@@ -17,6 +17,7 @@
 
 package org.apache.pdfbox.examples.pdmodel;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -55,7 +56,7 @@ public class HelloWorldTTF
 
             PDPage page = new PDPage();
             doc.addPage(page);
-            PDFont font = PDTrueTypeFont.loadTTF(doc, fontfile);
+            PDFont font = PDTrueTypeFont.loadTTF(doc, new File(fontfile));
 
             PDPageContentStream contentStream = new PDPageContentStream(doc,
                     page);

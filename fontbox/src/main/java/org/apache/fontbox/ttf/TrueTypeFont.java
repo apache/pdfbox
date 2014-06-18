@@ -26,24 +26,19 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * A class to hold true type font information.
+ * A TrueType font file.
  * 
- * @author Ben Litchfield (ben@benlitchfield.com)
+ * @author Ben Litchfield
  */
 public class TrueTypeFont 
 {
     private final Log log = LogFactory.getLog(TrueTypeFont.class);
 
-    private float version; 
-
+    private float version;
     private int numberOfGlyphs = -1;
-    
     private int unitsPerEm = -1;
-
     private int[] advanceWidths = null;
-    
     private Map<String,TTFTable> tables = new HashMap<String,TTFTable>();
-    
     private TTFDataStream data;
     
     /**
@@ -51,7 +46,7 @@ public class TrueTypeFont
      * 
      * @param fontData The font data.
      */
-    TrueTypeFont( TTFDataStream fontData )
+    TrueTypeFont(TTFDataStream fontData)
     {
         data = fontData;
     }
@@ -73,20 +68,22 @@ public class TrueTypeFont
     {
         return version;
     }
+
     /**
+     * Set the version. Package-private, used by TTFParser only.
      * @param versionValue The version to set.
      */
-    public void setVersion(float versionValue) 
+    void setVersion(float versionValue)
     {
         version = versionValue;
     }
     
     /**
-     * Add a table definition.
+     * Add a table definition. Package-private, used by TTFParser only.
      * 
      * @param table The table to add.
      */
-    public void addTable( TTFTable table )
+    void addTable( TTFTable table )
     {
         tables.put( table.getTag(), table );
     }
@@ -111,7 +108,7 @@ public class TrueTypeFont
         NamingTable naming = (NamingTable)tables.get( NamingTable.TAG );
         if (naming != null && !naming.getInitialized())
         {
-            initializeTable(naming);
+            readTable(naming);
         }
         return naming;
     }
@@ -126,7 +123,7 @@ public class TrueTypeFont
         PostScriptTable postscript = (PostScriptTable)tables.get( PostScriptTable.TAG );
         if (postscript != null && !postscript.getInitialized())
         {
-            initializeTable(postscript);
+            readTable(postscript);
         }
         return postscript;
     }
@@ -141,7 +138,7 @@ public class TrueTypeFont
         OS2WindowsMetricsTable os2WindowsMetrics = (OS2WindowsMetricsTable)tables.get( OS2WindowsMetricsTable.TAG );
         if (os2WindowsMetrics != null && !os2WindowsMetrics.getInitialized())
         {
-            initializeTable(os2WindowsMetrics);
+            readTable(os2WindowsMetrics);
         }
         return os2WindowsMetrics;
     }
@@ -156,7 +153,7 @@ public class TrueTypeFont
         MaximumProfileTable maximumProfile = (MaximumProfileTable)tables.get( MaximumProfileTable.TAG );
         if (maximumProfile != null && !maximumProfile.getInitialized())
         {
-            initializeTable(maximumProfile);
+            readTable(maximumProfile);
         }
         return maximumProfile;
     }
@@ -171,7 +168,7 @@ public class TrueTypeFont
         HeaderTable header = (HeaderTable)tables.get( HeaderTable.TAG );
         if (header != null && !header.getInitialized())
         {
-            initializeTable(header);
+            readTable(header);
         }
         return header;
     }
@@ -186,7 +183,7 @@ public class TrueTypeFont
         HorizontalHeaderTable horizontalHeader = (HorizontalHeaderTable)tables.get( HorizontalHeaderTable.TAG );
         if (horizontalHeader != null && !horizontalHeader.getInitialized())
         {
-            initializeTable(horizontalHeader);
+            readTable(horizontalHeader);
         }
         return horizontalHeader;
     }
@@ -201,7 +198,7 @@ public class TrueTypeFont
         HorizontalMetricsTable horizontalMetrics = (HorizontalMetricsTable)tables.get( HorizontalMetricsTable.TAG );
         if (horizontalMetrics != null && !horizontalMetrics.getInitialized())
         {
-            initializeTable(horizontalMetrics);
+            readTable(horizontalMetrics);
         }
         return horizontalMetrics;
     }
@@ -216,7 +213,7 @@ public class TrueTypeFont
         IndexToLocationTable indexToLocation = (IndexToLocationTable)tables.get( IndexToLocationTable.TAG );
         if (indexToLocation != null && !indexToLocation.getInitialized())
         {
-            initializeTable(indexToLocation);
+            readTable(indexToLocation);
         }
         return indexToLocation;
     }
@@ -231,7 +228,7 @@ public class TrueTypeFont
         GlyphTable glyph = (GlyphTable)tables.get( GlyphTable.TAG );
         if (glyph != null && !glyph.getInitialized())
         {
-            initializeTable(glyph);
+            readTable(glyph);
         }
         return glyph;
     }
@@ -246,7 +243,7 @@ public class TrueTypeFont
         CMAPTable cmap = (CMAPTable)tables.get( CMAPTable.TAG );
         if (cmap != null && !cmap.getInitialized())
         {
-            initializeTable(cmap);
+            readTable(cmap);
         }
         return cmap;
     }
@@ -266,18 +263,18 @@ public class TrueTypeFont
     }
     
     /**
-     * Initialize the given table if necessary.
+     * Read the given table if necessary. Package-private, used by TTFParser only.
      * 
      * @param table the table to be initialized
      */
-    public void initializeTable(TTFTable table)
+    void readTable(TTFTable table)
     {
         try
         {
             // save current position
             long currentPosition = data.getCurrentPosition();
             data.seek(table.getOffset());
-            table.initData(this, data);
+            table.read(this, data);
             // restore current position
             data.seek(currentPosition);
         }
@@ -365,5 +362,4 @@ public class TrueTypeFont
             return advanceWidths[advanceWidths.length-1];
         }
     }
-
 }

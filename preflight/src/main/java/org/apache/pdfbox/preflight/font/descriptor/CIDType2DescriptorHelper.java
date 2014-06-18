@@ -28,7 +28,7 @@ import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_KEY
 
 import java.io.ByteArrayInputStream;
 
-import org.apache.fontbox.ttf.CIDFontType2Parser;
+import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDocument;
@@ -106,7 +106,7 @@ public class CIDType2DescriptorHelper extends FontDescriptorHelper<CIDType2Conta
              * According to PDF Reference, CIDFontType2 is a TrueType font. Remark : Java.awt.Font throws exception when
              * a CIDFontType2 is parsed even if it is valid.
              */
-            ttf = new CIDFontType2Parser(true).parseTTF(new ByteArrayInputStream(fontFile.getByteArray()));
+            ttf = new TTFParser(true).parseTTF(new ByteArrayInputStream(fontFile.getByteArray()));
             this.fContainer.setTtf(ttf);
         }
         catch (Exception e)

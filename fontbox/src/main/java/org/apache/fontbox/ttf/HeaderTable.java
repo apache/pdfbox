@@ -56,7 +56,7 @@ public class HeaderTable extends TTFTable
      * @param data The stream to read the data from.
      * @throws IOException If there is an error reading the data.
      */
-    public void initData( TrueTypeFont ttf, TTFDataStream data ) throws IOException
+    public void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
     {
         version = data.read32Fixed();
         fontRevision = data.read32Fixed();

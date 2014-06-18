@@ -48,6 +48,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.encoding.MacOSRomanEncoding;
 import org.apache.pdfbox.encoding.WinAnsiEncoding;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
@@ -65,26 +66,30 @@ public class PDTrueTypeFont extends PDSimpleFont
     private static final int START_RANGE_F100 = 0xF100;
     private static final int START_RANGE_F200 = 0xF200;
 
+    /**
+     * Loads a TTF to be embedded into a document.
+     *
+     * @param doc The PDF document that will hold the embedded font.
+     * @param file a ttf file.
+     * @return a PDTrueTypeFont instance.
+     * @throws IOException If there is an error loading the data.
+     */
+    public static PDTrueTypeFont loadTTF(PDDocument doc, File file) throws IOException
+    {
+        return new PDTrueTypeFont(doc, new FileInputStream(file));
+    }
+
     private CMAPEncodingEntry cmapWinUnicode = null;
     private CMAPEncodingEntry cmapWinSymbol = null;
     private CMAPEncodingEntry cmapMacintoshSymbol = null;
     private boolean cmapInitialized = false;
 
-    private TrueTypeFont trueTypeFont = null;
-    private HashMap<Integer, Float> advanceWidths = new HashMap<Integer, Float> (); 
-    
-    /**
-     * Constructor.
-     */
-    public PDTrueTypeFont()
-    {
-        super();
-        font.setItem(COSName.SUBTYPE, COSName.TRUE_TYPE);
-    }
+    private TrueTypeFont ttf = null;
+    private HashMap<Integer, Float> advanceWidths = new HashMap<Integer, Float> ();
 
     /**
-     * Constructor.
-     * 
+     * Creates a new TrueType font from a Font dictionary.
+     *
      * @param fontDictionary The font dictionary according to the PDF specification.
      */
     public PDTrueTypeFont(COSDictionary fontDictionary)
@@ -93,120 +98,65 @@ public class PDTrueTypeFont extends PDSimpleFont
     }
 
     /**
-     * This will load a TTF font from a font file.
-     * 
-     * @param doc The PDF document that will hold the embedded font.
-     * @param file The file on the filesystem that holds the font file.
-     * @return A true type font.
-     * @throws IOException If there is an error loading the file data.
+     * Creates a new TrueType font for embedding.
      */
-    public static PDTrueTypeFont loadTTF(PDDocument doc, String file) throws IOException
+    private PDTrueTypeFont(PDDocument document, InputStream ttf) throws IOException
     {
-        return loadTTF(doc, new File(file));
-    }
+        font.setItem(COSName.SUBTYPE, COSName.TRUE_TYPE);
 
-    /**
-     * This will load a TTF to be embedded into a document.
-     * 
-     * @param doc The PDF document that will hold the embedded font.
-     * @param file a ttf file.
-     * @return a PDTrueTypeFont instance.
-     * @throws IOException If there is an error loading the data.
-     */
-    public static PDTrueTypeFont loadTTF(PDDocument doc, File file) throws IOException
-    {
-        return loadTTF(doc, new FileInputStream(file));
-    }
+        PDStream stream = new PDStream(document, ttf, false);
+        stream.getStream().setInt(COSName.LENGTH1, stream.getByteArray().length); // todo: wrong?
+        stream.addCompression();
 
-    /**
-     * This will load a TTF to be embedded into a document.
-     * 
-     * @param doc The PDF document that will hold the embedded font.
-     * @param stream a ttf input stream.
-     * @return a PDTrueTypeFont instance.
-     * @throws IOException If there is an error loading the data.
-     */
-    public static PDTrueTypeFont loadTTF(PDDocument doc, InputStream stream) throws IOException
-    {
-        return PDTrueTypeFont.loadTTF(doc, stream, new WinAnsiEncoding());
-    }
-
-    /**
-     * This will load a TTF to be embedded into a document.
-     * 
-     * @param doc The PDF document that will hold the embedded font.
-     * @param stream a ttf input stream.
-     * @param enc The font encoding.
-     * @return a PDTrueTypeFont instance.
-     * @throws IOException If there is an error loading the data.
-     */
-    public static PDTrueTypeFont loadTTF(PDDocument doc, InputStream stream, Encoding enc)
-            throws IOException
-    {
-        PDStream fontStream = new PDStream(doc, stream, false);
-        fontStream.getStream().setInt(COSName.LENGTH1, fontStream.getByteArray().length);
-        fontStream.addCompression();
         // only support winansi encoding right now, should really
         // just use Identity-H with unicode mapping
-        return PDTrueTypeFont.loadTTF(fontStream, enc);
-    }
+        Encoding encoding = new WinAnsiEncoding(); // fixme: read encoding from TTF
 
-    /**
-     * This will load a TTF to be embedded into a document.
-     * 
-     * @param fontStream a ttf input stream.
-     * @param enc The font encoding.
-     * @return a PDTrueTypeFont instance.
-     * @throws IOException If there is an error loading the data.
-     */
-    public static PDTrueTypeFont loadTTF(PDStream fontStream, Encoding enc) throws IOException
-    {
-        PDTrueTypeFont retval = new PDTrueTypeFont();
-        retval.setFontEncoding(enc);
-        retval.setEncoding(enc.getCOSObject());
+        setFontEncoding(encoding);
+        setEncoding(encoding.getCOSObject());
 
-        PDFontDescriptorDictionary fd = new PDFontDescriptorDictionary();
-        retval.setFontDescriptor(fd);
-        fd.setFontFile2(fontStream);
-        // As the stream was close within the PDStream constructor, we have to recreate it
-        InputStream stream = fontStream.createInputStream();
+        // as the stream was close within the PDStream constructor, we have to recreate it
+        InputStream stream2 = null;
+        PDFontDescriptorDictionary fd;
         try
         {
-            retval.loadDescriptorDictionary(fd, stream);
+            stream2 = stream.createInputStream();
+            fd = getFontDescriptor(new TTFParser().parseTTF(stream2));
         }
         finally
         {
-            stream.close();
+            IOUtils.closeQuietly(stream2);
         }
-        return retval;
+
+
+        fd.setFontFile2(stream);
+        setFontDescriptor(fd);
     }
 
-    private void loadDescriptorDictionary(PDFontDescriptorDictionary fd, InputStream ttfData)
-            throws IOException
+    // creates a new font descriptor dictionary for the given TTF
+    private PDFontDescriptorDictionary getFontDescriptor(TrueTypeFont ttf) throws IOException
     {
-        TrueTypeFont ttf = null;
-        try
-        {
-            TTFParser parser = new TTFParser();
-            ttf = parser.parseTTF(ttfData);
-            NamingTable naming = ttf.getNaming();
-            List<NameRecord> records = naming.getNameRecords();
-            for (NameRecord nr : records)
-            {
-                if (nr.getNameId() == NameRecord.NAME_POSTSCRIPT_NAME)
-                {
-                    setBaseFont(nr.getString());
-                    fd.setFontName(nr.getString());
-                } else if (nr.getNameId() == NameRecord.NAME_FONT_FAMILY_NAME)
-                {
-                    fd.setFontFamily(nr.getString());
-                }
-            }
+        PDFontDescriptorDictionary fd = new PDFontDescriptorDictionary();
 
-            OS2WindowsMetricsTable os2 = ttf.getOS2Windows();
-            boolean isSymbolic = false;
-            switch (os2.getFamilyClass())
+        NamingTable naming = ttf.getNaming();
+        List<NameRecord> records = naming.getNameRecords();
+        for (NameRecord nr : records)
+        {
+            if (nr.getNameId() == NameRecord.NAME_POSTSCRIPT_NAME)
             {
+                setBaseFont(nr.getString());
+                fd.setFontName(nr.getString());
+            }
+            else if (nr.getNameId() == NameRecord.NAME_FONT_FAMILY_NAME)
+            {
+                fd.setFontFamily(nr.getString());
+            }
+        }
+
+        OS2WindowsMetricsTable os2 = ttf.getOS2Windows();
+        boolean isSymbolic = false;
+        switch (os2.getFamilyClass())
+        {
             case OS2WindowsMetricsTable.FAMILY_CLASS_SYMBOLIC:
                 isSymbolic = true;
                 break;
@@ -220,11 +170,10 @@ public class PDTrueTypeFont extends PDSimpleFont
             case OS2WindowsMetricsTable.FAMILY_CLASS_SLAB_SERIFS:
                 fd.setSerif(true);
                 break;
-            default:
-                // do nothing
-            }
-            switch (os2.getWidthClass())
-            {
+        }
+
+        switch (os2.getWidthClass())
+        {
             case OS2WindowsMetricsTable.WIDTH_CLASS_ULTRA_CONDENSED:
                 fd.setFontStretch("UltraCondensed");
                 break;
@@ -252,135 +201,128 @@ public class PDTrueTypeFont extends PDSimpleFont
             case OS2WindowsMetricsTable.WIDTH_CLASS_ULTRA_EXPANDED:
                 fd.setFontStretch("UltraExpanded");
                 break;
-            default:
-                // do nothing
-            }
-            fd.setFontWeight(os2.getWeightClass());
-            fd.setSymbolic(isSymbolic);
-            fd.setNonSymbolic(!isSymbolic);
-
-            // todo retval.setItalic
-            // todo retval.setAllCap
-            // todo retval.setSmallCap
-            // todo retval.setForceBold
-
-            HeaderTable header = ttf.getHeader();
-            PDRectangle rect = new PDRectangle();
-            float scaling = 1000f / header.getUnitsPerEm();
-            rect.setLowerLeftX(header.getXMin() * scaling);
-            rect.setLowerLeftY(header.getYMin() * scaling);
-            rect.setUpperRightX(header.getXMax() * scaling);
-            rect.setUpperRightY(header.getYMax() * scaling);
-            fd.setFontBoundingBox(rect);
-
-            HorizontalHeaderTable hHeader = ttf.getHorizontalHeader();
-            fd.setAscent(hHeader.getAscender() * scaling);
-            fd.setDescent(hHeader.getDescender() * scaling);
-
-            GlyphTable glyphTable = ttf.getGlyph();
-            GlyphData[] glyphs = glyphTable.getGlyphs();
-
-            PostScriptTable ps = ttf.getPostScript();
-            fd.setFixedPitch(ps.getIsFixedPitch() > 0);
-            fd.setItalicAngle(ps.getItalicAngle());
-
-            String[] names = ps.getGlyphNames();
-
-            if (names != null)
-            {
-                for (int i = 0; i < names.length; i++)
-                {
-                    // if we have a capital H then use that, otherwise use the tallest letter
-                    if (names[i].equals("H"))
-                    {
-                        fd.setCapHeight(glyphs[i].getBoundingBox().getUpperRightY() / scaling);
-                    }
-                    if (names[i].equals("x"))
-                    {
-                        fd.setXHeight(glyphs[i].getBoundingBox().getUpperRightY() / scaling);
-                    }
-                }
-            }
-
-            // hmm there does not seem to be a clear definition for StemV,
-            // this is close enough and I am told it doesn't usually get used.
-            fd.setStemV(fd.getFontBoundingBox().getWidth() * .13f);
-
-            CMAPTable cmapTable = ttf.getCMAP();
-            CMAPEncodingEntry[] cmaps = cmapTable.getCmaps();
-            CMAPEncodingEntry uniMap = null;
-            for (CMAPEncodingEntry cmapEncodingEntry : cmaps)
-            {
-                if (cmapEncodingEntry.getPlatformId() == CMAPTable.PLATFORM_WINDOWS)
-                {
-                    int platformEncoding = cmapEncodingEntry.getPlatformEncodingId();
-                    if (CMAPTable.ENCODING_UNICODE == platformEncoding)
-                    {
-                        uniMap = cmapEncodingEntry;
-                        break;
-                    }
-                }
-            }
-
-            Map<Integer, String> codeToName = this.getFontEncoding().getCodeToNameMap();
-
-            int firstChar = Collections.min(codeToName.keySet());
-            int lastChar = Collections.max(codeToName.keySet());
-
-            HorizontalMetricsTable hMet = ttf.getHorizontalMetrics();
-            int[] widthValues = hMet.getAdvanceWidth();
-            // some monospaced fonts provide only one value for the width
-            // instead of an array containing the same value for every glyphid
-            boolean isMonospaced = fd.isFixedPitch();
-            int nWidths = lastChar - firstChar + 1;
-            List<Integer> widths = new ArrayList<Integer>(nWidths);
-            // use the first width as default
-            // proportional fonts -> width of the .notdef character
-            // monospaced-fonts -> the first width
-            int defaultWidth = Math.round(widthValues[0] * scaling);
-            for (int i = 0; i < nWidths; i++)
-            {
-                widths.add(defaultWidth);
-            }
-            // Encoding singleton to have acces to the chglyph name to
-            // unicode cpoint point mapping of Adobe's glyphlist.txt
-            Encoding glyphlist = WinAnsiEncoding.INSTANCE;
-
-            // A character code is mapped to a glyph name via the provided font encoding
-            // Afterwards, the glyph name is translated to a glyph ID.
-            // For details, see PDFReference16.pdf, Section 5.5.5, p.401
-            //
-            for (Entry<Integer, String> e : codeToName.entrySet())
-            {
-                String name = e.getValue();
-                // pdf code to unicode by glyph list.
-                String c = glyphlist.getCharacter(name);
-                int charCode = c.codePointAt(0);
-                int gid = uniMap.getGlyphId(charCode);
-                if (gid != 0)
-                {
-                    if (isMonospaced)
-                    {
-                        widths.set(e.getKey().intValue() - firstChar, defaultWidth);
-                    }
-                    else
-                    {
-                        widths.set(e.getKey().intValue() - firstChar,
-                                   Math.round(widthValues[gid] * scaling));
-                    }
-                }
-            }
-            setWidths(widths);
-            setFirstChar(firstChar);
-            setLastChar(lastChar);
         }
-        finally
+        fd.setFontWeight(os2.getWeightClass());
+        fd.setSymbolic(isSymbolic);
+        fd.setNonSymbolic(!isSymbolic);
+
+        // todo retval.setItalic
+        // todo retval.setAllCap
+        // todo retval.setSmallCap
+        // todo retval.setForceBold
+
+        HeaderTable header = ttf.getHeader();
+        PDRectangle rect = new PDRectangle();
+        float scaling = 1000f / header.getUnitsPerEm();
+        rect.setLowerLeftX(header.getXMin() * scaling);
+        rect.setLowerLeftY(header.getYMin() * scaling);
+        rect.setUpperRightX(header.getXMax() * scaling);
+        rect.setUpperRightY(header.getYMax() * scaling);
+        fd.setFontBoundingBox(rect);
+
+        HorizontalHeaderTable hHeader = ttf.getHorizontalHeader();
+        fd.setAscent(hHeader.getAscender() * scaling);
+        fd.setDescent(hHeader.getDescender() * scaling);
+
+        GlyphTable glyphTable = ttf.getGlyph();
+        GlyphData[] glyphs = glyphTable.getGlyphs();
+
+        PostScriptTable ps = ttf.getPostScript();
+        fd.setFixedPitch(ps.getIsFixedPitch() > 0);
+        fd.setItalicAngle(ps.getItalicAngle());
+
+        String[] names = ps.getGlyphNames();
+
+        if (names != null)
         {
-            if (ttf != null)
+            for (int i = 0; i < names.length; i++)
             {
-                ttf.close();
+                // if we have a capital H then use that, otherwise use the tallest letter
+                if (names[i].equals("H"))
+                {
+                    fd.setCapHeight(glyphs[i].getBoundingBox().getUpperRightY() / scaling);
+                }
+                if (names[i].equals("x"))
+                {
+                    fd.setXHeight(glyphs[i].getBoundingBox().getUpperRightY() / scaling);
+                }
             }
         }
+
+        // hmm there does not seem to be a clear definition for StemV,
+        // this is close enough and I am told it doesn't usually get used.
+        fd.setStemV(fd.getFontBoundingBox().getWidth() * .13f);
+
+        CMAPTable cmapTable = ttf.getCMAP();
+        CMAPEncodingEntry[] cmaps = cmapTable.getCmaps();
+        CMAPEncodingEntry uniMap = null;
+
+        for (CMAPEncodingEntry cmap : cmaps)
+        {
+            if (cmap.getPlatformId() == CMAPTable.PLATFORM_WINDOWS)
+            {
+                int platformEncoding = cmap.getPlatformEncodingId();
+                if (CMAPTable.ENCODING_UNICODE == platformEncoding)
+                {
+                    uniMap = cmap;
+                    break;
+                }
+            }
+        }
+
+        Map<Integer, String> codeToName = this.getFontEncoding().getCodeToNameMap();
+
+        int firstChar = Collections.min(codeToName.keySet());
+        int lastChar = Collections.max(codeToName.keySet());
+
+        HorizontalMetricsTable hMet = ttf.getHorizontalMetrics();
+        int[] widthValues = hMet.getAdvanceWidth();
+        // some monospaced fonts provide only one value for the width
+        // instead of an array containing the same value for every glyphid
+        boolean isMonospaced = fd.isFixedPitch();
+        int nWidths = lastChar - firstChar + 1;
+        List<Integer> widths = new ArrayList<Integer>(nWidths);
+        // use the first width as default
+        // proportional fonts -> width of the .notdef character
+        // monospaced-fonts -> the first width
+        int defaultWidth = Math.round(widthValues[0] * scaling);
+        for (int i = 0; i < nWidths; i++)
+        {
+            widths.add(defaultWidth);
+        }
+        // Encoding singleton to have acces to the chglyph name to
+        // unicode cpoint point mapping of Adobe's glyphlist.txt
+        Encoding glyphlist = WinAnsiEncoding.INSTANCE;
+
+        // A character code is mapped to a glyph name via the provided font encoding
+        // Afterwards, the glyph name is translated to a glyph ID.
+        // For details, see PDFReference16.pdf, Section 5.5.5, p.401
+        //
+        for (Entry<Integer, String> e : codeToName.entrySet())
+        {
+            String name = e.getValue();
+            // pdf code to unicode by glyph list.
+            String c = glyphlist.getCharacter(name);
+            int charCode = c.codePointAt(0);
+            int gid = uniMap.getGlyphId(charCode);
+            if (gid != 0)
+            {
+                if (isMonospaced)
+                {
+                    widths.set(e.getKey() - firstChar, defaultWidth);
+                }
+                else
+                {
+                    widths.set(e.getKey() - firstChar,
+                               Math.round(widthValues[gid] * scaling));
+                }
+            }
+        }
+        setWidths(widths);
+        font.setInt(COSName.FIRST_CHAR, firstChar);
+        font.setInt(COSName.LAST_CHAR, lastChar);
+
+        return fd;
     }
 
     /**
@@ -391,7 +333,7 @@ public class PDTrueTypeFont extends PDSimpleFont
      */
     public TrueTypeFont getTTFFont() throws IOException
     {
-        if (trueTypeFont == null)
+        if (ttf == null)
         {
             PDFontDescriptorDictionary fd = (PDFontDescriptorDictionary) getFontDescriptor();
             if (fd != null)
@@ -400,30 +342,16 @@ public class PDTrueTypeFont extends PDSimpleFont
                 if (ff2Stream != null)
                 {
                     TTFParser ttfParser = new TTFParser(true);
-                    trueTypeFont = ttfParser.parseTTF(ff2Stream.createInputStream());
+                    ttf = ttfParser.parseTTF(ff2Stream.createInputStream());
                 }
             }
-            if (trueTypeFont == null)
+            if (ttf == null)
             {
                 // check if there is a font mapping for an external font file
-                trueTypeFont = FontManager.findTTFont(getBaseFont());
+                ttf = FontManager.findTTFont(getBaseFont());
             }
         }
-        return trueTypeFont;
-    }
-
-    @Override
-    public void clear()
-    {
-        super.clear();
-        cmapWinUnicode = null;
-        cmapWinSymbol = null;
-        cmapMacintoshSymbol = null;
-        trueTypeFont = null;
-        if (advanceWidths != null)
-        {
-            advanceWidths.clear();
-        }
+        return ttf;
     }
 
     @Override
@@ -444,7 +372,7 @@ public class PDTrueTypeFont extends PDSimpleFont
                     ttf = getTTFFont();
                     if (ttf != null)
                     {
-                        int code = getGlyphcode(charCode);
+                        int code = getGIDForCharacterCode(charCode);
                         width = ttf.getAdvanceWidth(code);
                         int unitsPerEM = ttf.getUnitsPerEm();
                         // do we have to scale the width
@@ -464,11 +392,15 @@ public class PDTrueTypeFont extends PDSimpleFont
         return width;
     }
 
-    // TODO I had to copy the following code from TTFGlyph2D as I haven't any idea
-    // where to put it else.
-    private int getGlyphcode(int code)
+    /**
+     * Returns the GID for the given character code.
+     *
+     * @param code character code
+     * @return GID (glyph index)
+     */
+    public int getGIDForCharacterCode(int code)
     {
-        extractCMaps();
+        extractCmapTable();
         int result = 0;
         if (getFontEncoding() != null && !isSymbolicFont())
         {
@@ -506,7 +438,7 @@ public class PDTrueTypeFont extends PDSimpleFont
                 LOG.error("Caught an exception getGlyhcode: " + exception);
             }
         }
-        else if (getFontEncoding() == null || isSymbolicFont())
+        if (getFontEncoding() == null || isSymbolicFont())
         {
             if (cmapWinSymbol != null)
             {
@@ -542,46 +474,65 @@ public class PDTrueTypeFont extends PDSimpleFont
     }
 
     /**
-     * extract all useful CMaps.
+     * extract all useful "cmap" subtables.
      */
-    private void extractCMaps()
+    private void extractCmapTable()
     {
-        if (!cmapInitialized)
+        if (cmapInitialized)
         {
-            try 
+            return;
+        }
+
+        try
+        {
+            getTTFFont();
+        }
+        catch(IOException exception)
+        {
+            LOG.error("Can't read the true type font", exception);
+        }
+
+        CMAPTable cmapTable = ttf.getCMAP();
+        if (cmapTable != null)
+        {
+            // get all relevant "cmap" subtables
+            CMAPEncodingEntry[] cmaps = cmapTable.getCmaps();
+            for (CMAPEncodingEntry cmap1 : cmaps)
             {
-                getTTFFont();
-            }
-            catch(IOException exception)
-            {
-                LOG.error("Can't read the true type font", exception);
-            }
-            CMAPTable cmapTable = trueTypeFont.getCMAP();
-            if (cmapTable != null)
-            {
-                // get all relevant CMaps
-                CMAPEncodingEntry[] cmaps = cmapTable.getCmaps();
-                for (CMAPEncodingEntry cmap1 : cmaps)
+                if (CMAPTable.PLATFORM_WINDOWS == cmap1.getPlatformId())
                 {
-                    if (CMAPTable.PLATFORM_WINDOWS == cmap1.getPlatformId())
+                    if (CMAPTable.ENCODING_UNICODE == cmap1.getPlatformEncodingId())
                     {
-                        if (CMAPTable.ENCODING_UNICODE == cmap1.getPlatformEncodingId())
-                        {
-                            cmapWinUnicode = cmap1;
-                        } else if (CMAPTable.ENCODING_SYMBOL == cmap1.getPlatformEncodingId())
-                        {
-                            cmapWinSymbol = cmap1;
-                        }
-                    } else if (CMAPTable.PLATFORM_MACINTOSH == cmap1.getPlatformId())
+                        cmapWinUnicode = cmap1;
+                    }
+                    else if (CMAPTable.ENCODING_SYMBOL == cmap1.getPlatformEncodingId())
                     {
-                        if (CMAPTable.ENCODING_SYMBOL == cmap1.getPlatformEncodingId())
-                        {
-                            cmapMacintoshSymbol = cmap1;
-                        }
+                        cmapWinSymbol = cmap1;
+                    }
+                }
+                else if (CMAPTable.PLATFORM_MACINTOSH == cmap1.getPlatformId())
+                {
+                    if (CMAPTable.ENCODING_SYMBOL == cmap1.getPlatformEncodingId())
+                    {
+                        cmapMacintoshSymbol = cmap1;
                     }
                 }
             }
-            cmapInitialized = true;
+        }
+        cmapInitialized = true;
+    }
+
+    @Override
+    public void clear()
+    {
+        super.clear();
+        cmapWinUnicode = null;
+        cmapWinSymbol = null;
+        cmapMacintoshSymbol = null;
+        ttf = null;
+        if (advanceWidths != null)
+        {
+            advanceWidths.clear();
         }
     }
 }
