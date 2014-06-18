@@ -19,14 +19,11 @@ package org.apache.pdfbox.pdmodel.graphics;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSInteger;
-import org.apache.pdfbox.cos.COSNumber;
 
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * A line dash pattern for stroking paths.

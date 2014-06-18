@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.color;
 
-import org.apache.pdfbox.cos.COSBase;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
