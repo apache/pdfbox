@@ -257,7 +257,7 @@ public class Type2CharString extends Type1CharString
 
     private List<Integer> clearStack(List<Integer> numbers, boolean flag)
     {
-        if (type1Sequence.size() == 0)
+        if (type1Sequence.isEmpty())
         {
             if (flag)
             {
