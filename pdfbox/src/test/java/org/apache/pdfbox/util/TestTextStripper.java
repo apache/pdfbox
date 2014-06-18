@@ -175,8 +175,8 @@ public class TestTextStripper extends TestCase
                 }
             }
         }
-        else if( ( expected == null && actual != null && actual.trim().equals( "" ) ) ||
-            ( actual == null && expected != null && expected.trim().equals( "" ) ) )
+        else if( ( expected == null && actual != null && actual.trim().isEmpty(  ) ) ||
+            ( actual == null && expected != null && expected.trim().isEmpty(  ) ) )
         {
             //basically there are some cases where pdfbox will put an extra line
             //at the end of the file, who cares, this is not enough to report
