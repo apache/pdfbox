@@ -116,7 +116,7 @@ public class PDFHighlighter extends PDFTextStripper
         //page = CCRStringUtil.stripChar(page, '\r');
 
         // Traitement des listes � puces (caract�res sp�ciaux)
-        if (page.indexOf("a") != -1)
+        if (page.indexOf('a') != -1)
         {
             page = page.replaceAll("a[0-9]{1,3}", ".");
         }

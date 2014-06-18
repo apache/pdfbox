@@ -238,7 +238,7 @@ public class PDType1Font extends PDSimpleFont
                 name = ((COSName) baseFont).getName();
                 if (name.contains("+"))
                 {
-                    name = name.substring(name.indexOf("+") + 1);
+                    name = name.substring(name.indexOf('+') + 1);
                 }
 
             }
