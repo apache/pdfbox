@@ -17,7 +17,9 @@
 package org.apache.pdfbox.util;
 
 import java.io.IOException;
-import junit.framework.*;
+import junit.framework.TestCase;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.fail;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
