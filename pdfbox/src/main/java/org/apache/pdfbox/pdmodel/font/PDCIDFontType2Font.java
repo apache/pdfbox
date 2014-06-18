@@ -45,15 +45,6 @@ public class PDCIDFontType2Font extends PDCIDFont
 
     /**
      * Constructor.
-     */
-    public PDCIDFontType2Font()
-    {
-        super();
-        font.setItem(COSName.SUBTYPE, COSName.CID_FONT_TYPE2);
-    }
-
-    /**
-     * Constructor.
      * 
      * @param fontDictionary The font dictionary according to the PDF specification.
      */
@@ -71,7 +62,7 @@ public class PDCIDFontType2Font extends PDCIDFont
     {
         if (hasCIDToGIDMap == null)
         {
-            COSBase map = font.getDictionaryObject(COSName.CID_TO_GID_MAP);
+            COSBase map = dict.getDictionaryObject(COSName.CID_TO_GID_MAP);
             if (map != null && map instanceof COSStream)
             {
                 hasCIDToGIDMap = Boolean.TRUE;
@@ -93,7 +84,7 @@ public class PDCIDFontType2Font extends PDCIDFont
     {
         if (hasIdentityCIDToGIDMap == null)
         {
-            COSBase map = font.getDictionaryObject(COSName.CID_TO_GID_MAP);
+            COSBase map = dict.getDictionaryObject(COSName.CID_TO_GID_MAP);
             if (map != null && map instanceof COSName)
             {
                 hasIdentityCIDToGIDMap = Boolean.TRUE;
@@ -152,7 +143,7 @@ public class PDCIDFontType2Font extends PDCIDFont
 
     private void readCIDToGIDMapping()
     {
-        COSBase map = font.getDictionaryObject(COSName.CID_TO_GID_MAP);
+        COSBase map = dict.getDictionaryObject(COSName.CID_TO_GID_MAP);
         if (map instanceof COSStream)
         {
             COSStream stream = (COSStream) map;
@@ -179,7 +170,7 @@ public class PDCIDFontType2Font extends PDCIDFont
 
     /**
      * Returns the embedded true type font.
-     * 
+     *
      * @return the true type font
      * @throws IOException exception if something went wrong
      */
@@ -194,5 +185,25 @@ public class PDCIDFontType2Font extends PDCIDFont
             trueTypeFont = ttfParser.parseTTF(ff2Stream.createInputStream());
         }
         return trueTypeFont;
+    }
+
+    @Override
+    public float getFontWidth(byte[] c, int offset, int length) throws IOException
+    {
+        // a suitable mapping is needed to address the correct width value
+        int code = getCodeFromArray(c, offset, length);
+        if (hasIdentityCIDToGIDMap() || hasCIDToGIDMap())
+        {
+            return getFontWidth(code);
+        }
+        else if (getCMap() != null)
+        {
+            String mappedString = getCMap().lookup(code, length);
+            if (mappedString != null)
+            {
+                return getFontWidth(mappedString.codePointAt(0));
+            }
+        }
+        return super.getFontWidth(c, offset, length);
     }
 }

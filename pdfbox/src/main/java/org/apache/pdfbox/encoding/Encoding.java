@@ -28,22 +28,48 @@ import java.util.StringTokenizer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.util.ResourceLoader;
 
 /**
  * This is an interface to a text encoder.
  * 
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * 
+ * @author Ben Litchfield
  */
 public abstract class Encoding implements COSObjectable
 {
+    private static final Log LOG = LogFactory.getLog(Encoding.class);
 
     /**
-     * Log instance.
+     * This will get an encoding by name.
+     *
+     * @param name The name of the encoding to get.
+     * @return The encoding that matches the name.
+     * @throws IOException if there is no encoding with that name.
      */
-    private static final Log LOG = LogFactory.getLog(Encoding.class);
+    public static Encoding getInstance(COSName name) throws IOException {
+        if (COSName.STANDARD_ENCODING.equals(name))
+        {
+            return StandardEncoding.INSTANCE;
+        }
+        else if (COSName.WIN_ANSI_ENCODING.equals(name))
+        {
+            return WinAnsiEncoding.INSTANCE;
+        }
+        else if (COSName.MAC_ROMAN_ENCODING.equals(name))
+        {
+            return MacRomanEncoding.INSTANCE;
+        }
+        else if (COSName.PDF_DOC_ENCODING.equals(name))
+        {
+            return PdfDocEncoding.INSTANCE;
+        }
+        else
+        {
+            throw new IOException("Unknown encoding for '" + name.getName() + "'");
+        }
+    }
 
     /** Identifies a non-mapped character. */
     public static final String NOTDEF = ".notdef";

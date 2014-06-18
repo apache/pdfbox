@@ -49,7 +49,7 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
  * 
  * @author Villu Ruusmann
  */
-public class PDType1CFont extends PDSimpleFont
+public class PDType1CFont extends PDFont
 {
     private static final Log LOG = LogFactory.getLog(PDType1CFont.class);
     private static final byte[] SPACE_BYTES = { (byte) 32 };

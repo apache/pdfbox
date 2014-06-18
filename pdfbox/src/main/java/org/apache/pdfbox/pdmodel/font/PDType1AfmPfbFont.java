@@ -36,6 +36,7 @@ import org.apache.pdfbox.encoding.AFMEncoding;
 import org.apache.pdfbox.encoding.DictionaryEncoding;
 import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 
@@ -54,13 +55,13 @@ public class PDType1AfmPfbFont extends PDType1Font
      * Create a new object.
      * 
      * @param doc The PDF document that will hold the embedded font.
-     * @param afmname The font filename.
+     * @param afmName The font filename.
      * @throws IOException If there is an error loading the data.
      */
-    public PDType1AfmPfbFont(final PDDocument doc, final String afmname) throws IOException
+    public PDType1AfmPfbFont(final PDDocument doc, final String afmName) throws IOException
     {
-        InputStream afmIn = new BufferedInputStream(new FileInputStream(afmname), BUFFER_SIZE);
-        String pfbName = afmname.replaceAll(".AFM", "").replaceAll(".afm", "") + ".pfb";
+        InputStream afmIn = new BufferedInputStream(new FileInputStream(afmName), BUFFER_SIZE);
+        String pfbName = afmName.replaceAll(".AFM", "").replaceAll(".afm", "") + ".pfb";
         InputStream pfbIn = new BufferedInputStream(new FileInputStream(pfbName), BUFFER_SIZE);
         load(doc, afmIn, pfbIn);
     }
@@ -91,7 +92,7 @@ public class PDType1AfmPfbFont extends PDType1Font
             throws IOException
     {
         PDFontDescriptorDictionary fd = new PDFontDescriptorDictionary();
-        setFontDescriptor(fd);
+        dict.setItem(COSName.FONT_DESC, fd);
 
         // read the pfb
         PfbParser pfbparser = new PfbParser(pfb);
@@ -109,10 +110,10 @@ public class PDType1AfmPfbFont extends PDType1Font
         // read the afm
         AFMParser parser = new AFMParser(afm);
         metric = parser.parse();
-        setFontEncoding(afmToDictionary(new AFMEncoding(metric)));
+        this.fontEncoding = afmToDictionary(new AFMEncoding(metric));
 
         // set the values
-        setBaseFont(metric.getFontName());
+        dict.setName(COSName.BASE_FONT, metric.getFontName());
         fd.setFontName(metric.getFontName());
         fd.setFontFamily(metric.getFamilyName());
         fd.setNonSymbolic(true);
@@ -191,9 +192,9 @@ public class PDType1AfmPfbFont extends PDType1Font
                 }
             }
         }
-        setFirstChar(0);
-        setLastChar(255);
-        setWidths(widths);
+        dict.setInt(COSName.FIRST_CHAR, 0);
+        dict.setInt(COSName.LAST_CHAR, 255);
+        dict.setItem(COSName.WIDTHS, COSArrayList.converterToCOSArray(widths));
     }
 
     // This will generate a Encoding from the AFM-Encoding, because the AFM-Enconding isn't exported

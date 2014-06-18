@@ -64,7 +64,6 @@ import org.apache.pdfbox.pdmodel.font.PDCIDFontType2Font;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
 import org.apache.pdfbox.pdmodel.font.PDFontDescriptorDictionary;
-import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
 import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType1CFont;
@@ -337,7 +336,7 @@ public class PageDrawer extends PDFStreamEngine
                 {
                     // Use AWT to render the font (standard14 fonts, substituted embedded fonts)
                     // TODO to be removed in the long run
-                    drawString((PDSimpleFont) font, text.getCharacter(), at);
+                    drawString(font, text.getCharacter(), at);
                 }
             }
         }
@@ -438,7 +437,7 @@ public class PageDrawer extends PDFStreamEngine
      *
      * @throws IOException If there is an error drawing the specific string.
      */
-    private void drawString(PDSimpleFont font, String string, AffineTransform at) throws IOException
+    private void drawString(PDFont font, String string, AffineTransform at) throws IOException
     {
         Font awtFont = createAWTFont(font);
         FontRenderContext frc = new FontRenderContext(new AffineTransform(), true, true);
@@ -472,7 +471,7 @@ public class PageDrawer extends PDFStreamEngine
      * @return the corresponding AWT font
      * @throws IOException if something went wrong
      */
-    private Font createAWTFont(PDSimpleFont font) throws IOException
+    private Font createAWTFont(PDFont font) throws IOException
     {
         Font awtFont = null;
         // Is there already a AWTFont for the given font?
@@ -496,11 +495,7 @@ public class PageDrawer extends PDFStreamEngine
                         {
                             awtFont = FontManager.getAwtFont(fd.getFontName());
                         }
-                        if (awtFont != null)
-                        {
-                            type1Font.setIsFontSubstituted(true);
-                        }
-                        else
+                        if (awtFont == null)
                         {
                             LOG.info("Can't find the specified font " + fd.getFontName());
                         }
@@ -526,7 +521,6 @@ public class PageDrawer extends PDFStreamEngine
                 // Fallback: we can't find anything, so we have to use the standard font
                 awtFont = FontManager.getStandardFont();
                 LOG.info("Using font " + awtFont.getName() + " instead of " + font.getBaseFont());
-                font.setIsFontSubstituted(true);
             }
             awtFonts.put(font, awtFont);
         }
@@ -589,18 +583,18 @@ public class PageDrawer extends PDFStreamEngine
                 PDType0Font type0Font = (PDType0Font) font;
                 if (type0Font.getDescendantFont() instanceof PDCIDFontType2Font)
                 {
-                    // a CIDFontType2Font contains TTF font
+                    // a Type2 CIDFont contains a TTF font
                     PDCIDFontType2Font cidType2Font = (PDCIDFontType2Font) type0Font.getDescendantFont();
                     // get the true type font raw data
                     TrueTypeFont ttf = cidType2Font.getTTFFont();
                     if (ttf != null)
                     {
-                        glyph2D = new TTFGlyph2D(ttf, font, cidType2Font);
+                        glyph2D = new TTFGlyph2D(type0Font);
                     }
                 }
                 else if (type0Font.getDescendantFont() instanceof PDCIDFontType0Font)
                 {
-                    // a CIDFontType2Font contains TTF font
+                    // a Type0 CIDFont contains CFF font
                     PDCIDFontType0Font cidType2Font = (PDCIDFontType0Font) type0Font.getDescendantFont();
                     PDType1CFont type1CFont = cidType2Font.getType1CFont();
                     if (type1CFont != null)

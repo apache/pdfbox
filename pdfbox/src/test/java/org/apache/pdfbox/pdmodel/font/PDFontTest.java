@@ -31,10 +31,10 @@ import org.junit.Test;
  * 
  * @author adam
  */
-public class PDSimpleFontTest
+public class PDFontTest
 {
 
-    public PDSimpleFontTest()
+    public PDFontTest()
     {
     }
 
@@ -67,7 +67,7 @@ public class PDSimpleFontTest
         PDDocument doc = null;
         try
         {
-            doc = PDDocument.load(PDSimpleFontTest.class.getResourceAsStream("F001u_3_7j.pdf"));
+            doc = PDDocument.load(PDFontTest.class.getResourceAsStream("F001u_3_7j.pdf"));
             PDFRenderer renderer = new PDFRenderer(doc);
             renderer.renderImage(0);
             // the allegation is that renderImage() will crash the JVM or hang
@@ -90,7 +90,7 @@ public class PDSimpleFontTest
         PDDocument doc = null;
         try
         {
-            doc = PDDocument.load(PDSimpleFontTest.class.getResourceAsStream("256.pdf"));
+            doc = PDDocument.load(PDFontTest.class.getResourceAsStream("256.pdf"));
             PDFRenderer renderer = new PDFRenderer(doc);
             renderer.renderImage(0);
             // the allegation is that renderImage() will crash the JVM or hang

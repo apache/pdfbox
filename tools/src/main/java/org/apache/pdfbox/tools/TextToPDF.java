@@ -26,7 +26,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
+import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
@@ -40,7 +40,7 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 public class TextToPDF
 {
     private int fontSize = 10;
-    private PDSimpleFont font = PDType1Font.HELVETICA;
+    private PDFont font = PDType1Font.HELVETICA;
 
     /**
      * Create a PDF document with some text.
@@ -240,14 +240,14 @@ public class TextToPDF
     /**
      * @return Returns the font.
      */
-    public PDSimpleFont getFont()
+    public PDFont getFont()
     {
         return font;
     }
     /**
      * @param aFont The font to set.
      */
-    public void setFont(PDSimpleFont aFont)
+    public void setFont(PDFont aFont)
     {
         this.font = aFont;
     }

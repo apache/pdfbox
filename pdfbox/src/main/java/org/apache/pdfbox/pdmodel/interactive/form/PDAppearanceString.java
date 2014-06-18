@@ -45,7 +45,6 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
-import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
 
 import org.apache.pdfbox.pdmodel.interactive.action.PDFormFieldAdditionalActions;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
@@ -553,9 +552,9 @@ public final class PDAppearanceString
             float lineWidth = getLineWidth( tokens );
             float stringWidth = pdFont.getStringWidth( value );
             float height = 0;
-            if( pdFont instanceof PDSimpleFont )
+            if( pdFont instanceof PDFont )
             {
-                height = ((PDSimpleFont)pdFont).getFontDescriptor().getFontBoundingBox().getHeight();
+                height = ((PDFont)pdFont).getFontDescriptor().getFontBoundingBox().getHeight();
             }
             else
             {
@@ -592,7 +591,7 @@ public final class PDAppearanceString
         }
         else
         {
-            if( pdFont instanceof PDSimpleFont )
+            if( pdFont instanceof PDFont )
             {
                 //BJL 9/25/2004
                 //This algorithm is a little bit of black magic.  It does
@@ -601,7 +600,7 @@ public final class PDAppearanceString
                 //have determined that the below method of computing the position
                 //is correct for certain documents, but maybe not all.  It does
                 //work f1040ez.pdf and Form_1.pdf
-                PDFontDescriptor fd = ((PDSimpleFont)pdFont).getFontDescriptor();
+                PDFontDescriptor fd = ((PDFont)pdFont).getFontDescriptor();
                 float bBoxHeight = boundingBox.getHeight();
                 float fontHeight = fd.getFontBoundingBox().getHeight() + 2 * fd.getDescent();
                 fontHeight = (fontHeight/1000) * fontSize;

@@ -21,7 +21,6 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSName;
 
 /**
  * A Type0 CIDFont (CFF).
@@ -30,21 +29,9 @@ import org.apache.pdfbox.cos.COSName;
  */
 public class PDCIDFontType0Font extends PDCIDFont
 {
-    /**
-     * Log instance.
-     */
     private static final Log LOG = LogFactory.getLog(PDCIDFontType0Font.class);
 
     private PDType1CFont type1CFont = null;
-
-    /**
-     * Constructor.
-     */
-    public PDCIDFontType0Font()
-    {
-        super();
-        font.setItem(COSName.SUBTYPE, COSName.CID_FONT_TYPE0);
-    }
 
     /**
      * Constructor.
@@ -62,7 +49,7 @@ public class PDCIDFontType0Font extends PDCIDFont
             {
                 try
                 {
-                    type1CFont = new PDType1CFont(font);
+                    type1CFont = new PDType1CFont(dict);
                 }
                 catch (IOException exception)
                 {
