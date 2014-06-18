@@ -62,24 +62,24 @@
     <property name="maven.repo1" value="http://repo1.maven.org/maven2" />
     <property name="maven.repo2" value="http://repo2.maven.org/maven2" />
 
-    <property name="bcprov.name" value="bcprov-jdk15on-1.48" />
-    <property name="bcprov.url" value="${maven.repo2}/org/bouncycastle/bcprov-jdk15on/1.48/${bcprov.name}.jar" />
+    <property name="bcprov.name" value="bcprov-jdk15on-1.50" />
+    <property name="bcprov.url" value="${maven.repo2}/org/bouncycastle/bcprov-jdk15on/1.50/${bcprov.name}.jar" />
     <property name="bcprov.jar" value="${jar.dir}/${bcprov.name}.jar" />
 
-    <property name="bcmail.name" value="bcmail-jdk15on-1.48" />
-    <property name="bcmail.url" value="${maven.repo2}/org/bouncycastle/bcmail-jdk15on/1.48/${bcmail.name}.jar" />
+    <property name="bcmail.name" value="bcmail-jdk15on-1.50" />
+    <property name="bcmail.url" value="${maven.repo2}/org/bouncycastle/bcmail-jdk15on/1.50/${bcmail.name}.jar" />
     <property name="bcmail.jar" value="${jar.dir}/${bcmail.name}.jar" />
 
     <property name="bcpkix.name" value="bcpkix-jdk15on-1.48" />
-    <property name="bcpkix.url" value="${maven.repo2}/org/bouncycastle/bcpkix-jdk15on/1.48/${bcpkix.name}.jar" />
+    <property name="bcpkix.url" value="${maven.repo2}/org/bouncycastle/bcpkix-jdk15on/1.50/${bcpkix.name}.jar" />
     <property name="bcpkix.jar" value="${jar.dir}/${bcpkix.name}.jar" />
 
     <property name="junit.name" value="junit-4.11" />
     <property name="junit.url" value="${maven.repo2}/junit/junit/4.11/${junit.name}.jar" />
     <property name="junit.jar" value="${jar.dir}/${junit.name}.jar" />
 
-    <property name="logging.name" value="commons-logging-1.1.1" />
-    <property name="logging.url" value="${maven.repo1}/commons-logging/commons-logging/1.1.1/${logging.name}.jar" />
+    <property name="logging.name" value="commons-logging-1.1.3" />
+    <property name="logging.url" value="${maven.repo1}/commons-logging/commons-logging/1.1.3/${logging.name}.jar" />
     <property name="logging.jar" value="${jar.dir}/${logging.name}.jar" />
 
     <property name="icu4j.name" value="icu4j-3.8" />
@@ -89,17 +89,6 @@
     <property name="testoutput.dir" value="${pdfbox.target.dir}/test-output"/>
     <property name="testoutput-ext.dir" value="${pdfbox.target.dir}/test-output-ext"/>
     <property name="testinput-ext.dir" value="${pdfbox.target.dir}/test-input-ext"/>
-    <property name="jiraattachment.url" value="https://issues.apache.org/jira/secure/attachment"/>
-    <property name="testfiles1.url" value="${jiraattachment.url}/12413230/input-ext1.jar"/>
-    <property name="testfiles1.jar" value="${download.dir}/input-ext1.jar"/>
-    <property name="testfiles2.url" value="${jiraattachment.url}/12413231/input-ext2.jar"/>
-    <property name="testfiles2.jar" value="${download.dir}/input-ext2.jar"/>
-    <property name="testfiles3.url" value="${jiraattachment.url}/12413232/input-ext3.jar"/>
-    <property name="testfiles3.jar" value="${download.dir}/input-ext3.jar"/>
-    <property name="testfiles.rendering.url" value="${jiraattachment.url}/12413229/input-ext_rendering.jar"/>
-    <property name="testfiles.rendering.jar" value="${download.dir}/input-ext_rendering.jar"/>
-    <property name="testfiles.encryption.url" value="${jiraattachment.url}/12413268/input-ext_encryption.jar"/>
-    <property name="testfiles.encryption.jar" value="${download.dir}/input-ext_encryption.jar"/>
 
     <property name="file" value=""/>
 
@@ -200,42 +189,6 @@
     </target>
 
     <target name="test" depends="testextract,test-junit,testimage" description="Run all the junit tests"/>
-
-    <target name="find.testfiles">
-        <available property="testfiles.found"
-                   file="${testinput-ext.dir}"
-                   type="dir"/>
-    </target>
-
-    <target name="get.testfiles" 
-            unless="testfiles.found" depends="find.testfiles" 
-            description="Download additional testfiles without suitable license to add them to svn">
-        <antcall target="downloadfile">
-            <param name="sourcefile" value="${testfiles1.url}"/>
-            <param name="destfile" value="${testfiles1.jar}"/>
-        </antcall>
-        <antcall target="downloadfile">
-            <param name="sourcefile" value="${testfiles2.url}"/>
-            <param name="destfile" value="${testfiles2.jar}"/>
-        </antcall>
-        <antcall target="downloadfile">
-            <param name="sourcefile" value="${testfiles3.url}"/>
-            <param name="destfile" value="${testfiles3.jar}"/>
-        </antcall>
-        <antcall target="downloadfile">
-            <param name="sourcefile" value="${testfiles.rendering.url}"/>
-            <param name="destfile" value="${testfiles.rendering.jar}"/>
-        </antcall>
-        <antcall target="downloadfile">
-            <param name="sourcefile" value="${testfiles.encryption.url}"/>
-            <param name="destfile" value="${testfiles.encryption.jar}"/>
-        </antcall>
-        <unjar src="${testfiles1.jar}" dest="${testinput-ext.dir}"/>
-        <unjar src="${testfiles2.jar}" dest="${testinput-ext.dir}"/>
-        <unjar src="${testfiles3.jar}" dest="${testinput-ext.dir}"/>
-        <unjar src="${testfiles.rendering.jar}" dest="${testinput-ext.dir}"/>
-        <unjar src="${testfiles.encryption.jar}" dest="${testinput-ext.dir}"/>
-    </target>
 
     <target name="testextract" depends="clean,pdfbox.compile" description="Test text extraction">
         <junit printsummary="off" fork="on" dir=".">
