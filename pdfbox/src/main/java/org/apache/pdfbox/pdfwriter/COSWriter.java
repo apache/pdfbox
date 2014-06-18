@@ -783,12 +783,13 @@ public class COSWriter implements ICOSVisitor, Closeable
             SignatureInterface signatureInterface = doc.getSignatureInterface();
             byte[] sign = signatureInterface.sign(new ByteArrayInputStream(pdfContent));
             String signature = new COSString(sign).getHexString();
-            int leftSignaturerange = signaturePosition[1]-signaturePosition[0]-signature.length();
-            if(leftSignaturerange<0)
+            int startPos = signaturePosition[0] + 1; // move past "<"
+            int endPos = signaturePosition[1] - 1; // move in front of ">"
+            if (startPos + signature.length() > endPos)            
             {
                 throw new IOException("Can't write signature, not enough space");
             }
-            getStandardOutput().setPos(signaturePosition[0]+1);
+            getStandardOutput().setPos(startPos);
             getStandardOutput().write(signature.getBytes());
         }
     }
