@@ -96,36 +96,36 @@ public class PDType1Font extends PDSimpleFont
     private static Map<String, FontMetric> getAdobeFontMetrics()
     {
         Map<String, FontMetric> metrics = new HashMap<String, FontMetric>();
-        addMetric("Courier-Bold");
-        addMetric("Courier-BoldOblique");
-        addMetric("Courier");
-        addMetric("Courier-Oblique");
-        addMetric("Helvetica");
-        addMetric("Helvetica-Bold");
-        addMetric("Helvetica-BoldOblique");
-        addMetric("Helvetica-Oblique");
-        addMetric("Symbol");
-        addMetric("Times-Bold");
-        addMetric("Times-BoldItalic");
-        addMetric("Times-Italic");
-        addMetric("Times-Roman");
-        addMetric("ZapfDingbats");
+        addMetric(metrics, "Courier-Bold");
+        addMetric(metrics, "Courier-BoldOblique");
+        addMetric(metrics, "Courier");
+        addMetric(metrics, "Courier-Oblique");
+        addMetric(metrics, "Helvetica");
+        addMetric(metrics, "Helvetica-Bold");
+        addMetric(metrics, "Helvetica-BoldOblique");
+        addMetric(metrics, "Helvetica-Oblique");
+        addMetric(metrics, "Symbol");
+        addMetric(metrics, "Times-Bold");
+        addMetric(metrics, "Times-BoldItalic");
+        addMetric(metrics, "Times-Italic");
+        addMetric(metrics, "Times-Roman");
+        addMetric(metrics, "ZapfDingbats");
         
         // PDFBOX-239
-        addMetric("Arial", "Helvetica");
-        addMetric("Arial,Bold", "Helvetica-Bold");
-        addMetric("Arial,Italic", "Helvetica-Oblique");
-        addMetric("Arial,BoldItalic", "Helvetica-BoldOblique");
+        addMetric(metrics, "Arial", "Helvetica");
+        addMetric(metrics, "Arial,Bold", "Helvetica-Bold");
+        addMetric(metrics, "Arial,Italic", "Helvetica-Oblique");
+        addMetric(metrics, "Arial,BoldItalic", "Helvetica-BoldOblique");
 
         return Collections.unmodifiableMap(metrics);
     }
 
-    private static void addMetric(String name)
+    private static void addMetric(Map<String, FontMetric> metrics, String name)
     {
-        addMetric(name, name);
+        addMetric(metrics, name, name);
     }
     
-    private static void addMetric(String name, String prefix)
+    private static void addMetric(Map<String, FontMetric> metrics, String name, String prefix)
     {
         try
         {
@@ -137,7 +137,7 @@ public class PDType1Font extends PDSimpleFont
                 {
                     AFMParser parser = new AFMParser(afmStream);
                     FontMetric metric = parser.parse();
-                    AFM_MAP.put(name, metric);
+                    metrics.put(name, metric);
                 }
                 finally
                 {
