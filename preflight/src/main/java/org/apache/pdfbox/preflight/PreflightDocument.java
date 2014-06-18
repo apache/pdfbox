@@ -26,7 +26,6 @@ import java.util.Collection;
 
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.utils.ContextHelper;
