@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.text;
 
-import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.util.Matrix;
 
@@ -25,89 +24,33 @@ import org.apache.pdfbox.util.Matrix;
  *
  * @author Ben Litchfield
  */
-public class TextPosition
+public final class TextPosition
 {
     // text matrix for the start of the text object, coordinates are in display units
     // and have not been adjusted
-    private Matrix textPos;
+    private final Matrix textPos;
 
     // ending X and Y coordinates in display units
-    private float endX;
-    private float endY;
+    private final float endX;
+    private final float endY;
 
-    private float maxTextHeight; // maximum height of text, in display units
-    private int rot; // 0, 90, 180, 270 degrees of page rotation
-    private float x = Float.NEGATIVE_INFINITY;
-    private float y = Float.NEGATIVE_INFINITY;
-    private float pageHeight;
-    private float pageWidth;
+    private final float maxTextHeight; // maximum height of text, in display units
+    private final int rotation; // 0, 90, 180, 270 degrees of page rotation
+    private final float x = Float.NEGATIVE_INFINITY;
+    private final float y = Float.NEGATIVE_INFINITY;
+    private final float pageHeight;
+    private final float pageWidth;
+
+    private final float widthOfSpace; // width of a space, in display units
+
+    private final int[] unicodeCP;
+    private final PDFont font;
+    private final float fontSize;
+    private final int fontSizePt;
+
+    // mutable
     private float[] widths;
-    private float widthOfSpace; // width of a space, in display units
     private String string;
-    private int[] unicodeCP;
-    private PDFont font;
-    private float fontSize;
-    private int fontSizePt;
-
-    /**
-     * Constructor.
-     *
-     * @deprecated Can this be removed?
-     */
-    @Deprecated
-    protected TextPosition()
-    {
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param page Page that the text is located in
-     * @param textPositionSt TextMatrix for start of text (in display units)
-     * @param textPositionEnd TextMatrix for end of text (in display units)
-     * @param maxFontH Maximum height of text (in display units)
-     * @param individualWidths The width of each individual character. (in ? units)
-     * @param spaceWidth The width of the space character. (in display units)
-     * @param string The character to be displayed.
-     * @param currentFont The current for for this text position.
-     * @param fontSizeValue The new font size.
-     * @param fontSizeInPt The font size in pt units.
-     * @param ws The word spacing parameter (in display units)
-     *
-     * @deprecated Can this be removed?
-     */
-    @Deprecated
-    public TextPosition(PDPage page, Matrix textPositionSt, Matrix textPositionEnd, float maxFontH,
-                        float[] individualWidths, float spaceWidth, String string,
-                        PDFont currentFont, float fontSizeValue, int fontSizeInPt, float ws)
-    {
-        this.textPos = textPositionSt;
-
-        this.endX = textPositionEnd.getXPosition();
-        this.endY = textPositionEnd.getYPosition();
-
-        this.rot = page.findRotation();
-        // make sure it is 0 to 270 and no negative numbers
-        if (this.rot < 0)
-        {
-            rot += 360;
-        }
-        else if (rot >= 360)
-        {
-            rot -= 360;
-        }
-
-        this.maxTextHeight = maxFontH;
-        this.pageHeight = page.findMediaBox().getHeight();
-        this.pageWidth = page.findMediaBox().getWidth();
-
-        this.widths = individualWidths;
-        this.widthOfSpace = spaceWidth;
-        this.string = string;
-        this.font = currentFont;
-        this.fontSize = fontSizeValue;
-        this.fontSizePt = fontSizeInPt;
-    }
 
     /**
      * Constructor.
@@ -137,16 +80,17 @@ public class TextPosition
         this.endX = endXValue;
         this.endY = endYValue;
 
-        this.rot = pageRotation;
+        int rotation = pageRotation;
         // make sure it is 0 to 270 and no negative numbers
-        if (this.rot < 0)
+        if (rotation < 0)
         {
-            rot += 360;
+            rotation += 360;
         }
-        else if (rot >= 360)
+        else if (rotation >= 360)
         {
-            rot -= 360;
+            rotation -= 360;
         }
+        this.rotation = rotation;
 
         this.maxTextHeight = maxFontH;
         this.pageHeight = pageHeightValue;
@@ -176,7 +120,7 @@ public class TextPosition
      *
      * @return an array containing all codepoints.
      */
-    public int[] getCodePoints()
+    public int[] getCodePoints()    // todo: NOT Unicode!!
     {
         return unicodeCP;
     }
@@ -267,7 +211,7 @@ public class TextPosition
     {
         if (x == Float.NEGATIVE_INFINITY)
         {
-            x = getXRot(rot);
+            return getXRot(rotation);
         }
         return x;
     }
@@ -322,13 +266,13 @@ public class TextPosition
     {
         if (y == Float.NEGATIVE_INFINITY)
         {
-            if (rot == 0 || rot == 180)
+            if (rotation == 0 || rotation == 180)
             {
-                y = pageHeight - getYLowerLeftRot(rot);
+                return pageHeight - getYLowerLeftRot(rotation);
             }
             else
             {
-                y = pageWidth - getYLowerLeftRot(rot);
+                return pageWidth - getYLowerLeftRot(rotation);
             }
         }
         return y;
@@ -379,7 +323,7 @@ public class TextPosition
      */
     public float getWidth()
     {
-        return getWidthRot(rot);
+        return getWidthRot(rotation);
     }
 
     /**
@@ -608,6 +552,7 @@ public class TextPosition
             currCharXStart += widths[i];
         }
     }
+
     /**
      * Inserts the diacritic TextPosition to the str of this TextPosition and updates the widths
      * array to include the extra character width.

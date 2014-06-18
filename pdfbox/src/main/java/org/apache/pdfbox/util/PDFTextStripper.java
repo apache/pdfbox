@@ -574,7 +574,7 @@ public class PDFTextStripper extends PDFStreamEngine
             // Now cycle through to print the text.
             // We queue up a line at a time before we print so that we can convert
             // the line from presentation form to logical form (if needed).
-            List<TextPosition> line = new ArrayList<TextPosition>();
+            List<LineItem> line = new ArrayList<LineItem>();
 
             textIter = textList.iterator();    // start from the beginning again
             // PDF files don't always store spaces. We will need to guess where we should add
@@ -709,7 +709,7 @@ public class PDFTextStripper extends PDFStreamEngine
                         lastPosition.getTextPosition().getCharacter() != null &&
                         !lastPosition.getTextPosition().getCharacter().endsWith(" "))
                     {
-                        line.add(WordSeparator.getSeparator());
+                        line.add(LineItem.getWordSeparator());
                     }
                 }
                 if (positionY >= maxYForLine)
@@ -727,7 +727,7 @@ public class PDFTextStripper extends PDFStreamEngine
                     {
                         writeParagraphStart();//not sure this is correct for RTL?
                     }
-                    line.add(position);
+                    line.add(new LineItem(position));
                 }
                 maxHeightForLine = Math.max(maxHeightForLine, positionHeight);
                 minYTopForLine = Math.min(minYTopForLine, positionY - positionHeight);
@@ -1784,7 +1784,7 @@ public class PDFTextStripper extends PDFStreamEngine
      * @param hasRtl determines if lines contains rtl formatted text(parts)
      * @return a list of strings, one string for every word
      */
-    private List<WordWithTextPositions> normalize(List<TextPosition> line, boolean isRtlDominant,
+    private List<WordWithTextPositions> normalize(List<LineItem> line, boolean isRtlDominant,
                                                   boolean hasRtl)
     {
         LinkedList<WordWithTextPositions> normalized = new LinkedList<WordWithTextPositions>();
@@ -1801,9 +1801,9 @@ public class PDFTextStripper extends PDFStreamEngine
         }
         else
         {
-            for (TextPosition text : line)
+            for (LineItem item : line)
             {
-                lineBuilder = normalizeAdd(normalized, lineBuilder, wordPositions, text);
+                lineBuilder = normalizeAdd(normalized, lineBuilder, wordPositions, item);
             }
         }
         if (lineBuilder.length() > 0) 
@@ -1827,9 +1827,9 @@ public class PDFTextStripper extends PDFStreamEngine
      * @return The StringBuilder that must be used when calling this method.
      */
     private StringBuilder normalizeAdd(LinkedList<WordWithTextPositions> normalized,
-            StringBuilder lineBuilder, List<TextPosition> wordPositions, TextPosition text)
+            StringBuilder lineBuilder, List<TextPosition> wordPositions, LineItem item)
     {
-        if (text instanceof WordSeparator) 
+        if (item.isWordSeparator())
         {
             normalized.add(createWord(lineBuilder.toString(),
                     new ArrayList<TextPosition>(wordPositions)));
@@ -1838,6 +1838,7 @@ public class PDFTextStripper extends PDFStreamEngine
         }
         else 
         {
+            TextPosition text = item.getTextPosition();
             lineBuilder.append(text.getCharacter());
             wordPositions.add(text);
         }
@@ -1847,17 +1848,35 @@ public class PDFTextStripper extends PDFStreamEngine
     /**
      * internal marker class. Used as a place holder in a line of TextPositions.
      */
-    private static final class WordSeparator extends TextPosition
+    private static final class LineItem
     {
-        private static final WordSeparator separator = new WordSeparator();
-        
-        private WordSeparator()
+        public static LineItem WORD_SEPARATOR = new LineItem();
+
+        public static LineItem getWordSeparator()
         {
+            return WORD_SEPARATOR;
         }
 
-        public static WordSeparator getSeparator()
+        private final TextPosition textPosition;
+
+        private LineItem()
         {
-            return separator;
+            textPosition = null;
+        }
+
+        public LineItem(TextPosition textPosition)
+        {
+            this.textPosition = textPosition;
+        }
+
+        public TextPosition getTextPosition()
+        {
+            return textPosition;
+        }
+
+        public boolean isWordSeparator()
+        {
+            return textPosition == null;
         }
     }
 

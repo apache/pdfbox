@@ -273,9 +273,8 @@ public class TestTextStripper extends TestCase
             if (!expectedFile.exists())
             {
                 this.bFail = true;
-                log.error(
-                        "FAILURE: Input verification file: " + expectedFile.getAbsolutePath() +
-                " did not exist");
+                fail("FAILURE: Input verification file: " + expectedFile.getAbsolutePath() +
+                        " did not exist");
                 return;
             }
 
@@ -299,12 +298,12 @@ public class TestTextStripper extends TestCase
                 if (!stringsEqual(expectedLine, actualLine))
                 {
                     this.bFail = true;
-                    log.error("FAILURE: Line mismatch for file " + inFile.getName() +
+                    fail("FAILURE: Line mismatch for file " + inFile.getName() +
                             " ( sort = "+bSort+")" +
                             " at expected line: " + expectedReader.getLineNumber() +
-                            " at actual line: " + actualReader.getLineNumber());
-                    log.error("  expected line was: \"" + expectedLine + "\"");
-                    log.error("  actual line was:   \"" + actualLine + "\"" + "\n");
+                            " at actual line: " + actualReader.getLineNumber() +
+                            "\nexpected line was: \"" + expectedLine + "\"" +
+                            "\nactual line was:   \"" + actualLine + "\"" + "\n");
 
                     //lets report all lines, even though this might produce some verbose logging
                     //break;

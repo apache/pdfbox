@@ -269,17 +269,6 @@ public class PDFStreamEngine
     }
 
     /**
-     * A method provided as an event interface to allow a subclass to perform some specific
-     * functionality when text needs to be processed.
-     * 
-     * @param text The text to be processed.
-     */
-    protected void processTextPosition(TextPosition text)
-    {
-        // subclasses can override to provide specific functionality.
-    }
-
-    /**
      * Process encoded text from the PDF Stream. You should override this method if you want to
      * perform an action when encoded text is being processed.
      * 
@@ -466,6 +455,17 @@ public class PDFStreamEngine
                     widthText, spaceWidthDisp, c, codePoints, font, fontSizeText,
                     (int)(fontSizeText * textMatrix.getXScale())));
         }
+    }
+
+    /**
+     * A method provided as an event interface to allow a subclass to perform some specific
+     * functionality when text needs to be processed.
+     *
+     * @param text The text to be processed.
+     */
+    protected void processTextPosition(TextPosition text)
+    {
+        // subclasses can override to provide specific functionality.
     }
 
     /**
