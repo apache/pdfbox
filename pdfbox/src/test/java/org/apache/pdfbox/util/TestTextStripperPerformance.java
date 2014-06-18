@@ -125,9 +125,9 @@ public class TestTextStripperPerformance extends TestCase
             File outDirFile =  new File(outDir);
             if (outDirFile.mkdirs())
             {
-                for (int n = 0; n < testFiles.length; n++)
+                for (File testFile : testFiles)
                 {
-                    doTestFile(testFiles[n], outDir, false);
+                    doTestFile(testFile, outDir, false);
                 }
             }
         }

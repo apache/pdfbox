@@ -97,41 +97,41 @@ public abstract class FDFAnnotation implements COSObjectable
         if( flags != null )
         {
             String[] flagTokens = flags.split( "," );
-            for( int i=0; i< flagTokens.length; i++ )
+            for (String flagToken : flagTokens)
             {
-                if( flagTokens[i].equals( "invisible" ) )
+                if (flagToken.equals("invisible"))
                 {
                     setInvisible( true );
                 }
-                else if( flagTokens[i].equals( "hidden" ) )
+                else if (flagToken.equals("hidden"))
                 {
                     setHidden( true );
                 }
-                else if( flagTokens[i].equals( "print" ) )
+                else if (flagToken.equals("print"))
                 {
                     setPrinted( true );
                 }
-                else if( flagTokens[i].equals( "nozoom" ) )
+                else if (flagToken.equals("nozoom"))
                 {
                     setNoZoom( true );
                 }
-                else if( flagTokens[i].equals( "norotate" ) )
+                else if (flagToken.equals("norotate"))
                 {
                     setNoRotate( true );
                 }
-                else if( flagTokens[i].equals( "noview" ) )
+                else if (flagToken.equals("noview"))
                 {
                     setNoView( true );
                 }
-                else if( flagTokens[i].equals( "readonly" ) )
+                else if (flagToken.equals("readonly"))
                 {
                     setReadOnly( true );
                 }
-                else if( flagTokens[i].equals( "locked" ) )
+                else if (flagToken.equals("locked"))
                 {
                     setLocked( true );
                 }
-                else if( flagTokens[i].equals( "togglenoview" ) )
+                else if (flagToken.equals("togglenoview"))
                 {
                     setToggleNoView( true );
                 }

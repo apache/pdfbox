@@ -102,9 +102,9 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
     public void setChangeXs(PDNumberFormatDictionary[] changeXs)
     {
         COSArray array = new COSArray();
-        for (int i = 0; i < changeXs.length; i++)
+        for (PDNumberFormatDictionary changeX : changeXs)
         {
-            array.add(changeXs[i]);
+            array.add(changeX);
         }
         this.getDictionary().setItem("X", array);
     }
@@ -139,9 +139,9 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
     public void setChangeYs(PDNumberFormatDictionary[] changeYs)
     {
         COSArray array = new COSArray();
-        for (int i = 0; i < changeYs.length; i++)
+        for (PDNumberFormatDictionary changeY : changeYs)
         {
-            array.add(changeYs[i]);
+            array.add(changeY);
         }
         this.getDictionary().setItem("Y", array);
     }
@@ -176,9 +176,9 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
     public void setDistances(PDNumberFormatDictionary[] distances)
     {
         COSArray array = new COSArray();
-        for (int i = 0; i < distances.length; i++)
+        for (PDNumberFormatDictionary distance : distances)
         {
-            array.add(distances[i]);
+            array.add(distance);
         }
         this.getDictionary().setItem("D", array);
     }
@@ -213,9 +213,9 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
     public void setAreas(PDNumberFormatDictionary[] areas)
     {
         COSArray array = new COSArray();
-        for (int i = 0; i < areas.length; i++)
+        for (PDNumberFormatDictionary area : areas)
         {
-            array.add(areas[i]);
+            array.add(area);
         }
         this.getDictionary().setItem(COSName.A, array);
     }
@@ -250,9 +250,9 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
     public void setAngles(PDNumberFormatDictionary[] angles)
     {
         COSArray array = new COSArray();
-        for (int i = 0; i < angles.length; i++)
+        for (PDNumberFormatDictionary angle : angles)
         {
-            array.add(angles[i]);
+            array.add(angle);
         }
         this.getDictionary().setItem("T", array);
     }
@@ -287,9 +287,9 @@ public class PDRectlinearMeasureDictionary extends PDMeasureDictionary
     public void setLineSloaps(PDNumberFormatDictionary[] lineSloaps)
     {
         COSArray array = new COSArray();
-        for (int i = 0; i < lineSloaps.length; i++)
+        for (PDNumberFormatDictionary lineSloap : lineSloaps)
         {
-            array.add(lineSloaps[i]);
+            array.add(lineSloap);
         }
         this.getDictionary().setItem("S", array);
     }

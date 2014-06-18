@@ -122,24 +122,24 @@ public class TTFGlyph2D implements Glyph2D
         {
             // get all relevant CMaps
             CMAPEncodingEntry[] cmaps = cmapTable.getCmaps();
-            for (int i = 0; i < cmaps.length; i++)
+            for (CMAPEncodingEntry cmap : cmaps)
             {
-                if (CMAPTable.PLATFORM_WINDOWS == cmaps[i].getPlatformId())
+                if (CMAPTable.PLATFORM_WINDOWS == cmap.getPlatformId())
                 {
-                    if (CMAPTable.ENCODING_UNICODE == cmaps[i].getPlatformEncodingId())
+                    if (CMAPTable.ENCODING_UNICODE == cmap.getPlatformEncodingId())
                     {
-                        cmapWinUnicode = cmaps[i];
+                        cmapWinUnicode = cmap;
                     }
-                    else if (CMAPTable.ENCODING_SYMBOL == cmaps[i].getPlatformEncodingId())
+                    else if (CMAPTable.ENCODING_SYMBOL == cmap.getPlatformEncodingId())
                     {
-                        cmapWinSymbol = cmaps[i];
+                        cmapWinSymbol = cmap;
                     }
                 }
-                else if (CMAPTable.PLATFORM_MACINTOSH == cmaps[i].getPlatformId())
+                else if (CMAPTable.PLATFORM_MACINTOSH == cmap.getPlatformId())
                 {
-                    if (CMAPTable.ENCODING_SYMBOL == cmaps[i].getPlatformEncodingId())
+                    if (CMAPTable.ENCODING_SYMBOL == cmap.getPlatformEncodingId())
                     {
-                        cmapMacintoshSymbol = cmaps[i];
+                        cmapMacintoshSymbol = cmap;
                     }
                 }
             }
