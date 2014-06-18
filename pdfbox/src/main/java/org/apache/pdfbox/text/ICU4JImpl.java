@@ -22,12 +22,12 @@ import com.ibm.icu.text.Normalizer;
 /**
  * This class is an implementation the the ICU4J class. TextNormalize 
  * will call this only if the ICU4J library exists in the classpath.
- * @author <a href="mailto:carrier@digital-evidence.org">Brian Carrier</a>
- * @version $Revision: 1.0 $
+ *
+ * @author Brian Carrier
  */
 public class ICU4JImpl 
 {
-    Bidi bidi;
+    private Bidi bidi;
 
     /**
      * Constructor.
@@ -36,34 +36,28 @@ public class ICU4JImpl
     {
         bidi = new Bidi();
 
-        /* We do not use bidi.setInverse() because that uses
-         * Bidi.REORDER_INVERSE_NUMBERS_AS_L, which caused problems
-         * in some test files. For example, a file had a line of:
-         * 0 1 / ARABIC
-         * and the 0 and 1 were reversed in the end result.  
-         * REORDER_INVERSE_LIKE_DIRECT is the inverse Bidi mode 
-         * that more closely reflects the Unicode spec.
-         */
+        // We do not use bidi.setInverse() because that uses Bidi.REORDER_INVERSE_NUMBERS_AS_L,
+        // which caused problems in some test files. For example, a file had a line of:
+        // 0 1 / ARABIC  and the 0 and 1 were reversed in the end result.
+        // REORDER_INVERSE_LIKE_DIRECT is the inverse Bidi mode that more closely reflects the
+        // Unicode spec.
         bidi.setReorderingMode(Bidi.REORDER_INVERSE_LIKE_DIRECT);
     }
 
     /**
      * Takes a line of text in presentation order and converts it to logical order.
-     *
      *  
      * @param str String to convert
      * @param isRtlDominant RTL (right-to-left) will be the dominant text direction
      * @return The converted string
      */
-    public String makeLineLogicalOrder(String str, boolean isRtlDominant) 
+    public String makeLineLogicalOrder(String str, boolean isRtlDominant)
     {    
         bidi.setPara(str, isRtlDominant?Bidi.RTL:Bidi.LTR, null);
 
-        /* Set the mirror flag so that parentheses and other mirror symbols
-         * are properly reversed, when needed.  With this removed, lines
-         * such as (CBA) in the PDF file will come out like )ABC( in logical
-         * order.
-         */
+        // Set the mirror flag so that parentheses and other mirror symbols are properly reversed,
+        // when needed.  With this removed, lines such as (CBA) in the PDF file will come out like
+        // )ABC( in logical order.
         return bidi.writeReordered(Bidi.DO_MIRRORING);
     }
 
@@ -88,7 +82,7 @@ public class ICU4JImpl
             // extended Latin to the value in the Greek script. We normalize
             // the Unicode Alphabetic and Arabic A&B Presentation forms.
             char c = str.charAt(q);
-            if ((0xFB00 <= c && c <= 0xFDFF) || (0xFE70 <= c && c <= 0xFEFF))
+            if (0xFB00 <= c && c <= 0xFDFF || 0xFE70 <= c && c <= 0xFEFF)
             {
                 if (builder == null) 
                 {
@@ -104,10 +98,8 @@ public class ICU4JImpl
                 }
                 else
                 {
-                    // Trim because some decompositions have an extra space,
-                    // such as U+FC5E
-                    builder.append(
-                            Normalizer.normalize(c, Normalizer.NFKC).trim());
+                    // Trim because some decompositions have an extra space, such as U+FC5E
+                    builder.append(Normalizer.normalize(c, Normalizer.NFKC).trim());
                 }
                 p = q + 1;
             }
@@ -137,14 +129,11 @@ public class ICU4JImpl
         {
             char c = str.charAt(i);
             int type = Character.getType(c);
-            if(type == Character.NON_SPACING_MARK 
-                    || type == Character.MODIFIER_SYMBOL
-                    || type == Character.MODIFIER_LETTER)
+            if (type == Character.NON_SPACING_MARK ||
+               type == Character.MODIFIER_SYMBOL ||
+               type == Character.MODIFIER_LETTER)
             {
-                /*
-                 * Trim because some decompositions have an extra space, such as
-                 * U+00B4
-                 */
+                // trim because some decompositions have an extra space, such as U+00B4
                 retStr.append(Normalizer.normalize(c, Normalizer.NFKC).trim());
             }
             else
