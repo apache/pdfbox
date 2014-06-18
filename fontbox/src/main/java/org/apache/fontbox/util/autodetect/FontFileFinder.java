@@ -160,10 +160,6 @@ public class FontFileFinder
     private boolean checkFontfile(File file)
     {
         String name = file.getName().toLowerCase();
-        if (name.endsWith(".ttf") || name.endsWith(".otf") || name.endsWith(".pfb") || name.endsWith(".ttc"))
-        {
-            return true;
-        }
-        return false;
+        return name.endsWith(".ttf") || name.endsWith(".otf") || name.endsWith(".pfb") || name.endsWith(".ttc");
     }
 }
