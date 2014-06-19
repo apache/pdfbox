@@ -56,12 +56,7 @@ public class TTFGlyph2D implements Glyph2D
     private String name;
     private float scale = 1.0f;
     private boolean hasScaling = false;
-    private CMAPEncodingEntry cmapWinUnicode = null;
-    private CMAPEncodingEntry cmapWinSymbol = null;
-    private CMAPEncodingEntry cmapMacintoshSymbol = null;
-    private boolean isSymbol = false;
     private Map<Integer, GeneralPath> glyphs = new HashMap<Integer, GeneralPath>();
-    private Encoding fontEncoding = null;
     private CMap fontCMap = null;
     private boolean isCIDFont = false;
     private boolean hasIdentityCIDMapping = false;
@@ -103,43 +98,7 @@ public class TTFGlyph2D implements Glyph2D
             scale = 1000f / header.getUnitsPerEm();
             hasScaling = true;
         }
-        extractCmapTable();
         extractFontSpecifics(pdFont, descFont);
-    }
-
-    /**
-     * extract all useful "cmap" subtables.
-     */
-    private void extractCmapTable()
-    {
-        CMAPTable cmapTable = ttf.getCMAP();
-        if (cmapTable != null)
-        {
-            // get all relevant "cmap" subtables
-            CMAPEncodingEntry[] cmaps = cmapTable.getCmaps();
-            for (CMAPEncodingEntry cmap : cmaps)
-            {
-                if (CMAPTable.PLATFORM_WINDOWS == cmap.getPlatformId())
-                {
-                    if (CMAPTable.ENCODING_UNICODE == cmap.getPlatformEncodingId())
-                    {
-                        cmapWinUnicode = cmap;
-                    }
-                    else if (CMAPTable.ENCODING_SYMBOL == cmap.getPlatformEncodingId())
-                    {
-                        cmapWinSymbol = cmap;
-                    }
-                }
-                else if (CMAPTable.PLATFORM_MACINTOSH == cmap.getPlatformId())
-                {
-                    if (CMAPTable.ENCODING_SYMBOL == cmap.getPlatformEncodingId())
-                    {
-                        cmapMacintoshSymbol = cmap;
-                    }
-                }
-            }
-        }
-
     }
 
     /**
@@ -149,9 +108,7 @@ public class TTFGlyph2D implements Glyph2D
      */
     private void extractFontSpecifics(PDFont pdFont, PDCIDFontType2Font descFont)
     {
-        isSymbol = pdFont.isSymbolicFont();
         name = pdFont.getBaseFont();
-        fontEncoding = pdFont.getFontEncoding();
         if (descFont != null)
         {
             isCIDFont = true;
@@ -520,13 +477,9 @@ public class TTFGlyph2D implements Glyph2D
     @Override
     public void dispose()
     {
-        cmapMacintoshSymbol = null;
-        cmapWinSymbol = null;
-        cmapWinUnicode = null;
         ttf = null;
         descendantFont = null;
         fontCMap = null;
-        fontEncoding = null;
         if (glyphs != null)
         {
             glyphs.clear();

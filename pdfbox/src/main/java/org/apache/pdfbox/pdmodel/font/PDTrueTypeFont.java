@@ -261,8 +261,7 @@ public class PDTrueTypeFont extends PDFont
         {
             if (cmap.getPlatformId() == CMAPTable.PLATFORM_WINDOWS)
             {
-                int platformEncoding = cmap.getPlatformEncodingId();
-                if (CMAPTable.ENCODING_UNICODE == platformEncoding)
+                if (CMAPTable.ENCODING_WIN_UNICODE == cmap.getPlatformEncodingId())
                 {
                     uniMap = cmap;
                     break;
@@ -438,6 +437,7 @@ public class PDTrueTypeFont extends PDFont
                 LOG.error("Caught an exception getGlyhcode: " + exception);
             }
         }
+
         if (getFontEncoding() == null || isSymbolicFont())
         {
             if (cmapWinSymbol != null)
@@ -470,6 +470,12 @@ public class PDTrueTypeFont extends PDFont
                 result = cmapMacintoshSymbol.getGlyphId(code);
             }
         }
+
+        if (result == 0)
+        {
+            LOG.warn("Can't map code " + code + " in font " + getBaseFont());
+        }
+
         return result;
     }
 
@@ -497,24 +503,24 @@ public class PDTrueTypeFont extends PDFont
         {
             // get all relevant "cmap" subtables
             CMAPEncodingEntry[] cmaps = cmapTable.getCmaps();
-            for (CMAPEncodingEntry cmap1 : cmaps)
+            for (CMAPEncodingEntry cmap : cmaps)
             {
-                if (CMAPTable.PLATFORM_WINDOWS == cmap1.getPlatformId())
+                if (CMAPTable.PLATFORM_WINDOWS == cmap.getPlatformId())
                 {
-                    if (CMAPTable.ENCODING_UNICODE == cmap1.getPlatformEncodingId())
+                    if (CMAPTable.ENCODING_WIN_UNICODE == cmap.getPlatformEncodingId())
                     {
-                        cmapWinUnicode = cmap1;
+                        cmapWinUnicode = cmap;
                     }
-                    else if (CMAPTable.ENCODING_SYMBOL == cmap1.getPlatformEncodingId())
+                    else if (CMAPTable.ENCODING_WIN_SYMBOL == cmap.getPlatformEncodingId())
                     {
-                        cmapWinSymbol = cmap1;
+                        cmapWinSymbol = cmap;
                     }
                 }
-                else if (CMAPTable.PLATFORM_MACINTOSH == cmap1.getPlatformId())
+                else if (CMAPTable.PLATFORM_MACINTOSH == cmap.getPlatformId())
                 {
-                    if (CMAPTable.ENCODING_SYMBOL == cmap1.getPlatformEncodingId())
+                    if (CMAPTable.ENCODING_MAC_ROMAN == cmap.getPlatformEncodingId())
                     {
-                        cmapMacintoshSymbol = cmap1;
+                        cmapMacintoshSymbol = cmap;
                     }
                 }
             }
@@ -529,6 +535,7 @@ public class PDTrueTypeFont extends PDFont
         cmapWinUnicode = null;
         cmapWinSymbol = null;
         cmapMacintoshSymbol = null;
+        cmapInitialized = false;
         ttf = null;
         if (advanceWidths != null)
         {

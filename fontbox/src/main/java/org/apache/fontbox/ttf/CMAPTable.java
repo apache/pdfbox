@@ -21,8 +21,7 @@ import java.io.IOException;
 /**
  * The CMAP table of a true type font.
  * 
- * @author Ben Litchfield (ben@benlitchfield.com)
- * 
+ * @author Ben Litchfield
  */
 public class CMAPTable extends TTFTable
 {
@@ -31,49 +30,22 @@ public class CMAPTable extends TTFTable
      */
     public static final String TAG = "cmap";
 
-    /**
-     * A constant for the platform.
-     */
-    public static final int PLATFORM_MISC = 0;
-
-    /**
-     * A constant for the platform.
-     */
+    // platform
+    public static final int PLATFORM_UNICODE = 0;
     public static final int PLATFORM_MACINTOSH = 1;
-
-    /**
-     * A constant for the platform.
-     */
     public static final int PLATFORM_WINDOWS = 3;
 
-    /**
-     * An encoding constant.
-     */
-    public static final int ENCODING_SYMBOL = 0;
-    /**
-     * An encoding constant.
-     */
-    public static final int ENCODING_UNICODE = 1;
-    /**
-     * An encoding constant.
-     */
-    public static final int ENCODING_SHIFT_JIS = 2;
-    /**
-     * An encoding constant.
-     */
-    public static final int ENCODING_BIG5 = 3;
-    /**
-     * An encoding constant.
-     */
-    public static final int ENCODING_PRC = 4;
-    /**
-     * An encoding constant.
-     */
-    public static final int ENCODING_WANSUNG = 5;
-    /**
-     * An encoding constant.
-     */
-    public static final int ENCODING_JOHAB = 6;
+    // Mac encodings
+    public static final int ENCODING_MAC_ROMAN = 0;
+
+    // Windows encodings
+    public static final int ENCODING_WIN_SYMBOL = 0;
+    public static final int ENCODING_WIN_UNICODE = 1;
+    public static final int ENCODING_WIN_SHIFT_JIS = 2;
+    public static final int ENCODING_WIN_BIG5 = 3;
+    public static final int ENCODING_WIN_PRC = 4;
+    public static final int ENCODING_WIN_WANSUNG = 5;
+    public static final int ENCODING_JWIN_OHAB = 6;
 
     private CMAPEncodingEntry[] cmaps;
 
