@@ -34,10 +34,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.cff.IndexData;
 import org.apache.fontbox.cff.Type1CharStringParser;
 import org.apache.fontbox.cff.Type1FontUtil;
-import org.apache.log4j.Logger;
 import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.encoding.MacRomanEncoding;
 import org.apache.pdfbox.encoding.PdfDocEncoding;
@@ -47,7 +48,7 @@ import org.apache.pdfbox.encoding.WinAnsiEncoding;
 public final class Type1Parser
 {
 
-    public static final Logger LOGGER = Logger.getLogger(Type1Parser.class);
+    public static final Log LOGGER = LogFactory.getLog(Type1Parser.class);
 
     protected static final char NAME_START = '/';
     protected static final String NOTDEF = NAME_START + ".notdef";

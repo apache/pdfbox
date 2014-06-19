@@ -34,7 +34,8 @@ import junit.framework.Assert;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.preflight.PreflightDocument;
 import org.apache.pdfbox.preflight.ValidationResult;
 import org.apache.pdfbox.preflight.exception.ValidationException;
@@ -58,14 +59,14 @@ public class TestValidFiles
 
     protected File path;
 
-    protected static Logger staticLogger = Logger.getLogger("Test");
+    protected static Log staticLogger = LogFactory.getLog("Test");
 
-    protected Logger logger = null;
+    protected Log logger = null;
 
     public TestValidFiles(File path)
     {
         this.path = path;
-        this.logger = Logger.getLogger(path != null ? path.getName() : "dummy");
+        this.logger = LogFactory.getLog(path != null ? path.getName() : "dummy");
     }
 
     protected static Collection<Object[]> stopIfExpected() throws Exception

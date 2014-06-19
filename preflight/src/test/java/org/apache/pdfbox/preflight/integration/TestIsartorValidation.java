@@ -32,7 +32,8 @@ import java.util.StringTokenizer;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -47,7 +48,7 @@ public class TestIsartorValidation extends AbstractInvalidFileTester
 
     private static final String ISARTOR_FILES = "isartor.files";
 
-    protected static Logger staticLogger = Logger.getLogger("Test");
+    protected static Log staticLogger = LogFactory.getLog("Test");
 
     public TestIsartorValidation(File path, String error)
     {
