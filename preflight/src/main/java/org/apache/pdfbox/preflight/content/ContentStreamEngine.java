@@ -216,7 +216,6 @@ public abstract class ContentStreamEngine extends PDFStreamEngine
         registerOperatorProcessor("sh", stubOp);
     }
 
-    @Override
     public final void registerOperatorProcessor(String operator, OperatorProcessor op)
     {
         super.registerOperatorProcessor(operator, op);
@@ -324,19 +323,17 @@ public abstract class ContentStreamEngine extends PDFStreamEngine
                 }
                 catch (IllegalArgumentException e)
                 {
-                    // The color space is unknown. Try to access the resources dictionary,
-                    // the color space can be a reference.
-                    Map<String, PDColorSpace> colorSpaces = this.getResources().getColorSpaces();
-                    if (colorSpaces != null)
+                    /*
+                     * The color space is unknown. Try to access the resources dictionary, the color space can be a
+                     * reference.
+                     */
+                    PDColorSpace pdCS = (PDColorSpace) this.getColorSpaces().get(colorSpace);
+                    if (pdCS != null)
                     {
-                        PDColorSpace pdCS = colorSpaces.get(colorSpace);
-                        if (pdCS != null)
-                        {
-                            cs = ColorSpaces.valueOf(pdCS.getName());
-                            PreflightConfiguration cfg = context.getConfig();
-                            ColorSpaceHelperFactory csFact = cfg.getColorSpaceHelperFact();
-                            csHelper = csFact.getColorSpaceHelper(context, pdCS, ColorSpaceRestriction.ONLY_DEVICE);
-                        }
+                        cs = ColorSpaces.valueOf(pdCS.getName());
+                        PreflightConfiguration cfg = context.getConfig();
+                        ColorSpaceHelperFactory csFact = cfg.getColorSpaceHelperFact();
+                        csHelper = csFact.getColorSpaceHelper(context, pdCS, ColorSpaceRestriction.ONLY_DEVICE);
                     }
                 }
 
