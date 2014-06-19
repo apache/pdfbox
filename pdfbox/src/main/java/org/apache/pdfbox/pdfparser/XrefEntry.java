@@ -28,7 +28,7 @@ class XrefEntry
     private int generation = 0;
     private boolean inUse = true;
 
-    public XrefEntry(int objectNumber, int byteOffset, int generation, String inUse)
+    XrefEntry(int objectNumber, int byteOffset, int generation, String inUse)
     {
         this.objectNumber = objectNumber;
         this.byteOffset = byteOffset;

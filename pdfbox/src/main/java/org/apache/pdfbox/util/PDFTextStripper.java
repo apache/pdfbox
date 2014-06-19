@@ -1864,7 +1864,7 @@ public class PDFTextStripper extends PDFStreamEngine
             textPosition = null;
         }
 
-        public LineItem(TextPosition textPosition)
+        LineItem(TextPosition textPosition)
         {
             this.textPosition = textPosition;
         }
@@ -1892,7 +1892,7 @@ public class PDFTextStripper extends PDFStreamEngine
         protected String text;
         protected List<TextPosition> textPositions;
         
-        public WordWithTextPositions(String word, List<TextPosition> positions)
+        WordWithTextPositions(String word, List<TextPosition> positions)
         {
             text = word;
             textPositions = positions;

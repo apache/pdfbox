@@ -61,7 +61,7 @@ class GouraudTriangle
      * @param c point C of the triangle
      * @param cColor color of point C
      */
-    public GouraudTriangle(Point2D a, float[] aColor, Point2D b, float[] bColor, Point2D c, float[] cColor)
+    GouraudTriangle(Point2D a, float[] aColor, Point2D b, float[] bColor, Point2D c, float[] cColor)
     {
         pointA = a;
         pointB = b;

@@ -39,7 +39,7 @@ class EndstreamOutputStream extends BufferedOutputStream
     private int pos = 0;
     private boolean mustFilter = true;
 
-    public EndstreamOutputStream(OutputStream out)
+    EndstreamOutputStream(OutputStream out)
     {
         super(out);
     }

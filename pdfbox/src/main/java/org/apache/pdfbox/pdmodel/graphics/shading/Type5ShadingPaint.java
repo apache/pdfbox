@@ -46,7 +46,7 @@ class Type5ShadingPaint implements Paint
      * @param ctm current transformation matrix
      * @param pageHeight the height of the page
      */
-    public Type5ShadingPaint(PDShadingType5 shading, Matrix ctm, int pageHeight)
+    Type5ShadingPaint(PDShadingType5 shading, Matrix ctm, int pageHeight)
     {
         this.shading = shading;
         this.ctm = ctm;

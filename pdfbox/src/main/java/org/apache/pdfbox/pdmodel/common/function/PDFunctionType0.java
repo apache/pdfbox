@@ -339,7 +339,7 @@ public class PDFunctionType0 extends PDFunction
          * @param inputNext coordinate of the "floor" point
          *
          */
-        public Rinterpol(float[] input, int[] inputPrev, int[] inputNext)
+        Rinterpol(float[] input, int[] inputPrev, int[] inputNext)
         {
             in = input;
             inPrev = inputPrev;

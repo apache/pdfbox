@@ -32,7 +32,7 @@ final class PackedBitArray
      * Constructs a new bit array.
      * @param bitCount the number of bits to maintain
      */
-    public PackedBitArray(int bitCount)
+    PackedBitArray(int bitCount)
     {
         this.bitCount = bitCount;
         int byteCount = (bitCount + 7) / 8;
@@ -159,7 +159,7 @@ final class PackedBitArray
             this.data[firstByte] &= ~(0xFF << startBitOffset);
             for (int i = firstByte + 1; i < lastByte; i++)
             {
-                this.data[i] = (byte)0x00;
+                this.data[i] = 0x00;
             }
             if (endBitOffset > 0)
             {

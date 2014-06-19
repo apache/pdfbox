@@ -48,7 +48,7 @@ final class ASCII85InputStream extends FilterInputStream
      *
      * @param is The input stream to actually read from.
      */
-    public ASCII85InputStream(InputStream is)
+    ASCII85InputStream(InputStream is)
     {
         super(is);
         index = 0;

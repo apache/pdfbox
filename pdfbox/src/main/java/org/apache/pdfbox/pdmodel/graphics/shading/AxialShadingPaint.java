@@ -47,7 +47,7 @@ class AxialShadingPaint implements Paint
      * @param ctm current transformation matrix
      * @param pageHeight size of the current page
      */
-    public AxialShadingPaint(PDShadingType2 shadingType2, Matrix ctm, int pageHeight)
+    AxialShadingPaint(PDShadingType2 shadingType2, Matrix ctm, int pageHeight)
     {
         shading = shadingType2;
         this.ctm = ctm;

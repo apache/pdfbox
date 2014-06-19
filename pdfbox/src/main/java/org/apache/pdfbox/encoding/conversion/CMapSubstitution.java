@@ -77,7 +77,7 @@ public class CMapSubstitution
     {
         if (cmapSubstitutions.containsKey(cmapName))
         {
-            return (String)cmapSubstitutions.get(cmapName);
+            return cmapSubstitutions.get(cmapName);
         }
         return cmapName;
     }

@@ -49,7 +49,7 @@ class Type5ShadingContext extends GouraudShadingContext
      * @param pageHeight height of the current page
      * @throws IOException if something went wrong
      */
-    public Type5ShadingContext(PDShadingType5 shading, ColorModel cm, AffineTransform xform,
+    Type5ShadingContext(PDShadingType5 shading, ColorModel cm, AffineTransform xform,
                                Matrix ctm, int pageHeight) throws IOException
     {
         super(shading, cm, xform, ctm, pageHeight);

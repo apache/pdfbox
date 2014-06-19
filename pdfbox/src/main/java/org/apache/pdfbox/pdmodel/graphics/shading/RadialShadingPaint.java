@@ -47,7 +47,7 @@ class RadialShadingPaint implements Paint
      * @param ctm current transformation matrix
      * @param pageHeight size of the current page
      */
-    public RadialShadingPaint(PDShadingType3 shading, Matrix ctm, int pageHeight)
+    RadialShadingPaint(PDShadingType3 shading, Matrix ctm, int pageHeight)
     {
         this.shading = shading;
         this.ctm = ctm;

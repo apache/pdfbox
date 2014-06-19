@@ -42,7 +42,7 @@ public class AFMEncoding extends Encoding
         Iterator<CharMetric> characters = fontInfo.getCharMetrics().iterator();
         while( characters.hasNext() )
         {
-            CharMetric nextMetric = (CharMetric)characters.next();
+            CharMetric nextMetric = characters.next();
             addCharacterEncoding( nextMetric.getCharacterCode(), nextMetric.getName() );
         }
     }

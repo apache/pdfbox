@@ -46,7 +46,7 @@ class Type1ShadingPaint implements Paint
      * @param ctm current transformation matrix
      * @param pageHeight the height of the page
      */
-    public Type1ShadingPaint(PDShadingType1 shading, Matrix ctm, int pageHeight)
+    Type1ShadingPaint(PDShadingType1 shading, Matrix ctm, int pageHeight)
     {
         this.shading = shading;
         this.ctm = ctm;

@@ -34,7 +34,7 @@ class RC4Cipher
     /**
      * Constructor.
      */
-    public RC4Cipher()
+    RC4Cipher()
     {
         salt = new int[256];
     }
