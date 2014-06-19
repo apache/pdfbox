@@ -32,7 +32,8 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.SyntaxValidationException;
 import org.apache.pdfbox.preflight.exception.ValidationException;
@@ -58,7 +59,7 @@ public class TestIsartor
 
     protected File path;
 
-    protected static Logger logger = Logger.getLogger(TestIsartor.class);
+    protected static final Log logger = LogFactory.getLog(TestIsartor.class);
 
     public TestIsartor(File path, String error)
     {

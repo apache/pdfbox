@@ -22,8 +22,9 @@
 package org.apache.pdfbox.preflight.utils;
 
 import java.io.IOException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-import org.apache.log4j.Logger;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -40,7 +41,7 @@ import org.apache.pdfbox.persistence.util.COSObjectKey;
 public class COSUtils
 {
 
-    public static final Logger LOGGER = Logger.getLogger(COSUtils.class);
+    private static final Log LOGGER = LogFactory.getLog(COSUtils.class);
 
     /**
      * return true if the elt is a COSDictionary or a reference to a COSDictionary
@@ -482,9 +483,9 @@ public class COSUtils
     }
 
     /**
-     * Close the given Document. If the close method of the document throws an exception, it is logged using a log4j
-     * logger (Level : WARN)
-     * 
+     * Close the given Document. If the close method of the document throws an
+     * exception, it is logged using a commons logger (Level : WARN)
+     *
      * @param document
      */
     public static void closeDocumentQuietly(COSDocument document)
@@ -503,9 +504,9 @@ public class COSUtils
     }
 
     /**
-     * Close the given Document. If the close method of the document throws an exception, it is logged using a log4j
-     * logger (Level : WARN)
-     * 
+     * Close the given Document. If the close method of the document throws an
+     * exception, it is logged using a commons logger (Level : WARN)
+      * 
      * @param document
      */
     public static void closeDocumentQuietly(PDDocument document)
