@@ -141,7 +141,7 @@ public abstract class PDFont implements COSObjectable
     /**
      * This will clear AFM resources that are stored statically. This is usually not a problem
      * unless you want to reclaim resources for a long running process.
-     * 
+     *
      * SPECIAL NOTE: The font calculations are currently in COSObject, which is where they will
      * reside until PDFont is mature enough to take them over. PDFont is the appropriate place for
      * them and not in COSObject but we need font calculations for text extraction. THIS METHOD WILL
@@ -196,6 +196,7 @@ public abstract class PDFont implements COSObjectable
                 {
                     fontDescriptor = new PDFontDescriptorAFM(afm);
                 }
+                // it shouldn't be possible to reach this point...
             }
         }
         return fontDescriptor;
@@ -691,12 +692,7 @@ public abstract class PDFont implements COSObjectable
      */
     public boolean isSymbolicFont()
     {
-        // not all fonts have a font descriptor
-        if (getFontDescriptor() != null)
-        {
-            return getFontDescriptor().isSymbolic();
-        }
-        return false;
+        return getFontDescriptor().isSymbolic();
     }
 
     /**
