@@ -30,7 +30,8 @@ import javax.activation.FileDataSource;
 import org.junit.Assert;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.preflight.PreflightDocument;
 import org.apache.pdfbox.preflight.ValidationResult;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
@@ -61,9 +62,9 @@ public abstract class AbstractInvalidFileTester
      */
     protected File path;
 
-    protected static Logger staticLogger = Logger.getLogger("Test");
+    protected static Log staticLogger = LogFactory.getLog("Test");
 
-    protected Logger logger = null;
+    protected Log logger = null;
 
     /**
      * Prepare the test for one file
@@ -77,7 +78,7 @@ public abstract class AbstractInvalidFileTester
     {
         this.path = path;
         this.expectedError = error;
-        this.logger = Logger.getLogger(this.getClass());
+        this.logger = LogFactory.getLog(this.getClass());
     }
 
     @Test()
