@@ -904,7 +904,7 @@ public class PDFParser extends BaseParser
         private COSObjectKey objectKey;
         private COSObject object;
 
-        public ConflictObj(long offsetValue, COSObjectKey key, COSObject pdfObject)
+        ConflictObj(long offsetValue, COSObjectKey key, COSObject pdfObject)
         {
             this.offset = offsetValue;
             this.objectKey = key;

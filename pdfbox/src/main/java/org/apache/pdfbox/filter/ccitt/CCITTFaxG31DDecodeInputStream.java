@@ -370,7 +370,7 @@ public final class CCITTFaxG31DDecodeInputStream extends InputStream
         private final int bit;
         private final int length;
 
-        public RunLengthTreeNode(int bit, int length)
+        RunLengthTreeNode(int bit, int length)
         {
             this.bit = bit;
             this.length = length;
@@ -405,7 +405,7 @@ public final class CCITTFaxG31DDecodeInputStream extends InputStream
 
         private final int length;
 
-        public MakeUpTreeNode(int length)
+        MakeUpTreeNode(int length)
         {
             this.length = length;
         }

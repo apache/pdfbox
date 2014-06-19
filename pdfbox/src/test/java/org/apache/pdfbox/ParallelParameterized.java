@@ -37,7 +37,7 @@ public class ParallelParameterized extends Parameterized
     {
         private ExecutorService executorService;
 
-        public FixedThreadPoolScheduler()
+        FixedThreadPoolScheduler()
         {
             int cores = Runtime.getRuntime().availableProcessors();
             executorService = Executors.newFixedThreadPool(cores);

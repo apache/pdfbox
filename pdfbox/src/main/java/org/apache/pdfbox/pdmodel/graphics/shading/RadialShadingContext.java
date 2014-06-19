@@ -67,7 +67,7 @@ class RadialShadingContext implements PaintContext
      * @param ctm the transformation matrix
      * @param pageHeight height of the current page
      */
-    public RadialShadingContext(PDShadingType3 shading, ColorModel cm, AffineTransform xform,
+    RadialShadingContext(PDShadingType3 shading, ColorModel cm, AffineTransform xform,
                                 Matrix ctm, int pageHeight) throws IOException
     {
         this.shading = shading;
@@ -275,7 +275,7 @@ class RadialShadingContext implements PaintContext
                 {
                     try
                     {
-                        float input = (float) (domain[0] + (d1d0 * inputValue));
+                        float input = (domain[0] + (d1d0 * inputValue));
                         values = shading.evalFunction(input);
                     }
                     catch (IOException exception)

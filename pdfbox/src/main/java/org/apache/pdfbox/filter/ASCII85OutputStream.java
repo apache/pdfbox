@@ -51,7 +51,7 @@ final class ASCII85OutputStream extends FilterOutputStream
      *
      * @param out The output stream to write to.
      */
-    public ASCII85OutputStream(OutputStream out)
+    ASCII85OutputStream(OutputStream out)
     {
         super(out);
         lineBreak = 36 * 2;

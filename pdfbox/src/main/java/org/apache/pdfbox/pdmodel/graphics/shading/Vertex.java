@@ -29,7 +29,7 @@ class Vertex
     public Point2D point;
     public float[] color;
 
-    public Vertex(byte flag, Point2D point, float[] color)
+    Vertex(byte flag, Point2D point, float[] color)
     {
         this.flag = flag;
         this.point = point;

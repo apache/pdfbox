@@ -30,7 +30,7 @@ final class UnmodifiableCOSDictionary extends COSDictionary
     /**
      * @inheritDoc
      */
-    public UnmodifiableCOSDictionary(COSDictionary dict)
+    UnmodifiableCOSDictionary(COSDictionary dict)
     {
         super();
         items = dict.items;

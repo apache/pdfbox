@@ -57,7 +57,7 @@ class Type1ShadingContext implements PaintContext
      * @param ctm current transformation matrix
      * @param pageHeight height of the current page
      */
-    public Type1ShadingContext(PDShadingType1 shading, ColorModel cm, AffineTransform xform,
+    Type1ShadingContext(PDShadingType1 shading, ColorModel cm, AffineTransform xform,
                                Matrix ctm, int pageHeight) throws IOException
     {
         this.shading = shading;

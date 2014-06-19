@@ -146,16 +146,15 @@ public class TestPDFToImage extends TestCase
                     return (name.endsWith(".png") && name.startsWith(mcurFile.getName(),0));
                 }
               });
-                for (int n = 0; n < outFiles.length; n++)
+            for (File outFile : outFiles)
+            {
+                File inFile = new File(inDir + '/' + outFile.getName());
+                if (!inFile.exists() || !filesAreIdentical(outFile, inFile))
                 {
-                    File inFile = new File(inDir + '/' + outFiles[n].getName());
-                    if (!inFile.exists() ||
-                        !filesAreIdentical(outFiles[n], inFile))
-                    {
-                        this.bFail=true;
-                        log.warn("*** TEST FAILURE *** Input and output not identical for file: " + inFile.getName());
-                    }
+                    this.bFail=true;
+                    log.warn("*** TEST FAILURE *** Input and output not identical for file: " + inFile.getName());
                 }
+            }
         }
         catch(Exception e)
         {
@@ -188,11 +187,10 @@ public class TestPDFToImage extends TestCase
                         return (name.endsWith(".pdf") || name.endsWith(".ai"));
                     }
                 });
-
-                for (int n = 0; n < testFiles.length; n++)
-                {
-                    doTestFile(testFiles[n], false, inDir, outDir);
-                }
+            for (File testFile : testFiles)
+            {
+                doTestFile(testFile, false, inDir, outDir);
+            }
                 testFiles = new File(inDirExt).listFiles(new FilenameFilter()
                 {
                     public boolean accept(File dir, String name)
@@ -202,10 +200,9 @@ public class TestPDFToImage extends TestCase
                 });
                 if (testFiles != null)
                 {
-                    for (int n = 0; n < testFiles.length; n++)
-                    {
-                        doTestFile(testFiles[n], false, inDirExt, outDirExt);
-                    }
+                for (File testFile : testFiles) {
+                    doTestFile(testFile, false, inDirExt, outDirExt);
+                }
                 }
             }
             else

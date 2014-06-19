@@ -74,7 +74,7 @@ public final class BlendComposite implements Composite
         private ColorModel dstColorModel;
         private RenderingHints hints;
 
-        public BlendCompositeContext(ColorModel srcColorModel, ColorModel dstColorModel,
+        BlendCompositeContext(ColorModel srcColorModel, ColorModel dstColorModel,
                 RenderingHints hints)
         {
             this.srcColorModel = srcColorModel;

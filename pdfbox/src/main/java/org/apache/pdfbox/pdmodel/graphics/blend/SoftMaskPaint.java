@@ -80,7 +80,7 @@ public final class SoftMaskPaint implements Paint
         private final int numColorComponents;
         private final ColorModel parentColorModel;
 
-        public Context(PaintContext parentContext) throws IOException
+        Context(PaintContext parentContext) throws IOException
         {
             this.parentContext = parentContext;
             parentColorModel = parentContext.getColorModel();

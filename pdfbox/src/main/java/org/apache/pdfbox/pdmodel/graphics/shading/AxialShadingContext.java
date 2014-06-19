@@ -62,7 +62,7 @@ class AxialShadingContext implements PaintContext
      * @param ctm the transformation matrix
      * @param pageHeight height of the current page
      */
-    public AxialShadingContext(PDShadingType2 shading, ColorModel cm, AffineTransform xform,
+    AxialShadingContext(PDShadingType2 shading, ColorModel cm, AffineTransform xform,
                                Matrix ctm, int pageHeight) throws IOException
     {
         this.shading = shading;

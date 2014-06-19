@@ -51,7 +51,7 @@ class Type4ShadingContext extends GouraudShadingContext
      * @param ctm current transformation matrix
      * @param pageHeight height of the current page
      */
-    public Type4ShadingContext(PDShadingType4 shading, ColorModel cm, AffineTransform xform,
+    Type4ShadingContext(PDShadingType4 shading, ColorModel cm, AffineTransform xform,
                                Matrix ctm, int pageHeight) throws IOException
     {
         super(shading, cm, xform, ctm, pageHeight);

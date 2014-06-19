@@ -27,14 +27,11 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.cmap.CMap;
-import org.apache.fontbox.ttf.CMAPEncodingEntry;
-import org.apache.fontbox.ttf.CMAPTable;
 import org.apache.fontbox.ttf.GlyfDescript;
 import org.apache.fontbox.ttf.GlyphData;
 import org.apache.fontbox.ttf.GlyphDescription;
 import org.apache.fontbox.ttf.HeaderTable;
 import org.apache.fontbox.ttf.TrueTypeFont;
-import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.pdmodel.font.PDCIDFontType2Font;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
@@ -447,7 +444,7 @@ public class TTFGlyph2D implements Glyph2D
         private boolean onCurve = true;
         private boolean endOfContour = false;
 
-        public Point(int xValue, int yValue, boolean onCurveValue, boolean endOfContourValue)
+        Point(int xValue, int yValue, boolean onCurveValue, boolean endOfContourValue)
         {
             x = xValue;
             y = yValue;
@@ -455,7 +452,7 @@ public class TTFGlyph2D implements Glyph2D
             endOfContour = endOfContourValue;
         }
 
-        public Point(int xValue, int yValue)
+        Point(int xValue, int yValue)
         {
             this(xValue, yValue, false, false);
         }
