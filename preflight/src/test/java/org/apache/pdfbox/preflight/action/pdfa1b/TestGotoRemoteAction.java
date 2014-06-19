@@ -25,9 +25,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDFileSpecification;
-import org.apache.pdfbox.pdmodel.interactive.action.type.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.action.type.PDActionRemoteGoTo;
-import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.junit.Test;
 

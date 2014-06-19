@@ -21,8 +21,8 @@
 
 package org.apache.pdfbox.preflight.utils;
 
-import static org.apache.pdfbox.preflight.PreflightConstants.*;
 import org.apache.pdfbox.preflight.PreflightConfiguration;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_PDF_PROCESSING_MISSING;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.PreflightPath;
 import org.apache.pdfbox.preflight.exception.ValidationException;
