@@ -41,8 +41,7 @@ public class PDType0Font extends PDFont
 {
     private static final Log LOG = LogFactory.getLog(PDType0Font.class);
 
-    private COSArray descendantFontArray;
-    private PDFont descendantFont;
+    private PDCIDFont descendantFont;
     private COSDictionary descendantFontDictionary;
 
     /**
@@ -53,12 +52,13 @@ public class PDType0Font extends PDFont
     public PDType0Font(COSDictionary fontDictionary)
     {
         super(fontDictionary);
-        descendantFontDictionary = (COSDictionary) getDescendantFonts().getObject(0);
+        COSArray descendantFonts = (COSArray)dict.getDictionaryObject(COSName.DESCENDANT_FONTS);
+        descendantFontDictionary = (COSDictionary)descendantFonts.getObject(0);
         if (descendantFontDictionary != null)
         {
             try
             {
-                descendantFont = PDFontFactory.createFont(descendantFontDictionary);
+                descendantFont = (PDCIDFont)PDFontFactory.createFont(descendantFontDictionary);
             }
             catch (IOException exception)
             {
@@ -67,13 +67,20 @@ public class PDType0Font extends PDFont
         }
     }
 
-    private COSArray getDescendantFonts()
+    /**
+     * Returns the descendant font.
+     *
+     * @return the descendant font.
+     */
+    public PDCIDFont getDescendantFont()
     {
-        if (descendantFontArray == null)
-        {
-            descendantFontArray = (COSArray) dict.getDictionaryObject(COSName.DESCENDANT_FONTS);
-        }
-        return descendantFontArray;
+        return descendantFont;
+    }
+
+    @Override
+    public PDFontDescriptor getFontDescriptor()
+    {
+        return descendantFont.getFontDescriptor();
     }
 
     @Override
@@ -226,21 +233,10 @@ public class PDType0Font extends PDFont
         return retval;
     }
 
-    /**
-     * Returns the descendant font.
-     *
-     * @return the descendant font.
-     */
-    public PDFont getDescendantFont()
-    {
-        return descendantFont;
-    }
-
     @Override
     public void clear()
     {
         super.clear();
-        descendantFontArray = null;
         if (descendantFont != null)
         {
             descendantFont.clear();
