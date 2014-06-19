@@ -16,7 +16,9 @@
  */
 package org.apache.pdfbox.text;
 
+import java.text.Normalizer;
 import java.util.HashMap;
+
 
 /**
  * This class allows a caller to normalize text in various ways.
@@ -125,17 +127,52 @@ public class TextNormalize
      * single "fi" ligature to "f" and "i".
      * 
      * @param str String to normalize
-     * @return Normalized string (or original string if ICU4J library is not on classpath)
+     * @return Normalized string
      */
     public String normalizePresentationForm(String str)
     {
-        if (icu4j != null)
+        StringBuilder builder = null;
+        int p = 0;
+        int q = 0;
+        int strLength = str.length();
+        for (; q < strLength; q++) 
         {
-            return icu4j.normalizePres(str);
+            // We only normalize if the codepoint is in a given range.
+            // Otherwise, NFKC converts too many things that would cause
+            // confusion. For example, it converts the micro symbol in
+            // extended Latin to the value in the Greek script. We normalize
+            // the Unicode Alphabetic and Arabic A&B Presentation forms.
+            char c = str.charAt(q);
+            if (0xFB00 <= c && c <= 0xFDFF || 0xFE70 <= c && c <= 0xFEFF)
+            {
+                if (builder == null) 
+                {
+                    builder = new StringBuilder(strLength * 2);
+                }
+                builder.append(str.substring(p, q));
+                // Some fonts map U+FDF2 differently than the Unicode spec.
+                // They add an extra U+0627 character to compensate.
+                // This removes the extra character for those fonts. 
+                if(c == 0xFDF2 && q > 0 && (str.charAt(q-1) == 0x0627 || str.charAt(q-1) == 0xFE8D))
+                {
+                    builder.append("\u0644\u0644\u0647");
+                }
+                else
+                {
+                    // Trim because some decompositions have an extra space, such as U+FC5E
+                    builder.append(Normalizer.normalize(str.substring(q, q+1), Normalizer.Form.NFKC).trim());
+                }
+                p = q + 1;
+            }
         }
-        else
+        if (builder == null) 
         {
             return str;
+        } 
+        else 
+        {
+            builder.append(str.substring(p, q));
+            return builder.toString();
         }
     }
 
@@ -144,7 +181,7 @@ public class TextNormalize
      * combining counterparts.
      * 
      * @param str String to normalize
-     * @return Normalized string (or original string if ICU4J library is not on classpath)
+     * @return Normalized string
      */
     public String normalizeDiacritic(String str)
     {
@@ -157,13 +194,9 @@ public class TextNormalize
             {
                 return DIACRITICS.get(c);
             }
-            else if (icu4j != null)
-            {
-                return icu4j.normalizeDiac(str);
-            }
             else
             {
-                return str;
+                return Normalizer.normalize(str, Normalizer.Form.NFKC).trim();
             }
         }
         else
@@ -171,4 +204,5 @@ public class TextNormalize
             return str;
         }
     }
+
 }
