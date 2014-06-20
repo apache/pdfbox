@@ -24,6 +24,8 @@ import com.ibm.icu.text.Normalizer;
  * will call this only if the ICU4J library exists in the classpath.
  * @author <a href="mailto:carrier@digital-evidence.org">Brian Carrier</a>
  * @version $Revision: 1.0 $
+ * 
+ * @deprecated will be removed in 2.0.0
  */
 public class ICU4JImpl 
 {

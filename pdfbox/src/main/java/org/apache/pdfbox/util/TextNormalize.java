@@ -111,6 +111,8 @@ public class TextNormalize
      * @param str Presentation form of line to convert (i.e. left most char is first char)
      * @param isRtlDominant true if the PAGE has a dominant right to left ordering
      * @return Logical form of string (or original string if ICU4J library is not on classpath)
+     * 
+     * @deprecated isn't used anymore
      */
     public String makeLineLogicalOrder(String str, boolean isRtlDominant)
     {
