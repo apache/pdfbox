@@ -125,7 +125,7 @@ public class DomXmpParser
         XMPMetadata xmp = null;
 
         // Start reading
-        removeComments(document.getFirstChild());
+        removeComments(document);
         Node node = document.getFirstChild();
 
         // expect xpacket processing instruction
@@ -716,37 +716,36 @@ public class DomXmpParser
     /**
      * Remove all the comments node in the parent element of the parameter
      * 
-     * @param node
+     * @param root
      *            the first node of an element or document to clear
      */
     private void removeComments(Node root)
     {
-        Node node = root;
-        while (node != null)
-        {
-            Node next = node.getNextSibling();
+        if (root.getChildNodes().getLength()<=1) {
+            // There is only one node so we do not remove it
+            return;
+        }
+        NodeList nl = root.getChildNodes();
+        for (int i=0; i < nl.getLength() ; i ++) {
+            Node node = nl.item(i);
             if (node instanceof Comment)
             {
                 // remove the comment
-                node.getParentNode().removeChild(node);
+                root.removeChild(node);
             }
             else if (node instanceof Text)
             {
-                Text t = (Text) node;
-                if (t.getTextContent().trim().length() == 0)
+                if (((Text)node).getTextContent().trim().length() == 0)
                 {
-                    // XXX is there a better way to remove useless Text ?
-                    node.getParentNode().removeChild(node);
+                        root.removeChild(node);
                 }
             }
             else if (node instanceof Element)
             {
                 // clean child
-                removeComments(node.getFirstChild());
+                removeComments(node);
             } // else do nothing
-            node = next;
         }
-        // end of document
     }
 
     private AbstractStructuredType instanciateStructured(TypeMapping tm, Types type, String name,
