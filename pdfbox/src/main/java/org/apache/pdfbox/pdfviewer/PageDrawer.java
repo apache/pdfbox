@@ -603,6 +603,7 @@ public class PageDrawer extends PDFStreamEngine
         graphics.setComposite(getGraphicsState().getNonStrokeJavaComposite());
         graphics.setPaint(paint);
         graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
+        graphics.setClip(null); // PDFBOX-2153 don't use obsolete clipping path
         graphics.fill( getGraphicsState().getCurrentClippingPath() );
     }
     /**
