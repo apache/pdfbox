@@ -448,20 +448,20 @@ public class PageDrawer extends PDFStreamEngine
 
     private void writeFont(final AffineTransform at, final GlyphVector glyphs)
     {
-        try
+        // Convert from PDF, where glyphs are upright when direction is from
+        // bottom to top, to AWT, where this is the other way around
+        
+        // PDFBOX-2141: do not use graphics.transform(), because this prevents
+        // the correct rendering of shading patterns
+        // don't apply the translation to each glyph, only scale and shear
+        AffineTransform atRS = new AffineTransform(at.getScaleX(), at.getShearY(), 
+                -at.getShearX(), -at.getScaleY(), 0, 0);
+
+        for (int i = 0; i < glyphs.getNumGlyphs(); i++)
         {
-            // Convert from PDF, where glyphs are upright when direction is from
-            // bottom to top, to AWT, where this is the other way around
-            at.scale(1, -1);
-            AffineTransform atInverse = at.createInverse();
-            graphics.transform(at);
-            graphics.drawGlyphVector(glyphs, 0, 0);
-            graphics.transform(atInverse);
+            glyphs.setGlyphTransform(i, atRS);
         }
-        catch (NoninvertibleTransformException exception)
-        {
-            LOG.error("Can't invert the given affine transformation", exception);
-        }
+        graphics.drawGlyphVector(glyphs, (float) at.getTranslateX(), (float) at.getTranslateY());
     }
 
     /**
