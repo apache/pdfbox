@@ -22,7 +22,6 @@ import java.util.HashMap;
 
 /**
  * This class allows a caller to normalize text in various ways.
- * It will load the ICU4J jar file if it is defined on the classpath.
  * 
  * @author Brian Carrier
  */
@@ -72,7 +71,6 @@ public class TextNormalize
         return map;
     }
 
-    private ICU4JImpl icu4j = null;
     private String outputEncoding;
 
     /**
@@ -81,45 +79,7 @@ public class TextNormalize
      */
     public TextNormalize(String encoding)
     {
-        findICU4J();
         outputEncoding = encoding;
-    }
-
-    private void findICU4J()
-    {
-        // see if we can load the icu4j classes from the classpath
-        try
-        {
-            this.getClass().getClassLoader().loadClass("com.ibm.icu.text.Bidi");
-            this.getClass().getClassLoader().loadClass("com.ibm.icu.text.Normalizer");
-            icu4j = new ICU4JImpl();
-        }
-        catch (ClassNotFoundException e)
-        {
-            icu4j = null;
-        }
-    }
-
-    /**
-     * Takes a line of text in presentation order and converts it to logical order. For most text
-     * other than Arabic and Hebrew, the presentation and logical orders are the same. However, for
-     * Arabic and Hebrew, they are different and if the text involves both RTL and LTR text then the
-     * Unicode BIDI algorithm must be used to determine how to map  between them.
-     * 
-     * @param str Presentation form of line to convert (i.e. left most char is first char)
-     * @param isRtlDominant true if the PAGE has a dominant right to left ordering
-     * @return Logical form of string (or original string if ICU4J library is not on classpath)
-     */
-    public String makeLineLogicalOrder(String str, boolean isRtlDominant)
-    {
-        if (icu4j != null)
-        {
-            return icu4j.makeLineLogicalOrder(str, isRtlDominant);
-        }
-        else
-        {
-            return str;
-        }
     }
 
     /**

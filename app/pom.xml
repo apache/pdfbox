@@ -49,11 +49,6 @@
       <artifactId>bcprov-jdk15on</artifactId>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>com.ibm.icu</groupId>
-      <artifactId>icu4j</artifactId>
-      <scope>provided</scope>
-    </dependency>
   </dependencies>
 
   <build>
