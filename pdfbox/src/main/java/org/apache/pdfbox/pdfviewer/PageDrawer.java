@@ -389,12 +389,7 @@ public class PageDrawer extends PDFStreamEngine
      */
     private BasicStroke calculateStroke()
     {
-        float lineWidth = (float)getGraphicsState().getLineWidth();
-        Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
-        if (ctm != null && ctm.getXScale() > 0)
-        {
-            lineWidth = lineWidth * ctm.getXScale();
-        }
+        float lineWidth = transformWidth((float) getGraphicsState().getLineWidth());
         if (lineWidth < 0.25)
         {
             lineWidth = 0.25f;
@@ -410,14 +405,18 @@ public class PageDrawer extends PDFStreamEngine
             float[] dashArray = stroke.getDashArray();
             if (dashArray != null)
             {
-                if (ctm != null && ctm.getXScale() > 0)
+                // apply the CTM
+                for (int i = 0; i < dashArray.length; ++i)
                 {
-                    for (int i = 0; i < dashArray.length; ++i)
-                    {
-                        dashArray[i] *= ctm.getXScale();
-                    }
+                    dashArray[i] = transformWidth(dashArray[i]);
                 }
-                phaseStart *= ctm.getXScale();
+                phaseStart = (int)transformWidth(phaseStart);
+
+                // empty dash array is illegal
+                if (dashArray.length == 0)
+                {
+                    dashArray = null;
+                }
             }
             currentStroke = new BasicStroke(lineWidth, stroke.getEndCap(), stroke.getLineJoin(),
                     stroke.getMiterLimit(), dashArray, phaseStart);
@@ -471,7 +470,7 @@ public class PageDrawer extends PDFStreamEngine
      * @param y y-coordinate of the point to be transform
      * @return the transformed coordinates as Point2D.Double
      */
-    public java.awt.geom.Point2D.Double transformedPoint(double x, double y)
+    public Point2D.Double transformedPoint(double x, double y)
     {
         double[] position = {x,y}; 
         getGraphicsState().getCurrentTransformationMatrix().createAffineTransform().transform(
@@ -513,7 +512,7 @@ public class PageDrawer extends PDFStreamEngine
         if (clippingWindingRule > -1)
         {
             PDGraphicsState graphicsState = getGraphicsState();
-            GeneralPath clippingPath = (GeneralPath)getLinePath().clone();
+            GeneralPath clippingPath = (GeneralPath)getLinePath().clone(); // TODO do we really need to clone this? isn't the line path reset anyway?
             clippingPath.setWindingRule(clippingWindingRule);
             // If there is already set a clipping path, we have to intersect the new with the existing one
             if (graphicsState.getCurrentClippingPath() != null) 
@@ -696,5 +695,20 @@ public class PageDrawer extends PDFStreamEngine
     protected void SHFill_TensorPatch(PDShading Shading) throws IOException
     {
         throw new IOException("Not Implemented");
+    }
+
+    private float transformWidth(float width)
+    {
+        Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
+
+        if (ctm == null)
+        {
+            // TODO does the CTM really need to use null?
+            return width;
+        }
+
+        float x = ctm.getValue(0, 0) + ctm.getValue(1, 0);
+        float y = ctm.getValue(0, 1) + ctm.getValue(1, 1);
+        return width * (float) Math.sqrt((x * x + y * y) * 0.5);
     }
 }
