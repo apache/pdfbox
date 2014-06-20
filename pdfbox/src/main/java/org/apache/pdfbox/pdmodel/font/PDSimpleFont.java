@@ -23,8 +23,6 @@ import java.awt.RenderingHints;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-import java.awt.geom.NoninvertibleTransformException;
 import java.io.IOException;
 
 import java.io.InputStream;
@@ -337,30 +335,12 @@ public abstract class PDSimpleFont extends PDFont
         // check if we have a rotation
         if (!at.isIdentity()) 
         {
-            try 
+            for (int i = 0; i < glyphs.getNumGlyphs(); i++)
             {
-                AffineTransform atInv = at.createInverse();
-                // do only apply the size of the transform, rotation will be realized by rotating the graphics,
-                // otherwise the hp printers will not render the font
-                // apply the transformation to the graphics, which should be the same as applying the
-                // transformation itself to the text
-                g2d.transform(at);
-                // translate the coordinates
-                Point2D.Float newXy = new  Point2D.Float(x,y);
-                atInv.transform(new Point2D.Float( x, y), newXy);
-                g2d.drawGlyphVector(glyphs, (float)newXy.getX(), (float)newXy.getY() );
-                // restore the original transformation
-                g2d.transform(atInv);
-            }
-            catch (NoninvertibleTransformException e) 
-            {
-                LOG.error("Error in "+getClass().getName()+".writeFont",e);
+                glyphs.setGlyphTransform(i, at);
             }
         }
-        else 
-        {
-            g2d.drawGlyphVector(glyphs, x, y);
-        }
+        g2d.drawGlyphVector(glyphs, x, y);
     }
 
     /**
