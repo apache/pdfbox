@@ -59,10 +59,12 @@ public class XMPSchema extends AbstractStructuredType
      * 
      * @param metadata
      *            The parent XMP metadata that this schema will be part of.
-     * @param namespaceName
-     *            The name of the namespace, ie pdf,dc,...
      * @param namespaceURI
      *            The URI of the namespace, ie "http://ns.adobe.com/pdf/1.3/"
+     * @param prefix
+     *            The prefix to be used
+     * @param name
+     *            The name of the namespace, ie pdf,dc,...
      * 
      */
     public XMPSchema(XMPMetadata metadata, String namespaceURI, String prefix, String name)
@@ -289,7 +291,7 @@ public class XMPSchema extends AbstractStructuredType
     /**
      * Get a TextProperty Type from its name
      * 
-     * @param qualifiedName
+     * @param name
      *            The full qualified name of the property wanted
      * @return The Text Type property wanted
      */
@@ -314,7 +316,7 @@ public class XMPSchema extends AbstractStructuredType
     /**
      * Get the value of a simple text property.
      * 
-     * @param qualifiedName
+     * @param name
      *            The name of the property to get, it must include the namespace prefix. ie "pdf:Keywords".
      * 
      * @return The value of the text property or the null if there is no value.
@@ -666,7 +668,7 @@ public class XMPSchema extends AbstractStructuredType
     /**
      * Remove all matching entries with the given value from the bag.
      * 
-     * @param qualifiedBagName
+     * @param bagName
      *            The name of the bag, it must include the namespace prefix. ie "pdf:Keywords".
      * @param bagValue
      *            The value to remove from the bagList.
@@ -722,7 +724,7 @@ public class XMPSchema extends AbstractStructuredType
      * Get all the values of the bag property. This will return a list of java.lang.String objects, this is a read-only
      * list.
      * 
-     * @param qualifiedBagName
+     * @param bagName
      *            The name of the bag property to get without namespace prefix.
      * 
      * @return All values of the bag property in a list.
@@ -756,7 +758,7 @@ public class XMPSchema extends AbstractStructuredType
     /**
      * Generic method to remove a field from an array with an Elementable Object
      * 
-     * @param qualifiedArrayName
+     * @param arrayName
      *            the full qualified name of the property concerned
      * @param fieldValue
      *            the elementable field value
@@ -802,7 +804,7 @@ public class XMPSchema extends AbstractStructuredType
     /**
      * Add a new value to a sequence property.
      * 
-     * @param qualifiedSeqName
+     * @param simpleSeqName
      *            The name of the sequence property without the namespace prefix
      * @param seqValue
      *            The value to add to the sequence.
@@ -850,7 +852,7 @@ public class XMPSchema extends AbstractStructuredType
     /**
      * Add a new value to a sequence property.
      * 
-     * @param qualifiedSeqName
+     * @param seqName
      *            The name of the sequence property, it must include the namespace prefix. ie "pdf:Keywords"
      * @param seqValue
      *            The value to add to the sequence.
@@ -874,7 +876,7 @@ public class XMPSchema extends AbstractStructuredType
     /**
      * Get all the values in a sequence property.
      * 
-     * @param qualifiedSeqName
+     * @param seqName
      *            The name of the sequence property without namespace prefix.
      * 
      * @return A read-only list of java.lang.String objects or null if the property does not exist.
@@ -895,7 +897,7 @@ public class XMPSchema extends AbstractStructuredType
     /**
      * Remove a date sequence value from the list.
      * 
-     * @param qualifiedSeqName
+     * @param seqName
      *            The name of the sequence property, it must include the namespace prefix. ie "pdf:Keywords"
      * @param date
      *            The date to remove from the sequence property.
@@ -945,7 +947,7 @@ public class XMPSchema extends AbstractStructuredType
     /**
      * Add a date sequence value to the list.
      * 
-     * @param qualifiedSeqName
+     * @param seqName
      *            The name of the sequence property, it must include the namespace prefix. ie "pdf:Keywords"
      * @param date
      *            The date to add to the sequence property.
@@ -961,7 +963,7 @@ public class XMPSchema extends AbstractStructuredType
     /**
      * Get all the date values in a sequence property.
      * 
-     * @param qualifiedSeqName
+     * @param seqName
      *            The name of the sequence property, it must include the namespace prefix. ie "pdf:Keywords".
      * 
      * @return A read-only list of java.util.Calendar objects or null if the property does not exist.
@@ -1048,7 +1050,7 @@ public class XMPSchema extends AbstractStructuredType
     /**
      * Set the value of a multi-lingual property.
      * 
-     * @param qualifiedName
+     * @param name
      *            The name of the property, it must include the namespace prefix. ie "pdf:Keywords"
      * @param language
      *            The language code of the value. If null then "x-default" is assumed.
@@ -1118,9 +1120,9 @@ public class XMPSchema extends AbstractStructuredType
     /**
      * Get the value of a multi-lingual property.
      * 
-     * @param qualifiedName
+     * @param name
      *            The name of the property, without the namespace prefix.
-     * @param language
+     * @param expectedLanguage
      *            The language code of the value. If null then "x-default" is assumed.
      * 
      * @return The value of the language property.
@@ -1162,7 +1164,7 @@ public class XMPSchema extends AbstractStructuredType
     /**
      * Get a list of all languages that are currently defined for a specific property.
      * 
-     * @param qualifiedName
+     * @param name
      *            The name of the property, it must include the namespace prefix. ie "pdf:Keywords"
      * 
      * @return A list of all languages, this will return an non-null empty list if none have been defined.
@@ -1294,7 +1296,7 @@ public class XMPSchema extends AbstractStructuredType
     /**
      * Get an AbstractField list corresponding to the content of an array Return null if the property is unknown
      * 
-     * @param nam
+     * @param name
      *            the property name whitout namespace;
      * @return List of property contained in the complex property
      * @throws BadFieldValueException

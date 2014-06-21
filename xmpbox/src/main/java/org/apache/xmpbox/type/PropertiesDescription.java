@@ -40,10 +40,8 @@ public class PropertiesDescription
     private Map<String, PropertyType> types;
 
     /**
-     * Build PropMapping for specified namespace
+     * PropertiesDescritption constructor
      * 
-     * @param namespace
-     *            namespace URI concerned by this PropMapping
      */
     public PropertiesDescription()
     {
@@ -67,8 +65,6 @@ public class PropertiesDescription
      *            new property name
      * @param type
      *            Valuetype of the new property
-     * @param attr
-     *            A list of attribute (put null while attribute management is not implemented)
      */
     public void addNewProperty(String name, PropertyType type)
     {

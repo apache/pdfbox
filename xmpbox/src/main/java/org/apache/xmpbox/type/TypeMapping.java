@@ -318,7 +318,7 @@ public final class TypeMapping
     /**
      * Give type of specified property in specified schema (given by its namespaceURI)
      * 
-     * @param prop
+     * @param name
      *            the property Qualified Name
      * @return Property type declared for namespace specified, null if unknown
      */

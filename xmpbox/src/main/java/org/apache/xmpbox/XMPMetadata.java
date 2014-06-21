@@ -461,7 +461,7 @@ public class XMPMetadata
     /***
      * create and add Photoshop Schema to this metadata. This method return the created schema to enter information
      * 
-     * @return
+     * @return schema added in order to work on it
      */
     public PhotoshopSchema createAndAddPhotoshopSchema()
     {
