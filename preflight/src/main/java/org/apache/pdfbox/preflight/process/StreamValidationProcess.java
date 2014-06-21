@@ -263,7 +263,7 @@ public class StreamValidationProcess extends AbstractProcess
                         if (cr == -1)
                         {
                             addValidationError(context, new ValidationError(ERROR_SYNTAX_STREAM_LENGTH_INVALID,
-                                    "Stream length is invalide"));
+                                "Stream length is invalid [cObj="+cObj.toString()+"]"));
                             org.apache.pdfbox.io.IOUtils.closeQuietly(ra);
                             return;
                         }
@@ -287,7 +287,7 @@ public class StreamValidationProcess extends AbstractProcess
                         if (!endStream.contains("endstream"))
                         {
                             addValidationError(context, new ValidationError(ERROR_SYNTAX_STREAM_LENGTH_INVALID,
-                                    "Stream length is invalide"));
+                                "Stream length is invalid [cObj="+cObj.toString()+"; defined length="+length+"; buffer2="+endStream+"]"));
                         }
                     }
                     else if (buffer2[0] == '\r' && buffer2[1] == 'e')
@@ -295,7 +295,7 @@ public class StreamValidationProcess extends AbstractProcess
                         if (!endStream.contains("endstream"))
                         {
                             addValidationError(context, new ValidationError(ERROR_SYNTAX_STREAM_LENGTH_INVALID,
-                                    "Stream length is invalide"));
+                                "Stream length is invalid [cObj="+cObj.toString()+"; defined length="+length+"; buffer2="+endStream+"]"));
                         }
                     }
                     else if (buffer2[0] == '\n' && buffer2[1] == 'e')
@@ -303,20 +303,22 @@ public class StreamValidationProcess extends AbstractProcess
                         if (!endStream.contains("endstream"))
                         {
                             addValidationError(context, new ValidationError(ERROR_SYNTAX_STREAM_LENGTH_INVALID,
-                                    "Stream length is invalide"));
+                                "Stream length is invalid [cObj="+cObj.toString()+"; defined length="+length+"; buffer2="+endStream+"]"));
                         }
                     }
                     else
                     {
-                        addValidationError(context, new ValidationError(ERROR_SYNTAX_STREAM_LENGTH_INVALID,
-                                "Stream length is invalide"));
+                        if (!endStream.startsWith("endStream")) {
+                             addValidationError(context, new ValidationError(ERROR_SYNTAX_STREAM_LENGTH_INVALID,
+                                "Stream length is invalid [cObj="+cObj.toString()+"; defined length="+length+"; buffer2="+endStream+"]"));
+                        }
                     }
 
                 }
                 else
                 {
                     addValidationError(context, new ValidationError(ERROR_SYNTAX_STREAM_LENGTH_INVALID,
-                            "Stream length is invalide"));
+                            "Stream length is invalid"));
                 }
             }
         }
