@@ -451,9 +451,6 @@ public class CFFFont implements Type1CharStringReader
         localSubrIndex = localSubrIndexValue;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public class Mapping implements Type1Mapping
     {
         private int mappedCode;

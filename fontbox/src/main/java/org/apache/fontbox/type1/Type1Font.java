@@ -193,9 +193,6 @@ public final class Type1Font implements Type1CharStringReader
         return mappings;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public class Mapping implements Type1Mapping
     {
         private int mappedCode;

@@ -702,7 +702,7 @@ public class CFFParser
      * @param dataInput
      * @param nGlyphs
      * @param ros
-     * @return
+     * @return the FDSelect data
      * @throws IOException
      */
     private CIDKeyedFDSelect readFDSelect(CFFDataInput dataInput, int nGlyphs, CFFFontROS ros) throws IOException
@@ -728,7 +728,7 @@ public class CFFParser
      * @param format
      * @param nGlyphs
      * @param ros
-     * @return
+     * @return the Format 0 of the FDSelect data
      * @throws IOException
      */
     private Format0FDSelect readFormat0FDSelect(CFFDataInput dataInput, int format, int nGlyphs, CFFFontROS ros)
@@ -752,7 +752,7 @@ public class CFFParser
      * @param format
      * @param nGlyphs
      * @param ros
-     * @return
+     * @return the Format 3 of the FDSelect data
      * @throws IOException
      */
     private Format3FDSelect readFormat3FDSelect(CFFDataInput dataInput, int format, int nGlyphs, CFFFontROS ros)
