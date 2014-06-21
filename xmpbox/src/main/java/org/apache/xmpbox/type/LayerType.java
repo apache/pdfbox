@@ -58,10 +58,6 @@ public class LayerType extends AbstractStructuredType
     /**
      * Set LayerName
      * 
-     * @param prefix
-     *            the prefix of LayerName property to set
-     * @param name
-     *            the name of LayerName property to set
      * @param image
      *            the value of LayerName property to set
      */
@@ -88,10 +84,6 @@ public class LayerType extends AbstractStructuredType
     /**
      * Set LayerText
      * 
-     * @param prefix
-     *            the prefix of LayerText property to set
-     * @param name
-     *            the name of LayerText property to set
      * @param image
      *            the value of LayerText property to set
      */

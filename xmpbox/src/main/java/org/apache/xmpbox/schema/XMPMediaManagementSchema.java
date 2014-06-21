@@ -156,7 +156,7 @@ public class XMPMediaManagementSchema extends XMPSchema
     /**
      * Set Manager value
      * 
-     * @param url
+     * @param value
      *            Manager value to set
      */
     public void setManager(String value)
@@ -256,7 +256,7 @@ public class XMPMediaManagementSchema extends XMPSchema
     /**
      * Set ManageUI value
      * 
-     * @param url
+     * @param value
      *            ManageUI value to set
      */
     public void setManageUI(String value)
@@ -306,7 +306,7 @@ public class XMPMediaManagementSchema extends XMPSchema
     /**
      * Set ManagerVariant value
      * 
-     * @param url
+     * @param value
      *            ManagerVariant value to set
      */
     public void setManagerVariant(String value)
@@ -356,7 +356,7 @@ public class XMPMediaManagementSchema extends XMPSchema
     /**
      * Set InstanceId value
      * 
-     * @param url
+     * @param value
      *            InstanceId value to set
      */
     public void setInstanceID(String value)
@@ -418,7 +418,7 @@ public class XMPMediaManagementSchema extends XMPSchema
     /**
      * set ManageFrom Property
      * 
-     * @param tt
+     * @param resourceRef
      *            ManageFrom Property to set
      */
     public void setManagedFromProperty(ResourceRefType resourceRef)
@@ -505,7 +505,7 @@ public class XMPMediaManagementSchema extends XMPSchema
     /**
      * Set renditionClass Value
      * 
-     * @param url
+     * @param value
      *            renditionClass Value to set
      */
     public void setRenditionClass(String value)
@@ -605,7 +605,7 @@ public class XMPMediaManagementSchema extends XMPSchema
     /**
      * Set VersionId value
      * 
-     * @param url
+     * @param value
      *            VersionId value to set
      */
     public void setVersionID(String value)

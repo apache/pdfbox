@@ -41,15 +41,6 @@ public class ComplexPropertyContainer /* extends AbstractField */
 
     /**
      * Complex Property type constructor (namespaceURI is given)
-     * 
-     * @param metadata
-     *            The metadata to attach to this property
-     * @param namespaceURI
-     *            The namespace URI to associate to this property
-     * @param prefix
-     *            The prefix to set for this property
-     * @param propertyName
-     *            The local Name of this property
      */
     public ComplexPropertyContainer()
     {
