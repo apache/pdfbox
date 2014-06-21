@@ -312,7 +312,7 @@ public class PDGraphicsState implements Cloneable
     /**
      * Returns the current blend mode
      *
-     * @return
+     * @return the current blend mode
      */
     public BlendMode getBlendMode()
     {

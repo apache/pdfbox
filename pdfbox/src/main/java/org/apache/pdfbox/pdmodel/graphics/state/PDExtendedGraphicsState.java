@@ -523,12 +523,17 @@ public class PDExtendedGraphicsState implements COSObjectable
     /**
      * Returns the blending mode stored in the COS dictionary
      *
-     * @return
+     * @return the blending mode
      */
     public BlendMode getBlendMode() {
         return BlendMode.getInstance(graphicsState.getDictionaryObject(COSName.BM));
     }
 
+    /**
+     * Returns the soft mask stored in the COS dictionary
+     *
+     * @return the soft mask
+     */
     public PDSoftMask getSoftMask() {
         return PDSoftMask.create(graphicsState.getDictionaryObject(COSName.SMASK));
     }

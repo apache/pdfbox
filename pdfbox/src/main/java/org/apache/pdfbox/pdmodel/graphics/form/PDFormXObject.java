@@ -109,9 +109,9 @@ public final class PDFormXObject extends PDXObject
     }
 
     /**
-     * Returns group descriptor...
+     * Returns the group attributes dictionary (Group XObject).
      *
-     * @return
+     * @return the group attributes dictionary
      */
     public PDGroup getGroup() {
         if( group == null ) 

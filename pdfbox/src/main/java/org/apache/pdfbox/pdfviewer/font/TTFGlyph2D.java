@@ -41,7 +41,7 @@ import org.apache.pdfbox.pdmodel.font.PDType0Font;
  * This class provides a glyph to GeneralPath conversion for true type fonts.
  * Based on code from Apache Batik a subproject of Apache XMLGraphics.
  *
- * {@see http://xmlgraphics.apache.org/batik/}
+ * @see <a href="http://xmlgraphics.apache.org/batik">http://xmlgraphics.apache.org/batik</a>
  */
 public class TTFGlyph2D implements Glyph2D
 {
