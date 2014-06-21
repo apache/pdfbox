@@ -455,7 +455,6 @@ public class CMAPEncodingEntry
 	/**
 	 * Initialize the CMapEntry when it is a subtype 0
 	 * 
-	 * @param ttf
 	 * @param data
 	 * @throws IOException
 	 */

@@ -63,7 +63,7 @@ public class FontFileFinder
      * Automagically finds a list of font files on local system.
      * 
      * @return List&lt;URI&gt; of font files
-     * @throws IOException io exception {@inheritDoc}
+     * @throws IOException thrown if an I/O exception of some sort has occurred
      */
     public List<URI> find() throws IOException
     {

@@ -206,7 +206,9 @@ public class GlyfCompositeDescript extends GlyfDescript
     }
 
     /**
-     * {@inheritDoc}
+     * Get the number of components.
+     * 
+     * @return the number of components
      */
     public int getComponentCount()
     {

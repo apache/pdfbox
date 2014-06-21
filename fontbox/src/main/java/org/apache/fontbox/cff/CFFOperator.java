@@ -113,7 +113,7 @@ public class CFFOperator
 
     /**
      * Returns the operator corresponding to the given name.
-     * @param key the given name
+     * @param name the given name
      * @return the corresponding operator
      */
     public static CFFOperator getOperator(String name)
