@@ -76,7 +76,7 @@ public abstract class AbstractXObjValidator implements XObjectValidator
                         .equals(COSUtils.getAsString(smask, cosDocument))))
         {
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_TRANSPARENCY_SMASK,
-                    "Soft Mask must be null or None"));
+                    "Soft Mask must be null or None ["+xobject.toString()+"]"));
         }
     }
 
@@ -84,9 +84,6 @@ public abstract class AbstractXObjValidator implements XObjectValidator
      * According the ISO 190005:1-2005 specification, a XObject can't have an OPI entry in its dictionary. If the
      * XObject has a OPI entry, the error list is updated with the error code ERROR_GRAPHIC_UNEXPECTED_KEY (2.3).
      * 
-     * @param errors
-     *            the list of error to update if the validation fails.
-     * @return true if the OPI is missing, false otherwise.
      */
     protected void checkOPI()
     {

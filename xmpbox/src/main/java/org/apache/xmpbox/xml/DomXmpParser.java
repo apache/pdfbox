@@ -384,13 +384,13 @@ public class DomXmpParser
         {
             // not an array
             throw new XmpParsingException(ErrorType.Format, "Invalid array definition, expecting " + type.card()
-                    + " and found nothing");
+                    + " and found nothing [prefix="+prefix+"; name="+name+"]");
         }
         if (!bagOrSeq.getLocalName().equals(type.card().name()))
         {
             // not the good array type
             throw new XmpParsingException(ErrorType.Format, "Invalid array type, expecting " + type.card()
-                    + " and found " + bagOrSeq.getLocalName());
+                    + " and found " + bagOrSeq.getLocalName() + " [prefix="+prefix+"; name="+name+"]");
         }
         ArrayProperty array = tm.createArrayProperty(namespace, prefix, name, type.card());
         container.addProperty(array);
@@ -735,7 +735,7 @@ public class DomXmpParser
             }
             else if (node instanceof Text)
             {
-                if (((Text)node).getTextContent().trim().length() == 0)
+                if (node.getTextContent().trim().length() == 0)
                 {
                         root.removeChild(node);
                 }

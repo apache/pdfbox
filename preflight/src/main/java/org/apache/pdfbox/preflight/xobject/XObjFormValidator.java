@@ -133,7 +133,7 @@ public class XObjFormValidator extends AbstractXObjValidator
                 String sVal = groupDictionary.getNameAsString(COSName.S);
                 if (sVal == null || XOBJECT_DICTIONARY_VALUE_S_TRANSPARENCY.equals(sVal))
                 {
-                    context.addValidationError(new ValidationError(ERROR_GRAPHIC_TRANSPARENCY_GROUP, "Group has a transparency S entry or the S entry is null."));
+                    context.addValidationError(new ValidationError(ERROR_GRAPHIC_TRANSPARENCY_GROUP, "Group has a transparency S entry or the S entry is null ["+xobject.toString()+"]"));
                     return;
                 }
             }
