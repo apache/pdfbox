@@ -631,7 +631,7 @@ public class PageDrawer extends PDFStreamEngine
      * Generates awt raster for a soft mask
      * 
      * @param context
-     * @return
+     * @return awt raster for soft mask
      * @throws IOException
      */
     private Raster createSoftMaskRaster(PDSoftMask softMask) throws IOException
@@ -924,7 +924,7 @@ public class PageDrawer extends PDFStreamEngine
     /**
      * Draws the transparency group into a {@link BufferedImage} object and returns it together with the transformation matrix
      *
-     * @param context {@link PageDrawer} object
+     * @param form {@link PageDrawer} object
      * @return PageDrawer.Group
      * @throws IOException
      */

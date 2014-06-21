@@ -140,7 +140,7 @@ public class PDVisibleSignDesigner
     /**
      * zoom signature image with some percent.
      * 
-     * @param percent- x % increase image with x percent.
+     * @param percent increase image with x percent.
      * @return Visible Signature Configuration Object
      */
     public PDVisibleSignDesigner zoom(float percent)
@@ -379,7 +379,7 @@ public class PDVisibleSignDesigner
 
     /**
      * get image size in percents
-     * @return
+     * @return the image size in percent
      */
     public float getImageSizeInPercents()
     {
@@ -397,7 +397,7 @@ public class PDVisibleSignDesigner
 
     /**
      * returns visible signature text
-     * @return
+     * @return the visible signature's text
      */
     public String getSignatureText()
     {
@@ -407,7 +407,7 @@ public class PDVisibleSignDesigner
     /**
      * 
      * @param signatureText - adds the text on visible signature
-     * @return
+     * @return the signature design
      */
     public PDVisibleSignDesigner signatureText(String signatureText)
     {

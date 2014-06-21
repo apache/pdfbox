@@ -51,7 +51,8 @@ import org.apache.pdfbox.util.operator.PDFOperator;
  * Processes a PDF content stream and executes certain operations.
  * Provides a callback interface for clients that want to do things with the stream.
  *
- * {@see org.apache.pdfbox.util.PDFTextStripper}
+ * @see org.apache.pdfbox.util.PDFTextStripper
+ * 
  * @author Ben Litchfield
  */
 public class PDFStreamEngine

@@ -178,7 +178,7 @@ public class PDFRenderer
      * Renders a given page to an AWT Graphics2D instance.
      * @param pageIndex the zero-based index of the page to be converted
      * @param graphics the Graphics2D on which to draw the page
-     * @scale scale the scale to draw the page at
+     * @param scale the scale to draw the page at
      * @throws IOException if the PDF cannot be read
      */
     public void renderPageToGraphics(int pageIndex, Graphics2D graphics, float scale)

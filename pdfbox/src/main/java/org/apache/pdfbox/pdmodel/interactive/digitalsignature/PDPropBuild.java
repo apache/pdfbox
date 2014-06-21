@@ -23,10 +23,12 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 /**
  * A signature build dictionary as specified in the PDF Signature Build Dictionary Specification.
- * {@see http://partners.adobe.com/public/developer/en/acrobat/Acrobat_Signature_BuiladDict.pdf}
  *
  * The signature build properties dictionary provides signature properties for the software
  * application that was used to create the signature.
+ *
+ * @see <a href="http://partners.adobe.com/public/developer/en/acrobat/Acrobat_Signature_BuiladDict.pdf">
+ * http://partners.adobe.com/public/developer/en/acrobat/Acrobat_Signature_BuiladDict.pdf</a>
  *
  * @author Thomas Chojecki
  */

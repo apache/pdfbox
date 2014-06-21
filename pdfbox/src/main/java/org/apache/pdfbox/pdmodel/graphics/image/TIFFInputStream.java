@@ -53,8 +53,10 @@ public final class TIFFInputStream extends InputStream
     private InputStream datastream; // Original InputStream
 
     /**
-     *  Writes the TIFF image to an OutputStream.
-     * {@inheritDoc}
+     * Writes the TIFF image to an OutputStream.
+     * 
+     * @param image the image which data should be written
+     * @param out the OutputStream to write to
      */
     // TODO this should be refactored
     public static void writeToOutputStream(PDImage image, OutputStream out) throws IOException
