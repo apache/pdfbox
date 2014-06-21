@@ -168,6 +168,16 @@ public class PDFPrinter
 
     /**
      * Prints the given document using the default printer without prompting the user.
+     * @param attributes application supplied attributes
+     * @throws PrinterException if the document cannot be printed
+     */
+    public boolean silentPrint(PrintRequestAttributeSet attributes) throws PrinterException
+    {
+        return print(printerJob, attributes, true);
+    }
+
+    /**
+     * Prints the given document using the default printer without prompting the user.
      * @param printerJob a printer job definition
      * @throws PrinterException if the document cannot be printed
      */
