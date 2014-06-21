@@ -90,22 +90,16 @@ public class RadialShadingContext implements PaintContext
         if (ctm != null)
         {
             // the shading is used in combination with the sh-operator
-            float[] coordsTemp = new float[coords.length]; 
             // transform the coords from shading to user space
-            ctm.createAffineTransform().transform(coords, 0, coordsTemp, 0, 1);
-            ctm.createAffineTransform().transform(coords, 3, coordsTemp, 3, 1);
+            ctm.createAffineTransform().transform(coords, 0, coords, 0, 1);
+            ctm.createAffineTransform().transform(coords, 3, coords, 3, 1);
             // scale radius to user space
             coords[2] *= ctm.getXScale();
             coords[5] *= ctm.getXScale();
+
             // move the 0,0-reference
-            coordsTemp[1] = pageHeight - coordsTemp[1];
-            coordsTemp[4] = pageHeight - coordsTemp[4];
-            // transform the coords from user to device space
-            xform.transform(coordsTemp, 0, coords, 0, 1);
-            xform.transform(coordsTemp, 3, coords, 3, 1);
-            // scale radius to device space
-            coords[2] *= xform.getScaleX();
-            coords[5] *= xform.getScaleX();
+            coords[1] = pageHeight - coords[1];
+            coords[4] = pageHeight - coords[4];
         }
         else
         {
@@ -116,6 +110,15 @@ public class RadialShadingContext implements PaintContext
             coords[1] = pageHeight + translateY - coords[1];
             coords[4] = pageHeight + translateY - coords[4];
         }
+
+        // transform the coords from user to device space
+        xform.transform(coords, 0, coords, 0, 1);
+        xform.transform(coords, 3, coords, 3, 1);
+
+        // scale radius to device space
+        coords[2] *= xform.getScaleX();
+        coords[5] *= xform.getScaleX();
+
         // get the shading colorSpace
         try
         {

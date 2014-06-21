@@ -170,7 +170,7 @@ public abstract class GouraudShadingContext implements PaintContext
             int color = (int) input.readBits(bitsPerColorComponent);
             colorComponentTab[n] = interpolate(color, maxSrcColor, colRangeTab[n].getMin(), colRangeTab[n].getMax());
             LOG.debug("color[" + n + "]: " + color + "/" + String.format("%02x", color)
-                    + "-> color[" + n + "]: " + colorComponentTab[n]);
+                    + " -> color[" + n + "]: " + colorComponentTab[n]);
         }
         return new Vertex(flag, new Point2D.Double(dstX, dstY), colorComponentTab);
     }

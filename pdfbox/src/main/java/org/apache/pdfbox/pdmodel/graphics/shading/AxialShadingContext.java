@@ -81,17 +81,15 @@ public class AxialShadingContext implements PaintContext
     {
         shadingType = shadingType2;
         coords = shadingType2.getCoords().toFloatArray();
+        
         if (ctm != null)
         {
             // the shading is used in combination with the sh-operator
-            float[] coordsTemp = new float[coords.length]; 
             // transform the coords from shading to user space
-            ctm.createAffineTransform().transform(coords, 0, coordsTemp, 0, 2);
+            ctm.createAffineTransform().transform(coords, 0, coords, 0, 2);
             // move the 0,0-reference
-            coordsTemp[1] = pageHeight - coordsTemp[1];
-            coordsTemp[3] = pageHeight - coordsTemp[3];
-            // transform the coords from user to device space
-            xform.transform(coordsTemp, 0, coords, 0, 2);
+            coords[1] = pageHeight - coords[1];
+            coords[3] = pageHeight - coords[3];
         }
         else
         {
@@ -102,6 +100,9 @@ public class AxialShadingContext implements PaintContext
             coords[1] = pageHeight + translateY - coords[1];
             coords[3] = pageHeight + translateY - coords[3];
         }
+        // transform the coords from user to device space
+        xform.transform(coords, 0, coords, 0, 2);
+        
         // get the shading colorSpace
         try
         {
