@@ -271,7 +271,7 @@ public class NonSequentialPDFParser extends PDFParser
      * be deleted at end of the parse method
      * 
      * @param input
-     * @return
+     * @return the temporary file
      * @throws IOException If something went wrong.
      */
     private File createTmpFile(InputStream input) throws IOException
@@ -1761,7 +1761,7 @@ public class NonSequentialPDFParser extends PDFParser
     /**
      * 
      * @param startXRefOffset
-     * @return
+     * @return the calculated offset
      * @throws IOException
      */
     private long calculateFixingOffset(long startXRefOffset) throws IOException

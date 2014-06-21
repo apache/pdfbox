@@ -161,7 +161,7 @@ public class PDFXRefStream implements PDFXRef
     /**
      * determines the minimal length required for all the lengths.
      * 
-     * @return
+     * @return the length information
      */
     private int[] getWEntry()
     {

@@ -44,6 +44,7 @@ import org.apache.pdfbox.util.MapUtil;
  * This represents a set of resources available at the page/pages/stream level.
  * 
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
+ * @author BM
  * 
  */
 public class PDResources implements COSObjectable
@@ -274,7 +275,6 @@ public class PDResources implements COSObjectable
      * This will get the map of images. An empty map will be returned if there are no underlying images. So far the keys
      * are COSName of the image and the value is the corresponding PDXObjectImage.
      * 
-     * @author By BM
      * @return The map of images.
      * @throws IOException If there is an error writing the picture.
      * 

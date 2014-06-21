@@ -73,7 +73,7 @@ public class PDSignatureField extends PDField
     
     /**
      * Generate a unique name for the signature.
-     * @return
+     * @return the unique name for the signature
      * @throws IOException If there is an error while getting the list of fields.
      */
     private String generatePartialName() throws IOException

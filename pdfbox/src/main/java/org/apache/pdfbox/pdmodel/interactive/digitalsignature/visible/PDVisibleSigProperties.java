@@ -91,7 +91,7 @@ public class PDVisibleSigProperties
 
     /**
      * gets reason of signing
-     * @return 
+     * @return the reason of signing
      */
     public String getSignatureReason()
     {

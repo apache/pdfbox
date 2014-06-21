@@ -58,7 +58,7 @@ public class WriteDecodedDoc
      * @throws IOException If there is an error parsing the document.
      * @throws COSVisitorException If there is an error while copying the document.
      * 
-     * @deprecated use {@link WriteDecodedDoc#doIt(String, String, String)} instead.
+     * @deprecated use {@link WriteDecodedDoc#doIt(String, String, String, boolean)} instead.
      */
     public void doIt(String in, String out) throws IOException, COSVisitorException
     {
