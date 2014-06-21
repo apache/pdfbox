@@ -357,7 +357,7 @@ public class COSDocument extends COSBase implements Closeable
     }
 
     /** Signals that the document is decrypted completely.
-     *  Needed e.g. by {@link NonSequentialPDFParser} to circumvent
+     *  Needed e.g. by {@link org.apache.pdfbox.pdfparser.NonSequentialPDFParser} to circumvent
      *  additional decryption later on. */
     public void setDecrypted()
     {

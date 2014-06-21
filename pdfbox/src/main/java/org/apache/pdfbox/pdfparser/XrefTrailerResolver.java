@@ -42,7 +42,7 @@ import org.apache.pdfbox.persistence.util.COSObjectKey;
  * XRef/trailer objects are used to create xref table / trailer dictionary
  * in order they occur.
  *
- * For each new xref object/XRef stream method {@link #nextXrefObj(long, XRefType)}
+ * For each new xref object/XRef stream method {@link #nextXrefObj(long)}
  * must be called with start byte position. All following calls to
  * {@link #setXRef(COSObjectKey, long)} or {@link #setTrailer(COSDictionary)}
  * will add the data for this byte position.
@@ -248,7 +248,7 @@ public class XrefTrailerResolver
 
     /**
      * Gets the resolved trailer. Might return <code>null</code> in case
-     * {@link #setStartxref(int)} was not called before.
+     * {@link #setStartxref(long)} was not called before.
      *
      * @return the trailer if available
      */
@@ -259,7 +259,7 @@ public class XrefTrailerResolver
 
     /**
      * Gets the resolved xref table. Might return <code>null</code> in case
-     *  {@link #setStartxref(int)} was not called before.
+     *  {@link #setStartxref(long)} was not called before.
      *
      * @return the xrefTable if available
      */
