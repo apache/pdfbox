@@ -175,7 +175,9 @@ public class BoundingBox
      * 
      * @param point The point to check
      * 
-     * @return true If the point is on the edge or inside the rectangle bounds. 
+     * @return true If the point is on the edge or inside the rectangle bounds.
+     * 
+     * @deprecated use {@link #contains(float, float)} instead
      */
     public boolean contains( Point point )
     {
