@@ -41,8 +41,6 @@ public class Attribute
      * 
      * @param nsURI
      *            namespaceURI of this attribute (could be null)
-     * @param prefix
-     *            prefix of this attribute
      * @param localName
      *            localName of this attribute
      * @param value
