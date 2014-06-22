@@ -169,7 +169,7 @@ public abstract class GouraudShadingContext implements PaintContext
         {
             int color = (int) input.readBits(bitsPerColorComponent);
             colorComponentTab[n] = interpolate(color, maxSrcColor, colRangeTab[n].getMin(), colRangeTab[n].getMax());
-            LOG.debug("color[" + n + "]: " + color + "/" + String.format("%02x", color)
+            LOG.debug("color[" + n + "]: " + color + "/" + String.format("%02X", color)
                     + " -> color[" + n + "]: " + colorComponentTab[n]);
         }
         return new Vertex(flag, new Point2D.Double(dstX, dstY), colorComponentTab);
@@ -195,16 +195,9 @@ public abstract class GouraudShadingContext implements PaintContext
             {
                 // transform from shading to user space
                 ctm.createAffineTransform().transform(v.point, v.point);
-                // transform from user to device space
-                xform.transform(v.point, v.point);
             }
-            else
-            {
-                // the shading is used as pattern colorspace in combination
-                // with a fill-, stroke- or showText-operator
-                // move the 0,0-reference including the y-translation from user to device space
-                v.point = new Point.Double(v.point.getX(), pageHeight + xform.getTranslateY() - v.point.getY());
-            }
+            // transform from user to device space
+            xform.transform(v.point, v.point);
 
             LOG.debug(v);
         }
