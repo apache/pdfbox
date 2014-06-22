@@ -124,8 +124,8 @@ abstract class GouraudShadingContext implements PaintContext
         {
             int color = (int) input.readBits(bitsPerColorComponent);
             colorComponentTab[n] = interpolate(color, maxSrcColor, colRangeTab[n].getMin(), colRangeTab[n].getMax());
-            LOG.debug("color[" + n + "]: " + color + "/" + String.format("%02x", color)
-                    + "-> color[" + n + "]: " + colorComponentTab[n]);
+            LOG.debug("color[" + n + "]: " + color + "/" + String.format("%02X", color)
+                    + " -> color[" + n + "]: " + colorComponentTab[n]);
         }
         return new Vertex(flag, new Point2D.Double(dstX, dstY), colorComponentTab);
     }
@@ -147,9 +147,9 @@ abstract class GouraudShadingContext implements PaintContext
             {
                 // transform from shading to user space
                 ctm.createAffineTransform().transform(v.point, v.point);
-                // transform from user to device space
-                xform.transform(v.point, v.point);
             }
+            // transform from user to device space
+            xform.transform(v.point, v.point);
 
             LOG.debug(v);
         }
