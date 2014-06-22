@@ -82,10 +82,6 @@
     <property name="logging.url" value="${maven.repo1}/commons-logging/commons-logging/1.1.3/${logging.name}.jar" />
     <property name="logging.jar" value="${jar.dir}/${logging.name}.jar" />
 
-    <property name="icu4j.name" value="icu4j-3.8" />
-    <property name="icu4j.url" value="${maven.repo1}/com/ibm/icu/icu4j/3.8/${icu4j.name}.jar" />
-    <property name="icu4j.jar" value="${jar.dir}/${icu4j.name}.jar" />
-
     <property name="testoutput.dir" value="${pdfbox.target.dir}/test-output"/>
     <property name="testoutput-ext.dir" value="${pdfbox.target.dir}/test-output-ext"/>
     <property name="testinput-ext.dir" value="${pdfbox.target.dir}/test-input-ext"/>
@@ -100,7 +96,6 @@
         <pathelement path="${bcprov.jar}" />
         <pathelement path="${bcmail.jar}" />
         <pathelement path="${bcpkix.jar}" />
-        <pathelement path="${icu4j.jar}" />
         <pathelement path="${logging.jar}" />
         <pathelement path="${junit.jar}" />
         <pathelement path="${fontbox.jar}" />
@@ -203,7 +198,6 @@
                 <pathelement path="${bcprov.jar}" />
                 <pathelement path="${bcmail.jar}" />
                 <pathelement path="${bcpkix.jar}" />
-                <pathelement path="${icu4j.jar}" />
                 <pathelement path="${pdfbox.dest.dir}"/>
                 <pathelement path="${pdfbox.resources.dir}" />
                 <pathelement path="${fontbox.dest.dir}"/>
@@ -228,7 +222,6 @@
                 <pathelement path="${bcprov.jar}" />
                 <pathelement path="${bcmail.jar}" />
                 <pathelement path="${bcpkix.jar}" />
-                <pathelement path="${icu4j.jar}" />
                 <pathelement path="${pdfbox.dest.dir}"/>
                 <pathelement path="${pdfbox.resources.dir}" />
                 <pathelement path="${fontbox.dest.dir}"/>
@@ -289,10 +282,6 @@
         <antcall target="downloadfile">
             <param name="sourcefile" value="${logging.url}"/>
             <param name="destfile" value="${logging.jar}"/>
-        </antcall>
-        <antcall target="downloadfile">
-            <param name="sourcefile" value="${icu4j.url}"/>
-            <param name="destfile" value="${icu4j.jar}"/>
         </antcall>
     </target>
 
@@ -442,21 +431,6 @@
             <arg value="-out:${bin.dir}\${bcpkix.name}.dll" />
             <arg value="${bcpkix.jar}" />
         </exec>
-        <echo>Building ICU4J</echo>
-        <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Core.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Media.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Misc.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Security.dll" />
-            <arg value="-reference:bin/junit.dll" />
-            <arg value="-target:library" />
-            <arg value="-compressresources" />
-            <arg value="-out:${bin.dir}\${icu4j.name}.dll" />
-            <arg value="${icu4j.jar}" />
-        </exec>
         <echo>Building FontBox</echo>
         <exec executable="${ikvmc}">
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
@@ -520,7 +494,6 @@
             <arg value="-reference:bin/${jempbox.release.name}.dll" />
             <arg value="-reference:bin/${bcprov.name}.dll" />
             <arg value="-reference:bin/${bcmail.name}.dll" />
-            <arg value="-reference:bin/${icu4j.name}.dll" />
             <arg value="-reference:bin/junit.dll" />
             <arg value="-reference:bin/commons-logging.dll" />
             <arg value="-target:library" />
