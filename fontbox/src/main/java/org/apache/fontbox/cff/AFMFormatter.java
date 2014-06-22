@@ -30,6 +30,8 @@ import org.apache.fontbox.cff.encoding.CFFEncoding;
  * 
  * @author Villu Ruusmann
  * @version $Revision$
+ * 
+ * @deprecated will be removed in 2.0. The CFFParse will create the font metrics itself.
  */
 public class AFMFormatter
 {
