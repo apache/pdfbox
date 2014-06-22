@@ -51,12 +51,6 @@ public class ResourceEventType extends AbstractStructuredType
      * 
      * @param metadata
      *            The metadata to attach to this property
-     * @param namespace
-     *            the namespace URI to associate to this property
-     * @param prefix
-     *            The prefix to set for this property
-     * @param propertyName
-     *            The local Name of this thumbnail type
      */
     public ResourceEventType(XMPMetadata metadata)
     {

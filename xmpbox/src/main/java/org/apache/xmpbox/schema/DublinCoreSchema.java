@@ -399,7 +399,6 @@ public class DublinCoreSchema extends XMPSchema
     /**
      * set default title
      * 
-     * @param lang
      * @param value
      */
     public void setTitle(String value)
