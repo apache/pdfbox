@@ -17,7 +17,6 @@
 
 package org.apache.pdfbox.pdmodel.font;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,12 +29,9 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.fontbox.afm.AFMParser;
 import org.apache.fontbox.afm.FontMetric;
-import org.apache.fontbox.cff.AFMFormatter;
 import org.apache.fontbox.cff.CFFFont;
 import org.apache.fontbox.cff.CFFParser;
-import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
@@ -251,14 +247,7 @@ public class PDType1CFont extends PDFont
     {
         if (fontMetric == null)
         {
-            try
-            {
-                fontMetric = prepareFontMetric(cffFont);
-            }
-            catch (IOException exception)
-            {
-                LOG.error("An error occured while extracting the font metrics!", exception);
-            }
+            fontMetric = cffFont.getFontMetric();
         }
         return fontMetric;
     }
@@ -359,31 +348,6 @@ public class PDType1CFont extends PDFont
             }
         }
         return null;
-    }
-
-    private FontMetric prepareFontMetric(CFFFont font) throws IOException
-    {
-        byte[] afmBytes = AFMFormatter.format(font);
-
-        InputStream is = new ByteArrayInputStream(afmBytes);
-        try
-        {
-            AFMParser afmParser = new AFMParser(is);
-            FontMetric result = afmParser.parse();
-
-            // Replace default FontBBox value with a newly computed one
-            BoundingBox bounds = result.getFontBBox();
-            List<Integer> numbers = Arrays.asList((int) bounds.getLowerLeftX(),
-                    (int) bounds.getLowerLeftY(), (int) bounds.getUpperRightX(),
-                    (int) bounds.getUpperRightY());
-            font.addValueToTopDict("FontBBox", numbers);
-
-            return result;
-        }
-        finally
-        {
-            is.close();
-        }
     }
 
     /**
