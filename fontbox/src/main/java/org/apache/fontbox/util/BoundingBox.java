@@ -16,14 +16,12 @@
  */
 package org.apache.fontbox.util;
 
-import java.awt.Point;
 
 /**
  * This is an implementation of a bounding box.  This was originally written for the
  * AMF parser.
  *
  * @author Ben Litchfield (ben@benlitchfield.com)
- * @version $Revision: 1.1 $
  */
 public class BoundingBox
 {
@@ -171,18 +169,6 @@ public class BoundingBox
     }
     
     /**
-     * Checks if a point is inside this rectangle.
-     * 
-     * @param point The point to check
-     * 
-     * @return true If the point is on the edge or inside the rectangle bounds. 
-     */
-    public boolean contains( Point point )
-    {
-        return contains( (float)point.getX(), (float)point.getY() );
-    }
-    
-    /**
      * This will return a string representation of this rectangle.
      *
      * @return This object as a string.
@@ -193,4 +179,33 @@ public class BoundingBox
                      getUpperRightX() + "," + getUpperRightY() +"]";
     }
 
+    /**
+     * Unions the given bounding boxes and puts the result into the 
+     * specified result bounding box.
+     * 
+     * @param bBox1 the first bounding box to be combined with each other
+     * @param bBox2 the second bounding box to be combined with each other
+     * @param result the bounding box that holds the results of the union
+     * 
+     */
+    public static void union(BoundingBox bBox1, BoundingBox bBox2, BoundingBox result)
+    {
+        float x1 = Math.min(bBox1.getLowerLeftX(), bBox2.getLowerLeftX());
+        float y1 = Math.min(bBox1.getLowerLeftY(), bBox2.getLowerLeftY());
+        float x2 = Math.max(bBox1.getUpperRightX(), bBox2.getUpperRightX());
+        float y2 = Math.max(bBox1.getUpperRightY(), bBox2.getUpperRightY());
+        if (x2 < x1)
+        {
+            float temp = x1;
+            x1 = x2;
+            x2 = temp;
+        }
+        if (y2 < y1)
+        {
+            float temp = y1;
+            y1 = y2;
+            y2 = temp;
+        }
+        result = new BoundingBox(x1, y1, x2, y2);
+    }
 }
