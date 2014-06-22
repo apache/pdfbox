@@ -49,6 +49,7 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.font.PDCIDFontType0Font;
 import org.apache.pdfbox.pdmodel.font.PDCIDFontType2Font;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
@@ -161,7 +162,7 @@ public class Type0FontValidator extends FontValidator<Type0Container>
      */
     protected FontValidator<? extends FontContainer> createCIDType0FontValidator(COSDictionary fDict)
     {
-        return new CIDType0FontValidator(context, new PDCIDFontType0Font(fDict));
+        return new CIDType0FontValidator(context, new PDCIDFontType0Font(fDict, (PDType0Font)font));
     }
 
     /**
@@ -171,7 +172,7 @@ public class Type0FontValidator extends FontValidator<Type0Container>
      */
     protected FontValidator<? extends FontContainer> createCIDType2FontValidator(COSDictionary fDict)
     {
-        return new CIDType2FontValidator(context, new PDCIDFontType2Font(fDict));
+        return new CIDType2FontValidator(context, new PDCIDFontType2Font(fDict, (PDType0Font)font));
     }
 
     /**

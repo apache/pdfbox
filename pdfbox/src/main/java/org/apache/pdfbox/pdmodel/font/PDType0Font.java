@@ -58,7 +58,7 @@ public class PDType0Font extends PDFont
         {
             try
             {
-                descendantFont = (PDCIDFont)PDFontFactory.createFont(descendantFontDictionary);
+                descendantFont = PDFontFactory.createDescendantFont(descendantFontDictionary, this);
             }
             catch (IOException exception)
             {

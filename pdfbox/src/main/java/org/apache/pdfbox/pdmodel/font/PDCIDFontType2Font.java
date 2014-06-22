@@ -48,9 +48,9 @@ public class PDCIDFontType2Font extends PDCIDFont
      * 
      * @param fontDictionary The font dictionary according to the PDF specification.
      */
-    public PDCIDFontType2Font(COSDictionary fontDictionary)
+    public PDCIDFontType2Font(COSDictionary fontDictionary, PDType0Font parent)
     {
-        super(fontDictionary);
+        super(fontDictionary, parent);
     }
 
     /**
@@ -196,9 +196,9 @@ public class PDCIDFontType2Font extends PDCIDFont
         {
             return getFontWidth(code);
         }
-        else if (getCMap() != null)
+        else if (getParent().getCMap() != null)
         {
-            String mappedString = getCMap().lookup(code, length);
+            String mappedString = getParent().getCMap().lookup(code, length);
             if (mappedString != null)
             {
                 return getFontWidth(mappedString.codePointAt(0));

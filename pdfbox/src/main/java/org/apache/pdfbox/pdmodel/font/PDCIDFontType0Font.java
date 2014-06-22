@@ -31,16 +31,16 @@ public class PDCIDFontType0Font extends PDCIDFont
 {
     private static final Log LOG = LogFactory.getLog(PDCIDFontType0Font.class);
 
-    private PDType1CFont type1CFont = null;
+    private PDType1CFont type1CFont;
 
     /**
      * Constructor.
      * 
      * @param fontDictionary The font dictionary according to the PDF specification.
      */
-    public PDCIDFontType0Font(COSDictionary fontDictionary)
+    public PDCIDFontType0Font(COSDictionary fontDictionary, PDType0Font parent)
     {
-        super(fontDictionary);
+        super(fontDictionary, parent);
         PDFontDescriptor fd = getFontDescriptor();
         if (fd instanceof PDFontDescriptorDictionary)
         {
