@@ -41,18 +41,30 @@ public abstract class PDCIDFont extends PDFont
 {
     private static final Log LOG = LogFactory.getLog(PDCIDFont.class);
 
-    private Map<Integer, Float> widthCache = null;
-    private long defaultWidth = 0;
+    private PDType0Font parent;
+    private Map<Integer, Float> widthCache;
+    private long defaultWidth;
 
     /**
      * Constructor.
      *
      * @param fontDictionary The font dictionary according to the PDF specification.
      */
-    protected PDCIDFont(COSDictionary fontDictionary)
+    protected PDCIDFont(COSDictionary fontDictionary, PDType0Font parent)
     {
         super(fontDictionary);
+        this.parent = parent;
         extractWidths();
+    }
+
+    /**
+     * Returns the Type 0 font which is the parent of this font.
+     *
+     * @return parent Type 0 font
+     */
+    public final PDType0Font getParent()
+    {
+        return parent;
     }
 
     /**
