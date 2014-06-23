@@ -249,9 +249,14 @@ public class PDFPrinter
         else
         {
             job.setPageable(getPageable());
-            if (isSilent)
+            if (isSilent && attributes == null)
             {
                 job.print();
+                return true;
+            }
+            else if (isSilent)
+            {
+                job.print(attributes);
                 return true;
             }
             else if (attributes == null)
