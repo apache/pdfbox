@@ -691,10 +691,6 @@ public abstract class PDFont implements COSObjectable
      */
     public boolean isSymbolicFont()
     {
-        if (getFontDescriptor() == null)
-        {
-            return false;
-        }
         return getFontDescriptor().isSymbolic();
     }
 
