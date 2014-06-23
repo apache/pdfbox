@@ -667,8 +667,6 @@ public class XMPMetadata
     public List<XMPSchema> getSchemasByNamespaceURI(String namespaceURI)
             throws IOException
     {
-
-        List<XMPSchema> l = getSchemas();
         List<XMPSchema> result = new LinkedList<XMPSchema>();
 
         Class<?> schemaClass = nsMappings.get(namespaceURI);
@@ -677,11 +675,10 @@ public class XMPMetadata
             return result;
         }
 
-        Iterator<XMPSchema> i = l.iterator();
+        Iterator<XMPSchema> i = getSchemas().iterator();
         while (i.hasNext())
         {
             XMPSchema schema = i.next();
-
             if (schemaClass.isAssignableFrom(schema.getClass()))
             {
                 result.add(schema);
