@@ -144,7 +144,6 @@ public final class PDRadioButton extends PDButton
     @SuppressWarnings("unchecked")
     public List getKids() throws IOException
     {
-        List retval = null;
         COSArray kids = (COSArray)getDictionary().getDictionaryObject(COSName.KIDS);
         if( kids != null )
         {
@@ -153,8 +152,11 @@ public final class PDRadioButton extends PDButton
             {
                 kidsList.add( PDFieldFactory.createField( getAcroForm(), (COSDictionary)kids.getObject(i) ) );
             }
-            retval = new COSArrayList( kidsList, kids );
+            return new COSArrayList( kidsList, kids );
         }
-        return retval;
+        else
+        {
+            return new ArrayList();
+        }
     }
 }
