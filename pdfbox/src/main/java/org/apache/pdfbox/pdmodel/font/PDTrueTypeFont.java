@@ -321,19 +321,22 @@ public class PDTrueTypeFont extends PDFont
         {
             String name = e.getValue();
             // pdf code to unicode by glyph list.
-            String c = glyphlist.getCharacter(name);
-            int charCode = c.codePointAt(0);
-            int gid = uniMap.getGlyphId(charCode);
-            if (gid != 0)
+            if (!name.equals(".notdef"))
             {
-                if (isMonospaced)
+                String c = glyphlist.getCharacter(name);
+                int charCode = c.codePointAt(0);
+                int gid = uniMap.getGlyphId(charCode);
+                if (gid != 0)
                 {
-                    widths.set(e.getKey() - firstChar, defaultWidth);
-                }
-                else
-                {
-                    widths.set(e.getKey() - firstChar,
-                               Math.round(widthValues[gid] * scaling));
+                    if (isMonospaced)
+                    {
+                        widths.set(e.getKey() - firstChar, defaultWidth);
+                    }
+                    else
+                    {
+                        widths.set(e.getKey() - firstChar,
+                                Math.round(widthValues[gid] * scaling));
+                    }
                 }
             }
         }
