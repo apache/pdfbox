@@ -397,7 +397,10 @@ public class XMPSchema
         }
         Element liElement = schema.getOwnerDocument().createElement("rdf:li");
         XMLUtil.setStringValue(liElement, bagValue);
-        bagElement.appendChild(liElement);
+        if (bagElement != null)
+        {
+            bagElement.appendChild(liElement);
+        }
     }
 
     /**
@@ -574,7 +577,10 @@ public class XMPSchema
             bagElement = schema.getOwnerDocument().createElement("rdf:Seq");
             contElement.appendChild(bagElement);
         }
-        bagElement.appendChild(seqValue.getElement());
+        if (bagElement != null)
+        {
+            bagElement.appendChild(seqValue.getElement());
+        }
     }
 
     /**
@@ -608,7 +614,6 @@ public class XMPSchema
                 retval = Collections.unmodifiableList(retval);
             }
         }
-
         return retval;
     }
 
@@ -641,7 +646,6 @@ public class XMPSchema
                 retval = Collections.unmodifiableList(retval);
             }
         }
-
         return retval;
     }
 
