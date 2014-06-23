@@ -91,7 +91,7 @@ public class PDMemoryStream extends PDStream
      *
      * @throws IOException If an IO error occurs during reading.
      */
-    public InputStream createInputStream() throws IOException
+    public InputStream createInputStream()
     {
         return new ByteArrayInputStream( data );
     }
