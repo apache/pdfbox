@@ -129,7 +129,7 @@ public abstract class PDFont implements COSObjectable
 
     private List<Integer> widths = null;
 
-    private PDFontDescriptor fontDescriptor = null;
+    protected PDFontDescriptor fontDescriptor = null;
     private boolean widthsAreMissing = false;
 
     // formerly in PDSimpleFont
@@ -196,7 +196,6 @@ public abstract class PDFont implements COSObjectable
                 {
                     fontDescriptor = new PDFontDescriptorAFM(afm);
                 }
-                // it shouldn't be possible to reach this point...
             }
         }
         return fontDescriptor;
@@ -692,6 +691,10 @@ public abstract class PDFont implements COSObjectable
      */
     public boolean isSymbolicFont()
     {
+        if (getFontDescriptor() == null)
+        {
+            return false;
+        }
         return getFontDescriptor().isSymbolic();
     }
 

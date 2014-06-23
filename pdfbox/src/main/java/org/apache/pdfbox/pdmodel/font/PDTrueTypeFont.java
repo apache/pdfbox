@@ -93,19 +93,20 @@ public class PDTrueTypeFont extends PDFont
      *
      * @param fontDictionary The font dictionary according to the PDF specification.
      */
-    public PDTrueTypeFont(COSDictionary fontDictionary)
+    public PDTrueTypeFont(COSDictionary fontDictionary)  throws IOException
     {
         super(fontDictionary);
+        getTTFFont(); // load the font file
     }
 
     /**
      * Creates a new TrueType font for embedding.
      */
-    private PDTrueTypeFont(PDDocument document, InputStream ttf) throws IOException
+    private PDTrueTypeFont(PDDocument document, InputStream ttfStream) throws IOException
     {
         dict.setItem(COSName.SUBTYPE, COSName.TRUE_TYPE);
 
-        PDStream stream = new PDStream(document, ttf, false);
+        PDStream stream = new PDStream(document, ttfStream, false);
         stream.getStream().setInt(COSName.LENGTH1, stream.getByteArray().length); // todo: wrong?
         stream.addCompression();
 
@@ -122,7 +123,8 @@ public class PDTrueTypeFont extends PDFont
         try
         {
             stream2 = stream.createInputStream();
-            fd = getFontDescriptor(new TTFParser().parseTTF(stream2));
+            ttf = new TTFParser().parseTTF(stream2);
+            fd = makeFontDescriptor(ttf);
         }
         finally
         {
@@ -133,8 +135,26 @@ public class PDTrueTypeFont extends PDFont
         dict.setItem(COSName.FONT_DESC, fd);
     }
 
+    @Override
+    public PDFontDescriptor getFontDescriptor()
+    {
+        if (fontDescriptor == null)
+        {
+            COSDictionary fd = (COSDictionary) dict.getDictionaryObject(COSName.FONT_DESC);
+            if (fd != null)
+            {
+                fontDescriptor = new PDFontDescriptorDictionary(fd);
+            }
+            else
+            {
+                fontDescriptor = makeFontDescriptor(ttf);
+            }
+        }
+        return fontDescriptor;
+    }
+
     // creates a new font descriptor dictionary for the given TTF
-    private PDFontDescriptorDictionary getFontDescriptor(TrueTypeFont ttf) throws IOException
+    private PDFontDescriptorDictionary makeFontDescriptor(TrueTypeFont ttf)
     {
         PDFontDescriptorDictionary fd = new PDFontDescriptorDictionary();
 
@@ -334,7 +354,7 @@ public class PDTrueTypeFont extends PDFont
     {
         if (ttf == null)
         {
-            PDFontDescriptorDictionary fd = (PDFontDescriptorDictionary) getFontDescriptor();
+            PDFontDescriptorDictionary fd = (PDFontDescriptorDictionary) super.getFontDescriptor();
             if (fd != null)
             {
                 PDStream ff2Stream = fd.getFontFile2();
