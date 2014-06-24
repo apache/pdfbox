@@ -362,27 +362,7 @@ public class PageDrawer extends PDFStreamEngine
             GeneralPath path = glyph2D.getPathForCharacterCode(codePoints[i]);
             if (path != null)
             {
-                AffineTransform atInverse = null;
-                if (!at.isIdentity())
-                {
-                    try
-                    {
-                        atInverse = at.createInverse();
-                    }
-                    catch (NoninvertibleTransformException exception)
-                    {
-                        LOG.error("Can't invert the given affine transformation", exception);
-                    }
-                }
-                if (atInverse != null)
-                {
-                    graphics.transform(at);
-                }
-                graphics.fill(path);
-                if (atInverse != null)
-                {
-                    graphics.transform(atInverse);
-                }
+                graphics.fill(at.createTransformedShape(path));                
             }
         }
     }
