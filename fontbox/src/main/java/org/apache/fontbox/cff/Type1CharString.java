@@ -333,7 +333,15 @@ public class Type1CharString
     {
         float x = (float)current.getX() + dx.floatValue();
         float y = (float)current.getY() + dy.floatValue();
-        path.lineTo(x, y);
+        if (path.getCurrentPoint() == null)
+        {
+            LOG.warn("rlineTo without initial moveTo in font " + fontName + ", glyph " + glyphName);
+            path.moveTo(x, y);
+        }
+        else
+        {
+            path.lineTo(x, y);
+        }
         current.setLocation(x, y);
     }
 
@@ -349,7 +357,15 @@ public class Type1CharString
         float y2 = y1 + dy2.floatValue();
         float x3 = x2 + dx3.floatValue();
         float y3 = y2 + dy3.floatValue();
-        path.curveTo(x1, y1, x2, y2, x3, y3);
+        if (path.getCurrentPoint() == null)
+        {
+            LOG.warn("rrcurveTo without initial moveTo in font " + fontName + ", glyph " + glyphName);
+            path.moveTo(x3, y3);
+        }
+        else
+        {
+            path.curveTo(x1, y1, x2, y2, x3, y3);
+        }
         current.setLocation(x3, y3);
     }
 

@@ -52,6 +52,7 @@ public class COSNull extends COSBase
      * @return any object, depending on the visitor implementation, or null
      * @throws IOException If an error occurs while visiting this object.
      */
+    @Override
     public Object accept( ICOSVisitor  visitor ) throws IOException
     {
         return visitor.visitFromNull( this );
@@ -66,5 +67,14 @@ public class COSNull extends COSBase
     public void writePDF( OutputStream output ) throws IOException
     {
         output.write(NULL_BYTES);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString()
+    {
+        return "COSNull{}";
     }
 }

@@ -37,6 +37,8 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
 
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
+import org.apache.pdfbox.cos.COSFloat;
+import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.common.PDMemoryStream;
 
 /**
@@ -420,24 +422,31 @@ final class SampledImageReader
 
         if (cosDecode != null)
         {
-            decode = cosDecode.toFloatArray();
-
-            // if ImageMask is true then decode must be [0 1] or [1 0]
-            if (pdImage.isStencil() && (decode.length != 2 ||
-                decode[0] < 0 || decode[0] > 1 ||
-                decode[1] < 0 || decode[1] > 1))
+            int numberOfComponents = pdImage.getColorSpace().getNumberOfComponents();
+            if (cosDecode.size() != numberOfComponents * 2)
             {
-                LOG.warn("Ignored invalid decode array: not compatible with ImageMask");
-                decode = null;
+                if (pdImage.isStencil() && cosDecode.size() >= 2
+                        && cosDecode.get(0) instanceof COSNumber
+                        && cosDecode.get(1) instanceof COSNumber)
+                {
+                    float decode0 = ((COSFloat) cosDecode.get(0)).floatValue();
+                    float decode1 = ((COSFloat) cosDecode.get(1)).floatValue();
+                    if (decode0 >= 0 && decode0 <= 1 && decode1 >= 0 && decode1 <= 1)
+                    {
+                        LOG.warn("decode array " + cosDecode
+                                + " not compatible with color space, using the first two entries");
+                        return new float[]
+                        {
+                            decode0, decode1
+                        };
+                    }
+                }
+                LOG.error("decode array " + cosDecode
+                        + " not compatible with color space, using default");
             }
-
-            // otherwise, its length shall be twice the number of colour
-            // components required by ColorSpace
-            int n = pdImage.getColorSpace().getNumberOfComponents();
-            if (decode != null && decode.length != n * 2)
+            else
             {
-                LOG.warn("Ignored invalid decode array: not compatible with color space");
-                decode = null;
+                decode = cosDecode.toFloatArray();
             }
         }
 
