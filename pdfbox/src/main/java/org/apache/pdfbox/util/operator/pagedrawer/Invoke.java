@@ -17,6 +17,9 @@
 package org.apache.pdfbox.util.operator.pagedrawer;
 
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
@@ -30,11 +33,13 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.filter.MissingImageReaderException;
 import org.apache.pdfbox.rendering.PageDrawer;
 import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
+import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.operator.PDFOperator;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
@@ -117,6 +122,34 @@ public final class Invoke extends OperatorProcessor
                     Matrix xobjectCTM = matrix.multiply(
                                     context.getGraphicsState().getCurrentTransformationMatrix());
                     context.getGraphicsState().setCurrentTransformationMatrix(xobjectCTM);
+                }
+                if (form.getBBox() != null)
+                {
+                    PDGraphicsState graphicsState = context.getGraphicsState();
+                    PDRectangle bBox = form.getBBox();
+
+                    float x1 = bBox.getLowerLeftX();
+                    float y1 = bBox.getLowerLeftY();
+                    float x2 = bBox.getUpperRightX();
+                    float y2 = bBox.getUpperRightY();
+
+                    Point2D p0 = drawer.transformedPoint(x1, y1);
+                    Point2D p1 = drawer.transformedPoint(x2, y1);
+                    Point2D p2 = drawer.transformedPoint(x2, y2);
+                    Point2D p3 = drawer.transformedPoint(x1, y2);
+
+                    GeneralPath bboxPath = new GeneralPath();
+                    bboxPath.moveTo((float) p0.getX(), (float) p0.getY());
+                    bboxPath.lineTo((float) p1.getX(), (float) p1.getY());
+                    bboxPath.lineTo((float) p2.getX(), (float) p2.getY());
+                    bboxPath.lineTo((float) p3.getX(), (float) p3.getY());
+                    bboxPath.closePath();
+                    
+                    Area resultClippingArea = new Area(graphicsState.getCurrentClippingPath());
+                    Area newArea = new Area(bboxPath);            
+                    resultClippingArea.intersect(newArea);
+                    
+                    graphicsState.setCurrentClippingPath(resultClippingArea);
                 }
                 getContext().processSubStream(pdResources, formContentStream);
 
