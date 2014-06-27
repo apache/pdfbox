@@ -534,7 +534,11 @@ public abstract class PDField implements COSObjectable
                 if (kidDictionary.getDictionaryObject(COSName.FT) != null
                         || (parent != null && parent.getDictionaryObject(COSName.FT) != null))
                 {
-                    kidsList.add(PDFieldFactory.createField(form, kidDictionary));
+                    PDField field = PDFieldFactory.createField(form, kidDictionary);
+                    if (field != null)
+                    {
+                        kidsList.add(field);
+                    }
                 }
                 else if ("Widget".equals(kidDictionary.getNameAsString(COSName.SUBTYPE)))
                 {
@@ -542,8 +546,11 @@ public abstract class PDField implements COSObjectable
                 }
                 else
                 {
-                    //
-                    kidsList.add(PDFieldFactory.createField(form, kidDictionary));
+                    PDField field = PDFieldFactory.createField(form, kidDictionary);
+                    if (field != null)
+                    {
+                        kidsList.add(field);
+                    }
                 }
             }
             retval = new COSArrayList<COSObjectable>(kidsList, kids);
