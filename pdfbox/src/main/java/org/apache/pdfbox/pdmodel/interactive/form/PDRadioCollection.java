@@ -155,7 +155,11 @@ public class PDRadioCollection extends PDChoiceButton
             List kidsList = new ArrayList();
             for (int i = 0; i < kids.size(); i++)
             {
-                kidsList.add( PDFieldFactory.createField( getAcroForm(), (COSDictionary)kids.getObject(i) ) );
+                PDField field = PDFieldFactory.createField( getAcroForm(), (COSDictionary)kids.getObject(i) );
+                if( field != null )
+                {
+                    kidsList.add( field );
+                }
             }
             return  new COSArrayList( kidsList, kids );
         }
