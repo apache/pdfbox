@@ -131,7 +131,7 @@ public class PDFStreamParser extends BaseParser
     {
         try
         {
-            Object token = null;
+            Object token;
             while( (token = parseNextToken()) != null )
             {
                 streamObjects.add( token );
@@ -192,6 +192,7 @@ public class PDFStreamParser extends BaseParser
             }
 
             /** {@inheritDoc} */
+            @Override
             public boolean hasNext()
             {
                 tryNext();
@@ -199,6 +200,7 @@ public class PDFStreamParser extends BaseParser
             }
 
             /** {@inheritDoc} */
+            @Override
             public Object next() 
             {
                 tryNext();
@@ -212,6 +214,7 @@ public class PDFStreamParser extends BaseParser
             }
 
             /** {@inheritDoc} */
+            @Override
             public void remove()
             {
                 throw new UnsupportedOperationException();
@@ -228,7 +231,7 @@ public class PDFStreamParser extends BaseParser
      */
     private Object parseNextToken() throws IOException
     {
-        Object retval = null;
+        Object retval;
 
         skipSpaces();
         int nextByte = pdfSource.peek();
@@ -246,7 +249,6 @@ public class PDFStreamParser extends BaseParser
                 pdfSource.unread( leftBracket ); //put back first bracket
                 if(c == '<')
                 {
-
                     COSDictionary pod = parseCOSDictionary();
                     skipSpaces();
                     if((char)pdfSource.peek() == 's')
@@ -397,8 +399,9 @@ public class PDFStreamParser extends BaseParser
                 // Be aware not all kind of whitespaces are allowed here. see PDFBOX-1561
                 while( !(lastByte == 'E' &&
                          currentByte == 'I' &&
-                         isSpaceOrReturn() &&
-                         hasNoFollowingBinData( pdfSource )) &&
+                         hasNextSpaceOrReturn() &&
+                         hasNoFollowingBinData( pdfSource ) &&
+                         !hasPrecedingAscii85Data(imageData)) &&
                        !pdfSource.isEOF() )
                 {
                     imageData.write( lastByte );
@@ -407,7 +410,7 @@ public class PDFStreamParser extends BaseParser
                 }
                 // the EI operator isn't unread, as it won't be processed anyway
                 retval = PDFOperator.getOperator( "ID" );
-                // save the image data to the operator, so that it can be accessed it later
+                // save the image data to the operator, so that it can be accessed later
                 ((PDFOperator)retval).setImageData( imageData.toByteArray() );
                 break;
             }
@@ -433,9 +436,7 @@ public class PDFStreamParser extends BaseParser
                     retval = PDFOperator.getOperator( operator );
                 }
             }
-
         }
-
         return retval;
     }
 
@@ -470,6 +471,32 @@ public class PDFStreamParser extends BaseParser
         return noBinData;
     }
 
+    /**
+     * Check whether the output stream ends with 70 ASCII85 data bytes
+     * (33..117). This method is to be called when "EI" and then space/LF/CR
+     * are detected.
+     *
+     * @param imageData output data stream without the "EI"
+     * @return true if this is an ASCII85 line so the "EI" is to be considered
+     * part of the data stream, false if not
+     */
+    private boolean hasPrecedingAscii85Data(ByteArrayOutputStream imageData)
+    {
+        if (imageData.size() < 70)
+        {
+            return false;
+        }
+        byte[] tab = imageData.toByteArray();
+        for (int i = tab.length - 1; i >= tab.length - 70; --i)
+        {
+            if (tab[i] < 33 || tab[i] > 117)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    
     /**
      * This will read an operator from the stream.
      *
@@ -521,7 +548,7 @@ public class PDFStreamParser extends BaseParser
      * @return true if the next char is a space or a return
      * @throws IOException if something went wrong
      */
-    private boolean isSpaceOrReturn() throws IOException
+    private boolean hasNextSpaceOrReturn() throws IOException
     {
         return isSpaceOrReturn( pdfSource.peek() );
     }
