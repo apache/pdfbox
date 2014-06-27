@@ -95,7 +95,8 @@ public final class PDFieldFactory
         }
         else
         {
-            throw new IOException("Invalid field type: " + fieldType);
+            // todo: inheritance and "non-terminal fields" are not supported yet
+            return null;
         }
     }
 
