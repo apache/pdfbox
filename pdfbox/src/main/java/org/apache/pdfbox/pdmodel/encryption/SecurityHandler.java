@@ -101,6 +101,10 @@ public abstract class SecurityHandler
      */
     protected ARCFour rc4 = new ARCFour();
 
+    /** 
+     * indicates if the Metadata have to be decrypted of not 
+     */ 
+    protected boolean decryptMetadata; 
     private Set<COSBase> objects = new HashSet<COSBase>();
 
     private Set<COSDictionary> potentialSignatures = new HashSet<COSDictionary>();
@@ -408,6 +412,10 @@ public abstract class SecurityHandler
      */
     public void decryptStream(COSStream stream, long objNum, long genNum) throws CryptographyException, IOException
     {
+        if (!decryptMetadata && COSName.METADATA.equals(stream.getDictionaryObject(COSName.TYPE)))
+        {
+            return;
+        }
         decryptDictionary(stream, objNum, genNum);
         InputStream encryptedStream = stream.getFilteredStream();
         encryptData(objNum, genNum, encryptedStream, stream.createFilteredStream(), true /* decrypt */);
