@@ -871,24 +871,7 @@ public class PageDrawer extends PDFStreamEngine
             }
 
             PDRectangle bBox = form.getBBox();
-
-            float x1 = bBox.getLowerLeftX();
-            float y1 = bBox.getLowerLeftY();
-            float x2 = bBox.getUpperRightX();
-            float y2 = bBox.getUpperRightY();
-
-            Point2D p0 = transformedPoint(x1, y1);
-            Point2D p1 = transformedPoint(x2, y1);
-            Point2D p2 = transformedPoint(x2, y2);
-            Point2D p3 = transformedPoint(x1, y2);
-
-            GeneralPath path = new GeneralPath();
-            path.moveTo((float) p0.getX(), (float) p0.getY());
-            path.lineTo((float) p1.getX(), (float) p1.getY());
-            path.lineTo((float) p2.getX(), (float) p2.getY());
-            path.lineTo((float) p3.getX(), (float) p3.getY());
-            path.closePath();
-
+            GeneralPath path = transformedPDRectanglePath(bBox);
             return new TransparencyGroup(path, pdResources, form.getCOSStream());
         }
         finally
