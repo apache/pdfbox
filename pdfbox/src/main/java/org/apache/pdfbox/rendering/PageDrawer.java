@@ -758,10 +758,6 @@ public class PageDrawer extends PDFStreamEngine
         strokePath();
     }
 
-    public void clip() {
-        // ...
-    }
-
     /**
      * Modify the current clipping path by intersecting it with the current path.
      * The clipping path will not be updated until the succeeding painting operator is called.
