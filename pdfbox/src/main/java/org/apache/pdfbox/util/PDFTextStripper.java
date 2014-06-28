@@ -1748,6 +1748,10 @@ public class PDFTextStripper extends PDFStreamEngine
      */
     protected void writeParagraphEnd() throws IOException
     {
+        if (!inParagraph)
+        {
+            writeParagraphStart();
+        }
         output.write(getParagraphEnd());
         inParagraph = false;
     }
