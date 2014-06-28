@@ -308,21 +308,12 @@ public class Matrix implements Cloneable
      * Clones this object.
      * @return cloned matrix as an object.
      */
-    public Object clone()
+    @Override
+    public Matrix clone()
     {
         Matrix clone = new Matrix();
         System.arraycopy( single, 0, clone.single, 0, 9 );
         return clone;
-    }
-
-    /**
-     * This will copy the text matrix data.
-     *
-     * @return a matrix that matches this one.
-     */
-    public Matrix copy()
-    {
-        return (Matrix) clone();
     }
 
     /**

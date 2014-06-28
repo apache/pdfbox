@@ -550,7 +550,7 @@ public class PDFStreamEngine
      */
     public void saveGraphicsState()
     {
-        graphicsStack.push((PDGraphicsState) getGraphicsState().clone());
+        graphicsStack.push(getGraphicsState().clone());
     }
 
     /**

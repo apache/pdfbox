@@ -33,6 +33,6 @@ public class ClipNonZeroRule extends OperatorProcessor
     @Override
     public void process(PDFOperator operator, List<COSBase> operands)
     {
-        ((PageDrawer)context).setClippingWindingRule(GeneralPath.WIND_NON_ZERO);
+        ((PageDrawer)context).clip(GeneralPath.WIND_NON_ZERO);
     }
 }
