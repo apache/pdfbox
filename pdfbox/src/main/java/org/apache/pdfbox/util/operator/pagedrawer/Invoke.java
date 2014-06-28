@@ -99,11 +99,10 @@ public final class Invoke extends OperatorProcessor
         else if (xobject instanceof PDFormXObject)
         {
             PDFormXObject form = (PDFormXObject) xobject;         
-            if ((form.getGroup() != null) && (COSName.TRANSPARENCY.equals(form.getGroup().getSubType()))) {
-                PageDrawer.Group group = drawer.createPageDrawerGroup(form);
-
-                // Draw the result of the group to the page...
-                group.drawResult();
+            if (form.getGroup() != null && COSName.TRANSPARENCY.equals(form.getGroup().getSubType())) {
+                PageDrawer.TransparencyGroup group = drawer.createTransparencyGroup(form);
+                // draw the result of the transparency group to the page
+                group.draw();
             }
             else 
             {
