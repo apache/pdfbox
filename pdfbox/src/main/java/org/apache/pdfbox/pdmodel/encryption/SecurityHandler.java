@@ -82,11 +82,14 @@ public abstract class SecurityHandler
     /** The RC4 implementation used for cryptographic functions. */
     protected RC4Cipher rc4 = new RC4Cipher();
 
+    /** indicates if the Metadata have to be decrypted of not */ 
+    protected boolean decryptMetadata; 
+    
     private final Set<COSBase> objects = new HashSet<COSBase>();
     private final Set<COSDictionary> potentialSignatures = new HashSet<COSDictionary>();
 
     private boolean useAES;
-
+    
     /**
      * The access permission granted to the current user for the document. These
      * permissions are computed during decryption and are in read only mode.
@@ -413,6 +416,10 @@ public abstract class SecurityHandler
      */
     public void decryptStream(COSStream stream, long objNum, long genNum) throws IOException
     {
+        if (!decryptMetadata && COSName.METADATA.equals(stream.getCOSName(COSName.TYPE)))
+        {
+            return;
+        }
         decryptDictionary(stream, objNum, genNum);
         InputStream encryptedStream = stream.getFilteredStream();
         encryptData(objNum, genNum, encryptedStream, stream.createFilteredStream(), true /* decrypt */);

@@ -175,6 +175,7 @@ public final class StandardSecurityHandler extends SecurityHandler
         {
             throw new IOException("Decryption material is not compatible with the document");
         }
+        decryptMetadata = encryption.isEncryptMetaData();
 
         StandardDecryptionMaterial material = (StandardDecryptionMaterial)decryptionMaterial;
 
