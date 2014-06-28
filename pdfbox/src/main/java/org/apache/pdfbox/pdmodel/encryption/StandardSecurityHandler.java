@@ -179,7 +179,8 @@ public class StandardSecurityHandler extends SecurityHandler
         {
             throw new CryptographyException("Provided decryption material is not compatible with the document");
         }
-
+        decryptMetadata = encDictionary.isEncryptMetaData();
+        
         StandardDecryptionMaterial material = (StandardDecryptionMaterial)decryptionMaterial;
 
         String password = material.getPassword();
