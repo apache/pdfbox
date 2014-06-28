@@ -135,17 +135,18 @@ public final class PublicKeySecurityHandler extends SecurityHandler
                                      DecryptionMaterial decryptionMaterial)
                                      throws IOException
     {
-	      if(encryption.getLength() != 0)
-	      {
-	          this.keyLength = encryption.getLength();
-	      }
-	
 	      if(!(decryptionMaterial instanceof PublicKeyDecryptionMaterial))
 	      {
 	          throw new IOException(
 	              "Provided decryption material is not compatible with the document");
 	      }
 	
+          decryptMetadata = encryption.isEncryptMetaData();
+          if(encryption.getLength() != 0)
+          {
+              this.keyLength = encryption.getLength();
+          }
+    
 	      PublicKeyDecryptionMaterial material = (PublicKeyDecryptionMaterial)decryptionMaterial;
 	
 	      try
