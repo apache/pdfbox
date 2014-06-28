@@ -46,7 +46,7 @@ public class TestMatrix extends TestCase
         Matrix m1 = new Matrix();
         assertMatrixIsPristine(m1);
 
-        Matrix m2 = m1.copy();
+        Matrix m2 = m1.clone();
         assertNotSame(m1, m2);
         assertMatrixIsPristine(m2);
     }
@@ -68,8 +68,8 @@ public class TestMatrix extends TestCase
             }
         }
 
-        Matrix m1 = testMatrix.copy();
-        Matrix m2 = testMatrix.copy();
+        Matrix m1 = testMatrix.clone();
+        Matrix m2 = testMatrix.clone();
 
         // Multiply two matrices together producing a new result matrix.
         Matrix product = m1.multiply(m2);
@@ -127,8 +127,8 @@ public class TestMatrix extends TestCase
 
 
         // Multiply two matrices together with the result being written into 'this' matrix
-        m1 = testMatrix.copy();
-        m2 = testMatrix.copy();
+        m1 = testMatrix.clone();
+        m2 = testMatrix.clone();
 
         retVal = m1.multiply(m2, m1);
         assertSame(retVal, m1);
@@ -143,7 +143,7 @@ public class TestMatrix extends TestCase
 
 
         // Multiply the same matrix with itself with the result being written into 'this' matrix
-        m1 = testMatrix.copy();
+        m1 = testMatrix.clone();
 
         retVal = m1.multiply(m1, m1);
         assertSame(retVal, m1);

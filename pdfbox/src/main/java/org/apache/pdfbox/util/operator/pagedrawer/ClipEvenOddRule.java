@@ -33,6 +33,6 @@ public final class ClipEvenOddRule extends OperatorProcessor
     @Override
     public void process(PDFOperator operator, List<COSBase> operands)
     {
-        ((PageDrawer)context).setClippingWindingRule(GeneralPath.WIND_EVEN_ODD);
+        ((PageDrawer)context).clip(GeneralPath.WIND_EVEN_ODD);
     }
 }

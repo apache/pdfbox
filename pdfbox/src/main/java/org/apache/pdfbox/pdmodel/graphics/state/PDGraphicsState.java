@@ -20,10 +20,9 @@ import java.awt.BasicStroke;
 import java.awt.Composite;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.PDLineDashPattern;
 import org.apache.pdfbox.pdmodel.graphics.blend.BlendComposite;
@@ -34,25 +33,14 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.util.Matrix;
 
 /**
- * This class will hold the current state of the graphics parameters when executing a
- * content stream.
+ * The current state of the graphics parameters when executing a content stream.
  *
- * @author <a href="ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.5 $
+ * @author Ben Litchfield
  */
 public class PDGraphicsState implements Cloneable
 {
-
-    /**
-     * Log instance.
-     */
-    private static final Log LOG = LogFactory.getLog(PDGraphicsState.class);
-    
+    private Area clippingPath;
     private Matrix currentTransformationMatrix = new Matrix();
-
-    //Here are some attributes of the Graphics state, but have not been created yet.
-    //
-    //clippingPath
     private PDColor strokingColor = PDColor.DEVICE_GRAY_BLACK;
     private PDColor nonStrokingColor = PDColor.DEVICE_GRAY_BLACK;
     private PDColorSpace strokingColorSpace = PDDeviceGray.INSTANCE;
@@ -65,13 +53,13 @@ public class PDGraphicsState implements Cloneable
     private PDLineDashPattern lineDashPattern = new PDLineDashPattern();
     private String renderingIntent;
     private boolean strokeAdjustment = false;
-    //blend mode
-    //soft mask
+    private BlendMode blendMode = BlendMode.COMPATIBLE;
+    private PDSoftMask softMask;
     private double alphaConstants = 1.0;
     private double nonStrokingAlphaConstants = 1.0;
     private boolean alphaSource = false;
 
-    //DEVICE DEPENDENT parameters
+    // DEVICE-DEPENDENT parameters
     private boolean overprint = false;
     private double overprintMode = 0;
     //black generation
@@ -80,11 +68,6 @@ public class PDGraphicsState implements Cloneable
     //halftone
     private double flatness = 1.0;
     private double smoothness = 0;
-
-    private GeneralPath currentClippingPath;
-
-    private BlendMode blendMode = BlendMode.COMPATIBLE;
-    private PDSoftMask softMask;
 
     /**
      * Default constructor.
@@ -99,7 +82,7 @@ public class PDGraphicsState implements Cloneable
      */
     public PDGraphicsState(PDRectangle page)
     {
-        currentClippingPath = new GeneralPath(new Rectangle(page.createDimension()));
+        clippingPath = new Area(new GeneralPath(new Rectangle(page.createDimension())));
         if (page.getLowerLeftX() != 0 || page.getLowerLeftY() != 0)
         {
             //Compensate for offset
@@ -473,33 +456,25 @@ public class PDGraphicsState implements Cloneable
         renderingIntent = value;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public Object clone()
+    @Override
+    public PDGraphicsState clone()
     {
-        PDGraphicsState clone = null;
         try
         {
-            clone = (PDGraphicsState)super.clone();
-            clone.setTextState( (PDTextState)textState.clone() );
-            clone.setCurrentTransformationMatrix( currentTransformationMatrix.copy() );
+            PDGraphicsState clone = (PDGraphicsState)super.clone();
+            clone.textState = textState.clone();
+            clone.currentTransformationMatrix = currentTransformationMatrix.clone();
             clone.strokingColor = strokingColor; // immutable
             clone.nonStrokingColor = nonStrokingColor; // immutable
-            if( lineDashPattern != null )
-            {
-                clone.setLineDashPattern( lineDashPattern ); // immutable
-            }
-            if (currentClippingPath != null)
-            {
-                clone.setCurrentClippingPath((GeneralPath)currentClippingPath.clone());
-            }
+            clone.lineDashPattern = lineDashPattern; // immutable
+            clone.clippingPath = (Area) clippingPath.clone();
+            return clone;
         }
-        catch( CloneNotSupportedException e )
+        catch (CloneNotSupportedException e)
         {
-            LOG.error(e,e);
+            // should not happen
+            throw new RuntimeException(e);
         }
-        return clone;
     }
 
     /**
@@ -583,39 +558,22 @@ public class PDGraphicsState implements Cloneable
     }
 
     /**
-     * This will set the current clipping path.
-     *
-     * @param pCurrentClippingPath The current clipping path.
-     *
+     * Modify the current clipping path by intersecting it with the given path.
+     * @param path path to intersect with the clipping path
      */
-    public void setCurrentClippingPath(Shape pCurrentClippingPath)
+    public void intersectClippingPath(GeneralPath path)
     {
-        if (pCurrentClippingPath != null)
-        {
-            if (pCurrentClippingPath instanceof GeneralPath)
-            {
-                currentClippingPath = (GeneralPath)pCurrentClippingPath;
-            }
-            else
-            {
-                currentClippingPath = new GeneralPath();
-                currentClippingPath.append(pCurrentClippingPath,false);
-            }
-        }
-        else
-        {
-            currentClippingPath = null;
-        }
+        clippingPath.intersect(new Area(path));
     }
 
     /**
-     * This will get the current clipping path.
+     * This will get the current clipping path. Do not modify this Area object!
      *
      * @return The current clipping path.
      */
-    public Shape getCurrentClippingPath()
+    public Area getCurrentClippingPath()
     {
-        return currentClippingPath;
+        return clippingPath;
     }
 
     public Composite getStrokeJavaComposite() 

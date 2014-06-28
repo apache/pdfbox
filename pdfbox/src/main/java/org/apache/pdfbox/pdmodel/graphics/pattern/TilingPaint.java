@@ -124,7 +124,7 @@ public class TilingPaint extends TexturePaint
         else
         {
             // undo translation
-            matrix = (Matrix)pattern.getMatrix().clone();
+            matrix = pattern.getMatrix().clone();
             matrix.setValue(2, 0, matrix.getValue(2, 0) - (float)rect.getX()); // tx
             matrix.setValue(2, 1, matrix.getValue(2, 1) - (float)rect.getY()); // ty
         }

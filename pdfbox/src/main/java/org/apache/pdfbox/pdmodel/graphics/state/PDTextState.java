@@ -254,19 +254,17 @@ public class PDTextState implements Cloneable
         knockout = value;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public Object clone()
+    @Override
+    public PDTextState clone()
     {
         try
         {
-            return super.clone();
+            return (PDTextState)super.clone();
         }
-        catch (CloneNotSupportedException ignore)
+        catch (CloneNotSupportedException e)
         {
-            //ignore
+            // should not happen
+            throw new RuntimeException(e);
         }
-        return null;
     }
 }

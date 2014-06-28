@@ -104,9 +104,8 @@ public class PageDrawer extends PDFStreamEngine
 
     private Graphics2D graphics;
 
-    // clipping winding rule used for the clipping path.
-    private int clippingWindingRule = -1;
-
+    // clipping winding rule used for the clipping path
+    private int clipWindingRule = -1;
     private GeneralPath linePath = new GeneralPath();
 
     private Map<PDFont, Glyph2D> fontGlyph2D = new HashMap<PDFont, Glyph2D>();
@@ -764,40 +763,26 @@ public class PageDrawer extends PDFStreamEngine
     }
 
     /**
-     * Set the clipping winding rule.
+     * Modify the current clipping path by intersecting it with the current path.
+     * The clipping path will not be updated until the succeeding painting operator is called.
      * 
      * @param windingRule The winding rule which will be used for clipping.
-     * 
      */
-    public void setClippingWindingRule(int windingRule)
+    public void clip(int windingRule)
     {
-        clippingWindingRule = windingRule;
+        clipWindingRule = windingRule;
     }
 
     /**
-     * Set the clipping Path.
-     * 
+     * Ends the current path without filling or stroking it. The clipping path is updated here.
      */
     public void endPath()
     {
-        if (clippingWindingRule > -1)
+        if (clipWindingRule != -1)
         {
-            PDGraphicsState graphicsState = getGraphicsState();
-            GeneralPath clippingPath = (GeneralPath) linePath.clone();  // TODO do we really need to clone this? isn't the line path reset anyway?
-            clippingPath.setWindingRule(clippingWindingRule);
-            // If there is already set a clipping path, we have to intersect the new with the existing one
-            if (graphicsState.getCurrentClippingPath() != null)
-            {
-                Area currentArea = new Area(getGraphicsState().getCurrentClippingPath());
-                Area newArea = new Area(clippingPath);
-                currentArea.intersect(newArea);
-                graphicsState.setCurrentClippingPath(currentArea);
-            }
-            else
-            {
-                graphicsState.setCurrentClippingPath(clippingPath);
-            }
-            clippingWindingRule = -1;
+            linePath.setWindingRule(clipWindingRule);
+            getGraphicsState().intersectClippingPath(linePath);
+            clipWindingRule = -1;
         }
         linePath.reset();
     }
@@ -984,11 +969,11 @@ public class PageDrawer extends PDFStreamEngine
             }
             matrix = matrix1;
 
-            PDGraphicsState gs = getGraphicsState();
-            gs.setBlendMode(BlendMode.NORMAL);
-            gs.setAlphaConstants(1.0);
-            gs.setNonStrokeAlphaConstants(1.0);
-            gs.setSoftMask(null);
+            PDGraphicsState state = getGraphicsState();
+            state.setBlendMode(BlendMode.NORMAL);
+            state.setAlphaConstants(1.0);
+            state.setNonStrokeAlphaConstants(1.0);
+            state.setSoftMask(null);
             graphics = groupG2D;
             try
             {

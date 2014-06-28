@@ -43,6 +43,6 @@ public class MoveText extends OperatorProcessor
         td.setValue( 2, 0, x.floatValue() );
         td.setValue( 2, 1, y.floatValue() );
         context.setTextLineMatrix( td.multiply( context.getTextLineMatrix() ) );
-        context.setTextMatrix( context.getTextLineMatrix().copy() );
+        context.setTextMatrix( context.getTextLineMatrix().clone() );
     }
 }

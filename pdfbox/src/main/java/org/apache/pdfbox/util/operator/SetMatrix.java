@@ -53,6 +53,6 @@ public class SetMatrix extends OperatorProcessor
         textMatrix.setValue( 2, 0, e.floatValue() );
         textMatrix.setValue( 2, 1, f.floatValue() );
         context.setTextMatrix( textMatrix );
-        context.setTextLineMatrix( textMatrix.copy() );
+        context.setTextLineMatrix( textMatrix.clone() );
     }
 }

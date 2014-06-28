@@ -144,11 +144,7 @@ public final class Invoke extends OperatorProcessor
                     bboxPath.lineTo((float) p3.getX(), (float) p3.getY());
                     bboxPath.closePath();
                     
-                    Area resultClippingArea = new Area(graphicsState.getCurrentClippingPath());
-                    Area newArea = new Area(bboxPath);            
-                    resultClippingArea.intersect(newArea);
-                    
-                    graphicsState.setCurrentClippingPath(resultClippingArea);
+                    graphicsState.intersectClippingPath(bboxPath);
                 }
                 getContext().processSubStream(pdResources, formContentStream);
 
