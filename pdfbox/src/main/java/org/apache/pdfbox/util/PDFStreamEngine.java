@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.util;
 
+import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -638,6 +639,37 @@ public class PDFStreamEngine
     public PDResources getResources()
     {
         return streamResourcesStack.peek();
+    }
+
+    /**
+     * use the current transformation matrix to transform a single point.
+     *
+     * @param x x-coordinate of the point to be transform
+     * @param y y-coordinate of the point to be transform
+     * @return the transformed coordinates as Point2D.Double
+     */
+    public Point2D.Double transformedPoint(double x, double y)
+    {
+        double[] position = { x, y };
+        getGraphicsState().getCurrentTransformationMatrix().createAffineTransform()
+                .transform(position, 0, position, 0, 1);
+        return new Point2D.Double(position[0], position[1]);
+    }
+
+    // transforms a width using the CTM
+    protected float transformWidth(float width)
+    {
+        Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
+
+        if (ctm == null)
+        {
+            // TODO does the CTM really need to use null?
+            return width;
+        }
+
+        float x = ctm.getValue(0, 0) + ctm.getValue(1, 0);
+        float y = ctm.getValue(0, 1) + ctm.getValue(1, 1);
+        return width * (float)Math.sqrt((x * x + y * y) * 0.5);
     }
 
     /**
