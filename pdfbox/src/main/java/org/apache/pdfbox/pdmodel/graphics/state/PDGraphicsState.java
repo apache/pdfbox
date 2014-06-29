@@ -19,7 +19,6 @@ package org.apache.pdfbox.pdmodel.graphics.state;
 import java.awt.BasicStroke;
 import java.awt.Composite;
 import java.awt.Rectangle;
-import java.awt.Shape;
 import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 
@@ -74,6 +73,7 @@ public class PDGraphicsState implements Cloneable
      */
     public PDGraphicsState()
     {
+        clippingPath = new Area();
     }
 
     /**
