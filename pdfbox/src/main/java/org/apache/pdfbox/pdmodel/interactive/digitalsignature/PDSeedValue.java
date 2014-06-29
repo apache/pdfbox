@@ -97,6 +97,7 @@ public class PDSeedValue implements COSObjectable
      *
      * @return The cos object that matches this Java object.
      */
+    @Override
     public COSBase getCOSObject()
     {
         return getDictionary();
@@ -292,10 +293,7 @@ public class PDSeedValue implements COSObjectable
                 String element = fields.getName(i);
                 if (element != null)
                 {
-                    if (element != null)
-                    {
-                        actuals.add(element);
-                    }
+                    actuals.add(element);
                 }
             }
             retval = new COSArrayList(actuals, fields);
@@ -335,10 +333,7 @@ public class PDSeedValue implements COSObjectable
                 String element = fields.getName(i);
                 if (element != null)
                 {
-                    if (element != null)
-                    {
-                        actuals.add(element);
-                    }
+                    actuals.add(element);
                 }
             }
             retval = new COSArrayList(actuals, fields);
@@ -427,10 +422,7 @@ public class PDSeedValue implements COSObjectable
                 String element = fields.getString(i);
                 if (element != null)
                 {
-                    if (element != null)
-                    {
-                        actuals.add(element);
-                    }
+                    actuals.add(element);
                 }
             }
             retval = new COSArrayList(actuals, fields);
@@ -547,10 +539,7 @@ public class PDSeedValue implements COSObjectable
                 String element = fields.getString(i);
                 if (element != null)
                 {
-                    if (element != null)
-                    {
-                        actuals.add(element);
-                    }
+                    actuals.add(element);
                 }
             }
             retval = new COSArrayList(actuals, fields);
