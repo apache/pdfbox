@@ -69,14 +69,6 @@ public class PDGraphicsState implements Cloneable
     private double smoothness = 0;
 
     /**
-     * Default constructor.
-     */
-    public PDGraphicsState()
-    {
-        clippingPath = new Area();
-    }
-
-    /**
      * Constructor with a given pagesize to initialize the clipping path.
      * @param page the size of the page
      */

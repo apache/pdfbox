@@ -96,7 +96,6 @@ public class PreflightContentStream extends PreflightStreamEngine
     {
         try
         {
-            resetEnginContext();
             processSubStream(xobj.getResources(), xobj.getCOSStream());
         }
         catch (ContentStreamException e)
@@ -121,7 +120,6 @@ public class PreflightContentStream extends PreflightStreamEngine
         try
         {
             COSDictionary res = (COSDictionary) pattern.getDictionaryObject(COSName.RESOURCES);
-            resetEnginContext();
             processSubStream(new PDResources(res), pattern);
         }
         catch (ContentStreamException e)
@@ -132,15 +130,6 @@ public class PreflightContentStream extends PreflightStreamEngine
         {
             throw new ValidationException("Unable to check the ContentStream : " + e.getMessage(), e);
         }
-    }
-
-    public final void resetEnginContext()
-    {
-        this.setGraphicsState(new PDGraphicsState());
-        this.setTextMatrix(null);
-        this.setTextLineMatrix(null);
-        //this.getGraphicsStack().clear();
-        // this.streamResourcesStack.clear();
     }
 
     /*
