@@ -72,7 +72,7 @@ public class PreflightContentStream extends PreflightStreamEngine
             if (pstream != null)
             {
                 processStream(processeedPage.findResources(), pstream.getStream(), 
-                		processeedPage.findCropBox(), processeedPage.findRotation());
+                		processeedPage.findCropBox());
             }
         }
         catch (ContentStreamException e)
@@ -96,7 +96,7 @@ public class PreflightContentStream extends PreflightStreamEngine
     {
         try
         {
-            initStream(this.processeedPage.findCropBox(), 0);
+            initStream(this.processeedPage.findCropBox());
             processSubStream(xobj.getResources(), xobj.getCOSStream());
         }
         catch (ContentStreamException e)

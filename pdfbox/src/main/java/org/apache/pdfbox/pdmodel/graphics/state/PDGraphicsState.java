@@ -459,7 +459,7 @@ public class PDGraphicsState implements Cloneable
             clone.strokingColor = strokingColor; // immutable
             clone.nonStrokingColor = nonStrokingColor; // immutable
             clone.lineDashPattern = lineDashPattern; // immutable
-            clone.clippingPath = (Area) clippingPath.clone();
+            clone.clippingPath = clippingPath; // not cloned, see intersectClippingPath
             return clone;
         }
         catch (CloneNotSupportedException e)
@@ -555,6 +555,10 @@ public class PDGraphicsState implements Cloneable
      */
     public void intersectClippingPath(GeneralPath path)
     {
+        // lazy cloning of clipping path for performance
+        clippingPath = (Area) clippingPath.clone();
+
+        // intersection as usual
         clippingPath.intersect(new Area(path));
     }
 

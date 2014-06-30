@@ -100,7 +100,7 @@ public class PrintImageLocations extends PDFStreamEngine
                     PDPage page = (PDPage)allPages.get( i );
                     System.out.println( "Processing page: " + i );
                     printer.processStream( page.findResources(), page.getContents().getStream(),
-                    		page.findCropBox(), page.findRotation() );
+                    		page.findCropBox() );
                 }
             }
             finally

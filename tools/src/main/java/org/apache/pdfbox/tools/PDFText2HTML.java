@@ -143,7 +143,7 @@ public class PDFText2HTML extends PDFTextStripper
                     }
                     if (currentFontSize > 13.0f)
                     { // most body text is 12pt
-                        titleText.append(position.getCharacter());
+                        titleText.append(position.getUnicode());
                     }
                 }
             }
