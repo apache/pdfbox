@@ -490,9 +490,9 @@ public final class PDImageXObject extends PDXObject implements PDImage
     }
     
     @Override
-    public void clear()
+    public void clearCache()
     {
-        super.clear();
+        super.clearCache();
         cachedImage = null;
     }
 }

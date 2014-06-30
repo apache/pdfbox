@@ -120,7 +120,7 @@ public class PDType3Font extends PDFont
         charProcs = null;
         if (type3Resources != null)
         {
-            type3Resources.clear();
+            type3Resources.clearCache();
             type3Resources = null;
         }
     }

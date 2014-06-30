@@ -62,15 +62,13 @@ public class PDFStreamEngine
     private static final Log LOG = LogFactory.getLog(PDFStreamEngine.class);
 
     private final Set<String> unsupportedOperators = new HashSet<String>();
-    private Map<String, OperatorProcessor> operators = new HashMap<String, OperatorProcessor>();
-
-    private PDGraphicsState graphicsState;
+    private final Map<String, OperatorProcessor> operators = new HashMap<String, OperatorProcessor>();
 
     private Matrix textMatrix;
     private Matrix textLineMatrix;
-    private Stack<PDGraphicsState> graphicsStack = new Stack<PDGraphicsState>();
+    private final Stack<PDGraphicsState> graphicsStack = new Stack<PDGraphicsState>();
 
-    private Stack<PDResources> streamResourcesStack = new Stack<PDResources>();
+    private final Stack<PDResources> streamResourcesStack = new Stack<PDResources>();
 
     private int pageRotation;
     private PDRectangle drawingRectangle;
@@ -186,10 +184,10 @@ public class PDFStreamEngine
     {
         drawingRectangle = drawingSize;
         pageRotation = rotation;
-        graphicsState = new PDGraphicsState(drawingRectangle);
+        graphicsStack.clear();
+        graphicsStack.push(new PDGraphicsState(drawingRectangle));
         textMatrix = null;
         textLineMatrix = null;
-        graphicsStack.clear();
         streamResourcesStack.clear();
     }
 
@@ -218,6 +216,13 @@ public class PDFStreamEngine
      */
     public void processSubStream(PDResources resources, COSStream cosStream) throws IOException
     {
+        // sanity check
+        if (drawingRectangle == null)
+        {
+            throw new IllegalStateException("Call to processSubStream() before processStream() " +
+                                            "or initStream()");
+        }
+
         if (resources != null)
         {
             streamResourcesStack.push(resources);
@@ -227,7 +232,7 @@ public class PDFStreamEngine
             }
             finally
             {
-                streamResourcesStack.pop().clear();
+                streamResourcesStack.pop().clearCache();
             }
         }
         else
@@ -285,6 +290,8 @@ public class PDFStreamEngine
         // units, and we want to save the data in display units. The variable names should end with
         // Text or Disp to represent if the values are in text or disp units (no glyph units are
         // saved).
+
+        PDGraphicsState graphicsState = getGraphicsState();
 
         final float fontSizeText = graphicsState.getTextState().getFontSize();
         final float horizontalScalingText = graphicsState.getTextState().getHorizontalScaling() / 100f;
@@ -551,7 +558,7 @@ public class PDFStreamEngine
      */
     public void saveGraphicsState()
     {
-        graphicsStack.push(getGraphicsState().clone());
+        graphicsStack.push(graphicsStack.peek().clone());
     }
 
     /**
@@ -559,7 +566,7 @@ public class PDFStreamEngine
      */
     public void restoreGraphicsState()
     {
-        graphicsState = graphicsStack.pop();
+        graphicsStack.pop();
     }
 
     /**
@@ -575,15 +582,7 @@ public class PDFStreamEngine
      */
     public PDGraphicsState getGraphicsState()
     {
-        return graphicsState;
-    }
-
-    /**
-     * @param value The graphicsState to set.
-     */
-    public void setGraphicsState(PDGraphicsState value)
-    {
-        graphicsState = value;
+        return graphicsStack.peek();
     }
 
     /**
@@ -592,14 +591,6 @@ public class PDFStreamEngine
     public Map<String, PDExtendedGraphicsState> getGraphicsStates()
     {
         return streamResourcesStack.peek().getGraphicsStates();
-    }
-
-    /**
-     * @param value The graphicsStates to set.
-     */
-    public void setGraphicsStates(Map<String, PDExtendedGraphicsState> value)
-    {
-        streamResourcesStack.peek().setGraphicsStates(value);
     }
 
     /**
@@ -686,42 +677,8 @@ public class PDFStreamEngine
     protected float transformWidth(float width)
     {
         Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
-
-        if (ctm == null)
-        {
-            // TODO does the CTM really need to use null?
-            return width;
-        }
-
         float x = ctm.getValue(0, 0) + ctm.getValue(1, 0);
         float y = ctm.getValue(0, 1) + ctm.getValue(1, 1);
         return width * (float)Math.sqrt((x * x + y * y) * 0.5);
-    }
-
-    /**
-     * Remove all cached resources.
-     */
-    public void dispose()
-    {
-        drawingRectangle = null;
-        graphicsState = null;
-        textLineMatrix = null;
-        textMatrix = null;
-        if (graphicsStack != null)
-        {
-            graphicsStack.clear();
-            graphicsStack = null;
-        }
-        if (streamResourcesStack != null)
-        {
-            streamResourcesStack.clear();
-            streamResourcesStack = null;
-        }
-        if (operators != null)
-        {
-            operators.clear();
-            operators = null;
-        }
-        unsupportedOperators.clear();
     }
 }

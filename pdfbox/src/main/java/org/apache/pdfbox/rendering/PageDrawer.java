@@ -40,7 +40,6 @@ import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -89,10 +88,9 @@ import org.apache.pdfbox.util.PDFStreamEngine;
 import org.apache.pdfbox.util.ResourceLoader;
 
 /**
- * This will paint a page in a PDF document to a graphics context.
+ * Paints a page in a PDF document to a Graphics context.
  * 
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * 
+ * @author Ben Litchfield
  */
 public class PageDrawer extends PDFStreamEngine
 {
@@ -102,14 +100,15 @@ public class PageDrawer extends PDFStreamEngine
     // parent document renderer
     private final PDFRenderer renderer;
 
+    private final PDPage page; // will be null if this is a TilingPatternDrawer
     private Graphics2D graphics;
 
     // clipping winding rule used for the clipping path
     private int clipWindingRule = -1;
     private GeneralPath linePath = new GeneralPath();
 
-    private Map<PDFont, Glyph2D> fontGlyph2D = new HashMap<PDFont, Glyph2D>();
-    private Map<PDFont, Font> awtFonts = new HashMap<PDFont, Font>();
+    private final Map<PDFont, Glyph2D> fontGlyph2D = new HashMap<PDFont, Glyph2D>();
+    private final Map<PDFont, Font> awtFonts = new HashMap<PDFont, Font>();
 
     private int pageHeight;
     
@@ -118,10 +117,23 @@ public class PageDrawer extends PDFStreamEngine
      * 
      * @throws IOException If there is an error loading properties from the file.
      */
-    public PageDrawer(PDFRenderer renderer) throws IOException
+    public PageDrawer(PDFRenderer renderer, PDPage page) throws IOException
     {
         super(ResourceLoader.loadProperties("org/apache/pdfbox/resources/PageDrawer.properties", true));
         this.renderer = renderer;
+        this.page = page;
+    }
+
+    /**
+     * Tiling pattern constructor, loads properties from file.
+     *
+     * @throws IOException If there is an error loading properties from the file.
+     */
+    PageDrawer(PDFRenderer renderer) throws IOException
+    {
+        super(ResourceLoader.loadProperties("org/apache/pdfbox/resources/PageDrawer.properties", true));
+        this.renderer = renderer;
+        this.page = null;
     }
 
     /**
@@ -146,12 +158,11 @@ public class PageDrawer extends PDFStreamEngine
      * This will draw the page to the requested context.
      * 
      * @param g The graphics context to draw onto.
-     * @param page The page to draw.
      * @param pageSize The size of the page to draw.
      * 
      * @throws IOException If there is an IO error while drawing the page.
      */
-    public void drawPage(Graphics g, PDPage page, PDRectangle pageSize) throws IOException
+    public void drawPage(Graphics g, PDRectangle pageSize) throws IOException
     {
         graphics = (Graphics2D) g;
         pageHeight = (int)pageSize.getHeight();
@@ -240,30 +251,6 @@ public class PageDrawer extends PDFStreamEngine
         }
 
         processSubStream(pattern.getResources(), (COSStream)pattern.getCOSObject());
-    }
-
-    /**
-     * Remove all cached resources.
-     */
-    public void dispose()
-    {
-        super.dispose();
-        if (fontGlyph2D != null)
-        {
-            Iterator<Glyph2D> iter = fontGlyph2D.values().iterator();
-            while (iter.hasNext())
-            {
-                iter.next().dispose();
-            }
-            fontGlyph2D.clear();
-            fontGlyph2D = null;
-        }
-        if (awtFonts != null)
-        {
-            awtFonts.clear();
-        }
-        graphics = null;
-        linePath = null;
     }
 
     /**

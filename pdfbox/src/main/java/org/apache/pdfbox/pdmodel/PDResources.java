@@ -101,9 +101,8 @@ public class PDResources implements COSObjectable
 
     /**
      * Calling this will release all cached information.
-     * 
      */
-    public void clear()
+    public void clearCache()
     {
         if (fonts != null)
         {
@@ -128,7 +127,7 @@ public class PDResources implements COSObjectable
         {
             for(PDXObject xobject : xobjects.values())
             {
-                xobject.clear();
+                xobject.clearCache();
             }
             xobjects.clear();
             xobjects = null;

@@ -132,7 +132,7 @@ public class PDXObject implements COSObjectable
     /**
      * Calling this will release all cached information.
      */
-    public void clear()
+    public void clearCache()
     {
     }
 }
