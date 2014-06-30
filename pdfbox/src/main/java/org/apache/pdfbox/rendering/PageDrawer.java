@@ -270,6 +270,12 @@ public class PageDrawer extends PDFStreamEngine
     @Override
     public void beginText() throws IOException
     {
+        setClip();
+    }
+
+    @Override
+    public void processText(byte[] string) throws IOException
+    {
         PDGraphicsState state = getGraphicsState();
         Composite composite;
         Paint paint;
@@ -300,7 +306,7 @@ public class PageDrawer extends PDFStreamEngine
         }
         graphics.setComposite(composite);
         graphics.setPaint(paint);
-        setClip();
+        super.processText(string);
     }
 
     @Override
