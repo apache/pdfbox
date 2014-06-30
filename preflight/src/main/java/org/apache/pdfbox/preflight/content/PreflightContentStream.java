@@ -96,6 +96,7 @@ public class PreflightContentStream extends PreflightStreamEngine
     {
         try
         {
+            initStream(this.processeedPage.findCropBox(), 0);
             processSubStream(xobj.getResources(), xobj.getCOSStream());
         }
         catch (ContentStreamException e)

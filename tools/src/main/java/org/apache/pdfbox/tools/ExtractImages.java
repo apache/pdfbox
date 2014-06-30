@@ -239,7 +239,7 @@ public class ExtractImages
 
                     System.out.println( "Writing image:" + name );
                     write2file( image, name, directJPEG );
-                    image.clear(); // PDFBOX-2101 get rid of cache ASAP
+                    image.clearCache();
                 }
                 // maybe there are more images embedded in a form object
                 else if (xobject instanceof PDFormXObject)
@@ -250,7 +250,7 @@ public class ExtractImages
                 }
             }
         }
-        resources.clear();
+        resources.clearCache();
     }
     
     // get and write the unmodified JPEG stream
