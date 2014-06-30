@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.pdmodel.common.COSDictionaryMap;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.font.PDFont;
@@ -251,8 +252,11 @@ public class PDResources implements COSObjectable
                     PDXObject xobject = null;
                     try
                     {
-                        xobject = PDXObject.createXObject(dict.getDictionaryObject(objName),
-                                                          objName.getName(), this);
+                        String name = objName.getName() + "#";
+                        COSObject cosObject = (COSObject)dict.getItem(objName);
+                        // add the object number to create an unique identifier
+                        name += cosObject.getObjectNumber().intValue();
+                        xobject = PDXObject.createXObject(cosObject.getObject(), name, this);
                     }
                     catch (IOException exception)
                     {
