@@ -36,7 +36,7 @@ import org.apache.pdfbox.text.TextPosition;
  * @author koch
  * @version $Revision$
  */
-public class PDFMarkedContentExtractor extends PDFStreamEngine
+public class PDFMarkedContentExtractor extends PDFTextStreamEngine
 {
     private boolean suppressDuplicateOverlappingText = true;
     private List<PDMarkedContent> markedContents = new ArrayList<PDMarkedContent>();
@@ -163,13 +163,14 @@ public class PDFMarkedContentExtractor extends PDFStreamEngine
      *
      * @param text The text to process.
      */
+    @Override
     protected void processTextPosition( TextPosition text )
     {
         boolean showCharacter = true;
         if( this.suppressDuplicateOverlappingText )
         {
             showCharacter = false;
-            String textCharacter = text.getCharacter();
+            String textCharacter = text.getUnicode();
             float textX = text.getX();
             float textY = text.getY();
             List<TextPosition> sameTextCharacters = this.characterListMapping.get( textCharacter );
@@ -195,7 +196,7 @@ public class PDFMarkedContentExtractor extends PDFStreamEngine
             for( int i=0; i<sameTextCharacters.size(); i++ )
             {
                 TextPosition character = (TextPosition)sameTextCharacters.get( i );
-                String charCharacter = character.getCharacter();
+                String charCharacter = character.getUnicode();
                 float charX = character.getX();
                 float charY = character.getY();
                 //only want to suppress

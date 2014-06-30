@@ -116,7 +116,7 @@ public class PrintTextLocations extends PDFTextStripper
                 text.getYDirAdj() + " fs=" + text.getFontSize() + " xscale=" +
                 text.getXScale() + " height=" + text.getHeightDir() + " space=" +
                 text.getWidthOfSpace() + " width=" +
-                text.getWidthDirAdj() + "]" + text.getCharacter() );
+                text.getWidthDirAdj() + "]" + text.getUnicode() );
     }
 
     /**

@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.util.operator;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSBase;
@@ -35,9 +36,10 @@ public class BeginText extends OperatorProcessor
      * @param operator The operator that is being executed.
      * @param arguments List
      */
-    public void process(PDFOperator operator, List<COSBase> arguments)
+    public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
         context.setTextMatrix( new Matrix());
         context.setTextLineMatrix( new Matrix() );
+        context.beginText();
     }
 }

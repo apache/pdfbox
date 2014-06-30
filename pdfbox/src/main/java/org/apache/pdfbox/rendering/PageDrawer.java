@@ -82,7 +82,6 @@ import org.apache.pdfbox.pdmodel.graphics.state.PDTextState;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
-import org.apache.pdfbox.text.TextPosition;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.PDFStreamEngine;
 import org.apache.pdfbox.util.ResourceLoader;
@@ -106,6 +105,9 @@ public class PageDrawer extends PDFStreamEngine
     // clipping winding rule used for the clipping path
     private int clipWindingRule = -1;
     private GeneralPath linePath = new GeneralPath();
+
+    // last clipping path
+    private Area lastClip;
 
     private final Map<PDFont, Glyph2D> fontGlyph2D = new HashMap<PDFont, Glyph2D>();
     private final Map<PDFont, Font> awtFonts = new HashMap<PDFont, Font>();
@@ -178,7 +180,7 @@ public class PageDrawer extends PDFStreamEngine
         if (page.getContents() != null)
         {
             PDResources resources = page.findResources();
-            processStream(resources, page.getContents().getStream(), page.findCropBox(), page.findRotation());
+            processStream(resources, page.getContents().getStream(), page.findCropBox());
         }
 
         List<PDAnnotation> annotations = page.getAnnotations();
@@ -235,7 +237,7 @@ public class PageDrawer extends PDFStreamEngine
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
 
-        initStream(pageDimension, 0);
+        initStream(pageDimension);
 
         // transform ctm
         Matrix concat = matrix.multiply(getGraphicsState().getCurrentTransformationMatrix());
@@ -253,82 +255,96 @@ public class PageDrawer extends PDFStreamEngine
         processSubStream(pattern.getResources(), (COSStream)pattern.getCOSObject());
     }
 
-    /**
-     * You should override this method if you want to perform an action when a text is being processed.
-     * 
-     * @param text The text to process
-     */
-    protected void processTextPosition(TextPosition text)
+    // sets the clipping path using caching for performance, we track lastClip manually because
+    // Graphics2D#getClip() returns a new object instead of the same one passed to setClip
+    private void setClip()
     {
-        try
+        Area clippingPath = getGraphicsState().getCurrentClippingPath();
+        if (clippingPath != lastClip)
         {
-            PDGraphicsState graphicsState = getGraphicsState();
-            Composite composite;
-            Paint paint;
-            switch (graphicsState.getTextState().getRenderingMode())
-            {
+            graphics.setClip(clippingPath);
+            lastClip = clippingPath;
+        }
+    }
+
+    @Override
+    public void beginText() throws IOException
+    {
+        PDGraphicsState state = getGraphicsState();
+        Composite composite;
+        Paint paint;
+        switch (state.getTextState().getRenderingMode())
+        {
             case PDTextState.RENDERING_MODE_FILL_TEXT:
-                composite = graphicsState.getNonStrokeJavaComposite();
+                composite = state.getNonStrokeJavaComposite();
                 paint = getNonStrokingPaint();
                 break;
             case PDTextState.RENDERING_MODE_STROKE_TEXT:
-                composite = graphicsState.getStrokeJavaComposite();
+                composite = state.getStrokeJavaComposite();
                 paint = getStrokingPaint();
                 break;
             case PDTextState.RENDERING_MODE_NEITHER_FILL_NOR_STROKE_TEXT:
                 // basic support for text rendering mode "invisible"
                 // TODO why are we drawing anything at all?
                 paint = COLOR_TRANSPARENT;
-                composite = graphicsState.getStrokeJavaComposite();
+                composite = state.getStrokeJavaComposite();
                 break;
             default:
                 // TODO : need to implement....
-                LOG.debug("Unsupported RenderingMode " + this.getGraphicsState().getTextState().getRenderingMode()
+                LOG.debug("Unsupported RenderingMode "
+                        + this.getGraphicsState().getTextState().getRenderingMode()
                         + " in PageDrawer.processTextPosition()." + " Using RenderingMode "
                         + PDTextState.RENDERING_MODE_FILL_TEXT + " instead");
-                composite = graphicsState.getNonStrokeJavaComposite();
+                composite = state.getNonStrokeJavaComposite();
                 paint = getNonStrokingPaint();
-            }
-            graphics.setComposite(composite);
-            graphics.setPaint(paint);
+        }
+        graphics.setComposite(composite);
+        graphics.setPaint(paint);
+        setClip();
+    }
 
-            PDFont font = text.getFont();
-            AffineTransform at = text.getTextPos().createAffineTransform();
+    @Override
+    protected void processGlyph(Matrix textMatrix, Point2D.Float end, float maxHeight,
+                                float widthText, String unicode, int[] charCodes, PDFont font,
+                                float fontSize) throws IOException
+    {
+        try
+        {
+            AffineTransform at = textMatrix.createAffineTransform();
             PDMatrix fontMatrix = font.getFontMatrix();
-            // TODO setClip() is a massive performance hot spot. Investigate optimization possibilities
-            graphics.setClip(graphicsState.getCurrentClippingPath());
 
             // use different methods to draw the string
             if (font.isType3Font())
             {
-                // Type3 fonts don't use the same units within the font matrix as all the other fonts
+                // Type3 fonts don't use the same units within the font matrix as the other fonts
                 at.scale(fontMatrix.getValue(0, 0), fontMatrix.getValue(1, 1));
                 // Type3 fonts are using streams for each character
-                drawType3String((PDType3Font) font, text, at);
+                drawType3String((PDType3Font) font, charCodes, at);
             }
             else
             {
                 Glyph2D glyph2D = createGlyph2D(font);
                 if (glyph2D != null)
                 {
-                    AffineTransform fontMatrixAT = new AffineTransform(fontMatrix.getValue(0, 0), fontMatrix.getValue(
-                            0, 1), fontMatrix.getValue(1, 0), fontMatrix.getValue(1, 1), fontMatrix.getValue(2, 0),
-                            fontMatrix.getValue(2, 1));
+                    AffineTransform fontMatrixAT = new AffineTransform(
+                            fontMatrix.getValue(0, 0), fontMatrix.getValue(0, 1),
+                            fontMatrix.getValue(1, 0), fontMatrix.getValue(1, 1),
+                            fontMatrix.getValue(2, 0), fontMatrix.getValue(2, 1));
                     at.concatenate(fontMatrixAT);
                     // Let PDFBox render the font if supported
-                    drawGlyph2D(glyph2D, text.getCodePoints(), at);
+                    drawGlyph2D(glyph2D, charCodes, at);
                 }
                 else
                 {
                     // Use AWT to render the font (standard14 fonts, substituted embedded fonts)
                     // TODO to be removed in the long run
-                    drawString(font, text.getCharacter(), at);
+                    drawString(font, unicode, at);
                 }
             }
         }
-        catch (IOException io)
+        catch (IOException e)
         {
-            LOG.error (io, io);
+            LOG.error(e.getMessage(), e);  // todo: really?
         }
     }
 
@@ -357,18 +373,17 @@ public class PageDrawer extends PDFStreamEngine
      * Render the text using a type 3 font.
      * 
      * @param font the type3 font
-     * @param text the text to be rendered
+     * @param charCodes internal PDF character codes of glyphs
      * @param at the transformation
      * 
      * @throws IOException if something went wrong
      */
-    private void drawType3String(PDType3Font font, TextPosition text, AffineTransform at) throws IOException
+    private void drawType3String(PDType3Font font, int[] charCodes, AffineTransform at) throws IOException
     {
-        int[] codePoints = text.getCodePoints();
-        int textLength = codePoints.length;
+        int textLength = charCodes.length;
         for (int i = 0; i < textLength; i++)
         {
-            COSStream stream = font.getCharStream((char)codePoints[i]);
+            COSStream stream = font.getCharStream((char)charCodes[i]);
             if (stream != null)
             {
                 // save the current graphics state and matrices
@@ -389,7 +404,7 @@ public class PageDrawer extends PDFStreamEngine
             }
             else
             {
-                LOG.debug("drawType3String: stream for character " + (char)codePoints[i] + " not found");
+                LOG.debug("drawType3String: stream for character " + (char)charCodes[i] + " not found");
             }
         }
     }
@@ -699,7 +714,7 @@ public class PageDrawer extends PDFStreamEngine
         graphics.setPaint(strokingPaint);
         graphics.setStroke(getStroke());
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-        graphics.setClip(getGraphicsState().getCurrentClippingPath());
+        setClip();
         graphics.draw(linePath);
         linePath.reset();
     }
@@ -724,7 +739,7 @@ public class PageDrawer extends PDFStreamEngine
         graphics.setPaint(nonStrokingPaint);
         linePath.setWindingRule(windingRule);
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-        graphics.setClip(getGraphicsState().getCurrentClippingPath());
+        setClip();
         graphics.fill(linePath);
         linePath.reset();
     }
@@ -781,7 +796,7 @@ public class PageDrawer extends PDFStreamEngine
     public void drawImage(Image awtImage, AffineTransform at) throws IOException
     {
         graphics.setComposite(getGraphicsState().getNonStrokeJavaComposite());
-        graphics.setClip(getGraphicsState().getCurrentClippingPath());
+        setClip();
         PDSoftMask softMask = getGraphicsState().getSoftMask();
         if( softMask != null ) 
         {
@@ -826,6 +841,7 @@ public class PageDrawer extends PDFStreamEngine
         graphics.setPaint(paint);
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         graphics.setClip(null);
+        lastClip = null;
         graphics.fill(getGraphicsState().getCurrentClippingPath());
     }
 
@@ -894,16 +910,16 @@ public class PageDrawer extends PDFStreamEngine
             // check underlying g2d
             double unitSize = 1.0;
 
-            Area resultClippingArea = new Area(getGraphicsState().getCurrentClippingPath());
+            Area groupClip = new Area(getGraphicsState().getCurrentClippingPath());
             if (clippingPath != null)
             {
                 Area newArea = new Area(clippingPath);            
-                resultClippingArea.intersect(newArea);
+                groupClip.intersect(newArea);
             }
 
             AffineTransform at = g2dOriginal.getTransform();
             at.scale(unitSize, unitSize);
-            Shape clippingPathInPixels = at.createTransformedShape(resultClippingArea);
+            Shape clippingPathInPixels = at.createTransformedShape(groupClip);
             Rectangle2D bounds2D = clippingPathInPixels.getBounds2D();
 
             minX = (int) Math.floor(bounds2D.getMinX());
@@ -914,16 +930,16 @@ public class PageDrawer extends PDFStreamEngine
             width = maxX - minX;
             height = maxY - minY;
             image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB); // FIXME - color space
-            Graphics2D groupG2D = image.createGraphics();
-            groupG2D.translate(-minX, -minY);
-            groupG2D.transform(at);
-            groupG2D.setClip(resultClippingArea);
+            Graphics2D g = image.createGraphics();
+            g.translate(-minX, -minY);
+            g.transform(at);
+            g.setClip(groupClip);
 
             AffineTransform atInv;
             Matrix matrix1 = null;
             try
             {
-                atInv = groupG2D.getTransform().createInverse();
+                atInv = g.getTransform().createInverse();
                 atInv.scale(width, -height);
                 atInv.translate(0, -1);
                 matrix1 = new Matrix();
@@ -940,7 +956,7 @@ public class PageDrawer extends PDFStreamEngine
             state.setAlphaConstants(1.0);
             state.setNonStrokeAlphaConstants(1.0);
             state.setSoftMask(null);
-            graphics = groupG2D;
+            graphics = g;
             try
             {
                 processSubStream(resources, content);

@@ -60,7 +60,7 @@ import org.apache.pdfbox.text.TextPositionComparator;
  *
  * @author Ben Litchfield
  */
-public class PDFTextStripper extends PDFStreamEngine
+public class PDFTextStripper extends PDFTextStreamEngine
 {
     private static float DEFAULT_INDENT_THRESHOLD = 2.0f;
     private static float DEFAULT_DROP_THRESHOLD = 2.5f;
@@ -545,7 +545,7 @@ public class PDFTextStripper extends PDFStreamEngine
             while (textIter.hasNext())
             {
                 TextPosition position = textIter.next();
-                String stringValue = position.getCharacter();
+                String stringValue = position.getUnicode();
                 for (int a = 0; a < stringValue.length(); a++)
                 {
                     byte dir = Character.getDirectionality(stringValue.charAt(a));
@@ -591,7 +591,7 @@ public class PDFTextStripper extends PDFStreamEngine
             {
                 TextPosition position = textIter.next();
                 PositionWrapper current = new PositionWrapper(position);
-                String characterValue = position.getCharacter();
+                String characterValue = position.getUnicode();
 
                 // Resets the average character width when we see a change in font
                 // or a change in the font size
@@ -706,8 +706,8 @@ public class PDFTextStripper extends PDFStreamEngine
                     if (expectedStartOfNextWordX != EXPECTED_START_OF_NEXT_WORD_X_RESET_VALUE &&
                         expectedStartOfNextWordX < positionX &&
                         // only bother adding a space if the last character was not a space
-                        lastPosition.getTextPosition().getCharacter() != null &&
-                        !lastPosition.getTextPosition().getCharacter().endsWith(" "))
+                        lastPosition.getTextPosition().getUnicode() != null &&
+                        !lastPosition.getTextPosition().getUnicode().endsWith(" "))
                     {
                         line.add(LineItem.getWordSeparator());
                     }
@@ -786,7 +786,7 @@ public class PDFTextStripper extends PDFStreamEngine
      */
     protected void writeCharacters(TextPosition text) throws IOException
     {
-        output.write(text.getCharacter());
+        output.write(text.getUnicode());
     }
 
     /**
@@ -838,7 +838,7 @@ public class PDFTextStripper extends PDFStreamEngine
         if (suppressDuplicateOverlappingText)
         {
             showCharacter = false;
-            String textCharacter = text.getCharacter();
+            String textCharacter = text.getUnicode();
             float textX = text.getX();
             float textY = text.getY();
             TreeMap<Float, TreeSet<Float>> sameTextCharacters =
@@ -1666,7 +1666,7 @@ public class PDFTextStripper extends PDFStreamEngine
     protected Pattern matchListItemPattern(PositionWrapper pw) 
     {
         TextPosition tp = pw.getTextPosition();
-        String txt = tp.getCharacter();
+        String txt = tp.getUnicode();
         return matchPattern(txt,getListItemPatterns());
     }
 
@@ -1843,7 +1843,7 @@ public class PDFTextStripper extends PDFStreamEngine
         else 
         {
             TextPosition text = item.getTextPosition();
-            lineBuilder.append(text.getCharacter());
+            lineBuilder.append(text.getUnicode());
             wordPositions.add(text);
         }
         return lineBuilder;
@@ -1889,7 +1889,7 @@ public class PDFTextStripper extends PDFStreamEngine
      * Note that the number of entries in that list may differ from the number of characters in the
      * string due to normalization.
      *
-     * @author Axel Dörfler
+     * @author Axel Dï¿½rfler
      */
     private static final class WordWithTextPositions
     {

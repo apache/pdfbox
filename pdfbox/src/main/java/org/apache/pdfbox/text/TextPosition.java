@@ -28,13 +28,13 @@ public final class TextPosition
 {
     // text matrix for the start of the text object, coordinates are in display units
     // and have not been adjusted
-    private final Matrix textPos;
+    private final Matrix textMatrix;
 
     // ending X and Y coordinates in display units
     private final float endX;
     private final float endY;
 
-    private final float maxTextHeight; // maximum height of text, in display units
+    private final float maxHeight; // maximum height of text, in display units
     private final int rotation; // 0, 90, 180, 270 degrees of page rotation
     private final float x;
     private final float y;
@@ -43,42 +43,42 @@ public final class TextPosition
 
     private final float widthOfSpace; // width of a space, in display units
 
-    private final int[] unicodeCP;
+    private final int[] charCodes; // internal PDF character codes
     private final PDFont font;
     private final float fontSize;
     private final int fontSizePt;
 
     // mutable
     private float[] widths;
-    private String string;
+    private String unicode;
 
     /**
      * Constructor.
      *
      * @param pageRotation rotation of the page that the text is located in
-     * @param pageWidthValue rotation of the page that the text is located in
-     * @param pageHeightValue rotation of the page that the text is located in
-     * @param textPositionSt TextMatrix for start of text (in display units)
-     * @param endXValue x coordinate of the end position
-     * @param endYValue y coordinate of the end position
-     * @param maxFontH Maximum height of text (in display units)
-     * @param individualWidth The width of the given character/string. (in ? units)
+     * @param pageWidth rotation of the page that the text is located in
+     * @param pageHeight rotation of the page that the text is located in
+     * @param textMatrix TextMatrix for start of text (in display units)
+     * @param endX x coordinate of the end position
+     * @param endY y coordinate of the end position
+     * @param maxHeight Maximum height of text (in display units)
+     * @param individualWidth The width of the given character/string. (in text units)
      * @param spaceWidth The width of the space character. (in display units)
-     * @param string The character to be displayed.
-     * @param codePoints An array containing the codepoints of the given string.
-     * @param currentFont The current font for this text position.
-     * @param fontSizeValue The new font size.
+     * @param unicode The string of Unicode characters to be displayed.
+     * @param charCodes An array of the internal PDF character codes for the glyphs in this text.
+     * @param font The current font for this text position.
+     * @param fontSize The new font size.
      * @param fontSizeInPt The font size in pt units.
      */
-    public TextPosition(int pageRotation, float pageWidthValue, float pageHeightValue,
-                        Matrix textPositionSt, float endXValue, float endYValue, float maxFontH,
-                        float individualWidth,  float spaceWidth, String string, int[] codePoints,
-                        PDFont currentFont, float fontSizeValue, int fontSizeInPt)
+    public TextPosition(int pageRotation, float pageWidth, float pageHeight, Matrix textMatrix,
+                        float endX, float endY, float maxHeight, float individualWidth,
+                        float spaceWidth, String unicode, int[] charCodes, PDFont font,
+                        float fontSize, int fontSizeInPt)
     {
-        this.textPos = textPositionSt;
+        this.textMatrix = textMatrix;
 
-        this.endX = endXValue;
-        this.endY = endYValue;
+        this.endX = endX;
+        this.endY = endY;
 
         int rotation = pageRotation;
         // make sure it is 0 to 270 and no negative numbers
@@ -92,26 +92,26 @@ public final class TextPosition
         }
         this.rotation = rotation;
 
-        this.maxTextHeight = maxFontH;
-        this.pageHeight = pageHeightValue;
-        this.pageWidth = pageWidthValue;
+        this.maxHeight = maxHeight;
+        this.pageHeight = pageHeight;
+        this.pageWidth = pageWidth;
 
         this.widths = new float[] { individualWidth };
         this.widthOfSpace = spaceWidth;
-        this.string = string;
-        this.unicodeCP = codePoints;
-        this.font = currentFont;
-        this.fontSize = fontSizeValue;
+        this.unicode = unicode;
+        this.charCodes = charCodes;
+        this.font = font;
+        this.fontSize = fontSize;
         this.fontSizePt = fontSizeInPt;
 
         x = getXRot(rotation);
         if (rotation == 0 || rotation == 180)
         {
-            y = pageHeight - getYLowerLeftRot(rotation);
+            y = this.pageHeight - getYLowerLeftRot(rotation);
         }
         else
         {
-            y = pageWidth - getYLowerLeftRot(rotation);
+            y = this.pageWidth - getYLowerLeftRot(rotation);
         }
     }
 
@@ -120,29 +120,29 @@ public final class TextPosition
      *
      * @return The string on the screen.
      */
-    public String getCharacter()
+    public String getUnicode()
     {
-        return string;
+        return unicode;
     }
 
     /**
-     * Return the codepoints of the characters stored in this object.
+     * Return the internal PDF character codes of the glyphs in this text.
      *
-     * @return an array containing all codepoints.
+     * @return an array of internal PDF character codes
      */
-    public int[] getCodePoints()    // todo: NOT Unicode!!
+    public int[] getCharacterCodes()
     {
-        return unicodeCP;
+        return charCodes;
     }
 
     /**
-     * Return the Matrix textPos stored in this object.
+     * Return the text matrix stored in this object.
      *
-     * @return The Matrix containing all infos of the starting textposition
+     * @return The Matrix containing the starting text position
      */
-    public Matrix getTextPos()
+    public Matrix getTextMatrix()
     {
-        return textPos;
+        return textMatrix;
     }
 
     /**
@@ -151,10 +151,10 @@ public final class TextPosition
      */
     public float getDir()
     {
-        float a = textPos.getValue(0,0);
-        float b = textPos.getValue(0,1);
-        float c = textPos.getValue(1,0);
-        float d = textPos.getValue(1,1);
+        float a = textMatrix.getValue(0,0);
+        float b = textMatrix.getValue(0,1);
+        float c = textMatrix.getValue(1,0);
+        float d = textMatrix.getValue(1,1);
 
         // 12 0   left to right
         // 0 12
@@ -194,19 +194,19 @@ public final class TextPosition
     {
         if (rotation == 0)
         {
-            return textPos.getValue(2,0);
+            return textMatrix.getValue(2,0);
         }
         else if (rotation == 90)
         {
-            return textPos.getValue(2,1);
+            return textMatrix.getValue(2,1);
         }
         else if (rotation == 180)
         {
-            return pageWidth - textPos.getValue(2,0);
+            return pageWidth - textMatrix.getValue(2,0);
         }
         else if (rotation == 270)
         {
-            return pageHeight - textPos.getValue(2,1);
+            return pageHeight - textMatrix.getValue(2,1);
         }
         return 0;
     }
@@ -245,19 +245,19 @@ public final class TextPosition
     {
         if (rotation == 0)
         {
-            return textPos.getValue(2,1);
+            return textMatrix.getValue(2,1);
         }
         else if (rotation == 90)
         {
-            return pageWidth - textPos.getValue(2,0);
+            return pageWidth - textMatrix.getValue(2,0);
         }
         else if (rotation == 180)
         {
-            return pageHeight - textPos.getValue(2,1);
+            return pageHeight - textMatrix.getValue(2,1);
         }
         else if (rotation == 270)
         {
-            return textPos.getValue(2,0);
+            return textMatrix.getValue(2,0);
         }
         return 0;
     }
@@ -303,11 +303,11 @@ public final class TextPosition
     {
         if (rotation == 90 || rotation == 270)
         {
-            return Math.abs(endY - textPos.getYPosition());
+            return Math.abs(endY - textMatrix.getYPosition());
         }
         else
         {
-            return Math.abs(endX - textPos.getXPosition());
+            return Math.abs(endX - textMatrix.getXPosition());
         }
     }
 
@@ -338,7 +338,7 @@ public final class TextPosition
      */
     public float getHeight()
     {
-        return maxTextHeight;
+        return maxHeight;
     }
 
     /**
@@ -349,7 +349,7 @@ public final class TextPosition
     public float getHeightDir()
     {
         // this is not really a rotation-dependent calculation, but this is defined for symmetry
-        return maxTextHeight;
+        return maxHeight;
     }
 
     /**
@@ -399,7 +399,7 @@ public final class TextPosition
      */
     public float getXScale()
     {
-        return textPos.getXScale();
+        return textMatrix.getXScale();
     }
 
     /**
@@ -407,7 +407,7 @@ public final class TextPosition
      */
     public float getYScale()
     {
-        return textPos.getYScale();
+        return textMatrix.getYScale();
     }
 
     /**
@@ -477,7 +477,7 @@ public final class TextPosition
      */
     public void mergeDiacritic(TextPosition diacritic, TextNormalize normalize)
     {
-        if (diacritic.getCharacter().length() > 1)
+        if (diacritic.getUnicode().length() > 1)
         {
             return;
         }
@@ -487,7 +487,7 @@ public final class TextPosition
 
         float currCharXStart = getXDirAdj();
 
-        int strLen = string.length();
+        int strLen = unicode.length();
         boolean wasAdded = false;
 
         for (int i = 0; i < strLen && !wasAdded; i++)
@@ -561,10 +561,10 @@ public final class TextPosition
         // we add the diacritic to the right or left of the character depending on the direction
         // of the character. Note that this is only required because the text is currently stored in
         // presentation order and not in logical order
-        int dir = Character.getDirectionality(string.charAt(i));
+        int dir = Character.getDirectionality(unicode.charAt(i));
         StringBuilder sb = new StringBuilder();
 
-        sb.append(string.substring(0, i));
+        sb.append(unicode.substring(0, i));
 
         float[] widths2 = new float[widths.length + 1];
         System.arraycopy(widths, 0, widths2, 0, i);
@@ -574,24 +574,24 @@ public final class TextPosition
             dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_EMBEDDING ||
             dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_OVERRIDE)
         {
-            sb.append(normalize.normalizeDiacritic(diacritic.getCharacter()));
+            sb.append(normalize.normalizeDiacritic(diacritic.getUnicode()));
             widths2[i] = 0;
-            sb.append(string.charAt(i));
+            sb.append(unicode.charAt(i));
             widths2[i + 1] = widths[i];
         }
         else
         {
-            sb.append(string.charAt(i));
+            sb.append(unicode.charAt(i));
             widths2[i] = widths[i];
-            sb.append(normalize.normalizeDiacritic(diacritic.getCharacter()));
+            sb.append(normalize.normalizeDiacritic(diacritic.getUnicode()));
             widths2[i + 1] = 0;
         }
 
         // get the rest of the string
-        sb.append(string.substring(i + 1, string.length()));
+        sb.append(unicode.substring(i + 1, unicode.length()));
         System.arraycopy(widths, i + 1, widths2, i + 2, widths.length - i - 1);
 
-        string = sb.toString();
+        unicode = sb.toString();
         widths = widths2;
     }
 
@@ -600,7 +600,7 @@ public final class TextPosition
      */
     public boolean isDiacritic()
     {
-        String text = this.getCharacter();
+        String text = this.getUnicode();
         if (text.length() != 1)
         {
             return false; 
@@ -618,6 +618,6 @@ public final class TextPosition
      */
     public String toString()
     {
-        return getCharacter();
+        return getUnicode();
     }
 }

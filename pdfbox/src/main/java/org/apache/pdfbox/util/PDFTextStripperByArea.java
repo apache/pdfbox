@@ -156,6 +156,7 @@ public class PDFTextStripperByArea extends PDFTextStripper
     /**
      * {@inheritDoc}
      */
+    @Override
     protected void processTextPosition( TextPosition text )
     {
         Iterator<String> regionIter = regionArea.keySet().iterator();
