@@ -26,6 +26,8 @@ import static junit.framework.TestCase.assertTrue;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
+import org.junit.Assume;
+
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.colorCount;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.doWritePDF;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.validate;
@@ -110,6 +112,11 @@ public class JPEGFactoryTest extends TestCase
      */
     public void testCreateFromImageINT_ARGB() throws IOException
     {
+        System.getProperties().list(System.out);
+
+        // Open JDK 6 bug
+        Assume.assumeFalse(System.getProperty("java.version").equals("1.6.0_30"));
+
         PDDocument document = new PDDocument();
         BufferedImage image = ImageIO.read(JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg"));
 
@@ -144,6 +151,9 @@ public class JPEGFactoryTest extends TestCase
      */
     public void testCreateFromImage4BYTE_ABGR() throws IOException
     {
+        // Open JDK 6 bug
+        Assume.assumeFalse(System.getProperty("java.version").equals("1.6.0_30"));
+
         PDDocument document = new PDDocument();
         BufferedImage image = ImageIO.read(JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg"));
 
