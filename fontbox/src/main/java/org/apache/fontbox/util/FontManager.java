@@ -50,6 +50,25 @@ public class FontManager
     // HashMap with all known true type fonts
     private static HashMap<String, String> fontMappingTTF = new HashMap<String, String>();
 
+    // fallback font
+    private static TrueTypeFont standardFont;
+
+    static
+    {
+        try
+        {
+            standardFont = findTTFont("Arial");
+            if (standardFont == null)
+            {
+                throw new IOException("Could not load TTF fallback font");
+            }
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
     private FontManager()
     {
     }
@@ -318,23 +337,33 @@ public class FontManager
      * Search for a true type font for the given font name.
      * 
      * @param fontname the given font name
-     * @return the mapped true type font
+     * @return the mapped true type font, or null if none could be found
      * @throws IOException if something went wrong
      */
     public static TrueTypeFont findTTFont(String fontname) throws IOException
     {
-        String ttffontname = findTTFontname(fontname);
+        String ttfFontName = findTTFontname(fontname);
         TrueTypeFont ttfFont = null;
-        if (ttffontname != null)
+        if (ttfFontName != null)
         {
             TTFParser ttfParser = new TTFParser();
-            InputStream fontStream = ResourceLoader.loadResource(ttffontname);
+            InputStream fontStream = ResourceLoader.loadResource(ttfFontName);
             if (fontStream == null)
             {
-                throw new IOException("Can't load external font: " + ttffontname);
+                throw new IOException("Can't load external font: " + ttfFontName);
             }
             ttfFont = ttfParser.parseTTF(fontStream);
         }
         return ttfFont;
+    }
+
+    /**
+     * Get the standard font from the environment.
+     *
+     * @return standard font
+     */
+    public static TrueTypeFont getStandardFont()
+    {
+        return standardFont;
     }
 }

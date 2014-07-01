@@ -289,6 +289,15 @@ public class PDTrueTypeFont extends PDFont
             }
         }
 
+        if (this.getFontEncoding() == null)
+        {
+            // todo: calling this.getFontEncoding() doesn't work if the font is loaded
+            //       from the local system, because it relies on the FontDescriptor!
+            //       We make do for now by returning an incomplete descriptor pending further
+            //       refactoring of PDFont#determineEncoding().
+            return fd;
+        }
+
         Map<Integer, String> codeToName = this.getFontEncoding().getCodeToNameMap();
 
         int firstChar = Collections.min(codeToName.keySet());
@@ -371,6 +380,10 @@ public class PDTrueTypeFont extends PDFont
             {
                 // check if there is a font mapping for an external font file
                 ttf = FontManager.findTTFont(getBaseFont());
+            }
+            if (ttf == null)
+            {
+                ttf = FontManager.getStandardFont();
             }
         }
         return ttf;
