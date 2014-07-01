@@ -181,7 +181,7 @@ public class PDResources implements COSObjectable
      * 
      * @return The map of fonts.
      */
-    public Map<String, PDFont> getFonts()
+    public Map<String, PDFont> getFonts() throws IOException
     {
         if (fonts == null)
         {
@@ -203,19 +203,8 @@ public class PDResources implements COSObjectable
                     // PDF, we will just ignore entries that are not dictionaries.
                     if (font instanceof COSDictionary)
                     {
-                        PDFont newFont = null;
-                        try
-                        {
-                            newFont = PDFontFactory.createFont((COSDictionary) font);
-                        }
-                        catch (IOException exception)
-                        {
-                            LOG.error("error while creating a font", exception);
-                        }
-                        if (newFont != null)
-                        {
-                            fonts.put(fontName.getName(), newFont);
-                        }
+                        PDFont newFont = PDFontFactory.createFont((COSDictionary) font);
+                        fonts.put(fontName.getName(), newFont);
                     }
                 }
             }
@@ -555,7 +544,7 @@ public class PDResources implements COSObjectable
      * @param font the font to be added
      * @return the font name to be used within the content stream.
      */
-    public String addFont(PDFont font)
+    public String addFont(PDFont font) throws IOException
     {
         // use the getter to initialize a possible empty fonts map
         return addFont(font, getNextUniqueKey(getFonts(), "F"));
@@ -568,7 +557,7 @@ public class PDResources implements COSObjectable
      * @param fontKey key to used to map to the given font
      * @return the font name to be used within the content stream.
      */
-    public String addFont(PDFont font, String fontKey)
+    public String addFont(PDFont font, String fontKey) throws IOException
     {
         if (fonts == null)
         {

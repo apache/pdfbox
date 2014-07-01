@@ -369,7 +369,7 @@ public class FontManager
 
             if (standardFont == null)
             {
-                throw new IOException("Could not load TTF fallback font");
+                throw new IOException("Could not find TTF fallback font on the system");
             }
         }
         return standardFont;
