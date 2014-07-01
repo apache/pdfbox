@@ -107,7 +107,7 @@ public class PageDrawer extends PDFStreamEngine
     private GeneralPath linePath = new GeneralPath();
 
     // last clipping path
-    private Area lastClip;
+    private Shape lastClip;
 
     private final Map<PDFont, Glyph2D> fontGlyph2D = new HashMap<PDFont, Glyph2D>();
     private final Map<PDFont, Font> awtFonts = new HashMap<PDFont, Font>();
@@ -259,11 +259,10 @@ public class PageDrawer extends PDFStreamEngine
     // Graphics2D#getClip() returns a new object instead of the same one passed to setClip
     private void setClip()
     {
-        Area clippingPath = getGraphicsState().getCurrentClippingPath();
-        if (clippingPath != lastClip)
+        if (graphics.getClip() != lastClip)
         {
-            graphics.setClip(clippingPath);
-            lastClip = clippingPath;
+            graphics.setClip(getGraphicsState().getCurrentClippingPath());
+            lastClip = graphics.getClip();
         }
     }
 
@@ -847,7 +846,6 @@ public class PageDrawer extends PDFStreamEngine
         graphics.setPaint(paint);
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         graphics.setClip(null);
-        lastClip = null;
         graphics.fill(getGraphicsState().getCurrentClippingPath());
     }
 
