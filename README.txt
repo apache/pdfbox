@@ -46,10 +46,7 @@ commont issues are:
    order.  This mght be because you have not enabled sorting.  The text
    in PDF files is stored in chunks and the chunks do not need to be stored 
    in the order that they are displayed on a page.  By default, PDFBox does 
-   not sort the text.  Also, if you have text in a language that reads right
-   to left (such as Arabic or Hebrew), make sure you have the ICU4J jar file
-   in your classpath. This library is needed to properly hande right to
-   left text.
+   not sort the text.
 
 License (see also LICENSE.txt)
 ==============================
@@ -70,13 +67,6 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-
-Unmodifiable files
-==================
-
-Apache PDFBox contains the Adobe glyph list file that may be redistributed
-only in *unmodified* form. See the LICENSE file for the exact licensing
-conditions.
 
 Export control
 ==============
