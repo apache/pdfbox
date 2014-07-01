@@ -105,10 +105,11 @@ public class Type1CharStringParser
 
                 // othersubrs 0-3 have their own semantics
                 Stack<Integer> results = new Stack<Integer>();
-                if (othersubrNum == 0) {
-                    results.push((Integer)sequence.remove(sequence.size()-1));
-                    results.push((Integer)sequence.remove(sequence.size()-1));
-                    sequence.remove(sequence.size()-1);
+                if (othersubrNum == 0)
+                {
+                    results.push(removeInteger(sequence));
+                    results.push(removeInteger(sequence));
+                    sequence.remove(sequence.size() - 1);
                     // end flex
                     sequence.add(0);
                     sequence.add(new CharStringCommand(TWO_BYTE, CALLOTHERSUBR));
@@ -122,13 +123,13 @@ public class Type1CharStringParser
                 else if (othersubrNum == 3)
                 {
                     // allows hint replacement
-                    results.push((Integer)sequence.remove(sequence.size()-1));
+                    results.push(removeInteger(sequence));
                 }
                 else
                 {
                     // all remaining othersubrs use this fallback mechanism
                     for (int i = 0; i < numArgs; i++) {
-                        Integer arg = (Integer)sequence.remove(sequence.size()-1);
+                        Integer arg = removeInteger(sequence);
                         results.push(arg);
                     }
                 }
@@ -161,6 +162,33 @@ public class Type1CharStringParser
             }
         }
         return sequence;
+    }
+
+    // this method is a workaround for the fact that Type1CharStringParser assumes that subrs and
+    // othersubrs can be unrolled without executing the 'div' operator, which isn't true
+    private Integer removeInteger(List<Object> sequence) throws IOException
+    {
+        Object item = sequence.remove(sequence.size() - 1);
+        if (item instanceof Integer)
+        {
+            return (Integer)item;
+        }
+        else
+        {
+            CharStringCommand command = (CharStringCommand)item;
+
+            // div
+            if (command.getKey().getValue()[0] == 12 && command.getKey().getValue()[0] == 12)
+            {
+                int a = (Integer)sequence.remove(sequence.size() - 1);
+                int b = (Integer)sequence.remove(sequence.size() - 1);
+                return b / a;
+            }
+            else
+            {
+                throw new IOException("Unexpected char string command: " + command.getKey());
+            }
+        }
     }
 
     private CharStringCommand readCommand(DataInput input, int b0) throws IOException
