@@ -508,7 +508,7 @@ public class PDFStreamEngine
     /**
      * @return Returns the fonts.
      */
-    public Map<String, PDFont> getFonts()
+    public Map<String, PDFont> getFonts() throws IOException
     {
         if (streamResourcesStack.isEmpty())
         {

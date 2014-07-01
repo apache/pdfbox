@@ -26,7 +26,9 @@ import static org.apache.pdfbox.preflight.PreflightConfiguration.FONT_PROCESS;
 import static org.apache.pdfbox.preflight.PreflightConfiguration.GRAPHIC_PROCESS;
 import static org.apache.pdfbox.preflight.PreflightConfiguration.SHADDING_PATTERN_PROCESS;
 import static org.apache.pdfbox.preflight.PreflightConfiguration.TILING_PATTERN_PROCESS;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_DICTIONARY_INVALID;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_PATTERN_DEFINITION;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_PDF_PROCESSING_MISSING;
 import static org.apache.pdfbox.preflight.PreflightConstants.TRANPARENCY_DICTIONARY_KEY_EXTGSTATE;
 
 import java.io.IOException;
@@ -88,13 +90,20 @@ public class ResourcesValidationProcess extends AbstractProcess
      */
     protected void validateFonts(PreflightContext context, PDResources resources) throws ValidationException
     {
-        Map<String, PDFont> mapOfFonts = resources.getFonts();
-        if (mapOfFonts != null)
+        try
         {
-            for (Entry<String, PDFont> entry : mapOfFonts.entrySet())
+            Map<String, PDFont> mapOfFonts = resources.getFonts();
+            if (mapOfFonts != null)
             {
-                ContextHelper.validateElement(context, entry.getValue(), FONT_PROCESS);
+                for (Entry<String, PDFont> entry : mapOfFonts.entrySet())
+                {
+                    ContextHelper.validateElement(context, entry.getValue(), FONT_PROCESS);
+                }
             }
+        }
+        catch (IOException e)
+        {
+            context.addValidationError(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID, "Could not read font"));
         }
     }
 

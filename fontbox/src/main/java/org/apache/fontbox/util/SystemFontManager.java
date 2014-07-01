@@ -32,28 +32,19 @@ import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.util.autodetect.FontFileFinder;
 
 /**
- * This class is used as manager for local fonts. It's based on the font manager provided by Apache FOP. see
- * org.apache.fop.fonts.FontManager.java
+ * System font manager. Based on the font manager provided by Apache FOP.
+ *
+ * See: org.apache.fop.fonts.FontManager
  */
-
-public class FontManager
+public class SystemFontManager
 {
-    /**
-     * Log instance.
-     */
-    private static final Log LOG = LogFactory.getLog(FontManager.class);
+    private static final Log LOG = LogFactory.getLog(SystemFontManager.class);
 
     private static HashMap<String, String> ttfFontfiles = new HashMap<String, String>();
-
     private static boolean fontsLoaded = false;
-
-    // HashMap with all known true type fonts
     private static HashMap<String, String> fontMappingTTF = new HashMap<String, String>();
 
-    // fallback font
-    private static TrueTypeFont standardFont;
-
-    private FontManager()
+    private SystemFontManager()
     {
     }
 
@@ -339,39 +330,5 @@ public class FontManager
             ttfFont = ttfParser.parseTTF(fontStream);
         }
         return ttfFont;
-    }
-
-    /**
-     * Get the standard font from the environment.
-     *
-     * @return standard font
-     */
-    public static TrueTypeFont getStandardFont() throws IOException
-    {
-        if (standardFont == null)
-        {
-            // todo: make this configurable
-
-            // Windows
-            standardFont = findTTFont("Arial");
-
-            if (standardFont == null)
-            {
-                // OS X
-                standardFont = findTTFont("Helvetica");
-            }
-
-            if (standardFont == null)
-            {
-                // Linux
-                standardFont = findTTFont("Liberation Sans");
-            }
-
-            if (standardFont == null)
-            {
-                throw new IOException("Could not find TTF fallback font on the system");
-            }
-        }
-        return standardFont;
     }
 }

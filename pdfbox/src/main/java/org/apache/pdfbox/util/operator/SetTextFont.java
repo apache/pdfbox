@@ -49,12 +49,7 @@ public class SetTextFont extends OperatorProcessor
             COSName fontName = (COSName)arguments.get( 0 );
             float fontSize = ((COSNumber)arguments.get( 1 ) ).floatValue();
             context.getGraphicsState().getTextState().setFontSize( fontSize );
-
-            context.getGraphicsState().getTextState().setFont( (PDFont)context.getFonts().get( fontName.getName() ) );
-            if( context.getGraphicsState().getTextState().getFont() == null )
-            {
-                throw new IOException( "Error: Could not find font(" + fontName + ") in map=" + context.getFonts() );
-            }
+            context.getGraphicsState().getTextState().setFont( context.getFonts().get( fontName.getName() ) );
         }
     }
 
