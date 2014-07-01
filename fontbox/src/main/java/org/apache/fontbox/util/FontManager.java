@@ -81,6 +81,7 @@ public class FontManager
         }
         catch (IOException e)
         {
+            LOG.error(e);
             throw new RuntimeException(e);
         }
     }
