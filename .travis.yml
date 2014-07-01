@@ -23,3 +23,6 @@ jdk:
   - oraclejdk7
   - openjdk6
 
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq fonts-liberation
