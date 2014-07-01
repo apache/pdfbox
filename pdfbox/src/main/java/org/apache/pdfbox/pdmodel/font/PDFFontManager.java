@@ -25,27 +25,27 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.apache.fontbox.ttf.TrueTypeFont;
+import org.apache.fontbox.util.SystemFontManager;
 import org.apache.pdfbox.util.ResourceLoader;
 
 /**
- *  This class is used as font manager.
- *  @author <a href="mailto:andreas@lehmi.de">Andreas Lehmkühler</a>
- *  @version $Revision: 1.0 $
+ * PDF font manager.
+ *
+ * @author Andreas Lehmkühler
  */
-
-public class FontManager 
+public final class PDFFontManager
 {
-    /**
-     * Log instance.
-     */
-    private static final Log LOG = LogFactory.getLog(FontManager.class);
+    private static final Log LOG = LogFactory.getLog(PDFFontManager.class);
 
-    // HashMap with all known fonts
+    // AWT
     private static HashMap<String,java.awt.Font> envFonts = new HashMap<String,java.awt.Font>();
-    // the standard font
-    private final static String standardFont = "helvetica";
-    private static Properties fontMapping = new Properties(); 
-    
+    private final static String awtFallback = "helvetica";
+    private static Properties fontMapping = new Properties();
+
+    // system TTF
+    private static TrueTypeFont ttfFallback;
+
     static {
         try
         {
@@ -63,7 +63,7 @@ public class FontManager
         loadFontMapping();
     }
     
-    private FontManager() 
+    private PDFFontManager()
     {
     }
     
@@ -73,20 +73,54 @@ public class FontManager
      * @return The standard font 
      * 
      */
-    public static java.awt.Font getStandardFont() 
+    public static java.awt.Font getAWTFallbackFont()
     {
-        Font awtFont = getAwtFont(standardFont);
+        Font awtFont = getAwtFont(awtFallback);
         if (awtFont == null)
         {
             // PDFBOX-1069
-            LOG.error("Standard font '" + standardFont + "' is not part of the environment");
+            LOG.error("Standard font '" + awtFallback + "' is not part of the environment");
             LOG.error("Available fonts:");
             for (Font font : GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts())
             {
                 LOG.error("\t" + font.getFontName());
-    }
+            }
         }
         return awtFont;
+    }
+
+    /**
+     * Get the standard font from the environment.
+     *
+     * @return standard font
+     */
+    public static TrueTypeFont getTrueTypeFallbackFont() throws IOException
+    {
+        if (ttfFallback == null)
+        {
+            // todo: make this configurable
+
+            // Windows
+            ttfFallback = SystemFontManager.findTTFont("Arial");
+
+            if (ttfFallback == null)
+            {
+                // OS X
+                ttfFallback = SystemFontManager.findTTFont("Helvetica");
+            }
+
+            if (ttfFallback == null)
+            {
+                // Linux
+                ttfFallback = SystemFontManager.findTTFont("Liberation Sans");
+            }
+
+            if (ttfFallback == null)
+            {
+                throw new IOException("Could not find TTF fallback font on the system");
+            }
+        }
+        return ttfFallback;
     }
     
     /**

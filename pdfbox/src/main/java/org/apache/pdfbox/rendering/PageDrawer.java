@@ -57,7 +57,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDMatrix;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.font.FontManager;
+import org.apache.pdfbox.pdmodel.font.PDFFontManager;
 import org.apache.pdfbox.pdmodel.font.PDCIDFontType0Font;
 import org.apache.pdfbox.pdmodel.font.PDCIDFontType2Font;
 import org.apache.pdfbox.pdmodel.font.PDFont;
@@ -389,7 +389,7 @@ public class PageDrawer extends PDFStreamEngine
         int textLength = charCodes.length;
         for (int i = 0; i < textLength; i++)
         {
-            COSStream stream = font.getCharStream((char)charCodes[i]);
+            COSStream stream = font.getCharStream((char) charCodes[i]);
             if (stream != null)
             {
                 // save the current graphics state and matrices
@@ -410,7 +410,7 @@ public class PageDrawer extends PDFStreamEngine
             }
             else
             {
-                LOG.debug("drawType3String: stream for character " + (char)charCodes[i] + " not found");
+                LOG.debug("drawType3String: stream for character " + (char) charCodes[i] + " not found");
             }
         }
     }
@@ -480,7 +480,7 @@ public class PageDrawer extends PDFStreamEngine
                         // check if the font is part of our environment
                         if (fd.getFontName() != null)
                         {
-                            awtFont = FontManager.getAwtFont(fd.getFontName());
+                            awtFont = PDFFontManager.getAwtFont(fd.getFontName());
                         }
                         if (awtFont == null)
                         {
@@ -492,7 +492,7 @@ public class PageDrawer extends PDFStreamEngine
                 {
                     // check if the font is part of our environment
                     String baseFont = type1Font.getBaseFont();
-                    awtFont = FontManager.getAwtFont(baseFont);
+                    awtFont = PDFFontManager.getAwtFont(baseFont);
                     if (awtFont == null)
                     {
                         LOG.info("Can't find the specified basefont " + baseFont);
@@ -506,7 +506,7 @@ public class PageDrawer extends PDFStreamEngine
             if (awtFont == null)
             {
                 // Fallback: we can't find anything, so we have to use the standard font
-                awtFont = FontManager.getStandardFont();
+                awtFont = PDFFontManager.getAWTFallbackFont();
                 LOG.info("Using font " + awtFont.getName() + " instead of " + font.getBaseFont());
             }
             awtFonts.put(font, awtFont);

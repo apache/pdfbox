@@ -42,7 +42,7 @@ import org.apache.fontbox.ttf.OS2WindowsMetricsTable;
 import org.apache.fontbox.ttf.PostScriptTable;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
-import org.apache.fontbox.util.FontManager;
+import org.apache.fontbox.util.SystemFontManager;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.encoding.Encoding;
@@ -379,11 +379,11 @@ public class PDTrueTypeFont extends PDFont
             if (ttf == null)
             {
                 // check if there is a font mapping for an external font file
-                ttf = FontManager.findTTFont(getBaseFont());
+                ttf = SystemFontManager.findTTFont(getBaseFont());
             }
             if (ttf == null)
             {
-                ttf = FontManager.getStandardFont();
+                ttf = PDFFontManager.getTrueTypeFallbackFont();
             }
         }
         return ttf;
