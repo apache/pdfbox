@@ -57,7 +57,23 @@ public class FontManager
     {
         try
         {
+            // todo: make this configurable
+
+            // Windows
             standardFont = findTTFont("Arial");
+
+            if (standardFont == null)
+            {
+                // OS X
+                standardFont = findTTFont("Helvetica");
+            }
+
+            if (standardFont == null)
+            {
+                // Linux
+                standardFont = findTTFont("Liberation Sans");
+            }
+
             if (standardFont == null)
             {
                 throw new IOException("Could not load TTF fallback font");
