@@ -19,12 +19,14 @@ package org.apache.pdfbox.pdmodel.font;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.util.SystemFontManager;
 import org.apache.pdfbox.util.ResourceLoader;
@@ -115,9 +117,17 @@ public final class PDFFontManager
                 ttfFallback = SystemFontManager.findTTFont("Liberation Sans");
             }
 
+            // built-in
             if (ttfFallback == null)
             {
-                throw new IOException("Could not find TTF fallback font on the system");
+                String name = "org/apache/pdfbox/resources/ttf/NimbusSanL-Regu.ttf";
+                TTFParser ttfParser = new TTFParser();
+                InputStream fontStream = org.apache.fontbox.util.ResourceLoader.loadResource(name);
+                if (fontStream == null)
+                {
+                    throw new IOException("Error loading resource: " + name);
+                }
+                ttfFallback = ttfParser.parseTTF(fontStream);
             }
         }
         return ttfFallback;
