@@ -37,21 +37,23 @@ import org.apache.pdfbox.util.ImageIOUtil;
 /**
  * Convert a PDF document to an image.
  *
- * @author <a href="ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.6 $
+ * @author Ben Litchfield
  */
 public class PDFToImage
 {
-
     private static final String PASSWORD = "-password";
     private static final String START_PAGE = "-startPage";
     private static final String END_PAGE = "-endPage";
-    private static final String IMAGE_FORMAT = "-imageType";
+    private static final String PAGE = "-page";
+    private static final String IMAGE_TYPE = "-imageType";
+    private static final String FORMAT = "-format";
     private static final String OUTPUT_PREFIX = "-outputPrefix";
+    private static final String PREFIX = "-prefix";
     private static final String COLOR = "-color";
     private static final String RESOLUTION = "-resolution";
+    private static final String DPI = "-dpi";
     private static final String CROPBOX = "-cropbox";
-    private static final String NONSEQ = "-nonSeq";
+    private static final String NON_SEQ = "-nonSeq";
 
     /**
      * private constructor.
@@ -120,12 +122,22 @@ public class PDFToImage
                 }
                 endPage = Integer.parseInt( args[i] );
             }
-            else if( args[i].equals( IMAGE_FORMAT ) )
+            else if( args[i].equals( PAGE ) )
+            {
+                i++;
+                if( i >= args.length )
+                {
+                    usage();
+                }
+                startPage = Integer.parseInt( args[i] );
+                endPage = Integer.parseInt( args[i] );
+            }
+            else if( args[i].equals(IMAGE_TYPE) || args[i].equals(FORMAT) )
             {
                 i++;
                 imageFormat = args[i];
             }
-            else if( args[i].equals( OUTPUT_PREFIX ) )
+            else if( args[i].equals( OUTPUT_PREFIX ) || args[i].equals( PREFIX ) )
             {
                 i++;
                 outputPrefix = args[i];
@@ -135,7 +147,7 @@ public class PDFToImage
                 i++;
                 color = args[i];
             }
-            else if( args[i].equals( RESOLUTION ) )
+            else if( args[i].equals( RESOLUTION ) || args[i].equals( DPI ) )
             {
                 i++;
                 dpi = Integer.parseInt(args[i]);
@@ -143,15 +155,15 @@ public class PDFToImage
             else if( args[i].equals( CROPBOX ) )
             {
                 i++;
-                cropBoxLowerLeftX = Float.valueOf(args[i]).floatValue();
+                cropBoxLowerLeftX = Float.valueOf(args[i]);
                 i++;
-                cropBoxLowerLeftY = Float.valueOf(args[i]).floatValue();
+                cropBoxLowerLeftY = Float.valueOf(args[i]);
                 i++;
-                cropBoxUpperRightX = Float.valueOf(args[i]).floatValue();
+                cropBoxUpperRightX = Float.valueOf(args[i]);
                 i++;
-                cropBoxUpperRightY = Float.valueOf(args[i]).floatValue();
+                cropBoxUpperRightY = Float.valueOf(args[i]);
             }
-            else if( args[i].equals( NONSEQ ) )
+            else if( args[i].equals(NON_SEQ) )
             {
                 useNonSeqParser = true;
             }
@@ -276,12 +288,13 @@ public class PDFToImage
     {
         System.err.println( "Usage: java -jar pdfbox-app-x.y.z.jar PDFToImage [OPTIONS] <PDF file>\n" +
             "  -password  <password>          Password to decrypt document\n" +
-            "  -imageType <image type>        (" + getImageFormats() + ")\n" +
-            "  -outputPrefix <output prefix>  Filename prefix for image files\n" +
-            "  -startPage <number>            The first page to start extraction(1 based)\n" +
+            "  -format <string>               Image format: " + getImageFormats() + "\n" +
+            "  -prefix <string>               Filename prefix for image files\n" +
+            "  -page <number>                 The only page to extract (1-based)\n" +
+            "  -startPage <number>            The first page to start extraction (1-based)\n" +
             "  -endPage <number>              The last page to extract(inclusive)\n" +
             "  -color <string>                The color depth (valid: bilevel, indexed, gray, rgb, rgba)\n" +
-            "  -resolution <number>           The bitmap resolution in dpi\n" +
+            "  -dpi <number>                  The DPI of the output image\n" +
             "  -cropbox <number> <number> <number> <number> The page area to export\n" +
             "  -nonSeq                        Enables the new non-sequential parser\n" +
             "  <PDF file>                     The PDF document to use\n"
@@ -291,15 +304,18 @@ public class PDFToImage
 
     private static String getImageFormats()
     {
-        StringBuffer retval = new StringBuffer();
+        StringBuilder retval = new StringBuilder();
         String[] formats = ImageIO.getReaderFormatNames();
         for( int i = 0; i < formats.length; i++ )
         {
-            retval.append( formats[i] );
-            if( i + 1 < formats.length )
-            {
-                retval.append( "," );
-            }
+           if(formats[i].toLowerCase().equals(formats[i]))
+           {
+               retval.append( formats[i] );
+               if( i + 1 < formats.length )
+               {
+                   retval.append( ", " );
+               }
+           }
         }
         return retval.toString();
     }
@@ -321,5 +337,4 @@ public class PDFToImage
 
         }
     }
-
 }
