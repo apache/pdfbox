@@ -212,6 +212,7 @@ public class PageDrawer extends PDFStreamEngine
                             at.transform(point, point);
                         }
                         graphics.translate((int) point.getX(), -(int) point.getY());
+                        lastClip = null;
                         processSubStream(appearance.getResources(), appearance.getStream());
                         graphics.translate(-(int) point.getX(), (int) point.getY());
                     }
@@ -912,6 +913,7 @@ public class PageDrawer extends PDFStreamEngine
         private TransparencyGroup(GeneralPath clippingPath, PDResources resources, COSStream content) throws IOException
         {
             Graphics2D g2dOriginal = graphics;
+            Area lastClipOriginal = lastClip;
 
             // check underlying g2d
             double unitSize = 1.0;
@@ -969,6 +971,7 @@ public class PageDrawer extends PDFStreamEngine
             }
             finally 
             {
+                lastClip = lastClipOriginal;                
                 graphics = g2dOriginal;
             }
         }
