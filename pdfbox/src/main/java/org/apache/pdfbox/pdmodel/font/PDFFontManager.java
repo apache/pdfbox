@@ -120,7 +120,7 @@ public final class PDFFontManager
             // built-in
             if (ttfFallback == null)
             {
-                String name = "org/apache/pdfbox/resources/ttf/NimbusSanL-Regu.ttf";
+                String name = "org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf";
                 TTFParser ttfParser = new TTFParser();
                 InputStream fontStream = org.apache.fontbox.util.ResourceLoader.loadResource(name);
                 if (fontStream == null)
