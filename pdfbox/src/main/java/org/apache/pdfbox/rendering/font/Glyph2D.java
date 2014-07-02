@@ -17,14 +17,13 @@
 
  */
 
-package org.apache.pdfbox.pdfviewer.font;
+package org.apache.pdfbox.rendering.font;
 
 import java.awt.geom.GeneralPath;
 
 /**
- * This interface is implemented by several font specific classes which is called to get the general path of a single
- * glyph of the represented font most likely to render it.
- * 
+ * This interface is implemented by several font specific classes which is called to get the
+ * general path of a single glyph of the represented font most likely to render it.
  */
 public interface Glyph2D
 {
@@ -38,15 +37,7 @@ public interface Glyph2D
     public GeneralPath getPathForCharacterCode(int code);
 
     /**
-     * Returns the number of glyphs provided by the given font.
-     * 
-     * @return the number of glyphs
-     */
-    public int getNumberOfGlyphs();
-
-    /**
      * Remove all cached resources.
      */
     public void dispose();
-
 }

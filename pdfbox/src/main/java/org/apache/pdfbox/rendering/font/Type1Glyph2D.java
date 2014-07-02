@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.pdfviewer.font;
+package org.apache.pdfbox.rendering.font;
 
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
@@ -34,9 +34,6 @@ import org.apache.pdfbox.encoding.Encoding;
  */
 public class Type1Glyph2D implements Glyph2D
 {
-    /**
-     * Log instance.
-     */
     private static final Log LOG = LogFactory.getLog(Type1Glyph2D.class);
 
     private HashMap<String, GeneralPath> glyphs = new HashMap<String, GeneralPath>();
@@ -111,9 +108,6 @@ public class Type1Glyph2D implements Glyph2D
         return glyphs.get(name);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public GeneralPath getPathForCharacterCode(int code)
     {
@@ -129,22 +123,6 @@ public class Type1Glyph2D implements Glyph2D
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getNumberOfGlyphs()
-    {
-        if (glyphs != null)
-        {
-            return glyphs.size();
-        }
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void dispose()
     {
