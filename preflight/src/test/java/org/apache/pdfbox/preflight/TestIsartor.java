@@ -53,6 +53,8 @@ import static org.junit.Assert.fail;
 public class TestIsartor
 {
 
+    public static final String FILTER_FILE = "isartor.filter";
+
     protected static FileOutputStream isartorResultFile = null;
 
     protected String expectedError;
@@ -106,7 +108,6 @@ public class TestIsartor
         PreflightDocument document = null;
         try
         {
-            System.out.println(path);
             InputStream input = new FileInputStream(path);
 
             ValidationResult result = null;
@@ -123,9 +124,8 @@ public class TestIsartor
             {
                 result = e.getResult();
             }
-
-            assertFalse(path + " : Isartor file should be invalid (" + path + ")", result.isValid());
-            assertTrue(path + " : Should find at least one error", result.getErrorsList().size() > 0);
+            assertFalse(path.getName() + " : Isartor file should be invalid", result.isValid());
+            assertTrue(path.getName() + " : Should find at least one error", result.getErrorsList().size() > 0);
 
             // could contain more than one error
             boolean found = false;
@@ -152,24 +152,31 @@ public class TestIsartor
                 if (!found)
                 {
                     StringBuilder message = new StringBuilder(100);
-                    message.append(path).append(" : Invalid error code returned. Expected ");
-                    message.append(this.expectedError).append(", found ");
                     for (ValidationError error : result.getErrorsList())
                     {
                         message.append(error.getErrorCode()).append(" ");
                     }
-                    fail(message.toString());
+                    fail(String.format("%s : Invalid error code returned. Expected %s, found [%s]",
+                            path.getName(),
+                            expectedError,
+                            message.toString().trim()
+                    ));
+
                 }
+                // if one of the error code of the list is the expected one, we consider test valid
             }
             else
             {
-                assertEquals(path + " : Invalid error code returned.", this.expectedError, result
+                assertEquals(path.getName() + " : Invalid error code returned.", this.expectedError, result
                         .getErrorsList().get(0).getErrorCode());
             }
         }
-        catch (ValidationException e)
-        {
-            throw new Exception(path + " :" + e.getMessage(), e);
+        catch (Exception e) {
+            fail(String.format("%s : %s raised , message=%s",
+                    path.getName(),
+                    e.getClass().getSimpleName()
+                    , e.getMessage()
+            ));
         }
         finally
         {
@@ -181,6 +188,7 @@ public class TestIsartor
     @Parameters(name = "{0}")
     public static Collection<Object[]> initializeParameters() throws Exception
     {
+        String filter = System.getProperty(FILTER_FILE);
         // load expected errors
         File f = new File("src/test/resources/expected_errors.txt");
         InputStream expected = new FileInputStream(f);
@@ -195,9 +203,11 @@ public class TestIsartor
             Collection<?> pdfFiles = FileUtils.listFiles(isartor,new String[] {"pdf","PDF"},true);
             for (Object  pdfFile : pdfFiles) {
                 String fn = ((File)pdfFile).getName();
-                String error = new StringTokenizer(props.getProperty(fn), "//").nextToken().trim();
-                Object [] tmp = new Object [] {(File)pdfFile,error};
-                data.add(tmp);
+                if (filter==null || (filter!=null && fn.contains(filter))) {
+                    String error = new StringTokenizer(props.getProperty(fn), "//").nextToken().trim();
+                    Object[] tmp = new Object[]{(File) pdfFile, error};
+                    data.add(tmp);
+                }
             }
         } else {
             logger.warn("Isartor data set not present, skipping Isartor validation");
