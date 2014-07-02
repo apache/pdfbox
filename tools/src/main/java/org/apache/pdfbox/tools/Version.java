@@ -68,6 +68,9 @@ public class Version
      */
     public static void main(String[] args)
     {
+        // suppress the Dock icon on OS X
+        System.setProperty("apple.awt.UIElement", "true");
+
         if( args.length != 0 )
         {
             usage();

@@ -170,6 +170,9 @@ public class TextToPDF
      */
     public static void main(String[] args) throws IOException
     {
+        // suppress the Dock icon on OS X
+        System.setProperty("apple.awt.UIElement", "true");
+
         TextToPDF app = new TextToPDF();
         PDDocument doc = null;
         try

@@ -72,6 +72,9 @@ public class PDFToImage
      */
     public static void main( String[] args ) throws IOException
     {
+        // suppress the Dock icon on OS X
+        System.setProperty("apple.awt.UIElement", "true");
+
         boolean useNonSeqParser = false; 
         String password = "";
         String pdfFile = null;

@@ -142,6 +142,9 @@ public class WriteDecodedDoc
      */
     public static void main(String[] args)
     {
+        // suppress the Dock icon on OS X
+        System.setProperty("apple.awt.UIElement", "true");
+
         WriteDecodedDoc app = new WriteDecodedDoc();
         String password = "";
         boolean useNonSeqParser = false;

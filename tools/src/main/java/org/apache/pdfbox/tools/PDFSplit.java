@@ -55,6 +55,9 @@ public class PDFSplit
      */
     public static void main( String[] args ) throws Exception
     {
+        // suppress the Dock icon on OS X
+        System.setProperty("apple.awt.UIElement", "true");
+
         PDFSplit split = new PDFSplit();
         split.split( args );
     }

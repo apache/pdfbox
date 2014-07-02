@@ -51,6 +51,9 @@ public class ExportXFDF
      */
     public static void main(String[] args) throws Exception
     {
+        // suppress the Dock icon on OS X
+        System.setProperty("apple.awt.UIElement", "true");
+
         ExportXFDF exporter = new ExportXFDF();
         exporter.exportXFDF( args );
     }

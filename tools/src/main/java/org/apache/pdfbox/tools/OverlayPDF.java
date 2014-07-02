@@ -53,6 +53,9 @@ public class OverlayPDF
      */
     public static void main(final String[] args) throws Exception 
     {
+        // suppress the Dock icon on OS X
+        System.setProperty("apple.awt.UIElement", "true");
+
         Overlay overlayer = new Overlay();
         Map<Integer, String> specificPageOverlayFile = new HashMap<Integer, String>();
         boolean useNonSeqParser = false;
