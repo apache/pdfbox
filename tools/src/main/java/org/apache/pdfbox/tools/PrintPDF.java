@@ -53,6 +53,9 @@ public class PrintPDF
      */
     public static void main(String[] args) throws Exception
     {
+        // suppress the Dock icon on OS X
+        System.setProperty("apple.awt.UIElement", "true");
+
         String password = "";
         String pdfFile = null;
         boolean silentPrint = false;

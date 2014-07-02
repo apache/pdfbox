@@ -69,6 +69,9 @@ public class ImportFDF
      */
     public static void main(String[] args) throws Exception
     {
+        // suppress the Dock icon on OS X
+        System.setProperty("apple.awt.UIElement", "true");
+
         ImportFDF importer = new ImportFDF();
         importer.importFDF( args );
     }

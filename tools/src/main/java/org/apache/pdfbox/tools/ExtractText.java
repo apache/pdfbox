@@ -80,6 +80,9 @@ public class ExtractText
      */
     public static void main( String[] args ) throws Exception
     {
+        // suppress the Dock icon on OS X
+        System.setProperty("apple.awt.UIElement", "true");
+
         ExtractText extractor = new ExtractText();
         extractor.startExtraction(args);
     }
