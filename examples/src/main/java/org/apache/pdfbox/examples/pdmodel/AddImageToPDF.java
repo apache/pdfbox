@@ -111,23 +111,16 @@ public class AddImageToPDF
      *
      * @param args Command line arguments.
      */
-    public static void main(String[] args)
+    public static void main(String[] args) throws IOException
     {
         AddImageToPDF app = new AddImageToPDF();
-        try
+        if( args.length != 3 )
         {
-            if( args.length != 3 )
-            {
-                app.usage();
-            }
-            else
-            {
-                app.createPDFFromImage( args[0], args[1], args[2] );
-            }
+            app.usage();
         }
-        catch (Exception e)
+        else
         {
-            e.printStackTrace();
+            app.createPDFFromImage( args[0], args[1], args[2] );
         }
     }
 

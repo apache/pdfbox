@@ -39,7 +39,7 @@ public final class PDOutputIntent implements COSObjectable
 {
     private COSDictionary dictionary;
 
-    public PDOutputIntent(PDDocument doc, InputStream colorProfile) throws Exception
+    public PDOutputIntent(PDDocument doc, InputStream colorProfile) throws IOException
     {
         dictionary = new COSDictionary();
         dictionary.setItem(COSName.TYPE, COSName.OUTPUT_INTENT);

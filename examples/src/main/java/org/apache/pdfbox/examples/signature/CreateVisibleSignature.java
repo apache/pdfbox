@@ -27,6 +27,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.interfaces.RSAPrivateKey;
 import java.util.Calendar;
@@ -41,6 +42,7 @@ import org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible.PDVisibleS
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.CMSSignedDataGenerator;
 import org.bouncycastle.cms.SignerInfoGeneratorBuilder;
@@ -49,6 +51,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.DefaultDigestAlgorithmIdentifierFinder;
 import org.bouncycastle.operator.DefaultSignatureAlgorithmIdentifierFinder;
+import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.bc.BcDigestCalculatorProvider;
 import org.bouncycastle.operator.bc.BcRSAContentSignerBuilder;
 
@@ -74,39 +77,23 @@ public class CreateVisibleSignature implements SignatureInterface
      * @param pin is the pin for the keystore / private key
      */
     public CreateVisibleSignature(KeyStore keystore, char[] pin)
+            throws KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException
     {
-        try
+        // grabs the first alias from the keystore and get the private key. An
+        // alternative method or constructor could be used for setting a specific
+        // alias that should be used.
+        Enumeration<String> aliases = keystore.aliases();
+        String alias = null;
+        if (aliases.hasMoreElements())
         {
-            // grabs the first alias from the keystore and get the private key. An
-            // alternative method or constructor could be used for setting a specific
-            // alias that should be used.
-            Enumeration<String> aliases = keystore.aliases();
-            String alias = null;
-            if (aliases.hasMoreElements())
-            {
-                alias = aliases.nextElement();
-            }
-            else
-            {
-                throw new RuntimeException("Could not find alias");
-            }
-            privKey = (PrivateKey) keystore.getKey(alias, pin);
-            cert = keystore.getCertificateChain(alias);
+            alias = aliases.nextElement();
         }
-        catch (KeyStoreException e)
+        else
         {
-            e.printStackTrace();
+            throw new RuntimeException("Could not find alias");
         }
-        catch (UnrecoverableKeyException e)
-        {
-            System.err.println("Could not extract private key.");
-            e.printStackTrace();
-        }
-        catch (NoSuchAlgorithmException e)
-        {
-            System.err.println("Unknown algorithm.");
-            e.printStackTrace();
-        }
+        privKey = (PrivateKey) keystore.getKey(alias, pin);
+        cert = keystore.getCertificateChain(alias);
     }
 
     /**
@@ -192,13 +179,13 @@ public class CreateVisibleSignature implements SignatureInterface
     {
         try
         {
-            org.bouncycastle.asn1.x509.Certificate certificate = 
-                    org.bouncycastle.asn1.x509.Certificate.getInstance(ASN1Primitive.fromByteArray(cert[0].getEncoded())); 
+            org.bouncycastle.asn1.x509.Certificate certificate =
+                    org.bouncycastle.asn1.x509.Certificate.getInstance(ASN1Primitive.fromByteArray(cert[0].getEncoded()));
 
             AlgorithmIdentifier sigAlgId = new DefaultSignatureAlgorithmIdentifierFinder().find("SHA256WITHRSAENCRYPTION");
             AlgorithmIdentifier digAlgId = new DefaultDigestAlgorithmIdentifierFinder().find(sigAlgId);
-            RSAPrivateKey privateRSAKey = (RSAPrivateKey)privKey; 
-            RSAKeyParameters keyParams = new RSAKeyParameters(true, privateRSAKey.getModulus(), privateRSAKey.getPrivateExponent()); 
+            RSAPrivateKey privateRSAKey = (RSAPrivateKey)privKey;
+            RSAKeyParameters keyParams = new RSAKeyParameters(true, privateRSAKey.getModulus(), privateRSAKey.getPrivateExponent());
             ContentSigner sigGen = new BcRSAContentSignerBuilder(sigAlgId, digAlgId).build(keyParams);
             CMSSignedDataGenerator gen = new CMSSignedDataGenerator();
             gen.addSignerInfoGenerator(
@@ -208,13 +195,18 @@ public class CreateVisibleSignature implements SignatureInterface
             CMSSignedData signedData = gen.generate(processable, false);
             return signedData.getEncoded();
         }
-        catch (Exception e)
+        catch (CertificateEncodingException e)
         {
-            // should be handled
-            System.err.println("Error while creating pkcs7 signature.");
-            e.printStackTrace();
+            throw new IOException(e);
         }
-        throw new RuntimeException("Problem while preparing signature");
+        catch (CMSException e)
+        {
+            throw new IOException(e);
+        }
+        catch (OperatorCreationException e)
+        {
+            throw new IOException(e);
+        }
     }
 
     /**
@@ -225,7 +217,7 @@ public class CreateVisibleSignature implements SignatureInterface
      * [3] image of visible signature
      */
     public static void main(String[] args) throws KeyStoreException, CertificateException,
-            IOException, NoSuchAlgorithmException
+            IOException, NoSuchAlgorithmException, UnrecoverableKeyException
     {
 
         if (args.length != 4)

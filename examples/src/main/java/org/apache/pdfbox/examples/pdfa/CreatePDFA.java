@@ -17,6 +17,7 @@
 package org.apache.pdfbox.examples.pdfa;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.jempbox.xmp.XMPMetadata;
@@ -29,6 +30,8 @@ import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
 import org.apache.pdfbox.pdmodel.graphics.color.PDOutputIntent;
+
+import javax.xml.transform.TransformerException;
 
 /**
  * This is an example that creates a simple PDF/A document.
@@ -59,7 +62,8 @@ public class CreatePDFA
      *
      * @throws Exception If something bad occurs
      */
-    public void doIt( final String file, final String message, final String fontfile) throws Exception
+    public void doIt( final String file, final String message, final String fontfile)
+            throws IOException, TransformerException
     {
         // the document
         PDDocument doc = null;
@@ -125,23 +129,16 @@ public class CreatePDFA
      *
      * @param args Command line arguments.
      */
-    public static void main(String[] args)
+    public static void main(String[] args) throws IOException, TransformerException
     {
         CreatePDFA app = new CreatePDFA();
-        try
+        if( args.length != 3 )
         {
-            if( args.length != 3 )
-            {
-                app.usage();
-            }
-            else
-            {
-                app.doIt( args[0], args[1], args[2] );
-            }
+            app.usage();
         }
-        catch (Exception e)
+        else
         {
-            e.printStackTrace();
+            app.doIt( args[0], args[1], args[2] );
         }
     }
 

@@ -147,7 +147,7 @@ public class PDFReader extends JFrame
                 }
                 catch (PrinterException e)
                 {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
             }
         });
@@ -160,7 +160,14 @@ public class PDFReader extends JFrame
             {
                 if (document != null)
                 {
-                    saveImage();
+                    try
+                    {
+                        saveImage();
+                    }
+                    catch (IOException e)
+                    {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         });
@@ -188,7 +195,14 @@ public class PDFReader extends JFrame
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt)
             {
-                nextPage();
+                try
+                {
+                    nextPage();
+                }
+                catch (IOException e)
+                {
+                    throw new RuntimeException(e);
+                }
             }
         });
         viewMenu.add(nextPageItem);
@@ -200,7 +214,14 @@ public class PDFReader extends JFrame
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt)
             {
-                previousPage();
+                try
+                {
+                    previousPage();
+                }
+                catch (IOException e)
+                {
+                    throw new RuntimeException(e);
+                }
             }
         });
         viewMenu.add(previousPageItem);
@@ -218,7 +239,7 @@ public class PDFReader extends JFrame
         setTitle(BASETITLE + ": " + currentFilename + " (" + (currentPage + 1) + "/" + numberOfPages + ")");
     }
 
-    private void nextPage()
+    private void nextPage() throws IOException
     {
         if (currentPage < numberOfPages - 1)
         {
@@ -228,7 +249,7 @@ public class PDFReader extends JFrame
         }
     }
 
-    private void previousPage()
+    private void previousPage() throws IOException
     {
         if (currentPage > 0)
         {
@@ -254,9 +275,9 @@ public class PDFReader extends JFrame
             {
                 openPDFFile(name, "");
             }
-            catch (Exception e)
+            catch (IOException e)
             {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
     }
@@ -316,7 +337,7 @@ public class PDFReader extends JFrame
         viewer.setVisible(true);
     }
 
-    private void openPDFFile(String filename, String password) throws Exception
+    private void openPDFFile(String filename, String password) throws IOException
     {
         if (document != null)
         {
@@ -334,42 +355,28 @@ public class PDFReader extends JFrame
         showPage(0);
     }
 
-    private void showPage(int pageNumber)
+    private void showPage(int pageNumber) throws IOException
     {
-        try
+        PageWrapper wrapper = new PageWrapper(this);
+        wrapper.displayPage(renderer, pages.get(pageNumber), pageNumber);
+        if (documentPanel.getComponentCount() > 0)
         {
-            PageWrapper wrapper = new PageWrapper(this);
-            wrapper.displayPage(renderer, pages.get(pageNumber), pageNumber);
-            if (documentPanel.getComponentCount() > 0)
-            {
-                documentPanel.remove(0);
-            }
-            documentPanel.add(wrapper.getPanel());
-            pack();
+            documentPanel.remove(0);
         }
-        catch (IOException exception)
-        {
-            exception.printStackTrace();
-        }
+        documentPanel.add(wrapper.getPanel());
+        pack();
     }
 
-    private void saveImage()
+    private void saveImage() throws IOException
     {
-        try
+        BufferedImage pageAsImage = renderer.renderImage(currentPage);
+        String imageFilename = currentFilename;
+        if (imageFilename.toLowerCase().endsWith(".pdf"))
         {
-            BufferedImage pageAsImage = renderer.renderImage(currentPage);
-            String imageFilename = currentFilename;
-            if (imageFilename.toLowerCase().endsWith(".pdf"))
-            {
-                imageFilename = imageFilename.substring(0, imageFilename.length() - 4);
-            }
-            imageFilename += "_" + (currentPage + 1);
-            ImageIOUtil.writeImage(pageAsImage, imageFilename + ".png", 300);
+            imageFilename = imageFilename.substring(0, imageFilename.length() - 4);
         }
-        catch (IOException exception)
-        {
-            exception.printStackTrace();
-        }
+        imageFilename += "_" + (currentPage + 1);
+        ImageIOUtil.writeImage(pageAsImage, imageFilename + ".png", 300);
     }
 
     private void parseDocument(File file, String password) throws IOException

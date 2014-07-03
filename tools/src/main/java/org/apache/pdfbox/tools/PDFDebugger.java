@@ -210,7 +210,7 @@ public class PDFDebugger extends javax.swing.JFrame
             }
             catch (Exception e)
             {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
     }//GEN-LAST:event_openMenuItemActionPerformed
@@ -238,7 +238,7 @@ public class PDFDebugger extends javax.swing.JFrame
             }
             catch (Exception e)
             {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
     }//GEN-LAST:event_jTree1ValueChanged
@@ -287,7 +287,7 @@ public class PDFDebugger extends javax.swing.JFrame
             }
             catch( IOException e )
             {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
         else if( selectedNode instanceof MapEntry )
@@ -309,9 +309,9 @@ public class PDFDebugger extends javax.swing.JFrame
             {
                 document.close();
             }
-            catch( IOException io )
+            catch( IOException e )
             {
-                io.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
         System.exit(0);
@@ -328,9 +328,9 @@ public class PDFDebugger extends javax.swing.JFrame
             {
                 document.close();
             }
-            catch( IOException io )
+            catch( IOException e )
             {
-                io.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
         System.exit(0);

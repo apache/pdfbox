@@ -94,23 +94,16 @@ public class CopyDoc
      *
      * @param args command line arguments
      */
-    public static void main(String[] args)
+    public static void main(String[] args) throws IOException
     {
         CopyDoc app = new CopyDoc();
-        try
+        if( args.length != 2 )
         {
-            if( args.length != 2 )
-            {
-                app.usage();
-            }
-            else
-            {
-                app.doIt( args[0], args[1]);
-            }
+            app.usage();
         }
-        catch (Exception e)
+        else
         {
-            e.printStackTrace();
+            app.doIt( args[0], args[1]);
         }
     }
 

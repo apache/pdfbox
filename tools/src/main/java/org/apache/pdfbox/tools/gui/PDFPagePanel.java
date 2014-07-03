@@ -88,7 +88,7 @@ public class PDFPagePanel extends JPanel
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 }

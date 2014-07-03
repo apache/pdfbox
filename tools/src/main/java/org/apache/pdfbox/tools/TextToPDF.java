@@ -210,10 +210,6 @@ public class TextToPDF
                 doc.save( args[args.length-2] );
             }
         }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
         finally
         {
             if( doc != null )

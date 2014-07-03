@@ -88,23 +88,16 @@ public class ShowColorBoxes
      *
      * @param args Command line arguments.
      */
-    public static void main(String[] args)
+    public static void main(String[] args) throws IOException
     {
         ShowColorBoxes app = new ShowColorBoxes();
-        try
+        if( args.length != 1 )
         {
-            if( args.length != 1 )
-            {
-                app.usage();
-            }
-            else
-            {
-                app.doIt( args[0] );
-            }
+            app.usage();
         }
-        catch (Exception e)
+        else
         {
-            e.printStackTrace();
+            app.doIt( args[0] );
         }
     }
 
