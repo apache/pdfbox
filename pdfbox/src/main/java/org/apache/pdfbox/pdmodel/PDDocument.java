@@ -1225,6 +1225,10 @@ public class PDDocument implements Closeable
      */
     public void save(OutputStream output) throws IOException
     {
+        if (documentCatalog == null)
+        {
+            throw new IOException("Cannot save a document which has been closed");
+        }
         // update the count in case any pages have been added behind the scenes.
         getDocumentCatalog().getPages().updateCount();
         COSWriter writer = null;
