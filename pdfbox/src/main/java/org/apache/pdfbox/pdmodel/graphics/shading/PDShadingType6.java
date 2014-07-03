@@ -21,7 +21,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.util.Matrix;
 
-import java.awt.Color;
 import java.awt.Paint;
 
 /**
@@ -49,8 +48,6 @@ public class PDShadingType6 extends PDShadingType4
     @Override
     public Paint toPaint(Matrix matrix, int pageHeight)
     {
-        // TODO ...
-        LOG.debug("Type 6 Shading not implemented");
-        return new Color(0, 0, 0, 0); // transparent
+        return new Type6ShadingPaint(this, matrix, pageHeight);
     }
 }
