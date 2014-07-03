@@ -374,7 +374,7 @@ public class XMPMetadata
      * @throws Exception
      *             If there is an error creating the stream.
      */
-    public byte[] asByteArray() throws Exception
+    public byte[] asByteArray() throws TransformerException
     {
         return XMLUtil.asByteArray(xmpDocument, encoding);
     }
@@ -638,8 +638,7 @@ public class XMPMetadata
                     }
                     catch(Exception e)
                     {
-                        e.printStackTrace();
-                        throw new IOException(e.getMessage());
+                        throw new IOException(e);
                     }
                 }
             }

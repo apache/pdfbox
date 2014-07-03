@@ -117,23 +117,16 @@ public class AddMessageToEachPage
      *
      * @param args Command line arguments.
      */
-    public static void main(String[] args)
+    public static void main(String[] args) throws IOException
     {
         AddMessageToEachPage app = new AddMessageToEachPage();
-        try
+        if( args.length != 3 )
         {
-            if( args.length != 3 )
-            {
-                app.usage();
-            }
-            else
-            {
-                app.doIt( args[0], args[1], args[2] );
-            }
+            app.usage();
         }
-        catch (Exception e)
+        else
         {
-            e.printStackTrace();
+            app.doIt( args[0], args[1], args[2] );
         }
     }
 

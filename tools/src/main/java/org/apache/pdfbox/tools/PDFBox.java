@@ -31,7 +31,7 @@ public class PDFBox
      * 
      * @param args command line arguments
      */
-    public static void main(String[] args)
+    public static void main(String[] args) throws Exception
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
@@ -42,77 +42,67 @@ public class PDFBox
             String[] arguments = new String[args.length - 1];
             System.arraycopy(args, 1, arguments, 0, arguments.length);
             boolean exitAfterCallingMain = true;
-            try 
+            if (command.equals("Decrypt"))
             {
-                if (command.equals("Decrypt")) 
-                {
-                    Decrypt.main(arguments);
-                } 
-                else if (command.equals("Encrypt")) 
-                {
-                    Encrypt.main(arguments);
-                } 
-                else if (command.equals("ExtractText")) 
-                {
-                    ExtractText.main(arguments);
-                } 
-                else if (command.equals("ExtractImages")) 
-                {
-                    ExtractImages.main(arguments);
-                } 
-                else if (command.equals("OverlayPDF")) 
-                {
-                    OverlayPDF.main(arguments);
-                } 
-                else if (command.equals("PrintPDF")) 
-                {
-                    PrintPDF.main(arguments);
-                } 
-                else if (command.equals("PDFDebugger")) 
-                {
-                    PDFDebugger.main(arguments);
-                    exitAfterCallingMain = false;
-                } 
-                else if (command.equals("PDFMerger")) 
-                {
-                    PDFMerger.main(arguments);
-                } 
-                else if (command.equals("PDFReader")) 
-                {
-                    PDFReader.main(arguments);
-                    exitAfterCallingMain = false;
-                } 
-                else if (command.equals("PDFSplit")) 
-                {
-                    PDFSplit.main(arguments);
-                } 
-                else if (command.equals("PDFToImage")) 
-                {
-                    PDFToImage.main(arguments);
-                } 
-                else if (command.equals("TextToPDF")) 
-                {
-                    TextToPDF.main(arguments);
-                } 
-                else if (command.equals("WriteDecodedDoc")) 
-                {
-                    WriteDecodedDoc.main(arguments);
-                }
-                else 
-                {
-                    showMessageAndExit();
-                }
-                if (exitAfterCallingMain) 
-                {
-                    System.exit(0);
-                }
-            } 
-            catch (Exception e) 
+                Decrypt.main(arguments);
+            }
+            else if (command.equals("Encrypt"))
             {
-                System.err.println(
-                        command + " failed with the following exception:");
-                e.printStackTrace();
-                System.exit(1);
+                Encrypt.main(arguments);
+            }
+            else if (command.equals("ExtractText"))
+            {
+                ExtractText.main(arguments);
+            }
+            else if (command.equals("ExtractImages"))
+            {
+                ExtractImages.main(arguments);
+            }
+            else if (command.equals("OverlayPDF"))
+            {
+                OverlayPDF.main(arguments);
+            }
+            else if (command.equals("PrintPDF"))
+            {
+                PrintPDF.main(arguments);
+            }
+            else if (command.equals("PDFDebugger"))
+            {
+                PDFDebugger.main(arguments);
+                exitAfterCallingMain = false;
+            }
+            else if (command.equals("PDFMerger"))
+            {
+                PDFMerger.main(arguments);
+            }
+            else if (command.equals("PDFReader"))
+            {
+                PDFReader.main(arguments);
+                exitAfterCallingMain = false;
+            }
+            else if (command.equals("PDFSplit"))
+            {
+                PDFSplit.main(arguments);
+            }
+            else if (command.equals("PDFToImage"))
+            {
+                PDFToImage.main(arguments);
+            }
+            else if (command.equals("TextToPDF"))
+            {
+                TextToPDF.main(arguments);
+            }
+            else if (command.equals("WriteDecodedDoc"))
+            {
+                WriteDecodedDoc.main(arguments);
+            }
+            else
+            {
+                showMessageAndExit();
+            }
+            if (exitAfterCallingMain)
+            {
+                System.exit(0);
             }
         }
         else 

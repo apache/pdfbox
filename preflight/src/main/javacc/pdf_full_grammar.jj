@@ -51,7 +51,7 @@ public class PDFParser
 		return true;
 	}
 
-    public static void main (String [] args) {
+    public static void main (String [] args) throws ParseException {
         PDFParser parser;
         String filename = null;
         long initTime = 0;
@@ -85,22 +85,15 @@ public class PDFParser
             System.out.println("         java PDFParser inputfile");
             return;
         }
-        try
-        {
-            startTime = System.currentTimeMillis();
+        startTime = System.currentTimeMillis();
 
-			parser.PDF();
+        parser.PDF();
 
-            stopTime = System.currentTimeMillis();
-            parseTime = stopTime - startTime;
-            System.out.println("PDF Parser ");
-            System.out.print("   PDF Parser parsed " + filename + " successfully in " + (initTime + parseTime) + " ms.");
-            System.out.println(" Init. : " + initTime + " ms / parse time : " + parseTime + " ms");
-        } catch (ParseException e)
-        {
-            e.printStackTrace(System.out);
-            System.out.println("PDF Parser :  Encountered errors during parse.");
-        }
+        stopTime = System.currentTimeMillis();
+        parseTime = stopTime - startTime;
+        System.out.println("PDF Parser ");
+        System.out.print("   PDF Parser parsed " + filename + " successfully in " + (initTime + parseTime) + " ms.");
+        System.out.println(" Init. : " + initTime + " ms / parse time : " + parseTime + " ms");
     }
 }
 PARSER_END(PDFParser)

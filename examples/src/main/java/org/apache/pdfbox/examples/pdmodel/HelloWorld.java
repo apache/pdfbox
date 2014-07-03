@@ -89,23 +89,16 @@ public class HelloWorld
      *
      * @param args Command line arguments.
      */
-    public static void main(String[] args)
+    public static void main(String[] args) throws IOException
     {
         HelloWorld app = new HelloWorld();
-        try
+        if( args.length != 2 )
         {
-            if( args.length != 2 )
-            {
-                app.usage();
-            }
-            else
-            {
-                app.doIt( args[0], args[1] );
-            }
+            app.usage();
         }
-        catch (Exception e)
+        else
         {
-            e.printStackTrace();
+            app.doIt( args[0], args[1] );
         }
     }
 
