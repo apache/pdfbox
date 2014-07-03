@@ -123,7 +123,9 @@ public final class PDICCBased extends PDCIEBasedColorSpace
         }
         catch (RuntimeException e)
         {
-            if (e instanceof ProfileDataException || e instanceof CMMException)
+            if (e instanceof ProfileDataException ||
+                e instanceof CMMException ||
+                e instanceof IllegalArgumentException)
             {
                 // fall back to alternateColorSpace color space
                 LOG.error("Can't read embedded ICC profile, using alternate color space");
