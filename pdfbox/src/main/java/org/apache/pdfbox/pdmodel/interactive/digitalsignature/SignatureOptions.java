@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.digitalsignature;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -26,7 +27,7 @@ import org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible.PDVisibleS
 /**
  * TODO description needed
  */
-public class SignatureOptions
+public class SignatureOptions implements Closeable
 {
     private COSDocument visualSignature;
     private int preferedSignatureSize;
@@ -64,7 +65,6 @@ public class SignatureOptions
      * Reads the visual signature from the given input stream.
      *  
      * @param is the input stream containing the visual signature
-     * 
      * @throws IOException when something went wrong during parsing 
      */
     public void setVisualSignature(InputStream is) throws IOException
@@ -117,5 +117,18 @@ public class SignatureOptions
         {
             preferedSignatureSize = size;
         }
-    } 
+    }
+
+    /**
+     * Closes the visual signature COSDocument, if any.
+     *
+     * @throws IOException if the document could not be closed
+     */
+    public void close() throws IOException
+    {
+        if (visualSignature != null)
+        {
+            visualSignature.close();
+        }
+    }
 }

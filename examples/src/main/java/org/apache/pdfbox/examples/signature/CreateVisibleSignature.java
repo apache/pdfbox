@@ -147,11 +147,21 @@ public class CreateVisibleSignature implements SignatureInterface
 
         if (signatureProperties != null && signatureProperties.isVisualSignEnabled())
         {
-            options = new SignatureOptions();
-            options.setVisualSignature(signatureProperties);
-            // options.setPage(signatureProperties.getPage());
-            // options.setPreferedSignatureSize(signatureProperties.getPreferredSize());
-            doc.addSignature(signature, this, options);
+            try
+            {
+                options = new SignatureOptions();
+                options.setVisualSignature(signatureProperties);
+                // options.setPage(signatureProperties.getPage());
+                // options.setPreferedSignatureSize(signatureProperties.getPreferredSize());
+                doc.addSignature(signature, this, options);
+            }
+            finally
+            {
+                if (options != null)
+                {
+                    options.close();
+                }
+            }
         }
         else
         {
