@@ -81,7 +81,7 @@ final class XMLUtil
             Node next = children.item( i );
             if( next instanceof Text )
             {
-                retval = next.getNodeValue();
+                retval += next.getNodeValue();
             }
         }
         return retval;
