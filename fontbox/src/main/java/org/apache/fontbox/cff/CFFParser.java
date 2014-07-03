@@ -47,7 +47,6 @@ import org.apache.fontbox.util.BoundingBox;
  */
 public class CFFParser
 {
-
     private static final String TAG_OTTO = "OTTO";
     private static final String TAG_TTCF = "ttcf";
     private static final String TAG_TTFONLY = "\u0000\u0001\u0000\u0000";
@@ -509,12 +508,13 @@ public class CFFParser
                 int localSubrOffset = (Integer) getNumber(privateDict, "Subrs", Integer.valueOf(0));
                 if (localSubrOffset == 0)
                 {
-                    font.setLocalSubrIndex(new IndexData(0));
+                    privDict.put("Subrs", new IndexData(0));
                 }
                 else
                 {
                     input.setPosition(privateOffset + localSubrOffset);
-                    font.setLocalSubrIndex(readIndexData(input));
+                    IndexData idx = readIndexData(input);
+                    privDict.put("Subrs", idx);
                 }
 
                 privateDictionaries.add(privDict);
@@ -565,12 +565,14 @@ public class CFFParser
             int localSubrOffset = (Integer) getNumber(privateDict, "Subrs", Integer.valueOf(0));
             if (localSubrOffset == 0)
             {
-                font.setLocalSubrIndex(new IndexData(0));
+                //font.setLocalSubrIndex(new IndexData(0));
+                font.addValueToPrivateDict("Subrs", new IndexData(0));
             }
             else
             {
                 input.setPosition(privateOffset + localSubrOffset);
-                font.setLocalSubrIndex(readIndexData(input));
+                //font.setLocalSubrIndex(readIndexData(input));
+                font.addValueToPrivateDict("Subrs", readIndexData(input));
             }
         }
         return font;

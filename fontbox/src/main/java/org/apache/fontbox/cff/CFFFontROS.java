@@ -240,4 +240,16 @@ public class CFFFontROS extends CFFFont
         Map<String, Object> privDict = this.privateDictionaries.get(fdArrayIndex);
         return privDict.containsKey("nominalWidthX") ? ((Number)privDict.get("nominalWidthX")).intValue() : 0;
     }
+
+    @Override
+    protected IndexData getLocalSubrIndex(int cid)
+    {
+        int fdArrayIndex = this.fdSelect.getFd(cid);
+        if (fdArrayIndex == -1)
+        {
+            return new IndexData(0);
+        }
+        Map<String, Object> privDict = this.privateDictionaries.get(fdArrayIndex);
+        return (IndexData)privDict.get("Subrs");
+    }
 }

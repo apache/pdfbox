@@ -47,7 +47,6 @@ public class CFFFont implements Type1CharStringReader
     private CFFCharset fontCharset = null;
     private Map<String, byte[]> charStringsDict = new LinkedHashMap<String, byte[]>();
     private IndexData globalSubrIndex = null;
-    private IndexData localSubrIndex = null;
     private Map<String, Type2CharString> charStringCache = new HashMap<String, Type2CharString>();
     private FontMetric fontMetric = null;
     
@@ -431,8 +430,8 @@ public class CFFFont implements Type1CharStringReader
         Type2CharString type2 = charStringCache.get(name);
         if (type2 == null)
         {
-            Type2CharStringParser parser = new Type2CharStringParser();
-            List<Object> type2seq = parser.parse(charStringsDict.get(name), globalSubrIndex, localSubrIndex);
+            Type2CharStringParser parser = new Type2CharStringParser(fontname, name);
+            List<Object> type2seq = parser.parse(charStringsDict.get(name), globalSubrIndex, getLocalSubrIndex(sid));
             type2 = new Type2CharString(this, fontname, name, type2seq, getDefaultWidthX(sid), getNominalWidthX(sid));
             charStringCache.put(name, type2);
         }
@@ -506,19 +505,9 @@ public class CFFFont implements Type1CharStringReader
      * 
      * @return the dictionary
      */
-    public IndexData getLocalSubrIndex()
+    protected IndexData getLocalSubrIndex(int sid)
     {
-        return localSubrIndex;
-    }
-
-    /**
-     * Sets the local subroutine index data.
-     * 
-     * @param localSubrIndexValue the IndexData object containing the local subroutines
-     */
-    public void setLocalSubrIndex(IndexData localSubrIndexValue)
-    {
-        localSubrIndex = localSubrIndexValue;
+        return (IndexData)privateDict.get("Subrs");
     }
 
     public class Mapping implements Type1Mapping
