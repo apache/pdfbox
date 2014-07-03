@@ -23,14 +23,25 @@ import java.util.List;
 /**
  * This class represents a converter for a mapping into a Type2-sequence.
  * @author Villu Ruusmann
- * @version $Revision: 1.0 $
  */
 public class Type2CharStringParser
 {
-
     private int hstemCount = 0;
     private int vstemCount = 0;
     private List<Object> sequence = null;
+    private final String fontName, glyphName;
+
+    /**
+     * Constructs a new Type1CharStringParser object.
+     *
+     * @param fontName font name
+     * @param glyphName glyph name
+     */
+    public Type2CharStringParser(String fontName, String glyphName)
+    {
+        this.fontName = fontName;
+        this.glyphName = glyphName;
+    }
 
     /**
      * The given byte array will be parsed and converted to a Type2 sequence.
