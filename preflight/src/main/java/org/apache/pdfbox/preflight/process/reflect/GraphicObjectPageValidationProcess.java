@@ -21,10 +21,8 @@
 
 package org.apache.pdfbox.preflight.process.reflect;
 
-import static org.apache.pdfbox.preflight.PreflightConstants.XOBJECT_DICTIONARY_VALUE_SUBTYPE_POSTSCRIPT;
-
-import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.pdmodel.graphics.PDPostScriptXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.preflight.PreflightConstants;
@@ -55,18 +53,13 @@ public class GraphicObjectPageValidationProcess extends AbstractProcess
         {
             validator = new XObjFormValidator(context, (PDFormXObject) vPath.peek());
         }
+        else if (!vPath.isEmpty() && vPath.isExpectedType(PDPostScriptXObject.class))
+        {
+            validator = new XObjPostscriptValidator(context, (PDPostScriptXObject) vPath.peek());
+        }
         else if (!vPath.isEmpty() && vPath.isExpectedType(COSStream.class))
         {
-            COSStream stream = (COSStream) vPath.peek();
-            String subType = stream.getNameAsString(COSName.SUBTYPE);
-            if (XOBJECT_DICTIONARY_VALUE_SUBTYPE_POSTSCRIPT.equals(subType))
-            {
-                validator = new XObjPostscriptValidator(context, stream);
-            }
-            else
-            {
-                context.addValidationError(new ValidationError(PreflightConstants.ERROR_GRAPHIC_XOBJECT_INVALID_TYPE, "Invalid XObject subtype"));
-            }
+            context.addValidationError(new ValidationError(PreflightConstants.ERROR_GRAPHIC_XOBJECT_INVALID_TYPE, "Invalid XObject subtype"));
         }
         else
         {

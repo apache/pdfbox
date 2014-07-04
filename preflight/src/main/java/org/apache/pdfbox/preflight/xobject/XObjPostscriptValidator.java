@@ -21,16 +21,16 @@
 
 package org.apache.pdfbox.preflight.xobject;
 
-import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.pdmodel.graphics.PDPostScriptXObject;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 
 public class XObjPostscriptValidator extends AbstractXObjValidator
 {
 
-    public XObjPostscriptValidator(PreflightContext context, COSStream xobj)
+    public XObjPostscriptValidator(PreflightContext context, PDPostScriptXObject xobj)
     {
-        super(context, xobj);
+        super(context, xobj.getCOSStream());
     }
 
     /*
