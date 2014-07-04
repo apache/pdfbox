@@ -31,6 +31,7 @@ import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.image.PDInlineImage;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.content.PreflightStreamEngine;
@@ -66,8 +67,7 @@ public class PreflightType3Stream extends PreflightStreamEngine
      */
     public Image createImage(COSStream type3Stream) throws IOException
     {
-        resetEngine();
-        processSubStream(null, type3Stream);
+        processStream(null, type3Stream, new PDRectangle(0, 0, 1000, 1000)); // dummy bbox
         return image.getImage();
     }
 
