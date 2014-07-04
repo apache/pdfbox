@@ -27,11 +27,13 @@ import static org.apache.pdfbox.preflight.PreflightConfiguration.GRAPHIC_PROCESS
 import static org.apache.pdfbox.preflight.PreflightConfiguration.SHADDING_PATTERN_PROCESS;
 import static org.apache.pdfbox.preflight.PreflightConfiguration.TILING_PATTERN_PROCESS;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_DICTIONARY_INVALID;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_TRUETYPE_DAMAGED;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_PATTERN_DEFINITION;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_PDF_PROCESSING_MISSING;
 import static org.apache.pdfbox.preflight.PreflightConstants.TRANPARENCY_DICTIONARY_KEY_EXTGSTATE;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -42,6 +44,12 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDFontFactory;
+import org.apache.pdfbox.pdmodel.font.PDMMType1Font;
+import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDAbstractPattern;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
@@ -90,20 +98,114 @@ public class ResourcesValidationProcess extends AbstractProcess
      */
     protected void validateFonts(PreflightContext context, PDResources resources) throws ValidationException
     {
-        try
+        Map<String, PDFont> mapOfFonts = getFonts(resources.getCOSDictionary(), context);
+        if (mapOfFonts != null)
         {
-            Map<String, PDFont> mapOfFonts = resources.getFonts();
-            if (mapOfFonts != null)
+            for (Entry<String, PDFont> entry : mapOfFonts.entrySet())
             {
-                for (Entry<String, PDFont> entry : mapOfFonts.entrySet())
+                ContextHelper.validateElement(context, entry.getValue(), FONT_PROCESS);
+            }
+        }
+    }
+
+    /**
+     * This will get the map of fonts. This will never return null.
+     *
+     * @return The map of fonts.
+     */
+    private Map<String, PDFont> getFonts(COSDictionary resources, PreflightContext context)
+    {
+        Map<String, PDFont> fonts = new HashMap<String, PDFont>();
+        COSDictionary fontsDictionary = (COSDictionary) resources.getDictionaryObject(COSName.FONT);
+        if (fontsDictionary == null)
+        {
+            fontsDictionary = new COSDictionary();
+            resources.setItem(COSName.FONT, fontsDictionary);
+        }
+        for (COSName fontName : fontsDictionary.keySet())
+        {
+            COSBase font = fontsDictionary.getDictionaryObject(fontName);
+            // data-000174.pdf contains a font that is a COSArray, looks to be an error in the
+            // PDF, we will just ignore entries that are not dictionaries.
+            if (font instanceof COSDictionary)
+            {
+                PDFont newFont = null;
+                try
                 {
-                    ContextHelper.validateElement(context, entry.getValue(), FONT_PROCESS);
+                    newFont = PDFontFactory.createFont((COSDictionary) font);
+                }
+                catch (IOException e)
+                {
+                    addFontError((COSDictionary)font, context);
+                }
+                if (newFont != null)
+                {
+                    fonts.put(fontName.getName(), newFont);
                 }
             }
         }
-        catch (IOException e)
+        return fonts;
+    }
+
+    /**
+     * PDFont loads embedded fonts in its constructor so we have to handle IOExceptions
+     * from PDFont and translate them into validation errors.
+     */
+    private void addFontError(COSDictionary dictionary, PreflightContext context)
+    {
+        COSName type = dictionary.getCOSName(COSName.TYPE, COSName.FONT);
+        if (!COSName.FONT.equals(type))
         {
-            context.addValidationError(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID, "Could not read font"));
+            addValidationError(context, new ValidationError(PreflightConstants.ERROR_FONTS_UNKNOWN_FONT_TYPE,
+                    "Expected 'Font' dictionary but found '" + type.getName() + "'"));
+        }
+
+        String fontName = "Unknown";
+        if (dictionary.containsKey(COSName.BASE_FONT))
+        {
+            fontName = dictionary.getNameAsString(COSName.BASE_FONT);
+        }
+
+        COSName subType = dictionary.getCOSName(COSName.SUBTYPE);
+        if (COSName.TYPE1.equals(subType))
+        {
+            addValidationError(context, new ValidationError(PreflightConstants.ERROR_FONTS_TYPE1_DAMAGED,
+                    "The FontFile can't be read for " + fontName));
+        }
+        else if (COSName.MM_TYPE1.equals(subType))
+        {
+            addValidationError(context, new ValidationError(PreflightConstants.ERROR_FONTS_TYPE1_DAMAGED,
+                    "The FontFile can't be read for " + fontName));
+        }
+        else if (COSName.TRUE_TYPE.equals(subType))
+        {
+            addValidationError(context, new ValidationError(PreflightConstants.ERROR_FONTS_TRUETYPE_DAMAGED,
+                                        "The FontFile can't be read for " + fontName));
+        }
+        else if (COSName.TYPE3.equals(subType))
+        {
+            addValidationError(context, new ValidationError(PreflightConstants.ERROR_FONTS_TYPE3_DAMAGED,
+                    "The FontFile can't be read for " + fontName));
+        }
+        else if (COSName.TYPE0.equals(subType))
+        {
+            addValidationError(context, new ValidationError(PreflightConstants.ERROR_FONTS_CID_DAMAGED,
+                    "The FontFile can't be read for " + fontName));
+        }
+        else if (COSName.CID_FONT_TYPE0.equals(subType))
+        {
+            addValidationError(context, new ValidationError(PreflightConstants.ERROR_FONTS_UNKNOWN_FONT_TYPE,
+                    "Unexpected CIDFontType0 descendant font for " + fontName));
+        }
+        else if (COSName.CID_FONT_TYPE2.equals(subType))
+        {
+            addValidationError(context, new ValidationError(PreflightConstants.ERROR_FONTS_UNKNOWN_FONT_TYPE,
+                    "Unexpected CIDFontType2 descendant font for " + fontName));
+        }
+        else
+        {
+            addValidationError(context, new ValidationError(PreflightConstants.ERROR_FONTS_UNKNOWN_FONT_TYPE,
+                    "Unknown font type for " + fontName));
         }
     }
 
