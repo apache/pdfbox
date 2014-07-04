@@ -542,8 +542,8 @@ public class PDFParser extends BaseParser
         else
         {
             long number = -1;
-            int genNum = -1;
-            String objectKey = null;
+            int genNum;
+            String objectKey;
             boolean missingObjectNumber = false;
             try
             {
@@ -762,7 +762,7 @@ public class PDFParser extends BaseParser
                 }
                 //Ignore table contents
                 String currentLine = readLine();
-                String[] splitString = currentLine.split(" ");
+                String[] splitString = currentLine.split("\\s");
                 if (splitString.length < 3)
                 {
                     LOG.warn("invalid xref line: " + currentLine);
@@ -900,9 +900,9 @@ public class PDFParser extends BaseParser
     private static class ConflictObj
     {
 
-        private long offset;
-        private COSObjectKey objectKey;
-        private COSObject object;
+        private final long offset;
+        private final COSObjectKey objectKey;
+        private final COSObject object;
 
         ConflictObj(long offsetValue, COSObjectKey key, COSObject pdfObject)
         {
@@ -933,8 +933,7 @@ public class PDFParser extends BaseParser
                 do
                 {
                     ConflictObj o = conflicts.next();
-                    Long offset = new Long(o.offset);
-                    if (tolerantConflicResolver(values, offset, 4))
+                    if (tolerantConflicResolver(values, o.offset, 4))
                     {
                         COSObject pdfObject = document.getObjectFromPool(o.objectKey);
                         if (pdfObject.getObjectNumber() != null 
@@ -944,7 +943,7 @@ public class PDFParser extends BaseParser
                         }
                         else
                         {
-                            LOG.debug("Conflict object ["+o.objectKey+"] at offset "+offset
+                            LOG.debug("Conflict object [" + o.objectKey + "] at offset " + o.offset
                                     +" found in the xref table, but the object numbers differ. Ignoring this object."
                                     + " The document is maybe malformed.");
                         }
