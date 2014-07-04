@@ -159,16 +159,6 @@ public class PDFStreamEngine
     }
 
     /**
-     * This method must be called between processing documents. The PDFStreamEngine caches
-     * information for the document between pages and this will release the cached information.
-     * This only needs to be called if processing a new document.
-     */
-    public void resetEngine()
-    {
-        // overridden in subclasses
-    }
-
-    /**
      * Initialises a stream for processing.
      *
      * @param drawingSize the size of the page
