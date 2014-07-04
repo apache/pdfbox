@@ -55,6 +55,7 @@
 							<excludes>
 								<exclude>**/integration/**</exclude>
 							</excludes>
+                            <argLine>-Xmx768m</argLine>
 						</configuration>
 					</execution>
 					<execution>
