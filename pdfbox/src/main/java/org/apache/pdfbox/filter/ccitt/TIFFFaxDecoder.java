@@ -556,15 +556,16 @@ public final class TIFFFaxDecoder {
      * @param w The width of the image in pixels
      * @param h The height of the image in pixels
      */
-    public TIFFFaxDecoder(int fillOrder, int w, int h) {
+    public TIFFFaxDecoder(int fillOrder, int w, int h) 
+    {
         this.fillOrder = fillOrder;
         this.w = w;
         this.h = h;
 
         this.bitPointer = 0;
         this.bytePointer = 0;
-        this.prevChangingElems = new int[w];
-        this.currChangingElems = new int[w];
+        this.prevChangingElems = new int[w + 1];
+        this.currChangingElems = new int[w + 1];
     }
 
     // One-dimensional decoding methods
