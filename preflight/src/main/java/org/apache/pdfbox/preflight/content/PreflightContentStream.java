@@ -121,6 +121,7 @@ public class PreflightContentStream extends PreflightStreamEngine
         try
         {
             COSDictionary res = (COSDictionary) pattern.getDictionaryObject(COSName.RESOURCES);
+            initStream(processeedPage.findCropBox());
             processSubStream(new PDResources(res), pattern);
         }
         catch (ContentStreamException e)

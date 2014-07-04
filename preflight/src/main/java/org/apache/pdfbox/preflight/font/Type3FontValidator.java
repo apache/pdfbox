@@ -41,6 +41,7 @@ import org.apache.pdfbox.encoding.DictionaryEncoding;
 import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontFactory;
 import org.apache.pdfbox.preflight.PreflightConstants;
@@ -404,8 +405,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
     {
         PreflightPath vPath = context.getValidationPath();
         PreflightType3Stream parser = new PreflightType3Stream(context, vPath.getClosestPathElement(PDPage.class));
-        parser.resetEngine();
-        parser.processSubStream(resources, charStream);
+        parser.processStream(resources, charStream, new PDRectangle(0, 0, 1000, 1000)); // dummy bbox
         return parser.getWidth();
     }
 
