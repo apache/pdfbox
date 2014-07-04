@@ -374,7 +374,14 @@ public class Type1CharString
      */
     private void closepath()
     {
-        path.closePath();
+        if (path.getCurrentPoint() == null)
+        {
+            LOG.warn("closepath without initial moveTo in font " + fontName + ", glyph " + glyphName);
+        }
+        else
+        {
+            path.closePath();
+        }
         path.moveTo(current.getX(), current.getY());
     }
 
