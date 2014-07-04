@@ -242,8 +242,7 @@ public class PDFTextStripper extends PDFTextStreamEngine
         return outputStream.toString();
     }
 
-    @Override
-    public void resetEngine()
+    private void resetEngine()
     {
         currentPageNo = 0;
         document = null;

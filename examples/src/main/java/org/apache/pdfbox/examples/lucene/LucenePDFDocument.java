@@ -453,10 +453,6 @@ public class LucenePDFDocument
             {
                 stripper = new PDFTextStripper();
             }
-            else
-            {
-                stripper.resetEngine();
-            }
             stripper.writeText(pdfDocument, writer);
 
             // Note: the buffer to string operation is costless;
