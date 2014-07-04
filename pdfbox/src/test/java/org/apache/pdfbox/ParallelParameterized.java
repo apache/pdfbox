@@ -40,6 +40,15 @@ public class ParallelParameterized extends Parameterized
         FixedThreadPoolScheduler()
         {
             int cores = Runtime.getRuntime().availableProcessors();
+
+            // workaround Open JDK 6 bug which causes CMMException: Invalid profile data
+            System.out.println("JDK: " + System.getProperty("java.runtime.name"));
+            if (System.getProperty("java.runtime.name").equals("OpenJDK Runtime Environment") &&
+                System.getProperty("java.specification.version").equals("1.6"))
+            {
+                cores = 1;
+            }
+
             executorService = Executors.newFixedThreadPool(cores);
         }
 
