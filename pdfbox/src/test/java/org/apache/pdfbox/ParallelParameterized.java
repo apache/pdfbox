@@ -41,8 +41,11 @@ public class ParallelParameterized extends Parameterized
         {
             int cores = Runtime.getRuntime().availableProcessors();
 
-            // workaround Open JDK 6 bug which causes CMMException: Invalid profile data
+            // for debugging
             System.out.println("JDK: " + System.getProperty("java.runtime.name"));
+            System.out.println("Version: " + System.getProperty("java.specification.version"));
+
+            // workaround Open JDK 6 bug which causes CMMException: Invalid profile data
             if (System.getProperty("java.runtime.name").equals("OpenJDK Runtime Environment") &&
                 System.getProperty("java.specification.version").equals("1.6"))
             {
