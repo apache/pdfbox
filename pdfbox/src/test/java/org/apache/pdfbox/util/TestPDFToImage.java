@@ -16,9 +16,12 @@
  */
 package org.apache.pdfbox.util;
 
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 
@@ -34,29 +37,30 @@ import org.apache.pdfbox.rendering.PDFRenderer;
 import javax.imageio.ImageIO;
 
 /**
- * Test suite for PDFTextStripper.
+ * Test suite for rendering.
  *
  * FILE SET VALIDATION
  *
- * This test suite is designed to test PDFToImage using a set of PDF
- * files and known good output for each.  The default mode of testAll()
- * is to process each *.pdf file in "src/test/resources/input/rendering".  An output file is
- * created in "target/test-output/rendering" with the same name as the PDF file, plus an
+ * This test suite is designed to test PDFToImage using a set of PDF files and
+ * known good output for each. The default mode of testAll() is to process each
+ * *.pdf file in "src/test/resources/input/rendering". An output file is created
+ * in "target/test-output/rendering" with the same name as the PDF file, plus an
  * additional page number and ".png" suffix.
  *
- * The output file is then tested against a known good result file from
- * the input directory (again, with the same name as the tested PDF file,
- * but with the additional page number and ".png" suffix).
+ * The output file is then tested against a known good result file from the
+ * input directory (again, with the same name as the tested PDF file, but with
+ * the additional page number and ".png" suffix).
  *
- * Currently, testing against known output is simply a byte-for-byte comparison
+ * If the two aren't identical, a graphical .diff.png file is created. If they
+ * are identical, the output .png file is deleted. If a "good result" file
+ * doesn't exist, the output .png file is left there for human inspection.
  *
- *In the future, testing against the known output may be accomplished using PerceptualDiff
- *  http://sourceforge.net/projects/pdiff
- *
+ * Errors are flagged by creating empty files with appropriate names in the
+ * target directory.
  *
  * @author <a href="mailto:DanielWilson@Users.Sourceforge.net">Daniel Wilson</a>
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.1 $
+ * @author <a href="mailto:tilman@snafu.de">Tilman Hausherr</a>
  */
 public class TestPDFToImage extends TestCase
 {
@@ -64,10 +68,9 @@ public class TestPDFToImage extends TestCase
     /**
      * Logger instance.
      */
-    private static final Log log = LogFactory.getLog(TestPDFToImage.class);
+    private static final Log LOG = LogFactory.getLog(TestPDFToImage.class);
 
     private boolean bFail = false;
-    private PDFRenderer renderer = null;
     private File mcurFile = null;
 
     /**
@@ -77,20 +80,106 @@ public class TestPDFToImage extends TestCase
      *
      * @throws IOException If there is an error creating the test.
      */
-    public TestPDFToImage( String name ) throws IOException
+    public TestPDFToImage(String name) throws IOException
     {
-        super( name );
+        super(name);
     }
 
     /**
      * Test suite setup.
      */
+    @Override
     public void setUp()
     {
         // If you want to test a single file using DEBUG logging, from an IDE,
         // you can do something like this:
         //
         // System.setProperty("org.apache.pdfbox.util.TextStripper.file", "FVS318Ref.pdf");
+    }
+
+    /**
+     * Create an image; the part between the smaller and the larger image is
+     * painted black, the rest in white
+     *
+     * @param minWidth width of the smaller image
+     * @param minHeight width of the smaller image
+     * @param maxWidth height of the larger image
+     * @param maxHeight height of the larger image
+     *
+     * @return
+     */
+    private BufferedImage createEmptyDiffImage(int minWidth, int minHeight, int maxWidth, int maxHeight)
+    {
+        BufferedImage bim3 = new BufferedImage(maxWidth, maxHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics graphics = bim3.getGraphics();
+        if (minWidth != maxWidth || minHeight != maxHeight)
+        {
+            graphics.setColor(Color.BLACK);
+            graphics.fillRect(0, 0, maxWidth, maxHeight);
+        }
+        graphics.setColor(Color.WHITE);
+        graphics.fillRect(0, 0, minWidth, minHeight);
+        graphics.dispose();
+        return bim3;
+    }
+
+    /**
+     * Get the difference between two images, identical colors are set to white,
+     * differences are xored, the highest bit of each color is reset to avoid
+     * colors that are too light
+     *
+     * @param bim1
+     * @param bim2
+     * @return If the images are different, the function returns a diff image If
+     * the images are identical, the function returns null If the size is
+     * different, a black border on the botton and the right is created
+     *
+     * @throws IOException
+     */
+    BufferedImage diffImages(BufferedImage bim1, BufferedImage bim2) throws IOException
+    {
+        int minWidth = Math.min(bim1.getWidth(), bim2.getWidth());
+        int minHeight = Math.min(bim1.getHeight(), bim2.getHeight());
+        int maxWidth = Math.max(bim1.getWidth(), bim2.getWidth());
+        int maxHeight = Math.max(bim1.getHeight(), bim2.getHeight());
+        BufferedImage bim3 = null;
+        if (minWidth != maxWidth || minHeight != maxHeight)
+        {
+            bim3 = createEmptyDiffImage(minWidth, minHeight, maxWidth, maxHeight);
+        }
+        for (int x = 0; x < minWidth; ++x)
+        {
+            for (int y = 0; y < minHeight; ++y)
+            {
+                int rgb1 = bim1.getRGB(x, y);
+                int rgb2 = bim2.getRGB(x, y);
+                if (rgb1 != rgb2
+                        // don't bother about differences of 1 color step
+                        && (Math.abs((rgb1 & 0xFF) - (rgb2 & 0xFF)) > 1)
+                        && (Math.abs(((rgb1 >> 8) & 0xFF) - ((rgb2 >> 8) & 0xFF)) > 1)
+                        && (Math.abs(((rgb1 >> 16) & 0xFF) - ((rgb2 >> 16) & 0xFF)) > 1))
+                {
+                    if (bim3 == null)
+                    {
+                        bim3 = createEmptyDiffImage(minWidth, minHeight, maxWidth, maxHeight);
+                    }
+                    int rgb3 = (rgb1 ^ rgb2) & 0x7f7f7f;  // 7f is to avoid colors that are too light and won't be seen
+                    if (rgb3 == 0)
+                    {
+                        rgb3 = 0x808080;
+                    }
+                    bim3.setRGB(x, y, rgb3);
+                }
+                else
+                {
+                    if (bim3 != null)
+                    {
+                        bim3.setRGB(x, y, Color.WHITE.getRGB());
+                    }
+                }
+            }
+        }
+        return bim3;
     }
 
     /**
@@ -103,63 +192,132 @@ public class TestPDFToImage extends TestCase
      * @throws Exception when there is an exception
      */
     public void doTestFile(File file, boolean bLogResult, String inDir, String outDir)
-        throws Exception
+            throws Exception
     {
         PDDocument document = null;
 
-        log.info("Preparing to convert " + file.getName());
+        LOG.info("Opening: " + file.getName());
         try
         {
-            document =  PDDocument.load(file);
-            renderer = new PDFRenderer(document);
-
+            new FileOutputStream(new File(outDir + file.getName() + ".parseerror")).close();
+            document = PDDocument.loadNonSeq(file, null);
             String outputPrefix = outDir + file.getName() + "-";
             int numPages = document.getNumberOfPages();
+            if (numPages < 1)
+            {
+                this.bFail = true;
+                LOG.error("file " + file.getName() + " has < 1 page");
+            }
+            else
+            {
+                new File(outDir + file.getName() + ".parseerror").delete();
+            }
+
+            try
+            {
+                // Check for version difference between load() and loadNonSeq()
+                new FileOutputStream(new File(outDir + file.getName() + ".parseseqerror")).close();
+                PDDocument doc2 = PDDocument.load(file, null);
+                if (doc2.getDocument().getVersion() != document.getDocument().getVersion())
+                {
+                    new FileOutputStream(new File(outDir + file.getName() + ".versiondiff")).close();
+                }
+                doc2.close();
+                new File(outDir + file.getName() + ".parseseqerror").delete();
+            }
+            catch (IOException ex)
+            {
+            }
+            LOG.info("Rendering: " + file.getName());
             PDFRenderer renderer = new PDFRenderer(document);
             for (int i = 0; i < numPages; i++)
             {
+                String fileName = outputPrefix + (i + 1) + ".png";
+                new FileOutputStream(new File(fileName + ".rendererror")).close();
                 BufferedImage image = renderer.renderImageWithDPI(i, 96); // Windows native DPI
-                String fileName = outputPrefix + (i + 1);
-                log.info("Writing: " + fileName + ".pbg");
-                ImageIO.write(image, "PNG", new File(fileName));
+                new File(fileName + ".rendererror").delete();
+                LOG.info("Writing: " + fileName);
+                new FileOutputStream(new File(fileName + ".writeerror")).close();
+                ImageIOUtil.writeImage(image, fileName, 96);
+                new File(fileName + ".writeerror").delete();
             }
+
+            // test to see whether file is destroyed in pdfbox
+            File tmpFile = File.createTempFile("pdfbox", ".pdf");
+            document.save(tmpFile);
+            PDDocument.loadNonSeq(tmpFile, null).close();
+            tmpFile.delete();
         }
-        catch(Exception e)
-        { 
-            this.bFail=true;
-            log.error("Error converting file " + file.getName(), e);
+        catch (Exception e)
+        {
+            this.bFail = true;
+            LOG.error("Error converting file " + file.getName(), e);
         }
         finally
         {
-            document.close();
+            if (document != null)
+            {
+                document.close();
+            }
         }
+
+        LOG.info("Comparing: " + file.getName());
 
         //Now check the resulting files ... did we get identical PNG(s)?
         try
         {
+            new File(outDir + file.getName() + ".cmperror").delete();
+
             mcurFile = file;
 
             File[] outFiles = new File(outDir).listFiles(new FilenameFilter()
-              {
+            {
                 public boolean accept(File dir, String name)
                 {
-                    return (name.endsWith(".png") && name.startsWith(mcurFile.getName(),0));
+                    return (name.endsWith(".png") && name.startsWith(mcurFile.getName(), 0));
                 }
-              });
-            for (File outFile : outFiles)
+            });
+            for (int n = 0; n < outFiles.length; n++)
             {
-                File inFile = new File(inDir + '/' + outFile.getName());
-                if (!inFile.exists() || !filesAreIdentical(outFile, inFile))
+                new File(outFiles[n].getAbsolutePath() + "-diff.png").delete(); // delete diff file from a previous run
+
+                File inFile = new File(inDir + '/' + outFiles[n].getName());
+                if (!inFile.exists())
                 {
-                    this.bFail=true;
-                    log.warn("*** TEST FAILURE *** Input and output not identical for file: " + inFile.getName());
+                    this.bFail = true;
+                    LOG.warn("*** TEST FAILURE *** Input missing for file: " + inFile.getName());
+                }
+                else if (!filesAreIdentical(outFiles[n], inFile))
+                {
+                    // different files might still have identical content
+                    // save the difference (if any) into a diff image
+                    BufferedImage bim3 = diffImages(ImageIO.read(inFile), ImageIO.read(outFiles[n]));
+                    if (bim3 != null)
+                    {
+                        this.bFail = true;
+                        LOG.warn("*** TEST FAILURE *** Input and output not identical for file: " + inFile.getName());
+                        ImageIO.write(bim3, "png", new File(outFiles[n].getAbsolutePath() + "-diff.png"));
+                    }
+                    else
+                    {
+                        LOG.info("*** TEST OK *** for file: " + inFile.getName());
+                        LOG.info("Deleting: " + outFiles[n].getName());
+                        outFiles[n].delete();
+                    }
+                }
+                else
+                {
+                    LOG.info("*** TEST OK *** for file: " + inFile.getName());
+                    LOG.info("Deleting: " + outFiles[n].getName());
+                    outFiles[n].delete();
                 }
             }
         }
-        catch(Exception e)
+        catch (Exception e)
         {
-            this.bFail=true;
-            log.error("Error comparing file output for " + file.getName(), e);
+            new FileOutputStream(new File(outDir + file.getName() + ".cmperror")).close();
+            this.bFail = true;
+            LOG.error("Error comparing file output for " + file.getName(), e);
         }
 
     }
@@ -170,7 +328,7 @@ public class TestPDFToImage extends TestCase
      * @throws Exception when there is an exception
      */
     public void testRenderImage()
-        throws Exception
+            throws Exception
     {
         String filename = System.getProperty("org.apache.pdfbox.util.TextStripper.file");
         String inDir = "src/test/resources/input/rendering";
@@ -178,42 +336,47 @@ public class TestPDFToImage extends TestCase
         String inDirExt = "target/test-input-ext/rendering";
         String outDirExt = "target/test-output-ext/rendering";
 
-            if ((filename == null) || (filename.length() == 0))
+        new File(outDir).mkdirs();
+
+        if ((filename == null) || (filename.length() == 0))
+        {
+            File[] testFiles = new File(inDir).listFiles(new FilenameFilter()
             {
-                File[] testFiles = new File(inDir).listFiles(new FilenameFilter()
+                @Override
+                public boolean accept(File dir, String name)
                 {
-                    public boolean accept(File dir, String name)
-                    {
-                        return (name.endsWith(".pdf") || name.endsWith(".ai"));
-                    }
-                });
+                    return (name.endsWith(".pdf") || name.endsWith(".ai"));
+                }
+            });
             for (File testFile : testFiles)
             {
                 doTestFile(testFile, false, inDir, outDir);
             }
-                testFiles = new File(inDirExt).listFiles(new FilenameFilter()
+            testFiles = new File(inDirExt).listFiles(new FilenameFilter()
+            {
+                @Override
+                public boolean accept(File dir, String name)
                 {
-                    public boolean accept(File dir, String name)
-                    {
-                        return (name.endsWith(".pdf") || name.endsWith(".ai"));
-                    }
-                });
-                if (testFiles != null)
+                    return (name.endsWith(".pdf") || name.endsWith(".ai"));
+                }
+            });
+            if (testFiles != null)
+            {
+                for (File testFile : testFiles)
                 {
-                for (File testFile : testFiles) {
                     doTestFile(testFile, false, inDirExt, outDirExt);
                 }
-                }
             }
-            else
-            {
-                doTestFile(new File(inDir, filename), true, inDir, outDir);
-            }
+        }
+        else
+        {
+            doTestFile(new File(inDir, filename), true, inDir, outDir);
+        }
 
-            if (this.bFail)
-            {
-                fail("One or more failures, see test log for details");
-            }
+        if (this.bFail)
+        {
+            fail("One or more failures, see test log for details");
+        }
     }
 
     /**
@@ -223,7 +386,7 @@ public class TestPDFToImage extends TestCase
      */
     public static Test suite()
     {
-        return new TestSuite( TestPDFToImage.class );
+        return new TestSuite(TestPDFToImage.class);
     }
 
     /**
@@ -231,23 +394,27 @@ public class TestPDFToImage extends TestCase
      *
      * @param args Command line arguments.
      */
-    public static void main( String[] args )
+    public static void main(String[] args)
     {
-        String[] arg = {TestPDFToImage.class.getName() };
-        junit.textui.TestRunner.main( arg );
+        String[] arg =
+        {
+            TestPDFToImage.class.getName()
+        };
+        junit.textui.TestRunner.main(arg);
     }
 
     private boolean filesAreIdentical(File left, File right) throws IOException
     {
         //http://forum.java.sun.com/thread.jspa?threadID=688105&messageID=4003259
+        //http://web.archive.org/web/20060515173719/http://forum.java.sun.com/thread.jspa?threadID=688105&messageID=4003259
 
         /* -- I reworked ASSERT's into IF statement -- dwilson
-        assert left != null;
-        assert right != null;
-        assert left.exists();
-        assert right.exists();
-        */
-        if(left != null && right != null && left.exists() && right.exists())
+         assert left != null;
+         assert right != null;
+         assert left.exists();
+         assert right.exists();
+         */
+        if (left != null && right != null && left.exists() && right.exists())
         {
             if (left.length() != right.length())
             {
