@@ -30,51 +30,48 @@ import org.apache.pdfbox.util.operator.OperatorProcessor;
  * Implementation of content stream operator for page drawer.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * 
+ *
  */
 public class AppendRectangleToPath extends OperatorProcessor
 {
 
-
     /**
      * process : re : append rectangle to path.
+     *
      * @param operator The operator that is being executed.
      * @param arguments List
      */
     public void process(PDFOperator operator, List<COSBase> arguments)
     {
-        PageDrawer drawer = (PageDrawer)context;
+        PageDrawer drawer = (PageDrawer) context;
 
-        COSNumber x = (COSNumber)arguments.get( 0 );
-        COSNumber y = (COSNumber)arguments.get( 1 );
-        COSNumber w = (COSNumber)arguments.get( 2 );
-        COSNumber h = (COSNumber)arguments.get( 3 );
+        COSNumber x = (COSNumber) arguments.get(0);
+        COSNumber y = (COSNumber) arguments.get(1);
+        COSNumber w = (COSNumber) arguments.get(2);
+        COSNumber h = (COSNumber) arguments.get(3);
 
         double x1 = x.doubleValue();
         double y1 = y.doubleValue();
-        // create a pair of coordinates for the transformation 
-        double x2 = w.doubleValue()+x1;
-        double y2 = h.doubleValue()+y1;
 
-        Point2D startCoords = drawer.transformedPoint(x1,y1);
-        Point2D endCoords = drawer.transformedPoint(x2,y2);
+        // create a pair of coordinates for the transformation
+        double x2 = w.doubleValue() + x1;
+        double y2 = h.doubleValue() + y1;
 
-        float width = (float)(endCoords.getX()-startCoords.getX());
-        float height = (float)(endCoords.getY()-startCoords.getY());
-        float xStart = (float)startCoords.getX();
-        float yStart = (float)startCoords.getY();
+        Point2D p0 = drawer.transformedPoint(x1, y1);
+        Point2D p1 = drawer.transformedPoint(x2, y1);
+        Point2D p2 = drawer.transformedPoint(x2, y2);
+        Point2D p3 = drawer.transformedPoint(x1, y2);
 
-        // To ensure that the path is created in the right direction,
-        // we have to create it by combining single lines instead of
-        // creating a simple rectangle
+        // to ensure that the path is created in the right direction, we have to create
+        // it by combining single lines instead of creating a simple rectangle
         GeneralPath path = drawer.getLinePath();
-        path.moveTo(xStart, yStart);
-        path.lineTo(xStart+width, yStart);
-        path.lineTo(xStart+width, yStart+height);
-        path.lineTo(xStart, yStart+height);
-        // close the subpath instead of adding the last line
-        // so that a possible set line cap style isn't taken into account
-        // at the "beginning" of the rectangle
+        path.moveTo((float) p0.getX(), (float) p0.getY());
+        path.lineTo((float) p1.getX(), (float) p1.getY());
+        path.lineTo((float) p2.getX(), (float) p2.getY());
+        path.lineTo((float) p3.getX(), (float) p3.getY());
+
+        // close the subpath instead of adding the last line so that a possible set line
+        // cap style isn't taken into account at the "beginning" of the rectangle
         path.closePath();
     }
 }
