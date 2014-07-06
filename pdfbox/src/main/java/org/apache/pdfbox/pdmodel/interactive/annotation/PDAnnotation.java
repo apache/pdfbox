@@ -24,6 +24,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -79,7 +80,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public static final int FLAG_TOGGLE_NO_VIEW = 1 << 8;
 
-    private COSDictionary dictionary;
+    private final COSDictionary dictionary;
 
     /**
      * Create the correct annotation from the base COS object.
@@ -206,7 +207,18 @@ public abstract class PDAnnotation implements COSObjectable
         PDRectangle rectangle = null;
         if (rectArray != null)
         {
-            rectangle = new PDRectangle(rectArray);
+            if (rectArray.size() == 4
+                    && rectArray.get(0) instanceof COSNumber
+                    && rectArray.get(1) instanceof COSNumber
+                    && rectArray.get(2) instanceof COSNumber
+                    && rectArray.get(3) instanceof COSNumber)
+            {
+                rectangle = new PDRectangle(rectArray);
+            }
+            else
+            {
+                LOG.warn(rectArray + " is not a rectangle array, returning null");
+            }
         }
         return rectangle;
     }
@@ -246,6 +258,7 @@ public abstract class PDAnnotation implements COSObjectable
      * 
      * @return This object as a standard COS object.
      */
+    @Override
     public COSBase getCOSObject()
     {
         return getDictionary();
