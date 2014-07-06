@@ -129,6 +129,11 @@ public abstract class PDFunction implements COSObjectable
      */
     public static PDFunction create( COSBase function ) throws IOException
     {
+        if (function == COSName.IDENTITY)
+        {
+            return new PDFunctionTypeIdentity(null);
+        }
+
         PDFunction retval = null;
         if( function instanceof COSObject )
         {
@@ -310,7 +315,7 @@ public abstract class PDFunction implements COSObjectable
     protected float[] clipToRange(float[] inputValues) 
     {
         COSArray rangesArray = getRangeValues();
-        float[] result = null;
+        float[] result;
         if (rangesArray != null) 
         {
             float[] rangeValues = rangesArray.toFloatArray();
@@ -362,6 +367,7 @@ public abstract class PDFunction implements COSObjectable
     /**
      * {@inheritDoc}
      */
+    @Override
     public String toString()
     {
         return "FunctionType" + getFunctionType();
