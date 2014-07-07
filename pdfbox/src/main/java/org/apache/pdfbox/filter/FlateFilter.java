@@ -64,8 +64,7 @@ final class FlateFilter extends Filter
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 decompress(encoded, baos);
                 ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-                byte[] decodedData = Predictor.decodePredictor(predictor, colors, bitsPerPixel, columns, bais);
-                decoded.write(decodedData);
+                Predictor.decodePredictor(predictor, colors, bitsPerPixel, columns, bais, decoded);
                 decoded.flush();
                 baos.reset();
                 bais.reset();
