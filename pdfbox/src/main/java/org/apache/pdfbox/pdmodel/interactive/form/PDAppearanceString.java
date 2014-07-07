@@ -63,12 +63,12 @@ import org.apache.pdfbox.util.operator.PDFOperator;
  */
 public final class PDAppearanceString
 {
-    private PDVariableText parent;
+    private final PDVariableText parent;
 
     private String value;
-    private COSString defaultAppearance;
+    private final COSString defaultAppearance;
 
-    private PDAcroForm acroForm;
+    private final PDAcroForm acroForm;
     private List<COSObjectable> widgets = new ArrayList<COSObjectable>();
 
 
@@ -215,7 +215,7 @@ public final class PDAppearanceString
         {
             COSObjectable next = widgetIter.next();
             PDField field = null;
-            PDAnnotationWidget widget = null;
+            PDAnnotationWidget widget;
             if( next instanceof PDField )
             {
                 field = (PDField)next;
@@ -349,8 +349,7 @@ public final class PDAppearanceString
     {
         PrintWriter printWriter = new PrintWriter( output, true );
         float fontSize = 0.0f;
-        PDRectangle boundingBox = null;
-        boundingBox = appearanceStream.getBoundingBox();
+        PDRectangle boundingBox = appearanceStream.getBoundingBox();
         if( boundingBox == null )
         {
             boundingBox = fieldWidget.getRectangle().createRetranslatedRectangle();
@@ -440,13 +439,13 @@ public final class PDAppearanceString
 
     private String convertToMultiLine( String line )
     {
-        int currIdx = 0;
+        int currIdx;
         int lastIdx = 0;
         StringBuffer result = new StringBuffer(line.length() + 64);
         while( (currIdx = line.indexOf('\n',lastIdx )) > -1 )
         {
             result.append(line.substring(lastIdx,currIdx));
-            result.append(" ) Tj\n0 -13 Td\n(");
+            result.append(" > Tj\n0 -13 Td\n<");
             lastIdx = currIdx + 1;
         }
         result.append(line.substring(lastIdx));
