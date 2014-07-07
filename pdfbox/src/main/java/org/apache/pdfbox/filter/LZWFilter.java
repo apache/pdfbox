@@ -98,8 +98,7 @@ public class LZWFilter implements Filter
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             doLZWDecode(compressedData, baos);
             ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-            byte[] decodedData = Predictor.decodePredictor(predictor, colors, bitsPerPixel, columns, bais);
-            result.write(decodedData);
+            Predictor.decodePredictor(predictor, colors, bitsPerPixel, columns, bais, result);
             result.flush();
             baos.reset();
             bais.reset();
