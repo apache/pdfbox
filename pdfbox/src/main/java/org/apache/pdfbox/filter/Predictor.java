@@ -15,29 +15,24 @@
  */
 package org.apache.pdfbox.filter;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import org.apache.pdfbox.io.IOUtils;
 
 /**
- * Helper class to contain predictor decoding used by Flate and LZW filter.
+ * Helper class to contain predictor decoding used by Flate and LZW filter. 
  * To see the history, look at the FlateFilter class.
  */
 public class Predictor
 {
-    static byte[] decodePredictor(int predictor, int colors, int bitsPerComponent, int columns, InputStream data)
+    static void decodePredictor(int predictor, int colors, int bitsPerComponent, int columns, InputStream in, OutputStream out)
             throws IOException
     {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        byte[] buffer = new byte[2048];
         if (predictor == 1)
         {
             // no prediction
-            int i;
-            while ((i = data.read(buffer)) != -1)
-            {
-                baos.write(buffer, 0, i);
-            }
+            IOUtils.copy(in, out);
         }
         else
         {
@@ -48,20 +43,18 @@ public class Predictor
             byte[] actline = new byte[rowlength];
             byte[] lastline = new byte[rowlength];
 
-            boolean done = false;
             int linepredictor = predictor;
 
-            while (!done && data.available() > 0)
+            while (in.available() > 0)
             {
                 // test for PNG predictor; each value >= 10 (not only 15) indicates usage of PNG predictor
                 if (predictor >= 10)
                 {
                     // PNG predictor; each row starts with predictor type (0, 1, 2, 3, 4)
-                    linepredictor = data.read();// read per line predictor
+                    linepredictor = in.read();// read per line predictor
                     if (linepredictor == -1)
                     {
-                        done = true;// reached EOF
-                        break;
+                        return;
                     }
                     else
                     {
@@ -71,7 +64,7 @@ public class Predictor
 
                 // read line
                 int i, offset = 0;
-                while (offset < rowlength && ((i = data.read(actline, offset, rowlength - offset)) != -1))
+                while (offset < rowlength && ((i = in.read(actline, offset, rowlength - offset)) != -1))
                 {
                     offset += i;
                 }
@@ -152,11 +145,10 @@ public class Predictor
                     default:
                         break;
                 }
-                lastline = actline.clone();
-                baos.write(actline, 0, actline.length);
+                System.arraycopy(actline, 0, lastline, 0, rowlength);
+                out.write(actline);
             }
         }
-        return baos.toByteArray();
     }
 
 }
