@@ -452,7 +452,7 @@ public class PDAppearance
         while( (currIdx = line.indexOf('\n',lastIdx )) > -1 )
         {
             result.append(line.substring(lastIdx,currIdx));
-            result.append(" ) Tj\n0 -13 Td\n(");
+            result.append(" > Tj\n0 -13 Td\n<");
             lastIdx = currIdx + 1;
         }
         result.append(line.substring(lastIdx));
