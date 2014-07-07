@@ -272,44 +272,44 @@ public class TestPDFToImage extends TestCase
 
             File[] outFiles = new File(outDir).listFiles(new FilenameFilter()
             {
+                @Override
                 public boolean accept(File dir, String name)
                 {
                     return (name.endsWith(".png") && name.startsWith(mcurFile.getName(), 0));
                 }
             });
-            for (int n = 0; n < outFiles.length; n++)
+            for (File outFile : outFiles)
             {
-                new File(outFiles[n].getAbsolutePath() + "-diff.png").delete(); // delete diff file from a previous run
-
-                File inFile = new File(inDir + '/' + outFiles[n].getName());
+                new File(outFile.getAbsolutePath() + "-diff.png").delete(); // delete diff file from a previous run
+                File inFile = new File(inDir + '/' + outFile.getName());
                 if (!inFile.exists())
                 {
                     this.bFail = true;
                     LOG.warn("*** TEST FAILURE *** Input missing for file: " + inFile.getName());
                 }
-                else if (!filesAreIdentical(outFiles[n], inFile))
+                else if (!filesAreIdentical(outFile, inFile))
                 {
                     // different files might still have identical content
                     // save the difference (if any) into a diff image
-                    BufferedImage bim3 = diffImages(ImageIO.read(inFile), ImageIO.read(outFiles[n]));
+                    BufferedImage bim3 = diffImages(ImageIO.read(inFile), ImageIO.read(outFile));
                     if (bim3 != null)
                     {
                         this.bFail = true;
                         LOG.warn("*** TEST FAILURE *** Input and output not identical for file: " + inFile.getName());
-                        ImageIO.write(bim3, "png", new File(outFiles[n].getAbsolutePath() + "-diff.png"));
+                        ImageIO.write(bim3, "png", new File(outFile.getAbsolutePath() + "-diff.png"));
                     }
                     else
                     {
                         LOG.info("*** TEST OK *** for file: " + inFile.getName());
-                        LOG.info("Deleting: " + outFiles[n].getName());
-                        outFiles[n].delete();
+                        LOG.info("Deleting: " + outFile.getName());
+                        outFile.delete();
                     }
                 }
                 else
                 {
                     LOG.info("*** TEST OK *** for file: " + inFile.getName());
-                    LOG.info("Deleting: " + outFiles[n].getName());
-                    outFiles[n].delete();
+                    LOG.info("Deleting: " + outFile.getName());
+                    outFile.delete();
                 }
             }
         }
@@ -427,10 +427,12 @@ public class TestPDFToImage extends TestCase
             {
                 byte[] lbuffer = new byte[4096];
                 byte[] rbuffer = new byte[lbuffer.length];
-                for (int lcount = 0; (lcount = lin.read(lbuffer)) > 0;)
+                int lcount;
+                while ((lcount = lin.read(lbuffer)) > 0)
                 {
                     int bytesRead = 0;
-                    for (int rcount = 0; (rcount = rin.read(rbuffer, bytesRead, lcount - bytesRead)) > 0;)
+                    int rcount;
+                    while ((rcount = rin.read(rbuffer, bytesRead, lcount - bytesRead)) > 0)
                     {
                         bytesRead += rcount;
                     }
