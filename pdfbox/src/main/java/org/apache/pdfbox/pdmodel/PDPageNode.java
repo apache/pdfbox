@@ -30,6 +30,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -199,27 +200,33 @@ public class PDPageNode implements COSObjectable
             log.error("No Kids found in getAllKids(). Probably a malformed pdf.");
             return null;
         }
+        HashSet<COSBase> seen = new HashSet<COSBase>();
         for( int i=0; i<kids.size(); i++ )
         {
-            COSBase obj = kids.getObject( i );
-            if (obj instanceof COSDictionary)
+            // ignore duplicates (from malformed PDFs)
+            if (!seen.contains(kids.get(i)))
             {
-                COSDictionary kid = (COSDictionary)obj;
-                if( COSName.PAGE.equals( kid.getDictionaryObject( COSName.TYPE ) ) )
+                COSBase obj = kids.getObject( i );
+                if (obj instanceof COSDictionary)
                 {
-                    result.add( new PDPage( kid ) );
-                }
-                else
-                {
-                    if (recurse)
+                    COSDictionary kid = (COSDictionary)obj;
+                    if( COSName.PAGE.equals( kid.getDictionaryObject( COSName.TYPE ) ) )
                     {
-                        getAllKids(result, kid, recurse);
+                        result.add( new PDPage( kid ) );
                     }
                     else
                     {
-                        result.add( new PDPageNode( kid ) );
+                        if (recurse)
+                        {
+                            getAllKids(result, kid, recurse);
+                        }
+                        else
+                        {
+                            result.add( new PDPageNode( kid ) );
+                        }
                     }
                 }
+                seen.add(kids.get(i));
             }
         }
         return kids;
