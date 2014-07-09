@@ -110,9 +110,9 @@ public final class PDAcroForm implements COSObjectable
         List fields = fdf.getCatalog().getFDF().getFields();
         if( fields != null )
         {
-            for( int i=0; i<fields.size(); i++ )
+            for (Object field : fields)
             {
-                FDFField fdfField = (FDFField)fields.get( i );
+                FDFField fdfField = (FDFField) field;
                 PDField docField = getField( fdfField.getPartialFieldName() );
                 if( docField != null )
                 {
@@ -162,9 +162,9 @@ public final class PDAcroForm implements COSObjectable
         if( kids != null )
         {
 
-            for( int i=0; i<kids.size(); i++ )
+            for (Object kid : kids)
             {
-                addFieldAndChildren( (PDField)kids.get( i ), childFDFFields );
+                addFieldAndChildren((PDField) kid, childFDFFields);
             }
             if( childFDFFields.size() > 0 )
             {

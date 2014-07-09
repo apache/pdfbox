@@ -166,9 +166,9 @@ public class FDFDictionary implements COSObjectable
         if( fields != null && fields.size() > 0 )
         {
             output.write( "<fields>\n" );
-            for( int i=0; i<fields.size(); i++ )
+            for (Object field : fields)
             {
-                ((FDFField)fields.get( i )).writeXML( output );
+                ((FDFField) field).writeXML(output);
             }
             output.write( "</fields>\n" );
         }

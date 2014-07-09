@@ -193,14 +193,13 @@ public class PDFMarkedContentExtractor extends PDFTextStreamEngine
             //
             boolean suppressCharacter = false;
             float tolerance = (text.getWidth()/textCharacter.length())/3.0f;
-            for( int i=0; i<sameTextCharacters.size(); i++ )
+            for (TextPosition sameTextCharacter : sameTextCharacters)
             {
-                TextPosition character = (TextPosition)sameTextCharacters.get( i );
+                TextPosition character = (TextPosition) sameTextCharacter;
                 String charCharacter = character.getUnicode();
                 float charX = character.getX();
                 float charY = character.getY();
                 //only want to suppress
-
                 if( charCharacter != null &&
                         //charCharacter.equals( textCharacter ) &&
                         within( charX, textX, tolerance ) &&
