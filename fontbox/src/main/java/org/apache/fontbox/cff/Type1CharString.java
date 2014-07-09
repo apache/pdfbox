@@ -254,10 +254,15 @@ public class Type1CharString
         {
             // end
         }
-        else
+        else if (name != null)
         {
             // indicates a PDFBox bug
-            throw new IllegalArgumentException("Unknown command: " + name);
+            throw new IllegalArgumentException("Unhandled command: " + name);
+        }
+        else
+        {
+            // indicates an invalid charstring
+            LOG.warn("Unknown charstring command: " + command.getKey());
         }
         return null;
     }
