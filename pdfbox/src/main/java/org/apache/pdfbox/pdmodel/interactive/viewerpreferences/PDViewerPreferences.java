@@ -411,7 +411,7 @@ public class PDViewerPreferences implements COSObjectable
      */
     public void setReadingDirection( String value )
     {
-        prefs.setName( COSName.DIRECTION, value.toString() );
+        prefs.setName( COSName.DIRECTION, value);
     }
 
     /**
