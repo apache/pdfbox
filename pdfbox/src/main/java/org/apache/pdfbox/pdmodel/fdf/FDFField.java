@@ -135,9 +135,9 @@ public class FDFField implements COSObjectable
         List<FDFField> kids = getKids();
         if( kids != null )
         {
-            for( int i=0; i<kids.size(); i++ )
+            for (FDFField kid : kids)
             {
-                ((FDFField)kids.get( i ) ).writeXML( output );
+                ((FDFField) kid).writeXML(output);
             }
         }
         output.write( "</field>\n");

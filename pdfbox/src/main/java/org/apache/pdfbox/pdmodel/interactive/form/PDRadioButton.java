@@ -81,13 +81,14 @@ public final class PDRadioButton extends PDButton
      *
      * {@inheritDoc}
      */
+    @Override
     public void setValue(String value) throws IOException
     {
         getDictionary().setString( COSName.V, value );
         List kids = getKids();
-        for (int i = 0; i < kids.size(); i++)
+        for (Object kid : kids)
         {
-            PDField field = (PDField)kids.get(i);
+            PDField field = (PDField) kid;
             if ( field instanceof PDCheckbox )
             {
                 PDCheckbox btn = (PDCheckbox)field;
@@ -110,16 +111,17 @@ public final class PDRadioButton extends PDButton
      *
      * @throws IOException If there is an error getting the value.
      */
+    @Override
     public String getValue() throws IOException
     {
         String retval = null;
         List kids = getKids();
-        for (int i = 0; i < kids.size(); i++)
+        for (Object kid : kids)
         {
-            PDField kid = (PDField)kids.get(i);
-            if ( kid instanceof PDCheckbox )
+            PDField field = (PDField) kid;
+            if ( field instanceof PDCheckbox )
             {
-                PDCheckbox btn = (PDCheckbox)kid;
+                PDCheckbox btn = (PDCheckbox)field;
                 if( btn.isChecked() )
                 {
                     retval = btn.getOnValue();

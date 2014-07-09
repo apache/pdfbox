@@ -372,9 +372,9 @@ public class COSArrayList<E> implements List<E>
     public static COSArray convertStringListToCOSNameCOSArray( List<String> strings )
     {
         COSArray retval = new COSArray();
-        for( int i=0; i<strings.size(); i++ )
+        for (String string : strings)
         {
-            retval.add( COSName.getPDFName( strings.get( i ) ) );
+            retval.add(COSName.getPDFName(string));
         }
         return retval;
     }
@@ -390,9 +390,9 @@ public class COSArrayList<E> implements List<E>
     public static COSArray convertStringListToCOSStringCOSArray( List<String> strings )
     {
         COSArray retval = new COSArray();
-        for( int i=0; i<strings.size(); i++ )
+        for (String string : strings)
         {
-            retval.add( new COSString( strings.get( i ) ) );
+            retval.add(new COSString(string));
         }
         return retval;
     }

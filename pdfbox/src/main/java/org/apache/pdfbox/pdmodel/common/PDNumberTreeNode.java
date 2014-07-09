@@ -259,9 +259,8 @@ public class PDNumberTreeNode implements COSObjectable
             List<Integer> keys = new ArrayList<Integer>( numbers.keySet() );
             Collections.sort( keys );
             COSArray array = new COSArray();
-            for( int i=0; i<keys.size(); i++ )
+            for (Integer key : keys)
             {
-                Integer key = keys.get(i);
                 array.add( COSInteger.get( key ) );
                 COSObjectable obj = (COSObjectable)numbers.get( key );
                 array.add( obj );

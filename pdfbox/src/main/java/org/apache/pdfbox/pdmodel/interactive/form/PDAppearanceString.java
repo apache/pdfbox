@@ -290,12 +290,12 @@ public final class PDAppearanceString
                         ContentStreamWriter writer = new ContentStreamWriter( output );
                         float fontSize = calculateFontSize( pdFont, appearanceStream.getBoundingBox(), tokens, null );
                         boolean foundString = false;
-                        for( int i=0; i<tokens.size(); i++ )
+                        for (Object token : tokens)
                         {
-                            if( tokens.get( i ) instanceof COSString )
+                            if (token instanceof COSString)
                             {
                                 foundString = true;
-                                COSString drawnString =((COSString)tokens.get(i));
+                                COSString drawnString = (COSString) token;
                                 drawnString.reset();
                                 drawnString.append( apValue.getBytes("ISO-8859-1") );
                             }

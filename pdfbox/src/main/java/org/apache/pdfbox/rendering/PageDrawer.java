@@ -184,9 +184,9 @@ public class PageDrawer extends PDFStreamEngine
         }
 
         List<PDAnnotation> annotations = page.getAnnotations();
-        for (int i = 0; i < annotations.size(); i++)
+        for (PDAnnotation annotation : annotations)
         {
-            PDAnnotation annot = (PDAnnotation) annotations.get(i);
+            PDAnnotation annot = (PDAnnotation) annotation;
             PDRectangle rect = annot.getRectangle();
             String appearanceName = annot.getAppearanceStream();
             PDAppearanceDictionary appearDictionary = annot.getAppearance();

@@ -392,9 +392,9 @@ public abstract class PDField implements COSObjectable
         {
             FDFField fdfChild = fdfKids.get(i);
             String fdfName = fdfChild.getPartialFieldName();
-            for (int j = 0; j < pdKids.size(); j++)
+            for (COSObjectable pdKid : pdKids)
             {
-                Object pdChildObj = pdKids.get(j);
+                Object pdChildObj = pdKid;
                 if (pdChildObj instanceof PDField)
                 {
                     PDField pdChild = (PDField) pdChildObj;
