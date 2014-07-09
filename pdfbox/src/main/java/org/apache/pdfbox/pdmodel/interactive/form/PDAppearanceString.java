@@ -203,12 +203,6 @@ public final class PDAppearanceString
      */
     public void setAppearanceValue(String apValue) throws IOException
     {
-        // MulitLine check and set
-        if ( parent.isMultiline() && apValue.indexOf('\n') != -1 )
-        {
-            apValue = convertToMultiLine( apValue );
-        }
-
         value = apValue;
         Iterator<COSObjectable> widgetIter = widgets.iterator();
         while( widgetIter.hasNext() )
@@ -395,14 +389,26 @@ public final class PDAppearanceString
             throw new IOException( "Error: Unknown justification value:" + q );
         }
         // add the value as hex string to deal with non ISO-8859-1 data values
-        printWriter.println("<" + new COSString(value).getHexString() + "> Tj");
+        if (!isMultiLineValue(value))
+        {
+            printWriter.println("<" + new COSString(value).getHexString() + "> Tj");
+        }
+        else
+        {
+            String[] lines = value.split("\n");
+            for (int i = 0; i < lines.length; i++)
+            {
+                boolean lastLine = i == (lines.length - 1);
+                String endingTag = lastLine ? "> Tj\n" : "> Tj 0 -13 Td";
+                printWriter.print("<" + new COSString(lines[i]).getHexString() + endingTag);
+            }
+        }        
         printWriter.println("ET" );
         printWriter.flush();
     }
 
     private PDFont getFontAndUpdateResources( List tokens, PDAppearanceStream appearanceStream ) throws IOException
     {
-
         PDFont retval = null;
         PDResources streamResources = appearanceStream.getResources();
         PDResources formResources = acroForm.getDefaultResources();
@@ -437,21 +443,11 @@ public final class PDAppearanceString
         return retval;
     }
 
-    private String convertToMultiLine( String line )
+    private boolean isMultiLineValue(String value)
     {
-        int currIdx;
-        int lastIdx = 0;
-        StringBuffer result = new StringBuffer(line.length() + 64);
-        while( (currIdx = line.indexOf('\n',lastIdx )) > -1 )
-        {
-            result.append(line.substring(lastIdx,currIdx));
-            result.append(" > Tj\n0 -13 Td\n<");
-            lastIdx = currIdx + 1;
-        }
-        result.append(line.substring(lastIdx));
-        return result.toString();
+        return (parent.isMultiline() && value.contains("\n"));
     }
-
+    
     /**
      * Writes the stream to the actual stream in the COSStream.
      *
