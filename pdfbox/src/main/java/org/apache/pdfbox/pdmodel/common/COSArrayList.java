@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import org.apache.pdfbox.cos.COSObject;
 
 /**
  * This is an implementation of a List that will sync its contents to a COSArray.
@@ -287,17 +288,26 @@ public class COSArrayList<E> implements List<E>
      *
      * @return The list of Float objects.
      */
-    public static List<Float> convertFloatCOSArrayToList( COSArray floatArray )
+    public static List<Float> convertFloatCOSArrayToList(COSArray floatArray)
     {
         List<Float> retval = null;
-        if( floatArray != null )
+        if (floatArray != null)
         {
             List<Float> numbers = new ArrayList<Float>();
-            for( int i=0; i<floatArray.size(); i++ )
+            for (int i = 0; i < floatArray.size(); i++)
             {
-                numbers.add( new Float( ((COSNumber)floatArray.get( i )).floatValue() ) );
+                COSNumber num;
+                if (floatArray.get(i) instanceof COSObject)
+                {
+                    num = (COSNumber) ((COSObject) floatArray.get(i)).getObject();
+                }
+                else
+                {
+                    num = (COSNumber) floatArray.get(i);
+                }
+                numbers.add(num.floatValue());
             }
-            retval = new COSArrayList<Float>( numbers, floatArray );
+            retval = new COSArrayList<Float>(numbers, floatArray);
         }
         return retval;
     }
