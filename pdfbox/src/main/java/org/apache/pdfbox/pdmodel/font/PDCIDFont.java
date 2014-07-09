@@ -309,7 +309,7 @@ public abstract class PDCIDFont extends PDFont
         }
         else
         {
-            cidSystemInfo = cidSystemInfo.substring(0, cidSystemInfo.lastIndexOf("-")) + "-UCS2";
+            cidSystemInfo = cidSystemInfo.substring(0, cidSystemInfo.lastIndexOf('-')) + "-UCS2";
         }
 
         cmap = cmapObjects.get(cidSystemInfo);
