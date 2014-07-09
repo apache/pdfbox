@@ -269,8 +269,8 @@ public class PDNumberTreeNode implements COSObjectable
             Integer upper = null;
             if( keys.size() > 0 )
             {
-                lower = (Integer)keys.get( 0 );
-                upper = (Integer)keys.get( keys.size()-1 );
+                lower = keys.get( 0 );
+                upper = keys.get( keys.size()-1 );
             }
             setUpperLimit( upper );
             setLowerLimit( lower );
