@@ -119,8 +119,11 @@ public class PDExtendedGraphicsState implements COSObjectable
             else if( key.equals( COSName.FONT ) )
             {
                 PDFontSetting setting = getFontSetting();
-                gs.getTextState().setFont( setting.getFont() );
-                gs.getTextState().setFontSize( setting.getFontSize() );
+                if (setting != null)
+                {
+                    gs.getTextState().setFont( setting.getFont() );
+                    gs.getTextState().setFontSize( setting.getFontSize() );
+                }
             }
             else if( key.equals( COSName.FL ) )
             {
@@ -382,10 +385,14 @@ public class PDExtendedGraphicsState implements COSObjectable
     public PDFontSetting getFontSetting()
     {
         PDFontSetting setting = null;
-        COSArray font = (COSArray)graphicsState.getDictionaryObject( COSName.FONT );
-        if( font != null )
+        COSBase base = graphicsState.getDictionaryObject( COSName.FONT );
+        if (base instanceof COSArray)
         {
-            setting = new PDFontSetting( font );
+            COSArray font = (COSArray)base;
+            if( font != null )
+            {
+                setting = new PDFontSetting( font );
+            }
         }
         return setting;
     }
