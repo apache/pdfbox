@@ -69,12 +69,12 @@ import org.apache.pdfbox.util.PDFOperator;
  */
 public class PDAppearance
 {
-    private PDVariableText parent;
+    private final PDVariableText parent;
 
     private String value;
-    private COSString defaultAppearance;
+    private final COSString defaultAppearance;
 
-    private PDAcroForm acroForm;
+    private final PDAcroForm acroForm;
     private List<COSObjectable> widgets = new ArrayList<COSObjectable>();
 
 
@@ -209,19 +209,13 @@ public class PDAppearance
      */
     public void setAppearanceValue(String apValue) throws IOException
     {
-        // MulitLine check and set
-        if ( parent.isMultiline() && apValue.indexOf('\n') != -1 )
-        {
-            apValue = convertToMultiLine( apValue );
-        }
-
         value = apValue;
         Iterator<COSObjectable> widgetIter = widgets.iterator();
         while( widgetIter.hasNext() )
         {
             COSObjectable next = widgetIter.next();
             PDField field = null;
-            PDAnnotationWidget widget = null;
+            PDAnnotationWidget widget;
             if( next instanceof PDField )
             {
                 field = (PDField)next;
@@ -355,8 +349,7 @@ public class PDAppearance
     {
         PrintWriter printWriter = new PrintWriter( output, true );
         float fontSize = 0.0f;
-        PDRectangle boundingBox = null;
-        boundingBox = appearanceStream.getBoundingBox();
+        PDRectangle boundingBox = appearanceStream.getBoundingBox();
         if( boundingBox == null )
         {
             boundingBox = fieldWidget.getRectangle().createRetranslatedRectangle();
@@ -402,14 +395,26 @@ public class PDAppearance
             throw new IOException( "Error: Unknown justification value:" + q );
         }
         // add the value as hex string to deal with non ISO-8859-1 data values
-        printWriter.println("<" + new COSString(value).getHexString() + "> Tj");
-        printWriter.println("ET" );
+        if (!isMultiLineValue(value))
+        {
+            printWriter.println("<" + new COSString(value).getHexString() + "> Tj");
+        }
+        else
+        {
+            String[] lines = value.split("\n");
+            for (int i = 0; i < lines.length; i++)
+            {
+                boolean lastLine = i == (lines.length - 1);
+                String endingTag = lastLine ? "> Tj\n" : "> Tj 0 -13 Td";
+                printWriter.print("<" + new COSString(lines[i]).getHexString() + endingTag);
+            }
+        }
+        printWriter.println("ET");
         printWriter.flush();
     }
 
     private PDFont getFontAndUpdateResources( List tokens, PDAppearanceStream appearanceStream ) throws IOException
     {
-
         PDFont retval = null;
         PDResources streamResources = appearanceStream.getResources();
         PDResources formResources = acroForm.getDefaultResources();
@@ -444,19 +449,9 @@ public class PDAppearance
         return retval;
     }
 
-    private String convertToMultiLine( String line )
+    private boolean isMultiLineValue(String value)
     {
-        int currIdx = 0;
-        int lastIdx = 0;
-        StringBuffer result = new StringBuffer(line.length() + 64);
-        while( (currIdx = line.indexOf('\n',lastIdx )) > -1 )
-        {
-            result.append(line.substring(lastIdx,currIdx));
-            result.append(" > Tj\n0 -13 Td\n<");
-            lastIdx = currIdx + 1;
-        }
-        result.append(line.substring(lastIdx));
-        return result.toString();
+        return (parent.isMultiline() && value.contains("\n"));
     }
 
     /**
@@ -470,7 +465,6 @@ public class PDAppearance
         out.write( data );
         out.flush();
     }
-
 
     /**
      * w in an appearance stream represents the lineWidth.
