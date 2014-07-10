@@ -572,7 +572,7 @@ public class PDPage implements COSObjectable
         Integer rotation = getRotation();
         if (rotation != null)
         {
-            retval = rotation.intValue();
+            retval = rotation;
         }
         else
         {

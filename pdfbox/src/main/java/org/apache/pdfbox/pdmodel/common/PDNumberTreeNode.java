@@ -311,7 +311,7 @@ public class PDNumberTreeNode implements COSObjectable
         }
         if ( upper != null)
         {
-            arr.setInt( 1, upper.intValue() );
+            arr.setInt( 1, upper);
         }
         else
         {
@@ -352,7 +352,7 @@ public class PDNumberTreeNode implements COSObjectable
         }
         if ( lower != null )
         {
-            arr.setInt( 0, lower.intValue() );
+            arr.setInt( 0, lower);
         }
         else
         {
