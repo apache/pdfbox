@@ -183,13 +183,11 @@ public class PageDrawer extends PDFStreamEngine
             processStream(resources, page.getContents().getStream(), page.findCropBox());
         }
 
-        List<PDAnnotation> annotations = page.getAnnotations();
-        for (PDAnnotation annotation : annotations)
+        for (PDAnnotation annotation : page.getAnnotations())
         {
-            PDAnnotation annot = (PDAnnotation) annotation;
-            PDRectangle rect = annot.getRectangle();
-            String appearanceName = annot.getAppearanceStream();
-            PDAppearanceDictionary appearDictionary = annot.getAppearance();
+            PDRectangle rect = annotation.getRectangle();
+            String appearanceName = annotation.getAppearanceStream();
+            PDAppearanceDictionary appearDictionary = annotation.getAppearance();
             if (appearDictionary != null)
             {
                 if (appearanceName == null)
