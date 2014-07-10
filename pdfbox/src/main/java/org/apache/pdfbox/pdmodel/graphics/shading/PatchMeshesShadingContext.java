@@ -30,6 +30,8 @@ import java.awt.image.WritableRaster;
 import java.io.EOFException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
 import org.apache.commons.logging.Log;
@@ -54,6 +56,7 @@ abstract class PatchMeshesShadingContext implements PaintContext
     protected PDColorSpace shadingColorSpace;
     protected final int numberOfColorComponents; // number of color components
     protected float[] background; // background values.
+    protected float[] rgbBackground;
     protected final boolean hasFunction;
     protected final PDShading patchMeshesShadingType;
     
@@ -62,6 +65,7 @@ abstract class PatchMeshesShadingContext implements PaintContext
     protected int bitsPerCoordinate; // bits per coordinate
     protected int bitsPerColorComponent; // bits per color component
     protected int bitsPerFlag; // bits per flag
+    protected HashMap<Point, ColorRGB> pixelTable;
     
     /**
      * Constructor creates an instance to be used for fill operations.
@@ -91,7 +95,8 @@ abstract class PatchMeshesShadingContext implements PaintContext
         if (bg != null)
         {
             background = bg.toFloatArray();
-        }   
+            rgbBackground = convertToRGB(background);
+        }
     }
     
     // transform a point from source space to device space
@@ -267,11 +272,88 @@ abstract class PatchMeshesShadingContext implements PaintContext
      */
     abstract Patch generatePatch(Point2D[] points, float[][] color);
     
-    
     // get a point coordinate on a line by linear interpolation
     private double interpolate(double x, long maxValue, float rangeMin, float rangeMax)
     {
-        return rangeMin + (x / maxValue) * (rangeMax - rangeMin); 
+        return rangeMin + (x / maxValue) * (rangeMax - rangeMin);
+    }
+    
+    /**
+     * Calculate every point and its color and store them in a Hash table.
+     * @return a Hash table contains all the points' positions and colors of one image
+     */
+    protected HashMap<Point, ColorRGB> calcPixelTable()
+    {
+        HashMap<Point, ColorRGB> map = new HashMap<Point, ColorRGB>();
+        for (Patch it : patchList)
+        {
+            for (CoonsTriangle tri : it.listOfCoonsTriangle)
+            {
+                int degree = tri.getDeg();
+                if (degree == 2)
+                {
+                    Line line = tri.getLine();
+                    HashSet<Point> linePoints = line.linePoints;
+                    for (Point p : linePoints)
+                    {
+                        float[] values = line.getColor(p);
+                        map.put(p, new ColorRGB(convertToRGB(values)));
+                    }
+                }
+                else
+                {
+                    int[] boundary = tri.getBoundary();
+                    for (int x = boundary[0]; x <= boundary[1]; x++)
+                    {
+                        for (int y = boundary[2]; y <= boundary[3]; y++)
+                        {
+                            Point p = new Point(x, y);
+                            if (tri.contains(p))
+                            {
+                                float[] values = tri.getColor(p);
+                                map.put(p, new ColorRGB(convertToRGB(values)));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return map;
+    }
+    
+    // convert color to RGB color values
+    private float[] convertToRGB(float[] values)
+    {
+        float[] nValues = null;
+        float[] rgbValues = null;
+        if (hasFunction)
+        {
+            try
+            {
+                nValues = patchMeshesShadingType.evalFunction(values);
+            }
+            catch (IOException exception)
+            {
+                LOG.error("error while processing a function", exception);
+            }
+        }
+
+        try
+        {
+            if (nValues == null)
+            {
+                rgbValues = shadingColorSpace.toRGB(values);
+            }
+            else
+            {
+                rgbValues = shadingColorSpace.toRGB(nValues);
+            }
+        }
+        catch (IOException exception)
+        {
+            LOG.error("error processing color space", exception);
+        }
+        return rgbValues;
     }
     
     @Override
@@ -293,59 +375,29 @@ abstract class PatchMeshesShadingContext implements PaintContext
     {
         WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);
         int[] data = new int[w * h * 4];
-        
         if (!patchList.isEmpty() || background != null)
         {
             for (int row = 0; row < h; row++)
             {
                 for (int col = 0; col < w; col++)
                 {
-                    Point2D p = new Point(x + col, y + row);
-                    float[] values = null;
-                    for (Patch it : patchList)
+                    Point p = new Point(x + col, y + row);
+                    float[] values;
+                    if (pixelTable.containsKey(p))
                     {
-                        for (CoonsTriangle tri : it.listOfCoonsTriangle)
-                        {
-                            if (tri.contains(p))
-                            {
-                                values = tri.getColor(p);
-                            }
-                        }
+                        values = pixelTable.get(p).color;
                     }
-                    
-                    if (values == null)
+                    else
                     {
-                        if (background != null)
+                        if (rgbBackground != null)
                         {
-                            values = background;
+                            values = rgbBackground;
                         }
                         else
                         {
                             continue;
                         }
                     }
-                    
-                    if (hasFunction)
-                    {
-                        try
-                        {
-                            values = patchMeshesShadingType.evalFunction(values);
-                        }
-                        catch (IOException exception)
-                        {
-                            LOG.error("error while processing a function", exception);
-                        }
-                    }
-                    
-                    try
-                    {
-                        values = shadingColorSpace.toRGB(values);
-                    }
-                    catch (IOException exception)
-                    {
-                        LOG.error("error processing color space", exception);
-                    }
-
                     int index = (row * w + col) * 4;
                     data[index] = (int) (values[0] * 255);
                     data[index + 1] = (int) (values[1] * 255);
@@ -356,5 +408,5 @@ abstract class PatchMeshesShadingContext implements PaintContext
         }
         raster.setPixels(0, 0, w, h, data);
         return raster;
-    }   
+    }
 }

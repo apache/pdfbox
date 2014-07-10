@@ -57,7 +57,7 @@ class CoonsTriangle
         corner = p.clone();
         color = c.clone();
         area = getArea(p[0], p[1], p[2]);
-        degree = getDeg(p);
+        degree = calcDeg(p);
         
         if (degree == 2)
         {
@@ -89,7 +89,7 @@ class CoonsTriangle
      * @param p 3 vertexes coordinates
      * @return number of unique points in the 3 vertexes of a triangle, 3, 2 or 1
      */
-    private int getDeg(Point2D[] p)
+    private int calcDeg(Point2D[] p)
     {
         HashSet<Point> set = new HashSet<Point>();
         for (Point2D itp : p)
@@ -98,6 +98,34 @@ class CoonsTriangle
             set.add(np);
         }
         return set.size();
+    }
+    
+    public int getDeg()
+    {
+        return degree;
+    }
+    
+    /**
+     * get the boundary of a triangle.
+     * @return {xmin, xmax, ymin, ymax}
+     */
+    public int[] getBoundary()
+    {
+        int[] boundary = new int[4];
+        int x0 = (int) Math.round(corner[0].getX()), x1 = (int) Math.round(corner[1].getX()), 
+                                x2 = (int) Math.round(corner[2].getX());
+        int y0 = (int) Math.round(corner[0].getY()), y1 = (int) Math.round(corner[1].getY()), 
+                                y2 = (int) Math.round(corner[2].getY());
+        boundary[0] = Math.min(Math.min(x0, x1), x2);
+        boundary[1] = Math.max(Math.max(x0, x1), x2);
+        boundary[2] = Math.min(Math.min(y0, y1), y2);
+        boundary[3] = Math.max(Math.max(y0, y1), y2);
+        return boundary;
+    }
+    
+    public Line getLine()
+    {
+        return line;
     }
     
     /**
