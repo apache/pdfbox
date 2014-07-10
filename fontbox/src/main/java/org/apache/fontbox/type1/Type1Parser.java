@@ -96,13 +96,14 @@ final class Type1Parser
         // font dict
         int length = read(Token.INTEGER).intValue();
         read(Token.NAME, "dict");
+        readMaybe(Token.NAME, "dup"); // found in some TeX fonts
         read(Token.NAME, "begin");
 
         for (int i = 0; i < length; i++)
         {
             // premature end
             if (lexer.peekToken().getKind() == Token.NAME &&
-                    lexer.peekToken().getText().equals("currentdict"))
+                lexer.peekToken().getText().equals("currentdict"))
             {
                 break;
             }
@@ -143,8 +144,8 @@ final class Type1Parser
                     // as some fonts don't provide any dup-values, see PDFBOX-2134 
                     while (!(lexer.peekToken().getKind() == Token.NAME &&
                             (lexer.peekToken().getText().equals("dup") ||
-                            lexer.peekToken().getText().equals("readonly") ||
-                            lexer.peekToken().getText().equals("def"))))
+                             lexer.peekToken().getText().equals("readonly") ||
+                             lexer.peekToken().getText().equals("def"))))
                     {
                         lexer.nextToken();
                     }
@@ -300,14 +301,14 @@ final class Type1Parser
 
         for (int i = 0; i < length; i++)
         {
-            if (lexer.peekToken().getKind() == Token.NAME
-                    && !lexer.peekToken().getText().equals("end"))
+            if (lexer.peekToken().getKind() == Token.NAME &&
+               !lexer.peekToken().getText().equals("end"))
             {
                 read(Token.NAME);
             }
             // premature end
             if (lexer.peekToken().getKind() == Token.NAME &&
-                    lexer.peekToken().getText().equals("end"))
+                lexer.peekToken().getText().equals("end"))
             {
                 break;
             }
@@ -475,6 +476,10 @@ final class Type1Parser
             {
                 readSubrs(lenIV);
             }
+            else if (key.equals("OtherSubrs"))
+            {
+                readOtherSubrs();
+            }
             else if (key.equals("lenIV"))
             {
                 lenIV = readDictValue().get(0).intValue();
@@ -507,7 +512,7 @@ final class Type1Parser
         // sometimes followed by "put". Either way, we just skip until
         // the /CharStrings dict is found
         while (!(lexer.peekToken().getKind() == Token.LITERAL &&
-                lexer.peekToken().getText().equals("CharStrings")))
+                 lexer.peekToken().getText().equals("CharStrings")))
         {
             lexer.nextToken();
         }
@@ -589,7 +594,7 @@ final class Type1Parser
         {
             // premature end
             if (!(lexer.peekToken().getKind() == Token.NAME &&
-                    lexer.peekToken().getText().equals("dup")))
+                  lexer.peekToken().getText().equals("dup")))
             {
                 break;
             }
@@ -606,6 +611,30 @@ final class Type1Parser
         readDef();
     }
 
+    // OtherSubrs are embedded PostScript procedures which we can safely ignore
+    private void readOtherSubrs() throws IOException
+    {
+        if (lexer.peekToken().getKind() == Token.START_ARRAY)
+        {
+            readValue();
+            readDef();
+        }
+        else
+        {
+            int length = read(Token.INTEGER).intValue();
+            read(Token.NAME, "array");
+
+            for (int i = 0; i < length; i++)
+            {
+                read(Token.NAME, "dup");
+                read(Token.INTEGER); // index
+                readValue(); // PostScript
+                readPut();
+            }
+            readDef();
+        }
+    }
+
     /**
      * Reads the /CharStrings dictionary.
      * @param lenIV The number of random bytes used in charstring encryption.
@@ -620,8 +649,8 @@ final class Type1Parser
         for (int i = 0; i < length; i++)
         {
             // premature end
-            if (lexer.peekToken().getKind() == Token.NAME
-                    && lexer.peekToken().getText().equals("end"))
+            if (lexer.peekToken().getKind() == Token.NAME &&
+                lexer.peekToken().getText().equals("end"))
             {
                 break;
             }
@@ -651,11 +680,13 @@ final class Type1Parser
         {
             return;
         }
-        else if (token.getText().equals("noaccess")) {
+        else if (token.getText().equals("noaccess"))
+        {
             token = read(Token.NAME);
         }
 
-        if (token.getText().equals("def")) {
+        if (token.getText().equals("def"))
+        {
             return;
         }
         throw new IOException("Found " + token + " but expected ND");
