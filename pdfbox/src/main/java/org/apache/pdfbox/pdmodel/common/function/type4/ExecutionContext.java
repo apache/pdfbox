@@ -73,7 +73,7 @@ public class ExecutionContext
      */
     public int popInt()
     {
-        return ((Integer)stack.pop()).intValue();
+        return ((Integer)stack.pop());
     }
 
     /**

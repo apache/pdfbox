@@ -78,7 +78,7 @@ public class Type4Tester
     public Type4Tester popReal(float expected, double delta)
     {
         Float value = (Float)context.getStack().pop();
-        Assert.assertEquals(expected, value.floatValue(), delta);
+        Assert.assertEquals(expected, value, delta);
         return this;
     }
 

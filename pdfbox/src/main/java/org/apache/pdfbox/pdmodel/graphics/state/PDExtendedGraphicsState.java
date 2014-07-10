@@ -127,11 +127,11 @@ public class PDExtendedGraphicsState implements COSObjectable
             }
             else if( key.equals( COSName.FL ) )
             {
-                gs.setFlatness( getFlatnessTolerance().floatValue() );
+                gs.setFlatness( getFlatnessTolerance() );
             }
             else if( key.equals( COSName.SM ) )
             {
-                gs.setSmoothness( getSmoothnessTolerance().floatValue() );
+                gs.setSmoothness( getSmoothnessTolerance() );
             }
             else if( key.equals( COSName.SA ) )
             {
@@ -139,11 +139,11 @@ public class PDExtendedGraphicsState implements COSObjectable
             }
             else if( key.equals( COSName.CA ) )
             {
-                gs.setAlphaConstants( getStrokingAlpaConstant().floatValue() );
+                gs.setAlphaConstants( getStrokingAlpaConstant() );
             }
             else if( key.equals( COSName.CA_NS ) )
             {
-                gs.setNonStrokeAlphaConstants(getNonStrokingAlpaConstant().floatValue() );
+                gs.setNonStrokeAlphaConstants(getNonStrokingAlpaConstant() );
             }
             else if( key.equals( COSName.AIS ) )
             {
@@ -599,7 +599,7 @@ public class PDExtendedGraphicsState implements COSObjectable
         }
         else
         {
-            graphicsState.setItem( key, new COSFloat( value.floatValue() ) );
+            graphicsState.setItem( key, new COSFloat( value) );
         }
     }
 }
