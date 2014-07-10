@@ -53,6 +53,7 @@ class Type6ShadingContext extends PatchMeshesShadingContext
         bitsPerCoordinate = shading.getBitsPerCoordinate();
         bitsPerFlag = shading.getBitsPerFlag();
         patchList = getCoonsPatchList(xform, ctm);
+        pixelTable = calcPixelTable();
     }
     
     // get the patch list which forms the type 6 shading image from data stream

@@ -53,6 +53,7 @@ class Type7ShadingContext extends PatchMeshesShadingContext
         bitsPerCoordinate = shading.getBitsPerCoordinate();
         bitsPerFlag = shading.getBitsPerFlag();
         patchList = getTensorPatchList(xform, ctm);
+        pixelTable = calcPixelTable();
     }
     
     // get the patch list which forms the type 7 shading image from data stream

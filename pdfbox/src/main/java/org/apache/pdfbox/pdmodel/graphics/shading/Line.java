@@ -65,8 +65,8 @@ class Line
     private HashSet<Point> getLine(int x0, int y0, int x1, int y1) 
     {
         HashSet<Point> points = new HashSet<Point>();
-        int dx = Math.abs(x1 - x0);
-        int dy = Math.abs(y1 - y0);
+        int dx = (int) Math.round(Math.abs(x1 - x0));
+        int dy = (int) Math.round(Math.abs(y1 - y0));
         int sx = x0 < x1 ? 1 : -1;
         int sy = y0 < y1 ? 1 : -1;
         int err = dx - dy;	
