@@ -42,7 +42,7 @@ public class TestPDNumberTreeNode extends TestCase
     private PDNumberTreeNode node24;
     
     public static class PDTest implements COSObjectable {
-        private int value;
+        private final int value;
 
         public PDTest(int value) {
             this.value = value;
@@ -52,6 +52,7 @@ public class TestPDNumberTreeNode extends TestCase
             this.value = cosInt.intValue();
         }
 
+        @Override
         public COSBase getCOSObject()
         {
             return COSInteger.get( value );
@@ -143,13 +144,13 @@ public class TestPDNumberTreeNode extends TestCase
 
     public void testUpperLimit() throws IOException
     {
-        Assert.assertEquals(7, this.node5.getUpperLimit());
-        Assert.assertEquals(7, this.node2.getUpperLimit());
+        Assert.assertEquals(7, (int) this.node5.getUpperLimit());
+        Assert.assertEquals(7, (int) this.node2.getUpperLimit());
 
-        Assert.assertEquals(12, this.node24.getUpperLimit());
-        Assert.assertEquals(12, this.node4.getUpperLimit());
+        Assert.assertEquals(12, (int) this.node24.getUpperLimit());
+        Assert.assertEquals(12, (int) this.node4.getUpperLimit());
 
-        Assert.assertEquals(12, this.node1.getUpperLimit());
+        Assert.assertEquals(12, (int) this.node1.getUpperLimit());
 
         this.node24.setNumbers( new HashMap<Integer, COSObjectable>() );
         Assert.assertNull( this.node24.getUpperLimit() );
@@ -163,13 +164,13 @@ public class TestPDNumberTreeNode extends TestCase
 
     public void testLowerLimit() throws IOException
     {
-        Assert.assertEquals(1, this.node5.getLowerLimit());
-        Assert.assertEquals(1, this.node2.getLowerLimit());
+        Assert.assertEquals(1, (int) this.node5.getLowerLimit());
+        Assert.assertEquals(1, (int) this.node2.getLowerLimit());
 
-        Assert.assertEquals(8, this.node24.getLowerLimit());
-        Assert.assertEquals(8, this.node4.getLowerLimit());
+        Assert.assertEquals(8, (int) this.node24.getLowerLimit());
+        Assert.assertEquals(8, (int) this.node4.getLowerLimit());
 
-        Assert.assertEquals(1, this.node1.getLowerLimit());
+        Assert.assertEquals(1, (int) this.node1.getLowerLimit());
         
         this.node24.setNumbers( new HashMap<Integer, COSObjectable>() );
         Assert.assertNull( this.node24.getLowerLimit() );
