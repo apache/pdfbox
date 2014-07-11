@@ -98,7 +98,7 @@ public class PDFObjectStreamParser extends BaseParser
             {
                 long objectNumber = readObjectNumber();
                 long offset = readLong();
-                objectNumbers.add( new Long( objectNumber ) );
+                objectNumbers.add( objectNumber);
             }
             COSObject object = null;
             COSBase cosObject = null;

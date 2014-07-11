@@ -232,7 +232,7 @@ public class COSDictionaryMap<K,V> implements Map<K,V>
                 }
                 else if( cosObj instanceof COSInteger )
                 {
-                    actualObject = new Integer( ((COSInteger)cosObj).intValue() );
+                    actualObject = ((COSInteger)cosObj).intValue();
                 }
                 else if( cosObj instanceof COSName )
                 {
@@ -240,7 +240,7 @@ public class COSDictionaryMap<K,V> implements Map<K,V>
                 }
                 else if( cosObj instanceof COSFloat )
                 {
-                    actualObject = new Float( ((COSFloat)cosObj).floatValue() );
+                    actualObject = ((COSFloat)cosObj).floatValue();
                 }
                 else if( cosObj instanceof COSBoolean )
                 {

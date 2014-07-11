@@ -197,7 +197,7 @@ public class PDNumberTreeNode implements COSObjectable
                 COSInteger key = (COSInteger)namesArray.getObject(i);
                 COSBase cosValue = namesArray.getObject( i+1 );
                 COSObjectable pdValue = convertCOSToPD( cosValue );
-                indices.put( Integer.valueOf(key.intValue()), pdValue );
+                indices.put( key.intValue(), pdValue );
             }
             indices = Collections.unmodifiableMap(indices);
         }
@@ -289,7 +289,7 @@ public class PDNumberTreeNode implements COSObjectable
         COSArray arr = (COSArray)node.getDictionaryObject( COSName.LIMITS );
         if( arr != null && arr.get(0) != null )
         {
-            retval = Integer.valueOf(arr.getInt( 1 ));
+            retval = arr.getInt( 1 );
         }
         return retval;
     }
@@ -330,7 +330,7 @@ public class PDNumberTreeNode implements COSObjectable
         COSArray arr = (COSArray)node.getDictionaryObject( COSName.LIMITS );
         if( arr != null && arr.get(0) != null )
         {
-            retval = Integer.valueOf(arr.getInt( 0 ));
+            retval = arr.getInt( 0 );
         }
         return retval;
     }

@@ -223,7 +223,7 @@ public abstract class FDFAnnotation implements COSObjectable
         COSNumber page = (COSNumber)annot.getDictionaryObject( "Page" );
         if( page != null )
         {
-            retval = new Integer( page.intValue() );
+            retval = page.intValue();
         }
         return retval;
     }

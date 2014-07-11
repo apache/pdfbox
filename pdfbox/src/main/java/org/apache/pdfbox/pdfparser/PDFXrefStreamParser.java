@@ -96,7 +96,7 @@ public class PDFXrefStreamParser extends BaseParser
                 int size = ((COSInteger)indexIter.next()).intValue();
                 for(int i = 0; i < size; i++)
                 {
-                    objNums.add(new Integer(objID + i));
+                    objNums.add(objID + i);
                 }
             }
             Iterator<Integer> objIter = objNums.iterator();

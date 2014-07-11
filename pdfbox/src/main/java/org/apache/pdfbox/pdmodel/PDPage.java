@@ -556,7 +556,7 @@ public class PDPage implements COSObjectable
         COSNumber value = (COSNumber) page.getDictionaryObject(COSName.ROTATE);
         if (value != null)
         {
-            retval = new Integer(value.intValue());
+            retval = value.intValue();
         }
         return retval;
     }
