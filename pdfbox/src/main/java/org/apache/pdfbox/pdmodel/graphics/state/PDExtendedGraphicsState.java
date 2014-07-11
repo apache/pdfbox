@@ -580,7 +580,7 @@ public class PDExtendedGraphicsState implements COSObjectable
         COSNumber value = (COSNumber)graphicsState.getDictionaryObject( key );
         if( value != null )
         {
-            retval = new Float( value.floatValue() );
+            retval = value.floatValue();
         }
         return retval;
     }

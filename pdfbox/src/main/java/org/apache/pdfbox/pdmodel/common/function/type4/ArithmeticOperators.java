@@ -58,17 +58,17 @@ class ArithmeticOperators
                 long sum = num1.longValue() + num2.longValue();
                 if (sum < Integer.MIN_VALUE || sum > Integer.MAX_VALUE)
                 {
-                    context.getStack().push(Float.valueOf(sum));
+                    context.getStack().push((float) sum);
                 }
                 else
                 {
-                    context.getStack().push(Integer.valueOf((int)sum));
+                    context.getStack().push((int)sum);
                 }
             }
             else
             {
                 float sum = num1.floatValue() + num2.floatValue();
-                context.getStack().push(Float.valueOf(sum));
+                context.getStack().push(sum);
             }
         }
 
@@ -363,17 +363,17 @@ class ArithmeticOperators
                 long result = num1.longValue() - num2.longValue();
                 if (result < Integer.MIN_VALUE || result > Integer.MAX_VALUE)
                 {
-                    stack.push(Float.valueOf(result));
+                    stack.push((float) result);
                 }
                 else
                 {
-                    stack.push(Integer.valueOf((int)result));
+                    stack.push((int)result);
                 }
             }
             else
             {
                 float result = num1.floatValue() - num2.floatValue();
-                stack.push(Float.valueOf(result));
+                stack.push(result);
             }
         }
 
