@@ -22,7 +22,6 @@ import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import java.io.IOException;
-import java.lang.Math;
 
 /**
  * This class represents a type 2 function in a PDF document.
@@ -41,6 +40,10 @@ public class PDFunctionType2 extends PDFunction
      * The C1 values of the exponential function.
      */
     private COSArray C1;
+    /**
+     * The N value of the exponential function.
+     */
+    private Float N;
 
     /**
      * Constructor.
@@ -55,6 +58,7 @@ public class PDFunctionType2 extends PDFunction
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getFunctionType()
     {
         return 2;
@@ -63,6 +67,7 @@ public class PDFunctionType2 extends PDFunction
     /**
     * {@inheritDoc}
     */
+    @Override
     public float[] eval(float[] input) throws IOException
     {
         //This function performs exponential interpolation.
@@ -128,6 +133,10 @@ public class PDFunctionType2 extends PDFunction
      */
     public float getN()
     {
-        return getDictionary().getFloat(COSName.N);
+        if (N == null)
+        {
+            N = getDictionary().getFloat(COSName.N);
+        }
+        return N;
     }
 }
