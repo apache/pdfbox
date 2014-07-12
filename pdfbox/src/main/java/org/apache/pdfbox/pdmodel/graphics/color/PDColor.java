@@ -132,12 +132,14 @@ public final class PDColor
         return patternName != null;
     }
 
-    // todo: toRGB() which returns a packed int
-    // todo: getColorSpace() getter
-
-    // STARTING POINT:
-    // todo: JavaDoc [TODO: WHAT TO DO IF THIS IS A PATTERN? THROW ERROR?]
-    public int toRGB(PDColorSpace colorSpace) throws IOException // todo: store colorSpace locally (Also, fallback color if exception?)
+    /**
+     * Returns the packed RGB value for this color, if any.
+     * @param colorSpace color space
+     * @return RGB
+     * @throws IOException
+     * @throws java.lang.IllegalStateException if this color value is a pattern.
+     */
+    public int toRGB(PDColorSpace colorSpace) throws IOException
     {
         float[] floats = colorSpace.toRGB(components);
         int r = Math.round(floats[0] * 255);

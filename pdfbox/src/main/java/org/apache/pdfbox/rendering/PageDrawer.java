@@ -261,7 +261,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     }
 
     @Override
-    public void processText(byte[] string) throws IOException
+    protected void processText(byte[] string) throws IOException
     {
         PDGraphicsState state = getGraphicsState();
         Composite composite;
@@ -591,18 +591,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         return glyph2D;
     }
 
-    /**
-     * Get the current line path to be drawn.
-     *
-     * @return The current line path to be drawn.
-     */
-    // TODO: NO LONGER PUBLIC :)
-    /*public GeneralPath getLinePath()
-    {
-        return linePath;
-    }*/
-
-    @Override // todo: is this "append or draw?"
+    @Override
     public void appendRectangle(Point2D p0, Point2D p1, Point2D p2, Point2D p3)
     {
         // to ensure that the path is created in the right direction, we have to create
