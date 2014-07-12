@@ -33,7 +33,7 @@ import java.util.List;
 public class GlyfCompositeDescript extends GlyfDescript
 {
 
-    private List<GlyfCompositeComp> components = new ArrayList<GlyfCompositeComp>();
+    private final List<GlyfCompositeComp> components = new ArrayList<GlyfCompositeComp>();
     private GlyphData[] glyphs = null;
     private boolean beingResolved = false;
     private boolean resolved = false;
@@ -69,6 +69,7 @@ public class GlyfCompositeDescript extends GlyfDescript
     /**
      * {@inheritDoc}
      */
+    @Override
     public void resolve()
     {
         if (resolved)
@@ -108,6 +109,7 @@ public class GlyfCompositeDescript extends GlyfDescript
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getEndPtOfContours(int i)
     {
         GlyfCompositeComp c = getCompositeCompEndPt(i);
@@ -122,6 +124,7 @@ public class GlyfCompositeDescript extends GlyfDescript
     /**
      * {@inheritDoc}
      */
+    @Override
     public byte getFlags(int i)
     {
         GlyfCompositeComp c = getCompositeComp(i);
@@ -136,6 +139,7 @@ public class GlyfCompositeDescript extends GlyfDescript
     /**
      * {@inheritDoc}
      */
+    @Override
     public short getXCoordinate(int i)
     {
         GlyfCompositeComp c = getCompositeComp(i);
@@ -155,6 +159,7 @@ public class GlyfCompositeDescript extends GlyfDescript
     /**
      * {@inheritDoc}
      */
+    @Override
     public short getYCoordinate(int i)
     {
         GlyfCompositeComp c = getCompositeComp(i);
@@ -174,6 +179,7 @@ public class GlyfCompositeDescript extends GlyfDescript
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean isComposite()
     {
         return true;
@@ -182,6 +188,7 @@ public class GlyfCompositeDescript extends GlyfDescript
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getPointCount()
     {
         if (!resolved)
@@ -195,6 +202,7 @@ public class GlyfCompositeDescript extends GlyfDescript
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getContourCount()
     {
         if (!resolved)
@@ -217,10 +225,8 @@ public class GlyfCompositeDescript extends GlyfDescript
 
     private GlyfCompositeComp getCompositeComp(int i)
     {
-        GlyfCompositeComp c;
-        for (int n = 0; n < components.size(); n++)
+        for (GlyfCompositeComp c : components)
         {
-            c = (GlyfCompositeComp) components.get(n);
             GlyphDescription gd = getGlypDescription(c.getGlyphIndex());
             if (c.getFirstIndex() <= i && i < (c.getFirstIndex() + gd.getPointCount()))
             {
@@ -232,10 +238,8 @@ public class GlyfCompositeDescript extends GlyfDescript
 
     private GlyfCompositeComp getCompositeCompEndPt(int i)
     {
-        GlyfCompositeComp c;
-        for (int j = 0; j < components.size(); j++)
+        for (GlyfCompositeComp c : components)
         {
-            c = (GlyfCompositeComp) components.get(j);
             GlyphDescription gd = getGlypDescription(c.getGlyphIndex());
             if (c.getFirstContour() <= i && i < (c.getFirstContour() + gd.getContourCount()))
             {
