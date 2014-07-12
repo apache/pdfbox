@@ -90,6 +90,7 @@ public class ExtractMetadata
                         display("Description:", dc.getDescription());
                         list("Creators: ", dc.getCreators());
                         list("Dates:", dc.getDates());
+                        list("Subjects:", dc.getSubjects());
                     }
     
                     XMPSchemaPDF pdf = metadata.getPDFSchema();
