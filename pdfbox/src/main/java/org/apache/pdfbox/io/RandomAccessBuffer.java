@@ -25,7 +25,7 @@ import java.util.ArrayList;
  * The data will be stored in 16kb chunks organized in an ArrayList.  
  *
  */
-public class RandomAccessBuffer implements RandomAccess, Closeable
+public class RandomAccessBuffer implements RandomAccess, Closeable, Cloneable
 {
     // chunk size is 16kb
     private static final int BUFFER_SIZE = 16384;
