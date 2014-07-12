@@ -35,7 +35,8 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.util.operator.PDFOperator;
+import org.apache.pdfbox.util.operator.Operator;
+import org.apache.pdfbox.util.operator.Operator;
 
 /**
  * This will parse a PDF byte stream and extract operands and such.
@@ -286,7 +287,7 @@ public class PDFStreamParser extends BaseParser
                 }
                 else
                 {
-                    retval = PDFOperator.getOperator( nullString );
+                    retval = Operator.getOperator(nullString);
                 }
                 break;
             }
@@ -305,7 +306,7 @@ public class PDFStreamParser extends BaseParser
                 }
                 else
                 {
-                    retval = PDFOperator.getOperator( next );
+                    retval = Operator.getOperator(next);
                 }
                 break;
             }
@@ -318,7 +319,7 @@ public class PDFStreamParser extends BaseParser
                 }
                 else
                 {
-                    retval = PDFOperator.getOperator( line );
+                    retval = Operator.getOperator(line);
                 }
                 break;
             }
@@ -359,10 +360,10 @@ public class PDFStreamParser extends BaseParser
             case 'B':
             {
                 String next = readString();
-                retval = PDFOperator.getOperator( next );
+                retval = Operator.getOperator(next);
                 if( next.equals( "BI" ) )
                 {
-                    PDFOperator beginImageOP = (PDFOperator)retval;
+                    Operator beginImageOP = (Operator)retval;
                     COSDictionary imageParams = new COSDictionary();
                     beginImageOP.setImageParameters( imageParams );
                     Object nextToken = null;
@@ -372,7 +373,7 @@ public class PDFStreamParser extends BaseParser
                         imageParams.setItem( (COSName)nextToken, (COSBase)value );
                     }
                     //final token will be the image data, maybe??
-                    PDFOperator imageData = (PDFOperator)nextToken;
+                    Operator imageData = (Operator)nextToken;
                     beginImageOP.setImageData( imageData.getImageData() );
                 }
                 break;
@@ -409,9 +410,9 @@ public class PDFStreamParser extends BaseParser
                     currentByte = pdfSource.read();
                 }
                 // the EI operator isn't unread, as it won't be processed anyway
-                retval = PDFOperator.getOperator( "ID" );
+                retval = Operator.getOperator("ID");
                 // save the image data to the operator, so that it can be accessed later
-                ((PDFOperator)retval).setImageData( imageData.toByteArray() );
+                ((Operator)retval).setImageData( imageData.toByteArray() );
                 break;
             }
             case ']':
@@ -433,7 +434,7 @@ public class PDFStreamParser extends BaseParser
                 }
                 else
                 {
-                    retval = PDFOperator.getOperator( operator );
+                    retval = Operator.getOperator(operator);
                 }
             }
         }

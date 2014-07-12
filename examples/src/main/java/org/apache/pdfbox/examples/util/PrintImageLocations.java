@@ -27,7 +27,8 @@ import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.util.Matrix;
-import org.apache.pdfbox.util.operator.PDFOperator;
+import org.apache.pdfbox.util.operator.Operator;
+import org.apache.pdfbox.util.operator.Operator;
 import org.apache.pdfbox.util.PDFStreamEngine;
 import org.apache.pdfbox.util.ResourceLoader;
 
@@ -121,7 +122,7 @@ public class PrintImageLocations extends PDFStreamEngine
      *
      * @throws IOException If there is an error processing the operation.
      */
-    protected void processOperator( PDFOperator operator, List arguments ) throws IOException
+    protected void processOperator( Operator operator, List arguments ) throws IOException
     {
         String operation = operator.getOperation();
         if( INVOKE_OPERATOR.equals(operation) )

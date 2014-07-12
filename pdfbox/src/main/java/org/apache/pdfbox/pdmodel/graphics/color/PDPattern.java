@@ -16,8 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.color;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDAbstractPattern;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDShadingPattern;
@@ -40,8 +38,6 @@ import java.util.Map;
  */
 public final class PDPattern extends PDSpecialColorSpace
 {
-    private static final Log LOG = LogFactory.getLog(PDPattern.class);
-
     private Map<String, PDAbstractPattern> patterns;
     private PDColorSpace underlyingColorSpace;
 
@@ -107,12 +103,7 @@ public final class PDPattern extends PDSpecialColorSpace
     @Override
     public Paint toPaint(PDFRenderer renderer, PDColor color, int pageHeight) throws IOException
     {
-        if (!patterns.containsKey(color.getPatternName()))
-        {
-            throw new IOException("pattern " + color.getPatternName() + " was not found");
-        }
-
-        PDAbstractPattern pattern = patterns.get(color.getPatternName());
+        PDAbstractPattern pattern = getPattern(color);
         if (pattern instanceof PDTilingPattern)
         {
             PDTilingPattern tilingPattern = (PDTilingPattern)pattern;
@@ -133,6 +124,20 @@ public final class PDPattern extends PDSpecialColorSpace
             PDShading shading = shadingPattern.getShading();
             return shading.toPaint(shadingPattern.getMatrix(), pageHeight);
         }
+    }
+
+    /**
+     * Returns the pattern for the given color.
+     * @param color color containing a pattern name
+     * @return pattern for the given color
+     */
+    public final PDAbstractPattern getPattern(PDColor color) throws IOException
+    {
+      if (!patterns.containsKey(color.getPatternName()))
+      {
+        throw new IOException("pattern " + color.getPatternName() + " was not found");
+      }
+      return patterns.get(color.getPatternName());
     }
 
     @Override

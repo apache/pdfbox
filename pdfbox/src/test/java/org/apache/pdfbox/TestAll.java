@@ -35,7 +35,7 @@ import org.apache.pdfbox.pdmodel.TestPDDocumentInformation;
 import org.apache.pdfbox.pdmodel.common.TestPDNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.TestPDNumberTreeNode;
 import org.apache.pdfbox.pdmodel.edit.TestPDPageContentStream;
-import org.apache.pdfbox.pdmodel.graphics.optional_content.TestOptionalContentGroups;
+import org.apache.pdfbox.pdmodel.graphics.optionalcontent.TestOptionalContentGroups;
 import org.apache.pdfbox.pdmodel.interactive.form.TestFields;
 import org.apache.pdfbox.util.TestDateUtil;
 import org.apache.pdfbox.util.TestImageIOUtils;

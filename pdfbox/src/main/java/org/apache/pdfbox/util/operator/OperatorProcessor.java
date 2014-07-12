@@ -23,12 +23,13 @@ import java.io.IOException;
 
 /**
  * Processes a PDF operator.
+ *
  * @author Laurent Huault
  */
 public abstract class OperatorProcessor
 {
     /** The processing context. */
-    protected PDFStreamEngine context = null;
+    protected PDFStreamEngine context;
 
     /**
      * Creates a new OperatorProcessor.
@@ -61,5 +62,5 @@ public abstract class OperatorProcessor
      * @param operands the operands to use when processing
      * @throws IOException if the operator cannot be processed
      */
-    public abstract void process(PDFOperator operator, List<COSBase> operands) throws IOException;
+    public abstract void process(Operator operator, List<COSBase> operands) throws IOException;
 }

@@ -44,7 +44,8 @@ import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.util.operator.PDFOperator;
+import org.apache.pdfbox.util.operator.Operator;
+import org.apache.pdfbox.util.operator.Operator;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
 
 /**
@@ -61,7 +62,7 @@ public class StubOperator extends OperatorProcessor
      * java.util.List)
      */
     @Override
-    public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
+    public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
         String op = operator.getOperation();
         if ("S".equals(op))

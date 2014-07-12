@@ -22,7 +22,6 @@ import java.awt.Composite;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.Paint;
 import java.awt.RenderingHints;
 import java.awt.Shape;
@@ -40,7 +39,6 @@ import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -50,6 +48,7 @@ import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.type1.Type1Font;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImage;
 import org.apache.pdfbox.rendering.font.Glyph2D;
 import org.apache.pdfbox.rendering.font.TTFGlyph2D;
 import org.apache.pdfbox.rendering.font.Type1Glyph2D;
@@ -83,15 +82,14 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.util.Matrix;
-import org.apache.pdfbox.util.PDFStreamEngine;
-import org.apache.pdfbox.util.ResourceLoader;
+import org.apache.pdfbox.util.PDFGraphicsStreamEngine;
 
 /**
  * Paints a page in a PDF document to a Graphics context.
  * 
  * @author Ben Litchfield
  */
-public class PageDrawer extends PDFStreamEngine
+public class PageDrawer extends PDFGraphicsStreamEngine
 {
     private static final Log LOG = LogFactory.getLog(PageDrawer.class);
     private static final Color COLOR_TRANSPARENT = new Color(0, 0, 0, 0);
@@ -99,7 +97,6 @@ public class PageDrawer extends PDFStreamEngine
     // parent document renderer
     private final PDFRenderer renderer;
 
-    private final PDPage page; // will be null if this is a TilingPatternDrawer
     private Graphics2D graphics;
 
     // clipping winding rule used for the clipping path
@@ -112,7 +109,7 @@ public class PageDrawer extends PDFStreamEngine
     private final Map<PDFont, Glyph2D> fontGlyph2D = new HashMap<PDFont, Glyph2D>();
     private final Map<PDFont, Font> awtFonts = new HashMap<PDFont, Font>();
 
-    private int pageHeight;
+    private PDRectangle pageSize;
     
     /**
      * Default constructor, loads properties from file.
@@ -121,9 +118,8 @@ public class PageDrawer extends PDFStreamEngine
      */
     public PageDrawer(PDFRenderer renderer, PDPage page) throws IOException
     {
-        super(ResourceLoader.loadProperties("org/apache/pdfbox/resources/PageDrawer.properties", true));
+        super(page);
         this.renderer = renderer;
-        this.page = page;
     }
 
     /**
@@ -133,9 +129,8 @@ public class PageDrawer extends PDFStreamEngine
      */
     PageDrawer(PDFRenderer renderer) throws IOException
     {
-        super(ResourceLoader.loadProperties("org/apache/pdfbox/resources/PageDrawer.properties", true));
+        super(null);
         this.renderer = renderer;
-        this.page = null;
     }
 
     /**
@@ -145,15 +140,6 @@ public class PageDrawer extends PDFStreamEngine
     public PDFRenderer getRenderer()
     {
         return renderer;
-    }
-
-    /**
-     * Returns the page height.
-     * @return the page height
-     */
-    public int getPageHeight()
-    {
-        return pageHeight;
     }
 
     /**
@@ -167,16 +153,17 @@ public class PageDrawer extends PDFStreamEngine
     public void drawPage(Graphics g, PDRectangle pageSize) throws IOException
     {
         graphics = (Graphics2D) g;
-        pageHeight = (int)pageSize.getHeight();
+        this.pageSize = pageSize;
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
-        graphics.translate(0, pageHeight);
+        graphics.translate(0, pageSize.getHeight());
         graphics.scale(1, -1);
         // TODO use getStroke() to set the initial stroke
         graphics.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
 
         // Only if there is some content, we have to process it.
         // Otherwise we are done here and we will produce an empty page
+        PDPage page = getPage();
         if (page.getContents() != null)
         {
             PDResources resources = page.findResources();
@@ -197,7 +184,7 @@ public class PageDrawer extends PDFStreamEngine
                 Map<String, PDAppearanceStream> appearanceMap = appearDictionary.getNormalAppearance();
                 if (appearanceMap != null)
                 {
-                    PDAppearanceStream appearance = (PDAppearanceStream) appearanceMap.get(appearanceName);
+                    PDAppearanceStream appearance = appearanceMap.get(appearanceName);
                     if (appearance != null)
                     {
                         Point2D point = new Point2D.Float(rect.getLowerLeftX(), rect.getLowerLeftY());
@@ -232,6 +219,7 @@ public class PageDrawer extends PDFStreamEngine
                                   Matrix matrix, PDColorSpace colorSpace, PDColor color)
                                   throws IOException
     {
+        pageSize = pageDimension;
         graphics = g;
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
@@ -605,12 +593,28 @@ public class PageDrawer extends PDFStreamEngine
 
     /**
      * Get the current line path to be drawn.
-     * 
+     *
      * @return The current line path to be drawn.
      */
-    public GeneralPath getLinePath()
+    // TODO: NO LONGER PUBLIC :)
+    /*public GeneralPath getLinePath()
     {
         return linePath;
+    }*/
+
+    @Override // todo: is this "append or draw?"
+    public void appendRectangle(Point2D p0, Point2D p1, Point2D p2, Point2D p3)
+    {
+        // to ensure that the path is created in the right direction, we have to create
+        // it by combining single lines instead of creating a simple rectangle
+        linePath.moveTo((float) p0.getX(), (float) p0.getY());
+        linePath.lineTo((float) p1.getX(), (float) p1.getY());
+        linePath.lineTo((float) p2.getX(), (float) p2.getY());
+        linePath.lineTo((float) p3.getX(), (float) p3.getY());
+
+        // close the subpath instead of adding the last line so that a possible set line
+        // cap style isn't taken into account at the "beginning" of the rectangle
+        linePath.closePath();
     }
 
     /**
@@ -622,15 +626,15 @@ public class PageDrawer extends PDFStreamEngine
      */
     private Raster createSoftMaskRaster(PDSoftMask softMask) throws IOException
     {
-        TransparencyGroup result = createTransparencyGroup(softMask.getGroup());
-        COSName sMaskSubType = softMask.getSubType();
-        if (COSName.ALPHA.equals(sMaskSubType))
+        TransparencyGroup transparencyGroup = createTransparencyGroup(softMask.getGroup());
+        COSName subtype = softMask.getSubType();
+        if (COSName.ALPHA.equals(subtype))
         {
-            return result.getAlphaRaster();
+            return transparencyGroup.getAlphaRaster();
         }
-        else if (COSName.LUMINOSITY.equals(sMaskSubType))
+        else if (COSName.LUMINOSITY.equals(subtype))
         {
-            return result.getLuminosityRaster();
+            return transparencyGroup.getLuminosityRaster();
         }
         else
         {
@@ -655,14 +659,15 @@ public class PageDrawer extends PDFStreamEngine
     {
         PDGraphicsState graphicsState = getGraphicsState();
         return applySoftMaskToPaint(graphicsState.getStrokingColorSpace()
-                .toPaint(renderer, graphicsState.getStrokingColor(), pageHeight), graphicsState.getSoftMask());
+                .toPaint(renderer, graphicsState.getStrokingColor(), (int)pageSize.getHeight()),
+                         graphicsState.getSoftMask());
     }
 
     // returns the non-stroking AWT Paint
     private Paint getNonStrokingPaint() throws IOException
     {
         return getGraphicsState().getNonStrokingColorSpace()
-                .toPaint(renderer, getGraphicsState().getNonStrokingColor(), pageHeight);
+                .toPaint(renderer, getGraphicsState().getNonStrokingColor(), (int)pageSize.getHeight());
     }
 
     // create a new stroke based on the current CTM and the current stroke
@@ -701,11 +706,7 @@ public class PageDrawer extends PDFStreamEngine
                                state.getMiterLimit(), dashArray, phaseStart);
     }
 
-    /**
-     * Stroke the path.
-     * 
-     * @throws IOException If there is an IO error while stroking the path.
-     */
+    @Override
     public void strokePath() throws IOException
     {
         graphics.setComposite(getGraphicsState().getStrokeJavaComposite());
@@ -724,13 +725,7 @@ public class PageDrawer extends PDFStreamEngine
         linePath.reset();
     }
 
-    /**
-     * Fill the path.
-     *
-     * @param windingRule The winding rule this path will use.
-     *
-     * @throws IOException If there is an IO error while filling the path.
-     */
+    @Override
     public void fillPath(int windingRule) throws IOException
     {
         graphics.setComposite(getGraphicsState().getNonStrokeJavaComposite());
@@ -756,6 +751,7 @@ public class PageDrawer extends PDFStreamEngine
      *
      * @throws IOException If there is an IO error while filling the path.
      */
+    @Override
     public void fillAndStrokePath(int windingRule) throws IOException
     {
         // TODO can we avoid cloning the path?
@@ -765,20 +761,44 @@ public class PageDrawer extends PDFStreamEngine
         strokePath();
     }
 
-    /**
-     * Modify the current clipping path by intersecting it with the current path.
-     * The clipping path will not be updated until the succeeding painting operator is called.
-     * 
-     * @param windingRule The winding rule which will be used for clipping.
-     */
+    @Override
     public void clip(int windingRule)
     {
+        // the clipping path will not be updated until the succeeding painting operator is called
         clipWindingRule = windingRule;
     }
 
-    /**
-     * Ends the current path without filling or stroking it. The clipping path is updated here.
-     */
+    @Override
+    public void moveTo(float x, float y)
+    {
+        linePath.moveTo(x, y);
+    }
+
+    @Override
+    public void lineTo(float x, float y)
+    {
+        linePath.lineTo(x, y);
+    }
+
+    @Override
+    public void curveTo(float x1, float y1, float x2, float y2, float x3, float y3)
+    {
+        linePath.curveTo(x1, y1, x2, y2, x3, y3);
+    }
+
+    @Override
+    public Point2D getCurrentPoint()
+    {
+        return linePath.getCurrentPoint();
+    }
+
+    @Override
+    public void closePath()
+    {
+        linePath.closePath();
+    }
+
+    @Override
     public void endPath()
     {
         if (clipWindingRule != -1)
@@ -790,57 +810,66 @@ public class PageDrawer extends PDFStreamEngine
         linePath.reset();
     }
 
-    /**
-     * Draw the AWT image. Called by Invoke. Moved into PageDrawer so that Invoke doesn't have to
-     * reach in here for Graphics as that breaks extensibility.
-     * 
-     * @param awtImage The image to draw.
-     * @param at The transformation to use when drawing.
-     * 
-     */
-    public void drawImage(Image awtImage, AffineTransform at) throws IOException
+    public void drawImage(PDImage pdImage) throws IOException
+    {
+        Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
+        AffineTransform at = ctm.createAffineTransform();
+
+        if (pdImage.isStencil())
+        {
+            // fill the image with paint
+            PDColorSpace colorSpace = getGraphicsState().getNonStrokingColorSpace();
+            PDColor color = getGraphicsState().getNonStrokingColor();
+            BufferedImage image = pdImage.getStencilImage(colorSpace.toPaint(renderer, color,
+                                                          (int)pageSize.getHeight()));
+
+            // draw the image
+            drawBufferedImage(image, at);
+        }
+        else
+        {
+            // draw the image
+            drawBufferedImage(pdImage.getImage(), at);
+        }
+    }
+
+    public void drawBufferedImage(BufferedImage image, AffineTransform at) throws IOException
     {
         graphics.setComposite(getGraphicsState().getNonStrokeJavaComposite());
         setClip();
         PDSoftMask softMask = getGraphicsState().getSoftMask();
-        if( softMask != null ) 
+        if( softMask != null )
         {
             AffineTransform imageTransform = new AffineTransform(at);
             imageTransform.scale(1, -1);
             imageTransform.translate(0, -1);
-            Paint awtPaint = new TexturePaint((BufferedImage)awtImage, 
+            Paint awtPaint = new TexturePaint(image,
                     new Rectangle2D.Double(imageTransform.getTranslateX(), imageTransform.getTranslateY(),
-                            imageTransform.getScaleX(), imageTransform.getScaleY())); 
+                            imageTransform.getScaleX(), imageTransform.getScaleY()));
             awtPaint = applySoftMaskToPaint(awtPaint, softMask);
             graphics.setPaint(awtPaint);
             graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                                      RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+                    RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
             Rectangle2D unitRect = new Rectangle2D.Float(0, 0, 1, 1);
             graphics.fill(at.createTransformedShape(unitRect));
         }
-        else 
+        else
         {
-            int width = awtImage.getWidth(null);
-            int height = awtImage.getHeight(null);
+            int width = image.getWidth(null);
+            int height = image.getHeight(null);
             AffineTransform imageTransform = new AffineTransform(at);
             imageTransform.scale(1.0 / width, -1.0 / height);
             imageTransform.translate(0, -height);
-            graphics.drawImage(awtImage, imageTransform, null);
+            graphics.drawImage(image, imageTransform, null);
         }
     }
 
-    /**
-     * Fill with Shading. Called by SHFill operator.
-     *
-     * @param shadingName The name of the Shading Dictionary to use for this fill instruction.
-     *
-     * @throws IOException If there is an IO error while shade-filling the clipping area.
-     */
-    public void shFill(COSName shadingName) throws IOException
+    @Override
+    public void shadingFill(COSName shadingName) throws IOException
     {
         PDShading shading = getResources().getShadings().get(shadingName.getName());
         Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
-        Paint paint = shading.toPaint(ctm, pageHeight);
+        Paint paint = shading.toPaint(ctm, (int)pageSize.getHeight());
 
         graphics.setComposite(getGraphicsState().getNonStrokeJavaComposite());
         graphics.setPaint(paint);
@@ -850,16 +879,14 @@ public class PageDrawer extends PDFStreamEngine
         graphics.fill(getGraphicsState().getCurrentClippingPath());
     }
 
+    @Override
+    public void showTransparencyGroup(PDFormXObject form) throws IOException
+    {
+        TransparencyGroup group = createTransparencyGroup(form);
+        group.draw();
+    }
 
-    /**
-     * Draws the transparency group into a {@link BufferedImage} object and returns it together
-     * with the transformation matrix.
-     *
-     * @param form {@link PageDrawer} object
-     * @return PageDrawer.Group
-     * @throws IOException
-     */
-    public TransparencyGroup createTransparencyGroup(PDFormXObject form) throws IOException
+    private TransparencyGroup createTransparencyGroup(PDFormXObject form) throws IOException
     {
         saveGraphicsState();
         try
@@ -891,7 +918,7 @@ public class PageDrawer extends PDFStreamEngine
     /**
      * Transparency group.
      **/
-    public final class TransparencyGroup
+    private final class TransparencyGroup
     {
         private final BufferedImage image;
         private final Matrix matrix;
@@ -908,7 +935,8 @@ public class PageDrawer extends PDFStreamEngine
          * @param resources Global resources
          * @param content Content of the transparency group to create
          */
-        private TransparencyGroup(GeneralPath clippingPath, PDResources resources, COSStream content) throws IOException
+        private TransparencyGroup(GeneralPath clippingPath, PDResources resources,
+                                  COSStream content) throws IOException
         {
             Graphics2D g2dOriginal = graphics;
             Area lastClipOriginal = lastClip;
@@ -989,7 +1017,7 @@ public class PageDrawer extends PDFStreamEngine
             if (matrix != null)
             {
                 saveGraphicsState();
-                drawImage(image, matrix.createAffineTransform());
+                drawBufferedImage(image, matrix.createAffineTransform());
                 restoreGraphicsState();
             }
         }

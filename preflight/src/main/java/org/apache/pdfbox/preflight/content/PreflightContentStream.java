@@ -48,7 +48,8 @@ import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.font.container.FontContainer;
 import org.apache.pdfbox.preflight.font.util.GlyphException;
-import org.apache.pdfbox.util.operator.PDFOperator;
+import org.apache.pdfbox.util.operator.Operator;
+import org.apache.pdfbox.util.operator.Operator;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
 
 public class PreflightContentStream extends PreflightStreamEngine
@@ -139,7 +140,7 @@ public class PreflightContentStream extends PreflightStreamEngine
      * 
      * @see org.apache.pdfbox.util.PDFStreamEngine#processOperator(org.apache.pdfbox .util.PDFOperator, java.util.List)
      */
-    protected void processOperator(PDFOperator operator, List arguments) throws IOException
+    protected void processOperator(Operator operator, List arguments) throws IOException
     {
         /*
          * Here is a copy of the super method because the else block is different. (If the operator is unknown, throw an
@@ -185,7 +186,7 @@ public class PreflightContentStream extends PreflightStreamEngine
      * @throws ContentStreamException
      * @throws IOException
      */
-    protected void checkShowTextOperators(PDFOperator operator, List<?> arguments) throws ContentStreamException,
+    protected void checkShowTextOperators(Operator operator, List<?> arguments) throws ContentStreamException,
             IOException
     {
         String op = operator.getOperation();
@@ -211,7 +212,7 @@ public class PreflightContentStream extends PreflightStreamEngine
      * @throws ContentStreamException
      * @throws IOException
      */
-    private void validStringDefinition(PDFOperator operator, List<?> arguments) throws ContentStreamException,
+    private void validStringDefinition(Operator operator, List<?> arguments) throws ContentStreamException,
             IOException
     {
         /*
@@ -274,7 +275,7 @@ public class PreflightContentStream extends PreflightStreamEngine
      * @throws ContentStreamException
      * @throws IOException
      */
-    private void validStringArray(PDFOperator operator, List<?> arguments) throws ContentStreamException, IOException
+    private void validStringArray(Operator operator, List<?> arguments) throws ContentStreamException, IOException
     {
         for (Object object : arguments)
         {

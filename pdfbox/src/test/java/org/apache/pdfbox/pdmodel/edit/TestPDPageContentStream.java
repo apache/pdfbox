@@ -22,7 +22,8 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.util.operator.PDFOperator;
+import org.apache.pdfbox.util.operator.Operator;
+import org.apache.pdfbox.util.operator.Operator;
 
 import java.io.IOException;
 
@@ -58,7 +59,7 @@ public class TestPDPageContentStream extends TestCase
         assertEquals(0.2f, ((COSFloat)pageTokens.get(1)).floatValue());
         assertEquals(0.3f, ((COSFloat)pageTokens.get(2)).floatValue());
         assertEquals(0.4f, ((COSFloat)pageTokens.get(3)).floatValue());
-        assertEquals("k", ((PDFOperator) pageTokens.get(4)).getOperation());
+        assertEquals("k", ((Operator) pageTokens.get(4)).getOperation());
 
         // same as above but for PDPageContentStream#setStrokingColor
         page = new PDPage();
@@ -84,6 +85,6 @@ public class TestPDPageContentStream extends TestCase
         assertEquals(0.6f, ((COSFloat)pageTokens.get(1)).floatValue());
         assertEquals(0.7f, ((COSFloat)pageTokens.get(2)).floatValue());
         assertEquals(0.8f, ((COSFloat)pageTokens.get(3)).floatValue());
-        assertEquals("K", ((PDFOperator)pageTokens.get(4)).getOperation());
+        assertEquals("K", ((Operator)pageTokens.get(4)).getOperation());
     }
 }
