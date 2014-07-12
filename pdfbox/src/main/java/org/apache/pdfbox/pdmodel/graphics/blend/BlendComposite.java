@@ -24,6 +24,8 @@ import java.awt.color.ColorSpace;
 import java.awt.image.ColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * AWT composite for blend modes.
@@ -33,15 +35,31 @@ import java.awt.image.WritableRaster;
 public final class BlendComposite implements Composite
 {
     /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(BlendComposite.class);
+
+    /**
      * Creates a blend composite
      *
      * @param blendMode Desired blend mode
-     * @param constantAlpha Constant alpha
+     * @param constantAlpha Constant alpha, must be in the inclusive range
+     * [0.0, 1.0] or it will be clipped.
      */
     public static Composite getInstance(BlendMode blendMode, float constantAlpha)
     {
         if (blendMode == BlendMode.NORMAL)
         {
+            if (constantAlpha < 0)
+            {
+                LOG.warn("using 0 instead of incorrect Alpha " + constantAlpha);
+                constantAlpha = 0;
+            }
+            else if (constantAlpha > 1)
+            {
+                LOG.warn("using 1 instead of incorrect Alpha " + constantAlpha);
+                constantAlpha = 1;
+            }
             return AlphaComposite.getInstance(AlphaComposite.SRC_OVER, constantAlpha);
         }
         else
@@ -62,6 +80,7 @@ public final class BlendComposite implements Composite
         this.constantAlpha = constantAlpha;
     }
 
+    @Override
     public CompositeContext createContext(ColorModel srcColorModel, ColorModel dstColorModel,
             RenderingHints hints)
     {
@@ -70,9 +89,9 @@ public final class BlendComposite implements Composite
 
     class BlendCompositeContext implements CompositeContext
     {
-        private ColorModel srcColorModel;
-        private ColorModel dstColorModel;
-        private RenderingHints hints;
+        private final ColorModel srcColorModel;
+        private final ColorModel dstColorModel;
+        private final RenderingHints hints;
 
         BlendCompositeContext(ColorModel srcColorModel, ColorModel dstColorModel,
                 RenderingHints hints)
@@ -82,11 +101,13 @@ public final class BlendComposite implements Composite
             this.hints = hints;
         }
 
+        @Override
         public void dispose()
         {
             // nothing needed
         }
 
+        @Override
         public void compose(Raster src, Raster dstIn, WritableRaster dstOut)
         {
             int x0 = src.getMinX();
