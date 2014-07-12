@@ -55,38 +55,38 @@ import org.apache.pdfbox.preflight.graphic.ICCProfileWrapper;
 import org.apache.pdfbox.preflight.utils.COSUtils;
 import org.apache.pdfbox.preflight.utils.FilterHelper;
 import org.apache.pdfbox.preflight.utils.RenderingIntents;
-import org.apache.pdfbox.util.operator.PDFOperator;
+import org.apache.pdfbox.util.operator.DrawObject;
+import org.apache.pdfbox.util.operator.Operator;
 import org.apache.pdfbox.util.PDFStreamEngine;
-import org.apache.pdfbox.util.operator.BeginText;
-import org.apache.pdfbox.util.operator.Concatenate;
-import org.apache.pdfbox.util.operator.EndText;
-import org.apache.pdfbox.util.operator.GRestore;
-import org.apache.pdfbox.util.operator.GSave;
-import org.apache.pdfbox.util.operator.Invoke;
-import org.apache.pdfbox.util.operator.MoveText;
-import org.apache.pdfbox.util.operator.MoveTextSetLeading;
-import org.apache.pdfbox.util.operator.NextLine;
+import org.apache.pdfbox.util.operator.text.BeginText;
+import org.apache.pdfbox.util.operator.state.Concatenate;
+import org.apache.pdfbox.util.operator.text.EndText;
+import org.apache.pdfbox.util.operator.state.Restore;
+import org.apache.pdfbox.util.operator.state.Save;
+import org.apache.pdfbox.util.operator.text.MoveText;
+import org.apache.pdfbox.util.operator.text.MoveTextSetLeading;
+import org.apache.pdfbox.util.operator.text.NextLine;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
-import org.apache.pdfbox.util.operator.SetCharSpacing;
-import org.apache.pdfbox.util.operator.SetHorizontalTextScaling;
-import org.apache.pdfbox.util.operator.SetLineCapStyle;
-import org.apache.pdfbox.util.operator.SetLineDashPattern;
-import org.apache.pdfbox.util.operator.SetLineJoinStyle;
-import org.apache.pdfbox.util.operator.SetLineWidth;
-import org.apache.pdfbox.util.operator.SetMatrix;
-import org.apache.pdfbox.util.operator.SetNonStrokingDeviceCMYKColor;
-import org.apache.pdfbox.util.operator.SetNonStrokingColor;
-import org.apache.pdfbox.util.operator.SetNonStrokingColorSpace;
-import org.apache.pdfbox.util.operator.SetNonStrokingDeviceRGBColor;
-import org.apache.pdfbox.util.operator.SetStrokingDeviceCMYKColor;
-import org.apache.pdfbox.util.operator.SetStrokingColor;
-import org.apache.pdfbox.util.operator.SetStrokingColorSpace;
-import org.apache.pdfbox.util.operator.SetStrokingDeviceRGBColor;
-import org.apache.pdfbox.util.operator.SetTextFont;
-import org.apache.pdfbox.util.operator.SetTextLeading;
-import org.apache.pdfbox.util.operator.SetTextRenderingMode;
-import org.apache.pdfbox.util.operator.SetTextRise;
-import org.apache.pdfbox.util.operator.SetWordSpacing;
+import org.apache.pdfbox.util.operator.text.SetCharSpacing;
+import org.apache.pdfbox.util.operator.text.SetHorizontalTextScaling;
+import org.apache.pdfbox.util.operator.state.SetLineCapStyle;
+import org.apache.pdfbox.util.operator.state.SetLineDashPattern;
+import org.apache.pdfbox.util.operator.state.SetLineJoinStyle;
+import org.apache.pdfbox.util.operator.state.SetLineWidth;
+import org.apache.pdfbox.util.operator.state.SetMatrix;
+import org.apache.pdfbox.util.operator.color.SetNonStrokingDeviceCMYKColor;
+import org.apache.pdfbox.util.operator.color.SetNonStrokingColor;
+import org.apache.pdfbox.util.operator.color.SetNonStrokingColorSpace;
+import org.apache.pdfbox.util.operator.color.SetNonStrokingDeviceRGBColor;
+import org.apache.pdfbox.util.operator.color.SetStrokingDeviceCMYKColor;
+import org.apache.pdfbox.util.operator.color.SetStrokingColor;
+import org.apache.pdfbox.util.operator.color.SetStrokingColorSpace;
+import org.apache.pdfbox.util.operator.color.SetStrokingDeviceRGBColor;
+import org.apache.pdfbox.util.operator.text.SetTextFont;
+import org.apache.pdfbox.util.operator.text.SetTextLeading;
+import org.apache.pdfbox.util.operator.text.SetTextRenderingMode;
+import org.apache.pdfbox.util.operator.text.SetTextRise;
+import org.apache.pdfbox.util.operator.text.SetWordSpacing;
 
 /**
  * This class inherits from org.apache.pdfbox.util.PDFStreamEngine to allow the validation of specific rules in
@@ -121,7 +121,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
         registerOperatorProcessor("CS", new SetStrokingColorSpace());
         registerOperatorProcessor("cs", new SetNonStrokingColorSpace());
         registerOperatorProcessor("d", new SetLineDashPattern());
-        registerOperatorProcessor("Do", new Invoke());
+        registerOperatorProcessor("Do", new DrawObject());
 
         registerOperatorProcessor("j", new SetLineJoinStyle());
         registerOperatorProcessor("J", new SetLineCapStyle());
@@ -137,8 +137,8 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
         registerOperatorProcessor("scn", new SetNonStrokingColor());
 
         // Graphics state
-        registerOperatorProcessor("Q", new GRestore());
-        registerOperatorProcessor("q", new GSave());
+        registerOperatorProcessor("Q", new Restore());
+        registerOperatorProcessor("q", new Save());
 
         // Text operators
         registerOperatorProcessor("BT", new BeginText());
@@ -230,7 +230,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
      * @throws ContentStreamException
      *             ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY if the operand is invalid
      */
-    protected void validRenderingIntent(PDFOperator operator, List arguments) throws ContentStreamException
+    protected void validRenderingIntent(Operator operator, List arguments) throws ContentStreamException
     {
         if ("ri".equals(operator.getOperation()))
         {
@@ -259,7 +259,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
      * @param operator
      * @throws ContentStreamException
      */
-    protected void validNumberOfGraphicStates(PDFOperator operator) throws ContentStreamException
+    protected void validNumberOfGraphicStates(Operator operator) throws ContentStreamException
     {
         if ("q".equals(operator.getOperation()))
         {
@@ -278,7 +278,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
      * @param operator the InlinedImage object (BI to EI)
      * @throws ContentStreamException
      */
-    protected void validImageFilter(PDFOperator operator) throws ContentStreamException
+    protected void validImageFilter(Operator operator) throws ContentStreamException
     {
         COSDictionary dict = operator.getImageParameters();
         /*
@@ -296,7 +296,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
      * @param operator the InlinedImage object (BI to EI)
      * @throws ContentStreamException
      */
-    protected void validImageColorSpace(PDFOperator operator) throws IOException
+    protected void validImageColorSpace(Operator operator) throws IOException
     {
         COSDictionary dict = operator.getImageParameters();
 
@@ -507,7 +507,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
      * @param arguments
      * @throws IOException
      */
-    protected void checkSetColorSpaceOperators(PDFOperator operator, List<?> arguments) throws IOException
+    protected void checkSetColorSpaceOperators(Operator operator, List<?> arguments) throws IOException
     {
         if (!("CS".equals(operator.getOperation()) || "cs".equals(operator.getOperation())))
         {

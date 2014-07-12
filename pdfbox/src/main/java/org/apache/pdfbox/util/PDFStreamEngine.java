@@ -42,11 +42,12 @@ import org.apache.pdfbox.pdmodel.common.PDMatrix;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
+import org.apache.pdfbox.util.operator.Operator;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
-import org.apache.pdfbox.util.operator.PDFOperator;
 
 /**
  * Processes a PDF content stream and executes certain operations.
@@ -175,10 +176,10 @@ public class PDFStreamEngine
     /**
      * This will initialise and process the contents of the stream.
      * 
-     * @param resources The location to retrieve resources.
-     * @param cosStream the Stream to execute.
+     * @param resources the location to retrieve resources
+     * @param cosStream the Stream to execute
      * @param drawingSize the size of the page
-     * @throws IOException if there is an error accessing the stream.
+     * @throws IOException if there is an error accessing the stream
      */
     public void processStream(PDResources resources, COSStream cosStream, PDRectangle drawingSize)
             throws IOException
@@ -188,11 +189,33 @@ public class PDFStreamEngine
     }
 
     /**
+     * Shows a form from the content stream.
+     *
+     * @param form form XObject
+     * @throws IOException if the form cannot be processed
+     */
+    public void showForm(PDFormXObject form) throws IOException
+    {
+        processSubStream(form.getResources(), form.getCOSStream());
+    }
+
+    /**
+     * Shows a transparency group from the content stream.
+     *
+     * @param form transparency group (form) XObject
+     * @throws IOException if the transparency group cannot be processed
+     */
+    public void showTransparencyGroup(PDFormXObject form) throws IOException
+    {
+        showForm(form);
+    }
+
+    /**
      * Process a sub stream of the current stream.
      * 
-     * @param resources The resources used when processing the stream.
-     * @param cosStream The stream to process.
-     * @throws IOException If there is an exception while processing the stream.
+     * @param resources the resources used when processing the stream
+     * @param cosStream the stream to process
+     * @throws IOException if there is an exception while processing the stream
      */
     public void processSubStream(PDResources resources, COSStream cosStream) throws IOException
     {
@@ -239,9 +262,9 @@ public class PDFStreamEngine
                 {
                     arguments.add(((COSObject) next).getObject());
                 }
-                else if (next instanceof PDFOperator)
+                else if (next instanceof Operator)
                 {
-                    processOperator((PDFOperator) next, arguments);
+                    processOperator((Operator) next, arguments);
                     arguments = new ArrayList<COSBase>();
                 }
                 else
@@ -268,13 +291,70 @@ public class PDFStreamEngine
     }
 
     /**
+     * Called when the ET operator is encountered. This method is for overriding in subclasses, the
+     * default implementation does nothing.
+     *
+     * @throws IOException if there was an error processing the text
+     */
+    public void endText() throws IOException
+    {
+        // overridden in subclasses
+    }
+
+    /**
+     * Called when a string of text is to be shown.
+     *
+     * @param string the encoded text
+     * @throws IOException if there was an error showing the text
+     */
+    public void showText(byte[] string) throws IOException
+    {
+        processText(string);
+    }
+
+    /**
+     * Called when a string of text with spacing adjustments is to be shown.
+     *
+     * @param strings list of the encoded text
+     * @param adjustments spacing adjustment for each string
+     * @throws IOException if there was an error showing the text
+     */
+    public void showAdjustedText(List<byte[]> strings, List<Float> adjustments) throws IOException
+    {
+        float fontsize = getGraphicsState().getTextState().getFontSize();
+        float horizontalScaling = getGraphicsState().getTextState().getHorizontalScaling() / 100;
+        for (int i = 0, len = strings.size(); i < len; i++)
+        {
+            float adjustment = adjustments.get(i);
+            Matrix adjMatrix = new Matrix();
+            adjustment =- (adjustment / 1000) * horizontalScaling * fontsize;
+            // TODO vertical writing mode
+            adjMatrix.setValue( 2, 0, adjustment );
+            showAdjustedTextRun(strings.get(i), adjMatrix);
+        }
+    }
+
+    /**
+     * Called when a single run of text with a spacing adjustment is to be shown.
+     *
+     * @param string the encoded text
+     * @param adjustment spacing adjustment to apply before showing the string
+     * @throws IOException if there was an error showing the text
+     */
+    protected void showAdjustedTextRun(byte[] string, Matrix adjustment) throws IOException
+    {
+        setTextMatrix(adjustment.multiply(getTextMatrix(), adjustment));
+        processText(string);
+    }
+
+    /**
      * Process text from the PDF Stream. You should override this method if you want to
      * perform an action when encoded text is being processed.
      * 
-     * @param string The encoded text
-     * @throws IOException If there is an error processing the string
+     * @param string the encoded text
+     * @throws IOException if there is an error processing the string
      */
-    public void processText(byte[] string) throws IOException
+    protected void processText(byte[] string) throws IOException
     {
         // Note on variable names. There are three different units being used in this code.
         // Character sizes are given in glyph units, text locations are initially given in text
@@ -452,7 +532,7 @@ public class PDFStreamEngine
     {
         try
         {
-            PDFOperator operator = PDFOperator.getOperator(operation);
+            Operator operator = Operator.getOperator(operation);
             processOperator(operator, arguments);
         }
         catch (IOException e)
@@ -468,7 +548,7 @@ public class PDFStreamEngine
      * @param arguments The list of arguments.
      * @throws IOException If there is an error processing the operation.
      */
-    protected void processOperator(PDFOperator operator, List<COSBase> arguments) throws IOException
+    protected void processOperator(Operator operator, List<COSBase> arguments) throws IOException
     {
         String operation = operator.getOperation();
         OperatorProcessor processor = operators.get(operation);

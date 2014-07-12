@@ -21,6 +21,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSString;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 /**
@@ -120,6 +121,32 @@ public final class PDColor
     public String getPatternName()
     {
         return patternName;
+    }
+
+    /**
+     * Returns true if this color value is a pattern.
+     * @return true if this color value is a pattern
+     */
+    public boolean isPattern()
+    {
+        return patternName != null;
+    }
+
+    // todo: toRGB() which returns a packed int
+    // todo: getColorSpace() getter
+
+    // STARTING POINT:
+    // todo: JavaDoc [TODO: WHAT TO DO IF THIS IS A PATTERN? THROW ERROR?]
+    public int toRGB(PDColorSpace colorSpace) throws IOException // todo: store colorSpace locally (Also, fallback color if exception?)
+    {
+        float[] floats = colorSpace.toRGB(components);
+        int r = Math.round(floats[0] * 255);
+        int g = Math.round(floats[1] * 255);
+        int b = Math.round(floats[2] * 255);
+        int rgb = r;
+        rgb = (rgb << 8) + g;
+        rgb = (rgb << 8) + b;
+        return rgb;
     }
 
     /**

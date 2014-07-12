@@ -51,7 +51,8 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 
-import org.apache.pdfbox.util.operator.PDFOperator;
+import org.apache.pdfbox.util.operator.Operator;
+import org.apache.pdfbox.util.operator.Operator;
 
 /**
  * A default appearance string contains any graphics state or text state operators needed to
@@ -191,7 +192,7 @@ public final class PDAppearanceString
      */
     private boolean containsMarkedContent( List stream )
     {
-        return stream.contains( PDFOperator.getOperator( "BMC" ) );
+        return stream.contains( Operator.getOperator("BMC") );
     }
 
     /**
@@ -276,8 +277,8 @@ public final class PDAppearanceString
                     {
                         if( daTokens != null )
                         {
-                            int bmcIndex = tokens.indexOf( PDFOperator.getOperator( "BMC" ));
-                            int emcIndex = tokens.indexOf( PDFOperator.getOperator( "EMC" ));
+                            int bmcIndex = tokens.indexOf( Operator.getOperator("BMC"));
+                            int emcIndex = tokens.indexOf( Operator.getOperator("EMC"));
                             if( bmcIndex != -1 && emcIndex != -1 &&
                                 emcIndex == bmcIndex+1 )
                             {
@@ -300,7 +301,7 @@ public final class PDAppearanceString
                                 drawnString.append( apValue.getBytes("ISO-8859-1") );
                             }
                         }
-                        int setFontIndex = tokens.indexOf( PDFOperator.getOperator( "Tf" ));
+                        int setFontIndex = tokens.indexOf( Operator.getOperator("Tf"));
                         tokens.set( setFontIndex-1, new COSFloat( fontSize ) );
                         if( foundString )
                         {
@@ -308,8 +309,8 @@ public final class PDAppearanceString
                         }
                         else
                         {
-                            int bmcIndex = tokens.indexOf( PDFOperator.getOperator( "BMC" ) );
-                            int emcIndex = tokens.indexOf( PDFOperator.getOperator( "EMC" ) );
+                            int bmcIndex = tokens.indexOf( Operator.getOperator("BMC") );
+                            int emcIndex = tokens.indexOf( Operator.getOperator("EMC") );
 
                             if( bmcIndex != -1 )
                             {
@@ -356,7 +357,7 @@ public final class PDAppearanceString
             daParser.parse();
             List<Object> daTokens = daParser.getTokens();
             fontSize = calculateFontSize( pdFont, boundingBox, tokens, daTokens );
-            int fontIndex = daTokens.indexOf( PDFOperator.getOperator( "Tf" ) );
+            int fontIndex = daTokens.indexOf( Operator.getOperator("Tf") );
             if(fontIndex != -1 )
             {
                 daTokens.set( fontIndex-1, new COSFloat( fontSize ) );
@@ -430,7 +431,7 @@ public final class PDAppearanceString
                 tokens = streamParser.getTokens();
             }
 
-            int setFontIndex = tokens.indexOf( PDFOperator.getOperator( "Tf" ));
+            int setFontIndex = tokens.indexOf( Operator.getOperator("Tf"));
             COSName cosFontName = (COSName)tokens.get( setFontIndex-2 );
             String fontName = cosFontName.getName();
             retval = (PDFont)streamResources.getFonts().get( fontName );
@@ -471,8 +472,8 @@ public final class PDAppearanceString
         float retval = 1;
         if( tokens != null )
         {
-            int btIndex = tokens.indexOf(PDFOperator.getOperator( "BT" ));
-            int wIndex = tokens.indexOf(PDFOperator.getOperator( "w" ));
+            int btIndex = tokens.indexOf(Operator.getOperator("BT"));
+            int wIndex = tokens.indexOf(Operator.getOperator("w"));
             //the w should only be used if it is before the first BT.
             if( (wIndex > 0) && (wIndex < btIndex) )
             {
@@ -488,7 +489,7 @@ public final class PDAppearanceString
         for( int i=0; i<tokens.size(); i++ )
         {
             Object next = tokens.get( i );
-            if( next == PDFOperator.getOperator( "re" ) )
+            if( next == Operator.getOperator("re") )
             {
                 COSNumber x = (COSNumber)tokens.get( i-4 );
                 COSNumber y = (COSNumber)tokens.get( i-3 );
@@ -526,7 +527,7 @@ public final class PDAppearanceString
         {
             //daString looks like   "BMC /Helv 3.4 Tf EMC"
 
-            int fontIndex = daTokens.indexOf( PDFOperator.getOperator( "Tf" ) );
+            int fontIndex = daTokens.indexOf( Operator.getOperator("Tf") );
             if(fontIndex != -1 )
             {
                 fontSize = ((COSNumber)daTokens.get(fontIndex-1)).floatValue();

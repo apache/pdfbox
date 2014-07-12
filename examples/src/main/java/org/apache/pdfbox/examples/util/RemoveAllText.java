@@ -22,7 +22,8 @@ import org.apache.pdfbox.pdfwriter.ContentStreamWriter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.util.operator.PDFOperator;
+import org.apache.pdfbox.util.operator.Operator;
+import org.apache.pdfbox.util.operator.Operator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,9 +81,9 @@ public class RemoveAllText
                     for( int j=0; j<tokens.size(); j++)
                     {
                         Object token = tokens.get( j );
-                        if( token instanceof PDFOperator )
+                        if( token instanceof Operator)
                         {
-                            PDFOperator op = (PDFOperator)token;
+                            Operator op = (Operator)token;
                             if( op.getOperation().equals( "TJ") || op.getOperation().equals( "Tj" ))
                             {
                                 //remove the one argument to this operator
