@@ -156,7 +156,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         this.pageSize = pageSize;
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
-        graphics.translate(0, pageSize.getHeight());
+        graphics.translate(0, (int)pageSize.getHeight());
         graphics.scale(1, -1);
         // TODO use getStroke() to set the initial stroke
         graphics.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
