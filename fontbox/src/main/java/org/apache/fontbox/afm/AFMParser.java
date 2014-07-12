@@ -17,6 +17,7 @@
 package org.apache.fontbox.afm;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.IOException;
 
@@ -287,7 +288,7 @@ public class AFMParser
     private static final int BITS_IN_HEX = 16;
 
 
-    private InputStream input;
+    private final InputStream input;
 
     /**
      * A method to test parsing of all AFM documents in the resources
@@ -306,7 +307,7 @@ public class AFMParser
             if (file.getPath().toUpperCase().endsWith(".AFM"))
             {
                 long start = System.currentTimeMillis();
-                java.io.FileInputStream input = new java.io.FileInputStream(file);
+                FileInputStream input = new FileInputStream(file);
                 AFMParser parser = new AFMParser( input );
                 parser.parse();
                 long stop = System.currentTimeMillis();
@@ -355,7 +356,7 @@ public class AFMParser
                                    " and not '" + startFontMetrics + "'" );
         }
         fontMetrics.setAFMVersion( readFloat() );
-        String nextCommand = null;
+        String nextCommand;
         while( !END_FONT_METRICS.equals( (nextCommand = readString() ) ) )
         {
             if( FONT_NAME.equals( nextCommand ) )
@@ -528,7 +529,7 @@ public class AFMParser
      */
     private void parseKernData( FontMetric fontMetrics ) throws IOException
     {
-        String nextCommand = null;
+        String nextCommand;
         while( !(nextCommand = readString()).equals( END_KERN_DATA ) )
         {
             if( START_TRACK_KERN.equals( nextCommand ) )
@@ -940,7 +941,7 @@ public class AFMParser
     private boolean readBoolean() throws IOException
     {
         String theBoolean = readString();
-        return Boolean.valueOf( theBoolean ).booleanValue();
+        return Boolean.valueOf( theBoolean );
     }
 
     /**
