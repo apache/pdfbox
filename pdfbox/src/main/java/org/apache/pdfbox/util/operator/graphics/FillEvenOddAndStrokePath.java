@@ -20,7 +20,6 @@ import java.util.List;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.util.operator.Operator;
-import org.apache.pdfbox.util.operator.Operator;
 
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
