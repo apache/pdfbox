@@ -23,7 +23,6 @@ import java.util.List;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.util.operator.Operator;
-import org.apache.pdfbox.util.operator.Operator;
 
 /**
  * v Append curved segment to path with the initial point replicated.

@@ -23,7 +23,6 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImage;
 import org.apache.pdfbox.pdmodel.graphics.image.PDInlineImage;
 import org.apache.pdfbox.util.operator.Operator;
-import org.apache.pdfbox.util.operator.Operator;
 
 /**
  * BI Begins an inline image.

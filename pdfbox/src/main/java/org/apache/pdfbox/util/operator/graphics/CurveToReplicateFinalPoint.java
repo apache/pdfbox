@@ -23,7 +23,6 @@ import java.awt.geom.Point2D;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.util.operator.Operator;
-import org.apache.pdfbox.util.operator.Operator;
 
 /**
  * y Append curved segment to path with final point replicated.
