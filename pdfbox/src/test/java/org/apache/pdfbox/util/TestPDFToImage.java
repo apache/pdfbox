@@ -275,7 +275,9 @@ public class TestPDFToImage extends TestCase
                 @Override
                 public boolean accept(File dir, String name)
                 {
-                    return (name.endsWith(".png") && name.startsWith(mcurFile.getName(), 0));
+                    return (name.endsWith(".png") && 
+                            name.startsWith(mcurFile.getName(), 0)) && 
+                            !name.endsWith(".png-diff.png");
                 }
             });
             for (File outFile : outFiles)
