@@ -236,9 +236,7 @@ public class COSString extends COSBase
                 }
                 else
                 {
-                    IOException exception = new IOException("Invalid hex string: " + hex);
-                    exception.initCause(e);
-                    throw exception;
+                    throw new IOException("Invalid hex string: " + hex, e);
                 }
             }
         }
