@@ -191,15 +191,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                         Matrix matrix = appearance.getMatrix();
                         if (matrix != null)
                         {
-                            // transform the rectangle using the given matrix
-                            AffineTransform at = matrix.createAffineTransform();
-                            at.scale(1, -1);
-                            at.transform(point, point);
+                            matrix.createAffineTransform().transform(point, point);
                         }
-                        graphics.translate((int) point.getX(), -(int) point.getY());
+                        graphics.translate((int) point.getX(), (int) point.getY());
                         lastClip = null;
                         processSubStream(appearance.getResources(), appearance.getStream());
-                        graphics.translate(-(int) point.getX(), (int) point.getY());
+                        graphics.translate(-(int) point.getX(), -(int) point.getY());
                     }
                 }
             }
