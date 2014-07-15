@@ -31,13 +31,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBoolean;
+import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.util.Matrix;
 
 /**
  * AWT PaintContext for radial shading.
  */
-class RadialShadingContext implements PaintContext
+public class RadialShadingContext implements PaintContext
 {
     private static final Log LOG = LogFactory.getLog(RadialShadingContext.class);
 
@@ -360,5 +361,16 @@ class RadialShadingContext implements PaintContext
     public boolean[] getExtend() 
     {
         return extend;
+    }
+    
+    /**
+     * Returns the function.
+     *
+     * @return the function
+     * @throws IOException if something goes wrong
+     */
+    public PDFunction getFunction() throws IOException
+    {
+        return shading.getFunction();
     }
 }
