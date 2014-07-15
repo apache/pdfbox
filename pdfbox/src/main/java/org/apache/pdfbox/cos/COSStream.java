@@ -151,7 +151,7 @@ public class COSStream extends COSDictionary implements Closeable
             doEncode();
         }
         long position = filteredStream.getPosition();
-        long length = filteredStream.getLength();
+        long length = filteredStream.getLengthWritten();
 
         RandomAccessFileInputStream input =
             new RandomAccessFileInputStream( file, position, length );
@@ -181,7 +181,7 @@ public class COSStream extends COSDictionary implements Closeable
      *
      * @throws IOException when encoding/decoding causes an exception
      */
-    public InputStream  getUnfilteredStream() throws IOException
+    public InputStream getUnfilteredStream() throws IOException
     {
         InputStream retval;
         if( unFilteredStream == null )
@@ -518,6 +518,7 @@ public class COSStream extends COSDictionary implements Closeable
         return new BufferedOutputStream( unFilteredStream, BUFFER_SIZE );
     }
     
+    @Override
     public void close()
     {
         try
