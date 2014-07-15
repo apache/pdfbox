@@ -150,7 +150,7 @@ public class COSStream extends COSDictionary implements Closeable
             doEncode();
         }
         long position = filteredStream.getPosition();
-        long length = filteredStream.getLength();
+        long length = filteredStream.getLengthWritten();
 
         RandomAccessFileInputStream input =
             new RandomAccessFileInputStream( file, position, length );
