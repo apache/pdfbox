@@ -122,6 +122,7 @@ public class WriteDecodedDoc
                     cosStream.setFilters(null);
                 }
             }
+            doc.getDocumentCatalog();
             doc.save( out );
         }
         finally
