@@ -37,6 +37,12 @@ import org.apache.pdfbox.util.Matrix;
 
 /**
  * AWT PaintContext for radial shading.
+ *
+ * Performance improvement done as part of GSoC2014, Tilman Hausherr is the
+ * mentor.
+ *
+ * @author Andreas Lehmkühler
+ * @author Shaola Ren 
  */
 public class RadialShadingContext implements PaintContext
 {
@@ -49,6 +55,7 @@ public class RadialShadingContext implements PaintContext
     private float[] coords;
     private float[] domain;
     private float[] background;
+    private int rgbBackground;
     private boolean[] extend;
     private double x1x0; 
     private double y1y0;
@@ -59,6 +66,9 @@ public class RadialShadingContext implements PaintContext
 
     private float d1d0;
     private double denom;
+    
+    private final double longestDistance;
+    private int[] colorTable;
 
     /**
      * Constructor creates an instance to be used for fill operations.
@@ -68,7 +78,7 @@ public class RadialShadingContext implements PaintContext
      * @param ctm the transformation matrix
      * @param pageHeight height of the current page
      */
-    RadialShadingContext(PDShadingType3 shading, ColorModel cm, AffineTransform xform,
+    public RadialShadingContext(PDShadingType3 shading, ColorModel cm, AffineTransform xform,
                                 Matrix ctm, int pageHeight) throws IOException
     {
         this.shading = shading;
@@ -134,7 +144,92 @@ public class RadialShadingContext implements PaintContext
         if (bg != null)
         {
             background = bg.toFloatArray();
+            rgbBackground = convertToRGB(background);
         }
+        longestDistance = getLongestDis();
+        colorTable = calcColorTable();
+    }
+    
+    // get the longest distance of two points which are located on these two circles
+    private double getLongestDis()
+    {
+        double centerToCenter = Math.sqrt(x1x0pow2 + y1y0pow2);
+        double rmin, rmax;
+        if (coords[2] < coords[5])
+        {
+            rmin = coords[2];
+            rmax = coords[5];
+        }
+        else
+        {
+            rmin = coords[5];
+            rmax = coords[2];
+        }
+        if (centerToCenter + rmin <= rmax)
+        {
+            return 2 * rmax;
+        }
+        else
+        {
+            return rmin + centerToCenter + coords[5];
+        }
+    }
+    
+    /**
+     * Calculate the color on the line connects two circles' centers and store the result in an array.
+     * @return an array, index denotes the relative position, the corresponding value the color
+     */
+    private int[] calcColorTable()
+    {
+        int[] map = new int[(int) longestDistance + 1];
+        if (longestDistance == 0 || d1d0 == 0)
+        {
+            try
+            {
+                float[] values = shading.evalFunction(domain[0]);
+                map[0] = convertToRGB(values);
+            }
+            catch (IOException exception)
+            {
+                LOG.error("error while processing a function", exception);
+            }
+        }
+        else
+        {
+            for (int i = 0; i <= longestDistance; i++)
+            {
+                float t = domain[0] + d1d0 * i / (float)longestDistance;
+                try
+                {
+                    float[] values = shading.evalFunction(t);
+                    map[i] = convertToRGB(values);
+                }
+                catch (IOException exception)
+                {
+                    LOG.error("error while processing a function", exception);
+                }
+            }
+        }
+        return map;
+    }
+    
+    // convert color to RGB color values
+    private int convertToRGB(float[] values)
+    {
+        float[] rgbValues;
+        int normRGBValues = 0;
+        try
+        {
+            rgbValues = shadingColorSpace.toRGB(values);
+            normRGBValues = (int) (rgbValues[0] * 255);
+            normRGBValues |= (((int) (rgbValues[1] * 255)) << 8);
+            normRGBValues |= (((int) (rgbValues[2] * 255)) << 16);
+        }
+        catch (IOException exception)
+        {
+            LOG.error("error processing color space", exception);
+        }
+        return normRGBValues;
     }
 
     @Override
@@ -265,37 +360,23 @@ public class RadialShadingContext implements PaintContext
                         }
                     }
                 }
-                float[] values = null;
-                int index = (j * w + i) * 4;
+                int value;
                 if (useBackground)
                 {
                     // use the given backgound color values
-                    values = background;
+                    value = rgbBackground;
                 }
                 else
                 {
-                    try
-                    {
-                        float input = (domain[0] + (d1d0 * inputValue));
-                        values = shading.evalFunction(input);
-                    }
-                    catch (IOException exception)
-                    {
-                        LOG.error("error while processing a function", exception);
-                    }
+                    int key = (int) (inputValue * longestDistance);
+                    value = colorTable[key];
                 }
-                // convert color values from shading color space to RGB
-                try
-                {
-                    values = shadingColorSpace.toRGB(values);
-                }
-                catch (IOException exception)
-                {
-                    LOG.error("error processing color space", exception);
-                }
-                data[index] = (int) (values[0] * 255);
-                data[index + 1] = (int) (values[1] * 255);
-                data[index + 2] = (int) (values[2] * 255);
+                int index = (j * w + i) * 4;
+                data[index] = value & 255;
+                value >>= 8;
+                data[index + 1] = value & 255;
+                value >>= 8;
+                data[index + 2] = value & 255;
                 data[index + 3] = 255;
             }
         }
