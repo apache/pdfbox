@@ -56,7 +56,7 @@ abstract class PatchMeshesShadingContext implements PaintContext
     protected PDColorSpace shadingColorSpace;
     protected final int numberOfColorComponents; // number of color components
     protected float[] background; // background values.
-    protected float[] rgbBackground;
+    protected int rgbBackground;
     protected final boolean hasFunction;
     protected final PDShading patchMeshesShadingType;
     
@@ -65,7 +65,7 @@ abstract class PatchMeshesShadingContext implements PaintContext
     protected int bitsPerCoordinate; // bits per coordinate
     protected int bitsPerColorComponent; // bits per color component
     protected int bitsPerFlag; // bits per flag
-    protected HashMap<Point, ColorRGB> pixelTable;
+    protected HashMap<Point, Integer> pixelTable;
     
     /**
      * Constructor creates an instance to be used for fill operations.
@@ -282,9 +282,9 @@ abstract class PatchMeshesShadingContext implements PaintContext
      * Calculate every point and its color and store them in a Hash table.
      * @return a Hash table contains all the points' positions and colors of one image
      */
-    protected HashMap<Point, ColorRGB> calcPixelTable()
+    protected HashMap<Point, Integer> calcPixelTable()
     {
-        HashMap<Point, ColorRGB> map = new HashMap<Point, ColorRGB>();
+        HashMap<Point, Integer> map = new HashMap<Point, Integer>();
         for (Patch it : patchList)
         {
             for (CoonsTriangle tri : it.listOfCoonsTriangle)
@@ -297,7 +297,7 @@ abstract class PatchMeshesShadingContext implements PaintContext
                     for (Point p : linePoints)
                     {
                         float[] values = line.getColor(p);
-                        map.put(p, new ColorRGB(convertToRGB(values)));
+                        map.put(p, convertToRGB(values));
                     }
                 }
                 else
@@ -311,7 +311,7 @@ abstract class PatchMeshesShadingContext implements PaintContext
                             if (tri.contains(p))
                             {
                                 float[] values = tri.getColor(p);
-                                map.put(p, new ColorRGB(convertToRGB(values)));
+                                map.put(p, convertToRGB(values));
                             }
                         }
                     }
@@ -321,11 +321,12 @@ abstract class PatchMeshesShadingContext implements PaintContext
         return map;
     }
     
-    // convert color to RGB color values
-    private float[] convertToRGB(float[] values)
+    // convert values to RGB color, using function when needed
+    private int convertToRGB(float[] values)
     {
         float[] nValues = null;
         float[] rgbValues = null;
+        int normRGBValues = 0;
         if (hasFunction)
         {
             try
@@ -348,12 +349,15 @@ abstract class PatchMeshesShadingContext implements PaintContext
             {
                 rgbValues = shadingColorSpace.toRGB(nValues);
             }
+            normRGBValues = (int) (rgbValues[0] * 255);
+            normRGBValues |= (((int) (rgbValues[1] * 255)) << 8);
+            normRGBValues |= (((int) (rgbValues[2] * 255)) << 16);
         }
         catch (IOException exception)
         {
             LOG.error("error processing color space", exception);
         }
-        return rgbValues;
+        return normRGBValues;
     }
     
     @Override
@@ -374,7 +378,7 @@ abstract class PatchMeshesShadingContext implements PaintContext
     public final Raster getRaster(int x, int y, int w, int h)
     {
         WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);
-        int[] data = new int[w * h * 4];
+        int[] data = new int[w * h * 4];       
         if (!patchList.isEmpty() || background != null)
         {
             for (int row = 0; row < h; row++)
@@ -382,16 +386,16 @@ abstract class PatchMeshesShadingContext implements PaintContext
                 for (int col = 0; col < w; col++)
                 {
                     Point p = new Point(x + col, y + row);
-                    float[] values;
+                    int value;
                     if (pixelTable.containsKey(p))
                     {
-                        values = pixelTable.get(p).color;
+                        value = pixelTable.get(p);
                     }
                     else
                     {
-                        if (rgbBackground != null)
+                        if (background != null)
                         {
-                            values = rgbBackground;
+                            value = rgbBackground;
                         }
                         else
                         {
@@ -399,9 +403,11 @@ abstract class PatchMeshesShadingContext implements PaintContext
                         }
                     }
                     int index = (row * w + col) * 4;
-                    data[index] = (int) (values[0] * 255);
-                    data[index + 1] = (int) (values[1] * 255);
-                    data[index + 2] = (int) (values[2] * 255);
+                    data[index] = value & 255;
+                    value >>= 8;
+                    data[index + 1] = value & 255;
+                    value >>= 8;
+                    data[index + 2] = value & 255;
                     data[index + 3] = 255;
                 }
             }
