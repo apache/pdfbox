@@ -145,7 +145,8 @@ public class PDFunctionType2 extends PDFunction
     public String toString()
     {
         return "FunctionType2{"
-                + "C0:" + getC0() + " "
-                + "C1:" + getC1() + "}";
+                + "C0: " + getC0() + " "
+                + "C1: " + getC1() + " "
+                + "N: " + getN() + "}";
     }
 }
