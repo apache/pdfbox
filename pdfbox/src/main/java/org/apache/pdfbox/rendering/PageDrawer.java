@@ -93,7 +93,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     // parent document renderer
     private final PDFRenderer renderer;
-
+    private boolean highQuality = false;
     private Graphics2D graphics;
 
     // initial transform
@@ -110,6 +110,16 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     private Area textClippingArea;
 
     private final Map<PDFont, Glyph2D> fontGlyph2D = new HashMap<PDFont, Glyph2D>();
+
+    private RenderingHints renderingHints=null;
+    static private RenderingHints defaultRenderingHints;
+
+    static {
+       defaultRenderingHints=new RenderingHints(null);
+       defaultRenderingHints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+       defaultRenderingHints.put(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+    }
+
     
     /**
      * Default constructor, loads properties from file.
@@ -144,6 +154,15 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         return renderer;
     }
 
+    public void setRenderingHints(RenderingHints renderingHints) {
+       this.renderingHints=renderingHints;
+    }
+
+    public void applyRenderingHints(Graphics2D g) {
+       RenderingHints rh=renderingHints!=null?renderingHints:defaultRenderingHints;
+       g.setRenderingHints(rh);
+    }
+
     /**
      * Sets high-quality rendering hints on the current Graphics2D.
      */
@@ -167,10 +186,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     public void drawPage(Graphics g, PDRectangle pageSize) throws IOException
     {
         graphics = (Graphics2D) g;
-        xform = graphics.getTransform();
-        setRenderingHints();
+        this.pageSize = pageSize;
+        applyRenderingHints(graphics);
+        graphics.translate(0, (int)pageSize.getHeight());
 
-        graphics.translate(0, (int) pageSize.getHeight());
         graphics.scale(1, -1);
         // TODO use getStroke() to set the initial stroke
         graphics.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
@@ -302,7 +321,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                                   throws IOException
     {
         graphics = g;
-        setRenderingHints();
+
+        applyRenderingHints(g);
 
         initStream(pageDimension);
 
@@ -489,7 +509,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         Font awtFont = createAWTFont(font);
         FontRenderContext frc = new FontRenderContext(new AffineTransform(), true, true);
         GlyphVector glyphs = awtFont.createGlyphVector(frc, string);
-//        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        applyRenderingHints(graphics);
+
         writeFont(at, glyphs);
     }
 
@@ -939,6 +961,37 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             AffineTransform imageTransform = new AffineTransform(at);
             imageTransform.scale(1.0 / width, -1.0 / height);
             imageTransform.translate(0, -height);
+            //graphics.drawImage(image, imageTransform, null);
+
+            AffineTransform result=new AffineTransform(graphics.getTransform());
+            result.concatenate(imageTransform);
+            result.concatenate( graphics.getDeviceConfiguration().getNormalizingTransform() );
+            int targetWidth=(int)(width*result.getScaleX());
+            int targetHeight=(int)(height*result.getScaleY());
+            if (targetWidth>=3 && targetHeight>=3)
+            {
+                ResampleOp  resampleOp = new ResampleOp(targetWidth,targetHeight);
+                if (highQuality)
+                {
+                   resampleOp.setUnsharpenMask(AdvancedResizeOp.UnsharpenMask.Normal);
+                   resampleOp.setFilter(ResampleFilters.getLanczos3Filter());
+                }
+                else
+                {
+                   // cubic hf provides good compromise between sharpness and speed
+                   resampleOp.setFilter(ResampleFilters.getBiCubicHighFreqResponse());
+                   // triangle is slightly fuzzier, similar speed
+                   // resampleOp.setFilter(ResampleFilters.getTriangleFilter());
+                }
+
+                image = resampleOp.filter((BufferedImage)image, null);
+                width=targetWidth;
+                height=targetHeight;
+
+                imageTransform = new AffineTransform(at);
+                imageTransform.scale(1.0 / targetWidth, -1.0 / targetHeight);
+                imageTransform.translate(0, -targetHeight);
+            }
             graphics.drawImage(image, imageTransform, null);
         }
 
