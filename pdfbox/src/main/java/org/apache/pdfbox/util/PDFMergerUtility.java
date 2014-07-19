@@ -63,7 +63,7 @@ public class PDFMergerUtility
 {
     private static final String STRUCTURETYPE_DOCUMENT = "Document";
 
-    private List<InputStream> sources;
+    private final List<InputStream> sources;
     private String destinationFileName;
     private OutputStream destinationStream;
     private boolean ignoreAcroFormErrors = false;
@@ -202,7 +202,7 @@ public class PDFMergerUtility
         PDDocument source;
         if (sources != null && sources.size() > 0)
         {
-            java.util.Vector<PDDocument> tobeclosed = new java.util.Vector<PDDocument>();
+            ArrayList<PDDocument> tobeclosed = new ArrayList<PDDocument>();
 
             try
             {
@@ -331,13 +331,17 @@ public class PDFMergerUtility
                 }
             }
         }
-        catch (Exception e)
+        catch (IOException e)
         {
             // if we are not ignoring exceptions, we'll re-throw this
             if (!ignoreAcroFormErrors)
             {
-                throw (IOException) e;
+                throw new IOException(e);
             }
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
         }
 
         COSArray destThreads = (COSArray) destCatalog.getCOSDictionary().getDictionaryObject(COSName.THREADS);
@@ -401,7 +405,7 @@ public class PDFMergerUtility
         if (srcLabels != null)
         {
             int destPageCount = destination.getNumberOfPages();
-            COSArray destNums = null;
+            COSArray destNums;
             if (destLabels == null)
             {
                 destLabels = new COSDictionary();
