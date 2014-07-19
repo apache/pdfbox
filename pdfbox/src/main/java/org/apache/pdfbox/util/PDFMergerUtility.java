@@ -344,7 +344,7 @@ public class PDFMergerUtility
             // if we are not ignoring exceptions, we'll re-throw this
             if (!ignoreAcroFormErrors)
             {
-                throw new IOException(e);
+                throw new IOException(e.getMessage());
             }
         }
         catch (Exception e)
