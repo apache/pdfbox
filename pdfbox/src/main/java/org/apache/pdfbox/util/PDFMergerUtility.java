@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -35,6 +37,7 @@ import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.exceptions.COSVisitorException;
+import org.apache.pdfbox.filter.JPXFilter;
 import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
@@ -62,6 +65,12 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDFieldFactory;
  */
 public class PDFMergerUtility
 {
+    
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(PDFMergerUtility.class);
+
     private static final String STRUCTURETYPE_DOCUMENT = "Document";
 
     private final List<InputStream> sources;
@@ -344,6 +353,7 @@ public class PDFMergerUtility
             // if we are not ignoring exceptions, we'll re-throw this
             if (!ignoreAcroFormErrors)
             {
+                LOG.error (e, e);
                 throw new IOException(e.getMessage());
             }
         }
