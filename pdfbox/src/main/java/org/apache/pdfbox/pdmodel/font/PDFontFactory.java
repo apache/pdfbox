@@ -118,4 +118,19 @@ public class PDFontFactory
             throw new IOException("Invalid font type: " + type);
         }
     }
+
+    /**
+     * Create a default font
+     * 
+     * @return a default font
+     * @throws IOException if something goes wrong
+     */
+    public static PDFont createDefaultFont() throws IOException
+    {
+        COSDictionary dict = new COSDictionary();
+        dict.setItem(COSName.TYPE, COSName.FONT);
+        dict.setItem (COSName.SUBTYPE, COSName.TRUE_TYPE);
+        dict.setString(COSName.BASE_FONT, "Arial");
+        return createFont(dict);
+    }
 }
