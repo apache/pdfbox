@@ -124,4 +124,19 @@ public class PDFontFactory
         }
         return retval;
     }
+
+    /**
+     * Create a default font
+     * 
+     * @return a default font
+     * @throws IOException if something goes wrong
+     */
+    public static PDFont createDefaultFont() throws IOException
+    {
+        COSDictionary dict = new COSDictionary();
+        dict.setItem(COSName.TYPE, COSName.FONT);
+        dict.setItem (COSName.SUBTYPE, COSName.TYPE1);
+        dict.setString(COSName.BASE_FONT, "Arial");
+        return createFont(dict);
+    }
 }
