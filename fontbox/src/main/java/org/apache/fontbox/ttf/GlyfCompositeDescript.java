@@ -22,16 +22,23 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
- * Glyph description for composite glyphs. Composite glyphs are made up of one or more simple glyphs, usually with some
- * sort of transformation applied to each.
- * 
- * This class is based on code from Apache Batik a subproject of Apache XMLGraphics. see
- * http://xmlgraphics.apache.org/batik/ for further details.
+ * Glyph description for composite glyphs. Composite glyphs are made up of one
+ * or more simple glyphs, usually with some sort of transformation applied to
+ * each.
+ *
+ * This class is based on code from Apache Batik a subproject of Apache
+ * XMLGraphics. see http://xmlgraphics.apache.org/batik/ for further details.
  */
 public class GlyfCompositeDescript extends GlyfDescript
 {
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(GlyfCompositeDescript.class);
 
     private final List<GlyfCompositeComp> components = new ArrayList<GlyfCompositeComp>();
     private GlyphData[] glyphs = null;
@@ -57,7 +64,8 @@ public class GlyfCompositeDescript extends GlyfDescript
         {
             comp = new GlyfCompositeComp(bais);
             components.add(comp);
-        } while ((comp.getFlags() & GlyfCompositeComp.MORE_COMPONENTS) != 0);
+        } 
+        while ((comp.getFlags() & GlyfCompositeComp.MORE_COMPONENTS) != 0);
 
         // Are there hinting instructions to read?
         if ((comp.getFlags() & GlyfCompositeComp.WE_HAVE_INSTRUCTIONS) != 0)
@@ -78,7 +86,7 @@ public class GlyfCompositeDescript extends GlyfDescript
         }
         if (beingResolved)
         {
-            System.err.println("Circular reference in GlyfCompositeDesc");
+            LOG.error("Circular reference in GlyfCompositeDesc");
             return;
         }
         beingResolved = true;
@@ -193,10 +201,16 @@ public class GlyfCompositeDescript extends GlyfDescript
     {
         if (!resolved)
         {
-            System.err.println("getPointCount called on unresolved GlyfCompositeDescript");
+            LOG.error("getPointCount called on unresolved GlyfCompositeDescript");
         }
         GlyfCompositeComp c = (GlyfCompositeComp) components.get(components.size() - 1);
-        return c.getFirstIndex() + getGlypDescription(c.getGlyphIndex()).getPointCount();
+        GlyphDescription gd = getGlypDescription(c.getGlyphIndex());
+        if (gd == null)
+        {
+            LOG.error("getGlypDescription(" + c.getGlyphIndex() + ") is null, returning 0");
+            return 0;
+        }
+        return c.getFirstIndex() + gd.getPointCount();
     }
 
     /**
@@ -207,7 +221,7 @@ public class GlyfCompositeDescript extends GlyfDescript
     {
         if (!resolved)
         {
-            System.err.println("getContourCount called on unresolved GlyfCompositeDescript");
+            LOG.error("getContourCount called on unresolved GlyfCompositeDescript");
         }
         GlyfCompositeComp c = (GlyfCompositeComp) components.get(components.size() - 1);
         return c.getFirstContour() + getGlypDescription(c.getGlyphIndex()).getContourCount();
