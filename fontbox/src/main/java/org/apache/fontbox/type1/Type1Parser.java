@@ -132,6 +132,7 @@ final class Type1Parser
                     {
                         throw new IOException("Unknown encoding: " + name);
                     }
+                    readMaybe(Token.NAME, "readonly");
                     read(Token.NAME, "def");
                 }
                 else
