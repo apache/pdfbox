@@ -181,6 +181,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName DW = new COSName("DW");
     // E
     public static final COSName E = new COSName("E");
+    public static final COSName EARLY_CHANGE = new COSName("EarlyChange");
     public static final COSName EF = new COSName("EF");
     public static final COSName EMBEDDED_FDFS = new COSName("EmbeddedFDFs");
     public static final COSName EMBEDDED_FILES = new COSName("EmbeddedFiles");

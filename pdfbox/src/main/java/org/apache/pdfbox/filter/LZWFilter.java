@@ -65,11 +65,17 @@ public class LZWFilter extends Filter
             COSDictionary parameters, int index) throws IOException
     {
         int predictor = -1;
+        int earlyChange = 1;
 
         COSDictionary decodeParams = getDecodeParams(parameters, index);
         if (decodeParams != null)
         {
             predictor = decodeParams.getInt(COSName.PREDICTOR);
+            earlyChange = decodeParams.getInt(COSName.EARLY_CHANGE, 1);
+            if (earlyChange != 0 && earlyChange != 1)
+            {
+                earlyChange = 1;
+            }
         }
         if (predictor > 1)
         {
@@ -77,7 +83,7 @@ public class LZWFilter extends Filter
             int bitsPerPixel = decodeParams.getInt(COSName.BITS_PER_COMPONENT, 8);
             int columns = decodeParams.getInt(COSName.COLUMNS, 1);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            doLZWDecode(encoded, baos);
+            doLZWDecode(encoded, baos, earlyChange);
             ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
             Predictor.decodePredictor(predictor, colors, bitsPerPixel, columns, bais, decoded);
             decoded.flush();
@@ -86,12 +92,12 @@ public class LZWFilter extends Filter
         }
         else
         {
-            doLZWDecode(encoded, decoded);
+            doLZWDecode(encoded, decoded, earlyChange);
         }
         return new DecodeResult(parameters);
     }
 
-    private void doLZWDecode(InputStream encoded, OutputStream decoded) throws IOException
+    private void doLZWDecode(InputStream encoded, OutputStream decoded, int earlyChange) throws IOException
     {
         ArrayList<byte[]> codeTable = null;
         int chunk = 9;
@@ -133,7 +139,7 @@ public class LZWFilter extends Filter
                         codeTable.add(newData);
                     }
                     
-                    chunk = calculateChunk(codeTable.size());
+                    chunk = calculateChunk(codeTable.size(), earlyChange);
                     prevCommand = nextCommand;
                 }
             }
@@ -179,7 +185,7 @@ public class LZWFilter extends Filter
                 if (newFoundCode == -1)
                 {
                     // use previous
-                    chunk = calculateChunk(codeTable.size() - 1);
+                    chunk = calculateChunk(codeTable.size() - 1, 1);
                     out.writeBits(foundCode, chunk);
                     // create new table entry
                     codeTable.add(inputPattern);
@@ -206,7 +212,7 @@ public class LZWFilter extends Filter
         }
         if (foundCode != -1)
         {
-            chunk = calculateChunk(codeTable.size() - 1);
+            chunk = calculateChunk(codeTable.size() - 1, 1);
             out.writeBits(foundCode, chunk);
         }
 
@@ -215,7 +221,7 @@ public class LZWFilter extends Filter
         // possibly adjusted the chunk. Therefore, the encoder must behave as 
         // if the code table had just grown and thus it must be checked it is
         // needed to adjust the chunk, based on an increased table size parameter
-        chunk = calculateChunk(codeTable.size());
+        chunk = calculateChunk(codeTable.size(), 1);
 
         out.writeBits(EOD, chunk);
         out.writeBits(0, 7); // pad with 0
@@ -284,20 +290,21 @@ public class LZWFilter extends Filter
      * Calculate the appropriate chunk size
      *
      * @param tabSize the size of the code table
+     * @param earlyChange 0 or 1 for early chunk increase
      *
      * @return a value between 9 and 12
      */
-    private int calculateChunk(int tabSize)
+    private int calculateChunk(int tabSize, int earlyChange)
     {
-        if (tabSize >= 2047)
+        if (tabSize >= 2048 - earlyChange)
         {
             return 12;
         }
-        if (tabSize >= 1023)
+        if (tabSize >= 1024 - earlyChange)
         {
             return 11;
         }
-        if (tabSize >= 511)
+        if (tabSize >= 512 - earlyChange)
         {
             return 10;
         }
