@@ -70,7 +70,7 @@
     <property name="bcmail.url" value="${maven.repo2}/org/bouncycastle/bcmail-jdk15on/1.50/${bcmail.name}.jar" />
     <property name="bcmail.jar" value="${jar.dir}/${bcmail.name}.jar" />
 
-    <property name="bcpkix.name" value="bcpkix-jdk15on-1.48" />
+    <property name="bcpkix.name" value="bcpkix-jdk15on-1.50" />
     <property name="bcpkix.url" value="${maven.repo2}/org/bouncycastle/bcpkix-jdk15on/1.50/${bcpkix.name}.jar" />
     <property name="bcpkix.jar" value="${jar.dir}/${bcpkix.name}.jar" />
 
