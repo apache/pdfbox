@@ -43,13 +43,13 @@ public class GRestore extends OperatorProcessor
      */
     public void process(PDFOperator operator, List<COSBase> arguments)
     {
-        if (context.getGraphicsStack().size() > 0)
+        if (context.getGraphicsStack().size() > 1)
         {
             context.setGraphicsState((PDGraphicsState) context.getGraphicsStack().pop());
         }
         else
         {
-    		// this shouldn't happen but it does, see PDFBOX-161
+            // this shouldn't happen but it does, see PDFBOX-161
             // TODO make this self healing mechanism optional for preflight??
             LOG.error("GRestore: no graphics state left to be restored.");
         }
