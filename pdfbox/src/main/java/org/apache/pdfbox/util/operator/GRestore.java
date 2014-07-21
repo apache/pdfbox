@@ -43,7 +43,7 @@ public class GRestore extends OperatorProcessor
      */
     public void process(PDFOperator operator, List<COSBase> arguments)
     {
-        if (context.getGraphicsStack().size() > 1)
+        if (context.getGraphicsStack().size() > 0)
         {
             context.setGraphicsState((PDGraphicsState) context.getGraphicsStack().pop());
         }
