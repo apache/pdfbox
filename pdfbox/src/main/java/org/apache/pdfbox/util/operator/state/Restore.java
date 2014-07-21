@@ -36,14 +36,14 @@ public class Restore extends OperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> arguments)
     {
-    	if (context.getGraphicsStackSize() > 0)
-    	{
-    		context.restoreGraphicsState();
-    	}
-    	else
-    	{
-    		// this shouldn't happen but it does, see PDFBOX-161
-    		LOG.debug("GRestore: no graphics state left to be restored.");
-    	}
+        if (context.getGraphicsStackSize() > 1)
+        {
+            context.restoreGraphicsState();
+        }
+        else
+        {
+            // this shouldn't happen but it does, see PDFBOX-161
+            LOG.error("GRestore: no graphics state left to be restored.");
+        }
     }
 }
