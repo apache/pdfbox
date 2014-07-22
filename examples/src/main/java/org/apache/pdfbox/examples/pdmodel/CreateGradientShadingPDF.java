@@ -27,7 +27,9 @@ import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.common.function.PDFunctionType2;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingResources;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType2;
 
@@ -56,18 +58,7 @@ public class CreateGradientShadingPDF
             PDPage page = new PDPage();
             document.addPage(page);
 
-            // shading attributes
-            COSDictionary dict = new COSDictionary();
-            dict.setInt(COSName.SHADING_TYPE, 2);
-            dict.setName(COSName.COLORSPACE, "DeviceRGB");
-            COSArray coords = new COSArray();
-            coords.add(COSInteger.get(100));
-            coords.add(COSInteger.get(400));
-            coords.add(COSInteger.get(400));
-            coords.add(COSInteger.get(600));
-            dict.setItem(COSName.COORDS, coords);
-
-            // function with attributes
+            // function attributes
             COSDictionary fdict = new COSDictionary();
             fdict.setInt(COSName.FUNCTION_TYPE, 2);
             COSArray domain = new COSArray();
@@ -85,9 +76,20 @@ public class CreateGradientShadingPDF
             fdict.setItem(COSName.C0, c0);
             fdict.setItem(COSName.C1, c1);
             fdict.setInt(COSName.N, 1);
-            dict.setItem(COSName.FUNCTION, fdict);
+            PDFunctionType2 func = new PDFunctionType2(fdict);
 
-            PDShadingType2 shading = new PDShadingType2(dict);
+            PDShadingType2 shading = new PDShadingType2(new COSDictionary());
+
+            // shading attributes
+            shading.setColorSpace(PDDeviceRGB.INSTANCE);
+            shading.setShadingType(PDShadingType2.SHADING_TYPE2);
+            COSArray coords = new COSArray();
+            coords.add(COSInteger.get(100));
+            coords.add(COSInteger.get(400));
+            coords.add(COSInteger.get(400));
+            coords.add(COSInteger.get(600));
+            shading.setCoords(coords);
+            shading.setFunction(func);
 
             // create and add to shading resources
             page.setResources(new PDResources());
