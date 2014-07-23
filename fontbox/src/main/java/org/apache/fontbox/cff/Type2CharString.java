@@ -204,8 +204,8 @@ public class Type2CharString extends Type1CharString
             }
             List<Integer> first = numbers.subList(0, 6);
             List<Integer> second = Arrays.asList(numbers.get(6), numbers.get(7), numbers.get(8), 
-                    numbers.get(9), (Math.abs(dx) > Math.abs(dy) ? numbers.get(10) : Integer.valueOf(-dx)), 
-                    (Math.abs(dx) > Math.abs(dy) ? Integer.valueOf(-dy) : numbers.get(10)));
+                    numbers.get(9), (Math.abs(dx) > Math.abs(dy) ? numbers.get(10) : -dx), 
+                    (Math.abs(dx) > Math.abs(dy) ? -dy : numbers.get(10)));
             addCommandList(Arrays.asList(first, second), new CharStringCommand(8));
         }
         else if ("hstemhm".equals(name))
@@ -322,14 +322,14 @@ public class Type2CharString extends Type1CharString
             {
                 addCommand(Arrays.asList(numbers.get(0), 0,
                         numbers.get(1), numbers.get(2), last ? numbers.get(4)
-                                : Integer.valueOf(0), numbers.get(3)),
+                                : 0, numbers.get(3)),
                         new CharStringCommand(8));
             } 
             else
             {
                 addCommand(Arrays.asList(0, numbers.get(0),
                         numbers.get(1), numbers.get(2), numbers.get(3),
-                        last ? numbers.get(4) : Integer.valueOf(0)),
+                        last ? numbers.get(4) : 0),
                         new CharStringCommand(8));
             }
             numbers = numbers.subList(last ? 5 : 4, numbers.size());
@@ -346,15 +346,14 @@ public class Type2CharString extends Type1CharString
             if (horizontal)
             {
                 addCommand(Arrays.asList(numbers.get(first ? 1 : 0),
-                        first ? numbers.get(0) : Integer.valueOf(0), numbers
+                        first ? numbers.get(0) : 0, numbers
                                 .get(first ? 2 : 1),
                         numbers.get(first ? 3 : 2), numbers.get(first ? 4 : 3),
                         0), new CharStringCommand(8));
             } 
             else
             {
-                addCommand(Arrays.asList(first ? numbers.get(0) : Integer
-                        .valueOf(0), numbers.get(first ? 1 : 0), numbers
+                addCommand(Arrays.asList(first ? numbers.get(0) : 0, numbers.get(first ? 1 : 0), numbers
                         .get(first ? 2 : 1), numbers.get(first ? 3 : 2),
                         0, numbers.get(first ? 4 : 3)),
                         new CharStringCommand(8));

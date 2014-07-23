@@ -87,7 +87,7 @@ public class Type1CharStringTest
 
         for (int value : values)
         {
-            sequence.add(Integer.valueOf(value));
+            sequence.add(value);
         }
 
         return sequence;

@@ -203,23 +203,23 @@ public class Type2CharStringParser
             int b1 = input.readUnsignedByte();
             int b2 = input.readUnsignedByte();
 
-            return Integer.valueOf((short) (b1 << 8 | b2));
+            return (int) (short) (b1 << 8 | b2);
         } 
         else if (b0 >= 32 && b0 <= 246)
         {
-            return Integer.valueOf(b0 - 139);
+            return b0 - 139;
         } 
         else if (b0 >= 247 && b0 <= 250)
         {
             int b1 = input.readUnsignedByte();
 
-            return Integer.valueOf((b0 - 247) * 256 + b1 + 108);
+            return (b0 - 247) * 256 + b1 + 108;
         } 
         else if (b0 >= 251 && b0 <= 254)
         {
             int b1 = input.readUnsignedByte();
 
-            return Integer.valueOf(-(b0 - 251) * 256 - b1 - 108);
+            return -(b0 - 251) * 256 - b1 - 108;
         } 
         else if (b0 == 255)
         {
@@ -229,7 +229,7 @@ public class Type2CharStringParser
             // the decimal point and aren't needed in this context
             input.readUnsignedByte();
             input.readUnsignedByte();
-            return Integer.valueOf((short)(b1 << 8 | b2));
+            return (int) (short)(b1 << 8 | b2);
         } 
         else
         {
