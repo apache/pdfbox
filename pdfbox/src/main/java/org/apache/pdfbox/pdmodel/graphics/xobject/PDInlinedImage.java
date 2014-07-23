@@ -183,7 +183,7 @@ public class PDInlinedImage
         
         List filters = params.getFilters();
         byte[] finalData;
-        if( filters == null )
+        if( filters == null || filters.isEmpty() )
         {
             finalData = getImageData();
         }
