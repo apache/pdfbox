@@ -38,8 +38,8 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 
 /**
- * An inline image object which uses a special syntax to express the data for
- * a small image directly within the content stream.
+ * An inline image object which uses a special syntax to express the data for a
+ * small image directly within the content stream.
  *
  * @author Ben Litchfield
  * @author John Hewson
@@ -47,34 +47,35 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 public final class PDInlineImage implements PDImage
 {
     // image parameters
-    private COSDictionary parameters;
+    private final COSDictionary parameters;
 
     // color spaces in current resource dictionary
-    private Map<String, PDColorSpace> colorSpaces;
+    private final Map<String, PDColorSpace> colorSpaces;
 
     // image data
-    private PDStream stream;
+    private final PDStream stream;
 
     /**
      * Creates an inline image from the given parameters and data.
+     *
      * @param parameters the image parameters
      * @param data the image data
      * @param colorSpaces the color spaces in the current resources parameters
      */
     public PDInlineImage(COSDictionary parameters, byte[] data,
-                         Map<String, PDColorSpace> colorSpaces) throws IOException
+            Map<String, PDColorSpace> colorSpaces) throws IOException
     {
         this.parameters = parameters;
         this.colorSpaces = colorSpaces;
 
         DecodeResult decodeResult = null;
-        if (getFilters() == null)
+        List<String> filters = getFilters();
+        if (filters == null || filters.isEmpty())
         {
             this.stream = new PDMemoryStream(data);
         }
         else
         {
-            List<String> filters = getFilters();
             ByteArrayInputStream in = new ByteArrayInputStream(data);
             ByteArrayOutputStream out = new ByteArrayOutputStream(data.length);
             for (int i = 0; i < filters.size(); i++)
@@ -96,11 +97,13 @@ public final class PDInlineImage implements PDImage
         }
     }
 
+    @Override
     public COSBase getCOSObject()
     {
         return parameters;
     }
 
+    @Override
     public int getBitsPerComponent()
     {
         if (isStencil())
@@ -113,11 +116,13 @@ public final class PDInlineImage implements PDImage
         }
     }
 
+    @Override
     public void setBitsPerComponent(int bitsPerComponent)
     {
         parameters.setInt(COSName.BPC, bitsPerComponent);
     }
 
+    @Override
     public PDColorSpace getColorSpace() throws IOException
     {
         COSBase cs = parameters.getDictionaryObject(COSName.CS);
@@ -143,6 +148,7 @@ public final class PDInlineImage implements PDImage
         }
     }
 
+    @Override
     public void setColorSpace(PDColorSpace colorSpace)
     {
         COSBase base = null;
@@ -153,28 +159,34 @@ public final class PDInlineImage implements PDImage
         parameters.setItem(COSName.CS, base);
     }
 
+    @Override
     public int getHeight()
     {
         return parameters.getInt(COSName.H, COSName.HEIGHT, -1);
     }
 
+    @Override
     public void setHeight(int height)
     {
         parameters.setInt(COSName.H, height);
     }
 
+    @Override
     public int getWidth()
     {
         return parameters.getInt(COSName.W, COSName.WIDTH, -1);
     }
 
+    @Override
     public void setWidth(int width)
     {
         parameters.setInt(COSName.W, width);
     }
 
     /**
-     * Returns a list of filters applied to this stream, or null if there are none.
+     * Returns a list of filters applied to this stream, or null if there are
+     * none.
+     *
      * @return a list of filters applied to this stream
      */
     // TODO return an empty list if there are none?
@@ -196,6 +208,7 @@ public final class PDInlineImage implements PDImage
 
     /**
      * Sets which filters are applied to this stream.
+     *
      * @param filters the filters to apply to this stream.
      */
     public void setFilters(List<String> filters)
@@ -204,36 +217,43 @@ public final class PDInlineImage implements PDImage
         parameters.setItem(COSName.F, obj);
     }
 
+    @Override
     public void setDecode(COSArray decode)
     {
         parameters.setItem(COSName.D, decode);
     }
 
+    @Override
     public COSArray getDecode()
     {
         return (COSArray) parameters.getDictionaryObject(COSName.D, COSName.DECODE);
     }
 
+    @Override
     public boolean isStencil()
     {
         return parameters.getBoolean(COSName.IM, COSName.IMAGE_MASK, false);
     }
 
+    @Override
     public void setStencil(boolean isStencil)
     {
         parameters.setBoolean(COSName.IM, isStencil);
     }
 
+    @Override
     public PDStream getStream() throws IOException
     {
         return stream;
     }
 
+    @Override
     public BufferedImage getImage() throws IOException
     {
         return SampledImageReader.getRGBImage(this, getColorKeyMask());
     }
 
+    @Override
     public BufferedImage getStencilImage(Paint paint) throws IOException
     {
         if (!isStencil())
@@ -244,7 +264,9 @@ public final class PDInlineImage implements PDImage
     }
 
     /**
-     * Returns the color key mask array associated with this image, or null if there is none.
+     * Returns the color key mask array associated with this image, or null if
+     * there is none.
+     *
      * @return Mask Image XObject
      */
     public COSArray getColorKeyMask()
@@ -252,13 +274,14 @@ public final class PDInlineImage implements PDImage
         COSBase mask = parameters.getDictionaryObject(COSName.IM, COSName.MASK);
         if (mask instanceof COSArray)
         {
-            return (COSArray)mask;
+            return (COSArray) mask;
         }
         return null;
     }
 
     /**
      * Returns the suffix for this image type, e.g. jpg/png.
+     *
      * @return The image suffix.
      */
     public String getSuffix()
