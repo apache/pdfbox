@@ -22,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -29,7 +30,6 @@ import javax.imageio.ImageIO;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.bouncycastle.util.Arrays;
 
 /**
  * 
@@ -54,11 +54,9 @@ public class PDVisibleSignDesigner
     private byte[] AffineTransformParams =   { 1, 0, 0, 1, 0, 0 }; // default
     private float imageSizeInPercents;
     private PDDocument document = null;
-  
-    
 
     /**
-     * 
+     *
      * @param originalDocumenStream
      * @param imageStream
      * @param page the page number the visible signature is added to.
@@ -80,7 +78,6 @@ public class PDVisibleSignDesigner
      */
     public PDVisibleSignDesigner(String documentPath, InputStream imageStream, int page) throws IOException
     {
-
         // set visible singature image Input stream
         signatureImageStream(imageStream);
 
@@ -114,7 +111,6 @@ public class PDVisibleSignDesigner
      */
     private void calculatePageSize(PDDocument document, int page)
     {
-
         if (page < 1)
         {
             throw new IllegalArgumentException("First page of pdf is 1, not " + page);
@@ -309,7 +305,6 @@ public class PDVisibleSignDesigner
      */
     private PDVisibleSignDesigner signatureImageStream(InputStream imageStream) throws IOException 
     {
-
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
         int len;
@@ -321,7 +316,7 @@ public class PDVisibleSignDesigner
         baos.close();
 
         byte[] byteArray = baos.toByteArray();
-        byte[] byteArraySecond = Arrays.clone(byteArray);
+        byte[] byteArraySecond = Arrays.copyOf(byteArray, byteArray.length);
 
         InputStream inputForBufferedImage = new ByteArrayInputStream(byteArray);
         InputStream revertInputStream = new ByteArrayInputStream(byteArraySecond);
