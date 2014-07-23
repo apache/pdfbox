@@ -103,7 +103,7 @@ public class TTFSubFont
      */
     public void addCharCode(int charCode) 
     {
-        Integer gid = Integer.valueOf(baseCmap.getGlyphId(charCode));
+        Integer gid = baseCmap.getGlyphId(charCode);
         if (charCode == 0 || gid != 0) 
         {
             characters.put(charCode,gid);
