@@ -316,7 +316,8 @@ public class PDVisibleSignDesigner
         baos.close();
 
         byte[] byteArray = baos.toByteArray();
-        byte[] byteArraySecond = Arrays.copyOf(byteArray, byteArray.length);
+        byte[] byteArraySecond = new byte[byteArray.length];
+        System.arraycopy(byteArray, 0, byteArraySecond, 0, byteArray.length);
 
         InputStream inputForBufferedImage = new ByteArrayInputStream(byteArray);
         InputStream revertInputStream = new ByteArrayInputStream(byteArraySecond);
