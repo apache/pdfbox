@@ -238,7 +238,7 @@ public class CFFParser
         {
             int b1 = input.readUnsignedByte();
             int b2 = input.readUnsignedByte();
-            return Integer.valueOf((short) (b1 << 8 | b2));
+            return (int) (short) (b1 << 8 | b2);
         }
         else if (b0 == 29)
         {
@@ -246,21 +246,21 @@ public class CFFParser
             int b2 = input.readUnsignedByte();
             int b3 = input.readUnsignedByte();
             int b4 = input.readUnsignedByte();
-            return Integer.valueOf(b1 << 24 | b2 << 16 | b3 << 8 | b4);
+            return b1 << 24 | b2 << 16 | b3 << 8 | b4;
         }
         else if (b0 >= 32 && b0 <= 246)
         {
-            return Integer.valueOf(b0 - 139);
+            return b0 - 139;
         }
         else if (b0 >= 247 && b0 <= 250)
         {
             int b1 = input.readUnsignedByte();
-            return Integer.valueOf((b0 - 247) * 256 + b1 + 108);
+            return (b0 - 247) * 256 + b1 + 108;
         }
         else if (b0 >= 251 && b0 <= 254)
         {
             int b1 = input.readUnsignedByte();
-            return Integer.valueOf(-(b0 - 251) * 256 - b1 - 108);
+            return -(b0 - 251) * 256 - b1 - 108;
         }
         else
         {
@@ -376,16 +376,14 @@ public class CFFParser
                 getArray(
                         topDict,
                         "FontMatrix",
-                        Arrays.<Number> asList(Double.valueOf(0.001), Double.valueOf(0), Double.valueOf(0),
-                                Double.valueOf(0.001), Double.valueOf(0), Double.valueOf(0))));
+                        Arrays.<Number> asList(0.001, (double) 0, (double) 0, 0.001, (double) 0, (double) 0)));
         font.addValueToTopDict("UniqueID", getNumber(topDict, "UniqueID", null));
         font.addValueToTopDict(
                 "FontBBox",
                 getArray(
                         topDict,
                         "FontBBox",
-                        Arrays.<Number> asList(Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(0),
-                                Integer.valueOf(0))));
+                        Arrays.<Number> asList(0, 0, 0, 0)));
         font.addValueToTopDict("StrokeWidth", getNumber(topDict, "StrokeWidth", 0));
         font.addValueToTopDict("XUID", getArray(topDict, "XUID", null));
 
@@ -491,19 +489,19 @@ public class CFFParser
                 privDict.put("OtherBlues", getDelta(privateDict, "OtherBlues", null));
                 privDict.put("FamilyBlues", getDelta(privateDict, "FamilyBlues", null));
                 privDict.put("FamilyOtherBlues", getDelta(privateDict, "FamilyOtherBlues", null));
-                privDict.put("BlueScale", getNumber(privateDict, "BlueScale", Double.valueOf(0.039625)));
-                privDict.put("BlueShift", getNumber(privateDict, "BlueShift", Integer.valueOf(7)));
-                privDict.put("BlueFuzz", getNumber(privateDict, "BlueFuzz", Integer.valueOf(1)));
+                privDict.put("BlueScale", getNumber(privateDict, "BlueScale", 0.039625));
+                privDict.put("BlueShift", getNumber(privateDict, "BlueShift", 7));
+                privDict.put("BlueFuzz", getNumber(privateDict, "BlueFuzz", 1));
                 privDict.put("StdHW", getNumber(privateDict, "StdHW", null));
                 privDict.put("StdVW", getNumber(privateDict, "StdVW", null));
                 privDict.put("StemSnapH", getDelta(privateDict, "StemSnapH", null));
                 privDict.put("StemSnapV", getDelta(privateDict, "StemSnapV", null));
                 privDict.put("ForceBold", getBoolean(privateDict, "ForceBold", false));
-                privDict.put("LanguageGroup", getNumber(privateDict, "LanguageGroup", Integer.valueOf(0)));
-                privDict.put("ExpansionFactor", getNumber(privateDict, "ExpansionFactor", Double.valueOf(0.06)));
-                privDict.put("initialRandomSeed", getNumber(privateDict, "initialRandomSeed", Integer.valueOf(0)));
-                privDict.put("defaultWidthX", getNumber(privateDict, "defaultWidthX", Integer.valueOf(0)));
-                privDict.put("nominalWidthX", getNumber(privateDict, "nominalWidthX", Integer.valueOf(0)));
+                privDict.put("LanguageGroup", getNumber(privateDict, "LanguageGroup", 0));
+                privDict.put("ExpansionFactor", getNumber(privateDict, "ExpansionFactor", 0.06));
+                privDict.put("initialRandomSeed", getNumber(privateDict, "initialRandomSeed", 0));
+                privDict.put("defaultWidthX", getNumber(privateDict, "defaultWidthX", 0));
+                privDict.put("nominalWidthX", getNumber(privateDict, "nominalWidthX", 0));
 
                 int localSubrOffset = (Integer) getNumber(privateDict, "Subrs", Integer.valueOf(0));
                 if (localSubrOffset == 0)
@@ -528,8 +526,8 @@ public class CFFParser
             input.setPosition(fdSelectPos);
             CIDKeyedFDSelect fdSelect = readFDSelect(input, charStringsIndex.getCount(), fontRos);
 
-            font.addValueToPrivateDict("defaultWidthX", Integer.valueOf(1000));
-            font.addValueToPrivateDict("nominalWidthX", Integer.valueOf(0));
+            font.addValueToPrivateDict("defaultWidthX", 1000);
+            font.addValueToPrivateDict("nominalWidthX", 0);
 
             fontRos.setFdSelect(fdSelect);
 
@@ -546,21 +544,21 @@ public class CFFParser
             font.addValueToPrivateDict("OtherBlues", getDelta(privateDict, "OtherBlues", null));
             font.addValueToPrivateDict("FamilyBlues", getDelta(privateDict, "FamilyBlues", null));
             font.addValueToPrivateDict("FamilyOtherBlues", getDelta(privateDict, "FamilyOtherBlues", null));
-            font.addValueToPrivateDict("BlueScale", getNumber(privateDict, "BlueScale", Double.valueOf(0.039625)));
-            font.addValueToPrivateDict("BlueShift", getNumber(privateDict, "BlueShift", Integer.valueOf(7)));
-            font.addValueToPrivateDict("BlueFuzz", getNumber(privateDict, "BlueFuzz", Integer.valueOf(1)));
+            font.addValueToPrivateDict("BlueScale", getNumber(privateDict, "BlueScale", 0.039625));
+            font.addValueToPrivateDict("BlueShift", getNumber(privateDict, "BlueShift", 7));
+            font.addValueToPrivateDict("BlueFuzz", getNumber(privateDict, "BlueFuzz", 1));
             font.addValueToPrivateDict("StdHW", getNumber(privateDict, "StdHW", null));
             font.addValueToPrivateDict("StdVW", getNumber(privateDict, "StdVW", null));
             font.addValueToPrivateDict("StemSnapH", getDelta(privateDict, "StemSnapH", null));
             font.addValueToPrivateDict("StemSnapV", getDelta(privateDict, "StemSnapV", null));
             font.addValueToPrivateDict("ForceBold", getBoolean(privateDict, "ForceBold", false));
-            font.addValueToPrivateDict("LanguageGroup", getNumber(privateDict, "LanguageGroup", Integer.valueOf(0)));
+            font.addValueToPrivateDict("LanguageGroup", getNumber(privateDict, "LanguageGroup", 0));
             font.addValueToPrivateDict("ExpansionFactor",
-                    getNumber(privateDict, "ExpansionFactor", Double.valueOf(0.06)));
+                    getNumber(privateDict, "ExpansionFactor", 0.06));
             font.addValueToPrivateDict("initialRandomSeed",
-                    getNumber(privateDict, "initialRandomSeed", Integer.valueOf(0)));
-            font.addValueToPrivateDict("defaultWidthX", getNumber(privateDict, "defaultWidthX", Integer.valueOf(0)));
-            font.addValueToPrivateDict("nominalWidthX", getNumber(privateDict, "nominalWidthX", Integer.valueOf(0)));
+                    getNumber(privateDict, "initialRandomSeed", 0));
+            font.addValueToPrivateDict("defaultWidthX", getNumber(privateDict, "defaultWidthX", 0));
+            font.addValueToPrivateDict("nominalWidthX", getNumber(privateDict, "nominalWidthX", 0));
 
             int localSubrOffset = (Integer) getNumber(privateDict, "Subrs", Integer.valueOf(0));
             if (localSubrOffset == 0)
