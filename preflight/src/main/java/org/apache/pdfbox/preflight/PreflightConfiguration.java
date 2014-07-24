@@ -22,7 +22,7 @@
 package org.apache.pdfbox.preflight;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.pdfbox.preflight.action.ActionManagerFactory;
@@ -92,9 +92,9 @@ public class PreflightConfiguration
      */
     private boolean lazyValidation = false;
 
-    private Map<String, Class<? extends ValidationProcess>> processes = new HashMap<String, Class<? extends ValidationProcess>>();
+    private Map<String, Class<? extends ValidationProcess>> processes = new LinkedHashMap<String, Class<? extends ValidationProcess>>();
     // TODO use annotation to mark these validation processes as inner page validation and factorize the access method
-    private Map<String, Class<? extends ValidationProcess>> innerProcesses = new HashMap<String, Class<? extends ValidationProcess>>();
+    private Map<String, Class<? extends ValidationProcess>> innerProcesses = new LinkedHashMap<String, Class<? extends ValidationProcess>>();
 
     /**
      * Define the AnnotationFactory used by ValidationProcess
