@@ -262,7 +262,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
         WritableRaster dest = masked.getRaster();
         WritableRaster alpha = mask.getRaster();
 
-        float[] rgb = new float[3];
+        float[] rgb = new float[4];
         float[] rgba = new float[4];
         float[] alphaPixel = null;
         for (int y = 0; y < height; y++)
