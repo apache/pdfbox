@@ -40,6 +40,7 @@ import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.PDNumberTreeNode;
 import org.apache.pdfbox.pdmodel.common.PDStream;
@@ -207,15 +208,7 @@ public class PDFMergerUtility
             try
             {
                 Iterator<InputStream> sit = sources.iterator();
-                sourceFile = sit.next();
-                if (isNonSeq)
-                {
-                    destination = PDDocument.loadNonSeq(sourceFile, scratchFile);
-                }
-                else
-                {
-                    destination = PDDocument.load(sourceFile);
-                }
+                destination = new PDDocument();
 
                 while (sit.hasNext())
                 {
@@ -295,23 +288,6 @@ public class PDFMergerUtility
             destCatalog.setOpenAction(srcCatalog.getOpenAction());
         }
 
-        // maybe there are some shared resources for all pages
-        COSDictionary srcPages = (COSDictionary) srcCatalog.getCOSDictionary().getDictionaryObject(COSName.PAGES);
-        COSDictionary srcResources = (COSDictionary) srcPages.getDictionaryObject(COSName.RESOURCES);
-        COSDictionary destPages = (COSDictionary) destCatalog.getCOSDictionary().getDictionaryObject(COSName.PAGES);
-        COSDictionary destResources = (COSDictionary) destPages.getDictionaryObject(COSName.RESOURCES);
-        if (srcResources != null)
-        {
-            if (destResources != null)
-            {
-                destResources.mergeInto(srcResources);
-            }
-            else
-            {
-                destPages.setItem(COSName.RESOURCES, srcResources);
-            }
-        }
-
         PDFCloneUtility cloner = new PDFCloneUtility(destination);
 
         try
@@ -368,7 +344,6 @@ public class PDFMergerUtility
             {
                 cloner.cloneMerge(srcNames, destNames);
             }
-
         }
 
         PDDocumentOutline destOutline = destCatalog.getDocumentOutline();
@@ -494,7 +469,6 @@ public class PDFMergerUtility
             }
         }
 
-        // finally append the pages
         List<PDPage> pages = srcCatalog.getAllPages();
         Iterator<PDPage> pageIter = pages.iterator();
         HashMap<COSDictionary, COSDictionary> objMapping = new HashMap<COSDictionary, COSDictionary>();
@@ -505,6 +479,8 @@ public class PDFMergerUtility
             newPage.setCropBox(page.findCropBox());
             newPage.setMediaBox(page.findMediaBox());
             newPage.setRotation(page.findRotation());
+            // this is smart enough to just create references for resources that are used on multiple pages
+            newPage.setResources(new PDResources((COSDictionary) cloner.cloneForNewDocument(page.findResources())));
             if (mergeStructTree)
             {
                 updateStructParentEntries(newPage, destParentTreeNextKey);
