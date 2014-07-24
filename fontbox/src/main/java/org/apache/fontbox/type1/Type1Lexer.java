@@ -267,6 +267,13 @@ class Type1Lexer
         {
             sb.append(c);
             c = getChar();
+            
+            // optional minus
+            if (c == '-')
+            {
+                sb.append(c);
+                c = getChar();
+            }
 
             // required digit
             if (Character.isDigit(c))
