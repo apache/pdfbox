@@ -117,7 +117,7 @@ public class ExtractEmbeddedFiles
         for (String filename : names.keySet())
         {
             PDComplexFileSpecification fileSpec = (PDComplexFileSpecification)names.get(filename);
-            PDEmbeddedFile embeddedFile = fileSpec.getEmbeddedFile();
+            PDEmbeddedFile embeddedFile = getEmbeddedFile(fileSpec);
             String embeddedFilename = filePath+filename;
             File file = new File(filePath+filename);
             System.out.println("Writing "+ embeddedFilename);
@@ -125,6 +125,33 @@ public class ExtractEmbeddedFiles
             fos.write(embeddedFile.getByteArray());
             fos.close();
         }
+    }
+    
+    private static PDEmbeddedFile getEmbeddedFile(PDComplexFileSpecification fileSpec )
+    {
+        // search for the first available alternative of the embedded file
+        PDEmbeddedFile embeddedFile = null;
+        if (fileSpec != null)
+        {
+            embeddedFile = fileSpec.getEmbeddedFileUnicode(); 
+            if (embeddedFile == null)
+            {
+                embeddedFile = fileSpec.getEmbeddedFileDos();
+            }
+            if (embeddedFile == null)
+            {
+                embeddedFile = fileSpec.getEmbeddedFileMac();
+            }
+            if (embeddedFile == null)
+            {
+                embeddedFile = fileSpec.getEmbeddedFileUnix();
+            }
+            if (embeddedFile == null)
+            {
+                embeddedFile = fileSpec.getEmbeddedFile();
+            }
+        }
+        return embeddedFile;
     }
     /**
      * This will print the usage for this program.
