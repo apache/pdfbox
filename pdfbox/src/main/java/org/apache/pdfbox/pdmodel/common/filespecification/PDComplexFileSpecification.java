@@ -138,7 +138,7 @@ public class PDComplexFileSpecification extends PDFileSpecification
      */
     public String getUnicodeFile()
     {
-        return fs.getString(COSName.UF);
+        return getFileUnicode();
     }
 
     /**
