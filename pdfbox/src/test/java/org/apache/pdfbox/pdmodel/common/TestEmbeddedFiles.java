@@ -17,13 +17,14 @@
 package org.apache.pdfbox.pdmodel.common;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDEmbeddedFilesNameTreeNode;
-import org.apache.pdfbox.pdmodel.TestPDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDComplexFileSpecification;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
 import org.junit.Test;
@@ -70,5 +71,52 @@ public class TestEmbeddedFiles extends TestCase
         assertNull("EmbeddedFile was correctly null", embeddedFile);
     }
 
+    @Test
+    public void testOSSpecificAttachments() throws IOException
+    {
+        PDEmbeddedFile nonOSFile = null;
+        PDEmbeddedFile macFile = null;
+        PDEmbeddedFile dosFile = null;
+        PDEmbeddedFile unixFile = null;
+
+        PDDocument doc = PDDocument.load(TestEmbeddedFiles.class
+                .getResourceAsStream("testPDF_multiFormatEmbFiles.pdf"));
+
+        PDDocumentCatalog catalog = doc.getDocumentCatalog();
+        PDDocumentNameDictionary names = catalog.getNames();
+        PDEmbeddedFilesNameTreeNode treeNode = names.getEmbeddedFiles();
+        List<PDNameTreeNode> kids = treeNode.getKids();
+        for (PDNameTreeNode kid : kids)
+        {
+            Map<String, COSObjectable> tmpNames = kid.getNames();
+            COSObjectable obj = tmpNames.get("My first attachment");
+            if (obj instanceof PDComplexFileSpecification)
+            {
+                PDComplexFileSpecification spec = (PDComplexFileSpecification) obj;
+                nonOSFile = spec.getEmbeddedFile();
+                macFile = spec.getEmbeddedFileMac();
+                dosFile = spec.getEmbeddedFileDos();
+                unixFile = spec.getEmbeddedFileUnix();
+            }
+        }
+
+        assertTrue("non os specific",
+                byteArrayContainsLC("non os specific", nonOSFile.getByteArray(), "ISO-8859-1"));
+ 
+        assertTrue("mac", byteArrayContainsLC("mac embedded", macFile.getByteArray(), "ISO-8859-1"));
+
+        assertTrue("dos", byteArrayContainsLC("dos embedded", dosFile.getByteArray(), "ISO-8859-1"));
+
+        assertTrue("unix",
+                byteArrayContainsLC("unix embedded", unixFile.getByteArray(), "ISO-8859-1"));
+
+    }
+
+    private boolean byteArrayContainsLC(String target, byte[] bytes, String encoding)
+            throws UnsupportedEncodingException
+    {
+        String s = new String(bytes, encoding);
+        return s.toLowerCase().contains(target);
+    }
 }
 
