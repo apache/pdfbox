@@ -47,7 +47,7 @@ public class PDFStreamParser extends BaseParser
 {
     private List<Object> streamObjects = new ArrayList<Object>( 100 );
     private final RandomAccess file;
-    private final int    maxBinCharTestLength = 5;
+    private final int    maxBinCharTestLength = 10;
     private final byte[] binCharTestArr = new byte[maxBinCharTestLength];
 
     /**
@@ -441,11 +441,12 @@ public class PDFStreamParser extends BaseParser
     }
 
     /**
-     * Looks up next 5 bytes if they contain only ASCII characters (no control
-     * sequences etc.).
+     * Looks up an amount of bytes if they contain only ASCII characters (no
+     * control sequences etc.), and that these ASCII characters begin with a
+     * sequence of 1-3 non-blank characters between blanks
      *
-     * @return <code>true</code> if next 5 bytes are printable ASCII characters,
-     * otherwise <code>false</code>
+     * @return <code>true</code> if next bytes are probably printable ASCII
+     * characters starting with a PDF operator, otherwise <code>false</code>
      */
     private boolean hasNoFollowingBinData(final PushbackInputStream pdfSource) 
             throws IOException
@@ -453,6 +454,8 @@ public class PDFStreamParser extends BaseParser
         // as suggested in PDFBOX-1164
         final int readBytes = pdfSource.read(binCharTestArr, 0, maxBinCharTestLength);
         boolean noBinData = true;
+        int startOpIdx = -1;
+        int endOpIdx = -1;
         
         if (readBytes > 0)
         {
@@ -465,6 +468,28 @@ public class PDFStreamParser extends BaseParser
                     noBinData = false;
                     break;
                 }
+                // find the start of a PDF operator
+                if (startOpIdx == -1 && (b == 9 || b == 0x20 || b == 0x0a || b == 0x0d))
+                {
+                    startOpIdx = bIdx;
+                }
+                else if (startOpIdx != -1 && endOpIdx == -1 && (b == 9 || b == 0x20 || b == 0x0a || b == 0x0d))
+                {
+                    if (bIdx == startOpIdx + 1)
+                    {
+                        // several blanks after another
+                        startOpIdx = bIdx;
+                    }
+                    else
+                    {
+                        endOpIdx = bIdx;
+                    }
+                }
+            }
+            // a PDF operator is 1-3 bytes long
+            if (endOpIdx == -1 || startOpIdx == -1 || endOpIdx - startOpIdx > 3)
+            {
+                noBinData = false;
             }
             pdfSource.unread(binCharTestArr, 0, readBytes);
         }
