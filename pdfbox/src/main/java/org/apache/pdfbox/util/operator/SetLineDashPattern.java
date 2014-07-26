@@ -25,6 +25,8 @@ import org.apache.pdfbox.pdmodel.graphics.PDLineDashPattern;
 import org.apache.pdfbox.util.PDFOperator;
 
 import java.io.IOException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Implementation of content stream operator for page drawer.
@@ -36,7 +38,13 @@ public class SetLineDashPattern extends OperatorProcessor
 {
 
     /**
+     * log instance
+     */
+    private static final Log LOG = LogFactory.getLog(SetLineDashPattern.class);
+
+    /**
      * Set the line dash pattern.
+     *
      * @param operator The operator that is being executed.
      * @param arguments List
      *
@@ -44,9 +52,14 @@ public class SetLineDashPattern extends OperatorProcessor
      */
     public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
-        COSArray dashArray = (COSArray)arguments.get( 0 );
-        int dashPhase = ((COSNumber)arguments.get( 1 )).intValue();
-        PDLineDashPattern lineDash = new PDLineDashPattern( dashArray, dashPhase );
-        context.getGraphicsState().setLineDashPattern( lineDash );
+        COSArray dashArray = (COSArray) arguments.get(0);
+        int dashPhase = ((COSNumber) arguments.get(1)).intValue();
+        if (dashPhase < 0)
+        {
+            LOG.warn("dash phaseStart has negative value " + dashPhase + ", set to 0");
+            dashPhase = 0;
+        }
+        PDLineDashPattern lineDash = new PDLineDashPattern(dashArray, dashPhase);
+        context.getGraphicsState().setLineDashPattern(lineDash);
     }
 }
