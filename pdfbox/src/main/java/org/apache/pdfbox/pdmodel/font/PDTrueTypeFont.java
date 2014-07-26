@@ -449,7 +449,16 @@ public class PDTrueTypeFont extends PDFont
                         String unicode = Encoding.getCharacterForName(characterName);
                         if (unicode != null)
                         {
-                            result = unicode.codePointAt(0);
+                            if (unicode.isEmpty())
+                            {
+                                LOG.error("getCharacterForName for code " + code + 
+                                        ", characterName '" + characterName + 
+                                        "' is empty");
+                            }
+                            else
+                            {
+                                result = unicode.codePointAt(0);
+                            }
                         }
                         result = cmapWinUnicode.getGlyphId(result);
                     }
