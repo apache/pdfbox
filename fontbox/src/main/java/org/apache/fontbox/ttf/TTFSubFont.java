@@ -578,8 +578,8 @@ public class TTFSubFont
             long lastOff = 0L;
             for (Integer glyphId : this.glyphIds) 
             {
-                long offset = offsets[glyphId.intValue()];
-                long len = offsets[glyphId.intValue()+1] - offset;
+                long offset = offsets[glyphId];
+                long len = offsets[glyphId+1] - offset;
                 is.skip(offset-lastOff);
                 byte[] buf= new byte[(int)len];
                 is.read(buf);
@@ -633,7 +633,7 @@ public class TTFSubFont
                     while ((flags & (1 << 5)) != 0);
                     
                 }
-                lastOff = offsets[glyphId.intValue()+1];
+                lastOff = offsets[glyphId+1];
             }
         }
         finally 
@@ -662,8 +662,8 @@ public class TTFSubFont
             int ioff = 0;
             for (Integer glyphId : this.glyphIds) 
             {
-                long offset = offsets[glyphId.intValue()];
-                long len = offsets[glyphId.intValue()+1] - offset;
+                long offset = offsets[glyphId];
+                long len = offsets[glyphId+1] - offset;
                 newOffsets[ioff++] = newOff;
                 is.skip(offset-lastOff);
                 byte[] buf= new byte[(int)len];
@@ -782,7 +782,7 @@ public class TTFSubFont
                     newOff += np;
                 }
                 
-                lastOff = offsets[glyphId.intValue()+1];
+                lastOff = offsets[glyphId+1];
             }
             newOffsets[ioff++] = newOff;
         }
@@ -966,7 +966,7 @@ public class TTFSubFont
             int[] gidToUC = this.baseCmap.getGlyphIdToCharacterCode();
             for (Integer glyphId : this.glyphIds) 
             {
-                int uc = gidToUC[glyphId.intValue()];
+                int uc = gidToUC[glyphId];
                 String name = null;
                 if (uc < 0x8000) 
                 {
@@ -993,11 +993,11 @@ public class TTFSubFont
                         additionalNames.add(name);
                         additionalNamesIndices.put(name,idx);
                     }
-                    writeUint16(dos,idx.intValue()+258);
+                    writeUint16(dos,idx+258);
                 }
                 else 
                 {
-                    writeUint16(dos,macId.intValue());
+                    writeUint16(dos, macId);
                 }
             }
         }
@@ -1005,7 +1005,7 @@ public class TTFSubFont
         { 
             for (Integer glyphId : this.glyphIds) 
             {
-                String name = glyphNames[glyphId.intValue()];
+                String name = glyphNames[glyphId];
                 Integer macId = Encoding.MAC_GLYPH_NAMES_INDICES.get(name);
                 if (macId == null) 
                 {
@@ -1016,11 +1016,11 @@ public class TTFSubFont
                         additionalNames.add(name);
                         additionalNamesIndices.put(name,idx);
                     }
-                    writeUint16(dos,idx.intValue()+258);
+                    writeUint16(dos,idx+258);
                 }
                 else 
                 {
-                    writeUint16(dos,macId.intValue());
+                    writeUint16(dos, macId);
                 }
             }
         }

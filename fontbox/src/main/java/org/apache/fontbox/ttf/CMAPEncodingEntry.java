@@ -545,7 +545,7 @@ public class CMAPEncodingEntry
     public int getGlyphId(int characterCode)
     {
         Integer glyphId = characterCodeToGlyphId.get(characterCode);
-        return glyphId == null ? 0 : glyphId.intValue();
+        return glyphId == null ? 0 : glyphId;
     }
 
     /**
