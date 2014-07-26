@@ -67,7 +67,7 @@ public class Type1CharStringFormatter
 
     private void writeNumber(Integer number)
     {
-        int value = number.intValue();
+        int value = number;
         if (value >= -107 && value <= 107)
         {
             output.write(value + 139);
