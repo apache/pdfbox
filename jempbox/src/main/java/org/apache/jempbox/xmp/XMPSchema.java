@@ -289,7 +289,7 @@ public class XMPSchema
         String value = null;
         if (bool != null)
         {
-            value = bool.booleanValue() ? "True" : "False";
+            value = bool ? "True" : "False";
         }
         setTextProperty(propertyName, value);
     }
@@ -695,9 +695,9 @@ public class XMPSchema
         if (strings != null)
         {
             retval = new ArrayList<Calendar>();
-            for (int i = 0; i < strings.size(); i++)
+            for (String string : strings)
             {
-                retval.add(DateConverter.toCalendar(strings.get(i)));
+                retval.add(DateConverter.toCalendar(string));
             }
         }
         return retval;

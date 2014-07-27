@@ -28,8 +28,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import junit.framework.TestCase;
 
 import org.apache.jempbox.impl.DateConverter;
-import org.apache.jempbox.xmp.XMPMetadata;
-import org.apache.jempbox.xmp.XMPSchema;
 import org.w3c.dom.Element;
 
 /**
@@ -119,19 +117,19 @@ public class XMPSchemaTest extends TestCase
         XMPMetadata xmp = new XMPMetadata();
         XMPSchema schema = new XMPSchema(xmp, "test", "http://test.com/test");
         
-        schema.setIntegerProperty("test:intvalue", new Integer(14));
+        schema.setIntegerProperty("test:intvalue", 14);
         
         Element e = schema.getElement();
         assertEquals("14", e.getAttribute("test:intvalue"));
         
-        assertEquals(new Integer(14),schema.getIntegerProperty("test:intvalue"));
+        assertEquals(14, (int) schema.getIntegerProperty("test:intvalue"));
         
-        schema.setIntegerProperty("test:intvalue",new Integer(16));
+        schema.setIntegerProperty("test:intvalue", 16);
         
         e = schema.getElement();
         assertEquals("16", e.getAttribute("test:intvalue"));
         
-        assertEquals(new Integer(16), schema.getIntegerProperty("test:intvalue"));
+        assertEquals(16, (int) schema.getIntegerProperty("test:intvalue"));
     }
 
     /**
