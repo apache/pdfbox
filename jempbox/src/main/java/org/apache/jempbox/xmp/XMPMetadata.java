@@ -580,8 +580,8 @@ public class XMPMetadata
         Thumbnail t = new Thumbnail(metadata);
         t.setFormat(Thumbnail.FORMAT_JPEG);
         t.setImage("IMAGE_DATA");
-        t.setHeight(new Integer(100));
-        t.setWidth(new Integer(200));
+        t.setHeight(100);
+        t.setWidth(200);
         basic.setThumbnail(t);
         basic.setBaseURL("http://www.pdfbox.org/");
 
@@ -755,10 +755,8 @@ public class XMPMetadata
      */
     public void merge(XMPMetadata metadata) throws IOException
     {
-        List<XMPSchema> schemas2 = metadata.getSchemas();
-        for (Iterator<XMPSchema> iterator = schemas2.iterator(); iterator.hasNext();)
+        for (XMPSchema schema2 : metadata.getSchemas())
         {
-            XMPSchema schema2 = iterator.next();
             XMPSchema schema1 = getSchemaByClass(schema2.getClass());
             if (schema1 == null)
             {

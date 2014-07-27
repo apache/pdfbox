@@ -338,7 +338,7 @@ public class XMPSchemaPhotoshop extends XMPSchema
     {
         if( s != null )
         {
-            if( s.intValue() < 1 || s.intValue() > 8 )
+            if( s < 1 || s > 8 )
             {
                 throw new RuntimeException( "Error: photoshop:Urgency must be between 1 and 8.  value=" + s );
             }
