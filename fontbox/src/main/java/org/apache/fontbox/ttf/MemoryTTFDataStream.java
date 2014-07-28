@@ -25,8 +25,8 @@ import java.io.InputStream;
 /**
  * An interface into a data stream.
  * 
- * @author Ben Litchfield (ben@benlitchfield.com)
- * @version $Revision: 1.2 $
+ * @author Ben Litchfield
+ * 
  */
 public class MemoryTTFDataStream extends TTFDataStream 
 {
@@ -98,11 +98,11 @@ public class MemoryTTFDataStream extends TTFDataStream
      */
     public int read() throws IOException
     {
-        int retval = -1;
-        if( currentPosition < data.length )
+        if (currentPosition >= data.length)
         {
-            retval = data[currentPosition];
+            return -1;
         }
+        int retval = data[currentPosition];
         currentPosition++;
         return (retval+256)%256;
     }
