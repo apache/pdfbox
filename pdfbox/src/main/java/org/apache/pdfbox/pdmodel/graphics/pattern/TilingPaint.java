@@ -81,7 +81,7 @@ public class TilingPaint extends TexturePaint
         }
         if (pattern.getYStep() != 0)
         {
-            height = pattern.getXStep();
+            height = pattern.getYStep();
         }
 
         if (pattern.getMatrix() == null)
