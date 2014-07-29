@@ -398,7 +398,7 @@ public class PDTrueTypeFont extends PDSimpleFont
             int[] widthValues = hMet.getAdvanceWidth();
             // some monospaced fonts provide only one value for the width 
             // instead of an array containing the same value for every glyphid 
-            boolean isMonospaced = fd.isFixedPitch();
+            boolean isMonospaced = fd.isFixedPitch() || widthValues.length == 1;
             int nWidths=lastChar-firstChar+1;
             List<Float> widths = new ArrayList<Float>(nWidths);
             // use the first width as default
