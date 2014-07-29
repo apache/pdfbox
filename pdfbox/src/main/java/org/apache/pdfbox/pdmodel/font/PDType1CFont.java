@@ -92,6 +92,8 @@ public class PDType1CFont extends PDSimpleFont
 
     private static final byte[] SPACE_BYTES = {(byte)32};
 
+    private final int charOffset;
+    
     /**
      * Constructor.
      * @param fontDictionary the corresponding dictionary
@@ -99,6 +101,7 @@ public class PDType1CFont extends PDSimpleFont
     public PDType1CFont( COSDictionary fontDictionary ) throws IOException
     {
         super( fontDictionary );
+        charOffset = getFirstChar() > -1 ? getFirstChar() - 1 : 0; 
         load();
     }
 
@@ -121,7 +124,11 @@ public class PDType1CFont extends PDSimpleFont
     {
         int code = getCodeFromArray(bytes, offset, length);
         String character = null;
-        if (codeToSID.containsKey(code))
+        if (charOffset > 0)
+        {
+            code += charOffset;
+        }
+        else if (codeToSID.containsKey(code))
         {
             code = codeToSID.get(code);
         }
