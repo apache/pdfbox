@@ -61,6 +61,7 @@ public class PDType1CFont extends PDFont
     private Map<String, Float> glyphHeights = new HashMap<String, Float>();
     private Float avgWidth = null;
     private PDRectangle fontBBox = null;
+    private final int charOffset;
 
     /**
      * Constructor.
@@ -71,6 +72,7 @@ public class PDType1CFont extends PDFont
     public PDType1CFont(COSDictionary fontDictionary) throws IOException
     {
         super(fontDictionary);
+        charOffset = getFirstChar() > -1 ? getFirstChar() - 1 : 0; 
         load();
     }
 
@@ -105,7 +107,11 @@ public class PDType1CFont extends PDFont
     {
         int code = getCodeFromArray(bytes, offset, length);
         String character = null;
-        if (codeToSID.containsKey(code))
+        if (charOffset > 0)
+        {
+            code -= charOffset;
+        }
+        else if (codeToSID.containsKey(code))
         {
             code = codeToSID.get(code);
         }
