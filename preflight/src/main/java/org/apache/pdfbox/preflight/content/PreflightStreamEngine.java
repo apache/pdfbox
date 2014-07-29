@@ -213,6 +213,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
         registerOperatorProcessor("sh", stubOp);
     }
 
+    @Override
     public final void registerOperatorProcessor(String operator, OperatorProcessor op)
     {
         super.registerOperatorProcessor(operator, op);
@@ -248,7 +249,6 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
             {
                 registerError("Unexpected value '" + arguments.get(0) + "' for ri operand. ",
                         ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY);
-                return;
             }
         }
     }
@@ -267,7 +267,6 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
             if (numberOfGraphicStates > MAX_GRAPHIC_STATES)
             {
                 registerError("Too many graphic states", ERROR_GRAPHIC_TOO_MANY_GRAPHIC_STATES);
-                return;
             }
         }
     }
@@ -319,13 +318,17 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
                 {
                     // The color space is unknown. Try to access the resources dictionary,
                     // the color space can be a reference.
-                    PDColorSpace pdCS = (PDColorSpace) this.getResources().getColorSpaces().get(colorSpace);
-                    if (pdCS != null)
+                    Map<String, PDColorSpace> colorSpaces = this.getResources().getColorSpaces();
+                    if (colorSpaces != null)
                     {
-                        cs = ColorSpaces.valueOf(pdCS.getName());
-                        PreflightConfiguration cfg = context.getConfig();
-                        ColorSpaceHelperFactory csFact = cfg.getColorSpaceHelperFact();
-                        csHelper = csFact.getColorSpaceHelper(context, pdCS, ColorSpaceRestriction.ONLY_DEVICE);
+                        PDColorSpace pdCS = colorSpaces.get(colorSpace);
+                        if (pdCS != null)
+                        {
+                            cs = ColorSpaces.valueOf(pdCS.getName());
+                            PreflightConfiguration cfg = context.getConfig();
+                            ColorSpaceHelperFactory csFact = cfg.getColorSpaceHelperFact();
+                            csHelper = csFact.getColorSpaceHelper(context, pdCS, ColorSpaceRestriction.ONLY_DEVICE);
+                        }
                     }
                 }
 
@@ -397,7 +400,6 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
                 // The default fill color needs an OutputIntent
                 registerError("The operator \"" + operation + "\" can't be used without Color Profile",
                         ERROR_GRAPHIC_INVALID_COLOR_SPACE_MISSING);
-                return;
             }
         }
     }
@@ -514,7 +516,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
             return;
         }
 
-        String colorSpaceName = null;
+        String colorSpaceName;
         if (arguments.get(0) instanceof String)
         {
             colorSpaceName = (String) arguments.get(0);
