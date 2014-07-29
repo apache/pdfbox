@@ -86,7 +86,7 @@ public class PDTrueTypeFont extends PDFont
     private boolean cmapInitialized = false;
 
     private TrueTypeFont ttf = null;
-    private HashMap<Integer, Float> advanceWidths = new HashMap<Integer, Float> ();
+    private final HashMap<Integer, Float> advanceWidths = new HashMap<Integer, Float> ();
 
     /**
      * Creates a new TrueType font from a Font dictionary.
@@ -307,7 +307,7 @@ public class PDTrueTypeFont extends PDFont
         int[] widthValues = hMet.getAdvanceWidth();
         // some monospaced fonts provide only one value for the width
         // instead of an array containing the same value for every glyphid
-        boolean isMonospaced = fd.isFixedPitch();
+        boolean isMonospaced = fd.isFixedPitch() || widthValues.length == 1;
         int nWidths = lastChar - firstChar + 1;
         List<Integer> widths = new ArrayList<Integer>(nWidths);
         // use the first width as default
