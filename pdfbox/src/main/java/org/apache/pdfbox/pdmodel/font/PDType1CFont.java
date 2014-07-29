@@ -126,7 +126,7 @@ public class PDType1CFont extends PDSimpleFont
         String character = null;
         if (charOffset > 0)
         {
-            code += charOffset;
+            code -= charOffset;
         }
         else if (codeToSID.containsKey(code))
         {
