@@ -274,14 +274,14 @@ public class RadialShadingContext implements PaintContext
                 else
                 {
                     // choose 1 of the 2 values
-                    if (inputValues[0] >= domain[0] && inputValues[0] <= domain[1])
+                    if (inputValues[0] >= 0 && inputValues[0] <= 1)
                     {
-                        // both values are in the domain -> choose the larger one
-                        if (inputValues[1] >= domain[0] && inputValues[1] <= domain[1])
+                        // both values are in the range -> choose the larger one
+                        if (inputValues[1] >= 0 && inputValues[1] <= 1)
                         {
                             inputValue = Math.max(inputValues[0], inputValues[1]);
                         }
-                        // first value is in the domain, the second not -> choose first value
+                        // first value is in the range, the second not -> choose first value
                         else
                         {
                             inputValue = inputValues[0];
@@ -289,12 +289,13 @@ public class RadialShadingContext implements PaintContext
                     }
                     else
                     {
-                        // first value is not in the domain, but the second -> choose second value
-                        if (inputValues[1] >= domain[0] && inputValues[1] <= domain[1])
+                        // first value is not in the range, 
+                        // but the second -> choose second value
+                        if (inputValues[1] >= 0 && inputValues[1] <= 1)
                         {
                             inputValue = inputValues[1];
                         }
-                        // both are not in the domain
+                        // both are not in the range
                         else
                         {
                             if (extend[0] && extend[1])
@@ -320,12 +321,12 @@ public class RadialShadingContext implements PaintContext
                         }
                     }
                     // input value is out of range
-                    if (inputValue > domain[1])
+                    if (inputValue > 1)
                     {
                         // the shading has to be extended if extend[1] == true
                         if (extend[1])
                         {
-                            inputValue = domain[1];
+                            inputValue = 1;
                         }
                         else
                         {
@@ -340,12 +341,12 @@ public class RadialShadingContext implements PaintContext
                         }
                     }
                     // input value is out of range
-                    else if (inputValue < domain[0])
+                    else if (inputValue < 0)
                     {
                         // the shading has to be extended if extend[0] == true
                         if (extend[0])
                         {
-                            inputValue = domain[0];
+                            inputValue = 0;
                         }
                         else
                         {
