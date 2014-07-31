@@ -31,6 +31,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBoolean;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.util.Matrix;
@@ -62,6 +63,8 @@ public class AxialShadingContext implements PaintContext
     private double y1y0;
     private float d1d0;
     private double denom;
+    private final PDRectangle bboxRect;
+    private float[] bboxTab = new float[4];
     
     private final double axialLength;
     private final int[] colorTable;
@@ -79,6 +82,21 @@ public class AxialShadingContext implements PaintContext
     {
         this.shading = shading;
         coords = this.shading.getCoords().toFloatArray();
+        
+        bboxRect = shading.getBBox();
+        if (bboxRect != null)
+        {
+            bboxTab[0] = bboxRect.getLowerLeftX();
+            bboxTab[1] = bboxRect.getLowerLeftY();
+            bboxTab[2] = bboxRect.getUpperRightX();
+            bboxTab[3] = bboxRect.getUpperRightY();
+            if (ctm != null)
+            {
+                // transform the coords using the given matrix
+                ctm.createAffineTransform().transform(bboxTab, 0, bboxTab, 0, 2);
+            }
+            xform.transform(bboxTab, 0, bboxTab, 0, 2);
+        }        
 
         if (ctm != null)
         {
@@ -214,11 +232,29 @@ public class AxialShadingContext implements PaintContext
         int[] data = new int[w * h * 4];
         for (int j = 0; j < h; j++)
         {
+            double currentY = y + j;
+            if (bboxRect != null)
+            {
+                if (currentY < bboxTab[3] || currentY > bboxTab[1])
+                {
+                    continue;
+                }
+            }
+            
             for (int i = 0; i < w; i++)
             {
+                double currentX = x + i;
+                if (bboxRect != null)
+                {
+                    if (currentX < bboxTab[0] || currentX > bboxTab[2])
+                    {
+                        continue;
+                    }
+                }
+                
                 useBackground = false;
-                double inputValue = x1x0 * (x + i - coords[0]);
-                inputValue += y1y0 * (y + j - coords[1]);
+                double inputValue = x1x0 * (currentX - coords[0]);
+                inputValue += y1y0 * (currentY - coords[1]);
                 // TODO this happens if start == end, see PDFBOX-1442
                 if (denom == 0)
                 {
