@@ -155,9 +155,9 @@ public class TestPDFToImage extends TestCase
                 int rgb2 = bim2.getRGB(x, y);
                 if (rgb1 != rgb2
                         // don't bother about differences of 1 color step
-                        && (Math.abs((rgb1 & 0xFF) - (rgb2 & 0xFF)) > 1)
-                        && (Math.abs(((rgb1 >> 8) & 0xFF) - ((rgb2 >> 8) & 0xFF)) > 1)
-                        && (Math.abs(((rgb1 >> 16) & 0xFF) - ((rgb2 >> 16) & 0xFF)) > 1))
+                        && (Math.abs((rgb1 & 0xFF) - (rgb2 & 0xFF)) > 1
+                        || Math.abs(((rgb1 >> 8) & 0xFF) - ((rgb2 >> 8) & 0xFF)) > 1
+                        || Math.abs(((rgb1 >> 16) & 0xFF) - ((rgb2 >> 16) & 0xFF)) > 1))
                 {
                     if (bim3 == null)
                     {
