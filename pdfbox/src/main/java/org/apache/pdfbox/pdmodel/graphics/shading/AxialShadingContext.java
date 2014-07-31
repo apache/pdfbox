@@ -236,12 +236,12 @@ public class AxialShadingContext implements PaintContext
                     inputValue /= denom;
                 }
                 // input value is out of range
-                if (inputValue < domain[0])
+                if (inputValue < 0)
                 {
                     // the shading has to be extended if extend[0] == true
                     if (extend[0])
                     {
-                        inputValue = domain[0];
+                        inputValue = 0;
                     }
                     else
                     {
@@ -256,12 +256,12 @@ public class AxialShadingContext implements PaintContext
                     }
                 }
                 // input value is out of range
-                else if (inputValue > domain[1])
+                else if (inputValue > 1)
                 {
                     // the shading has to be extended if extend[1] == true
                     if (extend[1])
                     {
-                        inputValue = domain[1];
+                        inputValue = 1;
                     }
                     else
                     {
