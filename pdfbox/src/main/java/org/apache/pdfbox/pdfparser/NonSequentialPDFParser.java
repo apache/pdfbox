@@ -1766,14 +1766,37 @@ public class NonSequentialPDFParser extends PDFParser
      */
     private long calculateFixingOffset(long startXRefOffset) throws IOException
     {
-    	// TODO check offset for XRef stream objects
     	setPdfSource(startXRefOffset);
     	if (pdfSource.peek() == X && calculateFixingOffset(startXRefOffset, XREF) == 0)
     	{
     		return 0;
     	}
-    	long fixingOffset = calculateFixingOffset(startXRefOffset, XREF);
-   		return fixingOffset;
+        int nextValue = pdfSource.peek();
+        // is the next character a digit?
+        if (nextValue > 47 && nextValue < 57)
+        {
+            // save the origin offset
+            long originOffset = pdfSource.getOffset();
+            try
+            {
+                // Maybe it's a XRef stream
+                readObjectNumber();
+                readGenerationNumber();
+                readPattern(OBJ_MARKER);
+                setPdfSource(startXRefOffset);
+                return 0;
+            }
+            catch (IOException exception)
+            {
+                setPdfSource(startXRefOffset);
+            }
+            finally
+            {
+                pdfSource.seek(originOffset);
+            }
+        }
+        // TODO try to repair for XRef streams
+        return  calculateFixingOffset(startXRefOffset, XREF);
     }
 
     /**
