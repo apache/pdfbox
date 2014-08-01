@@ -323,8 +323,8 @@ public class RadialShadingContext implements PaintContext
                     // input value is out of range
                     if (inputValue > 1)
                     {
-                        // the shading has to be extended if extend[1] == true
-                        if (extend[1])
+                        // extend shading if extend[1] is true and nonzero radius
+                        if (extend[1] && coords[5] > 0)
                         {
                             inputValue = 1;
                         }
@@ -343,8 +343,8 @@ public class RadialShadingContext implements PaintContext
                     // input value is out of range
                     else if (inputValue < 0)
                     {
-                        // the shading has to be extended if extend[0] == true
-                        if (extend[0])
+                        // extend shading if extend[0] is true and nonzero radius
+                        if (extend[0] && coords[2] > 0)
                         {
                             inputValue = 0;
                         }
