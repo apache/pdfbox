@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * An encoding entry for a cmap.
@@ -31,6 +33,12 @@ import java.util.Map.Entry;
  */
 public class CMAPEncodingEntry
 {
+
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(CMAPEncodingEntry.class);
+
     private static final long LEAD_OFFSET = 0xD800 - (0x10000 >> 10);
     private static final long SURROGATE_OFFSET = 0x10000 - (0xD800 << 10) - 0xDC00;
 
@@ -401,6 +409,11 @@ public class CMAPEncodingEntry
          * this is the final result key=glyphId, value is character codes Create an array that contains MAX(GlyphIds)
          * element and fill this array with the .notdef character
          */
+        if (tmpGlyphToChar.isEmpty())
+        {
+            LOG.warn("cmap format 4 subtable is empty");
+            return;
+        }
         glyphIdToCharacterCode = new int[Collections.max(tmpGlyphToChar.keySet()) + 1];
         Arrays.fill(glyphIdToCharacterCode, 0);
         for (Entry<Integer, Integer> entry : tmpGlyphToChar.entrySet())
@@ -555,17 +568,16 @@ public class CMAPEncodingEntry
      */
     private class SubHeader
     {
-
-        private int firstCode;
-        private int entryCount;
+        private final int firstCode;
+        private final int entryCount;
         /**
          * used to compute the GlyphIndex : P = glyphIndexArray.SubArray[pos] GlyphIndex = P + idDelta % 65536.
          */
-        private short idDelta;
+        private final short idDelta;
         /**
          * Number of bytes to skip to reach the firstCode in the glyphIndexArray.
          */
-        private int idRangeOffset;
+        private final int idRangeOffset;
 
         private SubHeader(int firstCodeValue, int entryCountValue, short idDeltaValue, int idRangeOffsetValue)
         {
