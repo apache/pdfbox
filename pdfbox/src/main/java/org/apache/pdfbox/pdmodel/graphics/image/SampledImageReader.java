@@ -37,7 +37,6 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
 
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
-import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.common.PDMemoryStream;
 
@@ -429,8 +428,8 @@ final class SampledImageReader
                         && cosDecode.get(0) instanceof COSNumber
                         && cosDecode.get(1) instanceof COSNumber)
                 {
-                    float decode0 = ((COSFloat) cosDecode.get(0)).floatValue();
-                    float decode1 = ((COSFloat) cosDecode.get(1)).floatValue();
+                    float decode0 = ((COSNumber) cosDecode.get(0)).floatValue();
+                    float decode1 = ((COSNumber) cosDecode.get(1)).floatValue();
                     if (decode0 >= 0 && decode0 <= 1 && decode1 >= 0 && decode1 <= 1)
                     {
                         LOG.warn("decode array " + cosDecode
