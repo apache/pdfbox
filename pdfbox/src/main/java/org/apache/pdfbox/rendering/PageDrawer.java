@@ -410,6 +410,14 @@ public class PageDrawer extends PDFGraphicsStreamEngine
      */
     private void drawString(PDFont font, String string, AffineTransform at) throws IOException
     {
+        if (string == null) {
+            // AWT fonts can't handle the case where there is no Unicode mapping for the character,
+            // as we don't know what character it is. We use the replacement character which is
+            // better than nothing, to show that something is missing.
+            LOG.error("Could not render a character in font " + font.getBaseFont());
+            string = "\uFFFD"; // REPLACEMENT CHARACTER
+        }
+
         Font awtFont = createAWTFont(font);
         FontRenderContext frc = new FontRenderContext(new AffineTransform(), true, true);
         GlyphVector glyphs = awtFont.createGlyphVector(frc, string);
