@@ -21,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -293,7 +294,8 @@ public class PDTrueTypeFont extends PDFont
             // there should always be a usable cmap, if this happens we haven't tried hard enough
             // to find one. Furthermore, if we loaded the font from disk then we should've checked
             // first to see that it had a suitable cmap before calling makeFontDescriptor
-            throw new IllegalArgumentException("ttf: no suitable cmap");
+            throw new IllegalArgumentException("ttf: no suitable cmap for font '" +
+                    ttf.getNaming().getFontFamily() + "', found: " + Arrays.toString(cmaps));
         }
 
         if (this.getFontEncoding() == null)
