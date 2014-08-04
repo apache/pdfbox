@@ -79,7 +79,7 @@ public class LZWFilter extends Filter
         }
         if (predictor > 1)
         {
-            int colors = decodeParams.getInt(COSName.COLORS, 1);
+            int colors = Math.min(decodeParams.getInt(COSName.COLORS, 1), 32);
             int bitsPerPixel = decodeParams.getInt(COSName.BITS_PER_COMPONENT, 8);
             int columns = decodeParams.getInt(COSName.COLUMNS, 1);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
