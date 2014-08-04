@@ -85,7 +85,7 @@ public class FlateFilter implements Filter
             // Decode data using given predictor
             if (predictor > 1)
             {
-                int colors = dict.getInt(COSName.COLORS, 1);
+                int colors = Math.min(dict.getInt(COSName.COLORS, 1), 32);
                 int bitsPerPixel = dict.getInt(COSName.BITS_PER_COMPONENT, 8);
                 int columns = dict.getInt(COSName.COLUMNS, 1);
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
