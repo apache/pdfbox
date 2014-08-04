@@ -561,6 +561,12 @@ public class CMAPEncodingEntry
         return glyphId == null ? 0 : glyphId;
     }
 
+    @Override
+    public String toString()
+    {
+        return "{" + getPlatformId() + " " + getPlatformEncodingId() + "}";
+    }
+
     /**
      * 
      * Class used to manage CMap - Format 2.
