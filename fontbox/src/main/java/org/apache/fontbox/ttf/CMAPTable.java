@@ -45,7 +45,13 @@ public class CMAPTable extends TTFTable
     public static final int ENCODING_WIN_BIG5 = 3;
     public static final int ENCODING_WIN_PRC = 4;
     public static final int ENCODING_WIN_WANSUNG = 5;
-    public static final int ENCODING_JWIN_OHAB = 6;
+    public static final int ENCODING_WIN_JOHAB = 6;
+
+    // Unicode encodings
+    public static final int ENCODING_UNICODE_1_0 = 0;
+    public static final int ENCODING_UNICODE_1_1 = 1;
+    public static final int ENCODING_UNICODE_2_0_BMP = 3;
+    public static final int ENCODING_UNICODE_2_0_FULL = 4;
 
     private CMAPEncodingEntry[] cmaps;
 

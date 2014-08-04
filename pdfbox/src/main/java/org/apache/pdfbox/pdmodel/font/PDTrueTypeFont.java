@@ -279,14 +279,21 @@ public class PDTrueTypeFont extends PDFont
 
         for (CMAPEncodingEntry cmap : cmaps)
         {
-            if (cmap.getPlatformId() == CMAPTable.PLATFORM_WINDOWS)
+            if (cmap.getPlatformId() == CMAPTable.PLATFORM_UNICODE &&
+                    (cmap.getPlatformEncodingId() == CMAPTable.ENCODING_UNICODE_2_0_BMP ||
+                     cmap.getPlatformEncodingId() == CMAPTable.ENCODING_UNICODE_2_0_FULL))
             {
-                if (CMAPTable.ENCODING_WIN_UNICODE == cmap.getPlatformEncodingId())
-                {
-                    uniMap = cmap;
-                    break;
-                }
+                uniMap = cmap;
+                break;
             }
+        }
+
+        if (uniMap == null)
+        {
+            // there should always be a usable cmap, if this happens we haven't tried hard enough
+            // to find one. Furthermore, if we loaded the font from disk then we should've checked
+            // first to see that it had a suitable cmap before calling makeFontDescriptor
+            throw new IllegalArgumentException("ttf: no suitable cmap");
         }
 
         if (this.getFontEncoding() == null)
