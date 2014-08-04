@@ -40,6 +40,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.common.PDRange;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.util.Matrix;
 
@@ -59,6 +60,8 @@ abstract class PatchMeshesShadingContext implements PaintContext
     protected int rgbBackground;
     protected final boolean hasFunction;
     protected final PDShading patchMeshesShadingType;
+    private PDRectangle rectBBox;
+    float minBBoxX, minBBoxY, maxBBoxX, maxBBoxY;
     
     // the following fields are not intialized in this abstract class
     protected ArrayList<Patch> patchList; // patch list
@@ -84,6 +87,31 @@ abstract class PatchMeshesShadingContext implements PaintContext
         hasFunction = shading.getFunction() != null;
         shadingColorSpace = shading.getColorSpace();
         
+        rectBBox = shading.getBBox();
+        if (rectBBox != null)
+        {
+            float[] bboxTab = new float[4];
+            bboxTab[0] = rectBBox.getLowerLeftX();
+            bboxTab[1] = rectBBox.getLowerLeftY();
+            bboxTab[2] = rectBBox.getUpperRightX();
+            bboxTab[3] = rectBBox.getUpperRightY();
+            if (ctm != null)
+            {
+                // transform the coords using the given matrix
+                ctm.createAffineTransform().transform(bboxTab, 0, bboxTab, 0, 2);
+            }
+            xform.transform(bboxTab, 0, bboxTab, 0, 2);
+            minBBoxX = Math.min(bboxTab[0],bboxTab[2]);
+            minBBoxY = Math.min(bboxTab[1],bboxTab[3]);
+            maxBBoxX = Math.max(bboxTab[0],bboxTab[2]);
+            maxBBoxY = Math.max(bboxTab[1],bboxTab[3]);
+            if (minBBoxX == maxBBoxX || minBBoxY == maxBBoxY)
+            {
+                LOG.warn("empty BBox is ignored");
+                rectBBox = null;
+            }
+        }
+
         numberOfColorComponents = hasFunction ? 1 : shadingColorSpace.getNumberOfComponents();
         
         // create the output color model using RGB+alpha as color space
@@ -383,8 +411,25 @@ abstract class PatchMeshesShadingContext implements PaintContext
         {
             for (int row = 0; row < h; row++)
             {
+                double currentY = y + row;
+                if (rectBBox != null)
+                {
+                    if (currentY < minBBoxY || currentY > maxBBoxY)
+                    {
+                        continue;
+                    }
+                }
+
                 for (int col = 0; col < w; col++)
                 {
+                    double currentX = x + col;
+                    if (rectBBox != null)
+                    {
+                        if (currentX < minBBoxX || currentX > maxBBoxX)
+                        {
+                            continue;
+                        }
+                    }
                     Point p = new Point(x + col, y + row);
                     int value;
                     if (pixelTable.containsKey(p))
