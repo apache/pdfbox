@@ -31,6 +31,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBoolean;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.util.Matrix;
@@ -66,7 +67,9 @@ public class RadialShadingContext implements PaintContext
 
     private float d1d0;
     private double denom;
-    
+    private PDRectangle rectBBox;
+    float minBBoxX, minBBoxY, maxBBoxX, maxBBoxY;
+
     private final double longestDistance;
     private int[] colorTable;
 
@@ -84,6 +87,31 @@ public class RadialShadingContext implements PaintContext
         this.shading = shading;
         coords = this.shading.getCoords().toFloatArray();
 
+        rectBBox = shading.getBBox();
+        if (rectBBox != null)
+        {
+            float[] bboxTab = new float[4];
+            bboxTab[0] = rectBBox.getLowerLeftX();
+            bboxTab[1] = rectBBox.getLowerLeftY();
+            bboxTab[2] = rectBBox.getUpperRightX();
+            bboxTab[3] = rectBBox.getUpperRightY();
+            if (ctm != null)
+            {
+                // transform the coords using the given matrix
+                ctm.createAffineTransform().transform(bboxTab, 0, bboxTab, 0, 2);
+            }
+            xform.transform(bboxTab, 0, bboxTab, 0, 2);
+            minBBoxX = Math.min(bboxTab[0],bboxTab[2]);
+            minBBoxY = Math.min(bboxTab[1],bboxTab[3]);
+            maxBBoxX = Math.max(bboxTab[0],bboxTab[2]);
+            maxBBoxY = Math.max(bboxTab[1],bboxTab[3]);
+            if (minBBoxX == maxBBoxX || minBBoxY == maxBBoxY)
+            {
+                LOG.warn("empty BBox is ignored");
+                rectBBox = null;
+            }
+        }        
+        
         if (ctm != null)
         {
             // transform the coords using the given matrix
@@ -256,8 +284,24 @@ public class RadialShadingContext implements PaintContext
         int[] data = new int[w * h * 4];
         for (int j = 0; j < h; j++)
         {
+            double currentY = y + j;
+            if (rectBBox != null)
+            {
+                if (currentY < minBBoxY || currentY > maxBBoxY)
+                {
+                    continue;
+                }
+            }
             for (int i = 0; i < w; i++)
             {
+                double currentX = x + i;
+                if (rectBBox != null)
+                {
+                    if (currentX < minBBoxX || currentX > maxBBoxX)
+                    {
+                        continue;
+                    }
+                }
                 useBackground = false;
                 float[] inputValues = calculateInputValues(x + i, y + j);
                 if (Float.isNaN(inputValues[0]) && Float.isNaN(inputValues[1]))

@@ -63,8 +63,8 @@ public class AxialShadingContext implements PaintContext
     private double y1y0;
     private float d1d0;
     private double denom;
-    private final PDRectangle bboxRect;
-    private float[] bboxTab = new float[4];
+    private PDRectangle rectBBox;
+    float minBBoxX, minBBoxY, maxBBoxX, maxBBoxY;
     
     private final double axialLength;
     private final int[] colorTable;
@@ -83,19 +83,29 @@ public class AxialShadingContext implements PaintContext
         this.shading = shading;
         coords = this.shading.getCoords().toFloatArray();
         
-        bboxRect = shading.getBBox();
-        if (bboxRect != null)
+        rectBBox = shading.getBBox();
+        if (rectBBox != null)
         {
-            bboxTab[0] = bboxRect.getLowerLeftX();
-            bboxTab[1] = bboxRect.getLowerLeftY();
-            bboxTab[2] = bboxRect.getUpperRightX();
-            bboxTab[3] = bboxRect.getUpperRightY();
+            float[] bboxTab = new float[4];
+            bboxTab[0] = rectBBox.getLowerLeftX();
+            bboxTab[1] = rectBBox.getLowerLeftY();
+            bboxTab[2] = rectBBox.getUpperRightX();
+            bboxTab[3] = rectBBox.getUpperRightY();
             if (ctm != null)
             {
                 // transform the coords using the given matrix
                 ctm.createAffineTransform().transform(bboxTab, 0, bboxTab, 0, 2);
             }
             xform.transform(bboxTab, 0, bboxTab, 0, 2);
+            minBBoxX = Math.min(bboxTab[0],bboxTab[2]);
+            minBBoxY = Math.min(bboxTab[1],bboxTab[3]);
+            maxBBoxX = Math.max(bboxTab[0],bboxTab[2]);
+            maxBBoxY = Math.max(bboxTab[1],bboxTab[3]);
+            if (minBBoxX == maxBBoxX || minBBoxY == maxBBoxY)
+            {
+                LOG.warn("empty BBox is ignored");
+                rectBBox = null;
+            }
         }        
 
         if (ctm != null)
@@ -233,9 +243,9 @@ public class AxialShadingContext implements PaintContext
         for (int j = 0; j < h; j++)
         {
             double currentY = y + j;
-            if (bboxRect != null)
+            if (rectBBox != null)
             {
-                if (currentY < bboxTab[3] || currentY > bboxTab[1])
+                if (currentY < minBBoxY || currentY > maxBBoxY)
                 {
                     continue;
                 }
@@ -244,9 +254,9 @@ public class AxialShadingContext implements PaintContext
             for (int i = 0; i < w; i++)
             {
                 double currentX = x + i;
-                if (bboxRect != null)
+                if (rectBBox != null)
                 {
-                    if (currentX < bboxTab[0] || currentX > bboxTab[2])
+                    if (currentX < minBBoxX || currentX > maxBBoxX)
                     {
                         continue;
                     }

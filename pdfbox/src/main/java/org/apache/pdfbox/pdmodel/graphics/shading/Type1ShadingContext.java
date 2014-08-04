@@ -29,6 +29,7 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.util.Matrix;
 
@@ -48,6 +49,8 @@ class Type1ShadingContext implements PaintContext
     private float[] domain;
     private Matrix matrix;
     private float[] background;
+    private PDRectangle rectBBox;
+    float minBBoxX, minBBoxY, maxBBoxX, maxBBoxY;
 
     /**
      * Constructor creates an instance to be used for fill operations.
@@ -62,6 +65,31 @@ class Type1ShadingContext implements PaintContext
     {
         this.shading = shading;
 
+        rectBBox = shading.getBBox();
+        if (rectBBox != null)
+        {
+            float[] bboxTab = new float[4];
+            bboxTab[0] = rectBBox.getLowerLeftX();
+            bboxTab[1] = rectBBox.getLowerLeftY();
+            bboxTab[2] = rectBBox.getUpperRightX();
+            bboxTab[3] = rectBBox.getUpperRightY();
+            if (ctm != null)
+            {
+                // transform the coords using the given matrix
+                ctm.createAffineTransform().transform(bboxTab, 0, bboxTab, 0, 2);
+            }
+            xform.transform(bboxTab, 0, bboxTab, 0, 2);
+            minBBoxX = Math.min(bboxTab[0],bboxTab[2]);
+            minBBoxY = Math.min(bboxTab[1],bboxTab[3]);
+            maxBBoxX = Math.max(bboxTab[0],bboxTab[2]);
+            maxBBoxY = Math.max(bboxTab[1],bboxTab[3]);
+            if (minBBoxX == maxBBoxX || minBBoxY == maxBBoxY)
+            {
+                LOG.warn("empty BBox is ignored");
+                rectBBox = null;
+            }
+        }        
+        
         // color space
         shadingColorSpace = this.shading.getColorSpace();
         // create the output colormodel using RGB+alpha as colorspace
@@ -134,8 +162,24 @@ class Type1ShadingContext implements PaintContext
         int[] data = new int[w * h * 4];
         for (int j = 0; j < h; j++)
         {
+            double currentY = y + j;
+            if (rectBBox != null)
+            {
+                if (currentY < minBBoxY || currentY > maxBBoxY)
+                {
+                    continue;
+                }
+            }
             for (int i = 0; i < w; i++)
             {
+                double currentX = x + i;
+                if (rectBBox != null)
+                {
+                    if (currentX < minBBoxX || currentX > maxBBoxX)
+                    {
+                        continue;
+                    }
+                }
                 int index = (j * w + i) * 4;
                 boolean useBackground = false;
                 float[] values = new float[]
