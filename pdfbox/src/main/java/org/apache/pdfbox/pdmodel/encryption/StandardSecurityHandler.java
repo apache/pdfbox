@@ -187,7 +187,7 @@ public final class StandardSecurityHandler extends SecurityHandler
 
         int dicPermissions = encryption.getPermissions();
         int dicRevision = encryption.getRevision();
-        int dicLength = encryption.getLength()/8;
+        int dicLength = encryption.getVersion() == 1 ? 5 : encryption.getLength() / 8;
 
         //some documents may have not document id, see
         //test\encryption\encrypted_doc_no_id.pdf
@@ -568,10 +568,6 @@ public final class StandardSecurityHandler extends SecurityHandler
                 digest = md.digest();
             }
         }
-        if( encRevision == 2 && length != 5 )
-        {
-            throw new IOException("Error: Expected length=5 actual=" + length );
-        }
 
         byte[] rc4Key = new byte[ (int)length ];
         System.arraycopy( digest, 0, rc4Key, 0, (int)length );
@@ -700,11 +696,6 @@ public final class StandardSecurityHandler extends SecurityHandler
                 }
             }
 
-            if( encRevision == 2 && length != 5 )
-            {
-                throw new IOException(
-                    "Error: length should be 5 when revision is two actual=" + length );
-            }
             System.arraycopy( digest, 0, result, 0, length );
         }
 
