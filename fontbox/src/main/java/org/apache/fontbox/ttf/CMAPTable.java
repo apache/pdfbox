@@ -39,7 +39,7 @@ public class CMAPTable extends TTFTable
     public static final int ENCODING_MAC_ROMAN = 0;
 
     // Windows encodings
-    public static final int ENCODING_WIN_SYMBOL = 0;
+    public static final int ENCODING_WIN_SYMBOL = 0; // Unicode, non-standard character set
     public static final int ENCODING_WIN_UNICODE = 1;
     public static final int ENCODING_WIN_SHIFT_JIS = 2;
     public static final int ENCODING_WIN_BIG5 = 3;

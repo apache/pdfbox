@@ -276,19 +276,26 @@ public class PDTrueTypeFont extends PDFont
 
         CMAPTable cmapTable = ttf.getCMAP();
         CMAPEncodingEntry[] cmaps = cmapTable.getCmaps();
-        CMAPEncodingEntry uniMap = null;
 
-        for (CMAPEncodingEntry cmap : cmaps)
+        CMAPEncodingEntry uniMap = getCmapSubtable(cmaps, CMAPTable.PLATFORM_UNICODE,
+                                                   CMAPTable.ENCODING_UNICODE_2_0_FULL);
+        if (uniMap == null)
         {
-            if (cmap.getPlatformId() == CMAPTable.PLATFORM_UNICODE &&
-                    (cmap.getPlatformEncodingId() == CMAPTable.ENCODING_UNICODE_2_0_BMP ||
-                     cmap.getPlatformEncodingId() == CMAPTable.ENCODING_UNICODE_2_0_FULL))
-            {
-                uniMap = cmap;
-                break;
-            }
+            uniMap = getCmapSubtable(cmaps, CMAPTable.PLATFORM_UNICODE,
+                                     CMAPTable.ENCODING_UNICODE_2_0_BMP);
         }
-
+        if (uniMap == null)
+        {
+            uniMap = getCmapSubtable(cmaps, CMAPTable.PLATFORM_WINDOWS,
+                                     CMAPTable.ENCODING_WIN_UNICODE);
+        }
+        if (uniMap == null)
+        {
+            // Microsoft's "Recommendations for OpenType Fonts" says that "Symbol" encoding
+            // actually means "Unicode, non-standard character set"
+            uniMap = getCmapSubtable(cmaps, CMAPTable.PLATFORM_WINDOWS,
+                                     CMAPTable.ENCODING_WIN_SYMBOL);
+        }
         if (uniMap == null)
         {
             // there should always be a usable cmap, if this happens we haven't tried hard enough
@@ -363,6 +370,23 @@ public class PDTrueTypeFont extends PDFont
         dict.setInt(COSName.LAST_CHAR, lastChar);
 
         return fd;
+    }
+
+    /**
+     * Returns the "cmap" subtable for the given platform and encoding, or null.
+     */
+    private CMAPEncodingEntry getCmapSubtable(CMAPEncodingEntry[] cmaps,
+                                              int platformId, int platformEncodingId)
+    {
+        for (CMAPEncodingEntry cmap : cmaps)
+        {
+            if (cmap.getPlatformId() == platformId &&
+                cmap.getPlatformEncodingId() == platformEncodingId)
+            {
+                return cmap;
+            }
+        }
+        return null;
     }
 
     /**
