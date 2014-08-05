@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel;
 
-import java.io.BufferedInputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
@@ -289,7 +288,7 @@ public class PDDocument implements Closeable
         rootPages.getAllKids(kids);
 
         int size = (int) rootPages.getCount();
-        PDPage page = null;
+        PDPage page;
         if (size == 0)
         {
             throw new IllegalStateException("Cannot sign an empty document");
@@ -617,7 +616,7 @@ public class PDDocument implements Closeable
                 os = dest.createOutputStream();
 
                 byte[] buf = new byte[10240];
-                int amountRead = 0;
+                int amountRead;
                 is = src.createInputStream();
                 while ((amountRead = is.read(buf, 0, 10240)) > -1)
                 {
@@ -1082,7 +1081,7 @@ public class PDDocument implements Closeable
      */
     public static PDDocument load(File file, RandomAccess scratchFile, boolean force) throws IOException
     {
-        PDFParser parser = new PDFParser(new BufferedInputStream(new FileInputStream(file)), scratchFile, force);
+        PDFParser parser = new PDFParser(new FileInputStream(file), scratchFile, force);
         parser.parse();
         PDDocument doc = parser.getPDDocument();
         doc.incrementalFile = file;
@@ -1101,7 +1100,7 @@ public class PDDocument implements Closeable
      */
     public static PDDocument load(InputStream input, RandomAccess scratchFile) throws IOException
     {
-        PDFParser parser = new PDFParser(new BufferedInputStream(input), scratchFile);
+        PDFParser parser = new PDFParser(input, scratchFile);
         parser.parse();
         return parser.getPDDocument();
     }
@@ -1120,7 +1119,7 @@ public class PDDocument implements Closeable
      */
     public static PDDocument load(InputStream input, RandomAccess scratchFile, boolean force) throws IOException
     {
-        PDFParser parser = new PDFParser(new BufferedInputStream(input), scratchFile, force);
+        PDFParser parser = new PDFParser(input, scratchFile, force);
         parser.parse();
         return parser.getPDDocument();
     }
