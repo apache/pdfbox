@@ -82,7 +82,19 @@ public class CharStringCommand
      */
     public String toString()
     {
-        return getKey().toString();
+        String str = TYPE2_VOCABULARY.get(getKey());
+        if (str == null)
+        {
+            str = TYPE1_VOCABULARY.get(getKey());
+        }
+        if (str == null)
+        {
+            return getKey().toString() + '|';
+        }
+        else
+        {
+            return str + '|';
+        }
     }
 
     /**
