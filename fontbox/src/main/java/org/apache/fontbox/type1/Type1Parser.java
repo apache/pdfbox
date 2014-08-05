@@ -588,7 +588,12 @@ final class Type1Parser
      */
     private void readSubrs(int lenIV) throws IOException
     {
+        // allocate size (array indexes may not be in-order)
         int length = read(Token.INTEGER).intValue();
+        for (int i = 0; i < length; i++)
+        {
+            font.subrs.add(null);
+        }
         read(Token.NAME, "array");
 
         for (int i = 0; i < length; i++)
@@ -601,12 +606,12 @@ final class Type1Parser
             }
 
             read(Token.NAME, "dup");
-            read(Token.INTEGER);
+            Token index = read(Token.INTEGER);
             read(Token.INTEGER);
 
             // RD
             Token charstring = read(Token.CHARSTRING);
-            font.subrs.add(decrypt(charstring.getData(), CHARSTRING_KEY, lenIV));
+            font.subrs.set(index.intValue(), decrypt(charstring.getData(), CHARSTRING_KEY, lenIV));
             readPut();
         }
         readDef();
