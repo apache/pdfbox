@@ -49,13 +49,15 @@ public class Type1CharString
     private boolean isFlex = false;
     private List<Point.Float> flexPoints = new ArrayList<Point2D.Float>();
     protected List<Object> type1Sequence;
+    protected int commandCount;
 
     /**
      * Constructs a new Type1CharString object.
      * @param reader Parent Type 1 CharString reader
      * @param sequence Type 1 char string sequence
      */
-    public Type1CharString(Type1CharStringReader reader, String fontName, String glyphName, List<Object> sequence)
+    public Type1CharString(Type1CharStringReader reader, String fontName, String glyphName,
+                           List<Object> sequence)
     {
         this(reader, fontName, glyphName);
         type1Sequence = sequence;
@@ -140,6 +142,7 @@ public class Type1CharString
 
     private List<Integer> handleCommand(List<Integer> numbers, CharStringCommand command)
     {
+        commandCount++;
         String name = CharStringCommand.TYPE1_VOCABULARY.get(command.getKey());
 
         if ("rmoveto".equals(name))
@@ -287,9 +290,17 @@ public class Type1CharString
             // end flex
             isFlex = false;
 
+            if (flexPoints.size() < 7)
+            {
+                LOG.warn("flex without moveTo in font " + fontName + ", glyph " + glyphName +
+                         ", command " + commandCount);
+                return;
+            }
+
             // reference point is relative to start point
             Point.Float reference = flexPoints.get(0);
-            reference.setLocation(current.getX() + reference.getX(), current.getY() + reference.getY());
+            reference.setLocation(current.getX() + reference.getX(),
+                                  current.getY() + reference.getY());
 
             // first point is relative to reference point
             Point.Float first = flexPoints.get(1);
@@ -299,12 +310,12 @@ public class Type1CharString
             first.setLocation(first.getX() - current.getX(), first.getY() - current.getY());
 
             rrcurveTo(flexPoints.get(1).getX(), flexPoints.get(1).getY(),
-                    flexPoints.get(2).getX(), flexPoints.get(2).getY(),
-                    flexPoints.get(3).getX(), flexPoints.get(3).getY());
+                      flexPoints.get(2).getX(), flexPoints.get(2).getY(),
+                      flexPoints.get(3).getX(), flexPoints.get(3).getY());
 
             rrcurveTo(flexPoints.get(4).getX(), flexPoints.get(4).getY(),
-                    flexPoints.get(5).getX(), flexPoints.get(5).getY(),
-                    flexPoints.get(6).getX(), flexPoints.get(6).getY());
+                      flexPoints.get(5).getX(), flexPoints.get(5).getY(),
+                      flexPoints.get(6).getX(), flexPoints.get(6).getY());
 
             flexPoints.clear();
         }
@@ -428,5 +439,11 @@ public class Type1CharString
                 LOG.warn("invalid seac character in glyph " + glyphName + " of font " + fontName);
             }
         }
+    }
+
+    @Override
+    public String toString()
+    {
+        return type1Sequence.toString().replace("|","\n").replace(",", " ");
     }
 }

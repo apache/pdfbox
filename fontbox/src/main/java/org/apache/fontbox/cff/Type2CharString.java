@@ -101,6 +101,7 @@ public class Type2CharString extends Type1CharString
     @SuppressWarnings(value = { "unchecked" })
     private List<Integer> handleCommand(List<Integer> numbers, CharStringCommand command)
     {
+        commandCount++;
         String name = CharStringCommand.TYPE2_VOCABULARY.get(command.getKey());
 
         if ("hstem".equals(name))
