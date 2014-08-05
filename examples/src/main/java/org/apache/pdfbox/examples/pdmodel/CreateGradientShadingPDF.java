@@ -99,7 +99,7 @@ public class CreateGradientShadingPDF
 
             // invoke shading from content stream
             PDPageContentStream contentStream = new PDPageContentStream(document, page, true, false);
-            contentStream.appendRawCommands("/sh1 sh");
+            contentStream.appendRawCommands("/sh1 sh\n");
             contentStream.close();
             
             document.save(file);
