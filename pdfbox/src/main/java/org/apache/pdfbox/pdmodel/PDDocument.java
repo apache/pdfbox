@@ -21,7 +21,6 @@ import java.awt.print.Pageable;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
-import java.io.BufferedInputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
@@ -1212,7 +1211,7 @@ public class PDDocument implements Pageable, Closeable
      */
     public static PDDocument load( InputStream input, RandomAccess scratchFile ) throws IOException
     {
-        PDFParser parser = new PDFParser( new BufferedInputStream( input ) , scratchFile );
+        PDFParser parser = new PDFParser(input, scratchFile);
         parser.parse();
         return parser.getPDDocument();
     }
@@ -1231,7 +1230,7 @@ public class PDDocument implements Pageable, Closeable
      */
     public static PDDocument load(InputStream input, RandomAccess scratchFile, boolean force) throws IOException
     {
-        PDFParser parser = new PDFParser( new BufferedInputStream( input ), scratchFile, force);
+        PDFParser parser = new PDFParser(input, scratchFile, force);
         parser.parse();
         return parser.getPDDocument();
     }
