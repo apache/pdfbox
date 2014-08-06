@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.ColorModel;
 import java.io.EOFException;
@@ -50,9 +51,9 @@ class Type5ShadingContext extends GouraudShadingContext
      * @throws IOException if something went wrong
      */
     Type5ShadingContext(PDShadingType5 shading, ColorModel cm, AffineTransform xform,
-                               Matrix ctm, int pageHeight) throws IOException
+                               Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
     {
-        super(shading, cm, xform, ctm, pageHeight);
+        super(shading, cm, xform, ctm, pageHeight, dBounds);
 
         LOG.debug("Type5ShadingContext");
 
