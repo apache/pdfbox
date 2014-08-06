@@ -567,7 +567,7 @@ public class PDGraphicsState implements Cloneable
     public void intersectClippingPath(Area area)
     {
         // lazy cloning of clipping path for performance
-        if (isClippingPathDirty)
+        if (!isClippingPathDirty)
         {
             clippingPath = (Area) clippingPath.clone();
             isClippingPathDirty = true;
