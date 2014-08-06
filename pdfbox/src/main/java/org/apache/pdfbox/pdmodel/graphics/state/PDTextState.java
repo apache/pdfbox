@@ -22,53 +22,17 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
  * This class will hold the current state of the text parameters when executing a
  * content stream.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.4 $
+ * @author Ben Litchfield
  */
 public class PDTextState implements Cloneable
 {
-    /**
-     * See PDF Reference 1.5 Table 5.3.
-     */
-    public static final int RENDERING_MODE_FILL_TEXT = 0;
-    /**
-     * See PDF Reference 1.5 Table 5.3.
-     */
-    public static final int RENDERING_MODE_STROKE_TEXT = 1;
-    /**
-     * See PDF Reference 1.5 Table 5.3.
-     */
-    public static final int RENDERING_MODE_FILL_THEN_STROKE_TEXT = 2;
-    /**
-     * See PDF Reference 1.5 Table 5.3.
-     */
-    public static final int RENDERING_MODE_NEITHER_FILL_NOR_STROKE_TEXT = 3;
-    /**
-     * See PDF Reference 1.5 Table 5.3.
-     */
-    public static final int RENDERING_MODE_FILL_TEXT_AND_ADD_TO_PATH_FOR_CLIPPING = 4;
-    /**
-     * See PDF Reference 1.5 Table 5.3.
-     */
-    public static final int RENDERING_MODE_STROKE_TEXT_AND_ADD_TO_PATH_FOR_CLIPPING = 5;
-    /**
-     * See PDF Reference 1.5 Table 5.3.
-     */
-    public static final int RENDERING_MODE_FILL_THEN_STROKE_TEXT_AND_ADD_TO_PATH_FOR_CLIPPING = 6;
-    /**
-     * See PDF Reference 1.5 Table 5.3.
-     */
-    public static final int RENDERING_MODE_ADD_TEXT_TO_PATH_FOR_CLIPPING = 7;
-
-
-    //these are set default according to PDF Reference 1.5 section 5.2
     private float characterSpacing = 0;
     private float wordSpacing = 0;
     private float horizontalScaling = 100;
     private float leading = 0;
     private PDFont font;
     private float fontSize;
-    private int renderingMode = 0;
+    private RenderingMode renderingMode = RenderingMode.FILL;
     private float rise = 0;
     private boolean knockout = true;
 
@@ -199,7 +163,7 @@ public class PDTextState implements Cloneable
      *
      * @return The renderingMode.
      */
-    public int getRenderingMode()
+    public RenderingMode getRenderingMode()
     {
         return renderingMode;
     }
@@ -207,11 +171,11 @@ public class PDTextState implements Cloneable
     /**
      * Set the value of the renderingMode.
      *
-     * @param value The renderingMode.
+     * @param renderingMode The renderingMode.
      */
-    public void setRenderingMode(int value)
+    public void setRenderingMode(RenderingMode renderingMode)
     {
-        renderingMode = value;
+        this.renderingMode = renderingMode;
     }
 
     /**

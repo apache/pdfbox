@@ -18,7 +18,6 @@ package org.apache.pdfbox.rendering;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Composite;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -49,6 +48,7 @@ import org.apache.fontbox.type1.Type1Font;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImage;
+import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
 import org.apache.pdfbox.rendering.font.Glyph2D;
 import org.apache.pdfbox.rendering.font.TTFGlyph2D;
 import org.apache.pdfbox.rendering.font.Type1Glyph2D;
@@ -77,7 +77,6 @@ import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
 import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
-import org.apache.pdfbox.pdmodel.graphics.state.PDTextState;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
@@ -92,7 +91,6 @@ import org.apache.pdfbox.util.PDFGraphicsStreamEngine;
 public class PageDrawer extends PDFGraphicsStreamEngine
 {
     private static final Log LOG = LogFactory.getLog(PageDrawer.class);
-    private static final Color COLOR_TRANSPARENT = new Color(0, 0, 0, 0);
 
     // parent document renderer
     private final PDFRenderer renderer;
@@ -156,7 +154,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         this.pageSize = pageSize;
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
-        graphics.translate(0, (int)pageSize.getHeight());
+        graphics.translate(0, (int) pageSize.getHeight());
         graphics.scale(1, -1);
         // TODO use getStroke() to set the initial stroke
         graphics.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
@@ -260,36 +258,34 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     @Override
     protected void processText(byte[] string) throws IOException
     {
+        //
+        // DEPRECATED: Used for AWT text only. Will be removed soon! Don't edit me.
+        //
+
         PDGraphicsState state = getGraphicsState();
-        Composite composite;
-        Paint paint;
-        switch (state.getTextState().getRenderingMode())
+        RenderingMode renderingMode = state.getTextState().getRenderingMode();
+
+        if (renderingMode == RenderingMode.FILL)
         {
-            case PDTextState.RENDERING_MODE_FILL_TEXT:
-                composite = state.getNonStrokeJavaComposite();
-                paint = getNonStrokingPaint();
-                break;
-            case PDTextState.RENDERING_MODE_STROKE_TEXT:
-                composite = state.getStrokeJavaComposite();
-                paint = getStrokingPaint();
-                break;
-            case PDTextState.RENDERING_MODE_NEITHER_FILL_NOR_STROKE_TEXT:
-                // basic support for text rendering mode "invisible"
-                // TODO why are we drawing anything at all?
-                paint = COLOR_TRANSPARENT;
-                composite = state.getStrokeJavaComposite();
-                break;
-            default:
-                // TODO : need to implement....
-                LOG.debug("Unsupported RenderingMode "
-                        + this.getGraphicsState().getTextState().getRenderingMode()
-                        + " in PageDrawer.processTextPosition()." + " Using RenderingMode "
-                        + PDTextState.RENDERING_MODE_FILL_TEXT + " instead");
-                composite = state.getNonStrokeJavaComposite();
-                paint = getNonStrokingPaint();
+            graphics.setComposite(state.getNonStrokingJavaComposite());
+            graphics.setPaint(getNonStrokingPaint());
         }
-        graphics.setComposite(composite);
-        graphics.setPaint(paint);
+        else if (renderingMode == RenderingMode.STROKE)
+        {
+            graphics.setComposite(state.getStrokingJavaComposite());
+            graphics.setPaint(getStrokingPaint());
+            graphics.setStroke(getStroke());
+        }
+        else
+        {
+            LOG.debug("Unsupported RenderingMode " +
+                      this.getGraphicsState().getTextState().getRenderingMode() +
+                      " in PageDrawer.processTextPosition()." + " Using RenderingMode " +
+                      RenderingMode.FILL + " instead");
+            graphics.setComposite(state.getNonStrokingJavaComposite());
+            graphics.setPaint(getNonStrokingPaint());
+        }
+
         super.processText(string);
     }
 
@@ -322,7 +318,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                             fontMatrix.getValue(2, 0), fontMatrix.getValue(2, 1));
                     at.concatenate(fontMatrixAT);
                     // Let PDFBox render the font if supported
-                    drawGlyph2D(glyph2D, charCodes, at);
+                    drawGlyphs2D(glyph2D, charCodes, at);
                 }
                 else
                 {
@@ -339,22 +335,59 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     }
 
     /**
-     * Render the font using the Glyph2d interface.
+     * Render the font using the Glyph2D interface.
      * 
      * @param glyph2D the Glyph2D implementation provided a GeneralPath for each glyph
      * @param codePoints the string to be rendered
      * @param at the transformation
      * @throws IOException if something went wrong
      */
-    private void drawGlyph2D(Glyph2D glyph2D, int[] codePoints, AffineTransform at) throws IOException
+    private void drawGlyphs2D(Glyph2D glyph2D, int[] codePoints, AffineTransform at) throws IOException
     {
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        for (int i = 0; i < codePoints.length; i++)
+
+        PDGraphicsState state = getGraphicsState();
+        RenderingMode renderingMode = state.getTextState().getRenderingMode();
+
+        boolean needsFill = true;
+        boolean needsStroke = true;
+
+        for (int codePoint : codePoints)
         {
-            GeneralPath path = glyph2D.getPathForCharacterCode(codePoints[i]);
+            GeneralPath path = glyph2D.getPathForCharacterCode(codePoint);
             if (path != null)
             {
-                graphics.fill(at.createTransformedShape(path));                
+                Shape glyph = at.createTransformedShape(path);
+
+                if (renderingMode.isFill())
+                {
+                    if (needsFill)
+                    {
+                        graphics.setComposite(state.getNonStrokingJavaComposite());
+                        graphics.setPaint(getNonStrokingPaint());
+                        needsFill = false;
+                        needsStroke = true;
+                    }
+                    graphics.fill(glyph);
+                }
+
+                if (renderingMode.isStroke())
+                {
+                    if (needsStroke)
+                    {
+                        graphics.setComposite(state.getStrokingJavaComposite());
+                        graphics.setPaint(getStrokingPaint());
+                        graphics.setStroke(getStroke());
+                        needsFill = true;
+                        needsStroke = false;
+                    }
+                    graphics.draw(glyph);
+                }
+
+                if (renderingMode.isClip())
+                {
+                    state.intersectClippingPath(new Area(glyph));
+                }
             }
         }
     }
@@ -427,13 +460,17 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     private void writeFont(final AffineTransform at, final GlyphVector glyphs)
     {
+        //
+        // DEPRECATED: Will be removed soon! Don't edit me.
+        //
+
         // Convert from PDF, where glyphs are upright when direction is from
         // bottom to top, to AWT, where this is the other way around
-        
+
         // PDFBOX-2141: do not use graphics.transform(), because this prevents
         // the correct rendering of shading patterns
         // don't apply the translation to each glyph, only scale and shear
-        AffineTransform atRS = new AffineTransform(at.getScaleX(), at.getShearY(), 
+        AffineTransform atRS = new AffineTransform(at.getScaleX(), at.getShearY(),
                 -at.getShearX(), -at.getScaleY(), 0, 0);
 
         for (int i = 0; i < glyphs.getNumGlyphs(); i++)
@@ -452,6 +489,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
      */
     private Font createAWTFont(PDFont font) throws IOException
     {
+        //
+        // DEPRECATED: Will be removed soon! Don't edit me.
+        //
+
         Font awtFont = null;
         // Is there already a AWTFont for the given font?
         if (awtFonts.containsKey(font))
@@ -460,6 +501,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
         else
         {
+            LOG.info("Using AWT font for " + font.getBaseFont());
+
             if (font instanceof PDType1Font)
             {
                 PDType1Font type1Font = (PDType1Font) font;
@@ -703,7 +746,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     @Override
     public void strokePath() throws IOException
     {
-        graphics.setComposite(getGraphicsState().getStrokeJavaComposite());
+        graphics.setComposite(getGraphicsState().getStrokingJavaComposite());
         Paint strokingPaint = getStrokingPaint();
         if (strokingPaint == null)
         {
@@ -722,7 +765,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     @Override
     public void fillPath(int windingRule) throws IOException
     {
-        graphics.setComposite(getGraphicsState().getNonStrokeJavaComposite());
+        graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
         Paint nonStrokingPaint = getNonStrokingPaint();
         if (nonStrokingPaint == null)
         {
@@ -803,7 +846,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
         linePath.reset();
     }
-
+    
     public void drawImage(PDImage pdImage) throws IOException
     {
         Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
@@ -829,7 +872,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     public void drawBufferedImage(BufferedImage image, AffineTransform at) throws IOException
     {
-        graphics.setComposite(getGraphicsState().getNonStrokeJavaComposite());
+        graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
         setClip();
         PDSoftMask softMask = getGraphicsState().getSoftMask();
         if( softMask != null )
@@ -865,7 +908,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
         Paint paint = shading.toPaint(ctm, (int)pageSize.getHeight());
 
-        graphics.setComposite(getGraphicsState().getNonStrokeJavaComposite());
+        graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
         graphics.setPaint(paint);
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         graphics.setClip(null);
