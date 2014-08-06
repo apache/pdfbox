@@ -38,6 +38,7 @@ import org.apache.pdfbox.util.Matrix;
  */
 public class PDGraphicsState implements Cloneable
 {
+    private boolean isClippingPathDirty;
     private Area clippingPath;
     private Matrix currentTransformationMatrix = new Matrix();
     private PDColor strokingColor = PDColor.DEVICE_GRAY_BLACK;
@@ -460,6 +461,7 @@ public class PDGraphicsState implements Cloneable
             clone.nonStrokingColor = nonStrokingColor; // immutable
             clone.lineDashPattern = lineDashPattern; // immutable
             clone.clippingPath = clippingPath; // not cloned, see intersectClippingPath
+            clone.isClippingPathDirty = false;
             return clone;
         }
         catch (CloneNotSupportedException e)
@@ -555,11 +557,24 @@ public class PDGraphicsState implements Cloneable
      */
     public void intersectClippingPath(GeneralPath path)
     {
+        intersectClippingPath(new Area(path));
+    }
+
+    /**
+     * Modify the current clipping path by intersecting it with the given path.
+     * @param area area to intersect with the clipping path
+     */
+    public void intersectClippingPath(Area area)
+    {
         // lazy cloning of clipping path for performance
-        clippingPath = (Area) clippingPath.clone();
+        if (isClippingPathDirty)
+        {
+            clippingPath = (Area) clippingPath.clone();
+            isClippingPathDirty = true;
+        }
 
         // intersection as usual
-        clippingPath.intersect(new Area(path));
+        clippingPath.intersect(area);
     }
 
     /**
@@ -572,12 +587,12 @@ public class PDGraphicsState implements Cloneable
         return clippingPath;
     }
 
-    public Composite getStrokeJavaComposite() 
+    public Composite getStrokingJavaComposite()
     {
         return BlendComposite.getInstance(blendMode, (float) alphaConstants);
     }
 
-    public Composite getNonStrokeJavaComposite() 
+    public Composite getNonStrokingJavaComposite()
     {
         return BlendComposite.getInstance(blendMode, (float) nonStrokingAlphaConstants);
     }

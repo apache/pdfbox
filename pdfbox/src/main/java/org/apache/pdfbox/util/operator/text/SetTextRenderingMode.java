@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
 import org.apache.pdfbox.util.operator.Operator;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
 
@@ -35,7 +36,8 @@ public class SetTextRenderingMode extends OperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
-        COSNumber mode = (COSNumber)arguments.get( 0 );
-        context.getGraphicsState().getTextState().setRenderingMode( mode.intValue() );
+        COSNumber mode = (COSNumber)arguments.get(0);
+        RenderingMode renderingMode = RenderingMode.fromInt(mode.intValue());
+        context.getGraphicsState().getTextState().setRenderingMode(renderingMode);
     }
 }
