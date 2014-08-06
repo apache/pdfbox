@@ -43,6 +43,7 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.state.PDTextState;
+import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
@@ -311,7 +312,7 @@ public class PreflightContentStream extends PreflightStreamEngine
     {
         // TextSize accessible through the TextState
         PDTextState textState = getGraphicsState().getTextState();
-        final int renderingMode = textState.getRenderingMode();
+        final RenderingMode renderingMode = textState.getRenderingMode();
         final PDFont font = textState.getFont();
         if (font == null)
         {
@@ -321,7 +322,7 @@ public class PreflightContentStream extends PreflightStreamEngine
         }
 
         FontContainer fontContainer = context.getFontContainer(font.getCOSObject());
-        if (renderingMode == 3 && (fontContainer == null || !fontContainer.isEmbeddedFont()))
+        if (renderingMode == RenderingMode.NEITHER && (fontContainer == null || !fontContainer.isEmbeddedFont()))
         {
             // font not embedded and rendering mode is 3. Valid case and nothing to check
             return;
@@ -370,7 +371,7 @@ public class PreflightContentStream extends PreflightStreamEngine
             }
             catch (GlyphException e)
             {
-                if (renderingMode != 3)
+                if (renderingMode != RenderingMode.NEITHER)
                 {
                     registerError(e.getMessage(), e.getErrorCode());
                     return;
