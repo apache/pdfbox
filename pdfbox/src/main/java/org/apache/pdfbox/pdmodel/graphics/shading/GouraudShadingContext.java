@@ -19,6 +19,7 @@ package org.apache.pdfbox.pdmodel.graphics.shading;
 
 import java.awt.PaintContext;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
 import java.awt.geom.AffineTransform;
@@ -34,6 +35,7 @@ import javax.imageio.stream.ImageInputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdmodel.common.PDRange;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.util.Matrix;
 
@@ -41,6 +43,7 @@ import org.apache.pdfbox.util.Matrix;
  * Shades Gouraud triangles for  Type4ShadingContext and Type5ShadingContext.
  * @author Andreas Lehmkühler
  * @author Tilman Hausherr
+ * @author Shaola Ren
  */
 abstract class GouraudShadingContext implements PaintContext
 {
@@ -48,6 +51,7 @@ abstract class GouraudShadingContext implements PaintContext
 
     private ColorModel outputColorModel;
     private PDColorSpace shadingColorSpace;
+    private final Rectangle deviceBounds;
 
     /** number of color components. */
     protected int numberOfColorComponents;
@@ -66,6 +70,8 @@ abstract class GouraudShadingContext implements PaintContext
 
     private final boolean hasFunction;
     private final PDShading gouraudShadingType;
+    private PDRectangle bboxRect;
+    private float[] bboxTab = new float[4];
 
     /**
      * Constructor creates an instance to be used for fill operations.
@@ -77,9 +83,10 @@ abstract class GouraudShadingContext implements PaintContext
      * @throws IOException if something went wrong
      */
     protected GouraudShadingContext(PDShading shading, ColorModel colorModel, AffineTransform xform,
-                                    Matrix ctm, int pageHeight) throws IOException
+                                    Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
     {
         gouraudShadingType = shading;
+        deviceBounds = dBounds;
         triangleList = new ArrayList<GouraudTriangle>();
         hasFunction = shading.getFunction() != null;
         LOG.debug("hasFunction: " + hasFunction);
@@ -88,6 +95,30 @@ abstract class GouraudShadingContext implements PaintContext
         LOG.debug("colorSpace: " + shadingColorSpace);
 
         numberOfColorComponents = hasFunction ? 1 : shadingColorSpace.getNumberOfComponents();
+        
+        bboxRect = shading.getBBox();
+        if (bboxRect != null)
+        {
+            bboxTab[0] = bboxRect.getLowerLeftX();
+            bboxTab[1] = bboxRect.getLowerLeftY();
+            bboxTab[2] = bboxRect.getUpperRightX();
+            bboxTab[3] = bboxRect.getUpperRightY();
+            if (ctm != null)
+            {
+                // transform the coords using the given matrix
+                ctm.createAffineTransform().transform(bboxTab, 0, bboxTab, 0, 2);
+            }
+            xform.transform(bboxTab, 0, bboxTab, 0, 2);
+        }
+        reOrder(bboxTab, 0, 2);
+        reOrder(bboxTab, 1, 3);
+        LOG.debug("BBox: " + shading.getBBox());
+        LOG.debug("Background: " + shading.getBackground());
+        if (bboxTab[0] >= bboxTab[2] || bboxTab[1] >= bboxTab[3])
+        {
+            bboxRect = null;
+        }
+        
         LOG.debug("numberOfColorComponents: " + numberOfColorComponents);
 
         LOG.debug("BBox: " + shading.getBBox());
@@ -129,6 +160,20 @@ abstract class GouraudShadingContext implements PaintContext
         }
         return new Vertex(flag, new Point2D.Double(dstX, dstY), colorComponentTab);
     }
+    
+    // this method is used to arrange the array to denote the left upper corner and right lower corner of the BBox
+    private void reOrder(float[] array, int i, int j)
+    {
+        if (i < j && array[i] <= array[j])
+        {
+        }
+        else
+        {
+            float tmp = array[i];
+            array[i] = array[j];
+            array[j] = tmp;
+        }
+    }    
 
     /**
      * Transforms vertices from shading to user space (if applicable) and from user to device space.
@@ -191,8 +236,24 @@ abstract class GouraudShadingContext implements PaintContext
         {
             for (int row = 0; row < h; row++)
             {
+                int currentY = y + row;
+                if (bboxRect != null)
+                {
+                    if (currentY < bboxTab[1] || currentY > bboxTab[3])
+                    {
+                        continue;
+                    }
+                }
                 for (int col = 0; col < w; col++)
                 {
+                    int currentX = x + col;
+                    if (bboxRect != null)
+                    {
+                        if (currentX < bboxTab[0] || currentX > bboxTab[2])
+                        {
+                            continue;
+                        }
+                    }
                     Point2D p = new Point(x + col, y + row);
                     GouraudTriangle triangle = null;
                     for (GouraudTriangle tryTriangle : triangleList)

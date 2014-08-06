@@ -49,8 +49,8 @@ class Type1ShadingContext implements PaintContext
     private float[] domain;
     private Matrix matrix;
     private float[] background;
-    private PDRectangle rectBBox;
-    float minBBoxX, minBBoxY, maxBBoxX, maxBBoxY;
+    private PDRectangle bboxRect;
+    private float[] bboxTab = new float[4];
 
     /**
      * Constructor creates an instance to be used for fill operations.
@@ -60,35 +60,30 @@ class Type1ShadingContext implements PaintContext
      * @param ctm current transformation matrix
      * @param pageHeight height of the current page
      */
-    Type1ShadingContext(PDShadingType1 shading, ColorModel cm, AffineTransform xform,
+    public Type1ShadingContext(PDShadingType1 shading, ColorModel cm, AffineTransform xform,
                                Matrix ctm, int pageHeight) throws IOException
     {
         this.shading = shading;
-
-        rectBBox = shading.getBBox();
-        if (rectBBox != null)
+        bboxRect = shading.getBBox();
+        if (bboxRect != null)
         {
-            float[] bboxTab = new float[4];
-            bboxTab[0] = rectBBox.getLowerLeftX();
-            bboxTab[1] = rectBBox.getLowerLeftY();
-            bboxTab[2] = rectBBox.getUpperRightX();
-            bboxTab[3] = rectBBox.getUpperRightY();
+            bboxTab[0] = bboxRect.getLowerLeftX();
+            bboxTab[1] = bboxRect.getLowerLeftY();
+            bboxTab[2] = bboxRect.getUpperRightX();
+            bboxTab[3] = bboxRect.getUpperRightY();
             if (ctm != null)
             {
                 // transform the coords using the given matrix
                 ctm.createAffineTransform().transform(bboxTab, 0, bboxTab, 0, 2);
             }
             xform.transform(bboxTab, 0, bboxTab, 0, 2);
-            minBBoxX = Math.min(bboxTab[0],bboxTab[2]);
-            minBBoxY = Math.min(bboxTab[1],bboxTab[3]);
-            maxBBoxX = Math.max(bboxTab[0],bboxTab[2]);
-            maxBBoxY = Math.max(bboxTab[1],bboxTab[3]);
-            if (minBBoxX == maxBBoxX || minBBoxY == maxBBoxY)
-            {
-                LOG.warn("empty BBox is ignored");
-                rectBBox = null;
-            }
-        }        
+        }
+        reOrder(bboxTab, 0, 2);
+        reOrder(bboxTab, 1, 3);
+        if (bboxTab[0] >= bboxTab[2] || bboxTab[1] >= bboxTab[3])
+        {
+            bboxRect = null;
+        }
         
         // color space
         shadingColorSpace = this.shading.getColorSpace();
@@ -140,6 +135,20 @@ class Type1ShadingContext implements PaintContext
             background = bg.toFloatArray();
         }
     }
+    
+    // this method is used to arrange the array to denote the left upper corner and right lower corner of the BBox
+    private void reOrder(float[] array, int i, int j)
+    {
+        if (i < j && array[i] <= array[j])
+        {
+        }
+        else
+        {
+            float tmp = array[i];
+            array[i] = array[j];
+            array[j] = tmp;
+        }
+    }
 
     @Override
     public void dispose()
@@ -162,20 +171,20 @@ class Type1ShadingContext implements PaintContext
         int[] data = new int[w * h * 4];
         for (int j = 0; j < h; j++)
         {
-            double currentY = y + j;
-            if (rectBBox != null)
+            int currentY = y + j;
+            if (bboxRect != null)
             {
-                if (currentY < minBBoxY || currentY > maxBBoxY)
+                if (currentY < bboxTab[1] || currentY > bboxTab[3])
                 {
                     continue;
                 }
             }
             for (int i = 0; i < w; i++)
             {
-                double currentX = x + i;
-                if (rectBBox != null)
+                int currentX = x + i;
+                if (bboxRect != null)
                 {
-                    if (currentX < minBBoxX || currentX > maxBBoxX)
+                    if (currentX < bboxTab[0] || currentX > bboxTab[2])
                     {
                         continue;
                     }

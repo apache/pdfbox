@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.image.ColorModel;
@@ -52,9 +53,9 @@ class Type4ShadingContext extends GouraudShadingContext
      * @param pageHeight height of the current page
      */
     Type4ShadingContext(PDShadingType4 shading, ColorModel cm, AffineTransform xform,
-                               Matrix ctm, int pageHeight) throws IOException
+                               Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
     {
-        super(shading, cm, xform, ctm, pageHeight);
+        super(shading, cm, xform, ctm, pageHeight, dBounds);
 
         ArrayList<Vertex> vertexList = new ArrayList<Vertex>();
 
