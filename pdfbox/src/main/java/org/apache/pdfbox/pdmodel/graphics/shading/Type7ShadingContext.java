@@ -44,6 +44,7 @@ class Type7ShadingContext extends PatchMeshesShadingContext
      * @param xform transformation for user to device space
      * @param ctm current transformation matrix
      * @param pageHeight height of the current page
+     * @param dBounds device bounds
      * @throws IOException if something went wrong
      */
     public Type7ShadingContext(PDShadingType7 shading, ColorModel colorModel, AffineTransform xform,

@@ -80,6 +80,7 @@ abstract class GouraudShadingContext implements PaintContext
      * @param xform transformation for user to device space
      * @param ctm current transformation matrix
      * @param pageHeight height of the current page
+     * @param dBounds device bounds
      * @throws IOException if something went wrong
      */
     protected GouraudShadingContext(PDShading shading, ColorModel colorModel, AffineTransform xform,

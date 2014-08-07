@@ -46,14 +46,17 @@ class Type4ShadingContext extends GouraudShadingContext
 
     /**
      * Constructor creates an instance to be used for fill operations.
+     *
      * @param shading the shading type to be used
      * @param cm the color model to be used
      * @param xform transformation for user to device space
      * @param ctm current transformation matrix
      * @param pageHeight height of the current page
+     * @param dBounds device bounds
+     * @throws IOException if something went wrong
      */
     Type4ShadingContext(PDShadingType4 shading, ColorModel cm, AffineTransform xform,
-                               Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
+            Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
     {
         super(shading, cm, xform, ctm, pageHeight, dBounds);
 
