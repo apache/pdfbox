@@ -276,6 +276,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             graphics.setPaint(getStrokingPaint());
             graphics.setStroke(getStroke());
         }
+        else if (renderingMode == RenderingMode.NEITHER)
+        {
+            return;
+        }
         else
         {
             LOG.debug("Unsupported RenderingMode " +
