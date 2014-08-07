@@ -48,6 +48,7 @@ class Type5ShadingContext extends GouraudShadingContext
      * @param xform transformation for user to device space
      * @param ctm current transformation matrix
      * @param pageHeight height of the current page
+     * @param dBounds device bounds
      * @throws IOException if something went wrong
      */
     Type5ShadingContext(PDShadingType5 shading, ColorModel cm, AffineTransform xform,

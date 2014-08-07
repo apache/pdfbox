@@ -79,6 +79,7 @@ abstract class PatchMeshesShadingContext implements PaintContext
      * @param xform transformation for user to device space
      * @param ctm current transformation matrix
      * @param pageHeight height of the current page
+     * @param dBounds device bounds 
      * @throws IOException if something went wrong
      */
     protected PatchMeshesShadingContext(PDShading shading, ColorModel colorModel, AffineTransform xform,
@@ -321,7 +322,7 @@ abstract class PatchMeshesShadingContext implements PaintContext
     
     /**
      * Calculate every point and its color and store them in a Hash table.
-     * @return a Hash table contains all the points' positions and colors of one image
+     * @return a Hash table which contains all the points' positions and colors of one image
      */
     protected HashMap<Point, Integer> calcPixelTable()
     {
