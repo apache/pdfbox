@@ -317,7 +317,9 @@ public abstract class PDShading implements COSObjectable
         {
             COSBase dictionaryFunctionObject = getCOSDictionary().getDictionaryObject(COSName.FUNCTION);
             if (dictionaryFunctionObject != null)
+            {
                 function = PDFunction.create(dictionaryFunctionObject);
+            }
         }
         return function;
     }

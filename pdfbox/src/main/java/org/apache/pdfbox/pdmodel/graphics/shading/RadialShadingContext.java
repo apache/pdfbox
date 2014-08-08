@@ -17,12 +17,9 @@
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
 import java.awt.PaintContext;
-import java.awt.Transparency;
-import java.awt.color.ColorSpace;
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
@@ -33,7 +30,6 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBoolean;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -45,12 +41,10 @@ import org.apache.pdfbox.util.Matrix;
  * @author Andreas Lehmkühler
  * @author Shaola Ren 
  */
-public class RadialShadingContext implements PaintContext
+public class RadialShadingContext extends ShadingContext implements PaintContext
 {
     private static final Log LOG = LogFactory.getLog(RadialShadingContext.class);
 
-    private ColorModel outputColorModel;
-    private PDColorSpace shadingColorSpace;
     private PDShadingType3 shading;
 
     private float[] coords;
@@ -76,14 +70,16 @@ public class RadialShadingContext implements PaintContext
     /**
      * Constructor creates an instance to be used for fill operations.
      * @param shading the shading type to be used
-     * @param cm the color model to be used
+     * @param colorModel the color model to be used
      * @param xform transformation for user to device space
      * @param ctm the transformation matrix
+     * @param dBounds device bounds 
      * @param pageHeight height of the current page
      */
-    public RadialShadingContext(PDShadingType3 shading, ColorModel cm, AffineTransform xform,
-                                Matrix ctm, int pageHeight) throws IOException
+    public RadialShadingContext(PDShadingType3 shading, ColorModel colorModel, AffineTransform xform,
+                                Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
     {
+        super(shading, colorModel, xform, ctm, pageHeight, dBounds);
         this.shading = shading;
         coords = this.shading.getCoords().toFloatArray();
 
@@ -128,12 +124,6 @@ public class RadialShadingContext implements PaintContext
         coords[2] *= xform.getScaleX();
         coords[5] *= xform.getScaleX();
 
-        // get the shading colorSpace
-        shadingColorSpace = this.shading.getColorSpace();
-        // create the output colormodel using RGB+alpha as colorspace
-        ColorSpace outputCS = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-        outputColorModel = new ComponentColorModel(outputCS, true, false, Transparency.TRANSLUCENT,
-                DataBuffer.TYPE_BYTE);
         // domain values
         if (this.shading.getDomain() != null)
         {

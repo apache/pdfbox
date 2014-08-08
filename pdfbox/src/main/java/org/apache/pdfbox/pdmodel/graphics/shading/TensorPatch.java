@@ -36,7 +36,7 @@ class TensorPatch extends Patch
         super(tcp, color);
         controlPoints = reshapeControlPoints(tcp);
         level = calcLevel();
-        listOfCoonsTriangle = getCoonsTriangle();
+        listOfCoonsTriangles = getCoonsTriangle();
     }
     
     /*

@@ -66,7 +66,7 @@ public class RadialShadingPaint implements Paint
     {
         try
         {
-            return new RadialShadingContext(shading, cm, xform, ctm, pageHeight);
+            return new RadialShadingContext(shading, cm, xform, ctm, pageHeight, deviceBounds);
         }
         catch (IOException ex)
         {
