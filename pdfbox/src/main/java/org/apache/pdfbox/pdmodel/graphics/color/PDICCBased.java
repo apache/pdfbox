@@ -110,7 +110,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
             awtColorSpace = new ICC_ColorSpace(iccProfile);
 
             // set initial colour
-            float[] initial = new float[getColorSpaceType()];
+            float[] initial = new float[getNumberOfComponents()];
             for (int c = 0; c < getNumberOfComponents(); c++)
             {
                 initial[c] = Math.max(0, getRangeForComponent(c).getMin());
