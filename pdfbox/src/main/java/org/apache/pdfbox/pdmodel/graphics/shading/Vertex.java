@@ -25,15 +25,13 @@ import java.awt.geom.Point2D;
  */
 class Vertex
 {
-    public byte flag; // used only with type 4 shading
     public Point2D point;
     public float[] color;
-
-    Vertex(byte flag, Point2D point, float[] color)
+    
+    public Vertex(Point2D p, float[] c)
     {
-        this.flag = flag;
-        this.point = point;
-        this.color = color.clone();
+        point = p;
+        color = c.clone();
     }
 
     @Override
@@ -48,6 +46,6 @@ class Vertex
             }
             colorStr += String.format("%3.2f", f);
         }
-        return "Vertex{" + flag + ": " + point + ", colors=[" + colorStr + "] }";
+        return "Vertex{" + " " + point + ", colors=[" + colorStr + "] }";
     }
 }
