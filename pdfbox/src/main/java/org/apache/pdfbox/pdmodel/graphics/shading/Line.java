@@ -46,25 +46,21 @@ class Line
         point1 = p1;
         color0 = c0.clone();
         color1 = c1.clone();
-        linePoints = getLine();
-    }
-    
-    private HashSet<Point> getLine()
-    {
-        return getLine(point0.x, point0.y, point1.x, point1.y);
+        linePoints = calcLine(point0.x, point0.y, point1.x, point1.y);
     }
     
     /**
-     * Bresenham's line algorithm, http://en.wikipedia.org/wiki/Bresenham's_line_algorithm
+     * Calculate the points of a line with Bresenham's line algorithm
+     * <a href="http://en.wikipedia.org/wiki/Bresenham's_line_algorithm">Bresenham's line algorithm</a>
      * @param x0 coordinate
      * @param y0 coordinate
      * @param x1 coordinate
      * @param y1 coordinate
      * @return all the points on the rasterized line from (x0, y0) to (x1, y1)
      */
-    private HashSet<Point> getLine(int x0, int y0, int x1, int y1) 
+    private HashSet<Point> calcLine(int x0, int y0, int x1, int y1) 
     {
-        HashSet<Point> points = new HashSet<Point>();
+        HashSet<Point> points = new HashSet<Point>(3);
         int dx = (int) Math.round(Math.abs(x1 - x0));
         int dy = (int) Math.round(Math.abs(y1 - y0));
         int sx = x0 < x1 ? 1 : -1;
@@ -97,7 +93,7 @@ class Line
      * @param p target point, p should always be contained in linePoints
      * @return color
      */
-    protected float[] getColor(Point p)
+    protected float[] calcColor(Point p)
     {
         int numberOfColorComponents = color0.length;
         float[] pc = new float[numberOfColorComponents];
@@ -110,7 +106,8 @@ class Line
             float l = point1.y - point0.y;
             for (int i = 0; i < numberOfColorComponents; i++)
             {
-                pc[i] = (float) (color0[i] * (point1.y - p.y) / l + color1[i] * (p.y - point0.y) / l);
+                pc[i] = (float) (color0[i] * (point1.y - p.y) / l + 
+                                 color1[i] * (p.y - point0.y) / l);
             }
         }
         else
@@ -118,7 +115,8 @@ class Line
             float l = point1.x - point0.x;
             for (int i = 0; i < numberOfColorComponents; i++)
             {
-                pc[i] = (float) (color0[i] * (point1.x - p.x) / l + color1[i] * (p.x - point0.x) / l);
+                pc[i] = (float) (color0[i] * (point1.x - p.x) / l + 
+                                 color1[i] * (p.x - point0.x) / l);
             }
         }
         return pc;

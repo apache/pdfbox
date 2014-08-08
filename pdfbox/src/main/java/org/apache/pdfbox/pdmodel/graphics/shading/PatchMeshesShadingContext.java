@@ -127,13 +127,12 @@ abstract class PatchMeshesShadingContext implements PaintContext
         }
     }
     
-    // this method is used to arrange the array to denote the left upper corner and right lower corner of the BBox
+    // this helper method is used to arrange the array 
+    // to denote the left upper corner and right lower corner of the BBox
+    // i is always < j
     private void reOrder(float[] array, int i, int j)
     {
-        if (i < j && array[i] <= array[j])
-        {
-        }
-        else
+        if (array[i] > array[j])
         {
             float tmp = array[i];
             array[i] = array[j];
@@ -338,7 +337,7 @@ abstract class PatchMeshesShadingContext implements PaintContext
                     HashSet<Point> linePoints = line.linePoints;
                     for (Point p : linePoints)
                     {
-                        float[] values = line.getColor(p);
+                        float[] values = line.calcColor(p);
                         map.put(p, convertToRGB(values));
                     }
                 }
@@ -356,7 +355,7 @@ abstract class PatchMeshesShadingContext implements PaintContext
                             Point p = new Point(x, y);
                             if (tri.contains(p))
                             {
-                                float[] values = tri.getColor(p);
+                                float[] values = tri.calcColor(p);
                                 map.put(p, convertToRGB(values));
                             }
                         }

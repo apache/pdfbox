@@ -206,8 +206,7 @@ abstract class GouraudShadingContext implements PaintContext
                 HashSet<Point> linePoints = line.linePoints;
                 for (Point p : linePoints)
                 {
-                    float[] values = line.getColor(p);
-                    map.put(p, convertToRGB(values));
+                    map.put(p, convertToRGB(line.calcColor(p)));
                 }
             }
             else
@@ -224,8 +223,7 @@ abstract class GouraudShadingContext implements PaintContext
                         Point p = new Point(x, y);
                         if (tri.contains(p))
                         {
-                            float[] values = tri.getColor(p);
-                            map.put(p, convertToRGB(values));
+                            map.put(p, convertToRGB(tri.calcColor(p)));
                         }
                     }
                 }

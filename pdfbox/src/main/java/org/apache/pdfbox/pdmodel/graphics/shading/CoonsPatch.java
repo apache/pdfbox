@@ -35,7 +35,7 @@ class CoonsPatch extends Patch
     {
         super(points, color);
         controlPoints = reshapeControlPoints(points);
-        level = calLevel();
+        level = calcLevel();
         listOfCoonsTriangle = getCoonsTriangle();
     }
     
@@ -63,7 +63,7 @@ class CoonsPatch extends Patch
     }
     
     // calculate the dividing level from control points
-    private int[] calLevel()
+    private int[] calcLevel()
     {
         int[] l = {4, 4};
         // if two opposite edges are both lines, there is a possibility to reduce the dividing level
