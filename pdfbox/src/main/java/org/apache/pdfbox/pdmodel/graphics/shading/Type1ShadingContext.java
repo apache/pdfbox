@@ -42,7 +42,6 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
     private float[] domain;
     private Matrix matrix;
     private float[] background;
-    private float[] bboxTab = new float[4];
 
     /**
      * Constructor creates an instance to be used for fill operations.
