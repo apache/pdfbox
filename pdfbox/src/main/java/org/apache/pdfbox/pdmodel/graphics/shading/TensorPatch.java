@@ -35,7 +35,7 @@ class TensorPatch extends Patch
     {
         super(tcp, color);
         controlPoints = reshapeControlPoints(tcp);
-        level = calLevel();
+        level = calcLevel();
         listOfCoonsTriangle = getCoonsTriangle();
     }
     
@@ -63,7 +63,7 @@ class TensorPatch extends Patch
     }
     
     // calculate the dividing level from the control points
-    private int[] calLevel()
+    private int[] calcLevel()
     {
         int[] l = {4, 4};
         
@@ -78,12 +78,14 @@ class TensorPatch extends Patch
         if (isEdgeALine(ctlC1) & isEdgeALine(ctlC2))
         {
             /*
-            if any of the 4 inner control points is out of the patch formed by the 4 edges, keep the high dividing level, 
+            if any of the 4 inner control points is out of the patch formed by the 4 edges, 
+            keep the high dividing level, 
             otherwise, determine the dividing level by the lengths of edges
             */
             if (isOnSameSideCC(controlPoints[1][1]) | isOnSameSideCC(controlPoints[1][2]) |
                                 isOnSameSideCC(controlPoints[2][1]) | isOnSameSideCC(controlPoints[2][2]))
             {
+                // keep the high dividing level
             }
             else
             {
@@ -113,6 +115,7 @@ class TensorPatch extends Patch
             if (isOnSameSideDD(controlPoints[1][1]) | isOnSameSideDD(controlPoints[1][2]) |
                                 isOnSameSideDD(controlPoints[2][1]) | isOnSameSideDD(controlPoints[2][2]))
             {
+                // keep the high dividing level
             }
             else
             {

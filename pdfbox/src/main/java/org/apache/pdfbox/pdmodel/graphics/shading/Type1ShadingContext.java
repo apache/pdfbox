@@ -136,13 +136,12 @@ class Type1ShadingContext implements PaintContext
         }
     }
     
-    // this method is used to arrange the array to denote the left upper corner and right lower corner of the BBox
+    // this helper method is used to arrange the array 
+    // to denote the left upper corner and right lower corner of the BBox
+    // i is always < j
     private void reOrder(float[] array, int i, int j)
     {
-        if (i < j && array[i] <= array[j])
-        {
-        }
-        else
+        if (array[i] > array[j])
         {
             float tmp = array[i];
             array[i] = array[j];

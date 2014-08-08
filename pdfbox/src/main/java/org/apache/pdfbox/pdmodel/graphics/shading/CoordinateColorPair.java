@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
 import java.awt.geom.Point2D;
@@ -21,6 +20,7 @@ import java.awt.geom.Point2D;
 /**
  * This class is used to store a point's coordinate and its corresponding color.
  * This was done as part of GSoC2014, Tilman Hausherr is the mentor.
+ *
  * @author Shaola Ren
  */
 class CoordinateColorPair
@@ -30,6 +30,7 @@ class CoordinateColorPair
 
     /**
      * Constructor.
+     *
      * @param p point
      * @param c color
      */
