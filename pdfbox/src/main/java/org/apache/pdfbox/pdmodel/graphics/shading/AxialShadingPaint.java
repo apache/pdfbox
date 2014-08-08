@@ -67,7 +67,7 @@ public class AxialShadingPaint implements Paint
     {
         try
         {
-            return new AxialShadingContext(shading, cm, xform, ctm, pageHeight);
+            return new AxialShadingContext(shading, cm, xform, ctm, pageHeight, deviceBounds);
         }
         catch (IOException ex)
         {

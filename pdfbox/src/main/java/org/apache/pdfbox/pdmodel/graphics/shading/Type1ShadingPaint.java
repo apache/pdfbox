@@ -65,7 +65,7 @@ class Type1ShadingPaint implements Paint
     {
         try
         {
-            return new Type1ShadingContext(shading, cm, xform, ctm, pageHeight);
+            return new Type1ShadingContext(shading, cm, xform, ctm, pageHeight, deviceBounds);
         }
         catch (IOException ex)
         {

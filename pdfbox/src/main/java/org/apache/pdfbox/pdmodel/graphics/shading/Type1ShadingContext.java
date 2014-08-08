@@ -16,21 +16,16 @@
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
 import java.awt.PaintContext;
-import java.awt.Transparency;
-import java.awt.color.ColorSpace;
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -38,59 +33,31 @@ import org.apache.pdfbox.util.Matrix;
  * @author Andreas Lehmkühler
  * @author Tilman Hausherr
  */
-class Type1ShadingContext implements PaintContext
+class Type1ShadingContext extends ShadingContext implements PaintContext
 {
     private static final Log LOG = LogFactory.getLog(Type1ShadingContext.class);
 
-    private ColorModel outputColorModel;
-    private PDColorSpace shadingColorSpace;
     private PDShadingType1 shading;
     private AffineTransform rat;
     private float[] domain;
     private Matrix matrix;
     private float[] background;
-    private PDRectangle bboxRect;
     private float[] bboxTab = new float[4];
 
     /**
      * Constructor creates an instance to be used for fill operations.
      * @param shading the shading type to be used
-     * @param cm the color model to be used
+     * @param colorModel the color model to be used
      * @param xform transformation for user to device space
      * @param ctm current transformation matrix
      * @param pageHeight height of the current page
+     * @param dBounds device bounds 
      */
-    public Type1ShadingContext(PDShadingType1 shading, ColorModel cm, AffineTransform xform,
-                               Matrix ctm, int pageHeight) throws IOException
+    public Type1ShadingContext(PDShadingType1 shading, ColorModel colorModel, AffineTransform xform,
+                               Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
     {
+        super(shading, colorModel, xform, ctm, pageHeight, dBounds);
         this.shading = shading;
-        bboxRect = shading.getBBox();
-        if (bboxRect != null)
-        {
-            bboxTab[0] = bboxRect.getLowerLeftX();
-            bboxTab[1] = bboxRect.getLowerLeftY();
-            bboxTab[2] = bboxRect.getUpperRightX();
-            bboxTab[3] = bboxRect.getUpperRightY();
-            if (ctm != null)
-            {
-                // transform the coords using the given matrix
-                ctm.createAffineTransform().transform(bboxTab, 0, bboxTab, 0, 2);
-            }
-            xform.transform(bboxTab, 0, bboxTab, 0, 2);
-        }
-        reOrder(bboxTab, 0, 2);
-        reOrder(bboxTab, 1, 3);
-        if (bboxTab[0] >= bboxTab[2] || bboxTab[1] >= bboxTab[3])
-        {
-            bboxRect = null;
-        }
-        
-        // color space
-        shadingColorSpace = this.shading.getColorSpace();
-        // create the output colormodel using RGB+alpha as colorspace
-        ColorSpace outputCS = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-        outputColorModel = new ComponentColorModel(outputCS, true, false, Transparency.TRANSLUCENT,
-                DataBuffer.TYPE_BYTE);
         
         // spec p.308
         // (Optional) An array of four numbers [ xmin xmax ymin ymax ] 
@@ -133,19 +100,6 @@ class Type1ShadingContext implements PaintContext
         if (bg != null)
         {
             background = bg.toFloatArray();
-        }
-    }
-    
-    // this helper method is used to arrange the array 
-    // to denote the left upper corner and right lower corner of the BBox
-    // i is always < j
-    private void reOrder(float[] array, int i, int j)
-    {
-        if (array[i] > array[j])
-        {
-            float tmp = array[i];
-            array[i] = array[j];
-            array[j] = tmp;
         }
     }
 

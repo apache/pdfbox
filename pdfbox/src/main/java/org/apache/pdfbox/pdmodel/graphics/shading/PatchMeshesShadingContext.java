@@ -19,20 +19,15 @@ package org.apache.pdfbox.pdmodel.graphics.shading;
 import java.awt.PaintContext;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.Transparency;
-import java.awt.color.ColorSpace;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.EOFException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
 import org.apache.commons.logging.Log;
@@ -41,8 +36,6 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.common.PDRange;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -50,20 +43,14 @@ import org.apache.pdfbox.util.Matrix;
  * This was done as part of GSoC2014, Tilman Hausherr is the mentor.
  * @author Shaola Ren
  */
-abstract class PatchMeshesShadingContext implements PaintContext
+abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext implements PaintContext
 {
     private static final Log LOG = LogFactory.getLog(PatchMeshesShadingContext.class);
     
-    protected ColorModel outputColorModel;
-    protected PDColorSpace shadingColorSpace;
-    private final Rectangle deviceBounds;
     protected final int numberOfColorComponents; // number of color components
     protected float[] background; // background values.
     protected int rgbBackground;
-    protected final boolean hasFunction;
     protected final PDShading patchMeshesShadingType;
-    private PDRectangle bboxRect;
-    private float[] bboxTab = new float[4];
     
     // the following fields are not intialized in this abstract class
     protected ArrayList<Patch> patchList; // patch list
@@ -85,58 +72,16 @@ abstract class PatchMeshesShadingContext implements PaintContext
     protected PatchMeshesShadingContext(PDShading shading, ColorModel colorModel, AffineTransform xform,
                                 Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
     {
+        super(shading, colorModel, xform, ctm, pageHeight, dBounds);
         patchMeshesShadingType = shading;
-        deviceBounds = dBounds;
-        bboxRect = shading.getBBox();
-        if (bboxRect != null)
-        {
-            bboxTab[0] = bboxRect.getLowerLeftX();
-            bboxTab[1] = bboxRect.getLowerLeftY();
-            bboxTab[2] = bboxRect.getUpperRightX();
-            bboxTab[3] = bboxRect.getUpperRightY();
-            if (ctm != null)
-            {
-                // transform the coords using the given matrix
-                ctm.createAffineTransform().transform(bboxTab, 0, bboxTab, 0, 2);
-            }
-            xform.transform(bboxTab, 0, bboxTab, 0, 2);
-        }
-        reOrder(bboxTab, 0, 2);
-        reOrder(bboxTab, 1, 3);
-        if (bboxTab[0] >= bboxTab[2] || bboxTab[1] >= bboxTab[3])
-        {
-            bboxRect = null;
-        }
-        
         patchList = new ArrayList<Patch>();
-        hasFunction = shading.getFunction() != null;
-        shadingColorSpace = shading.getColorSpace();
-        
         numberOfColorComponents = hasFunction ? 1 : shadingColorSpace.getNumberOfComponents();
-        
-        // create the output color model using RGB+alpha as color space
-        ColorSpace outputCS = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-        outputColorModel = new ComponentColorModel(outputCS, true, false, Transparency.TRANSLUCENT,
-                DataBuffer.TYPE_BYTE);
         
         COSArray bg = shading.getBackground();
         if (bg != null)
         {
             background = bg.toFloatArray();
             rgbBackground = convertToRGB(background);
-        }
-    }
-    
-    // this helper method is used to arrange the array 
-    // to denote the left upper corner and right lower corner of the BBox
-    // i is always < j
-    private void reOrder(float[] array, int i, int j)
-    {
-        if (array[i] > array[j])
-        {
-            float tmp = array[i];
-            array[i] = array[j];
-            array[j] = tmp;
         }
     }
     
@@ -328,83 +273,11 @@ abstract class PatchMeshesShadingContext implements PaintContext
         HashMap<Point, Integer> map = new HashMap<Point, Integer>();
         for (Patch it : patchList)
         {
-            for (CoonsTriangle tri : it.listOfCoonsTriangle)
-            {
-                int degree = tri.getDeg();
-                if (degree == 2)
-                {
-                    Line line = tri.getLine();
-                    HashSet<Point> linePoints = line.linePoints;
-                    for (Point p : linePoints)
-                    {
-                        float[] values = line.calcColor(p);
-                        map.put(p, convertToRGB(values));
-                    }
-                }
-                else
-                {
-                    int[] boundary = tri.getBoundary();
-                    boundary[0] = Math.max(boundary[0], deviceBounds.x);
-                    boundary[1] = Math.min(boundary[1], deviceBounds.x + deviceBounds.width);
-                    boundary[2] = Math.max(boundary[2], deviceBounds.y);
-                    boundary[3] = Math.min(boundary[3], deviceBounds.y + deviceBounds.height);
-                    for (int x = boundary[0]; x <= boundary[1]; x++)
-                    {
-                        for (int y = boundary[2]; y <= boundary[3]; y++)
-                        {
-                            Point p = new Point(x, y);
-                            if (tri.contains(p))
-                            {
-                                float[] values = tri.calcColor(p);
-                                map.put(p, convertToRGB(values));
-                            }
-                        }
-                    }
-                }
-            }
+            super.calcPixelTable(it.listOfCoonsTriangles, map);
         }
         return map;
     }
-    
-    // convert color to RGB color values
-    private int convertToRGB(float[] values)
-    {
-        float[] nValues = null;
-        float[] rgbValues = null;
-        int normRGBValues = 0;
-        if (hasFunction)
-        {
-            try
-            {
-                nValues = patchMeshesShadingType.evalFunction(values);
-            }
-            catch (IOException exception)
-            {
-                LOG.error("error while processing a function", exception);
-            }
-        }
 
-        try
-        {
-            if (nValues == null)
-            {
-                rgbValues = shadingColorSpace.toRGB(values);
-            }
-            else
-            {
-                rgbValues = shadingColorSpace.toRGB(nValues);
-            }
-            normRGBValues = (int) (rgbValues[0] * 255);
-            normRGBValues |= (((int) (rgbValues[1] * 255)) << 8);
-            normRGBValues |= (((int) (rgbValues[2] * 255)) << 16);
-        }
-        catch (IOException exception)
-        {
-            LOG.error("error processing color space", exception);
-        }
-        return normRGBValues;
-    }
-    
     @Override
     public void dispose()
     {

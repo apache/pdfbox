@@ -219,7 +219,7 @@ class CoonsTriangle
     }
 
     /**
-     * Calculate color of a point.
+     * Calculate the color of a point.
      * @param p the target point
      * @return an array denotes the point's color
      */

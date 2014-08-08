@@ -35,7 +35,7 @@ abstract class Patch
      be divided into 2^levelV parts
      */
     protected int[] level;
-    protected ArrayList<CoonsTriangle> listOfCoonsTriangle;
+    protected ArrayList<CoonsTriangle> listOfCoonsTriangles;
     
     /**
      * Constructor of Patch.

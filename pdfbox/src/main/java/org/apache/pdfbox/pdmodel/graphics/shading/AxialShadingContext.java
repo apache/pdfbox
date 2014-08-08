@@ -17,12 +17,9 @@
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
 import java.awt.PaintContext;
-import java.awt.Transparency;
-import java.awt.color.ColorSpace;
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
@@ -33,7 +30,6 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBoolean;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -46,12 +42,10 @@ import org.apache.pdfbox.util.Matrix;
  * @author Shaola Ren 
  *
  */
-public class AxialShadingContext implements PaintContext
+public class AxialShadingContext extends ShadingContext implements PaintContext
 {
     private static final Log LOG = LogFactory.getLog(AxialShadingContext.class);
 
-    private ColorModel outputColorModel;
-    private PDColorSpace shadingColorSpace;
     private PDShadingType2 shading;
 
     private float[] coords;
@@ -72,14 +66,16 @@ public class AxialShadingContext implements PaintContext
     /**
      * Constructor creates an instance to be used for fill operations.
      * @param shading the shading type to be used
-     * @param cm the color model to be used
+     * @param colorModel the color model to be used
      * @param xform transformation for user to device space
      * @param ctm the transformation matrix
      * @param pageHeight height of the current page
+     * @param dBounds device bounds 
      */
-    public AxialShadingContext(PDShadingType2 shading, ColorModel cm, AffineTransform xform,
-                               Matrix ctm, int pageHeight) throws IOException
+    public AxialShadingContext(PDShadingType2 shading, ColorModel colorModel, AffineTransform xform,
+                               Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
     {
+        super(shading, colorModel, xform, ctm, pageHeight, dBounds);
         this.shading = shading;
         coords = this.shading.getCoords().toFloatArray();
         
@@ -114,12 +110,6 @@ public class AxialShadingContext implements PaintContext
             ctm.createAffineTransform().transform(coords, 0, coords, 0, 2);
         }
         xform.transform(coords, 0, coords, 0, 2);
-        // get the shading colorSpace
-        shadingColorSpace = this.shading.getColorSpace();
-        // create the output colormodel using RGB+alpha as colorspace
-        ColorSpace outputCS = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-        outputColorModel = new ComponentColorModel(outputCS, true, false, Transparency.TRANSLUCENT,
-                DataBuffer.TYPE_BYTE);
         // domain values
         if (this.shading.getDomain() != null)
         {

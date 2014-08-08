@@ -36,7 +36,7 @@ class CoonsPatch extends Patch
         super(points, color);
         controlPoints = reshapeControlPoints(points);
         level = calcLevel();
-        listOfCoonsTriangle = getCoonsTriangle();
+        listOfCoonsTriangles = getCoonsTriangle();
     }
     
     // adjust the 12 control points to 4 groups, each group defines one edge of a patch
