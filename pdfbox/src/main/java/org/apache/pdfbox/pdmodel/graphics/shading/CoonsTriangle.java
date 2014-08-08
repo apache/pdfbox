@@ -29,8 +29,8 @@ import java.util.HashSet;
  */
 class CoonsTriangle
 {
-    private final Point2D[] corner; // vertexes coordinates of a triangle
-    private final float[][] color;
+    protected final Point2D[] corner; // vertexes coordinates of a triangle
+    protected final float[][] color;
     private final double area; // area of the triangle
     
     /*
