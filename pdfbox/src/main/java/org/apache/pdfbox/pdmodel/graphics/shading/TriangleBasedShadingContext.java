@@ -19,6 +19,7 @@ package org.apache.pdfbox.pdmodel.graphics.shading;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.awt.image.ColorModel;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,14 +40,14 @@ abstract class TriangleBasedShadingContext extends ShadingContext
 {
     private static final Log LOG = LogFactory.getLog(TriangleBasedShadingContext.class);
     
-    protected final boolean hasFunction;
-
     /** bits per coordinate. */
     protected int bitsPerCoordinate;
     
     /** bits per color component */
     protected int bitsPerColorComponent; 
 
+    final protected boolean hasFunction;
+    
     public TriangleBasedShadingContext(PDShading shading, ColorModel cm, 
             AffineTransform xform, Matrix ctm, int pageHeight, Rectangle dBounds) 
             throws IOException
@@ -58,47 +59,6 @@ abstract class TriangleBasedShadingContext extends ShadingContext
         LOG.debug("bitsPerCoordinate: " + (Math.pow(2, bitsPerCoordinate) - 1));
         bitsPerColorComponent = triangleBasedShadingType.getBitsPerComponent();
         LOG.debug("bitsPerColorComponent: " + bitsPerColorComponent);
-    }
-
-    // convert color to RGB color value, using function if required, 
-    // then convert from the shading colorspace to an RGB value,
-    // which is encoded into an integer.
-    protected int convertToRGB(float[] values)
-    {
-        float[] nValues = null;
-        int normRGBValues = 0;
-        if (hasFunction)
-        {
-            try
-            {
-                nValues = shading.evalFunction(values);
-            }
-            catch (IOException exception)
-            {
-                LOG.error("error while processing a function", exception);
-            }
-        }
-
-        try
-        {
-            float[] rgbValues;
-            if (nValues == null)
-            {
-                rgbValues = shadingColorSpace.toRGB(values);
-            }
-            else
-            {
-                rgbValues = shadingColorSpace.toRGB(nValues);
-            }
-            normRGBValues = (int) (rgbValues[0] * 255);
-            normRGBValues |= (((int) (rgbValues[1] * 255)) << 8);
-            normRGBValues |= (((int) (rgbValues[2] * 255)) << 16);
-        }
-        catch (IOException exception)
-        {
-            LOG.error("error processing color space", exception);
-        }
-        return normRGBValues;
     }
     
     // get the points from the triangles, calculate their color and add 
@@ -139,4 +99,34 @@ abstract class TriangleBasedShadingContext extends ShadingContext
         }
     }
     
+    // transform a point from source space to device space
+    protected void transformPoint(Point2D p, Matrix ctm, AffineTransform xform)
+    {
+        if (ctm != null)
+        {
+            ctm.createAffineTransform().transform(p, p);
+        }
+        xform.transform(p, p);
+    }
+    
+    // convert color to RGB color value, using function if required,
+    // then convert from the shading colorspace to an RGB value,
+    // which is encoded into an integer.
+    @Override
+    protected int convertToRGB(float[] values)
+    {
+        if (hasFunction)
+        {
+            try
+            {
+                values = shading.evalFunction(values);
+            }
+            catch (IOException exception)
+            {
+                LOG.error("error while processing a function", exception);
+            }
+        }
+        return super.convertToRGB(values);
+    }
+
 }

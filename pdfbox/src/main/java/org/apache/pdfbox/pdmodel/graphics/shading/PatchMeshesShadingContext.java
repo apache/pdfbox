@@ -84,16 +84,6 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext imp
         }
     }
     
-    // transform a point from source space to device space
-    private void transformPoint(Point2D p, Matrix ctm, AffineTransform xform)
-    {
-        if (ctm != null)
-        {
-            ctm.createAffineTransform().transform(p, p);
-        }
-        xform.transform(p, p);
-    }
-    
     /**
      * Create a patch list from a data stream, the returned list contains all the patches 
      * contained in the data stream.
