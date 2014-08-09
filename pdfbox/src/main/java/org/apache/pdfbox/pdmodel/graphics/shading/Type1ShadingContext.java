@@ -37,9 +37,9 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
 {
     private static final Log LOG = LogFactory.getLog(Type1ShadingContext.class);
 
-    private PDShadingType1 shading;
+    private PDShadingType1 type1ShadingType;
     private AffineTransform rat;
-    private float[] domain;
+    private final float[] domain;
     private Matrix matrix;
     private float[] background;
 
@@ -56,15 +56,15 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
                                Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
     {
         super(shading, colorModel, xform, ctm, pageHeight, dBounds);
-        this.shading = shading;
+        this.type1ShadingType = shading;
         
         // spec p.308
         // (Optional) An array of four numbers [ xmin xmax ymin ymax ] 
         // specifying the rectangular domain of coordinates over which the 
         // color function(s) are defined. Default value: [ 0.0 1.0 0.0 1.0 ].
-        if (this.shading.getDomain() != null)
+        if (shading.getDomain() != null)
         {
-            domain = this.shading.getDomain().toFloatArray();
+            domain = shading.getDomain().toFloatArray();
         }
         else
         {
@@ -74,7 +74,7 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
             };
         }
 
-        matrix = this.shading.getMatrix();
+        matrix = shading.getMatrix();
         if (matrix == null)
         {
             matrix = new Matrix();
@@ -107,7 +107,7 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
     {
         outputColorModel = null;
         shadingColorSpace = null;
-        shading = null;
+        type1ShadingType = null;
     }
 
     @Override
@@ -168,7 +168,7 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
                 {
                     try
                     {
-                        values = shading.evalFunction(values);
+                        values = type1ShadingType.evalFunction(values);
                     }
                     catch (IOException exception)
                     {

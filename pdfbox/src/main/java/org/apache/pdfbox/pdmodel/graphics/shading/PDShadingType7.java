@@ -16,8 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.util.Matrix;
 
@@ -26,12 +24,12 @@ import java.awt.Paint;
 /**
  * Resources for a shading type 7 (Tensor-Product Patch Mesh).
  */
-public class PDShadingType7 extends PDShadingType4
+public class PDShadingType7 extends PDShadingType6
 {
-    private static final Log LOG = LogFactory.getLog(PDShadingType7.class);
 
     /**
      * Constructor using the given shading dictionary.
+     *
      * @param shadingDictionary the dictionary for this shading
      */
     public PDShadingType7(COSDictionary shadingDictionary)

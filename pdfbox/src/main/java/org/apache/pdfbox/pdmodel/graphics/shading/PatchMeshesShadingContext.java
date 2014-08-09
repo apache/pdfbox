@@ -54,8 +54,6 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext imp
     
     // the following fields are not intialized in this abstract class
     protected ArrayList<Patch> patchList; // patch list
-    protected int bitsPerCoordinate; // bits per coordinate
-    protected int bitsPerColorComponent; // bits per color component
     protected int bitsPerFlag; // bits per flag
     protected HashMap<Point, Integer> pixelTable;
     
@@ -74,6 +72,7 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext imp
     {
         super(shading, colorModel, xform, ctm, pageHeight, dBounds);
         patchMeshesShadingType = shading;
+        bitsPerFlag = ((PDShadingType6) shading).getBitsPerFlag();
         patchList = new ArrayList<Patch>();
         numberOfColorComponents = hasFunction ? 1 : shadingColorSpace.getNumberOfComponents();
         

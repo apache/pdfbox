@@ -20,13 +20,9 @@ package org.apache.pdfbox.pdmodel.graphics.shading;
 import java.awt.PaintContext;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.Transparency;
-import java.awt.color.ColorSpace;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
@@ -55,18 +51,10 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext impleme
     /** triangle list. */
     protected ArrayList<CoonsTriangle> triangleList;
 
-    /** bits per coordinate. */
-    protected int bitsPerCoordinate;
-
-    /** bits per color component. */
-    protected int bitsPerColorComponent;
-
     /** background values.*/
     protected float[] background;
     protected int rgbBackground;
 
-    protected final PDShading gouraudShadingType;
-    
     protected HashMap<Point, Integer> pixelTable;
 
     /**
@@ -82,7 +70,6 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext impleme
                                     Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
     {
         super(shading, colorModel, xform, ctm, pageHeight, dBounds);
-        gouraudShadingType = shading;
         triangleList = new ArrayList<CoonsTriangle>();
         numberOfColorComponents = hasFunction ? 1 : shadingColorSpace.getNumberOfComponents();
         LOG.debug("Background: " + shading.getBackground());

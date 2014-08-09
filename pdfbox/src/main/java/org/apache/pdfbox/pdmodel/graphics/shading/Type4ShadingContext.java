@@ -56,10 +56,6 @@ class Type4ShadingContext extends GouraudShadingContext
         super(shading, cm, xform, ctm, pageHeight, dBounds);
         LOG.debug("Type4ShadingContext");
 
-        bitsPerColorComponent = shading.getBitsPerComponent();
-        LOG.debug("bitsPerColorComponent: " + bitsPerColorComponent);
-        bitsPerCoordinate = shading.getBitsPerCoordinate();
-        LOG.debug(Math.pow(2, bitsPerCoordinate) - 1);
         bitsPerFlag = shading.getBitsPerFlag();
         LOG.debug("bitsPerFlag: " + bitsPerFlag); //TODO handle cases where bitperflag isn't 8
         triangleList = getTriangleList(xform,ctm);
@@ -68,14 +64,14 @@ class Type4ShadingContext extends GouraudShadingContext
     
     private ArrayList<CoonsTriangle> getTriangleList(AffineTransform xform,Matrix ctm) throws IOException
     {
-        PDShadingType4 FreeTriangleShadingType = (PDShadingType4) gouraudShadingType;
-        COSDictionary cosDictionary = FreeTriangleShadingType.getCOSDictionary();
-        PDRange rangeX = FreeTriangleShadingType.getDecodeForParameter(0);
-        PDRange rangeY = FreeTriangleShadingType.getDecodeForParameter(1);
+        PDShadingType4 freeTriangleShadingType = (PDShadingType4) shading;
+        COSDictionary cosDictionary = freeTriangleShadingType.getCOSDictionary();
+        PDRange rangeX = freeTriangleShadingType.getDecodeForParameter(0);
+        PDRange rangeY = freeTriangleShadingType.getDecodeForParameter(1);
         PDRange[] colRange = new PDRange[numberOfColorComponents];
         for (int i = 0; i < numberOfColorComponents; ++i)
         {
-            colRange[i] = FreeTriangleShadingType.getDecodeForParameter(2 + i);
+            colRange[i] = freeTriangleShadingType.getDecodeForParameter(2 + i);
         }
         ArrayList<CoonsTriangle> list = new ArrayList<CoonsTriangle>();
         long maxSrcCoord = (long) Math.pow(2, bitsPerCoordinate) - 1;

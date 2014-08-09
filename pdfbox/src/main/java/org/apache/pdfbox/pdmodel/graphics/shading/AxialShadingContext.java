@@ -28,7 +28,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBoolean;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 import org.apache.pdfbox.util.Matrix;
 
@@ -46,16 +45,16 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
 {
     private static final Log LOG = LogFactory.getLog(AxialShadingContext.class);
 
-    private PDShadingType2 shading;
+    private PDShadingType2 axialShadingType;
 
-    private float[] coords;
-    private float[] domain;
+    private final float[] coords;
+    private final float[] domain;
     private float[] background;
     private int rgbBackground;
-    private boolean[] extend;
-    private double x1x0;
-    private double y1y0;
-    private float d1d0;
+    private final boolean[] extend;
+    private final double x1x0;
+    private final double y1y0;
+    private final float d1d0;
     private double denom;
     
     private final double axialLength;
@@ -74,7 +73,7 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
                                Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
     {
         super(shading, colorModel, xform, ctm, pageHeight, dBounds);
-        this.shading = shading;
+        this.axialShadingType = shading;
         coords = shading.getCoords().toFloatArray();
 
         if (ctm != null)
@@ -137,7 +136,7 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
         {
             try
             {
-                float[] values = shading.evalFunction(domain[0]);
+                float[] values = axialShadingType.evalFunction(domain[0]);
                 map[0] = convertToRGB(values);
             }
             catch (IOException exception)
@@ -152,7 +151,7 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
                 float t = domain[0] + d1d0 * i / (float)axialLength;
                 try
                 {
-                    float[] values = shading.evalFunction(t);
+                    float[] values = axialShadingType.evalFunction(t);
                     map[i] = convertToRGB(values);
                 }
                 catch (IOException exception)
@@ -188,7 +187,7 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
     {
         outputColorModel = null;
         shadingColorSpace = null;
-        shading = null;
+        axialShadingType = null;
     }
 
     @Override
@@ -343,6 +342,6 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
      */
     public PDFunction getFunction() throws IOException
     {
-        return shading.getFunction();
+        return axialShadingType.getFunction();
     }
 }

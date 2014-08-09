@@ -57,10 +57,6 @@ class Type5ShadingContext extends GouraudShadingContext
 
         LOG.debug("Type5ShadingContext");
 
-        bitsPerColorComponent = shading.getBitsPerComponent();
-        LOG.debug("bitsPerColorComponent: " + bitsPerColorComponent);
-        bitsPerCoordinate = shading.getBitsPerCoordinate();
-        LOG.debug(Math.pow(2, bitsPerCoordinate) - 1);
         triangleList = getTriangleList(xform,ctm);
         pixelTable = calcPixelTable();
     }
@@ -68,15 +64,15 @@ class Type5ShadingContext extends GouraudShadingContext
     private ArrayList<CoonsTriangle> getTriangleList(AffineTransform xform, Matrix ctm) throws IOException
     {
         ArrayList<CoonsTriangle> list = new ArrayList<CoonsTriangle>();
-        PDShadingType5 LatticeTriangleShadingType = (PDShadingType5) gouraudShadingType;
-        COSDictionary cosDictionary = LatticeTriangleShadingType.getCOSDictionary();
-        PDRange rangeX = LatticeTriangleShadingType.getDecodeForParameter(0);
-        PDRange rangeY = LatticeTriangleShadingType.getDecodeForParameter(1);
-        int numPerRow = LatticeTriangleShadingType.getVerticesPerRow();
+        PDShadingType5 latticeTriangleShadingType = (PDShadingType5) shading;
+        COSDictionary cosDictionary = latticeTriangleShadingType.getCOSDictionary();
+        PDRange rangeX = latticeTriangleShadingType.getDecodeForParameter(0);
+        PDRange rangeY = latticeTriangleShadingType.getDecodeForParameter(1);
+        int numPerRow = latticeTriangleShadingType.getVerticesPerRow();
         PDRange[] colRange = new PDRange[numberOfColorComponents];
         for (int i = 0; i < numberOfColorComponents; ++i)
         {
-            colRange[i] = LatticeTriangleShadingType.getDecodeForParameter(2 + i);
+            colRange[i] = latticeTriangleShadingType.getDecodeForParameter(2 + i);
         }
         ArrayList<Vertex> vlist = new ArrayList<Vertex>(); 
         long maxSrcCoord = (long) Math.pow(2, bitsPerCoordinate) - 1;

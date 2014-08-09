@@ -28,7 +28,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBoolean;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 import org.apache.pdfbox.util.Matrix;
 
@@ -45,25 +44,24 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
 {
     private static final Log LOG = LogFactory.getLog(RadialShadingContext.class);
 
-    private PDShadingType3 shading;
+    private PDShadingType3 radialShadingType;
 
-    private float[] coords;
-    private float[] domain;
+    private final float[] coords;
+    private final float[] domain;
     private float[] background;
     private int rgbBackground;
-    private boolean[] extend;
-    private double x1x0; 
-    private double y1y0;
-    private double r1r0;
-    private double x1x0pow2;
-    private double y1y0pow2;
-    private double r0pow2;
-
-    private float d1d0;
-    private double denom;
+    private final boolean[] extend;
+    private final double x1x0; 
+    private final double y1y0;
+    private final double r1r0;
+    private final double x1x0pow2;
+    private final double y1y0pow2;
+    private final double r0pow2;
+    private final float d1d0;
+    private final double denom;
 
     private final double longestDistance;
-    private int[] colorTable;
+    private final int[] colorTable;
 
     /**
      * Constructor creates an instance to be used for fill operations.
@@ -78,7 +76,7 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
                                 Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
     {
         super(shading, colorModel, xform, ctm, pageHeight, dBounds);
-        this.shading = shading;
+        this.radialShadingType = shading;
         coords = shading.getCoords().toFloatArray();
 
         if (ctm != null)
@@ -98,7 +96,7 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
         coords[5] *= xform.getScaleX();
 
         // domain values
-        if (this.shading.getDomain() != null)
+        if (this.radialShadingType.getDomain() != null)
         {
             domain = shading.getDomain().toFloatArray();
         }
@@ -178,7 +176,7 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
         {
             try
             {
-                float[] values = shading.evalFunction(domain[0]);
+                float[] values = radialShadingType.evalFunction(domain[0]);
                 map[0] = convertToRGB(values);
             }
             catch (IOException exception)
@@ -193,7 +191,7 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
                 float t = domain[0] + d1d0 * i / (float)longestDistance;
                 try
                 {
-                    float[] values = shading.evalFunction(t);
+                    float[] values = radialShadingType.evalFunction(t);
                     map[i] = convertToRGB(values);
                 }
                 catch (IOException exception)
@@ -228,7 +226,7 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
     public void dispose() 
     {
         outputColorModel = null;
-        shading = null;
+        radialShadingType = null;
         shadingColorSpace = null;
     }
 
@@ -461,6 +459,6 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
      */
     public PDFunction getFunction() throws IOException
     {
-        return shading.getFunction();
+        return radialShadingType.getFunction();
     }
 }
