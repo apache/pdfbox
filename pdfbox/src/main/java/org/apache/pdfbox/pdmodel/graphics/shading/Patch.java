@@ -35,7 +35,7 @@ abstract class Patch
      be divided into 2^levelV parts
      */
     protected int[] level;
-    protected ArrayList<CoonsTriangle> listOfCoonsTriangles;
+    protected ArrayList<ShadedTriangle> listOfTriangles;
     
     /**
      * Constructor of Patch.
@@ -157,11 +157,11 @@ abstract class Patch
     /**
      * An assistant method to accomplish type 6 and type 7 shading.
      * @param patchCC all the crossing point coordinates and color of a grid
-     * @return a CoonsTriangle list which can compose the grid patch
+     * @return a ShadedTriangle list which can compose the grid patch
      */
-    protected ArrayList<CoonsTriangle> getCoonsTriangle(CoordinateColorPair[][] patchCC)
+    protected ArrayList<ShadedTriangle> getShadedTriangles(CoordinateColorPair[][] patchCC)
     {
-        ArrayList<CoonsTriangle> list = new ArrayList<CoonsTriangle>();
+        ArrayList<ShadedTriangle> list = new ArrayList<ShadedTriangle>();
         int szV = patchCC.length;
         int szU = patchCC[0].length;
         for (int i = 1; i < szV; i++)
@@ -179,7 +179,7 @@ abstract class Patch
                     // p0, p1 and p3 are in counter clock wise order, p1 has priority over p0, p3 has priority over p1
                     Point2D[] llCorner = {p0, p1, p3};
                     float[][] llColor = {patchCC[i-1][j-1].color, patchCC[i-1][j].color, patchCC[i][j-1].color};
-                    CoonsTriangle tmpll = new CoonsTriangle(llCorner, llColor); // lower left triangle
+                    ShadedTriangle tmpll = new ShadedTriangle(llCorner, llColor); // lower left triangle
                     list.add(tmpll);
                 }
                 if (ll && (overlaps(p2, p1) || overlaps(p2, p3)))
@@ -190,7 +190,7 @@ abstract class Patch
                     // p3, p1 and p2 are in counter clock wise order, p1 has priority over p3, p2 has priority over p1
                     Point2D[] urCorner = {p3, p1, p2};
                     float[][] urColor = {patchCC[i][j-1].color, patchCC[i-1][j].color, patchCC[i][j].color};
-                    CoonsTriangle tmpur = new CoonsTriangle(urCorner, urColor); // upper right triangle
+                    ShadedTriangle tmpur = new ShadedTriangle(urCorner, urColor); // upper right triangle
                     list.add(tmpur);
                 }
             }

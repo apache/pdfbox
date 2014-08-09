@@ -262,7 +262,7 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext imp
         HashMap<Point, Integer> map = new HashMap<Point, Integer>();
         for (Patch it : patchList)
         {
-            super.calcPixelTable(it.listOfCoonsTriangles, map);
+            super.calcPixelTable(it.listOfTriangles, map);
         }
         return map;
     }

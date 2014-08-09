@@ -61,9 +61,9 @@ class Type5ShadingContext extends GouraudShadingContext
         pixelTable = calcPixelTable();
     }
     
-    private ArrayList<CoonsTriangle> getTriangleList(AffineTransform xform, Matrix ctm) throws IOException
+    private ArrayList<ShadedTriangle> getTriangleList(AffineTransform xform, Matrix ctm) throws IOException
     {
-        ArrayList<CoonsTriangle> list = new ArrayList<CoonsTriangle>();
+        ArrayList<ShadedTriangle> list = new ArrayList<ShadedTriangle>();
         PDShadingType5 latticeTriangleShadingType = (PDShadingType5) shading;
         COSDictionary cosDictionary = latticeTriangleShadingType.getCOSDictionary();
         PDRange rangeX = latticeTriangleShadingType.getDecodeForParameter(0);
@@ -119,7 +119,7 @@ class Type5ShadingContext extends GouraudShadingContext
                                 {
                                     latticeArray[i][j].color, latticeArray[i][j + 1].color, latticeArray[i + 1][j].color
                                 };
-                list.add(new CoonsTriangle(ps, cs));
+                list.add(new ShadedTriangle(ps, cs));
                 ps = new Point2D[]
                                 {
                                     latticeArray[i][j + 1].point, latticeArray[i + 1][j].point, latticeArray[i + 1][j + 1].point
@@ -128,7 +128,7 @@ class Type5ShadingContext extends GouraudShadingContext
                                 {
                                     latticeArray[i][j + 1].color, latticeArray[i + 1][j].color, latticeArray[i + 1][j + 1].color
                                 };
-                list.add(new CoonsTriangle(ps, cs));
+                list.add(new ShadedTriangle(ps, cs));
             }
         }
         return list;

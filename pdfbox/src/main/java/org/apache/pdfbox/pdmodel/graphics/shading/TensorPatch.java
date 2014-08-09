@@ -36,7 +36,7 @@ class TensorPatch extends Patch
         super(tcp, color);
         controlPoints = reshapeControlPoints(tcp);
         level = calcLevel();
-        listOfCoonsTriangles = getCoonsTriangle();
+        listOfTriangles = getTriangles();
     }
     
     /*
@@ -157,11 +157,11 @@ class TensorPatch extends Patch
         return dd > 0;
     }
     
-    // get a list of CoonsTriangles which compose this tensor patch
-    private ArrayList<CoonsTriangle> getCoonsTriangle()
+    // get a list of triangles which compose this tensor patch
+    private ArrayList<ShadedTriangle> getTriangles()
     {
         CoordinateColorPair[][] patchCC = getPatchCoordinatesColor();
-        return getCoonsTriangle(patchCC);
+        return getShadedTriangles(patchCC);
     }
     
     @Override

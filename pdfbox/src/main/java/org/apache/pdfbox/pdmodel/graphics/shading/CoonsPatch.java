@@ -36,7 +36,7 @@ class CoonsPatch extends Patch
         super(points, color);
         controlPoints = reshapeControlPoints(points);
         level = calcLevel();
-        listOfCoonsTriangles = getCoonsTriangle();
+        listOfTriangles = getTriangles();
     }
     
     // adjust the 12 control points to 4 groups, each group defines one edge of a patch
@@ -113,8 +113,8 @@ class CoonsPatch extends Patch
         return l;
     }
 
-    // get a list of CoonsTriangles which compose this coons patch
-    private ArrayList<CoonsTriangle> getCoonsTriangle()
+    // get a list of triangles which compose this coons patch
+    private ArrayList<ShadedTriangle> getTriangles()
     {
         // 4 edges are 4 cubic Bezier curves
         CubicBezierCurve eC1 = new CubicBezierCurve(controlPoints[0], level[0]);
@@ -122,7 +122,7 @@ class CoonsPatch extends Patch
         CubicBezierCurve eD1 = new CubicBezierCurve(controlPoints[2], level[1]);
         CubicBezierCurve eD2 = new CubicBezierCurve(controlPoints[3], level[1]);
         CoordinateColorPair[][] patchCC = getPatchCoordinatesColor(eC1, eC2, eD1, eD2);
-        return getCoonsTriangle(patchCC);
+        return getShadedTriangles(patchCC);
     }
     
     @Override
