@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
 import org.apache.pdfbox.cos.COSArray;
@@ -37,7 +36,9 @@ abstract class PDTriangleBasedShadingType extends PDShading
     }
 
     /**
-     * The bits per component of this shading. This will return -1 if one has not been set.
+     * The bits per component of this shading. This will return -1 if one has
+     * not been set.
+     *
      * @return the number of bits per component
      */
     public int getBitsPerComponent()
@@ -47,6 +48,7 @@ abstract class PDTriangleBasedShadingType extends PDShading
 
     /**
      * Set the number of bits per component.
+     *
      * @param bitsPerComponent the number of bits per component
      */
     public void setBitsPerComponent(int bitsPerComponent)
@@ -55,7 +57,9 @@ abstract class PDTriangleBasedShadingType extends PDShading
     }
 
     /**
-     * The bits per coordinate of this shading. This will return -1 if one has not been set.
+     * The bits per coordinate of this shading. This will return -1 if one has
+     * not been set.
+     *
      * @return the number of bits per coordinate
      */
     public int getBitsPerCoordinate()
@@ -65,6 +69,7 @@ abstract class PDTriangleBasedShadingType extends PDShading
 
     /**
      * Set the number of bits per coordinate.
+     *
      * @param bitsPerComponent the number of bits per coordinate
      */
     public void setBitsPerCoordinate(int bitsPerComponent)
@@ -74,6 +79,7 @@ abstract class PDTriangleBasedShadingType extends PDShading
 
     /**
      * Returns all decode values as COSArray.
+     *
      * @return the decode array
      */
     private COSArray getDecodeValues()
@@ -87,6 +93,7 @@ abstract class PDTriangleBasedShadingType extends PDShading
 
     /**
      * This will set the decode values.
+     *
      * @param decodeValues the new decode values
      */
     public void setDecodeValues(COSArray decodeValues)
@@ -97,6 +104,7 @@ abstract class PDTriangleBasedShadingType extends PDShading
 
     /**
      * Get the decode for the input parameter.
+     *
      * @param paramNum the function parameter number
      * @return the decode parameter range or null if none is set
      */

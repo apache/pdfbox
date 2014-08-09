@@ -34,6 +34,7 @@ import org.apache.pdfbox.util.Matrix;
 
 /**
  * AWT PaintContext for Gouraud Triangle Lattice (Type 5) shading.
+ *
  * @author Tilman Hausherr
  * @author Shaola Ren
  */
@@ -43,6 +44,7 @@ class Type5ShadingContext extends GouraudShadingContext
 
     /**
      * Constructor creates an instance to be used for fill operations.
+     *
      * @param shading the shading type to be used
      * @param cm the color model to be used
      * @param xform transformation for user to device space
@@ -51,16 +53,16 @@ class Type5ShadingContext extends GouraudShadingContext
      * @throws IOException if something went wrong
      */
     public Type5ShadingContext(PDShadingType5 shading, ColorModel cm, AffineTransform xform,
-                               Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
+            Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
     {
         super(shading, cm, xform, ctm, pageHeight, dBounds);
 
         LOG.debug("Type5ShadingContext");
 
-        triangleList = getTriangleList(xform,ctm);
+        triangleList = getTriangleList(xform, ctm);
         pixelTable = calcPixelTable();
     }
-    
+
     private ArrayList<ShadedTriangle> getTriangleList(AffineTransform xform, Matrix ctm) throws IOException
     {
         ArrayList<ShadedTriangle> list = new ArrayList<ShadedTriangle>();
@@ -74,21 +76,21 @@ class Type5ShadingContext extends GouraudShadingContext
         {
             colRange[i] = latticeTriangleShadingType.getDecodeForParameter(2 + i);
         }
-        ArrayList<Vertex> vlist = new ArrayList<Vertex>(); 
+        ArrayList<Vertex> vlist = new ArrayList<Vertex>();
         long maxSrcCoord = (long) Math.pow(2, bitsPerCoordinate) - 1;
         long maxSrcColor = (long) Math.pow(2, bitsPerColorComponent) - 1;
         COSStream cosStream = (COSStream) cosDictionary;
-        
+
         ImageInputStream mciis = new MemoryCacheImageInputStream(cosStream.getUnfilteredStream());
-        while(true)
+        while (true)
         {
             Vertex p;
             try
             {
-                p = readVertex(mciis, maxSrcCoord, maxSrcColor,rangeX, rangeY, colRange, ctm, xform);
+                p = readVertex(mciis, maxSrcCoord, maxSrcColor, rangeX, rangeY, colRange, ctm, xform);
                 vlist.add(p);
             }
-            catch(EOFException ex)
+            catch (EOFException ex)
             {
                 break;
             }
@@ -106,28 +108,28 @@ class Type5ShadingContext extends GouraudShadingContext
                 latticeArray[i][j] = vlist.get(i * numPerRow + j);
             }
         }
-        
+
         for (int i = 0; i < rowNum - 1; i++)
         {
             for (int j = 0; j < numPerRow - 1; j++)
             {
                 Point2D[] ps = new Point2D[]
-                                {
-                                    latticeArray[i][j].point, latticeArray[i][j + 1].point, latticeArray[i + 1][j].point
-                                };
+                {
+                    latticeArray[i][j].point, latticeArray[i][j + 1].point, latticeArray[i + 1][j].point
+                };
                 float[][] cs = new float[][]
-                                {
-                                    latticeArray[i][j].color, latticeArray[i][j + 1].color, latticeArray[i + 1][j].color
-                                };
+                {
+                    latticeArray[i][j].color, latticeArray[i][j + 1].color, latticeArray[i + 1][j].color
+                };
                 list.add(new ShadedTriangle(ps, cs));
                 ps = new Point2D[]
-                                {
-                                    latticeArray[i][j + 1].point, latticeArray[i + 1][j].point, latticeArray[i + 1][j + 1].point
-                                };
+                {
+                    latticeArray[i][j + 1].point, latticeArray[i + 1][j].point, latticeArray[i + 1][j + 1].point
+                };
                 cs = new float[][]
-                                {
-                                    latticeArray[i][j + 1].color, latticeArray[i + 1][j].color, latticeArray[i + 1][j + 1].color
-                                };
+                {
+                    latticeArray[i][j + 1].color, latticeArray[i + 1][j].color, latticeArray[i + 1][j + 1].color
+                };
                 list.add(new ShadedTriangle(ps, cs));
             }
         }

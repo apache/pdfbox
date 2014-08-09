@@ -34,6 +34,7 @@ public class PDShadingType2 extends PDShading
 
     /**
      * Constructor using the given shading dictionary.
+     *
      * @param shadingDictionary the dictionary for this shading
      */
     public PDShadingType2(COSDictionary shadingDictionary)
@@ -49,6 +50,7 @@ public class PDShadingType2 extends PDShading
 
     /**
      * This will get the optional Extend values for this shading.
+     *
      * @return the extend values
      */
     public COSArray getExtend()
@@ -62,6 +64,7 @@ public class PDShadingType2 extends PDShading
 
     /**
      * Sets the optional Extend entry for this shading.
+     *
      * @param newExtend the extend array
      */
     public void setExtend(COSArray newExtend)
@@ -79,6 +82,7 @@ public class PDShadingType2 extends PDShading
 
     /**
      * This will get the optional Domain values for this shading.
+     *
      * @return the domain values
      */
     public COSArray getDomain()
@@ -92,6 +96,7 @@ public class PDShadingType2 extends PDShading
 
     /**
      * Sets the optional Domain entry for this shading.
+     *
      * @param newDomain the domain array
      */
     public void setDomain(COSArray newDomain)
@@ -109,6 +114,7 @@ public class PDShadingType2 extends PDShading
 
     /**
      * This will get the Coords values for this shading.
+     *
      * @return the coordinate values
      */
     public COSArray getCoords()
@@ -122,6 +128,7 @@ public class PDShadingType2 extends PDShading
 
     /**
      * Sets the Coords entry for this shading.
+     *
      * @param newCoords the coordinates array
      */
     public void setCoords(COSArray newCoords)

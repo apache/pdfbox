@@ -52,12 +52,12 @@ public abstract class ShadingContext
         this.shading = shading;
         deviceBounds = dBounds;
         shadingColorSpace = shading.getColorSpace();
-        
+
         // create the output color model using RGB+alpha as color space
         ColorSpace outputCS = ColorSpace.getInstance(ColorSpace.CS_sRGB);
         outputColorModel = new ComponentColorModel(outputCS, true, false, Transparency.TRANSLUCENT,
-                DataBuffer.TYPE_BYTE);        
-        
+                DataBuffer.TYPE_BYTE);
+
         bboxRect = shading.getBBox();
         if (bboxRect != null)
         {
@@ -78,10 +78,10 @@ public abstract class ShadingContext
             ctm.createAffineTransform().transform(bboxTab, 0, bboxTab, 0, 2);
         }
         xform.transform(bboxTab, 0, bboxTab, 0, 2);
-        minBBoxX = Math.min(bboxTab[0],bboxTab[2]);
-        minBBoxY = Math.min(bboxTab[1],bboxTab[3]);
-        maxBBoxX = Math.max(bboxTab[0],bboxTab[2]);
-        maxBBoxY = Math.max(bboxTab[1],bboxTab[3]);
+        minBBoxX = Math.min(bboxTab[0], bboxTab[2]);
+        minBBoxY = Math.min(bboxTab[1], bboxTab[3]);
+        maxBBoxX = Math.max(bboxTab[0], bboxTab[2]);
+        maxBBoxY = Math.max(bboxTab[1], bboxTab[3]);
         if (minBBoxX >= maxBBoxX || minBBoxY >= maxBBoxY)
         {
             LOG.warn("empty BBox is ignored");

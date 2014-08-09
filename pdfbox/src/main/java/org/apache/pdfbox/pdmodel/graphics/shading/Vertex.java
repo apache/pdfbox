@@ -14,20 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
 import java.awt.geom.Point2D;
 
 /**
  * Vertex for Type 4 and Type 5 shadings.
+ *
  * @author Tilman Hausherr
  */
 class Vertex
 {
     public Point2D point;
     public float[] color;
-    
+
     public Vertex(Point2D p, float[] c)
     {
         point = p;

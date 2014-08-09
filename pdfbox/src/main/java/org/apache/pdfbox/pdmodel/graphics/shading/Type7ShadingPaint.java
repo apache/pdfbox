@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
 import java.awt.Paint;
@@ -29,8 +28,9 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.util.Matrix;
 
 /**
- * AWT Paint for tensor-product patch meshes (Type 7) shading.
- * This was done as part of GSoC2014, Tilman Hausherr is the mentor.
+ * AWT Paint for tensor-product patch meshes (Type 7) shading. This was done as
+ * part of GSoC2014, Tilman Hausherr is the mentor.
+ *
  * @author Shaola Ren
  */
 class Type7ShadingPaint implements Paint
@@ -40,9 +40,10 @@ class Type7ShadingPaint implements Paint
     private final PDShadingType7 shading;
     private final Matrix ctm;
     private final int pageHeight;
-    
+
     /**
      * Constructor.
+     *
      * @param shading the shading resources
      * @param ctm current transformation matrix
      * @param pageHeight the height of the page
@@ -62,7 +63,7 @@ class Type7ShadingPaint implements Paint
 
     @Override
     public PaintContext createContext(ColorModel cm, Rectangle deviceBounds, Rectangle2D userBounds,
-                                      AffineTransform xform, RenderingHints hints)
+            AffineTransform xform, RenderingHints hints)
     {
         try
         {
