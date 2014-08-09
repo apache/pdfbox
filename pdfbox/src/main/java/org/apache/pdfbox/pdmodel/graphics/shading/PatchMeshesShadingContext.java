@@ -304,7 +304,7 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext imp
                 int currentY = y + row;
                 if (bboxRect != null)
                 {
-                    if (currentY < bboxTab[1] || currentY > bboxTab[3])
+                    if (currentY < minBBoxY || currentY > maxBBoxY)
                     {
                         continue;
                     }
@@ -314,7 +314,7 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext imp
                     int currentX = x + col;
                     if (bboxRect != null)
                     {
-                        if (currentX < bboxTab[0] || currentX > bboxTab[2])
+                        if (currentX < minBBoxX || currentX > maxBBoxX)
                         {
                             continue;
                         }

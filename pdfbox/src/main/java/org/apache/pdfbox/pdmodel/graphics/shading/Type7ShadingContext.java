@@ -78,10 +78,5 @@ class Type7ShadingContext extends PatchMeshesShadingContext
     {
         return new TensorPatch(points, color);
     }
-    
-    @Override
-    public void dispose()
-    {
-        super.dispose();
-    }
+
 }

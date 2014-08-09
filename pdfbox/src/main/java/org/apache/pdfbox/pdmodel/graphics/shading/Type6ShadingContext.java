@@ -78,10 +78,5 @@ class Type6ShadingContext extends PatchMeshesShadingContext
     {
         return new CoonsPatch(points, color);
     }
-    
-    @Override
-    public void dispose()
-    {
-        super.dispose();
-    }
+
 }
