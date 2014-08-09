@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
 import java.awt.PaintContext;
@@ -37,6 +36,7 @@ import org.apache.pdfbox.util.Matrix;
 
 /**
  * Shades Gouraud triangles for Type4ShadingContext and Type5ShadingContext.
+ *
  * @author Andreas Lehmkühler
  * @author Tilman Hausherr
  * @author Shaola Ren
@@ -45,13 +45,19 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext impleme
 {
     private static final Log LOG = LogFactory.getLog(GouraudShadingContext.class);
 
-    /** number of color components. */
+    /**
+     * number of color components.
+     */
     protected int numberOfColorComponents;
 
-    /** triangle list. */
+    /**
+     * triangle list.
+     */
     protected ArrayList<ShadedTriangle> triangleList;
 
-    /** background values.*/
+    /**
+     * background values.
+     */
     protected float[] background;
     protected int rgbBackground;
 
@@ -59,6 +65,7 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext impleme
 
     /**
      * Constructor creates an instance to be used for fill operations.
+     *
      * @param shading the shading type to be used
      * @param colorModel the color model to be used
      * @param xform transformation for user to device space
@@ -67,7 +74,7 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext impleme
      * @throws IOException if something went wrong
      */
     protected GouraudShadingContext(PDShading shading, ColorModel colorModel, AffineTransform xform,
-                                    Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
+            Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
     {
         super(shading, colorModel, xform, ctm, pageHeight, dBounds);
         triangleList = new ArrayList<ShadedTriangle>();
@@ -83,6 +90,7 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext impleme
 
     /**
      * Read a vertex from the bit input stream performs interpolations.
+     *
      * @param input bit input stream
      * @param flag the flag or any value if not relevant
      * @param maxSrcCoord max value for source coordinate (2^bits-1)
@@ -94,8 +102,8 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext impleme
      * @throws IOException if something went wrong
      */
     protected Vertex readVertex(ImageInputStream input, long maxSrcCoord, long maxSrcColor,
-                                PDRange rangeX, PDRange rangeY, PDRange[] colRangeTab, Matrix ctm, 
-                                AffineTransform xform) throws IOException
+            PDRange rangeX, PDRange rangeY, PDRange[] colRangeTab, Matrix ctm,
+            AffineTransform xform) throws IOException
     {
         float[] colorComponentTab = new float[numberOfColorComponents];
         long x = input.readBits(bitsPerCoordinate);
@@ -105,7 +113,7 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext impleme
         LOG.debug("coord: " + String.format("[%06X,%06X] -> [%f,%f]", x, y, dstX, dstY));
         Point2D tmp = new Point2D.Double(dstX, dstY);
         transformPoint(tmp, ctm, xform);
-        
+
         for (int n = 0; n < numberOfColorComponents; ++n)
         {
             int color = (int) input.readBits(bitsPerColorComponent);
@@ -115,7 +123,7 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext impleme
         }
         return new Vertex(tmp, colorComponentTab);
     }
-    
+
     protected HashMap<Point, Integer> calcPixelTable()
     {
         HashMap<Point, Integer> map = new HashMap<Point, Integer>();
@@ -139,6 +147,7 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext impleme
 
     /**
      * Calculate the interpolation, see p.345 pdf spec 1.7.
+     *
      * @param src src value
      * @param srcMax max src value (2^bits-1)
      * @param dstMin min dst value

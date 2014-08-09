@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
 import java.awt.Rectangle;
@@ -27,15 +26,17 @@ import org.apache.pdfbox.pdmodel.common.PDRange;
 import org.apache.pdfbox.util.Matrix;
 
 /**
- * AWT PaintContext for coons patch meshes (type 6) shading.
- * This was done as part of GSoC2014, Tilman Hausherr is the mentor.
+ * AWT PaintContext for coons patch meshes (type 6) shading. This was done as
+ * part of GSoC2014, Tilman Hausherr is the mentor.
+ *
  * @author Shaola Ren
  */
 class Type6ShadingContext extends PatchMeshesShadingContext
 {
-    
-     /**
+
+    /**
      * Constructor creates an instance to be used for fill operations.
+     *
      * @param shading the shading type to be used
      * @param colorModel the color model to be used
      * @param xform transformation for user to device space
@@ -45,15 +46,15 @@ class Type6ShadingContext extends PatchMeshesShadingContext
      * @throws IOException if something went wrong
      */
     public Type6ShadingContext(PDShadingType6 shading, ColorModel colorModel, AffineTransform xform,
-                                Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
+            Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
     {
         super(shading, colorModel, xform, ctm, pageHeight, dBounds);
         patchList = getCoonsPatchList(xform, ctm);
         pixelTable = calcPixelTable();
     }
-    
+
     // get the patch list which forms the type 6 shading image from data stream
-    private ArrayList<Patch> getCoonsPatchList(AffineTransform xform,Matrix ctm) throws IOException
+    private ArrayList<Patch> getCoonsPatchList(AffineTransform xform, Matrix ctm) throws IOException
     {
         PDShadingType6 coonsShadingType = (PDShadingType6) patchMeshesShadingType;
         COSDictionary cosDictionary = coonsShadingType.getCOSDictionary();
@@ -66,7 +67,7 @@ class Type6ShadingContext extends PatchMeshesShadingContext
         }
         return getPatchList(xform, ctm, cosDictionary, rangeX, rangeY, colRange, 12);
     }
-    
+
     @Override
     protected Patch generatePatch(Point2D[] points, float[][] color)
     {

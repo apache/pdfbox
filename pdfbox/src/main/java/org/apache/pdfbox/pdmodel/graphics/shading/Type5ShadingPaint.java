@@ -42,6 +42,7 @@ class Type5ShadingPaint implements Paint
 
     /**
      * Constructor.
+     *
      * @param shading the shading resources
      * @param ctm current transformation matrix
      * @param pageHeight the height of the page
@@ -61,7 +62,7 @@ class Type5ShadingPaint implements Paint
 
     @Override
     public PaintContext createContext(ColorModel cm, Rectangle deviceBounds, Rectangle2D userBounds,
-                                      AffineTransform xform, RenderingHints hints)
+            AffineTransform xform, RenderingHints hints)
     {
         try
         {

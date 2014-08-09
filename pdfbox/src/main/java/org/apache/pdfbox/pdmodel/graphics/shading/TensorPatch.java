@@ -13,23 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 /**
- * This class is used to describe a patch for type 7 shading.
- * This was done as part of GSoC2014, Tilman Hausherr is the mentor.
+ * This class is used to describe a patch for type 7 shading. This was done as
+ * part of GSoC2014, Tilman Hausherr is the mentor.
+ *
  * @author Shaola Ren
  */
 class TensorPatch extends Patch
-{  
+{
     /**
      * Constructor of a patch for type 7 shading.
+     *
      * @param points 16 control points
-     * @param color  4 corner colors
+     * @param color 4 corner colors
      */
     protected TensorPatch(Point2D[] tcp, float[][] color)
     {
@@ -38,11 +39,11 @@ class TensorPatch extends Patch
         level = calcLevel();
         listOfTriangles = getTriangles();
     }
-    
+
     /*
-    order the 16 1d points to a square matrix which is as the one described 
-    in p.199 of PDF3200_2008.pdf rotated 90 degrees clockwise
-    */
+     order the 16 1d points to a square matrix which is as the one described 
+     in p.199 of PDF3200_2008.pdf rotated 90 degrees clockwise
+     */
     private Point2D[][] reshapeControlPoints(Point2D[] tcp)
     {
         Point2D[][] square = new Point2D[4][4];
@@ -61,12 +62,15 @@ class TensorPatch extends Patch
         square[2][1] = tcp[15];
         return square;
     }
-    
+
     // calculate the dividing level from the control points
     private int[] calcLevel()
     {
-        int[] l = {4, 4};
-        
+        int[] l =
+        {
+            4, 4
+        };
+
         Point2D[] ctlC1 = new Point2D[4];
         Point2D[] ctlC2 = new Point2D[4];
         for (int j = 0; j < 4; j++)
@@ -78,12 +82,12 @@ class TensorPatch extends Patch
         if (isEdgeALine(ctlC1) & isEdgeALine(ctlC2))
         {
             /*
-            if any of the 4 inner control points is out of the patch formed by the 4 edges, 
-            keep the high dividing level, 
-            otherwise, determine the dividing level by the lengths of edges
-            */
-            if (isOnSameSideCC(controlPoints[1][1]) | isOnSameSideCC(controlPoints[1][2]) |
-                                isOnSameSideCC(controlPoints[2][1]) | isOnSameSideCC(controlPoints[2][2]))
+             if any of the 4 inner control points is out of the patch formed by the 4 edges, 
+             keep the high dividing level, 
+             otherwise, determine the dividing level by the lengths of edges
+             */
+            if (isOnSameSideCC(controlPoints[1][1]) | isOnSameSideCC(controlPoints[1][2])
+                    | isOnSameSideCC(controlPoints[2][1]) | isOnSameSideCC(controlPoints[2][2]))
             {
                 // keep the high dividing level
             }
@@ -108,12 +112,12 @@ class TensorPatch extends Patch
                 }
             }
         }
-        
+
         // the other two opposite edges
         if (isEdgeALine(controlPoints[0]) & isEdgeALine(controlPoints[3]))
         {
-            if (isOnSameSideDD(controlPoints[1][1]) | isOnSameSideDD(controlPoints[1][2]) |
-                                isOnSameSideDD(controlPoints[2][1]) | isOnSameSideDD(controlPoints[2][2]))
+            if (isOnSameSideDD(controlPoints[1][1]) | isOnSameSideDD(controlPoints[1][2])
+                    | isOnSameSideDD(controlPoints[2][1]) | isOnSameSideDD(controlPoints[2][2]))
             {
                 // keep the high dividing level
             }
@@ -140,30 +144,30 @@ class TensorPatch extends Patch
         }
         return l;
     }
-    
+
     // whether a point is on the same side of edge C1 and edge C2
     private boolean isOnSameSideCC(Point2D p)
     {
-        double cc = edgeEquationValue(p, controlPoints[0][0], controlPoints[3][0]) * 
-                                edgeEquationValue(p, controlPoints[0][3], controlPoints[3][3]);
+        double cc = edgeEquationValue(p, controlPoints[0][0], controlPoints[3][0])
+                * edgeEquationValue(p, controlPoints[0][3], controlPoints[3][3]);
         return cc > 0;
     }
-    
+
     // whether a point is on the same side of edge D1 and edge D2
     private boolean isOnSameSideDD(Point2D p)
     {
-        double dd = edgeEquationValue(p, controlPoints[0][0], controlPoints[0][3]) * 
-                                edgeEquationValue(p, controlPoints[3][0], controlPoints[3][3]);
+        double dd = edgeEquationValue(p, controlPoints[0][0], controlPoints[0][3])
+                * edgeEquationValue(p, controlPoints[3][0], controlPoints[3][3]);
         return dd > 0;
     }
-    
+
     // get a list of triangles which compose this tensor patch
     private ArrayList<ShadedTriangle> getTriangles()
     {
         CoordinateColorPair[][] patchCC = getPatchCoordinatesColor();
         return getShadedTriangles(patchCC);
     }
-    
+
     @Override
     protected Point2D[] getFlag1Edge()
     {
@@ -174,7 +178,7 @@ class TensorPatch extends Patch
         }
         return implicitEdge;
     }
-    
+
     @Override
     protected Point2D[] getFlag2Edge()
     {
@@ -185,7 +189,7 @@ class TensorPatch extends Patch
         }
         return implicitEdge;
     }
-    
+
     @Override
     protected Point2D[] getFlag3Edge()
     {
@@ -196,13 +200,13 @@ class TensorPatch extends Patch
         }
         return implicitEdge;
     }
-    
+
     /*
-    dividing a patch into a grid according to level, then calculate the coordinate and color of 
-    each crossing point in the grid, the rule to calculate the coordinate is tensor-product which 
-    is defined in page 119 of PDF32000_2008.pdf, the method to calculate the cooresponding color is 
-    bilinear interpolation
-    */
+     dividing a patch into a grid according to level, then calculate the coordinate and color of 
+     each crossing point in the grid, the rule to calculate the coordinate is tensor-product which 
+     is defined in page 119 of PDF32000_2008.pdf, the method to calculate the cooresponding color is 
+     bilinear interpolation
+     */
     private CoordinateColorPair[][] getPatchCoordinatesColor()
     {
         int numberOfColorComponents = cornerColor[0].length;
@@ -211,7 +215,7 @@ class TensorPatch extends Patch
         double[][] bernsteinPolyV = getBernsteinPolynomials(level[1]);
         int szV = bernsteinPolyV[0].length;
         CoordinateColorPair[][] patchCC = new CoordinateColorPair[szV][szU];
-        
+
         double stepU = 1.0 / (szU - 1);
         double stepV = 1.0 / (szV - 1);
         double v = -stepV;
@@ -219,7 +223,7 @@ class TensorPatch extends Patch
         {
             // v and u are the assistant parameters
             v += stepV;
-            double u = - stepU;
+            double u = -stepU;
             for (int l = 0; l < szU; l++)
             {
                 double tmpx = 0.0;
@@ -234,12 +238,12 @@ class TensorPatch extends Patch
                     }
                 }
                 Point2D tmpC = new Point2D.Double(tmpx, tmpy);
-                
+
                 u += stepU;
                 float[] paramSC = new float[numberOfColorComponents];
-                for(int ci = 0; ci < numberOfColorComponents; ci++)
+                for (int ci = 0; ci < numberOfColorComponents; ci++)
                 {
-                    paramSC[ci] = (float) ((1 - v) * ((1 - u) * cornerColor[0][ci] + u * cornerColor[3][ci]) 
+                    paramSC[ci] = (float) ((1 - v) * ((1 - u) * cornerColor[0][ci] + u * cornerColor[3][ci])
                             + v * ((1 - u) * cornerColor[1][ci] + u * cornerColor[2][ci])); // bilinear interpolation
                 }
                 patchCC[k][l] = new CoordinateColorPair(tmpC, paramSC);
@@ -247,14 +251,14 @@ class TensorPatch extends Patch
         }
         return patchCC;
     }
-    
+
     // Bernstein polynomials which are defined in page 119 of PDF32000_2008.pdf
     private double[][] getBernsteinPolynomials(int lvl)
     {
         int sz = (1 << lvl) + 1;
         double[][] poly = new double[4][sz];
         double step = 1.0 / (sz - 1);
-        double t = - step;
+        double t = -step;
         for (int i = 0; i < sz; i++)
         {
             t += step;

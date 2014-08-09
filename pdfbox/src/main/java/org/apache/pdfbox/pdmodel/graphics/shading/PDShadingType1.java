@@ -35,6 +35,7 @@ public class PDShadingType1 extends PDShading
 
     /**
      * Constructor using the given shading dictionary.
+     *
      * @param shadingDictionary the dictionary for this shading
      */
     public PDShadingType1(COSDictionary shadingDictionary)
@@ -50,6 +51,7 @@ public class PDShadingType1 extends PDShading
 
     /**
      * This will get the optional Matrix of a function based shading.
+     *
      * @return the matrix
      */
     public Matrix getMatrix()
@@ -71,6 +73,7 @@ public class PDShadingType1 extends PDShading
 
     /**
      * Sets the optional Matrix entry for the function based shading.
+     *
      * @param transform the transformation matrix
      */
     public void setMatrix(AffineTransform transform)
@@ -87,6 +90,7 @@ public class PDShadingType1 extends PDShading
 
     /**
      * This will get the optional Domain values of a function based shading.
+     *
      * @return the domain values
      */
     public COSArray getDomain()
@@ -100,6 +104,7 @@ public class PDShadingType1 extends PDShading
 
     /**
      * Sets the optional Domain entry for the function based shading.
+     *
      * @param newDomain the domain array
      */
     public void setDomain(COSArray newDomain)

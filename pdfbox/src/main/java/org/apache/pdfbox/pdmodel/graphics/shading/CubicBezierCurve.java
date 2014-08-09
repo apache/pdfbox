@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
 import java.awt.geom.Point2D;
@@ -21,21 +20,23 @@ import java.awt.geom.Point2D;
 /**
  * This class is used to describe the edge of each patch for type 6 shading.
  * This was done as part of GSoC2014, Tilman Hausherr is the mentor.
+ *
  * @author Shaola Ren
  */
-
 class CubicBezierCurve
 {
     protected final Point2D[] controlPoints;
-    
+
     private final int level;
     private final Point2D[] curve;
-    
+
     /**
      * Constructor of CubicBezierCurve
+     *
      * @param ctrlPnts, 4 control points [p0, p1, p2, p3]
-     * @param l, dividing level, if l = 0, one cubic Bezier curve is divided into 2^0 = 1 segments,
-     * if l = n, one cubic Bezier curve is divided into 2^n segments
+     * @param l, dividing level, if l = 0, one cubic Bezier curve is divided
+     * into 2^0 = 1 segments, if l = n, one cubic Bezier curve is divided into
+     * 2^n segments
      */
     public CubicBezierCurve(Point2D[] ctrlPnts, int l)
     {
@@ -43,16 +44,17 @@ class CubicBezierCurve
         level = l;
         curve = getPoints(level);
     }
-    
+
     /**
      * Get level parameter
-     * @return level 
+     *
+     * @return level
      */
     public int getLevel()
     {
         return level;
     }
-    
+
     // calculate sampled points on the cubic Bezier curve defined by the 4 given control points
     private Point2D[] getPoints(int l)
     {
@@ -63,32 +65,33 @@ class CubicBezierCurve
         int sz = (1 << l) + 1;
         Point2D[] res = new Point2D[sz];
         double step = (double) 1 / (sz - 1);
-        double t = - step;
-        for(int i = 0; i < sz; i++)
+        double t = -step;
+        for (int i = 0; i < sz; i++)
         {
             t += step;
-            double tmpX = (1 - t) * (1 - t)*( 1 - t) * controlPoints[0].getX() + 
-                    3 * t * (1 - t) * (1 - t) * controlPoints[1].getX() +
-                    3 * t * t * (1 - t) * controlPoints[2].getX() + 
-                    t * t * t * controlPoints[3].getX();
-            double tmpY = (1 - t) * (1 - t)*( 1 - t) * controlPoints[0].getY() + 
-                    3 * t * (1 - t) * (1 - t) * controlPoints[1].getY() +
-                    3 * t * t * (1 - t) * controlPoints[2].getY() + 
-                    t * t * t * controlPoints[3].getY();
+            double tmpX = (1 - t) * (1 - t) * (1 - t) * controlPoints[0].getX()
+                    + 3 * t * (1 - t) * (1 - t) * controlPoints[1].getX()
+                    + 3 * t * t * (1 - t) * controlPoints[2].getX()
+                    + t * t * t * controlPoints[3].getX();
+            double tmpY = (1 - t) * (1 - t) * (1 - t) * controlPoints[0].getY()
+                    + 3 * t * (1 - t) * (1 - t) * controlPoints[1].getY()
+                    + 3 * t * t * (1 - t) * controlPoints[2].getY()
+                    + t * t * t * controlPoints[3].getY();
             res[i] = new Point2D.Double(tmpX, tmpY);
         }
         return res;
     }
-    
+
     /**
      * Get sampled points of this cubic Bezier curve.
+     *
      * @return sampled points
      */
     public Point2D[] getCubicBezierCurve()
     {
         return curve;
     }
-    
+
     @Override
     public String toString()
     {

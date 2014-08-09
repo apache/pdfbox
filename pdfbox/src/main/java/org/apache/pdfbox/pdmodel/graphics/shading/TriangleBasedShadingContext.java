@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
 import java.awt.Point;
@@ -32,24 +31,28 @@ import org.apache.pdfbox.util.Matrix;
 /**
  * Intermediate class extended by the shading types 4,5,6 and 7 that contains
  * the common methods used by these classes.
- * 
+ *
  * @author Shaola Ren
  * @author Tilman Hausherr
  */
 abstract class TriangleBasedShadingContext extends ShadingContext
 {
     private static final Log LOG = LogFactory.getLog(TriangleBasedShadingContext.class);
-    
-    /** bits per coordinate. */
+
+    /**
+     * bits per coordinate.
+     */
     protected int bitsPerCoordinate;
-    
-    /** bits per color component */
-    protected int bitsPerColorComponent; 
+
+    /**
+     * bits per color component
+     */
+    protected int bitsPerColorComponent;
 
     final protected boolean hasFunction;
-    
-    public TriangleBasedShadingContext(PDShading shading, ColorModel cm, 
-            AffineTransform xform, Matrix ctm, int pageHeight, Rectangle dBounds) 
+
+    public TriangleBasedShadingContext(PDShading shading, ColorModel cm,
+            AffineTransform xform, Matrix ctm, int pageHeight, Rectangle dBounds)
             throws IOException
     {
         super(shading, cm, xform, ctm, pageHeight, dBounds);
@@ -60,7 +63,7 @@ abstract class TriangleBasedShadingContext extends ShadingContext
         bitsPerColorComponent = triangleBasedShadingType.getBitsPerComponent();
         LOG.debug("bitsPerColorComponent: " + bitsPerColorComponent);
     }
-    
+
     // get the points from the triangles, calculate their color and add 
     // point-color mappings to the map
     protected void calcPixelTable(ArrayList<ShadedTriangle> triangleList, HashMap<Point, Integer> map)
@@ -97,7 +100,7 @@ abstract class TriangleBasedShadingContext extends ShadingContext
             }
         }
     }
-    
+
     // transform a point from source space to device space
     protected void transformPoint(Point2D p, Matrix ctm, AffineTransform xform)
     {
@@ -107,7 +110,7 @@ abstract class TriangleBasedShadingContext extends ShadingContext
         }
         xform.transform(p, p);
     }
-    
+
     // convert color to RGB color value, using function if required,
     // then convert from the shading colorspace to an RGB value,
     // which is encoded into an integer.

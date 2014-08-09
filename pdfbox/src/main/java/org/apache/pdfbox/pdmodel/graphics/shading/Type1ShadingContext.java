@@ -30,6 +30,7 @@ import org.apache.pdfbox.util.Matrix;
 
 /**
  * AWT PaintContext for function-based (Type 1) shading.
+ *
  * @author Andreas Lehmkühler
  * @author Tilman Hausherr
  */
@@ -45,19 +46,20 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
 
     /**
      * Constructor creates an instance to be used for fill operations.
+     *
      * @param shading the shading type to be used
      * @param colorModel the color model to be used
      * @param xform transformation for user to device space
      * @param ctm current transformation matrix
      * @param pageHeight height of the current page
-     * @param dBounds device bounds 
+     * @param dBounds device bounds
      */
     public Type1ShadingContext(PDShadingType1 shading, ColorModel colorModel, AffineTransform xform,
-                               Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
+            Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
     {
         super(shading, colorModel, xform, ctm, pageHeight, dBounds);
         this.type1ShadingType = shading;
-        
+
         // spec p.308
         // (Optional) An array of four numbers [ xmin xmax ymin ymax ] 
         // specifying the rectangular domain of coordinates over which the 
@@ -91,7 +93,7 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
         }
         catch (NoninvertibleTransformException ex)
         {
-            LOG.error(ex,ex);
+            LOG.error(ex, ex);
         }
 
         // get background values if available

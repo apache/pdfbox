@@ -38,7 +38,7 @@ import org.apache.pdfbox.util.Matrix;
  * mentor.
  *
  * @author Andreas Lehmkühler
- * @author Shaola Ren 
+ * @author Shaola Ren
  */
 public class RadialShadingContext extends ShadingContext implements PaintContext
 {
@@ -51,7 +51,7 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
     private float[] background;
     private int rgbBackground;
     private final boolean[] extend;
-    private final double x1x0; 
+    private final double x1x0;
     private final double y1y0;
     private final double r1r0;
     private final double x1x0pow2;
@@ -65,15 +65,16 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
 
     /**
      * Constructor creates an instance to be used for fill operations.
+     *
      * @param shading the shading type to be used
      * @param colorModel the color model to be used
      * @param xform transformation for user to device space
      * @param ctm the transformation matrix
-     * @param dBounds device bounds 
+     * @param dBounds device bounds
      * @param pageHeight height of the current page
      */
     public RadialShadingContext(PDShadingType3 shading, ColorModel colorModel, AffineTransform xform,
-                                Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
+            Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
     {
         super(shading, colorModel, xform, ctm, pageHeight, dBounds);
         this.radialShadingType = shading;
@@ -103,9 +104,12 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
         else
         {
             // set default values
-            domain = new float[] { 0, 1 };
+            domain = new float[]
+            {
+                0, 1
+            };
         }
-        
+
         // extend values
         COSArray extendValues = shading.getExtend();
         if (shading.getExtend() != null)
@@ -117,7 +121,10 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
         else
         {
             // set default values
-            extend = new boolean[] { false, false };
+            extend = new boolean[]
+            {
+                false, false
+            };
         }
         // calculate some constants to be used in getRaster
         x1x0 = coords[3] - coords[0];
@@ -139,7 +146,7 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
         longestDistance = getLongestDis();
         colorTable = calcColorTable();
     }
-    
+
     // get the longest distance of two points which are located on these two circles
     private double getLongestDis()
     {
@@ -164,10 +171,13 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
             return rmin + centerToCenter + coords[5];
         }
     }
-    
+
     /**
-     * Calculate the color on the line connects two circles' centers and store the result in an array.
-     * @return an array, index denotes the relative position, the corresponding value the color
+     * Calculate the color on the line connects two circles' centers and store
+     * the result in an array.
+     *
+     * @return an array, index denotes the relative position, the corresponding
+     * value the color
      */
     private int[] calcColorTable()
     {
@@ -188,7 +198,7 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
         {
             for (int i = 0; i <= longestDistance; i++)
             {
-                float t = domain[0] + d1d0 * i / (float)longestDistance;
+                float t = domain[0] + d1d0 * i / (float) longestDistance;
                 try
                 {
                     float[] values = radialShadingType.evalFunction(t);
@@ -202,9 +212,9 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
         }
         return map;
     }
-    
+
     @Override
-    public void dispose() 
+    public void dispose()
     {
         outputColorModel = null;
         radialShadingType = null;
@@ -212,13 +222,13 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
     }
 
     @Override
-    public ColorModel getColorModel() 
+    public ColorModel getColorModel()
     {
         return outputColorModel;
     }
 
     @Override
-    public Raster getRaster(int x, int y, int w, int h) 
+    public Raster getRaster(int x, int y, int w, int h)
     {
         // create writable raster
         WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);
@@ -397,41 +407,50 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
         float root2 = (float) ((-p - root) / denom);
         if (denom < 0)
         {
-            return new float[] { root1, root2 };
+            return new float[]
+            {
+                root1, root2
+            };
         }
         else
         {
-            return new float[] { root2, root1 };
+            return new float[]
+            {
+                root2, root1
+            };
         }
     }
 
     /**
      * Returns the coords values.
+     *
      * @return the coords values as array
      */
-    public float[] getCoords() 
+    public float[] getCoords()
     {
         return coords;
     }
-        
+
     /**
      * Returns the domain values.
+     *
      * @return the domain values as array
      */
-    public float[] getDomain() 
+    public float[] getDomain()
     {
         return domain;
     }
-        
+
     /**
      * Returns the extend values.
+     *
      * @return the extend values as array
      */
-    public boolean[] getExtend() 
+    public boolean[] getExtend()
     {
         return extend;
     }
-    
+
     /**
      * Returns the function.
      *

@@ -29,6 +29,7 @@ public class PDShadingType4 extends PDTriangleBasedShadingType
 {
     /**
      * Constructor using the given shading dictionary.
+     *
      * @param shadingDictionary the dictionary for this shading
      */
     public PDShadingType4(COSDictionary shadingDictionary)
@@ -43,7 +44,9 @@ public class PDShadingType4 extends PDTriangleBasedShadingType
     }
 
     /**
-     * The bits per flag of this shading. This will return -1 if one has not been set.
+     * The bits per flag of this shading. This will return -1 if one has not
+     * been set.
+     *
      * @return The number of bits per flag.
      */
     public int getBitsPerFlag()
@@ -53,6 +56,7 @@ public class PDShadingType4 extends PDTriangleBasedShadingType
 
     /**
      * Set the number of bits per flag.
+     *
      * @param bitsPerFlag the number of bits per flag
      */
     public void setBitsPerFlag(int bitsPerFlag)

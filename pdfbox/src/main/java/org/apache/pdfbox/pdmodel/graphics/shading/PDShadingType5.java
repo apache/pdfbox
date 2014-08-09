@@ -29,6 +29,7 @@ public class PDShadingType5 extends PDTriangleBasedShadingType
 {
     /**
      * Constructor using the given shading dictionary.
+     *
      * @param shadingDictionary the dictionary for this shading
      */
     public PDShadingType5(COSDictionary shadingDictionary)
@@ -43,7 +44,9 @@ public class PDShadingType5 extends PDTriangleBasedShadingType
     }
 
     /**
-     * The vertices per row of this shading. This will return -1 if one has not been set.
+     * The vertices per row of this shading. This will return -1 if one has not
+     * been set.
+     *
      * @return the number of vertices per row
      */
     public int getVerticesPerRow()
@@ -53,6 +56,7 @@ public class PDShadingType5 extends PDTriangleBasedShadingType
 
     /**
      * Set the number of vertices per row.
+     *
      * @param verticesPerRow the number of vertices per row
      */
     public void setVerticesPerRow(int verticesPerRow)

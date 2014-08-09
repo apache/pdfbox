@@ -33,12 +33,12 @@ import org.apache.pdfbox.util.Matrix;
 
 /**
  * AWT PaintContext for axial shading.
- * 
+ *
  * Performance improvement done as part of GSoC2014, Tilman Hausherr is the
  * mentor.
  *
  * @author Andreas Lehmkühler
- * @author Shaola Ren 
+ * @author Shaola Ren
  *
  */
 public class AxialShadingContext extends ShadingContext implements PaintContext
@@ -56,21 +56,22 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
     private final double y1y0;
     private final float d1d0;
     private double denom;
-    
+
     private final double axialLength;
     private final int[] colorTable;
 
     /**
      * Constructor creates an instance to be used for fill operations.
+     *
      * @param shading the shading type to be used
      * @param colorModel the color model to be used
      * @param xform transformation for user to device space
      * @param ctm the transformation matrix
      * @param pageHeight height of the current page
-     * @param dBounds device bounds 
+     * @param dBounds device bounds
      */
     public AxialShadingContext(PDShadingType2 shading, ColorModel colorModel, AffineTransform xform,
-                               Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
+            Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
     {
         super(shading, colorModel, xform, ctm, pageHeight, dBounds);
         this.axialShadingType = shading;
@@ -82,7 +83,7 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
             ctm.createAffineTransform().transform(coords, 0, coords, 0, 2);
         }
         xform.transform(coords, 0, coords, 0, 2);
-        
+
         // domain values
         if (shading.getDomain() != null)
         {
@@ -91,7 +92,10 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
         else
         {
             // set default values
-            domain = new float[] { 0, 1 };
+            domain = new float[]
+            {
+                0, 1
+            };
         }
         // extend values
         COSArray extendValues = shading.getExtend();
@@ -104,7 +108,10 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
         else
         {
             // set default values
-            extend = new boolean[] { false, false };
+            extend = new boolean[]
+            {
+                false, false
+            };
         }
         // calculate some constants to be used in getRaster
         x1x0 = coords[2] - coords[0];
@@ -122,7 +129,7 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
         }
         colorTable = calcColorTable();
     }
-    
+
     /**
      * Calculate the color on the axial line and store them in an array.
      *
@@ -148,7 +155,7 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
         {
             for (int i = 0; i <= axialLength; i++)
             {
-                float t = domain[0] + d1d0 * i / (float)axialLength;
+                float t = domain[0] + d1d0 * i / (float) axialLength;
                 try
                 {
                     float[] values = axialShadingType.evalFunction(t);
@@ -162,9 +169,9 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
         }
         return map;
     }
-    
+
     @Override
-    public void dispose() 
+    public void dispose()
     {
         outputColorModel = null;
         shadingColorSpace = null;
@@ -172,13 +179,13 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
     }
 
     @Override
-    public ColorModel getColorModel() 
+    public ColorModel getColorModel()
     {
         return outputColorModel;
     }
 
     @Override
-    public Raster getRaster(int x, int y, int w, int h) 
+    public Raster getRaster(int x, int y, int w, int h)
     {
         // create writable raster
         WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);
@@ -204,7 +211,7 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
                         continue;
                     }
                 }
-                
+
                 useBackground = false;
                 double inputValue = x1x0 * (currentX - coords[0]);
                 inputValue += y1y0 * (currentY - coords[1]);
@@ -290,27 +297,30 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
 
     /**
      * Returns the coords values.
+     *
      * @return the coords values as array
      */
-    public float[] getCoords() 
+    public float[] getCoords()
     {
         return coords;
     }
-        
+
     /**
      * Returns the domain values.
+     *
      * @return the domain values as array
      */
-    public float[] getDomain() 
+    public float[] getDomain()
     {
         return domain;
     }
-        
+
     /**
      * Returns the extend values.
+     *
      * @return the extend values as array
      */
-    public boolean[] getExtend() 
+    public boolean[] getExtend()
     {
         return extend;
     }
