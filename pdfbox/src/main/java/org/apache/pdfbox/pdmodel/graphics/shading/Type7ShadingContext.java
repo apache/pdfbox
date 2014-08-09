@@ -22,8 +22,6 @@ import java.awt.geom.Point2D;
 import java.awt.image.ColorModel;
 import java.io.IOException;
 import java.util.ArrayList;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.common.PDRange;
 import org.apache.pdfbox.util.Matrix;
@@ -35,7 +33,6 @@ import org.apache.pdfbox.util.Matrix;
  */
 class Type7ShadingContext extends PatchMeshesShadingContext
 {
-    private static final Log LOG = LogFactory.getLog(Type7ShadingContext.class);
     
     /**
      * Constructor creates an instance to be used for fill operations.
@@ -51,9 +48,6 @@ class Type7ShadingContext extends PatchMeshesShadingContext
                                 Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
     {
         super(shading, colorModel, xform, ctm, pageHeight, dBounds);
-        bitsPerColorComponent = shading.getBitsPerComponent();
-        bitsPerCoordinate = shading.getBitsPerCoordinate();
-        bitsPerFlag = shading.getBitsPerFlag();
         patchList = getTensorPatchList(xform, ctm);
         pixelTable = calcPixelTable();
     }

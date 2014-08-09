@@ -40,15 +40,24 @@ abstract class TriangleBasedShadingContext extends ShadingContext
     private static final Log LOG = LogFactory.getLog(TriangleBasedShadingContext.class);
     
     protected final boolean hasFunction;
-    protected final PDShading shading;
+
+    /** bits per coordinate. */
+    protected int bitsPerCoordinate;
+    
+    /** bits per color component */
+    protected int bitsPerColorComponent; 
 
     public TriangleBasedShadingContext(PDShading shading, ColorModel cm, 
             AffineTransform xform, Matrix ctm, int pageHeight, Rectangle dBounds) 
             throws IOException
     {
         super(shading, cm, xform, ctm, pageHeight, dBounds);
+        PDTriangleBasedShadingType triangleBasedShadingType = (PDTriangleBasedShadingType) shading;
         hasFunction = shading.getFunction() != null;
-        this.shading = shading;
+        bitsPerCoordinate = triangleBasedShadingType.getBitsPerCoordinate();
+        LOG.debug("bitsPerCoordinate: " + (Math.pow(2, bitsPerCoordinate) - 1));
+        bitsPerColorComponent = triangleBasedShadingType.getBitsPerComponent();
+        LOG.debug("bitsPerColorComponent: " + bitsPerColorComponent);
     }
 
     // convert color to RGB color value, using function if required, 

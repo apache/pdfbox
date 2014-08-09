@@ -16,8 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.util.Matrix;
 
@@ -28,10 +26,10 @@ import java.awt.Paint;
  */
 public class PDShadingType6 extends PDShadingType4
 {
-    private static final Log LOG = LogFactory.getLog(PDShadingType6.class);
 
     /**
      * Constructor using the given shading dictionary.
+     *
      * @param shadingDictionary the dictionary for this shading
      */
     public PDShadingType6(COSDictionary shadingDictionary)

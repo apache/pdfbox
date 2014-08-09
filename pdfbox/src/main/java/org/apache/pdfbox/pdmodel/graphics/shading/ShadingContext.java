@@ -39,6 +39,7 @@ public abstract class ShadingContext
 {
     private static final Log LOG = LogFactory.getLog(ShadingContext.class);
 
+    protected final PDShading shading;
     protected final Rectangle deviceBounds;
     protected PDColorSpace shadingColorSpace;
     protected PDRectangle bboxRect;
@@ -48,6 +49,7 @@ public abstract class ShadingContext
     public ShadingContext(PDShading shading, ColorModel cm, AffineTransform xform,
             Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
     {
+        this.shading = shading;
         deviceBounds = dBounds;
         shadingColorSpace = shading.getColorSpace();
         
