@@ -187,9 +187,4 @@ class Type4ShadingContext extends GouraudShadingContext
         return list;
     }
 
-    @Override
-    public void dispose()
-    {
-        super.dispose();
-    }
 }

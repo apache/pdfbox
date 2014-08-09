@@ -137,10 +137,5 @@ class Type5ShadingContext extends GouraudShadingContext
         }
         return list;
     }
-    
-    @Override
-    public void dispose()
-    {
-        super.dispose();
-    }
+
 }

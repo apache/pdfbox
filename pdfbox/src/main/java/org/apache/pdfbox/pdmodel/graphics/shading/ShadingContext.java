@@ -23,6 +23,8 @@ import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
 import java.io.IOException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.util.Matrix;
@@ -35,10 +37,12 @@ import org.apache.pdfbox.util.Matrix;
  */
 public abstract class ShadingContext
 {
+    private static final Log LOG = LogFactory.getLog(ShadingContext.class);
+
     protected final Rectangle deviceBounds;
     protected PDColorSpace shadingColorSpace;
     protected PDRectangle bboxRect;
-    protected float[] bboxTab = new float[4];
+    protected float minBBoxX, minBBoxY, maxBBoxX, maxBBoxY;
     protected ColorModel outputColorModel;
 
     public ShadingContext(PDShading shading, ColorModel cm, AffineTransform xform,
@@ -57,11 +61,11 @@ public abstract class ShadingContext
         {
             transformBBox(ctm, xform);
         }
-
     }
 
     private void transformBBox(Matrix ctm, AffineTransform xform)
     {
+        float[] bboxTab = new float[4];
         bboxTab[0] = bboxRect.getLowerLeftX();
         bboxTab[1] = bboxRect.getLowerLeftY();
         bboxTab[2] = bboxRect.getUpperRightX();
@@ -72,25 +76,14 @@ public abstract class ShadingContext
             ctm.createAffineTransform().transform(bboxTab, 0, bboxTab, 0, 2);
         }
         xform.transform(bboxTab, 0, bboxTab, 0, 2);
-        reOrder(bboxTab, 0, 2);
-        reOrder(bboxTab, 1, 3);
-        if (bboxTab[0] >= bboxTab[2] || bboxTab[1] >= bboxTab[3])
+        minBBoxX = Math.min(bboxTab[0],bboxTab[2]);
+        minBBoxY = Math.min(bboxTab[1],bboxTab[3]);
+        maxBBoxX = Math.max(bboxTab[0],bboxTab[2]);
+        maxBBoxY = Math.max(bboxTab[1],bboxTab[3]);
+        if (minBBoxX >= maxBBoxX || minBBoxY >= maxBBoxY)
         {
+            LOG.warn("empty BBox is ignored");
             bboxRect = null;
-            //TODO LOG output
-        }
-    }
-
-    // this helper method is used to arrange the array 
-    // to denote the left upper corner and right lower corner of the BBox
-    // i is always < j
-    private void reOrder(float[] array, int i, int j)
-    {
-        if (array[i] > array[j])
-        {
-            float tmp = array[i];
-            array[i] = array[j];
-            array[j] = tmp;
         }
     }
 

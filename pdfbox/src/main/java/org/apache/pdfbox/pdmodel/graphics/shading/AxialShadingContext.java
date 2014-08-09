@@ -57,8 +57,6 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
     private double y1y0;
     private float d1d0;
     private double denom;
-    private PDRectangle rectBBox;
-    float minBBoxX, minBBoxY, maxBBoxX, maxBBoxY;
     
     private final double axialLength;
     private final int[] colorTable;
@@ -77,32 +75,7 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
     {
         super(shading, colorModel, xform, ctm, pageHeight, dBounds);
         this.shading = shading;
-        coords = this.shading.getCoords().toFloatArray();
-        
-        rectBBox = shading.getBBox();
-        if (rectBBox != null)
-        {
-            float[] bboxTab = new float[4];
-            bboxTab[0] = rectBBox.getLowerLeftX();
-            bboxTab[1] = rectBBox.getLowerLeftY();
-            bboxTab[2] = rectBBox.getUpperRightX();
-            bboxTab[3] = rectBBox.getUpperRightY();
-            if (ctm != null)
-            {
-                // transform the coords using the given matrix
-                ctm.createAffineTransform().transform(bboxTab, 0, bboxTab, 0, 2);
-            }
-            xform.transform(bboxTab, 0, bboxTab, 0, 2);
-            minBBoxX = Math.min(bboxTab[0],bboxTab[2]);
-            minBBoxY = Math.min(bboxTab[1],bboxTab[3]);
-            maxBBoxX = Math.max(bboxTab[0],bboxTab[2]);
-            maxBBoxY = Math.max(bboxTab[1],bboxTab[3]);
-            if (minBBoxX == maxBBoxX || minBBoxY == maxBBoxY)
-            {
-                LOG.warn("empty BBox is ignored");
-                rectBBox = null;
-            }
-        }        
+        coords = shading.getCoords().toFloatArray();
 
         if (ctm != null)
         {
@@ -110,10 +83,11 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
             ctm.createAffineTransform().transform(coords, 0, coords, 0, 2);
         }
         xform.transform(coords, 0, coords, 0, 2);
+        
         // domain values
-        if (this.shading.getDomain() != null)
+        if (shading.getDomain() != null)
         {
-            domain = this.shading.getDomain().toFloatArray();
+            domain = shading.getDomain().toFloatArray();
         }
         else
         {
@@ -121,8 +95,8 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
             domain = new float[] { 0, 1 };
         }
         // extend values
-        COSArray extendValues = this.shading.getExtend();
-        if (this.shading.getExtend() != null)
+        COSArray extendValues = shading.getExtend();
+        if (shading.getExtend() != null)
         {
             extend = new boolean[2];
             extend[0] = ((COSBoolean) extendValues.get(0)).getValue();
@@ -233,18 +207,17 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
         for (int j = 0; j < h; j++)
         {
             double currentY = y + j;
-            if (rectBBox != null)
+            if (bboxRect != null)
             {
                 if (currentY < minBBoxY || currentY > maxBBoxY)
                 {
                     continue;
                 }
             }
-            
             for (int i = 0; i < w; i++)
             {
                 double currentX = x + i;
-                if (rectBBox != null)
+                if (bboxRect != null)
                 {
                     if (currentX < minBBoxX || currentX > maxBBoxX)
                     {

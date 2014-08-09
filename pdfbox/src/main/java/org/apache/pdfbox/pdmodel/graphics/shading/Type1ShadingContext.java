@@ -126,7 +126,7 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
             int currentY = y + j;
             if (bboxRect != null)
             {
-                if (currentY < bboxTab[1] || currentY > bboxTab[3])
+                if (currentY < minBBoxY || currentY > maxBBoxY)
                 {
                     continue;
                 }
@@ -136,7 +136,7 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
                 int currentX = x + i;
                 if (bboxRect != null)
                 {
-                    if (currentX < bboxTab[0] || currentX > bboxTab[2])
+                    if (currentX < minBBoxX || currentX > maxBBoxX)
                     {
                         continue;
                     }
