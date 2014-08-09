@@ -63,16 +63,15 @@ abstract class TriangleBasedShadingContext extends ShadingContext
     
     // get the points from the triangles, calculate their color and add 
     // point-color mappings to the map
-    protected void calcPixelTable(ArrayList<CoonsTriangle> triangleList, HashMap<Point, Integer> map)
+    protected void calcPixelTable(ArrayList<ShadedTriangle> triangleList, HashMap<Point, Integer> map)
     {
-        for (CoonsTriangle tri : triangleList)
+        for (ShadedTriangle tri : triangleList)
         {
             int degree = tri.getDeg();
             if (degree == 2)
             {
                 Line line = tri.getLine();
-                HashSet<Point> linePoints = line.linePoints;
-                for (Point p : linePoints)
+                for (Point p : line.linePoints)
                 {
                     map.put(p, convertToRGB(line.calcColor(p)));
                 }

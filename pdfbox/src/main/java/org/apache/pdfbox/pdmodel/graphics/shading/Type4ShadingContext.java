@@ -62,7 +62,7 @@ class Type4ShadingContext extends GouraudShadingContext
         pixelTable = calcPixelTable();
     }
     
-    private ArrayList<CoonsTriangle> getTriangleList(AffineTransform xform,Matrix ctm) throws IOException
+    private ArrayList<ShadedTriangle> getTriangleList(AffineTransform xform,Matrix ctm) throws IOException
     {
         PDShadingType4 freeTriangleShadingType = (PDShadingType4) shading;
         COSDictionary cosDictionary = freeTriangleShadingType.getCOSDictionary();
@@ -73,7 +73,7 @@ class Type4ShadingContext extends GouraudShadingContext
         {
             colRange[i] = freeTriangleShadingType.getDecodeForParameter(2 + i);
         }
-        ArrayList<CoonsTriangle> list = new ArrayList<CoonsTriangle>();
+        ArrayList<ShadedTriangle> list = new ArrayList<ShadedTriangle>();
         long maxSrcCoord = (long) Math.pow(2, bitsPerCoordinate) - 1;
         long maxSrcColor = (long) Math.pow(2, bitsPerColorComponent) - 1;
         COSStream cosStream = (COSStream) cosDictionary;
@@ -122,7 +122,7 @@ class Type4ShadingContext extends GouraudShadingContext
                                 {
                                     p0.color, p1.color, p2.color
                                 };
-                        list.add(new CoonsTriangle(ps, cs));
+                        list.add(new ShadedTriangle(ps, cs));
                         flag = (byte) (mciis.readBits(bitsPerFlag) & 3);
                         break;
                     case 1:
@@ -133,7 +133,7 @@ class Type4ShadingContext extends GouraudShadingContext
                         }
                         else
                         {
-                            CoonsTriangle preTri = list.get(lastIndex);
+                            ShadedTriangle preTri = list.get(lastIndex);
                             p2 = readVertex(mciis, maxSrcCoord, maxSrcColor,rangeX, rangeY, colRange, ctm, xform);
                             ps = new Point2D[]
                                 {
@@ -143,7 +143,7 @@ class Type4ShadingContext extends GouraudShadingContext
                                 {
                                     preTri.color[1], preTri.color[2], p2.color
                                 };
-                            list.add(new CoonsTriangle(ps, cs));
+                            list.add(new ShadedTriangle(ps, cs));
                             flag = (byte) (mciis.readBits(bitsPerFlag) & 3);
                         }
                         break;
@@ -155,7 +155,7 @@ class Type4ShadingContext extends GouraudShadingContext
                         }
                         else
                         {
-                            CoonsTriangle preTri = list.get(lastIndex);
+                            ShadedTriangle preTri = list.get(lastIndex);
                             p2 = readVertex(mciis, maxSrcCoord, maxSrcColor,rangeX, rangeY, colRange, ctm, xform);
                             ps = new Point2D[]
                                 {
@@ -165,7 +165,7 @@ class Type4ShadingContext extends GouraudShadingContext
                                 {
                                     preTri.color[0], preTri.color[2], p2.color
                                 };
-                            list.add(new CoonsTriangle(ps, cs));
+                            list.add(new ShadedTriangle(ps, cs));
                             flag = (byte) (mciis.readBits(bitsPerFlag) & 3);
                         }
                         break;

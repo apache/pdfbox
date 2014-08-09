@@ -28,7 +28,7 @@ import java.util.HashSet;
  *
  * @author Shaola Ren
  */
-class CoonsTriangle
+class ShadedTriangle
 {
     protected final Point2D[] corner; // vertices coordinates of a triangle
     protected final float[][] color;
@@ -55,7 +55,7 @@ class CoonsTriangle
      * @param p an array of the 3 vertices of a triangle
      * @param c an array of color corresponding the vertex array p
      */
-    public CoonsTriangle(Point2D[] p, float[][] c)
+    public ShadedTriangle(Point2D[] p, float[][] c)
     {
         corner = p.clone();
         color = c.clone();
@@ -145,7 +145,7 @@ class CoonsTriangle
     }
     
     /**
-     * Whether a point is contained in this CoonsTriangle.
+     * Whether a point is contained in this ShadedTriangle.
      * @param p the target point
      * @return false if p is outside of this triangle, otherwise true
      */

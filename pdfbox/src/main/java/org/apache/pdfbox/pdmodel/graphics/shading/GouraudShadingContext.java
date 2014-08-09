@@ -49,7 +49,7 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext impleme
     protected int numberOfColorComponents;
 
     /** triangle list. */
-    protected ArrayList<CoonsTriangle> triangleList;
+    protected ArrayList<ShadedTriangle> triangleList;
 
     /** background values.*/
     protected float[] background;
@@ -70,7 +70,7 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext impleme
                                     Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
     {
         super(shading, colorModel, xform, ctm, pageHeight, dBounds);
-        triangleList = new ArrayList<CoonsTriangle>();
+        triangleList = new ArrayList<ShadedTriangle>();
         numberOfColorComponents = hasFunction ? 1 : shadingColorSpace.getNumberOfComponents();
         LOG.debug("Background: " + shading.getBackground());
         COSArray bg = shading.getBackground();
