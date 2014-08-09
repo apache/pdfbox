@@ -116,16 +116,6 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext impleme
         return new Vertex(tmp, colorComponentTab);
     }
     
-    // transform a point from source space to device space
-    private void transformPoint(Point2D p, Matrix ctm, AffineTransform xform)
-    {
-        if (ctm != null)
-        {
-            ctm.createAffineTransform().transform(p, p);
-        }
-        xform.transform(p, p);
-    }
-    
     protected HashMap<Point, Integer> calcPixelTable()
     {
         HashMap<Point, Integer> map = new HashMap<Point, Integer>();

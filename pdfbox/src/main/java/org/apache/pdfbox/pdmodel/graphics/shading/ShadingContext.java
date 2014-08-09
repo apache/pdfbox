@@ -89,4 +89,23 @@ public abstract class ShadingContext
         }
     }
 
+    // convert color to RGB color values encoded into an integer.
+    protected int convertToRGB(float[] values)
+    {
+        float[] rgbValues;
+        int normRGBValues = 0;
+        try
+        {
+            rgbValues = shadingColorSpace.toRGB(values);
+            normRGBValues = (int) (rgbValues[0] * 255);
+            normRGBValues |= (((int) (rgbValues[1] * 255)) << 8);
+            normRGBValues |= (((int) (rgbValues[2] * 255)) << 16);
+        }
+        catch (IOException exception)
+        {
+            LOG.error("error processing color space", exception);
+        }
+        return normRGBValues;
+    }
+
 }
