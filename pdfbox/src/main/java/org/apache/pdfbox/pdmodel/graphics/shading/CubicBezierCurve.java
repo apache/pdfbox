@@ -98,7 +98,7 @@ class CubicBezierCurve
         String pointStr = "";
         for (Point2D p : controlPoints)
         {
-            if (!pointStr.isEmpty())
+            if (pointStr.length() > 0)
             {
                 pointStr += " ";
             }

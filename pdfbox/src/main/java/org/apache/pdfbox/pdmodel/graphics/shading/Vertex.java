@@ -40,7 +40,7 @@ class Vertex
         String colorStr = "";
         for (float f : color)
         {
-            if (!colorStr.isEmpty())
+            if (colorStr.length() > 0)
             {
                 colorStr += " ";
             }
