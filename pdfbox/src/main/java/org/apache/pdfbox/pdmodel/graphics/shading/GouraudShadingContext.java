@@ -46,11 +46,6 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext impleme
     private static final Log LOG = LogFactory.getLog(GouraudShadingContext.class);
 
     /**
-     * number of color components.
-     */
-    protected int numberOfColorComponents;
-
-    /**
      * triangle list.
      */
     protected ArrayList<ShadedTriangle> triangleList;
@@ -78,7 +73,6 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext impleme
     {
         super(shading, colorModel, xform, ctm, pageHeight, dBounds);
         triangleList = new ArrayList<ShadedTriangle>();
-        numberOfColorComponents = hasFunction ? 1 : shadingColorSpace.getNumberOfComponents();
         LOG.debug("Background: " + shading.getBackground());
         COSArray bg = shading.getBackground();
         if (bg != null)

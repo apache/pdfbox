@@ -47,7 +47,6 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext imp
 {
     private static final Log LOG = LogFactory.getLog(PatchMeshesShadingContext.class);
 
-    protected final int numberOfColorComponents; // number of color components
     protected float[] background; // background values.
     protected int rgbBackground;
     protected final PDShading patchMeshesShadingType;
@@ -75,7 +74,6 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext imp
         patchMeshesShadingType = shading;
         bitsPerFlag = ((PDShadingType6) shading).getBitsPerFlag();
         patchList = new ArrayList<Patch>();
-        numberOfColorComponents = hasFunction ? 1 : shadingColorSpace.getNumberOfComponents();
 
         COSArray bg = shading.getBackground();
         if (bg != null)

@@ -23,7 +23,6 @@ import java.awt.image.ColorModel;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.util.Matrix;
@@ -49,6 +48,11 @@ abstract class TriangleBasedShadingContext extends ShadingContext
      */
     protected int bitsPerColorComponent;
 
+    /**
+     * number of color components.
+     */
+    protected int numberOfColorComponents;
+
     final protected boolean hasFunction;
 
     public TriangleBasedShadingContext(PDShading shading, ColorModel cm,
@@ -62,6 +66,8 @@ abstract class TriangleBasedShadingContext extends ShadingContext
         LOG.debug("bitsPerCoordinate: " + (Math.pow(2, bitsPerCoordinate) - 1));
         bitsPerColorComponent = triangleBasedShadingType.getBitsPerComponent();
         LOG.debug("bitsPerColorComponent: " + bitsPerColorComponent);
+        numberOfColorComponents = hasFunction ? 1 : shadingColorSpace.getNumberOfComponents();
+        LOG.debug("numberOfColorComponents: " + numberOfColorComponents);
     }
 
     // get the points from the triangles, calculate their color and add 
