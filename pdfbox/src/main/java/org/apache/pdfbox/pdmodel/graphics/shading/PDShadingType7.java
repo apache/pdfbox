@@ -40,7 +40,7 @@ public class PDShadingType7 extends PDShadingType6
     @Override
     public int getShadingType()
     {
-        return PDShading.SHADING_TYPE6;
+        return PDShading.SHADING_TYPE7;
     }
 
     @Override
