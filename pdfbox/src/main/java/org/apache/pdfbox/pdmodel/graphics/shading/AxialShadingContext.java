@@ -90,14 +90,14 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
         {
             // the shading is used as pattern colorspace in combination
             // with a fill-, stroke- or showText-operator
-            float translateY = (float)xform.getTranslateY();
+            float translateY = (float) xform.getTranslateY();
             // move the 0,0-reference including the y-translation from user to device space
             coords[1] = pageHeight + translateY - coords[1];
             coords[3] = pageHeight + translateY - coords[3];
         }
         // transform the coords from user to device space
         xform.transform(coords, 0, coords, 0, 2);
-        
+
         // domain values
         if (shading.getDomain() != null)
         {
@@ -187,9 +187,9 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
     /**
      * {@inheritDoc}
      */
-    public void dispose() 
+    public void dispose()
     {
-    	outputColorModel = null;
+        outputColorModel = null;
         shadingColorSpace = null;
         shadingTinttransform = null;
         axialShadingType = null;
@@ -198,7 +198,7 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
     /**
      * {@inheritDoc}
      */
-    public ColorModel getColorModel() 
+    public ColorModel getColorModel()
     {
         return outputColorModel;
     }
@@ -206,7 +206,7 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
     /**
      * {@inheritDoc}
      */
-    public Raster getRaster(int x, int y, int w, int h) 
+    public Raster getRaster(int x, int y, int w, int h)
     {
         // create writable raster
         WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);

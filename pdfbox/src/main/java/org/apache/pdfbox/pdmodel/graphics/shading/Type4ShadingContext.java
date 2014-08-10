@@ -60,10 +60,10 @@ class Type4ShadingContext extends GouraudShadingContext
 
         bitsPerFlag = shading.getBitsPerFlag();
         LOG.debug("bitsPerFlag: " + bitsPerFlag); //TODO handle cases where bitperflag isn't 8
-        
+
         // PDFBOX-1966 flip the AffineTransform in 1.8 branch
-        xform.scale(1,-1);
-        xform.translate(0, -pageHeight);        
+        xform.scale(1, -1);
+        xform.translate(0, -pageHeight);
 
         triangleList = getTriangleList(xform, ctm);
         pixelTable = calcPixelTable();

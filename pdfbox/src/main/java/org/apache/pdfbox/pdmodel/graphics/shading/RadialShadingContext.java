@@ -98,7 +98,7 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
         {
             // the shading is used as pattern colorspace in combination
             // with a fill-, stroke- or showText-operator
-            float translateY = (float)xform.getTranslateY();
+            float translateY = (float) xform.getTranslateY();
             // move the 0,0-reference including the y-translation from user to device space
             coords[1] = pageHeight + translateY - coords[1];
             coords[4] = pageHeight + translateY - coords[4];
@@ -232,9 +232,9 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
     /**
      * {@inheritDoc}
      */
-    public void dispose() 
+    public void dispose()
     {
-    	outputColorModel = null;
+        outputColorModel = null;
         radialShadingType = null;
         shadingColorSpace = null;
         shadingTinttransform = null;
@@ -243,7 +243,7 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
     /**
      * {@inheritDoc}
      */
-    public ColorModel getColorModel() 
+    public ColorModel getColorModel()
     {
         return outputColorModel;
     }
@@ -251,7 +251,7 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
     /**
      * {@inheritDoc}
      */
-    public Raster getRaster(int x, int y, int w, int h) 
+    public Raster getRaster(int x, int y, int w, int h)
     {
         // create writable raster
         WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);

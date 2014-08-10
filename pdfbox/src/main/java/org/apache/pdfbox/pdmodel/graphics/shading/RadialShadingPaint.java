@@ -55,10 +55,11 @@ public class RadialShadingPaint implements Paint
         this.ctm = ctm;
         this.pageHeight = pageHeight;
     }
+
     /**
      * {@inheritDoc}
      */
-    public int getTransparency() 
+    public int getTransparency()
     {
         return 0;
     }
@@ -67,7 +68,7 @@ public class RadialShadingPaint implements Paint
      * {@inheritDoc}
      */
     public PaintContext createContext(ColorModel cm, Rectangle deviceBounds,
-            Rectangle2D userBounds, AffineTransform xform, RenderingHints hints) 
+            Rectangle2D userBounds, AffineTransform xform, RenderingHints hints)
     {
         try
         {

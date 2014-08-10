@@ -59,7 +59,7 @@ public abstract class ShadingContext
         deviceBounds = dBounds;
 
         colorSpace = shading.getColorSpace();
-        
+
         // get the shading colorSpace
         try
         {
@@ -114,7 +114,7 @@ public abstract class ShadingContext
         {
             // the shading is used as pattern colorspace in combination
             // with a fill-, stroke- or showText-operator
-            float translateY = (float)xform.getTranslateY();
+            float translateY = (float) xform.getTranslateY();
             // move the 0,0-reference including the y-translation from user to device space
             bboxTab[1] = pageHeight + translateY - bboxTab[1];
             bboxTab[3] = pageHeight + translateY - bboxTab[3];
