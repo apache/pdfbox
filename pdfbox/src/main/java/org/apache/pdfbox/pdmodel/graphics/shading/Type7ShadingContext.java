@@ -52,9 +52,9 @@ class Type7ShadingContext extends PatchMeshesShadingContext
         super(shading, colorModel, xform, ctm, pageHeight, dBounds);
 
         // PDFBOX-1966 flip the AffineTransform in 1.8 branch
-        xform.scale(1,-1);
-        xform.translate(0, -pageHeight);        
-        
+        xform.scale(1, -1);
+        xform.translate(0, -pageHeight);
+
         patchList = getTensorPatchList(xform, ctm);
         pixelTable = calcPixelTable();
     }

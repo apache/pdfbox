@@ -53,8 +53,8 @@ class Type6ShadingContext extends PatchMeshesShadingContext
         super(shading, colorModel, xform, ctm, pageHeight, dBounds);
 
         // PDFBOX-1966 flip the AffineTransform in 1.8 branch
-        xform.scale(1,-1);
-        xform.translate(0, -pageHeight);        
+        xform.scale(1, -1);
+        xform.translate(0, -pageHeight);
 
         patchList = getCoonsPatchList(xform, ctm);
         pixelTable = calcPixelTable();
@@ -67,7 +67,7 @@ class Type6ShadingContext extends PatchMeshesShadingContext
         COSDictionary cosDictionary = coonsShadingType.getCOSDictionary();
         PDRange rangeX = coonsShadingType.getDecodeForParameter(0);
         PDRange rangeY = coonsShadingType.getDecodeForParameter(1);
-        
+
         PDRange[] colRange = new PDRange[numberOfColorComponents];
         for (int i = 0; i < numberOfColorComponents; ++i)
         {

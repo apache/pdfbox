@@ -43,7 +43,7 @@ public class PDShadingType2 extends PDShadingResources
 
     /**
      * {@inheritDoc}
-     */    
+     */
     @Override
     public int getShadingType()
     {

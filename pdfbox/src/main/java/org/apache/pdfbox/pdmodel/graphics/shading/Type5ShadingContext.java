@@ -58,10 +58,10 @@ class Type5ShadingContext extends GouraudShadingContext
         super(shading, cm, xform, ctm, pageHeight, dBounds);
 
         LOG.debug("Type5ShadingContext");
-        
+
         // PDFBOX-1966 flip the AffineTransform in 1.8 branch
-        xform.scale(1,-1);
-        xform.translate(0, -pageHeight);        
+        xform.scale(1, -1);
+        xform.translate(0, -pageHeight);
 
         triangleList = getTriangleList(xform, ctm);
         pixelTable = calcPixelTable();

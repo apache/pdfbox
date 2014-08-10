@@ -39,7 +39,7 @@ public class PDShadingType4 extends PDTriangleBasedShadingType
 
     /**
      * {@inheritDoc}
-     */    
+     */
     @Override
     public int getShadingType()
     {

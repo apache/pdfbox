@@ -62,7 +62,7 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
 
         // PDFBOX-1966 flip the AffineTransform in 1.8 branch
         //TODO find out why AffineTransform passed in 1.8 branch is flipped         
-        xform.scale(1,-1);
+        xform.scale(1, -1);
         xform.translate(0, -pageHeight);
 
         // spec p.308
