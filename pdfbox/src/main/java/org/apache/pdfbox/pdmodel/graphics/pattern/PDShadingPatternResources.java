@@ -29,7 +29,6 @@ import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.graphics.PDExtendedGraphicsState;
-import org.apache.pdfbox.pdmodel.graphics.pattern.PDPatternResources;
 import org.apache.pdfbox.pdmodel.graphics.shading.AxialShadingPaint;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingResources;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType1;
@@ -37,10 +36,14 @@ import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType2;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType3;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType4;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType5;
+import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType6;
+import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType7;
 import org.apache.pdfbox.pdmodel.graphics.shading.RadialShadingPaint;
 import org.apache.pdfbox.pdmodel.graphics.shading.Type1ShadingPaint;
 import org.apache.pdfbox.pdmodel.graphics.shading.Type4ShadingPaint;
 import org.apache.pdfbox.pdmodel.graphics.shading.Type5ShadingPaint;
+import org.apache.pdfbox.pdmodel.graphics.shading.Type6ShadingPaint;
+import org.apache.pdfbox.pdmodel.graphics.shading.Type7ShadingPaint;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -226,8 +229,10 @@ public class PDShadingPatternResources extends PDPatternResources
                 paint = new Type5ShadingPaint((PDShadingType5)getShading(), getMatrix(), pageHeight);
                 break;
             case PDShadingResources.SHADING_TYPE6:
+                paint = new Type6ShadingPaint((PDShadingType6)getShading(), getMatrix(), pageHeight);
+                break;
             case PDShadingResources.SHADING_TYPE7:
-                LOG.debug( "Error: Unsupported shading type " + shadingType );
+                paint = new Type7ShadingPaint((PDShadingType7)getShading(), getMatrix(), pageHeight);
                 break;
             default:
                 throw new IOException( "Error: Unknown shading type " + shadingType );

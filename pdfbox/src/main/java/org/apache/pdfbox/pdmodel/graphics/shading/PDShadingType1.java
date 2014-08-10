@@ -47,6 +47,7 @@ public class PDShadingType1 extends PDShadingResources
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getShadingType()
     {
         return PDShadingResources.SHADING_TYPE1;

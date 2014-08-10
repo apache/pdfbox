@@ -37,7 +37,8 @@ public class PDShadingType3 extends PDShadingType2
 
     /**
      * {@inheritDoc}
-     */
+     */    
+    @Override
     public int getShadingType()
     {
         return PDShadingResources.SHADING_TYPE3;

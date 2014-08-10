@@ -62,6 +62,10 @@ import org.apache.pdfbox.util.PDFStreamEngine;
 import org.apache.pdfbox.util.ResourceLoader;
 import org.apache.pdfbox.util.TextPosition;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType6;
+import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType7;
+import org.apache.pdfbox.pdmodel.graphics.shading.Type6ShadingPaint;
+import org.apache.pdfbox.pdmodel.graphics.shading.Type7ShadingPaint;
 
 
 /**
@@ -591,10 +595,10 @@ public class PageDrawer extends PDFStreamEngine
                 paint = new Type5ShadingPaint((PDShadingType5)shading, ctm, pageSize.height);
                 break;
             case 6:
+                paint = new Type6ShadingPaint((PDShadingType6)shading, ctm, pageSize.height);
+                break;
             case 7:
-                // TODO
-                LOG.debug("Shading type "+shadingType+" not yet supported");
-                paint = new Color(0, 0, 0, 0); // transparent
+                paint = new Type7ShadingPaint((PDShadingType7)shading, ctm, pageSize.height);
                 break;
             default:
                 throw new IOException("Invalid ShadingType " + shadingType + " for Shading " + shadingName);
