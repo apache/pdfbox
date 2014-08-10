@@ -23,7 +23,7 @@ import org.apache.pdfbox.cos.COSDictionary;
  *
  * @version $Revision: 1.0 $
  */
-public class PDShadingType7 extends PDShadingType4
+public class PDShadingType7 extends PDShadingType6
 {
     /**
      * Constructor using the given shading dictionary.
@@ -37,9 +37,10 @@ public class PDShadingType7 extends PDShadingType4
 
     /**
      * {@inheritDoc}
-     */
+     */    
+    @Override
     public int getShadingType()
     {
-        return PDShadingResources.SHADING_TYPE6;
+        return PDShadingResources.SHADING_TYPE7;
     }
 }

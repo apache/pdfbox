@@ -1,10 +1,9 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Copyright 2014 The Apache Software Foundation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -24,21 +23,23 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.ColorModel;
 import java.io.IOException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.util.Matrix;
 
 /**
- * AWT PaintContext for Gouraud Triangle Mesh (Type 4) shading.
+ * AWT Paint for tensor-product patch meshes (Type 7) shading. This was done as
+ * part of GSoC2014, Tilman Hausherr is the mentor.
+ *
+ * @author Shaola Ren
  */
-public class Type4ShadingPaint implements Paint
+public class Type7ShadingPaint implements Paint
 {
-    private static final Log LOG = LogFactory.getLog(Type4ShadingPaint.class);
+    private static final Log LOG = LogFactory.getLog(Type7ShadingPaint.class);
 
-    private PDShadingType4 shading;
-    private Matrix ctm;
-    private int pageHeight;
+    private final PDShadingType7 shading;
+    private final Matrix ctm;
+    private final int pageHeight;
 
     /**
      * Constructor.
@@ -47,24 +48,30 @@ public class Type4ShadingPaint implements Paint
      * @param ctm current transformation matrix
      * @param pageHeight the height of the page
      */
-    public Type4ShadingPaint(PDShadingType4 shading, Matrix ctm, int pageHeight)
+    public Type7ShadingPaint(PDShadingType7 shading, Matrix ctm, int pageHeight)
     {
         this.shading = shading;
         this.ctm = ctm;
         this.pageHeight = pageHeight;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public int getTransparency()
     {
         return 0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public PaintContext createContext(ColorModel cm, Rectangle deviceBounds, Rectangle2D userBounds,
             AffineTransform xform, RenderingHints hints)
     {
         try
         {
-            return new Type4ShadingContext(shading, cm, xform, ctm, pageHeight, deviceBounds);
+            return new Type7ShadingContext(shading, cm, xform, ctm, pageHeight, deviceBounds);
         }
         catch (IOException ex)
         {

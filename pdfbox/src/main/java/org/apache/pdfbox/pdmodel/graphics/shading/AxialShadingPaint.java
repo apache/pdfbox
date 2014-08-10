@@ -23,35 +23,37 @@ import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.ColorModel;
+import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.util.Matrix;
 
 /**
- * This represents the Paint of an axial shading.
- * 
- * @author lehmi
- * @version $Revision: $
- * 
+ * AWT Paint for axial shading.
+ *
+ * @author Andreas Lehmkühler
  */
-public class AxialShadingPaint implements Paint 
+public class AxialShadingPaint implements Paint
 {
+    private static final Log LOG = LogFactory.getLog(AxialShadingPaint.class);
 
     private PDShadingType2 shading;
-    private Matrix currentTransformationMatrix;
+    private Matrix ctm;
     private int pageHeight;
-    
+
     /**
      * Constructor.
-     * 
+     *
      * @param shadingType2 the shading resources
      * @param ctm current transformation matrix
-     * @param pageHeightValue size of the current page
+     * @param pageHeight size of the current page
      */
-    public AxialShadingPaint(PDShadingType2 shadingType2, Matrix ctm, int pageHeightValue) 
+    public AxialShadingPaint(PDShadingType2 shadingType2, Matrix ctm, int pageHeight)
     {
         shading = shadingType2;
-        currentTransformationMatrix = ctm;
-        pageHeight = pageHeightValue;
+        this.ctm = ctm;
+        this.pageHeight = pageHeight;
     }
     /**
      * {@inheritDoc}
@@ -67,7 +69,15 @@ public class AxialShadingPaint implements Paint
     public PaintContext createContext(ColorModel cm, Rectangle deviceBounds,
             Rectangle2D userBounds, AffineTransform xform, RenderingHints hints) 
     {
-        return new AxialShadingContext(shading, cm, xform, currentTransformationMatrix, pageHeight);
+        try
+        {
+            return new AxialShadingContext(shading, cm, xform, ctm, pageHeight, deviceBounds);
+        }
+        catch (IOException ex)
+        {
+            LOG.error(ex);
+            return null;
+        }
     }
 
 }

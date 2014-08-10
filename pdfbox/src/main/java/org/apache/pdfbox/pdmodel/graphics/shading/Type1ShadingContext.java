@@ -16,99 +16,62 @@
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
 import java.awt.PaintContext;
-import java.awt.Transparency;
-import java.awt.color.ColorSpace;
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.pdmodel.common.function.PDFunction;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceN;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
-import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
 import org.apache.pdfbox.util.Matrix;
 
 /**
- * This represents the Paint of a type 1 (Function based) shading context.
+ * AWT PaintContext for function-based (Type 1) shading.
  *
- * @author lehmi
- * @author Tilman Hausherr <tilman@snafu.de>
+ * @author Andreas Lehmkühler
+ * @author Tilman Hausherr
  */
-class Type1ShadingContext implements PaintContext
+class Type1ShadingContext extends ShadingContext implements PaintContext
 {
     private static final Log LOG = LogFactory.getLog(Type1ShadingContext.class);
 
-    private ColorModel outputColorModel;
-    private ColorSpace shadingColorSpace;
-    private PDFunction shadingTinttransform;
-    private PDShadingType1 shadingType;
+    private PDShadingType1 type1ShadingType;
     private AffineTransform rat;
-    private float[] domain;
+    private final float[] domain;
     private Matrix matrix;
     private float[] background;
 
     /**
      * Constructor creates an instance to be used for fill operations.
      *
-     * @param shadingType1 the shading type to be used
-     * @param colorModelValue the color model to be used
+     * @param shading the shading type to be used
+     * @param colorModel the color model to be used
      * @param xform transformation for user to device space
      * @param ctm current transformation matrix
      * @param pageHeight height of the current page
-     *
+     * @param dBounds device bounds
      */
-    public Type1ShadingContext(PDShadingType1 shadingType1, ColorModel colorModelValue, 
-            AffineTransform xform, Matrix currentTransformationMatrix, int pageHeight)
+    public Type1ShadingContext(PDShadingType1 shading, ColorModel colorModel, AffineTransform xform,
+            Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
     {
-        shadingType = shadingType1;
-        
+        super(shading, colorModel, xform, ctm, pageHeight, dBounds);
+        this.type1ShadingType = shading;
+
         // PDFBOX-1966 flip the AffineTransform in 1.8 branch
         //TODO find out why AffineTransform passed in 1.8 branch is flipped         
         xform.scale(1,-1);
         xform.translate(0, -pageHeight);
 
-        // colorSpace 
-        try
-        {
-            PDColorSpace cs = shadingType.getColorSpace();
-            if (!(cs instanceof PDDeviceRGB))
-            {
-                // we have to create an instance of the shading colorspace if it isn't RGB
-                shadingColorSpace = cs.getJavaColorSpace();
-                if (cs instanceof PDDeviceN)
-                {
-                    shadingTinttransform = ((PDDeviceN) cs).getTintTransform();
-                }
-                else if (cs instanceof PDSeparation)
-                {
-                    shadingTinttransform = ((PDSeparation) cs).getTintTransform();
-                }
-            }
-        }
-        catch (IOException exception)
-        {
-            LOG.error("error while creating colorSpace", exception);
-        }
-        // create the output colormodel using RGB+alpha as colorspace
-        ColorSpace outputCS = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-        outputColorModel = new ComponentColorModel(outputCS, true, false, Transparency.TRANSLUCENT,
-                DataBuffer.TYPE_BYTE);
-        
         // spec p.308
         // (Optional) An array of four numbers [ xmin xmax ymin ymax ] 
         // specifying the rectangular domain of coordinates over which the 
         // color function(s) are defined. Default value: [ 0.0 1.0 0.0 1.0 ].
-        if (shadingType.getDomain() != null)
+        if (shading.getDomain() != null)
         {
-            domain = shadingType.getDomain().toFloatArray();
+            domain = shading.getDomain().toFloatArray();
         }
         else
         {
@@ -118,7 +81,7 @@ class Type1ShadingContext implements PaintContext
             };
         }
 
-        matrix = shadingType.getMatrix();
+        matrix = shading.getMatrix();
         if (matrix == null)
         {
             matrix = new Matrix();
@@ -130,16 +93,16 @@ class Type1ShadingContext implements PaintContext
             // shading matrix and current user / device space 
             // when handling actual pixels in getRaster()
             rat = matrix.createAffineTransform().createInverse();
-            rat.concatenate(currentTransformationMatrix.createAffineTransform().createInverse());
+            rat.concatenate(ctm.createAffineTransform().createInverse());
             rat.concatenate(xform.createInverse());
         }
         catch (NoninvertibleTransformException ex)
         {
-            LOG.error(ex,ex);
+            LOG.error(ex, ex);
         }
 
         // get background values if available
-        COSArray bg = shadingType1.getBackground();
+        COSArray bg = shading.getBackground();
         if (bg != null)
         {
             background = bg.toFloatArray();
@@ -154,7 +117,7 @@ class Type1ShadingContext implements PaintContext
         outputColorModel = null;
         shadingColorSpace = null;
         shadingTinttransform = null;
-        shadingType = null;
+        type1ShadingType = null;
     }
 
     /**
@@ -170,14 +133,28 @@ class Type1ShadingContext implements PaintContext
      */
     public Raster getRaster(int x, int y, int w, int h)
     {
-        // create writable raster
-        
         WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);
         int[] data = new int[w * h * 4];
         for (int j = 0; j < h; j++)
         {
+            int currentY = y + j;
+            if (bboxRect != null)
+            {
+                if (currentY < minBBoxY || currentY > maxBBoxY)
+                {
+                    continue;
+                }
+            }
             for (int i = 0; i < w; i++)
             {
+                int currentX = x + i;
+                if (bboxRect != null)
+                {
+                    if (currentX < minBBoxX || currentX > maxBBoxX)
+                    {
+                        continue;
+                    }
+                }
                 int index = (j * w + i) * 4;
                 boolean useBackground = false;
                 float[] values = new float[]
@@ -205,7 +182,7 @@ class Type1ShadingContext implements PaintContext
                     }
                     else
                     {
-                        values = shadingType.evalFunction(values);
+                        values = type1ShadingType.evalFunction(values);
                     }
                     // convert color values from shading colorspace to RGB 
                     if (shadingColorSpace != null)
@@ -234,10 +211,5 @@ class Type1ShadingContext implements PaintContext
     public float[] getDomain()
     {
         return domain;
-    }
-
-    public PDFunction getShadingTintTransform()
-    {
-        return shadingTinttransform;
     }
 }

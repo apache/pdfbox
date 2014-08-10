@@ -23,35 +23,37 @@ import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.ColorModel;
+import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.util.Matrix;
 
 /**
- * This represents the Paint of an radial shading.
- * 
- * @author lehmi
- * @version $Revision: $
- * 
+ * AWT Paint for radial shading.
+ *
+ * @author Andreas Lehmkühler
  */
-public class RadialShadingPaint implements Paint 
+public class RadialShadingPaint implements Paint
 {
+    private static final Log LOG = LogFactory.getLog(RadialShadingPaint.class);
 
     private PDShadingType3 shading;
-    private Matrix currentTransformationMatrix;
+    private Matrix ctm;
     private int pageHeight;
-    
+
     /**
      * Constructor.
-     * 
-     * @param shadingType3 the shading resources
+     *
+     * @param shading the shading resources
      * @param ctm current transformation matrix
-     * @param pageHeightValue size of the current page
+     * @param pageHeight size of the current page
      */
-    public RadialShadingPaint(PDShadingType3 shadingType3, Matrix ctm, int pageHeightValue) 
+    public RadialShadingPaint(PDShadingType3 shading, Matrix ctm, int pageHeight)
     {
-        shading = shadingType3;
-        currentTransformationMatrix = ctm;
-        pageHeight = pageHeightValue;
+        this.shading = shading;
+        this.ctm = ctm;
+        this.pageHeight = pageHeight;
     }
     /**
      * {@inheritDoc}
@@ -67,7 +69,14 @@ public class RadialShadingPaint implements Paint
     public PaintContext createContext(ColorModel cm, Rectangle deviceBounds,
             Rectangle2D userBounds, AffineTransform xform, RenderingHints hints) 
     {
-        return new RadialShadingContext(shading, cm, xform, currentTransformationMatrix, pageHeight);
+        try
+        {
+            return new RadialShadingContext(shading, cm, xform, ctm, pageHeight, deviceBounds);
+        }
+        catch (IOException ex)
+        {
+            LOG.error(ex);
+            return null;
+        }
     }
-
 }
