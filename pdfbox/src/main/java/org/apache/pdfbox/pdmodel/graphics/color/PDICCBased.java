@@ -128,9 +128,9 @@ public final class PDICCBased extends PDCIEBasedColorSpace
                 e instanceof IllegalArgumentException)
             {
                 // fall back to alternateColorSpace color space
-                LOG.error("Can't read embedded ICC profile, using alternate color space");
                 awtColorSpace = null;
-                alternateColorSpace = getAlternateColorSpaces().get(0);
+                alternateColorSpace = getAlternateColorSpace();
+                LOG.error("Can't read embedded ICC profile, using alternate color space: " + alternateColorSpace.getName());
                 initialColor = alternateColorSpace.getInitialColor();
             }
             else
@@ -213,7 +213,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
      * @return A list of alternateColorSpace color spaces.
      * @throws IOException If there is an error getting the alternateColorSpace color spaces.
      */
-    public List<PDColorSpace> getAlternateColorSpaces() throws IOException
+    public PDColorSpace getAlternateColorSpace() throws IOException
     {
         COSBase alternate = stream.getStream().getDictionaryObject(COSName.ALTERNATE);
         COSArray alternateArray;
@@ -257,12 +257,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
                     alternate.getClass().getName());
             }
         }
-        List<PDColorSpace> list = new ArrayList<PDColorSpace>();
-        for(int i=0; i<alternateArray.size(); i++)
-        {
-            list.add(PDColorSpace.create(alternateArray.get(i)));
-        }
-        return list;
+        return PDColorSpace.create(alternateArray);
     }
 
     /**
