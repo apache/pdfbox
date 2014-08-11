@@ -242,30 +242,25 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
                         "Unable to read ICCBase color space "));
                 return;
             }
-            List<PDColorSpace> altCs = iccBased.getAlternateColorSpaces();
-            for (PDColorSpace altpdcs : altCs)
+            PDColorSpace altpdcs = iccBased.getAlternateColorSpace();
+            if (altpdcs != null)
             {
-                if (altpdcs != null)
+                ColorSpaces altCsId = ColorSpaces.valueOf(altpdcs.getName());
+                if (altCsId == ColorSpaces.Pattern)
                 {
-
-                    ColorSpaces altCsId = ColorSpaces.valueOf(altpdcs.getName());
-                    if (altCsId == ColorSpaces.Pattern)
-                    {
-                        context.addValidationError(new ValidationError(
-                                ERROR_GRAPHIC_INVALID_PATTERN_COLOR_SPACE_FORBIDDEN,
-                                "Pattern is forbidden as AlternateColorSpace of a ICCBased"));
-                        return;
-                    }
-
-                    /*
-                     * According to the ISO-19005-1:2005
-                     * 
-                     * A conforming reader shall render ICCBased colour spaces as specified by the ICC specification,
-                     * and shall not use the Alternate colour space specified in an ICC profile stream dictionary
-                     * 
-                     * We don't check the alternate ColorSpaces
-                     */
+                    context.addValidationError(new ValidationError(
+                            ERROR_GRAPHIC_INVALID_PATTERN_COLOR_SPACE_FORBIDDEN,
+                            "Pattern is forbidden as AlternateColorSpace of a ICCBased"));
                 }
+
+                /*
+                 * According to the ISO-19005-1:2005
+                 * 
+                 * A conforming reader shall render ICCBased colour spaces as specified by the ICC specification,
+                 * and shall not use the Alternate colour space specified in an ICC profile stream dictionary
+                 * 
+                 * We don't check the alternate ColorSpaces
+                 */
             }
         }        
         catch (IllegalArgumentException e)
