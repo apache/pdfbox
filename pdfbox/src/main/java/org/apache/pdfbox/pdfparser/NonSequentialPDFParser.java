@@ -372,6 +372,14 @@ public class NonSequentialPDFParser extends PDFParser
                     throw new IOException("Expected trailer object at position: " + pdfSource.getOffset());
                 }
                 COSDictionary trailer = xrefTrailerResolver.getCurrentTrailer();
+                // check for a XRef stream, it may contain some object ids of compressed objects 
+                if(trailer.containsKey(COSName.XREF_STM))
+                {
+                    int streamOffset = trailer.getInt(COSName.XREF_STM);
+                    setPdfSource(streamOffset);
+                    skipSpaces();
+                    parseXrefObjStream(prev); 
+                }
                 prev = trailer.getInt(COSName.PREV);
                 if (isLenient && prev > -1)
                 {
