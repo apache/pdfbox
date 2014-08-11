@@ -31,9 +31,11 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
 
 import java.awt.Color;
 import java.awt.Transparency;
+import java.awt.color.CMMException;
 import java.awt.color.ColorSpace;
 import java.awt.color.ICC_ColorSpace;
 import java.awt.color.ICC_Profile;
+import java.awt.color.ProfileDataException;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
@@ -110,6 +112,7 @@ public class PDICCBased extends PDColorSpace
      *
      * @return The cos object that matches this Java object.
      */
+    @Override
     public COSBase getCOSObject()
     {
         return array;
@@ -141,19 +144,27 @@ public class PDICCBased extends PDColorSpace
             profile = stream.createInputStream();
             ICC_Profile iccProfile = ICC_Profile.getInstance( profile );
             cSpace = new ICC_ColorSpace( iccProfile );
-            float[] components = new float[numberOfComponents];
             // there maybe a ProfileDataException or a CMMException as there
             // are some issues when loading ICC_Profiles, see PDFBOX-1295
             // Try to create a color as test ...
-            new Color(cSpace,components,1f);
+            new Color(cSpace,new float[getNumberOfComponents()],1f);
         }
         catch (RuntimeException e)
         {
-            // we are using an alternate colorspace as fallback
-            LOG.debug("Can't read ICC-profile, using alternate colorspace instead");
-            List alternateCSList = getAlternateColorSpaces();
-            PDColorSpace alternate = (PDColorSpace)alternateCSList.get(0);
-            cSpace = alternate.getJavaColorSpace();
+            if (e instanceof ProfileDataException
+                    || e instanceof CMMException
+                    || e instanceof IllegalArgumentException)
+            {
+                // we are using an alternate colorspace as fallback
+                List alternateCSList = getAlternateColorSpaces();
+                PDColorSpace alternate = (PDColorSpace) alternateCSList.get(0);
+                LOG.error("Can't read ICC-profile, using alternate colorspace instead: " + alternate);
+                cSpace = alternate.getJavaColorSpace();
+            }
+            else
+            {
+                throw e;
+            }
         }
         finally
         {
@@ -286,10 +297,7 @@ public class PDICCBased extends PDColorSpace
             }
         }
         List retval = new ArrayList();
-        for( int i=0; i<alternateArray.size(); i++ )
-        {
-            retval.add( PDColorSpaceFactory.createColorSpace( alternateArray.get( i ) ) );
-        }
+        retval.add( PDColorSpaceFactory.createColorSpace( alternateArray ) );
         return new COSArrayList( retval, alternateArray );
     }
 
