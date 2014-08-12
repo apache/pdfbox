@@ -877,10 +877,28 @@ public class PDFParser extends BaseParser
      */
     public void parseXrefStream( COSStream stream, long objByteOffset ) throws IOException
     {
-        xrefTrailerResolver.nextXrefObj( objByteOffset, XRefType.STREAM );
-        xrefTrailerResolver.setTrailer( stream );
+        parseXrefStream( stream, objByteOffset, true );
+    }
+        
+    /**
+     * Fills XRefTrailerResolver with data of given stream.
+     * Stream must be of type XRef.
+     * @param stream the stream to be read
+     * @param objByteOffset the offset to start at
+     * @param isStandalone should be set to true if the stream is not part of a hybrid xref table
+     * @throws IOException if there is an error parsing the stream
+     */
+    public void parseXrefStream( COSStream stream, long objByteOffset, boolean isStandalone ) throws IOException
+    {
+        // the cross reference stream of a hybrid xref table will be added to the existing one
+        // and we must not override the offset and the trailer
+        if ( isStandalone )
+        {
+            xrefTrailerResolver.nextXrefObj( objByteOffset, XRefType.STREAM );
+            xrefTrailerResolver.setTrailer( stream );
+        }        
         PDFXrefStreamParser parser =
-            new PDFXrefStreamParser( stream, document, forceParsing, xrefTrailerResolver );
+                new PDFXrefStreamParser( stream, document, forceParsing, xrefTrailerResolver );
         parser.parse();
     }
 
