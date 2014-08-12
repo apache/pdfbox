@@ -378,7 +378,7 @@ public class NonSequentialPDFParser extends PDFParser
                     int streamOffset = trailer.getInt(COSName.XREF_STM);
                     setPdfSource(streamOffset);
                     skipSpaces();
-                    parseXrefObjStream(prev); 
+                    parseXrefObjStream(prev, false); 
                 }
                 prev = trailer.getInt(COSName.PREV);
                 if (isLenient && prev > -1)
@@ -395,7 +395,7 @@ public class NonSequentialPDFParser extends PDFParser
             else
             {
                 // parse xref stream
-                prev = parseXrefObjStream(prev);
+                prev = parseXrefObjStream(prev, true);
                 if (isLenient && prev > -1)
                 {
                 	// check the xref table reference
@@ -514,7 +514,7 @@ public class NonSequentialPDFParser extends PDFParser
      * @return value of PREV item in dictionary or <code>-1</code> if no such
      *         item exists
      */
-    private long parseXrefObjStream(long objByteOffset) throws IOException
+    private long parseXrefObjStream(long objByteOffset, boolean isStandalone) throws IOException
     {
         // ---- parse indirect object head
         readObjectNumber();
@@ -523,8 +523,7 @@ public class NonSequentialPDFParser extends PDFParser
 
         COSDictionary dict = parseCOSDictionary();
         COSStream xrefStream = parseCOSStream(dict, getDocument().getScratchFile());
-        parseXrefStream(xrefStream, (int) objByteOffset);
-
+        parseXrefStream(xrefStream, (int) objByteOffset,isStandalone);
         return dict.getLong(COSName.PREV);
     }
 
