@@ -31,9 +31,9 @@ import java.util.List;
 public final class PDFieldFactory
 {
     // button flags
-    private static final int FLAG_RADIO = 0x8000,
-                             FLAG_PUSHBUTTON = 0x10000,
-                             FLAG_RADIOS_IN_UNISON = 0x2000000;
+    private static final int FLAG_RADIO = 0x8000;
+    private static final int FLAG_PUSHBUTTON = 0x10000;
+    private static final int FLAG_RADIOS_IN_UNISON = 0x2000000;
 
     // choice flags
     private static final int FLAG_COMBO = 0x20000;
@@ -52,7 +52,27 @@ public final class PDFieldFactory
     public static PDField createField(PDAcroForm form, COSDictionary field) throws IOException
     {
         String fieldType = PDField.findFieldType(field);
-        if (isButton(form, field))
+        if (PDField.FIELD_TYPE_CHOICE.equals(fieldType))
+        {
+            int flags = field.getInt(COSName.FF, 0);
+            if ((flags & FLAG_COMBO) != 0)
+            {
+                return new PDComboBox(form, field);
+            }
+            else
+            {
+                return new PDListBox(form, field);
+            }
+        }
+        else if (PDField.FIELD_TYPE_TEXT.equals(fieldType))
+        {
+            return new PDTextField(form, field);
+        }
+        else if (PDField.FIELD_TYPE_SIGNATURE.equals(fieldType))
+        {
+            return new PDSignatureField(form, field);
+        }
+        else if (PDField.FIELD_TYPE_BUTTON.equals(fieldType))
         {
             int flags = field.getInt(COSName.FF, 0);
             // BJL: I have found that the radio flag bit is not always set
@@ -73,26 +93,6 @@ public final class PDFieldFactory
                 return new PDCheckbox(form, field);
             }
         }
-        else if ("Ch".equals(fieldType))
-        {
-            int flags = field.getInt(COSName.FF, 0);
-            if ((flags & FLAG_COMBO) != 0)
-            {
-                return new PDComboBox(form, field);
-            }
-            else
-            {
-                return new PDListBox(form, field);
-            }
-        }
-        else if ("Tx".equals(fieldType))
-        {
-            return new PDTextField(form, field);
-        }
-        else if ("Sig".equals(fieldType))
-        {
-            return new PDSignatureField(form, field);
-        }
         else
         {
             // todo: inheritance and "non-terminal fields" are not supported yet
@@ -100,18 +100,4 @@ public final class PDFieldFactory
         }
     }
 
-    private static boolean isButton(PDAcroForm form, COSDictionary field) throws IOException
-    {
-        String fieldType = PDField.findFieldType(field);
-        List<COSObjectable> kids = PDField.getKids(form, field);
-        if (fieldType == null && kids != null && !kids.isEmpty())
-        {
-            // sometimes if it is a button the type is only defined by one of the kids entries
-            // TODO JH: this is due to inheritance, we need proper support for "non-terminal fields"
-
-            COSDictionary kid = (COSDictionary)kids.get(0).getCOSObject();
-            return isButton(form, kid);
-        }
-        return "Btn".equals(fieldType);
-    }
 }
