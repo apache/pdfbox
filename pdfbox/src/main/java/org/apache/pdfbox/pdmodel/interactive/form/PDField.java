@@ -53,6 +53,23 @@ public abstract class PDField implements COSObjectable
      */
     public static final int FLAG_NO_EXPORT = 1 << 2;
 
+    /**
+     * Field type Text.
+     */
+    public static final String FIELD_TYPE_TEXT = "Tx";
+    /**
+     * Field type Button.
+     */
+    public static final String FIELD_TYPE_BUTTON = "Btn";
+    /**
+     * Field type Button.
+     */
+    public static final String FIELD_TYPE_CHOICE = "Ch";
+    /**
+     * Field type Button.
+     */
+    public static final String FIELD_TYPE_SIGNATURE = "Sig";
+
     private PDAcroForm acroForm;
 
     private COSDictionary dictionary;
@@ -467,7 +484,7 @@ public abstract class PDField implements COSObjectable
      */
     public void setParent(PDField parent)
     {
-        getDictionary().setItem("Parent", parent);
+        getDictionary().setItem(COSName.PARENT, parent);
     }
 
     /**
@@ -489,7 +506,7 @@ public abstract class PDField implements COSObjectable
             for (int i = 0; retval == null && i < kids.size(); i++)
             {
                 COSDictionary kidDictionary = (COSDictionary) kids.getObject(i);
-                if (name[nameIndex].equals(kidDictionary.getString("T")))
+                if (name[nameIndex].equals(kidDictionary.getString(COSName.T)))
                 {
                     retval = PDFieldFactory.createField(acroForm, kidDictionary);
                     if (name.length > nameIndex + 1)
