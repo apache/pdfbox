@@ -18,10 +18,6 @@ package org.apache.pdfbox.pdmodel.interactive.form;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.common.COSObjectable;
-
-import java.io.IOException;
-import java.util.List;
 
 /**
  * Factory for creating instances of PDField.
@@ -30,14 +26,7 @@ import java.util.List;
  */
 public final class PDFieldFactory
 {
-    // button flags
-    private static final int FLAG_RADIO = 0x8000;
-    private static final int FLAG_PUSHBUTTON = 0x10000;
-    private static final int FLAG_RADIOS_IN_UNISON = 0x2000000;
-
-    // choice flags
-    private static final int FLAG_COMBO = 0x20000;
-
+ 
     private PDFieldFactory()
     {
     }
@@ -47,56 +36,52 @@ public final class PDFieldFactory
      * @param form the form that the field is part of
      * @param field the dictionary representing a field element
      * @return the corresponding PDField instance
-     * @throws IOException if the field cannot be read
      */
-    public static PDField createField(PDAcroForm form, COSDictionary field) throws IOException
+    public static PDFieldTreeNode createField(PDAcroForm form, COSDictionary field, PDFieldTreeNode parentNode)
     {
         String fieldType = PDField.findFieldType(field);
-        if (PDField.FIELD_TYPE_CHOICE.equals(fieldType))
+        if (PDFieldTreeNode.FIELD_TYPE_CHOICE.equals(fieldType))
         {
             int flags = field.getInt(COSName.FF, 0);
-            if ((flags & FLAG_COMBO) != 0)
+            if ((flags & PDVariableText.FLAG_COMB) != 0)
             {
-                return new PDComboBox(form, field);
+                return new PDComboBox(form, field, parentNode);
             }
             else
             {
-                return new PDListBox(form, field);
+                return new PDListBox(form, field, parentNode);
             }
         }
-        else if (PDField.FIELD_TYPE_TEXT.equals(fieldType))
+        else if (PDFieldTreeNode.FIELD_TYPE_TEXT.equals(fieldType))
         {
-            return new PDTextField(form, field);
+            return new PDTextField(form, field, parentNode);
         }
-        else if (PDField.FIELD_TYPE_SIGNATURE.equals(fieldType))
+        else if (PDFieldTreeNode.FIELD_TYPE_SIGNATURE.equals(fieldType))
         {
-            return new PDSignatureField(form, field);
+            return new PDSignatureField(form, field, parentNode);
         }
-        else if (PDField.FIELD_TYPE_BUTTON.equals(fieldType))
+        else if (PDFieldTreeNode.FIELD_TYPE_BUTTON.equals(fieldType))
         {
             int flags = field.getInt(COSName.FF, 0);
             // BJL: I have found that the radio flag bit is not always set
             // and that sometimes there is just a kids dictionary.
             // so, if there is a kids dictionary then it must be a radio button group.
-            // TODO JH: this is due to inheritance, we need proper support for "non-terminal fields"
-
-            if ((flags & FLAG_RADIO) != 0 || field.getDictionaryObject(COSName.KIDS) != null)
+            if ((flags & PDButton.FLAG_RADIO) != 0 || field.getDictionaryObject(COSName.KIDS) != null)
             {
-                return new PDRadioButton(form, field);
+                return new PDRadioButton(form, field, parentNode);
             }
-            else if ((flags & FLAG_PUSHBUTTON) != 0)
+            else if ((flags & PDButton.FLAG_PUSHBUTTON) != 0)
             {
-                return new PDPushButton(form, field);
+                return new PDPushButton(form, field, parentNode);
             }
             else
             {
-                return new PDCheckbox(form, field);
+                return new PDCheckbox(form, field, parentNode);
             }
         }
         else
         {
-            // todo: inheritance and "non-terminal fields" are not supported yet
-            return null;
+            return new PDNonTerminalField(form, field, parentNode); 
         }
     }
 

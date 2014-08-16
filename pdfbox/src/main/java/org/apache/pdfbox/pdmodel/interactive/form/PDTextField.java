@@ -27,8 +27,9 @@ import org.apache.pdfbox.cos.COSName;
  */
 public final class PDTextField extends PDVariableText
 {
+ 
     /**
-     * @see PDField#PDField(PDAcroForm,COSDictionary)
+     * @see PDFieldTreeNode#PDFieldTreeNode(PDAcroForm)(PDAcroForm,COSDictionary)
      *
      * @param theAcroForm The acroform.
      */
@@ -38,14 +39,15 @@ public final class PDTextField extends PDVariableText
     }
 
     /**
-     * @see org.apache.pdfbox.pdmodel.interactive.form.PDField#PDField(PDAcroForm,COSDictionary)
-     *
-     * @param theAcroForm The acroForm for this field.
-     * @param field The field's dictionary.
+     * Constructor.
+     * 
+     * @param theAcroForm The form that this field is part of.
+     * @param field the PDF object to represent as a field.
+     * @param parentNode the parent node of the node to be created
      */
-    public PDTextField(PDAcroForm theAcroForm, COSDictionary field)
+    public PDTextField(PDAcroForm theAcroForm, COSDictionary field, PDFieldTreeNode parentNode)
     {
-        super( theAcroForm, field);
+        super( theAcroForm, field, parentNode);
     }
     
     /**

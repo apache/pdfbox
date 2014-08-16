@@ -31,9 +31,16 @@ import org.apache.pdfbox.cos.COSString;
  */
 public abstract class PDChoice extends PDVariableText
 {
-    PDChoice(PDAcroForm acroForm, COSDictionary field)
+    /**
+     * Constructor.
+     * 
+     * @param theAcroForm The form that this field is part of.
+     * @param field the PDF object to represent as a field.
+     * @param parentNode the parent node of the node to be created
+     */
+    protected PDChoice(PDAcroForm acroForm, COSDictionary field, PDFieldTreeNode parentNode)
     {
-        super(acroForm, field);
+        super(acroForm, field, parentNode);
     }
 
     // returns the "Opt" index for the given string

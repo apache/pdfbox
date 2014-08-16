@@ -36,7 +36,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
-import org.apache.pdfbox.pdmodel.interactive.form.PDField;
+import org.apache.pdfbox.pdmodel.interactive.form.PDFieldTreeNode;
 import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
 
 /**
@@ -66,7 +66,7 @@ public class PDFTemplateStructure
     private PDFormXObject innerForm;
     private PDStream imageFormStream;
     private PDResources imageFormResources;
-    private List<PDField> acroFormFields;
+    private List<PDFieldTreeNode> acroFormFields;
     private String innerFormName;
     private String imageFormName;
     private String imageName;
@@ -554,7 +554,7 @@ public class PDFTemplateStructure
      * Gets acroFormFields
      * @return the AcroForm fields
      */
-    public List<PDField> getAcroFormFields()
+    public List<PDFieldTreeNode> getAcroFormFields()
     {
         return acroFormFields;
     }
@@ -563,7 +563,7 @@ public class PDFTemplateStructure
      * Sets acroFormFields
      * @param acroFormFields
      */
-    public void setAcroFormFields(List<PDField> acroFormFields)
+    public void setAcroFormFields(List<PDFieldTreeNode> acroFormFields)
     {
         this.acroFormFields = acroFormFields;
     }

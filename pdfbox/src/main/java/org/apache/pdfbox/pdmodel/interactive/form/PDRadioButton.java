@@ -17,14 +17,11 @@
 package org.apache.pdfbox.pdmodel.interactive.form;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-
-import org.apache.pdfbox.pdmodel.common.COSArrayList;
+import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 /**
  * Radio button fields contain a set of related buttons that can each be on or off.
@@ -33,20 +30,17 @@ import org.apache.pdfbox.pdmodel.common.COSArrayList;
  */
 public final class PDRadioButton extends PDButton
 {
-    /**
-     * A Ff flag.
-     */
-    public static final int FLAG_RADIOS_IN_UNISON = 1 << 25;
 
     /**
-     * @param theAcroForm The acroForm for this field.
-     * @param field The field that makes up the radio collection.
-     *
-     * {@inheritDoc}
+     * Constructor.
+     * 
+     * @param theAcroForm The form that this field is part of.
+     * @param field the PDF object to represent as a field.
+     * @param parentNode the parent node of the node to be created
      */
-    public PDRadioButton(PDAcroForm theAcroForm, COSDictionary field)
+    public PDRadioButton(PDAcroForm theAcroForm, COSDictionary field, PDFieldTreeNode parentNode)
     {
-        super(theAcroForm,field);
+        super(theAcroForm, field, parentNode);
     }
 
     /**
@@ -85,13 +79,12 @@ public final class PDRadioButton extends PDButton
     public void setValue(String value) throws IOException
     {
         getDictionary().setString( COSName.V, value );
-        List kids = getKids();
-        for (Object kid : kids)
+        List<COSObjectable> kids = getKids();
+        for (COSObjectable kid : kids)
         {
-            PDField field = (PDField) kid;
-            if ( field instanceof PDCheckbox )
+            if ( kid instanceof PDCheckbox )
             {
-                PDCheckbox btn = (PDCheckbox)field;
+                PDCheckbox btn = (PDCheckbox)kid;
                 if( btn.getOnValue().equals(value) )
                 {
                     btn.check();
@@ -115,13 +108,12 @@ public final class PDRadioButton extends PDButton
     public String getValue() throws IOException
     {
         String retval = null;
-        List kids = getKids();
-        for (Object kid : kids)
+        List<COSObjectable> kids = getKids();
+        for (COSObjectable kid : kids)
         {
-            PDField field = (PDField) kid;
-            if ( field instanceof PDCheckbox )
+            if ( kid instanceof PDCheckbox )
             {
-                PDCheckbox btn = (PDCheckbox)field;
+                PDCheckbox btn = (PDCheckbox)kid;
                 if( btn.isChecked() )
                 {
                     retval = btn.getOnValue();
@@ -135,34 +127,4 @@ public final class PDRadioButton extends PDButton
         return retval;
     }
 
-
-    /**
-     * This will return a list of PDField objects that are part of this radio collection.
-     *
-     * @see PDField#getWidget()
-     * @return A list of PDWidget objects.
-     * @throws IOException if there is an error while creating the children objects.
-     */
-    @SuppressWarnings("unchecked")
-    public List getKids() throws IOException
-    {
-        COSArray kids = (COSArray)getDictionary().getDictionaryObject(COSName.KIDS);
-        if( kids != null )
-        {
-            List kidsList = new ArrayList();
-            for (int i = 0; i < kids.size(); i++)
-            {
-                PDField field = PDFieldFactory.createField( getAcroForm(), (COSDictionary)kids.getObject(i) );
-                if (field != null)
-                {
-                    kidsList.add( field );
-                }
-            }
-            return new COSArrayList( kidsList, kids );
-        }
-        else
-        {
-            return new ArrayList();
-        }
-    }
 }

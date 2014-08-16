@@ -26,22 +26,24 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
+import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
-import org.apache.pdfbox.pdmodel.interactive.form.PDField;
+import org.apache.pdfbox.pdmodel.interactive.form.PDFieldTreeNode;
 import org.apache.pdfbox.pdmodel.interactive.form.PDRadioButton;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
 
 /**
  * This will test the FDF algorithms in PDFBox.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.7 $
+ * @author Ben Litchfield
+ * 
  */
 public class TestFDF extends TestCase
 {
@@ -182,8 +184,6 @@ public class TestFDF extends TestCase
                 PDRadioButton feld3 = (PDRadioButton)form.getField( "Feld.3" );
                 feld3.setValue("RB1");
                 assertEquals( "RB1", feld3.getValue() );
-                //assertEquals( ((PDCheckbox)feld3.getKids().get( 0 )).getValue(), "RB1" );
-    
             }
             finally
             {
@@ -215,16 +215,16 @@ public class TestFDF extends TestCase
                 PDAcroForm form = freedom.getDocumentCatalog().getAcroForm();
                 form.importFDF( fdf );
                 PDTextField feld2 = (PDTextField)form.getField( "eeFirstName" );
-                List kids = feld2.getKids();
-                PDField firstKid = (PDField)kids.get( 0 );
-                PDField secondKid = (PDField)kids.get( 1 );
+                List<COSObjectable> kids = feld2.getKids();
+                PDFieldTreeNode firstKid = (PDFieldTreeNode)kids.get( 0 );
+                PDFieldTreeNode secondKid = (PDFieldTreeNode)kids.get( 1 );
                 testContentStreamContains( freedom, firstKid, "Steve" );
                 testContentStreamContains( freedom, secondKid, "Steve" );
     
                 //the appearance stream is suppose to be null because there
                 //is an F action in the AA dictionary that populates that field.
-                PDField totalAmt = form.getField( "eeSuppTotalAmt" );
-                assertTrue( totalAmt.getDictionary().getDictionaryObject( "AP" ) == null );
+                PDFieldTreeNode totalAmt = form.getField( "eeSuppTotalAmt" );
+                assertTrue( totalAmt.getDictionary().getDictionaryObject( COSName.AP ) == null );
     
             }
             finally
@@ -241,26 +241,26 @@ public class TestFDF extends TestCase
         }
     }
 
-    private void testContentStreamContains( PDDocument doc, PDField field, String expected ) throws Exception
+    private void testContentStreamContains( PDDocument doc, PDFieldTreeNode field, String expected ) throws Exception
     {
         PDAnnotationWidget widget = field.getWidget();
-        Map normalAppearance = widget.getAppearance().getNormalAppearance();
-        PDAppearanceStream appearanceStream = (PDAppearanceStream)normalAppearance.get( "default" );
+        Map<String,PDAppearanceStream> normalAppearance = widget.getAppearance().getNormalAppearance();
+        PDAppearanceStream appearanceStream = normalAppearance.get( "default" );
         COSStream actual = appearanceStream.getStream();
 
-        List actualTokens = getStreamTokens( doc, actual );
+        List<Object> actualTokens = getStreamTokens( doc, actual );
         assertTrue( actualTokens.contains( new COSString( expected ) ) );
     }
 
-    private void testContentStreams( PDDocument doc, PDField field, String expected ) throws Exception
+    private void testContentStreams( PDDocument doc, PDFieldTreeNode field, String expected ) throws Exception
     {
         PDAnnotationWidget widget = field.getWidget();
-        Map normalAppearance = widget.getAppearance().getNormalAppearance();
-        PDAppearanceStream appearanceStream = (PDAppearanceStream)normalAppearance.get( "default" );
+        Map<String,PDAppearanceStream> normalAppearance = widget.getAppearance().getNormalAppearance();
+        PDAppearanceStream appearanceStream = normalAppearance.get( "default" );
         COSStream actual = appearanceStream.getStream();
 
-        List actualTokens = getStreamTokens( doc, actual );
-        List expectedTokens = getStreamTokens( doc, expected );
+        List<Object> actualTokens = getStreamTokens( doc, actual );
+        List<Object> expectedTokens = getStreamTokens( doc, expected );
         assertEquals( actualTokens.size(), expectedTokens.size() );
         for( int i=0; i<actualTokens.size(); i++ )
         {
@@ -270,11 +270,11 @@ public class TestFDF extends TestCase
         }
     }
 
-    private List getStreamTokens( PDDocument doc, String string ) throws IOException
+    private List<Object> getStreamTokens( PDDocument doc, String string ) throws IOException
     {
         PDFStreamParser parser;
 
-        List tokens = null;
+        List<Object> tokens = null;
         if( string != null )
         {
             ByteArrayInputStream stream = new ByteArrayInputStream( string.getBytes() );
@@ -285,11 +285,11 @@ public class TestFDF extends TestCase
         return tokens;
     }
 
-    private List getStreamTokens( PDDocument doc, COSStream stream ) throws IOException
+    private List<Object> getStreamTokens( PDDocument doc, COSStream stream ) throws IOException
     {
         PDFStreamParser parser;
 
-        List tokens = null;
+        List<Object> tokens = null;
         if( stream != null )
         {
             parser = new PDFStreamParser( stream );

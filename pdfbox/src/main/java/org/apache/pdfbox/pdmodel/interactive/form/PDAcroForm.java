@@ -50,7 +50,7 @@ public final class PDAcroForm implements COSObjectable
     private COSDictionary acroForm;
     private PDDocument document;
 
-    private Map fieldCache;
+    private Map<String,PDFieldTreeNode> fieldCache;
 
     /**
      * Constructor.
@@ -62,7 +62,7 @@ public final class PDAcroForm implements COSObjectable
         document = doc;
         acroForm = new COSDictionary();
         COSArray fields = new COSArray();
-        acroForm.setItem( COSName.getPDFName( "Fields" ), fields );
+        acroForm.setItem( COSName.FIELDS, fields );
     }
 
     /**
@@ -107,13 +107,13 @@ public final class PDAcroForm implements COSObjectable
      */
     public void importFDF( FDFDocument fdf ) throws IOException
     {
-        List fields = fdf.getCatalog().getFDF().getFields();
+        List<?> fields = fdf.getCatalog().getFDF().getFields();
         if( fields != null )
         {
             for (Object field : fields)
             {
                 FDFField fdfField = (FDFField) field;
-                PDField docField = getField( fdfField.getPartialFieldName() );
+                PDFieldTreeNode docField = getField( fdfField.getPartialFieldName() );
                 if( docField != null )
                 {
                     docField.importFDF( fdfField );
@@ -135,12 +135,12 @@ public final class PDAcroForm implements COSObjectable
         FDFDictionary fdfDict = new FDFDictionary();
         catalog.setFDF( fdfDict );
 
-        List fdfFields = new ArrayList();
-        List fields = getFields();
-        Iterator fieldIter = fields.iterator();
+        List<FDFField> fdfFields = new ArrayList<FDFField>();
+        List<PDFieldTreeNode> fields = getFields();
+        Iterator<PDFieldTreeNode> fieldIter = fields.iterator();
         while( fieldIter.hasNext() )
         {
-            PDField docField = (PDField)fieldIter.next();
+            PDFieldTreeNode docField = fieldIter.next();
             addFieldAndChildren( docField, fdfFields );
         }
         fdfDict.setID( document.getDocument().getDocumentID() );
@@ -151,20 +151,19 @@ public final class PDAcroForm implements COSObjectable
         return fdf;
     }
 
-    private void addFieldAndChildren( PDField docField, List fdfFields ) throws IOException
+    private void addFieldAndChildren( PDFieldTreeNode docField, List<FDFField> fdfFields ) throws IOException
     {
         Object fieldValue = docField.getValue();
         FDFField fdfField = new FDFField();
         fdfField.setPartialFieldName( docField.getPartialName() );
         fdfField.setValue( fieldValue );
-        List kids = docField.getKids();
-        List childFDFFields = new ArrayList();
+        List<COSObjectable> kids = docField.getKids();
+        List<FDFField> childFDFFields = new ArrayList<FDFField>();
         if( kids != null )
         {
-
-            for (Object kid : kids)
+            for (COSObjectable kid : kids)
             {
-                addFieldAndChildren((PDField) kid, childFDFFields);
+                addFieldAndChildren((PDFieldTreeNode) kid, childFDFFields);
             }
             if( childFDFFields.size() > 0 )
             {
@@ -182,31 +181,29 @@ public final class PDAcroForm implements COSObjectable
      * will be a org.apache.pdfbox.pdmodel.field.PDField.
      *
      * @return A list of all the fields.
-     * @throws IOException If there is an error while getting the list of fields.
+     * 
      */
-    public List<PDField> getFields() throws IOException
+    public List<PDFieldTreeNode> getFields()
     {
-        COSArray cosFields = (COSArray) acroForm.getDictionaryObject(COSName.getPDFName("Fields"));
-
+        COSArray cosFields = (COSArray) acroForm.getDictionaryObject(COSName.FIELDS);
         if( cosFields == null )
         {
             return null;
         }
-
-        List<PDField> pdFields = new ArrayList<PDField>();
+        List<PDFieldTreeNode> pdFields = new ArrayList<PDFieldTreeNode>();
         for (int i = 0; i < cosFields.size(); i++)
         {
             COSDictionary element = (COSDictionary) cosFields.getObject(i);
             if (element != null)
             {
-                PDField field = PDFieldFactory.createField( this, element );
+                PDFieldTreeNode field = PDFieldFactory.createField( this, element, null );
                 if( field != null )
                 {
                     pdFields.add(field);
                 }
             }
         }
-        return new COSArrayList<PDField>( pdFields, cosFields );
+        return new COSArrayList<PDFieldTreeNode>( pdFields, cosFields );
     }
 
     /**
@@ -214,9 +211,9 @@ public final class PDAcroForm implements COSObjectable
      *
      * @param fields The fields that are part of this form.
      */
-    public void setFields( List fields )
+    public void setFields( List<PDFieldTreeNode> fields )
     {
-        acroForm.setItem( "Fields", COSArrayList.converterToCOSArray( fields ));
+        acroForm.setItem( COSName.FIELDS, COSArrayList.converterToCOSArray( fields ));
     }
 
     /**
@@ -232,12 +229,12 @@ public final class PDAcroForm implements COSObjectable
     {
         if( cache )
         {
-            fieldCache = new HashMap();
-            List fields = getFields();
-            Iterator fieldIter = fields.iterator();
+            fieldCache = new HashMap<String,PDFieldTreeNode>();
+            List<PDFieldTreeNode> fields = getFields();
+            Iterator<PDFieldTreeNode> fieldIter = fields.iterator();
             while( fieldIter.hasNext() )
             {
-                PDField next = (PDField)fieldIter.next();
+                PDFieldTreeNode next = fieldIter.next();
                 fieldCache.put( next.getFullyQualifiedName(), next );
             }
         }
@@ -266,19 +263,17 @@ public final class PDAcroForm implements COSObjectable
      *
      * @throws IOException If there is an error getting the field type.
      */
-    public PDField getField( String name ) throws IOException
+    public PDFieldTreeNode getField( String name ) throws IOException
     {
-        PDField retval = null;
+        PDFieldTreeNode retval = null;
         if( fieldCache != null )
         {
-            retval = (PDField)fieldCache.get( name );
+            retval = fieldCache.get( name );
         }
         else
         {
             String[] nameSubSection = name.split( "\\." );
-            COSArray fields =
-                (COSArray) acroForm.getDictionaryObject(
-                    COSName.getPDFName("Fields"));
+            COSArray fields = (COSArray) acroForm.getDictionaryObject(COSName.FIELDS);
 
             for (int i = 0; i < fields.size() && retval == null; i++)
             {
@@ -286,15 +281,15 @@ public final class PDAcroForm implements COSObjectable
                 if( element != null )
                 {
                     COSString fieldName =
-                        (COSString)element.getDictionaryObject( COSName.getPDFName( "T" ) );
+                        (COSString)element.getDictionaryObject( COSName.T );
                     if( fieldName.getString().equals( name ) ||
                         fieldName.getString().equals( nameSubSection[0] ) )
                     {
-                        PDField root = PDFieldFactory.createField( this, element );
+                        PDFieldTreeNode root = PDFieldFactory.createField( this, element, null );
 
                         if( nameSubSection.length > 1 )
                         {
-                            PDField kid = root.findKid( nameSubSection, 1 );
+                            PDFieldTreeNode kid = root.findKid( nameSubSection, 1 );
                             if( kid != null )
                             {
                                 retval = kid;
@@ -323,7 +318,7 @@ public final class PDAcroForm implements COSObjectable
     public PDResources getDefaultResources()
     {
         PDResources retval = null;
-        COSDictionary dr = (COSDictionary)acroForm.getDictionaryObject( COSName.getPDFName( "DR" ) );
+        COSDictionary dr = (COSDictionary)acroForm.getDictionaryObject( COSName.DR );
         if( dr != null )
         {
             retval = new PDResources( dr );
@@ -343,7 +338,7 @@ public final class PDAcroForm implements COSObjectable
         {
             drDict = dr.getCOSDictionary();
         }
-        acroForm.setItem( COSName.getPDFName( "DR" ), drDict );
+        acroForm.setItem( COSName.DR, drDict );
     }
 
     @Override

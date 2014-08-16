@@ -37,15 +37,15 @@ import java.util.Set;
 public class PDSignatureField extends PDField
 {
     /**
-     * @see PDField#PDField(PDAcroForm,COSDictionary)
-     *
-     * @param theAcroForm The acroForm for this field.
-     * @param field The dictionary for the signature.
-     * @throws IOException If there is an error while resolving partital name for the signature field
+     * Constructor.
+     * 
+     * @param theAcroForm The form that this field is part of.
+     * @param field the PDF object to represent as a field.
+     * @param parentNode the parent node of the node to be created
      */
-    public PDSignatureField(PDAcroForm theAcroForm, COSDictionary field) throws IOException
+    public PDSignatureField(PDAcroForm theAcroForm, COSDictionary field, PDFieldTreeNode parentNode)
     {
-        super(theAcroForm,field);
+        super(theAcroForm, field, parentNode);
         // dirty hack to avoid npe caused through getWidget() method
         getDictionary().setItem( COSName.TYPE, COSName.ANNOT );
         getDictionary().setName( COSName.SUBTYPE, PDAnnotationWidget.SUB_TYPE);
@@ -72,31 +72,26 @@ public class PDSignatureField extends PDField
     /**
      * Generate a unique name for the signature.
      * @return the signature's unique name
-     * @throws IOException If there is an error while getting the list of fields.
      */
-    private String generatePartialName() throws IOException
+    private String generatePartialName()
     {
-      PDAcroForm acroForm = getAcroForm();
-      List fields = acroForm.getFields();
-      
-      String fieldName = "Signature";
-      int i = 1;
-      
-      Set<String> sigNames = new HashSet<String>();
-      
-      for ( Object object : fields )
-      {
-        if(object instanceof PDSignatureField)
+        PDAcroForm acroForm = getAcroForm();
+        List<PDFieldTreeNode> fields = acroForm.getFields();
+        String fieldName = "Signature";
+        Set<String> sigNames = new HashSet<String>();
+        for ( PDFieldTreeNode field : fields )
         {
-          sigNames.add(((PDSignatureField) object).getPartialName());
+            if(field instanceof PDSignatureField)
+            {
+                sigNames.add(field.getPartialName());
+            }
         }
-      }
-
-      while(sigNames.contains(fieldName+i))
-      {
-        ++i;
-      }
-      return fieldName+i;
+        int i = 1;
+        while(sigNames.contains(fieldName+i))
+        {
+            ++i;
+        }
+        return fieldName+i;
     }
     
     /**
@@ -147,7 +142,7 @@ public class PDSignatureField extends PDField
      */
     public void setSignature(PDSignature value)
     {
-      getDictionary().setItem(COSName.V, value);
+        getDictionary().setItem(COSName.V, value);
     }
     
     /**
@@ -158,12 +153,12 @@ public class PDSignatureField extends PDField
      */
     public PDSignature getSignature()
     {
-      COSBase dictionary = getDictionary().getDictionaryObject(COSName.V);
-      if (dictionary == null)
-      {
-          return null;
-      }
-      return new PDSignature((COSDictionary)dictionary);
+        COSBase dictionary = getDictionary().getDictionaryObject(COSName.V);
+        if (dictionary == null)
+        {
+            return null;
+        }
+        return new PDSignature((COSDictionary)dictionary);
     }
 
     /**
@@ -175,13 +170,13 @@ public class PDSignatureField extends PDField
      */
     public PDSeedValue getSeedValue()
     {
-      COSDictionary dict = (COSDictionary)getDictionary().getDictionaryObject(COSName.SV);
-      PDSeedValue sv = null;
-      if (dict != null)
-      {
-          sv = new PDSeedValue(dict);
-      }
-      return sv;
+        COSDictionary dict = (COSDictionary)getDictionary().getDictionaryObject(COSName.SV);
+        PDSeedValue sv = null;
+        if (dict != null)
+        {
+            sv = new PDSeedValue(dict);
+        }
+        return sv;
     }
 
     /**
@@ -193,9 +188,9 @@ public class PDSignatureField extends PDField
      */
     public void setSeedValue(PDSeedValue sv)
     {
-      if (sv != null)
-      {
-          getDictionary().setItem(COSName.SV, sv.getCOSObject());
-      }
+        if (sv != null)
+        {
+            getDictionary().setItem(COSName.SV, sv.getCOSObject());
+        }
     }
 }

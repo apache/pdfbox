@@ -29,7 +29,7 @@ import java.io.IOException;
  *
  * @author Ben Litchfield
  */
-public abstract class PDVariableText extends PDField    // TODO mixin, not really a field
+public abstract class PDVariableText extends PDField
 {
     /**
      * A Ff flag.
@@ -95,14 +95,15 @@ public abstract class PDVariableText extends PDField    // TODO mixin, not reall
     }
 
     /**
-     * @see org.apache.pdfbox.pdmodel.interactive.form.PDField#PDField(PDAcroForm,COSDictionary)
-     *
-     * @param theAcroForm The acroForm for this field.
-     * @param field The field's dictionary.
+     * Constructor.
+     * 
+     * @param theAcroForm The form that this field is part of.
+     * @param field the PDF object to represent as a field.
+     * @param parentNode the parent node of the node to be created
      */
-    PDVariableText(PDAcroForm theAcroForm, COSDictionary field)
+    protected PDVariableText(PDAcroForm theAcroForm, COSDictionary field, PDFieldTreeNode parentNode)
     {
-        super( theAcroForm, field);
+        super( theAcroForm, field, parentNode);
         da = (COSString) field.getDictionaryObject(COSName.DA);
     }
 
