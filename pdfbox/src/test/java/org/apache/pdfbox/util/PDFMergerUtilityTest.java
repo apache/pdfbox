@@ -52,7 +52,7 @@ public class PDFMergerUtilityTest extends TestCase
      * Tests whether the merge of two PDF files with identically named but
      * different global resources works. The two PDF files have two fonts each
      * named /TT1 and /TT0 that are Arial and Courier and vice versa in the
-     * second file. Revisions before 1613017 fail this test because global
+     * second file. Revisions before 1617990 fail this test because global
      * resources were merged which made trouble when resources of the same kind
      * had the same name.
      *
