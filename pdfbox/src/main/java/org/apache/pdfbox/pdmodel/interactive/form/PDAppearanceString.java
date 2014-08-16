@@ -145,9 +145,9 @@ public final class PDAppearanceString
      *
      * @return The tokens in the original appearance stream
      */
-    private List getStreamTokens( PDAppearanceStream appearanceStream ) throws IOException
+    private List<Object> getStreamTokens( PDAppearanceStream appearanceStream ) throws IOException
     {
-        List tokens = null;
+        List<Object> tokens = new ArrayList<Object>();
         if( appearanceStream != null )
         {
             tokens = getStreamTokens( appearanceStream.getStream() );
@@ -155,11 +155,11 @@ public final class PDAppearanceString
         return tokens;
     }
 
-    private List getStreamTokens( COSString string ) throws IOException
+    private List<Object> getStreamTokens( COSString string ) throws IOException
     {
         PDFStreamParser parser;
 
-        List tokens = null;
+        List<Object> tokens =  new ArrayList<Object>();
         if( string != null )
         {
             ByteArrayInputStream stream = new ByteArrayInputStream( string.getBytes() );
@@ -170,11 +170,11 @@ public final class PDAppearanceString
         return tokens;
     }
 
-    private List getStreamTokens( COSStream stream ) throws IOException
+    private List<Object> getStreamTokens( COSStream stream ) throws IOException
     {
         PDFStreamParser parser;
 
-        List tokens = null;
+        List<Object> tokens = new ArrayList<Object>();
         if( stream != null )
         {
             parser = new PDFStreamParser( stream );
@@ -186,12 +186,14 @@ public final class PDAppearanceString
 
     /**
      * Tests if the apperance stream already contains content.
+     * 
+     * @param streamTokens individual tokens within the appearance stream
      *
      * @return true if it contains any content
      */
-    private boolean containsMarkedContent( List stream )
+    private boolean containsMarkedContent( List<Object> streamTokens )
     {
-        return stream.contains( Operator.getOperator("BMC") );
+        return streamTokens.contains( Operator.getOperator("BMC") );
     }
 
     /**
