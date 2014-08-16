@@ -22,6 +22,7 @@ import java.awt.TexturePaint;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
@@ -67,12 +68,12 @@ public class TilingPaint extends TexturePaint
     }
 
     //  gets rect in parent content stream coordinates
-    private static Rectangle getTransformedRect(PDTilingPattern pattern)
+    private static Rectangle2D getTransformedRect(PDTilingPattern pattern)
     {
-        int x = (int)pattern.getBBox().getLowerLeftX();
-        int y = (int)pattern.getBBox().getLowerLeftY();
-        int width = (int)pattern.getBBox().getWidth();
-        int height = (int)pattern.getBBox().getHeight();
+        float x = (int)pattern.getBBox().getLowerLeftX();
+        float y = (int)pattern.getBBox().getLowerLeftY();
+        float width = (int)pattern.getBBox().getWidth();
+        float height = (int)pattern.getBBox().getHeight();
 
         // xStep and yStep
         if (pattern.getXStep() != 0)
@@ -86,13 +87,13 @@ public class TilingPaint extends TexturePaint
 
         if (pattern.getMatrix() == null)
         {
-            return new Rectangle(x, y, width, height);
+            return new Rectangle2D.Float(x, y, width, height);
         }
         else
         {
             AffineTransform at = pattern.getMatrix().createAffineTransform();
-            Rectangle rect = new Rectangle(x, y, width, height);
-            return at.createTransformedShape(rect).getBounds();
+            Rectangle2D rect = new Rectangle.Float(x, y, width, height);
+            return at.createTransformedShape(rect).getBounds2D();
         }
     }
 
@@ -104,9 +105,9 @@ public class TilingPaint extends TexturePaint
         ColorModel cm = new ComponentColorModel(outputCS, true, false,
                 Transparency.TRANSLUCENT, DataBuffer.TYPE_BYTE);
 
-        Rectangle rect = getTransformedRect(pattern);
-        int width = Math.round((float)rect.getWidth());
-        int height = Math.round((float)rect.getHeight());
+        Rectangle2D rect = getTransformedRect(pattern);
+        int width = Math.round((float) rect.getWidth());
+        int height = Math.round((float) rect.getHeight());
 
         // create raster
         WritableRaster raster = cm.createCompatibleWritableRaster(width, height);
