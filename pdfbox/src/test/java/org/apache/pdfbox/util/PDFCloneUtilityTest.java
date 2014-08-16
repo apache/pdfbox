@@ -86,7 +86,7 @@ public class PDFCloneUtilityTest extends TestCase
         // which would fail before the fix in PDFBOX-2052
         merger.appendDocument(dstDoc, srcDoc);
 
-        // save and reload PDF, so that once can see that the files are legit
+        // save and reload PDF, so that one can see that the files are legit
         dstDoc.save(TESTDIR + CLONEDST);
         PDDocument.load(TESTDIR + CLONESRC).close();
         PDDocument.loadNonSeq(new File(TESTDIR + CLONESRC), null).close();
