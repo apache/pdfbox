@@ -196,7 +196,7 @@ public final class PDAcroForm implements COSObjectable
             COSDictionary element = (COSDictionary) cosFields.getObject(i);
             if (element != null)
             {
-                PDFieldTreeNode field = PDFieldFactory.createField( this, element, null );
+                PDFieldTreeNode field = PDFieldTreeNode.createField( this, element, null );
                 if( field != null )
                 {
                     pdFields.add(field);
@@ -285,7 +285,7 @@ public final class PDAcroForm implements COSObjectable
                     if( fieldName.getString().equals( name ) ||
                         fieldName.getString().equals( nameSubSection[0] ) )
                     {
-                        PDFieldTreeNode root = PDFieldFactory.createField( this, element, null );
+                        PDFieldTreeNode root = PDFieldTreeNode.createField( this, element, null );
 
                         if( nameSubSection.length > 1 )
                         {

@@ -50,7 +50,6 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
-import org.apache.pdfbox.pdmodel.interactive.form.PDFieldFactory;
 import org.apache.pdfbox.pdmodel.interactive.form.PDFieldTreeNode;
 
 /**
@@ -557,7 +556,7 @@ public class PDFMergerUtility
             while (srcFieldsIterator.hasNext())
             {
                 PDFieldTreeNode srcField = srcFieldsIterator.next();
-                PDFieldTreeNode destFieldNode = PDFieldFactory.createField(destAcroForm,
+                PDFieldTreeNode destFieldNode = PDFieldTreeNode.createField(destAcroForm,
                         (COSDictionary) cloner.cloneForNewDocument(srcField.getDictionary()), null);
                 // if the form already has a field with this name then we need to rename this field
                 // to prevent merge conflicts.
