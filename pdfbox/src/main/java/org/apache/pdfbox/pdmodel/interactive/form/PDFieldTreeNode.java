@@ -107,21 +107,6 @@ public abstract class PDFieldTreeNode implements COSObjectable
      */
     public abstract String getFieldType();
 
-    // used by factory class
-    static String findFieldType(COSDictionary dic)
-    {
-        String retval = dic.getNameAsString(COSName.FT);
-        if (retval == null)
-        {
-            COSDictionary parent = (COSDictionary) dic.getDictionaryObject(COSName.PARENT,
-                    COSName.P);
-            if (parent != null)
-            {
-                retval = findFieldType(parent);
-            }
-        }
-        return retval;
-    }
 
     /**
      * setValue sets the fields value to a given string.
@@ -417,7 +402,7 @@ public abstract class PDFieldTreeNode implements COSObjectable
                 COSDictionary kidDictionary = (COSDictionary) kids.getObject(i);
                 if (name[nameIndex].equals(kidDictionary.getString(COSName.T)))
                 {
-                    retval = (PDFieldTreeNode) PDFieldFactory.createField(acroForm, kidDictionary, this);
+                    retval = (PDFieldTreeNode) PDFieldTreeNode.createField(acroForm, kidDictionary, this);
                     if (name.length > nameIndex + 1)
                     {
                         retval = retval.findKid(name, nameIndex + 1);
@@ -453,7 +438,7 @@ public abstract class PDFieldTreeNode implements COSObjectable
                 if (kidDictionary.getDictionaryObject(COSName.FT) != null
                         || (parent != null && parent.getDictionaryObject(COSName.FT) != null))
                 {
-                    PDFieldTreeNode field = PDFieldFactory.createField(acroForm, kidDictionary, this);
+                    PDFieldTreeNode field = PDFieldTreeNode.createField(acroForm, kidDictionary, this);
                     if (field != null)
                     {
                         kidsList.add(field);
@@ -465,7 +450,7 @@ public abstract class PDFieldTreeNode implements COSObjectable
                 }
                 else
                 {
-                    PDFieldTreeNode field = PDFieldFactory.createField(acroForm, kidDictionary, this);
+                    PDFieldTreeNode field = PDFieldTreeNode.createField(acroForm, kidDictionary, this);
                     if (field != null)
                     {
                         kidsList.add(field);
@@ -595,6 +580,75 @@ public abstract class PDFieldTreeNode implements COSObjectable
     public void setAlternateFieldName(String alternateFieldName)
     {
         this.getDictionary().setString(COSName.TU, alternateFieldName);
+    }
+
+    /**
+     * Creates a COSField subclass from the given field.
+     * @param form the form that the field is part of
+     * @param field the dictionary representing a field element
+     * @return the corresponding PDField instance
+     */
+    public static PDFieldTreeNode createField(PDAcroForm form, COSDictionary field, PDFieldTreeNode parentNode)
+    {
+        String fieldType = findFieldType(field);
+        if (FIELD_TYPE_CHOICE.equals(fieldType))
+        {
+            int flags = field.getInt(COSName.FF, 0);
+            if ((flags & PDVariableText.FLAG_COMB) != 0)
+            {
+                return new PDComboBox(form, field, parentNode);
+            }
+            else
+            {
+                return new PDListBox(form, field, parentNode);
+            }
+        }
+        else if (FIELD_TYPE_TEXT.equals(fieldType))
+        {
+            return new PDTextField(form, field, parentNode);
+        }
+        else if (FIELD_TYPE_SIGNATURE.equals(fieldType))
+        {
+            return new PDSignatureField(form, field, parentNode);
+        }
+        else if (FIELD_TYPE_BUTTON.equals(fieldType))
+        {
+            int flags = field.getInt(COSName.FF, 0);
+            // BJL: I have found that the radio flag bit is not always set
+            // and that sometimes there is just a kids dictionary.
+            // so, if there is a kids dictionary then it must be a radio button group.
+            if ((flags & PDButton.FLAG_RADIO) != 0 || field.getDictionaryObject(COSName.KIDS) != null)
+            {
+                return new PDRadioButton(form, field, parentNode);
+            }
+            else if ((flags & PDButton.FLAG_PUSHBUTTON) != 0)
+            {
+                return new PDPushButton(form, field, parentNode);
+            }
+            else
+            {
+                return new PDCheckbox(form, field, parentNode);
+            }
+        }
+        else
+        {
+            return new PDNonTerminalField(form, field, parentNode); 
+        }
+    }
+
+    private static String findFieldType(COSDictionary dic)
+    {
+        String retval = dic.getNameAsString(COSName.FT);
+        if (retval == null)
+        {
+            COSDictionary parent = (COSDictionary) dic.getDictionaryObject(COSName.PARENT,
+                    COSName.P);
+            if (parent != null)
+            {
+                retval = findFieldType(parent);
+            }
+        }
+        return retval;
     }
 
 }
