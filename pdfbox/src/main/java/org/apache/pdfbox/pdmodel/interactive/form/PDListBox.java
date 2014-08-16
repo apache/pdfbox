@@ -30,13 +30,15 @@ import java.io.IOException;
 public final class PDListBox extends PDChoice
 {
     /**
-     * Creates a new list box field
-     * @param acroForm the parent form
-     * @param field the COS field
+     * Constructor.
+     * 
+     * @param theAcroForm The form that this field is part of.
+     * @param field the PDF object to represent as a field.
+     * @param parentNode the parent node of the node to be created
      */
-    public PDListBox(PDAcroForm acroForm, COSDictionary field)
+    public PDListBox(PDAcroForm acroForm, COSDictionary field, PDFieldTreeNode parentNode)
     {
-        super(acroForm, field);
+        super(acroForm, field, parentNode);
     }
 
     @Override

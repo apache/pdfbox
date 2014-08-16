@@ -30,13 +30,15 @@ public final class PDComboBox extends PDChoice
     private static final int FLAG_EDIT = 0x40000;
 
     /**
-     * Creates a new combo box field
-     * @param acroForm the parent form
-     * @param field the COS field
+     * Constructor.
+     * 
+     * @param theAcroForm The form that this field is part of.
+     * @param field the PDF object to represent as a field.
+     * @param parentNode the parent node of the node to be created
      */
-    public PDComboBox(PDAcroForm acroForm, COSDictionary field)
+    public PDComboBox(PDAcroForm acroForm, COSDictionary field, PDFieldTreeNode parentNode)
     {
-        super(acroForm, field);
+        super(acroForm, field, parentNode);
     }
 
     @Override

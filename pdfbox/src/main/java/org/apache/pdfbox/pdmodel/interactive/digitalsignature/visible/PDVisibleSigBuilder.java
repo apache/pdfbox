@@ -39,7 +39,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
-import org.apache.pdfbox.pdmodel.interactive.form.PDField;
+import org.apache.pdfbox.pdmodel.interactive.form.PDFieldTreeNode;
 import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
 
 /**
@@ -118,7 +118,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
             throws IOException
     {
         @SuppressWarnings("unchecked")
-        List<PDField> acroFormFields = acroForm.getFields();
+        List<PDFieldTreeNode> acroFormFields = acroForm.getFields();
         COSDictionary acroFormDict = acroForm.getDictionary();
         acroFormDict.setDirect(true);
         acroFormDict.setInt(COSName.SIG_FLAGS, 3);

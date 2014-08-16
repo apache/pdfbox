@@ -62,7 +62,7 @@ import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureOptions;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
-import org.apache.pdfbox.pdmodel.interactive.form.PDField;
+import org.apache.pdfbox.pdmodel.interactive.form.PDFieldTreeNode;
 import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
 
 /**
@@ -328,14 +328,14 @@ public class PDDocument implements Closeable
         // Create Annotation / Field for signature
         List<PDAnnotation> annotations = page.getAnnotations();
 
-        List<PDField> fields = acroForm.getFields();
+        List<PDFieldTreeNode> fields = acroForm.getFields();
         PDSignatureField signatureField = null;
         if(fields == null) 
         {
-            fields = new ArrayList();
+            fields = new ArrayList<PDFieldTreeNode>();
             acroForm.setFields(fields);
         }
-        for (PDField pdField : fields)
+        for (PDFieldTreeNode pdField : fields)
         {
             if (pdField instanceof PDSignatureField)
             {
@@ -354,13 +354,13 @@ public class PDDocument implements Closeable
         }
 
         // Set the AcroForm Fields
-        List<PDField> acroFormFields = acroForm.getFields();
+        List<PDFieldTreeNode> acroFormFields = acroForm.getFields();
         COSDictionary acroFormDict = acroForm.getDictionary();
         acroFormDict.setDirect(true);
         acroFormDict.setInt(COSName.SIG_FLAGS, 3);
 
         boolean checkFields = false;
-        for (PDField field : acroFormFields)
+        for (PDFieldTreeNode field : acroFormFields)
         {
             if (field instanceof PDSignatureField)
             {
@@ -513,7 +513,7 @@ public class PDDocument implements Closeable
             acroFormDict.setInt(COSName.SIG_FLAGS, 1); // 1 if at least one signature field is available
         }
 
-        List<PDField> field = acroForm.getFields();
+        List<PDFieldTreeNode> field = acroForm.getFields();
 
         for (PDSignatureField sigField : sigFields)
         {
@@ -522,11 +522,11 @@ public class PDDocument implements Closeable
 
             // Check if the field already exist
             boolean checkFields = false;
-            for (Object obj : field)
+            for (PDFieldTreeNode fieldNode : field)
             {
-                if (obj instanceof PDSignatureField)
+                if (fieldNode instanceof PDSignatureField)
                 {
-                    if (((PDSignatureField) obj).getCOSObject().equals(sigField.getCOSObject()))
+                    if (fieldNode.getCOSObject().equals(sigField.getCOSObject()))
                     {
                         checkFields = true;
                         sigField.getCOSObject().setNeedToBeUpdate(true);
@@ -812,7 +812,7 @@ public class PDDocument implements Closeable
             List<COSDictionary> signatureDictionary = document.getSignatureFields(false);
             for (COSDictionary dict : signatureDictionary)
             {
-                fields.add(new PDSignatureField(acroForm, dict));
+                fields.add(new PDSignatureField(acroForm, dict, null));
             }
         }
         return fields;

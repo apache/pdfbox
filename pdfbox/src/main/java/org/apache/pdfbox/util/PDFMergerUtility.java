@@ -50,8 +50,8 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
-import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDFieldFactory;
+import org.apache.pdfbox.pdmodel.interactive.form.PDFieldTreeNode;
 
 /**
  * This class will take a list of pdf documents and merge them, saving the
@@ -544,28 +544,28 @@ public class PDFMergerUtility
     private void mergeAcroForm(PDFCloneUtility cloner, PDAcroForm destAcroForm, PDAcroForm srcAcroForm)
             throws IOException
     {
-        List destFields = destAcroForm.getFields();
-        List srcFields = srcAcroForm.getFields();
+        List<PDFieldTreeNode> destFields = destAcroForm.getFields();
+        List<PDFieldTreeNode> srcFields = srcAcroForm.getFields();
         if (srcFields != null)
         {
             if (destFields == null)
             {
-                destFields = new COSArrayList();
+                destFields = new COSArrayList<PDFieldTreeNode>();
                 destAcroForm.setFields(destFields);
             }
-            Iterator srcFieldsIterator = srcFields.iterator();
+            Iterator<PDFieldTreeNode> srcFieldsIterator = srcFields.iterator();
             while (srcFieldsIterator.hasNext())
             {
-                PDField srcField = (PDField) srcFieldsIterator.next();
-                PDField destField = PDFieldFactory.createField(destAcroForm,
-                        (COSDictionary) cloner.cloneForNewDocument(srcField.getDictionary()));
+                PDFieldTreeNode srcField = srcFieldsIterator.next();
+                PDFieldTreeNode destFieldNode = PDFieldFactory.createField(destAcroForm,
+                        (COSDictionary) cloner.cloneForNewDocument(srcField.getDictionary()), null);
                 // if the form already has a field with this name then we need to rename this field
                 // to prevent merge conflicts.
-                if (destAcroForm.getField(destField.getFullyQualifiedName()) != null)
+                if (destAcroForm.getField(destFieldNode.getFullyQualifiedName()) != null)
                 {
-                    destField.setPartialName("dummyFieldName" + (nextFieldNum++));
+                    destFieldNode.setPartialName("dummyFieldName" + (nextFieldNum++));
                 }
-                destFields.add(destField);
+                destFields.add(destFieldNode);
             }
         }
     }

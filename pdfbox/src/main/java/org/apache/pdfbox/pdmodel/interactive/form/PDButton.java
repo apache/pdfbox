@@ -34,9 +34,33 @@ import java.util.List;
  */
 public abstract class PDButton extends PDField
 {
-    PDButton(PDAcroForm acroForm, COSDictionary field)
+    /**
+     * A Ff flag.
+     */
+    public static final int FLAG_NO_TOGGLE_TO_OFF = 1 << 14;
+    /**
+     * A Ff flag.
+     */
+    public static final int FLAG_RADIO = 1 << 15;
+    /**
+     * A Ff flag.
+     */
+    public static final int FLAG_PUSHBUTTON = 1 << 16;
+    /**
+     * A Ff flag.
+     */
+    public static final int FLAG_RADIOS_IN_UNISON = 1 << 25;
+
+    /**
+     * Constructor.
+     * 
+     * @param theAcroForm The form that this field is part of.
+     * @param field the PDF object to represent as a field.
+     * @param parentNode the parent node of the node to be created
+     */
+    protected PDButton(PDAcroForm acroForm, COSDictionary field, PDFieldTreeNode parentNode)
     {
-        super(acroForm, field);
+        super(acroForm, field, parentNode);
     }
 
     /**
@@ -44,18 +68,18 @@ public abstract class PDButton extends PDField
      *
      * @return A list of java.lang.String values.
      */
-    public List getOptions()
+    public List<String> getOptions()
     {
-        List retval = null;
-        COSArray array = (COSArray)getDictionary().getDictionaryObject( COSName.getPDFName( "Opt" ) );
+        List<String> retval = null;
+        COSArray array = (COSArray)getDictionary().getDictionaryObject( COSName.OPT );
         if( array != null )
         {
-            List strings = new ArrayList();
+            List<String> strings = new ArrayList<String>();
             for( int i=0; i<array.size(); i++ )
             {
                 strings.add( ((COSString)array.getObject( i )).getString() );
             }
-            retval = new COSArrayList( strings, array );
+            retval = new COSArrayList<String>( strings, array );
         }
         return retval;
     }
@@ -65,10 +89,8 @@ public abstract class PDButton extends PDField
      *
      * @param options The list of options for the button.
      */
-    public void setOptions( List options )
+    public void setOptions( List<String> options )
     {
-        getDictionary().setItem(
-            COSName.getPDFName( "Opt" ),
-            COSArrayList.converterToCOSArray( options ) );
+        getDictionary().setItem(COSName.OPT, COSArrayList.converterToCOSArray( options ) );
     }
 }

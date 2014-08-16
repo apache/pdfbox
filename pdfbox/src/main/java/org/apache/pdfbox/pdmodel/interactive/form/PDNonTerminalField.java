@@ -16,20 +16,28 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
-import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSString;
-
 import java.io.IOException;
 
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSInteger;
+import org.apache.pdfbox.cos.COSName;
+
 /**
- * A pushbutton is a purely interactive control that responds immediately to user
- * input without retaining a permanent value.
+ * A non terminal field in an interactive form.
  *
- * @author sug
+ * @author Andreas Lehmkühler
  */
-public class PDPushButton extends PDButton
+public class PDNonTerminalField extends PDFieldTreeNode
 {
+    /**
+     * Constructor.
+     * 
+     * @param theAcroForm The form that this field is part of.
+     */
+    public PDNonTerminalField(PDAcroForm theAcroForm)
+    {
+        super(theAcroForm);
+    }
 
     /**
      * Constructor.
@@ -38,34 +46,48 @@ public class PDPushButton extends PDButton
      * @param field the PDF object to represent as a field.
      * @param parentNode the parent node of the node to be created
      */
-    public PDPushButton( PDAcroForm theAcroForm, COSDictionary field, PDFieldTreeNode parentNode)
+    public PDNonTerminalField(PDAcroForm theAcroForm, COSDictionary field, PDFieldTreeNode parentNode)
     {
         super(theAcroForm, field, parentNode);
     }
 
     /**
-     * @see PDField#setValue(java.lang.String)
-     *
-     * @param value The new value for the field.
-     *
-     * @throws IOException If there is an error creating the appearance stream.
+     * {@inheritDoc}
      */
-    public void setValue(String value) throws IOException
+    @Override
+    public int getFieldFlags()
     {
-        COSString fieldValue = new COSString(value);
-        getDictionary().setItem( COSName.getPDFName( "V" ), fieldValue );
-        getDictionary().setItem( COSName.getPDFName( "DV" ), fieldValue );
+        int retval = 0;
+        COSInteger ff = (COSInteger) getDictionary().getDictionaryObject(COSName.FF);
+        if (ff != null)
+        {
+            retval = ff.intValue();
+        }
+        // There is no need to look up the parent hierarchy within a non terminal field
+        return retval;
     }
 
     /**
-     * getValue gets the fields value to as a string.
-     *
-     * @return The string value of this field.
-     *
-     * @throws IOException If there is an error getting the value.
+     * {@inheritDoc}
      */
+    @Override
+    public String getFieldType()
+    {
+        // There is no need to look up the parent hierarchy within a non terminal field
+        return getDictionary().getNameAsString(COSName.FT);
+    }
+
+    @Override
+    public void setValue(String value) throws IOException
+    {
+        // non terminal fields don't have a value
+    }
+
+    @Override
     public String getValue() throws IOException
     {
-        return getDictionary().getString( "V" );
+        // non terminal fields don't have a value
+        return null;
     }
+
 }

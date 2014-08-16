@@ -23,7 +23,7 @@ import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
-import org.apache.pdfbox.pdmodel.interactive.form.PDField;
+import org.apache.pdfbox.pdmodel.interactive.form.PDFieldTreeNode;
 
 /**
  * This example will take a PDF document and set a FDF field in it.
@@ -46,7 +46,7 @@ public class SetField
     {
         PDDocumentCatalog docCatalog = pdfDocument.getDocumentCatalog();
         PDAcroForm acroForm = docCatalog.getAcroForm();
-        PDField field = acroForm.getField(name);
+        PDFieldTreeNode field = acroForm.getField(name);
         if (field != null)
         {
             field.setValue(value);
