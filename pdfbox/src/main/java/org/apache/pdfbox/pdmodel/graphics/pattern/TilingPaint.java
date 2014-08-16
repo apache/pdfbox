@@ -17,11 +17,11 @@
 package org.apache.pdfbox.pdmodel.graphics.pattern;
 
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.TexturePaint;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -70,10 +70,10 @@ public class TilingPaint extends TexturePaint
     //  gets rect in parent content stream coordinates
     private static Rectangle2D getTransformedRect(PDTilingPattern pattern)
     {
-        float x = (int)pattern.getBBox().getLowerLeftX();
-        float y = (int)pattern.getBBox().getLowerLeftY();
-        float width = (int)pattern.getBBox().getWidth();
-        float height = (int)pattern.getBBox().getHeight();
+        float x = pattern.getBBox().getLowerLeftX();
+        float y = pattern.getBBox().getLowerLeftY();
+        float width = pattern.getBBox().getWidth();
+        float height = pattern.getBBox().getHeight();
 
         // xStep and yStep
         if (pattern.getXStep() != 0)
@@ -85,16 +85,27 @@ public class TilingPaint extends TexturePaint
             height = pattern.getYStep();
         }
 
+        Rectangle2D rectangle;
         if (pattern.getMatrix() == null)
         {
-            return new Rectangle2D.Float(x, y, width, height);
+            rectangle = new Rectangle2D.Float(x, y, width, height);
         }
         else
         {
             AffineTransform at = pattern.getMatrix().createAffineTransform();
-            Rectangle2D rect = new Rectangle.Float(x, y, width, height);
-            return at.createTransformedShape(rect).getBounds2D();
+            Point2D p1 = new Point2D.Float(x,y);
+            Point2D p2 = new Point2D.Float(x+width,y+height);
+            at.transform(p1, p1);
+            at.transform(p2, p2);
+            // at.createTransformedShape(rect).getBounds2D() gets empty rectangle
+            // when negative numbers, so we do it the hard way
+            rectangle = new Rectangle2D.Float(
+                    (float) Math.min(p1.getX(), p2.getX()),
+                    (float) Math.min(p1.getY(), p2.getY()),
+                    (float) Math.abs(p2.getX() - p1.getX()),
+                    (float) Math.abs(p2.getY() - p1.getY()));
         }
+        return rectangle;
     }
 
     // gets image in parent stream coordinates
