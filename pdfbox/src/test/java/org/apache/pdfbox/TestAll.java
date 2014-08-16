@@ -47,6 +47,7 @@ import org.apache.pdfbox.pdmodel.graphics.xobject.PDJpegTest;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDPixelMapTest;
 import org.apache.pdfbox.pdmodel.interactive.form.TestFields;
 import org.apache.pdfbox.util.PDFCloneUtilityTest;
+import org.apache.pdfbox.util.PDFMergerUtilityTest;
 import org.apache.pdfbox.util.TestDateUtil;
 import org.apache.pdfbox.util.TestLayerUtility;
 import org.apache.pdfbox.util.TestMatrix;
@@ -121,6 +122,7 @@ public class TestAll extends TestCase
         suite.addTestSuite(TestPDNumberTreeNode.class);
         
         suite.addTestSuite(PDFCloneUtilityTest.class);
+        suite.addTestSuite(PDFMergerUtilityTest.class);
         suite.addTestSuite(PDLabTest.class);
         suite.addTestSuite(PDPixelMapTest.class);
         suite.addTestSuite(PDJpegTest.class);       
