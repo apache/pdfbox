@@ -76,6 +76,7 @@ public class PDTilingPattern extends PDAbstractPattern
      * This will set the length of the content stream.
      * @param length The new stream length.
      */
+    @Override
     public void setLength(int length)
     {
         getCOSDictionary().setInt(COSName.LENGTH, length);
@@ -85,6 +86,7 @@ public class PDTilingPattern extends PDAbstractPattern
      * This will return the length of the content stream.
      * @return The length of the content stream
      */
+    @Override
     public int getLength()
     {
         return getCOSDictionary().getInt( COSName.LENGTH, 0 );
@@ -94,6 +96,7 @@ public class PDTilingPattern extends PDAbstractPattern
      * This will set the paint type.
      * @param paintType The new paint type.
      */
+    @Override
     public void setPaintType(int paintType)
     {
         getCOSDictionary().setInt(COSName.PAINT_TYPE, paintType);
@@ -130,36 +133,36 @@ public class PDTilingPattern extends PDAbstractPattern
      * This will set the XStep value.
      * @param xStep The new XStep value.
      */
-    public void setXStep(int xStep)
+    public void setXStep(float xStep)
     {
-        getCOSDictionary().setInt(COSName.X_STEP, xStep);
+        getCOSDictionary().setFloat(COSName.X_STEP, xStep);
     }
 
     /**
      * This will return the XStep value.
      * @return The XStep value
      */
-    public int getXStep()
+    public float getXStep()
     {
-        return getCOSDictionary().getInt( COSName.X_STEP, 0 );
+        return getCOSDictionary().getFloat( COSName.X_STEP, 0 );
     }
 
     /**
      * This will set the YStep value.
      * @param yStep The new YStep value.
      */
-    public void setYStep(int yStep)
+    public void setYStep(float yStep)
     {
-        getCOSDictionary().setInt(COSName.Y_STEP, yStep);
+        getCOSDictionary().setFloat(COSName.Y_STEP, yStep);
     }
 
     /**
      * This will return the YStep value.
      * @return The YStep value
      */
-    public int getYStep()
+    public float getYStep()
     {
-        return getCOSDictionary().getInt( COSName.Y_STEP, 0 );
+        return getCOSDictionary().getFloat( COSName.Y_STEP, 0 );
     }
 
     /**
