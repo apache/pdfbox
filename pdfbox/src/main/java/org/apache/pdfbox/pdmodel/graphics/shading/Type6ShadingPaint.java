@@ -39,20 +39,17 @@ class Type6ShadingPaint implements Paint
 
     private final PDShadingType6 shading;
     private final Matrix ctm;
-    private final int pageHeight;
 
     /**
      * Constructor.
      *
      * @param shading the shading resources
      * @param ctm current transformation matrix
-     * @param pageHeight the height of the page
      */
-    public Type6ShadingPaint(PDShadingType6 shading, Matrix ctm, int pageHeight)
+    public Type6ShadingPaint(PDShadingType6 shading, Matrix ctm)
     {
         this.shading = shading;
         this.ctm = ctm;
-        this.pageHeight = pageHeight;
     }
 
     @Override
@@ -67,7 +64,7 @@ class Type6ShadingPaint implements Paint
     {
         try
         {
-            return new Type6ShadingContext(shading, cm, xform, ctm, pageHeight, deviceBounds);
+            return new Type6ShadingContext(shading, cm, xform, ctm, deviceBounds);
         }
         catch (IOException ex)
         {

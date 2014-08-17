@@ -67,13 +67,12 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
      * @param colorModel the color model to be used
      * @param xform transformation for user to device space
      * @param ctm the transformation matrix
-     * @param pageHeight height of the current page
      * @param dBounds device bounds
      */
     public AxialShadingContext(PDShadingType2 shading, ColorModel colorModel, AffineTransform xform,
-            Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
+            Matrix ctm, Rectangle dBounds) throws IOException
     {
-        super(shading, colorModel, xform, ctm, pageHeight, dBounds);
+        super(shading, colorModel, xform, ctm, dBounds);
         this.axialShadingType = shading;
         coords = shading.getCoords().toFloatArray();
 

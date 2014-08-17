@@ -135,7 +135,7 @@ public final class PDPattern extends PDSpecialColorSpace
                 LOG.error("shadingPattern ist null, will be filled with transparency");
                 return new Color(0,0,0,0);
             }
-            return shading.toPaint(shadingPattern.getMatrix(), pageHeight);
+            return shading.toPaint(shadingPattern.getMatrix());
         }
     }
 

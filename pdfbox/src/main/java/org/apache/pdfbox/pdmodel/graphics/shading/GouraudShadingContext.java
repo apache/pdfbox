@@ -65,13 +65,12 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext impleme
      * @param colorModel the color model to be used
      * @param xform transformation for user to device space
      * @param ctm current transformation matrix
-     * @param pageHeight height of the current page
      * @throws IOException if something went wrong
      */
     protected GouraudShadingContext(PDShading shading, ColorModel colorModel, AffineTransform xform,
-            Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
+            Matrix ctm, Rectangle dBounds) throws IOException
     {
-        super(shading, colorModel, xform, ctm, pageHeight, dBounds);
+        super(shading, colorModel, xform, ctm, dBounds);
         triangleList = new ArrayList<ShadedTriangle>();
         LOG.debug("Background: " + shading.getBackground());
         COSArray bg = shading.getBackground();

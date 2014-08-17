@@ -40,20 +40,17 @@ public class RadialShadingPaint implements Paint
 
     private PDShadingType3 shading;
     private Matrix ctm;
-    private int pageHeight;
 
     /**
      * Constructor.
      *
      * @param shading the shading resources
      * @param ctm current transformation matrix
-     * @param pageHeight size of the current page
      */
-    RadialShadingPaint(PDShadingType3 shading, Matrix ctm, int pageHeight)
+    RadialShadingPaint(PDShadingType3 shading, Matrix ctm)
     {
         this.shading = shading;
         this.ctm = ctm;
-        this.pageHeight = pageHeight;
     }
 
     @Override
@@ -68,7 +65,7 @@ public class RadialShadingPaint implements Paint
     {
         try
         {
-            return new RadialShadingContext(shading, cm, xform, ctm, pageHeight, deviceBounds);
+            return new RadialShadingContext(shading, cm, xform, ctm, deviceBounds);
         }
         catch (IOException ex)
         {

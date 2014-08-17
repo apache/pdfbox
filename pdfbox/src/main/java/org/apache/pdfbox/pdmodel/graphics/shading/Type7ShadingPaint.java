@@ -39,20 +39,17 @@ class Type7ShadingPaint implements Paint
 
     private final PDShadingType7 shading;
     private final Matrix ctm;
-    private final int pageHeight;
 
     /**
      * Constructor.
      *
      * @param shading the shading resources
      * @param ctm current transformation matrix
-     * @param pageHeight the height of the page
      */
-    public Type7ShadingPaint(PDShadingType7 shading, Matrix ctm, int pageHeight)
+    public Type7ShadingPaint(PDShadingType7 shading, Matrix ctm)
     {
         this.shading = shading;
         this.ctm = ctm;
-        this.pageHeight = pageHeight;
     }
 
     @Override
@@ -67,7 +64,7 @@ class Type7ShadingPaint implements Paint
     {
         try
         {
-            return new Type7ShadingContext(shading, cm, xform, ctm, pageHeight, deviceBounds);
+            return new Type7ShadingContext(shading, cm, xform, ctm, deviceBounds);
         }
         catch (IOException ex)
         {

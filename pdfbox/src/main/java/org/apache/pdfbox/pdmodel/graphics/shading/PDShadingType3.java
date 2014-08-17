@@ -43,8 +43,8 @@ public class PDShadingType3 extends PDShadingType2
     }
 
     @Override
-    public Paint toPaint(Matrix matrix, int pageHeight)
+    public Paint toPaint(Matrix matrix)
     {
-        return new RadialShadingPaint(this, matrix, pageHeight);
+        return new RadialShadingPaint(this, matrix);
     }
 }

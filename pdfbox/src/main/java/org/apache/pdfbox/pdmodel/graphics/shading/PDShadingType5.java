@@ -65,8 +65,8 @@ public class PDShadingType5 extends PDTriangleBasedShadingType
     }
 
     @Override
-    public Paint toPaint(Matrix matrix, int pageHeight)
+    public Paint toPaint(Matrix matrix)
     {
-        return new Type5ShadingPaint(this, matrix, pageHeight);
+        return new Type5ShadingPaint(this, matrix);
     }
 }

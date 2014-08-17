@@ -448,8 +448,7 @@ public abstract class PDShading implements COSObjectable
      * Returns an AWT paint which corresponds to this shading
      *
      * @param matrix the pattern matrix
-     * @param pageHeight the height of the current page
      * @return an AWT Paint instance
      */
-    public abstract Paint toPaint(Matrix matrix, int pageHeight);
+    public abstract Paint toPaint(Matrix matrix);
 }

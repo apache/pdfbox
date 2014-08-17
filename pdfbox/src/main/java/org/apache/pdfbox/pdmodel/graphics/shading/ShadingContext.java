@@ -47,7 +47,7 @@ public abstract class ShadingContext
     protected ColorModel outputColorModel;
 
     public ShadingContext(PDShading shading, ColorModel cm, AffineTransform xform,
-            Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
+            Matrix ctm, Rectangle dBounds) throws IOException
     {
         this.shading = shading;
         deviceBounds = dBounds;

@@ -38,20 +38,17 @@ class Type4ShadingPaint implements Paint
 
     private PDShadingType4 shading;
     private Matrix ctm;
-    private int pageHeight;
 
     /**
      * Constructor.
      *
      * @param shading the shading resources
      * @param ctm current transformation matrix
-     * @param pageHeight the height of the page
      */
-    Type4ShadingPaint(PDShadingType4 shading, Matrix ctm, int pageHeight)
+    Type4ShadingPaint(PDShadingType4 shading, Matrix ctm)
     {
         this.shading = shading;
         this.ctm = ctm;
-        this.pageHeight = pageHeight;
     }
 
     @Override
@@ -66,7 +63,7 @@ class Type4ShadingPaint implements Paint
     {
         try
         {
-            return new Type4ShadingContext(shading, cm, xform, ctm, pageHeight, deviceBounds);
+            return new Type4ShadingContext(shading, cm, xform, ctm, deviceBounds);
         }
         catch (IOException ex)
         {
