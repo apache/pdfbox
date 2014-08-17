@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
+import java.awt.geom.GeneralPath;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -26,33 +27,83 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.afm.AFMParser;
-import org.apache.fontbox.afm.FontMetric;
+import org.apache.fontbox.afm.FontMetrics;
+import org.apache.fontbox.ttf.Type1Equivalent;
 import org.apache.fontbox.type1.Type1Font;
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.encoding.AFMEncoding;
 import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.encoding.StandardEncoding;
 import org.apache.pdfbox.encoding.Type1Encoding;
 import org.apache.pdfbox.encoding.WinAnsiEncoding;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDMatrix;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.util.ResourceLoader;
 
 /**
- * PostScript Type 1 Font.
- * 
+ * A PostScript Type 1 Font.
+ *
  * @author Ben Litchfield
  */
-public class PDType1Font extends PDFont
+public class PDType1Font extends PDFont implements PDType1Equivalent
 {
     private static final Log LOG = LogFactory.getLog(PDType1Font.class);
 
+    /**
+     * The static map of the default Adobe font metrics.
+     */
+    private static final Map<String, FontMetrics> AFM_MAP;
+    static
+    {
+        AFM_MAP = new HashMap<String, FontMetrics>();
+        addMetric("Courier-Bold");
+        addMetric("Courier-BoldOblique");
+        addMetric("Courier");
+        addMetric("Courier-Oblique");
+        addMetric("Helvetica");
+        addMetric("Helvetica-Bold");
+        addMetric("Helvetica-BoldOblique");
+        addMetric("Helvetica-Oblique");
+        addMetric("Symbol");
+        addMetric("Times-Bold");
+        addMetric("Times-BoldItalic");
+        addMetric("Times-Italic");
+        addMetric("Times-Roman");
+        addMetric("ZapfDingbats");
+    }
+
+    private static void addMetric(String name)
+    {
+        String prefix = name; // todo: HACK
+        try
+        {
+            String resource = "org/apache/pdfbox/resources/afm/" + prefix + ".afm";
+            InputStream afmStream = ResourceLoader.loadResource(resource);
+            if (afmStream != null)
+            {
+                try
+                {
+                    AFMParser parser = new AFMParser(afmStream);
+                    FontMetrics metric = parser.parse();
+                    AFM_MAP.put(name, metric);
+                }
+                finally
+                {
+                    afmStream.close();
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            LOG.error("Something went wrong when reading the adobe afm files", e);
+        }
+    }
+
+    // todo: replace with enum? or getters?
     public static final PDType1Font TIMES_ROMAN = new PDType1Font("Times-Roman");
     public static final PDType1Font TIMES_BOLD = new PDType1Font("Times-Bold");
     public static final PDType1Font TIMES_ITALIC = new PDType1Font("Times-Italic");
@@ -68,134 +119,67 @@ public class PDType1Font extends PDFont
     public static final PDType1Font SYMBOL = new PDType1Font("Symbol");
     public static final PDType1Font ZAPF_DINGBATS = new PDType1Font("ZapfDingbats");
 
-    private static final Map<String, PDType1Font> STANDARD_14 = new HashMap<String, PDType1Font>();
-    static
-    {
-        STANDARD_14.put(TIMES_ROMAN.getBaseFont(), TIMES_ROMAN);
-        STANDARD_14.put(TIMES_BOLD.getBaseFont(), TIMES_BOLD);
-        STANDARD_14.put(TIMES_ITALIC.getBaseFont(), TIMES_ITALIC);
-        STANDARD_14.put(TIMES_BOLD_ITALIC.getBaseFont(), TIMES_BOLD_ITALIC);
-        STANDARD_14.put(HELVETICA.getBaseFont(), HELVETICA);
-        STANDARD_14.put(HELVETICA_BOLD.getBaseFont(), HELVETICA_BOLD);
-        STANDARD_14.put(HELVETICA_OBLIQUE.getBaseFont(), HELVETICA_OBLIQUE);
-        STANDARD_14.put(HELVETICA_BOLD_OBLIQUE.getBaseFont(), HELVETICA_BOLD_OBLIQUE);
-        STANDARD_14.put(COURIER.getBaseFont(), COURIER);
-        STANDARD_14.put(COURIER_BOLD.getBaseFont(), COURIER_BOLD);
-        STANDARD_14.put(COURIER_OBLIQUE.getBaseFont(), COURIER_OBLIQUE);
-        STANDARD_14.put(COURIER_BOLD_OBLIQUE.getBaseFont(), COURIER_BOLD_OBLIQUE);
-        STANDARD_14.put(SYMBOL.getBaseFont(), SYMBOL);
-        STANDARD_14.put(ZAPF_DINGBATS.getBaseFont(), ZAPF_DINGBATS);
-    }
+    private final FontMetrics afm; // for standard 14 fonts
+    private final Type1Font type1font; // embedded font
+    private final Type1Equivalent type1Equivalent; // embedded or system font for rendering
 
     /**
-     * The static map of the default Adobe font metrics.
-     */
-    private static final Map<String, FontMetric> AFM_MAP;
-
-    static
-    {
-        AFM_MAP = new HashMap<String, FontMetric>();
-        addMetric("Courier-Bold");
-        addMetric("Courier-BoldOblique");
-        addMetric("Courier");
-        addMetric("Courier-Oblique");
-        addMetric("Helvetica");
-        addMetric("Helvetica-Bold");
-        addMetric("Helvetica-BoldOblique");
-        addMetric("Helvetica-Oblique");
-        addMetric("Symbol");
-        addMetric("Times-Bold");
-        addMetric("Times-BoldItalic");
-        addMetric("Times-Italic");
-        addMetric("Times-Roman");
-        addMetric("ZapfDingbats");
-
-        // PDFBOX-239
-        addMetric("Arial", "Helvetica");
-        addMetric("Arial,Bold", "Helvetica-Bold");
-        addMetric("Arial,Italic", "Helvetica-Oblique");
-        addMetric("Arial,BoldItalic", "Helvetica-BoldOblique");
-    }
-
-    private static void addMetric(String name)
-    {
-        addMetric(name, name);
-    }
-
-    private static void addMetric(String name, String prefix)
-    {
-        try
-        {
-            String resource = "org/apache/pdfbox/resources/afm/" + prefix + ".afm";
-            InputStream afmStream = ResourceLoader.loadResource(resource);
-            if (afmStream != null)
-            {
-                try
-                {
-                    AFMParser parser = new AFMParser(afmStream);
-                    FontMetric metric = parser.parse();
-                    AFM_MAP.put(name, metric);
-                }
-                finally
-                {
-                    afmStream.close();
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            LOG.error("Something went wrong when reading the adobe afm files", e);
-        }
-    }
-
-    private PDType1CFont type1CFont = null;
-    private Type1Font type1font = null;
-    private FontMetric afm = null;
-
-    /**
-     * Constructor.
-     */
-    protected PDType1Font()
-    {
-        dict.setItem(COSName.SUBTYPE, COSName.TYPE1);
-    }
-
-    /**
-     * Constructor.
+     * Creates a Type 1 standard 14 font for embedding.
      *
-     * @param baseFont The base font for this font.
+     * @param baseFont One of the standard 14 PostScript names
      */
     private PDType1Font(String baseFont)
     {
         dict.setItem(COSName.SUBTYPE, COSName.TYPE1);
         dict.setName(COSName.BASE_FONT, baseFont);
-        this.fontEncoding = new WinAnsiEncoding();
-        dict.setItem(COSName.ENCODING, COSName.WIN_ANSI_ENCODING); // todo: really?
+        fontEncoding = new WinAnsiEncoding();
+        dict.setItem(COSName.ENCODING, COSName.WIN_ANSI_ENCODING);
+
+        afm = getAFMFromBaseFont(baseFont);
+        if (afm == null)
+        {
+            throw new IllegalArgumentException("No AFM for font " + baseFont);
+        }
+
+        // todo: could load the PFB font here if we wanted to support Standard 14 embedding
+        type1font = null;
+        type1Equivalent = null;
     }
 
     /**
-     * Constructor.
-     * 
-     * @param fontDictionary The font dictionary according to the PDF specification.
+     * Creates a new Type 1 font for embedding.
+     *
+     * @param doc PDF document to write to
+     * @param afmIn AFM file stream
+     * @param pfbIn PFB file stream
+     * @throws IOException
      */
-    public PDType1Font(COSDictionary fontDictionary)
+    public PDType1Font(PDDocument doc, InputStream afmIn, InputStream pfbIn) throws IOException
+    {
+        PDType1FontEmbedder embedder = new PDType1FontEmbedder(doc, dict, afmIn, pfbIn);
+        fontEncoding = embedder.getFontEncoding();
+        afm = null; // only used for standard 14 fonts, not AFM fonts as we already have the PFB
+        type1font = embedder.getType1Font();
+        type1Equivalent = embedder.getType1Font();
+    }
+
+    /**
+     * Creates a Type 1 font from a Font dictionary in a PDF.
+     * 
+     * @param fontDictionary font dictionary
+     */
+    public PDType1Font(COSDictionary fontDictionary) throws IOException
     {
         super(fontDictionary);
         PDFontDescriptor fd = getFontDescriptor();
-        if (fd != null && fd instanceof PDFontDescriptorDictionary)
+        Type1Font t1 = null;
+        if (fd != null && fd instanceof PDFontDescriptorDictionary) // <-- todo: must be true
         {
             // a Type1 font may contain a Type1C font
             PDStream fontFile3 = ((PDFontDescriptorDictionary) fd).getFontFile3();
             if (fontFile3 != null)
             {
-                try
-                {
-                    type1CFont = new PDType1CFont(super.dict);
-                }
-                catch (IOException e)
-                {
-                    LOG.error("Can't read the embedded Type1C font " + fd.getFontName(), e);
-                }
+                throw new IllegalArgumentException("Use PDType1CFont for FontFile3");
             }
 
             // or it may contain a PFB
@@ -213,7 +197,7 @@ public class PDType1Font extends PDFont
                     byte[] segment1 = Arrays.copyOfRange(bytes, 0, length1);
                     byte[] segment2 = Arrays.copyOfRange(bytes, length1, length1 + length2);
 
-                    type1font =  Type1Font.createWithSegments(segment1, segment2);
+                    t1 =  Type1Font.createWithSegments(segment1, segment2);
                 }
                 catch (IOException e)
                 {
@@ -221,57 +205,180 @@ public class PDType1Font extends PDFont
                 }
             }
         }
-        getEncodingFromFont(getFontEncoding() == null);
-    }
 
-    protected FontMetric getAFM()
-    {
-        if (afm == null)
+        // try to find a suitable .pfb font to substitute
+        if (t1 == null)
         {
-            COSBase baseFont = dict.getDictionaryObject(COSName.BASE_FONT);
-            String name = null;
-            if (baseFont instanceof COSName)
-            {
-                name = ((COSName) baseFont).getName();
-                if (name.contains("+"))
-                {
-                    name = name.substring(name.indexOf('+') + 1);
-                }
+            t1 = ExternalFonts.getType1Font(getBaseFont());
+        }
 
-            }
-            else if (baseFont instanceof COSString)
+        type1font = t1;
+
+        // find a type 1-equivalent font to use for rendering, could even be a .ttf
+        if (type1font != null)
+        {
+            type1Equivalent = type1font;
+        }
+        else
+        {
+            Type1Equivalent t1Equiv = ExternalFonts.getType1EquivalentFont(getBaseFont());
+            if (t1Equiv != null)
             {
-                COSString string = (COSString) baseFont;
-                name = string.getString();
+                type1Equivalent = t1Equiv;
             }
-            if (name != null)
+            else
             {
-                afm = AFM_MAP.get(name);
+                LOG.warn("Using fallback font for " + getBaseFont());
+                type1Equivalent = ExternalFonts.getFallbackFont();
             }
         }
-        return afm;
+
+        // todo: for standard 14 only. todo: move this to a subclass "PDStandardType1Font" ?
+        afm = getAFMFromBaseFont(getBaseFont()); // may be null (it usually is)
+
+        determineEncoding();
+        getEncodingFromFont();
+    }
+
+    // todo: move this to a subclass?
+    private FontMetrics getAFMFromBaseFont(String baseFont)
+    {
+        if (baseFont != null)
+        {
+            if (baseFont.contains("+"))
+            {
+                baseFont = baseFont.substring(baseFont.indexOf('+') + 1);
+            }
+            return AFM_MAP.get(baseFont);
+        }
+        return null;
     }
 
     /**
-     * A convenience method to get one of the standard 14 font from name.
-     * 
-     * @param name The name of the font to get.
-     * 
-     * @return The font that matches the name or null if it does not exist.
+     * Extracts the encoding from the font, if there is no Encoding given in the Font dictionary.
      */
-    public static PDType1Font getStandardFont(String name)
+    private void getEncodingFromFont()
     {
-        return STANDARD_14.get(name);
+        if (getFontEncoding() == null)
+        {
+            // todo: this doesn't work properly for TTFs because they fake StandardEncoding currently
+            //       it seems that they should look for a MacRoman cmap instead and claim to use that
+            org.apache.fontbox.encoding.Encoding encoding = type1Equivalent.getEncoding();
+            if (encoding instanceof org.apache.fontbox.encoding.StandardEncoding)
+            {
+                this.fontEncoding = StandardEncoding.INSTANCE;
+            }
+            else if (encoding instanceof org.apache.fontbox.encoding.CustomEncoding)
+            {
+                Map<Integer,String> codeToName = encoding.getCodeToNameMap();
+                Type1Encoding type1Encoding = new Type1Encoding(codeToName.size());
+                for (Integer code : codeToName.keySet())
+                {
+                    type1Encoding.addCharacterEncoding(code, codeToName.get(code));
+                }
+                this.fontEncoding = type1Encoding;
+            }
+        }
     }
 
-    /**
-     * This will get the names of the standard 14 fonts.
-     * 
-     * @return An array of the names of the standard 14 fonts.
-     */
-    public static String[] getStandard14Names()
+    @Override
+    public PDMatrix getFontMatrix()
     {
-        return STANDARD_14.keySet().toArray(new String[14]);
+        if (fontMatrix == null)
+        {
+            // todo: this is an experimental implementation: just use the standard PostScript matrix
+            // todo: don't all PostScript fonts use a 1000upem matrix anyway?
+            if (type1font == null)
+            {
+                COSArray a = new COSArray();
+                a.add(new COSFloat(0.001f));
+                a.add(new COSFloat(0));
+                a.add(new COSFloat(0));
+                a.add(new COSFloat(0.001f));
+                a.add(new COSFloat(0));
+                a.add(new COSFloat(0));
+                fontMatrix = new PDMatrix(a);
+                return fontMatrix;
+            }
+
+            List<Number> numbers = type1font.getFontMatrix();
+            if (numbers != null && numbers.size() == 6)
+            {
+                COSArray array = new COSArray();
+                for (Number number : numbers)
+                {
+                    array.add(new COSFloat(number.floatValue()));
+                }
+                fontMatrix = new PDMatrix(array);
+            }
+            else
+            {
+                // todo: the font should always have a Matrix, so why fallback?
+                super.getFontMatrix();
+            }
+        }
+        return fontMatrix;
+    }
+
+    @Override
+    public PDFontDescriptor getFontDescriptor()
+    {
+        if (super.getFontDescriptor() == null)
+        {
+            if (afm != null)
+            {
+                fontDescriptor = new PDFontDescriptorAFM(afm); // todo: wait, isn't this for embedding?
+            }
+            // todo: else: then what? (no FD means no embedded font, plus we have no AFM: so fallback)
+        }
+        return fontDescriptor;
+    }
+
+    @Override
+    public float getFontHeight(byte[] c, int offset, int length)
+    {
+        if (afm != null)
+        {
+            int code = getCodeFromArray(c, offset, length);
+            Encoding encoding = getFontEncoding();
+            String characterName = encoding.getName(code);
+            return afm.getCharacterHeight(characterName);
+        }
+        return super.getFontHeight(c, offset, length);
+    }
+
+    @Override
+    public float getFontWidth(int charCode)
+    {
+        float width = super.getFontWidth(charCode);
+        if (width <= 0)
+        {
+            // get width from AFM
+            float retval = 0;
+            if (afm != null)
+            {
+                String characterName = fontEncoding.getName(charCode);
+                retval = afm.getCharacterWidth(characterName);
+            }
+            return retval;
+        }
+        else
+        {
+            return width;
+        }
+    }
+
+    @Override
+    public float getAverageFontWidth()
+    {
+        if (afm != null)
+        {
+            return afm.getAverageCharacterWidth();
+        }
+        else
+        {
+            return super.getAverageFontWidth();
+        }
     }
 
     @Override
@@ -281,125 +388,62 @@ public class PDType1Font extends PDFont
         Encoding fontEncoding = getFontEncoding();
         if (fontEncoding == null)
         {
-            FontMetric metric = getAFM();
-            if (metric != null)
+            if (afm != null)
             {
-                fontEncoding = new AFMEncoding(metric);
+                fontEncoding = new Type1Encoding(afm);
             }
+            // todo: get encoding from font if still null
             this.fontEncoding = fontEncoding;
         }
     }
 
     /**
-     * Tries to get the encoding for the type1 font.
-     */
-    private void getEncodingFromFont(boolean extractEncoding)
-    {
-        if (type1font != null)
-        {
-            // FontMatrix
-            List<Number> matrixValues = type1font.getFontMatrix();
-            if (!matrixValues.isEmpty() && matrixValues.size() == 6)
-            {
-                COSArray array = new COSArray();
-                for (Number value : matrixValues  )
-                {
-                    array.add(new COSFloat(value.floatValue()));
-                }
-                fontMatrix = new PDMatrix(array);
-            }
-            if (extractEncoding)
-            {
-                // Encoding
-                org.apache.fontbox.encoding.Encoding encoding = type1font.getEncoding();
-                if (encoding instanceof org.apache.fontbox.encoding.StandardEncoding)
-                {
-                    this.fontEncoding = StandardEncoding.INSTANCE;
-                }
-                else if (encoding instanceof org.apache.fontbox.encoding.CustomEncoding)
-                {
-                    Map<Integer,String> codeToName = encoding.getCodeToNameMap();
-                    Type1Encoding type1Encoding = new Type1Encoding(codeToName.size());
-                    for (Integer code : codeToName.keySet())
-                    {
-                        type1Encoding.addCharacterEncoding(code, codeToName.get(code));
-                    }
-                    this.fontEncoding = type1Encoding;
-                }
-            }
-        }
-    }
-
-    @Override
-    public String encode(byte[] c, int offset, int length) throws IOException
-    {
-        if (type1CFont != null && getFontEncoding() == null)
-        {
-            String character = type1CFont.encode(c, offset, length);
-            if (character != null)
-            {
-                return character;
-            }
-        }
-        return super.encode(c, offset, length);
-    }
-
-    @Override
-    public int encodeToCID(byte[] c, int offset, int length) throws IOException
-    {
-        if (type1CFont != null && getFontEncoding() == null)
-        {
-            return type1CFont.encodeToCID(c, offset, length);
-        }
-        else
-        {
-            return super.encodeToCID(c, offset, length);
-        }
-    }
-
-    @Override
-    public PDMatrix getFontMatrix()
-    {
-        if (type1CFont != null)
-        {
-            return type1CFont.getFontMatrix();
-        }
-        else
-        {
-            return super.getFontMatrix();
-        }
-    }
-
-    /**
-     * Returns the embedded Type1C font if available.
-     * 
-     * @return the Type1C font
-     */
-    public PDType1CFont getType1CFont()
-    {
-        return type1CFont;
-    }
-
-    /**
-     * Returns the embedded Type font if available.
-     *
-     * @return the Type1 font
+     * Returns the embedded or substituted Type 1 font, or null if there is none.
      */
     public Type1Font getType1Font()
     {
         return type1font;
     }
 
-    @Override
-    public void clear()
+    /**
+     * Returns the embedded or system font for rendering. This font is a Type 1-equivalent, but
+     * may not be a Type 1 font, it could be a CFF font or TTF font. If there is no suitable font
+     * then the fallback font will be returned: this method never returns null.
+     */
+    public Type1Equivalent getFontForRendering()
     {
-        super.clear();
-        if (type1CFont != null)
+        return type1Equivalent;
+    }
+
+    @Override
+    public String getName()
+    {
+        return getBaseFont();
+    }
+
+    @Override
+    public boolean hasGlyph(String name)
+    {
+        return type1Equivalent.hasGlyph(name);
+    }
+
+    @Override
+    public String codeToName(int code)
+    {
+        String name = getFontEncoding().getName(code);
+        if (name != null)
         {
-            type1CFont.clear();
-            type1CFont = null;
+            return name;
         }
-        type1font = null;
-        afm = null;
+        else
+        {
+            return ".notdef";
+        }
+    }
+
+    @Override
+    public GeneralPath getPath(String name) throws IOException
+    {
+        return type1Equivalent.getPath(name);
     }
 }

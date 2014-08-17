@@ -17,7 +17,8 @@
 package org.apache.pdfbox.pdmodel.font;
 
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSName;
+
+import java.io.IOException;
 
 /**
  * Type 1 Multiple Master Font.
@@ -27,19 +28,11 @@ import org.apache.pdfbox.cos.COSName;
 public class PDMMType1Font extends PDType1Font
 {
     /**
-     * Constructor.
-     */
-    public PDMMType1Font()
-    {
-        dict.setItem(COSName.SUBTYPE, COSName.MM_TYPE1);
-    }
-
-    /**
-     * Constructor.
+     * Creates an MMType1Font from a Font dictionary in a PDF.
      *
-     * @param fontDictionary The font dictionary according to the PDF specification.
+     * @param fontDictionary font dictionary
      */
-    public PDMMType1Font(COSDictionary fontDictionary)
+    public PDMMType1Font(COSDictionary fontDictionary) throws IOException
     {
         super(fontDictionary);
     }

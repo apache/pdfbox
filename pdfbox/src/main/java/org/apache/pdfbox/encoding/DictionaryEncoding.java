@@ -27,8 +27,7 @@ import org.apache.pdfbox.cos.COSNumber;
 /**
  * This will perform the encoding from a dictionary.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.13 $
+ * @author Ben Litchfield
  */
 public class DictionaryEncoding extends Encoding
 {
@@ -45,15 +44,15 @@ public class DictionaryEncoding extends Encoding
     {
         encoding = fontEncoding;
 
-        //first set up the base encoding
-        //The previious value WinAnsiEncoding() has been changed to StandardEnding
-        //see p 389 of the PDF 1.5 ref�rence table 5.11 entries in a dictionary encoding
-        //"If this entry is absent, the Differences entry describes differences from an implicit
-        //base encoding. For a font program that is embedded in the PDF file, the
-        //implicit base encoding is the font program�s built-in encoding, as described
-        //above and further elaborated in the sections on specific font types below. Otherwise,
-        //for a nonsymbolic font, it is StandardEncoding, and for a symbolic font, it
-        //is the font�s built-in encoding."
+        // first set up the base encoding
+        // The previous value WinAnsiEncoding() has been changed to StandardEnding
+        // see p 389 of the PDF 1.5 reference table 5.11 entries in a dictionary encoding
+        // "If this entry is absent, the Differences entry describes differences from an implicit
+        // base encoding. For a font program that is embedded in the PDF file, the
+        // implicit base encoding is the font program's built-in encoding, as described
+        // above and further elaborated in the sections on specific font types below. Otherwise,
+        // for a nonsymbolic font, it is StandardEncoding, and for a symbolic font, it
+        // is the font's built-in encoding."
 
         // The default base encoding is standardEncoding
         Encoding baseEncoding = StandardEncoding.INSTANCE;

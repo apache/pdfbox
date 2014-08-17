@@ -27,13 +27,11 @@ import java.util.Map;
 import org.apache.fontbox.util.BoundingBox;
 
 /**
- * This is the outermost AFM type.  This can be created by the afmparser with a valid
- * AFM document.
+ * This is the outermost AFM type.  This can be created by the afmparser with a valid AFM document.
  *
- * @author Ben Litchfield (ben@benlitchfield.com)
- * @version $Revision: 1.3 $
+ * @author Ben Litchfield
  */
-public class FontMetric
+public class FontMetrics
 {
     /**
      * This is the version of the FontMetrics.
@@ -80,7 +78,7 @@ public class FontMetric
     /**
      * Constructor.
      */
-    public FontMetric()
+    public FontMetrics()
     {
     }
 
@@ -90,10 +88,8 @@ public class FontMetric
      * @param name The character to get the width for.
      *
      * @return The width of the character.
-     *
-     * @throws IOException If this AFM file does not handle the character.
      */
-    public float getCharacterWidth( String name ) throws IOException
+    public float getCharacterWidth( String name )
     {
         float result = 0;
         CharMetric metric = charMetricsMap.get( name );
@@ -114,12 +110,9 @@ public class FontMetric
      * This will get the width of a character.
      *
      * @param name The character to get the width for.
-     *
      * @return The width of the character.
-     *
-     * @throws IOException If this AFM file does not handle the character.
      */
-    public float getCharacterHeight( String name ) throws IOException
+    public float getCharacterHeight( String name )
     {
         float result = 0;
         CharMetric metric = charMetricsMap.get( name );
@@ -151,7 +144,7 @@ public class FontMetric
      *
      * @throws IOException If this AFM file does not handle the character.
      */
-    public float getAverageCharacterWidth() throws IOException
+    public float getAverageCharacterWidth()
     {
         float average = 0;
         float totalWidths = 0;

@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -41,6 +43,25 @@ public class TextToPDF
 {
     private int fontSize = 10;
     private PDFont font = PDType1Font.HELVETICA;
+
+    private static final Map<String, PDType1Font> STANDARD_14 = new HashMap<String, PDType1Font>();
+    static
+    {
+        STANDARD_14.put(PDType1Font.TIMES_ROMAN.getBaseFont(), PDType1Font.TIMES_ROMAN);
+        STANDARD_14.put(PDType1Font.TIMES_BOLD.getBaseFont(), PDType1Font.TIMES_BOLD);
+        STANDARD_14.put(PDType1Font.TIMES_ITALIC.getBaseFont(), PDType1Font.TIMES_ITALIC);
+        STANDARD_14.put(PDType1Font.TIMES_BOLD_ITALIC.getBaseFont(), PDType1Font.TIMES_BOLD_ITALIC);
+        STANDARD_14.put(PDType1Font.HELVETICA.getBaseFont(), PDType1Font.HELVETICA);
+        STANDARD_14.put(PDType1Font.HELVETICA_BOLD.getBaseFont(), PDType1Font.HELVETICA_BOLD);
+        STANDARD_14.put(PDType1Font.HELVETICA_OBLIQUE.getBaseFont(), PDType1Font.HELVETICA_OBLIQUE);
+        STANDARD_14.put(PDType1Font.HELVETICA_BOLD_OBLIQUE.getBaseFont(), PDType1Font.HELVETICA_BOLD_OBLIQUE);
+        STANDARD_14.put(PDType1Font.COURIER.getBaseFont(), PDType1Font.COURIER);
+        STANDARD_14.put(PDType1Font.COURIER_BOLD.getBaseFont(), PDType1Font.COURIER_BOLD);
+        STANDARD_14.put(PDType1Font.COURIER_OBLIQUE.getBaseFont(), PDType1Font.COURIER_OBLIQUE);
+        STANDARD_14.put(PDType1Font.COURIER_BOLD_OBLIQUE.getBaseFont(), PDType1Font.COURIER_BOLD_OBLIQUE);
+        STANDARD_14.put(PDType1Font.SYMBOL.getBaseFont(), PDType1Font.SYMBOL);
+        STANDARD_14.put(PDType1Font.ZAPF_DINGBATS.getBaseFont(), PDType1Font.ZAPF_DINGBATS);
+    }
 
     /**
      * Create a PDF document with some text.
@@ -188,7 +209,7 @@ public class TextToPDF
                     if( args[i].equals( "-standardFont" ))
                     {
                         i++;
-                        app.setFont( PDType1Font.getStandardFont( args[i] ));
+                        app.setFont( getStandardFont( args[i] ));
                     }
                     else if( args[i].equals( "-ttf" ))
                     {
@@ -224,7 +245,7 @@ public class TextToPDF
      */
     private void usage()
     {
-        String[] std14 = PDType1Font.getStandard14Names();
+        String[] std14 = getStandard14Names();
         System.err.println( "usage: jar -jar pdfbox-app-x.y.z.jar TextToPDF [options] <output-file> <text-file>" );
         System.err.println( "    -standardFont <name>    default:" + PDType1Font.HELVETICA.getBaseFont() );
         for (String std14String : std14)
@@ -233,9 +254,32 @@ public class TextToPDF
         }
         System.err.println( "    -ttf <ttf file>         The TTF font to use.");
         System.err.println( "    -fontSize <fontSize>    default:10" );
-
-
     }
+
+
+    /**
+     * A convenience method to get one of the standard 14 font from name.
+     *
+     * @param name The name of the font to get.
+     *
+     * @return The font that matches the name or null if it does not exist.
+     */
+    private static PDType1Font getStandardFont(String name)
+    {
+        return STANDARD_14.get(name);
+    }
+
+    /**
+     * This will get the names of the standard 14 fonts.
+     *
+     * @return An array of the names of the standard 14 fonts.
+     */
+    private static String[] getStandard14Names()
+    {
+        return STANDARD_14.keySet().toArray(new String[14]);
+    }
+
+
     /**
      * @return Returns the font.
      */

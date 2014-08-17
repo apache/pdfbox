@@ -24,6 +24,7 @@ package org.apache.pdfbox.preflight.font;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_CIDKEYED_CMAP_INVALID_OR_MISSING;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_CIDKEYED_INVALID;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_CIDKEYED_SYSINFO;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_CID_DAMAGED;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_CID_CMAP_DAMAGED;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_DICTIONARY_INVALID;
 import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_DEFAULT_CMAP_WMODE;
@@ -46,8 +47,8 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.pdmodel.font.PDCIDFontType0Font;
-import org.apache.pdfbox.pdmodel.font.PDCIDFontType2Font;
+import org.apache.pdfbox.pdmodel.font.PDCIDFontType0;
+import org.apache.pdfbox.pdmodel.font.PDCIDFontType2;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.preflight.PreflightContext;
@@ -157,22 +158,34 @@ public class Type0FontValidator extends FontValidator<Type0Container>
 
     /**
      * Create the validation object for CIDType0 Font
-     * 
-     * @return
      */
     protected FontValidator<? extends FontContainer> createCIDType0FontValidator(COSDictionary fDict)
     {
-        return new CIDType0FontValidator(context, new PDCIDFontType0Font(fDict, (PDType0Font)font));
+        try
+        {
+            return new CIDType0FontValidator(context, new PDCIDFontType0(fDict, (PDType0Font)font));
+        }
+        catch (IOException e)
+        {
+            this.fontContainer.push(new ValidationError(ERROR_FONTS_CID_DAMAGED, "The CIDType0 font is damaged"));
+            return null;
+        }
     }
 
     /**
      * Create the validation object for CIDType2 Font
-     * 
-     * @return
      */
     protected FontValidator<? extends FontContainer> createCIDType2FontValidator(COSDictionary fDict)
     {
-        return new CIDType2FontValidator(context, new PDCIDFontType2Font(fDict, (PDType0Font)font));
+        try
+        {
+            return new CIDType2FontValidator(context, new PDCIDFontType2(fDict, (PDType0Font)font));
+        }
+        catch (IOException e)
+        {
+            this.fontContainer.push(new ValidationError(ERROR_FONTS_CID_DAMAGED, "The CIDType2 font is damaged"));
+            return null;
+        }
     }
 
     /**
@@ -180,8 +193,6 @@ public class Type0FontValidator extends FontValidator<Type0Container>
      * 
      * The CMap entry must be a dictionary in a PDF/A. This entry can be a String only if the String value is Identity-H
      * or Identity-V
-     * 
-     * @param encoding
      */
     protected void checkEncoding()
     {

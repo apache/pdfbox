@@ -18,24 +18,23 @@
 package org.apache.fontbox.util.autodetect;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Implementers provide find method for searching native operating system for available fonts. This class is based on a
- * class provided by Apache FOP. see org.apache.fop.fonts.autodetect.FontDirFinder
+ * Implementers provide find method for searching native operating system for available fonts.
+ * This class is based on a class provided by Apache FOP.
+ *
+ * See org.apache.fop.fonts.autodetect.FontDirFinder
  */
 public interface FontDirFinder
 {
-
     /**
      * Finds a list of font files.
      * 
      * @return list of font files.
-     * @throws IOException In case of an I/O problem
      */
-    List<File> find() throws IOException;
+    List<File> find();
 
     /**
      * Provides a list of platform specific ttf name mappings.
@@ -43,5 +42,4 @@ public interface FontDirFinder
      * @return a fontname mapping
      */
     Map<String, String> getCommonTTFMapping();
-
 }

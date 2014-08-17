@@ -55,6 +55,7 @@ public abstract class PDCIDFont extends PDFont
         super(fontDictionary);
         this.parent = parent;
         extractWidths();
+        determineEncoding();
     }
 
     /**
@@ -108,10 +109,9 @@ public abstract class PDCIDFont extends PDFont
      * @param offset The offset into the array.
      * @param length The length of the data.
      * @return The width is in 1000 unit of text space, ie 333 or 777
-     * @throws IOException If an error occurs while parsing.
      */
     @Override
-    public float getFontWidth(byte[] c, int offset, int length) throws IOException
+    public float getFontWidth(byte[] c, int offset, int length)
     {
         float retval = getDefaultWidth();
         int code = getCodeFromArray(c, offset, length);
@@ -174,11 +174,9 @@ public abstract class PDCIDFont extends PDFont
      * @param length The length of the data.
      *
      * @return The width is in 1000 unit of text space, ie 333 or 777
-     *
-     * @throws IOException If an error occurs while parsing.
      */
     @Override
-    public float getFontHeight(byte[] c, int offset, int length) throws IOException
+    public float getFontHeight(byte[] c, int offset, int length)
     {
         float retval = 0;
         PDFontDescriptor desc = getFontDescriptor();
@@ -212,11 +210,9 @@ public abstract class PDCIDFont extends PDFont
      * This will get the average font width for all characters.
      *
      * @return The width is in 1000 unit of text space, ie 333 or 777
-     *
-     * @throws IOException If an error occurs while parsing.
      */
     @Override
-    public float getAverageFontWidth() throws IOException
+    public float getAverageFontWidth()
     {
         float totalWidths = 0.0f;
         float characterCount = 0.0f;
@@ -331,7 +327,7 @@ public abstract class PDCIDFont extends PDFont
                 }
                 else
                 {
-                    LOG.debug("'" + cidSystemInfo + "' isn't a predefined CMap, most " +
+                    LOG.warn("'" + cidSystemInfo + "' isn't a predefined CMap, most " +
                               "likely it's embedded in the pdf itself.");
                 }
             }

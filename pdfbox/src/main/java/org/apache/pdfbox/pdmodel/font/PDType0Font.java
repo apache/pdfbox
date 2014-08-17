@@ -33,7 +33,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.util.ResourceLoader;
 
 /**
- * Type 0 (composite) Font.
+ * A Type 0 (composite) font.
  * 
  * @author Ben Litchfield
  */
@@ -49,28 +49,22 @@ public class PDType0Font extends PDFont
      * 
      * @param fontDictionary The font dictionary according to the PDF specification.
      */
-    public PDType0Font(COSDictionary fontDictionary)
+    public PDType0Font(COSDictionary fontDictionary) throws IOException
     {
         super(fontDictionary);
         COSArray descendantFonts = (COSArray)dict.getDictionaryObject(COSName.DESCENDANT_FONTS);
         descendantFontDictionary = (COSDictionary)descendantFonts.getObject(0);
-        if (descendantFontDictionary != null)
+
+        if (descendantFontDictionary == null)
         {
-            try
-            {
-                descendantFont = PDFontFactory.createDescendantFont(descendantFontDictionary, this);
-            }
-            catch (IOException exception)
-            {
-                LOG.error("Error while creating the descendant font!");
-            }
+            throw new IOException("Missing descendant font dictionary");
         }
+        descendantFont = PDFontFactory.createDescendantFont(descendantFontDictionary, this);
+        determineEncoding();
     }
 
     /**
      * Returns the descendant font.
-     *
-     * @return the descendant font.
      */
     public PDCIDFont getDescendantFont()
     {
@@ -90,19 +84,19 @@ public class PDType0Font extends PDFont
     }
 
     @Override
-    public float getFontWidth(byte[] c, int offset, int length) throws IOException
+    public float getFontWidth(byte[] c, int offset, int length)
     {
         return descendantFont.getFontWidth(c, offset, length);
     }
 
     @Override
-    public float getFontHeight(byte[] c, int offset, int length) throws IOException
+    public float getFontHeight(byte[] c, int offset, int length)
     {
         return descendantFont.getFontHeight(c, offset, length);
     }
 
     @Override
-    public float getAverageFontWidth() throws IOException
+    public float getAverageFontWidth()
     {
         return descendantFont.getAverageFontWidth();
     }
@@ -136,7 +130,8 @@ public class PDType0Font extends PDFont
                         cmapName = encodingName.getName();
                     }
                 }
-                if (cmap == null && cmapName != null)
+                // todo: disabled because a Type0 font cannot have a simple Encoding.
+                /*if (cmap == null && cmapName != null)
                 {
                     try
                     {
@@ -144,9 +139,9 @@ public class PDType0Font extends PDFont
                     }
                     catch (IOException exception)
                     {
-                        LOG.debug("Debug: Could not find encoding for " + encodingName);
+                        LOG.warn("Debug: Could not find encoding for " + encodingName);
                     }
-                }
+                }*/
             }
             else if (encoding instanceof COSStream)
             {
@@ -198,7 +193,7 @@ public class PDType0Font extends PDFont
                 }
                 else
                 {
-                    LOG.debug("Debug: '" + cmapName + "' isn't a predefined map, most likely it's" +
+                    LOG.warn("Debug: '" + cmapName + "' isn't a predefined map, most likely it's" +
                             "embedded in the pdf itself.");
                 }
             }
@@ -243,5 +238,12 @@ public class PDType0Font extends PDFont
             descendantFont = null;
         }
         descendantFontDictionary = null;
+    }
+
+    @Override
+    public String toString()
+    {
+        return getClass().getSimpleName() + "/" + getDescendantFont()
+              .getClass().getSimpleName() + " " + getBaseFont();
     }
 }

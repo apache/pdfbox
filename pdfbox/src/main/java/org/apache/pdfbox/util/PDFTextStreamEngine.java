@@ -132,7 +132,9 @@ public class PDFTextStreamEngine extends PDFStreamEngine
         // PDFBOX-373: Replace a null entry with "?" so it is not printed as "(null)"
         if (unicode == null)
         {
-            unicode = "?";
+            //unicode = "?";
+            // fixme: new: don't process non-unicode Text, as it's not meaningful.
+            return;
         }
 
         processTextPosition(new TextPosition(pageRotation, pageSize.getWidth(),

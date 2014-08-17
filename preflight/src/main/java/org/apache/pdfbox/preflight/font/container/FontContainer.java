@@ -104,7 +104,7 @@ public abstract class FontContainer
      * @param cid
      * @throws GlyphException
      */
-    public void checkGlyphWith(int cid) throws GlyphException
+    public void checkGlyphWidth(int cid) throws GlyphException
     {
         if (isAlreadyComputedCid(cid))
         {

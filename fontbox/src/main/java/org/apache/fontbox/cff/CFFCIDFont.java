@@ -17,18 +17,21 @@
 
 package org.apache.fontbox.cff;
 
+import org.apache.fontbox.type1.Type1CharStringReader;
+
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 /**
- * This class represents a CID-Keyed CFF/Type2 Font.
+ * A Type 0 CIDFont represented in a CFF file.
  *
  * @author Villu Ruusmann
  * @author John Hewson
  */
-public class CFFFontROS extends CFFFont
+public class CFFCIDFont extends CFFFont
 {
     private String registry;
     private String ordering;
@@ -36,7 +39,12 @@ public class CFFFontROS extends CFFFont
 
     private List<Map<String, Object>> fontDictionaries = new LinkedList<Map<String,Object>>();
     private List<Map<String, Object>> privateDictionaries = new LinkedList<Map<String,Object>>();
-    private CIDKeyedFDSelect fdSelect = null;
+    private CIDKeyedFDSelect fdSelect;
+
+    private final Map<Integer, CIDKeyedType2CharString> charStringCache =
+            new HashMap<Integer, CIDKeyedType2CharString>();
+
+    private final PrivateType1CharStringReader reader = new PrivateType1CharStringReader();
 
     /**
      * Returns the registry value.
@@ -52,7 +60,7 @@ public class CFFFontROS extends CFFFont
      *
      * @param registry the registry to set
      */
-    public void setRegistry(String registry) 
+    void setRegistry(String registry)
     {
         this.registry = registry;
     }
@@ -72,7 +80,7 @@ public class CFFFontROS extends CFFFont
      *
      * @param ordering the ordering to set
      */
-    public void setOrdering(String ordering) 
+    void setOrdering(String ordering)
     {
         this.ordering = ordering;
     }
@@ -92,7 +100,7 @@ public class CFFFontROS extends CFFFont
      *
      * @param supplement the supplement to set
      */
-    public void setSupplement(int supplement) 
+    void setSupplement(int supplement)
     {
         this.supplement = supplement;
     }
@@ -112,7 +120,7 @@ public class CFFFontROS extends CFFFont
      *
      * @param fontDict the fontDict to set
      */
-    public void setFontDict(List<Map<String, Object>> fontDict)
+    void setFontDict(List<Map<String, Object>> fontDict)
     {
         this.fontDictionaries = fontDict;
     }
@@ -132,7 +140,7 @@ public class CFFFontROS extends CFFFont
      *
      * @param privDict the privDict to set
      */
-    public void setPrivDict(List<Map<String, Object>> privDict) 
+    void setPrivDict(List<Map<String, Object>> privDict)
     {
         this.privateDictionaries = privDict;
     }
@@ -152,59 +160,9 @@ public class CFFFontROS extends CFFFont
      *
      * @param fdSelect the fdSelect to set
      */
-    public void setFdSelect(CIDKeyedFDSelect fdSelect) 
+    void setFdSelect(CIDKeyedFDSelect fdSelect)
     {
         this.fdSelect = fdSelect;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected Mapping createMapping(int code, int sid, String name, byte[] bytes)
-    {
-        Mapping mapping = new Mapping();
-        mapping.setCode(sid); // code = sid
-        mapping.setSID(sid);
-        mapping.setName(name);
-        mapping.setBytes(bytes);
-        return  mapping;
-    }
-
-    /**
-     * Returns the Width value of the given Glyph identifier
-     *
-     * @param cid CID
-     * @return -1 if the CID is missing from the Font.
-     * @throws IOException
-     */
-    public int getWidth(int cid) throws IOException
-    {
-        // search the right FDArray index in the FDSelect according to the Character identifier
-        // this index will be used to access the private dictionary which contains useful values
-        // to compute width.
-        int fdArrayIndex = this.fdSelect.getFd(cid);
-        if (fdArrayIndex == -1 && cid == 0 ) // notdef char
-        {
-            return super.getWidth(cid);
-        }
-        else if (fdArrayIndex == -1)
-        {
-            return 1000;
-        }
-
-        for (Mapping m : getMappings())
-        {
-            if (m.getSID() == cid)
-            {
-                Type1CharString charstring = m.getType1CharString();
-                return charstring.getWidth();
-            }
-        }
-        
-        // CID not found, return the notdef width
-        int nominalWidth = getNominalWidthX(cid);
-        int defaultWidth = getDefaultWidthX(cid);
-        return getNotDefWidth(defaultWidth, nominalWidth);
     }
 
     /**
@@ -213,7 +171,7 @@ public class CFFFontROS extends CFFFont
      * @param cid CID
      * @return defaultWidthX
      */
-    protected int getDefaultWidthX(int cid)
+    private int getDefaultWidthX(int cid)
     {
         int fdArrayIndex = this.fdSelect.getFd(cid);
         if (fdArrayIndex == -1)
@@ -230,7 +188,7 @@ public class CFFFontROS extends CFFFont
      * @param cid CID
      * @return defaultWidthX
      */
-    protected int getNominalWidthX(int cid)
+    private int getNominalWidthX(int cid)
     {
         int fdArrayIndex = this.fdSelect.getFd(cid);
         if (fdArrayIndex == -1)
@@ -241,8 +199,7 @@ public class CFFFontROS extends CFFFont
         return privDict.containsKey("nominalWidthX") ? ((Number)privDict.get("nominalWidthX")).intValue() : 0;
     }
 
-    @Override
-    protected IndexData getLocalSubrIndex(int cid)
+    private IndexData getLocalSubrIndex(int cid)
     {
         int fdArrayIndex = this.fdSelect.getFd(cid);
         if (fdArrayIndex == -1)
@@ -251,5 +208,44 @@ public class CFFFontROS extends CFFFont
         }
         Map<String, Object> privDict = this.privateDictionaries.get(fdArrayIndex);
         return (IndexData)privDict.get("Subrs");
+    }
+
+    /**
+     * Returns the Type 2 charstring for the given CID.
+     *
+     * @param cid CID
+     * @throws IOException if the charstring could not be read
+     */
+    public CIDKeyedType2CharString getType2CharString(int cid) throws IOException
+    {
+        CIDKeyedType2CharString type2 = charStringCache.get(cid);
+        if (type2 == null)
+        {
+            int gid = charset.getGIDForCID(cid);
+
+            byte[] bytes = charStrings.get(gid);
+            if (bytes == null)
+            {
+                bytes = charStrings.get(0); // .notdef
+            }
+            Type2CharStringParser parser = new Type2CharStringParser(fontName, cid);
+            List<Object> type2seq = parser.parse(bytes, globalSubrIndex, getLocalSubrIndex(cid));
+            type2 = new CIDKeyedType2CharString(reader, fontName, cid, gid, type2seq, getDefaultWidthX(cid), getNominalWidthX(cid));
+            charStringCache.put(cid, type2);
+        }
+        return type2;
+    }
+
+    /**
+     * Private implementation of Type1CharStringReader, because only CFFType1Font can
+     * expose this publicly, as CIDFonts only support this for legacy 'seac' commands.
+     */
+    private class PrivateType1CharStringReader implements Type1CharStringReader
+    {
+        @Override
+        public Type1CharString getType1CharString(String name) throws IOException
+        {
+            return CFFCIDFont.this.getType2CharString(0); // .notdef
+        }
     }
 }

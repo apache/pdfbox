@@ -17,30 +17,26 @@
 package org.apache.pdfbox.pdmodel.font;
 
 import java.io.IOException;
-
-import org.apache.fontbox.afm.FontMetric;
-
+import org.apache.fontbox.afm.FontMetrics;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-
 import org.apache.fontbox.util.BoundingBox;
 
 /**
  * This class represents the font descriptor when the font information
  * is coming from an AFM file.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.3 $
+ * @author Ben Litchfield
  */
 public class PDFontDescriptorAFM extends PDFontDescriptor
 {
-    private FontMetric afm;
+    private FontMetrics afm;
 
     /**
      * Constructor.
      *
      * @param afmFile The AFM file.
      */
-    public PDFontDescriptorAFM( FontMetric afmFile )
+    public PDFontDescriptorAFM( FontMetrics afmFile )
     {
         afm = afmFile;
     }

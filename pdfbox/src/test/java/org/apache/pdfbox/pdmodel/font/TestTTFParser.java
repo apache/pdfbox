@@ -62,7 +62,7 @@ public class TestTTFParser
         for (CMAPEncodingEntry e : cmaps)
         {
             if (e.getPlatformId() == NameRecord.PLATFORM_WINDOWS
-                    && e.getPlatformEncodingId() == NameRecord.PLATFORM_ENCODING_WINDOWS_UNICODE)
+                    && e.getPlatformEncodingId() == NameRecord.ENCODING_WINDOWS_UNICODE_BMP)
             {
                 uc = e;
                 break;

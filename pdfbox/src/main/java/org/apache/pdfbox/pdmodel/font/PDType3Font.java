@@ -43,6 +43,7 @@ public class PDType3Font extends PDFont
     public PDType3Font(COSDictionary fontDictionary)
     {
         super(fontDictionary);
+        determineEncoding();
     }
 
     /**

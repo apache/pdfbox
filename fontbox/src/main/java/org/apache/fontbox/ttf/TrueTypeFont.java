@@ -16,6 +16,8 @@
  */
 package org.apache.fontbox.ttf;
 
+import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,13 +26,15 @@ import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.encoding.Encoding;
+import org.apache.fontbox.encoding.StandardEncoding;
 
 /**
  * A TrueType font file.
  * 
  * @author Ben Litchfield
  */
-public class TrueTypeFont 
+public class TrueTypeFont implements Type1Equivalent
 {
     private final Log log = LogFactory.getLog(TrueTypeFont.class);
 
@@ -40,6 +44,7 @@ public class TrueTypeFont
     private int[] advanceWidths = null;
     private Map<String,TTFTable> tables = new HashMap<String,TTFTable>();
     private TTFDataStream data;
+    private Map<String, Integer> postScriptNames;
     
     /**
      * Constructor.  Clients should use the TTFParser to create a new TrueTypeFont object.
@@ -96,6 +101,16 @@ public class TrueTypeFont
     public Collection<TTFTable> getTables()
     {
         return tables.values();
+    }
+
+    /**
+     * Get all of the tables.
+     *
+     * @return All of the tables.
+     */
+    public Map<String, TTFTable> getTableMap()
+    {
+        return tables;
     }
     
     /**
@@ -361,5 +376,85 @@ public class TrueTypeFont
             // the last one is for subsequent glyphs
             return advanceWidths[advanceWidths.length-1];
         }
+    }
+
+    @Override
+    public String getFullName()
+    {
+        return getNaming().getPostScriptName();
+    }
+
+    private void readPostScriptNames()
+    {
+        if (postScriptNames == null)
+        {
+            postScriptNames = new HashMap<String, Integer>();
+            if (getPostScript() != null)
+            {
+                String[] names = getPostScript().getGlyphNames();
+                if (names != null)
+                {
+                    for (int i = 0; i < names.length; i++)
+                    {
+                        postScriptNames.put(names[i], i);
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public GeneralPath getPath(String name) throws IOException
+    {
+        readPostScriptNames();
+
+        GlyphData[] glyphs = getGlyph().getGlyphs();
+        Integer gid = postScriptNames.get(name);
+        if (gid == null || gid < 0 || gid >= glyphs.length)
+        {
+            gid = 0;
+        }
+
+        // some glyphs have no outlines (e.g. space, table, newline)
+        if (glyphs[gid] == null)
+        {
+            return new GeneralPath();
+        }
+        else
+        {
+            GeneralPath path = glyphs[gid].getPath();
+
+            // scale to 1000upem, per PostScript convention
+            // todo: we could do this with the PostScript "matrix" entry, later?
+            float scale = 1000f / getUnitsPerEm();
+            AffineTransform atScale = AffineTransform.getScaleInstance(scale, scale);
+            path.transform(atScale);
+
+            return path;
+        }
+    }
+
+    @Override
+    public boolean hasGlyph(String name)
+    {
+        readPostScriptNames();
+
+        Integer gid = postScriptNames.get(name);
+        GlyphData[] glyphs = getGlyph().getGlyphs();
+        return !(gid == null || gid < 0 || gid >= glyphs.length);
+    }
+
+    @Override
+    public Encoding getEncoding()
+    {
+        // todo: what to use? There isn't a built-in encoding really, could use the MacRoman cmap?
+        log.warn("Using StandardEncoding for Type 1-equivalent TTF");
+        return new StandardEncoding();
+    }
+
+    @Override
+    public String toString()
+    {
+        return getNaming().getPostScriptName();
     }
 }

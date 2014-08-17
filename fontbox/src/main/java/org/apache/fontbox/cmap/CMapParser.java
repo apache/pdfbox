@@ -703,24 +703,4 @@ public class CMapParser
             op = theOp;
         }
     }
-
-    /**
-     * A simple class to test parsing of cmap files.
-     * 
-     * @param args Some command line arguments.
-     * 
-     * @throws Exception If there is an error parsing the file.
-     */
-    public static void main(String[] args) throws Exception
-    {
-        if (args.length != 1)
-        {
-            System.err.println("usage: java org.apache.fontbox.cmap.CMapParser <CMAP File>");
-            System.exit(-1);
-        }
-        CMapParser parser = new CMapParser();
-        File cmapFile = new File(args[0]);
-        CMap result = parser.parse(cmapFile);
-        System.out.println("Result:" + result);
-    }
 }

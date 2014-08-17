@@ -40,7 +40,7 @@ public class Type1CharString
 {
     private static final Log LOG = LogFactory.getLog(Type1CharString.class);
 
-    private Type1CharStringReader reader;
+    private Type1CharStringReader font;
     private String fontName, glyphName;
     private GeneralPath path = null;
     private int width = 0;
@@ -53,26 +53,32 @@ public class Type1CharString
 
     /**
      * Constructs a new Type1CharString object.
-     * @param reader Parent Type 1 CharString reader
+     * @param font Parent Type 1 CharString font
      * @param sequence Type 1 char string sequence
      */
-    public Type1CharString(Type1CharStringReader reader, String fontName, String glyphName,
+    public Type1CharString(Type1CharStringReader font, String fontName, String glyphName,
                            List<Object> sequence)
     {
-        this(reader, fontName, glyphName);
+        this(font, fontName, glyphName);
         type1Sequence = sequence;
     }
 
     /**
      * Constructor for use in subclasses.
-     * @param reader Parent Type 1 CharString reader
+     * @param font Parent Type 1 CharString font
      */
-    protected Type1CharString(Type1CharStringReader reader, String fontName, String glyphName)
+    protected Type1CharString(Type1CharStringReader font, String fontName, String glyphName)
     {
-        this.reader = reader;
+        this.font = font;
         this.fontName = fontName;
         this.glyphName = glyphName;
         this.current = new Point2D.Float(0, 0);
+    }
+
+    // todo: NEW name (or CID as hex)
+    public String getName()
+    {
+        return glyphName;
     }
 
     /**
@@ -414,7 +420,7 @@ public class Type1CharString
         {
             try
             {
-                Type1CharString base = reader.getType1CharString(baseName);
+                Type1CharString base = font.getType1CharString(baseName);
                 path.append(base.getPath().getPathIterator(null), false);
             }
             catch (IOException e)
@@ -428,7 +434,7 @@ public class Type1CharString
         {
             try
             {
-                Type1CharString accent = reader.getType1CharString(accentName);
+                Type1CharString accent = font.getType1CharString(accentName);
                 AffineTransform at = AffineTransform.getTranslateInstance(
                     leftSideBearing.getX() + adx.floatValue(),
                     leftSideBearing.getY() + ady.floatValue());

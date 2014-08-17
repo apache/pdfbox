@@ -227,9 +227,7 @@ public abstract class Encoding implements COSObjectable
      * This will get the character code for the name.
      * 
      * @param name The name of the character.
-     * 
      * @return The code for the character.
-     * 
      * @throws IOException If there is no character code for the name.
      */
     public int getCode(String name) throws IOException
@@ -237,6 +235,7 @@ public abstract class Encoding implements COSObjectable
         Integer code = nameToCode.get(name);
         if (code == null)
         {
+            // todo: would be much better to return null
             throw new IOException("No character code for character name '" + name + "'");
         }
         return code;
@@ -246,12 +245,9 @@ public abstract class Encoding implements COSObjectable
      * This will take a character code and get the name from the code.
      * 
      * @param code The character code.
-     * 
      * @return The name of the character.
-     * 
-     * @throws IOException If there is no name for the code.
      */
-    public String getName(int code) throws IOException
+    public String getName(int code)
     {
         return codeToName.get(code);
     }
@@ -260,9 +256,7 @@ public abstract class Encoding implements COSObjectable
      * This will take a character code and get the name from the code.
      * 
      * @param c The character.
-     * 
      * @return The name of the character.
-     * 
      * @throws IOException If there is no name for the character.
      */
     public String getNameForCharacter(char c) throws IOException
@@ -279,9 +273,7 @@ public abstract class Encoding implements COSObjectable
      * This will take a name and get the character code for that name.
      * 
      * @param name The name.
-     * 
      * @return The name of the character.
-     * 
      */
     public static String getCharacterForName(String name)
     {
@@ -291,7 +283,7 @@ public abstract class Encoding implements COSObjectable
         }
         if (LOG.isDebugEnabled())
         {
-            LOG.debug("No character for name " + name);
+            LOG.warn("No character for name " + name);
         }
         return null;
     }
@@ -300,9 +292,7 @@ public abstract class Encoding implements COSObjectable
      * This will get the character from the code.
      * 
      * @param code The character code.
-     * 
      * @return The printable character for the code.
-     * 
      * @throws IOException If there is not name for the character.
      */
     public String getCharacter(int code) throws IOException
@@ -319,7 +309,6 @@ public abstract class Encoding implements COSObjectable
      * This will get the character from the name.
      * 
      * @param name The name of the character.
-     * 
      * @return The printable character for the code.
      */
     public String getCharacter(String name)

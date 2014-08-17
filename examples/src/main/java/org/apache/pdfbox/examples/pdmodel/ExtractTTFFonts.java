@@ -28,7 +28,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
-import org.apache.pdfbox.pdmodel.font.PDCIDFontType2Font;
+import org.apache.pdfbox.pdmodel.font.PDCIDFontType2;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontDescriptorDictionary;
 import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
@@ -182,7 +182,7 @@ public class ExtractTTFFonts
                 else if (font instanceof PDType0Font)
                 {
                     PDFont descendantFont = ((PDType0Font) font).getDescendantFont();
-                    if (descendantFont instanceof PDCIDFontType2Font)
+                    if (descendantFont instanceof PDCIDFontType2)
                     {
                         String name = null;
                         if (addKey)

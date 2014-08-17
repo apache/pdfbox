@@ -34,21 +34,24 @@ public class Type2CharString extends Type1CharString
     private int defWidthX = 0;
     private int nominalWidthX = 0;
     private int pathCount = 0;
-    private List<Object> type2sequence;
+    private final List<Object> type2sequence;
+    private final int gid;
 
     /**
      * Constructor.
-     * @param reader Parent CFF font
+     * @param font Parent CFF font
      * @param fontName font name
-     * @param glyphName glyph name
+     * @param glyphName glyph name (or CID as hex string)
+     * @param gid GID
      * @param sequence Type 2 char string sequence
      * @param defaultWidthX default width
      * @param nomWidthX nominal width
      */
-    public Type2CharString(Type1CharStringReader reader, String fontName, String glyphName, List<Object> sequence,
+    public Type2CharString(Type1CharStringReader font, String fontName, String glyphName, int gid, List<Object> sequence,
                            int defaultWidthX, int nomWidthX)
     {
-        super(reader, fontName, glyphName);
+        super(font, fontName, glyphName);
+        this.gid = gid;
         type2sequence = sequence;
         defWidthX = defaultWidthX;
         nominalWidthX = nomWidthX;
@@ -56,8 +59,15 @@ public class Type2CharString extends Type1CharString
     }
 
     /**
-     * Returns the advance width of the glyph.
-     * @return the width
+     * Return the GID (glyph id) of this charstring.
+     */
+    public int getGID()
+    {
+        return gid;
+    }
+
+    /**
+     * Returns the advance width of this glyph.
      */
     public int getWidth()
     {
@@ -73,8 +83,7 @@ public class Type2CharString extends Type1CharString
     }
 
     /**
-     * Returns the Type 2 char string sequence.
-     * @return the Type 2 sequence
+     * Returns the Type 2 charstring sequence.
      */
     public List<Object> getType2Sequence()
     {
@@ -138,7 +147,7 @@ public class Type2CharString extends Type1CharString
         }
         else if ("endchar".equals(name))
         {
-            numbers = clearStack(numbers, numbers.size() == 5);
+            numbers = clearStack(numbers, numbers.size() == 5 || numbers.size() == 1);
             closePath();
             if (numbers.size() == 4)
             {

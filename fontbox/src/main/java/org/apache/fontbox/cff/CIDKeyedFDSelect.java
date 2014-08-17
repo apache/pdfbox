@@ -19,14 +19,14 @@ package org.apache.fontbox.cff;
 
 public abstract class CIDKeyedFDSelect {
 	
-	protected CFFFontROS owner = null;
+	protected CFFCIDFont owner = null;
 	
 	/**
 	 * Constructor.
-	 * @param _owner the owner of the FDSelect data.
+	 * @param owner the owner of the FDSelect data.
 	 */
-	public CIDKeyedFDSelect(CFFFontROS _owner) {
-		this.owner = _owner;
+	public CIDKeyedFDSelect(CFFCIDFont owner) {
+		this.owner = owner;
 	}
 	/**
 	 * Returns the Font DICT index for the given glyph identifier

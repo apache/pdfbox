@@ -42,6 +42,7 @@ import org.apache.pdfbox.pdmodel.common.PDMatrix;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontFactory;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
@@ -393,8 +394,6 @@ public class PDFStreamEngine
             fontMatrixYScaling = fontMatrix.getValue(1, 1);
         }
 
-        float maxVerticalDisplacementText = 0;
-
         Matrix textStateParameters = new Matrix();
         textStateParameters.setValue(0, 0, fontSizeText * horizontalScalingText);
         textStateParameters.setValue(1, 1, fontSizeText);
@@ -406,19 +405,35 @@ public class PDFStreamEngine
         Matrix td = new Matrix();
         Matrix tempMatrix = new Matrix();
 
+        // todo: push this decision into the Font, i.e. hasTwoByteCharacterCodes()
+        // for now we use a workaround which accesses CMap fonts directly
         int codeLength;
+        if (font instanceof PDType0Font)
+        {
+            // "When the current font is a Type 0 font whose Encoding entry is Identity-H or
+            // Identity-V, the string to be shown shall contain pairs of bytes representing CIDs,
+            // high-order byte first."
+
+            // "When the current font is a CIDFont, the string to be shown shall contain pairs of
+            // bytes representing CIDs, high-order byte first."
+
+            // todo: ((PDType0Font)font).getCMap().hasTwoByteMappings() ???
+            codeLength = 2; // todo: HACK, see "9.7.6.2 CMap Mapping" (also p275 for Identity-H or Identity-V,)
+        }
+        else
+        {
+            codeLength = 1;
+        }
+
         for (int i = 0; i < string.length; i += codeLength)
         {
             // Decode the value to a Unicode character
-            codeLength = 1;
             String unicode = font.encode(string, i, codeLength);
             int[] charCodes;
-            if (unicode == null && i + 1 < string.length)
+            if (codeLength == 2)
             {
-                // maybe a multibyte encoding
-                codeLength++;
-                unicode = font.encode(string, i, codeLength);
                 charCodes = new int[] { font.getCodeFromArray(string, i, codeLength) };
+                // todo: shouldn't the above array have two codes?
             }
             else
             {
@@ -433,9 +448,6 @@ public class PDFStreamEngine
             // multiply the width/height with the scaling factor
             charHorizontalDisplacementText = charHorizontalDisplacementText * fontMatrixXScaling;
             charVerticalDisplacementText = charVerticalDisplacementText * fontMatrixYScaling;
-
-            maxVerticalDisplacementText = Math.max(maxVerticalDisplacementText,
-                    charVerticalDisplacementText);
 
             // PDF Spec - 5.5.2 Word Spacing
             //
@@ -496,7 +508,7 @@ public class PDFStreamEngine
             float startXPosition = textMatrixStart.getXPosition();
             float widthText = endXPosition - startXPosition;
 
-            float totalVerticalDisplacementDisp = maxVerticalDisplacementText * fontSizeText *
+            float totalVerticalDisplacementDisp = charVerticalDisplacementText * fontSizeText *
                     textXctm.getYScale();
 
             // process the decoded glyph

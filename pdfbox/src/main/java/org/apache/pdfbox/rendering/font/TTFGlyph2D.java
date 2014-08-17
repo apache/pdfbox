@@ -30,7 +30,7 @@ import org.apache.fontbox.cmap.CMap;
 import org.apache.fontbox.ttf.GlyphData;
 import org.apache.fontbox.ttf.HeaderTable;
 import org.apache.fontbox.ttf.TrueTypeFont;
-import org.apache.pdfbox.pdmodel.font.PDCIDFontType2Font;
+import org.apache.pdfbox.pdmodel.font.PDCIDFontType2;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
@@ -44,7 +44,7 @@ public class TTFGlyph2D implements Glyph2D
 
     private PDFont pdFont;
     private TrueTypeFont ttf;
-    private PDCIDFontType2Font descendantFont;
+    private PDCIDFontType2 descendantFont;
     private String name;
     private float scale = 1.0f;
     private boolean hasScaling = false;
@@ -62,7 +62,7 @@ public class TTFGlyph2D implements Glyph2D
      */
     public TTFGlyph2D(PDTrueTypeFont ttfFont) throws IOException
     {
-        this(ttfFont.getTTFFont(), ttfFont, null);
+        this(ttfFont.getTrueTypeFont(), ttfFont, null);
     }
 
     /**
@@ -72,11 +72,11 @@ public class TTFGlyph2D implements Glyph2D
      */
     public TTFGlyph2D(PDType0Font type0Font) throws IOException
     {
-        this(((PDCIDFontType2Font)type0Font.getDescendantFont()).getTTFFont(), type0Font,
-                (PDCIDFontType2Font)type0Font.getDescendantFont());
+        this(((PDCIDFontType2)type0Font.getDescendantFont()).getTrueTypeFont(), type0Font,
+                (PDCIDFontType2)type0Font.getDescendantFont());
     }
 
-    public TTFGlyph2D(TrueTypeFont ttf, PDFont pdFont, PDCIDFontType2Font descFont)
+    public TTFGlyph2D(TrueTypeFont ttf, PDFont pdFont, PDCIDFontType2 descFont)
             throws IOException
     {
         this.pdFont = pdFont;
@@ -98,7 +98,7 @@ public class TTFGlyph2D implements Glyph2D
      * 
      * @param pdFont the given PDFont
      */
-    private void extractFontSpecifics(PDFont pdFont, PDCIDFontType2Font descFont)
+    private void extractFontSpecifics(PDFont pdFont, PDCIDFontType2 descFont)
     {
         name = pdFont.getBaseFont();
         if (descFont != null)
@@ -209,10 +209,7 @@ public class TTFGlyph2D implements Glyph2D
             }
             else
             {
-                if (LOG.isDebugEnabled())
-                {
-                    LOG.debug(name + ": Glyph not found:" + glyphId);
-                }
+                LOG.error(name + ": Glyph not found:" + glyphId);
             }
         }
         return glyphPath != null ? (GeneralPath) glyphPath.clone() : null;

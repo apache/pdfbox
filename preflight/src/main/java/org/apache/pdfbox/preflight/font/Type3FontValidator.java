@@ -385,15 +385,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
 
     private String getCharNameFromEncoding(int cid) throws ValidationException
     {
-        try
-        {
-            return this.encoding.getName(cid);
-        }
-        catch (IOException e)
-        {
-            // shouldn't occur
-            throw new ValidationException("Unable to check Widths consistency", e);
-        }
+        return this.encoding.getName(cid);
     }
 
     /**

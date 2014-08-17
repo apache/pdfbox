@@ -16,122 +16,98 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
+import org.apache.fontbox.afm.AFMParser;
+import org.apache.fontbox.afm.CharMetric;
+import org.apache.fontbox.afm.FontMetrics;
+import org.apache.fontbox.pfb.PfbParser;
+import org.apache.fontbox.type1.Type1Font;
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSInteger;
+import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.encoding.DictionaryEncoding;
+import org.apache.pdfbox.encoding.Encoding;
+import org.apache.pdfbox.encoding.Type1Encoding;
+import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.common.COSArrayList;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.common.PDStream;
+
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.fontbox.afm.AFMParser;
-import org.apache.fontbox.afm.CharMetric;
-import org.apache.fontbox.afm.FontMetric;
-import org.apache.fontbox.pfb.PfbParser;
-import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSInteger;
-import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.encoding.AFMEncoding;
-import org.apache.pdfbox.encoding.DictionaryEncoding;
-import org.apache.pdfbox.encoding.Encoding;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.common.COSArrayList;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.common.PDStream;
-
 /**
- * Adobe Type 1 Font with an .afm and .pfb file.
- * 
+ * Embedded PDType1Font builder. Helper class to populate a PDType1Font from a PFB and AFM.
+ *
  * @author Michael Niedermair
  */
-public class PDType1AfmPfbFont extends PDType1Font
+class PDType1FontEmbedder
 {
-    private static final int BUFFER_SIZE = 0xffff;
-
-    private FontMetric metric;
-
-    /**
-     * Create a new object.
-     * 
-     * @param doc The PDF document that will hold the embedded font.
-     * @param afmName The font filename.
-     * @throws IOException If there is an error loading the data.
-     */
-    public PDType1AfmPfbFont(final PDDocument doc, final String afmName) throws IOException
-    {
-        InputStream afmIn = new BufferedInputStream(new FileInputStream(afmName), BUFFER_SIZE);
-        String pfbName = afmName.replaceAll(".AFM", "").replaceAll(".afm", "") + ".pfb";
-        InputStream pfbIn = new BufferedInputStream(new FileInputStream(pfbName), BUFFER_SIZE);
-        load(doc, afmIn, pfbIn);
-    }
-
-    /**
-     * Create a new object.
-     * 
-     * @param doc The PDF document that will hold the embedded font.
-     * @param afm The afm input.
-     * @param pfb The pfb input.
-     * @throws IOException If there is an error loading the data.
-     */
-    public PDType1AfmPfbFont(final PDDocument doc, final InputStream afm, final InputStream pfb)
-            throws IOException
-    {
-        load(doc, afm, pfb);
-    }
+    private final Encoding fontEncoding;
+    private final FontMetrics metrics;
+    private final Type1Font type1;
 
     /**
      * This will load a afm and pfb to be embedding into a document.
-     * 
+     *
      * @param doc The PDF document that will hold the embedded font.
-     * @param afm The afm input.
-     * @param pfb The pfb input.
+     * @param dict The Font dictionary to write to.
+     * @param afmStream The afm input.
+     * @param pfbStream The pfb input.
      * @throws IOException If there is an error loading the data.
      */
-    private void load(final PDDocument doc, final InputStream afm, final InputStream pfb)
-            throws IOException
+    public PDType1FontEmbedder(PDDocument doc, COSDictionary dict, InputStream afmStream,
+                               InputStream pfbStream) throws IOException
     {
+        dict.setItem(COSName.SUBTYPE, COSName.TYPE1);
+
         PDFontDescriptorDictionary fd = new PDFontDescriptorDictionary();
         dict.setItem(COSName.FONT_DESC, fd);
 
         // read the pfb
-        PfbParser pfbparser = new PfbParser(pfb);
-        pfb.close();
+        byte[] pfbBytes = IOUtils.toByteArray(pfbStream);
+        PfbParser pfbParser = new PfbParser(new ByteArrayInputStream(pfbBytes));
+        type1 = Type1Font.createWithPFB(new ByteArrayInputStream(pfbBytes));
 
-        PDStream fontStream = new PDStream(doc, pfbparser.getInputStream(), false);
-        fontStream.getStream().setInt("Length", pfbparser.size());
-        for (int i = 0; i < pfbparser.getLengths().length; i++)
+        PDStream fontStream = new PDStream(doc, pfbParser.getInputStream(), false);
+        fontStream.getStream().setInt("Length", pfbParser.size());
+        for (int i = 0; i < pfbParser.getLengths().length; i++)
         {
-            fontStream.getStream().setInt("Length" + (i + 1), pfbparser.getLengths()[i]);
+            fontStream.getStream().setInt("Length" + (i + 1), pfbParser.getLengths()[i]);
         }
         fontStream.addCompression();
         fd.setFontFile(fontStream);
 
         // read the afm
-        AFMParser parser = new AFMParser(afm);
-        metric = parser.parse();
-        this.fontEncoding = afmToDictionary(new AFMEncoding(metric));
+        AFMParser afmParser = new AFMParser(afmStream);
+        metrics = afmParser.parse();
+        this.fontEncoding = encodingFromAFM(metrics);
 
         // set the values
-        dict.setName(COSName.BASE_FONT, metric.getFontName());
-        fd.setFontName(metric.getFontName());
-        fd.setFontFamily(metric.getFamilyName());
+        dict.setName(COSName.BASE_FONT, metrics.getFontName());
+        fd.setFontName(metrics.getFontName());
+        fd.setFontFamily(metrics.getFamilyName());
         fd.setNonSymbolic(true);
-        fd.setFontBoundingBox(new PDRectangle(metric.getFontBBox()));
-        fd.setItalicAngle(metric.getItalicAngle());
-        fd.setAscent(metric.getAscender());
-        fd.setDescent(metric.getDescender());
-        fd.setCapHeight(metric.getCapHeight());
-        fd.setXHeight(metric.getXHeight());
-        fd.setAverageWidth(metric.getAverageCharacterWidth());
-        fd.setCharacterSet(metric.getCharacterSet());
+        fd.setFontBoundingBox(new PDRectangle(metrics.getFontBBox()));
+        fd.setItalicAngle(metrics.getItalicAngle());
+        fd.setAscent(metrics.getAscender());
+        fd.setDescent(metrics.getDescender());
+        fd.setCapHeight(metrics.getCapHeight());
+        fd.setXHeight(metrics.getXHeight());
+        fd.setAverageWidth(metrics.getAverageCharacterWidth());
+        fd.setCharacterSet(metrics.getCharacterSet());
 
         // get firstchar, lastchar
         int firstchar = 255;
         int lastchar = 0;
 
         // widths
-        List<CharMetric> listmetric = metric.getCharMetrics();
+        List<CharMetric> listmetric = metrics.getCharMetrics();
         Encoding encoding = getFontEncoding();
         int maxWidths = 256;
         List<Integer> widths = new ArrayList<Integer>(maxWidths);
@@ -201,8 +177,10 @@ public class PDType1AfmPfbFont extends PDType1Font
     // to the pdf and consequently the StandardEncoding is used so that any special character is
     // missing I've copied the code from the pdfbox-forum posted by V0JT4 and made some additions
     // concerning german umlauts see also https://sourceforge.net/forum/message.php?msg_id=4705274
-    private DictionaryEncoding afmToDictionary(AFMEncoding encoding) throws java.io.IOException
+    private DictionaryEncoding encodingFromAFM(FontMetrics metrics) throws IOException
     {
+        Type1Encoding encoding = new Type1Encoding(metrics);
+
         COSArray array = new COSArray();
         array.add(COSInteger.ZERO);
         for (int i = 0; i < 256; i++)
@@ -226,10 +204,27 @@ public class PDType1AfmPfbFont extends PDType1Font
         return new DictionaryEncoding(dictionary);
     }
 
-    @Override
-    public void clear()
+    /**
+     * Returns the font's encoding.
+     */
+    public Encoding getFontEncoding()
     {
-        super.clear();
-        metric = null;
+        return fontEncoding;
+    }
+
+    /**
+     * Returns the font's metrics.
+     */
+    public FontMetrics getFontMetrics()
+    {
+        return metrics;
+    }
+
+    /**
+     * Returns the Type 1 font.
+     */
+    public Type1Font getType1Font()
+    {
+        return type1;
     }
 }

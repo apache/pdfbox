@@ -21,11 +21,12 @@ import org.apache.fontbox.cff.Type1CharString;
 import org.apache.fontbox.cff.Type1CharStringParser;
 import org.apache.fontbox.encoding.Encoding;
 import org.apache.fontbox.pfb.PfbParser;
+import org.apache.fontbox.ttf.Type1Equivalent;
 
+import java.awt.geom.GeneralPath;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -37,7 +38,7 @@ import java.util.Map;
  *
  * @author John Hewson
  */
-public final class Type1Font implements Type1CharStringReader
+public final class Type1Font implements Type1CharStringReader, Type1Equivalent
 {
     /**
      * Constructs a new Type1Font object from a .pfb stream.
@@ -110,7 +111,6 @@ public final class Type1Font implements Type1CharStringReader
 
     // private caches
     private final Map<String, Type1CharString> charStringCache = new HashMap<String, Type1CharString>();
-    private Collection<Mapping> mappings;
 
     /**
      * Constructs a new Type1Font, called by Type1Parser.
@@ -139,112 +139,35 @@ public final class Type1Font implements Type1CharStringReader
         return Collections.unmodifiableMap(charstrings);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
+    public GeneralPath getPath(String name) throws IOException
+    {
+        return getType1CharString(name).getPath();
+    }
+
+    @Override
+    public boolean hasGlyph(String name)
+    {
+        return charstrings.get(name) != null;
+    }
+
+    @Override
     public Type1CharString getType1CharString(String name) throws IOException
     {
         Type1CharString type1 = charStringCache.get(name);
         if (type1 == null)
         {
+            byte[] bytes = charstrings.get(name);
+            if (bytes == null)
+            {
+                bytes = charstrings.get(".notdef");
+            }
             Type1CharStringParser parser = new Type1CharStringParser(fontName, name);
-            List<Object> sequence = parser.parse(charstrings.get(name), subrs);
+            List<Object> sequence = parser.parse(bytes, subrs);
             type1 = new Type1CharString(this, fontName, name, sequence);
             charStringCache.put(name, type1);
         }
         return type1;
-    }
-
-    /**
-     * Get the mappings for the font as Type1Mapping.
-     *
-     * @return the Type1Mapping
-     */
-    public Collection<? extends Type1Mapping> getType1Mappings()
-    {
-        return getMappings();
-    }
-
-    /**
-     * Get the mapping (code/charname/bytes) for this font.
-     *
-     * @return mappings for character codes
-     */
-    public Collection<Type1Font.Mapping> getMappings()
-    {
-        if (mappings == null)
-        {
-            mappings = new ArrayList<Mapping>();
-            for (String name : getCharStringsDict().keySet())
-            {
-                Integer code = encoding.getCode(name);
-                if (code == null)
-                {
-                    code = 0; // .notdef
-                }
-                Mapping mapping = new Mapping();
-                mapping.setCode(code);
-                mapping.setName(name);
-                mapping.setBytes(getCharStringsDict().get(name));
-                mappings.add(mapping);
-            }
-            mappings = Collections.unmodifiableCollection(mappings);
-        }
-        return mappings;
-    }
-
-    public class Mapping implements Type1Mapping
-    {
-        private int mappedCode;
-        private String mappedName;
-        private byte[] mappedBytes;
-
-        /**
-         * {@inheritDoc}
-         */
-        public Type1CharString getType1CharString() throws IOException
-        {
-            return Type1Font.this.getType1CharString(mappedName);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public int getCode()
-        {
-            return mappedCode;
-        }
-
-        private void setCode(int code)
-        {
-            mappedCode = code;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public String getName()
-        {
-            return mappedName;
-        }
-
-        private void setName(String name)
-        {
-            this.mappedName = name;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public byte[] getBytes()
-        {
-            return mappedBytes;
-        }
-
-        private void setBytes(byte[] bytes)
-        {
-            this.mappedBytes = bytes;
-        }
     }
 
     // font dictionary
@@ -365,6 +288,7 @@ public final class Type1Font implements Type1CharStringReader
      * 
      * @return the full name
      */
+    @Override
     public String getFullName()
     {
         return fullName;

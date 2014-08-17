@@ -26,7 +26,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.fontbox.afm.FontMetric;
 import org.apache.fontbox.cmap.CMap;
 import org.apache.fontbox.cmap.CMapParser;
 import org.apache.pdfbox.cos.COSArray;
@@ -172,7 +171,6 @@ public abstract class PDFont implements COSObjectable
     protected PDFont(COSDictionary fontDictionary)
     {
         dict = fontDictionary;
-        determineEncoding();
     }
 
     /**
@@ -189,14 +187,7 @@ public abstract class PDFont implements COSObjectable
             {
                 fontDescriptor = new PDFontDescriptorDictionary(fd);
             }
-            else
-            {
-                FontMetric afm = getAFM();
-                if (afm != null)
-                {
-                    fontDescriptor = new PDFontDescriptorAFM(afm);
-                }
-            }
+            // todo: NOTE: null return value here if fine, because we override this method
         }
         return fontDescriptor;
     }
@@ -220,7 +211,7 @@ public abstract class PDFont implements COSObjectable
                 }
                 catch (IOException exception)
                 {
-                    LOG.debug("Debug: Could not find encoding for " + encodingName);
+                    LOG.warn("Debug: Could not find encoding for " + encodingName);
                 }
             }
             else if (encoding instanceof COSDictionary)
@@ -301,20 +292,14 @@ public abstract class PDFont implements COSObjectable
      * @param offset The offset into the array.
      * @param length The length of the data.
      * @return The width is in 1000 unit of text space, ie 333 or 777
-     * @throws IOException If an error occurs while parsing.
      */
-    public float getFontWidth(byte[] c, int offset, int length) throws IOException
+    public float getFontWidth(byte[] c, int offset, int length)
     {
         int code = getCodeFromArray(c, offset, length);
         Float fontWidth = fontSizes.get(code);
         if (fontWidth == null)
         {
             fontWidth = getFontWidth(code);
-            if (fontWidth <= 0)
-            {
-                // TODO should this be in PDType1Font??
-                fontWidth = getFontWidthFromAFMFile(code);
-            }
             fontSizes.put(code, fontWidth);
         }
         return fontWidth;
@@ -327,61 +312,46 @@ public abstract class PDFont implements COSObjectable
      * @param offset The offset into the array.
      * @param length The length of the data.
      * @return The height is in 1000 unit of text space, ie 333 or 777
-     * @throws IOException If an error occurs while parsing.
      */
-    public float getFontHeight(byte[] c, int offset, int length) throws IOException
+    public float getFontHeight(byte[] c, int offset, int length)
     {
         // maybe there is already a precalculated value
-        if (avgFontHeight > 0)
+        PDFontDescriptor desc = getFontDescriptor();
+        if (desc != null)
         {
-            return avgFontHeight;
-        }
-        float retval = 0;
-        FontMetric metric = getAFM();
-        if (metric != null)
-        {
-            int code = getCodeFromArray(c, offset, length);
-            Encoding encoding = getFontEncoding();
-            String characterName = encoding.getName(code);
-            retval = metric.getCharacterHeight(characterName);
-        }
-        else
-        {
-            PDFontDescriptor desc = getFontDescriptor();
-            if (desc != null)
+            // the following values are all more or less accurate at least all are average
+            // values. Maybe we'll find another way to get those value for every single glyph
+            // in the future if needed
+            PDRectangle fontBBox = desc.getFontBoundingBox();
+            float retval = 0;
+            if (fontBBox != null)
             {
-                // the following values are all more or less accurate at least all are average
-                // values. Maybe we'll find another way to get those value for every single glyph
-                // in the future if needed
-                PDRectangle fontBBox = desc.getFontBoundingBox();
-                if (fontBBox != null)
-                {
-                    retval = fontBBox.getHeight() / 2;
-                }
-                if (retval == 0)
-                {
-                    retval = desc.getCapHeight();
-                }
-                if (retval == 0)
-                {
-                    retval = desc.getAscent();
-                }
-                if (retval == 0)
-                {
-                    retval = desc.getXHeight();
-                    if (retval > 0)
-                    {
-                        retval -= desc.getDescent();
-                    }
-                }
-                avgFontHeight = retval;
+                retval = fontBBox.getHeight() / 2;
             }
+            if (retval == 0)
+            {
+                retval = desc.getCapHeight();
+            }
+            if (retval == 0)
+            {
+                retval = desc.getAscent();
+            }
+            if (retval == 0)
+            {
+                retval = desc.getXHeight();
+                if (retval > 0)
+                {
+                    retval -= desc.getDescent();
+                }
+            }
+            avgFontHeight = retval;
+            return retval;
         }
-        return retval;
+        return 0;
     }
 
     /**
-     * This will get the width of this string for this font.
+     * Returns the width of the given Unicode string.
      * 
      * @param string The string to get the width of.
      * @return The width of the string in 1000 units of text space, ie 333 567...
@@ -402,9 +372,9 @@ public abstract class PDFont implements COSObjectable
      * This will get the average font width for all characters.
      * 
      * @return The width is in 1000 unit of text space, ie 333 or 777
-     * @throws IOException If an error occurs while parsing.
      */
-    public float getAverageFontWidth() throws IOException
+    // todo: this method is highly suspicious, the average glyph width is not usually a good metric
+    public float getAverageFontWidth()
     {
         float average;
         if (avgFontWidth != 0.0f)
@@ -435,7 +405,7 @@ public abstract class PDFont implements COSObjectable
             }
             else
             {
-                average = getAverageFontWidthFromAFMFile();
+                average = 0;
             }
             avgFontWidth = average;
         }
@@ -459,52 +429,6 @@ public abstract class PDFont implements COSObjectable
             code |= (data[offset + i] + 256) % 256;
         }
         return code;
-    }
-
-    /**
-     * This will attempt to get the font width from an AFM file.
-     * 
-     * @param code The character code we are trying to get.
-     * @return The font width from the AFM file.
-     * @throws IOException if we cannot find the width.
-     */
-    private float getFontWidthFromAFMFile(int code) throws IOException
-    {
-        float retval = 0;
-        FontMetric metric = getAFM();
-        if (metric != null)
-        {
-            String characterName = fontEncoding.getName(code);
-            retval = metric.getCharacterWidth(characterName);
-        }
-        return retval;
-    }
-
-    /**
-     * This will attempt to get the average font width from an AFM file.
-     * 
-     * @return The average font width from the AFM file.
-     * @throws IOException if we cannot find the width.
-     */
-    private float getAverageFontWidthFromAFMFile() throws IOException
-    {
-        float retval = 0;
-        FontMetric metric = getAFM();
-        if (metric != null)
-        {
-            retval = metric.getAverageCharacterWidth();
-        }
-        return retval;
-    }
-
-    /**
-     * This will get an AFM object if one exists.
-     * 
-     * @return The afm object from the name.
-     */
-    protected FontMetric getAFM()
-    {
-        return null;
     }
 
     /**
@@ -538,7 +462,7 @@ public abstract class PDFont implements COSObjectable
     }
 
     /**
-     * This will perform the encoding of a character if needed.
+     * Returns the Unicode character(s) for a given character code.
      * 
      * @param c The character to encode.
      * @param offset The offset into the array to get the data
@@ -871,7 +795,7 @@ public abstract class PDFont implements COSObjectable
 
     /**
      * Returns the toUnicode mapping if present.
-     * 
+     *
      * @return the CMap representing the toUnicode mapping
      */
     public CMap getToUnicodeCMap()
@@ -881,7 +805,7 @@ public abstract class PDFont implements COSObjectable
 
     /**
      * Returns the CMap if present.
-     * 
+     *
      * @return the CMap representing the character encoding
      */
     public CMap getCMap()
@@ -906,5 +830,11 @@ public abstract class PDFont implements COSObjectable
     public int hashCode()
     {
         return this.getCOSObject().hashCode();
+    }
+
+    @Override
+    public String toString()
+    {
+        return getClass().getSimpleName() + " " + getBaseFont();
     }
 }

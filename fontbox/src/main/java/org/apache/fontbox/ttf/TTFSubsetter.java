@@ -48,10 +48,9 @@ import org.apache.commons.logging.LogFactory;
  * Based on code developed by Wolfgang Glas
  * http://svn.clazzes.org/svn/sketch/trunk/pdf/pdf-entities/src/main/java/org/clazzes/sketch/pdf/entities/impl/TTFSubFont.java
  */
-public class TTFSubFont 
+public class TTFSubsetter
 {
-
-    private static final Log LOG = LogFactory.getLog(TTFSubFont.class);
+    private static final Log LOG = LogFactory.getLog(TTFSubsetter.class);
     private static final byte[] PAD_BUF = new byte[] {0,0,0};
     
     private final TrueTypeFont baseTTF;
@@ -71,7 +70,7 @@ public class TTFSubFont
      * @param suffix suffix used for the naming
      * 
      */
-    public TTFSubFont(TrueTypeFont baseFont, String suffix) 
+    public TTFSubsetter(TrueTypeFont baseFont, String suffix)
     {
         baseTTF = baseFont;
         nameSuffix = suffix;
@@ -329,7 +328,7 @@ public class TTFSubFont
     private static boolean replicateNameRecord(NameRecord nr) 
     {
         return nr.getPlatformId() == NameRecord.PLATFORM_WINDOWS 
-                && nr.getPlatformEncodingId() == NameRecord.PLATFORM_ENCODING_WINDOWS_UNICODE 
+                && nr.getPlatformEncodingId() == NameRecord.ENCODING_WINDOWS_UNICODE_BMP
                 && nr.getLanguageId() == 0 
                 && nr.getNameId() >= 0 && nr.getNameId() < 7;
     }
@@ -354,14 +353,14 @@ public class TTFSubFont
             nameRecords = new ArrayList<NameRecord>();
             NameRecord nr = new NameRecord();
             nr.setPlatformId(NameRecord.PLATFORM_WINDOWS);
-            nr.setPlatformEncodingId(NameRecord.PLATFORM_ENCODING_WINDOWS_UNICODE);
+            nr.setPlatformEncodingId(NameRecord.ENCODING_WINDOWS_UNICODE_BMP);
             nr.setLanguageId(0);
             nr.setNameId(NameRecord.NAME_FONT_FAMILY_NAME);
             nr.setString("PDFBox-Dummy-Familyname");
             nameRecords.add(nr);
             nr = new NameRecord();
             nr.setPlatformId(NameRecord.PLATFORM_WINDOWS);
-            nr.setPlatformEncodingId(NameRecord.PLATFORM_ENCODING_WINDOWS_UNICODE);
+            nr.setPlatformEncodingId(NameRecord.ENCODING_WINDOWS_UNICODE_BMP);
             nr.setLanguageId(0);
             nr.setNameId(NameRecord.NAME_FULL_FONT_NAME);
             nr.setString("PDFBox-Dummy-Fullname");
@@ -983,7 +982,7 @@ public class TTFSubFont
                 {
                     name = String.format(Locale.ENGLISH,"uni%04X",uc);
                 }
-                Integer macId = Encoding.MAC_GLYPH_NAMES_INDICES.get(name);
+                Integer macId = WGL4Names.MAC_GLYPH_NAMES_INDICES.get(name);
                 if (macId == null) 
                 {
                     Integer idx = additionalNamesIndices.get(name);
@@ -1006,7 +1005,7 @@ public class TTFSubFont
             for (Integer glyphId : this.glyphIds) 
             {
                 String name = glyphNames[glyphId];
-                Integer macId = Encoding.MAC_GLYPH_NAMES_INDICES.get(name);
+                Integer macId = WGL4Names.MAC_GLYPH_NAMES_INDICES.get(name);
                 if (macId == null) 
                 {
                     Integer idx = additionalNamesIndices.get(name);
