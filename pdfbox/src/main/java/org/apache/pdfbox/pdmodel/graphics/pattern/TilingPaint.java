@@ -119,6 +119,14 @@ public class TilingPaint extends TexturePaint
         Rectangle2D rect = getTransformedRect(pattern);
         int width = Math.round((float) rect.getWidth());
         int height = Math.round((float) rect.getHeight());
+        if (width < 1)
+        {
+            width = 1;
+        }
+        if (height < 1)
+        {
+            height = 1;
+        }        
 
         // create raster
         WritableRaster raster = cm.createCompatibleWritableRaster(width, height);
