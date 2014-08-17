@@ -1037,6 +1037,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             finally 
             {
                 lastClip = lastClipOriginal;                
+                graphics.dispose();
                 graphics = g2dOriginal;
             }
         }
@@ -1071,6 +1072,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             BufferedImage gray = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
             Graphics g = gray.getGraphics();
             g.drawImage(image, 0, 0, null);
+            g.dispose();
 
             WritableRaster result = gray.getRaster();
             return result.createTranslatedChild(minX, minY);
