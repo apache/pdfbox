@@ -56,10 +56,10 @@ abstract class TriangleBasedShadingContext extends ShadingContext
     final protected boolean hasFunction;
 
     public TriangleBasedShadingContext(PDShading shading, ColorModel cm,
-            AffineTransform xform, Matrix ctm, int pageHeight, Rectangle dBounds)
+            AffineTransform xform, Matrix ctm, Rectangle dBounds)
             throws IOException
     {
-        super(shading, cm, xform, ctm, pageHeight, dBounds);
+        super(shading, cm, xform, ctm, dBounds);
         PDTriangleBasedShadingType triangleBasedShadingType = (PDTriangleBasedShadingType) shading;
         hasFunction = shading.getFunction() != null;
         bitsPerCoordinate = triangleBasedShadingType.getBitsPerCoordinate();

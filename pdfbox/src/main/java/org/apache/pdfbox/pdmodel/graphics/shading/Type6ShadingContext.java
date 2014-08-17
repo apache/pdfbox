@@ -41,14 +41,13 @@ class Type6ShadingContext extends PatchMeshesShadingContext
      * @param colorModel the color model to be used
      * @param xform transformation for user to device space
      * @param ctm current transformation matrix
-     * @param pageHeight height of the current page
      * @param dBounds device bounds
      * @throws IOException if something went wrong
      */
     public Type6ShadingContext(PDShadingType6 shading, ColorModel colorModel, AffineTransform xform,
-            Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
+            Matrix ctm, Rectangle dBounds) throws IOException
     {
-        super(shading, colorModel, xform, ctm, pageHeight, dBounds);
+        super(shading, colorModel, xform, ctm, dBounds);
         patchList = getCoonsPatchList(xform, ctm);
         pixelTable = calcPixelTable();
     }

@@ -910,7 +910,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     {
         PDShading shading = getResources().getShadings().get(shadingName.getName());
         Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
-        Paint paint = shading.toPaint(ctm, (int)pageSize.getHeight());
+        Paint paint = shading.toPaint(ctm);
 
         graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
         graphics.setPaint(paint);

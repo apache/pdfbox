@@ -51,13 +51,12 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
      * @param colorModel the color model to be used
      * @param xform transformation for user to device space
      * @param ctm current transformation matrix
-     * @param pageHeight height of the current page
      * @param dBounds device bounds
      */
     public Type1ShadingContext(PDShadingType1 shading, ColorModel colorModel, AffineTransform xform,
-            Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
+            Matrix ctm, Rectangle dBounds) throws IOException
     {
-        super(shading, colorModel, xform, ctm, pageHeight, dBounds);
+        super(shading, colorModel, xform, ctm, dBounds);
         this.type1ShadingType = shading;
 
         // spec p.308

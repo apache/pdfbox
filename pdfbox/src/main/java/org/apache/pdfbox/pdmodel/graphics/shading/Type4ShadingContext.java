@@ -50,12 +50,11 @@ class Type4ShadingContext extends GouraudShadingContext
      * @param cm the color model to be used
      * @param xform transformation for user to device space
      * @param ctm current transformation matrix
-     * @param pageHeight height of the current page
      */
     public Type4ShadingContext(PDShadingType4 shading, ColorModel cm, AffineTransform xform,
-            Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
+            Matrix ctm, Rectangle dBounds) throws IOException
     {
-        super(shading, cm, xform, ctm, pageHeight, dBounds);
+        super(shading, cm, xform, ctm, dBounds);
         LOG.debug("Type4ShadingContext");
 
         bitsPerFlag = shading.getBitsPerFlag();

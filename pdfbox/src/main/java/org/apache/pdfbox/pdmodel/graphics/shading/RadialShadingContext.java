@@ -71,12 +71,11 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
      * @param xform transformation for user to device space
      * @param ctm the transformation matrix
      * @param dBounds device bounds
-     * @param pageHeight height of the current page
      */
     public RadialShadingContext(PDShadingType3 shading, ColorModel colorModel, AffineTransform xform,
-            Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
+            Matrix ctm, Rectangle dBounds) throws IOException
     {
-        super(shading, colorModel, xform, ctm, pageHeight, dBounds);
+        super(shading, colorModel, xform, ctm, dBounds);
         this.radialShadingType = shading;
         coords = shading.getCoords().toFloatArray();
 

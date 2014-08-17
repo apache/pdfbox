@@ -49,13 +49,12 @@ class Type5ShadingContext extends GouraudShadingContext
      * @param cm the color model to be used
      * @param xform transformation for user to device space
      * @param ctm current transformation matrix
-     * @param pageHeight height of the current page
      * @throws IOException if something went wrong
      */
     public Type5ShadingContext(PDShadingType5 shading, ColorModel cm, AffineTransform xform,
-            Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
+            Matrix ctm, Rectangle dBounds) throws IOException
     {
-        super(shading, cm, xform, ctm, pageHeight, dBounds);
+        super(shading, cm, xform, ctm, dBounds);
 
         LOG.debug("Type5ShadingContext");
 

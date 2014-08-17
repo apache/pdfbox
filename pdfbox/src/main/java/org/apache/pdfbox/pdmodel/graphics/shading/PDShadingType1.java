@@ -114,8 +114,8 @@ public class PDShadingType1 extends PDShading
     }
 
     @Override
-    public Paint toPaint(Matrix matrix, int pageHeight)
+    public Paint toPaint(Matrix matrix)
     {
-        return new Type1ShadingPaint(this, matrix, pageHeight);
+        return new Type1ShadingPaint(this, matrix);
     }
 }

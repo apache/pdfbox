@@ -63,14 +63,13 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext imp
      * @param colorModel the color model to be used
      * @param xform transformation for user to device space
      * @param ctm current transformation matrix
-     * @param pageHeight height of the current page
      * @param dBounds device bounds
      * @throws IOException if something went wrong
      */
     protected PatchMeshesShadingContext(PDShading shading, ColorModel colorModel, AffineTransform xform,
-            Matrix ctm, int pageHeight, Rectangle dBounds) throws IOException
+            Matrix ctm, Rectangle dBounds) throws IOException
     {
-        super(shading, colorModel, xform, ctm, pageHeight, dBounds);
+        super(shading, colorModel, xform, ctm, dBounds);
         patchMeshesShadingType = shading;
         bitsPerFlag = ((PDShadingType6) shading).getBitsPerFlag();
         patchList = new ArrayList<Patch>();

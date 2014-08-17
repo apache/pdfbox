@@ -65,8 +65,8 @@ public class PDShadingType4 extends PDTriangleBasedShadingType
     }
 
     @Override
-    public Paint toPaint(Matrix matrix, int pageHeight)
+    public Paint toPaint(Matrix matrix)
     {
-        return new Type4ShadingPaint(this, matrix, pageHeight);
+        return new Type4ShadingPaint(this, matrix);
     }
 }

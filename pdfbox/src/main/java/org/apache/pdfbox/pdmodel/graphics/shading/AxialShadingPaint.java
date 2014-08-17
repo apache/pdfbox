@@ -40,20 +40,17 @@ public class AxialShadingPaint implements Paint
 
     private PDShadingType2 shading;
     private Matrix ctm;
-    private int pageHeight;
 
     /**
      * Constructor.
      *
      * @param shadingType2 the shading resources
      * @param ctm current transformation matrix
-     * @param pageHeight size of the current page
      */
-    AxialShadingPaint(PDShadingType2 shadingType2, Matrix ctm, int pageHeight)
+    AxialShadingPaint(PDShadingType2 shadingType2, Matrix ctm)
     {
         shading = shadingType2;
         this.ctm = ctm;
-        this.pageHeight = pageHeight;
     }
 
     @Override
@@ -69,7 +66,7 @@ public class AxialShadingPaint implements Paint
     {
         try
         {
-            return new AxialShadingContext(shading, cm, xform, ctm, pageHeight, deviceBounds);
+            return new AxialShadingContext(shading, cm, xform, ctm, deviceBounds);
         }
         catch (IOException ex)
         {
