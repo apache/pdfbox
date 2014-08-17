@@ -983,7 +983,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             Area lastClipOriginal = lastClip;
 
             // check underlying g2d
-            double unitSize = 1.0;
 
             Area groupClip = new Area(getGraphicsState().getCurrentClippingPath());
             if (clippingPath != null)
@@ -993,7 +992,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             }
 
             AffineTransform at = g2dOriginal.getTransform();
-            at.scale(unitSize, unitSize);
             Shape clippingPathInPixels = at.createTransformedShape(groupClip);
             Rectangle2D bounds2D = clippingPathInPixels.getBounds2D();
 
