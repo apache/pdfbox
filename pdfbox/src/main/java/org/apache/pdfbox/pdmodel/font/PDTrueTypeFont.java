@@ -65,7 +65,7 @@ public class PDTrueTypeFont extends PDFont
     private CMAPEncodingEntry cmapMacintoshSymbol = null;
     private boolean cmapInitialized = false;
 
-    private TrueTypeFont ttf = null;
+    private final TrueTypeFont ttf;
     private final HashMap<Integer, Float> advanceWidths = new HashMap<Integer, Float> ();
 
     /**
@@ -78,6 +78,7 @@ public class PDTrueTypeFont extends PDFont
         super(fontDictionary);
 
         PDFontDescriptorDictionary fd = (PDFontDescriptorDictionary) super.getFontDescriptor();
+        TrueTypeFont ttfFont = null;
         if (fd != null)
         {
             PDStream ff2Stream = fd.getFontFile2();
@@ -85,16 +86,24 @@ public class PDTrueTypeFont extends PDFont
             {
                 // embedded
                 TTFParser ttfParser = new TTFParser(true);
-                ttf = ttfParser.parseTTF(ff2Stream.createInputStream());
+                ttfFont = ttfParser.parseTTF(ff2Stream.createInputStream());
             }
         }
 
         // substitute
-        if (ttf == null)
+        if (ttfFont == null)
         {
-            ttf = ExternalFonts.getTrueTypeFont(getBaseFont());
+            ttfFont = ExternalFonts.getTrueTypeFont(getBaseFont());
+
+            // fallback
+            if (ttfFont == null)
+            {
+                LOG.warn("Using fallback font for " + getBaseFont());
+                ttfFont = ExternalFonts.getFallbackFont();
+            }
         }
-        // todo: put the fallback here? (i.e. make this class fallback-aware - cleaner)
+
+        ttf = ttfFont;
 
         determineEncoding();
     }
@@ -299,7 +308,6 @@ public class PDTrueTypeFont extends PDFont
         cmapWinSymbol = null;
         cmapMacintoshSymbol = null;
         cmapInitialized = false;
-        ttf = null;
         advanceWidths.clear();
     }
 }

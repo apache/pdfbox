@@ -93,7 +93,7 @@ public final class ExternalFonts
     private final static Map<String, List<String>> substitutes = new HashMap<String, List<String>>();
     static
     {
-        // well-known substitutes commonly found on end-user systems
+        // substitutes for standard 14 fonts
         substitutes.put("Courier",
                 Arrays.asList("CourierNew", "CourierNewPSMT"));
         substitutes.put("Courier-Bold",
@@ -125,6 +125,7 @@ public final class ExternalFonts
         // the Adobe Supplement to the ISO 32000 specifies some alternative names for some
         // of the standard 14 fonts, so we map these to our fallbacks above
         substitutes.put("CourierCourierNew", substitutes.get("Courier"));
+        substitutes.put("CourierNew", substitutes.get("Courier"));
         substitutes.put("CourierNew,Italic", substitutes.get("Courier-Oblique"));
         substitutes.put("CourierNew,Bold", substitutes.get("Courier-Bold"));
         substitutes.put("CourierNew,BoldItalic", substitutes.get("Courier-BoldOblique"));
