@@ -887,7 +887,14 @@ public class CFFParser
         @Override
         public int getFDIndex(int gid)
         {
-            return fds[gid];
+            if (gid < fds.length)
+            {
+                return fds[gid];
+            }
+            else
+            {
+                return 0;
+            }
         }
 
         @Override
