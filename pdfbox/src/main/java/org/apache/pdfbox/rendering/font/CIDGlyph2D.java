@@ -59,6 +59,15 @@ public class CIDGlyph2D implements Glyph2D
             return cache.get(cid);
         }
 
+        // don't draw CID 0
+        if (cid == 0)
+        {
+            LOG.warn("No glyph for " + code + " (CID 0000) in font " + fontName);
+            GeneralPath path = new GeneralPath();
+            cache.put(cid, path);
+            return path;
+        }
+
         try
         {
             CFFCIDFont cidFont = font.getCFFCIDFont();

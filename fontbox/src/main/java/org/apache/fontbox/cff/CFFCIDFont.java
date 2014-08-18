@@ -39,7 +39,7 @@ public class CFFCIDFont extends CFFFont
 
     private List<Map<String, Object>> fontDictionaries = new LinkedList<Map<String,Object>>();
     private List<Map<String, Object>> privateDictionaries = new LinkedList<Map<String,Object>>();
-    private CIDKeyedFDSelect fdSelect;
+    private FDSelect fdSelect;
 
     private final Map<Integer, CIDKeyedType2CharString> charStringCache =
             new HashMap<Integer, CIDKeyedType2CharString>();
@@ -110,7 +110,7 @@ public class CFFCIDFont extends CFFFont
      *
      * @return the fontDict
      */
-    public List<Map<String, Object>> getFontDict() 
+    public List<Map<String, Object>> getFontDicts()
     {
         return fontDictionaries;
     }
@@ -130,7 +130,7 @@ public class CFFCIDFont extends CFFFont
      *
      * @return the privDict
      */
-    public List<Map<String, Object>> getPrivDict() 
+    public List<Map<String, Object>> getPrivDicts()
     {
         return privateDictionaries;
     }
@@ -150,7 +150,7 @@ public class CFFCIDFont extends CFFFont
      *
      * @return the fdSelect
      */
-    public CIDKeyedFDSelect getFdSelect() 
+    public FDSelect getFdSelect()
     {
         return fdSelect;
     }
@@ -160,7 +160,7 @@ public class CFFCIDFont extends CFFFont
      *
      * @param fdSelect the fdSelect to set
      */
-    void setFdSelect(CIDKeyedFDSelect fdSelect)
+    void setFdSelect(FDSelect fdSelect)
     {
         this.fdSelect = fdSelect;
     }
@@ -173,7 +173,7 @@ public class CFFCIDFont extends CFFFont
      */
     private int getDefaultWidthX(int cid)
     {
-        int fdArrayIndex = this.fdSelect.getFd(cid);
+        int fdArrayIndex = this.fdSelect.getFDIndex(cid);
         if (fdArrayIndex == -1)
         {
             return 1000;
@@ -190,7 +190,7 @@ public class CFFCIDFont extends CFFFont
      */
     private int getNominalWidthX(int cid)
     {
-        int fdArrayIndex = this.fdSelect.getFd(cid);
+        int fdArrayIndex = this.fdSelect.getFDIndex(cid);
         if (fdArrayIndex == -1)
         {
             return 0;
@@ -201,7 +201,7 @@ public class CFFCIDFont extends CFFFont
 
     private IndexData getLocalSubrIndex(int cid)
     {
-        int fdArrayIndex = this.fdSelect.getFd(cid);
+        int fdArrayIndex = this.fdSelect.getFDIndex(cid);
         if (fdArrayIndex == -1)
         {
             return new IndexData(0);

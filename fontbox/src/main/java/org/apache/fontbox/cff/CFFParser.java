@@ -509,7 +509,7 @@ public class CFFParser
         DictData.Entry fdSelectEntry = topDict.getEntry("FDSelect");
         int fdSelectPos = fdSelectEntry.getNumber(0).intValue();
         input.setPosition(fdSelectPos);
-        CIDKeyedFDSelect fdSelect = readFDSelect(input, charStringsIndex.getCount(), font);
+        FDSelect fdSelect = readFDSelect(input, charStringsIndex.getCount(), font);
 
         // todo: almost certainly erroneous - CIDFonts do not have a top-level private dict
         //font.addValueToPrivateDict("defaultWidthX", 1000);
@@ -727,7 +727,7 @@ public class CFFParser
      * @return the FDSelect data
      * @throws IOException
      */
-    private CIDKeyedFDSelect readFDSelect(CFFDataInput dataInput, int nGlyphs, CFFCIDFont ros) throws IOException
+    private FDSelect readFDSelect(CFFDataInput dataInput, int nGlyphs, CFFCIDFont ros) throws IOException
     {
         int format = dataInput.readCard8();
         if (format == 0)
@@ -799,9 +799,9 @@ public class CFFParser
     }
 
     /**
-     *  Container of a Format 3 FDSelect data (see "The Compact Font Format Specification" chapter "FDSelect" ).
+     *  Format 3 FDSelect data.
      */
-    private static class Format3FDSelect extends CIDKeyedFDSelect
+    private static class Format3FDSelect extends FDSelect
     {
         private int format;
         private int nbRanges;
@@ -813,21 +813,16 @@ public class CFFParser
             super(owner);
         }
 
-        /*
-         * (non-Javadoc)
-         * 
-         * @see org.apache.fontbox.cff.CIDKeyedFDSelect#getFd(int)
-         */
         @Override
-        public int getFd(int glyph)
+        public int getFDIndex(int gid)
         {
             for (int i = 0; i < nbRanges; ++i)
             {
-                if (range3[i].first >= glyph)
+                if (range3[i].first >= gid)
                 {
                     if (i + 1 < nbRanges)
                     {
-                        if (range3[i + 1].first > glyph)
+                        if (range3[i + 1].first > gid)
                         {
                             return range3[i].fd;
                         }
@@ -838,8 +833,8 @@ public class CFFParser
                     }
                     else
                     {
-                        // last range reach, the sentinel must be greater than sid
-                        if (sentinel > glyph)
+                        // last range reach, the sentinel must be greater than gid
+                        if (sentinel > gid)
                         {
                             return range3[i].fd;
                         }
@@ -877,9 +872,9 @@ public class CFFParser
     }
 
     /**
-     *  Container of a Format 0 FDSelect data (see "The Compact Font Format Specification" chapter "FDSelect" ).
+     *  Format 0 FDSelect.
      */
-    private static class Format0FDSelect extends CIDKeyedFDSelect
+    private static class Format0FDSelect extends FDSelect
     {
         private int format;
         private int[] fds;
@@ -890,36 +885,15 @@ public class CFFParser
         }
 
         @Override
-        public int getFd(int glyph)
+        public int getFDIndex(int gid)
         {
-            // todo: needs to be re-implemented
-            throw new UnsupportedOperationException("not implemented: FDSelect");
-
-            /*Map<String, byte[]> charStrings = null;// owner.getCharStringsDict();
-            Set<String> keys = charStrings.keySet();
-            // search the position of the given sid
-            for (Mapping mapping : owner.getMappings())
-            {
-                if (mapping.getSID() == glyph && charStrings.containsKey(mapping.getName()))
-                {
-                    int index = 0;
-                    for (String str : keys)
-                    {
-                        if (mapping.getName().equals(str))
-                        {
-                            return fds[index];
-                        }
-                        ++index;
-                    }
-                }
-            }
-            return -1;*/
+            return fds[gid];
         }
 
         @Override
         public String toString()
         {
-            return getClass().getName() + "[format=" + format + ", fds=" + Arrays.toString(fds) + "]";
+            return getClass().getName() + "[fds=" + Arrays.toString(fds) + "]";
         }
     }
 

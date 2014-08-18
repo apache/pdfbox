@@ -110,7 +110,7 @@ public class PDCIDFontType0 extends PDCIDFont
 
         if (character == null)
         {
-            LOG.error("No character for code " + (bytes[offset] & 0xff) + " in " + fontname);
+            LOG.warn("No character for code " + (bytes[offset] & 0xff) + " in " + fontname);
             return null;
         }
         return character;
@@ -137,7 +137,8 @@ public class PDCIDFontType0 extends PDCIDFont
         int cid = codeToCID(bytes, offset, length);
         if (cid == 0 && !Arrays.equals(SPACE_BYTES, bytes))
         {
-            LOG.error("No name for code " + (bytes[offset] & 0xff) + " in " + fontname);
+            // todo: for debugging only
+            LOG.warn("No name for code " + (bytes[offset] & 0xff) + " in " + fontname);
             return 0;
         }
 
@@ -157,7 +158,8 @@ public class PDCIDFontType0 extends PDCIDFont
         int cid = codeToCID(bytes, offset, length);
         if (cid == 0)
         {
-            LOG.error("No CID for code " + (bytes[offset] & 0xff) + " in " + fontname);
+            // todo: for debugging only
+            LOG.warn("No CID for code " + (bytes[offset] & 0xff) + " in " + fontname);
             return 0;
         }
 

@@ -17,22 +17,24 @@
 
 package org.apache.fontbox.cff;
 
-public abstract class CIDKeyedFDSelect {
-	
-	protected CFFCIDFont owner = null;
+public abstract class FDSelect
+{
+	protected final CFFCIDFont owner;
 	
 	/**
 	 * Constructor.
+     *
 	 * @param owner the owner of the FDSelect data.
 	 */
-	public CIDKeyedFDSelect(CFFCIDFont owner) {
+	public FDSelect(CFFCIDFont owner)
+    {
 		this.owner = owner;
 	}
+
 	/**
-	 * Returns the Font DICT index for the given glyph identifier
+	 * Returns the Font DICT index for the given GID.
 	 *  
-	 * @param glyph
-	 * @return -1 if the glyph isn't define, otherwise the FD index value
+	 * @param gid GID
 	 */
-	public abstract int getFd(int glyph);
+	public abstract int getFDIndex(int gid);
 }
