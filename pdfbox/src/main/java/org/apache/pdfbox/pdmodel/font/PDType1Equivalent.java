@@ -19,7 +19,7 @@ public interface PDType1Equivalent
     /**
      * Returns true if the font contains a glyph with the given name.
      */
-    public boolean hasGlyph(String name);
+    public boolean hasGlyph(String name) throws IOException;
 
     /**
      * Returns the glyph name for the given character code.

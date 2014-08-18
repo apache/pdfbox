@@ -70,8 +70,7 @@ public class PDType3Font extends PDFont
      * @return The fonts bounding box.
      * @throws IOException If there is an error getting the bounding box.
      */
-    @Override
-    public PDRectangle getFontBoundingBox() throws IOException
+    public PDRectangle getBoundingBox() throws IOException
     {
         COSArray rect = (COSArray) dict.getDictionaryObject(COSName.FONT_BBOX);
         PDRectangle retval = null;

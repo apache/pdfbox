@@ -129,7 +129,7 @@ public class PDTrueTypeFont extends PDFont
     }
 
     @Override
-    public float getFontWidth(int charCode)
+    public float getFontWidth(int charCode) throws IOException
     {
         float width = super.getFontWidth(charCode);
         if (width <= 0)
@@ -160,7 +160,7 @@ public class PDTrueTypeFont extends PDFont
      * @param code character code
      * @return GID (glyph index)
      */
-    public int getGIDForCharacterCode(int code)
+    public int getGIDForCharacterCode(int code) throws IOException
     {
         extractCmapTable();
         int result = 0;
@@ -254,7 +254,7 @@ public class PDTrueTypeFont extends PDFont
     /**
      * extract all useful "cmap" subtables.
      */
-    private void extractCmapTable()
+    private void extractCmapTable() throws IOException
     {
         if (cmapInitialized)
         {

@@ -145,7 +145,7 @@ public class TTFGlyph2D implements Glyph2D
     }
 
     @Override
-    public GeneralPath getPathForCharacterCode(int code)
+    public GeneralPath getPathForCharacterCode(int code) throws IOException
     {
         int glyphId = getGIDForCharacterCode(code);
 
@@ -167,7 +167,7 @@ public class TTFGlyph2D implements Glyph2D
     }
 
     // Try to map the given code to the corresponding glyph-ID
-    private int getGIDForCharacterCode(int code)
+    private int getGIDForCharacterCode(int code) throws IOException
     {
         if (isCIDFont)
         {
@@ -186,17 +186,40 @@ public class TTFGlyph2D implements Glyph2D
      *
      * @return the GeneralPath for the given glyphId
      */
-    public GeneralPath getPathForGlyphId(int glyphId)
+    public GeneralPath getPathForGlyphId(int glyphId) throws IOException
     {
-        GeneralPath glyphPath = null;
+        GeneralPath glyphPath;
         if (glyphs.containsKey(glyphId))
         {
             glyphPath = glyphs.get(glyphId);
         }
         else
         {
-            GlyphData[] glyphData = ttf.getGlyph().getGlyphs();
-            if (glyphId < glyphData.length && glyphData[glyphId] != null)
+            // fixme: TrueTypeFont is buggy so we have to catch RuntimeException for debugging
+            GlyphData[] glyphData;
+            try
+            {
+                glyphData = ttf.getGlyph().getGlyphs();
+            }
+            catch (RuntimeException e)
+            {
+                throw new RuntimeException("Error in TTF:" + pdFont.getBaseFont() + " -> " +
+                        ttf.getNaming().getPostScriptName(), e);
+            }
+
+            if (glyphId >= glyphData.length)
+            {
+                LOG.warn(name + ": Glyph not found: " + glyphId);
+                glyphPath = new GeneralPath();
+                glyphs.put(glyphId, glyphPath);
+            }
+            else if (glyphData[glyphId] == null)
+            {
+                // empty glyph (e.g. space, newline)
+                glyphPath = new GeneralPath();
+                glyphs.put(glyphId, glyphPath);
+            }
+            else
             {
                 GlyphData glyph = glyphData[glyphId];
                 glyphPath = glyph.getPath();
@@ -207,12 +230,8 @@ public class TTFGlyph2D implements Glyph2D
                 }
                 glyphs.put(glyphId, glyphPath);
             }
-            else
-            {
-                LOG.error(name + ": Glyph not found:" + glyphId);
-            }
         }
-        return glyphPath != null ? (GeneralPath) glyphPath.clone() : null;
+        return glyphPath != null ? (GeneralPath) glyphPath.clone() : null; // todo: expensive
     }
 
     @Override

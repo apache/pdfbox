@@ -69,18 +69,6 @@ public abstract class PDCIDFont extends PDFont
     }
 
     /**
-     * This will get the fonts bounding box.
-     *
-     * @return The fonts bounding box.
-     * @throws IOException If there is an error getting the font bounding box.
-     */
-    @Override
-    public PDRectangle getFontBoundingBox() throws IOException
-    {
-        throw new RuntimeException("getFontBoundingBox(): Not yet implemented");
-    }
-
-    /**
      * This will get the default width.  The default value for the default width is 1000.
      *
      * @return The default width for the glyphs in this font.

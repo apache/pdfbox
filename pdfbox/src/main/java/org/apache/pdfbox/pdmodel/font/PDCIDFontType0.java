@@ -50,7 +50,6 @@ public class PDCIDFontType0 extends PDCIDFont
     private final Map<Integer, Float> glyphWidths = new HashMap<Integer, Float>();
     private final Map<Integer, Float> glyphHeights = new HashMap<Integer, Float>();
     private Float avgWidth = null;
-    private PDRectangle fontBBox = null;
 
     /**
      * Constructor.
@@ -216,16 +215,6 @@ public class PDCIDFontType0 extends PDCIDFont
             avgWidth = getAverageCharacterWidth();
         }
         return avgWidth;
-    }
-
-    @Override
-    public PDRectangle getFontBoundingBox() throws IOException
-    {
-        if (fontBBox == null)
-        {
-            fontBBox = new PDRectangle(cffFont.getFontBBox());
-        }
-        return fontBBox;
     }
 
     @Override

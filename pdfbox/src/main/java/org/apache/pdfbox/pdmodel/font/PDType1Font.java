@@ -41,6 +41,7 @@ import org.apache.pdfbox.encoding.Type1Encoding;
 import org.apache.pdfbox.encoding.WinAnsiEncoding;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDMatrix;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.util.ResourceLoader;
 
@@ -348,7 +349,7 @@ public class PDType1Font extends PDFont implements PDType1Equivalent
     }
 
     @Override
-    public float getFontWidth(int charCode)
+    public float getFontWidth(int charCode) throws IOException
     {
         float width = super.getFontWidth(charCode);
         if (width <= 0)
@@ -422,7 +423,7 @@ public class PDType1Font extends PDFont implements PDType1Equivalent
     }
 
     @Override
-    public boolean hasGlyph(String name)
+    public boolean hasGlyph(String name) throws IOException
     {
         return type1Equivalent.hasGlyph(name);
     }

@@ -16,7 +16,7 @@ public interface Type1Equivalent
     /**
      * The PostScript name of the font.
      */
-    public String getFullName();
+    public String getFullName() throws IOException;
 
     /**
      * Returns the Type 1 CharString for the character with the given name.
@@ -30,7 +30,7 @@ public interface Type1Equivalent
      * Returns true if the font contains the given glyph.
      * @param name PostScript glyph name
      */
-    public boolean hasGlyph(String name);
+    public boolean hasGlyph(String name) throws IOException;
 
     /**
      * Returns the PostScript Encoding vector for the font.

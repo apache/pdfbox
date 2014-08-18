@@ -30,6 +30,8 @@ import org.apache.fontbox.ttf.CMAPTable;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.preflight.PreflightConstants;
+import org.apache.pdfbox.preflight.font.util.GlyphException;
 
 public class TrueTypeContainer extends FontContainer
 {
@@ -65,14 +67,21 @@ public class TrueTypeContainer extends FontContainer
         if (this.cmapEncodingEntries != null)
             return;
 
-        CMAPTable cmap = this.ttFont.getCMAP();
-        if (this.font.getFontDescriptor().isSymbolic())
+        try
         {
-            this.cmapEncodingEntries = cmap.getCmaps();
+            CMAPTable cmap = this.ttFont.getCMAP();
+            if (this.font.getFontDescriptor().isSymbolic())
+            {
+                this.cmapEncodingEntries = cmap.getCmaps();
+            }
+            else
+            {
+                this.cmapEncodingEntries = orderCMapEntries(cmap);
+            }
         }
-        else
+        catch (IOException e)
         {
-            this.cmapEncodingEntries = orderCMapEntries(cmap);
+            return;
         }
     }
 
@@ -111,22 +120,29 @@ public class TrueTypeContainer extends FontContainer
     }
 
     @Override
-    protected float getFontProgramWidth(int cid)
+    protected float getFontProgramWidth(int cid) throws GlyphException
     {
-        float result = -1f;
-        if (cmapEncodingEntries != null)
+        try
         {
-            for (CMAPEncodingEntry entry : cmapEncodingEntries)
+            float result = -1f;
+            if (cmapEncodingEntries != null)
             {
-                int glyphID = extractGlyphID(cid, entry);
-                if (glyphID > 0)
+                for (CMAPEncodingEntry entry : cmapEncodingEntries)
                 {
-                    result = extractGlyphWidth(glyphID);
-                    break;
+                    int glyphID = extractGlyphID(cid, entry);
+                    if (glyphID > 0)
+                    {
+                        result = extractGlyphWidth(glyphID);
+                        break;
+                    }
                 }
             }
+            return result;
         }
-        return result;
+        catch (IOException e)
+        {
+            throw new GlyphException(PreflightConstants.ERROR_FONTS_GLYPH, cid, "Unexpected error during the width validtion for the character CID(" + cid+") : " + e.getMessage());
+        }
     }
 
     /**
@@ -182,7 +198,7 @@ public class TrueTypeContainer extends FontContainer
         return cmap.getGlyphId(innerFontCid);
     }
 
-    private float extractGlyphWidth(int glyphID)
+    private float extractGlyphWidth(int glyphID) throws IOException
     {
         int unitsPerEm = this.ttFont.getHeader().getUnitsPerEm();
         int[] glyphWidths = this.ttFont.getHorizontalMetrics().getAdvanceWidth();

@@ -70,7 +70,7 @@ public class TTFSubsetter
      * @param suffix suffix used for the naming
      * 
      */
-    public TTFSubsetter(TrueTypeFont baseFont, String suffix)
+    public TTFSubsetter(TrueTypeFont baseFont, String suffix) throws IOException
     {
         baseTTF = baseFont;
         nameSuffix = suffix;

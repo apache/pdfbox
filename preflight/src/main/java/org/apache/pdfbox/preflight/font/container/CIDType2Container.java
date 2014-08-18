@@ -23,7 +23,11 @@ package org.apache.pdfbox.preflight.font.container;
 
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.font.util.CIDToGIDMap;
+import org.apache.pdfbox.preflight.font.util.GlyphException;
+
+import java.io.IOException;
 
 public class CIDType2Container extends FontContainer
 {
@@ -38,30 +42,37 @@ public class CIDType2Container extends FontContainer
     }
 
     @Override
-    protected float getFontProgramWidth(int cid)
+    protected float getFontProgramWidth(int cid) throws GlyphException
     {
         float foundWidth = -1;
         final int glyphIndex = getGlyphIndex(cid);
 
-        // if glyph exists we can check the width
-        if (this.ttf != null && this.ttf.getGlyph().getGlyphs().length > glyphIndex)
+        try
         {
+            // if glyph exists we can check the width
+            if (this.ttf != null && this.ttf.getGlyph().getGlyphs().length > glyphIndex)
+            {
             /*
              * In a Mono space font program, the length of the AdvanceWidth array must be one. According to the TrueType
              * font specification, the Last Value of the AdvanceWidth array is apply to the subsequent glyphs. So if the
              * GlyphId is greater than the length of the array the last entry is used.
              */
-            int numberOfLongHorMetrics = ttf.getHorizontalHeader().getNumberOfHMetrics();
-            int unitsPerEm = ttf.getHeader().getUnitsPerEm();
-            int[] advanceGlyphWidths = ttf.getHorizontalMetrics().getAdvanceWidth();
-            float glypdWidth = advanceGlyphWidths[numberOfLongHorMetrics - 1];
-            if (glyphIndex < numberOfLongHorMetrics)
-            {
-                glypdWidth = advanceGlyphWidths[glyphIndex];
+                int numberOfLongHorMetrics = ttf.getHorizontalHeader().getNumberOfHMetrics();
+                int unitsPerEm = ttf.getHeader().getUnitsPerEm();
+                int[] advanceGlyphWidths = ttf.getHorizontalMetrics().getAdvanceWidth();
+                float glypdWidth = advanceGlyphWidths[numberOfLongHorMetrics - 1];
+                if (glyphIndex < numberOfLongHorMetrics)
+                {
+                    glypdWidth = advanceGlyphWidths[glyphIndex];
+                }
+                foundWidth = ((glypdWidth * 1000) / unitsPerEm);
             }
-            foundWidth = ((glypdWidth * 1000) / unitsPerEm);
+            return foundWidth;
         }
-        return foundWidth;
+        catch (IOException e)
+        {
+            throw new GlyphException(PreflightConstants.ERROR_FONTS_GLYPH, cid, "Unexpected error during the width validtion for the character CID(" + cid+") : " + e.getMessage());
+        }
     }
 
     /**

@@ -97,6 +97,7 @@ class PDTrueTypeFontEmbedder
 
     // creates a new font descriptor dictionary for the given TTF
     private PDFontDescriptorDictionary createFontDescriptor(COSDictionary dict, TrueTypeFont ttf)
+            throws IOException
     {
         PDFontDescriptorDictionary fd = new PDFontDescriptorDictionary();
 

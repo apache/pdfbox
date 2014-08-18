@@ -21,6 +21,7 @@
 
 package org.apache.pdfbox.preflight.font.container;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -110,10 +111,16 @@ public abstract class FontContainer
         {
             return;
         }
-
-        final float expectedWidth = this.font.getFontWidth(cid);
-        final float foundWidth = getFontProgramWidth(cid);
-        checkWidthsConsistency(cid, expectedWidth, foundWidth);
+        try
+        {
+            final float expectedWidth = this.font.getFontWidth(cid);
+            final float foundWidth = getFontProgramWidth(cid);
+            checkWidthsConsistency(cid, expectedWidth, foundWidth);
+        }
+        catch (IOException e)
+        {
+            throw new GlyphException(PreflightConstants.ERROR_FONTS_GLYPH, cid, "Unexpected error during the width validtion for the character CID(" + cid+") : " + e.getMessage());
+        }
     }
 
     /**

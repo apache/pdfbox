@@ -78,12 +78,6 @@ public class PDType0Font extends PDFont
     }
 
     @Override
-    public PDRectangle getFontBoundingBox() throws IOException
-    {
-        throw new RuntimeException("Not yet implemented");
-    }
-
-    @Override
     public float getFontWidth(byte[] c, int offset, int length)
     {
         return descendantFont.getFontWidth(c, offset, length);

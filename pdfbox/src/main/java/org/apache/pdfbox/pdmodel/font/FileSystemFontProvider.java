@@ -109,35 +109,37 @@ final class FileSystemFontProvider implements FontProvider
             NamingTable nameTable = ttf.getNaming();
             if (nameTable == null)
             {
-                throw new IOException("Missing 'name' table");
-            }
-
-            // read PostScript name, if any
-            if (nameTable.getPostScriptName() != null)
-            {
-                String psName = nameTable.getPostScriptName();
-
-                String format;
-                if (ttf.getTableMap().get("CFF ") != null)
-                {
-                    format = "OTF";
-                    cffFontFiles.put(psName, otfFile);
-                }
-                else
-                {
-                    format = "TTF";
-                    ttfFontFiles.put(psName, otfFile);
-                }
-
-                if (LOG.isTraceEnabled())
-                {
-                    LOG.trace(format +": '" + psName + "' / '" + nameTable.getFontFamily() +
-                            "' / '" + nameTable.getFontSubFamily() + "'");
-                }
+                LOG.warn("Missing 'name' table in font " + otfFile);
             }
             else
             {
-                throw new IOException("Missing 'name' entry for PostScript name");
+                // read PostScript name, if any
+                if (nameTable.getPostScriptName() != null)
+                {
+                    String psName = nameTable.getPostScriptName();
+
+                    String format;
+                    if (ttf.getTableMap().get("CFF ") != null)
+                    {
+                        format = "OTF";
+                        cffFontFiles.put(psName, otfFile);
+                    }
+                    else
+                    {
+                        format = "TTF";
+                        ttfFontFiles.put(psName, otfFile);
+                    }
+
+                    if (LOG.isTraceEnabled())
+                    {
+                        LOG.trace(format +": '" + psName + "' / '" + nameTable.getFontFamily() +
+                                "' / '" + nameTable.getFontSubFamily() + "'");
+                    }
+                }
+                else
+                {
+                    LOG.warn("Missing 'name' entry for PostScript name in font " + otfFile);
+                }
             }
         }
         finally

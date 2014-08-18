@@ -38,6 +38,8 @@ import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.encoding.DictionaryEncoding;
 import org.apache.pdfbox.encoding.Encoding;
+import org.apache.pdfbox.encoding.MacRomanEncoding;
+import org.apache.pdfbox.encoding.WinAnsiEncoding;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
@@ -293,7 +295,7 @@ public abstract class PDFont implements COSObjectable
      * @param length The length of the data.
      * @return The width is in 1000 unit of text space, ie 333 or 777
      */
-    public float getFontWidth(byte[] c, int offset, int length)
+    public float getFontWidth(byte[] c, int offset, int length) throws IOException
     {
         int code = getCodeFromArray(c, offset, length);
         Float fontWidth = fontSizes.get(code);
@@ -615,7 +617,22 @@ public abstract class PDFont implements COSObjectable
      */
     public boolean isSymbolicFont()
     {
-        return getFontDescriptor().isSymbolic();
+        if (getFontDescriptor() != null)
+        {
+            // fixme: isSymbolic() defaults to false if the flag is missing, which isn't useful!
+            // todo: what about isNonSymbolic()?
+            if (getFontDescriptor().isSymbolic()) // we can trust "true", but not "false"
+            {
+                return true;
+            }
+        }
+
+        // fixme: this heuristic is a starting point only
+        if (fontEncoding instanceof MacRomanEncoding || fontEncoding instanceof WinAnsiEncoding)
+        {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -700,23 +717,12 @@ public abstract class PDFont implements COSObjectable
     }
 
     /**
-     * This will get the fonts bounding box.
-     * 
-     * @return The fonts bounding box.
-     * @throws IOException If there is an error getting the bounding box.
-     */
-    public PDRectangle getFontBoundingBox() throws IOException
-    {
-        return getFontDescriptor().getFontBoundingBox();
-    }
-
-    /**
      * Determines the width of the given character.
      * 
      * @param charCode the code of the given character
      * @return the width of the character
      */
-    public float getFontWidth(int charCode)
+    public float getFontWidth(int charCode) throws IOException
     {
         float width = -1;
         int firstChar = getFirstChar();

@@ -118,7 +118,7 @@ public class TrueTypeFont implements Type1Equivalent
      * 
      * @return The naming table.
      */
-    public NamingTable getNaming()
+    public NamingTable getNaming() throws IOException
     {
         NamingTable naming = (NamingTable)tables.get( NamingTable.TAG );
         if (naming != null && !naming.getInitialized())
@@ -133,7 +133,7 @@ public class TrueTypeFont implements Type1Equivalent
      * 
      * @return The postscript table.
      */
-    public PostScriptTable getPostScript()
+    public PostScriptTable getPostScript() throws IOException
     {
         PostScriptTable postscript = (PostScriptTable)tables.get( PostScriptTable.TAG );
         if (postscript != null && !postscript.getInitialized())
@@ -148,7 +148,7 @@ public class TrueTypeFont implements Type1Equivalent
      * 
      * @return The OS/2 table.
      */
-    public OS2WindowsMetricsTable getOS2Windows()
+    public OS2WindowsMetricsTable getOS2Windows() throws IOException
     {
         OS2WindowsMetricsTable os2WindowsMetrics = (OS2WindowsMetricsTable)tables.get( OS2WindowsMetricsTable.TAG );
         if (os2WindowsMetrics != null && !os2WindowsMetrics.getInitialized())
@@ -163,7 +163,7 @@ public class TrueTypeFont implements Type1Equivalent
      * 
      * @return The maxp table.
      */
-    public MaximumProfileTable getMaximumProfile()
+    public MaximumProfileTable getMaximumProfile() throws IOException
     {
         MaximumProfileTable maximumProfile = (MaximumProfileTable)tables.get( MaximumProfileTable.TAG );
         if (maximumProfile != null && !maximumProfile.getInitialized())
@@ -178,7 +178,7 @@ public class TrueTypeFont implements Type1Equivalent
      * 
      * @return The head table.
      */
-    public HeaderTable getHeader()
+    public HeaderTable getHeader() throws IOException
     {
         HeaderTable header = (HeaderTable)tables.get( HeaderTable.TAG );
         if (header != null && !header.getInitialized())
@@ -193,7 +193,7 @@ public class TrueTypeFont implements Type1Equivalent
      * 
      * @return The hhea table.
      */
-    public HorizontalHeaderTable getHorizontalHeader()
+    public HorizontalHeaderTable getHorizontalHeader() throws IOException
     {
         HorizontalHeaderTable horizontalHeader = (HorizontalHeaderTable)tables.get( HorizontalHeaderTable.TAG );
         if (horizontalHeader != null && !horizontalHeader.getInitialized())
@@ -208,7 +208,7 @@ public class TrueTypeFont implements Type1Equivalent
      * 
      * @return The hmtx table.
      */
-    public HorizontalMetricsTable getHorizontalMetrics()
+    public HorizontalMetricsTable getHorizontalMetrics() throws IOException
     {
         HorizontalMetricsTable horizontalMetrics = (HorizontalMetricsTable)tables.get( HorizontalMetricsTable.TAG );
         if (horizontalMetrics != null && !horizontalMetrics.getInitialized())
@@ -223,7 +223,7 @@ public class TrueTypeFont implements Type1Equivalent
      * 
      * @return The loca table.
      */
-    public IndexToLocationTable getIndexToLocation()
+    public IndexToLocationTable getIndexToLocation() throws IOException
     {
         IndexToLocationTable indexToLocation = (IndexToLocationTable)tables.get( IndexToLocationTable.TAG );
         if (indexToLocation != null && !indexToLocation.getInitialized())
@@ -238,7 +238,7 @@ public class TrueTypeFont implements Type1Equivalent
      * 
      * @return The glyf table.
      */
-    public GlyphTable getGlyph()
+    public GlyphTable getGlyph() throws IOException
     {
         GlyphTable glyph = (GlyphTable)tables.get( GlyphTable.TAG );
         if (glyph != null && !glyph.getInitialized())
@@ -253,7 +253,7 @@ public class TrueTypeFont implements Type1Equivalent
      * 
      * @return The cmap table.
      */
-    public CMAPTable getCMAP()
+    public CMAPTable getCMAP() throws IOException
     {
         CMAPTable cmap = (CMAPTable)tables.get( CMAPTable.TAG );
         if (cmap != null && !cmap.getInitialized())
@@ -282,21 +282,14 @@ public class TrueTypeFont implements Type1Equivalent
      * 
      * @param table the table to be initialized
      */
-    void readTable(TTFTable table)
+    void readTable(TTFTable table) throws IOException
     {
-        try
-        {
-            // save current position
-            long currentPosition = data.getCurrentPosition();
-            data.seek(table.getOffset());
-            table.read(this, data);
-            // restore current position
-            data.seek(currentPosition);
-        }
-        catch (IOException exception)
-        {
-            log.error("An error occured when reading table " + table.getTag(), exception);
-        }
+        // save current position
+        long currentPosition = data.getCurrentPosition();
+        data.seek(table.getOffset());
+        table.read(this, data);
+        // restore current position
+        data.seek(currentPosition);
     }
 
     /**
@@ -304,7 +297,7 @@ public class TrueTypeFont implements Type1Equivalent
      * 
      * @return the number of glyphs
      */
-    public int getNumberOfGlyphs()
+    public int getNumberOfGlyphs() throws IOException
     {
         if (numberOfGlyphs == -1)
         {
@@ -327,7 +320,7 @@ public class TrueTypeFont implements Type1Equivalent
      * 
      * @return units per EM
      */
-    public int getUnitsPerEm()
+    public int getUnitsPerEm() throws IOException
     {
         if (unitsPerEm == -1)
         {
@@ -351,7 +344,7 @@ public class TrueTypeFont implements Type1Equivalent
      * @param code the glyph code
      * @return the width
      */
-    public int getAdvanceWidth(int code)
+    public int getAdvanceWidth(int code) throws IOException
     {
         if (advanceWidths == null)
         {
@@ -379,12 +372,12 @@ public class TrueTypeFont implements Type1Equivalent
     }
 
     @Override
-    public String getFullName()
+    public String getFullName() throws IOException
     {
         return getNaming().getPostScriptName();
     }
 
-    private void readPostScriptNames()
+    private void readPostScriptNames() throws IOException
     {
         if (postScriptNames == null)
         {
@@ -435,7 +428,7 @@ public class TrueTypeFont implements Type1Equivalent
     }
 
     @Override
-    public boolean hasGlyph(String name)
+    public boolean hasGlyph(String name) throws IOException
     {
         readPostScriptNames();
 
@@ -455,6 +448,13 @@ public class TrueTypeFont implements Type1Equivalent
     @Override
     public String toString()
     {
-        return getNaming().getPostScriptName();
+        try
+        {
+            return getNaming().getPostScriptName();
+        }
+        catch (IOException e)
+        {
+            return "(null)";
+        }
     }
 }

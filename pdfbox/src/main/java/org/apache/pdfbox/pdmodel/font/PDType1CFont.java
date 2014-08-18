@@ -131,7 +131,7 @@ public class PDType1CFont extends PDFont implements PDType1Equivalent
     }
 
     @Override
-    public boolean hasGlyph(String name)
+    public boolean hasGlyph(String name) throws IOException
     {
         return type1Equivalent.hasGlyph(name);
     }
@@ -174,7 +174,8 @@ public class PDType1CFont extends PDFont implements PDType1Equivalent
         String character = getUnicode(bytes, offset, length);
         if (character == null)
         {
-            LOG.error("No character for code " + (bytes[offset] & 0xff) + " in " + fontName);
+            // todo: message is for debugging, remove in long term
+            LOG.warn("No character for code " + (bytes[offset] & 0xff) + " in " + fontName);
             return null;
         }
         return character;
@@ -202,7 +203,8 @@ public class PDType1CFont extends PDFont implements PDType1Equivalent
         String character = getFontEncoding().getCharacter(code);
         if (character == null)
         {
-            LOG.error("Could not get character " + code);
+            // todo: message is for debugging, remove in long term
+            LOG.warn("Could not get character " + code);
         }
         return character;
     }
@@ -215,7 +217,8 @@ public class PDType1CFont extends PDFont implements PDType1Equivalent
 
         if (isNotDef(name) && !Arrays.equals(SPACE_BYTES, bytes))
         {
-            LOG.error("No name for code " + (bytes[offset] & 0xff) + " in " + fontName);
+            // todo: message is for debugging, remove in long term
+            LOG.warn("No name for code " + (bytes[offset] & 0xff) + " in " + fontName);
             return 0;
         }
 
@@ -237,7 +240,8 @@ public class PDType1CFont extends PDFont implements PDType1Equivalent
 
         if (isNotDef(name))
         {
-            LOG.error("No name for code " + (bytes[offset] & 0xff) + " in " + fontName);
+            // todo: message is for debugging, remove in long term
+            LOG.warn("No name for code " + (bytes[offset] & 0xff) + " in " + fontName);
             return 0;
         }
 
@@ -260,7 +264,8 @@ public class PDType1CFont extends PDFont implements PDType1Equivalent
             String name = getFontEncoding().getNameForCharacter(character.charAt(0));
             if (isNotDef(name))
             {
-                LOG.error("No code for character " + character);
+                // todo: message is for debugging, remove in long term
+                LOG.warn("No code for character " + character);
                 return 0;
             }
             width += getCharacterWidth(name);
@@ -276,16 +281,6 @@ public class PDType1CFont extends PDFont implements PDType1Equivalent
             avgWidth = getAverageCharacterWidth();
         }
         return avgWidth;
-    }
-
-    @Override
-    public PDRectangle getFontBoundingBox() throws IOException
-    {
-        if (fontBBox == null)
-        {
-            fontBBox = new PDRectangle(cffFont.getFontBBox()); // todo: cffFont could be null
-        }
-        return fontBBox;
     }
 
     @Override
@@ -332,6 +327,7 @@ public class PDType1CFont extends PDFont implements PDType1Equivalent
             Type1CharString charstring = cffFont.getType1CharString(name);
             if (charstring == notdef)
             {
+                // todo: message is for debugging, remove in long term
                 LOG.warn("No width for character " + name + ", using .notdef");
             }
             return charstring.getWidth();
