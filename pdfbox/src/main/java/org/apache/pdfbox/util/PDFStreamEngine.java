@@ -417,6 +417,13 @@ public class PDFStreamEngine
             // "When the current font is a CIDFont, the string to be shown shall contain pairs of
             // bytes representing CIDs, high-order byte first."
 
+            // fixme: sanity check
+            if (!font.getCMap().getName().equals("Identity-H") &&
+                !font.getCMap().getName().equals("Identity-V"))
+            {
+                throw new UnsupportedOperationException("CMap Not implemented: " + font.getCMap().getName());
+            }
+
             // todo: ((PDType0Font)font).getCMap().hasTwoByteMappings() ???
             codeLength = 2; // todo: HACK, see "9.7.6.2 CMap Mapping" (also p275 for Identity-H or Identity-V,)
         }
@@ -427,6 +434,12 @@ public class PDFStreamEngine
 
         for (int i = 0; i < string.length; i += codeLength)
         {
+            // fixme: sanity check
+            if (i + codeLength > string.length)
+            {
+                throw new UnsupportedOperationException("Not enough data: " + string.length + " < " + (i + codeLength));
+            }
+
             // Decode the value to a Unicode character
             String unicode = font.encode(string, i, codeLength);
             int[] charCodes;

@@ -90,8 +90,8 @@ public class CodespaceRange
         {
             for ( int i = 0; i < end.length; i++ ) 
             {
-                int endInt = ((int)end[i]) & 0xFF;
-                int codeInt = ((int)code[offset + i]) & 0xFF;
+                int endInt = (int)end[i] & 0xFF;
+                int codeInt = (int)code[offset + i] & 0xFF;
                 if ( endInt < codeInt )
                 {
                     return false;
@@ -102,8 +102,8 @@ public class CodespaceRange
         {
             for ( int i = 0; i < end.length; i++ ) 
             {
-                int startInt = ((int)start[i]) & 0xFF;
-                int codeInt = ((int)code[offset + i]) & 0xFF;
+                int startInt = (int)start[i] & 0xFF;
+                int codeInt = (int)code[offset + i] & 0xFF;
                 if ( startInt > codeInt )
                 {
                     return false;
