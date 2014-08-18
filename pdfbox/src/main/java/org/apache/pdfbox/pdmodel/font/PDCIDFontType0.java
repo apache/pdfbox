@@ -135,12 +135,6 @@ public class PDCIDFontType0 extends PDCIDFont
     public float getFontWidth(byte[] bytes, int offset, int length)
     {
         int cid = codeToCID(bytes, offset, length);
-        if (cid == 0 && !Arrays.equals(SPACE_BYTES, bytes))
-        {
-            // todo: for debugging only
-            LOG.warn("No name for code " + (bytes[offset] & 0xff) + " in " + fontname);
-            return 0;
-        }
 
         Float width = glyphWidths.get(cid);
         if (width == null)
@@ -156,12 +150,6 @@ public class PDCIDFontType0 extends PDCIDFont
     public float getFontHeight(byte[] bytes, int offset, int length)
     {
         int cid = codeToCID(bytes, offset, length);
-        if (cid == 0)
-        {
-            // todo: for debugging only
-            LOG.warn("No CID for code " + (bytes[offset] & 0xff) + " in " + fontname);
-            return 0;
-        }
 
         float height = 0;
         if (!glyphHeights.containsKey(cid))

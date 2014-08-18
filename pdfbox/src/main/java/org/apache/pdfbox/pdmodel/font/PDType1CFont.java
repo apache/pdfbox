@@ -215,13 +215,6 @@ public class PDType1CFont extends PDFont implements PDType1Equivalent
         int code = bytes[offset] & 0xff;
         String name = codeToName(code);
 
-        if (isNotDef(name) && !Arrays.equals(SPACE_BYTES, bytes))
-        {
-            // todo: message is for debugging, remove in long term
-            LOG.warn("No name for code " + (bytes[offset] & 0xff) + " in " + fontName);
-            return 0;
-        }
-
         Float width = glyphWidths.get(name);
         if (width == null)
         {
