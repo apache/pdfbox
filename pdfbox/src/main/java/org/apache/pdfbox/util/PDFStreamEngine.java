@@ -256,9 +256,9 @@ public class PDFStreamEngine
             while (iter.hasNext())
             {
                 Object next = iter.next();
-                if (LOG.isDebugEnabled())
+                if (LOG.isTraceEnabled())
                 {
-                    LOG.debug("processing substream token: " + next);
+                    LOG.trace("processing substream token: " + next);
                 }
                 if (next instanceof COSObject)
                 {

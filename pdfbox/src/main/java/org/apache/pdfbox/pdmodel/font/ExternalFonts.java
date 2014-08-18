@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.cff.CFFCIDFont;
 import org.apache.fontbox.cff.CFFFont;
 import org.apache.fontbox.cff.CFFType1Font;
@@ -42,6 +44,7 @@ public final class ExternalFonts
 {
     private ExternalFonts() {}
 
+    private static final Log log = LogFactory.getLog(ExternalFonts.class);
     private static FontProvider fontProvider;
 
     /**

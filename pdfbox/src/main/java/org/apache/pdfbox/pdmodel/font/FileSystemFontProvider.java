@@ -60,9 +60,9 @@ final class FileSystemFontProvider implements FontProvider
      */
     FileSystemFontProvider()
     {
-        if (LOG.isDebugEnabled())
+        if (LOG.isTraceEnabled())
         {
-            LOG.debug("Will search the local system for fonts");
+            LOG.trace("Will search the local system for fonts");
         }
 
         int count = 0;
@@ -90,9 +90,9 @@ final class FileSystemFontProvider implements FontProvider
             }
         }
 
-        if (LOG.isDebugEnabled())
+        if (LOG.isTraceEnabled())
         {
-            LOG.debug("Found " + count + " fonts on the local system");
+            LOG.trace("Found " + count + " fonts on the local system");
         }
     }
 
@@ -129,9 +129,9 @@ final class FileSystemFontProvider implements FontProvider
                     ttfFontFiles.put(psName, otfFile);
                 }
 
-                if (LOG.isDebugEnabled())
+                if (LOG.isTraceEnabled())
                 {
-                    LOG.debug(format +": '" + psName + "' / '" + nameTable.getFontFamily() +
+                    LOG.trace(format +": '" + psName + "' / '" + nameTable.getFontFamily() +
                             "' / '" + nameTable.getFontSubFamily() + "'");
                 }
             }
@@ -159,9 +159,9 @@ final class FileSystemFontProvider implements FontProvider
             String psName = type1.getFontName();
             type1FontFiles.put(psName, pfbFile);
 
-            if (LOG.isDebugEnabled())
+            if (LOG.isTraceEnabled())
             {
-                LOG.debug("PFB: '" + psName + "' / '" + type1.getFamilyName() + "' / '" +
+                LOG.trace("PFB: '" + psName + "' / '" + type1.getFamilyName() + "' / '" +
                         type1.getWeight() + "'");
             }
         }
@@ -188,6 +188,10 @@ final class FileSystemFontProvider implements FontProvider
             {
                 ttf = ttfParser.parseTTF(file);
                 ttfFonts.put(postScriptName, ttf);
+                if (LOG.isDebugEnabled())
+                {
+                    LOG.debug("Loaded " + postScriptName + " from " + file);
+                }
                 return ttf;
             }
             catch (IOException e)
@@ -218,6 +222,11 @@ final class FileSystemFontProvider implements FontProvider
                 CFFParser cffParser = new CFFParser();
                 cff = cffParser.parse(bytes).get(0);
                 cffFonts.put(postScriptName, cff);
+                if (LOG.isDebugEnabled())
+                {
+                    LOG.debug("Loaded " + postScriptName + " from " + file);
+                }
+                return cff;
             }
             catch (IOException e)
             {
@@ -249,6 +258,11 @@ final class FileSystemFontProvider implements FontProvider
                 input = new FileInputStream(file);
                 type1 = Type1Font.createWithPFB(input);
                 type1Fonts.put(postScriptName, type1);
+                if (LOG.isDebugEnabled())
+                {
+                    LOG.debug("Loaded " + postScriptName + " from " + file);
+                }
+                return type1;
             }
             catch (IOException e)
             {
