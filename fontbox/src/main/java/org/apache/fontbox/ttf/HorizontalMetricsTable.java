@@ -63,7 +63,11 @@ public class HorizontalMetricsTable extends TTFTable
             nonHorizontalLeftSideBearing = new short[ numberNonHorizontal ];
             for( int i=0; i<numberNonHorizontal; i++ )
             {
-                nonHorizontalLeftSideBearing[i] = data.readSignedShort();
+                if (bytesRead < getLength())
+                {
+                    nonHorizontalLeftSideBearing[i] = data.readSignedShort();
+                    bytesRead += 2;
+                }
             }
         }
 
