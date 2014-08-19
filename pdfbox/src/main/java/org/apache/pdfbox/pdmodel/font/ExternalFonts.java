@@ -100,6 +100,8 @@ public final class ExternalFonts
                 Arrays.asList("CourierNewPS-BoldMT", "CourierNew-Bold"));
         substitutes.put("Courier-Oblique",
                 Arrays.asList("CourierNewPS-ItalicMT","CourierNew-Italic"));
+        substitutes.put("Courier-BoldOblique",
+                Arrays.asList("CourierNewPS-BoldItalicMT","CourierNew-BoldItalic"));
         substitutes.put("Helvetica",
                 Arrays.asList("ArialMT", "Arial"));
         substitutes.put("Helvetica-Bold",
@@ -107,7 +109,7 @@ public final class ExternalFonts
         substitutes.put("Helvetica-Oblique",
                 Arrays.asList("Arial-ItalicMT", "Arial-Italic", "Helvetica-Italic"));
         substitutes.put("Helvetica-BoldOblique",
-                Arrays.asList("Helvetica-BoldItalic"));
+                Arrays.asList("Arial-BoldItalicMT", "Helvetica-BoldItalic"));
         substitutes.put("Times-Roman",
                 Arrays.asList("TimesNewRomanPSMT", "TimesNewRoman", "TimesNewRomanPS"));
         substitutes.put("Times-Bold",
