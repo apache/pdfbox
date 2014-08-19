@@ -592,7 +592,10 @@ public class PDFStreamEngine
         {
             if (!unsupportedOperators.contains(operation))
             {
-                LOG.info("unsupported/disabled operation: " + operation);
+                if (LOG.isDebugEnabled())
+                {
+                    LOG.debug("unsupported/disabled operation: " + operation);
+                }
                 unsupportedOperators.add(operation);
             }
         }
