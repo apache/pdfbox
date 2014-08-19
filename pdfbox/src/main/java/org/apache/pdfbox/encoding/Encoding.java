@@ -293,9 +293,8 @@ public abstract class Encoding implements COSObjectable
      * 
      * @param code The character code.
      * @return The printable character for the code.
-     * @throws IOException If there is not name for the character.
      */
-    public String getCharacter(int code) throws IOException
+    public String getCharacter(int code)
     {
         String name = getName(code);
         if (name != null)

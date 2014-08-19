@@ -160,37 +160,29 @@ public class TrueTypeContainer extends FontContainer
         int innerFontCid = cid;
         if (cmap.getPlatformEncodingId() == 1 && cmap.getPlatformId() == 3)
         {
-            try
+            Encoding fontEncoding = this.font.getFontEncoding();
+            String character = fontEncoding.getCharacter(cid);
+            if (character == null)
             {
-                Encoding fontEncoding = this.font.getFontEncoding();
-                String character = fontEncoding.getCharacter(cid);
-                if (character == null)
-                {
-                    return notFoundGlyphID;
-                }
+                return notFoundGlyphID;
+            }
 
-                char[] characterArray = character.toCharArray();
-                if (characterArray.length == 1)
+            char[] characterArray = character.toCharArray();
+            if (characterArray.length == 1)
+            {
+                innerFontCid = (int) characterArray[0];
+            }
+            else
+            {
+                // TODO OD-PDFA-87 A faire?
+                innerFontCid = (int) characterArray[0];
+                for (int i = 1; i < characterArray.length; ++i)
                 {
-                    innerFontCid = (int) characterArray[0];
-                }
-                else
-                {
-                    // TODO OD-PDFA-87 A faire?
-                    innerFontCid = (int) characterArray[0];
-                    for (int i = 1; i < characterArray.length; ++i)
+                    if (cmap.getGlyphId((int) characterArray[i]) == 0)
                     {
-                        if (cmap.getGlyphId((int) characterArray[i]) == 0)
-                        {
-                            return notFoundGlyphID; // TODO what we have to do here ???
-                        }
+                        return notFoundGlyphID; // TODO what we have to do here ???
                     }
                 }
-            }
-            catch (IOException ioe)
-            {
-                // should never happen
-                return notFoundGlyphID;
             }
         }
 

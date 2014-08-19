@@ -36,12 +36,9 @@ public class PDFDocEncodingCharsetTest extends TestCase
      */
     public void testEncoding() throws UnsupportedEncodingException
     {
-        //TODO Use when switching to JavaSE-1.6
-        //Charset charset = PDFDocEncodingCharset.INSTANCE;
-
         //Check basic round-trip
         String text = "Test \u20AC$£ ;-) Gr\u00FCezi\u2026";
-        byte[] encoded = text.getBytes(PDFDocEncodingCharset.NAME);
+        byte[] encoded = text.getBytes(PDFDocEncodingCharset.INSTANCE);
         int[] expected = new int[] {
                 0x54, 0x65, 0x73, 0x74, 0x20, //Test
                 0xA0, 0x24, 0xA3, 0x20, //Currency
@@ -50,16 +47,16 @@ public class PDFDocEncodingCharsetTest extends TestCase
                 0x83 //ellipsis
         };
         compareEncoded(encoded, expected);
-        String decoded = new String(encoded, PDFDocEncodingCharset.NAME);
+        String decoded = new String(encoded, PDFDocEncodingCharset.INSTANCE);
         assertEquals(text, decoded);
 
         text = "Bad\u03C0\u2023char";
         expected = new int[] {
                 0x42, 0x61, 0x64, 0x3F, 0x3F, 0x63, 0x68, 0x61, 0x72 //unencodable characters as '?'
         };
-        encoded = text.getBytes(PDFDocEncodingCharset.NAME);
+        encoded = text.getBytes(PDFDocEncodingCharset.INSTANCE);
         compareEncoded(encoded, expected);
-        decoded = new String(encoded, PDFDocEncodingCharset.NAME);
+        decoded = new String(encoded, PDFDocEncodingCharset.INSTANCE);
         assertEquals("Bad??char", decoded);
     }
 
