@@ -619,12 +619,8 @@ public abstract class PDFont implements COSObjectable
     {
         if (getFontDescriptor() != null)
         {
-            // fixme: isSymbolic() defaults to false if the flag is missing, which isn't useful!
-            // todo: what about isNonSymbolic()?
-            if (getFontDescriptor().isSymbolic()) // we can trust "true", but not "false"
-            {
-                return true;
-            }
+            // fixme: isSymbolic() defaults to false if the flag is missing so we can't trust this
+            return getFontDescriptor().isSymbolic();
         }
 
         // fixme: this heuristic is a starting point only

@@ -171,6 +171,14 @@ public final class ExternalFonts
     }
 
     /**
+     * Windows name (ArialNarrow,Bold) to PostScript name (ArialNarrow-Bold)
+     */
+    private static String windowsToPs(String windowsName)
+    {
+        return windowsName.replace(",", "-");
+    }
+
+    /**
      * Returns the fallback font, used for rendering when no other fonts are available.
      */
     public static TrueTypeFont getFallbackFont()
@@ -197,9 +205,11 @@ public final class ExternalFonts
                 ttf = getProvider().getTrueTypeFont(substituteName);
                 if (ttf != null)
                 {
-                    break;
+                    return ttf;
                 }
             }
+            // then Windows name
+            ttf = getProvider().getTrueTypeFont(windowsToPs(postScriptName));
         }
         return ttf;
     }
@@ -221,9 +231,11 @@ public final class ExternalFonts
                 t1 = getProvider().getType1Font(substituteName);
                 if (t1 != null)
                 {
-                    break;
+                    return t1;
                 }
             }
+            // then Windows name
+            t1 = getProvider().getType1Font(windowsToPs(postScriptName));
         }
         return t1;
     }
@@ -275,9 +287,11 @@ public final class ExternalFonts
                 cff = getProvider().getCFFFont(substituteName);
                 if (cff != null)
                 {
-                    break;
+                    return cff;
                 }
             }
+            // then Windows name
+            cff = getProvider().getCFFFont(windowsToPs(postScriptName));
         }
         return cff;
     }
