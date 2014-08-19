@@ -61,10 +61,6 @@ public abstract class Encoding implements COSObjectable
         {
             return MacRomanEncoding.INSTANCE;
         }
-        else if (COSName.PDF_DOC_ENCODING.equals(name))
-        {
-            return PdfDocEncoding.INSTANCE;
-        }
         else
         {
             throw new IOException("Unknown encoding for '" + name.getName() + "'");
