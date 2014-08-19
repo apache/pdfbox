@@ -203,8 +203,9 @@ public class TTFGlyph2D implements Glyph2D
             }
             catch (RuntimeException e)
             {
-                throw new RuntimeException("Error in TTF:" + pdFont.getBaseFont() + " -> " +
-                        ttf.getNaming().getPostScriptName(), e);
+                LOG.error("Error in TTF: " + pdFont.getBaseFont() + " -> " +
+                        ttf.getNaming().getPostScriptName());
+                throw e;
             }
 
             if (glyphId >= glyphData.length)

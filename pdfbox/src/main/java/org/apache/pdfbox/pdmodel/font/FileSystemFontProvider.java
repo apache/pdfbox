@@ -188,7 +188,10 @@ final class FileSystemFontProvider implements FontProvider
             TTFParser ttfParser = new TTFParser(false, true);
             try
             {
-                ttf = ttfParser.parseTTF(file);
+                // fixme: RAFDataStream appears to be broken
+                //ttf = ttfParser.parseTTF(file);
+                ttf = ttfParser.parseTTF(new FileInputStream(file));
+
                 ttfFonts.put(postScriptName, ttf);
                 if (LOG.isDebugEnabled())
                 {
