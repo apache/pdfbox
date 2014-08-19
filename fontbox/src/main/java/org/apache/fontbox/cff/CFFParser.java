@@ -1005,11 +1005,11 @@ public class CFFParser
         charset.range = new Format2Charset.Range2[0];
         if (isCIDFont)
         {
-            charset.addSID(0, 0, ".notdef");
+            charset.addCID(0, 0);
         }
         else
         {
-            charset.addCID(0, 0);
+            charset.addSID(0, 0, ".notdef");
         }
 
         for (int gid = 1; gid < nGlyphs; gid++)
