@@ -312,10 +312,10 @@ public class PDFParser extends BaseParser
         // read first line
         String header = readLine();
         // some pdf-documents are broken and the pdf-version is in one of the following lines
-        if ((header.indexOf( PDF_HEADER ) == -1) && (header.indexOf( FDF_HEADER ) == -1))
+        if (!header.contains(PDF_HEADER) && !header.contains(FDF_HEADER))
         {
             header = readLine();
-            while ((header.indexOf( PDF_HEADER ) == -1) && (header.indexOf( FDF_HEADER ) == -1))
+            while (!header.contains(PDF_HEADER) && !header.contains(FDF_HEADER))
             {
                 // if a line starts with a digit, it has to be the first one with data in it
                 if ((header.length() > 0) && (Character.isDigit(header.charAt(0))))
@@ -733,7 +733,17 @@ public class PDFParser extends BaseParser
         {
             return false;
         }
-
+        
+        // check for trailer after xref
+        String str = readString();
+        byte[] b = str.getBytes("ISO-8859-1");
+        pdfSource.unread(b, 0, b.length);
+        if (str.startsWith("trailer"))
+        {
+            LOG.warn("skipping empty xref table");
+            return false;
+        }
+        
         // signal start of new XRef
         xrefTrailerResolver.nextXrefObj( startByteOffset, XRefType.TABLE );
 
