@@ -1118,7 +1118,7 @@ public class NonSequentialPDFParser extends PDFParser
                                 if ((fileOffset == null) || (fileOffset <= 0))
                                 {
                                     throw new IOException(
-                                            "Invalid object stream xref object reference: "
+                                            "Invalid object stream xref object reference for key '" + objKey + "': "
                                                     + fileOffset);
                                 }
 
