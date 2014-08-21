@@ -1102,7 +1102,7 @@ public class NonSequentialPDFParser extends PDFParser
                         Long fileOffset = xrefTrailerResolver.getXrefTable().get(objKey);
                         // it is allowed that object references point to null,
                         // thus we have to test
-                        if (fileOffset != null)
+                        if (fileOffset != null && fileOffset != 0)
                         {
                             if (fileOffset > 0)
                             {
