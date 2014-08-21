@@ -249,8 +249,8 @@ public class Type1CharString
             int result = a / b; // TODO loss of precision, should be float
 
             List<Integer> list = new ArrayList<Integer>(numbers);
-            numbers.remove(numbers.size() - 1);
-            numbers.remove(numbers.size() - 1);
+            list.remove(list.size() - 1);
+            list.remove(list.size() - 1);
             list.add(result);
             return list;
         }
