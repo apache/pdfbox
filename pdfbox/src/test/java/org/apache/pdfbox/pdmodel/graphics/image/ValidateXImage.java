@@ -99,11 +99,15 @@ public class ValidateXImage
         contentStream.drawXObject(ximage, 150, 300, width, height);
         contentStream.drawXObject(ximage, 200, 350, width, height);
         contentStream.close();
+        
+        // check that the resource map is up-to-date
+        assertEquals(1, document.getPage(0).getResources().getXObjects().size());
 
         document.save(pdfFile);
         document.close();
 
         document = PDDocument.loadNonSeq(pdfFile, null);
+        assertEquals(1, document.getPage(0).getResources().getXObjects().size());
         new PDFRenderer(document).renderImage(0);
         document.close();
     }
