@@ -156,39 +156,8 @@ public class PageDrawer extends PDFStreamEngine
                 { 
                     PDAppearanceStream appearance = 
                         (PDAppearanceStream)appearanceMap.get( appearanceName ); 
-                    if (appearance != null)
-                    {
-                        // save the graphics state
-                        getGraphicsStack().push((PDGraphicsState) getGraphicsState().clone());
-                        if (appearance.getBoundingBox() != null)
-                        {
-                            PDGraphicsState graphicsState = getGraphicsState();
-                            PDRectangle bBox = appearance.getBoundingBox();
-
-                            float x1 = bBox.getLowerLeftX();
-                            float y1 = bBox.getLowerLeftY();
-                            float x2 = bBox.getUpperRightX();
-                            float y2 = bBox.getUpperRightY();
-
-                            Point2D p0 = transformedPoint(x1, y1);
-                            Point2D p1 = transformedPoint(x2, y1);
-                            Point2D p2 = transformedPoint(x2, y2);
-                            Point2D p3 = transformedPoint(x1, y2);
-
-                            GeneralPath bboxPath = new GeneralPath();
-                            bboxPath.moveTo((float) p0.getX(), (float) p0.getY());
-                            bboxPath.lineTo((float) p1.getX(), (float) p1.getY());
-                            bboxPath.lineTo((float) p2.getX(), (float) p2.getY());
-                            bboxPath.lineTo((float) p3.getX(), (float) p3.getY());
-                            bboxPath.closePath();
-
-                            Area resultClippingArea = new Area(graphicsState.getCurrentClippingPath());
-                            Area newArea = new Area(bboxPath);
-                            resultClippingArea.intersect(newArea);
-
-                            graphicsState.setCurrentClippingPath(resultClippingArea);
-                        }
-
+                    if( appearance != null ) 
+                    { 
                         Point2D point = new Point2D.Float(rect.getLowerLeftX(), rect.getLowerLeftY());
                         Matrix matrix = appearance.getMatrix();
                         if (matrix != null) 
@@ -200,9 +169,6 @@ public class PageDrawer extends PDFStreamEngine
                         g.translate( (int)point.getX(), -(int)point.getY() );
                         processSubStream( page, appearance.getResources(), appearance.getStream() ); 
                         g.translate( -(int)point.getX(), (int)point.getY() ); 
-
-                        // restore the graphics state
-                        setGraphicsState((PDGraphicsState) getGraphicsStack().pop());
                     }
                 }
             }
