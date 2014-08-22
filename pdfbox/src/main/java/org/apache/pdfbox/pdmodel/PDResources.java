@@ -251,7 +251,6 @@ public class PDResources implements COSObjectable
                             xobject = PDXObject.createXObject(cosObject.getObject(), name, this);
                         }
                         else
-                        if (item instanceof COSBase)
                         {
                             xobject = PDXObject.createXObject(item, name, this);
                         }
