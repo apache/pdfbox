@@ -28,8 +28,10 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
+import org.apache.pdfbox.pdmodel.font.PDCIDFont;
 import org.apache.pdfbox.pdmodel.font.PDCIDFontType2;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
 import org.apache.pdfbox.pdmodel.font.PDFontDescriptorDictionary;
 import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
@@ -177,11 +179,11 @@ public class ExtractTTFFonts
                     {
                         name = getUniqueFileName(prefix, "ttf");
                     }
-                    writeFont(font, name);
+                    writeFont(font.getFontDescriptor(), name);
                 }
                 else if (font instanceof PDType0Font)
                 {
-                    PDFont descendantFont = ((PDType0Font) font).getDescendantFont();
+                    PDCIDFont descendantFont = ((PDType0Font) font).getDescendantFont();
                     if (descendantFont instanceof PDCIDFontType2)
                     {
                         String name = null;
@@ -193,7 +195,7 @@ public class ExtractTTFFonts
                         {
                             name = getUniqueFileName(prefix, "ttf");
                         }
-                        writeFont(descendantFont, name);
+                        writeFont(descendantFont.getFontDescriptor(), name);
                     }
                 }
             }
@@ -217,12 +219,12 @@ public class ExtractTTFFonts
 
     }
 
-    private void writeFont(PDFont font, String name) throws IOException
+    private void writeFont(PDFontDescriptor fd, String name) throws IOException
     {
-        PDFontDescriptorDictionary fd = (PDFontDescriptorDictionary) font.getFontDescriptor();
+        PDFontDescriptorDictionary fdd = (PDFontDescriptorDictionary) fd;
         if (fd != null)
         {
-            PDStream ff2Stream = fd.getFontFile2();
+            PDStream ff2Stream = fdd.getFontFile2();
             if (ff2Stream != null)
             {
                 System.out.println("Writing font:" + name);

@@ -80,7 +80,7 @@ public class TTFSubsetter
         CMAPEncodingEntry[] cmaps = this.baseTTF.getCMAP().getCmaps();
         CMAPEncodingEntry unicodeCmap = null;
         
-        for (CMAPEncodingEntry cmap : cmaps) 
+        for (CMAPEncodingEntry cmap : cmaps)
         {
             // take first unicode map.
             if (cmap.getPlatformId() == 0 || (cmap.getPlatformId() == 3 && cmap.getPlatformEncodingId() == 1)) 

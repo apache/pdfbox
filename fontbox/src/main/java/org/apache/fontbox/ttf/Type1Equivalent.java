@@ -27,6 +27,14 @@ public interface Type1Equivalent
     public GeneralPath getPath(String name) throws IOException;
 
     /**
+     * Returns the advance width for the character with the given name.
+     *
+     * @return glyph advance width
+     * @throws IOException if the path could not be read
+     */
+    public float getWidth(String name) throws IOException;
+
+    /**
      * Returns true if the font contains the given glyph.
      * @param name PostScript glyph name
      */

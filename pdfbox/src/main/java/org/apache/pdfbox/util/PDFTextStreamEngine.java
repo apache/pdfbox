@@ -22,6 +22,7 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.text.TextPosition;
 
@@ -81,9 +82,8 @@ public class PDFTextStreamEngine extends PDFStreamEngine
      */
     @Override
     protected final void processGlyph(Matrix textMatrix, Point2D.Float end, float maxHeight,
-                                      float widthText, String unicode,
-                                      int[] charCodes, PDFont font, float fontSize)
-                                      throws IOException
+                                      float widthText, int code, String unicode, PDFont font,
+                                      float fontSize) throws IOException
     {
         // Note on variable names. There are three different units being used in this code.
         // Character sizes are given in glyph units, text locations are initially given in text
@@ -129,17 +129,27 @@ public class PDFTextStreamEngine extends PDFStreamEngine
         float spaceWidthDisp = spaceWidthText * fontSizeText * horizontalScalingText *
                 textMatrix.getXScale()  * ctm.getXScale();
 
-        // PDFBOX-373: Replace a null entry with "?" so it is not printed as "(null)"
+        // when there is no Unicode mapping available, Acrobat simply coerces the character code
+        // into Unicode, so we do the same. Subclasses of PDFStreamEngine don't necessarily want
+        // this, which is why we leave it until this point in PDFTextStreamEngine.
         if (unicode == null)
         {
-            //unicode = "?";
-            // fixme: new: don't process non-unicode Text, as it's not meaningful.
-            return;
+            if (font instanceof PDSimpleFont)
+            {
+                char c = (char) code;
+                unicode = new String(new char[] { c });
+            }
+            else
+            {
+                // Acrobat doesn't seem to coerce composite font's character codes, instead it
+                // skips them. See the "allah2.pdf" TestTextStripper file.
+                return;
+            }
         }
 
         processTextPosition(new TextPosition(pageRotation, pageSize.getWidth(),
                 pageSize.getHeight(), textMatrix, end.x, end.y, maxHeight, widthText,
-                spaceWidthDisp, unicode, charCodes, font, fontSize,
+                spaceWidthDisp, unicode, new int[] { code } , font, fontSize,
                 (int)(fontSize * textMatrix.getXScale())));
     }
 

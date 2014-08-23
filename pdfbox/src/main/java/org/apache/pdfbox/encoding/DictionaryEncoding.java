@@ -16,7 +16,8 @@
  */
 package org.apache.pdfbox.encoding;
 
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -31,16 +32,16 @@ import org.apache.pdfbox.cos.COSNumber;
  */
 public class DictionaryEncoding extends Encoding
 {
-    private COSDictionary encoding = null;
+    private final COSDictionary encoding;
+    private final String baseEncoding;
+    private final Map<Integer, String> differences = new HashMap<Integer, String>();
 
     /**
      * Constructor.
      *
      * @param fontEncoding The encoding dictionary.
-     *
-     * @throws IOException If there is a problem getting the base font.
      */
-    public DictionaryEncoding( COSDictionary fontEncoding ) throws IOException
+    public DictionaryEncoding( COSDictionary fontEncoding )
     {
         encoding = fontEncoding;
 
@@ -55,11 +56,19 @@ public class DictionaryEncoding extends Encoding
         // is the font's built-in encoding."
 
         // The default base encoding is standardEncoding
-        Encoding baseEncoding = StandardEncoding.INSTANCE;
-        COSName baseEncodingName =
-            (COSName) encoding.getDictionaryObject(COSName.BASE_ENCODING);
-        if (baseEncodingName != null) {
+        Encoding baseEncoding;
+        COSName baseEncodingName = (COSName) encoding.getDictionaryObject(COSName.BASE_ENCODING);
+        if (baseEncodingName != null)
+        {
             baseEncoding = Encoding.getInstance(baseEncodingName);
+            this.baseEncoding = baseEncodingName.getName();
+        }
+        else
+        {
+            // todo: Otherwise, for a nonsymbolic font, it is StandardEncoding, and for a symbolic
+            // font, it is the font's built-in encoding."
+            baseEncoding = StandardEncoding.INSTANCE;
+            this.baseEncoding = COSName.STANDARD_ENCODING.getName();
         }
 
         nameToCode.putAll( baseEncoding.nameToCode );
@@ -79,9 +88,27 @@ public class DictionaryEncoding extends Encoding
             else if( next instanceof COSName )
             {
                 COSName name = (COSName)next;
-                addCharacterEncoding( currentIndex++, name.getName() );
+                addCharacterEncoding( currentIndex, name.getName() );
+                this.differences.put(currentIndex, name.getName());
+                currentIndex++;
             }
         }
+    }
+
+    /**
+     * Returns the name of the base encoding.
+     */
+    public String getBaseEncoding()
+    {
+        return baseEncoding;
+    }
+
+    /**
+     * Returns the Differences array.
+     */
+    public Map<Integer, String> getDifferences()
+    {
+        return differences;
     }
 
     /**

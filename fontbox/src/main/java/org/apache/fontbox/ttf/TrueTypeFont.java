@@ -249,9 +249,9 @@ public class TrueTypeFont implements Type1Equivalent
     }
     
     /**
-     * Get the cmap table for this TTF.
+     * Get the "cmap" table for this TTF.
      * 
-     * @return The cmap table.
+     * @return The "cmap" table.
      */
     public CMAPTable getCMAP() throws IOException
     {
@@ -339,12 +339,12 @@ public class TrueTypeFont implements Type1Equivalent
     }
 
     /**
-     * Returns the width for the given glyph code.
+     * Returns the width for the given GID.
      * 
-     * @param code the glyph code
+     * @param gid the GID
      * @return the width
      */
-    public int getAdvanceWidth(int code) throws IOException
+    public int getAdvanceWidth(int gid) throws IOException
     {
         if (advanceWidths == null)
         {
@@ -359,9 +359,9 @@ public class TrueTypeFont implements Type1Equivalent
                 advanceWidths = new int[]{250};
             }
         }
-        if (advanceWidths.length > code)
+        if (advanceWidths.length > gid)
         {
-            return advanceWidths[code];
+            return advanceWidths[gid];
         }
         else
         {
@@ -396,6 +396,22 @@ public class TrueTypeFont implements Type1Equivalent
         }
     }
 
+    /**
+     * Returns the GID for the given PostScript name, if the "post" table is present.
+     */
+    public int nameToGID(String name) throws IOException
+    {
+        readPostScriptNames();
+
+        GlyphData[] glyphs = getGlyph().getGlyphs();
+        Integer gid = postScriptNames.get(name);
+        if (gid == null || gid < 0 || gid >= glyphs.length)
+        {
+            return 0;
+        }
+        return gid;
+    }
+
     @Override
     public GeneralPath getPath(String name) throws IOException
     {
@@ -425,6 +441,15 @@ public class TrueTypeFont implements Type1Equivalent
 
             return path;
         }
+    }
+
+    @Override
+    public float getWidth(String name) throws IOException
+    {
+        readPostScriptNames();
+
+        Integer gid = postScriptNames.get(name);
+        return getAdvanceWidth(gid);
     }
 
     @Override

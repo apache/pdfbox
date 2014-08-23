@@ -17,15 +17,13 @@
 package org.apache.fontbox.cmap;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Iterator;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * This class represents a CMap file.
@@ -34,9 +32,6 @@ import org.apache.commons.logging.LogFactory;
  */
 public class CMap
 {
- 
-    private static final Log LOG = LogFactory.getLog(CMap.class);
-    
     private int wmode = 0;
     private String cmapName = null;
     private String cmapVersion = null;
@@ -45,44 +40,25 @@ public class CMap
     private String registry = null;
     private String ordering = null;
     private int supplement = 0;
-    
-    private List<CodespaceRange> codeSpaceRanges = new ArrayList<CodespaceRange>();
-    private Map<Integer,String> singleByteMappings = new HashMap<Integer,String>();
-    private Map<Integer,String> doubleByteMappings = new HashMap<Integer,String>();
 
-    private final Map<Integer,String> cid2charMappings = new HashMap<Integer,String>();
-    private final Map<String,Integer> char2CIDMappings = new HashMap<String,Integer>();
-    private final List<CIDRange> cidRanges = new LinkedList<CIDRange>();
+    // code lengths
+    private final List<CodespaceRange> codespaceRanges = new ArrayList<CodespaceRange>();
+
+    // Unicode mappings
+    private final Map<Integer,String> charToUnicode = new HashMap<Integer,String>();
+
+    // CID mappings
+    private final Map<Integer,Integer> codeToCid = new HashMap<Integer,Integer>();
+    private final List<CIDRange> codeToCidRanges = new LinkedList<CIDRange>();
 
     private static final String SPACE = " ";
     private int spaceMapping = -1;
-    
+
     /**
      * Creates a new instance of CMap.
      */
-    public CMap()
+    CMap()
     {
-        //default constructor
-    }
-    
-    /**
-     * This will tell if this cmap has any one byte mappings.
-     * 
-     * @return true If there are any one byte mappings, false otherwise.
-     */
-    public boolean hasOneByteMappings()
-    {
-        return singleByteMappings.size() > 0;
-    }
-    
-    /**
-     * This will tell if this cmap has any two byte mappings.
-     * 
-     * @return true If there are any two byte mappings, false otherwise.
-     */
-    public boolean hasTwoByteMappings()
-    {
-        return doubleByteMappings.size() > 0;
     }
 
     /**
@@ -92,104 +68,133 @@ public class CMap
      */
     public boolean hasCIDMappings()
     {
-        return !char2CIDMappings.isEmpty() || !cidRanges.isEmpty();
+        return !codeToCid.isEmpty() || !codeToCidRanges.isEmpty();
     }
 
     /**
-     * This will perform a lookup into the map.
+     * Returns the sequence of Unicode characters for the given character code.
      *
-     * @param code The code used to lookup.
-     * @param offset The offset into the byte array.
-     * @param length The length of the data we are getting.
-     *
-     * @return The string that matches the lookup.
+     * @param code character code
+     * @return Unicode characters (may be more than one, e.g "fi" ligature)
      */
-    public String lookup( byte[] code, int offset, int length )
+    public String toUnicode(int code)
     {
-        return lookup(getCodeFromArray(code, offset, length), length);
+        return charToUnicode.get(code);
     }
 
     /**
-     * This will perform a lookup into the map.
+     * Reads a character code from a string in the content stream.
+     * <p>>See "CMap Mapping" and "Handling Undefined Characters" in PDF32000 for more details.
      *
-     * @param code The code used to lookup.
-     * @param length The length of the data we are getting.
-     *
-     * @return The string that matches the lookup.
+     * @param in string stream
+     * @return character code
+     * @throws IOException if there was an error reading the stream or CMap
      */
-    public String lookup( int code, int length )
+    public int readCode(InputStream in) throws IOException
     {
-        String result = null;
-        if( length == 1 )
+        // save the position in the string
+        in.mark(4);
+
+        // mapping algorithm
+        List<Byte> bytes = new ArrayList<Byte>(4);
+        for (int i = 0; i < 4; i++)
         {
-            result = singleByteMappings.get( code );
-        }
-        else if( length == 2 )
-        {
-            result = doubleByteMappings.get( code );
-        }
-        return result;
-    }
-    
-    /**
-     * This will perform a lookup into the CID map.
-     *
-     * @param cid The CID used to lookup.
-     *
-     * @return The string that matches the lookup.
-     */
-    public String lookupCID(int cid) 
-    {
-        if (cid2charMappings.containsKey(cid)) 
-        {
-            return cid2charMappings.get(cid);
-        } 
-        else 
-        {
-            for (CIDRange range : cidRanges) 
+            bytes.add((byte)in.read());
+            for (CodespaceRange range : codespaceRanges)
             {
-                int ch = range.unmap(cid);
-                if (ch != -1) 
+                if (range.isFullMatch(bytes))
                 {
-                    return Character.toString((char) ch);
+                    return toInt(bytes);
                 }
             }
-            return null;
         }
-    }
 
-    /**
-     * This will perform a lookup into the CID map.
-     *
-     * @param code The code used to lookup.
-     * @param offset the offset into the array.
-     * @param length the length of the subarray.
-     *
-     * @return The CID that matches the lookup.
-     */
-    public int lookupCID(byte[] code, int offset, int length) 
-    {
-        if (isInCodeSpaceRanges(code,offset,length)) 
+        // reset to the original position in the string
+        in.reset();
+
+        // modified mapping algorithm
+        bytes = new ArrayList<Byte>(4);
+        for (int i = 0; i < 4; i++)
         {
-            int codeAsInt = getCodeFromArray(code, offset, length);
-            if (char2CIDMappings.containsKey(codeAsInt)) 
+            bytes.add((byte)in.read());
+            CodespaceRange match = null;
+            CodespaceRange shortest = null;
+            for (CodespaceRange range : codespaceRanges)
             {
-                return char2CIDMappings.get(codeAsInt);
-            } 
-            else 
-            {
-                for (CIDRange range : cidRanges) 
+                if (range.isPartialMatch(bytes.get(i), i));
                 {
-                    int ch = range.map((char)codeAsInt);
-                    if (ch != -1) 
+                    if (match == null)
                     {
-                        return ch;
+                        match = range;
+                    }
+                    else if (range.getStart().length < match.getStart().length)
+                    {
+                        // for multiple matches, choose the codespace with the shortest codes
+                        match = range;
                     }
                 }
-                return 0;
+
+                // find shortest range
+                if (shortest == null || range.getStart().length < shortest.getStart().length)
+                {
+                    shortest = range;
+                }
+            }
+
+            // if there are no matches, the range with the shortest codes is chosen
+            if (match == null)
+            {
+                match = shortest;
+            }
+
+            // we're done when we have enough bytes for the matched range
+            if (match.getStart().length == bytes.size())
+            {
+                return toInt(bytes);
             }
         }
-        return 0;
+
+        throw new IOException("CMap is invalid");
+    }
+
+    /**
+     * Returns an int given a List<Byte>
+     */
+    private int toInt(List<Byte> data)
+    {
+        int code = 0;
+        for (byte b : data)
+        {
+            code <<= 8;
+            code |= (b + 256) % 256;
+        }
+        return code;
+    }
+
+    /**
+     * Returns the CID for the given character code.
+     *
+     * @param code character code
+     * @return CID
+     */
+    public int toCID(int code)
+    {
+        if (codeToCid.containsKey(code))
+        {
+            return codeToCid.get(code);
+        }
+        else
+        {
+            for (CIDRange range : codeToCidRanges)
+            {
+                int ch = range.map((char)code);
+                if (ch != -1)
+                {
+                    return ch;
+                }
+            }
+            return 0;
+        }
     }
     
     /**
@@ -211,49 +216,32 @@ public class CMap
     }
 
     /**
-     * This will add a mapping.
+     * This will add a character code to Unicode character sequence mapping.
      *
-     * @param src The src to the mapping.
-     * @param dest The dest to the mapping.
-     *
-     * @throws IOException if the src is invalid.
+     * @param codes The character codes to map from.
+     * @param unicode The Unicode characters to map to.
      */
-    public void addMapping( byte[] src, String dest ) throws IOException
+    void addCharMapping(byte[] codes, String unicode)
     {
-        
-        int srcLength = src.length;
-        int intSrc = getCodeFromArray(src, 0, srcLength);
-        if ( SPACE.equals(dest) )
+        int code = getCodeFromArray(codes, 0, codes.length);
+        charToUnicode.put(code, unicode);
+
+        // fixme: ugly little hack
+        if (SPACE.equals(unicode))
         {
-            spaceMapping = intSrc;
-        }
-        if( srcLength == 1 )
-        {
-            singleByteMappings.put( intSrc, dest );
-        }
-        else if( srcLength == 2 )
-        {
-            doubleByteMappings.put( intSrc, dest );
-        }
-        else
-        {
-            // Just log the invalid entry instead of throwing an exception
-            LOG.error("Mapping code should be 1 or two bytes and not " + src.length);
+            spaceMapping = code;
         }
     }
 
     /**
      * This will add a CID mapping.
      *
-     * @param src The CID to the mapping.
-     * @param dest The dest to the mapping.
-     *
-     * @throws IOException if the src is invalid.
+     * @param code character code
+     * @param cid CID
      */
-    public void addCIDMapping( int src, String dest ) throws IOException
+    void addCIDMapping(int code, int cid)
     {
-        cid2charMappings.put( src, dest );
-        char2CIDMappings.put( dest, src );
+        codeToCid.put(cid, code);
     }
 
     /**
@@ -264,9 +252,9 @@ public class CMap
      * @param cid the cid to be started with.
      *
      */
-    public void addCIDRange(char from, char to, int cid) 
+    void addCIDRange(char from, char to, int cid)
     {
-        cidRanges.add(0, new CIDRange(from, to, cid));
+        codeToCidRanges.add(0, new CIDRange(from, to, cid));
     }
 
     /**
@@ -274,19 +262,9 @@ public class CMap
      *
      * @param range A single codespace range.
      */
-    public void addCodespaceRange( CodespaceRange range )
+    void addCodespaceRange( CodespaceRange range )
     {
-        codeSpaceRanges.add( range );
-    }
-
-    /**
-     * Getter for property codeSpaceRanges.
-     *
-     * @return Value of property codeSpaceRanges.
-     */
-    public List<CodespaceRange> getCodeSpaceRanges()
-    {
-        return codeSpaceRanges;
+        codespaceRanges.add(range);
     }
     
     /**
@@ -295,41 +273,27 @@ public class CMap
      * 
      * @param cmap The cmap to load mappings from.
      */
-    public void useCmap( CMap cmap )
+    void useCmap( CMap cmap )
     {
-        this.codeSpaceRanges.addAll( cmap.codeSpaceRanges );
-        this.singleByteMappings.putAll( cmap.singleByteMappings );
-        this.doubleByteMappings.putAll( cmap.doubleByteMappings );
-    }
-
-    /**
-     *  Check whether the given byte array is in codespace ranges or not.
-     *  
-     *  @param code The byte array to look for in the codespace range.
-     *  
-     *  @return true if the given byte array is in the codespace range.
-     */
-    public boolean isInCodeSpaceRanges( byte[] code )
-    {
-        return isInCodeSpaceRanges(code, 0, code.length);
+        this.codespaceRanges.addAll(cmap.codespaceRanges);
+        this.charToUnicode.putAll(cmap.charToUnicode);
     }
  
     /**
      *  Check whether the given byte array is in codespace ranges or not.
      *  
      *  @param code The byte array to look for in the codespace range.
-     *  @param offset The starting offset within the byte array.
-     *  @param length The length of the part of the array.
-     *  
+     *  @param code The byte array to look for in the codespace range.isInCodeSpaceRanges
+     *
      *  @return true if the given byte array is in the codespace range.
      */
-    public boolean isInCodeSpaceRanges( byte[] code, int offset, int length )
+    public boolean isInCodeSpaceRanges( byte[] code )
     {
-        Iterator<CodespaceRange> it = codeSpaceRanges.iterator();
+        Iterator<CodespaceRange> it = codespaceRanges.iterator();
         while ( it.hasNext() ) 
         {
             CodespaceRange range = it.next();
-            if ( range != null && range.isInRange(code, offset, length) )
+            if ( range != null && range.matches(code) )
             {
                 return true;
             }

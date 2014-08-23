@@ -26,17 +26,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * An encoding entry for a cmap.
+ * A "cmap" subtable.
  * 
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * 
+ * @author Ben Litchfield
  */
 public class CMAPEncodingEntry
 {
-
-    /**
-     * Log instance.
-     */
     private static final Log LOG = LogFactory.getLog(CMAPEncodingEntry.class);
 
     private static final long LEAD_OFFSET = 0xD800 - (0x10000 >> 10);
@@ -625,5 +620,4 @@ public class CMAPEncodingEntry
             return idRangeOffset;
         }
     }
-
 }

@@ -19,24 +19,19 @@ package org.apache.pdfbox.pdmodel.font;
 
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
-import java.util.Arrays;
+import java.io.InputStream;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.cff.CFFParser;
 import org.apache.fontbox.cff.CFFType1Font;
-import org.apache.fontbox.cff.Type1CharString;
 import org.apache.fontbox.ttf.Type1Equivalent;
-import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.encoding.Type1Encoding;
 import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.pdmodel.common.PDMatrix;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 
@@ -46,19 +41,17 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
  * @author Villu Ruusmann
  * @author John Hewson
  */
-public class PDType1CFont extends PDFont implements PDType1Equivalent
+public class PDType1CFont extends PDSimpleFont implements PDType1Equivalent
 {
     private static final Log LOG = LogFactory.getLog(PDType1CFont.class);
-    private static final byte[] SPACE_BYTES = { (byte) 32 };
 
-    private String fontName = null;
-    private Map<String, Float> glyphWidths = new HashMap<String, Float>();
     private Map<String, Float> glyphHeights = new HashMap<String, Float>();
     private Float avgWidth = null;
     private PDRectangle fontBBox = null;
 
-    private CFFType1Font cffFont; // embedded font
+    private final CFFType1Font cffFont; // embedded font
     private final Type1Equivalent type1Equivalent; // embedded or system font for rendering
+    private final boolean isEmbedded;
 
     /**
      * Constructor.
@@ -87,6 +80,7 @@ public class PDType1CFont extends PDFont implements PDType1Equivalent
         if (cffFont != null)
         {
             type1Equivalent = cffFont;
+            isEmbedded = true;
         }
         else
         {
@@ -100,12 +94,9 @@ public class PDType1CFont extends PDFont implements PDType1Equivalent
                 LOG.warn("Using fallback font for " + getBaseFont());
                 type1Equivalent = ExternalFonts.getFallbackFont();
             }
+            isEmbedded = false;
         }
-
-        // cache the font name
-        fontName = cffFont.getName();
-
-        determineEncoding();
+        readEncoding();
     }
 
     /**
@@ -139,7 +130,7 @@ public class PDType1CFont extends PDFont implements PDType1Equivalent
     @Override
     public String codeToName(int code)
     {
-        String name = getFontEncoding().getName(code);
+        String name = getEncoding().getName(code);
         if (name != null)
         {
             return name;
@@ -155,93 +146,47 @@ public class PDType1CFont extends PDFont implements PDType1Equivalent
     {
         return ".notdef".equals(name);
     }
-
     @Override
-    protected void determineEncoding()
+    protected Encoding readEncodingFromFont() throws IOException
     {
-        super.determineEncoding();
-        Encoding fontEncoding = getFontEncoding();
-        if (fontEncoding == null)
-        {
-            // extract from CFF/substitute
-            this.fontEncoding = new Type1Encoding(type1Equivalent.getEncoding());
-        }
+        return Type1Encoding.fromFontBox(type1Equivalent.getEncoding());
     }
 
     @Override
-    public String encode(byte[] bytes, int offset, int length) throws IOException
+    public int readCode(InputStream in) throws IOException
     {
-        String character = getUnicode(bytes, offset, length);
-        if (character == null)
-        {
-            // todo: message is for debugging, remove in long term
-            LOG.warn("No character for code " + (bytes[offset] & 0xff) + " in " + fontName);
-            return null;
-        }
-        return character;
-    }
-
-    /*@Override
-    public int encodeToCID(byte[] bytes, int offset, int length)
-    {
-        if (length > 2)
-        {
-            return -1;
-        }
-        int code = bytes[offset] & 0xff;
-        if (length == 2)
-        {
-            code = code * 256 + bytes[offset + 1] & 0xff;
-        }
-        return code;
-    }*/
-
-    // helper
-    private String getUnicode(byte[] bytes, int offset, int length) throws IOException
-    {
-        int code = getCodeFromArray(bytes, offset, length);
-        String character = getFontEncoding().getCharacter(code);
-        if (character == null)
-        {
-            // todo: message is for debugging, remove in long term
-            LOG.warn("Could not get character " + code);
-        }
-        return character;
+        return in.read();
     }
 
     @Override
-    public float getFontWidth(byte[] bytes, int offset, int length)
+    protected float getWidthFromFont(int code) throws IOException
     {
-        int code = bytes[offset] & 0xff;
         String name = codeToName(code);
-
-        Float width = glyphWidths.get(name);
-        if (width == null)
-        {
-            width = getCharacterWidth(name);
-            glyphWidths.put(name, width);
-        }
-
-        return width;
+        return cffFont.getType1CharString(name).getWidth();
     }
 
     @Override
-    public float getFontHeight(byte[] bytes, int offset, int length)
+    protected boolean isEmbedded()
     {
-        int code = bytes[offset] & 0xff;
+        return isEmbedded;
+    }
+
+    @Override
+    public float getHeight(int code) throws IOException
+    {
         String name = codeToName(code);
 
         if (isNotDef(name))
         {
             // todo: message is for debugging, remove in long term
-            LOG.warn("No name for code " + (bytes[offset] & 0xff) + " in " + fontName);
+            LOG.warn("No name for code " + code + " in " + cffFont.getName());
             return 0;
         }
 
         float height = 0;
         if (!glyphHeights.containsKey(name))
         {
-            height = getCharacterHeight(name);
+            height = (float)cffFont.getType1CharString(name).getBounds().getHeight(); // todo: cffFont could be null
             glyphHeights.put(name, height);
         }
         return height;
@@ -254,14 +199,13 @@ public class PDType1CFont extends PDFont implements PDType1Equivalent
         for (int i = 0; i < string.length(); i++)
         {
             String character = string.substring(i, i + 1);
-            String name = getFontEncoding().getNameForCharacter(character.charAt(0));
+            String name = getEncoding().getNameForCharacter(character.charAt(0));
             if (isNotDef(name))
             {
                 // todo: message is for debugging, remove in long term
                 LOG.warn("No code for character " + character);
-                return 0;
             }
-            width += getCharacterWidth(name);
+            width += cffFont.getType1CharString(name).getWidth();
         }
         return width;
     }
@@ -276,30 +220,6 @@ public class PDType1CFont extends PDFont implements PDType1Equivalent
         return avgWidth;
     }
 
-    @Override
-    public PDMatrix getFontMatrix()
-    {
-        if (fontMatrix == null)
-        {
-            List<Number> numbers = cffFont.getFontMatrix(); // todo: cffFont could be null
-            if (numbers != null && numbers.size() == 6)
-            {
-                COSArray array = new COSArray();
-                for (Number number : numbers)
-                {
-                    array.add(new COSFloat(number.floatValue()));
-                }
-                fontMatrix = new PDMatrix(array);
-            }
-            else
-            {
-                // todo: the font should always have a Matrix, so why fallback?
-                super.getFontMatrix();
-            }
-        }
-        return fontMatrix;
-    }
-
     /**
      * Returns the embedded Type 1-equivalent CFF font.
      * 
@@ -308,45 +228,6 @@ public class PDType1CFont extends PDFont implements PDType1Equivalent
     public CFFType1Font getCFFType1Font()
     {
         return cffFont;
-    }
-
-    // todo: this is a replacement for FontMetrics method
-    private float getCharacterWidth(String name)
-    {
-        try
-        {
-            // todo: for debugging we check for .notdef
-            Type1CharString notdef = cffFont.getType1CharString(".notdef"); // todo: cffFont could be null
-            Type1CharString charstring = cffFont.getType1CharString(name);
-            if (charstring == notdef)
-            {
-                // todo: message is for debugging, remove in long term
-                LOG.warn("No width for character " + name + ", using .notdef");
-            }
-            return charstring.getWidth();
-        }
-        catch (IOException e)
-        {
-            // todo: HACK
-            LOG.error(e);
-        }
-        return 0;
-    }
-
-    // todo: this is a replacement for FontMetrics method
-    // todo: but in FontMetrics this method actually gets the advance-y for vertical mode
-    private float getCharacterHeight(String name)
-    {
-        try
-        {
-            return (float)cffFont.getType1CharString(name).getBounds().getHeight(); // todo: cffFont could be null
-        }
-        catch (IOException e)
-        {
-            // todo: HACK
-            LOG.error(e);
-            return 0;
-        }
     }
 
     // todo: this is a replacement for FontMetrics method
@@ -360,17 +241,11 @@ public class PDType1CFont extends PDFont implements PDType1Equivalent
     public void clear()
     {
         super.clear();
-        cffFont = null;
         fontBBox = null;
         if (glyphHeights != null)
         {
             glyphHeights.clear();
             glyphHeights = null;
-        }
-        if (glyphWidths != null)
-        {
-            glyphWidths.clear();
-            glyphWidths = null;
         }
     }
 }

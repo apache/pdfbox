@@ -17,12 +17,17 @@
 package org.apache.pdfbox.pdmodel.font;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSFloat;
+import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.common.PDMatrix;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 
 /**
@@ -30,20 +35,67 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
  *
  * @author Ben Litchfield
  */
-public class PDType3Font extends PDFont
+public class PDType3Font extends PDSimpleFont
 {
 	private PDResources type3Resources = null;
     private COSDictionary charProcs = null;
+    private PDMatrix fontMatrix;
 
     /**
      * Constructor.
      *
      * @param fontDictionary The font dictionary according to the PDF specification.
      */
-    public PDType3Font(COSDictionary fontDictionary)
+    public PDType3Font(COSDictionary fontDictionary) throws IOException
     {
         super(fontDictionary);
-        determineEncoding();
+        readEncoding();
+    }
+
+    @Override
+    protected Encoding readEncodingFromFont() throws IOException
+    {
+        return null;
+    }
+
+    @Override
+    protected float getWidthFromFont(int code)
+    {
+        // todo: implement me (need to peek into stream)
+        return 0;
+    }
+
+    @Override
+    protected boolean isEmbedded()
+    {
+        return true;
+    }
+
+    @Override
+    public int readCode(InputStream in) throws IOException
+    {
+        return in.read();
+    }
+
+    @Override
+    public PDMatrix getFontMatrix()
+    {
+        if (fontMatrix == null)
+        {
+            COSArray array = (COSArray) dict.getDictionaryObject(COSName.FONT_MATRIX);
+            if (array == null)
+            {
+                array = new COSArray();
+                array.add(new COSFloat(0.001f));
+                array.add(COSInteger.ZERO);
+                array.add(COSInteger.ZERO);
+                array.add(new COSFloat(0.001f));
+                array.add(COSInteger.ZERO);
+                array.add(COSInteger.ZERO);
+            }
+            fontMatrix = new PDMatrix(array);
+        }
+        return fontMatrix;
     }
 
     /**
@@ -98,21 +150,21 @@ public class PDType3Font extends PDFont
     /**
      * Returns the stream of the glyph representing by the given character
      * 
-     * @param character the represented character
+     * @param code char code
      * @return the stream to be used to render the glyph
      * @throws IOException If something went wrong when getting the stream.
      */
-    public COSStream getCharStream(Character character) throws IOException
+    public COSStream getCharStream(int code) throws IOException
     {
     	COSStream stream = null;
-        String cMapsTo = getFontEncoding().getName(character);
+        String cMapsTo = getEncoding().getName(code);
         if (cMapsTo != null)
         {
         	stream = (COSStream)getCharProcs().getDictionaryObject(COSName.getPDFName(cMapsTo));
         }
         return stream;
     }
-    
+
     @Override
     public void clear()
     {

@@ -21,12 +21,16 @@ import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.ttf.CMAPEncodingEntry;
+import org.apache.fontbox.ttf.CMAPTable;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.encoding.Encoding;
+import org.apache.pdfbox.encoding.StandardEncoding;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 
@@ -40,9 +44,8 @@ public class PDCIDFontType2 extends PDCIDFont
     private static final Log LOG = LogFactory.getLog(PDCIDFontType2.class);
 
     private final TrueTypeFont ttf;
-    private Boolean hasCIDToGIDMap = null;
-    private Boolean hasIdentityCIDToGIDMap = null;
-    private int[] cid2gid = null;
+    private final int[] cid2gid;
+    private final boolean isEmbedded;
 
     /**
      * Constructor.
@@ -61,6 +64,7 @@ public class PDCIDFontType2 extends PDCIDFont
             // embedded
             TTFParser ttfParser = new TTFParser(true);
             ttf = ttfParser.parseTTF(ff2Stream.createInputStream());
+            isEmbedded = true;
         }
         else
         {
@@ -76,82 +80,15 @@ public class PDCIDFontType2 extends PDCIDFont
                 LOG.warn("Using fallback font for " + getBaseFont());
                 ttf = ExternalFonts.getFallbackFont();
             }
+            isEmbedded = false;
         }
+
+        cid2gid = readCIDToGIDMap();
     }
 
-    /**
-     * Indicates if this font has a CIDToGIDMap.
-     * 
-     * @return returns true if the font has a CIDToGIDMap.
-     */
-    public boolean hasCIDToGIDMap()
+    private int[] readCIDToGIDMap()
     {
-        if (hasCIDToGIDMap == null)
-        {
-            COSBase map = dict.getDictionaryObject(COSName.CID_TO_GID_MAP);
-            if (map != null && map instanceof COSStream)
-            {
-                hasCIDToGIDMap = Boolean.TRUE;
-            }
-            else
-            {
-                hasCIDToGIDMap = Boolean.FALSE;
-            }
-        }
-        return hasCIDToGIDMap;
-    }
-
-    /**
-     * Indicates if this font has an identity CIDToGIDMap.
-     * 
-     * @return returns true if the font has an identity CIDToGIDMap.
-     */
-    public boolean hasIdentityCIDToGIDMap()
-    {
-        if (hasIdentityCIDToGIDMap == null)
-        {
-            COSBase map = dict.getDictionaryObject(COSName.CID_TO_GID_MAP);
-            if (map != null && map instanceof COSName)
-            {
-                hasIdentityCIDToGIDMap = Boolean.TRUE;
-            }
-            else
-            {
-                hasIdentityCIDToGIDMap = Boolean.FALSE;
-            }
-        }
-        return hasIdentityCIDToGIDMap;
-    }
-
-    /**
-     * Maps the given CID to the correspondent GID.
-     * 
-     * @param cid the given CID
-     * @return the mapped GID, or -1 if something went wrong.
-     */
-    public int mapCIDToGID(int cid)
-    {
-        if (hasCIDToGIDMap())
-        {
-            if (cid2gid == null)
-            {
-                readCIDToGIDMapping();
-            }
-            if (cid2gid != null && cid < cid2gid.length)
-            {
-                return cid2gid[cid];
-            }
-            return -1;
-        }
-        else
-        {
-            // identity is the default value
-            return cid;
-        }
-    }
-
-    private void readCIDToGIDMapping()
-    {
+        int[] cid2gid = null;
         COSBase map = dict.getDictionaryObject(COSName.CID_TO_GID_MAP);
         if (map instanceof COSStream)
         {
@@ -166,7 +103,8 @@ public class PDCIDFontType2 extends PDCIDFont
                 int offset = 0;
                 for (int index = 0; index < numberOfInts; index++)
                 {
-                    cid2gid[index] = getCodeFromArray(mapAsBytes, offset, 2);
+                    int gid = (mapAsBytes[offset] & 0xff) << 8 | mapAsBytes[offset + 1] & 0xff;
+                    cid2gid[index] = gid;
                     offset += 2;
                 }
             }
@@ -175,6 +113,171 @@ public class PDCIDFontType2 extends PDCIDFont
                 LOG.error("Can't read the CIDToGIDMap", exception);
             }
         }
+        return cid2gid;
+    }
+
+    @Override
+    public int codeToCID(int code)
+    {
+        // TTF has no native notion of a CID
+        return code;
+    }
+
+    /**
+     * Returns the GID for the given character code.
+     *
+     * @param code character code
+     * @return GID
+     */
+    public int codeToGID(int code) throws IOException
+    {
+        int cid = codeToCID(code);
+        return cidToGID(cid);
+    }
+
+    /**
+     * Returns the GID for the given CID.
+     * 
+     * @param cid the given CID (for TTF this is the same as the character code)
+     * @return the mapped GID
+     */
+    public int cidToGID(int cid) throws IOException
+    {
+        if (!isEmbedded)
+        {
+            // The conforming reader shall select glyphs by translating characters from the
+            // encoding specified by the predefined CMap to one of the encodings in the TrueType
+            // font's 'cmap' table. The means by which this is accomplished are implementation-
+            // dependent.
+
+            CMAPEncodingEntry cmap = getUnicodeCmap(ttf.getCMAP());
+            String unicode;
+
+            // non-symbolic behaviour for Type2 TTFs isn't well documented, test with PDFBOX-1422
+            if (!parent.isSymbolic()) // todo: but this descendant font has its own flags?
+            {
+                // if the font descriptor?s Nonsymbolic flag is set, the conforming reader shall
+                // create a table that maps from character codes to glyph names
+                String name = null;
+
+                // If the Encoding entry is one of the names MacRomanEncoding, WinAnsiEncoding,
+                // or a dictionary, then the table is initialized as normal
+                // todo: Encoding is not allowed though, right? So this never happens?
+                /*if (getFontEncoding() != null)
+                {
+                    name = getFontEncoding().getName(cid);
+                }*/
+
+                // Any undefined entries in the table shall be filled using StandardEncoding
+                if (name == null)
+                {
+                    name = StandardEncoding.INSTANCE.getName(cid); // code = CID for TTF
+                }
+
+                // map to a Unicode value using the Adobe Glyph List
+                unicode = Encoding.getCharacterForName(name);
+            }
+            else
+            {
+                unicode = parent.toUnicode(cid); // code = CID for TTF
+            }
+
+            if (unicode == null)
+            {
+                return 0;
+            }
+            else if (unicode.length() > 1)
+            {
+                LOG.warn("trying to map a multi-byte character using 'cmap', result will be poor");
+            }
+            return cmap.getGlyphId(unicode.codePointAt(0));
+        }
+        else
+        {
+            // If the TrueType font program is embedded, the Type 2 CIDFont dictionary shall contain
+            // a CIDToGIDMap entry that maps CIDs to the glyph indices for the appropriate glyph
+            // descriptions in that font program.
+
+            if (cid2gid != null)
+            {
+                // use CIDToGIDMap
+                if (cid < cid2gid.length)
+                {
+                    return cid2gid[cid];
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            else
+            {
+                // "Identity" is the default CIDToGIDMap
+                return cid;
+            }
+        }
+    }
+
+    /**
+     * Returns the best Unicode from the font (the most general). The PDF spec says that "The means
+     * by which this is accomplished are implementation-dependent."
+     */
+    private CMAPEncodingEntry getUnicodeCmap(CMAPTable cmapTable)
+    {
+        CMAPEncodingEntry cmap = cmapTable.getSubtable(CMAPTable.PLATFORM_UNICODE,
+                                                  CMAPTable.ENCODING_UNICODE_2_0_FULL);
+        if (cmap == null)
+        {
+            cmap = cmapTable.getSubtable(CMAPTable.PLATFORM_UNICODE,
+                                         CMAPTable.ENCODING_UNICODE_2_0_BMP);
+        }
+        if (cmap == null)
+        {
+            cmap = cmapTable.getSubtable(CMAPTable.PLATFORM_WINDOWS,
+                                         CMAPTable.ENCODING_WIN_UNICODE);
+        }
+        if (cmap == null)
+        {
+            // Microsoft's "Recommendations for OpenType Fonts" says that "Symbol" encoding
+            // actually means "Unicode, non-standard character set"
+            cmap = cmapTable.getSubtable(CMAPTable.PLATFORM_WINDOWS,
+                                         CMAPTable.ENCODING_WIN_SYMBOL);
+        }
+        if (cmap == null)
+        {
+            // fallback to the first cmap (may not ne Unicode, so may produce poor results)
+            LOG.warn("Used fallback cmap for font " + getBaseFont());
+            cmap = cmapTable.getCmaps()[0];
+        }
+        return cmap;
+    }
+
+    @Override
+    public float getHeight(int code) throws IOException
+    {
+        // todo: really we want the BBox, (for text extraction:)
+        return (ttf.getHorizontalHeader().getAscender() + -ttf.getHorizontalHeader().getDescender())
+                / ttf.getUnitsPerEm(); // todo: shouldn't this be the yMax/yMin?
+    }
+
+    @Override
+    protected float getWidthFromFont(int code) throws IOException
+    {
+        int cid = codeToCID(code);
+        int gid = cidToGID(cid);
+        int width = ttf.getAdvanceWidth(gid);
+        int unitsPerEM = ttf.getUnitsPerEm();
+        if (unitsPerEM != 1000)
+        {
+            width *= 1000f / unitsPerEM;
+        }
+        return width;
+    }
+
+    @Override
+    protected boolean isEmbedded()
+    {
+        return isEmbedded;
     }
 
     /**
@@ -183,25 +286,5 @@ public class PDCIDFontType2 extends PDCIDFont
     public TrueTypeFont getTrueTypeFont()
     {
         return ttf;
-    }
-
-    @Override
-    public float getFontWidth(byte[] c, int offset, int length)
-    {
-        // a suitable mapping is needed to address the correct width value
-        int code = getCodeFromArray(c, offset, length);
-        if (hasIdentityCIDToGIDMap() || hasCIDToGIDMap())
-        {
-            return getFontWidth(code);
-        }
-        else if (getParent().getCMap() != null)
-        {
-            String mappedString = getParent().getCMap().lookup(code, length);
-            if (mappedString != null)
-            {
-                return getFontWidth(mappedString.codePointAt(0));
-            }
-        }
-        return super.getFontWidth(c, offset, length);
     }
 }

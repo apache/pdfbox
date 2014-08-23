@@ -146,6 +146,12 @@ public final class Type1Font implements Type1CharStringReader, Type1Equivalent
     }
 
     @Override
+    public float getWidth(String name) throws IOException
+    {
+        return getType1CharString(name).getWidth();
+    }
+
+    @Override
     public boolean hasGlyph(String name)
     {
         return charstrings.get(name) != null;

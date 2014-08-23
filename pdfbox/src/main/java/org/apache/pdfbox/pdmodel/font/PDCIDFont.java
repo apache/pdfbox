@@ -17,106 +17,49 @@
 package org.apache.pdfbox.pdmodel.font;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
-import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.util.ResourceLoader;
+import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 /**
- * A CIDFont.
+ * A CIDFont. A CIDFont is a PDF object that contains information about a CIDFont program. Although
+ * its Type value is Font, a CIDFont is not actually a font.
  *
  * @author Ben Litchfield
  */
-public abstract class PDCIDFont extends PDFont
+public abstract class PDCIDFont implements COSObjectable
 {
-    private static final Log LOG = LogFactory.getLog(PDCIDFont.class);
+    protected final PDType0Font parent;
 
-    private PDType0Font parent;
-    private Map<Integer, Float> widthCache;
-    private long defaultWidth;
+    private Map<Integer, Float> widths;
+    private float defaultWidth;
+
+    protected final COSDictionary dict;
+    private PDFontDescriptor fontDescriptor;
 
     /**
      * Constructor.
      *
      * @param fontDictionary The font dictionary according to the PDF specification.
      */
-    protected PDCIDFont(COSDictionary fontDictionary, PDType0Font parent)
+    protected PDCIDFont(COSDictionary fontDictionary, PDType0Font parent) throws IOException
     {
-        super(fontDictionary);
+        this.dict = fontDictionary;
         this.parent = parent;
-        extractWidths();
-        determineEncoding();
+        readWidths();
     }
 
-    /**
-     * Returns the Type 0 font which is the parent of this font.
-     *
-     * @return parent Type 0 font
-     */
-    public final PDType0Font getParent()
+    private void readWidths()
     {
-        return parent;
-    }
-
-    /**
-     * This will get the default width.  The default value for the default width is 1000.
-     *
-     * @return The default width for the glyphs in this font.
-     */
-    public long getDefaultWidth()
-    {
-        if (defaultWidth == 0)
+        if (widths == null)
         {
-            COSNumber number = (COSNumber) dict.getDictionaryObject(COSName.DW);
-            if (number != null)
-            {
-                defaultWidth = number.intValue();
-            }
-            else
-            {
-                defaultWidth = 1000;
-            }
-        }
-        return defaultWidth;
-    }
-
-    /**
-     * This will get the font width for a character.
-     *
-     * @param c The character code to get the width for.
-     * @param offset The offset into the array.
-     * @param length The length of the data.
-     * @return The width is in 1000 unit of text space, ie 333 or 777
-     */
-    @Override
-    public float getFontWidth(byte[] c, int offset, int length)
-    {
-        float retval = getDefaultWidth();
-        int code = getCodeFromArray(c, offset, length);
-
-        Float widthFloat = widthCache.get(code);
-        if (widthFloat != null)
-        {
-            retval = widthFloat;
-        }
-        return retval;
-    }
-
-    private void extractWidths()
-    {
-        if (widthCache == null)
-        {
-            widthCache = new HashMap<Integer, Float>();
+            widths = new HashMap<Integer, Float>();
             COSArray widths = (COSArray) dict.getDictionaryObject(COSName.W);
             if (widths != null)
             {
@@ -134,7 +77,7 @@ public abstract class PDCIDFont extends PDFont
                         for (int i = 0; i < arraySize; i++)
                         {
                             COSNumber width = (COSNumber) array.get(i);
-                            widthCache.put(startRange + i, width.floatValue());
+                            this.widths.put(startRange + i, width.floatValue());
                         }
                     }
                     else
@@ -146,7 +89,7 @@ public abstract class PDCIDFont extends PDFont
                         float width = rangeWidth.floatValue();
                         for (int i = startRange; i <= endRange; i++)
                         {
-                            widthCache.put(i, width);
+                            this.widths.put(i, width);
                         }
                     }
                 }
@@ -154,52 +97,111 @@ public abstract class PDCIDFont extends PDFont
         }
     }
 
+    @Override
+    public COSDictionary getCOSObject()
+    {
+        return dict;
+    }
+
+    /**
+     * The PostScript name of the font.
+     *
+     * @return The postscript name of the font.
+     */
+    public String getBaseFont()
+    {
+        return dict.getNameAsString(COSName.BASE_FONT);
+    }
+
+    /**
+     * This will get the font descriptor for this font. A font descriptor is required for a CIDFont.
+     *
+     * @return The font descriptor for this font.
+     */
+    public PDFontDescriptor getFontDescriptor()
+    {
+        if (fontDescriptor == null)
+        {
+            COSDictionary fd = (COSDictionary) dict.getDictionaryObject(COSName.FONT_DESC);
+            if (fd != null)
+            {
+                fontDescriptor = new PDFontDescriptorDictionary(fd);
+            }
+        }
+        return fontDescriptor;
+    }
+
+    /**
+     * Returns the Type 0 font which is the parent of this font.
+     *
+     * @return parent Type 0 font
+     */
+    public final PDType0Font getParent()
+    {
+        return parent;
+    }
+
+    /**
+     * This will get the default width. The default value for the default width is 1000.
+     *
+     * @return The default width for the glyphs in this font.
+     */
+    private float getDefaultWidth()
+    {
+        if (defaultWidth == 0)
+        {
+            COSNumber number = (COSNumber) dict.getDictionaryObject(COSName.DW);
+            if (number != null)
+            {
+                defaultWidth = number.floatValue();
+            }
+            else
+            {
+                defaultWidth = 1000;
+            }
+        }
+        return defaultWidth;
+    }
+
     /**
      * This will get the font height for a character.
      *
-     * @param c The character code to get the height for.
-     * @param offset The offset into the array.
-     * @param length The length of the data.
-     *
-     * @return The width is in 1000 unit of text space, ie 333 or 777
+     * @param code character code
+     * @return The height is in 1000 unit of text space, ie 333 or 777
      */
-    @Override
-    public float getFontHeight(byte[] c, int offset, int length)
+    public abstract float getHeight(int code) throws IOException;
+
+    /**
+     * Returns the width of the given character.
+     *
+     * @param code character code
+     */
+    public float getWidth(int code) throws IOException
     {
-        float retval = 0;
-        PDFontDescriptor desc = getFontDescriptor();
-        float xHeight = desc.getXHeight();
-        float capHeight = desc.getCapHeight();
-        if (xHeight != 0f && capHeight != 0)
-        {
-            // do an average of these two. Can we do better???
-            retval = (xHeight + capHeight) / 2f;
-        }
-        else if (xHeight != 0)
-        {
-            retval = xHeight;
-        }
-        else if (capHeight != 0)
-        {
-            retval = capHeight;
-        }
-        else
-        {
-            retval = 0;
-        }
-        if (retval == 0)
-        {
-            retval = desc.getAscent();
-        }
-        return retval;
+        // These widths shall be consistent with the actual widths given in the CIDFont program.
+        // Note: PDFBOX-1422 contains an example showing that CIDFont widths are not overridden
+        return getWidthFromFont(code);
     }
+
+    /**
+     * Returns the width of a glyph in the embedded font file.
+     *
+     * @param code character code
+     * @return width in glyph space
+     * @throws IOException if the font could not be read
+     */
+    protected abstract float getWidthFromFont(int code) throws IOException;
+
+    /**
+     * Returns true if the font file is embedded in the PDF.
+     */
+    protected abstract boolean isEmbedded();
 
     /**
      * This will get the average font width for all characters.
      *
      * @return The width is in 1000 unit of text space, ie 333 or 777
      */
-    @Override
     public float getAverageFontWidth()
     {
         float totalWidths = 0.0f;
@@ -242,117 +244,28 @@ public abstract class PDCIDFont extends PDFont
         return average;
     }
 
-    @Override
-    public float getFontWidth(int charCode)
-    {
-        float width = getDefaultWidth();
-        if (widthCache.containsKey(charCode))
-        {
-            width = widthCache.get(charCode);
-        }
-        return width;
-    }
+    /**
+     * Returns the CID for the given character code. If not found then CID 0 is returned.
+     *
+     * @param code character code
+     * @return CID
+     */
+    public abstract int codeToCID(int code);
 
     /**
-     * Extract the CIDSystemInfo.
-     * @return the CIDSystemInfo as String
+     * Returns the GID for the given character code.
+     *
+     * @param code character code
+     * @return GID
      */
-    private String getCIDSystemInfo()
-    {
-        String cidSystemInfo = null;
-        COSDictionary dict = (COSDictionary) this.dict.getDictionaryObject(COSName.CIDSYSTEMINFO);
-        if (dict != null)
-        {
-            String ordering = dict.getString(COSName.ORDERING);
-            String registry = dict.getString(COSName.REGISTRY);
-            int supplement = dict.getInt(COSName.SUPPLEMENT);
-            cidSystemInfo = registry + "-" + ordering + "-" + supplement;
-        }
-        return cidSystemInfo;
-    }
+    public abstract int codeToGID(int code) throws IOException;
 
-    // todo: do we want to do this at all? Isn't the parent Type0 font responsible for this?
-    @Override
-    protected void determineEncoding()
-    {
-        String cidSystemInfo = getCIDSystemInfo();
-        if (cidSystemInfo == null)
-        {
-            // todo: CIDSystemInfo is required, so this is an error (perform recovery?)
-            LOG.error("Missing CIDSystemInfo in CIDFont dictionary");
-            return;
-        }
-
-        if (cidSystemInfo.contains("Identity"))
-        {
-            cidSystemInfo = "Identity-H";
-        }
-        else if (cidSystemInfo.startsWith("Adobe-UCS-"))
-        {
-            cidSystemInfo = "Adobe-Identity-UCS";
-        }
-        else
-        {
-            cidSystemInfo = cidSystemInfo.substring(0, cidSystemInfo.lastIndexOf('-')) + "-UCS2";
-        }
-
-        cmap = cmapObjects.get(cidSystemInfo);
-        if (cmap == null)
-        {
-            InputStream cmapStream = null;
-            try
-            {
-                // look for a predefined CMap with the given name
-                cmapStream = ResourceLoader.loadResource(resourceRootCMAP + cidSystemInfo);
-                if (cmapStream != null)
-                {
-                    cmap = parseCmap(resourceRootCMAP, cmapStream);
-                    if (cmap == null)
-                    {
-                        LOG.error("Could not parse predefined CMAP file for '" +
-                                cidSystemInfo + "'");
-                    }
-                }
-                else
-                {
-                    LOG.warn("'" + cidSystemInfo + "' isn't a predefined CMap, most " +
-                              "likely it's embedded in the pdf itself.");
-                }
-            }
-            catch (IOException exception)
-            {
-                LOG.error("Could not find predefined CMAP file for '" + cidSystemInfo + "'");
-            }
-            finally
-            {
-                IOUtils.closeQuietly(cmapStream);
-            }
-        }
-    }
-
-    @Override
-    public String encode(byte[] c, int offset, int length) throws IOException
-    {
-        String result;
-        if (cmap != null)
-        {
-            result = cmapEncoding(getCodeFromArray(c, offset, length), length, true, cmap);
-        }
-        else
-        {
-            result = super.encode(c, offset, length);
-        }
-        return result;
-    }
-    
-    @Override
     public void clear()
     {
-        super.clear();
-        if (widthCache != null)
+        if (widths != null)
         {
-            widthCache.clear();
-            widthCache = null;
+            widths.clear();
+            widths = null;
         }
     }
 }

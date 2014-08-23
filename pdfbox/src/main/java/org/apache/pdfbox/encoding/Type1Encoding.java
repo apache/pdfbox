@@ -28,13 +28,32 @@ import java.util.Map;
 public class Type1Encoding extends Encoding
 {
     /**
+     * Creates an encoding from the given FontBox encoding.
+     *
+     * @param encoding FontBox encoding
+     */
+    public static Type1Encoding fromFontBox(org.apache.fontbox.encoding.Encoding encoding)
+    {
+        // todo: could optimise this by looking for specific subclasses
+        Map<Integer,String> codeToName = encoding.getCodeToNameMap();
+        Type1Encoding enc = new Type1Encoding(codeToName.size());
+
+        for (Integer code : codeToName.keySet())
+        {
+            enc.addCharacterEncoding(code, codeToName.get(code));
+        }
+
+        return enc;
+    }
+
+    /**
      * Creates an empty encoding of the given size (all elements map to .notdef).
      */
     public Type1Encoding(int size)
     {
         for (int i = 1; i < size; i++)
         {
-            addCharacterEncoding(i, NOTDEF);
+            addCharacterEncoding(i, ".notdef");
         }
     }
 
@@ -48,19 +67,6 @@ public class Type1Encoding extends Encoding
         for (CharMetric nextMetric : fontMetrics.getCharMetrics())
         {
             addCharacterEncoding(nextMetric.getCharacterCode(), nextMetric.getName());
-        }
-    }
-
-    /**
-     * Creates an encoding from the given FontBox encoding.
-     *
-     * @param encoding FontBox encoding
-     */
-    public Type1Encoding(org.apache.fontbox.encoding.Encoding encoding)
-    {
-        for (Map.Entry<Integer, String> entry : encoding.getCodeToNameMap().entrySet())
-        {
-            addCharacterEncoding(entry.getKey(), entry.getValue());
         }
     }
 

@@ -26,7 +26,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.fontbox.cmap.CMap;
 import org.apache.fontbox.ttf.GlyphData;
 import org.apache.fontbox.ttf.HeaderTable;
 import org.apache.fontbox.ttf.TrueTypeFont;
@@ -44,16 +43,11 @@ public class TTFGlyph2D implements Glyph2D
 
     private PDFont pdFont;
     private TrueTypeFont ttf;
-    private PDCIDFontType2 descendantFont;
     private String name;
     private float scale = 1.0f;
     private boolean hasScaling = false;
     private Map<Integer, GeneralPath> glyphs = new HashMap<Integer, GeneralPath>();
-    private CMap fontCMap = null;
     private boolean isCIDFont = false;
-    private boolean hasIdentityCIDMapping = false;
-    private boolean hasCID2GIDMapping = false;
-    private boolean hasTwoByteMappings = false;
 
     /**
      * Constructor.
@@ -62,7 +56,7 @@ public class TTFGlyph2D implements Glyph2D
      */
     public TTFGlyph2D(PDTrueTypeFont ttfFont) throws IOException
     {
-        this(ttfFont.getTrueTypeFont(), ttfFont, null);
+        this(ttfFont.getTrueTypeFont(), ttfFont, false);
     }
 
     /**
@@ -72,11 +66,10 @@ public class TTFGlyph2D implements Glyph2D
      */
     public TTFGlyph2D(PDType0Font type0Font) throws IOException
     {
-        this(((PDCIDFontType2)type0Font.getDescendantFont()).getTrueTypeFont(), type0Font,
-                (PDCIDFontType2)type0Font.getDescendantFont());
+        this(((PDCIDFontType2)type0Font.getDescendantFont()).getTrueTypeFont(), type0Font, true);
     }
 
-    public TTFGlyph2D(TrueTypeFont ttf, PDFont pdFont, PDCIDFontType2 descFont)
+    public TTFGlyph2D(TrueTypeFont ttf, PDFont pdFont, boolean isCIDFont)
             throws IOException
     {
         this.pdFont = pdFont;
@@ -90,7 +83,7 @@ public class TTFGlyph2D implements Glyph2D
             scale = 1000f / header.getUnitsPerEm();
             hasScaling = true;
         }
-        extractFontSpecifics(pdFont, descFont);
+        extractFontSpecifics(pdFont, isCIDFont);
     }
 
     /**
@@ -98,72 +91,17 @@ public class TTFGlyph2D implements Glyph2D
      * 
      * @param pdFont the given PDFont
      */
-    private void extractFontSpecifics(PDFont pdFont, PDCIDFontType2 descFont)
+    private void extractFontSpecifics(PDFont pdFont, boolean isCIDFont)
     {
         name = pdFont.getBaseFont();
-        if (descFont != null)
-        {
-            isCIDFont = true;
-            descendantFont = descFont;
-            hasIdentityCIDMapping = descendantFont.hasIdentityCIDToGIDMap();
-            hasCID2GIDMapping = descendantFont.hasCIDToGIDMap();
-            fontCMap = pdFont.getCMap();
-            if (fontCMap != null)
-            {
-                hasTwoByteMappings = fontCMap.hasTwoByteMappings();
-            }
-        }
-    }
-
-    /**
-     * Get the GID for the given CIDFont.
-     * 
-     * @param code the given CID
-     * @return the mapped GID
-     */
-    private int getGID(int code)
-    {
-        if (hasIdentityCIDMapping)
-        {
-            // identity mapping
-            return code;
-        }
-        if (hasCID2GIDMapping)
-        {
-            // use the provided CID2GID mapping
-            return descendantFont.mapCIDToGID(code);
-        }
-        if (fontCMap != null)
-        {
-            String string = fontCMap.lookup(code, hasTwoByteMappings ? 2 : 1);
-            if (string != null)
-            {
-                return string.codePointAt(0);
-            }
-        }
-        return code;
+        this.isCIDFont = isCIDFont;
     }
 
     @Override
     public GeneralPath getPathForCharacterCode(int code) throws IOException
     {
-        int glyphId = getGIDForCharacterCode(code);
-
-        if (glyphId > 0)
-        {
-            return getPathForGlyphId(glyphId);
-        }
-        glyphId = code;
-        // there isn't any mapping, but probably an optional CMap
-        if (fontCMap != null)
-        {
-            String string = fontCMap.lookup(code, hasTwoByteMappings ? 2 : 1);
-            if (string != null)
-            {
-                glyphId = string.codePointAt(0);
-            }
-        }
-        return getPathForGlyphId(glyphId);
+        int gid = getGIDForCharacterCode(code);
+        return getPathForGlyphId(gid);
     }
 
     // Try to map the given code to the corresponding glyph-ID
@@ -171,11 +109,11 @@ public class TTFGlyph2D implements Glyph2D
     {
         if (isCIDFont)
         {
-            return getGID(code);
+            return ((PDType0Font)pdFont).codeToGID(code);
         }
         else
         {
-            return ((PDTrueTypeFont)pdFont).getGIDForCharacterCode(code);
+            return ((PDTrueTypeFont)pdFont).codeToGID(code);
         }
     }
 
@@ -239,8 +177,6 @@ public class TTFGlyph2D implements Glyph2D
     public void dispose()
     {
         ttf = null;
-        descendantFont = null;
-        fontCMap = null;
         if (glyphs != null)
         {
             glyphs.clear();

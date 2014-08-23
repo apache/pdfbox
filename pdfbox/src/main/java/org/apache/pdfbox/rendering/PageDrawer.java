@@ -46,7 +46,7 @@ import org.apache.pdfbox.pdmodel.font.PDCIDFontType0;
 import org.apache.pdfbox.pdmodel.font.PDCIDFontType2;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImage;
 import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
-import org.apache.pdfbox.rendering.font.CIDGlyph2D;
+import org.apache.pdfbox.rendering.font.CIDType0Glyph2D;
 import org.apache.pdfbox.rendering.font.Glyph2D;
 import org.apache.pdfbox.rendering.font.TTFGlyph2D;
 import org.apache.pdfbox.rendering.font.Type1Glyph2D;
@@ -287,7 +287,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     @Override
     protected void processGlyph(Matrix textMatrix, Point2D.Float end, float maxHeight,
-                                float widthText, String unicode, int[] charCodes, PDFont font,
+                                float widthText, int code, String unicode, PDFont font,
                                 float fontSize) throws IOException
     {
         try
@@ -296,12 +296,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             PDMatrix fontMatrix = font.getFontMatrix();
 
             // use different methods to draw the string
-            if (font.isType3Font())
+            if (font instanceof PDType3Font)
             {
                 // Type3 fonts don't use the same units within the font matrix as the other fonts
                 at.scale(fontMatrix.getValue(0, 0), fontMatrix.getValue(1, 1));
                 // Type3 fonts are using streams for each character
-                drawType3String((PDType3Font) font, charCodes, at);
+                drawType3String((PDType3Font) font, code, at);
             }
             else
             {
@@ -314,7 +314,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                             fontMatrix.getValue(2, 0), fontMatrix.getValue(2, 1));
                     at.concatenate(fontMatrixAT);
                     // Let PDFBox render the font if supported
-                    drawGlyphs2D(glyph2D, charCodes, at);
+                    drawGlyph2D(glyph2D, code, at);
                 }
                 else
                 {
@@ -335,56 +335,40 @@ public class PageDrawer extends PDFGraphicsStreamEngine
      * Render the font using the Glyph2D interface.
      * 
      * @param glyph2D the Glyph2D implementation provided a GeneralPath for each glyph
-     * @param codePoints the string to be rendered
+     * @param code character code
      * @param at the transformation
      * @throws IOException if something went wrong
      */
-    private void drawGlyphs2D(Glyph2D glyph2D, int[] codePoints, AffineTransform at) throws IOException
+    private void drawGlyph2D(Glyph2D glyph2D, int code, AffineTransform at) throws IOException
     {
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         PDGraphicsState state = getGraphicsState();
         RenderingMode renderingMode = state.getTextState().getRenderingMode();
 
-        boolean needsFill = true;
-        boolean needsStroke = true;
-
-        for (int codePoint : codePoints)
+        GeneralPath path = glyph2D.getPathForCharacterCode(code);
+        if (path != null)
         {
-            GeneralPath path = glyph2D.getPathForCharacterCode(codePoint);
-            if (path != null)
+            Shape glyph = at.createTransformedShape(path);
+
+            if (renderingMode.isFill())
             {
-                Shape glyph = at.createTransformedShape(path);
+                graphics.setComposite(state.getNonStrokingJavaComposite());
+                graphics.setPaint(getNonStrokingPaint());
+                graphics.fill(glyph);
+            }
 
-                if (renderingMode.isFill())
-                {
-                    if (needsFill)
-                    {
-                        graphics.setComposite(state.getNonStrokingJavaComposite());
-                        graphics.setPaint(getNonStrokingPaint());
-                        needsFill = false;
-                        needsStroke = true;
-                    }
-                    graphics.fill(glyph);
-                }
+            if (renderingMode.isStroke())
+            {
+                graphics.setComposite(state.getStrokingJavaComposite());
+                graphics.setPaint(getStrokingPaint());
+                graphics.setStroke(getStroke());
+                graphics.draw(glyph);
+            }
 
-                if (renderingMode.isStroke())
-                {
-                    if (needsStroke)
-                    {
-                        graphics.setComposite(state.getStrokingJavaComposite());
-                        graphics.setPaint(getStrokingPaint());
-                        graphics.setStroke(getStroke());
-                        needsFill = true;
-                        needsStroke = false;
-                    }
-                    graphics.draw(glyph);
-                }
-
-                if (renderingMode.isClip())
-                {
-                    state.intersectClippingPath(new Area(glyph));
-                }
+            if (renderingMode.isClip())
+            {
+                state.intersectClippingPath(new Area(glyph));
             }
         }
     }
@@ -393,39 +377,35 @@ public class PageDrawer extends PDFGraphicsStreamEngine
      * Render the text using a type 3 font.
      * 
      * @param font the type3 font
-     * @param charCodes internal PDF character codes of glyphs
+     * @param code internal PDF character codes of glyph
      * @param at the transformation
      * 
      * @throws IOException if something went wrong
      */
-    private void drawType3String(PDType3Font font, int[] charCodes, AffineTransform at) throws IOException
+    private void drawType3String(PDType3Font font, int code, AffineTransform at) throws IOException
     {
-        int textLength = charCodes.length;
-        for (int i = 0; i < textLength; i++)
+        COSStream stream = font.getCharStream(code);
+        if (stream != null)
         {
-            COSStream stream = font.getCharStream((char) charCodes[i]);
-            if (stream != null)
-            {
-                // save the current graphics state and matrices
-                saveGraphicsState();
-                Matrix textMatrix = getTextMatrix();
-                Matrix textLineMatrix = getTextLineMatrix();
-                
-                Matrix ctm = new Matrix();
-                ctm.setFromAffineTransform(at);
-                getGraphicsState().setCurrentTransformationMatrix(ctm);
-                processSubStream(font.getType3Resources(), stream);
+            // save the current graphics state and matrices
+            saveGraphicsState();
+            Matrix textMatrix = getTextMatrix();
+            Matrix textLineMatrix = getTextLineMatrix();
 
-                // restore the saved graphics state and matrices
-                restoreGraphicsState();
-                setTextLineMatrix(textLineMatrix);
-                setTextMatrix(textMatrix);
-                 
-            }
-            else
-            {
-                LOG.error("drawType3String: stream for character " + (char) charCodes[i] + " not found");
-            }
+            Matrix ctm = new Matrix();
+            ctm.setFromAffineTransform(at);
+            getGraphicsState().setCurrentTransformationMatrix(ctm);
+            processSubStream(font.getType3Resources(), stream);
+
+            // restore the saved graphics state and matrices
+            restoreGraphicsState();
+            setTextLineMatrix(textLineMatrix);
+            setTextMatrix(textMatrix);
+
+        }
+        else
+        {
+            LOG.error("Stream for Type 3 character " + code + " not found");
         }
     }
 
@@ -478,7 +458,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 CFFCIDFont cffCIDFont = cidType0Font.getCFFCIDFont(); // todo: could be null (need incorporate fallback)
                 if (cffCIDFont != null)
                 {
-                    glyph2D = new CIDGlyph2D(cidType0Font);
+                    glyph2D = new CIDType0Glyph2D(cidType0Font);
                 }
             }
         }

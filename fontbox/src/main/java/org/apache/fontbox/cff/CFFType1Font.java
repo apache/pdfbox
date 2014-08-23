@@ -65,6 +65,12 @@ public class CFFType1Font extends CFFFont implements Type1Equivalent
     }
 
     @Override
+    public float getWidth(String name) throws IOException
+    {
+        return getType1CharString(name).getWidth();
+    }
+
+    @Override
     public boolean hasGlyph(String name)
     {
         int sid = charset.getSID(name);

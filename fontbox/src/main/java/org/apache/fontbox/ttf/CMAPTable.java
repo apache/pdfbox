@@ -19,7 +19,7 @@ package org.apache.fontbox.ttf;
 import java.io.IOException;
 
 /**
- * The CMAP table of a true type font.
+ * The "cmap" table of a true type font.
  * 
  * @author Ben Litchfield
  */
@@ -94,5 +94,21 @@ public class CMAPTable extends TTFTable
     public void setCmaps(CMAPEncodingEntry[] cmapsValue)
     {
         cmaps = cmapsValue;
+    }
+
+    /**
+     * Returns the subtable, if any, for the given platform and encoding.
+     */
+    public CMAPEncodingEntry getSubtable(int platformId, int platformEncodingId)
+    {
+        for (CMAPEncodingEntry cmap : cmaps)
+        {
+            if (cmap.getPlatformId() == platformId &&
+                cmap.getPlatformEncodingId() == platformEncodingId)
+            {
+                return cmap;
+            }
+        }
+        return null;
     }
 }

@@ -46,9 +46,9 @@ public abstract class Encoding implements COSObjectable
      *
      * @param name The name of the encoding to get.
      * @return The encoding that matches the name.
-     * @throws IOException if there is no encoding with that name.
      */
-    public static Encoding getInstance(COSName name) throws IOException {
+    public static Encoding getInstance(COSName name)
+    {
         if (COSName.STANDARD_ENCODING.equals(name))
         {
             return StandardEncoding.INSTANCE;
@@ -63,12 +63,9 @@ public abstract class Encoding implements COSObjectable
         }
         else
         {
-            throw new IOException("Unknown encoding for '" + name.getName() + "'");
+            return null;
         }
     }
-
-    /** Identifies a non-mapped character. */
-    public static final String NOTDEF = ".notdef";
 
     /**
      * This is a mapping from a character code to a character name.
@@ -109,7 +106,6 @@ public abstract class Encoding implements COSObjectable
             // PDFBOX-1946 ignore and continue
         }
 
-        NAME_TO_CHARACTER.put(NOTDEF, "");
         NAME_TO_CHARACTER.put("fi", "fi");
         NAME_TO_CHARACTER.put("fl", "fl");
         NAME_TO_CHARACTER.put("ffi", "ffi");

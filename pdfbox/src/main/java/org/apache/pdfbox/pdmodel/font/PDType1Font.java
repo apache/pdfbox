@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -30,18 +29,13 @@ import org.apache.fontbox.afm.AFMParser;
 import org.apache.fontbox.afm.FontMetrics;
 import org.apache.fontbox.ttf.Type1Equivalent;
 import org.apache.fontbox.type1.Type1Font;
-import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.encoding.Encoding;
-import org.apache.pdfbox.encoding.StandardEncoding;
 import org.apache.pdfbox.encoding.Type1Encoding;
 import org.apache.pdfbox.encoding.WinAnsiEncoding;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.common.PDMatrix;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.util.ResourceLoader;
 
@@ -50,7 +44,7 @@ import org.apache.pdfbox.util.ResourceLoader;
  *
  * @author Ben Litchfield
  */
-public class PDType1Font extends PDFont implements PDType1Equivalent
+public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
 {
     private static final Log LOG = LogFactory.getLog(PDType1Font.class);
 
@@ -123,6 +117,7 @@ public class PDType1Font extends PDFont implements PDType1Equivalent
     private final FontMetrics afm; // for standard 14 fonts
     private final Type1Font type1font; // embedded font
     private final Type1Equivalent type1Equivalent; // embedded or system font for rendering
+    private final boolean isEmbedded;
 
     /**
      * Creates a Type 1 standard 14 font for embedding.
@@ -145,6 +140,7 @@ public class PDType1Font extends PDFont implements PDType1Equivalent
         // todo: could load the PFB font here if we wanted to support Standard 14 embedding
         type1font = null;
         type1Equivalent = null;
+        isEmbedded = false;
     }
 
     /**
@@ -162,6 +158,7 @@ public class PDType1Font extends PDFont implements PDType1Equivalent
         afm = null; // only used for standard 14 fonts, not AFM fonts as we already have the PFB
         type1font = embedder.getType1Font();
         type1Equivalent = embedder.getType1Font();
+        isEmbedded = true;
     }
 
     /**
@@ -206,6 +203,7 @@ public class PDType1Font extends PDFont implements PDType1Equivalent
                 }
             }
         }
+        isEmbedded = t1 != null;
 
         // try to find a suitable .pfb font to substitute
         if (t1 == null)
@@ -237,8 +235,7 @@ public class PDType1Font extends PDFont implements PDType1Equivalent
         // todo: for standard 14 only. todo: move this to a subclass "PDStandardType1Font" ?
         afm = getAFMFromBaseFont(getBaseFont()); // may be null (it usually is)
 
-        determineEncoding();
-        getEncodingFromFont();
+        readEncoding();
     }
 
     // todo: move this to a subclass?
@@ -255,72 +252,6 @@ public class PDType1Font extends PDFont implements PDType1Equivalent
         return null;
     }
 
-    /**
-     * Extracts the encoding from the font, if there is no Encoding given in the Font dictionary.
-     */
-    private void getEncodingFromFont()
-    {
-        if (getFontEncoding() == null)
-        {
-            // todo: this doesn't work properly for TTFs because they fake StandardEncoding currently
-            //       it seems that they should look for a MacRoman cmap instead and claim to use that
-            org.apache.fontbox.encoding.Encoding encoding = type1Equivalent.getEncoding();
-            if (encoding instanceof org.apache.fontbox.encoding.StandardEncoding)
-            {
-                this.fontEncoding = StandardEncoding.INSTANCE;
-            }
-            else if (encoding instanceof org.apache.fontbox.encoding.CustomEncoding)
-            {
-                Map<Integer,String> codeToName = encoding.getCodeToNameMap();
-                Type1Encoding type1Encoding = new Type1Encoding(codeToName.size());
-                for (Integer code : codeToName.keySet())
-                {
-                    type1Encoding.addCharacterEncoding(code, codeToName.get(code));
-                }
-                this.fontEncoding = type1Encoding;
-            }
-        }
-    }
-
-    @Override
-    public PDMatrix getFontMatrix()
-    {
-        if (fontMatrix == null)
-        {
-            // todo: this is an experimental implementation: just use the standard PostScript matrix
-            // todo: don't all PostScript fonts use a 1000upem matrix anyway?
-            if (type1font == null)
-            {
-                COSArray a = new COSArray();
-                a.add(new COSFloat(0.001f));
-                a.add(new COSFloat(0));
-                a.add(new COSFloat(0));
-                a.add(new COSFloat(0.001f));
-                a.add(new COSFloat(0));
-                a.add(new COSFloat(0));
-                fontMatrix = new PDMatrix(a);
-                return fontMatrix;
-            }
-
-            List<Number> numbers = type1font.getFontMatrix();
-            if (numbers != null && numbers.size() == 6)
-            {
-                COSArray array = new COSArray();
-                for (Number number : numbers)
-                {
-                    array.add(new COSFloat(number.floatValue()));
-                }
-                fontMatrix = new PDMatrix(array);
-            }
-            else
-            {
-                // todo: the font should always have a Matrix, so why fallback?
-                super.getFontMatrix();
-            }
-        }
-        return fontMatrix;
-    }
-
     @Override
     public PDFontDescriptor getFontDescriptor()
     {
@@ -328,45 +259,42 @@ public class PDType1Font extends PDFont implements PDType1Equivalent
         {
             if (afm != null)
             {
-                fontDescriptor = new PDFontDescriptorAFM(afm); // todo: wait, isn't this for embedding?
+                // this is for embedding fonts into PDFs, rather than for reading, though it works.
+                fontDescriptor = new PDFontDescriptorAFM(afm);
             }
-            // todo: else: then what? (no FD means no embedded font, plus we have no AFM: so fallback)
         }
         return fontDescriptor;
     }
 
     @Override
-    public float getFontHeight(byte[] c, int offset, int length)
+    public float getHeight(int code) throws IOException
     {
         if (afm != null)
         {
-            int code = getCodeFromArray(c, offset, length);
-            Encoding encoding = getFontEncoding();
-            String characterName = encoding.getName(code);
-            return afm.getCharacterHeight(characterName);
+            String characterName = getEncoding().getName(code);
+            return afm.getCharacterHeight(characterName); // todo: isn't this the y-advance, not the height?
         }
-        return super.getFontHeight(c, offset, length);
+        return super.getHeight(code);
     }
 
     @Override
-    public float getFontWidth(int charCode) throws IOException
+    protected float getWidthFromFont(int code) throws IOException
     {
-        float width = super.getFontWidth(charCode);
-        if (width <= 0)
+        String name = codeToName(code);
+        if (afm != null)
         {
-            // get width from AFM
-            float retval = 0;
-            if (afm != null)
-            {
-                String characterName = fontEncoding.getName(charCode);
-                retval = afm.getCharacterWidth(characterName);
-            }
-            return retval;
+            return afm.getCharacterWidth(name);
         }
         else
         {
-            return width;
+            return type1Equivalent.getWidth(name);
         }
+    }
+
+    @Override
+    protected boolean isEmbedded()
+    {
+        return isEmbedded;
     }
 
     @Override
@@ -383,18 +311,23 @@ public class PDType1Font extends PDFont implements PDType1Equivalent
     }
 
     @Override
-    protected void determineEncoding()
+    public int readCode(InputStream in) throws IOException
     {
-        super.determineEncoding();
-        Encoding fontEncoding = getFontEncoding();
-        if (fontEncoding == null)
+        return in.read();
+    }
+
+    @Override
+    protected Encoding readEncodingFromFont() throws IOException
+    {
+        if (afm != null)
         {
-            if (afm != null)
-            {
-                fontEncoding = new Type1Encoding(afm);
-            }
-            // todo: get encoding from font if still null
-            this.fontEncoding = fontEncoding;
+            // read from AFM
+            return new Type1Encoding(afm);
+        }
+        else
+        {
+            // extract from Type1 font/substitute
+            return Type1Encoding.fromFontBox(type1Equivalent.getEncoding());
         }
     }
 
@@ -431,7 +364,7 @@ public class PDType1Font extends PDFont implements PDType1Equivalent
     @Override
     public String codeToName(int code)
     {
-        String name = getFontEncoding().getName(code);
+        String name = getEncoding().getName(code);
         if (name != null)
         {
             return name;

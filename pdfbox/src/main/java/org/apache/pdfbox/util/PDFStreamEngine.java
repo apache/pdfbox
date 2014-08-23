@@ -18,7 +18,9 @@ package org.apache.pdfbox.util;
 
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -42,7 +44,6 @@ import org.apache.pdfbox.pdmodel.common.PDMatrix;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontFactory;
-import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
@@ -358,7 +359,7 @@ public class PDFStreamEngine
      */
     protected void processText(byte[] string) throws IOException
     {
-        // Note on variable names. There are three different units being used in this code.
+        // Note on variable names: there are three different units being used in this code.
         // Character sizes are given in glyph units, text locations are initially given in text
         // units, and we want to save the data in display units. The variable names should end with
         // Text or Disp to represent if the values are in text or disp units (no glyph units are
@@ -380,9 +381,10 @@ public class PDFStreamEngine
         PDFont font = graphicsState.getTextState().getFont();
         if (font == null)
         {
-            LOG.warn("font is undefined, creating default font");
+            LOG.warn("No current font, will use default");
             font = PDFontFactory.createDefaultFont();
         }
+
         // all fonts have the width/height of a character in thousandths of a unit of text space
         float fontMatrixXScaling = 1 / 1000f;
         float fontMatrixYScaling = 1 / 1000f;
@@ -405,58 +407,16 @@ public class PDFStreamEngine
         Matrix td = new Matrix();
         Matrix tempMatrix = new Matrix();
 
-        // todo: push this decision into the Font, i.e. hasTwoByteCharacterCodes()
-        // for now we use a workaround which accesses CMap fonts directly
-        int codeLength;
-        if (font instanceof PDType0Font)
+        InputStream in = new ByteArrayInputStream(string);
+        while (in.available() > 0)
         {
-            // "When the current font is a Type 0 font whose Encoding entry is Identity-H or
-            // Identity-V, the string to be shown shall contain pairs of bytes representing CIDs,
-            // high-order byte first."
-
-            // "When the current font is a CIDFont, the string to be shown shall contain pairs of
-            // bytes representing CIDs, high-order byte first."
-
-            // fixme: sanity check
-            if (!font.getCMap().getName().equals("Identity-H") &&
-                !font.getCMap().getName().equals("Identity-V"))
-            {
-                throw new UnsupportedOperationException("CMap Not implemented: " + font.getCMap().getName());
-            }
-
-            // todo: ((PDType0Font)font).getCMap().hasTwoByteMappings() ???
-            codeLength = 2; // todo: HACK, see "9.7.6.2 CMap Mapping" (also p275 for Identity-H or Identity-V,)
-        }
-        else
-        {
-            codeLength = 1;
-        }
-
-        for (int i = 0; i < string.length; i += codeLength)
-        {
-            // fixme: sanity check
-            if (i + codeLength > string.length)
-            {
-                throw new UnsupportedOperationException("Not enough data: " + string.length + " < " + (i + codeLength));
-            }
-
-            // Decode the value to a Unicode character
-            String unicode = font.encode(string, i, codeLength);
-            int[] charCodes;
-            if (codeLength == 2)
-            {
-                charCodes = new int[] { font.getCodeFromArray(string, i, codeLength) };
-                // todo: shouldn't the above array have two codes?
-            }
-            else
-            {
-                charCodes = new int[] { font.getCodeFromArray(string, i, codeLength) };
-            }
+            int code = font.readCode(in);
+            String unicode = font.toUnicode(code);
 
             // TODO: handle horizontal displacement
             // get the width and height of this character in text units
-            float charHorizontalDisplacementText = font.getFontWidth(string, i, codeLength);
-            float charVerticalDisplacementText = font.getFontHeight(string, i, codeLength);
+            float charHorizontalDisplacementText = font.getWidth(code);
+            float charVerticalDisplacementText = font.getHeight(code); // todo: NOPE we want y-advance not BBox
 
             // multiply the width/height with the scaling factor
             charHorizontalDisplacementText = charHorizontalDisplacementText * fontMatrixXScaling;
@@ -481,7 +441,7 @@ public class PDFStreamEngine
             // code 32 non-space resulted in errors consistent with this interpretation.
             //
             float spacingText = 0;
-            if (string[i] == 0x20 && codeLength == 1)
+            if (code == 32)
             {
                 spacingText += wordSpacingText;
             }
@@ -517,7 +477,7 @@ public class PDFStreamEngine
             td.multiply(textMatrix, textMatrix);
 
             // determine the width of this character
-            // XXX: Note that if we handled vertical text, we should be using Y here
+            // TODO: Note that if we handled vertical text, we should be using Y here
             float startXPosition = textMatrixStart.getXPosition();
             float widthText = endXPosition - startXPosition;
 
@@ -526,7 +486,7 @@ public class PDFStreamEngine
 
             // process the decoded glyph
             processGlyph(textMatrixStart, new Point2D.Float(endXPosition, endYPosition),
-                    totalVerticalDisplacementDisp, widthText, unicode, charCodes,
+                    totalVerticalDisplacementDisp, widthText, code, unicode,
                     font, fontSizeText);
         }
     }
@@ -540,13 +500,13 @@ public class PDFStreamEngine
      * @param maxHeight the height of the glyph in device space
      * @param widthText the width of the glyph in text space
      * @param unicode the Unicode text for this glyph, or null. May be meaningless.
-     * @param charCodes array of internal PDF character codes for the glyph todo: should be 1 code?
+     * @param code internal PDF character code for the glyph
      * @param font the current font
      * @param fontSize font size in text space
      * @throws IOException if the glyph cannot be processed
      */
     protected void processGlyph(Matrix textMatrix, Point2D.Float end, float maxHeight,
-                                float widthText, String unicode, int[] charCodes, PDFont font,
+                                float widthText, int code, String unicode, PDFont font,
                                 float fontSize) throws IOException
     {
         // overridden in subclasses

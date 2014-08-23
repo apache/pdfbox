@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,7 +38,7 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
  * 
  * @author Ben Litchfield
  */
-public class PDTrueTypeFont extends PDFont
+public class PDTrueTypeFont extends PDSimpleFont
 {
     private static final Log LOG = LogFactory.getLog(PDTrueTypeFont.class);
 
@@ -66,7 +65,7 @@ public class PDTrueTypeFont extends PDFont
     private boolean cmapInitialized = false;
 
     private final TrueTypeFont ttf;
-    private final HashMap<Integer, Float> advanceWidths = new HashMap<Integer, Float> ();
+    private final boolean isEmbedded;
 
     /**
      * Creates a new TrueType font from a Font dictionary.
@@ -89,6 +88,7 @@ public class PDTrueTypeFont extends PDFont
                 ttfFont = ttfParser.parseTTF(ff2Stream.createInputStream());
             }
         }
+        isEmbedded = ttfFont != null;
 
         // substitute
         if (ttfFont == null)
@@ -102,10 +102,14 @@ public class PDTrueTypeFont extends PDFont
                 ttfFont = ExternalFonts.getFallbackFont();
             }
         }
-
         ttf = ttfFont;
+        readEncoding();
+    }
 
-        determineEncoding();
+    @Override
+    protected Encoding readEncodingFromFont() throws IOException
+    {
+        return null;
     }
 
     /**
@@ -116,17 +120,13 @@ public class PDTrueTypeFont extends PDFont
         PDTrueTypeFontEmbedder embedder = new PDTrueTypeFontEmbedder(document, dict, ttfStream);
         fontEncoding = embedder.getFontEncoding();
         ttf = embedder.getTrueTypeFont();
+        isEmbedded = true;
     }
 
     @Override
-    public PDFontDescriptor getFontDescriptor()
+    public int readCode(InputStream in) throws IOException
     {
-        if (super.getFontDescriptor() == null)
-        {
-            // todo: this is an experiment: we now allow this to be null (i.e. we no longer synthesise)
-            //fontDescriptor = makeFontDescriptor(ttf);
-        }
-        return fontDescriptor;
+        return in.read();
     }
 
     /**
@@ -138,29 +138,22 @@ public class PDTrueTypeFont extends PDFont
     }
 
     @Override
-    public float getFontWidth(int charCode) throws IOException
+    protected float getWidthFromFont(int code) throws IOException
     {
-        float width = super.getFontWidth(charCode);
-        if (width <= 0)
+        int gid = codeToGID(code);
+        int width = ttf.getAdvanceWidth(gid);
+        int unitsPerEM = ttf.getUnitsPerEm();
+        if (unitsPerEM != 1000)
         {
-            if (advanceWidths.containsKey(charCode))
-            {
-                width = advanceWidths.get(charCode);
-            }
-            else
-            {
-                int code = getGIDForCharacterCode(charCode);
-                width = ttf.getAdvanceWidth(code);
-                int unitsPerEM = ttf.getUnitsPerEm();
-                // do we have to scale the width
-                if (unitsPerEM != 1000)
-                {
-                    width *= 1000f / unitsPerEM;
-                }
-                advanceWidths.put(charCode, width);
-            }
+            width *= 1000f / unitsPerEM;
         }
         return width;
+    }
+
+    @Override
+    protected boolean isEmbedded()
+    {
+        return isEmbedded;
     }
 
     /**
@@ -169,15 +162,15 @@ public class PDTrueTypeFont extends PDFont
      * @param code character code
      * @return GID (glyph index)
      */
-    public int getGIDForCharacterCode(int code) throws IOException
+    public int codeToGID(int code) throws IOException
     {
         extractCmapTable();
         int result = 0;
-        if (getFontEncoding() != null && !isSymbolicFont())
+        if (getEncoding() != null && !isSymbolic())
         {
             try
             {
-                String characterName = getFontEncoding().getName(code);
+                String characterName = getEncoding().getName(code);
                 if (characterName != null)
                 {
                     if (cmapWinUnicode != null)
@@ -219,7 +212,7 @@ public class PDTrueTypeFont extends PDFont
             }
         }
 
-        if (getFontEncoding() == null || isSymbolicFont())
+        if (getEncoding() == null || isSymbolic())
         {
             if (cmapWinSymbol != null)
             {
@@ -308,6 +301,5 @@ public class PDTrueTypeFont extends PDFont
         cmapWinSymbol = null;
         cmapMacintoshSymbol = null;
         cmapInitialized = false;
-        advanceWidths.clear();
     }
 }

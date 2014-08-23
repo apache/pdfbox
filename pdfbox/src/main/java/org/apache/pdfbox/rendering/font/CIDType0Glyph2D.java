@@ -31,7 +31,7 @@ import org.apache.pdfbox.pdmodel.font.PDCIDFontType0;
  *
  * @author John Hewson
  */
-public class CIDGlyph2D implements Glyph2D
+public class CIDType0Glyph2D implements Glyph2D
 {
     private static final Log LOG = LogFactory.getLog(Type1Glyph2D.class);
 
@@ -44,7 +44,7 @@ public class CIDGlyph2D implements Glyph2D
      *
      * @param font Type 0 CIDFont
      */
-    public CIDGlyph2D(PDCIDFontType0 font)
+    public CIDType0Glyph2D(PDCIDFontType0 font) // todo: what about PDCIDFontType2?
     {
         this.font = font;
         fontName = font.getBaseFont();
@@ -53,7 +53,7 @@ public class CIDGlyph2D implements Glyph2D
     @Override
     public GeneralPath getPathForCharacterCode(int code)
     {
-        int cid = font.codeToCID(code);
+        int cid = font.getParent().codeToCID(code);
         if (cache.containsKey(cid))
         {
             return cache.get(cid);

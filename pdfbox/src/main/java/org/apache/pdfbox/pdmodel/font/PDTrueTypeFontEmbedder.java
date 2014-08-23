@@ -217,25 +217,23 @@ class PDTrueTypeFontEmbedder
         fd.setStemV(fd.getFontBoundingBox().getWidth() * .13f);
 
         CMAPTable cmapTable = ttf.getCMAP();
-        CMAPEncodingEntry[] cmaps = cmapTable.getCmaps();
-
-        CMAPEncodingEntry uniMap = getCmapSubtable(cmaps, CMAPTable.PLATFORM_UNICODE,
+        CMAPEncodingEntry uniMap = cmapTable.getSubtable(CMAPTable.PLATFORM_UNICODE,
                 CMAPTable.ENCODING_UNICODE_2_0_FULL);
         if (uniMap == null)
         {
-            uniMap = getCmapSubtable(cmaps, CMAPTable.PLATFORM_UNICODE,
+            uniMap = cmapTable.getSubtable(CMAPTable.PLATFORM_UNICODE,
                     CMAPTable.ENCODING_UNICODE_2_0_BMP);
         }
         if (uniMap == null)
         {
-            uniMap = getCmapSubtable(cmaps, CMAPTable.PLATFORM_WINDOWS,
+            uniMap = cmapTable.getSubtable(CMAPTable.PLATFORM_WINDOWS,
                     CMAPTable.ENCODING_WIN_UNICODE);
         }
         if (uniMap == null)
         {
             // Microsoft's "Recommendations for OpenType Fonts" says that "Symbol" encoding
             // actually means "Unicode, non-standard character set"
-            uniMap = getCmapSubtable(cmaps, CMAPTable.PLATFORM_WINDOWS,
+            uniMap = cmapTable.getSubtable(CMAPTable.PLATFORM_WINDOWS,
                     CMAPTable.ENCODING_WIN_SYMBOL);
         }
         if (uniMap == null)
@@ -244,7 +242,8 @@ class PDTrueTypeFontEmbedder
             // to find one. Furthermore, if we loaded the font from disk then we should've checked
             // first to see that it had a suitable cmap before calling createFontDescriptor
             throw new IllegalArgumentException("ttf: no suitable cmap for font '" +
-                    ttf.getNaming().getFontFamily() + "', found: " + Arrays.toString(cmaps));
+                    ttf.getNaming().getFontFamily() + "', found: " +
+                    Arrays.toString(cmapTable.getCmaps()));
         }
 
         if (this.getFontEncoding() == null)
@@ -312,23 +311,6 @@ class PDTrueTypeFontEmbedder
         dict.setInt(COSName.LAST_CHAR, lastChar);
 
         return fd;
-    }
-
-    /**
-     * Returns the "cmap" subtable for the given platform and encoding, or null.
-     */
-    private CMAPEncodingEntry getCmapSubtable(CMAPEncodingEntry[] cmaps,
-                                              int platformId, int platformEncodingId)
-    {
-        for (CMAPEncodingEntry cmap : cmaps)
-        {
-            if (cmap.getPlatformId() == platformId &&
-                    cmap.getPlatformEncodingId() == platformEncodingId)
-            {
-                return cmap;
-            }
-        }
-        return null;
     }
 
     /**
