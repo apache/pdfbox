@@ -30,6 +30,7 @@ import java.util.Map;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
+import org.apache.pdfbox.preflight.font.util.FontLike;
 import org.apache.pdfbox.preflight.font.util.GlyphDetail;
 import org.apache.pdfbox.preflight.font.util.GlyphException;
 
@@ -52,11 +53,15 @@ public abstract class FontContainer
 
     protected boolean errorsAleadyMerged = false;
 
-    protected PDFont font;
+    protected FontLike font;
 
     public FontContainer(PDFont font)
     {
-        super();
+        this.font = new FontLike(font);
+    }
+
+    public FontContainer(FontLike font)
+    {
         this.font = font;
     }
 
@@ -102,7 +107,7 @@ public abstract class FontContainer
 
     /**
      * 
-     * @param cid
+     * @param cid todo: not a CID, this is actually a char code!
      * @throws GlyphException
      */
     public void checkGlyphWidth(int cid) throws GlyphException
@@ -113,7 +118,7 @@ public abstract class FontContainer
         }
         try
         {
-            final float expectedWidth = this.font.getFontWidth(cid);
+            final float expectedWidth = this.font.getWidth(cid);
             final float foundWidth = getFontProgramWidth(cid);
             checkWidthsConsistency(cid, expectedWidth, foundWidth);
         }

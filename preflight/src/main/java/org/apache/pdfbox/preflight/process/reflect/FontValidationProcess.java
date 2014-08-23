@@ -32,6 +32,9 @@ import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VAL
 import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VALUE_TYPE3;
 
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
+import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
+import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.PreflightPath;
@@ -82,15 +85,15 @@ public class FontValidationProcess extends AbstractProcess
         String subtype = font.getSubType();
         if (FONT_DICTIONARY_VALUE_TRUETYPE.equals(subtype))
         {
-            return new TrueTypeFontValidator(context, font);
+            return new TrueTypeFontValidator(context, (PDTrueTypeFont)font);
         }
         else if (FONT_DICTIONARY_VALUE_MMTYPE.equals(subtype) || FONT_DICTIONARY_VALUE_TYPE1.equals(subtype))
         {
-            return new Type1FontValidator(context, font);
+            return new Type1FontValidator(context, (PDSimpleFont)font);
         }
         else if (FONT_DICTIONARY_VALUE_TYPE3.equals(subtype))
         {
-            return new Type3FontValidator(context, font);
+            return new Type3FontValidator(context, (PDType3Font)font);
         }
         else if (FONT_DICTIONARY_VALUE_COMPOSITE.equals(subtype))
         {

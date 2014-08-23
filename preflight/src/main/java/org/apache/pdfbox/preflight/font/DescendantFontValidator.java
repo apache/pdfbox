@@ -33,7 +33,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDCIDFont;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.font.container.FontContainer;
@@ -42,20 +42,17 @@ import org.apache.pdfbox.preflight.utils.COSUtils;
 
 public abstract class DescendantFontValidator<T extends FontContainer> extends SimpleFontValidator<T>
 {
-
     protected COSDocument cosDocument = null;
 
-    public DescendantFontValidator(PreflightContext context, PDFont font, T fContainer)
+    public DescendantFontValidator(PreflightContext context, PDCIDFont font, T fContainer)
     {
-        super(context, font, fContainer);
+        super(context, font.getCOSObject(), fContainer);
         cosDocument = context.getDocument().getDocument();
     }
 
     @Override
     protected void checkMandatoryField()
     {
-        COSDictionary fontDictionary = (COSDictionary) font.getCOSObject();
-
         boolean arePresent = fontDictionary.containsKey(COSName.TYPE);
         arePresent &= fontDictionary.containsKey(COSName.SUBTYPE);
         arePresent &= fontDictionary.containsKey(COSName.BASE_FONT);

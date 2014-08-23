@@ -60,12 +60,12 @@ import org.apache.pdfbox.preflight.utils.COSUtils;
 
 public class Type0FontValidator extends FontValidator<Type0Container>
 {
-
+    protected PDFont font;
     protected COSDocument cosDocument = null;
 
     public Type0FontValidator(PreflightContext context, PDFont font)
     {
-        super(context, font, new Type0Container(font));
+        super(context, font.getCOSObject(), new Type0Container(font));
         cosDocument = this.context.getDocument().getDocument();
     }
 

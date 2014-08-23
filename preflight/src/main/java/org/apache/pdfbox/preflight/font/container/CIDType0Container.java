@@ -27,15 +27,16 @@ import java.util.List;
 
 import org.apache.fontbox.cff.CFFCIDFont;
 import org.apache.fontbox.cff.CFFFont;
-import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDCIDFontType0;
+import org.apache.pdfbox.preflight.font.util.FontLike;
 
 public class CIDType0Container extends FontContainer
 {
     protected List<CFFFont> lCFonts = new ArrayList<CFFFont>();
 
-    public CIDType0Container(PDFont font)
+    public CIDType0Container(PDCIDFontType0 font)
     {
-        super(font);
+        super(new FontLike(font));
     }
 
     @Override

@@ -26,7 +26,7 @@ import java.util.List;
 
 import org.apache.fontbox.cff.CFFFont;
 import org.apache.fontbox.cff.CFFType1Font;
-import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.font.util.GlyphException;
 import org.apache.pdfbox.preflight.font.util.Type1;
@@ -47,9 +47,12 @@ public class Type1Container extends FontContainer
     protected Type1 type1Font;
     protected List<CFFFont> lCFonts;
 
-    public Type1Container(PDFont font)
+    private PDSimpleFont simpleFont;
+
+    public Type1Container(PDSimpleFont font)
     {
         super(font);
+        this.simpleFont = font;
     }
 
     @Override
@@ -72,7 +75,7 @@ public class Type1Container extends FontContainer
             else
             {
                 // assuming that "cid" is actually the character code
-                String name = this.font.getFontEncoding().getName(cid);
+                String name = simpleFont.getEncoding().getName(cid);
                 if (name.equals(".notdef"))
                 {
                     throw new GlyphException(PreflightConstants.ERROR_FONTS_GLYPH_MISSING, cid, "Unknown character CID(" + cid+")");

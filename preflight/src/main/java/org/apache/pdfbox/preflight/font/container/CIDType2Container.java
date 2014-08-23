@@ -22,23 +22,22 @@
 package org.apache.pdfbox.preflight.font.container;
 
 import org.apache.fontbox.ttf.TrueTypeFont;
-import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDCIDFontType2;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.font.util.CIDToGIDMap;
+import org.apache.pdfbox.preflight.font.util.FontLike;
 import org.apache.pdfbox.preflight.font.util.GlyphException;
 
 import java.io.IOException;
 
 public class CIDType2Container extends FontContainer
 {
-
     protected CIDToGIDMap cidToGid = null;
-
     protected TrueTypeFont ttf = null;
 
-    public CIDType2Container(PDFont font)
+    public CIDType2Container(PDCIDFontType2 font)
     {
-        super(font);
+        super(new FontLike(font));
     }
 
     @Override

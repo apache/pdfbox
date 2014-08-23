@@ -21,7 +21,7 @@
 
 package org.apache.pdfbox.preflight.font;
 
-import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.font.container.FontContainer;
@@ -29,21 +29,18 @@ import org.apache.pdfbox.preflight.font.descriptor.FontDescriptorHelper;
 
 public abstract class FontValidator<T extends FontContainer>
 {
-
     protected T fontContainer;
     protected PreflightContext context;
-    protected PDFont font;
     protected FontDescriptorHelper<T> descriptorHelper;
 
     private static final String SUB_SET_PATTERN = "^[A-Z]{6}\\+.*";
 
-    public FontValidator(PreflightContext context, PDFont font, T fContainer)
+    public FontValidator(PreflightContext context, COSDictionary dict, T fContainer)
     {
         super();
         this.context = context;
-        this.font = font;
         this.fontContainer = fContainer;
-        this.context.addFontContainer(font.getCOSObject(), fContainer);
+        this.context.addFontContainer(dict, fContainer);
     }
 
     public static boolean isSubSet(String fontName)

@@ -29,20 +29,20 @@ import org.apache.fontbox.ttf.CMAPEncodingEntry;
 import org.apache.fontbox.ttf.CMAPTable;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.encoding.Encoding;
-import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.font.util.GlyphException;
 
 public class TrueTypeContainer extends FontContainer
 {
-
     protected TrueTypeFont ttFont;
-
     private CMAPEncodingEntry[] cmapEncodingEntries = null;
+    private PDTrueTypeFont trueTypeFont;
 
-    public TrueTypeContainer(PDFont font)
+    public TrueTypeContainer(PDTrueTypeFont font)
     {
         super(font);
+        this.trueTypeFont = font;
     }
 
     public void setTrueTypeFont(TrueTypeFont ttFont)
@@ -70,7 +70,7 @@ public class TrueTypeContainer extends FontContainer
         try
         {
             CMAPTable cmap = this.ttFont.getCMAP();
-            if (this.font.getFontDescriptor().isSymbolic())
+            if (this.trueTypeFont.getFontDescriptor().isSymbolic())
             {
                 this.cmapEncodingEntries = cmap.getCmaps();
             }
@@ -160,7 +160,7 @@ public class TrueTypeContainer extends FontContainer
         int innerFontCid = cid;
         if (cmap.getPlatformEncodingId() == 1 && cmap.getPlatformId() == 3)
         {
-            Encoding fontEncoding = this.font.getFontEncoding();
+            Encoding fontEncoding = this.trueTypeFont.getEncoding();
             String character = fontEncoding.getCharacter(cid);
             if (character == null)
             {
