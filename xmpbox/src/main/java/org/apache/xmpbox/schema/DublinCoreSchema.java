@@ -208,17 +208,6 @@ public class DublinCoreSchema extends XMPSchema
     }
 
     /**
-     * Convenience method for signature compatibility with jempbox
-     * 
-     * @see DublinCoreSchema#addDescription(String, String)
-     */
-    @Deprecated
-    public void setDescription(String language, String description)
-    {
-        addDescription(language, description);
-    }
-
-    /**
      * set the file format used when saving the resource.
      * 
      * @param mimeType
@@ -310,28 +299,6 @@ public class DublinCoreSchema extends XMPSchema
     public void addRights(String lang, String value)
     {
         setUnqualifiedLanguagePropertyValue(RIGHTS, lang, value);
-    }
-
-    /**
-     * Convenience method for signature compatibility with jempbox
-     * 
-     * @see DublinCoreSchema#addRights(String, String)
-     */
-    @Deprecated
-    public void setRights(String language, String rights)
-    {
-        addRights(language, rights);
-    }
-
-    /**
-     * Convenience method for signature compatibility with jempbox. Add default rights
-     * 
-     * @see DublinCoreSchema#addRights(String, String)
-     */
-    @Deprecated
-    public void setRights(String rights)
-    {
-        addRights(null, rights);
     }
 
     /**
@@ -652,17 +619,6 @@ public class DublinCoreSchema extends XMPSchema
     public List<String> getRelations()
     {
         return getUnqualifiedBagValueList(RELATION);
-    }
-
-    /**
-     * Convenience method for signature compatibility with jempbox
-     * 
-     * @see DublinCoreSchema#getRelations()
-     */
-    @Deprecated
-    public List<String> getRelationships()
-    {
-        return getRelations();
     }
 
     /**

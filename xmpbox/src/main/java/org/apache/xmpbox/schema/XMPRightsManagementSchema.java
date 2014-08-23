@@ -187,17 +187,6 @@ public class XMPRightsManagementSchema extends XMPSchema
     }
 
     /**
-     * Convenience method for jempbox signature compatibility
-     * 
-     * @see XMPRightsManagementSchema#addUsageTerms(String, String)
-     */
-    @Deprecated
-    public void setDescription(String language, String terms)
-    {
-        addUsageTerms(language, terms);
-    }
-
-    /**
      * Return the Lang alt UsageTerms
      * 
      * @return usageterms property
@@ -305,28 +294,6 @@ public class XMPRightsManagementSchema extends XMPSchema
     }
 
     /**
-     * Convenience method for jempbox signature compatibility
-     * 
-     * @see XMPRightsManagementSchema#getCertificate()
-     */
-    @Deprecated
-    public String getCopyright()
-    {
-        return getCertificate();
-    }
-
-    /**
-     * Convenience method for jempbox signature compatibility
-     * 
-     * @see XMPRightsManagementSchema#getCertificate()
-     */
-    @Deprecated
-    public String getCertificateURL()
-    {
-        return getCertificate();
-    }
-
-    /**
      * Set the Certificate URL.
      * 
      * @param url
@@ -336,28 +303,6 @@ public class XMPRightsManagementSchema extends XMPSchema
     {
         URLType tt = (URLType) instanciateSimple(CERTIFICATE, url);
         setCertificateProperty(tt);
-    }
-
-    /**
-     * Convenience method for jempbox signature compatibility
-     * 
-     * @see XMPRightsManagementSchema#setCertificate(String)
-     */
-    @Deprecated
-    public void setCertificateURL(String certificate)
-    {
-        setCertificate(certificate);
-    }
-
-    /**
-     * Convenience method for jempbox signature compatibility
-     * 
-     * @see XMPRightsManagementSchema#setCertificate(String)
-     */
-    @Deprecated
-    public void setCopyright(String certificate)
-    {
-        setCertificate(certificate);
     }
 
     /**
