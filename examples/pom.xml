@@ -54,11 +54,6 @@
         <version>${project.version}</version>
     </dependency>
     <dependency>
-		<groupId>org.apache.pdfbox</groupId>
-        <artifactId>jempbox</artifactId>
-        <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>xmpbox</artifactId>
       <version>${project.version}</version>

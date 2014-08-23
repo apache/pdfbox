@@ -16,16 +16,17 @@
  */
 package org.apache.pdfbox.examples.pdmodel;
 
-import org.apache.jempbox.xmp.XMPMetadata;
-import org.apache.jempbox.xmp.XMPSchemaBasic;
-import org.apache.jempbox.xmp.XMPSchemaDublinCore;
-import org.apache.jempbox.xmp.XMPSchemaPDF;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
+import org.apache.xmpbox.XMPMetadata;
+import org.apache.xmpbox.schema.AdobePDFSchema;
+import org.apache.xmpbox.schema.DublinCoreSchema;
+import org.apache.xmpbox.schema.XMPBasicSchema;
+import org.apache.xmpbox.xml.XmpSerializer;
 
+import java.io.ByteArrayOutputStream;
 import java.util.GregorianCalendar;
 
 /**
@@ -33,8 +34,8 @@ import java.util.GregorianCalendar;
  *
  * Usage: java org.apache.pdfbox.examples.pdmodel.AddMetadataToDocument &lt;input-pdf&gt; &lt;output-pdf&gt;
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.4 $
+ * @author Ben Litchfield
+ * 
  */
 public class AddMetadataFromDocInfo
 {
@@ -71,26 +72,30 @@ public class AddMetadataFromDocInfo
                 PDDocumentCatalog catalog = document.getDocumentCatalog();
                 PDDocumentInformation info = document.getDocumentInformation();
                 
-                XMPMetadata metadata = new XMPMetadata();
+                XMPMetadata metadata = XMPMetadata.createXMPMetadata();
 
-                XMPSchemaPDF pdfSchema = metadata.addPDFSchema();
+                AdobePDFSchema pdfSchema = metadata.createAndAddAdobePDFSchema();
                 pdfSchema.setKeywords( info.getKeywords() );
                 pdfSchema.setProducer( info.getProducer() );
 
-                XMPSchemaBasic basicSchema = metadata.addBasicSchema();
+                XMPBasicSchema basicSchema = metadata.createAndAddXMPBasicSchema();
                 basicSchema.setModifyDate( info.getModificationDate() );
                 basicSchema.setCreateDate( info.getCreationDate() );
                 basicSchema.setCreatorTool( info.getCreator() );
                 basicSchema.setMetadataDate( new GregorianCalendar() );
 
-                XMPSchemaDublinCore dcSchema = metadata.addDublinCoreSchema();
+                DublinCoreSchema dcSchema = metadata.createAndAddDublinCoreSchema();
                 dcSchema.setTitle( info.getTitle() );
                 dcSchema.addCreator( "PDFBox" );
                 dcSchema.setDescription( info.getSubject() );
 
                 PDMetadata metadataStream = new PDMetadata(document);
-                metadataStream.importXMPMetadata( metadata.asByteArray() );
                 catalog.setMetadata( metadataStream );
+                
+                XmpSerializer serializer = new XmpSerializer();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                serializer.serialize(metadata, baos, false);
+                metadataStream.importXMPMetadata( baos.toByteArray() );
 
                 document.save( args[1] );
             }
