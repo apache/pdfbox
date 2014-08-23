@@ -16,11 +16,6 @@
  */
 package org.apache.pdfbox.examples.pdmodel;
 
-import org.apache.jempbox.xmp.XMPMetadata;
-import org.apache.jempbox.xmp.XMPSchemaBasic;
-import org.apache.jempbox.xmp.XMPSchemaDublinCore;
-import org.apache.jempbox.xmp.XMPSchemaPDF;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
@@ -32,24 +27,25 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
-import org.w3c.dom.Document;
+import org.apache.xmpbox.XMPMetadata;
+import org.apache.xmpbox.schema.AdobePDFSchema;
+import org.apache.xmpbox.schema.DublinCoreSchema;
+import org.apache.xmpbox.schema.XMPBasicSchema;
+import org.apache.xmpbox.xml.DomXmpParser;
+import org.apache.xmpbox.xml.XmpParsingException;
 
 /**
  * This is an example on how to extract metadata from a PDF document.
- * <p>
+ * 
  * Usage: java org.apache.pdfbox.examples.pdmodel.ExtractDocument &lt;input-pdf&gt;
  *
- * @version $Revision$
  */
 public class ExtractMetadata
 {
     private ExtractMetadata()
     {
-        //utility class
+        // utility class
     }
 
     /**
@@ -59,9 +55,9 @@ public class ExtractMetadata
      *
      * @throws Exception If there is an error parsing the document.
      */
-    public static void main( String[] args ) throws Exception
+    public static void main(String[] args) throws Exception
     {
-        if( args.length != 1 )
+        if (args.length != 1)
         {
             usage();
             System.exit(1);
@@ -72,68 +68,75 @@ public class ExtractMetadata
 
             try
             {
-                document = PDDocument.load( args[0] );
-                if (document.isEncrypted()) 
+                document = PDDocument.load(args[0]);
+                if (document.isEncrypted())
                 {
                     try
                     {
                         StandardDecryptionMaterial sdm = new StandardDecryptionMaterial("");
                         document.openProtection(sdm);
                     }
-                    catch( InvalidPasswordException e )
+                    catch (InvalidPasswordException e)
                     {
-                        System.err.println( "Error: The document is encrypted." );
+                        System.err.println("Error: The document is encrypted.");
                     }
                 }
                 PDDocumentCatalog catalog = document.getDocumentCatalog();
                 PDMetadata meta = catalog.getMetadata();
-                if ( meta != null)
+                if (meta != null)
                 {
-                	DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                    DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
-                	Document xmpDocument = documentBuilder.parse(meta.createInputStream());
-                    XMPMetadata metadata = new XMPMetadata(xmpDocument);
-    
-                    XMPSchemaDublinCore dc = metadata.getDublinCoreSchema();
-                    if (dc != null)
+                    DomXmpParser xmpParser = new DomXmpParser();
+                    try
                     {
-                        display("Title:", dc.getTitle());
-                        display("Description:", dc.getDescription());
-                        list("Creators: ", dc.getCreators());
-                        list("Dates:", dc.getDates());
-                        list("Subjects:", dc.getSubjects());
+                        XMPMetadata metadata = xmpParser.parse(meta.createInputStream());
+
+                        DublinCoreSchema dc = metadata.getDublinCoreSchema();
+                        if (dc != null)
+                        {
+                            display("Title:", dc.getTitle());
+                            display("Description:", dc.getDescription());
+                            listString("Creators: ", dc.getCreators());
+                            listCalendar("Dates:", dc.getDates());
+                            listString("Subjects:", dc.getSubjects());
+                        }
+
+                        AdobePDFSchema pdf = metadata.getAdobePDFSchema();
+                        if (pdf != null)
+                        {
+                            display("Keywords:", pdf.getKeywords());
+                            display("PDF Version:", pdf.getPDFVersion());
+                            display("PDF Producer:", pdf.getProducer());
+                        }
+
+                        XMPBasicSchema basic = metadata.getXMPBasicSchema();
+                        if (basic != null)
+                        {
+                            display("Create Date:", basic.getCreateDate());
+                            display("Modify Date:", basic.getModifyDate());
+                            display("Creator Tool:", basic.getCreatorTool());
+                        }
                     }
-    
-                    XMPSchemaPDF pdf = metadata.getPDFSchema();
-                    if (pdf != null)
+                    catch (XmpParsingException e)
                     {
-                        display("Keywords:", pdf.getKeywords());
-                        display("PDF Version:", pdf.getPDFVersion());
-                        display("PDF Producer:", pdf.getProducer());
-                    }
-    
-                    XMPSchemaBasic basic = metadata.getBasicSchema();
-                    if (basic != null)
-                    {
-                        display("Create Date:", basic.getCreateDate());
-                        display("Modify Date:", basic.getModifyDate());
-                        display("Creator Tool:", basic.getCreatorTool());
+                        System.err.println("An error ouccred when parsing the meta data: "
+                                + e.getMessage());
                     }
                 }
                 else
                 {
-                    // The pdf doesn't contain any metadata, try to use the document information instead
+                    // The pdf doesn't contain any metadata, try to use the
+                    // document information instead
                     PDDocumentInformation information = document.getDocumentInformation();
-                    if ( information != null)
+                    if (information != null)
                     {
                         showDocumentInformation(information);
                     }
                 }
-                
+
             }
             finally
             {
-                if( document != null )
+                if (document != null)
                 {
                     document.close();
                 }
@@ -149,19 +152,34 @@ public class ExtractMetadata
         display("Creator:", information.getCreator());
         display("Producer:", information.getProducer());
     }
-    
-    private static void list(String title, List list)
+
+    private static void listString(String title, List<String> list)
     {
         if (list == null)
         {
             return;
         }
         System.out.println(title);
-        Iterator iter = list.iterator();
+        Iterator<String> iter = list.iterator();
         while (iter.hasNext())
         {
-            Object o = iter.next();
-            System.out.println("  " + format(o));
+            String string = iter.next();
+            System.out.println("  " + string);
+        }
+    }
+
+    private static void listCalendar(String title, List<Calendar> list)
+    {
+        if (list == null)
+        {
+            return;
+        }
+        System.out.println(title);
+        Iterator<Calendar> iter = list.iterator();
+        while (iter.hasNext())
+        {
+            Calendar calendar = iter.next();
+            System.out.println("  " + format(calendar));
         }
     }
 
@@ -169,7 +187,7 @@ public class ExtractMetadata
     {
         if (o instanceof Calendar)
         {
-            Calendar cal = (Calendar)o;
+            Calendar cal = (Calendar) o;
             return DateFormat.getDateInstance().format(cal.getTime());
         }
         else
@@ -191,6 +209,6 @@ public class ExtractMetadata
      */
     private static void usage()
     {
-        System.err.println( "Usage: java " + ExtractMetadata.class.getName() + " <input-pdf>" );
+        System.err.println("Usage: java " + ExtractMetadata.class.getName() + " <input-pdf>");
     }
 }
