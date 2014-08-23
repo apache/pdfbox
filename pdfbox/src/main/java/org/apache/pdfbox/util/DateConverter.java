@@ -57,7 +57,7 @@ import org.apache.pdfbox.cos.COSString;
  * @author Ben Litchfield
  * @author Fred Hansen
  * 
- * TODO Move members of this class elsewhere for shared use in pdfbox, xmpbox, and jempbox.
+ * TODO Move members of this class elsewhere for shared use in pdfbox and xmpbox.
  */
 public final class DateConverter
 {
