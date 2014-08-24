@@ -19,6 +19,8 @@ package org.apache.pdfbox.pdmodel.font;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
@@ -37,6 +39,8 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
  */
 public class PDType3Font extends PDSimpleFont
 {
+    private static final Log LOG = LogFactory.getLog(PDFont.class);
+
 	private PDResources type3Resources = null;
     private COSDictionary charProcs = null;
     private PDMatrix fontMatrix;
@@ -53,16 +57,47 @@ public class PDType3Font extends PDSimpleFont
     }
 
     @Override
+    public String getName()
+    {
+        return dict.getNameAsString(COSName.NAME);
+    }
+
+    @Override
     protected Encoding readEncodingFromFont() throws IOException
     {
         return null;
     }
 
     @Override
+    public float getWidth(int code) throws IOException
+    {
+        int firstChar = dict.getInt(COSName.FIRST_CHAR, -1);
+        int lastChar = dict.getInt(COSName.LAST_CHAR, -1);
+        if (getWidths().size() > 0 && code >= firstChar && code <= lastChar)
+        {
+            return getWidths().get(code - firstChar).floatValue();
+        }
+        else
+        {
+            PDFontDescriptor fd = getFontDescriptor();
+            if (fd instanceof PDFontDescriptorDictionary)
+            {
+                return fd.getMissingWidth();
+            }
+            else
+            {
+                // todo: call getWidthFromFont?
+                LOG.error("No width for glyph " + code + " in font " + getName());
+                return 0;
+            }
+        }
+    }
+
+    @Override
     protected float getWidthFromFont(int code)
     {
-        // todo: implement me (need to peek into stream)
-        return 0;
+       // todo: could these be extracted from the font's stream?
+       throw new UnsupportedOperationException("not suppported");
     }
 
     @Override

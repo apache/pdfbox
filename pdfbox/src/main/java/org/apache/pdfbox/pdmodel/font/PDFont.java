@@ -392,11 +392,19 @@ public abstract class PDFont implements COSObjectable
     }
 
     /**
+     * Returns the name of this font, either the PostScript "BaseName" or the Type 3 "Name".
+     */
+    public String getName()
+    {
+        return getBaseFont();
+    }
+
+    /**
      * The widths of the characters. This will be null for the standard 14 fonts.
      *
      * @return The widths of the characters.
      */
-    private List<Integer> getWidths()
+    protected final List<Integer> getWidths()
     {
         if (widths == null)
         {
@@ -482,6 +490,6 @@ public abstract class PDFont implements COSObjectable
     @Override
     public String toString()
     {
-        return getClass().getSimpleName() + " " + getBaseFont();
+        return getClass().getSimpleName() + " " + getName();
     }
 }
