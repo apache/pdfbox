@@ -90,6 +90,25 @@ public class CFFType1Font extends CFFFont implements Type1Equivalent
         int sid = charset.getSID(name);
         int gid = charset.getGIDForSID(sid);
 
+        // lookup in CharStrings INDEX
+        return getType2CharString(gid, name);
+    }
+
+    /**
+     * Returns the Type 1 charstring for the given GID.
+     *
+     * @param gid GID
+     * @throws IOException if the charstring could not be read
+     */
+    public Type2CharString getType2CharString(int gid) throws IOException
+    {
+        String name = "GID+" + gid; // for debugging only
+        return getType2CharString(gid, name);
+    }
+
+    // Returns the Type 1 charstring for the given GID, with name for debugging
+    private Type2CharString getType2CharString(int gid, String name) throws IOException
+    {
         Type2CharString type2 = charStringCache.get(gid);
         if (type2 == null)
         {
@@ -101,7 +120,7 @@ public class CFFType1Font extends CFFFont implements Type1Equivalent
             Type2CharStringParser parser = new Type2CharStringParser(fontName, name);
             List<Object> type2seq = parser.parse(bytes, globalSubrIndex, getLocalSubrIndex());
             type2 = new Type2CharString(reader, fontName, name, gid, type2seq, getDefaultWidthX(),
-                                        getNominalWidthX());
+                    getNominalWidthX());
             charStringCache.put(gid, type2);
         }
         return type2;

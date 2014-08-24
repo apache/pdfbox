@@ -454,12 +454,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             {
                 // a Type0 CIDFont contains CFF font
                 PDCIDFontType0 cidType0Font = (PDCIDFontType0)type0Font.getDescendantFont();
-
-                CFFCIDFont cffCIDFont = cidType0Font.getCFFCIDFont(); // todo: could be null (need incorporate fallback)
-                if (cffCIDFont != null)
-                {
-                    glyph2D = new CIDType0Glyph2D(cidType0Font);
-                }
+                glyph2D = new CIDType0Glyph2D(cidType0Font); // todo: could be null (need incorporate fallback)
             }
         }
         else

@@ -20,10 +20,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.cff.CFFCIDFont;
+import org.apache.fontbox.cff.CFFFont;
 import org.apache.fontbox.cff.CFFParser;
+import org.apache.fontbox.cff.CFFType1Font;
+import org.apache.fontbox.cff.Type2CharString;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.PDStream;
@@ -36,9 +37,9 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
  */
 public class PDCIDFontType0 extends PDCIDFont
 {
-    private static final Log LOG = LogFactory.getLog(PDCIDFontType0.class);
+    private final CFFCIDFont cidFont;  // Top DICT that uses CIDFont operators
+    private final CFFType1Font t1Font; // Top DICT that does not use CIDFont operators
 
-    private CFFCIDFont cffFont = null;
     private final Map<Integer, Float> glyphHeights = new HashMap<Integer, Float>();
     private Float avgWidth = null;
     private final boolean isEmbedded;
@@ -67,15 +68,26 @@ public class PDCIDFontType0 extends PDCIDFont
         {
             // embedded
             CFFParser cffParser = new CFFParser();
-            cffFont = (CFFCIDFont)cffParser.parse(bytes).get(0);
+            CFFFont cffFont = cffParser.parse(bytes).get(0);
+            if (cffFont instanceof CFFCIDFont)
+            {
+                cidFont = (CFFCIDFont)cffFont;
+                t1Font = null;
+            }
+            else
+            {
+                cidFont = null;
+                t1Font = (CFFType1Font)cffFont;
+            }
             isEmbedded = true;
         }
         else
         {
             // substitute
-            cffFont = ExternalFonts.getCFFCIDFont(getBaseFont());
+            cidFont = ExternalFonts.getCFFCIDFont(getBaseFont());
+            t1Font = null;
 
-            if (cffFont == null)
+            if (cidFont == null)
             {
                 // todo: log message + substitute? But what would we substitute with?
                 throw new UnsupportedOperationException("not implemented: missing CFF");
@@ -87,9 +99,34 @@ public class PDCIDFontType0 extends PDCIDFont
     /**
      * Returns the embedded CFF CIDFont.
      */
-    public CFFCIDFont getCFFCIDFont()
+    public CFFFont getCFFFont()
     {
-        return cffFont;
+        if (cidFont != null)
+        {
+            return cidFont;
+        }
+        else
+        {
+            return t1Font;
+        }
+    }
+
+    /**
+     * Returns the Type 2 charstring for the given CID.
+     *
+     * @param cid CID
+     * @throws IOException if the charstring could not be read
+     */
+    public Type2CharString getType2CharString(int cid) throws IOException
+    {
+        if (cidFont != null)
+        {
+            return cidFont.getType2CharString(cid);
+        }
+        else
+        {
+            return t1Font.getType2CharString(cid);
+        }
     }
 
     /**
@@ -107,14 +144,24 @@ public class PDCIDFontType0 extends PDCIDFont
     public int codeToGID(int code)
     {
         int cid = codeToCID(code);
-        return cffFont.getCharset().getGIDForCID(cid);
+        if (cidFont != null)
+        {
+            // The CIDs shall be used to determine the GID value for the glyph procedure using the
+            // charset table in the CFF program
+            return cidFont.getCharset().getGIDForCID(cid);
+        }
+        else
+        {
+            // The CIDs shall be used directly as GID values
+            return cid;
+        }
     }
 
     @Override
     protected float getWidthFromFont(int code) throws IOException
     {
         int cid = codeToCID(code);
-        return cffFont.getType2CharString(cid).getWidth();
+        return getType2CharString(cid).getWidth();
     }
 
     @Override
@@ -131,7 +178,7 @@ public class PDCIDFontType0 extends PDCIDFont
         float height = 0;
         if (!glyphHeights.containsKey(cid))
         {
-            height =  (float)cffFont.getType2CharString(cid).getBounds().getHeight();
+            height =  (float) getType2CharString(cid).getBounds().getHeight();
             glyphHeights.put(cid, height);
         }
         return height;
@@ -152,16 +199,5 @@ public class PDCIDFontType0 extends PDCIDFont
     {
         // todo: not implemented, highly suspect
         return 500;
-    }
-
-    @Override
-    public void clear()
-    {
-        super.clear();
-        if (cffFont != null)
-        {
-            //cffFont.clear();
-            cffFont = null;
-        }
     }
 }

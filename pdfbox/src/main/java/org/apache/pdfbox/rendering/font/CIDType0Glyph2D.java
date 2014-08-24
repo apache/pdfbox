@@ -22,7 +22,6 @@ import java.util.HashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.fontbox.cff.CFFCIDFont;
 import org.apache.fontbox.cff.Type2CharString;
 import org.apache.pdfbox.pdmodel.font.PDCIDFontType0;
 
@@ -70,8 +69,7 @@ public class CIDType0Glyph2D implements Glyph2D
 
         try
         {
-            CFFCIDFont cidFont = font.getCFFCIDFont();
-            Type2CharString charString = cidFont.getType2CharString(cid);
+            Type2CharString charString = font.getType2CharString(cid);
 
             if (charString.getGID() == 0)
             {
