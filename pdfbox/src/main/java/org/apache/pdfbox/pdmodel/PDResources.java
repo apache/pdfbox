@@ -196,15 +196,26 @@ public class PDResources implements COSObjectable
             }
             else
             {
+                Map<COSDictionary, PDFont> seenFonts = new HashMap<COSDictionary, PDFont>();
                 for (COSName fontName : fontsDictionary.keySet())
                 {
                     COSBase font = fontsDictionary.getDictionaryObject(fontName);
+
                     // data-000174.pdf contains a font that is a COSArray, looks to be an error in the
                     // PDF, we will just ignore entries that are not dictionaries.
                     if (font instanceof COSDictionary)
                     {
-                        PDFont newFont = PDFontFactory.createFont((COSDictionary) font);
-                        fonts.put(fontName.getName(), newFont);
+                        // some fonts may appear many times (see test_1fd9a_test.pdf)
+                        if (seenFonts.containsKey(font))
+                        {
+                            fonts.put(fontName.getName(), seenFonts.get(font));
+                        }
+                        else
+                        {
+                            PDFont newFont = PDFontFactory.createFont((COSDictionary) font);
+                            fonts.put(fontName.getName(), newFont);
+                            seenFonts.put((COSDictionary) font, newFont);
+                        }
                     }
                 }
             }
