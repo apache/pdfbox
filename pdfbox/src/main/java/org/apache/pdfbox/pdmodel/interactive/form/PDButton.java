@@ -20,7 +20,6 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
-
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 
 import java.util.ArrayList;
@@ -93,4 +92,19 @@ public abstract class PDButton extends PDField
     {
         getDictionary().setItem(COSName.OPT, COSArrayList.converterToCOSArray( options ) );
     }
+    
+    @Override
+    public Object getDefaultValue()
+    {
+        // Button fields don't support the "DV" entry.
+        return null;
+    }
+
+    @Override
+    public void setDefaultValue(Object value)
+    {
+        // Button fields don't support the "DV" entry.
+        throw new RuntimeException( "Button fields don't support the \"DV\" entry." );
+    }
+
 }

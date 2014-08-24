@@ -183,7 +183,7 @@ public class TestFDF extends TestCase
     
                 PDRadioButton feld3 = (PDRadioButton)form.getField( "Feld.3" );
                 feld3.setValue("RB1");
-                assertEquals( "RB1", feld3.getValue() );
+                assertEquals( "RB1", feld3.getValue().getName() );
             }
             finally
             {

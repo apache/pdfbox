@@ -79,7 +79,7 @@ public final class PDAppearanceString
      * @param field the field which you wish to control the appearance of
      * @throws IOException If there is an error creating the appearance.
      */
-    public PDAppearanceString(PDAcroForm theAcroForm, PDVariableText field) throws IOException
+    public PDAppearanceString(PDAcroForm theAcroForm, PDVariableText field)
     {
         acroForm = theAcroForm;
         parent = field;
@@ -90,10 +90,7 @@ public final class PDAppearanceString
             widgets = new ArrayList<COSObjectable>();
             widgets.add( field.getWidget() );
         }
-
         defaultAppearance = getDefaultAppearance();
-
-
     }
 
     /**
@@ -199,7 +196,7 @@ public final class PDAppearanceString
     /**
      * This is the public method for setting the appearance stream.
      *
-     * @param apValue the String value which the apperance shoud represent
+     * @param apValue the String value which the appearance should represent
      *
      * @throws IOException If there is an error creating the stream.
      */
@@ -243,8 +240,8 @@ public final class PDAppearanceString
                     widget.setAppearance( appearance );
                 }
 
-                Map normalAppearance = appearance.getNormalAppearance();
-                PDAppearanceStream appearanceStream = (PDAppearanceStream)normalAppearance.get( "default" );
+                Map<String,PDAppearanceStream> normalAppearance = appearance.getNormalAppearance();
+                PDAppearanceStream appearanceStream = normalAppearance.get( "default" );
                 if( appearanceStream == null )
                 {
                     COSStream cosStream = acroForm.getDocument().getDocument().createCOSStream();
@@ -253,8 +250,8 @@ public final class PDAppearanceString
                     appearance.setNormalAppearance( appearanceStream );
                 }
 
-                List tokens = getStreamTokens( appearanceStream );
-                List daTokens = getStreamTokens( getDefaultAppearance() );
+                List<Object> tokens = getStreamTokens( appearanceStream );
+                List<Object> daTokens = getStreamTokens( getDefaultAppearance() );
                 PDFont pdFont = getFontAndUpdateResources( tokens, appearanceStream );
 
                 if (!containsMarkedContent( tokens ))
@@ -341,7 +338,7 @@ public final class PDAppearanceString
     }
 
     private void insertGeneratedAppearance( PDAnnotationWidget fieldWidget, OutputStream output,
-        PDFont pdFont, List tokens, PDAppearanceStream appearanceStream ) throws IOException
+        PDFont pdFont, List<Object> tokens, PDAppearanceStream appearanceStream ) throws IOException
     {
         PrintWriter printWriter = new PrintWriter( output, true );
         float fontSize = 0.0f;
@@ -409,7 +406,7 @@ public final class PDAppearanceString
         printWriter.flush();
     }
 
-    private PDFont getFontAndUpdateResources( List tokens, PDAppearanceStream appearanceStream ) throws IOException
+    private PDFont getFontAndUpdateResources( List<Object> tokens, PDAppearanceStream appearanceStream ) throws IOException
     {
         PDFont retval = null;
         PDResources streamResources = appearanceStream.getResources();
@@ -467,7 +464,7 @@ public final class PDAppearanceString
      * w in an appearance stream represents the lineWidth.
      * @return the linewidth
      */
-    private float getLineWidth( List tokens )
+    private float getLineWidth( List<Object> tokens )
     {
 
         float retval = 1;
@@ -484,7 +481,7 @@ public final class PDAppearanceString
         return retval;
     }
 
-    private PDRectangle getSmallestDrawnRectangle( PDRectangle boundingBox, List tokens )
+    private PDRectangle getSmallestDrawnRectangle( PDRectangle boundingBox, List<Object> tokens )
     {
         PDRectangle smallest = boundingBox;
         for( int i=0; i<tokens.size(); i++ )
@@ -520,14 +517,13 @@ public final class PDAppearanceString
      *
      * @throws IOException If there is an error getting the font height.
      */
-    private float calculateFontSize( PDFont pdFont, PDRectangle boundingBox, List tokens, List daTokens )
+    private float calculateFontSize( PDFont pdFont, PDRectangle boundingBox, List<Object> tokens, List<Object> daTokens )
         throws IOException
     {
         float fontSize = 0;
         if( daTokens != null )
         {
             //daString looks like   "BMC /Helv 3.4 Tf EMC"
-
             int fontIndex = daTokens.indexOf( Operator.getOperator("Tf") );
             if(fontIndex != -1 )
             {
@@ -576,7 +572,7 @@ public final class PDAppearanceString
      *
      * @throws IOException If there is an error calculating the text position.
      */
-    private String getTextPosition( PDRectangle boundingBox, PDFont pdFont, float fontSize, List tokens )
+    private String getTextPosition( PDRectangle boundingBox, PDFont pdFont, float fontSize, List<Object> tokens )
         throws IOException
     {
         float lineWidth = getLineWidth( tokens );

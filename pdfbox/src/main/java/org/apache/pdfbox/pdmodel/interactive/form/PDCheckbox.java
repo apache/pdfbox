@@ -20,8 +20,6 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 
-import java.io.IOException;
-
 /**
  * A check box toggles between two states, on and off.
  *
@@ -101,22 +99,6 @@ public final class PDCheckbox extends PDButton
     }
 
     /**
-     * {@inheritDoc}
-     */
-    public void setValue(String newValue)
-    {
-        getDictionary().setName( COSName.V, newValue );
-        if( newValue == null )
-        {
-            getDictionary().setItem( COSName.AS, COSName.OFF );
-        }
-        else
-        {
-            getDictionary().setName( COSName.AS, newValue );
-        }
-    }
-
-    /**
      * This will get the value of the radio button.
      *
      * @return The value of the radio button.
@@ -151,16 +133,29 @@ public final class PDCheckbox extends PDButton
         return retval;
     }
 
-    /**
-     * getValue gets the fields value to as a string.
-     *
-     * @return The string value of this field.
-     *
-     * @throws IOException If there is an error getting the value.
-     */
-    public String getValue() throws IOException
+    @Override
+    public COSName getValue()
     {
-        return getDictionary().getNameAsString( COSName.V );
+        return getDictionary().getCOSName( COSName.V );
     }
 
+    @Override
+    public void setValue(Object value)
+    {
+        if (value == null)
+        {
+            getDictionary().removeItem(COSName.V);
+            getDictionary().setItem( COSName.AS, COSName.OFF );
+        }
+        else if (value instanceof COSName)
+        {
+            getDictionary().setItem(COSName.V, (COSName)value);
+            getDictionary().setItem( COSName.AS, (COSName)value);
+        }
+        else
+        {
+            throw new RuntimeException( "The value of a checkbox has to be a name object." );
+        }
+    }
+    
 }

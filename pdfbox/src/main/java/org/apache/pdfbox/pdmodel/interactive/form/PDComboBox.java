@@ -16,9 +16,11 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-
-import java.io.IOException;
+import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSString;
 
 /**
  * A combo box consisting of a drop-down list.
@@ -27,7 +29,6 @@ import java.io.IOException;
  */
 public final class PDComboBox extends PDChoice
 {
-    private static final int FLAG_EDIT = 0x40000;
 
     /**
      * Constructor.
@@ -41,18 +42,59 @@ public final class PDComboBox extends PDChoice
         super(acroForm, field, parentNode);
     }
 
+    /**
+     * getValue gets the value of the "V" entry.
+     * 
+     * @return The value of this entry.
+     * 
+     */
     @Override
-    public void setValue(String optionValue) throws IOException
+    public COSArray getValue()
     {
-        boolean isEditable = (getFieldFlags() & FLAG_EDIT) != 0;
-        int index = getSelectedIndex(optionValue);
-
-        if (index == -1 && !isEditable)
+        COSBase value = getDictionary().getDictionaryObject( COSName.V);
+        if (value instanceof COSString)
         {
-            throw new IllegalArgumentException("Combo box does not contain the given value");
+            COSArray array = new COSArray();
+            array.add(value);
+            return array;
         }
-
-        super.setValue(optionValue);
-        selectMultiple(index);
+        else if (value instanceof COSArray)
+        {
+            return (COSArray)value;
+        }
+        return null;
     }
+
+    /**
+     * setValue sets the entry "V" to the given value.
+     * 
+     * @param value the value
+     * 
+     */
+    @Override
+    public void setValue(Object value)
+    {
+        if ((getFieldFlags() & FLAG_EDIT) != 0)
+        {
+            throw new IllegalArgumentException("The combo box isn't editable.");
+        }
+        if (value != null)
+        {
+            if (value instanceof String)
+            {
+                int index = getSelectedIndex((String)value);
+                if (index == -1)
+                {
+                    throw new IllegalArgumentException("The combo box does not contain the given value.");
+                }
+                selectMultiple(index);
+            }
+            // TODO multiple values
+        }
+        else
+        {
+            getDictionary().removeItem(COSName.V);
+        }
+    }
+
 }

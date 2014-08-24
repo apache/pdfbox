@@ -95,36 +95,6 @@ public class PDSignatureField extends PDField
     }
     
     /**
-     * @see PDField#setValue(java.lang.String)
-     *
-     * @param value The new value for the field.
-     *
-     * @throws IOException If there is an error creating the appearance stream.
-     * @deprecated use setSignature(PDSignatureField) instead
-     */
-    @Override
-    @Deprecated
-    public void setValue(String value) throws IOException
-    {
-        throw new RuntimeException( "Can't set signature as String, use setSignature(PDSignatureField) instead" );
-    }
-
-    /**
-     * @see PDField#setValue(java.lang.String)
-     *
-     * @return The string value of this field.
-     *
-     * @throws IOException If there is an error creating the appearance stream.
-     * @deprecated use getSignature() instead
-     */
-    @Override
-    @Deprecated
-    public String getValue() throws IOException
-    {
-      throw new RuntimeException( "Can't get signature as String, use getSignature() instead." );
-    }
-
-    /**
      * Return a string rep of this object.
      *
      * @return A string rep of this object.
@@ -142,7 +112,7 @@ public class PDSignatureField extends PDField
      */
     public void setSignature(PDSignature value)
     {
-        getDictionary().setItem(COSName.V, value);
+        setValue(value);
     }
     
     /**
@@ -152,6 +122,34 @@ public class PDSignatureField extends PDField
      * 
      */
     public PDSignature getSignature()
+    {
+        return getValue();
+    }
+
+    /**
+     * Add a signature dictionary to the signature field.
+     * 
+     * @param value is the PDSignatureField
+     */
+    public void setValue(Object value)
+    {
+        if (value == null)
+        {
+            getDictionary().removeItem(COSName.V);
+        }
+        else if (value instanceof PDSignature)
+        {
+            getDictionary().setItem(COSName.V, (PDSignature)value);
+        }
+    }
+    
+    /**
+     * Get the signature dictionary.
+     * 
+     * @return the signature dictionary
+     * 
+     */
+    public PDSignature getValue()
     {
         COSBase dictionary = getDictionary().getDictionaryObject(COSName.V);
         if (dictionary == null)
@@ -193,4 +191,19 @@ public class PDSignatureField extends PDField
             getDictionary().setItem(COSName.SV, sv.getCOSObject());
         }
     }
+    
+    @Override
+    public Object getDefaultValue()
+    {
+        // Signature fields don't support the "DV" entry.
+        return null;
+    }
+
+    @Override
+    public void setDefaultValue(Object value)
+    {
+        // Signature fields don't support the "DV" entry.
+        throw new RuntimeException( "Signature fields don't support the \"DV\" entry." );
+    }
+
 }
