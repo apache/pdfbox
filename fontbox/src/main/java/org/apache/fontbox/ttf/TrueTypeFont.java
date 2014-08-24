@@ -27,7 +27,6 @@ import java.io.InputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.encoding.Encoding;
-import org.apache.fontbox.encoding.StandardEncoding;
 
 /**
  * A TrueType font file.
@@ -449,7 +448,13 @@ public class TrueTypeFont implements Type1Equivalent
         readPostScriptNames();
 
         Integer gid = postScriptNames.get(name);
-        return getAdvanceWidth(gid);
+        int width = getAdvanceWidth(gid);
+        int unitsPerEM = getUnitsPerEm();
+        if (unitsPerEM != 1000)
+        {
+            width *= 1000f / unitsPerEM;
+        }
+        return width;
     }
 
     @Override
@@ -465,9 +470,7 @@ public class TrueTypeFont implements Type1Equivalent
     @Override
     public Encoding getEncoding()
     {
-        // todo: what to use? There isn't a built-in encoding really, could use the MacRoman cmap?
-        log.warn("Using StandardEncoding for Type 1-equivalent TTF");
-        return new StandardEncoding();
+        return null;
     }
 
     @Override

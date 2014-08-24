@@ -33,6 +33,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.encoding.Encoding;
+import org.apache.pdfbox.encoding.StandardEncoding;
 import org.apache.pdfbox.encoding.Type1Encoding;
 import org.apache.pdfbox.encoding.WinAnsiEncoding;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -327,7 +328,15 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
         else
         {
             // extract from Type1 font/substitute
-            return Type1Encoding.fromFontBox(type1Equivalent.getEncoding());
+            if (type1Equivalent.getEncoding() != null)
+            {
+                return Type1Encoding.fromFontBox(type1Equivalent.getEncoding());
+            }
+            else
+            {
+                // default (only happens with TTFs)
+                return StandardEncoding.INSTANCE;
+            }
         }
     }
 
