@@ -107,24 +107,37 @@ public abstract class PDFieldTreeNode implements COSObjectable
      */
     public abstract String getFieldType();
 
+    /**
+     * getValue gets the value of the "V" entry.
+     * 
+     * @return The value of this entry.
+     * 
+     */
+    public abstract Object getValue();
 
     /**
-     * setValue sets the fields value to a given string.
+     * setValue sets the entry "V" to the given value.
      * 
-     * @param value the string value
+     * @param value the value
      * 
-     * @throws IOException If there is an error creating the appearance stream.
      */
-    public abstract void setValue(String value) throws IOException;
+    public abstract void setValue(Object value);
 
     /**
-     * getValue gets the fields value to as a string.
+     * getDefaultValue gets the value of the "DV" entry.
      * 
-     * @return The string value of this field.
+     * @return The value of this field.
      * 
-     * @throws IOException If there is an error getting the value.
      */
-    public abstract String getValue() throws IOException;
+    public abstract Object getDefaultValue();
+
+    /**
+     * setDefaultValue sets the entry "DV" to the given value.
+     * 
+     * @param value the value
+     * 
+     */
+    public abstract void setDefaultValue(Object value);
 
     /**
      * sets the field to be read-only.
@@ -553,7 +566,7 @@ public abstract class PDFieldTreeNode implements COSObjectable
      */
     public String getFullyQualifiedName() throws IOException
     {
-        String parentName = parent.getFullyQualifiedName();
+        String parentName = getParent() != null ? getParent().getFullyQualifiedName() : null;
         String finalName = getPartialName();
         if (parentName != null)
         {

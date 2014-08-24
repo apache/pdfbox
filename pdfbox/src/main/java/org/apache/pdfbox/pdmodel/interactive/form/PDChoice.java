@@ -31,6 +31,32 @@ import org.apache.pdfbox.cos.COSString;
  */
 public abstract class PDChoice extends PDVariableText
 {
+    
+    /**
+     * A Ff flag.
+     */
+    public static final int FLAG_COMBO = 1 << 17;
+    /**
+     * A Ff flag.
+     */
+    public static final int FLAG_EDIT = 1 << 18;
+    /**
+     * A Ff flag.
+     */
+    public static final int FLAG_SORT = 1 << 19;
+    /**
+     * A Ff flag.
+     */
+    public static final int FLAG_MULTI_SELECT = 1 << 21;
+    /**
+     * A Ff flag.
+     */
+    public static final int FLAG_DO_NOT_SPELL_CHECK = 1 << 22;
+    /**
+     * A Ff flag.
+     */
+    public static final int FLAG_COMMIT_ON_SEL_CHANGE = 1 << 26;
+
     /**
      * Constructor.
      * 

@@ -17,10 +17,10 @@
 package org.apache.pdfbox.pdmodel.interactive.form;
 
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-
-import java.io.IOException;
+import org.apache.pdfbox.cos.COSString;
 
 /**
  * A scrollable list box.
@@ -41,24 +41,59 @@ public final class PDListBox extends PDChoice
         super(acroForm, field, parentNode);
     }
 
+    /**
+     * getValue gets the value of the "V" entry.
+     * 
+     * @return The value of this entry.
+     * 
+     */
     @Override
-    public void setValue(String optionValue) throws IOException
+    public COSArray getValue()
     {
-        COSArray options = (COSArray)getDictionary().getDictionaryObject(COSName.OPT);
-        if(options.size() == 0)
+        COSBase value = getDictionary().getDictionaryObject( COSName.V);
+        if (value instanceof COSString)
         {
-            throw new IllegalArgumentException("List box does not contain the given value");
+            COSArray array = new COSArray();
+            array.add(value);
+            return array;
         }
-
-        int index = getSelectedIndex(optionValue);
-        if (index == -1)
+        else if (value instanceof COSArray)
         {
-            throw new IllegalArgumentException("List box does not contain the given value");
+            return (COSArray)value;
+        }
+        return null;
+    }
+
+    /**
+     * setValue sets the entry "V" to the given value.
+     * 
+     * @param value the value
+     * 
+     */
+    @Override
+    public void setValue(Object value)
+    {
+        if ((getFieldFlags() & FLAG_EDIT) != 0)
+        {
+            throw new IllegalArgumentException("The combo box isn't editable.");
+        }
+        if (value != null)
+        {
+            if (value instanceof String)
+            {
+                int index = getSelectedIndex((String)value);
+                if (index == -1)
+                {
+                    throw new IllegalArgumentException("The combo box does not contain the given value.");
+                }
+                selectMultiple(index);
+            }
+            // TODO multiple values
         }
         else
         {
-            super.setValue(optionValue);
-            selectMultiple(index);
+            getDictionary().removeItem(COSName.V);
         }
     }
+
 }
