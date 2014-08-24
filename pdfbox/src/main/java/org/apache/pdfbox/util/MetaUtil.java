@@ -44,7 +44,7 @@ public class MetaUtil
     // logs metadata as an XML tree if debug is enabled
     static void debugLogMetadata(IIOMetadata metadata, String format)
     {
-        if (LOG.isDebugEnabled())
+        if (!LOG.isDebugEnabled())
         {
             return;
         }
