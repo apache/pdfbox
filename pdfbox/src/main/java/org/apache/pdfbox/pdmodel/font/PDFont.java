@@ -162,37 +162,31 @@ public abstract class PDFont implements COSObjectable
      */
     public float getWidth(int code) throws IOException
     {
-        if (!isEmbedded())
-        {
-            // "If the font program is not embedded, Acrobat overrides the widths in the font
-            // program on the conforming reader?s system with the widths specified in the font
-            // dictionary." (Adobe Supplement to the ISO 32000)
+        // Acrobat overrides the widths in the font program on the conforming reader's system with
+        // the widths specified in the font dictionary." (Adobe Supplement to the ISO 32000)
+        //
+        // Note: The Adobe Supplement says that the override happens "If the font program is not
+        // embedded", however PDFBOX-427 shows that it also applies to embedded fonts.
 
-            // Type1, Type1C, Type3
-            int firstChar = dict.getInt(COSName.FIRST_CHAR, -1);
-            int lastChar = dict.getInt(COSName.LAST_CHAR, -1);
-            if (getWidths().size() > 0 && code >= firstChar && code <= lastChar)
-            {
-                return getWidths().get(code - firstChar).floatValue();
-            }
-            else
-            {
-                PDFontDescriptor fd = getFontDescriptor();
-                if (fd instanceof PDFontDescriptorDictionary)
-                {
-                    return fd.getMissingWidth();
-                }
-                else
-                {
-                    // if there's nothing to override with, then obviously we fall back to the font
-                    return getWidthFromFont(code);
-                }
-            }
+        // Type1, Type1C, Type3
+        int firstChar = dict.getInt(COSName.FIRST_CHAR, -1);
+        int lastChar = dict.getInt(COSName.LAST_CHAR, -1);
+        if (getWidths().size() > 0 && code >= firstChar && code <= lastChar)
+        {
+            return getWidths().get(code - firstChar).floatValue();
         }
         else
         {
-            // otherwise the fonts widths should exactly match the widths in the font dictionary
-            return getWidthFromFont(code);
+            PDFontDescriptor fd = getFontDescriptor();
+            if (fd instanceof PDFontDescriptorDictionary)
+            {
+                return fd.getMissingWidth();
+            }
+            else
+            {
+                // if there's nothing to override with, then obviously we fall back to the font
+                return getWidthFromFont(code);
+            }
         }
     }
 
