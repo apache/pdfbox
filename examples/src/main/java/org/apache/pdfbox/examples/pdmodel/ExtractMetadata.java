@@ -16,15 +16,16 @@
  */
 package org.apache.pdfbox.examples.pdmodel;
 
-import org.apache.jempbox.xmp.XMPMetadata;
-import org.apache.jempbox.xmp.XMPSchemaBasic;
-import org.apache.jempbox.xmp.XMPSchemaDublinCore;
-import org.apache.jempbox.xmp.XMPSchemaPDF;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
+import org.apache.xmpbox.XMPMetadata;
+import org.apache.xmpbox.schema.AdobePDFSchema;
+import org.apache.xmpbox.schema.DublinCoreSchema;
+import org.apache.xmpbox.schema.XMPBasicSchema;
+import org.apache.xmpbox.xml.DomXmpParser;
+import org.apache.xmpbox.xml.XmpParsingException;
 
 import java.text.DateFormat;
 import java.util.Calendar;
@@ -81,32 +82,41 @@ public class ExtractMetadata
                 PDMetadata meta = catalog.getMetadata();
                 if ( meta != null)
                 {
-                    XMPMetadata metadata = meta.exportXMPMetadata();
-    
-                    XMPSchemaDublinCore dc = metadata.getDublinCoreSchema();
-                    if (dc != null)
+                    DomXmpParser xmpParser = new DomXmpParser();
+                    try
                     {
-                        display("Title:", dc.getTitle());
-                        display("Description:", dc.getDescription());
-                        list("Creators: ", dc.getCreators());
-                        list("Dates:", dc.getDates());
-                        list("Subjects:", dc.getSubjects());
+                        XMPMetadata metadata = xmpParser.parse(meta.createInputStream());
+
+                        DublinCoreSchema dc = metadata.getDublinCoreSchema();
+                        if (dc != null)
+                        {
+                            display("Title:", dc.getTitle());
+                            display("Description:", dc.getDescription());
+                            listString("Creators: ", dc.getCreators());
+                            listCalendar("Dates:", dc.getDates());
+                            listString("Subjects:", dc.getSubjects());
+                        }
+
+                        AdobePDFSchema pdf = metadata.getAdobePDFSchema();
+                        if (pdf != null)
+                        {
+                            display("Keywords:", pdf.getKeywords());
+                            display("PDF Version:", pdf.getPDFVersion());
+                            display("PDF Producer:", pdf.getProducer());
+                        }
+
+                        XMPBasicSchema basic = metadata.getXMPBasicSchema();
+                        if (basic != null)
+                        {
+                            display("Create Date:", basic.getCreateDate());
+                            display("Modify Date:", basic.getModifyDate());
+                            display("Creator Tool:", basic.getCreatorTool());
+                        }
                     }
-    
-                    XMPSchemaPDF pdf = metadata.getPDFSchema();
-                    if (pdf != null)
+                    catch (XmpParsingException e)
                     {
-                        display("Keywords:", pdf.getKeywords());
-                        display("PDF Version:", pdf.getPDFVersion());
-                        display("PDF Producer:", pdf.getProducer());
-                    }
-    
-                    XMPSchemaBasic basic = metadata.getBasicSchema();
-                    if (basic != null)
-                    {
-                        display("Create Date:", basic.getCreateDate());
-                        display("Modify Date:", basic.getModifyDate());
-                        display("Creator Tool:", basic.getCreatorTool());
+                        System.err.println("An error ouccred when parsing the meta data: "
+                                + e.getMessage());
                     }
                 }
                 else
@@ -139,18 +149,33 @@ public class ExtractMetadata
         display("Producer:", information.getProducer());
     }
     
-    private static void list(String title, List list)
+    private static void listString(String title, List<String> list)
     {
         if (list == null)
         {
             return;
         }
         System.out.println(title);
-        Iterator iter = list.iterator();
+        Iterator<String> iter = list.iterator();
         while (iter.hasNext())
         {
-            Object o = iter.next();
-            System.out.println("  " + format(o));
+            String string = iter.next();
+            System.out.println("  " + string);
+        }
+    }
+
+    private static void listCalendar(String title, List<Calendar> list)
+    {
+        if (list == null)
+        {
+            return;
+        }
+        System.out.println(title);
+        Iterator<Calendar> iter = list.iterator();
+        while (iter.hasNext())
+        {
+            Calendar calendar = iter.next();
+            System.out.println("  " + format(calendar));
         }
     }
 
