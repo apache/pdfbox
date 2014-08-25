@@ -88,12 +88,12 @@ public final class PDTextField extends PDVariableText
                 getDictionary().setItem( COSName.V, fieldValue );
             }
             // TODO stream instead of string
-            // TODO creation of appearance stream
         }  
         else
         {
             getDictionary().removeItem(COSName.V);
         }
+        // TODO create/update appearance
     }
 
     /**
