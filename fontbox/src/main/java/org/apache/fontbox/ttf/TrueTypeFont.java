@@ -433,7 +433,6 @@ public class TrueTypeFont implements Type1Equivalent
             GeneralPath path = glyphs[gid].getPath();
 
             // scale to 1000upem, per PostScript convention
-            // todo: we could do this with the PostScript "matrix" entry, later?
             float scale = 1000f / getUnitsPerEm();
             AffineTransform atScale = AffineTransform.getScaleInstance(scale, scale);
             path.transform(atScale);

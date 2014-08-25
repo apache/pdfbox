@@ -154,7 +154,7 @@ public abstract class CFFFont
     @Override
     public String toString()
     {
-        return getClass().getName() + "[name=" + fontName + ", topDict=" + topDict
+        return getClass().getSimpleName() + "[name=" + fontName + ", topDict=" + topDict
                 + ", charset=" + charset + ", charStrings=" + charStrings
                 + "]";
     }

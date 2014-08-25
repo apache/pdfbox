@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.font;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.fontbox.cff.CFFCIDFont;
@@ -25,8 +26,12 @@ import org.apache.fontbox.cff.CFFFont;
 import org.apache.fontbox.cff.CFFParser;
 import org.apache.fontbox.cff.CFFType1Font;
 import org.apache.fontbox.cff.Type2CharString;
+import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSFloat;
+import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.pdmodel.common.PDMatrix;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 
 /**
@@ -41,8 +46,10 @@ public class PDCIDFontType0 extends PDCIDFont
     private final CFFType1Font t1Font; // Top DICT that does not use CIDFont operators
 
     private final Map<Integer, Float> glyphHeights = new HashMap<Integer, Float>();
-    private Float avgWidth = null;
     private final boolean isEmbedded;
+
+    private Float avgWidth = null;
+    private PDMatrix fontMatrix;
 
     /**
      * Constructor.
@@ -94,6 +101,46 @@ public class PDCIDFontType0 extends PDCIDFont
             }
             isEmbedded = false;
         }
+    }
+
+    @Override
+    public PDMatrix getFontMatrix()
+    {
+        if (fontMatrix == null)
+        {
+            List<Number> numbers;
+            if (cidFont != null)
+            {
+                numbers = cidFont.getFontMatrix();
+            }
+            else
+            {
+                numbers = t1Font.getFontMatrix();
+            }
+
+            if (numbers != null && numbers.size() == 6)
+            {
+                COSArray array = new COSArray();
+                for (Number number : numbers)
+                {
+                    array.add(new COSFloat(number.floatValue()));
+                }
+                fontMatrix = new PDMatrix(array);
+            }
+            else
+            {
+                // default 1000 upem
+                COSArray array = new COSArray();
+                array.add(new COSFloat(0.001f));
+                array.add(COSInteger.ZERO);
+                array.add(COSInteger.ZERO);
+                array.add(new COSFloat(0.001f));
+                array.add(COSInteger.ZERO);
+                array.add(COSInteger.ZERO);
+                fontMatrix = new PDMatrix(array);
+            }
+        }
+        return fontMatrix;
     }
 
     /**
@@ -161,7 +208,9 @@ public class PDCIDFontType0 extends PDCIDFont
     protected float getWidthFromFont(int code) throws IOException
     {
         int cid = codeToCID(code);
-        return getType2CharString(cid).getWidth();
+        int width = getType2CharString(cid).getWidth();
+        float scaleX = (cidFont != null ? cidFont : t1Font).getFontMatrix().get(0).floatValue();
+        return width * scaleX * 1000;
     }
 
     @Override

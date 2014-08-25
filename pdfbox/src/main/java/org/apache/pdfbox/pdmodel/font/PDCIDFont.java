@@ -26,6 +26,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
+import org.apache.pdfbox.pdmodel.common.PDMatrix;
 
 /**
  * A CIDFont. A CIDFont is a PDF object that contains information about a CIDFont program. Although
@@ -130,6 +131,11 @@ public abstract class PDCIDFont implements COSObjectable
         }
         return fontDescriptor;
     }
+
+    /**
+     * Returns the font matrix, which represents the transformation from glyph space to text space.
+     */
+    public abstract PDMatrix getFontMatrix();
 
     /**
      * Returns the Type 0 font which is the parent of this font.
