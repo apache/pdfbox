@@ -292,11 +292,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             else
             {
                 Glyph2D glyph2D = createGlyph2D(font);
-                AffineTransform fontMatrixAT = new AffineTransform(
-                        fontMatrix.getValue(0, 0), fontMatrix.getValue(0, 1),
-                        fontMatrix.getValue(1, 0), fontMatrix.getValue(1, 1),
-                        fontMatrix.getValue(2, 0), fontMatrix.getValue(2, 1));
-                at.concatenate(fontMatrixAT);
+                at.concatenate(fontMatrix.createAffineTransform());
                 drawGlyph2D(glyph2D, code, at);
             }
         }
