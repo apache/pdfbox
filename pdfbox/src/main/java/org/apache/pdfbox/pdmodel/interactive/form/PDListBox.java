@@ -23,8 +23,8 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
 
 /**
- * A scrollable list box.
- * Contains several text items, one or more of which shall be selected as the field value.
+ * A scrollable list box. Contains several text items, one or more of which shall be selected as the field value.
+ * 
  * @author John Hewson
  */
 public final class PDListBox extends PDChoice
@@ -32,7 +32,7 @@ public final class PDListBox extends PDChoice
     /**
      * Constructor.
      * 
-     * @param theAcroForm The form that this field is part of.
+     * @param acroForm The form that this field is part of.
      * @param field the PDF object to represent as a field.
      * @param parentNode the parent node of the node to be created
      */
@@ -50,7 +50,7 @@ public final class PDListBox extends PDChoice
     @Override
     public COSArray getValue()
     {
-        COSBase value = getDictionary().getDictionaryObject( COSName.V);
+        COSBase value = getDictionary().getDictionaryObject(COSName.V);
         if (value instanceof COSString)
         {
             COSArray array = new COSArray();
@@ -59,7 +59,7 @@ public final class PDListBox extends PDChoice
         }
         else if (value instanceof COSArray)
         {
-            return (COSArray)value;
+            return (COSArray) value;
         }
         return null;
     }
@@ -81,18 +81,50 @@ public final class PDListBox extends PDChoice
         {
             if (value instanceof String)
             {
-                int index = getSelectedIndex((String)value);
+                int index = getSelectedIndex((String) value);
                 if (index == -1)
                 {
-                    throw new IllegalArgumentException("The combo box does not contain the given value.");
+                    throw new IllegalArgumentException(
+                            "The combo box does not contain the given value.");
                 }
                 selectMultiple(index);
             }
-            // TODO multiple values
+            if (value instanceof String[])
+            {
+                // TODO multiple values
+            }
         }
         else
         {
             getDictionary().removeItem(COSName.V);
+        }
+        // TODO create/update appearance
+    }
+
+    /**
+     * This will get the top index "TI" value.
+     *
+     * @return the top index, default value 0.
+     */
+    public int getTopIndex()
+    {
+        return getDictionary().getInt(COSName.TI, 0);
+    }
+
+    /**
+     * This will set top index "TI" value.
+     *
+     * @param topIndex the value for the top index, null will remove the value.
+     */
+    public void setTopIndex(Integer topIndex)
+    {
+        if (topIndex != null)
+        {
+            getDictionary().setInt(COSName.TI, topIndex);
+        }
+        else
+        {
+            getDictionary().removeItem(COSName.TI);
         }
     }
 
