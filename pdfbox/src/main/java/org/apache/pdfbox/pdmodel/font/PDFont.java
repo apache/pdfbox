@@ -90,6 +90,10 @@ public abstract class PDFont implements COSObjectable
         if (toUnicode != null)
         {
             toUnicodeCMap = readCMap(toUnicode);
+            if (toUnicodeCMap != null && !toUnicodeCMap.hasUnicodeMappings())
+            {
+                LOG.warn("Invalid ToUnicode CMap in font " + getName());
+            }
         }
         else
         {

@@ -72,6 +72,16 @@ public class CMap
     }
 
     /**
+     * This will tell if this cmap has any Unicode mappings.
+     *
+     * @return true If there are any Unicode mappings, false otherwise.
+     */
+    public boolean hasUnicodeMappings()
+    {
+        return !charToUnicode.isEmpty();
+    }
+
+    /**
      * Returns the sequence of Unicode characters for the given character code.
      *
      * @param code character code
@@ -451,5 +461,11 @@ public class CMap
     public int getSpaceMapping()
     {
         return spaceMapping;
+    }
+
+    @Override
+    public String toString()
+    {
+        return cmapName;
     }
 }

@@ -21,6 +21,7 @@ import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.cmap.CMap;
 import org.apache.fontbox.ttf.CMAPEncodingEntry;
 import org.apache.fontbox.ttf.CMAPTable;
 import org.apache.fontbox.ttf.TTFParser;
@@ -142,7 +143,15 @@ public class PDCIDFontType2 extends PDCIDFont
     @Override
     public int codeToCID(int code)
     {
-        // TTF has no native notion of a CID
+        CMap cMap = parent.getCMap();
+
+        // Acrobat allows bad PDFs to use Unicode CMaps here instead of CID CMaps, see PDFBOX-1283
+        if (!cMap.hasCIDMappings() && cMap.hasUnicodeMappings())
+        {
+            return cMap.toUnicode(code).codePointAt(0); // actually: code -> CID
+        }
+
+        // CID CMap is not used for TTF, even if present, see see PDFBOX-1422
         return code;
     }
 

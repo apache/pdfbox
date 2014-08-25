@@ -19,6 +19,8 @@ package org.apache.pdfbox.pdmodel.font;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.cmap.CMap;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -33,6 +35,8 @@ import org.apache.pdfbox.pdmodel.common.PDMatrix;
  */
 public class PDType0Font extends PDFont
 {
+    private static final Log LOG = LogFactory.getLog(PDType0Font.class);
+
     private PDCIDFont descendantFont;
     private COSDictionary descendantFontDictionary;
     private CMap cMap, cMapUCS2;
@@ -77,10 +81,22 @@ public class PDType0Font extends PDFont
                     isCMapPredefined = true;
                     return;
                 }
+                else
+                {
+                    throw new IOException("Missing required CMap");
+                }
             }
             else
             {
                 cMap = readCMap(encoding);
+                if (cMap == null)
+                {
+                    throw new IOException("Missing required CMap");
+                }
+                else if (!cMap.hasCIDMappings())
+                {
+                    LOG.warn("Invalid Encoding CMap in font " + getName());
+                }
             }
         }
     }
