@@ -89,12 +89,16 @@ public final class PDComboBox extends PDChoice
                 }
                 selectMultiple(index);
             }
-            // TODO multiple values
+            if (value instanceof String[])
+            {
+                // TODO multiple values
+            }
         }
         else
         {
             getDictionary().removeItem(COSName.V);
         }
+        // TODO create/update appearance
     }
 
 }

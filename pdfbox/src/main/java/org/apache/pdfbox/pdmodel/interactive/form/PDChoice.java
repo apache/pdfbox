@@ -24,14 +24,14 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
 
 /**
- * A choice field contains several text items,
- * one or more of which shall be selected as the field value.
+ * A choice field contains several text items, one or more of which shall be selected as the field value.
+ * 
  * @author sug
  * @author John Hewson
  */
 public abstract class PDChoice extends PDVariableText
 {
-    
+
     /**
      * A Ff flag.
      */
@@ -60,7 +60,7 @@ public abstract class PDChoice extends PDVariableText
     /**
      * Constructor.
      * 
-     * @param theAcroForm The form that this field is part of.
+     * @param acroForm The form that this field is part of.
      * @param field the PDF object to represent as a field.
      * @param parentNode the parent node of the node to be created
      */
@@ -69,12 +69,65 @@ public abstract class PDChoice extends PDVariableText
         super(acroForm, field, parentNode);
     }
 
+    /**
+     * This will get the option values "Opt".
+     *
+     * @return COSArray containing all options.
+     */
+    public COSArray getOptions()
+    {
+        return (COSArray) getDictionary().getDictionaryObject(COSName.OPT);
+    }
+
+    /**
+     * This will set the options.
+     *
+     * @param values COSArray containing all possible options.
+     */
+    public void setOptions(COSArray values)
+    {
+        if (values != null)
+        {
+            getDictionary().setItem(COSName.OPT, values);
+        }
+        else
+        {
+            getDictionary().removeItem(COSName.OPT);
+        }
+    }
+
+    /**
+     * This will get the indices of the selected options "I".
+     *
+     * @return COSArray containing the indices of all selected options.
+     */
+    public COSArray getSelectedOptions()
+    {
+        return (COSArray) getDictionary().getDictionaryObject(COSName.I);
+    }
+
+    /**
+     * This will set the indices of the selected options "I".
+     *
+     * @param values COSArray containing the indices of all selected options.
+     */
+    public void setSelectedOptions(COSArray values)
+    {
+        if (values != null)
+        {
+            getDictionary().setItem(COSName.I, values);
+        }
+        else
+        {
+            getDictionary().removeItem(COSName.I);
+        }
+    }
+
     // returns the "Opt" index for the given string
     protected int getSelectedIndex(String optionValue)
     {
         int indexSelected = -1;
-        COSArray options = (COSArray)getDictionary().getDictionaryObject(COSName.OPT);
-
+        COSArray options = getOptions();
         // YXJ: Changed the order of the loops. Acrobat produces PDF's
         // where sometimes there is 1 string and the rest arrays.
         // This code works either way.
@@ -83,34 +136,30 @@ public abstract class PDChoice extends PDVariableText
             COSBase option = options.getObject(i);
             if (option instanceof COSArray)
             {
-                COSArray keyValuePair = (COSArray)option;
-                COSString key = (COSString)keyValuePair.getObject(0);
-                COSString value = (COSString)keyValuePair.getObject(1);
+                COSArray keyValuePair = (COSArray) option;
+                COSString key = (COSString) keyValuePair.getObject(0);
+                COSString value = (COSString) keyValuePair.getObject(1);
                 if (optionValue.equals(key.getString()) || optionValue.equals(value.getString()))
                 {
-                    // have the parent draw the appearance stream with the value
-                    // but then use the key as the V entry
-                    getDictionary().setItem(COSName.V, key);
                     indexSelected = i;
                 }
             }
             else
             {
-                COSString value = (COSString)option;
+                COSString value = (COSString) option;
                 if (optionValue.equals(value.getString()))
                 {
                     indexSelected = i;
                 }
             }
         }
-
         return indexSelected;
     }
 
     // implements "MultiSelect"
     protected void selectMultiple(int selectedIndex)
     {
-        COSArray indexArray = (COSArray)getDictionary().getDictionaryObject(COSName.I);
+        COSArray indexArray = getSelectedOptions();
         if (indexArray != null)
         {
             indexArray.clear();
