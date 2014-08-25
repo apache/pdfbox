@@ -141,8 +141,8 @@ public class PDTrueTypeFont extends PDSimpleFont
     protected float getWidthFromFont(int code) throws IOException
     {
         int gid = codeToGID(code);
-        int width = ttf.getAdvanceWidth(gid);
-        int unitsPerEM = ttf.getUnitsPerEm();
+        float width = ttf.getAdvanceWidth(gid);
+        float unitsPerEM = ttf.getUnitsPerEm();
         if (unitsPerEM != 1000)
         {
             width *= 1000f / unitsPerEM;
