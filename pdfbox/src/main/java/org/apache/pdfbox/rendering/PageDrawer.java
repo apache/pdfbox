@@ -51,7 +51,6 @@ import org.apache.pdfbox.rendering.font.TTFGlyph2D;
 import org.apache.pdfbox.rendering.font.Type1Glyph2D;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
-import org.apache.pdfbox.pdmodel.common.PDMatrix;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;

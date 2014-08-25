@@ -17,6 +17,7 @@
 package org.apache.pdfbox.util;
 
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSNumber;
 
 import java.awt.geom.AffineTransform;
@@ -433,5 +434,20 @@ public class Matrix implements Cloneable
     public float getYPosition()
     {
         return single[7];
+    }
+
+    /**
+     * Returns a COS array which represnets this matrix.
+     */
+    public COSArray toCOSArray()
+    {
+        COSArray array = new COSArray();
+        array.add(new COSFloat(0));
+        array.add(new COSFloat(1));
+        array.add(new COSFloat(3));
+        array.add(new COSFloat(4));
+        array.add(new COSFloat(6));
+        array.add(new COSFloat(7));
+        return array;
     }
 }
