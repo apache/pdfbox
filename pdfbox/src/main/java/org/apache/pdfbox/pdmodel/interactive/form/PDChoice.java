@@ -123,6 +123,109 @@ public abstract class PDChoice extends PDVariableText
         }
     }
 
+    /**
+     * Determines if Sort is set.
+     * 
+     * @return true if the options are sorted.
+     */
+    public boolean isSort()
+    {
+        return getDictionary().getFlag( COSName.FF, FLAG_SORT );
+    }
+
+    /**
+     * Set the Sort bit.
+     *
+     * @param sort The value for Sort.
+     */
+    public void setSort( boolean sort )
+    {
+        getDictionary().setFlag( COSName.FF, FLAG_SORT, sort );
+    }
+
+    /**
+     * Determines if MultiSelect is set.
+     * 
+     * @return true if multi select is allowed.
+     */
+    public boolean isMultiSelect()
+    {
+        return getDictionary().getFlag( COSName.FF, FLAG_MULTI_SELECT );
+    }
+
+    /**
+     * Set the MultiSelect bit.
+     *
+     * @param multiSelect The value for MultiSelect.
+     */
+    public void setMultiSelect( boolean multiSelect )
+    {
+        getDictionary().setFlag( COSName.FF, FLAG_MULTI_SELECT, multiSelect );
+    }
+
+    /**
+     * Determines if DoNotSpellCheck is set.
+     * 
+     * @return true if spell checker is disabled.
+     */
+    public boolean isDoNotSpellCheck()
+    {
+        return getDictionary().getFlag( COSName.FF, FLAG_DO_NOT_SPELL_CHECK );
+    }
+
+    /**
+     * Set the DoNotSpellCheck bit.
+     *
+     * @param doNotSpellCheck The value for DoNotSpellCheck.
+     */
+    public void setDoNotSpellCheck( boolean doNotSpellCheck )
+    {
+        getDictionary().setFlag( COSName.FF, FLAG_DO_NOT_SPELL_CHECK, doNotSpellCheck );
+    }
+
+    /**
+     * Determines if CommitOnSelChange is set.
+     * 
+     * @return true if value shall be committed as soon as a selection is made.
+     */
+    public boolean isCommitOnSelChange()
+    {
+        return getDictionary().getFlag( COSName.FF, FLAG_COMMIT_ON_SEL_CHANGE );
+    }
+
+    /**
+     * Set the CommitOnSelChange bit.
+     *
+     * @param commitOnSelChange The value for CommitOnSelChange.
+     */
+    public void setCommitOnSelChange( boolean commitOnSelChange )
+    {
+        getDictionary().setFlag( COSName.FF, FLAG_COMMIT_ON_SEL_CHANGE, commitOnSelChange );
+    }
+
+    /**
+     * getValue gets the value of the "V" entry.
+     * 
+     * @return The value of this entry.
+     * 
+     */
+    @Override
+    public COSArray getValue()
+    {
+        COSBase value = getDictionary().getDictionaryObject( COSName.V);
+        if (value instanceof COSString)
+        {
+            COSArray array = new COSArray();
+            array.add(value);
+            return array;
+        }
+        else if (value instanceof COSArray)
+        {
+            return (COSArray)value;
+        }
+        return null;
+    }
+
     // returns the "Opt" index for the given string
     protected int getSelectedIndex(String optionValue)
     {
