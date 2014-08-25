@@ -39,7 +39,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.fontbox.cff.CFFCIDFont;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.font.PDCIDFontType0;
@@ -96,6 +95,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     // last clipping path
     private Area lastClip;
+
+    // buffered clipping area for text being drawn
+    private Area textClippingArea;
 
     private final Map<PDFont, Glyph2D> fontGlyph2D = new HashMap<PDFont, Glyph2D>();
 
@@ -250,39 +252,23 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     @Override
     protected void processText(byte[] string) throws IOException
     {
-        //
-        // todo: DEPRECATED: Used for AWT text only. Will be removed soon! Don't edit me.
-        //
-
         PDGraphicsState state = getGraphicsState();
         RenderingMode renderingMode = state.getTextState().getRenderingMode();
 
-        if (renderingMode == RenderingMode.FILL)
+        // buffer the text clip because it represents a single clipping area
+        if (renderingMode.isClip())
         {
-            graphics.setComposite(state.getNonStrokingJavaComposite());
-            graphics.setPaint(getNonStrokingPaint());
-        }
-        else if (renderingMode == RenderingMode.STROKE)
-        {
-            graphics.setComposite(state.getStrokingJavaComposite());
-            graphics.setPaint(getStrokingPaint());
-            graphics.setStroke(getStroke());
-        }
-        else if (renderingMode == RenderingMode.NEITHER)
-        {
-            return;
-        }
-        else
-        {
-            LOG.error("Unsupported RenderingMode " +
-                      this.getGraphicsState().getTextState().getRenderingMode() +
-                      " in PageDrawer.processTextPosition()." + " Using RenderingMode " +
-                      RenderingMode.FILL + " instead");
-            graphics.setComposite(state.getNonStrokingJavaComposite());
-            graphics.setPaint(getNonStrokingPaint());
+            textClippingArea = new Area();
         }
 
         super.processText(string);
+
+        // apply the buffered clip as one area
+        if (renderingMode.isClip())
+        {
+            state.intersectClippingPath(textClippingArea);
+            textClippingArea = null;
+        }
     }
 
     @Override
@@ -306,23 +292,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             else
             {
                 Glyph2D glyph2D = createGlyph2D(font);
-                if (glyph2D != null)
-                {
-                    AffineTransform fontMatrixAT = new AffineTransform(
-                            fontMatrix.getValue(0, 0), fontMatrix.getValue(0, 1),
-                            fontMatrix.getValue(1, 0), fontMatrix.getValue(1, 1),
-                            fontMatrix.getValue(2, 0), fontMatrix.getValue(2, 1));
-                    at.concatenate(fontMatrixAT);
-                    // Let PDFBox render the font if supported
-                    drawGlyph2D(glyph2D, code, at);
-                }
-                else
-                {
-                    // Use AWT to render the font (standard14 fonts, substituted embedded fonts)
-                    // TODO to be removed in the long run
-                    //drawString(font, unicode, at);
-                    throw new UnsupportedOperationException("No font for " + font.getBaseFont());
-                }
+                AffineTransform fontMatrixAT = new AffineTransform(
+                        fontMatrix.getValue(0, 0), fontMatrix.getValue(0, 1),
+                        fontMatrix.getValue(1, 0), fontMatrix.getValue(1, 1),
+                        fontMatrix.getValue(2, 0), fontMatrix.getValue(2, 1));
+                at.concatenate(fontMatrixAT);
+                drawGlyph2D(glyph2D, code, at);
             }
         }
         catch (IOException e)
@@ -368,7 +343,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
             if (renderingMode.isClip())
             {
-                state.intersectClippingPath(new Area(glyph));
+                textClippingArea.add(new Area(glyph));
             }
         }
     }
@@ -468,6 +443,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             fontGlyph2D.put(font, glyph2D);
         }
 
+        if (glyph2D == null)
+        {
+            // todo: make sure this never happens
+            throw new UnsupportedOperationException("No font for " + font.getBaseFont());
+        }
+
         return glyph2D;
     }
 
@@ -487,10 +468,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     }
 
     /**
-     * Generates awt raster for a soft mask
+     * Generates AWT raster for a soft mask
      * 
      * @param softMask
-     * @return awt raster for soft mask
+     * @return AWT raster for soft mask
      * @throws IOException
      */
     private Raster createSoftMaskRaster(PDSoftMask softMask) throws IOException
