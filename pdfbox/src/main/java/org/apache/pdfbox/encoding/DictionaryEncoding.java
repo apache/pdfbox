@@ -82,6 +82,10 @@ public class DictionaryEncoding extends Encoding
         {
             // and for a symbolic font, it is the font's built-in encoding."
             baseEncoding = builtIn;
+            if (builtIn == null)
+            {
+                throw new IllegalArgumentException("Built-in Encoding required for symbolic font");
+            }
             this.baseEncoding = null;
         }
 

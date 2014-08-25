@@ -63,7 +63,13 @@ public class PDType3Font extends PDSimpleFont
     @Override
     protected Encoding readEncodingFromFont() throws IOException
     {
-        return null;
+        throw new UnsupportedOperationException("not supported for Type 3 fonts");
+    }
+
+    @Override
+    public boolean isSymbolic()
+    {
+        return false;
     }
 
     @Override
