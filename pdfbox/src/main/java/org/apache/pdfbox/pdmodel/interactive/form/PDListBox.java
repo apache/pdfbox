@@ -17,7 +17,6 @@
 package org.apache.pdfbox.pdmodel.interactive.form;
 
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
@@ -42,29 +41,6 @@ public final class PDListBox extends PDChoice
     }
 
     /**
-     * getValue gets the value of the "V" entry.
-     * 
-     * @return The value of this entry.
-     * 
-     */
-    @Override
-    public COSArray getValue()
-    {
-        COSBase value = getDictionary().getDictionaryObject(COSName.V);
-        if (value instanceof COSString)
-        {
-            COSArray array = new COSArray();
-            array.add(value);
-            return array;
-        }
-        else if (value instanceof COSArray)
-        {
-            return (COSArray) value;
-        }
-        return null;
-    }
-
-    /**
      * setValue sets the entry "V" to the given value.
      * 
      * @param value the value
@@ -73,25 +49,37 @@ public final class PDListBox extends PDChoice
     @Override
     public void setValue(Object value)
     {
+        // TODO move to superclass PDCoice??
         if ((getFieldFlags() & FLAG_EDIT) != 0)
         {
-            throw new IllegalArgumentException("The combo box isn't editable.");
+            throw new IllegalArgumentException("The list box isn't editable.");
         }
         if (value != null)
         {
             if (value instanceof String)
             {
+                getDictionary().setString(COSName.V, (String)value);
                 int index = getSelectedIndex((String) value);
                 if (index == -1)
                 {
                     throw new IllegalArgumentException(
-                            "The combo box does not contain the given value.");
+                            "The list box does not contain the given value.");
                 }
                 selectMultiple(index);
             }
             if (value instanceof String[])
             {
-                // TODO multiple values
+                if (!isMultiSelect())
+                {
+                    throw new IllegalArgumentException("The list box does allow multiple selection.");
+                }
+                String[] stringValues = (String[])value;
+                COSArray stringArray = new COSArray();
+                for (int i =0; i<stringValues.length;i++)
+                {
+                    stringArray.add(new COSString(stringValues[i]));
+                }
+                getDictionary().setItem(COSName.V, stringArray);
             }
         }
         else
