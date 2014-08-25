@@ -26,7 +26,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.common.PDMatrix;
+import org.apache.pdfbox.util.Matrix;
 
 /**
  * A Composite (Type 0) font.
@@ -166,7 +166,7 @@ public class PDType0Font extends PDFont
     }
 
     @Override
-    public PDMatrix getFontMatrix()
+    public Matrix getFontMatrix()
     {
         return descendantFont.getFontMatrix();
     }

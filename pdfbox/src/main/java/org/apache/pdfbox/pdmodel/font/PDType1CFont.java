@@ -17,10 +17,13 @@
 
 package org.apache.pdfbox.pdmodel.font;
 
+import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
+import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -34,6 +37,7 @@ import org.apache.pdfbox.encoding.Type1Encoding;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.util.Matrix;
 
 /**
  * Type 1-equivalent CFF font.
@@ -48,6 +52,8 @@ public class PDType1CFont extends PDSimpleFont implements PDType1Equivalent
     private Map<String, Float> glyphHeights = new HashMap<String, Float>();
     private Float avgWidth = null;
     private PDRectangle fontBBox = null;
+    private Matrix fontMatrix;
+    private AffineTransform fontMatrixTransform;
 
     private final CFFType1Font cffFont; // embedded font
     private final Type1Equivalent type1Equivalent; // embedded or system font for rendering
@@ -97,6 +103,8 @@ public class PDType1CFont extends PDSimpleFont implements PDType1Equivalent
             isEmbedded = false;
         }
         readEncoding();
+        fontMatrixTransform = getFontMatrix().createAffineTransform();
+        fontMatrixTransform.scale(1000, 1000);
     }
 
     /**
@@ -154,10 +162,34 @@ public class PDType1CFont extends PDSimpleFont implements PDType1Equivalent
     }
 
     @Override
+    public Matrix getFontMatrix()
+    {
+        if (fontMatrix == null)
+        {
+            List<Number> numbers = cffFont.getFontMatrix();
+            if (numbers != null && numbers.size() == 6)
+            {
+                fontMatrix = new Matrix(numbers.get(0).floatValue(), numbers.get(1).floatValue(),
+                                        numbers.get(2).floatValue(), numbers.get(3).floatValue(),
+                                        numbers.get(4).floatValue(), numbers.get(5).floatValue());
+            }
+            else
+            {
+                return super.getFontMatrix();
+            }
+        }
+        return fontMatrix;
+    }
+
+    @Override
     protected float getWidthFromFont(int code) throws IOException
     {
         String name = codeToName(code);
-        return cffFont.getType1CharString(name).getWidth();
+        int width = cffFont.getType1CharString(name).getWidth();
+
+        Point2D p = new Point2D.Float(width, 0);
+        fontMatrixTransform.transform(p, p);
+        return (float)p.getX();
     }
 
     @Override

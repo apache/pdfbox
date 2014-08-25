@@ -26,18 +26,15 @@ import org.apache.fontbox.ttf.CMAPEncodingEntry;
 import org.apache.fontbox.ttf.CMAPTable;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
-import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSFloat;
-import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.encoding.StandardEncoding;
 import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.pdmodel.common.PDMatrix;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.util.Matrix;
 
 /**
  * Type 2 CIDFont (TrueType).
@@ -51,7 +48,7 @@ public class PDCIDFontType2 extends PDCIDFont
     private final TrueTypeFont ttf;
     private final int[] cid2gid;
     private final boolean isEmbedded;
-    private PDMatrix fontMatrix;
+    private Matrix fontMatrix;
 
     /**
      * Constructor.
@@ -93,19 +90,12 @@ public class PDCIDFontType2 extends PDCIDFont
     }
 
     @Override
-    public PDMatrix getFontMatrix()
+    public Matrix getFontMatrix()
     {
         if (fontMatrix == null)
         {
             // 1000 upem, this is not strictly true
-            COSArray array = new COSArray();
-            array.add(new COSFloat(0.001f));
-            array.add(COSInteger.ZERO);
-            array.add(COSInteger.ZERO);
-            array.add(new COSFloat(0.001f));
-            array.add(COSInteger.ZERO);
-            array.add(COSInteger.ZERO);
-            fontMatrix = new PDMatrix(array);
+            fontMatrix = new Matrix(0.001f, 0, 0, 0.001f, 0, 0);
         }
         return fontMatrix;
     }

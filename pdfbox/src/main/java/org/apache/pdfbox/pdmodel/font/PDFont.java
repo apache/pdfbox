@@ -27,16 +27,14 @@ import org.apache.fontbox.cmap.CMap;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSFloat;
-import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
-import org.apache.pdfbox.pdmodel.common.PDMatrix;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.util.Matrix;
 
 /**
  * This is the base class for all PDF fonts.
@@ -46,19 +44,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 public abstract class PDFont implements COSObjectable
 {
     private static final Log LOG = LogFactory.getLog(PDFont.class);
-
-    private static final PDMatrix FONT_MATRIX_1000;
-    static
-    {
-        COSArray array = new COSArray();
-        array.add(new COSFloat(0.001f));
-        array.add(COSInteger.ZERO);
-        array.add(COSInteger.ZERO);
-        array.add(new COSFloat(0.001f));
-        array.add(COSInteger.ZERO);
-        array.add(COSInteger.ZERO);
-        FONT_MATRIX_1000 = new PDMatrix(array);
-    }
+    private static final Matrix DEFAULT_FONT_MATRIX = new Matrix(0.001f, 0, 0, 0.001f, 0, 0);
 
     protected final COSDictionary dict;
     private final CMap toUnicodeCMap;
@@ -441,9 +427,9 @@ public abstract class PDFont implements COSObjectable
     /**
      * Returns the font matrix, which represents the transformation from glyph space to text space.
      */
-    public PDMatrix getFontMatrix()
+    public Matrix getFontMatrix()
     {
-        return FONT_MATRIX_1000;
+        return DEFAULT_FONT_MATRIX;
     }
 
     /**

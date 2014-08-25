@@ -23,14 +23,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSFloat;
-import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.pdmodel.PDResources;
-import org.apache.pdfbox.pdmodel.common.PDMatrix;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.util.Matrix;
 
 /**
  * A PostScript Type 3 Font.
@@ -43,7 +41,7 @@ public class PDType3Font extends PDSimpleFont
 
 	private PDResources type3Resources = null;
     private COSDictionary charProcs = null;
-    private PDMatrix fontMatrix;
+    private Matrix fontMatrix;
 
     /**
      * Constructor.
@@ -113,30 +111,27 @@ public class PDType3Font extends PDSimpleFont
     }
 
     @Override
-    public PDMatrix getFontMatrix()
+    public Matrix getFontMatrix()
     {
         if (fontMatrix == null)
         {
             COSArray array = (COSArray) dict.getDictionaryObject(COSName.FONT_MATRIX);
-            if (array == null)
+            if (array != null)
             {
-                array = new COSArray();
-                array.add(new COSFloat(0.001f));
-                array.add(COSInteger.ZERO);
-                array.add(COSInteger.ZERO);
-                array.add(new COSFloat(0.001f));
-                array.add(COSInteger.ZERO);
-                array.add(COSInteger.ZERO);
+                fontMatrix = new Matrix(array);
             }
-            fontMatrix = new PDMatrix(array);
+            else
+            {
+                return super.getFontMatrix();
+            }
         }
         return fontMatrix;
     }
 
     /**
      * Returns the optional resources of the type3 stream.
-     * 
-     * @return the resources bound to be used when parsing the type3 stream 
+     *
+     * @return the resources bound to be used when parsing the type3 stream
      */
     public PDResources getType3Resources()
     {

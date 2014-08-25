@@ -16,6 +16,9 @@
  */
 package org.apache.pdfbox.util;
 
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSNumber;
+
 import java.awt.geom.AffineTransform;
 
 /**
@@ -42,6 +45,34 @@ public class Matrix implements Cloneable
     {
         single = new float[DEFAULT_SINGLE.length];
         reset();
+    }
+
+    /**
+     * Constructor.
+     */
+    public Matrix(COSArray array)
+    {
+        single = new float[DEFAULT_SINGLE.length];
+        single[0] = ((COSNumber)array.get(0)).floatValue();
+        single[1] = ((COSNumber)array.get(1)).floatValue();
+        single[3] = ((COSNumber)array.get(2)).floatValue();
+        single[4] = ((COSNumber)array.get(3)).floatValue();
+        single[6] = ((COSNumber)array.get(4)).floatValue();
+        single[7] = ((COSNumber)array.get(5)).floatValue();
+    }
+
+    /**
+     * Constructor.
+     */
+    public Matrix(float a, float b, float c, float d, float e, float f)
+    {
+        single = new float[DEFAULT_SINGLE.length];
+        single[0] = a;
+        single[1] = b;
+        single[3] = c;
+        single[4] = d;
+        single[6] = e;
+        single[7] = f;
     }
 
     /**

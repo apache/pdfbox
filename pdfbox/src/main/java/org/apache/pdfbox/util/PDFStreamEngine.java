@@ -40,7 +40,6 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDResources;
-import org.apache.pdfbox.pdmodel.common.PDMatrix;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontFactory;
@@ -391,7 +390,7 @@ public class PDFStreamEngine
         // expect Type3 fonts, those are providing the width of a character in glyph space units
         if (font instanceof PDType3Font)
         {
-            PDMatrix fontMatrix = font.getFontMatrix();
+            Matrix fontMatrix = font.getFontMatrix();
             fontMatrixXScaling = fontMatrix.getValue(0, 0);
             fontMatrixYScaling = fontMatrix.getValue(1, 1);
         }

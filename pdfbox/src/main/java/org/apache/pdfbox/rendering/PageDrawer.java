@@ -279,7 +279,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         try
         {
             AffineTransform at = textMatrix.createAffineTransform();
-            PDMatrix fontMatrix = font.getFontMatrix();
+            Matrix fontMatrix = font.getFontMatrix();
 
             // use different methods to draw the string
             if (font instanceof PDType3Font)
