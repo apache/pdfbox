@@ -662,11 +662,12 @@ public class CFFParser
         encoding.nCodes = dataInput.readCard8();
         encoding.code = new int[encoding.nCodes];
         encoding.add(0, 0, ".notdef");
-        for (int gid = 1; gid < encoding.code.length; gid++)
+        for (int gid = 1; gid <= encoding.nCodes; gid++)
         {
-            encoding.code[gid] = dataInput.readCard8();
+            int code = dataInput.readCard8();
+            encoding.code[gid - 1] = code;
             int sid = charset.getSIDForGID(gid);
-            encoding.add(encoding.code[gid], sid, readString(sid));
+            encoding.add(code, sid, readString(sid));
         }
         if ((format & 0x80) != 0)
         {
