@@ -181,27 +181,23 @@ class PDType1FontEmbedder
     {
         Type1Encoding encoding = new Type1Encoding(metrics);
 
-        COSArray array = new COSArray();
-        array.add(COSInteger.ZERO);
+        COSArray differences = new COSArray();
+        differences.add(COSInteger.ZERO);
         for (int i = 0; i < 256; i++)
         {
-            array.add(COSName.getPDFName(encoding.getName(i)));
+            differences.add(COSName.getPDFName(encoding.getName(i)));
         }
         // my AFMPFB-Fonts has no character-codes for german umlauts
         // so that I've to add them here by hand
-        array.set(0337 + 1, COSName.getPDFName("germandbls"));
-        array.set(0344 + 1, COSName.getPDFName("adieresis"));
-        array.set(0366 + 1, COSName.getPDFName("odieresis"));
-        array.set(0374 + 1, COSName.getPDFName("udieresis"));
-        array.set(0304 + 1, COSName.getPDFName("Adieresis"));
-        array.set(0326 + 1, COSName.getPDFName("Odieresis"));
-        array.set(0334 + 1, COSName.getPDFName("Udieresis"));
+        differences.set(0337 + 1, COSName.getPDFName("germandbls"));
+        differences.set(0344 + 1, COSName.getPDFName("adieresis"));
+        differences.set(0366 + 1, COSName.getPDFName("odieresis"));
+        differences.set(0374 + 1, COSName.getPDFName("udieresis"));
+        differences.set(0304 + 1, COSName.getPDFName("Adieresis"));
+        differences.set(0326 + 1, COSName.getPDFName("Odieresis"));
+        differences.set(0334 + 1, COSName.getPDFName("Udieresis"));
 
-        COSDictionary dictionary = new COSDictionary();
-        dictionary.setItem(COSName.NAME, COSName.ENCODING);
-        dictionary.setItem(COSName.DIFFERENCES, array);
-        dictionary.setItem(COSName.BASE_ENCODING, COSName.STANDARD_ENCODING);
-        return new DictionaryEncoding(dictionary);
+        return new DictionaryEncoding(COSName.STANDARD_ENCODING, differences);
     }
 
     /**

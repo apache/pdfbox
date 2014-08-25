@@ -118,7 +118,7 @@ public class PDTrueTypeFont extends PDSimpleFont
     private PDTrueTypeFont(PDDocument document, InputStream ttfStream) throws IOException
     {
         PDTrueTypeFontEmbedder embedder = new PDTrueTypeFontEmbedder(document, dict, ttfStream);
-        fontEncoding = embedder.getFontEncoding();
+        encoding = embedder.getFontEncoding();
         ttf = embedder.getTrueTypeFont();
         isEmbedded = true;
     }

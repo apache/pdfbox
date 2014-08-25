@@ -129,7 +129,7 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
     {
         dict.setItem(COSName.SUBTYPE, COSName.TYPE1);
         dict.setName(COSName.BASE_FONT, baseFont);
-        fontEncoding = new WinAnsiEncoding();
+        encoding = new WinAnsiEncoding();
         dict.setItem(COSName.ENCODING, COSName.WIN_ANSI_ENCODING);
 
         afm = getAFMFromBaseFont(baseFont);
@@ -155,7 +155,7 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
     public PDType1Font(PDDocument doc, InputStream afmIn, InputStream pfbIn) throws IOException
     {
         PDType1FontEmbedder embedder = new PDType1FontEmbedder(doc, dict, afmIn, pfbIn);
-        fontEncoding = embedder.getFontEncoding();
+        encoding = embedder.getFontEncoding();
         afm = null; // only used for standard 14 fonts, not AFM fonts as we already have the PFB
         type1font = embedder.getType1Font();
         type1Equivalent = embedder.getType1Font();

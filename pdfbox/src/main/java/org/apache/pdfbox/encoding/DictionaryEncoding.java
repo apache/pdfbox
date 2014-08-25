@@ -24,6 +24,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
 
 /**
  * This will perform the encoding from a dictionary.
@@ -37,45 +38,57 @@ public class DictionaryEncoding extends Encoding
     private final Map<Integer, String> differences = new HashMap<Integer, String>();
 
     /**
-     * Constructor.
-     *
-     * @param fontEncoding The encoding dictionary.
+     * Creates a new DictionaryEncoding for embedding.
      */
-    public DictionaryEncoding( COSDictionary fontEncoding )
+    public DictionaryEncoding(COSName baseEncoding, COSArray differences)
     {
-        encoding = fontEncoding;
-
-        // first set up the base encoding
-        // The previous value WinAnsiEncoding() has been changed to StandardEnding
-        // see p 389 of the PDF 1.5 reference table 5.11 entries in a dictionary encoding
-        // "If this entry is absent, the Differences entry describes differences from an implicit
-        // base encoding. For a font program that is embedded in the PDF file, the
-        // implicit base encoding is the font program's built-in encoding, as described
-        // above and further elaborated in the sections on specific font types below. Otherwise,
-        // for a nonsymbolic font, it is StandardEncoding, and for a symbolic font, it
-        // is the font's built-in encoding."
-
-        // The default base encoding is standardEncoding
-        Encoding baseEncoding;
-        COSName baseEncodingName = (COSName) encoding.getDictionaryObject(COSName.BASE_ENCODING);
-        if (baseEncodingName != null)
+        encoding = new COSDictionary();
+        encoding.setItem(COSName.NAME, COSName.ENCODING);
+        encoding.setItem(COSName.DIFFERENCES, differences);
+        if (baseEncoding != COSName.STANDARD_ENCODING)
         {
-            baseEncoding = Encoding.getInstance(baseEncodingName);
-            this.baseEncoding = baseEncodingName.getName();
+            encoding.setItem(COSName.BASE_ENCODING, baseEncoding);
+            this.baseEncoding = COSName.BASE_ENCODING.getName();
         }
         else
         {
-            // todo: Otherwise, for a nonsymbolic font, it is StandardEncoding, and for a symbolic
-            // font, it is the font's built-in encoding."
+            this.baseEncoding = baseEncoding.getName();
+        }
+    }
+
+    /**
+     * Creates a new DictionaryEncoding from a PDF.
+     *
+     * @param fontEncoding The encoding dictionary.
+     */
+    public DictionaryEncoding(COSDictionary fontEncoding, boolean isSymbolic, Encoding builtIn)
+    {
+        encoding = fontEncoding;
+
+        Encoding baseEncoding;
+        if (encoding.containsKey(COSName.BASE_ENCODING))
+        {
+            COSName name = encoding.getCOSName(COSName.BASE_ENCODING);
+            baseEncoding = Encoding.getInstance(name);
+            this.baseEncoding = name.getName();
+        }
+        else if (!isSymbolic)
+        {
+            // Otherwise, for a nonsymbolic font, it is StandardEncoding
             baseEncoding = StandardEncoding.INSTANCE;
             this.baseEncoding = COSName.STANDARD_ENCODING.getName();
+        }
+        else
+        {
+            // and for a symbolic font, it is the font's built-in encoding."
+            baseEncoding = builtIn;
+            this.baseEncoding = null;
         }
 
         nameToCode.putAll( baseEncoding.nameToCode );
         codeToName.putAll( baseEncoding.codeToName );
 
-
-        //now replace with the differences.
+        // now replace with the differences
         COSArray differences = (COSArray)encoding.getDictionaryObject( COSName.DIFFERENCES );
         int currentIndex = -1;
         for( int i=0; differences != null && i<differences.size(); i++ )
@@ -96,7 +109,7 @@ public class DictionaryEncoding extends Encoding
     }
 
     /**
-     * Returns the name of the base encoding.
+     * Returns the name of the base encoding, or null if using the font's built-in encoding.
      */
     public String getBaseEncoding()
     {

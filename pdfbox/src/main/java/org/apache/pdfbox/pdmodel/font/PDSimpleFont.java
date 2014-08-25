@@ -37,7 +37,7 @@ public abstract class PDSimpleFont extends PDFont
 {
     private static final Log LOG = LogFactory.getLog(PDSimpleFont.class);
 
-    protected Encoding fontEncoding;
+    protected Encoding encoding;
     private final Set<Integer> noUnicode = new HashSet<Integer>();
 
     /**
@@ -72,21 +72,27 @@ public abstract class PDSimpleFont extends PDFont
             if (encoding instanceof COSName)
             {
                 COSName encodingName = (COSName)encoding;
-                fontEncoding = Encoding.getInstance(encodingName);
-                if (fontEncoding == null)
+                this.encoding = Encoding.getInstance(encodingName);
+                if (this.encoding == null)
                 {
                     LOG.warn("Unknown encoding: " + encodingName);
-                    fontEncoding = readEncodingFromFont(); // fallback
+                    this.encoding = readEncodingFromFont(); // fallback
                 }
             }
             else if (encoding instanceof COSDictionary)
             {
-                fontEncoding = new DictionaryEncoding((COSDictionary) encoding);
+                COSDictionary encodingDict = (COSDictionary)encoding;
+                Encoding builtIn = null;
+                if (!encodingDict.containsKey(COSName.BASE_ENCODING) && isSymbolic())
+                {
+                    builtIn = readEncodingFromFont();
+                }
+                this.encoding = new DictionaryEncoding(encodingDict, isSymbolic(), builtIn);
             }
         }
         else
         {
-            fontEncoding = readEncodingFromFont();
+            this.encoding = readEncodingFromFont();
         }
     }
 
@@ -102,7 +108,7 @@ public abstract class PDSimpleFont extends PDFont
      */
     public Encoding getEncoding()
     {
-        return fontEncoding;
+        return encoding;
     }
 
     @Override
@@ -124,7 +130,7 @@ public abstract class PDSimpleFont extends PDFont
         String name = null;
         if (getEncoding() != null)
         {
-            name = fontEncoding.getName(code);
+            name = encoding.getName(code);
             unicode = Encoding.getCharacterForName(name);
             if (unicode != null)
             {
@@ -137,7 +143,7 @@ public abstract class PDSimpleFont extends PDFont
         {
             // we keep track of which warnings have been issued, so we don't log multiple times
             noUnicode.add(code);
-            if (name != null)
+            /*if (name != null)
             {
                 LOG.warn("No Unicode mapping for " + name + " (" + code + ") in font " +
                         getBaseFont());
@@ -146,7 +152,7 @@ public abstract class PDSimpleFont extends PDFont
             {
                 LOG.warn("No Unicode mapping for character code " + code + " in font " +
                         getBaseFont());
-            }
+            }*/
         }
 
         return null;

@@ -36,7 +36,7 @@ public class Type1Encoding extends Encoding
     {
         // todo: could optimise this by looking for specific subclasses
         Map<Integer,String> codeToName = encoding.getCodeToNameMap();
-        Type1Encoding enc = new Type1Encoding(codeToName.size());
+        Type1Encoding enc = new Type1Encoding();
 
         for (Integer code : codeToName.keySet())
         {
@@ -47,14 +47,10 @@ public class Type1Encoding extends Encoding
     }
 
     /**
-     * Creates an empty encoding of the given size (all elements map to .notdef).
+     * Creates an empty encoding.
      */
-    public Type1Encoding(int size)
+    public Type1Encoding()
     {
-        for (int i = 1; i < size; i++)
-        {
-            addCharacterEncoding(i, ".notdef");
-        }
     }
 
     /**

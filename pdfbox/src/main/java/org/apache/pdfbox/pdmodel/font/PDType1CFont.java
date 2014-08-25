@@ -141,11 +141,6 @@ public class PDType1CFont extends PDSimpleFont implements PDType1Equivalent
         }
     }
 
-    // todo: Encoding could encapsulate this behaviour (e.g. containsName)
-    private boolean isNotDef(String name)
-    {
-        return ".notdef".equals(name);
-    }
     @Override
     protected Encoding readEncodingFromFont() throws IOException
     {
@@ -175,14 +170,6 @@ public class PDType1CFont extends PDSimpleFont implements PDType1Equivalent
     public float getHeight(int code) throws IOException
     {
         String name = codeToName(code);
-
-        if (isNotDef(name))
-        {
-            // todo: message is for debugging, remove in long term
-            LOG.warn("No name for code " + code + " in " + cffFont.getName());
-            return 0;
-        }
-
         float height = 0;
         if (!glyphHeights.containsKey(name))
         {
@@ -200,11 +187,6 @@ public class PDType1CFont extends PDSimpleFont implements PDType1Equivalent
         {
             String character = string.substring(i, i + 1);
             String name = getEncoding().getNameForCharacter(character.charAt(0));
-            if (isNotDef(name))
-            {
-                // todo: message is for debugging, remove in long term
-                LOG.warn("No code for character " + character);
-            }
             width += cffFont.getType1CharString(name).getWidth();
         }
         return width;
