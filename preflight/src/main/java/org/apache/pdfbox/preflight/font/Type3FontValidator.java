@@ -245,7 +245,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
     private void checkEncodingAsDictionary(COSBase fontEncoding)
     {
         COSDictionary encodingDictionary = COSUtils.getAsDictionary(fontEncoding, cosDocument);
-        this.encoding = new DictionaryEncoding(encodingDictionary);
+        this.encoding = new DictionaryEncoding(encodingDictionary, false, null);
     }
 
     /**
