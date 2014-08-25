@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
@@ -62,7 +63,7 @@ public abstract class PDVariableText extends PDField
     /**
      * DA    Default appearance.
      */
-    private COSString da;
+    private COSString defaultAppearance;
 
     /**
      * A Q value.
@@ -99,7 +100,6 @@ public abstract class PDVariableText extends PDField
     protected PDVariableText(PDAcroForm theAcroForm, COSDictionary field, PDFieldTreeNode parentNode)
     {
         super( theAcroForm, field, parentNode);
-        da = (COSString) field.getDictionaryObject(COSName.DA);
     }
 
     /**
@@ -229,11 +229,50 @@ public abstract class PDVariableText extends PDField
     }
 
     /**
+     * Get the default appearance.
+     * 
      * @return the DA element of the dictionary object
      */
-    protected COSString getDefaultAppearance()
+    public COSString getDefaultAppearance()
     {
-        return da;
+        if (defaultAppearance == null)
+        {
+            COSBase daValue =  getDictionary().getItem(COSName.DA);
+            if (daValue != null)
+            {
+                defaultAppearance = (COSString)daValue;
+            }
+        }
+        // the default appearance is inheritable
+        // maybe the parent provides a default appearance
+        if (defaultAppearance == null)
+        {
+            PDFieldTreeNode parent = getParent();
+            if (parent instanceof PDVariableText)
+            {
+                defaultAppearance = ((PDVariableText)parent).getDefaultAppearance();
+            }
+        }
+        return defaultAppearance;
+    }
+
+    /**
+     * Set the default appearance.
+     * 
+     * @param daValue a string describing the default appearance
+     */
+    public void setDefaultAppearance(String daValue)
+    {
+        if (daValue != null)
+        {
+            defaultAppearance = new COSString(daValue);
+            getDictionary().setItem(COSName.DA, defaultAppearance);
+        }
+        else
+        {
+            defaultAppearance = null;
+            getDictionary().removeItem(COSName.DA);
+        }
     }
 
     /**
