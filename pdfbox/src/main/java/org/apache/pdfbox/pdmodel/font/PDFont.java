@@ -62,14 +62,14 @@ public abstract class PDFont implements COSObjectable
 
     protected final COSDictionary dict;
     private final CMap toUnicodeCMap;
-    protected PDFontDescriptor fontDescriptor;
+    private  PDFontDescriptor fontDescriptor;
 
     private List<Integer> widths;
     private float avgFontWidth;
     private float fontWidthOfSpace = -1f;
 
     /**
-     * Constructor.
+     * Constructor for embedding.
      */
     protected PDFont()
     {
@@ -86,6 +86,19 @@ public abstract class PDFont implements COSObjectable
     protected PDFont(COSDictionary fontDictionary) throws IOException
     {
         dict = fontDictionary;
+
+        // font descriptor
+        COSDictionary fd = (COSDictionary) dict.getDictionaryObject(COSName.FONT_DESC);
+        if (fd != null)
+        {
+            fontDescriptor = new PDFontDescriptorDictionary(fd);
+        }
+        else
+        {
+            fontDescriptor = null;
+        }
+
+        // ToUnicode CMap
         COSBase toUnicode = dict.getDictionaryObject(COSName.TO_UNICODE);
         if (toUnicode != null)
         {
@@ -106,15 +119,15 @@ public abstract class PDFont implements COSObjectable
      */
     public PDFontDescriptor getFontDescriptor()
     {
-        if (fontDescriptor == null)
-        {
-            COSDictionary fd = (COSDictionary) dict.getDictionaryObject(COSName.FONT_DESC);
-            if (fd != null)
-            {
-                fontDescriptor = new PDFontDescriptorDictionary(fd);
-            }
-        }
         return fontDescriptor;
+    }
+
+    /**
+     * Sets the font descriptor.
+     */
+    void setFontDescriptor(PDFontDescriptor fontDescriptor)
+    {
+        this.fontDescriptor = fontDescriptor;
     }
 
     /**

@@ -256,15 +256,17 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
     @Override
     public PDFontDescriptor getFontDescriptor()
     {
-        if (super.getFontDescriptor() == null)
+        PDFontDescriptor fd = super.getFontDescriptor();
+        if (fd == null)
         {
             if (afm != null)
             {
                 // this is for embedding fonts into PDFs, rather than for reading, though it works.
-                fontDescriptor = new PDFontDescriptorAFM(afm);
+                fd = new PDFontDescriptorAFM(afm);
+                setFontDescriptor(fd);
             }
         }
-        return fontDescriptor;
+        return fd;
     }
 
     @Override

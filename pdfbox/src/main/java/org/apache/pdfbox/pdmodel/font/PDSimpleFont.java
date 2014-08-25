@@ -41,7 +41,7 @@ public abstract class PDSimpleFont extends PDFont
     private final Set<Integer> noUnicode = new HashSet<Integer>();
 
     /**
-     * Constructor.
+     * Constructor
      */
     protected PDSimpleFont()
     {
