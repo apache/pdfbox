@@ -143,7 +143,7 @@ public abstract class PDSimpleFont extends PDFont
         {
             // we keep track of which warnings have been issued, so we don't log multiple times
             noUnicode.add(code);
-            /*if (name != null)
+            if (name != null)
             {
                 LOG.warn("No Unicode mapping for " + name + " (" + code + ") in font " +
                         getBaseFont());
@@ -152,7 +152,7 @@ public abstract class PDSimpleFont extends PDFont
             {
                 LOG.warn("No Unicode mapping for character code " + code + " in font " +
                         getBaseFont());
-            }*/
+            }
         }
 
         return null;
