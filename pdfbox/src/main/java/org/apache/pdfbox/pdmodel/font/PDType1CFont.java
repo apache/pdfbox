@@ -33,6 +33,7 @@ import org.apache.fontbox.cff.CFFType1Font;
 import org.apache.fontbox.ttf.Type1Equivalent;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.encoding.Encoding;
+import org.apache.pdfbox.encoding.GlyphList;
 import org.apache.pdfbox.encoding.Type1Encoding;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -138,15 +139,7 @@ public class PDType1CFont extends PDSimpleFont implements PDType1Equivalent
     @Override
     public String codeToName(int code)
     {
-        String name = getEncoding().getName(code);
-        if (name != null)
-        {
-            return name;
-        }
-        else
-        {
-            return ".notdef";
-        }
+        return getEncoding().getName(code);
     }
 
     @Override
@@ -218,7 +211,7 @@ public class PDType1CFont extends PDSimpleFont implements PDType1Equivalent
         for (int i = 0; i < string.length(); i++)
         {
             String character = string.substring(i, i + 1);
-            String name = getEncoding().getNameForCharacter(character.charAt(0));
+            String name = GlyphList.unicodeToName(character.charAt(0));
             width += cffFont.getType1CharString(name).getWidth();
         }
         return width;

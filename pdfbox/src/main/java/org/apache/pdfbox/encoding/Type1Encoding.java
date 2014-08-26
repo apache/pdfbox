@@ -40,7 +40,7 @@ public class Type1Encoding extends Encoding
 
         for (Integer code : codeToName.keySet())
         {
-            enc.addCharacterEncoding(code, codeToName.get(code));
+            enc.add(code, codeToName.get(code));
         }
 
         return enc;
@@ -62,7 +62,7 @@ public class Type1Encoding extends Encoding
     {
         for (CharMetric nextMetric : fontMetrics.getCharMetrics())
         {
-            addCharacterEncoding(nextMetric.getCharacterCode(), nextMetric.getName());
+            add(nextMetric.getCharacterCode(), nextMetric.getName());
         }
     }
 

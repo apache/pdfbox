@@ -32,6 +32,7 @@ import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.encoding.Encoding;
+import org.apache.pdfbox.encoding.GlyphList;
 import org.apache.pdfbox.encoding.WinAnsiEncoding;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -275,9 +276,6 @@ class PDTrueTypeFontEmbedder
         {
             widths.add(defaultWidth);
         }
-        // Encoding singleton to have acces to the chglyph name to
-        // unicode cpoint point mapping of Adobe's glyphlist.txt
-        Encoding glyphlist = WinAnsiEncoding.INSTANCE;
 
         // A character code is mapped to a glyph name via the provided font encoding
         // Afterwards, the glyph name is translated to a glyph ID.
@@ -289,7 +287,7 @@ class PDTrueTypeFontEmbedder
             // pdf code to unicode by glyph list.
             if (!name.equals(".notdef"))
             {
-                String c = glyphlist.getCharacter(name);
+                String c = GlyphList.toUnicode(name);
                 int charCode = c.codePointAt(0);
                 int gid = uniMap.getGlyphId(charCode);
                 if (gid != 0)

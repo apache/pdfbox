@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,6 +31,7 @@ import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.encoding.Encoding;
+import org.apache.pdfbox.encoding.GlyphList;
 import org.apache.pdfbox.encoding.MacOSRomanEncoding;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDStream;
@@ -46,6 +49,16 @@ public class PDTrueTypeFont extends PDSimpleFont
     private static final int START_RANGE_F100 = 0xF100;
     private static final int START_RANGE_F200 = 0xF200;
 
+    private static final Map<String, Integer> INVERTED_MACOS_ROMAN = new HashMap<String, Integer>();
+    static
+    {
+        Map<Integer, String> codeToName = MacOSRomanEncoding.INSTANCE.getCodeToNameMap();
+        for (Map.Entry<Integer, String> entry : codeToName.entrySet())
+        {
+            INVERTED_MACOS_ROMAN.put(entry.getValue(), entry.getKey());
+        }
+    }
+
     /**
      * Loads a TTF to be embedded into a document.
      *
@@ -61,7 +74,7 @@ public class PDTrueTypeFont extends PDSimpleFont
 
     private CMAPEncodingEntry cmapWinUnicode = null;
     private CMAPEncodingEntry cmapWinSymbol = null;
-    private CMAPEncodingEntry cmapMacintoshSymbol = null;
+    private CMAPEncodingEntry cmapMacRoman = null;
     private boolean cmapInitialized = false;
 
     private final TrueTypeFont ttf;
@@ -165,42 +178,48 @@ public class PDTrueTypeFont extends PDSimpleFont
     public int codeToGID(int code) throws IOException
     {
         extractCmapTable();
-        int result = 0;
+        int gid = 0;
         if (getEncoding() != null && !isSymbolic())
         {
-            String characterName = getEncoding().getName(code);
-            if (characterName != null)
+            String name = getEncoding().getName(code);
+            if (name.equals(".notdef"))
             {
-                if (cmapWinUnicode != null)
+                return 0;
+            }
+            else
+            {
+                if (cmapWinUnicode != null) // (3, 1)
                 {
-                    String unicode = Encoding.getCharacterForName(characterName);
+                    String unicode = GlyphList.toUnicode(name);
                     if (unicode != null)
                     {
                         if (unicode.isEmpty())
                         {
                             LOG.error("getCharacterForName for code " + code +
-                                    ", characterName '" + characterName +
+                                    ", characterName '" + name +
                                     "' is empty");
                         }
                         else
                         {
-                            result = unicode.codePointAt(0);
+                            gid = unicode.codePointAt(0);
                         }
                     }
-                    result = cmapWinUnicode.getGlyphId(result);
+                    gid = cmapWinUnicode.getGlyphId(gid);
                 }
-                else if (cmapMacintoshSymbol != null &&
-                         MacOSRomanEncoding.INSTANCE.contains(characterName))
+                else if (cmapMacRoman != null) // (1, 0)
                 {
-                    result = MacOSRomanEncoding.INSTANCE.getCode(characterName);
-                    result = cmapMacintoshSymbol.getGlyphId(result);
+                    Integer macCode = INVERTED_MACOS_ROMAN.get(name);
+                    if (macCode == null)
+                    {
+                        macCode = 0;
+                    }
+                    gid = cmapMacRoman.getGlyphId(macCode);
                 }
                 else if (cmapWinSymbol != null)
                 {
-                    // fallback scenario if the glyph can't be found yet
-                    // maybe the 3,0 cmap provides a suitable mapping
-                    // see PDFBOX-2091
-                    result = cmapWinSymbol.getGlyphId(code);
+                    // fallback scenario if the glyph can't be found yet, maybe the (3, 0) cmap
+                    // provides a suitable mapping, see PDFBOX-2091
+                    gid = cmapWinSymbol.getGlyphId(code);
                 }
             }
         }
@@ -209,41 +228,41 @@ public class PDTrueTypeFont extends PDSimpleFont
         {
             if (cmapWinSymbol != null)
             {
-                result = cmapWinSymbol.getGlyphId(code);
+                gid = cmapWinSymbol.getGlyphId(code);
                 if (code >= 0 && code <= 0xFF)
                 {
                     // the CMap may use one of the following code ranges,
                     // so that we have to add the high byte to get the
                     // mapped value
-                    if (result == 0)
+                    if (gid == 0)
                     {
                         // F000 - F0FF
-                        result = cmapWinSymbol.getGlyphId(code + START_RANGE_F000);
+                        gid = cmapWinSymbol.getGlyphId(code + START_RANGE_F000);
                     }
-                    if (result == 0)
+                    if (gid == 0)
                     {
                         // F100 - F1FF
-                        result = cmapWinSymbol.getGlyphId(code + START_RANGE_F100);
+                        gid = cmapWinSymbol.getGlyphId(code + START_RANGE_F100);
                     }
-                    if (result == 0)
+                    if (gid == 0)
                     {
                         // F200 - F2FF
-                        result = cmapWinSymbol.getGlyphId(code + START_RANGE_F200);
+                        gid = cmapWinSymbol.getGlyphId(code + START_RANGE_F200);
                     }
                 }
             }
-            else if (cmapMacintoshSymbol != null)
+            else if (cmapMacRoman != null)
             {
-                result = cmapMacintoshSymbol.getGlyphId(code);
+                gid = cmapMacRoman.getGlyphId(code);
             }
         }
 
-        if (result == 0)
+        if (gid == 0)
         {
             LOG.warn("Can't map code " + code + " in font " + getBaseFont());
         }
 
-        return result;
+        return gid;
     }
 
     /**
@@ -278,7 +297,7 @@ public class PDTrueTypeFont extends PDSimpleFont
                 {
                     if (CMAPTable.ENCODING_MAC_ROMAN == cmap.getPlatformEncodingId())
                     {
-                        cmapMacintoshSymbol = cmap;
+                        cmapMacRoman = cmap;
                     }
                 }
             }
@@ -292,7 +311,7 @@ public class PDTrueTypeFont extends PDSimpleFont
         super.clear();
         cmapWinUnicode = null;
         cmapWinSymbol = null;
-        cmapMacintoshSymbol = null;
+        cmapMacRoman = null;
         cmapInitialized = false;
     }
 }

@@ -24,7 +24,6 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
-import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
 
 /**
  * This will perform the encoding from a dictionary.
@@ -89,8 +88,8 @@ public class DictionaryEncoding extends Encoding
             this.baseEncoding = null;
         }
 
-        nameToCode.putAll( baseEncoding.nameToCode );
         codeToName.putAll( baseEncoding.codeToName );
+        names.addAll( baseEncoding.names );
 
         // now replace with the differences
         COSArray differences = (COSArray)encoding.getDictionaryObject( COSName.DIFFERENCES );
@@ -105,7 +104,7 @@ public class DictionaryEncoding extends Encoding
             else if( next instanceof COSName )
             {
                 COSName name = (COSName)next;
-                addCharacterEncoding( currentIndex, name.getName() );
+                add(currentIndex, name.getName());
                 this.differences.put(currentIndex, name.getName());
                 currentIndex++;
             }

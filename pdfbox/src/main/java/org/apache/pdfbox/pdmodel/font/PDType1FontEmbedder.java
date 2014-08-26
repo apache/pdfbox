@@ -112,11 +112,13 @@ class PDType1FontEmbedder
         int maxWidths = 256;
         List<Integer> widths = new ArrayList<Integer>(maxWidths);
         int zero = 250;
+
         Iterator<CharMetric> iter = listmetric.iterator();
         for (int i = 0; i < maxWidths; i++)
         {
             widths.add(zero);
         }
+
         while (iter.hasNext())
         {
             CharMetric m = iter.next();
@@ -129,42 +131,6 @@ class PDType1FontEmbedder
                 {
                     int width = Math.round(m.getWx());
                     widths.set(n, width);
-                    // germandbls has 2 character codes !! Don't ask me why
-                    // StandardEncoding = 0373 = 251
-                    // WinANSIEncoding = 0337 = 223
-                    if (m.getName().equals("germandbls") && n != 223)
-                    {
-                        widths.set(0337, width);
-                    }
-                }
-            }
-            else
-            {
-                // my AFMPFB-Fonts has no character-codes for german umlauts
-                // so that I've to add them here by hand
-                if (m.getName().equals("adieresis"))
-                {
-                    widths.set(0344, widths.get(encoding.getCode("a")));
-                }
-                else if (m.getName().equals("odieresis"))
-                {
-                    widths.set(0366, widths.get(encoding.getCode("o")));
-                }
-                else if (m.getName().equals("udieresis"))
-                {
-                    widths.set(0374, widths.get(encoding.getCode("u")));
-                }
-                else if (m.getName().equals("Adieresis"))
-                {
-                    widths.set(0304, widths.get(encoding.getCode("A")));
-                }
-                else if (m.getName().equals("Odieresis"))
-                {
-                    widths.set(0326, widths.get(encoding.getCode("O")));
-                }
-                else if (m.getName().equals("Udieresis"))
-                {
-                    widths.set(0334, widths.get(encoding.getCode("U")));
                 }
             }
         }

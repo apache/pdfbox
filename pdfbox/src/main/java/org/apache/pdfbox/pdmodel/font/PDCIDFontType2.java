@@ -30,7 +30,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.encoding.Encoding;
+import org.apache.pdfbox.encoding.GlyphList;
 import org.apache.pdfbox.encoding.StandardEncoding;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.PDStream;
@@ -197,7 +197,7 @@ public class PDCIDFontType2 extends PDCIDFont
                 }
 
                 // map to a Unicode value using the Adobe Glyph List
-                unicode = Encoding.getCharacterForName(name);
+                unicode = GlyphList.toUnicode(name);
             }
             else
             {

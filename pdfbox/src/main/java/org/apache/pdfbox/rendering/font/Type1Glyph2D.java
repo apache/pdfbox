@@ -24,6 +24,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.encoding.Encoding;
+import org.apache.pdfbox.encoding.GlyphList;
 import org.apache.pdfbox.pdmodel.font.PDType1Equivalent;
 
 /**
@@ -101,7 +102,7 @@ public class Type1Glyph2D implements Glyph2D
                 else
                 {
                     // try unicode name
-                    String unicodes = Encoding.getCharacterForName(name);
+                    String unicodes = GlyphList.toUnicode(name);
                     if (unicodes != null)
                     {
                         if (unicodes.length() == 1)

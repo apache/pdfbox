@@ -29,6 +29,7 @@ import org.apache.fontbox.ttf.CMAPEncodingEntry;
 import org.apache.fontbox.ttf.CMAPTable;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.encoding.Encoding;
+import org.apache.pdfbox.encoding.GlyphList;
 import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.font.util.GlyphException;
@@ -161,7 +162,8 @@ public class TrueTypeContainer extends FontContainer
         if (cmap.getPlatformEncodingId() == 1 && cmap.getPlatformId() == 3)
         {
             Encoding fontEncoding = this.trueTypeFont.getEncoding();
-            String character = fontEncoding.getCharacter(cid);
+            String name = fontEncoding.getName(cid);
+            String character = GlyphList.toUnicode(name);
             if (character == null)
             {
                 return notFoundGlyphID;

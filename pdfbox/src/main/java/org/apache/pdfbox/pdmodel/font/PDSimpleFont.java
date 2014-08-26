@@ -23,6 +23,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.encoding.DictionaryEncoding;
 import org.apache.pdfbox.encoding.Encoding;
+import org.apache.pdfbox.encoding.GlyphList;
 import org.apache.pdfbox.encoding.MacRomanEncoding;
 import org.apache.pdfbox.encoding.StandardEncoding;
 import org.apache.pdfbox.encoding.WinAnsiEncoding;
@@ -173,7 +174,7 @@ public abstract class PDSimpleFont extends PDFont
         if (getEncoding() != null)
         {
             name = encoding.getName(code);
-            unicode = Encoding.getCharacterForName(name);
+            unicode = GlyphList.toUnicode(name);
             if (unicode != null)
             {
                 return unicode;
