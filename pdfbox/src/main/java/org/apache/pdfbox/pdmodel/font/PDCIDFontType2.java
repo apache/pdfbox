@@ -47,6 +47,7 @@ public class PDCIDFontType2 extends PDCIDFont
 
     private final TrueTypeFont ttf;
     private final int[] cid2gid;
+    private final boolean hasIdentityCid2Gid;
     private final boolean isEmbedded;
     private Matrix fontMatrix;
 
@@ -87,6 +88,15 @@ public class PDCIDFontType2 extends PDCIDFont
         }
 
         cid2gid = readCIDToGIDMap();
+        COSBase map = dict.getDictionaryObject(COSName.CID_TO_GID_MAP);
+        if (map instanceof COSName && ((COSName) map).getName().equals("Identity"))
+        {
+            hasIdentityCid2Gid = true;
+        }
+        else
+        {
+            hasIdentityCid2Gid = false;
+        }
     }
 
     @Override
@@ -175,10 +185,23 @@ public class PDCIDFontType2 extends PDCIDFont
             CmapSubtable cmap = getUnicodeCmap(ttf.getCmap());
             String unicode;
 
-            // non-symbolic behaviour for Type2 TTFs isn't well documented, test with PDFBOX-1422
-            if (!parent.isSymbolic()) // todo: but this descendant font has its own flags?
+            if (cid2gid != null || hasIdentityCid2Gid)
             {
-                // if the font descriptor?s Nonsymbolic flag is set, the conforming reader shall
+                // strange but true, Acrobat allows non-embedded GIDs, test with PDFBOX-2060
+                if (hasIdentityCid2Gid)
+                {
+                    return cid;
+                }
+                else
+                {
+                    return cid2gid[cid];
+                }
+            }
+            if (!parent.isSymbolic())
+            {
+                // this nonsymbolic behaviour isn't well documented, test with PDFBOX-1422
+
+                // if the font descriptor's Nonsymbolic flag is set, the conforming reader shall
                 // create a table that maps from character codes to glyph names
                 String name = null;
 
