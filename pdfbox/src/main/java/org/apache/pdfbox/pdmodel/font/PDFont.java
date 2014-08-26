@@ -179,7 +179,8 @@ public abstract class PDFont implements COSObjectable
         else
         {
             PDFontDescriptor fd = getFontDescriptor();
-            if (fd instanceof PDFontDescriptorDictionary)
+            if (fd instanceof PDFontDescriptorDictionary &&
+                    ((PDFontDescriptorDictionary) fd).hasWidths())
             {
                 return fd.getMissingWidth();
             }

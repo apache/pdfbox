@@ -475,6 +475,14 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
     }
 
     /**
+     * Returns true if widths are present in the font descriptor.
+     */
+    public boolean hasWidths()
+    {
+        return dic.containsKey(COSName.WIDTHS) || dic.containsKey(COSName.MISSING_WIDTH);
+    }
+
+    /**
      * This will get the missing width for the font.
      *
      * @return The missing width value.
