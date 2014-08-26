@@ -41,13 +41,12 @@ public class TTFGlyph2D implements Glyph2D
 {
     private static final Log LOG = LogFactory.getLog(TTFGlyph2D.class);
 
-    private PDFont pdFont;
-    private TrueTypeFont ttf;
-    private String name;
+    private final PDFont font;
+    private final TrueTypeFont ttf;
     private float scale = 1.0f;
-    private boolean hasScaling = false;
-    private Map<Integer, GeneralPath> glyphs = new HashMap<Integer, GeneralPath>();
-    private boolean isCIDFont = false;
+    private boolean hasScaling;
+    private final Map<Integer, GeneralPath> glyphs = new HashMap<Integer, GeneralPath>();
+    private final boolean isCIDFont;
 
     /**
      * Constructor.
@@ -69,11 +68,12 @@ public class TTFGlyph2D implements Glyph2D
         this(((PDCIDFontType2)type0Font.getDescendantFont()).getTrueTypeFont(), type0Font, true);
     }
 
-    public TTFGlyph2D(TrueTypeFont ttf, PDFont pdFont, boolean isCIDFont)
+    public TTFGlyph2D(TrueTypeFont ttf, PDFont font, boolean isCIDFont)
             throws IOException
     {
-        this.pdFont = pdFont;
+        this.font = font;
         this.ttf = ttf;
+        this.isCIDFont = isCIDFont;
         // get units per em, which is used as scaling factor
         HeaderTable header = this.ttf.getHeader();
         if (header != null && header.getUnitsPerEm() != 1000)
@@ -83,25 +83,13 @@ public class TTFGlyph2D implements Glyph2D
             scale = 1000f / header.getUnitsPerEm();
             hasScaling = true;
         }
-        extractFontSpecifics(pdFont, isCIDFont);
-    }
-
-    /**
-     * Extract all font specific information.
-     * 
-     * @param pdFont the given PDFont
-     */
-    private void extractFontSpecifics(PDFont pdFont, boolean isCIDFont)
-    {
-        name = pdFont.getBaseFont();
-        this.isCIDFont = isCIDFont;
     }
 
     @Override
     public GeneralPath getPathForCharacterCode(int code) throws IOException
     {
         int gid = getGIDForCharacterCode(code);
-        return getPathForGlyphId(gid);
+        return getPathForGID(gid, code);
     }
 
     // Try to map the given code to the corresponding glyph-ID
@@ -109,65 +97,71 @@ public class TTFGlyph2D implements Glyph2D
     {
         if (isCIDFont)
         {
-            return ((PDType0Font)pdFont).codeToGID(code);
+            return ((PDType0Font)font).codeToGID(code);
         }
         else
         {
-            return ((PDTrueTypeFont)pdFont).codeToGID(code);
+            return ((PDTrueTypeFont)font).codeToGID(code);
         }
     }
 
     /**
      * Returns the path describing the glyph for the given glyphId.
      *
-     * @param glyphId the glyphId
+     * @param gid the GID
+     * @param code the character code
      *
      * @return the GeneralPath for the given glyphId
      */
-    public GeneralPath getPathForGlyphId(int glyphId) throws IOException
+    public GeneralPath getPathForGID(int gid, int code) throws IOException
     {
         GeneralPath glyphPath;
-        if (glyphs.containsKey(glyphId))
+        if (glyphs.containsKey(gid))
         {
-            glyphPath = glyphs.get(glyphId);
+            glyphPath = glyphs.get(gid);
         }
-        else
+        else if (gid == 0)
         {
-            // fixme: TrueTypeFont is buggy so we have to catch RuntimeException for debugging
-            GlyphData[] glyphData;
-            try
+            if (isCIDFont)
             {
-                glyphData = ttf.getGlyph().getGlyphs();
-            }
-            catch (RuntimeException e)
-            {
-                LOG.error("Error in TTF: " + pdFont.getBaseFont() + " -> " +
-                        ttf.getNaming().getPostScriptName());
-                throw e;
-            }
-
-            if (glyphId >= glyphData.length)
-            {
-                LOG.warn(name + ": Glyph not found: " + glyphId);
-                glyphPath = new GeneralPath();
-                glyphs.put(glyphId, glyphPath);
-            }
-            else if (glyphData[glyphId] == null)
-            {
-                // empty glyph (e.g. space, newline)
-                glyphPath = new GeneralPath();
-                glyphs.put(glyphId, glyphPath);
+                int cid = ((PDType0Font) font).codeToCID(code);
+                String cidHex = String.format("%04x", cid);
+                LOG.warn("No glyph for " + code + " (CID " + cidHex + ") in font " + font.getName());
             }
             else
             {
-                GlyphData glyph = glyphData[glyphId];
+                LOG.warn("No glyph for " + code + " in font " + font.getName());
+            }
+
+            // GID 0 is not drawn, see PDFBOX-1735
+            glyphPath = new GeneralPath();
+            glyphs.put(gid, glyphPath);
+        }
+        else
+        {
+            GlyphData[] glyphData = ttf.getGlyph().getGlyphs();
+            if (gid >= glyphData.length)
+            {
+                LOG.warn(font.getName() + ": Glyph not found: " + gid);
+                glyphPath = new GeneralPath();
+                glyphs.put(gid, glyphPath);
+            }
+            else if (glyphData[gid] == null)
+            {
+                // empty glyph (e.g. space, newline)
+                glyphPath = new GeneralPath();
+                glyphs.put(gid, glyphPath);
+            }
+            else
+            {
+                GlyphData glyph = glyphData[gid];
                 glyphPath = glyph.getPath();
                 if (hasScaling)
                 {
                     AffineTransform atScale = AffineTransform.getScaleInstance(scale, scale);
                     glyphPath.transform(atScale);
                 }
-                glyphs.put(glyphId, glyphPath);
+                glyphs.put(gid, glyphPath);
             }
         }
         return glyphPath != null ? (GeneralPath) glyphPath.clone() : null; // todo: expensive
@@ -176,10 +170,6 @@ public class TTFGlyph2D implements Glyph2D
     @Override
     public void dispose()
     {
-        ttf = null;
-        if (glyphs != null)
-        {
-            glyphs.clear();
-        }
+        glyphs.clear();
     }
 }
