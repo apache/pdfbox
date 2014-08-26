@@ -247,9 +247,7 @@ public class MacRomanEncoding extends Encoding
         add(0172, "z");
         add(060, "zero");
         // adding an additional mapping as defined in Appendix D of the pdf spec
-        // we must not add it to both mappings as the nameToCode mapping
-        // wouldn't be unique
-        codeToName.put(0312, "space");
+        add(0312, "space");
     }
     
     /**

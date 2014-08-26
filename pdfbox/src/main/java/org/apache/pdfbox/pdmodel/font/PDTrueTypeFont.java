@@ -55,7 +55,10 @@ public class PDTrueTypeFont extends PDSimpleFont
         Map<Integer, String> codeToName = MacOSRomanEncoding.INSTANCE.getCodeToNameMap();
         for (Map.Entry<Integer, String> entry : codeToName.entrySet())
         {
-            INVERTED_MACOS_ROMAN.put(entry.getValue(), entry.getKey());
+            if (!INVERTED_MACOS_ROMAN.containsKey(entry.getValue()))
+            {
+                INVERTED_MACOS_ROMAN.put(entry.getValue(), entry.getKey());
+            }
         }
     }
 

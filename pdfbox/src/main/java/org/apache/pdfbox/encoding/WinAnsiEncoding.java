@@ -256,15 +256,13 @@ public class WinAnsiEncoding extends Encoding
         add(0236, "zcaron");
         add(060, "zero");
         // adding some additional mappings as defined in Appendix D of the pdf spec
-        // we must not add them to both mappings as the nameToCode mapping
-        // wouldn't be unique
-        codeToName.put(0240, "space");
-        codeToName.put(0255, "hyphen");
+        add(0240, "space");
+        add(0255, "hyphen");
         for (int i = 041; i <= 255; i++)
         {
             if (!codeToName.containsKey(i))
             {
-                codeToName.put(i, "bullet");
+                add(i, "bullet");
             }
         }
     }
