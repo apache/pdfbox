@@ -396,6 +396,15 @@ public abstract class PDFont implements COSObjectable
      */
     protected Boolean isFontSymbolic()
     {
+        return getSymbolicFlag();
+    }
+
+    /**
+     * Returns the value of the symbolic flag,  allowing for the fact that the result may be
+     * indeterminate.
+     */
+    protected Boolean getSymbolicFlag()
+    {
         if (getFontDescriptor() != null)
         {
             // fixme: isSymbolic() defaults to false if the flag is missing so we can't trust this

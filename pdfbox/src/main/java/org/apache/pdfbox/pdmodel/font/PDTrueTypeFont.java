@@ -179,7 +179,8 @@ public class PDTrueTypeFont extends PDSimpleFont
     {
         extractCmapTable();
         int gid = 0;
-        if (getEncoding() != null && !isSymbolic())
+
+        if (getEncoding() != null && !isSymbolic()) // non-symbolic
         {
             String name = getEncoding().getName(code);
             if (name.equals(".notdef"))
@@ -223,8 +224,7 @@ public class PDTrueTypeFont extends PDSimpleFont
                 }
             }
         }
-
-        if (getEncoding() == null || isSymbolic())
+        else // symbolic
         {
             if (cmapWinSymbol != null)
             {

@@ -29,6 +29,7 @@ import org.apache.pdfbox.encoding.StandardEncoding;
 import org.apache.pdfbox.encoding.WinAnsiEncoding;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,6 +41,23 @@ import java.util.Set;
 public abstract class PDSimpleFont extends PDFont
 {
     private static final Log LOG = LogFactory.getLog(PDSimpleFont.class);
+
+    private static Set<String> STANDARD_14 = new HashSet<String>();
+    static
+    {
+        // standard 14 names
+        STANDARD_14.addAll(Arrays.asList(
+           "Courier", "Courier-Bold", "Courier-Oblique", "Courier-BoldOblique", "Helvetica",
+           "Helvetica-Bold", "Helvetica-Oblique", "Helvetica-BoldOblique", "Times-Roman",
+           "Times-Bold", "Times-Italic","Times-BoldItalic", "Symbol", "ZapfDingbats"
+        ));
+        // alternative names from Adobe Supplement to the ISO 32000
+        STANDARD_14.addAll(Arrays.asList(
+           "CourierCourierNew", "CourierNew", "CourierNew,Italic", "CourierNew,Bold",
+           "CourierNew,BoldItalic", "Arial", "Arial,Italic", "Arial,Bold", "Arial,BoldItalic",
+           "TimesNewRoman", "TimesNewRoman,Italic", "TimesNewRoman,Bold", "TimesNewRoman,BoldItalic"
+        ));
+    }
 
     protected Encoding encoding;
     private final Set<Integer> noUnicode = new HashSet<Integer>();
@@ -91,7 +109,12 @@ public abstract class PDSimpleFont extends PDFont
                 {
                     builtIn = readEncodingFromFont();
                 }
-                this.encoding = new DictionaryEncoding(encodingDict, isSymbolic(), builtIn);
+                Boolean symbolic = getSymbolicFlag();
+                if (symbolic == null)
+                {
+                    symbolic = builtIn != null;
+                }
+                this.encoding = new DictionaryEncoding(encodingDict, !symbolic, builtIn);
             }
         }
         else
@@ -118,27 +141,39 @@ public abstract class PDSimpleFont extends PDFont
     @Override
     protected Boolean isFontSymbolic()
     {
-        Boolean result = super.isFontSymbolic();
+        Boolean result = getSymbolicFlag();
         if (result != null)
         {
             return result;
         }
+        else if (isStandard14())
+        {
+            return getBaseFont().equals("Symbol") || getBaseFont().equals("ZapfDingbats");
+        }
         else
         {
-            if (encoding instanceof WinAnsiEncoding ||encoding instanceof MacRomanEncoding ||
+            if (encoding == null)
+            {
+                // sanity check, should never happen
+                throw new IllegalStateException("recursive definition");
+            }
+            else if (encoding instanceof WinAnsiEncoding ||encoding instanceof MacRomanEncoding ||
                 encoding instanceof StandardEncoding)
             {
                 return false;
             }
             else if (encoding instanceof DictionaryEncoding)
             {
-                // each name in Differences array must also be in the latin character se
-                DictionaryEncoding enc = (DictionaryEncoding)encoding;
-                for (String name : enc.getDifferences().values())
+                // each name in Differences array must also be in the latin character set
+                for (String name : ((DictionaryEncoding)encoding).getDifferences().values())
                 {
-                    if (!(WinAnsiEncoding.INSTANCE.contains(name) &&
-                          MacRomanEncoding.INSTANCE.contains(name) &&
-                          StandardEncoding.INSTANCE.contains(name)))
+                    if (name.equals(".notdef"))
+                    {
+                        // skip
+                    }
+                    else if (!(WinAnsiEncoding.INSTANCE.contains(name) &&
+                               MacRomanEncoding.INSTANCE.contains(name) &&
+                               StandardEncoding.INSTANCE.contains(name)))
                     {
                         return true;
                     }
@@ -199,5 +234,13 @@ public abstract class PDSimpleFont extends PDFont
         }
 
         return null;
+    }
+
+    /**
+     * Returns true if this font is one of the "standard 14" fonts.
+     */
+    public boolean isStandard14()
+    {
+        return !isEmbedded() && STANDARD_14.contains(getBaseFont());
     }
 }

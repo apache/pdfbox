@@ -60,7 +60,7 @@ public class DictionaryEncoding extends Encoding
      *
      * @param fontEncoding The encoding dictionary.
      */
-    public DictionaryEncoding(COSDictionary fontEncoding, boolean isSymbolic, Encoding builtIn)
+    public DictionaryEncoding(COSDictionary fontEncoding, boolean isNonSymbolic, Encoding builtIn)
     {
         encoding = fontEncoding;
 
@@ -71,7 +71,7 @@ public class DictionaryEncoding extends Encoding
             baseEncoding = Encoding.getInstance(name);
             this.baseEncoding = name.getName();
         }
-        else if (!isSymbolic)
+        else if (isNonSymbolic)
         {
             // Otherwise, for a nonsymbolic font, it is StandardEncoding
             baseEncoding = StandardEncoding.INSTANCE;
