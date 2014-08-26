@@ -16,8 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
-import org.apache.fontbox.ttf.CMAPEncodingEntry;
-import org.apache.fontbox.ttf.CMAPTable;
+import org.apache.fontbox.ttf.CmapSubtable;
+import org.apache.fontbox.ttf.CmapTable;
 import org.apache.fontbox.ttf.GlyphData;
 import org.apache.fontbox.ttf.GlyphTable;
 import org.apache.fontbox.ttf.HeaderTable;
@@ -217,25 +217,25 @@ class PDTrueTypeFontEmbedder
         // this is close enough and I am told it doesn't usually get used.
         fd.setStemV(fd.getFontBoundingBox().getWidth() * .13f);
 
-        CMAPTable cmapTable = ttf.getCMAP();
-        CMAPEncodingEntry uniMap = cmapTable.getSubtable(CMAPTable.PLATFORM_UNICODE,
-                CMAPTable.ENCODING_UNICODE_2_0_FULL);
+        CmapTable cmapTable = ttf.getCmap();
+        CmapSubtable uniMap = cmapTable.getSubtable(CmapTable.PLATFORM_UNICODE,
+                CmapTable.ENCODING_UNICODE_2_0_FULL);
         if (uniMap == null)
         {
-            uniMap = cmapTable.getSubtable(CMAPTable.PLATFORM_UNICODE,
-                    CMAPTable.ENCODING_UNICODE_2_0_BMP);
+            uniMap = cmapTable.getSubtable(CmapTable.PLATFORM_UNICODE,
+                    CmapTable.ENCODING_UNICODE_2_0_BMP);
         }
         if (uniMap == null)
         {
-            uniMap = cmapTable.getSubtable(CMAPTable.PLATFORM_WINDOWS,
-                    CMAPTable.ENCODING_WIN_UNICODE);
+            uniMap = cmapTable.getSubtable(CmapTable.PLATFORM_WINDOWS,
+                    CmapTable.ENCODING_WIN_UNICODE);
         }
         if (uniMap == null)
         {
             // Microsoft's "Recommendations for OpenType Fonts" says that "Symbol" encoding
             // actually means "Unicode, non-standard character set"
-            uniMap = cmapTable.getSubtable(CMAPTable.PLATFORM_WINDOWS,
-                    CMAPTable.ENCODING_WIN_SYMBOL);
+            uniMap = cmapTable.getSubtable(CmapTable.PLATFORM_WINDOWS,
+                    CmapTable.ENCODING_WIN_SYMBOL);
         }
         if (uniMap == null)
         {

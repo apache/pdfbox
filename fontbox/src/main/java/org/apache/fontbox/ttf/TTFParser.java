@@ -189,7 +189,7 @@ public class TTFParser
         }
 
         // check others mandatory tables
-        if (!isEmbedded && font.getCMAP() == null)
+        if (!isEmbedded && font.getCmap() == null)
         {
             throw new IOException("cmap is mandatory");
         }
@@ -199,9 +199,9 @@ public class TTFParser
     {
         TTFTable retval = null;
         String tag = raf.readString(4);
-        if (tag.equals(CMAPTable.TAG))
+        if (tag.equals(CmapTable.TAG))
         {
-            retval = new CMAPTable();
+            retval = new CmapTable();
         }
         else if (tag.equals(GlyphTable.TAG))
         {

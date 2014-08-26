@@ -83,7 +83,7 @@ public class TrueTypeDescriptorHelper extends FontDescriptorHelper<TrueTypeConta
             bis = new ByteArrayInputStream(fontFile.getByteArray());
             TrueTypeFont ttf = new TTFParser(true).parseTTF(bis);
 
-            if (fontDescriptor.isSymbolic() && ttf.getCMAP().getCmaps().length != 1)
+            if (fontDescriptor.isSymbolic() && ttf.getCmap().getCmaps().length != 1)
             {
                 this.fContainer.push(new ValidationError(ERROR_FONTS_ENCODING,
                         "The Encoding should be missing for the Symbolic TTF"));

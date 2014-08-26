@@ -55,7 +55,7 @@ public class TTFSubsetter
     
     private final TrueTypeFont baseTTF;
     private final String nameSuffix;
-    private final CMAPEncodingEntry baseCmap;
+    private final CmapSubtable baseCmap;
     
     // A map of unicode char codes to glyph IDs of the original font.
     private final SortedMap<Integer,Integer> characters;
@@ -77,10 +77,10 @@ public class TTFSubsetter
         characters = new TreeMap<Integer, Integer>();
         glyphIds = new TreeSet<Integer>();
         
-        CMAPEncodingEntry[] cmaps = this.baseTTF.getCMAP().getCmaps();
-        CMAPEncodingEntry unicodeCmap = null;
+        CmapSubtable[] cmaps = this.baseTTF.getCmap().getCmaps();
+        CmapSubtable unicodeCmap = null;
         
-        for (CMAPEncodingEntry cmap : cmaps)
+        for (CmapSubtable cmap : cmaps)
         {
             // take first unicode map.
             if (cmap.getPlatformId() == 0 || (cmap.getPlatformId() == 3 && cmap.getPlatformEncodingId() == 1)) 

@@ -23,7 +23,7 @@ import java.io.IOException;
  * 
  * @author Ben Litchfield
  */
-public class CMAPTable extends TTFTable
+public class CmapTable extends TTFTable
 {
     /**
      * A tag used to identify this table.
@@ -53,7 +53,7 @@ public class CMAPTable extends TTFTable
     public static final int ENCODING_UNICODE_2_0_BMP = 3;
     public static final int ENCODING_UNICODE_2_0_FULL = 4;
 
-    private CMAPEncodingEntry[] cmaps;
+    private CmapSubtable[] cmaps;
 
     /**
      * This will read the required data from the stream.
@@ -66,10 +66,10 @@ public class CMAPTable extends TTFTable
     {
         int version = data.readUnsignedShort();
         int numberOfTables = data.readUnsignedShort();
-        cmaps = new CMAPEncodingEntry[numberOfTables];
+        cmaps = new CmapSubtable[numberOfTables];
         for (int i = 0; i < numberOfTables; i++)
         {
-            CMAPEncodingEntry cmap = new CMAPEncodingEntry();
+            CmapSubtable cmap = new CmapSubtable();
             cmap.initData(data);
             cmaps[i] = cmap;
         }
@@ -83,7 +83,7 @@ public class CMAPTable extends TTFTable
     /**
      * @return Returns the cmaps.
      */
-    public CMAPEncodingEntry[] getCmaps()
+    public CmapSubtable[] getCmaps()
     {
         return cmaps;
     }
@@ -91,7 +91,7 @@ public class CMAPTable extends TTFTable
     /**
      * @param cmapsValue The cmaps to set.
      */
-    public void setCmaps(CMAPEncodingEntry[] cmapsValue)
+    public void setCmaps(CmapSubtable[] cmapsValue)
     {
         cmaps = cmapsValue;
     }
@@ -99,9 +99,9 @@ public class CMAPTable extends TTFTable
     /**
      * Returns the subtable, if any, for the given platform and encoding.
      */
-    public CMAPEncodingEntry getSubtable(int platformId, int platformEncodingId)
+    public CmapSubtable getSubtable(int platformId, int platformEncodingId)
     {
-        for (CMAPEncodingEntry cmap : cmaps)
+        for (CmapSubtable cmap : cmaps)
         {
             if (cmap.getPlatformId() == platformId &&
                 cmap.getPlatformEncodingId() == platformEncodingId)

@@ -25,8 +25,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.fontbox.ttf.CMAPEncodingEntry;
-import org.apache.fontbox.ttf.CMAPTable;
+import org.apache.fontbox.ttf.CmapSubtable;
+import org.apache.fontbox.ttf.CmapTable;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.encoding.GlyphList;
@@ -37,7 +37,7 @@ import org.apache.pdfbox.preflight.font.util.GlyphException;
 public class TrueTypeContainer extends FontContainer
 {
     protected TrueTypeFont ttFont;
-    private CMAPEncodingEntry[] cmapEncodingEntries = null;
+    private CmapSubtable[] cmapEncodingEntries = null;
     private PDTrueTypeFont trueTypeFont;
 
     public TrueTypeContainer(PDTrueTypeFont font)
@@ -70,7 +70,7 @@ public class TrueTypeContainer extends FontContainer
 
         try
         {
-            CMAPTable cmap = this.ttFont.getCMAP();
+            CmapTable cmap = this.ttFont.getCmap();
             if (this.trueTypeFont.getFontDescriptor().isSymbolic())
             {
                 this.cmapEncodingEntries = cmap.getCmaps();
@@ -86,11 +86,11 @@ public class TrueTypeContainer extends FontContainer
         }
     }
 
-    private CMAPEncodingEntry[] orderCMapEntries(CMAPTable cmap)
+    private CmapSubtable[] orderCMapEntries(CmapTable cmap)
     {
-        List<CMAPEncodingEntry> res = new ArrayList<CMAPEncodingEntry>();
+        List<CmapSubtable> res = new ArrayList<CmapSubtable>();
         boolean firstIs31 = false;
-        for (CMAPEncodingEntry cmapEntry : cmap.getCmaps())
+        for (CmapSubtable cmapEntry : cmap.getCmaps())
         {
             // WinAnsi
             if ((cmapEntry.getPlatformId() == 3) && (cmapEntry.getPlatformEncodingId() == 1))
@@ -117,7 +117,7 @@ public class TrueTypeContainer extends FontContainer
                 res.add(cmapEntry);
             }
         }
-        return res.toArray(new CMAPEncodingEntry[res.size()]);
+        return res.toArray(new CmapSubtable[res.size()]);
     }
 
     @Override
@@ -128,7 +128,7 @@ public class TrueTypeContainer extends FontContainer
             float result = -1f;
             if (cmapEncodingEntries != null)
             {
-                for (CMAPEncodingEntry entry : cmapEncodingEntries)
+                for (CmapSubtable entry : cmapEncodingEntries)
                 {
                     int glyphID = extractGlyphID(cid, entry);
                     if (glyphID > 0)
@@ -154,7 +154,7 @@ public class TrueTypeContainer extends FontContainer
      * @param cmap
      * @return
      */
-    private int extractGlyphID(int cid, CMAPEncodingEntry cmap)
+    private int extractGlyphID(int cid, CmapSubtable cmap)
     {
         int notFoundGlyphID = 0;
 

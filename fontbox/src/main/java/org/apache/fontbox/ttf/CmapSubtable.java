@@ -30,9 +30,9 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @author Ben Litchfield
  */
-public class CMAPEncodingEntry
+public class CmapSubtable
 {
-    private static final Log LOG = LogFactory.getLog(CMAPEncodingEntry.class);
+    private static final Log LOG = LogFactory.getLog(CmapSubtable.class);
 
     private static final long LEAD_OFFSET = 0xD800 - (0x10000 >> 10);
     private static final long SURROGATE_OFFSET = 0x10000 - (0xD800 << 10) - 0xDC00;
@@ -64,7 +64,7 @@ public class CMAPEncodingEntry
      * @param data The stream to read the data from.
      * @throws IOException If there is an error reading the data.
      */
-    public void initSubtable(CMAPTable cmap, int numGlyphs, TTFDataStream data) throws IOException
+    public void initSubtable(CmapTable cmap, int numGlyphs, TTFDataStream data) throws IOException
     {
         data.seek(cmap.getOffset() + subTableOffset);
         int subtableFormat = data.readUnsignedShort();

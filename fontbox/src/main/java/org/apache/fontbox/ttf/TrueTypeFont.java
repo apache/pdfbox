@@ -252,9 +252,9 @@ public class TrueTypeFont implements Type1Equivalent
      * 
      * @return The "cmap" table.
      */
-    public CMAPTable getCMAP() throws IOException
+    public CmapTable getCmap() throws IOException
     {
-        CMAPTable cmap = (CMAPTable)tables.get( CMAPTable.TAG );
+        CmapTable cmap = (CmapTable)tables.get( CmapTable.TAG );
         if (cmap != null && !cmap.getInitialized())
         {
             readTable(cmap);

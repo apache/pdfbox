@@ -22,8 +22,8 @@ import java.io.InputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.cmap.CMap;
-import org.apache.fontbox.ttf.CMAPEncodingEntry;
-import org.apache.fontbox.ttf.CMAPTable;
+import org.apache.fontbox.ttf.CmapSubtable;
+import org.apache.fontbox.ttf.CmapTable;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.cos.COSBase;
@@ -172,7 +172,7 @@ public class PDCIDFontType2 extends PDCIDFont
             // font's 'cmap' table. The means by which this is accomplished are implementation-
             // dependent.
 
-            CMAPEncodingEntry cmap = getUnicodeCmap(ttf.getCMAP());
+            CmapSubtable cmap = getUnicodeCmap(ttf.getCmap());
             String unicode;
 
             // non-symbolic behaviour for Type2 TTFs isn't well documented, test with PDFBOX-1422
@@ -244,26 +244,26 @@ public class PDCIDFontType2 extends PDCIDFont
      * Returns the best Unicode from the font (the most general). The PDF spec says that "The means
      * by which this is accomplished are implementation-dependent."
      */
-    private CMAPEncodingEntry getUnicodeCmap(CMAPTable cmapTable)
+    private CmapSubtable getUnicodeCmap(CmapTable cmapTable)
     {
-        CMAPEncodingEntry cmap = cmapTable.getSubtable(CMAPTable.PLATFORM_UNICODE,
-                                                  CMAPTable.ENCODING_UNICODE_2_0_FULL);
+        CmapSubtable cmap = cmapTable.getSubtable(CmapTable.PLATFORM_UNICODE,
+                                                  CmapTable.ENCODING_UNICODE_2_0_FULL);
         if (cmap == null)
         {
-            cmap = cmapTable.getSubtable(CMAPTable.PLATFORM_UNICODE,
-                                         CMAPTable.ENCODING_UNICODE_2_0_BMP);
+            cmap = cmapTable.getSubtable(CmapTable.PLATFORM_UNICODE,
+                                         CmapTable.ENCODING_UNICODE_2_0_BMP);
         }
         if (cmap == null)
         {
-            cmap = cmapTable.getSubtable(CMAPTable.PLATFORM_WINDOWS,
-                                         CMAPTable.ENCODING_WIN_UNICODE);
+            cmap = cmapTable.getSubtable(CmapTable.PLATFORM_WINDOWS,
+                                         CmapTable.ENCODING_WIN_UNICODE);
         }
         if (cmap == null)
         {
             // Microsoft's "Recommendations for OpenType Fonts" says that "Symbol" encoding
             // actually means "Unicode, non-standard character set"
-            cmap = cmapTable.getSubtable(CMAPTable.PLATFORM_WINDOWS,
-                                         CMAPTable.ENCODING_WIN_SYMBOL);
+            cmap = cmapTable.getSubtable(CmapTable.PLATFORM_WINDOWS,
+                                         CmapTable.ENCODING_WIN_SYMBOL);
         }
         if (cmap == null)
         {

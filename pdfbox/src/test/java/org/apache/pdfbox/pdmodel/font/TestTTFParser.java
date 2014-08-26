@@ -18,8 +18,8 @@ package org.apache.pdfbox.pdmodel.font;
 
 import java.io.IOException;
 import java.io.InputStream;
-import org.apache.fontbox.ttf.CMAPEncodingEntry;
-import org.apache.fontbox.ttf.CMAPTable;
+import org.apache.fontbox.ttf.CmapSubtable;
+import org.apache.fontbox.ttf.CmapTable;
 import org.apache.fontbox.ttf.NameRecord;
 import org.apache.fontbox.ttf.PostScriptTable;
 import org.apache.fontbox.ttf.TTFParser;
@@ -52,15 +52,15 @@ public class TestTTFParser
 
         TrueTypeFont arial = parser.parseTTF(arialIs);
 
-        CMAPTable cmap = arial.getCMAP();
+        CmapTable cmap = arial.getCmap();
         Assert.assertNotNull(cmap);
 
-        CMAPEncodingEntry[] cmaps = cmap.getCmaps();
+        CmapSubtable[] cmaps = cmap.getCmaps();
         Assert.assertNotNull(cmaps);
 
-        CMAPEncodingEntry uc = null;
+        CmapSubtable uc = null;
 
-        for (CMAPEncodingEntry e : cmaps)
+        for (CmapSubtable e : cmaps)
         {
             if (e.getPlatformId() == NameRecord.PLATFORM_WINDOWS
                     && e.getPlatformEncodingId() == NameRecord.ENCODING_WINDOWS_UNICODE_BMP)

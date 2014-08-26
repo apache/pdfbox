@@ -25,8 +25,8 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.fontbox.ttf.CMAPEncodingEntry;
-import org.apache.fontbox.ttf.CMAPTable;
+import org.apache.fontbox.ttf.CmapSubtable;
+import org.apache.fontbox.ttf.CmapTable;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -72,9 +72,9 @@ public class PDTrueTypeFont extends PDSimpleFont
         return new PDTrueTypeFont(doc, new FileInputStream(file));
     }
 
-    private CMAPEncodingEntry cmapWinUnicode = null;
-    private CMAPEncodingEntry cmapWinSymbol = null;
-    private CMAPEncodingEntry cmapMacRoman = null;
+    private CmapSubtable cmapWinUnicode = null;
+    private CmapSubtable cmapWinSymbol = null;
+    private CmapSubtable cmapMacRoman = null;
     private boolean cmapInitialized = false;
 
     private final TrueTypeFont ttf;
@@ -275,27 +275,27 @@ public class PDTrueTypeFont extends PDSimpleFont
             return;
         }
 
-        CMAPTable cmapTable = ttf.getCMAP();
+        CmapTable cmapTable = ttf.getCmap();
         if (cmapTable != null)
         {
             // get all relevant "cmap" subtables
-            CMAPEncodingEntry[] cmaps = cmapTable.getCmaps();
-            for (CMAPEncodingEntry cmap : cmaps)
+            CmapSubtable[] cmaps = cmapTable.getCmaps();
+            for (CmapSubtable cmap : cmaps)
             {
-                if (CMAPTable.PLATFORM_WINDOWS == cmap.getPlatformId())
+                if (CmapTable.PLATFORM_WINDOWS == cmap.getPlatformId())
                 {
-                    if (CMAPTable.ENCODING_WIN_UNICODE == cmap.getPlatformEncodingId())
+                    if (CmapTable.ENCODING_WIN_UNICODE == cmap.getPlatformEncodingId())
                     {
                         cmapWinUnicode = cmap;
                     }
-                    else if (CMAPTable.ENCODING_WIN_SYMBOL == cmap.getPlatformEncodingId())
+                    else if (CmapTable.ENCODING_WIN_SYMBOL == cmap.getPlatformEncodingId())
                     {
                         cmapWinSymbol = cmap;
                     }
                 }
-                else if (CMAPTable.PLATFORM_MACINTOSH == cmap.getPlatformId())
+                else if (CmapTable.PLATFORM_MACINTOSH == cmap.getPlatformId())
                 {
-                    if (CMAPTable.ENCODING_MAC_ROMAN == cmap.getPlatformEncodingId())
+                    if (CmapTable.ENCODING_MAC_ROMAN == cmap.getPlatformEncodingId())
                     {
                         cmapMacRoman = cmap;
                     }
