@@ -145,7 +145,7 @@ public class GlyphList
         {
             return null;
         }
-        
+
         String unicode = NAME_TO_UNICODE.get(name);
         if (unicode == null)
         {

@@ -87,7 +87,7 @@ public class Type1Glyph2D implements Glyph2D
         {
             String name = font.codeToName(code);
             GeneralPath path = null;
-            if (font.hasGlyph(name))
+            if (!name.equals(".notdef") && font.hasGlyph(name))
             {
                 path = font.getPath(name);
             }
@@ -95,7 +95,7 @@ public class Type1Glyph2D implements Glyph2D
             {
                 // try alternative name
                 String altName = ALT_NAMES.get(name);
-                if (altName != null && font.hasGlyph(altName))
+                if (altName != null && !name.equals(".notdef") && font.hasGlyph(altName))
                 {
                     path = font.getPath(altName);
                 }

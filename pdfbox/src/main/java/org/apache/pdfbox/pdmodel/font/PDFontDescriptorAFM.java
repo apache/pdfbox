@@ -154,6 +154,12 @@ public class PDFontDescriptorAFM extends PDFontDescriptor
         throw new UnsupportedOperationException( "The AFM Font descriptor is immutable" );
     }
 
+    @Override
+    public boolean isSymbolic()
+    {
+        return afm.getEncodingScheme().equals("FontSpecific");
+    }
+
     /**
      * This will get the fonts bouding box.
      *
