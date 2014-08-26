@@ -23,6 +23,9 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.encoding.DictionaryEncoding;
 import org.apache.pdfbox.encoding.Encoding;
+import org.apache.pdfbox.encoding.MacRomanEncoding;
+import org.apache.pdfbox.encoding.StandardEncoding;
+import org.apache.pdfbox.encoding.WinAnsiEncoding;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -109,6 +112,45 @@ public abstract class PDSimpleFont extends PDFont
     public Encoding getEncoding()
     {
         return encoding;
+    }
+
+    @Override
+    protected Boolean isFontSymbolic()
+    {
+        Boolean result = super.isFontSymbolic();
+        if (result != null)
+        {
+            return result;
+        }
+        else
+        {
+            if (encoding instanceof WinAnsiEncoding ||encoding instanceof MacRomanEncoding ||
+                encoding instanceof StandardEncoding)
+            {
+                return false;
+            }
+            else if (encoding instanceof DictionaryEncoding)
+            {
+                // each name in Differences array must also be in the latin character se
+                DictionaryEncoding enc = (DictionaryEncoding)encoding;
+                for (String name : enc.getDifferences().values())
+                {
+                    if (!(WinAnsiEncoding.INSTANCE.contains(name) &&
+                          MacRomanEncoding.INSTANCE.contains(name) &&
+                          StandardEncoding.INSTANCE.contains(name)))
+                    {
+                        return true;
+                    }
+
+                }
+                return false;
+            }
+            else
+            {
+                // we don't know
+                return null;
+            }
+        }
     }
 
     @Override

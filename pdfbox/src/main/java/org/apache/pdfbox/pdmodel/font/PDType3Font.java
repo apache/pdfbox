@@ -67,7 +67,7 @@ public class PDType3Font extends PDSimpleFont
     }
 
     @Override
-    public boolean isSymbolic()
+    protected Boolean isFontSymbolic()
     {
         return false;
     }

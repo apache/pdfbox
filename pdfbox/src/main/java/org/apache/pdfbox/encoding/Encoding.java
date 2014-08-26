@@ -199,7 +199,7 @@ public abstract class Encoding implements COSObjectable
      * @param name the source value for the mapping
      * @return the mapped value
      */
-    public boolean hasCodeForName(String name)
+    public boolean contains(String name)
     {
         return nameToCode.containsKey(name);
     }
@@ -210,25 +210,23 @@ public abstract class Encoding implements COSObjectable
      * @param code the source value for the mapping
      * @return the mapped value
      */
-    public boolean hasNameForCode(int code)
+    public boolean contains(int code)
     {
         return codeToName.containsKey(code);
     }
     
     /**
-     * This will get the character code for the name.
+     * This will get the character code for the name, or -1 if there is none.
      * 
      * @param name The name of the character.
      * @return The code for the character.
-     * @throws IOException If there is no character code for the name.
      */
-    public int getCode(String name) throws IOException
+    public int getCode(String name)
     {
         Integer code = nameToCode.get(name);
         if (code == null)
         {
-            // todo: would be much better to return null
-            throw new IOException("No character code for character name '" + name + "'");
+            return -1;
         }
         return code;
     }

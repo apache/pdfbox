@@ -53,6 +53,7 @@ public abstract class PDFont implements COSObjectable
     private List<Integer> widths;
     private float avgFontWidth;
     private float fontWidthOfSpace = -1f;
+    private Boolean isSymbolic;
 
     /**
      * Constructor for embedding.
@@ -370,14 +371,36 @@ public abstract class PDFont implements COSObjectable
      * Returns true the font is a symbolic (that is, it does not use the Adobe Standard Roman
      * character set).
      */
-    public boolean isSymbolic()
+    public final boolean isSymbolic()
+    {
+        if (isSymbolic == null)
+        {
+            Boolean result = isFontSymbolic();
+            if (result != null)
+            {
+                isSymbolic = result;
+            }
+            else
+            {
+                // unless we can prove that the font is symbolic, we assume that it is not
+                isSymbolic = true;
+            }
+        }
+        return isSymbolic;
+    }
+
+    /**
+     * Internal implementation of isSymbolic, allowing for the fact that the result may be
+     * indeterminate.
+     */
+    protected Boolean isFontSymbolic()
     {
         if (getFontDescriptor() != null)
         {
             // fixme: isSymbolic() defaults to false if the flag is missing so we can't trust this
             return getFontDescriptor().isSymbolic();
         }
-        return true;
+        return null;
     }
 
     /**

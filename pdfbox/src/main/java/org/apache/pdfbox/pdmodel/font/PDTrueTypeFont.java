@@ -168,47 +168,40 @@ public class PDTrueTypeFont extends PDSimpleFont
         int result = 0;
         if (getEncoding() != null && !isSymbolic())
         {
-            try
+            String characterName = getEncoding().getName(code);
+            if (characterName != null)
             {
-                String characterName = getEncoding().getName(code);
-                if (characterName != null)
+                if (cmapWinUnicode != null)
                 {
-                    if (cmapWinUnicode != null)
+                    String unicode = Encoding.getCharacterForName(characterName);
+                    if (unicode != null)
                     {
-                        String unicode = Encoding.getCharacterForName(characterName);
-                        if (unicode != null)
+                        if (unicode.isEmpty())
                         {
-                            if (unicode.isEmpty())
-                            {
-                                LOG.error("getCharacterForName for code " + code + 
-                                        ", characterName '" + characterName + 
-                                        "' is empty");
-                            }
-                            else
-                            {
-                                result = unicode.codePointAt(0);
-                            }
+                            LOG.error("getCharacterForName for code " + code +
+                                    ", characterName '" + characterName +
+                                    "' is empty");
                         }
-                        result = cmapWinUnicode.getGlyphId(result);
+                        else
+                        {
+                            result = unicode.codePointAt(0);
+                        }
                     }
-                    else if (cmapMacintoshSymbol != null &&
-                             MacOSRomanEncoding.INSTANCE.hasCodeForName(characterName))
-                    {
-                        result = MacOSRomanEncoding.INSTANCE.getCode(characterName);
-                        result = cmapMacintoshSymbol.getGlyphId(result);
-                    }
-                    else if (cmapWinSymbol != null)
-                    {
-                        // fallback scenario if the glyph can't be found yet
-                        // maybe the 3,0 cmap provides a suitable mapping
-                        // see PDFBOX-2091
-                        result = cmapWinSymbol.getGlyphId(code);
-                    }
+                    result = cmapWinUnicode.getGlyphId(result);
                 }
-            }
-            catch (IOException exception)
-            {
-                LOG.error("Caught an exception getGlyhcode: " + exception);
+                else if (cmapMacintoshSymbol != null &&
+                         MacOSRomanEncoding.INSTANCE.contains(characterName))
+                {
+                    result = MacOSRomanEncoding.INSTANCE.getCode(characterName);
+                    result = cmapMacintoshSymbol.getGlyphId(result);
+                }
+                else if (cmapWinSymbol != null)
+                {
+                    // fallback scenario if the glyph can't be found yet
+                    // maybe the 3,0 cmap provides a suitable mapping
+                    // see PDFBOX-2091
+                    result = cmapWinSymbol.getGlyphId(code);
+                }
             }
         }
 
