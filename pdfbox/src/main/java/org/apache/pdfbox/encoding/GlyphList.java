@@ -141,6 +141,11 @@ public class GlyphList
      */
     public static String toUnicode(String name)
     {
+        if (name == null)
+        {
+            return null;
+        }
+        
         String unicode = NAME_TO_UNICODE.get(name);
         if (unicode == null)
         {
