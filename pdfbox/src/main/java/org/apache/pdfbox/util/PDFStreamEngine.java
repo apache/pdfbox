@@ -431,10 +431,6 @@ public class PDFStreamEngine
                     spacingText += wordSpacingText;
                 }
             }
-            else
-            {
-                System.out.println("No space in font " + font.getName());
-            }
 
             textMatrix.multiply(ctm, textXctm);
             // Convert textMatrix to display units
