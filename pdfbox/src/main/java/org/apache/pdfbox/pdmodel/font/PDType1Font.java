@@ -229,7 +229,7 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
             else
             {
                 LOG.warn("Using fallback font for " + getBaseFont());
-                type1Equivalent = ExternalFonts.getFallbackFont();
+                type1Equivalent = ExternalFonts.getFallbackFont(getFontDescriptor());
             }
         }
 

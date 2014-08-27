@@ -16,8 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,7 +29,6 @@ import org.apache.fontbox.cff.CFFCIDFont;
 import org.apache.fontbox.cff.CFFFont;
 import org.apache.fontbox.cff.CFFType1Font;
 import org.apache.fontbox.ttf.Type1Equivalent;
-import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.type1.Type1Font;
 
@@ -65,28 +62,6 @@ public final class ExternalFonts
             fontProvider = new FileSystemFontProvider();
         }
         return fontProvider;
-    }
-
-    // todo: we could just rely on the system to provide Times rather than ship our own
-    /** Fallback font, used as as a last resort */
-    private static TrueTypeFont fallbackFont;
-    static
-    {
-        try
-        {
-            String name = "org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf";
-            TTFParser ttfParser = new TTFParser();
-            InputStream fontStream = org.apache.fontbox.util.ResourceLoader.loadResource(name);
-            if (fontStream == null)
-            {
-                throw new IOException("Error loading resource: " + name);
-            }
-            fallbackFont = ttfParser.parseTTF(fontStream);
-        }
-        catch (IOException e)
-        {
-            throw new RuntimeException(e);
-        }
     }
 
     /** Map of PostScript name substitutes, in priority order. */
@@ -181,13 +156,84 @@ public final class ExternalFonts
     }
 
     /**
-     * Returns the fallback font, used for rendering when no other fonts are available.
+     * Returns the fallback font, used for rendering when no other fonts are available,
+     * we attempt to find a good fallback based on the font descriptor.
      */
-    public static TrueTypeFont getFallbackFont()
+    public static TrueTypeFont getFallbackFont(PDFontDescriptor fontDescriptor)
     {
-        // todo: add FontDescriptor to the parameters for this method for "smart fallback" to
-        //       standard 14 fonts via the FontProvider
-        return fallbackFont;
+        String fontName = "Times";
+
+        if (fontDescriptor != null)
+        {
+            // heuristic detection of bold
+            boolean isBold = false;
+            String name = fontDescriptor.getFontName();
+            if (name != null)
+            {
+                isBold = fontDescriptor.getFontName().toLowerCase().contains("bold");
+            }
+
+            // font descriptor flags should describe the style
+            if (fontDescriptor.isFixedPitch())
+            {
+                fontName = "Courier";
+                if (isBold && fontDescriptor.isItalic())
+                {
+                    fontName += "-BoldOblique";
+                }
+                else if (isBold)
+                {
+                    fontName += "-Bold";
+                }
+                else if (fontDescriptor.isItalic())
+                {
+                    fontName += "-Oblique";
+                }
+            }
+            else if (fontDescriptor.isSerif())
+            {
+                fontName = "Times";
+                if (isBold && fontDescriptor.isItalic())
+                {
+                    fontName += "-BoldItalic";
+                }
+                else if (isBold)
+                {
+                    fontName += "-Bold";
+                }
+                else if (fontDescriptor.isItalic())
+                {
+                    fontName += "-Italic";
+                }
+                else
+                {
+                    fontName += "-Roman";
+                }
+            }
+            else
+            {
+                fontName = "Helvetica";
+                if (isBold && fontDescriptor.isItalic())
+                {
+                    fontName += "-BoldOblique";
+                }
+                else if (isBold)
+                {
+                    fontName += "-Bold";
+                }
+                else if (fontDescriptor.isItalic())
+                {
+                    fontName += "-Oblique";
+                }
+            }
+        }
+
+        TrueTypeFont ttf = getTrueTypeFont(fontName);
+        if (ttf == null)
+        {
+            throw new IllegalStateException("No fonts available on the system");
+        }
+        return ttf;
     }
 
     /**

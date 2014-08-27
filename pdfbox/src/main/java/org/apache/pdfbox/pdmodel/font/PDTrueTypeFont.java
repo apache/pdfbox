@@ -115,7 +115,7 @@ public class PDTrueTypeFont extends PDSimpleFont
             if (ttfFont == null)
             {
                 LOG.warn("Using fallback font for " + getBaseFont());
-                ttfFont = ExternalFonts.getFallbackFont();
+                ttfFont = ExternalFonts.getFallbackFont(getFontDescriptor());
             }
         }
         ttf = ttfFont;

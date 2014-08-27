@@ -82,7 +82,7 @@ public class PDCIDFontType2 extends PDCIDFont
             {
                 // fallback
                 LOG.warn("Using fallback font for " + getBaseFont());
-                ttf = ExternalFonts.getFallbackFont();
+                ttf = ExternalFonts.getFallbackFont(getFontDescriptor());
             }
             isEmbedded = false;
         }
