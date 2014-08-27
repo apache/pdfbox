@@ -408,7 +408,7 @@ public class PDFStreamEngine
         {
             int before = in.available();
             int code = font.readCode(in);
-            int codeLength = in.available() - before;
+            int codeLength = before - in.available();
             String unicode = font.toUnicode(code);
 
             // TODO: handle horizontal displacement
@@ -430,6 +430,10 @@ public class PDFStreamEngine
                 {
                     spacingText += wordSpacingText;
                 }
+            }
+            else
+            {
+                System.out.println("No space in font " + font.getName());
             }
 
             textMatrix.multiply(ctm, textXctm);
