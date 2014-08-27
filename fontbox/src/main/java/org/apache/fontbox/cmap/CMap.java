@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Iterator;
 
 /**
  * This class represents a CMap file.
@@ -287,28 +286,6 @@ public class CMap
     {
         this.codespaceRanges.addAll(cmap.codespaceRanges);
         this.charToUnicode.putAll(cmap.charToUnicode);
-    }
- 
-    /**
-     *  Check whether the given byte array is in codespace ranges or not.
-     *  
-     *  @param code The byte array to look for in the codespace range.
-     *  @param code The byte array to look for in the codespace range.isInCodeSpaceRanges
-     *
-     *  @return true if the given byte array is in the codespace range.
-     */
-    public boolean isInCodeSpaceRanges( byte[] code )
-    {
-        Iterator<CodespaceRange> it = codespaceRanges.iterator();
-        while ( it.hasNext() ) 
-        {
-            CodespaceRange range = it.next();
-            if ( range != null && range.matches(code) )
-            {
-                return true;
-            }
-        }
-        return false;
     }
     
     /**

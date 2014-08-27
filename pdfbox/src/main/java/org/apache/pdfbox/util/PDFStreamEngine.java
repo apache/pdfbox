@@ -406,7 +406,9 @@ public class PDFStreamEngine
         InputStream in = new ByteArrayInputStream(string);
         while (in.available() > 0)
         {
+            int before = in.available();
             int code = font.readCode(in);
+            int codeLength = in.available() - before;
             String unicode = font.toUnicode(code);
 
             // TODO: handle horizontal displacement
@@ -418,29 +420,18 @@ public class PDFStreamEngine
             charHorizontalDisplacementText = charHorizontalDisplacementText * fontMatrixXScaling;
             charVerticalDisplacementText = charVerticalDisplacementText * fontMatrixYScaling;
 
-            // PDF Spec - 5.5.2 Word Spacing
-            //
-            // Word spacing works the same was as character spacing, but applies
-            // only to the space character, code 32.
-            //
-            // Note: Word spacing is applied to every occurrence of the single-byte
-            // character code 32 in a string. This can occur when using a simple
-            // font or a composite font that defines code 32 as a single-byte code.
-            // It does not apply to occurrences of the byte value 32 in multiple-byte
-            // codes.
-            //
-            // RDD - My interpretation of this is that only character code 32's that
-            // encode to spaces should have word spacing applied. Cases have been
-            // observed where a font has a space character with a character code
-            // other than 32, and where word spacing (Tw) was used. In these cases,
-            // applying word spacing to either the non-32 space or to the character
-            // code 32 non-space resulted in errors consistent with this interpretation.
-            //
+            // Word spacing shall be applied to every occurrence of the single-byte character code
+            // 32 in a string when using a simple font or a composite font that defines code 32 as
+            // a single-byte code.
             float spacingText = 0;
-            if (code == 32)
+            if (codeLength == 1)
             {
-                spacingText += wordSpacingText;
+                if (code == 32)
+                {
+                    spacingText += wordSpacingText;
+                }
             }
+
             textMatrix.multiply(ctm, textXctm);
             // Convert textMatrix to display units
             // We need to instantiate a new Matrix instance here as it is passed to the TextPosition
