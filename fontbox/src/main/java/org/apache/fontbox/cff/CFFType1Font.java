@@ -78,6 +78,12 @@ public class CFFType1Font extends CFFFont implements Type1Equivalent
         return gid != 0;
     }
 
+    @Override
+    public List<Number> getFontMatrix()
+    {
+        return (List<Number>)topDict.get("FontMatrix");
+    }
+
     /**
      * Returns the Type 1 charstring for the given PostScript glyph name.
      *

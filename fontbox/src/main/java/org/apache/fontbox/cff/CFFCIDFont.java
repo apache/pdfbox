@@ -236,6 +236,21 @@ public class CFFCIDFont extends CFFFont
         return type2;
     }
 
+    @Override
+    public List<Number> getFontMatrix()
+    {
+        // some malformed CIDFonts have their FontMatrix in a Font DICT
+        if (fontDictionaries.size() > 0 && fontDictionaries.get(0).containsKey("FontMatrix"))
+        {
+            return (List<Number>)fontDictionaries.get(0).get("FontMatrix");
+        }
+        else
+        {
+            // but it should be in the Top DICT
+            return (List<Number>)topDict.get("FontMatrix");
+        }
+    }
+
     /**
      * Private implementation of Type1CharStringReader, because only CFFType1Font can
      * expose this publicly, as CIDFonts only support this for legacy 'seac' commands.

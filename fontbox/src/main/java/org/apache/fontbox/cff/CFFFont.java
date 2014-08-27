@@ -31,7 +31,6 @@ import org.apache.fontbox.util.BoundingBox;
  */
 public abstract class CFFFont
 {
-    // todo: can we avoid protected variables and make some of these final?
     protected String fontName;
     protected final Map<String, Object> topDict = new LinkedHashMap<String, Object>();
     protected CFFCharset charset;
@@ -85,10 +84,7 @@ public abstract class CFFFont
     /**
      * Returns the FontMatrix.
      */
-    public List<Number> getFontMatrix()
-    {
-        return (List<Number>)topDict.get("FontMatrix");
-    }
+    public abstract List<Number> getFontMatrix();
 
     /**
      * Returns the FontBBox.

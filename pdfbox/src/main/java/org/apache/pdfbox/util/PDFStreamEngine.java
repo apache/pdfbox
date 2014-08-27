@@ -364,20 +364,16 @@ public class PDFStreamEngine
         // Text or Disp to represent if the values are in text or disp units (no glyph units are
         // saved).
 
-        PDGraphicsState graphicsState = getGraphicsState();
+        PDGraphicsState state = getGraphicsState();
 
-        final float fontSizeText = graphicsState.getTextState().getFontSize();
-        final float horizontalScalingText = graphicsState.getTextState().getHorizontalScaling() / 100f;
-        final float riseText = graphicsState.getTextState().getRise();
-        final float wordSpacingText = graphicsState.getTextState().getWordSpacing();
-        final float characterSpacingText = graphicsState.getTextState().getCharacterSpacing();
+        final float fontSizeText = state.getTextState().getFontSize();
+        final float horizontalScalingText = state.getTextState().getHorizontalScaling() / 100f;
+        final float riseText = state.getTextState().getRise();
+        final float wordSpacingText = state.getTextState().getWordSpacing();
+        final float characterSpacingText = state.getTextState().getCharacterSpacing();
 
-        // We won't know the actual number of characters until
-        // we process the byte data(could be two bytes each) but
-        // it won't ever be more than string.length*2(there are some cases
-        // were a single byte will result in two output characters "fi"
-
-        PDFont font = graphicsState.getTextState().getFont();
+        // get the current font
+        PDFont font = state.getTextState().getFont();
         if (font == null)
         {
             LOG.warn("No current font, will use default");
@@ -387,7 +383,8 @@ public class PDFStreamEngine
         // all fonts have the width/height of a character in thousandths of a unit of text space
         float fontMatrixXScaling = 1 / 1000f;
         float fontMatrixYScaling = 1 / 1000f;
-        // expect Type3 fonts, those are providing the width of a character in glyph space units
+
+        // except Type 3 fonts, those provide the width of a character in glyph space units
         if (font instanceof PDType3Font)
         {
             Matrix fontMatrix = font.getFontMatrix();
@@ -400,7 +397,7 @@ public class PDFStreamEngine
         textStateParameters.setValue(1, 1, fontSizeText);
         textStateParameters.setValue(2, 1, riseText);
 
-        Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
+        Matrix ctm = state.getCurrentTransformationMatrix();
         Matrix textXctm = new Matrix();
         Matrix textMatrixEnd = new Matrix();
         Matrix td = new Matrix();
