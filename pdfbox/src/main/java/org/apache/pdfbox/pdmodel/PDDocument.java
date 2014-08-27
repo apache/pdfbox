@@ -940,7 +940,6 @@ public class PDDocument implements Pageable, Closeable
         {
             StandardDecryptionMaterial m = new StandardDecryptionMaterial(password);
             this.openProtection(m);
-            document.dereferenceObjectStreams();
         }
         catch(BadSecurityHandlerException e)
         {
@@ -1596,6 +1595,7 @@ public class PDDocument implements Pageable, Closeable
             securityHandler.decryptDocument(this, pm);
             document.dereferenceObjectStreams();
             document.setEncryptionDictionary( null );
+            getDocumentCatalog();
         }
         else
         {
