@@ -122,9 +122,17 @@ public abstract class CFFFont
      *
      * @return the dictionary
      */
-    List<byte[]> getCharStrings()
+    List<byte[]> getCharStringBytes()
     {
         return charStrings;
+    }
+
+    /**
+     * Returns the number of charstrings in the font.
+     */
+    public int getNumCharStrings()
+    {
+        return charStrings.size();
     }
 
     /**

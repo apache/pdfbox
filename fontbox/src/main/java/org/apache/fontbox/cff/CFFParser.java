@@ -401,11 +401,11 @@ public class CFFParser
         font.setCharset(charset);
 
         // charstrings dict
-        font.getCharStrings().add(charStringsIndex.getBytes(0)); // .notdef
+        font.getCharStringBytes().add(charStringsIndex.getBytes(0)); // .notdef
         for (int i = 1; i < charStringsIndex.getCount(); i++)
         {
             byte[] bytes = charStringsIndex.getBytes(i);
-            font.getCharStrings().add(bytes);
+            font.getCharStringBytes().add(bytes);
         }
 
         // format-specific dictionaries
