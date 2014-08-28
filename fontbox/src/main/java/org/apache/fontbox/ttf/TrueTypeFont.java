@@ -369,7 +369,14 @@ public class TrueTypeFont implements Type1Equivalent
     @Override
     public String getFullName() throws IOException
     {
-        return getNaming().getPostScriptName();
+        if (getNaming() != null)
+        {
+            return getNaming().getPostScriptName();
+        }
+        else
+        {
+            return null;
+        }
     }
 
     private synchronized void readPostScriptNames() throws IOException
@@ -473,11 +480,18 @@ public class TrueTypeFont implements Type1Equivalent
     {
         try
         {
-            return getNaming().getPostScriptName();
+            if (getNaming() != null)
+            {
+                return getNaming().getPostScriptName();
+            }
+            else
+            {
+                return "(null)";
+            }
         }
         catch (IOException e)
         {
-            return "(null)";
+            return "(null - " + e.getMessage() + ")";
         }
     }
 }
