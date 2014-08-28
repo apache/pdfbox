@@ -161,8 +161,7 @@ public final class ExternalFonts
      */
     public static TrueTypeFont getFallbackFont(PDFontDescriptor fontDescriptor)
     {
-        String fontName = "Times";
-
+        String fontName;
         if (fontDescriptor != null)
         {
             // heuristic detection of bold
@@ -227,11 +226,16 @@ public final class ExternalFonts
                 }
             }
         }
+        else
+        {
+            // if there is no FontDescriptor then we just fall back to Times Roman
+            fontName = "Times-Roman";
+        }
 
         TrueTypeFont ttf = getTrueTypeFont(fontName);
         if (ttf == null)
         {
-            throw new IllegalStateException("No fonts available on the system");
+            throw new IllegalStateException("No fonts available on the system for " + fontName);
         }
         return ttf;
     }
