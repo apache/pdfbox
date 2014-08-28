@@ -27,8 +27,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.ttf.CmapSubtable;
 import org.apache.fontbox.ttf.CmapTable;
+import org.apache.fontbox.ttf.GlyphData;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
+import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.encoding.GlyphList;
@@ -136,6 +138,7 @@ public class PDTrueTypeFont extends PDSimpleFont
     @Override
     protected Encoding readEncodingFromFont() throws IOException
     {
+        // TTF fonts don't have PostScript Encoding vectors
         return null;
     }
 
@@ -154,6 +157,12 @@ public class PDTrueTypeFont extends PDSimpleFont
     public int readCode(InputStream in) throws IOException
     {
         return in.read();
+    }
+
+    @Override
+    public BoundingBox getBoundingBox() throws IOException
+    {
+        return ttf.getFontBBox();
     }
 
     /**
@@ -175,6 +184,18 @@ public class PDTrueTypeFont extends PDSimpleFont
             width *= 1000f / unitsPerEM;
         }
         return width;
+    }
+
+    @Override
+    public float getHeight(int code) throws IOException
+    {
+        int gid = codeToGID(code);
+        GlyphData glyph = ttf.getGlyph().getGlyphs()[gid];
+        if (glyph != null)
+        {
+            return glyph.getBoundingBox().getHeight();
+        }
+        return 0;
     }
 
     @Override

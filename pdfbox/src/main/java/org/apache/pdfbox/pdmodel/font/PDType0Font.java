@@ -22,6 +22,7 @@ import java.io.InputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.cmap.CMap;
+import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -223,6 +224,12 @@ public class PDType0Font extends PDFont
             // if no value has been produced, there is no way to obtain Unicode for the character.
             return null;
         }
+    }
+
+    @Override
+    public BoundingBox getBoundingBox() throws IOException
+    {
+        return descendantFont.getBoundingBox();
     }
 
     @Override

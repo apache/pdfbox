@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.font;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +29,7 @@ import org.apache.fontbox.cff.CFFFont;
 import org.apache.fontbox.cff.CFFParser;
 import org.apache.fontbox.cff.CFFType1Font;
 import org.apache.fontbox.cff.Type2CharString;
+import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.PDStream;
@@ -132,6 +134,18 @@ public class PDCIDFontType0 extends PDCIDFont
             }
         }
         return fontMatrix;
+    }
+
+    @Override
+    public BoundingBox getBoundingBox()
+    {
+        if (cidFont != null)
+        {
+            return cidFont.getFontBBox();
+        } else
+        {
+            return t1Font.getFontBBox();
+        }
     }
 
     /**

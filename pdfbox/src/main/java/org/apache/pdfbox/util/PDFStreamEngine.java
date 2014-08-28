@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.util;
 
+import java.awt.Point;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.io.ByteArrayInputStream;
@@ -48,6 +49,7 @@ import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
+import org.apache.pdfbox.pdmodel.graphics.state.PDTextState;
 import org.apache.pdfbox.util.operator.Operator;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
 
@@ -358,123 +360,78 @@ public class PDFStreamEngine
      */
     protected void processText(byte[] string) throws IOException
     {
-        // Note on variable names: there are three different units being used in this code.
-        // Character sizes are given in glyph units, text locations are initially given in text
-        // units, and we want to save the data in display units. The variable names should end with
-        // Text or Disp to represent if the values are in text or disp units (no glyph units are
-        // saved).
-
         PDGraphicsState state = getGraphicsState();
-
-        final float fontSizeText = state.getTextState().getFontSize();
-        final float horizontalScalingText = state.getTextState().getHorizontalScaling() / 100f;
-        final float riseText = state.getTextState().getRise();
-        final float wordSpacingText = state.getTextState().getWordSpacing();
-        final float characterSpacingText = state.getTextState().getCharacterSpacing();
+        PDTextState textState = state.getTextState();
 
         // get the current font
-        PDFont font = state.getTextState().getFont();
+        PDFont font = textState.getFont();
         if (font == null)
         {
             LOG.warn("No current font, will use default");
             font = PDFontFactory.createDefaultFont();
         }
 
-        // all fonts have the width/height of a character in thousandths of a unit of text space
-        float fontMatrixXScaling = 1 / 1000f;
-        float fontMatrixYScaling = 1 / 1000f;
+        float fontSize = textState.getFontSize();
+        float horizontalScaling = textState.getHorizontalScaling() / 100f;
+        float characterSpacing = textState.getCharacterSpacing();
 
-        // except Type 3 fonts, those provide the width of a character in glyph space units
-        if (font instanceof PDType3Font)
-        {
-            Matrix fontMatrix = font.getFontMatrix();
-            fontMatrixXScaling = fontMatrix.getValue(0, 0);
-            fontMatrixYScaling = fontMatrix.getValue(1, 1);
-        }
+        // put the text state parameters into matrix form
+        Matrix parameters = new Matrix(
+                fontSize * horizontalScaling, 0, // 0
+                0, fontSize,                     // 0
+                0, textState.getRise());         // 1
 
-        Matrix textStateParameters = new Matrix();
-        textStateParameters.setValue(0, 0, fontSizeText * horizontalScalingText);
-        textStateParameters.setValue(1, 1, fontSizeText);
-        textStateParameters.setValue(2, 1, riseText);
-
-        Matrix ctm = state.getCurrentTransformationMatrix();
-        Matrix textXctm = new Matrix();
-        Matrix textMatrixEnd = new Matrix();
-        Matrix td = new Matrix();
-        Matrix tempMatrix = new Matrix();
-
+        // read the stream until it is empty
         InputStream in = new ByteArrayInputStream(string);
         while (in.available() > 0)
         {
+            // decode a character
             int before = in.available();
             int code = font.readCode(in);
             int codeLength = before - in.available();
             String unicode = font.toUnicode(code);
 
-            // TODO: handle horizontal displacement
-            // get the width and height of this character in text units
-            float charHorizontalDisplacementText = font.getWidth(code);
-            float charVerticalDisplacementText = font.getHeight(code); // todo: NOPE we want y-advance not BBox
-
-            // multiply the width/height with the scaling factor
-            charHorizontalDisplacementText = charHorizontalDisplacementText * fontMatrixXScaling;
-            charVerticalDisplacementText = charVerticalDisplacementText * fontMatrixYScaling;
-
             // Word spacing shall be applied to every occurrence of the single-byte character code
             // 32 in a string when using a simple font or a composite font that defines code 32 as
             // a single-byte code.
-            float spacingText = 0;
+            float wordSpacing = 0;
             if (codeLength == 1)
             {
                 if (code == 32)
                 {
-                    spacingText += wordSpacingText;
+                    wordSpacing += textState.getWordSpacing();
                 }
             }
 
-            textMatrix.multiply(ctm, textXctm);
-            // Convert textMatrix to display units
-            // We need to instantiate a new Matrix instance here as it is passed to the TextPosition
-            // constructor below
-            Matrix textMatrixStart = textStateParameters.multiply(textXctm);
+            // get glyph's horizontal and vertical displacements (glyph space -> text space)
+            float w0, w1;
+            if (font instanceof PDType3Font)
+            {
+                // Type 3 fonts specify a custom matrix
+                Point2D adv = font.getFontMatrix().transform(font.getWidth(code), font.getHeight(code));
+                w0 = (float)adv.getX();
+                w1 = (float)adv.getY();
+            }
+            else
+            {
+                // all other fonts use 1:1000 for widths, even those with a FontMatrix, see FOP-2252
+                w0 = font.getWidth(code) / 1000f;
+                w1 = 0; // todo: support vertical writing mode
+            }
 
-            // TODO: tx should be set for horizontal text and ty for vertical text
-            // which seems to be specified in the font (not the direction in the matrix).
-            float tx = charHorizontalDisplacementText * fontSizeText * horizontalScalingText;
-            float ty = 0;
-            // reset the matrix instead of creating a new one
-            td.reset();
-            td.setValue(2, 0, tx);
-            td.setValue(2, 1, ty);
-
-            // The text matrix gets updated after each glyph is placed. The updated
-            // version will have the X and Y coordinates for the next glyph.
-            // textMatrixEnd contains the coordinates of the end of the last glyph without
-            // taking characterSpacingText and spacintText into account, otherwise it'll be
-            // impossible to detect new words within text extraction
-            textStateParameters.multiply(td, tempMatrix);
-            tempMatrix.multiply(textXctm, textMatrixEnd);
-            final float endXPosition = textMatrixEnd.getXPosition();
-            final float endYPosition = textMatrixEnd.getYPosition();
-
-            // add some spacing to the text matrix (see comment above)
-            tx = (charHorizontalDisplacementText * fontSizeText + characterSpacingText +
-                    spacingText) * horizontalScalingText;
-            td.setValue(2, 0, tx);
-            td.multiply(textMatrix, textMatrix);
-
-            // determine the width of this character
-            // TODO: Note that if we handled vertical text, we should be using Y here
-            float startXPosition = textMatrixStart.getXPosition();
-            float widthText = endXPosition - startXPosition;
-
-            float totalVerticalDisplacementDisp = charVerticalDisplacementText * fontSizeText *
-                    textXctm.getYScale();
+            // text rendering matrix (text space -> device space)
+            Matrix ctm = state.getCurrentTransformationMatrix();
+            Matrix textRenderingMatrix = parameters.multiply(textMatrix).multiply(ctm);
 
             // process the decoded glyph
-            processGlyph(textMatrixStart, new Point2D.Float(endXPosition, endYPosition),
-                    totalVerticalDisplacementDisp, widthText, code, unicode,
-                    font, fontSizeText);
+            processGlyph(textRenderingMatrix, w0, w1, code, unicode, font);
+
+            // calculate the combined displacements
+            float tx = (w0 * fontSize + characterSpacing + wordSpacing) * horizontalScaling;
+            float ty = 0; // todo: support vertical writing mode
+
+            // update the text matrix
+            textMatrix.concatenate(Matrix.getTranslatingInstance(tx, ty));
         }
     }
 
@@ -482,19 +439,16 @@ public class PDFStreamEngine
      * Called when a glyph is to be processed.This method is intended for overriding in subclasses,
      * the default implementation does nothing.
      *
-     * @param textMatrix the text matrix at the start of the glyph
-     * @param end the end position of the glyph in text space
-     * @param maxHeight the height of the glyph in device space
-     * @param widthText the width of the glyph in text space
-     * @param unicode the Unicode text for this glyph, or null. May be meaningless.
+     * @param textRenderingMatrix the current text rendering matrix, T<sub>rm</sub>
+     * @param dx the x-advance of the glyph in text space
+     * @param dy the y-advance of the glyph in text space
      * @param code internal PDF character code for the glyph
+     * @param unicode the Unicode text for this glyph, or null if the PDF does provide it
      * @param font the current font
-     * @param fontSize font size in text space
      * @throws IOException if the glyph cannot be processed
      */
-    protected void processGlyph(Matrix textMatrix, Point2D.Float end, float maxHeight,
-                                float widthText, int code, String unicode, PDFont font,
-                                float fontSize) throws IOException
+    protected void processGlyph(Matrix textRenderingMatrix, float dx, float dy, int code,
+                                String unicode, PDFont font) throws IOException
     {
         // overridden in subclasses
     }

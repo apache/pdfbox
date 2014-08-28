@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.cff.CFFParser;
 import org.apache.fontbox.cff.CFFType1Font;
 import org.apache.fontbox.ttf.Type1Equivalent;
+import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.encoding.GlyphList;
@@ -128,6 +129,12 @@ public class PDType1CFont extends PDSimpleFont implements PDType1Equivalent
     public String getName()
     {
         return getBaseFont();
+    }
+
+    @Override
+    public BoundingBox getBoundingBox() throws IOException
+    {
+        return type1Equivalent.getFontBBox();
     }
 
     @Override

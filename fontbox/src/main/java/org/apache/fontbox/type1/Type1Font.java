@@ -22,6 +22,7 @@ import org.apache.fontbox.cff.Type1CharStringParser;
 import org.apache.fontbox.encoding.Encoding;
 import org.apache.fontbox.pfb.PfbParser;
 import org.apache.fontbox.ttf.Type1Equivalent;
+import org.apache.fontbox.util.BoundingBox;
 
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
@@ -233,9 +234,9 @@ public final class Type1Font implements Type1CharStringReader, Type1Equivalent
      * 
      * @return the font bounding box
      */
-    public List<Number> getFontBBox()
+    public BoundingBox getFontBBox()
     {
-        return Collections.unmodifiableList(fontBBox);
+        return new BoundingBox(fontBBox);
     }
 
     /**

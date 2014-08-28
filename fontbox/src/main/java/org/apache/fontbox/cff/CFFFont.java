@@ -92,9 +92,7 @@ public abstract class CFFFont
     public BoundingBox getFontBBox()
     {
         List<Number> numbers = (List<Number>)topDict.get("FontBBox");
-        BoundingBox bbox = new BoundingBox(numbers.get(0).floatValue(), numbers.get(1).floatValue(),
-                                           numbers.get(2).floatValue(), numbers.get(3).floatValue());
-        return bbox;
+        return new BoundingBox(numbers);
     }
 
     /**

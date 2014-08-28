@@ -21,6 +21,7 @@ import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSNumber;
 
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 
 /**
  * This class will be used for matrix manipulation.
@@ -74,6 +75,7 @@ public class Matrix implements Cloneable
         single[4] = d;
         single[6] = e;
         single[7] = f;
+        single[8] = 1;
     }
 
     /**
@@ -180,6 +182,16 @@ public class Matrix implements Cloneable
     }
 
     /**
+     * Concatenates (premultiplies) the given matrix to this matrix.
+     *
+     * @param matrix The matrix to concatenate.
+     */
+    public void concatenate(Matrix matrix)
+    {
+        matrix.multiply(this, this);
+    }
+
+    /**
      * This will take the current matrix and multipy it with a matrix that is passed in.
      *
      * @param b The matrix to multiply by.
@@ -273,6 +285,39 @@ public class Matrix implements Cloneable
     }
 
     /**
+     * Transforms the given point by this matrix.
+     *
+     * @param point point to transform
+     */
+    public void transform(Point2D point) {
+        double x = point.getX();
+        double y = point.getY();
+        double a = single[0];
+        double b = single[1];
+        double c = single[3];
+        double d = single[4];
+        double e = single[6];
+        double f = single[7];
+        point.setLocation(x * a + y * c + e, x * b + y * d + f);
+    }
+
+    /**
+     * Transforms the given point by this matrix.
+     *
+     * @param x x-coordinate
+     * @param y y-coordinate
+     */
+    public Point2D transform(double x, double y) {
+        double a = single[0];
+        double b = single[1];
+        double c = single[3];
+        double d = single[4];
+        double e = single[6];
+        double f = single[7];
+        return new Point2D.Double(x * a + y * c + e, x * b + y * d + f);
+    }
+
+    /**
      * Create a new matrix with just the scaling operators.
      *
      * @return A new matrix with just the scaling operators.
@@ -334,6 +379,19 @@ public class Matrix implements Cloneable
         retval.single[7] = y;
 
         return retval;
+    }
+
+    /**
+     * Produces a copy of the first matrix, with the second matrix concatenated.
+     *
+     * @param a The matrix to copy.
+     * @param b The matrix to concatenate.
+     */
+    public static Matrix concatenate(Matrix a, Matrix b)
+    {
+        Matrix copy = a.clone();
+        copy.concatenate(b);
+        return copy;
     }
 
     /**

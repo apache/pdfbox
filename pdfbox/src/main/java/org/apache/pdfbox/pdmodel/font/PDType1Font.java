@@ -29,6 +29,7 @@ import org.apache.fontbox.afm.AFMParser;
 import org.apache.fontbox.afm.FontMetrics;
 import org.apache.fontbox.ttf.Type1Equivalent;
 import org.apache.fontbox.type1.Type1Font;
+import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
@@ -272,12 +273,15 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
     @Override
     public float getHeight(int code) throws IOException
     {
+        String name = getEncoding().getName(code);
         if (afm != null)
         {
-            String characterName = getEncoding().getName(code);
-            return afm.getCharacterHeight(characterName); // todo: isn't this the y-advance, not the height?
+            return afm.getCharacterHeight(name); // todo: isn't this the y-advance, not the height?
         }
-        return super.getHeight(code);
+        else
+        {
+            return (float)type1Equivalent.getPath(name).getBounds().getHeight();
+        }
     }
 
     @Override
@@ -364,6 +368,12 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
     public String getName()
     {
         return getBaseFont();
+    }
+
+    @Override
+    public BoundingBox getBoundingBox() throws IOException
+    {
+        return type1Equivalent.getFontBBox();
     }
 
     @Override

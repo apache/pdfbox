@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -146,6 +147,11 @@ public abstract class PDCIDFont implements COSObjectable
     {
         return parent;
     }
+
+    /**
+     * Returns the font's bounding box.
+     */
+    public abstract BoundingBox getBoundingBox() throws IOException;
 
     /**
      * This will get the default width. The default value for the default width is 1000.

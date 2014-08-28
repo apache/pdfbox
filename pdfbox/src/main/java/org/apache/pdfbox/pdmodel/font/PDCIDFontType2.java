@@ -26,6 +26,7 @@ import org.apache.fontbox.ttf.CmapSubtable;
 import org.apache.fontbox.ttf.CmapTable;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
+import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -119,6 +120,12 @@ public class PDCIDFontType2 extends PDCIDFont
             fontMatrix = new Matrix(0.001f, 0, 0, 0.001f, 0, 0);
         }
         return fontMatrix;
+    }
+
+    @Override
+    public BoundingBox getBoundingBox() throws IOException
+    {
+        return ttf.getFontBBox();
     }
 
     private int[] readCIDToGIDMap()

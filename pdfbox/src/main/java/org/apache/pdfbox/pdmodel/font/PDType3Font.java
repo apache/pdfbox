@@ -21,6 +21,7 @@ import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -111,6 +112,42 @@ public class PDType3Font extends PDSimpleFont
     }
 
     @Override
+    public float getHeight(int code) throws IOException
+    {
+        PDFontDescriptor desc = getFontDescriptor();
+        if (desc != null)
+        {
+            // the following values are all more or less accurate at least all are average
+            // values. Maybe we'll find another way to get those value for every single glyph
+            // in the future if needed
+            PDRectangle fontBBox = desc.getFontBoundingBox();
+            float retval = 0;
+            if (fontBBox != null)
+            {
+                retval = fontBBox.getHeight() / 2;
+            }
+            if (retval == 0)
+            {
+                retval = desc.getCapHeight();
+            }
+            if (retval == 0)
+            {
+                retval = desc.getAscent();
+            }
+            if (retval == 0)
+            {
+                retval = desc.getXHeight();
+                if (retval > 0)
+                {
+                    retval -= desc.getDescent();
+                }
+            }
+            return retval;
+        }
+        return 0;
+    }
+
+    @Override
     public int readCode(InputStream in) throws IOException
     {
         return in.read();
@@ -156,9 +193,8 @@ public class PDType3Font extends PDSimpleFont
      * This will get the fonts bounding box.
      *
      * @return The fonts bounding box.
-     * @throws IOException If there is an error getting the bounding box.
      */
-    public PDRectangle getBoundingBox() throws IOException
+    public PDRectangle getFontBBox()
     {
         COSArray rect = (COSArray) dict.getDictionaryObject(COSName.FONT_BBOX);
         PDRectangle retval = null;
@@ -167,6 +203,14 @@ public class PDType3Font extends PDSimpleFont
             retval = new PDRectangle(rect);
         }
         return retval;
+    }
+
+    @Override
+    public BoundingBox getBoundingBox()
+    {
+        PDRectangle rect = getFontBBox();
+        return new BoundingBox(rect.getLowerLeftX(), rect.getLowerLeftY(),
+                               rect.getWidth(), rect.getHeight());
     }
     
     /**

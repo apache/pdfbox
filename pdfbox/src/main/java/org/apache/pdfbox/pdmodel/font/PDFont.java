@@ -24,6 +24,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.cmap.CMap;
+import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -33,7 +34,6 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -157,7 +157,7 @@ public abstract class PDFont implements COSObjectable
     }
 
     /**
-     * Returns the width of the given character.
+     * Returns the width of the given character, in glyph space.
      *
      * @param code character code
      */
@@ -207,47 +207,12 @@ public abstract class PDFont implements COSObjectable
     public abstract boolean isEmbedded();
 
     /**
-     * This will get the font height for a character.
+     * Returns the height of the given character, in glyph space. This can be expensive to
+     * calculate. Results are only approximate.
      * 
      * @param code character code
-     * @return The height is in 1000 unit of text space, ie 333 or 777
      */
-    // todo: this is not the glyph height at all! this method is *supposed* to get the y-advance
-    public float getHeight(int code) throws IOException
-    {
-        // maybe there is already a precalculated value
-        PDFontDescriptor desc = getFontDescriptor();
-        if (desc != null)
-        {
-            // the following values are all more or less accurate at least all are average
-            // values. Maybe we'll find another way to get those value for every single glyph
-            // in the future if needed
-            PDRectangle fontBBox = desc.getFontBoundingBox();
-            float retval = 0;
-            if (fontBBox != null)
-            {
-                retval = fontBBox.getHeight() / 2;
-            }
-            if (retval == 0)
-            {
-                retval = desc.getCapHeight();
-            }
-            if (retval == 0)
-            {
-                retval = desc.getAscent();
-            }
-            if (retval == 0)
-            {
-                retval = desc.getXHeight();
-                if (retval > 0)
-                {
-                    retval -= desc.getDescent();
-                }
-            }
-            return retval;
-        }
-        return 0;
-    }
+    public abstract float getHeight(int code) throws IOException;
 
     /**
      * Returns the width of the given Unicode string.
@@ -428,6 +393,11 @@ public abstract class PDFont implements COSObjectable
     {
         return getBaseFont();
     }
+
+    /**
+     * Returns the font's bounding box.
+     */
+    public abstract BoundingBox getBoundingBox() throws IOException;
 
     /**
      * The widths of the characters. This will be null for the standard 14 fonts.

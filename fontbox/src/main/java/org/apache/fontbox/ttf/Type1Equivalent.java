@@ -1,8 +1,10 @@
 package org.apache.fontbox.ttf;
 
 import org.apache.fontbox.encoding.Encoding;
+import org.apache.fontbox.util.BoundingBox;
 
 import java.awt.geom.GeneralPath;
+import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 
 /**
@@ -43,5 +45,10 @@ public interface Type1Equivalent
     /**
      * Returns the PostScript Encoding vector for the font.
      */
-    public Encoding getEncoding();
+    public Encoding getEncoding() throws IOException;
+
+    /**
+     * Returns the font's bounding box in PostScript units.
+     */
+    public abstract BoundingBox getFontBBox() throws IOException;
 }

@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.fontbox.encoding.Encoding;
+import org.apache.fontbox.util.BoundingBox;
 
 /**
  * A TrueType font file.
@@ -473,6 +474,17 @@ public class TrueTypeFont implements Type1Equivalent
     public Encoding getEncoding()
     {
         return null;
+    }
+
+    @Override
+    public BoundingBox getFontBBox() throws IOException
+    {
+        short xMin = getHeader().getXMin();
+        short xMax = getHeader().getXMax();
+        short yMin = getHeader().getYMin();
+        short yMax = getHeader().getYMax();
+        float scale = 1000f / getUnitsPerEm();
+        return new BoundingBox(xMin * scale, yMin * scale, xMax * scale, yMax * scale);
     }
 
     @Override

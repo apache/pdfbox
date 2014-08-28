@@ -271,13 +271,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     }
 
     @Override
-    protected void processGlyph(Matrix textMatrix, Point2D.Float end, float maxHeight,
-                                float widthText, int code, String unicode, PDFont font,
-                                float fontSize) throws IOException
+    protected void processGlyph(Matrix textRenderingMatrix, float dx, float dy, int code,
+                                String unicode, PDFont font) throws IOException
     {
         try
         {
-            AffineTransform at = textMatrix.createAffineTransform();
+            AffineTransform at = textRenderingMatrix.createAffineTransform();
             Matrix fontMatrix = font.getFontMatrix();
 
             // use different methods to draw the string
