@@ -207,7 +207,7 @@ public class PDCIDFontType0 extends PDCIDFont
     }
 
     @Override
-    protected boolean isEmbedded()
+    public boolean isEmbedded()
     {
         return isEmbedded;
     }

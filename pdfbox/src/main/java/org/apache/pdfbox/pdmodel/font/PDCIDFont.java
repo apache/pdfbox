@@ -211,7 +211,7 @@ public abstract class PDCIDFont implements COSObjectable
     /**
      * Returns true if the font file is embedded in the PDF.
      */
-    protected abstract boolean isEmbedded();
+    public abstract boolean isEmbedded();
 
     /**
      * This will get the average font width for all characters.

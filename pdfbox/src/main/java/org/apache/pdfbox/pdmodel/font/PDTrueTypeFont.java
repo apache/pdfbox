@@ -167,7 +167,7 @@ public class PDTrueTypeFont extends PDSimpleFont
     }
 
     @Override
-    protected boolean isEmbedded()
+    public boolean isEmbedded()
     {
         return isEmbedded;
     }

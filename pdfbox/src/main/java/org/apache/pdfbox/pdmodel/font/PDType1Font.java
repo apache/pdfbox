@@ -295,7 +295,7 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
     }
 
     @Override
-    protected boolean isEmbedded()
+    public boolean isEmbedded()
     {
         return isEmbedded;
     }

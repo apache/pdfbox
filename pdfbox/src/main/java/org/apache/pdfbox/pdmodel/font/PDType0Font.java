@@ -196,7 +196,7 @@ public class PDType0Font extends PDFont
     }
 
     @Override
-    protected boolean isEmbedded()
+    public boolean isEmbedded()
     {
         return descendantFont.isEmbedded();
     }

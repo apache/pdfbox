@@ -105,7 +105,7 @@ public class PDType3Font extends PDSimpleFont
     }
 
     @Override
-    protected boolean isEmbedded()
+    public boolean isEmbedded()
     {
         return true;
     }
