@@ -17,7 +17,6 @@
 package org.apache.fontbox.ttf;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -82,19 +81,7 @@ public class TTFParser
      */
     public TrueTypeFont parseTTF(File ttfFile) throws IOException
     {
-        InputStream in = null;
-        try
-        {
-            in = new FileInputStream(ttfFile);
-            return parseTTF(in);
-        }
-        finally
-        {
-            if (in != null)
-            {
-                in.close();
-            }
-        }
+        return parseTTF(new RAFDataStream(ttfFile, "r"));
     }
 
     /**
