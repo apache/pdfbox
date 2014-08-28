@@ -102,7 +102,21 @@ final class FileSystemFontProvider implements FontProvider
     private void addOpenTypeFont(File otfFile) throws IOException
     {
         TTFParser ttfParser = new TTFParser(false, true);
-        TrueTypeFont ttf = ttfParser.parseTTF(otfFile);
+        TrueTypeFont ttf = null;
+        try
+        {
+            System.out.println(otfFile);
+            ttf = ttfParser.parseTTF(otfFile);
+        }
+        catch (NullPointerException e) // TTF parser is buggy
+        {
+            LOG.error("Could not load font file: " + otfFile, e);
+        }
+        catch (IOException e)
+        {
+            LOG.error("Could not load font file: " + otfFile, e);
+        }
+
         try
         {
             // check for 'name' table
@@ -144,7 +158,10 @@ final class FileSystemFontProvider implements FontProvider
         }
         finally
         {
-            ttf.close();
+            if (ttf != null)
+            {
+                ttf.close();
+            }
         }
     }
 
@@ -197,9 +214,13 @@ final class FileSystemFontProvider implements FontProvider
                 }
                 return ttf;
             }
+            catch (NullPointerException e) // TTF parser is buggy
+            {
+                LOG.error("Could not load font file: " + file, e);
+            }
             catch (IOException e)
             {
-                LOG.error("Could not load font file: " + file);
+                LOG.error("Could not load font file: " + file, e);
             }
         }
         return null;
@@ -233,7 +254,7 @@ final class FileSystemFontProvider implements FontProvider
             }
             catch (IOException e)
             {
-                LOG.error("Could not load font file: " + file);
+                LOG.error("Could not load font file: " + file, e);
             }
             finally
             {
@@ -269,7 +290,7 @@ final class FileSystemFontProvider implements FontProvider
             }
             catch (IOException e)
             {
-                LOG.error("Could not load font file: " + file);
+                LOG.error("Could not load font file: " + file, e);
             }
             finally
             {

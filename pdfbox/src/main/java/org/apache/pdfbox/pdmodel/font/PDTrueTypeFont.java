@@ -99,9 +99,20 @@ public class PDTrueTypeFont extends PDSimpleFont
             PDStream ff2Stream = fd.getFontFile2();
             if (ff2Stream != null)
             {
-                // embedded
-                TTFParser ttfParser = new TTFParser(true);
-                ttfFont = ttfParser.parseTTF(ff2Stream.createInputStream());
+                try
+                {
+                    // embedded
+                    TTFParser ttfParser = new TTFParser(true);
+                    ttfFont = ttfParser.parseTTF(ff2Stream.createInputStream());
+                }
+                catch (NullPointerException e) // TTF parser is buggy
+                {
+                    throw new IOException("Could not read embedded TTF for font " + getBaseFont(), e);
+                }
+                catch (IOException e)
+                {
+                    throw new IOException("Could not read embedded TTF for font " + getBaseFont(), e);
+                }
             }
         }
         isEmbedded = ttfFont != null;

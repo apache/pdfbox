@@ -65,10 +65,21 @@ public class PDCIDFontType2 extends PDCIDFont
 
         if (ff2Stream != null)
         {
-            // embedded
-            TTFParser ttfParser = new TTFParser(true);
-            ttf = ttfParser.parseTTF(ff2Stream.createInputStream());
-            isEmbedded = true;
+            try
+            {
+                // embedded
+                TTFParser ttfParser = new TTFParser(true);
+                ttf = ttfParser.parseTTF(ff2Stream.createInputStream());
+                isEmbedded = true;
+            }
+            catch (NullPointerException e) // TTF parser is buggy
+            {
+                throw new IOException("Could not read embedded TTF for font " + getBaseFont(), e);
+            }
+            catch (IOException e)
+            {
+                throw new IOException("Could not read embedded TTF for font " + getBaseFont(), e);
+            }
         }
         else
         {
