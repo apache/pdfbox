@@ -163,12 +163,10 @@ public class TestPDFToImage extends TestCase
                     {
                         bim3 = createEmptyDiffImage(minWidth, minHeight, maxWidth, maxHeight);
                     }
-                    int rgb3 = (rgb1 ^ rgb2) & 0x7f7f7f;  // 7f is to avoid colors that are too light and won't be seen
-                    if (rgb3 == 0)
-                    {
-                        rgb3 = 0x808080;
-                    }
-                    bim3.setRGB(x, y, rgb3);
+                    int r = Math.abs((rgb1 & 0xFF) - (rgb2 & 0xFF));
+                    int g = Math.abs((rgb1 & 0xFF00) - (rgb2 & 0xFF00));
+                    int b = Math.abs((rgb1 & 0xFF0000) - (rgb2 & 0xFF0000));
+                    bim3.setRGB(x, y, 0xFFFFFF - (r | g | b));
                 }
                 else
                 {
