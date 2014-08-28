@@ -33,6 +33,10 @@ public abstract class CFFCharset
     private final Map<Integer, Integer> gidToSid = new HashMap<Integer, Integer>();
     private final Map<String, Integer> nameToSid = new HashMap<String, Integer>();
 
+    // inverse
+    private final Map<Integer, Integer> gidToCid = new HashMap<Integer, Integer>();
+    private final Map<Integer, String> gidToName = new HashMap<Integer, String>();
+
     /**
      * Package-private constructor for use by subclasses.
      *
@@ -58,6 +62,7 @@ public abstract class CFFCharset
         sidOrCidToGid.put(sid, gid);
         gidToSid.put(gid, sid);
         nameToSid.put(name, sid);
+        gidToName.put(gid, name);
     }
 
     /**
@@ -73,6 +78,7 @@ public abstract class CFFCharset
             throw new IllegalStateException("Not a CIDFont");
         }
         sidOrCidToGid.put(cid, gid);
+        gidToCid.put(gid, cid);
     }
 
     /**
@@ -154,5 +160,35 @@ public abstract class CFFCharset
             return 0;
         }
         return sid;
+    }
+
+    /**
+     * Returns the PostScript glyph name for the given GID.
+     *
+     * @param gid GID
+     * @return PostScript glyph name
+     */
+    public String getNameForGID(int gid)
+    {
+        if (isCIDFont)
+        {
+            throw new IllegalStateException("Not a Type 1-equivalent font");
+        }
+        return gidToName.get(gid);
+    }
+
+    /**
+     * Returns the CID for the given GID.
+     *
+     * @param gid GID
+     * @return CID
+     */
+    public int getCIDForGID(int gid)
+    {
+        if (!isCIDFont)
+        {
+            throw new IllegalStateException("Not a CIDFont");
+        }
+        return gidToCid.get(gid);
     }
 }

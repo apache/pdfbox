@@ -1,4 +1,5 @@
 /*
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -33,7 +34,7 @@ import org.apache.pdfbox.cos.COSNumber;
 public class DictionaryEncoding extends Encoding
 {
     private final COSDictionary encoding;
-    private final String baseEncoding;
+    private final Encoding baseEncoding;
     private final Map<Integer, String> differences = new HashMap<Integer, String>();
 
     /**
@@ -47,11 +48,11 @@ public class DictionaryEncoding extends Encoding
         if (baseEncoding != COSName.STANDARD_ENCODING)
         {
             encoding.setItem(COSName.BASE_ENCODING, baseEncoding);
-            this.baseEncoding = COSName.BASE_ENCODING.getName();
+            this.baseEncoding = Encoding.getInstance(baseEncoding);
         }
         else
         {
-            this.baseEncoding = baseEncoding.getName();
+            this.baseEncoding = Encoding.getInstance(baseEncoding);
         }
     }
 
@@ -64,18 +65,15 @@ public class DictionaryEncoding extends Encoding
     {
         encoding = fontEncoding;
 
-        Encoding baseEncoding;
         if (encoding.containsKey(COSName.BASE_ENCODING))
         {
             COSName name = encoding.getCOSName(COSName.BASE_ENCODING);
             baseEncoding = Encoding.getInstance(name);
-            this.baseEncoding = name.getName();
         }
         else if (isNonSymbolic)
         {
             // Otherwise, for a nonsymbolic font, it is StandardEncoding
             baseEncoding = StandardEncoding.INSTANCE;
-            this.baseEncoding = COSName.STANDARD_ENCODING.getName();
         }
         else
         {
@@ -85,7 +83,6 @@ public class DictionaryEncoding extends Encoding
             {
                 throw new IllegalArgumentException("Built-in Encoding required for symbolic font");
             }
-            this.baseEncoding = null;
         }
 
         codeToName.putAll( baseEncoding.codeToName );
@@ -112,9 +109,9 @@ public class DictionaryEncoding extends Encoding
     }
 
     /**
-     * Returns the name of the base encoding, or null if using the font's built-in encoding.
+     * Returns the base encoding.
      */
-    public String getBaseEncoding()
+    public Encoding getBaseEncoding()
     {
         return baseEncoding;
     }
