@@ -203,43 +203,37 @@ public class PDTrueTypeFont extends PDSimpleFont
             }
             else
             {
-                if (cmapWinUnicode != null) // (3, 1)
+                // (3, 1) - (Windows, Unicode)
+                if (cmapWinUnicode != null)
                 {
                     String unicode = GlyphList.toUnicode(name);
                     if (unicode != null)
                     {
-                        if (unicode.isEmpty())
-                        {
-                            LOG.error("getCharacterForName for code " + code +
-                                    ", characterName '" + name +
-                                    "' is empty");
-                        }
-                        else
-                        {
-                            gid = unicode.codePointAt(0);
-                        }
+                        gid = unicode.codePointAt(0);
                     }
                     gid = cmapWinUnicode.getGlyphId(gid);
                 }
-                else if (cmapMacRoman != null) // (1, 0)
+
+                // (1, 0) - (Macintosh, Roman)
+                if (gid == 0 && cmapMacRoman != null)
                 {
                     Integer macCode = INVERTED_MACOS_ROMAN.get(name);
-                    if (macCode == null)
+                    if (macCode != null)
                     {
-                        macCode = 0;
+                        gid = cmapMacRoman.getGlyphId(macCode);
                     }
-                    gid = cmapMacRoman.getGlyphId(macCode);
                 }
-                else if (cmapWinSymbol != null)
+
+                // 'post' table
+                if (gid == 0)
                 {
-                    // fallback scenario if the glyph can't be found yet, maybe the (3, 0) cmap
-                    // provides a suitable mapping, see PDFBOX-2091
-                    gid = cmapWinSymbol.getGlyphId(code);
+                    gid = ttf.nameToGID(name);
                 }
             }
         }
         else // symbolic
         {
+            // (3, 0) - (Windows, Symbol)
             if (cmapWinSymbol != null)
             {
                 gid = cmapWinSymbol.getGlyphId(code);
@@ -265,7 +259,9 @@ public class PDTrueTypeFont extends PDSimpleFont
                     }
                 }
             }
-            else if (cmapMacRoman != null)
+
+            // (1, 0) - (Mac, Roman)
+            if (gid == 0 && cmapMacRoman != null)
             {
                 gid = cmapMacRoman.getGlyphId(code);
             }
