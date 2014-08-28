@@ -21,13 +21,13 @@ import org.apache.fontbox.type1.Type1CharStringReader;
 
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * A Type 1-equivalent font program represented in a CFF file.
+ * A Type 1-equivalent font program represented in a CFF file. Thread safe.
  *
  * @author Villu Ruusmann
  * @author John Hewson
@@ -37,7 +37,9 @@ public class CFFType1Font extends CFFFont implements Type1Equivalent
     private final Map<String, Object> privateDict = new LinkedHashMap<String, Object>();
     private CFFEncoding encoding;
 
-    private final Map<Integer, Type2CharString> charStringCache = new HashMap<Integer, Type2CharString>();
+    private final Map<Integer, Type2CharString> charStringCache =
+            new ConcurrentHashMap<Integer, Type2CharString>();
+
     private final PrivateType1CharStringReader reader = new PrivateType1CharStringReader();
 
     /**

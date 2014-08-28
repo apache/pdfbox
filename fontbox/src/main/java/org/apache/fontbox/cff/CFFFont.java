@@ -24,7 +24,7 @@ import java.util.Map;
 import org.apache.fontbox.util.BoundingBox;
 
 /**
- * An Adobe Compact Font Format (CFF) font.
+ * An Adobe Compact Font Format (CFF) font. Thread safe.
  * 
  * @author Villu Ruusmann
  * @author John Hewson

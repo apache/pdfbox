@@ -24,8 +24,6 @@ import java.util.Map;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.encoding.Encoding;
 
 /**
@@ -35,8 +33,6 @@ import org.apache.fontbox.encoding.Encoding;
  */
 public class TrueTypeFont implements Type1Equivalent
 {
-    private final Log log = LogFactory.getLog(TrueTypeFont.class);
-
     private float version;
     private int numberOfGlyphs = -1;
     private int unitsPerEm = -1;
@@ -117,7 +113,7 @@ public class TrueTypeFont implements Type1Equivalent
      * 
      * @return The naming table.
      */
-    public NamingTable getNaming() throws IOException
+    public synchronized NamingTable getNaming() throws IOException
     {
         NamingTable naming = (NamingTable)tables.get( NamingTable.TAG );
         if (naming != null && !naming.getInitialized())
@@ -132,7 +128,7 @@ public class TrueTypeFont implements Type1Equivalent
      * 
      * @return The postscript table.
      */
-    public PostScriptTable getPostScript() throws IOException
+    public synchronized PostScriptTable getPostScript() throws IOException
     {
         PostScriptTable postscript = (PostScriptTable)tables.get( PostScriptTable.TAG );
         if (postscript != null && !postscript.getInitialized())
@@ -147,7 +143,7 @@ public class TrueTypeFont implements Type1Equivalent
      * 
      * @return The OS/2 table.
      */
-    public OS2WindowsMetricsTable getOS2Windows() throws IOException
+    public synchronized OS2WindowsMetricsTable getOS2Windows() throws IOException
     {
         OS2WindowsMetricsTable os2WindowsMetrics = (OS2WindowsMetricsTable)tables.get( OS2WindowsMetricsTable.TAG );
         if (os2WindowsMetrics != null && !os2WindowsMetrics.getInitialized())
@@ -162,7 +158,7 @@ public class TrueTypeFont implements Type1Equivalent
      * 
      * @return The maxp table.
      */
-    public MaximumProfileTable getMaximumProfile() throws IOException
+    public synchronized MaximumProfileTable getMaximumProfile() throws IOException
     {
         MaximumProfileTable maximumProfile = (MaximumProfileTable)tables.get( MaximumProfileTable.TAG );
         if (maximumProfile != null && !maximumProfile.getInitialized())
@@ -177,7 +173,7 @@ public class TrueTypeFont implements Type1Equivalent
      * 
      * @return The head table.
      */
-    public HeaderTable getHeader() throws IOException
+    public synchronized HeaderTable getHeader() throws IOException
     {
         HeaderTable header = (HeaderTable)tables.get( HeaderTable.TAG );
         if (header != null && !header.getInitialized())
@@ -192,7 +188,7 @@ public class TrueTypeFont implements Type1Equivalent
      * 
      * @return The hhea table.
      */
-    public HorizontalHeaderTable getHorizontalHeader() throws IOException
+    public synchronized HorizontalHeaderTable getHorizontalHeader() throws IOException
     {
         HorizontalHeaderTable horizontalHeader = (HorizontalHeaderTable)tables.get( HorizontalHeaderTable.TAG );
         if (horizontalHeader != null && !horizontalHeader.getInitialized())
@@ -207,7 +203,7 @@ public class TrueTypeFont implements Type1Equivalent
      * 
      * @return The hmtx table.
      */
-    public HorizontalMetricsTable getHorizontalMetrics() throws IOException
+    public synchronized HorizontalMetricsTable getHorizontalMetrics() throws IOException
     {
         HorizontalMetricsTable horizontalMetrics = (HorizontalMetricsTable)tables.get( HorizontalMetricsTable.TAG );
         if (horizontalMetrics != null && !horizontalMetrics.getInitialized())
@@ -222,7 +218,7 @@ public class TrueTypeFont implements Type1Equivalent
      * 
      * @return The loca table.
      */
-    public IndexToLocationTable getIndexToLocation() throws IOException
+    public synchronized IndexToLocationTable getIndexToLocation() throws IOException
     {
         IndexToLocationTable indexToLocation = (IndexToLocationTable)tables.get( IndexToLocationTable.TAG );
         if (indexToLocation != null && !indexToLocation.getInitialized())
@@ -237,7 +233,7 @@ public class TrueTypeFont implements Type1Equivalent
      * 
      * @return The glyf table.
      */
-    public GlyphTable getGlyph() throws IOException
+    public synchronized GlyphTable getGlyph() throws IOException
     {
         GlyphTable glyph = (GlyphTable)tables.get( GlyphTable.TAG );
         if (glyph != null && !glyph.getInitialized())
@@ -252,7 +248,7 @@ public class TrueTypeFont implements Type1Equivalent
      * 
      * @return The "cmap" table.
      */
-    public CmapTable getCmap() throws IOException
+    public synchronized CmapTable getCmap() throws IOException
     {
         CmapTable cmap = (CmapTable)tables.get( CmapTable.TAG );
         if (cmap != null && !cmap.getInitialized())
@@ -376,7 +372,7 @@ public class TrueTypeFont implements Type1Equivalent
         return getNaming().getPostScriptName();
     }
 
-    private void readPostScriptNames() throws IOException
+    private synchronized void readPostScriptNames() throws IOException
     {
         if (postScriptNames == null)
         {

@@ -20,13 +20,13 @@ package org.apache.fontbox.cff;
 import org.apache.fontbox.type1.Type1CharStringReader;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * A Type 0 CIDFont represented in a CFF file.
+ * A Type 0 CIDFont represented in a CFF file. Thread safe.
  *
  * @author Villu Ruusmann
  * @author John Hewson
@@ -42,7 +42,7 @@ public class CFFCIDFont extends CFFFont
     private FDSelect fdSelect;
 
     private final Map<Integer, CIDKeyedType2CharString> charStringCache =
-            new HashMap<Integer, CIDKeyedType2CharString>();
+            new ConcurrentHashMap<Integer, CIDKeyedType2CharString>();
 
     private final PrivateType1CharStringReader reader = new PrivateType1CharStringReader();
 

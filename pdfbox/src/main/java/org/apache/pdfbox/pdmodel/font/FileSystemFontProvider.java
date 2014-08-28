@@ -52,10 +52,9 @@ final class FileSystemFontProvider implements FontProvider
     private final Map<String, File> type1FontFiles =  new HashMap<String, File>();
 
     // cache of loaded fonts which are in use (populated on-the-fly)
-    // todo: disabled due to thread safety issues in TrueTypeFont (and others?)
-    private final Map<String, TrueTypeFont> ttfFonts = new ConcurrentHashMap<String, TrueTypeFont>();
-    private final Map<String, CFFFont> cffFonts = new ConcurrentHashMap<String, CFFFont>();
-    private final Map<String, Type1Font> type1Fonts = new ConcurrentHashMap<String, Type1Font>();
+    private final Map<String, TrueTypeFont> ttfFonts = new HashMap<String, TrueTypeFont>();
+    private final Map<String, CFFFont> cffFonts = new HashMap<String, CFFFont>();
+    private final Map<String, Type1Font> type1Fonts = new HashMap<String, Type1Font>();
 
     /**
      * Constructor.
@@ -192,7 +191,7 @@ final class FileSystemFontProvider implements FontProvider
     }
 
     @Override
-    public TrueTypeFont getTrueTypeFont(String postScriptName)
+    public synchronized TrueTypeFont getTrueTypeFont(String postScriptName)
     {
         TrueTypeFont ttf = ttfFonts.get(postScriptName);
         if (ttf != null)
@@ -208,7 +207,7 @@ final class FileSystemFontProvider implements FontProvider
             {
                 ttf = ttfParser.parseTTF(file);
 
-                // todo: ttfFonts.put(postScriptName, ttf);  [disabled due to thread safety]
+                ttfFonts.put(postScriptName, ttf);
                 if (LOG.isDebugEnabled())
                 {
                     LOG.debug("Loaded " + postScriptName + " from " + file);
@@ -228,7 +227,7 @@ final class FileSystemFontProvider implements FontProvider
     }
 
     @Override
-    public CFFFont getCFFFont(String postScriptName)
+    public synchronized CFFFont getCFFFont(String postScriptName)
     {
         CFFFont cff = cffFonts.get(postScriptName);
         if (cff != null)
@@ -246,7 +245,7 @@ final class FileSystemFontProvider implements FontProvider
                 byte[] bytes = IOUtils.toByteArray(input);
                 CFFParser cffParser = new CFFParser();
                 cff = cffParser.parse(bytes).get(0);
-                // todo: cffFonts.put(postScriptName, cff);  [disabled due to thread safety]
+                cffFonts.put(postScriptName, cff);
                 if (LOG.isDebugEnabled())
                 {
                     LOG.debug("Loaded " + postScriptName + " from " + file);
@@ -266,7 +265,7 @@ final class FileSystemFontProvider implements FontProvider
     }
 
     @Override
-    public Type1Font getType1Font(String postScriptName)
+    public synchronized Type1Font getType1Font(String postScriptName)
     {
         Type1Font type1 = type1Fonts.get(postScriptName);
         if (type1 != null)
@@ -282,7 +281,7 @@ final class FileSystemFontProvider implements FontProvider
             {
                 input = new FileInputStream(file);
                 type1 = Type1Font.createWithPFB(input);
-                // todo: type1Fonts.put(postScriptName, type1); [disabled due to thread safety]
+                type1Fonts.put(postScriptName, type1);
                 if (LOG.isDebugEnabled())
                 {
                     LOG.debug("Loaded " + postScriptName + " from " + file);

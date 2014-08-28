@@ -28,13 +28,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Represents an Adobe Type 1 (.pfb) font.
+ * Represents an Adobe Type 1 (.pfb) font. Thread safe.
  *
  * @author John Hewson
  */
@@ -110,7 +110,8 @@ public final class Type1Font implements Type1CharStringReader, Type1Equivalent
     final Map<String, byte[]> charstrings = new LinkedHashMap<String, byte[]>();
 
     // private caches
-    private final Map<String, Type1CharString> charStringCache = new HashMap<String, Type1CharString>();
+    private final Map<String, Type1CharString> charStringCache =
+            new ConcurrentHashMap<String, Type1CharString>();
 
     /**
      * Constructs a new Type1Font, called by Type1Parser.
