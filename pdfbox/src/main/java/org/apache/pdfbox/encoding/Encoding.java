@@ -111,6 +111,11 @@ public abstract class Encoding implements COSObjectable
      */
     public String getName(int code)
     {
-        return codeToName.get(code);
+       String name = codeToName.get(code);
+       if (name != null)
+       {
+          return name;
+       }
+       return ".notdef";
     }
 }
