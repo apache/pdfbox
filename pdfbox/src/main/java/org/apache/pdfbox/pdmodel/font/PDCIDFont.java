@@ -191,7 +191,15 @@ public abstract class PDCIDFont implements COSObjectable
         int cid = codeToCID(code);
         if (cid < widths.size())
         {
-            return widths.get(cid);
+            Float w = widths.get(cid);
+            if (w != null)
+            {
+                return w;
+            }
+            else
+            {
+                return getDefaultWidth();
+            }
         }
         else
         {
