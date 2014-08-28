@@ -21,7 +21,7 @@ import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.type1.Type1Font;
 
 /**
- * External font service provider interface.
+ * External font service provider interface. Implementations are expected to be thread safe.
  *
  * @author John Hewson
  */

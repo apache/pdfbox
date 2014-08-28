@@ -35,6 +35,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * External font provider which searches for fonts on the local filesystem.
@@ -45,15 +46,16 @@ final class FileSystemFontProvider implements FontProvider
 {
     private static final Log LOG = LogFactory.getLog(FileSystemFontProvider.class);
 
-    // cache of font files on the system
+    // cache of font files on the system (populated in constructor)
     private final Map<String, File> ttfFontFiles = new HashMap<String, File>();
     private final Map<String, File> cffFontFiles = new HashMap<String, File>();
     private final Map<String, File> type1FontFiles =  new HashMap<String, File>();
 
-    // cache of loaded fonts which are in use
-    private final Map<String, TrueTypeFont> ttfFonts = new HashMap<String, TrueTypeFont>();
-    private final Map<String, CFFFont> cffFonts = new HashMap<String, CFFFont>();
-    private final Map<String, Type1Font> type1Fonts = new HashMap<String, Type1Font>();
+    // cache of loaded fonts which are in use (populated on-the-fly)
+    // todo: disabled due to thread safety issues in TrueTypeFont (and others?)
+    private final Map<String, TrueTypeFont> ttfFonts = new ConcurrentHashMap<String, TrueTypeFont>();
+    private final Map<String, CFFFont> cffFonts = new ConcurrentHashMap<String, CFFFont>();
+    private final Map<String, Type1Font> type1Fonts = new ConcurrentHashMap<String, Type1Font>();
 
     /**
      * Constructor.
@@ -105,7 +107,6 @@ final class FileSystemFontProvider implements FontProvider
         TrueTypeFont ttf = null;
         try
         {
-            System.out.println(otfFile);
             ttf = ttfParser.parseTTF(otfFile);
         }
         catch (NullPointerException e) // TTF parser is buggy
@@ -207,7 +208,7 @@ final class FileSystemFontProvider implements FontProvider
             {
                 ttf = ttfParser.parseTTF(file);
 
-                ttfFonts.put(postScriptName, ttf);
+                // todo: ttfFonts.put(postScriptName, ttf);  [disabled due to thread safety]
                 if (LOG.isDebugEnabled())
                 {
                     LOG.debug("Loaded " + postScriptName + " from " + file);
@@ -245,7 +246,7 @@ final class FileSystemFontProvider implements FontProvider
                 byte[] bytes = IOUtils.toByteArray(input);
                 CFFParser cffParser = new CFFParser();
                 cff = cffParser.parse(bytes).get(0);
-                cffFonts.put(postScriptName, cff);
+                // todo: cffFonts.put(postScriptName, cff);  [disabled due to thread safety]
                 if (LOG.isDebugEnabled())
                 {
                     LOG.debug("Loaded " + postScriptName + " from " + file);
@@ -281,7 +282,7 @@ final class FileSystemFontProvider implements FontProvider
             {
                 input = new FileInputStream(file);
                 type1 = Type1Font.createWithPFB(input);
-                type1Fonts.put(postScriptName, type1);
+                // todo: type1Fonts.put(postScriptName, type1); [disabled due to thread safety]
                 if (LOG.isDebugEnabled())
                 {
                     LOG.debug("Loaded " + postScriptName + " from " + file);
