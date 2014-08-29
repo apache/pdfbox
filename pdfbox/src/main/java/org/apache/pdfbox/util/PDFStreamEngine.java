@@ -404,6 +404,7 @@ public class PDFStreamEngine
                 // all other fonts use 1:1000 for widths, even those with a FontMatrix, see FOP-2252
                 if (font.isVertical())
                 {
+                    // changes to vertical text should be tested with PDFBOX-2294 and PDFBOX-1422
                     PDType0Font type0 = (PDType0Font)font;
 
                     // position vector (position of vertical origin relative to horizontal origin)
