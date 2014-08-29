@@ -566,7 +566,7 @@ public abstract class BaseParser
                         }
                         // close and create new filtered stream
                         IOUtils.closeQuietly(out);
-                        out = stream.createFilteredStream( streamLength );
+                        out = stream.createFilteredStream();
                         // scan until we find endstream:
                         readUntilEndStream( new EndstreamOutputStream(out) );
                     }
@@ -995,7 +995,7 @@ public abstract class BaseParser
      *
      * @throws IOException If there is an error reading from the stream.
      */
-    private final COSString parseCOSHexString() throws IOException
+    private COSString parseCOSHexString() throws IOException
     {
         final StringBuilder sBuf = new StringBuilder();
         while( true )
