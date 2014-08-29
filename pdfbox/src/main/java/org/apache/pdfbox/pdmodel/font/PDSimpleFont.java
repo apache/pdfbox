@@ -236,6 +236,12 @@ public abstract class PDSimpleFont extends PDFont
         return null;
     }
 
+    @Override
+    public boolean isVertical()
+    {
+        return false;
+    }
+
     /**
      * Returns true if this font is one of the "standard 14" fonts.
      */

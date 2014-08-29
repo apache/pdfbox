@@ -169,8 +169,7 @@ public class PDCIDFontType2 extends PDCIDFont
             return cMap.toUnicode(code).codePointAt(0); // actually: code -> CID
         }
 
-        // CID CMap is not used for TTF, even if present, see see PDFBOX-1422
-        return code;
+        return cMap.toCID(code);
     }
 
     /**
@@ -180,18 +179,6 @@ public class PDCIDFontType2 extends PDCIDFont
      * @return GID
      */
     public int codeToGID(int code) throws IOException
-    {
-        int cid = codeToCID(code);
-        return cidToGID(cid);
-    }
-
-    /**
-     * Returns the GID for the given CID.
-     * 
-     * @param cid the given CID (for TTF this is the same as the character code)
-     * @return the mapped GID
-     */
-    public int cidToGID(int cid) throws IOException
     {
         if (!isEmbedded)
         {
@@ -205,6 +192,7 @@ public class PDCIDFontType2 extends PDCIDFont
 
             if (cid2gid != null || hasIdentityCid2Gid)
             {
+                int cid = codeToCID(code);
                 // strange but true, Acrobat allows non-embedded GIDs, test with PDFBOX-2060
                 if (hasIdentityCid2Gid)
                 {
@@ -215,7 +203,7 @@ public class PDCIDFontType2 extends PDCIDFont
                     return cid2gid[cid];
                 }
             }
-            if (!parent.isSymbolic())
+            else if (!parent.isSymbolic())
             {
                 // this nonsymbolic behaviour isn't well documented, test with PDFBOX-1422
 
@@ -234,7 +222,7 @@ public class PDCIDFontType2 extends PDCIDFont
                 // Any undefined entries in the table shall be filled using StandardEncoding
                 if (name == null)
                 {
-                    name = StandardEncoding.INSTANCE.getName(cid); // code = CID for TTF
+                    name = StandardEncoding.INSTANCE.getName(code);
                 }
 
                 // map to a Unicode value using the Adobe Glyph List
@@ -242,6 +230,7 @@ public class PDCIDFontType2 extends PDCIDFont
             }
             else
             {
+                int cid = codeToCID(code);
                 unicode = parent.toUnicode(cid); // code = CID for TTF
             }
 
@@ -261,6 +250,7 @@ public class PDCIDFontType2 extends PDCIDFont
             // a CIDToGIDMap entry that maps CIDs to the glyph indices for the appropriate glyph
             // descriptions in that font program.
 
+            int cid = codeToCID(code);
             if (cid2gid != null)
             {
                 // use CIDToGIDMap
@@ -326,8 +316,7 @@ public class PDCIDFontType2 extends PDCIDFont
     @Override
     protected float getWidthFromFont(int code) throws IOException
     {
-        int cid = codeToCID(code);
-        int gid = cidToGID(cid);
+        int gid = codeToGID(code);
         int width = ttf.getAdvanceWidth(gid);
         int unitsPerEM = ttf.getUnitsPerEm();
         if (unitsPerEM != 1000)

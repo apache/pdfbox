@@ -53,9 +53,9 @@ public class CIDType0Glyph2D implements Glyph2D
     public GeneralPath getPathForCharacterCode(int code)
     {
         int cid = font.getParent().codeToCID(code);
-        if (cache.containsKey(cid))
+        if (cache.containsKey(code))
         {
-            return cache.get(cid);
+            return cache.get(code);
         }
 
         // don't draw CID 0
@@ -63,7 +63,7 @@ public class CIDType0Glyph2D implements Glyph2D
         {
             LOG.warn("No glyph for " + code + " (CID 0000) in font " + fontName);
             GeneralPath path = new GeneralPath();
-            cache.put(cid, path);
+            cache.put(code, path);
             return path;
         }
 
@@ -78,7 +78,7 @@ public class CIDType0Glyph2D implements Glyph2D
             }
 
             GeneralPath path = charString.getPath();
-            cache.put(cid, path);
+            cache.put(code, path);
             return path;
         }
         catch (IOException e)

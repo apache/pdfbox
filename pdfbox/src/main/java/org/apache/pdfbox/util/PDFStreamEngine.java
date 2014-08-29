@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.util;
 
-import java.awt.Point;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.io.ByteArrayInputStream;
@@ -44,6 +43,7 @@ import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontFactory;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
@@ -313,7 +313,7 @@ public class PDFStreamEngine
      */
     public void showText(byte[] string) throws IOException
     {
-        processText(string);
+        showText(string, 0);
     }
 
     /**
@@ -325,40 +325,21 @@ public class PDFStreamEngine
      */
     public void showAdjustedText(List<byte[]> strings, List<Float> adjustments) throws IOException
     {
-        float fontsize = getGraphicsState().getTextState().getFontSize();
-        float horizontalScaling = getGraphicsState().getTextState().getHorizontalScaling() / 100;
         for (int i = 0, len = strings.size(); i < len; i++)
         {
-            float adjustment = adjustments.get(i);
-            Matrix adjMatrix = new Matrix();
-            adjustment =- (adjustment / 1000) * horizontalScaling * fontsize;
-            // TODO vertical writing mode
-            adjMatrix.setValue( 2, 0, adjustment );
-            showAdjustedTextRun(strings.get(i), adjMatrix);
+            showText(strings.get(i), adjustments.get(i));
         }
-    }
-
-    /**
-     * Called when a single run of text with a spacing adjustment is to be shown.
-     *
-     * @param string the encoded text
-     * @param adjustment spacing adjustment to apply before showing the string
-     * @throws IOException if there was an error showing the text
-     */
-    protected void showAdjustedTextRun(byte[] string, Matrix adjustment) throws IOException
-    {
-        setTextMatrix(adjustment.multiply(getTextMatrix(), adjustment));
-        processText(string);
     }
 
     /**
      * Process text from the PDF Stream. You should override this method if you want to
      * perform an action when encoded text is being processed.
-     * 
+     *
      * @param string the encoded text
+     * @param adjustment a position adjustment from a TJ array to be applied after the glyph
      * @throws IOException if there is an error processing the string
      */
-    protected void processText(byte[] string) throws IOException
+    protected void showText(byte[] string, float adjustment) throws IOException
     {
         PDGraphicsState state = getGraphicsState();
         PDTextState textState = state.getTextState();
@@ -373,7 +354,7 @@ public class PDFStreamEngine
 
         float fontSize = textState.getFontSize();
         float horizontalScaling = textState.getHorizontalScaling() / 100f;
-        float characterSpacing = textState.getCharacterSpacing();
+        float charSpacing = textState.getCharacterSpacing();
 
         // put the text state parameters into matrix form
         Matrix parameters = new Matrix(
@@ -403,32 +384,66 @@ public class PDFStreamEngine
                 }
             }
 
+            // text rendering matrix (text space -> device space)
+            Matrix ctm = state.getCurrentTransformationMatrix();
+            Matrix textRenderingMatrix = parameters.multiply(textMatrix).multiply(ctm);
+
             // get glyph's horizontal and vertical displacements (glyph space -> text space)
+            // todo: it would be nice to encapsulate the code below
             float w0, w1;
             if (font instanceof PDType3Font)
             {
                 // Type 3 fonts specify a custom matrix
-                Point2D adv = font.getFontMatrix().transform(font.getWidth(code), font.getHeight(code));
+                Matrix fontMatrix = font.getFontMatrix();
+                Point2D adv = fontMatrix.transform(font.getWidth(code), font.getHeight(code));
                 w0 = (float)adv.getX();
                 w1 = (float)adv.getY();
             }
             else
             {
                 // all other fonts use 1:1000 for widths, even those with a FontMatrix, see FOP-2252
-                w0 = font.getWidth(code) / 1000f;
-                w1 = 0; // todo: support vertical writing mode
+                if (font.isVertical())
+                {
+                    PDType0Font type0 = (PDType0Font)font;
+
+                    // position vector (position of vertical origin relative to horizontal origin)
+                    Vector v = type0.getDescendantFont().getPositionVector(code);
+                    textRenderingMatrix.translate(v.scale(-1 / 1000f));
+
+                    // displacement vector
+                    w0 = 0;
+                    w1 = type0.getDescendantFont().getVerticalDisplacementVectorY(code) / 1000;
+                }
+                else
+                {
+                    // displacement vector
+                    w0 = font.getWidth(code) / 1000f;
+                    w1 = 0;
+                }
             }
 
-            // text rendering matrix (text space -> device space)
-            Matrix ctm = state.getCurrentTransformationMatrix();
-            Matrix textRenderingMatrix = parameters.multiply(textMatrix).multiply(ctm);
-
             // process the decoded glyph
-            processGlyph(textRenderingMatrix, w0, w1, code, unicode, font);
+            showGlyph(textRenderingMatrix, font, code, unicode, w0, w1);
+
+            // TJ adjustment after final glyph
+            float tj = 0;
+            if (in.available() == 0)
+            {
+                tj = adjustment;
+            }
 
             // calculate the combined displacements
-            float tx = (w0 * fontSize + characterSpacing + wordSpacing) * horizontalScaling;
-            float ty = 0; // todo: support vertical writing mode
+            float tx, ty;
+            if (font.isVertical())
+            {
+                tx = 0;
+                ty = (w1 - tj / 1000) * fontSize + charSpacing + wordSpacing;
+            }
+            else
+            {
+                tx = ((w0 - tj / 1000) * fontSize + charSpacing + wordSpacing) * horizontalScaling;
+                ty = 0;
+            }
 
             // update the text matrix
             textMatrix.concatenate(Matrix.getTranslatingInstance(tx, ty));
@@ -440,15 +455,15 @@ public class PDFStreamEngine
      * the default implementation does nothing.
      *
      * @param textRenderingMatrix the current text rendering matrix, T<sub>rm</sub>
-     * @param dx the x-advance of the glyph in text space
-     * @param dy the y-advance of the glyph in text space
+     * @param font the current font
      * @param code internal PDF character code for the glyph
      * @param unicode the Unicode text for this glyph, or null if the PDF does provide it
-     * @param font the current font
+     * @param dx the x-advance of the glyph in text space
+     * @param dy the y-advance of the glyph in text space
      * @throws IOException if the glyph cannot be processed
      */
-    protected void processGlyph(Matrix textRenderingMatrix, float dx, float dy, int code,
-                                String unicode, PDFont font) throws IOException
+    protected void showGlyph(Matrix textRenderingMatrix, PDFont font, int code, String unicode,
+                             float dx, float dy) throws IOException
     {
         // overridden in subclasses
     }

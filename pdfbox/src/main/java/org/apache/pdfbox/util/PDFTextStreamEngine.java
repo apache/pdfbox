@@ -27,7 +27,6 @@ import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
 import org.apache.pdfbox.text.TextPosition;
 
-import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -82,8 +81,8 @@ public class PDFTextStreamEngine extends PDFStreamEngine
      * This method was originally written by Ben Litchfield for PDFStreamEngine.
      */
     @Override
-    protected void processGlyph(Matrix textRenderingMatrix, float dx, float dy, int code,
-                                String unicode, PDFont font) throws IOException
+    protected void showGlyph(Matrix textRenderingMatrix, PDFont font, int code, String unicode,
+                             float dx, float dy) throws IOException
     {
         //
         // legacy calculations which were previously in PDFStreamEngine

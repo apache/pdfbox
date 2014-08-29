@@ -28,6 +28,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.util.Matrix;
+import org.apache.pdfbox.util.Vector;
 
 /**
  * A CIDFont. A CIDFont is a PDF object that contains information about a CIDFont program. Although
@@ -42,6 +43,10 @@ public abstract class PDCIDFont implements COSObjectable
     private Map<Integer, Float> widths;
     private float defaultWidth;
 
+    private Map<Integer, Float> verticalDisplacementY = new HashMap<Integer, Float>(); // w1y
+    private Map<Integer, Vector> positionVectors = new HashMap<Integer, Vector>();     // v
+    private float[] dw2;
+
     protected final COSDictionary dict;
     private PDFontDescriptor fontDescriptor;
 
@@ -55,44 +60,96 @@ public abstract class PDCIDFont implements COSObjectable
         this.dict = fontDictionary;
         this.parent = parent;
         readWidths();
+        readVerticalDisplacements();
     }
 
     private void readWidths()
     {
-        if (widths == null)
+        widths = new HashMap<Integer, Float>();
+        COSArray widths = (COSArray) dict.getDictionaryObject(COSName.W);
+        if (widths != null)
         {
-            widths = new HashMap<Integer, Float>();
-            COSArray widths = (COSArray) dict.getDictionaryObject(COSName.W);
-            if (widths != null)
+            int size = widths.size();
+            int counter = 0;
+            while (counter < size)
             {
-                int size = widths.size();
-                int counter = 0;
-                while (counter < size)
+                COSNumber firstCode = (COSNumber) widths.getObject(counter++);
+                COSBase next = widths.getObject(counter++);
+                if (next instanceof COSArray)
                 {
-                    COSNumber firstCode = (COSNumber) widths.getObject(counter++);
-                    COSBase next = widths.getObject(counter++);
-                    if (next instanceof COSArray)
+                    COSArray array = (COSArray) next;
+                    int startRange = firstCode.intValue();
+                    int arraySize = array.size();
+                    for (int i = 0; i < arraySize; i++)
                     {
-                        COSArray array = (COSArray) next;
-                        int startRange = firstCode.intValue();
-                        int arraySize = array.size();
-                        for (int i = 0; i < arraySize; i++)
-                        {
-                            COSNumber width = (COSNumber) array.get(i);
-                            this.widths.put(startRange + i, width.floatValue());
-                        }
+                        COSNumber width = (COSNumber) array.get(i);
+                        this.widths.put(startRange + i, width.floatValue());
                     }
-                    else
+                }
+                else
+                {
+                    COSNumber secondCode = (COSNumber) next;
+                    COSNumber rangeWidth = (COSNumber) widths.getObject(counter++);
+                    int startRange = firstCode.intValue();
+                    int endRange = secondCode.intValue();
+                    float width = rangeWidth.floatValue();
+                    for (int i = startRange; i <= endRange; i++)
                     {
-                        COSNumber secondCode = (COSNumber) next;
-                        COSNumber rangeWidth = (COSNumber) widths.getObject(counter++);
-                        int startRange = firstCode.intValue();
-                        int endRange = secondCode.intValue();
-                        float width = rangeWidth.floatValue();
-                        for (int i = startRange; i <= endRange; i++)
-                        {
-                            this.widths.put(i, width);
-                        }
+                        this.widths.put(i, width);
+                    }
+                }
+            }
+        }
+
+    }
+
+    private void readVerticalDisplacements()
+    {
+        // default position vector and vertical displacement vector
+        COSArray cosDW2 = (COSArray) dict.getDictionaryObject(COSName.DW2);
+        if (cosDW2 != null)
+        {
+            dw2 = new float[2];
+            dw2[0] = ((COSNumber)cosDW2.get(0)).floatValue();
+            dw2[1] = ((COSNumber)cosDW2.get(1)).floatValue();
+        }
+        else
+        {
+            dw2 = new float[] { 880, -1000 };
+        }
+
+        // vertical metrics for individual CIDs.
+        COSArray w2 = (COSArray) dict.getDictionaryObject(COSName.W2);
+        if (w2 != null)
+        {
+            for (int i = 0; i < w2.size(); i++)
+            {
+                COSNumber c = (COSNumber)w2.get(i);
+                COSBase next = w2.get(++i);
+                if (next instanceof COSArray)
+                {
+                    COSArray array = (COSArray)next;
+                    for (int j = 0; j < array.size(); j++)
+                    {
+                        int cid = c.intValue() + j;
+                        COSNumber w1y = (COSNumber) array.get(j);
+                        COSNumber v1x = (COSNumber) array.get(++j);
+                        COSNumber v1y = (COSNumber) array.get(++j);
+                        verticalDisplacementY.put(cid, w1y.floatValue());
+                        positionVectors.put(cid, new Vector(v1x.floatValue(), v1y.floatValue()));
+                    }
+                }
+                else
+                {
+                    int first = c.intValue();
+                    int last = ((COSNumber) next).intValue();
+                    COSNumber w1y = (COSNumber) w2.get(++i);
+                    COSNumber v1x = (COSNumber) w2.get(++i);
+                    COSNumber v1y = (COSNumber) w2.get(++i);
+                    for (int cid = first; cid <= last; cid++)
+                    {
+                        verticalDisplacementY.put(cid, w1y.floatValue());
+                        positionVectors.put(cid, new Vector(v1x.floatValue(), v1y.floatValue()));
                     }
                 }
             }
@@ -176,6 +233,74 @@ public abstract class PDCIDFont implements COSObjectable
     }
 
     /**
+     * Returns the default position vector (v).
+     *
+     * @param cid CID
+     */
+    private Vector getDefaultPositionVector(int cid)
+    {
+        float w0;
+        if (widths.containsKey(cid))
+        {
+            Float w = widths.get(cid);
+            if (w != null)
+            {
+                w0 = w;
+            }
+            else
+            {
+                w0 = getDefaultWidth();
+            }
+        }
+        else
+        {
+            w0 = getDefaultWidth();
+        }
+
+        return new Vector(w0 / 2, dw2[0]);
+    }
+
+    /**
+     * Returns the position vector (v) for the given character code.
+     *
+     * @param code character code
+     * @return position vector (v)
+     */
+    public Vector getPositionVector(int code)
+    {
+        int cid = codeToCID(code);
+        Vector v = positionVectors.get(cid);
+        if (v != null)
+        {
+            return v;
+        }
+        else
+        {
+            return getDefaultPositionVector(cid);
+        }
+    }
+
+    /**
+     * Returns the y-component of the vertical displacement vector (w1).
+     *
+     * @param code character code
+     * @return w1y
+     */
+    public float getVerticalDisplacementVectorY(int code)
+    {
+        int cid = codeToCID(code);
+        Float w1y = verticalDisplacementY.get(cid);
+        if (w1y != null)
+        {
+            return w1y;
+        }
+        else
+        {
+            return dw2[1];
+        }
+    }
+
+    /**
      * This will get the font height for a character.
      *
      * @param code character code
@@ -195,7 +320,7 @@ public abstract class PDCIDFont implements COSObjectable
         // font widths with the widths given in the font dictionary
 
         int cid = codeToCID(code);
-        if (cid < widths.size())
+        if (widths.containsKey(cid))
         {
             Float w = widths.get(cid);
             if (w != null)

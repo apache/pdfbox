@@ -286,6 +286,8 @@ public class CMap
     {
         this.codespaceRanges.addAll(cmap.codespaceRanges);
         this.charToUnicode.putAll(cmap.charToUnicode);
+        this.codeToCid.putAll(cmap.codeToCid);
+        this.codeToCidRanges.addAll(cmap.codeToCidRanges);
     }
     
     /**

@@ -179,6 +179,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName DUPLEX = new COSName("Duplex");
     public static final COSName DV = new COSName("DV");
     public static final COSName DW = new COSName("DW");
+    public static final COSName DW2 = new COSName("DW2");
     // E
     public static final COSName E = new COSName("E");
     public static final COSName EARLY_CHANGE = new COSName("EarlyChange");
@@ -464,6 +465,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName VIEWER_PREFERENCES = new COSName("ViewerPreferences");
     // W
     public static final COSName W = new COSName("W");
+    public static final COSName W2 = new COSName("W2");
     public static final COSName WHITE_POINT = new COSName("WhitePoint");
     public static final COSName WIDTH = new COSName("Width");
     public static final COSName WIDTHS = new COSName("Widths");

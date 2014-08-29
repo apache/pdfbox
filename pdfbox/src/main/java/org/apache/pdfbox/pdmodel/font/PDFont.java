@@ -157,7 +157,7 @@ public abstract class PDFont implements COSObjectable
     }
 
     /**
-     * Returns the width of the given character, in glyph space.
+     * Returns the advance width of the given character, in glyph space.
      *
      * @param code character code
      */
@@ -467,6 +467,11 @@ public abstract class PDFont implements COSObjectable
         }
         return fontWidthOfSpace;
     }
+
+    /**
+     * Returns true if the font uses vertical writing mode.
+     */
+    public abstract boolean isVertical();
 
     /**
      * Calling this will release all cached information.

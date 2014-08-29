@@ -192,6 +192,17 @@ public class Matrix implements Cloneable
     }
 
     /**
+     * Translates this matrix by the given vector.
+     *
+     * @param vector 2D vector
+     */
+    public void translate(Vector vector)
+    {
+        Matrix m = Matrix.getTranslatingInstance(vector.getX(), vector.getY());
+        concatenate(m);
+    }
+
+    /**
      * This will take the current matrix and multipy it with a matrix that is passed in.
      *
      * @param b The matrix to multiply by.
