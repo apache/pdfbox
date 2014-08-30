@@ -161,6 +161,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             PDResources resources = page.findResources();
             processStream(resources, page.getContents().getStream(), page.findCropBox());
         }
+        else
+        {
+            initStream(page.findCropBox());
+        }
 
         for (PDAnnotation annotation : page.getAnnotations())
         {
