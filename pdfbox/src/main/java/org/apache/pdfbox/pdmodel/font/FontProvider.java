@@ -50,4 +50,10 @@ public interface FontProvider
      * @param postScriptName PostScript font name
      */
     public Type1Font getType1Font(String postScriptName);
+
+    /**
+     * Returns a string containing debugging information. This will be written to the log if no
+     * suitable fonts are found and no fallback fonts are available. May be null.
+     */
+    public String toDebugString();
 }

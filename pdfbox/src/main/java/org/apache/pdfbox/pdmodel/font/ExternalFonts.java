@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.cff.CFFCIDFont;
 import org.apache.fontbox.cff.CFFFont;
 import org.apache.fontbox.cff.CFFType1Font;
@@ -45,6 +47,7 @@ public final class ExternalFonts
         private static final FontProvider INSTANCE = new FileSystemFontProvider();
     }
 
+    private static final Log log = LogFactory.getLog(ExternalFonts.class);
     private static FontProvider fontProvider;
 
     /**
@@ -238,6 +241,12 @@ public final class ExternalFonts
         TrueTypeFont ttf = getTrueTypeFont(fontName);
         if (ttf == null)
         {
+            String message = fontProvider.toDebugString();
+            if (message != null)
+            {
+                log.error("No fallback font for '" + fontName + "', dumping debug information:");
+                log.error(message);
+            }
             throw new IllegalStateException("No fonts available on the system for " + fontName);
         }
         return ttf;
