@@ -71,7 +71,10 @@ public class PrintFields
             Iterator<COSObjectable> kidsIter = kids.iterator();
             if (field != null && !sParent.equals(field.getPartialName()))
             {
-                sParent = sParent + "." + partialName;
+                if (partialName != null)
+                {
+                    sParent = sParent + "." + partialName;
+                }
             }
             System.out.println(sLevel + sParent);
             while (kidsIter.hasNext())
@@ -105,11 +108,16 @@ public class PrintFields
                 }
                 else
                 {
-                    fieldValue = "";
+                    fieldValue = "no value available";
                 }
             }
-            String outputString = sLevel + sParent + "." + partialName + " = " + fieldValue + ",  type="
-                    + field.getClass().getName();
+            StringBuilder outputString = new StringBuilder(sLevel + sParent);
+            if (partialName != null)
+            {
+                outputString.append( "." + partialName);
+            }
+            outputString.append(" = " + fieldValue);
+            outputString.append(",  type=" + field.getClass().getName());
             System.out.println(outputString);
         }
     }
