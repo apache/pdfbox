@@ -33,8 +33,10 @@ import java.awt.image.ComponentColorModel;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.awt.color.ColorSpace;
+import java.awt.geom.AffineTransform;
 import java.awt.image.ColorModel;
 import java.util.Map;
+import org.apache.pdfbox.util.Matrix;
 
 /**
  * A color space specifies how the colours of graphics objects will be painted on the page.
@@ -236,26 +238,19 @@ public abstract class PDColorSpace implements COSObjectable
     }
 
     /**
-     * Returns the AWT paint which corresponds to the given color value in this color space.
-     * @param color the color value
-     * @return an AWT paint
-     * @throws IOException if the color conversion fails
-     */
-    public Paint toPaint(PDFRenderer renderer,  PDColor color) throws IOException
-    {
-        return toPaint(renderer, color, 0);
-    }
-
-    /**
      * Returns the AWT paint which corresponds to the given color value in this color space
      * and the height of the current page.
      * This is for use with pattern color spaces
      * @param color the color value
+     * @param subStreamMatrix the substream matrix
+     * @param xform the graphics transform
      * @param pageHeight the height of the current page, used by pattern color spaces
      * @return an AWT paint
      * @throws IOException if the color conversion fails
      */
-    public Paint toPaint(PDFRenderer renderer, PDColor color, int pageHeight) throws IOException
+    public Paint toPaint(PDFRenderer renderer, PDColor color, 
+            Matrix subStreamMatrix, AffineTransform xform, 
+            int pageHeight) throws IOException
     {
         float[] rgb = toRGB(color.getComponents());
         return new Color(rgb[0], rgb[1], rgb[2]);

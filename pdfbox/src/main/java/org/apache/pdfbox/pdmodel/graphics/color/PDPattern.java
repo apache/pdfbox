@@ -26,6 +26,7 @@ import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
 import java.awt.Paint;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 import java.awt.image.WritableRaster;
@@ -33,6 +34,7 @@ import java.io.IOException;
 import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.util.Matrix;
 
 /**
  * A Pattern color space is either a Tiling pattern or a Shading pattern.
@@ -103,13 +105,9 @@ public final class PDPattern extends PDSpecialColorSpace
     }
 
     @Override
-    public Paint toPaint(PDFRenderer renderer, PDColor color) throws IOException
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Paint toPaint(PDFRenderer renderer, PDColor color, int pageHeight) throws IOException
+    public Paint toPaint(PDFRenderer renderer, PDColor color, 
+            Matrix subStreamMatrix, AffineTransform xform, 
+            int pageHeight) throws IOException
     {
         PDAbstractPattern pattern = getPattern(color);
         if (pattern instanceof PDTilingPattern)
