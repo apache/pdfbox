@@ -21,20 +21,20 @@ import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.cmap.CMap;
+import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.encoding.DictionaryEncoding;
-import org.apache.pdfbox.encoding.Encoding;
-import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.util.ResourceLoader;
+import org.apache.pdfbox.encoding.GlyphList;
+import org.apache.pdfbox.encoding.StandardEncoding;
+import org.apache.pdfbox.util.Matrix;
+import org.apache.pdfbox.util.Vector;
 
 /**
- * Type 0 (composite) Font.
- * 
+ * A Composite (Type 0) font.
+ *
  * @author Ben Litchfield
  */
 public class PDType0Font extends PDFont
@@ -43,38 +43,130 @@ public class PDType0Font extends PDFont
 
     private PDCIDFont descendantFont;
     private COSDictionary descendantFontDictionary;
+    private CMap cMap, cMapUCS2;
+    private boolean isCMapPredefined;
 
     /**
      * Constructor.
      * 
      * @param fontDictionary The font dictionary according to the PDF specification.
      */
-    public PDType0Font(COSDictionary fontDictionary)
+    public PDType0Font(COSDictionary fontDictionary) throws IOException
     {
         super(fontDictionary);
         COSArray descendantFonts = (COSArray)dict.getDictionaryObject(COSName.DESCENDANT_FONTS);
         descendantFontDictionary = (COSDictionary)descendantFonts.getObject(0);
-        if (descendantFontDictionary != null)
+
+        if (descendantFontDictionary == null)
         {
-            try
+            throw new IOException("Missing descendant font dictionary");
+        }
+
+        readEncoding();
+        fetchCMapUCS2();
+        descendantFont = PDFontFactory.createDescendantFont(descendantFontDictionary, this);
+
+        // warn if there may be text extraction issues
+        if (!isSymbolic())
+        {
+            LOG.warn("Nonsymbolic Type 0 font: " + getName());
+        }
+    }
+
+    /**
+     * Reads the font's Encoding entry, which should be a CMap name/stream.
+     */
+    private void readEncoding() throws IOException
+    {
+        COSBase encoding = dict.getDictionaryObject(COSName.ENCODING);
+        if (encoding != null)
+        {
+            if (encoding instanceof COSName)
             {
-                descendantFont = PDFontFactory.createDescendantFont(descendantFontDictionary, this);
+                // predefined CMap
+                COSName encodingName = (COSName)encoding;
+                cMap = CMapManager.getPredefinedCMap(encodingName.getName());
+                if (cMap != null)
+                {
+                    isCMapPredefined = true;
+                    return;
+                }
+                else
+                {
+                    throw new IOException("Missing required CMap");
+                }
             }
-            catch (IOException exception)
+            else
             {
-                LOG.error("Error while creating the descendant font!");
+                cMap = readCMap(encoding);
+                if (cMap == null)
+                {
+                    throw new IOException("Missing required CMap");
+                }
+                else if (!cMap.hasCIDMappings())
+                {
+                    LOG.warn("Invalid Encoding CMap in font " + getName());
+                }
+            }
+        }
+    }
+
+    /**
+     * Fetches the corresponding UCS2 CMap if the font's CMap is predefined.
+     */
+    private void fetchCMapUCS2() throws IOException
+    {
+        // if the font is composite and uses a predefined cmap (excluding Identity-H/V) then
+        // or if its decendant font uses Adobe-GB1/CNS1/Japan1/Korea1
+        if (isCMapPredefined)
+        {
+            // a) Map the character code to a CID using the font's CMap
+            // b) Obtain the ROS from the font's CIDSystemInfo
+            // c) Construct a second CMap name by concatenating the ROS in the format "R-O-UCS2"
+            // d) Obtain the CMap with the constructed name
+            // e) Map the CID according to the CMap from step d), producing a Unicode value
+
+            String cMapName = null;
+
+            // get the encoding CMap
+            COSBase encoding = dict.getDictionaryObject(COSName.ENCODING);
+            if (encoding != null && encoding instanceof COSName)
+            {
+                cMapName = ((COSName)encoding).getName();
+            }
+
+            // try to find the corresponding Unicode (UC2) CMap
+            if (cMapName != null && !cMapName.equals("Identity-H") &&
+                                    !cMapName.equals("Identity-V"))
+            {
+                CMap cMap = CMapManager.getPredefinedCMap(cMapName);
+                if (cMap != null)
+                {
+                    String ucs2Name = cMap.getRegistry() + "-" + cMap.getOrdering() + "-UCS2";
+                    CMap ucs2CMap = CMapManager.getPredefinedCMap(ucs2Name);
+                    if (ucs2CMap != null)
+                    {
+                        cMapUCS2 = ucs2CMap;
+                    }
+                }
             }
         }
     }
 
     /**
      * Returns the descendant font.
-     *
-     * @return the descendant font.
      */
     public PDCIDFont getDescendantFont()
     {
         return descendantFont;
+    }
+
+    /**
+     * Returns the font's CMap.
+     */
+    public CMap getCMap()
+    {
+        return cMap;
     }
 
     @Override
@@ -84,153 +176,134 @@ public class PDType0Font extends PDFont
     }
 
     @Override
-    public PDRectangle getFontBoundingBox() throws IOException
+    public Matrix getFontMatrix()
     {
-        throw new RuntimeException("Not yet implemented");
+        return descendantFont.getFontMatrix();
     }
 
     @Override
-    public float getFontWidth(byte[] c, int offset, int length) throws IOException
+    public boolean isVertical()
     {
-        return descendantFont.getFontWidth(c, offset, length);
+        return cMap.getWMode() == 1;
     }
 
     @Override
-    public float getFontHeight(byte[] c, int offset, int length) throws IOException
+    public float getHeight(int code) throws IOException
     {
-        return descendantFont.getFontHeight(c, offset, length);
+        return descendantFont.getHeight(code);
     }
 
     @Override
-    public float getAverageFontWidth() throws IOException
+    public float getAverageFontWidth()
     {
         return descendantFont.getAverageFontWidth();
     }
 
     @Override
-    public float getFontWidth(int charCode)
+    public Vector getPositionVector(int code)
     {
-        return descendantFont.getFontWidth(charCode);
+        // units are always 1/1000 text space, font matrix is not used, see FOP-2252
+        return descendantFont.getPositionVector(code).scale(-1 / 1000f);
     }
 
-    // todo: copied from PDSimpleFont and modified
-    // todo: for a Type 0 font this can only be "The name of a predefined CMap, or a stream containing a
-    // CMap that maps character codes to font numbers and CIDs", so I should adjust this accordingly
     @Override
-    protected void determineEncoding()
+    public Vector getDisplacement(int code) throws IOException
     {
-        String cmapName = null;
-        COSName encodingName = null;
-        COSBase encoding = dict.getDictionaryObject(COSName.ENCODING);
-        Encoding fontEncoding = null;
-        if (encoding != null)
+        if (isVertical())
         {
-            if (encoding instanceof COSName)
-            {
-                if (cmap == null)
-                {
-                    encodingName = (COSName) encoding;
-                    cmap = cmapObjects.get(encodingName.getName());
-                    if (cmap == null)
-                    {
-                        cmapName = encodingName.getName();
-                    }
-                }
-                if (cmap == null && cmapName != null)
-                {
-                    try
-                    {
-                        fontEncoding = Encoding.getInstance(encodingName);
-                    }
-                    catch (IOException exception)
-                    {
-                        LOG.debug("Debug: Could not find encoding for " + encodingName);
-                    }
-                }
-            }
-            else if (encoding instanceof COSStream)
-            {
-                if (cmap == null)
-                {
-                    COSStream encodingStream = (COSStream) encoding;
-                    try
-                    {
-                        InputStream is = encodingStream.getUnfilteredStream();
-                        cmap = parseCmap(null, is);
-                        IOUtils.closeQuietly(is);
-                    }
-                    catch (IOException exception)
-                    {
-                        LOG.error("Error: Could not parse the embedded CMAP");
-                    }
-                }
-            }
-            else if (encoding instanceof COSDictionary)
-            {
-                try
-                {
-                    fontEncoding = new DictionaryEncoding((COSDictionary) encoding);
-                }
-                catch (IOException exception)
-                {
-                    LOG.error("Error: Could not create the DictionaryEncoding");
-                }
-            }
+            return new Vector(0, descendantFont.getVerticalDisplacementVectorY(code) / 1000f);
         }
-        this.fontEncoding = fontEncoding;
-        extractToUnicodeEncoding(); // todo: IMPORTANT!
-
-        if (cmap == null && cmapName != null)
+        else
         {
-            InputStream cmapStream = null;
-            try
-            {
-                // look for a predefined CMap with the given name
-                cmapStream = ResourceLoader.loadResource(resourceRootCMAP + cmapName);
-                if (cmapStream != null)
-                {
-                    cmap = parseCmap(resourceRootCMAP, cmapStream);
-                    if (cmap == null && encodingName == null)
-                    {
-                        LOG.error("Error: Could not parse predefined CMAP file for '" +
-                                cmapName + "'");
-                    }
-                }
-                else
-                {
-                    LOG.debug("Debug: '" + cmapName + "' isn't a predefined map, most likely it's" +
-                            "embedded in the pdf itself.");
-                }
-            }
-            catch (IOException exception)
-            {
-                LOG.error("Error: Could not find predefined CMAP file for '" + cmapName + "'");
-            }
-            finally
-            {
-                IOUtils.closeQuietly(cmapStream);
-            }
+            return super.getDisplacement(code);
         }
     }
 
     @Override
-    public String encode(byte[] c, int offset, int length) throws IOException
+    public float getWidth(int code) throws IOException
     {
-        String retval = null;
-        if (hasToUnicode())
+        return descendantFont.getWidth(code);
+    }
+
+    @Override
+    protected float getWidthFromFont(int code) throws IOException
+    {
+        return descendantFont.getWidthFromFont(code);
+    }
+
+    @Override
+    public boolean isEmbedded()
+    {
+        return descendantFont.isEmbedded();
+    }
+
+    @Override
+    public String toUnicode(int code)
+    {
+        // try to use a ToUnicode CMap
+        String unicode = super.toUnicode(code);
+        if (unicode != null)
         {
-            retval = super.encode(c, offset, length);
+            return unicode;
         }
 
-        if (retval == null)
+        if (!isSymbolic())
         {
-            int result = cmap.lookupCID(c, offset, length);
-            if (result != -1)
-            {
-                retval = descendantFont.cmapEncoding(result, 2, true, null);
-            }
+            // this nonsymbolic behaviour isn't well documented, test with PDFBOX-1422,
+            // also see PDCIDFontType2#cidToGID()
+            String name = StandardEncoding.INSTANCE.getName(code);
+            return GlyphList.toUnicode(name);
         }
-        return retval;
+        else if (isCMapPredefined && cMapUCS2 != null)
+        {
+            // if the font is composite and uses a predefined cmap (excluding Identity-H/V) then
+            // or if its decendant font uses Adobe-GB1/CNS1/Japan1/Korea1
+
+            // a) Map the character code to a character identifier (CID) according to the font?s CMap
+            int cid = codeToCID(code);
+
+            // e) Map the CID according to the CMap from step d), producing a Unicode value
+            return cMapUCS2.toUnicode(cid);
+        }
+        else
+        {
+            // if no value has been produced, there is no way to obtain Unicode for the character.
+            return null;
+        }
+    }
+
+    @Override
+    public BoundingBox getBoundingBox() throws IOException
+    {
+        return descendantFont.getBoundingBox();
+    }
+
+    @Override
+    public int readCode(InputStream in) throws IOException
+    {
+        return cMap.readCode(in);
+    }
+
+    /**
+     * Returns the CID for the given character code. If not found then CID 0 is returned.
+     *
+     * @param code character code
+     * @return CID
+     */
+    public int codeToCID(int code)
+    {
+        return descendantFont.codeToCID(code);
+    }
+
+    /**
+     * Returns the GID for the given character code.
+     *
+     * @param code character code
+     * @return GID
+     */
+    public int codeToGID(int code) throws IOException
+    {
+        return descendantFont.codeToGID(code);
     }
 
     @Override
@@ -243,5 +316,16 @@ public class PDType0Font extends PDFont
             descendantFont = null;
         }
         descendantFontDictionary = null;
+    }
+
+    @Override
+    public String toString()
+    {
+        String descendant = null;
+        if (getDescendantFont() != null)
+        {
+            descendant = getDescendantFont().getClass().getSimpleName();
+        }
+        return getClass().getSimpleName() + "/" + descendant + " " + getBaseFont();
     }
 }

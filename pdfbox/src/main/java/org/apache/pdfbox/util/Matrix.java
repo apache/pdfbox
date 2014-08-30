@@ -16,7 +16,12 @@
  */
 package org.apache.pdfbox.util;
 
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSFloat;
+import org.apache.pdfbox.cos.COSNumber;
+
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 
 /**
  * This class will be used for matrix manipulation.
@@ -42,6 +47,35 @@ public class Matrix implements Cloneable
     {
         single = new float[DEFAULT_SINGLE.length];
         reset();
+    }
+
+    /**
+     * Constructor.
+     */
+    public Matrix(COSArray array)
+    {
+        single = new float[DEFAULT_SINGLE.length];
+        single[0] = ((COSNumber)array.get(0)).floatValue();
+        single[1] = ((COSNumber)array.get(1)).floatValue();
+        single[3] = ((COSNumber)array.get(2)).floatValue();
+        single[4] = ((COSNumber)array.get(3)).floatValue();
+        single[6] = ((COSNumber)array.get(4)).floatValue();
+        single[7] = ((COSNumber)array.get(5)).floatValue();
+    }
+
+    /**
+     * Constructor.
+     */
+    public Matrix(float a, float b, float c, float d, float e, float f)
+    {
+        single = new float[DEFAULT_SINGLE.length];
+        single[0] = a;
+        single[1] = b;
+        single[3] = c;
+        single[4] = d;
+        single[6] = e;
+        single[7] = f;
+        single[8] = 1;
     }
 
     /**
@@ -148,6 +182,27 @@ public class Matrix implements Cloneable
     }
 
     /**
+     * Concatenates (premultiplies) the given matrix to this matrix.
+     *
+     * @param matrix The matrix to concatenate.
+     */
+    public void concatenate(Matrix matrix)
+    {
+        matrix.multiply(this, this);
+    }
+
+    /**
+     * Translates this matrix by the given vector.
+     *
+     * @param vector 2D vector
+     */
+    public void translate(Vector vector)
+    {
+        Matrix m = Matrix.getTranslatingInstance(vector.getX(), vector.getY());
+        concatenate(m);
+    }
+
+    /**
      * This will take the current matrix and multipy it with a matrix that is passed in.
      *
      * @param b The matrix to multiply by.
@@ -241,6 +296,56 @@ public class Matrix implements Cloneable
     }
 
     /**
+     * Transforms the given point by this matrix.
+     *
+     * @param point point to transform
+     */
+    public void transform(Point2D point) {
+        float x = (float)point.getX();
+        float y = (float)point.getY();
+        float a = single[0];
+        float b = single[1];
+        float c = single[3];
+        float d = single[4];
+        float e = single[6];
+        float f = single[7];
+        point.setLocation(x * a + y * c + e, x * b + y * d + f);
+    }
+
+    /**
+     * Transforms the given point by this matrix.
+     *
+     * @param x x-coordinate
+     * @param y y-coordinate
+     */
+    public Point2D transformPoint(double x, double y) {
+        float a = single[0];
+        float b = single[1];
+        float c = single[3];
+        float d = single[4];
+        float e = single[6];
+        float f = single[7];
+        return new Point2D.Double(x * a + y * c + e, x * b + y * d + f);
+    }
+
+    /**
+     * Transforms the given point by this matrix.
+     *
+     * @param vector @2D vector
+     */
+    public Vector transform(Vector vector) {
+        float a = single[0];
+        float b = single[1];
+        float c = single[3];
+        float d = single[4];
+        float e = single[6];
+        float f = single[7];
+        float x = vector.getX();
+        float y = vector.getY();
+        return new Vector(x * a + y * c + e, x * b + y * d + f);
+    }
+
+    /**
      * Create a new matrix with just the scaling operators.
      *
      * @return A new matrix with just the scaling operators.
@@ -302,6 +407,19 @@ public class Matrix implements Cloneable
         retval.single[7] = y;
 
         return retval;
+    }
+
+    /**
+     * Produces a copy of the first matrix, with the second matrix concatenated.
+     *
+     * @param a The matrix to copy.
+     * @param b The matrix to concatenate.
+     */
+    public static Matrix concatenate(Matrix a, Matrix b)
+    {
+        Matrix copy = a.clone();
+        copy.concatenate(b);
+        return copy;
     }
 
     /**
@@ -402,5 +520,20 @@ public class Matrix implements Cloneable
     public float getYPosition()
     {
         return single[7];
+    }
+
+    /**
+     * Returns a COS array which represnets this matrix.
+     */
+    public COSArray toCOSArray()
+    {
+        COSArray array = new COSArray();
+        array.add(new COSFloat(0));
+        array.add(new COSFloat(1));
+        array.add(new COSFloat(3));
+        array.add(new COSFloat(4));
+        array.add(new COSFloat(6));
+        array.add(new COSFloat(7));
+        return array;
     }
 }

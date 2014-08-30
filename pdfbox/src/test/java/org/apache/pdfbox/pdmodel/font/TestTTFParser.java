@@ -18,13 +18,14 @@ package org.apache.pdfbox.pdmodel.font;
 
 import java.io.IOException;
 import java.io.InputStream;
-import org.apache.fontbox.ttf.CMAPEncodingEntry;
-import org.apache.fontbox.ttf.CMAPTable;
+import org.apache.fontbox.ttf.CmapSubtable;
+import org.apache.fontbox.ttf.CmapTable;
 import org.apache.fontbox.ttf.NameRecord;
 import org.apache.fontbox.ttf.PostScriptTable;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.encoding.Encoding;
+import org.apache.pdfbox.encoding.GlyphList;
 import org.apache.pdfbox.encoding.WinAnsiEncoding;
 import org.junit.Assert;
 import org.junit.Test;
@@ -51,18 +52,18 @@ public class TestTTFParser
 
         TrueTypeFont arial = parser.parseTTF(arialIs);
 
-        CMAPTable cmap = arial.getCMAP();
+        CmapTable cmap = arial.getCmap();
         Assert.assertNotNull(cmap);
 
-        CMAPEncodingEntry[] cmaps = cmap.getCmaps();
+        CmapSubtable[] cmaps = cmap.getCmaps();
         Assert.assertNotNull(cmaps);
 
-        CMAPEncodingEntry uc = null;
+        CmapSubtable uc = null;
 
-        for (CMAPEncodingEntry e : cmaps)
+        for (CmapSubtable e : cmaps)
         {
             if (e.getPlatformId() == NameRecord.PLATFORM_WINDOWS
-                    && e.getPlatformEncodingId() == NameRecord.PLATFORM_ENCODING_WINDOWS_UNICODE)
+                    && e.getPlatformEncodingId() == NameRecord.ENCODING_WINDOWS_UNICODE_BMP)
             {
                 uc = e;
                 break;
@@ -93,27 +94,27 @@ public class TestTTFParser
                         || "product".equals(name) || "integral".equals(name) || "Omega".equals(name)
                         || "radical".equals(name) || "tilde".equals(name))
                 {
-                    Assert.assertTrue(enc.getNameForCharacter((char) charCode).startsWith(name));
+                    Assert.assertTrue(GlyphList.unicodeToName((char) charCode).startsWith(name));
                 }
                 else if ("bar".equals(name))
                 {
-                    Assert.assertTrue(enc.getNameForCharacter((char) charCode).endsWith(name));
+                    Assert.assertTrue(GlyphList.unicodeToName((char) charCode).endsWith(name));
                 }
                 else if ("sfthyphen".equals(name))
                 {
-                    Assert.assertEquals("softhyphen", enc.getNameForCharacter((char) charCode));
+                    Assert.assertEquals("softhyphen", GlyphList.unicodeToName((char) charCode));
                 }
-                else if ("periodcentered".equals(name) && !enc.getNameForCharacter((char) charCode).equals(name))
+                else if ("periodcentered".equals(name) && !GlyphList.unicodeToName((char) charCode).equals(name))
                 {
-                    Assert.assertEquals("bulletoperator", enc.getNameForCharacter((char) charCode));
+                    Assert.assertEquals("bulletoperator", GlyphList.unicodeToName((char) charCode));
                 }
                 else if ("fraction".equals(name))
                 {
-                    Assert.assertEquals("divisionslash", enc.getNameForCharacter((char) charCode));
+                    Assert.assertEquals("divisionslash", GlyphList.unicodeToName((char) charCode));
                 }
                 else if ("mu".equals(name))
                 {
-                    Assert.assertEquals("mu1", enc.getNameForCharacter((char) charCode));
+                    Assert.assertEquals("mu1", GlyphList.unicodeToName((char) charCode));
                 }
                 else if ("pi".equals(name))
                 {
@@ -121,7 +122,7 @@ public class TestTTFParser
                 }
                 else
                 {
-                    Assert.assertEquals(enc.getNameForCharacter((char) charCode), name);
+                    Assert.assertEquals(GlyphList.unicodeToName((char) charCode), name);
                 }
             }
         }

@@ -16,30 +16,31 @@
  */
 package org.apache.fontbox.ttf;
 
+import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.encoding.Encoding;
+import org.apache.fontbox.util.BoundingBox;
 
 /**
  * A TrueType font file.
  * 
  * @author Ben Litchfield
  */
-public class TrueTypeFont 
+public class TrueTypeFont implements Type1Equivalent
 {
-    private final Log log = LogFactory.getLog(TrueTypeFont.class);
-
     private float version;
     private int numberOfGlyphs = -1;
     private int unitsPerEm = -1;
     private int[] advanceWidths = null;
     private Map<String,TTFTable> tables = new HashMap<String,TTFTable>();
     private TTFDataStream data;
+    private Map<String, Integer> postScriptNames;
     
     /**
      * Constructor.  Clients should use the TTFParser to create a new TrueTypeFont object.
@@ -97,13 +98,23 @@ public class TrueTypeFont
     {
         return tables.values();
     }
+
+    /**
+     * Get all of the tables.
+     *
+     * @return All of the tables.
+     */
+    public Map<String, TTFTable> getTableMap()
+    {
+        return tables;
+    }
     
     /**
      * This will get the naming table for the true type font.
      * 
      * @return The naming table.
      */
-    public NamingTable getNaming()
+    public synchronized NamingTable getNaming() throws IOException
     {
         NamingTable naming = (NamingTable)tables.get( NamingTable.TAG );
         if (naming != null && !naming.getInitialized())
@@ -118,7 +129,7 @@ public class TrueTypeFont
      * 
      * @return The postscript table.
      */
-    public PostScriptTable getPostScript()
+    public synchronized PostScriptTable getPostScript() throws IOException
     {
         PostScriptTable postscript = (PostScriptTable)tables.get( PostScriptTable.TAG );
         if (postscript != null && !postscript.getInitialized())
@@ -133,7 +144,7 @@ public class TrueTypeFont
      * 
      * @return The OS/2 table.
      */
-    public OS2WindowsMetricsTable getOS2Windows()
+    public synchronized OS2WindowsMetricsTable getOS2Windows() throws IOException
     {
         OS2WindowsMetricsTable os2WindowsMetrics = (OS2WindowsMetricsTable)tables.get( OS2WindowsMetricsTable.TAG );
         if (os2WindowsMetrics != null && !os2WindowsMetrics.getInitialized())
@@ -148,7 +159,7 @@ public class TrueTypeFont
      * 
      * @return The maxp table.
      */
-    public MaximumProfileTable getMaximumProfile()
+    public synchronized MaximumProfileTable getMaximumProfile() throws IOException
     {
         MaximumProfileTable maximumProfile = (MaximumProfileTable)tables.get( MaximumProfileTable.TAG );
         if (maximumProfile != null && !maximumProfile.getInitialized())
@@ -163,7 +174,7 @@ public class TrueTypeFont
      * 
      * @return The head table.
      */
-    public HeaderTable getHeader()
+    public synchronized HeaderTable getHeader() throws IOException
     {
         HeaderTable header = (HeaderTable)tables.get( HeaderTable.TAG );
         if (header != null && !header.getInitialized())
@@ -178,7 +189,7 @@ public class TrueTypeFont
      * 
      * @return The hhea table.
      */
-    public HorizontalHeaderTable getHorizontalHeader()
+    public synchronized HorizontalHeaderTable getHorizontalHeader() throws IOException
     {
         HorizontalHeaderTable horizontalHeader = (HorizontalHeaderTable)tables.get( HorizontalHeaderTable.TAG );
         if (horizontalHeader != null && !horizontalHeader.getInitialized())
@@ -193,7 +204,7 @@ public class TrueTypeFont
      * 
      * @return The hmtx table.
      */
-    public HorizontalMetricsTable getHorizontalMetrics()
+    public synchronized HorizontalMetricsTable getHorizontalMetrics() throws IOException
     {
         HorizontalMetricsTable horizontalMetrics = (HorizontalMetricsTable)tables.get( HorizontalMetricsTable.TAG );
         if (horizontalMetrics != null && !horizontalMetrics.getInitialized())
@@ -208,7 +219,7 @@ public class TrueTypeFont
      * 
      * @return The loca table.
      */
-    public IndexToLocationTable getIndexToLocation()
+    public synchronized IndexToLocationTable getIndexToLocation() throws IOException
     {
         IndexToLocationTable indexToLocation = (IndexToLocationTable)tables.get( IndexToLocationTable.TAG );
         if (indexToLocation != null && !indexToLocation.getInitialized())
@@ -223,7 +234,7 @@ public class TrueTypeFont
      * 
      * @return The glyf table.
      */
-    public GlyphTable getGlyph()
+    public synchronized GlyphTable getGlyph() throws IOException
     {
         GlyphTable glyph = (GlyphTable)tables.get( GlyphTable.TAG );
         if (glyph != null && !glyph.getInitialized())
@@ -234,13 +245,13 @@ public class TrueTypeFont
     }
     
     /**
-     * Get the cmap table for this TTF.
+     * Get the "cmap" table for this TTF.
      * 
-     * @return The cmap table.
+     * @return The "cmap" table.
      */
-    public CMAPTable getCMAP()
+    public synchronized CmapTable getCmap() throws IOException
     {
-        CMAPTable cmap = (CMAPTable)tables.get( CMAPTable.TAG );
+        CmapTable cmap = (CmapTable)tables.get( CmapTable.TAG );
         if (cmap != null && !cmap.getInitialized())
         {
             readTable(cmap);
@@ -267,21 +278,14 @@ public class TrueTypeFont
      * 
      * @param table the table to be initialized
      */
-    void readTable(TTFTable table)
+    void readTable(TTFTable table) throws IOException
     {
-        try
-        {
-            // save current position
-            long currentPosition = data.getCurrentPosition();
-            data.seek(table.getOffset());
-            table.read(this, data);
-            // restore current position
-            data.seek(currentPosition);
-        }
-        catch (IOException exception)
-        {
-            log.error("An error occured when reading table " + table.getTag(), exception);
-        }
+        // save current position
+        long currentPosition = data.getCurrentPosition();
+        data.seek(table.getOffset());
+        table.read(this, data);
+        // restore current position
+        data.seek(currentPosition);
     }
 
     /**
@@ -289,7 +293,7 @@ public class TrueTypeFont
      * 
      * @return the number of glyphs
      */
-    public int getNumberOfGlyphs()
+    public int getNumberOfGlyphs() throws IOException
     {
         if (numberOfGlyphs == -1)
         {
@@ -312,7 +316,7 @@ public class TrueTypeFont
      * 
      * @return units per EM
      */
-    public int getUnitsPerEm()
+    public int getUnitsPerEm() throws IOException
     {
         if (unitsPerEm == -1)
         {
@@ -331,12 +335,12 @@ public class TrueTypeFont
     }
 
     /**
-     * Returns the width for the given glyph code.
+     * Returns the width for the given GID.
      * 
-     * @param code the glyph code
+     * @param gid the GID
      * @return the width
      */
-    public int getAdvanceWidth(int code)
+    public int getAdvanceWidth(int gid) throws IOException
     {
         if (advanceWidths == null)
         {
@@ -351,15 +355,155 @@ public class TrueTypeFont
                 advanceWidths = new int[]{250};
             }
         }
-        if (advanceWidths.length > code)
+        if (advanceWidths.length > gid)
         {
-            return advanceWidths[code];
+            return advanceWidths[gid];
         }
         else
         {
             // monospaced fonts may not have a width for every glyph
             // the last one is for subsequent glyphs
             return advanceWidths[advanceWidths.length-1];
+        }
+    }
+
+    @Override
+    public String getFullName() throws IOException
+    {
+        if (getNaming() != null)
+        {
+            return getNaming().getPostScriptName();
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    private synchronized void readPostScriptNames() throws IOException
+    {
+        if (postScriptNames == null)
+        {
+            postScriptNames = new HashMap<String, Integer>();
+            if (getPostScript() != null)
+            {
+                String[] names = getPostScript().getGlyphNames();
+                if (names != null)
+                {
+                    for (int i = 0; i < names.length; i++)
+                    {
+                        postScriptNames.put(names[i], i);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns the GID for the given PostScript name, if the "post" table is present.
+     */
+    public int nameToGID(String name) throws IOException
+    {
+        readPostScriptNames();
+
+        GlyphData[] glyphs = getGlyph().getGlyphs();
+        Integer gid = postScriptNames.get(name);
+        if (gid == null || gid < 0 || gid >= glyphs.length)
+        {
+            return 0;
+        }
+        return gid;
+    }
+
+    @Override
+    public GeneralPath getPath(String name) throws IOException
+    {
+        readPostScriptNames();
+
+        GlyphData[] glyphs = getGlyph().getGlyphs();
+        Integer gid = postScriptNames.get(name);
+        if (gid == null || gid < 0 || gid >= glyphs.length)
+        {
+            gid = 0;
+        }
+
+        // some glyphs have no outlines (e.g. space, table, newline)
+        if (glyphs[gid] == null)
+        {
+            return new GeneralPath();
+        }
+        else
+        {
+            GeneralPath path = glyphs[gid].getPath();
+
+            // scale to 1000upem, per PostScript convention
+            float scale = 1000f / getUnitsPerEm();
+            AffineTransform atScale = AffineTransform.getScaleInstance(scale, scale);
+            path.transform(atScale);
+
+            return path;
+        }
+    }
+
+    @Override
+    public float getWidth(String name) throws IOException
+    {
+        readPostScriptNames();
+
+        Integer gid = postScriptNames.get(name);
+        int width = getAdvanceWidth(gid);
+        int unitsPerEM = getUnitsPerEm();
+        if (unitsPerEM != 1000)
+        {
+            width *= 1000f / unitsPerEM;
+        }
+        return width;
+    }
+
+    @Override
+    public boolean hasGlyph(String name) throws IOException
+    {
+        readPostScriptNames();
+
+        Integer gid = postScriptNames.get(name);
+        GlyphData[] glyphs = getGlyph().getGlyphs();
+        return !(gid == null || gid < 0 || gid >= glyphs.length);
+    }
+
+    @Override
+    public Encoding getEncoding()
+    {
+        return null;
+    }
+
+    @Override
+    public BoundingBox getFontBBox() throws IOException
+    {
+        short xMin = getHeader().getXMin();
+        short xMax = getHeader().getXMax();
+        short yMin = getHeader().getYMin();
+        short yMax = getHeader().getYMax();
+        float scale = 1000f / getUnitsPerEm();
+        return new BoundingBox(xMin * scale, yMin * scale, xMax * scale, yMax * scale);
+    }
+
+    @Override
+    public String toString()
+    {
+        try
+        {
+            if (getNaming() != null)
+            {
+                return getNaming().getPostScriptName();
+            }
+            else
+            {
+                return "(null)";
+            }
+        }
+        catch (IOException e)
+        {
+            return "(null - " + e.getMessage() + ")";
         }
     }
 }

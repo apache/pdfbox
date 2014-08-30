@@ -28,8 +28,8 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.encoding.MacRomanEncoding;
 import org.apache.pdfbox.encoding.WinAnsiEncoding;
-import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
+import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.font.container.TrueTypeContainer;
@@ -37,8 +37,7 @@ import org.apache.pdfbox.preflight.font.descriptor.TrueTypeDescriptorHelper;
 
 public class TrueTypeFontValidator extends SimpleFontValidator<TrueTypeContainer>
 {
-
-    public TrueTypeFontValidator(PreflightContext context, PDFont font)
+    public TrueTypeFontValidator(PreflightContext context, PDTrueTypeFont font)
     {
         super(context, font, new TrueTypeContainer(font));
     }
@@ -58,7 +57,7 @@ public class TrueTypeFontValidator extends SimpleFontValidator<TrueTypeContainer
              */
             if (fd.isNonSymbolic())
             {
-                Encoding encodingValue = this.font.getFontEncoding();
+                Encoding encodingValue = this.font.getEncoding();
                 if (encodingValue == null
                         || !(encodingValue instanceof MacRomanEncoding || encodingValue instanceof WinAnsiEncoding))
                 {

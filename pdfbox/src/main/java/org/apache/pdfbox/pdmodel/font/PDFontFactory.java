@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.font;
 
 import java.io.IOException;
 
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.commons.logging.Log;
@@ -53,6 +54,14 @@ public class PDFontFactory
         COSName subType = dictionary.getCOSName(COSName.SUBTYPE);
         if (COSName.TYPE1.equals(subType))
         {
+            COSBase fd = dictionary.getDictionaryObject(COSName.FONT_DESC);
+            if (fd != null && fd instanceof COSDictionary)
+            {
+                if (((COSDictionary)fd).containsKey(COSName.FONT_FILE3))
+                {
+                    return new PDType1CFont(dictionary);
+                }
+            }
             return new PDType1Font(dictionary);
         }
         else if (COSName.MM_TYPE1.equals(subType))
@@ -101,17 +110,17 @@ public class PDFontFactory
         COSName type = dictionary.getCOSName(COSName.TYPE, COSName.FONT);
         if (!COSName.FONT.equals(type))
         {
-            throw new IOException("Expected 'Font' dictionary but found '" + type.getName() + "'");
+            throw new IllegalArgumentException("Expected 'Font' dictionary but found '" + type.getName() + "'");
         }
 
         COSName subType = dictionary.getCOSName(COSName.SUBTYPE);
         if (COSName.CID_FONT_TYPE0.equals(subType))
         {
-            return new PDCIDFontType0Font(dictionary, parent);
+            return new PDCIDFontType0(dictionary, parent);
         }
         else if (COSName.CID_FONT_TYPE2.equals(subType))
         {
-            return new PDCIDFontType2Font(dictionary, parent);
+            return new PDCIDFontType2(dictionary, parent);
         }
         else
         {

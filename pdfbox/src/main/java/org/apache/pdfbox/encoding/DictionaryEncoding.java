@@ -1,4 +1,5 @@
 /*
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -16,7 +17,8 @@
  */
 package org.apache.pdfbox.encoding;
 
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -27,47 +29,66 @@ import org.apache.pdfbox.cos.COSNumber;
 /**
  * This will perform the encoding from a dictionary.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.13 $
+ * @author Ben Litchfield
  */
 public class DictionaryEncoding extends Encoding
 {
-    private COSDictionary encoding = null;
+    private final COSDictionary encoding;
+    private final Encoding baseEncoding;
+    private final Map<Integer, String> differences = new HashMap<Integer, String>();
 
     /**
-     * Constructor.
+     * Creates a new DictionaryEncoding for embedding.
+     */
+    public DictionaryEncoding(COSName baseEncoding, COSArray differences)
+    {
+        encoding = new COSDictionary();
+        encoding.setItem(COSName.NAME, COSName.ENCODING);
+        encoding.setItem(COSName.DIFFERENCES, differences);
+        if (baseEncoding != COSName.STANDARD_ENCODING)
+        {
+            encoding.setItem(COSName.BASE_ENCODING, baseEncoding);
+            this.baseEncoding = Encoding.getInstance(baseEncoding);
+        }
+        else
+        {
+            this.baseEncoding = Encoding.getInstance(baseEncoding);
+        }
+    }
+
+    /**
+     * Creates a new DictionaryEncoding from a PDF.
      *
      * @param fontEncoding The encoding dictionary.
-     *
-     * @throws IOException If there is a problem getting the base font.
      */
-    public DictionaryEncoding( COSDictionary fontEncoding ) throws IOException
+    public DictionaryEncoding(COSDictionary fontEncoding, boolean isNonSymbolic, Encoding builtIn)
     {
         encoding = fontEncoding;
 
-        //first set up the base encoding
-        //The previious value WinAnsiEncoding() has been changed to StandardEnding
-        //see p 389 of the PDF 1.5 ref�rence table 5.11 entries in a dictionary encoding
-        //"If this entry is absent, the Differences entry describes differences from an implicit
-        //base encoding. For a font program that is embedded in the PDF file, the
-        //implicit base encoding is the font program�s built-in encoding, as described
-        //above and further elaborated in the sections on specific font types below. Otherwise,
-        //for a nonsymbolic font, it is StandardEncoding, and for a symbolic font, it
-        //is the font�s built-in encoding."
-
-        // The default base encoding is standardEncoding
-        Encoding baseEncoding = StandardEncoding.INSTANCE;
-        COSName baseEncodingName =
-            (COSName) encoding.getDictionaryObject(COSName.BASE_ENCODING);
-        if (baseEncodingName != null) {
-            baseEncoding = Encoding.getInstance(baseEncodingName);
+        if (encoding.containsKey(COSName.BASE_ENCODING))
+        {
+            COSName name = encoding.getCOSName(COSName.BASE_ENCODING);
+            baseEncoding = Encoding.getInstance(name);
+        }
+        else if (isNonSymbolic)
+        {
+            // Otherwise, for a nonsymbolic font, it is StandardEncoding
+            baseEncoding = StandardEncoding.INSTANCE;
+        }
+        else
+        {
+            // and for a symbolic font, it is the font's built-in encoding."
+            baseEncoding = builtIn;
+            if (builtIn == null)
+            {
+                throw new IllegalArgumentException("Built-in Encoding required for symbolic font");
+            }
         }
 
-        nameToCode.putAll( baseEncoding.nameToCode );
         codeToName.putAll( baseEncoding.codeToName );
+        names.addAll( baseEncoding.names );
 
-
-        //now replace with the differences.
+        // now replace with the differences
         COSArray differences = (COSArray)encoding.getDictionaryObject( COSName.DIFFERENCES );
         int currentIndex = -1;
         for( int i=0; differences != null && i<differences.size(); i++ )
@@ -80,9 +101,27 @@ public class DictionaryEncoding extends Encoding
             else if( next instanceof COSName )
             {
                 COSName name = (COSName)next;
-                addCharacterEncoding( currentIndex++, name.getName() );
+                add(currentIndex, name.getName());
+                this.differences.put(currentIndex, name.getName());
+                currentIndex++;
             }
         }
+    }
+
+    /**
+     * Returns the base encoding.
+     */
+    public Encoding getBaseEncoding()
+    {
+        return baseEncoding;
+    }
+
+    /**
+     * Returns the Differences array.
+     */
+    public Map<Integer, String> getDifferences()
+    {
+        return differences;
     }
 
     /**

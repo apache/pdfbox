@@ -20,6 +20,7 @@
 package org.apache.pdfbox.rendering.font;
 
 import java.awt.geom.GeneralPath;
+import java.io.IOException;
 
 /**
  * This interface is implemented by several font specific classes which is called to get the
@@ -34,7 +35,7 @@ public interface Glyph2D
      * 
      * @return the GeneralPath for the given character code
      */
-    public GeneralPath getPathForCharacterCode(int code);
+    public GeneralPath getPathForCharacterCode(int code) throws IOException;
 
     /**
      * Remove all cached resources.

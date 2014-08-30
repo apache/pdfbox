@@ -40,7 +40,6 @@ import org.apache.fontbox.cff.Type1CharStringParser;
 import org.apache.fontbox.cff.Type1FontUtil;
 import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.encoding.MacRomanEncoding;
-import org.apache.pdfbox.encoding.PdfDocEncoding;
 import org.apache.pdfbox.encoding.StandardEncoding;
 import org.apache.pdfbox.encoding.WinAnsiEncoding;
 
@@ -154,10 +153,6 @@ public final class Type1Parser
         else if (FONT_DICTIONARY_VALUE_ENCODING_WIN.equals(encodingName))
         {
             encoding = new WinAnsiEncoding();
-        }
-        else if (FONT_DICTIONARY_VALUE_ENCODING_PDFDOC.equals(encodingName))
-        {
-            encoding = new PdfDocEncoding();
         }
         return encoding;
     }

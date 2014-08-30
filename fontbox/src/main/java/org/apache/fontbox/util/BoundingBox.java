@@ -17,6 +17,8 @@
 package org.apache.fontbox.util;
 
 
+import java.util.List;
+
 /**
  * This is an implementation of a bounding box.  This was originally written for the
  * AMF parser.
@@ -52,6 +54,20 @@ public class BoundingBox
         upperRightX = maxX;
         upperRightY = maxY;
     }
+
+    /**
+     * Constructor.
+     *
+     * @param numbers list of four numbers
+     */
+    public BoundingBox(List<Number> numbers)
+    {
+        lowerLeftX = numbers.get(0).floatValue();
+        lowerLeftY = numbers.get(1).floatValue();
+        upperRightX = numbers.get(2).floatValue();
+        upperRightY = numbers.get(3).floatValue();
+    }
+
     /**
      * Getter for property lowerLeftX.
      *

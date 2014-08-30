@@ -450,21 +450,7 @@ public class Type1
 
     private String getLabelAsName(int cid)
     {
-        String label = null;
-
-        try
-        {
-            label = this.encoding.getName(cid);
-        }
-        catch (IOException e)
-        {
-            label = this.cidToLabel.get(cid);
-            if (label == null)
-            {
-                label = Type1Parser.NOTDEF;
-            }
-        }
-
+        String label = this.encoding.getName(cid);
         return label.charAt(0) == Type1Parser.NAME_START ? label : Type1Parser.NAME_START + label;
     }
 }

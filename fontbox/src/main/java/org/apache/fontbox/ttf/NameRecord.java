@@ -21,71 +21,48 @@ import java.io.IOException;
 /**
  * A name record in the name table.
  * 
- * @author Ben Litchfield (ben@benlitchfield.com)
- * @version $Revision: 1.1 $
+ * @author Ben Litchfield
  */
 public class NameRecord
 {
-    /**
-     * A constant for the platform.
-     */
-    public static final int PLATFORM_APPLE_UNICODE = 0;
-    /**
-     * A constant for the platform.
-     */
+    // platform ids
+    public static final int PLATFORM_UNICODE = 0;
     public static final int PLATFORM_MACINTOSH = 1;
-    /**
-     * A constant for the platform.
-     */
     public static final int PLATFORM_ISO = 2;
-    /**
-     * A constant for the platform.
-     */
     public static final int PLATFORM_WINDOWS = 3;
-    
-    /**
-     * Platform specific encoding.
-     */
-    public static final int PLATFORM_ENCODING_WINDOWS_UNDEFINED = 0;
-    /**
-     * Platform specific encoding.
-     */
-    public static final int PLATFORM_ENCODING_WINDOWS_UNICODE = 1;
-    
-    /**
-     * A name id.
-     */
+
+    // Unicode encoding ids
+    public static final int ENCODING_UNICODE_1_0 = 0;
+    public static final int ENCODING_UNICODE_1_1 = 1;
+    public static final int ENCODING_UNICODE_2_0_BMP = 3;
+    public static final int ENCODING_UNICODE_2_0_FULL = 4;
+
+    // Unicode encoding ids
+    public static final int LANGUGAE_UNICODE = 0;
+
+    // Windows encoding ids
+    public static final int ENCODING_WINDOWS_SYMBOL = 0;
+    public static final int ENCODING_WINDOWS_UNICODE_BMP = 1;
+    public static final int ENCODING_WINDOWS_UNICODE_UCS4 = 10;
+
+    // Windows language ids
+    public static final int LANGUGAE_WINDOWS_EN_US = 0x0409;
+
+    // Macintosh encoding ids
+    public static final int ENCODING_MACINTOSH_ROMAN = 0;
+
+    // Macintosh language ids
+    public static final int LANGUGAE_MACINTOSH_ENGLISH = 0;
+
+    // name ids
     public static final int NAME_COPYRIGHT = 0;
-    /**
-     * A name id.
-     */
     public static final int NAME_FONT_FAMILY_NAME = 1;
-    /**
-     * A name id.
-     */
     public static final int NAME_FONT_SUB_FAMILY_NAME = 2;
-    /**
-     * A name id.
-     */
     public static final int NAME_UNIQUE_FONT_ID = 3;
-    /**
-     * A name id.
-     */
     public static final int NAME_FULL_FONT_NAME = 4;
-    /**
-     * A name id.
-     */
     public static final int NAME_VERSION = 5;
-    /**
-     * A name id.
-     */
     public static final int NAME_POSTSCRIPT_NAME = 6;
-    /**
-     * A name id.
-     */
     public static final int NAME_TRADEMARK = 7;
-    
-    
     
     private int platformId;
     private int platformEncodingId;

@@ -44,6 +44,7 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontDescriptorDictionary;
+import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
@@ -151,7 +152,7 @@ public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container>
             int length2 = streamObj.getInt(COSName.LENGTH2);
             bis = new ByteArrayInputStream(fontFile.getByteArray());
             Type1Parser parserForMetrics = Type1Parser.createParserWithEncodingObject(bis, length1, length2,
-                    font.getFontEncoding());
+                    ((PDSimpleFont) font).getEncoding());
             Type1 parsedData = parserForMetrics.parse();
 
             this.fContainer.setType1Font(parsedData);
@@ -173,8 +174,7 @@ public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container>
 
     /**
      * Type1C is a CFF font format, extract all CFFFont object from the stream
-     * 
-     * @param fontStream
+     *
      * @return
      * @throws ValidationException
      */

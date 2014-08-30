@@ -186,26 +186,18 @@ public class GlyfSimpleDescript extends GlyfDescript
      */
     private void readFlags(int flagCount, TTFDataStream bais) throws IOException
     {
-        try
+        for (int index = 0; index < flagCount; index++)
         {
-            for (int index = 0; index < flagCount; index++)
+            flags[index] = (byte) bais.readUnsignedByte();
+            if ((flags[index] & REPEAT) != 0)
             {
-                flags[index] = (byte) bais.readUnsignedByte();
-                if ((flags[index] & REPEAT) != 0)
+                int repeats = bais.readUnsignedByte();
+                for (int i = 1; i <= repeats; i++)
                 {
-                    int repeats = bais.readUnsignedByte();
-                    for (int i = 1; i <= repeats; i++)
-                    {
-                        flags[index + i] = flags[index];
-                    }
-                    index += repeats;
+                    flags[index + i] = flags[index];
                 }
+                index += repeats;
             }
         }
-        catch (ArrayIndexOutOfBoundsException e)
-        {
-            LOG.error("error: array index out of bounds", e);
-        }
     }
-
 }

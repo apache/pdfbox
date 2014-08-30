@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class ParallelParameterized extends Parameterized
 {
-    static final long TIMEOUT_SECS = 30;
+    static final long TIMEOUT_SECS = 120;
 
     private static class FixedThreadPoolScheduler implements RunnerScheduler
     {

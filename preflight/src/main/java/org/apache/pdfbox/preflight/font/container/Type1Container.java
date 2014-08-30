@@ -25,8 +25,8 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.fontbox.cff.CFFFont;
-import org.apache.fontbox.cff.CFFFont.Mapping;
-import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.fontbox.cff.CFFType1Font;
+import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.font.util.GlyphException;
 import org.apache.pdfbox.preflight.font.util.Type1;
@@ -47,14 +47,21 @@ public class Type1Container extends FontContainer
     protected Type1 type1Font;
     protected List<CFFFont> lCFonts;
 
-    public Type1Container(PDFont font)
+    private PDSimpleFont simpleFont;
+
+    public Type1Container(PDSimpleFont font)
     {
         super(font);
+        this.simpleFont = font;
     }
 
     @Override
     protected float getFontProgramWidth(int cid) throws GlyphException
     {
+        // fixme: Type 1 fonts don't use CIDs, so this method makes little sense,
+        //        when making changes I've assumed that "cid" is actually the character code
+        //        from the PDF content stream.
+
         float widthResult = -1;
         try
         {
@@ -67,42 +74,15 @@ public class Type1Container extends FontContainer
             }
             else
             {
-                /*
-                 * Retrieves the SID with the Character Name in the encoding map Need
-                 * more PDF with a Type1C subfont to valid this implementation
-                 */
-                String name = null;
-                if (this.font.getFontEncoding() != null) {
-                    name = this.font.getFontEncoding().getName(cid);
-                }
-
-                int SID = -1;
-                
-                /* For each CFF, try to found the SID that correspond to the CID. 
-                 * Look up by name if the encoding entry is present in the PDFont object 
-                 * otherwise use the internal encoding map of the font.
-                 */
-                for (CFFFont cff : lCFonts)
-                {
-                    if (name == null) {
-                        SID = cff.getEncoding().getSID(cid);
-                    } else {
-                        SID = getSIDByCharacterName(name, cff);
-                    }
-
-                    if (SID > 0) {
-                        widthResult = cff.getWidth(SID);
-                        if (widthResult != defaultGlyphWidth)
-                        {
-                            break;
-                        }
-                    }
-                }
-
-                if (SID < 0) 
+                // assuming that "cid" is actually the character code
+                String name = simpleFont.getEncoding().getName(cid);
+                if (name.equals(".notdef"))
                 {
                     throw new GlyphException(PreflightConstants.ERROR_FONTS_GLYPH_MISSING, cid, "Unknown character CID(" + cid+")");
                 }
+
+                CFFType1Font cffFont = (CFFType1Font)lCFonts.get(0);
+                widthResult = cffFont.getType1CharString(name).getWidth();
             }
         }
         catch (IOException e)
@@ -111,27 +91,6 @@ public class Type1Container extends FontContainer
         }
 
         return widthResult;
-    }
-
-    /**
-     * Return the SID of the given character name.
-     * 
-     * @param name the character name looked up
-     * @param cff Compact Font Format that represents a sub set of the Type1C Font.
-     * @return -1 if the name is missing from the Font encoding map, the SID of the character if it is present in the CFF.
-     */
-    private int getSIDByCharacterName(String name, CFFFont cff)
-    {
-        int SID = -1;
-        for (Mapping m : cff.getMappings())
-        {
-            if (m.getName().equals(name))
-            {
-                SID = m.getSID();
-                break;
-            }
-        }
-        return SID;
     }
 
     public void setType1Font(Type1 type1Font)

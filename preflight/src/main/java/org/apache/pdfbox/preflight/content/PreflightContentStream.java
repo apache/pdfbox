@@ -26,7 +26,9 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_UNKNOWN
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_CONTENT_STREAM_INVALID_ARGUMENT;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_CONTENT_STREAM_UNSUPPORTED_OP;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSArray;
@@ -40,7 +42,6 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.state.PDTextState;
 import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
@@ -49,7 +50,6 @@ import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.font.container.FontContainer;
 import org.apache.pdfbox.preflight.font.util.GlyphException;
-import org.apache.pdfbox.util.operator.Operator;
 import org.apache.pdfbox.util.operator.Operator;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
 
@@ -346,23 +346,13 @@ public class PreflightContentStream extends PreflightStreamEngine
             return;
         }
 
-        int codeLength = 1;
-        for (int i = 0; i < string.length; i += codeLength)
+        InputStream in = new ByteArrayInputStream(string);
+        while (in.available() > 0)
         {
-            // explore the string to detect character code (length can be 1 or 2 bytes)
-            int cid = -1;
-            codeLength = 1;
             try
             {
-                // according to the encoding, extract the character identifier
-                cid = font.encodeToCID(string, i, codeLength);
-                if (cid == -1 && i + 1 < string.length)
-                {
-                    // maybe a multibyte encoding
-                    codeLength++;
-                    cid = font.encodeToCID(string, i, codeLength);
-                }
-                fontContainer.checkGlyphWith(cid);
+                int code = font.readCode(in);
+                fontContainer.checkGlyphWidth(code);
             }
             catch (IOException e)
             {
