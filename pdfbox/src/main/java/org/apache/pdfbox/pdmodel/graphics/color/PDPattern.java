@@ -24,6 +24,7 @@ import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
 import org.apache.pdfbox.pdmodel.graphics.pattern.TilingPaint;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.apache.pdfbox.util.Matrix;
 
 import java.awt.Paint;
 import java.awt.geom.AffineTransform;
@@ -34,7 +35,6 @@ import java.io.IOException;
 import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.util.Matrix;
 
 /**
  * A Pattern color space is either a Tiling pattern or a Shading pattern.
@@ -106,22 +106,39 @@ public final class PDPattern extends PDSpecialColorSpace
 
     @Override
     public Paint toPaint(PDFRenderer renderer, PDColor color, 
-            Matrix subStreamMatrix, AffineTransform xform, 
+            Matrix substreamMatrix, AffineTransform xform, 
             int pageHeight) throws IOException
     {
         PDAbstractPattern pattern = getPattern(color);
         if (pattern instanceof PDTilingPattern)
         {
-            PDTilingPattern tilingPattern = (PDTilingPattern)pattern;
+            PDTilingPattern tilingPattern = (PDTilingPattern) pattern;
+                        
+            Matrix patternMatrix = tilingPattern.getMatrix();
+            Matrix substreamMatrixClone = substreamMatrix.clone();
+            substreamMatrixClone.setValue(2, 0, 0);
+            substreamMatrixClone.setValue(2, 1, 0);
+            Matrix matrix;
+            if (patternMatrix == null)
+            {
+                matrix = substreamMatrixClone;
+            }
+            else
+            {
+                matrix = patternMatrix.multiply(substreamMatrixClone);
+            }
+            
             if (tilingPattern.getPaintType() == PDTilingPattern.PAINT_COLORED)
             {
                 // colored tiling pattern
-                return new TilingPaint(renderer, tilingPattern, subStreamMatrix, xform);
+                return new TilingPaint(renderer, tilingPattern, 
+                        matrix, xform);
             }
             else
             {
                 // uncolored tiling pattern
-                return new TilingPaint(renderer, tilingPattern, underlyingColorSpace, color, subStreamMatrix, xform);
+                return new TilingPaint(renderer, tilingPattern, underlyingColorSpace, color, 
+                        matrix, xform);
             }
         }
         else
@@ -133,7 +150,12 @@ public final class PDPattern extends PDSpecialColorSpace
                 LOG.error("shadingPattern ist null, will be filled with transparency");
                 return new Color(0,0,0,0);
             }
-            return shading.toPaint(shadingPattern.getMatrix());
+            Matrix patternMatrix = shadingPattern.getMatrix();
+            if (patternMatrix == null)
+            {
+                return shading.toPaint(substreamMatrix);
+            }
+            return shading.toPaint(patternMatrix.multiply(substreamMatrix));
         }
     }
 
