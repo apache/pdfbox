@@ -25,7 +25,7 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_DICTION
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
@@ -33,10 +33,19 @@ import org.apache.pdfbox.preflight.font.container.FontContainer;
 
 public abstract class SimpleFontValidator<T extends FontContainer> extends FontValidator<T>
 {
+    protected PDSimpleFont font;
+    protected COSDictionary fontDictionary;
 
-    public SimpleFontValidator(PreflightContext context, PDFont font, T fContainer)
+    public SimpleFontValidator(PreflightContext context, PDSimpleFont font, T fContainer)
     {
-        super(context, font, fContainer);
+        super(context, font.getCOSObject(), fContainer);
+        this.fontDictionary = font.getCOSObject();
+    }
+
+    public SimpleFontValidator(PreflightContext context, COSDictionary fontDictionary, T fContainer)
+    {
+        super(context, fontDictionary, fContainer);
+        this.fontDictionary = fontDictionary;
     }
 
     /**
@@ -60,7 +69,6 @@ public abstract class SimpleFontValidator<T extends FontContainer> extends FontV
 
     protected void checkMandatoryField()
     {
-        COSDictionary fontDictionary = (COSDictionary) font.getCOSObject();
         boolean areFieldsPResent = fontDictionary.containsKey(COSName.TYPE);
         areFieldsPResent &= fontDictionary.containsKey(COSName.SUBTYPE);
         areFieldsPResent &= fontDictionary.containsKey(COSName.BASE_FONT);

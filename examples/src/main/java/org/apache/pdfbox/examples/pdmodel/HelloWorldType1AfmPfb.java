@@ -17,13 +17,15 @@
 
 package org.apache.pdfbox.examples.pdmodel;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.pdmodel.font.PDType1AfmPfbFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
 /**
  * This is an example that creates a simple document
@@ -56,7 +58,7 @@ public class HelloWorldType1AfmPfb
 
             PDPage page = new PDPage();
             doc.addPage(page);
-            PDFont font = new PDType1AfmPfbFont(doc,fontfile);
+            PDFont font = createPDType1AfmPfbFont(doc, fontfile);
 
             PDPageContentStream contentStream = new PDPageContentStream(doc,
                     page);
@@ -76,6 +78,14 @@ public class HelloWorldType1AfmPfb
                 doc.close();
             }
         }
+    }
+
+    private PDType1Font createPDType1AfmPfbFont(PDDocument doc, String afmName) throws IOException
+    {
+        return new PDType1Font(doc,
+                new BufferedInputStream(new FileInputStream(afmName)),
+                new BufferedInputStream(new FileInputStream(afmName.replaceAll(".AFM", "").
+                        replaceAll(".afm", "") + ".pfb")));
     }
 
     /**

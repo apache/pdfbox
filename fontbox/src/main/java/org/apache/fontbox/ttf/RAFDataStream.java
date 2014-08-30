@@ -26,8 +26,7 @@ import java.io.RandomAccessFile;
 /**
  * An implementation of the TTFDataStream that goes against a RAF.
  * 
- * @author Ben Litchfield (ben@benlitchfield.com)
- * @version $Revision: 1.2 $
+ * @author Ben Litchfield
  */
 public class RAFDataStream extends TTFDataStream 
 {
@@ -150,13 +149,10 @@ public class RAFDataStream extends TTFDataStream
      * 
      * @throws IOException If there is an error reading from the stream.
      */
-    public int read(byte[] b,
-            int off,
-            int len)
-     throws IOException
-     {
-        return raf.read(b,off,len);
-     }
+    public int read(byte[] b, int off, int len) throws IOException
+    {
+        return raf.read(b, off, len);
+    }
     
     /**
      * {@inheritDoc}

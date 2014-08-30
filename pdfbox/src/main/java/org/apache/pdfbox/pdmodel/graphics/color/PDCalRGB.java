@@ -22,7 +22,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 
-import org.apache.pdfbox.pdmodel.common.PDMatrix;
+import org.apache.pdfbox.util.Matrix;
 
 /**
  * A CalRGB colour space is a CIE-based colour space with one transformation stage instead of two.
@@ -151,16 +151,16 @@ public class PDCalRGB extends PDCIEBasedColorSpace
      * If the underlying dictionary contains null then the identity matrix will be returned.
      * @return the linear interpretation matrix
      */
-    public final PDMatrix getGammaMatrix()
+    public final Matrix getGammaMatrix()
     {
         COSArray matrix = (COSArray)dictionary.getDictionaryObject(COSName.MATRIX);
         if(matrix == null)
         {
-            return new PDMatrix();
+            return new Matrix();
         }
         else
         {
-           return new PDMatrix(matrix);
+           return new Matrix(matrix);
         }
     }
 
@@ -210,12 +210,12 @@ public class PDCalRGB extends PDCIEBasedColorSpace
      * Passing in null will clear the matrix.
      * @param matrix the new linear interpretation matrix, or null
      */
-    public final void setGammaMatrix(PDMatrix matrix)
+    public final void setGammaMatrix(Matrix matrix)
     {
         COSArray matrixArray = null;
         if(matrix != null)
         {
-            matrixArray = matrix.getCOSArray();
+            matrixArray = matrix.toCOSArray();
         }
         dictionary.setItem(COSName.MATRIX, matrixArray);
     }

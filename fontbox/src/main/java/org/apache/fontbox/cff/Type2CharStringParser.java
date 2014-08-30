@@ -32,7 +32,7 @@ public class Type2CharStringParser
     private final String fontName, glyphName;
 
     /**
-     * Constructs a new Type1CharStringParser object.
+     * Constructs a new Type1CharStringParser object for a Type 1-equivalent font.
      *
      * @param fontName font name
      * @param glyphName glyph name
@@ -41,6 +41,18 @@ public class Type2CharStringParser
     {
         this.fontName = fontName;
         this.glyphName = glyphName;
+    }
+
+    /**
+     * Constructs a new Type1CharStringParser object for a CID-Keyed font.
+     *
+     * @param fontName font name
+     * @param cid CID
+     */
+    public Type2CharStringParser(String fontName, int cid)
+    {
+        this.fontName = fontName;
+        this.glyphName = String.format("%04x", cid); // for debugging only
     }
 
     /**

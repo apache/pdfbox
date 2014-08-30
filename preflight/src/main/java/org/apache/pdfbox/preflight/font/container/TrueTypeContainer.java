@@ -25,22 +25,25 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.fontbox.ttf.CMAPEncodingEntry;
-import org.apache.fontbox.ttf.CMAPTable;
+import org.apache.fontbox.ttf.CmapSubtable;
+import org.apache.fontbox.ttf.CmapTable;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.encoding.Encoding;
-import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.encoding.GlyphList;
+import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
+import org.apache.pdfbox.preflight.PreflightConstants;
+import org.apache.pdfbox.preflight.font.util.GlyphException;
 
 public class TrueTypeContainer extends FontContainer
 {
-
     protected TrueTypeFont ttFont;
+    private CmapSubtable[] cmapEncodingEntries = null;
+    private PDTrueTypeFont trueTypeFont;
 
-    private CMAPEncodingEntry[] cmapEncodingEntries = null;
-
-    public TrueTypeContainer(PDFont font)
+    public TrueTypeContainer(PDTrueTypeFont font)
     {
         super(font);
+        this.trueTypeFont = font;
     }
 
     public void setTrueTypeFont(TrueTypeFont ttFont)
@@ -65,22 +68,29 @@ public class TrueTypeContainer extends FontContainer
         if (this.cmapEncodingEntries != null)
             return;
 
-        CMAPTable cmap = this.ttFont.getCMAP();
-        if (this.font.getFontDescriptor().isSymbolic())
+        try
         {
-            this.cmapEncodingEntries = cmap.getCmaps();
+            CmapTable cmap = this.ttFont.getCmap();
+            if (this.trueTypeFont.getFontDescriptor().isSymbolic())
+            {
+                this.cmapEncodingEntries = cmap.getCmaps();
+            }
+            else
+            {
+                this.cmapEncodingEntries = orderCMapEntries(cmap);
+            }
         }
-        else
+        catch (IOException e)
         {
-            this.cmapEncodingEntries = orderCMapEntries(cmap);
+            return;
         }
     }
 
-    private CMAPEncodingEntry[] orderCMapEntries(CMAPTable cmap)
+    private CmapSubtable[] orderCMapEntries(CmapTable cmap)
     {
-        List<CMAPEncodingEntry> res = new ArrayList<CMAPEncodingEntry>();
+        List<CmapSubtable> res = new ArrayList<CmapSubtable>();
         boolean firstIs31 = false;
-        for (CMAPEncodingEntry cmapEntry : cmap.getCmaps())
+        for (CmapSubtable cmapEntry : cmap.getCmaps())
         {
             // WinAnsi
             if ((cmapEntry.getPlatformId() == 3) && (cmapEntry.getPlatformEncodingId() == 1))
@@ -107,26 +117,33 @@ public class TrueTypeContainer extends FontContainer
                 res.add(cmapEntry);
             }
         }
-        return res.toArray(new CMAPEncodingEntry[res.size()]);
+        return res.toArray(new CmapSubtable[res.size()]);
     }
 
     @Override
-    protected float getFontProgramWidth(int cid)
+    protected float getFontProgramWidth(int cid) throws GlyphException
     {
-        float result = -1f;
-        if (cmapEncodingEntries != null)
+        try
         {
-            for (CMAPEncodingEntry entry : cmapEncodingEntries)
+            float result = -1f;
+            if (cmapEncodingEntries != null)
             {
-                int glyphID = extractGlyphID(cid, entry);
-                if (glyphID > 0)
+                for (CmapSubtable entry : cmapEncodingEntries)
                 {
-                    result = extractGlyphWidth(glyphID);
-                    break;
+                    int glyphID = extractGlyphID(cid, entry);
+                    if (glyphID > 0)
+                    {
+                        result = extractGlyphWidth(glyphID);
+                        break;
+                    }
                 }
             }
+            return result;
         }
-        return result;
+        catch (IOException e)
+        {
+            throw new GlyphException(PreflightConstants.ERROR_FONTS_GLYPH, cid, "Unexpected error during the width validtion for the character CID(" + cid+") : " + e.getMessage());
+        }
     }
 
     /**
@@ -137,44 +154,37 @@ public class TrueTypeContainer extends FontContainer
      * @param cmap
      * @return
      */
-    private int extractGlyphID(int cid, CMAPEncodingEntry cmap)
+    private int extractGlyphID(int cid, CmapSubtable cmap)
     {
         int notFoundGlyphID = 0;
 
         int innerFontCid = cid;
         if (cmap.getPlatformEncodingId() == 1 && cmap.getPlatformId() == 3)
         {
-            try
+            Encoding fontEncoding = this.trueTypeFont.getEncoding();
+            String name = fontEncoding.getName(cid);
+            String character = GlyphList.toUnicode(name);
+            if (character == null)
             {
-                Encoding fontEncoding = this.font.getFontEncoding();
-                String character = fontEncoding.getCharacter(cid);
-                if (character == null)
-                {
-                    return notFoundGlyphID;
-                }
+                return notFoundGlyphID;
+            }
 
-                char[] characterArray = character.toCharArray();
-                if (characterArray.length == 1)
+            char[] characterArray = character.toCharArray();
+            if (characterArray.length == 1)
+            {
+                innerFontCid = (int) characterArray[0];
+            }
+            else
+            {
+                // TODO OD-PDFA-87 A faire?
+                innerFontCid = (int) characterArray[0];
+                for (int i = 1; i < characterArray.length; ++i)
                 {
-                    innerFontCid = (int) characterArray[0];
-                }
-                else
-                {
-                    // TODO OD-PDFA-87 A faire?
-                    innerFontCid = (int) characterArray[0];
-                    for (int i = 1; i < characterArray.length; ++i)
+                    if (cmap.getGlyphId((int) characterArray[i]) == 0)
                     {
-                        if (cmap.getGlyphId((int) characterArray[i]) == 0)
-                        {
-                            return notFoundGlyphID; // TODO what we have to do here ???
-                        }
+                        return notFoundGlyphID; // TODO what we have to do here ???
                     }
                 }
-            }
-            catch (IOException ioe)
-            {
-                // should never happen
-                return notFoundGlyphID;
             }
         }
 
@@ -182,7 +192,7 @@ public class TrueTypeContainer extends FontContainer
         return cmap.getGlyphId(innerFontCid);
     }
 
-    private float extractGlyphWidth(int glyphID)
+    private float extractGlyphWidth(int glyphID) throws IOException
     {
         int unitsPerEm = this.ttFont.getHeader().getUnitsPerEm();
         int[] glyphWidths = this.ttFont.getHorizontalMetrics().getAdvanceWidth();

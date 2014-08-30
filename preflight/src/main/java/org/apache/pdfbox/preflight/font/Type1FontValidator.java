@@ -32,7 +32,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.font.container.Type1Container;
@@ -42,7 +42,7 @@ import org.apache.pdfbox.preflight.utils.COSUtils;
 public class Type1FontValidator extends SimpleFontValidator<Type1Container>
 {
 
-    public Type1FontValidator(PreflightContext context, PDFont font)
+    public Type1FontValidator(PreflightContext context, PDSimpleFont font)
     {
         super(context, font, new Type1Container(font));
     }

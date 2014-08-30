@@ -69,8 +69,7 @@ public class TTFParser
      */
     public TrueTypeFont parseTTF(String ttfFile) throws IOException
     {
-        RAFDataStream raf = new RAFDataStream(ttfFile, "r");
-        return parseTTF(raf);
+        return parseTTF(new File(ttfFile));
     }
 
     /**
@@ -82,8 +81,7 @@ public class TTFParser
      */
     public TrueTypeFont parseTTF(File ttfFile) throws IOException
     {
-        RAFDataStream raf = new RAFDataStream(ttfFile, "r");
-        return parseTTF(raf);
+        return parseTTF(new RAFDataStream(ttfFile, "r"));
     }
 
     /**
@@ -189,7 +187,7 @@ public class TTFParser
         }
 
         // check others mandatory tables
-        if (!isEmbedded && font.getCMAP() == null)
+        if (!isEmbedded && font.getCmap() == null)
         {
             throw new IOException("cmap is mandatory");
         }
@@ -199,9 +197,9 @@ public class TTFParser
     {
         TTFTable retval = null;
         String tag = raf.readString(4);
-        if (tag.equals(CMAPTable.TAG))
+        if (tag.equals(CmapTable.TAG))
         {
-            retval = new CMAPTable();
+            retval = new CmapTable();
         }
         else if (tag.equals(GlyphTable.TAG))
         {

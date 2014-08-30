@@ -22,7 +22,7 @@
 package org.apache.pdfbox.preflight.font;
 
 import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDCIDFontType0;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.font.container.CIDType0Container;
 import org.apache.pdfbox.preflight.font.descriptor.CIDType0DescriptorHelper;
@@ -30,7 +30,7 @@ import org.apache.pdfbox.preflight.font.descriptor.CIDType0DescriptorHelper;
 public class CIDType0FontValidator extends DescendantFontValidator<CIDType0Container>
 {
 
-    public CIDType0FontValidator(PreflightContext context, PDFont font)
+    public CIDType0FontValidator(PreflightContext context, PDCIDFontType0 font)
     {
         super(context, font, new CIDType0Container(font));
     }

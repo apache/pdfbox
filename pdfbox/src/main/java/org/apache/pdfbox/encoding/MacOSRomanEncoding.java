@@ -38,22 +38,22 @@ public class MacOSRomanEncoding extends MacRomanEncoding
     public MacOSRomanEncoding()
     {
         super();
-        addCharacterEncoding(255, "notequal");
-        addCharacterEncoding(260, "infinity");
-        addCharacterEncoding(262, "lessequal");
-        addCharacterEncoding(263, "greaterequal");
-        addCharacterEncoding(266, "partialdiff");
-        addCharacterEncoding(267, "summation");
-        addCharacterEncoding(270, "product");
-        addCharacterEncoding(271, "pi");
-        addCharacterEncoding(272, "integral");
-        addCharacterEncoding(275, "Omega");
-        addCharacterEncoding(303, "radical");
-        addCharacterEncoding(305, "approxequal");
-        addCharacterEncoding(306, "Delta");
-        addCharacterEncoding(327, "lozenge");
-        addCharacterEncoding(333, "Euro");
-        addCharacterEncoding(360, "apple");
+        add(255, "notequal");
+        add(260, "infinity");
+        add(262, "lessequal");
+        add(263, "greaterequal");
+        add(266, "partialdiff");
+        add(267, "summation");
+        add(270, "product");
+        add(271, "pi");
+        add(272, "integral");
+        add(275, "Omega");
+        add(303, "radical");
+        add(305, "approxequal");
+        add(306, "Delta");
+        add(327, "lozenge");
+        add(333, "Euro");
+        add(360, "apple");
     }
 
     /**

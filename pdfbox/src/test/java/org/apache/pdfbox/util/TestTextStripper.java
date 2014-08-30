@@ -228,6 +228,7 @@ public class TestTextStripper extends TestCase
             }
         }
 
+        //System.out.println("  " + inFile + (bSort ? " (sorted)" : ""));
         PDDocument document = PDDocument.load(inFile);
         try
         {
@@ -299,7 +300,7 @@ public class TestTextStripper extends TestCase
                 {
                     this.bFail = true;
                     fail("FAILURE: Line mismatch for file " + inFile.getName() +
-                            " ( sort = "+bSort+")" +
+                            " (sort = "+bSort+")" +
                             " at expected line: " + expectedReader.getLineNumber() +
                             " at actual line: " + actualReader.getLineNumber() +
                             "\nexpected line was: \"" + expectedLine + "\"" +

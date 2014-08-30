@@ -41,29 +41,35 @@ public class ShowTextGlyph extends OperatorProcessor
 
         List<Float> adjustments = new ArrayList<Float>();
         List<byte[]> strings = new ArrayList<byte[]>();
-        boolean lastWasAdjustment = false;
+        boolean lastWasString = false;
 
         for(int i = 0, len = array.size(); i < len; i++)
         {
             COSBase next = array.get(i);
-            if(next instanceof COSNumber)
+            if (next instanceof COSNumber)
             {
                 adjustments.add(((COSNumber)next).floatValue());
-                lastWasAdjustment = true;
+                lastWasString = false;
             }
             else if(next instanceof COSString)
             {
-                if (!lastWasAdjustment)
+                if (lastWasString)
                 {
-                    adjustments.add(0f);
+                    adjustments.add(0f); // adjustment for previous string
                 }
                 strings.add(((COSString)next).getBytes());
-                lastWasAdjustment = false;
+                lastWasString = true;
             }
             else
             {
                 throw new IOException("Unknown type in array for TJ operation:" + next);
             }
+        }
+
+        // adjustment for final string
+        if (lastWasString)
+        {
+            adjustments.add(0f);
         }
 
         context.showAdjustedText(strings, adjustments);

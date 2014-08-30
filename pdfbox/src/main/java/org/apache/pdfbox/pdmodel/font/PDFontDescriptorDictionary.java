@@ -42,16 +42,16 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
     private int flags = -1;
 
     /**
-     * Constructor.
+     * Package-private constructor, for internal PDFBox use only.
      */
-    public PDFontDescriptorDictionary()
+    PDFontDescriptorDictionary()
     {
         dic = new COSDictionary();
         dic.setItem( COSName.TYPE, COSName.FONT_DESC );
     }
 
     /**
-     * Constructor.
+     * Creates a PDFontDescriptor from a COS dictionary.
      *
      * @param desc The wrapped COS Dictionary.
      */
@@ -472,6 +472,14 @@ public class PDFontDescriptorDictionary extends PDFontDescriptor implements COSO
     public void setMaxWidth( float maxWidth )
     {
         dic.setFloat( COSName.MAX_WIDTH, maxWidth );
+    }
+
+    /**
+     * Returns true if widths are present in the font descriptor.
+     */
+    public boolean hasWidths()
+    {
+        return dic.containsKey(COSName.WIDTHS) || dic.containsKey(COSName.MISSING_WIDTH);
     }
 
     /**

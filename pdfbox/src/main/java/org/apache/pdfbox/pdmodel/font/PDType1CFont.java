@@ -17,51 +17,49 @@
 
 package org.apache.pdfbox.pdmodel.font;
 
-import java.io.ByteArrayOutputStream;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.fontbox.afm.FontMetric;
-import org.apache.fontbox.cff.CFFFont;
 import org.apache.fontbox.cff.CFFParser;
-import org.apache.pdfbox.cos.COSArray;
+import org.apache.fontbox.cff.CFFType1Font;
+import org.apache.fontbox.ttf.Type1Equivalent;
+import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.encoding.Encoding;
-import org.apache.pdfbox.pdmodel.common.PDMatrix;
+import org.apache.pdfbox.encoding.GlyphList;
+import org.apache.pdfbox.encoding.Type1Encoding;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.util.Matrix;
 
 /**
- * Adobe CFF Font, also known as a "Type1C" font.
- * 
+ * Type 1-equivalent CFF font.
+ *
  * @author Villu Ruusmann
+ * @author John Hewson
  */
-public class PDType1CFont extends PDFont
+public class PDType1CFont extends PDSimpleFont implements PDType1Equivalent
 {
     private static final Log LOG = LogFactory.getLog(PDType1CFont.class);
-    private static final byte[] SPACE_BYTES = { (byte) 32 };
 
-    private CFFFont cffFont = null;
-    private String fontname = null;
-    private Map<Integer, String> sidToName = new HashMap<Integer, String>();
-    private Map<Integer, Integer> codeToSID = new HashMap<Integer, Integer>();
-    private Map<Integer, String> sidToCharacter = new HashMap<Integer, String>();
-    private Map<String, Integer> characterToSID = new HashMap<String, Integer>();
-    private FontMetric fontMetric = null;
-    private Map<String, Float> glyphWidths = new HashMap<String, Float>();
     private Map<String, Float> glyphHeights = new HashMap<String, Float>();
     private Float avgWidth = null;
     private PDRectangle fontBBox = null;
-    private final int charOffset;
+    private Matrix fontMatrix;
+    private AffineTransform fontMatrixTransform;
+
+    private final CFFType1Font cffFont; // embedded font
+    private final Type1Equivalent type1Equivalent; // embedded or system font for rendering
+    private final boolean isEmbedded;
 
     /**
      * Constructor.
@@ -72,337 +70,196 @@ public class PDType1CFont extends PDFont
     public PDType1CFont(COSDictionary fontDictionary) throws IOException
     {
         super(fontDictionary);
-        charOffset = getFirstChar() > -1 ? getFirstChar() - 1 : 0; 
-        load();
+
+        PDFontDescriptor fd = getFontDescriptor();
+        byte[] bytes = null;
+        if (fd != null && fd instanceof PDFontDescriptorDictionary) // <-- todo: must be true
+        {
+            PDStream ff3Stream = ((PDFontDescriptorDictionary) fd).getFontFile3();
+            if (ff3Stream != null)
+            {
+                bytes = IOUtils.toByteArray(ff3Stream.createInputStream());
+            }
+        }
+
+        CFFParser cffParser = new CFFParser();
+        cffFont = (CFFType1Font)cffParser.parse(bytes).get(0);
+
+        if (cffFont != null)
+        {
+            type1Equivalent = cffFont;
+            isEmbedded = true;
+        }
+        else
+        {
+            Type1Equivalent t1Equiv = ExternalFonts.getType1EquivalentFont(getBaseFont());
+            if (t1Equiv != null)
+            {
+                type1Equivalent = t1Equiv;
+            }
+            else
+            {
+                LOG.warn("Using fallback font for " + getBaseFont());
+                type1Equivalent = ExternalFonts.getFallbackFont(getFontDescriptor());
+            }
+            isEmbedded = false;
+        }
+        readEncoding();
+        fontMatrixTransform = getFontMatrix().createAffineTransform();
+        fontMatrixTransform.scale(1000, 1000);
+    }
+
+    /**
+     * Returns the embedded or system font for rendering. This font is a Type 1-equivalent, but
+     * may not be a Type 1 font, it could be a CFF font or TTF font. If there is no suitable font
+     * then the fallback font will be returned: this method never returns null.
+     */
+    public Type1Equivalent getFontForRendering()
+    {
+        return type1Equivalent;
     }
 
     @Override
-    public String encode(byte[] bytes, int offset, int length) throws IOException
+    public GeneralPath getPath(String name) throws IOException
     {
-        String character = getCharacter(bytes, offset, length);
-        if (character == null)
-        {
-            LOG.debug("No character for code " + (bytes[offset] & 0xff) + " in " + fontname);
-            return null;
-        }
-        return character;
+        return type1Equivalent.getPath(name);
     }
 
     @Override
-    public int encodeToCID(byte[] bytes, int offset, int length)
+    public String getName()
     {
-        if (length > 2)
-        {
-            return -1;
-        }
-        int code = bytes[offset] & 0xff;
-        if (length == 2)
-        {
-            code = code * 256 + bytes[offset + 1] & 0xff;
-        }
-        return code;
-    }
-
-    private String getCharacter(byte[] bytes, int offset, int length)
-    {
-        int code = getCodeFromArray(bytes, offset, length);
-        String character = null;
-        if (charOffset > 0)
-        {
-            code -= charOffset;
-        }
-        else if (codeToSID.containsKey(code))
-        {
-            code = codeToSID.get(code);
-        }
-        if (sidToCharacter.containsKey(code))
-        {
-            character = sidToCharacter.get(code);
-        }
-        return character;
+        return getBaseFont();
     }
 
     @Override
-    public float getFontWidth(byte[] bytes, int offset, int length) throws IOException
+    public BoundingBox getBoundingBox() throws IOException
     {
-        String name = getName(bytes, offset, length);
-        if (name == null && !Arrays.equals(SPACE_BYTES, bytes))
-        {
-            LOG.debug("No name for code " + (bytes[offset] & 0xff) + " in " + fontname);
-            return 0;
-        }
-
-        Float width = glyphWidths.get(name);
-        if (width == null)
-        {
-            width = getFontMetric().getCharacterWidth(name);
-            glyphWidths.put(name, width);
-        }
-
-        return width;
+        return type1Equivalent.getFontBBox();
     }
 
     @Override
-    public float getFontHeight(byte[] bytes, int offset, int length) throws IOException
+    public boolean hasGlyph(String name) throws IOException
     {
-        String name = getName(bytes, offset, length);
-        if (name == null)
+        return type1Equivalent.hasGlyph(name);
+    }
+
+    @Override
+    public String codeToName(int code)
+    {
+        return getEncoding().getName(code);
+    }
+
+    @Override
+    protected Encoding readEncodingFromFont() throws IOException
+    {
+        return Type1Encoding.fromFontBox(type1Equivalent.getEncoding());
+    }
+
+    @Override
+    public int readCode(InputStream in) throws IOException
+    {
+        return in.read();
+    }
+
+    @Override
+    public Matrix getFontMatrix()
+    {
+        if (fontMatrix == null)
         {
-            LOG.debug("No name for code " + (bytes[offset] & 0xff) + " in " + fontname);
-
-            return 0;
+            List<Number> numbers = cffFont.getFontMatrix();
+            if (numbers != null && numbers.size() == 6)
+            {
+                fontMatrix = new Matrix(numbers.get(0).floatValue(), numbers.get(1).floatValue(),
+                                        numbers.get(2).floatValue(), numbers.get(3).floatValue(),
+                                        numbers.get(4).floatValue(), numbers.get(5).floatValue());
+            }
+            else
+            {
+                return super.getFontMatrix();
+            }
         }
+        return fontMatrix;
+    }
 
+    @Override
+    protected float getWidthFromFont(int code) throws IOException
+    {
+        String name = codeToName(code);
+        int width = cffFont.getType1CharString(name).getWidth();
+
+        Point2D p = new Point2D.Float(width, 0);
+        fontMatrixTransform.transform(p, p);
+        return (float)p.getX();
+    }
+
+    @Override
+    public boolean isEmbedded()
+    {
+        return isEmbedded;
+    }
+
+    @Override
+    public float getHeight(int code) throws IOException
+    {
+        String name = codeToName(code);
         float height = 0;
         if (!glyphHeights.containsKey(name))
         {
-            height = getFontMetric().getCharacterHeight(name);
+            height = (float)cffFont.getType1CharString(name).getBounds().getHeight(); // todo: cffFont could be null
             glyphHeights.put(name, height);
         }
         return height;
-    }
-
-    private String getName(byte[] bytes, int offset, int length)
-    {
-        if (length > 2)
-        {
-            return null;
-        }
-
-        int code = bytes[offset] & 0xff;
-        if (length == 2)
-        {
-            code = code * 256 + bytes[offset + 1] & 0xff;
-        }
-
-        return sidToName.get(code);
     }
 
     @Override
     public float getStringWidth(String string) throws IOException
     {
         float width = 0;
-
         for (int i = 0; i < string.length(); i++)
         {
             String character = string.substring(i, i + 1);
-
-            Integer code = getCode(character);
-            if (code == null)
-            {
-                LOG.debug("No code for character " + character);
-
-                return 0;
-            }
-
-            width += getFontWidth(new byte[] { (byte) code.intValue() }, 0, 1);
+            String name = GlyphList.unicodeToName(character.charAt(0));
+            width += cffFont.getType1CharString(name).getWidth();
         }
-
         return width;
     }
 
-    private Integer getCode(String character)
-    {
-        return characterToSID.get(character);
-    }
-
     @Override
-    public float getAverageFontWidth() throws IOException
+    public float getAverageFontWidth()
     {
         if (avgWidth == null)
         {
-            avgWidth = getFontMetric().getAverageCharacterWidth();
+            avgWidth = getAverageCharacterWidth();
         }
         return avgWidth;
     }
 
-    @Override
-    public PDRectangle getFontBoundingBox() throws IOException
-    {
-        if (fontBBox == null)
-        {
-            fontBBox = new PDRectangle(getFontMetric().getFontBBox());
-        }
-        return fontBBox;
-    }
-
-    @Override
-    public PDMatrix getFontMatrix()
-    {
-        if (fontMatrix == null)
-        {
-            List<Number> numbers = (List<Number>) cffFont.getProperty("FontMatrix");
-            if (numbers != null && numbers.size() == 6)
-            {
-                COSArray array = new COSArray();
-                for (Number number : numbers)
-                {
-                    array.add(new COSFloat(number.floatValue()));
-                }
-                fontMatrix = new PDMatrix(array);
-            }
-            else
-            {
-                super.getFontMatrix();
-            }
-        }
-        return fontMatrix;
-    }
-
-    private FontMetric getFontMetric()
-    {
-        if (fontMetric == null)
-        {
-            fontMetric = cffFont.getFontMetric();
-        }
-        return fontMetric;
-    }
-
-    private void load() throws IOException
-    {
-        byte[] cffBytes = loadBytes();
-
-        CFFParser cffParser = new CFFParser();
-        List<CFFFont> fonts = cffParser.parse(cffBytes);
-
-        String baseFontName = getBaseFont();
-        if (fonts.size() > 1 && baseFontName != null)
-        {
-            for (CFFFont font : fonts)
-            {
-                if (baseFontName.equals(font.getName()))
-                {
-                    cffFont = font;
-                    break;
-                }
-            }
-        }
-        if (cffFont == null)
-        {
-            cffFont = fonts.get(0);
-        }
-        // cache the font name
-        fontname = cffFont.getName();
-
-        // TODO is this really needed?
-        Number defaultWidthX = (Number) this.cffFont.getProperty("defaultWidthX");
-        glyphWidths.put(null, defaultWidthX.floatValue());
-
-        // calculate some mappings to be used for rendering and text extraction
-        Encoding encoding = getFontEncoding();
-        Map<String, Integer> nameToCode = encoding != null ? encoding.getNameToCodeMap() : null;
-        Collection<CFFFont.Mapping> mappings = cffFont.getMappings();
-        Map<Integer, String> codeToNameMap = new LinkedHashMap<Integer, String>();
-        for (CFFFont.Mapping mapping : mappings)
-        {
-            codeToNameMap.put(mapping.getCode(), mapping.getName());
-        }
-        for (CFFFont.Mapping mapping : mappings)
-        {
-            int sid = mapping.getSID();
-            String name = mapping.getName();
-            String character = null;
-            if (nameToCode != null && nameToCode.containsKey(name))
-            {
-                sid = nameToCode.get(name);
-                character = encoding.getCharacter(name);
-            }
-            if (character == null)
-            {
-                character = Encoding.getCharacterForName(name);
-            }
-            codeToSID.put(mapping.getCode(), sid);
-            sidToName.put(sid, name);
-            if (character != null)
-            {
-                sidToCharacter.put(sid, character);
-                characterToSID.put(character, sid);
-            }
-        }
-    }
-
-    private byte[] loadBytes() throws IOException
-    {
-        PDFontDescriptor fd = getFontDescriptor();
-        if (fd != null && fd instanceof PDFontDescriptorDictionary)
-        {
-            PDStream ff3Stream = ((PDFontDescriptorDictionary) fd).getFontFile3();
-            if (ff3Stream != null)
-            {
-                ByteArrayOutputStream os = new ByteArrayOutputStream();
-
-                InputStream is = ff3Stream.createInputStream();
-                try
-                {
-                    byte[] buf = new byte[512];
-                    while (true)
-                    {
-                        int count = is.read(buf);
-                        if (count < 0)
-                        {
-                            break;
-                        }
-                        os.write(buf, 0, count);
-                    }
-                }
-                finally
-                {
-                    is.close();
-                }
-
-                return os.toByteArray();
-            }
-        }
-        return null;
-    }
-
     /**
-     * Returns the raw data of the font as CFFFont.
+     * Returns the embedded Type 1-equivalent CFF font.
      * 
      * @return the cffFont
-     * @throws IOException if something went wrong
      */
-    public CFFFont getCFFFont() throws IOException
+    public CFFType1Font getCFFType1Font()
     {
         return cffFont;
     }
-    
+
+    // todo: this is a replacement for FontMetrics method
+    private float getAverageCharacterWidth()
+    {
+        // todo: not implemented, highly suspect
+        return 500;
+    }
+
     @Override
     public void clear()
     {
         super.clear();
-        cffFont = null;
-        fontMetric = null;
         fontBBox = null;
-        if (characterToSID != null)
-        {
-            characterToSID.clear();
-            characterToSID = null;
-        }
-        if (codeToSID != null)
-        {
-            codeToSID.clear();
-            codeToSID = null;
-        }
         if (glyphHeights != null)
         {
             glyphHeights.clear();
             glyphHeights = null;
-        }
-        if (glyphWidths != null)
-        {
-            glyphWidths.clear();
-            glyphWidths = null;
-        }
-        if (sidToCharacter != null)
-        {
-            sidToCharacter.clear();
-            sidToCharacter = null;
-        }
-        if (sidToName != null)
-        {
-            sidToName.clear();
-            sidToName = null;
         }
     }
 }

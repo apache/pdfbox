@@ -24,7 +24,6 @@ import org.apache.fontbox.encoding.Encoding;
  * A table in a true type font.
  * 
  * @author Ben Litchfield (ben@benlitchfield.com)
- * 
  */
 public class PostScriptTable extends TTFTable
 {
@@ -68,8 +67,8 @@ public class PostScriptTable extends TTFTable
             /*
              * This TrueType font file contains exactly the 258 glyphs in the standard Macintosh TrueType.
              */
-            glyphNames = new String[Encoding.NUMBER_OF_MAC_GLYPHS];
-            System.arraycopy(Encoding.MAC_GLYPH_NAMES, 0, glyphNames, 0, Encoding.NUMBER_OF_MAC_GLYPHS);
+            glyphNames = new String[WGL4Names.NUMBER_OF_MAC_GLYPHS];
+            System.arraycopy(WGL4Names.MAC_GLYPH_NAMES, 0, glyphNames, 0, WGL4Names.NUMBER_OF_MAC_GLYPHS);
         }
         else if (formatType == 2.0f)
         {
@@ -89,10 +88,10 @@ public class PostScriptTable extends TTFTable
                 }
             }
             String[] nameArray = null;
-            if (maxIndex >= Encoding.NUMBER_OF_MAC_GLYPHS)
+            if (maxIndex >= WGL4Names.NUMBER_OF_MAC_GLYPHS)
             {
-                nameArray = new String[maxIndex - Encoding.NUMBER_OF_MAC_GLYPHS + 1];
-                for (int i = 0; i < maxIndex - Encoding.NUMBER_OF_MAC_GLYPHS + 1; i++)
+                nameArray = new String[maxIndex - WGL4Names.NUMBER_OF_MAC_GLYPHS + 1];
+                for (int i = 0; i < maxIndex - WGL4Names.NUMBER_OF_MAC_GLYPHS + 1; i++)
                 {
                     int numberOfChars = data.readUnsignedByte();
                     nameArray[i] = data.readString(numberOfChars);
@@ -101,13 +100,13 @@ public class PostScriptTable extends TTFTable
             for (int i = 0; i < numGlyphs; i++)
             {
                 int index = glyphNameIndex[i];
-                if (index < Encoding.NUMBER_OF_MAC_GLYPHS)
+                if (index < WGL4Names.NUMBER_OF_MAC_GLYPHS)
                 {
-                    glyphNames[i] = Encoding.MAC_GLYPH_NAMES[index];
+                    glyphNames[i] = WGL4Names.MAC_GLYPH_NAMES[index];
                 }
-                else if (index >= Encoding.NUMBER_OF_MAC_GLYPHS && index <= 32767)
+                else if (index >= WGL4Names.NUMBER_OF_MAC_GLYPHS && index <= 32767)
                 {
-                    glyphNames[i] = nameArray[index - Encoding.NUMBER_OF_MAC_GLYPHS];
+                    glyphNames[i] = nameArray[index - WGL4Names.NUMBER_OF_MAC_GLYPHS];
                 }
                 else
                 {
@@ -128,7 +127,7 @@ public class PostScriptTable extends TTFTable
             glyphNames = new String[glyphNameIndex.length];
             for (int i = 0; i < glyphNames.length; i++)
             {
-                String name = Encoding.MAC_GLYPH_NAMES[glyphNameIndex[i]];
+                String name = WGL4Names.MAC_GLYPH_NAMES[glyphNameIndex[i]];
                 if (name != null)
                 {
                     glyphNames[i] = name;

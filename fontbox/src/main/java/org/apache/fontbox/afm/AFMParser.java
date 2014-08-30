@@ -334,7 +334,7 @@ public class AFMParser
      * 
      * @throws IOException If there is an IO error reading the document.
      */
-    public FontMetric parse() throws IOException
+    public FontMetrics parse() throws IOException
     {
     	return parseFontMetric();
     }
@@ -346,9 +346,9 @@ public class AFMParser
      *
      * @throws IOException If there is an error reading the AFM file.
      */
-    private FontMetric parseFontMetric() throws IOException
+    private FontMetrics parseFontMetric() throws IOException
     {
-        FontMetric fontMetrics = new FontMetric();
+        FontMetrics fontMetrics = new FontMetrics();
         String startFontMetrics = readString();
         if( !START_FONT_METRICS.equals( startFontMetrics ) )
         {
@@ -527,7 +527,7 @@ public class AFMParser
      *
      * @throws IOException If there is an error parsing the data.
      */
-    private void parseKernData( FontMetric fontMetrics ) throws IOException
+    private void parseKernData( FontMetrics fontMetrics ) throws IOException
     {
         String nextCommand;
         while( !(nextCommand = readString()).equals( END_KERN_DATA ) )

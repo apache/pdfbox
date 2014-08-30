@@ -38,7 +38,7 @@ public class TestCMap extends TestCase
         bs[0] = (byte)200;
 
         CMap cMap = new CMap();
-        cMap.addMapping(bs, "a");
-        assertTrue("a".equals(cMap.lookup(bs, 0, 1)));
+        cMap.addCharMapping(bs, "a");
+        assertTrue("a".equals(cMap.toUnicode(200)));
     }
 }

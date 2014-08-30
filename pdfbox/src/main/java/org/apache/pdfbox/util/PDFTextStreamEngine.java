@@ -22,10 +22,11 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
+import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
 import org.apache.pdfbox.text.TextPosition;
 
-import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -80,11 +81,46 @@ public class PDFTextStreamEngine extends PDFStreamEngine
      * This method was originally written by Ben Litchfield for PDFStreamEngine.
      */
     @Override
-    protected final void processGlyph(Matrix textMatrix, Point2D.Float end, float maxHeight,
-                                      float widthText, String unicode,
-                                      int[] charCodes, PDFont font, float fontSize)
-                                      throws IOException
+    protected void showGlyph(Matrix textRenderingMatrix, PDFont font, int code, String unicode,
+                             Vector displacement) throws IOException
     {
+        //
+        // legacy calculations which were previously in PDFStreamEngine
+        //
+
+        PDGraphicsState state = getGraphicsState();
+        Matrix ctm = state.getCurrentTransformationMatrix();
+        float fontSize = state.getTextState().getFontSize();
+        float horizontalScaling = state.getTextState().getHorizontalScaling() / 100f;
+        Matrix textMatrix = getTextMatrix();
+
+        // 1/2 the bbox is used as the height todo: why?
+        float glyphHeight = font.getBoundingBox().getHeight() / 2;
+
+        // transformPoint from glyph space -> text space
+        float height = (float)font.getFontMatrix().transformPoint(0, glyphHeight).getY();
+
+        // (modified) combined displacement, this is calculated *without* taking the character
+        // spacing and word spacing into account, due to legacy code in TextStripper
+        float tx = displacement.getX() * fontSize * horizontalScaling;
+        float ty = 0; // todo: support vertical writing mode
+
+        // (modified) combined displacement matrix
+        Matrix td = Matrix.getTranslatingInstance(tx, ty);
+
+        // (modified) text rendering matrix
+        Matrix nextTextRenderingMatrix = td.multiply(textMatrix).multiply(ctm); // text space -> device space
+        float nextX = nextTextRenderingMatrix.getXPosition();
+        float nextY = nextTextRenderingMatrix.getYPosition();
+
+        // (modified) width and height calculations
+        float dxDisplay = nextX - textRenderingMatrix.getXPosition();
+        float dyDisplay = height * textRenderingMatrix.getYScale();
+
+        //
+        // start of the original method
+        //
+
         // Note on variable names. There are three different units being used in this code.
         // Character sizes are given in glyph units, text locations are initially given in text
         // units, and we want to save the data in display units. The variable names should end with
@@ -93,7 +129,7 @@ public class PDFTextStreamEngine extends PDFStreamEngine
 
         float fontSizeText = getGraphicsState().getTextState().getFontSize();
         float horizontalScalingText = getGraphicsState().getTextState().getHorizontalScaling()/100f;
-        Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
+        //Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
 
         float glyphSpaceToTextSpaceFactor = 1 / 1000f;
         if (font instanceof PDType3Font)
@@ -126,19 +162,32 @@ public class PDFTextStreamEngine extends PDFStreamEngine
         }
 
         // the space width has to be transformed into display units
-        float spaceWidthDisp = spaceWidthText * fontSizeText * horizontalScalingText *
-                textMatrix.getXScale()  * ctm.getXScale();
+        float spaceWidthDisplay = spaceWidthText * fontSizeText * horizontalScalingText *
+                textRenderingMatrix.getXScale()  * ctm.getXScale();
 
-        // PDFBOX-373: Replace a null entry with "?" so it is not printed as "(null)"
+        // when there is no Unicode mapping available, Acrobat simply coerces the character code
+        // into Unicode, so we do the same. Subclasses of PDFStreamEngine don't necessarily want
+        // this, which is why we leave it until this point in PDFTextStreamEngine.
         if (unicode == null)
         {
-            unicode = "?";
+            if (font instanceof PDSimpleFont)
+            {
+                char c = (char) code;
+                unicode = new String(new char[] { c });
+            }
+            else
+            {
+                // Acrobat doesn't seem to coerce composite font's character codes, instead it
+                // skips them. See the "allah2.pdf" TestTextStripper file.
+                return;
+            }
         }
 
         processTextPosition(new TextPosition(pageRotation, pageSize.getWidth(),
-                pageSize.getHeight(), textMatrix, end.x, end.y, maxHeight, widthText,
-                spaceWidthDisp, unicode, charCodes, font, fontSize,
-                (int)(fontSize * textMatrix.getXScale())));
+                pageSize.getHeight(), textRenderingMatrix, nextX, nextY,
+                dyDisplay, dxDisplay,
+                spaceWidthDisplay, unicode, new int[] { code } , font, fontSize,
+                (int)(fontSize * textRenderingMatrix.getXScale())));
     }
 
     /**

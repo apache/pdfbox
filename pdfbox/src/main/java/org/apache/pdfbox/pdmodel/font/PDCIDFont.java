@@ -17,45 +17,183 @@
 package org.apache.pdfbox.pdmodel.font;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
-import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.util.ResourceLoader;
+import org.apache.pdfbox.pdmodel.common.COSObjectable;
+import org.apache.pdfbox.util.Matrix;
+import org.apache.pdfbox.util.Vector;
 
 /**
- * A CIDFont.
+ * A CIDFont. A CIDFont is a PDF object that contains information about a CIDFont program. Although
+ * its Type value is Font, a CIDFont is not actually a font.
  *
  * @author Ben Litchfield
  */
-public abstract class PDCIDFont extends PDFont
+public abstract class PDCIDFont implements COSObjectable
 {
-    private static final Log LOG = LogFactory.getLog(PDCIDFont.class);
+    protected final PDType0Font parent;
 
-    private PDType0Font parent;
-    private Map<Integer, Float> widthCache;
-    private long defaultWidth;
+    private Map<Integer, Float> widths;
+    private float defaultWidth;
+
+    private Map<Integer, Float> verticalDisplacementY = new HashMap<Integer, Float>(); // w1y
+    private Map<Integer, Vector> positionVectors = new HashMap<Integer, Vector>();     // v
+    private float[] dw2;
+
+    protected final COSDictionary dict;
+    private PDFontDescriptor fontDescriptor;
 
     /**
      * Constructor.
      *
      * @param fontDictionary The font dictionary according to the PDF specification.
      */
-    protected PDCIDFont(COSDictionary fontDictionary, PDType0Font parent)
+    protected PDCIDFont(COSDictionary fontDictionary, PDType0Font parent) throws IOException
     {
-        super(fontDictionary);
+        this.dict = fontDictionary;
         this.parent = parent;
-        extractWidths();
+        readWidths();
+        readVerticalDisplacements();
     }
+
+    private void readWidths()
+    {
+        widths = new HashMap<Integer, Float>();
+        COSArray widths = (COSArray) dict.getDictionaryObject(COSName.W);
+        if (widths != null)
+        {
+            int size = widths.size();
+            int counter = 0;
+            while (counter < size)
+            {
+                COSNumber firstCode = (COSNumber) widths.getObject(counter++);
+                COSBase next = widths.getObject(counter++);
+                if (next instanceof COSArray)
+                {
+                    COSArray array = (COSArray) next;
+                    int startRange = firstCode.intValue();
+                    int arraySize = array.size();
+                    for (int i = 0; i < arraySize; i++)
+                    {
+                        COSNumber width = (COSNumber) array.get(i);
+                        this.widths.put(startRange + i, width.floatValue());
+                    }
+                }
+                else
+                {
+                    COSNumber secondCode = (COSNumber) next;
+                    COSNumber rangeWidth = (COSNumber) widths.getObject(counter++);
+                    int startRange = firstCode.intValue();
+                    int endRange = secondCode.intValue();
+                    float width = rangeWidth.floatValue();
+                    for (int i = startRange; i <= endRange; i++)
+                    {
+                        this.widths.put(i, width);
+                    }
+                }
+            }
+        }
+
+    }
+
+    private void readVerticalDisplacements()
+    {
+        // default position vector and vertical displacement vector
+        COSArray cosDW2 = (COSArray) dict.getDictionaryObject(COSName.DW2);
+        if (cosDW2 != null)
+        {
+            dw2 = new float[2];
+            dw2[0] = ((COSNumber)cosDW2.get(0)).floatValue();
+            dw2[1] = ((COSNumber)cosDW2.get(1)).floatValue();
+        }
+        else
+        {
+            dw2 = new float[] { 880, -1000 };
+        }
+
+        // vertical metrics for individual CIDs.
+        COSArray w2 = (COSArray) dict.getDictionaryObject(COSName.W2);
+        if (w2 != null)
+        {
+            for (int i = 0; i < w2.size(); i++)
+            {
+                COSNumber c = (COSNumber)w2.get(i);
+                COSBase next = w2.get(++i);
+                if (next instanceof COSArray)
+                {
+                    COSArray array = (COSArray)next;
+                    for (int j = 0; j < array.size(); j++)
+                    {
+                        int cid = c.intValue() + j;
+                        COSNumber w1y = (COSNumber) array.get(j);
+                        COSNumber v1x = (COSNumber) array.get(++j);
+                        COSNumber v1y = (COSNumber) array.get(++j);
+                        verticalDisplacementY.put(cid, w1y.floatValue());
+                        positionVectors.put(cid, new Vector(v1x.floatValue(), v1y.floatValue()));
+                    }
+                }
+                else
+                {
+                    int first = c.intValue();
+                    int last = ((COSNumber) next).intValue();
+                    COSNumber w1y = (COSNumber) w2.get(++i);
+                    COSNumber v1x = (COSNumber) w2.get(++i);
+                    COSNumber v1y = (COSNumber) w2.get(++i);
+                    for (int cid = first; cid <= last; cid++)
+                    {
+                        verticalDisplacementY.put(cid, w1y.floatValue());
+                        positionVectors.put(cid, new Vector(v1x.floatValue(), v1y.floatValue()));
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public COSDictionary getCOSObject()
+    {
+        return dict;
+    }
+
+    /**
+     * The PostScript name of the font.
+     *
+     * @return The postscript name of the font.
+     */
+    public String getBaseFont()
+    {
+        return dict.getNameAsString(COSName.BASE_FONT);
+    }
+
+    /**
+     * This will get the font descriptor for this font. A font descriptor is required for a CIDFont.
+     *
+     * @return The font descriptor for this font.
+     */
+    public PDFontDescriptor getFontDescriptor()
+    {
+        if (fontDescriptor == null)
+        {
+            COSDictionary fd = (COSDictionary) dict.getDictionaryObject(COSName.FONT_DESC);
+            if (fd != null)
+            {
+                fontDescriptor = new PDFontDescriptorDictionary(fd);
+            }
+        }
+        return fontDescriptor;
+    }
+
+    /**
+     * Returns the font matrix, which represents the transformation from glyph space to text space.
+     */
+    public abstract Matrix getFontMatrix();
 
     /**
      * Returns the Type 0 font which is the parent of this font.
@@ -68,30 +206,23 @@ public abstract class PDCIDFont extends PDFont
     }
 
     /**
-     * This will get the fonts bounding box.
-     *
-     * @return The fonts bounding box.
-     * @throws IOException If there is an error getting the font bounding box.
+     * Returns the font's bounding box.
      */
-    @Override
-    public PDRectangle getFontBoundingBox() throws IOException
-    {
-        throw new RuntimeException("getFontBoundingBox(): Not yet implemented");
-    }
+    public abstract BoundingBox getBoundingBox() throws IOException;
 
     /**
-     * This will get the default width.  The default value for the default width is 1000.
+     * This will get the default width. The default value for the default width is 1000.
      *
      * @return The default width for the glyphs in this font.
      */
-    public long getDefaultWidth()
+    private float getDefaultWidth()
     {
         if (defaultWidth == 0)
         {
             COSNumber number = (COSNumber) dict.getDictionaryObject(COSName.DW);
             if (number != null)
             {
-                defaultWidth = number.intValue();
+                defaultWidth = number.floatValue();
             }
             else
             {
@@ -102,121 +233,131 @@ public abstract class PDCIDFont extends PDFont
     }
 
     /**
-     * This will get the font width for a character.
+     * Returns the default position vector (v).
      *
-     * @param c The character code to get the width for.
-     * @param offset The offset into the array.
-     * @param length The length of the data.
-     * @return The width is in 1000 unit of text space, ie 333 or 777
-     * @throws IOException If an error occurs while parsing.
+     * @param cid CID
      */
-    @Override
-    public float getFontWidth(byte[] c, int offset, int length) throws IOException
+    private Vector getDefaultPositionVector(int cid)
     {
-        float retval = getDefaultWidth();
-        int code = getCodeFromArray(c, offset, length);
-
-        Float widthFloat = widthCache.get(code);
-        if (widthFloat != null)
+        float w0;
+        if (widths.containsKey(cid))
         {
-            retval = widthFloat;
+            Float w = widths.get(cid);
+            if (w != null)
+            {
+                w0 = w;
+            }
+            else
+            {
+                w0 = getDefaultWidth();
+            }
         }
-        return retval;
+        else
+        {
+            w0 = getDefaultWidth();
+        }
+
+        return new Vector(w0 / 2, dw2[0]);
     }
 
-    private void extractWidths()
+    /**
+     * Returns the position vector (v) in 1/1000 text space, for the given character code.
+     *
+     * @param code character code
+     * @return position vector (v)
+     */
+    public Vector getPositionVector(int code)
     {
-        if (widthCache == null)
+        int cid = codeToCID(code);
+        Vector v = positionVectors.get(cid);
+        if (v != null)
         {
-            widthCache = new HashMap<Integer, Float>();
-            COSArray widths = (COSArray) dict.getDictionaryObject(COSName.W);
-            if (widths != null)
-            {
-                int size = widths.size();
-                int counter = 0;
-                while (counter < size)
-                {
-                    COSNumber firstCode = (COSNumber) widths.getObject(counter++);
-                    COSBase next = widths.getObject(counter++);
-                    if (next instanceof COSArray)
-                    {
-                        COSArray array = (COSArray) next;
-                        int startRange = firstCode.intValue();
-                        int arraySize = array.size();
-                        for (int i = 0; i < arraySize; i++)
-                        {
-                            COSNumber width = (COSNumber) array.get(i);
-                            widthCache.put(startRange + i, width.floatValue());
-                        }
-                    }
-                    else
-                    {
-                        COSNumber secondCode = (COSNumber) next;
-                        COSNumber rangeWidth = (COSNumber) widths.getObject(counter++);
-                        int startRange = firstCode.intValue();
-                        int endRange = secondCode.intValue();
-                        float width = rangeWidth.floatValue();
-                        for (int i = startRange; i <= endRange; i++)
-                        {
-                            widthCache.put(i, width);
-                        }
-                    }
-                }
-            }
+            return v;
+        }
+        else
+        {
+            return getDefaultPositionVector(cid);
+        }
+    }
+
+    /**
+     * Returns the y-component of the vertical displacement vector (w1).
+     *
+     * @param code character code
+     * @return w1y
+     */
+    public float getVerticalDisplacementVectorY(int code)
+    {
+        int cid = codeToCID(code);
+        Float w1y = verticalDisplacementY.get(cid);
+        if (w1y != null)
+        {
+            return w1y;
+        }
+        else
+        {
+            return dw2[1];
         }
     }
 
     /**
      * This will get the font height for a character.
      *
-     * @param c The character code to get the height for.
-     * @param offset The offset into the array.
-     * @param length The length of the data.
-     *
-     * @return The width is in 1000 unit of text space, ie 333 or 777
-     *
-     * @throws IOException If an error occurs while parsing.
+     * @param code character code
+     * @return The height is in 1000 unit of text space, ie 333 or 777
      */
-    @Override
-    public float getFontHeight(byte[] c, int offset, int length) throws IOException
+    public abstract float getHeight(int code) throws IOException;
+
+    /**
+     * Returns the width of the given character.
+     *
+     * @param code character code
+     */
+    public float getWidth(int code) throws IOException
     {
-        float retval = 0;
-        PDFontDescriptor desc = getFontDescriptor();
-        float xHeight = desc.getXHeight();
-        float capHeight = desc.getCapHeight();
-        if (xHeight != 0f && capHeight != 0)
+        // these widths are supposed to be consistent with the actual widths given in the CIDFont
+        // program, but PDFBOX-563 shows that when they are not, Acrobat overrides the embedded
+        // font widths with the widths given in the font dictionary
+
+        int cid = codeToCID(code);
+        if (widths.containsKey(cid))
         {
-            // do an average of these two. Can we do better???
-            retval = (xHeight + capHeight) / 2f;
-        }
-        else if (xHeight != 0)
-        {
-            retval = xHeight;
-        }
-        else if (capHeight != 0)
-        {
-            retval = capHeight;
+            Float w = widths.get(cid);
+            if (w != null)
+            {
+                return w;
+            }
+            else
+            {
+                return getDefaultWidth();
+            }
         }
         else
         {
-            retval = 0;
+            return getWidthFromFont(code);
         }
-        if (retval == 0)
-        {
-            retval = desc.getAscent();
-        }
-        return retval;
     }
+
+    /**
+     * Returns the width of a glyph in the embedded font file.
+     *
+     * @param code character code
+     * @return width in glyph space
+     * @throws IOException if the font could not be read
+     */
+    protected abstract float getWidthFromFont(int code) throws IOException;
+
+    /**
+     * Returns true if the font file is embedded in the PDF.
+     */
+    public abstract boolean isEmbedded();
 
     /**
      * This will get the average font width for all characters.
      *
      * @return The width is in 1000 unit of text space, ie 333 or 777
-     *
-     * @throws IOException If an error occurs while parsing.
      */
-    @Override
-    public float getAverageFontWidth() throws IOException
+    public float getAverageFontWidth()
     {
         float totalWidths = 0.0f;
         float characterCount = 0.0f;
@@ -258,117 +399,28 @@ public abstract class PDCIDFont extends PDFont
         return average;
     }
 
-    @Override
-    public float getFontWidth(int charCode)
-    {
-        float width = getDefaultWidth();
-        if (widthCache.containsKey(charCode))
-        {
-            width = widthCache.get(charCode);
-        }
-        return width;
-    }
+    /**
+     * Returns the CID for the given character code. If not found then CID 0 is returned.
+     *
+     * @param code character code
+     * @return CID
+     */
+    public abstract int codeToCID(int code);
 
     /**
-     * Extract the CIDSystemInfo.
-     * @return the CIDSystemInfo as String
+     * Returns the GID for the given character code.
+     *
+     * @param code character code
+     * @return GID
      */
-    private String getCIDSystemInfo()
-    {
-        String cidSystemInfo = null;
-        COSDictionary dict = (COSDictionary) this.dict.getDictionaryObject(COSName.CIDSYSTEMINFO);
-        if (dict != null)
-        {
-            String ordering = dict.getString(COSName.ORDERING);
-            String registry = dict.getString(COSName.REGISTRY);
-            int supplement = dict.getInt(COSName.SUPPLEMENT);
-            cidSystemInfo = registry + "-" + ordering + "-" + supplement;
-        }
-        return cidSystemInfo;
-    }
+    public abstract int codeToGID(int code) throws IOException;
 
-    // todo: do we want to do this at all? Isn't the parent Type0 font responsible for this?
-    @Override
-    protected void determineEncoding()
-    {
-        String cidSystemInfo = getCIDSystemInfo();
-        if (cidSystemInfo == null)
-        {
-            // todo: CIDSystemInfo is required, so this is an error (perform recovery?)
-            LOG.error("Missing CIDSystemInfo in CIDFont dictionary");
-            return;
-        }
-
-        if (cidSystemInfo.contains("Identity"))
-        {
-            cidSystemInfo = "Identity-H";
-        }
-        else if (cidSystemInfo.startsWith("Adobe-UCS-"))
-        {
-            cidSystemInfo = "Adobe-Identity-UCS";
-        }
-        else
-        {
-            cidSystemInfo = cidSystemInfo.substring(0, cidSystemInfo.lastIndexOf('-')) + "-UCS2";
-        }
-
-        cmap = cmapObjects.get(cidSystemInfo);
-        if (cmap == null)
-        {
-            InputStream cmapStream = null;
-            try
-            {
-                // look for a predefined CMap with the given name
-                cmapStream = ResourceLoader.loadResource(resourceRootCMAP + cidSystemInfo);
-                if (cmapStream != null)
-                {
-                    cmap = parseCmap(resourceRootCMAP, cmapStream);
-                    if (cmap == null)
-                    {
-                        LOG.error("Could not parse predefined CMAP file for '" +
-                                cidSystemInfo + "'");
-                    }
-                }
-                else
-                {
-                    LOG.debug("'" + cidSystemInfo + "' isn't a predefined CMap, most " +
-                              "likely it's embedded in the pdf itself.");
-                }
-            }
-            catch (IOException exception)
-            {
-                LOG.error("Could not find predefined CMAP file for '" + cidSystemInfo + "'");
-            }
-            finally
-            {
-                IOUtils.closeQuietly(cmapStream);
-            }
-        }
-    }
-
-    @Override
-    public String encode(byte[] c, int offset, int length) throws IOException
-    {
-        String result;
-        if (cmap != null)
-        {
-            result = cmapEncoding(getCodeFromArray(c, offset, length), length, true, cmap);
-        }
-        else
-        {
-            result = super.encode(c, offset, length);
-        }
-        return result;
-    }
-    
-    @Override
     public void clear()
     {
-        super.clear();
-        if (widthCache != null)
+        if (widths != null)
         {
-            widthCache.clear();
-            widthCache = null;
+            widths.clear();
+            widths = null;
         }
     }
 }

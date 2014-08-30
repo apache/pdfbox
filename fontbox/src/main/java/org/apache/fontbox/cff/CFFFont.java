@@ -16,127 +16,45 @@
  */
 package org.apache.fontbox.cff;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import org.apache.fontbox.afm.FontMetric;
-import org.apache.fontbox.cff.charset.CFFCharset;
-import org.apache.fontbox.cff.encoding.CFFEncoding;
-import org.apache.fontbox.type1.Type1CharStringReader;
-import org.apache.fontbox.type1.Type1Mapping;
+import org.apache.fontbox.util.BoundingBox;
 
 /**
- * This class represents a CFF/Type2 Font.
+ * An Adobe Compact Font Format (CFF) font. Thread safe.
  * 
  * @author Villu Ruusmann
  * @author John Hewson
  */
-public class CFFFont implements Type1CharStringReader
+public abstract class CFFFont
 {
-    private String fontname = null;
-    private Map<String, Object> topDict = new LinkedHashMap<String, Object>();
-    private Map<String, Object> privateDict = new LinkedHashMap<String, Object>();
-    private CFFEncoding fontEncoding = null;
-    private CFFCharset fontCharset = null;
-    private Map<String, byte[]> charStringsDict = new LinkedHashMap<String, byte[]>();
-    private IndexData globalSubrIndex = null;
-    private Map<String, Type2CharString> charStringCache = new HashMap<String, Type2CharString>();
-    private FontMetric fontMetric = null;
-    
+    protected String fontName;
+    protected final Map<String, Object> topDict = new LinkedHashMap<String, Object>();
+    protected CFFCharset charset;
+    protected final List<byte[]> charStrings = new ArrayList<byte[]>();
+    protected IndexData globalSubrIndex;
+
     /**
      * The name of the font.
-     * 
+     *
      * @return the name of the font
      */
     public String getName()
     {
-        return fontname;
+        return fontName;
     }
 
     /**
      * Sets the name of the font.
-     * 
+     *
      * @param name the name of the font
      */
-    public void setName(String name)
+    void setName(String name)
     {
-        fontname = name;
-    }
-
-    /**
-     * Returns the value for the given name from the dictionary.
-     * 
-     * @param name the name of the value
-     * @return the value of the name if available
-     */
-    public Object getProperty(String name)
-    {
-        Object topDictValue = topDict.get(name);
-        if (topDictValue != null)
-        {
-            return topDictValue;
-        }
-        Object privateDictValue = privateDict.get(name);
-        if (privateDictValue != null)
-        {
-            return privateDictValue;
-        }
-        return null;
-    }
-
-    /**
-     * Returns the string value for the given name from the dictionary.
-     * 
-     * @param name the name of the value
-     * @return the string value of the name if available
-     */
-    public String getPropertyAsString(String name)
-    {
-        Object value = getProperty(name);
-        if (value != null && value instanceof String)
-        {
-            return (String)value;
-        }
-        return null;
-    }
-
-    /**
-     * Returns the float value for the given name from the dictionary.
-     * 
-     * @param name the name of the value
-     * @return the float value of the name if available
-     */
-    public float getPropertyAsFloat(String name, float defaultValue)
-    {
-        Object value = getProperty(name);
-        if (value != null && value instanceof Float)
-        {
-            return (Float)value;
-        }
-        return defaultValue;
-    }
-
-    /**
-     * Returns the boolean value for the given name from the dictionary.
-     * 
-     * @param name the name of the value
-     * @return the boolean value of the name if available
-     */
-    public boolean getPropertyAsBoolean(String name, boolean defaultValue)
-    {
-        Object value = getProperty(name);
-        if (value != null && value instanceof Boolean)
-        {
-            return (Boolean)value;
-        }
-        return defaultValue;
+        fontName = name;
     }
 
     /**
@@ -164,183 +82,17 @@ public class CFFFont implements Type1CharStringReader
     }
 
     /**
-     * Adds the given key/value pair to the private dictionary.
-     * 
-     * @param name the given key
-     * @param value the given value
+     * Returns the FontMatrix.
      */
-    public void addValueToPrivateDict(String name, Object value)
-    {
-        if (value != null)
-        {
-            privateDict.put(name, value);
-        }
-    }
+    public abstract List<Number> getFontMatrix();
 
     /**
-     * Returns the private dictionary.
-     * 
-     * @return the dictionary
+     * Returns the FontBBox.
      */
-    public Map<String, Object> getPrivateDict()
+    public BoundingBox getFontBBox()
     {
-        return privateDict;
-    }
-
-    /**
-     * Get the mappings for the font as Type1Mapping
-     *
-     * @return the Type1Mapping
-     */
-    public Collection<? extends Type1Mapping> getType1Mappings()
-    {
-        return getMappings();
-    }
-
-    /**
-     * Get the mapping (code/SID/charname/bytes) for this font.
-     * 
-     * @return mappings for codes &lt; 256 and for codes &gt;= 256
-     */
-    public Collection<CFFFont.Mapping> getMappings()
-    {
-        List<Mapping> mappings = new ArrayList<Mapping>();
-        Set<String> mappedNames = new HashSet<String>();
-        for (CFFEncoding.Entry entry : fontEncoding.getEntries())
-        {
-            String charName = fontCharset.getName(entry.getSID());
-            // Predefined encoding
-            if (charName == null)
-            {
-                continue;
-            }
-            byte[] bytes = charStringsDict.get(charName);
-            if (bytes == null)
-            {
-                continue;
-            }
-            Mapping mapping = createMapping(entry.getCode(), entry.getSID(), charName, bytes);
-            mappings.add(mapping);
-            mappedNames.add(charName);
-        }
-        if (fontEncoding instanceof CFFParser.EmbeddedEncoding)
-        {
-            CFFParser.EmbeddedEncoding embeddedEncoding = (CFFParser.EmbeddedEncoding) fontEncoding;
-
-            for (CFFParser.EmbeddedEncoding.Supplement supplement : embeddedEncoding.getSupplements())
-            {
-                String charName = fontCharset.getName(supplement.getGlyph());
-                if (charName == null)
-                {
-                    continue;
-                }
-                byte[] bytes = charStringsDict.get(charName);
-                if (bytes == null)
-                {
-                    continue;
-                }
-                Mapping mapping = createMapping(supplement.getCode(), supplement.getGlyph(), charName, bytes);
-                mappings.add(mapping);
-                mappedNames.add(charName);
-            }
-        }
-        // XXX
-        int code = 256;
-        for (CFFCharset.Entry entry : fontCharset.getEntries())
-        {
-            String name = entry.getName();
-            if (mappedNames.contains(name))
-            {
-                continue;
-            }
-            byte[] bytes = this.charStringsDict.get(name);
-            if (bytes == null)
-            {
-                continue;
-            }
-            Mapping mapping = createMapping(code++, entry.getSID(), name, bytes);
-            mappings.add(mapping);
-            mappedNames.add(name);
-        }
-        return mappings;
-    }
-
-    /**
-     * Returns a new mapping. Overridden in subclasses.
-     *
-     * @param code chatacter code
-     * @param sid SID
-     * @param name glyph name
-     * @param bytes charstring bytes
-     * @return a new mapping object
-     */
-    protected Mapping createMapping(int code, int sid, String name, byte[] bytes)
-    {
-        Mapping mapping = new Mapping();
-        mapping.setCode(code);
-        mapping.setSID(sid);
-        mapping.setName(name);
-        mapping.setBytes(bytes);
-        return  mapping;
-    }
-
-    /**
-     * Return the Width value of the given Glyph identifier.
-     * 
-     * @param sid SID
-     * @return -1 if the SID is missing from the Font.
-     * @throws IOException if something went wrong
-     * 
-     */
-    public int getWidth(int sid) throws IOException
-    {
-        for (Mapping m : getMappings())
-        {
-            if (m.getSID() == sid)
-            {
-                Type1CharString charstring = m.getType1CharString();
-                return charstring.getWidth();
-            }
-        }
-
-        // SID not found, return the nodef width
-        int nominalWidth = getNominalWidthX(sid);
-        int defaultWidth = getDefaultWidthX(sid);
-        return getNotDefWidth(defaultWidth, nominalWidth);
-    }
-
-    /**
-     * Returns the witdth of the .notdef character.
-     * 
-     * @param defaultWidth default width
-     * @param nominalWidth nominal width
-     * @return the calculated width for the .notdef character
-     * @throws IOException if something went wrong
-     */
-    protected int getNotDefWidth(int defaultWidth, int nominalWidth) throws IOException
-    {
-        Type1CharString charstring = getType1CharString(".notdef");
-        return charstring.getWidth() != 0 ? charstring.getWidth() + nominalWidth : defaultWidth;
-    }
-
-    /**
-     * Returns the CFFEncoding of the font.
-     * 
-     * @return the encoding
-     */
-    public CFFEncoding getEncoding()
-    {
-        return fontEncoding;
-    }
-
-    /**
-     * Sets the CFFEncoding of the font.
-     * 
-     * @param encoding the given CFFEncoding
-     */
-    public void setEncoding(CFFEncoding encoding)
-    {
-        fontEncoding = encoding;
+        List<Number> numbers = (List<Number>)topDict.get("FontBBox");
+        return new BoundingBox(numbers);
     }
 
     /**
@@ -350,7 +102,7 @@ public class CFFFont implements Type1CharStringReader
      */
     public CFFCharset getCharset()
     {
-        return fontCharset;
+        return charset;
     }
 
     /**
@@ -358,126 +110,27 @@ public class CFFFont implements Type1CharStringReader
      * 
      * @param charset the given CFFCharset
      */
-    public void setCharset(CFFCharset charset)
+    void setCharset(CFFCharset charset)
     {
-        fontCharset = charset;
-    }
-
-    /**
-     * Returns the FontMetric of the font.
-     * 
-     * @return the font metrics
-     */
-    public FontMetric getFontMetric()
-    {
-        return fontMetric;
-    }
-
-    /**
-     * Sets the FontMetric of the font.
-     * 
-     * @param metric the given FontMetric 
-     */
-    public void setFontMetric(FontMetric metric)
-    {
-        fontMetric = metric;
-    }
-
-    /**
-     * Returns the SID for a given glyph name.
-     * @param name glyph name
-     * @return SID
-     */
-    private int getSIDForName(String name)
-    {
-        int sid = 0; // .notdef
-        for (Mapping m : getMappings())
-        {
-            if (m.getName().equals(name))
-            {
-                sid = m.getSID();
-                break;
-            }
-        }
-      return sid;
+        this.charset = charset;
     }
 
     /**
      * Returns the character strings dictionary.
-     * 
+     *
      * @return the dictionary
      */
-    public Map<String, byte[]> getCharStringsDict()
+    List<byte[]> getCharStringBytes()
     {
-        return charStringsDict;
+        return charStrings;
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the number of charstrings in the font.
      */
-    public Type1CharString getType1CharString(String name) throws IOException
+    public int getNumCharStrings()
     {
-        return getType1CharString(name, getSIDForName(name));
-    }
-
-    /**
-     * Returns the Type 1 CharString for the character with the given name and SID.
-     *
-     * @return Type 1 CharString
-     */
-    private Type1CharString getType1CharString(String name, int sid) throws IOException
-    {
-        Type2CharString type2 = charStringCache.get(name);
-        if (type2 == null)
-        {
-            Type2CharStringParser parser = new Type2CharStringParser(fontname, name);
-            List<Object> type2seq = parser.parse(charStringsDict.get(name), globalSubrIndex, getLocalSubrIndex(sid));
-            type2 = new Type2CharString(this, fontname, name, type2seq, getDefaultWidthX(sid), getNominalWidthX(sid));
-            charStringCache.put(name, type2);
-        }
-        return type2;
-    }
-
-    /**
-     * Returns the defaultWidthX for the given SID.
-     *
-     * @param sid SID
-     * @return defaultWidthX
-     */
-    protected int getDefaultWidthX(int sid)
-    {
-        Number num = (Number)getProperty("defaultWidthX");
-        if (num == null)
-        {
-            return 1000;
-        }
-        return num.intValue();
-    }
-
-    /**
-     * Returns the nominalWidthX for the given SID.
-     *
-     * @param sid SID
-     * @return defaultWidthX
-     */
-    protected int getNominalWidthX(int sid)
-    {
-        Number num = (Number)getProperty("nominalWidthX");
-        if (num == null)
-        {
-            return 0;
-        }
-        return num.intValue();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public String toString()
-    {
-        return getClass().getName() + "[name=" + fontname + ", topDict=" + topDict + ", privateDict=" + privateDict
-                + ", encoding=" + fontEncoding + ", charset=" + fontCharset + ", charStringsDict=" + charStringsDict
-                + "]";
+        return charStrings.size();
     }
 
     /**
@@ -485,7 +138,7 @@ public class CFFFont implements Type1CharStringReader
      * 
      * @param globalSubrIndexValue the IndexData object containing the global subroutines
      */
-    public void setGlobalSubrIndex(IndexData globalSubrIndexValue)
+    void setGlobalSubrIndex(IndexData globalSubrIndexValue)
     {
         globalSubrIndex = globalSubrIndexValue;
     }
@@ -500,83 +153,11 @@ public class CFFFont implements Type1CharStringReader
         return globalSubrIndex;
     }
 
-    /**
-     * Returns the local subroutine index data.
-     * 
-     * @return the dictionary
-     */
-    protected IndexData getLocalSubrIndex(int sid)
+    @Override
+    public String toString()
     {
-        return (IndexData)privateDict.get("Subrs");
-    }
-
-    public class Mapping implements Type1Mapping
-    {
-        private int mappedCode;
-        private int mappedSID;
-        private String mappedName;
-        private byte[] mappedBytes;
-
-        /**
-         * {@inheritDoc}
-         */
-        public Type1CharString getType1CharString() throws IOException
-        {
-            return CFFFont.this.getType1CharString(mappedName, mappedSID);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public int getCode()
-        {
-            return mappedCode;
-        }
-
-        protected void setCode(int code)
-        {
-            mappedCode = code;
-        }
-
-        /**
-         * Gets the value for the SID.
-         *
-         * @return the SID
-         */
-        public int getSID()
-        {
-            return mappedSID;
-        }
-
-        protected void setSID(int sid)
-        {
-            this.mappedSID = sid;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public String getName()
-        {
-            return mappedName;
-        }
-
-        protected void setName(String name)
-        {
-            this.mappedName = name;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public byte[] getBytes()
-        {
-            return mappedBytes;
-        }
-
-        protected void setBytes(byte[] bytes)
-        {
-            this.mappedBytes = bytes;
-        }
+        return getClass().getSimpleName() + "[name=" + fontName + ", topDict=" + topDict
+                + ", charset=" + charset + ", charStrings=" + charStrings
+                + "]";
     }
 }
