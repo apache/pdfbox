@@ -299,4 +299,35 @@ final class FileSystemFontProvider implements FontProvider
         }
         return null;
     }
+
+    @Override
+    public String toDebugString()
+    {
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, File> entry : ttfFontFiles.entrySet())
+        {
+            sb.append("TTF: ");
+            sb.append(entry.getKey());
+            sb.append(": ");
+            sb.append(entry.getValue().getPath());
+            sb.append('\n');
+        }
+        for (Map.Entry<String, File> entry : cffFontFiles.entrySet())
+        {
+            sb.append("OTF: ");
+            sb.append(entry.getKey());
+            sb.append(": ");
+            sb.append(entry.getValue().getPath());
+            sb.append('\n');
+        }
+        for (Map.Entry<String, File> entry : type1FontFiles.entrySet())
+        {
+            sb.append("PFB: ");
+            sb.append(entry.getKey());
+            sb.append(": ");
+            sb.append(entry.getValue().getPath());
+            sb.append('\n');
+        }
+        return sb.toString();
+    }
 }
