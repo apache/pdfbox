@@ -30,6 +30,7 @@ import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.util.Matrix;
+import org.apache.pdfbox.util.Vector;
 
 /**
  * A PostScript Type 3 Font.
@@ -71,6 +72,12 @@ public class PDType3Font extends PDSimpleFont
     protected Boolean isFontSymbolic()
     {
         return false;
+    }
+
+    @Override
+    public Vector getDisplacement(int code) throws IOException
+    {
+        return getFontMatrix().transform(new Vector(getWidth(code), 0));
     }
 
     @Override

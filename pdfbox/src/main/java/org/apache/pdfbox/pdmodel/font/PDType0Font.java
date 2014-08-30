@@ -30,6 +30,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.encoding.GlyphList;
 import org.apache.pdfbox.encoding.StandardEncoding;
 import org.apache.pdfbox.util.Matrix;
+import org.apache.pdfbox.util.Vector;
 
 /**
  * A Composite (Type 0) font.
@@ -196,6 +197,26 @@ public class PDType0Font extends PDFont
     public float getAverageFontWidth()
     {
         return descendantFont.getAverageFontWidth();
+    }
+
+    @Override
+    public Vector getPositionVector(int code)
+    {
+        // units are always 1/1000 text space, font matrix is not used, see FOP-2252
+        return descendantFont.getPositionVector(code).scale(-1 / 1000f);
+    }
+
+    @Override
+    public Vector getDisplacement(int code) throws IOException
+    {
+        if (isVertical())
+        {
+            return new Vector(0, descendantFont.getVerticalDisplacementVectorY(code) / 1000f);
+        }
+        else
+        {
+            return super.getDisplacement(code);
+        }
     }
 
     @Override

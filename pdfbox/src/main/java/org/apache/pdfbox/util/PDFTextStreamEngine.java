@@ -82,7 +82,7 @@ public class PDFTextStreamEngine extends PDFStreamEngine
      */
     @Override
     protected void showGlyph(Matrix textRenderingMatrix, PDFont font, int code, String unicode,
-                             float dx, float dy) throws IOException
+                             Vector displacement) throws IOException
     {
         //
         // legacy calculations which were previously in PDFStreamEngine
@@ -97,12 +97,12 @@ public class PDFTextStreamEngine extends PDFStreamEngine
         // 1/2 the bbox is used as the height todo: why?
         float glyphHeight = font.getBoundingBox().getHeight() / 2;
 
-        // transform from glyph space -> text space
-        float height = (float)font.getFontMatrix().transform(0, glyphHeight).getY();
+        // transformPoint from glyph space -> text space
+        float height = (float)font.getFontMatrix().transformPoint(0, glyphHeight).getY();
 
         // (modified) combined displacement, this is calculated *without* taking the character
         // spacing and word spacing into account, due to legacy code in TextStripper
-        float tx = dx * fontSize * horizontalScaling;
+        float tx = displacement.getX() * fontSize * horizontalScaling;
         float ty = 0; // todo: support vertical writing mode
 
         // (modified) combined displacement matrix

@@ -301,14 +301,14 @@ public class Matrix implements Cloneable
      * @param point point to transform
      */
     public void transform(Point2D point) {
-        double x = point.getX();
-        double y = point.getY();
-        double a = single[0];
-        double b = single[1];
-        double c = single[3];
-        double d = single[4];
-        double e = single[6];
-        double f = single[7];
+        float x = (float)point.getX();
+        float y = (float)point.getY();
+        float a = single[0];
+        float b = single[1];
+        float c = single[3];
+        float d = single[4];
+        float e = single[6];
+        float f = single[7];
         point.setLocation(x * a + y * c + e, x * b + y * d + f);
     }
 
@@ -318,14 +318,31 @@ public class Matrix implements Cloneable
      * @param x x-coordinate
      * @param y y-coordinate
      */
-    public Point2D transform(double x, double y) {
-        double a = single[0];
-        double b = single[1];
-        double c = single[3];
-        double d = single[4];
-        double e = single[6];
-        double f = single[7];
+    public Point2D transformPoint(double x, double y) {
+        float a = single[0];
+        float b = single[1];
+        float c = single[3];
+        float d = single[4];
+        float e = single[6];
+        float f = single[7];
         return new Point2D.Double(x * a + y * c + e, x * b + y * d + f);
+    }
+
+    /**
+     * Transforms the given point by this matrix.
+     *
+     * @param vector @2D vector
+     */
+    public Vector transform(Vector vector) {
+        float a = single[0];
+        float b = single[1];
+        float c = single[3];
+        float d = single[4];
+        float e = single[6];
+        float f = single[7];
+        float x = vector.getX();
+        float y = vector.getY();
+        return new Vector(x * a + y * c + e, x * b + y * d + f);
     }
 
     /**

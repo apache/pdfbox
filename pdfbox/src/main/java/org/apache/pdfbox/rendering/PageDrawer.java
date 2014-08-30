@@ -73,6 +73,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.PDFGraphicsStreamEngine;
+import org.apache.pdfbox.util.Vector;
 
 /**
  * Paints a page in a PDF document to a Graphics context.
@@ -214,7 +215,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
         initStream(pageDimension);
 
-        // transform ctm
+        // transformPoint ctm
         Matrix concat = matrix.multiply(getGraphicsState().getCurrentTransformationMatrix());
         getGraphicsState().setCurrentTransformationMatrix(concat);
 
@@ -272,31 +273,21 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     @Override
     protected void showGlyph(Matrix textRenderingMatrix, PDFont font, int code, String unicode,
-                             float dx, float dy) throws IOException
+                             Vector displacement) throws IOException
     {
-        try
-        {
-            AffineTransform at = textRenderingMatrix.createAffineTransform();
-            Matrix fontMatrix = font.getFontMatrix();
+        AffineTransform at = textRenderingMatrix.createAffineTransform();
+        at.concatenate(font.getFontMatrix().createAffineTransform());
 
-            // use different methods to draw the string
-            if (font instanceof PDType3Font)
-            {
-                // Type3 fonts don't use the same units within the font matrix as the other fonts
-                at.scale(fontMatrix.getValue(0, 0), fontMatrix.getValue(1, 1));
-                // Type3 fonts are using streams for each character
-                drawType3String((PDType3Font) font, code, at);
-            }
-            else
-            {
-                Glyph2D glyph2D = createGlyph2D(font);
-                at.concatenate(fontMatrix.createAffineTransform());
-                drawGlyph2D(glyph2D, code, at);
-            }
-        }
-        catch (IOException e)
+        if (font instanceof PDType3Font)
         {
-            LOG.error(e.getMessage(), e);  // todo: really?
+            // Type3 fonts use PDF streams for each character
+            drawType3String((PDType3Font) font, code, at);
+        }
+        else
+        {
+            // all other fonts use vectors
+            Glyph2D glyph2D = createGlyph2D(font);
+            drawGlyph2D(glyph2D, code, at);
         }
     }
 

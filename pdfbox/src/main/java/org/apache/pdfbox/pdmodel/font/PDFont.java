@@ -35,6 +35,7 @@ import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.util.Matrix;
+import org.apache.pdfbox.util.Vector;
 
 /**
  * This is the base class for all PDF fonts.
@@ -154,6 +155,31 @@ public abstract class PDFont implements COSObjectable
     public COSDictionary getCOSObject()
     {
         return dict;
+    }
+
+    /**
+     * Returns the position vector (v), in text space, for the given character.
+     * This represents the position of vertical origin relative to horizontal origin, for
+     * horizontal writing it will always be (0, 0). For vertical writing both x and y are set.
+     *
+     * @param code character code
+     * @return position vector
+     */
+    public Vector getPositionVector(int code)
+    {
+        throw new UnsupportedOperationException("Horizontal fonts have no position vector");
+    }
+
+    /**
+     * Returns the displacement vector (w0, w1) in text space, for the given character.
+     * For horizontal text only the x component is used, for vertical text only the y component.
+     *
+     * @param code character code
+     * @return displacement vector
+     */
+    public Vector getDisplacement(int code) throws IOException
+    {
+        return new Vector(getWidth(code) / 1000, 0);
     }
 
     /**

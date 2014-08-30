@@ -388,43 +388,22 @@ public class PDFStreamEngine
             Matrix ctm = state.getCurrentTransformationMatrix();
             Matrix textRenderingMatrix = parameters.multiply(textMatrix).multiply(ctm);
 
-            // get glyph's horizontal and vertical displacements (glyph space -> text space)
-            // todo: it would be nice to encapsulate the code below
-            float w0, w1;
-            if (font instanceof PDType3Font)
+            // get glyph's position vector if this is vertical text
+            // changes to vertical text should be tested with PDFBOX-2294 and PDFBOX-1422
+            if (font.isVertical())
             {
-                // Type 3 fonts specify a custom matrix
-                Matrix fontMatrix = font.getFontMatrix();
-                Point2D adv = fontMatrix.transform(font.getWidth(code), font.getHeight(code));
-                w0 = (float)adv.getX();
-                w1 = (float)adv.getY();
-            }
-            else
-            {
-                // all other fonts use 1:1000 for widths, even those with a FontMatrix, see FOP-2252
-                if (font.isVertical())
-                {
-                    // changes to vertical text should be tested with PDFBOX-2294 and PDFBOX-1422
-                    PDType0Font type0 = (PDType0Font)font;
+                // position vector, in text space
+                Vector v = font.getPositionVector(code);
 
-                    // position vector (position of vertical origin relative to horizontal origin)
-                    Vector v = type0.getDescendantFont().getPositionVector(code);
-                    textRenderingMatrix.translate(v.scale(-1 / 1000f));
-
-                    // displacement vector
-                    w0 = 0;
-                    w1 = type0.getDescendantFont().getVerticalDisplacementVectorY(code) / 1000;
-                }
-                else
-                {
-                    // displacement vector
-                    w0 = font.getWidth(code) / 1000f;
-                    w1 = 0;
-                }
+                // apply the position vector to the horizontal origin to get the vertical origin
+                textRenderingMatrix.translate(v);
             }
+
+            // get glyph's horizontal and vertical displacements, in text space
+            Vector w = font.getDisplacement(code);
 
             // process the decoded glyph
-            showGlyph(textRenderingMatrix, font, code, unicode, w0, w1);
+            showGlyph(textRenderingMatrix, font, code, unicode, w);
 
             // TJ adjustment after final glyph
             float tj = 0;
@@ -438,11 +417,12 @@ public class PDFStreamEngine
             if (font.isVertical())
             {
                 tx = 0;
-                ty = (w1 - tj / 1000) * fontSize + charSpacing + wordSpacing;
+                ty = (w.getY() - tj / 1000) * fontSize + charSpacing + wordSpacing;
             }
             else
             {
-                tx = ((w0 - tj / 1000) * fontSize + charSpacing + wordSpacing) * horizontalScaling;
+                tx = ((w.getX() - tj / 1000) * fontSize + charSpacing + wordSpacing) *
+                        horizontalScaling;
                 ty = 0;
             }
 
@@ -459,12 +439,11 @@ public class PDFStreamEngine
      * @param font the current font
      * @param code internal PDF character code for the glyph
      * @param unicode the Unicode text for this glyph, or null if the PDF does provide it
-     * @param dx the x-advance of the glyph in text space
-     * @param dy the y-advance of the glyph in text space
+     * @param displacement the displacement (i.e. advance) of the glyph in text space
      * @throws IOException if the glyph cannot be processed
      */
     protected void showGlyph(Matrix textRenderingMatrix, PDFont font, int code, String unicode,
-                             float dx, float dy) throws IOException
+                             Vector displacement) throws IOException
     {
         // overridden in subclasses
     }
@@ -628,10 +607,10 @@ public class PDFStreamEngine
     }
 
     /**
-     * use the current transformation matrix to transform a single point.
+     * use the current transformation matrix to transformPoint a single point.
      *
-     * @param x x-coordinate of the point to be transform
-     * @param y y-coordinate of the point to be transform
+     * @param x x-coordinate of the point to be transformPoint
+     * @param y y-coordinate of the point to be transformPoint
      * @return the transformed coordinates as Point2D.Double
      */
     public Point2D.Double transformedPoint(double x, double y)
@@ -643,9 +622,9 @@ public class PDFStreamEngine
     }
 
     /**
-     * use the current transformation matrix to transform a PDRectangle.
+     * use the current transformation matrix to transformPoint a PDRectangle.
      * 
-     * @param rect the PDRectangle to transform
+     * @param rect the PDRectangle to transformPoint
      * @return the transformed coordinates as a GeneralPath
      */
     public GeneralPath transformedPDRectanglePath(PDRectangle rect)

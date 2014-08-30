@@ -261,7 +261,7 @@ public abstract class PDCIDFont implements COSObjectable
     }
 
     /**
-     * Returns the position vector (v) for the given character code.
+     * Returns the position vector (v) in 1/1000 text space, for the given character code.
      *
      * @param code character code
      * @return position vector (v)
