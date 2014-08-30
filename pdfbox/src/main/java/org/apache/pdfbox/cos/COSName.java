@@ -312,6 +312,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName N = new COSName("N");
     public static final COSName NAME = new COSName("Name");
     public static final COSName NAMES = new COSName("Names");
+    public static final COSName NEED_APPEARANCES = new COSName("NeedAppearances");
     public static final COSName NEXT = new COSName("Next");
     public static final COSName NM = new COSName("NM");
     public static final COSName NON_EFONT_NO_WARN = new COSName("NonEFontNoWarn");
@@ -472,6 +473,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName WIDTHS = new COSName("Widths");
     public static final COSName WIN_ANSI_ENCODING = new COSName("WinAnsiEncoding");
     // X
+    public static final COSName XFA = new COSName("XFA");
     public static final COSName X_STEP = new COSName("XStep");
     public static final COSName XHEIGHT = new COSName("XHeight");
     public static final COSName XOBJECT = new COSName("XObject");

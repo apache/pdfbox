@@ -120,10 +120,11 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
         @SuppressWarnings("unchecked")
         List<PDFieldTreeNode> acroFormFields = acroForm.getFields();
         COSDictionary acroFormDict = acroForm.getDictionary();
+        acroForm.setSignaturesExist(true);
+        acroForm.setAppendOnly(true);
         acroFormDict.setDirect(true);
-        acroFormDict.setInt(COSName.SIG_FLAGS, 3);
         acroFormFields.add(signatureField);
-        acroFormDict.setString(COSName.DA, "/sylfaen 0 Tf 0 g");
+        acroForm.setDefaultAppearance("/sylfaen 0 Tf 0 g");
         pdfStructure.setAcroFormFields(acroFormFields);
         pdfStructure.setAcroFormDictionary(acroFormDict);
         log.info("AcroForm dictionary has been created");

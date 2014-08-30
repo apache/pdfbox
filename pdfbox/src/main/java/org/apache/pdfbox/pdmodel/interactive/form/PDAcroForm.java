@@ -20,11 +20,10 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSString;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDResources;
-
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.fdf.FDFDictionary;
@@ -33,7 +32,6 @@ import org.apache.pdfbox.pdmodel.fdf.FDFCatalog;
 import org.apache.pdfbox.pdmodel.fdf.FDFField;
 
 import java.io.IOException;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -47,8 +45,12 @@ import java.util.Map;
  */
 public final class PDAcroForm implements COSObjectable
 {
+    private static final int FLAG_SIGNATURES_EXIST = 1;
+    private static final int FLAG_APPEND_ONLY = 1;
+    
     private COSDictionary acroForm;
     private PDDocument document;
+    private COSString defaultAppearance;
 
     private Map<String,PDFieldTreeNode> fieldCache;
 
@@ -311,6 +313,70 @@ public final class PDAcroForm implements COSObjectable
     }
 
     /**
+     * Get the default appearance.
+     * 
+     * @return the DA element of the dictionary object
+     */
+    public COSString getDefaultAppearance()
+    {
+        if (defaultAppearance == null)
+        {
+            COSBase daValue =  getDictionary().getItem(COSName.DA);
+            if (daValue != null)
+            {
+                defaultAppearance = (COSString)daValue;
+            }
+        }
+        return defaultAppearance;
+    }
+
+    /**
+     * Set the default appearance.
+     * 
+     * @param daValue a string describing the default appearance
+     */
+    public void setDefaultAppearance(String daValue)
+    {
+        if (daValue != null)
+        {
+            defaultAppearance = new COSString(daValue);
+            getDictionary().setItem(COSName.DA, defaultAppearance);
+        }
+        else
+        {
+            defaultAppearance = null;
+            getDictionary().removeItem(COSName.DA);
+        }
+    }
+
+    /**
+     * Get the value of NeedAppearances.
+     * 
+     * @return the value of NeedAppearances, false if the value isn't set
+     */
+    public boolean isNeedAppearances()
+    {
+        return getDictionary().getBoolean(COSName.NEED_APPEARANCES, false);
+    }
+
+    /**
+     * Set the NeedAppearances value.
+     * 
+     * @param value the value for NeedAppearances
+     */
+    public void setNeedAppearances(Boolean value)
+    {
+        if (value != null)
+        {
+            getDictionary().setBoolean(COSName.NEED_APPEARANCES, value);
+        }
+        else
+        {
+            getDictionary().removeItem(COSName.NEED_APPEARANCES);
+        }
+    }
+    
+    /**
      * This will get the default resources for the acro form.
      *
      * @return The default resources.
@@ -355,7 +421,7 @@ public final class PDAcroForm implements COSObjectable
     public PDXFAResource getXFA()
     {
         PDXFAResource xfa = null;
-        COSBase base = acroForm.getDictionaryObject( "XFA" );
+        COSBase base = acroForm.getDictionaryObject( COSName.XFA );
         if( base != null )
         {
             xfa = new PDXFAResource( base );
@@ -370,6 +436,76 @@ public final class PDAcroForm implements COSObjectable
      */
     public void setXFA( PDXFAResource xfa )
     {
-        acroForm.setItem( "XFA", xfa );
+        acroForm.setItem( COSName.XFA, xfa );
+    }
+    
+    /**
+     * This will get the 'quadding' or justification of the text to be displayed.
+     * 0 - Left(default)<br/>
+     * 1 - Centered<br />
+     * 2 - Right<br />
+     * Please see the QUADDING_CONSTANTS.
+     *
+     * @return The justification of the text strings.
+     */
+    public int getQ()
+    {
+        int retval = 0;
+        COSNumber number = (COSNumber)getDictionary().getDictionaryObject( COSName.Q );
+        if( number != null )
+        {
+            retval = number.intValue();
+        }
+        return retval;
+    }
+
+    /**
+     * This will set the quadding/justification of the text.  See QUADDING constants.
+     *
+     * @param q The new text justification.
+     */
+    public void setQ( int q )
+    {
+        getDictionary().setInt( COSName.Q, q );
+    }
+
+    /**
+     * Determines if SignaturesExist is set.
+     * 
+     * @return true if the document contains at least one signature.
+     */
+    public boolean isSignaturesExist()
+    {
+        return getDictionary().getFlag( COSName.SIG_FLAGS, FLAG_SIGNATURES_EXIST );
+    }
+
+    /**
+     * Set the SignaturesExist bit.
+     *
+     * @param signaturesExist The value for SignaturesExist.
+     */
+    public void setSignaturesExist( boolean signaturesExist )
+    {
+        getDictionary().setFlag( COSName.SIG_FLAGS, FLAG_SIGNATURES_EXIST, signaturesExist );
+    }
+
+    /**
+     * Determines if AppendOnly is set.
+     * 
+     * @return true if the document contains signatures that may be invalidated if the file is saved.
+     */
+    public boolean isAppendOnly()
+    {
+        return getDictionary().getFlag( COSName.SIG_FLAGS, FLAG_APPEND_ONLY );
+    }
+
+    /**
+     * Set the AppendOnly bit.
+     *
+     * @param appendOnly The value for AppendOnly.
+     */
+    public void setAppendOnly( boolean appendOnly )
+    {
+        getDictionary().setFlag( COSName.SIG_FLAGS, FLAG_APPEND_ONLY, appendOnly );
     }
 }
