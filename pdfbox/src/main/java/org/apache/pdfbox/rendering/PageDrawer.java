@@ -197,6 +197,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                         {
                             matrix = new Matrix();
                         }
+                        
+                        // PDF Spec 12.5.5:
                         // a) The appearance's bounding box (specified by its BBox entry) 
                         // shall be transformed, using Matrix, to produce a quadrilateral 
                         // with arbitrary orientation.
@@ -210,10 +212,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                                 (float) Math.abs(p2.getX() - p1.getX()),
                                 (float) Math.abs(p2.getY() - p1.getY()));
 
-                        // Spec 12.5.5:
+                        // PDF Spec 12.5.5:
                         // b) A matrix A shall be computed that scales and translates 
                         // the transformed appearance box to align with the edges
-                        // of the annotation?s rectangle
+                        // of the annotation's rectangle
                         //
                         // code inspired from
                         // http://stackoverflow.com/a/14015713/535646
@@ -224,9 +226,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                         Matrix matrixA = new Matrix();
                         matrixA.setFromAffineTransform(at);
                         
+                        // PDF Spec 12.5.5:
                         // c) Matrix shall be concatenated with A to form a matrix AA 
-                        // that maps from the appearance?s coordinate system to 
-                        // the annotation?s rectangle in default user space
+                        // that maps from the appearance's coordinate system to 
+                        // the annotation's rectangle in default user space
                         Matrix matrixAA = matrix.multiply(matrixA);
                         
                         Point2D point = new Point2D.Float(matrixAA.getXPosition(), matrixAA.getYPosition());
@@ -236,8 +239,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                         getGraphicsState().setCurrentTransformationMatrix(matrixAA);
 
                         // Calculate clipping
-                        // As per spec: "a self-contained content stream that 
-                        // shall be rendered inside the annotation rectangle"
+                        // PDF Spec 12.5.5:
+                        // a self-contained content stream that shall be rendered 
+                        // inside the annotation rectangle
                         Rectangle2D clipRect2D = new Rectangle2D.Float(
                                 (float) (rect2D.getMinX()-point.getX()),
                                 (float) (rect2D.getMinY()-point.getY()),
