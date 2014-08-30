@@ -120,7 +120,14 @@ public abstract class PDField implements COSObjectable
         String finalName = getPartialName();
         if (parentName != null)
         {
-            finalName = parentName + "." + finalName;
+            if (finalName != null)
+            {
+                finalName = parentName + "." + finalName;
+            }
+            else
+            {
+                finalName = parentName;
+            }
         }
         return finalName;
     }

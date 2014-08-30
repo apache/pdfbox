@@ -63,15 +63,18 @@ public class PrintFields
     private void processField(PDField field, String sLevel, String sParent) throws IOException
     {
         List<COSObjectable> kids = field.getKids();
+        String partialName = field.getPartialName();
         if (kids != null)
         {
             Iterator<COSObjectable> kidsIter = kids.iterator();
-            if (!sParent.equals(field.getPartialName()))
+            if (!sParent.equals(partialName))
             {
-                sParent = sParent + "." + field.getPartialName();
+                if (partialName != null)
+                {
+                    sParent = sParent + "." + partialName;
+                }
             }
             System.out.println(sLevel + sParent);
-            // System.out.println(sParent + " is of type " + field.getClass().getName());
             while (kidsIter.hasNext())
             {
                 Object pdfObj = kidsIter.next();
@@ -92,10 +95,22 @@ public class PrintFields
             }
             else
             {
-                fieldValue = field.getValue();
+                if (field.getValue() != null)
+                {
+                    fieldValue = field.getValue();
+                }
+                else
+                {
+                    fieldValue = "no value available";
+                }
             }
-            String outputString = sLevel + sParent + "." + field.getPartialName() + " = " + fieldValue + ",  type="
-                    + field.getClass().getName();
+            StringBuilder outputString = new StringBuilder(sLevel + sParent);
+            if (partialName != null)
+            {
+                outputString.append( "." + partialName);
+            }
+            outputString.append(" = " + fieldValue);
+            outputString.append(",  type=" + field.getClass().getName());
             System.out.println(outputString);
         }
     }
