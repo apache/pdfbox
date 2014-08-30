@@ -259,8 +259,11 @@ public class PDType0Font extends PDFont
             // if the font is composite and uses a predefined cmap (excluding Identity-H/V) then
             // or if its decendant font uses Adobe-GB1/CNS1/Japan1/Korea1
 
+            // a) Map the character code to a character identifier (CID) according to the font?s CMap
+            int cid = codeToCID(code);
+
             // e) Map the CID according to the CMap from step d), producing a Unicode value
-            return cMapUCS2.toUnicode(code);
+            return cMapUCS2.toUnicode(cid);
         }
         else
         {
