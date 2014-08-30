@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.util;
 
+import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,7 +29,6 @@ import java.util.Map;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
@@ -38,6 +38,8 @@ import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 
 /**
  * Adds an overlay to an existing PDF document.
@@ -48,7 +50,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 public class Overlay
 {
     /**
-     * Possible loacation of the overlayed pages: foreground or background.
+     * Possible location of the overlayed pages: foreground or background.
      */
     public enum Position
     {
@@ -94,7 +96,7 @@ public class Overlay
         PDDocument evenPageOverlay = null;
         try
         {
-            sourcePDFDocument = PDDocument.load(inputFileName);
+            sourcePDFDocument = loadPDF(inputFileName,useNonSeqParser);
             if (defaultOverlayFilename != null)
             {
                 defaultOverlay = loadPDF(defaultOverlayFilename, useNonSeqParser);
@@ -117,14 +119,6 @@ public class Overlay
             }
             if (evenPageOverlayFilename != null)
             {
-                if (useNonSeqParser)
-                {
-                    evenPageOverlay = PDDocument.loadNonSeq(new File(evenPageOverlayFilename), null);
-                }
-                else
-                {
-                    evenPageOverlay = PDDocument.load(evenPageOverlayFilename);
-                }
                 evenPageOverlay = loadPDF(evenPageOverlayFilename, useNonSeqParser);
                 evenPageOverlayPage = getLayoutPage(evenPageOverlay);
             }
@@ -366,50 +360,13 @@ public class Overlay
 
     private String createOverlayXObject(PDPage page, LayoutPage layoutPage, COSStream contentStream)
     {
+        PDFormXObject xobjForm = new PDFormXObject(new PDStream(contentStream));
+        xobjForm.setResources(new PDResources(layoutPage.overlayResources));
+        xobjForm.setFormType(1);
+        xobjForm.setBBox( layoutPage.overlayMediaBox.createRetranslatedRectangle());
+        xobjForm.setMatrix(new AffineTransform());
         PDResources resources = page.findResources();
-        // determine new ID
-        COSDictionary dict = (COSDictionary) resources.getCOSDictionary().getDictionaryObject(
-                COSName.XOBJECT);
-        if (dict == null)
-        {
-            dict = new COSDictionary();
-            resources.getCOSDictionary().setItem(COSName.XOBJECT, dict);
-        }
-        String xObjectId = getNextUniqueKey(resources.getXObjects(), XOBJECT_PREFIX);
-
-        // wrap the layout content in a BBox and add it to page
-        COSStream xobj = contentStream;
-        xobj.setItem(COSName.RESOURCES, layoutPage.overlayResources);
-        xobj.setItem(COSName.TYPE, COSName.XOBJECT);
-        xobj.setItem(COSName.SUBTYPE, COSName.FORM);
-        xobj.setInt(COSName.FORMTYPE, 1);
-        COSArray matrix = new COSArray();
-        matrix.add(COSInteger.get(1));
-        matrix.add(COSInteger.get(0));
-        matrix.add(COSInteger.get(0));
-        matrix.add(COSInteger.get(1));
-        matrix.add(COSInteger.get(0));
-        matrix.add(COSInteger.get(0));
-        xobj.setItem(COSName.MATRIX, matrix);
-        COSArray bbox = new COSArray();
-        bbox.add(COSInteger.get(0));
-        bbox.add(COSInteger.get(0));
-        bbox.add(COSInteger.get((int) layoutPage.overlayMediaBox.getWidth()));
-        bbox.add(COSInteger.get((int) layoutPage.overlayMediaBox.getHeight()));
-        xobj.setItem(COSName.BBOX, bbox);
-        dict.setItem(xObjectId, xobj);
-
-        return xObjectId;
-    }
-
-    private static String getNextUniqueKey(Map<String, ?> map, String prefix)
-    {
-        int counter = 0;
-        while (map != null && map.get(prefix + counter) != null)
-        {
-            counter++;
-        }
-        return prefix + counter;
+        return resources.addXObject(xobjForm, XOBJECT_PREFIX);
     }
 
     private COSStream createOverlayStream(PDPage page, LayoutPage layoutPage, String xObjectId)
