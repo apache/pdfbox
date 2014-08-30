@@ -566,11 +566,18 @@ public abstract class PDFieldTreeNode implements COSObjectable
      */
     public String getFullyQualifiedName() throws IOException
     {
-        String parentName = getParent() != null ? getParent().getFullyQualifiedName() : null;
         String finalName = getPartialName();
+        String parentName = getParent() != null ? getParent().getFullyQualifiedName() : null;
         if (parentName != null)
         {
-            finalName = parentName + "." + finalName;
+            if (finalName != null)
+            {
+                finalName = parentName + "." + finalName;
+            }
+            else
+            {
+                finalName = parentName;
+            }
         }
         return finalName;
     }
