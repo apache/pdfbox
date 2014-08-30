@@ -183,16 +183,74 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                     PDAppearanceStream appearance = appearanceMap.get(appearanceName);
                     if (appearance != null)
                     {
-                        Point2D point = new Point2D.Float(rect.getLowerLeftX(), rect.getLowerLeftY());
+                        saveGraphicsState();
+
+                        PDRectangle bBox = appearance.getBoundingBox();
+                        
+                        Rectangle2D rect2D = new Rectangle2D.Float(
+                                rect.getLowerLeftX(), 
+                                rect.getLowerLeftY(), 
+                                rect.getWidth(), 
+                                rect.getHeight());
                         Matrix matrix = appearance.getMatrix();
-                        if (matrix != null)
+                        if (matrix == null)
                         {
-                            matrix.createAffineTransform().transform(point, point);
+                            matrix = new Matrix();
                         }
+                        // a) The appearance's bounding box (specified by its BBox entry) 
+                        // shall be transformed, using Matrix, to produce a quadrilateral 
+                        // with arbitrary orientation.
+                        Point2D p1 = new Point2D.Float(bBox.getLowerLeftX(), bBox.getLowerLeftY());
+                        Point2D p2 = new Point2D.Float(bBox.getUpperRightX(), bBox.getUpperRightY());
+                        matrix.createAffineTransform().transform(p1, p1);
+                        matrix.createAffineTransform().transform(p2, p2);
+                        Rectangle2D transformedBBox = new Rectangle2D.Float(
+                                (float) Math.min(p1.getX(), p2.getX()),
+                                (float) Math.min(p1.getY(), p2.getY()),
+                                (float) Math.abs(p2.getX() - p1.getX()),
+                                (float) Math.abs(p2.getY() - p1.getY()));
+
+                        // Spec 12.5.5:
+                        // b) A matrix A shall be computed that scales and translates 
+                        // the transformed appearance box to align with the edges
+                        // of the annotation?s rectangle
+                        //
+                        // code inspired from
+                        // http://stackoverflow.com/a/14015713/535646
+                        AffineTransform at = new AffineTransform();
+                        at.translate(rect2D.getMinX(), rect2D.getMinY());
+                        at.scale(rect2D.getWidth() / transformedBBox.getWidth(), rect2D.getHeight() / transformedBBox.getHeight());
+                        at.translate(-transformedBBox.getMinX(), -transformedBBox.getMinY());
+                        Matrix matrixA = new Matrix();
+                        matrixA.setFromAffineTransform(at);
+                        
+                        // c) Matrix shall be concatenated with A to form a matrix AA 
+                        // that maps from the appearance?s coordinate system to 
+                        // the annotation?s rectangle in default user space
+                        Matrix matrixAA = matrix.multiply(matrixA);
+                        
+                        Point2D point = new Point2D.Float(matrixAA.getXPosition(), matrixAA.getYPosition());
+                        matrixAA.setValue(2, 0, 0);
+                        matrixAA.setValue(2, 1, 0);
+                        
+                        getGraphicsState().setCurrentTransformationMatrix(matrixAA);
+
+                        // Calculate clipping
+                        // As per spec: "a self-contained content stream that 
+                        // shall be rendered inside the annotation rectangle"
+                        Rectangle2D clipRect2D = new Rectangle2D.Float(
+                                (float) (rect2D.getMinX()-point.getX()),
+                                (float) (rect2D.getMinY()-point.getY()),
+                                (float) rect2D.getWidth(),
+                                (float) rect2D.getHeight());
+                        getGraphicsState().intersectClippingPath(new Area(clipRect2D));
+
                         graphics.translate((int) point.getX(), (int) point.getY());
                         lastClip = null;
                         processSubStream(appearance.getResources(), appearance.getStream());
                         graphics.translate(-(int) point.getX(), -(int) point.getY());
+                       
+                        restoreGraphicsState();
                     }
                 }
             }
