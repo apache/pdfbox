@@ -16,12 +16,11 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSString;
-
-import java.io.IOException;
 
 /**
  * Base class for fields which use "Variable Text".
@@ -64,10 +63,7 @@ public abstract class PDVariableText extends PDField
     /**
      * DA    Default appearance.
      */
-    private COSString da;
-
-    private PDAppearanceString appearance;
-
+    private COSString defaultAppearance;
 
     /**
      * A Q value.
@@ -104,42 +100,6 @@ public abstract class PDVariableText extends PDField
     protected PDVariableText(PDAcroForm theAcroForm, COSDictionary field, PDFieldTreeNode parentNode)
     {
         super( theAcroForm, field, parentNode);
-        da = (COSString) field.getDictionaryObject(COSName.DA);
-    }
-
-    /**
-     * @see org.apache.pdfbox.pdmodel.interactive.form.PDField#setValue(java.lang.String)
-     *
-     * @param value The new value for this text field.
-     *
-     * @throws IOException If there is an error calculating the appearance stream.
-     */
-    public void setValue(String value) throws IOException
-    {
-        COSString fieldValue = new COSString(value);
-        getDictionary().setItem( COSName.V, fieldValue );
-
-        //hmm, not sure what the case where the DV gets set to the field
-        //value, for now leave blank until we can come up with a case
-        //where it needs to be in there
-        //getDictionary().setItem( COSName.getPDFName( "DV" ), fieldValue );
-        if(appearance == null)
-        {
-            this.appearance = new PDAppearanceString( getAcroForm(), this );
-        }
-        appearance.setAppearanceValue(value);
-    }
-
-    /**
-     * getValue gets the fields value to as a string.
-     *
-     * @return The string value of this field.
-     *
-     * @throws IOException If there is an error getting the value.
-     */
-    public String getValue() throws IOException
-    {
-        return getDictionary().getString( COSName.V );
     }
 
     /**
@@ -269,11 +229,50 @@ public abstract class PDVariableText extends PDField
     }
 
     /**
+     * Get the default appearance.
+     * 
      * @return the DA element of the dictionary object
      */
-    protected COSString getDefaultAppearance()
+    public COSString getDefaultAppearance()
     {
-        return da;
+        if (defaultAppearance == null)
+        {
+            COSBase daValue =  getDictionary().getItem(COSName.DA);
+            if (daValue != null)
+            {
+                defaultAppearance = (COSString)daValue;
+            }
+        }
+        // the default appearance is inheritable
+        // maybe the parent provides a default appearance
+        if (defaultAppearance == null)
+        {
+            PDFieldTreeNode parent = getParent();
+            if (parent instanceof PDVariableText)
+            {
+                defaultAppearance = ((PDVariableText)parent).getDefaultAppearance();
+            }
+        }
+        return defaultAppearance;
+    }
+
+    /**
+     * Set the default appearance.
+     * 
+     * @param daValue a string describing the default appearance
+     */
+    public void setDefaultAppearance(String daValue)
+    {
+        if (daValue != null)
+        {
+            defaultAppearance = new COSString(daValue);
+            getDictionary().setItem(COSName.DA, defaultAppearance);
+        }
+        else
+        {
+            defaultAppearance = null;
+            getDictionary().removeItem(COSName.DA);
+        }
     }
 
     /**
@@ -305,4 +304,19 @@ public abstract class PDVariableText extends PDField
     {
         getDictionary().setInt( COSName.Q, q );
     }
+    
+    @Override
+    public Object getDefaultValue()
+    {
+        // Text fields don't support the "DV" entry.
+        return null;
+    }
+
+    @Override
+    public void setDefaultValue(Object value)
+    {
+        // Text fields don't support the "DV" entry.
+        throw new RuntimeException( "Text fields don't support the \"DV\" entry." );
+    }
+
 }

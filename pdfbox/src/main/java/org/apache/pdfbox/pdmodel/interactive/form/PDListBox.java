@@ -19,12 +19,11 @@ package org.apache.pdfbox.pdmodel.interactive.form;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-
-import java.io.IOException;
+import org.apache.pdfbox.cos.COSString;
 
 /**
- * A scrollable list box.
- * Contains several text items, one or more of which shall be selected as the field value.
+ * A scrollable list box. Contains several text items, one or more of which shall be selected as the field value.
+ * 
  * @author John Hewson
  */
 public final class PDListBox extends PDChoice
@@ -32,7 +31,7 @@ public final class PDListBox extends PDChoice
     /**
      * Constructor.
      * 
-     * @param theAcroForm The form that this field is part of.
+     * @param acroForm The form that this field is part of.
      * @param field the PDF object to represent as a field.
      * @param parentNode the parent node of the node to be created
      */
@@ -41,24 +40,80 @@ public final class PDListBox extends PDChoice
         super(acroForm, field, parentNode);
     }
 
+    /**
+     * setValue sets the entry "V" to the given value.
+     * 
+     * @param value the value
+     * 
+     */
     @Override
-    public void setValue(String optionValue) throws IOException
+    public void setValue(Object value)
     {
-        COSArray options = (COSArray)getDictionary().getDictionaryObject(COSName.OPT);
-        if(options.size() == 0)
+        // TODO move to superclass PDCoice??
+        if ((getFieldFlags() & FLAG_EDIT) != 0)
         {
-            throw new IllegalArgumentException("List box does not contain the given value");
+            throw new IllegalArgumentException("The list box isn't editable.");
         }
-
-        int index = getSelectedIndex(optionValue);
-        if (index == -1)
+        if (value != null)
         {
-            throw new IllegalArgumentException("List box does not contain the given value");
+            if (value instanceof String)
+            {
+                getDictionary().setString(COSName.V, (String)value);
+                int index = getSelectedIndex((String) value);
+                if (index == -1)
+                {
+                    throw new IllegalArgumentException(
+                            "The list box does not contain the given value.");
+                }
+                selectMultiple(index);
+            }
+            if (value instanceof String[])
+            {
+                if (!isMultiSelect())
+                {
+                    throw new IllegalArgumentException("The list box does allow multiple selection.");
+                }
+                String[] stringValues = (String[])value;
+                COSArray stringArray = new COSArray();
+                for (int i =0; i<stringValues.length;i++)
+                {
+                    stringArray.add(new COSString(stringValues[i]));
+                }
+                getDictionary().setItem(COSName.V, stringArray);
+            }
         }
         else
         {
-            super.setValue(optionValue);
-            selectMultiple(index);
+            getDictionary().removeItem(COSName.V);
+        }
+        // TODO create/update appearance
+    }
+
+    /**
+     * This will get the top index "TI" value.
+     *
+     * @return the top index, default value 0.
+     */
+    public int getTopIndex()
+    {
+        return getDictionary().getInt(COSName.TI, 0);
+    }
+
+    /**
+     * This will set top index "TI" value.
+     *
+     * @param topIndex the value for the top index, null will remove the value.
+     */
+    public void setTopIndex(Integer topIndex)
+    {
+        if (topIndex != null)
+        {
+            getDictionary().setInt(COSName.TI, topIndex);
+        }
+        else
+        {
+            getDictionary().removeItem(COSName.TI);
         }
     }
+
 }

@@ -16,8 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
-import java.io.IOException;
-
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
@@ -78,16 +76,31 @@ public class PDNonTerminalField extends PDFieldTreeNode
     }
 
     @Override
-    public void setValue(String value) throws IOException
+    public Object getValue()
     {
-        // non terminal fields don't have a value
-    }
-
-    @Override
-    public String getValue() throws IOException
-    {
-        // non terminal fields don't have a value
+        // Nonterminal fields don't support the "V" entry.
         return null;
     }
-
+    
+    @Override
+    public void setValue(Object value)
+    {
+        // Nonterminal fields don't support the "V" entry.
+        throw new RuntimeException( "Nonterminal fields don't support the \"V\" entry." );
+    }
+    
+    @Override
+    public Object getDefaultValue()
+    {
+        // Nonterminal fields don't support the "DV" entry.
+        return null;
+    }
+    
+    @Override
+    public void setDefaultValue(Object value)
+    {
+        // Nonterminal fields don't support the "DV" entry.
+        throw new RuntimeException( "Nonterminal fields don't support the \"DV\" entry." );
+    }
+    
 }

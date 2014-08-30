@@ -393,17 +393,6 @@ public class XMPBasicSchema extends XMPSchema
     }
 
     /**
-     * Convenience method for jempbox signature compatibility
-     * 
-     * @see XMPBasicSchema#getAdvisory()
-     */
-    @Deprecated
-    public List<String> getAdvisories()
-    {
-        return getAdvisory();
-    }
-
-    /**
      * Get the BaseURL property
      * 
      * @return the base url property

@@ -99,7 +99,14 @@ public class PrintFields
             }
             else
             {
-                fieldValue = field.getValue();
+                if (field.getValue() != null)
+                {
+                    fieldValue = field.getValue().toString();
+                }
+                else
+                {
+                    fieldValue = "";
+                }
             }
             String outputString = sLevel + sParent + "." + partialName + " = " + fieldValue + ",  type="
                     + field.getClass().getName();

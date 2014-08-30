@@ -252,11 +252,19 @@ public class PDResources implements COSObjectable
                     PDXObject xobject = null;
                     try
                     {
-                        String name = objName.getName() + "#";
-                        COSObject cosObject = (COSObject)dict.getItem(objName);
-                        // add the object number to create an unique identifier
-                        name += cosObject.getObjectNumber().intValue();
-                        xobject = PDXObject.createXObject(cosObject.getObject(), name, this);
+                        String name = objName.getName();
+                        COSBase item = dict.getItem(objName);
+                        if (item instanceof COSObject)
+                        {
+                            COSObject cosObject = (COSObject) item;
+                            // add the object number to create an unique identifier
+                            name += "#" + cosObject.getObjectNumber().intValue();
+                            xobject = PDXObject.createXObject(cosObject.getObject(), name, this);
+                        }
+                        else
+                        {
+                            xobject = PDXObject.createXObject(item, name, this);
+                        }
                     }
                     catch (IOException exception)
                     {

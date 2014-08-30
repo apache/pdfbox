@@ -16,12 +16,11 @@
  */
 package org.apache.pdfbox.examples.pdfa;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.jempbox.xmp.XMPMetadata;
-import org.apache.jempbox.xmp.pdfa.XMPSchemaPDFAId;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -30,6 +29,11 @@ import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
 import org.apache.pdfbox.pdmodel.graphics.color.PDOutputIntent;
+import org.apache.xmpbox.XMPMetadata;
+import org.apache.xmpbox.schema.PDFAIdentificationSchema;
+import org.apache.xmpbox.type.BadFieldValueException;
+import org.apache.xmpbox.xml.XmpSerializationException;
+import org.apache.xmpbox.xml.XmpSerializer;
 
 import javax.xml.transform.TransformerException;
 
@@ -91,16 +95,26 @@ public class CreatePDFA
             PDMetadata metadata = new PDMetadata(doc);
             cat.setMetadata(metadata);
 
-            // jempbox version
-            XMPMetadata xmp = new XMPMetadata();
-            XMPSchemaPDFAId pdfaid = new XMPSchemaPDFAId(xmp);
-            xmp.addSchema(pdfaid);
-            pdfaid.setConformance("B");
-            pdfaid.setPart(1);
-            pdfaid.setAbout("");
-            
-            metadata.importXMPMetadata( xmp.asByteArray() );
-            
+            XMPMetadata xmp = XMPMetadata.createXMPMetadata();
+            try
+            {
+                PDFAIdentificationSchema pdfaid = xmp.createAndAddPFAIdentificationSchema();
+                pdfaid.setConformance("B");
+                pdfaid.setPart(1);
+                pdfaid.setAboutAsSimple("PDFBox PDFA sample");
+                XmpSerializer serializer = new XmpSerializer();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                serializer.serialize(xmp, baos, false);
+                metadata.importXMPMetadata( baos.toByteArray() );
+            }
+            catch(BadFieldValueException badFieldexception)
+            {
+                // can't happen here, as the provided value is valid
+            }
+            catch(XmpSerializationException xmpException)
+            {
+                System.err.println(xmpException.getMessage());
+            }
             InputStream colorProfile = CreatePDFA.class.getResourceAsStream("/org/apache/pdfbox/resources/pdfa/sRGB Color Space Profile.icm");
             // create output intent
             PDOutputIntent oi = new PDOutputIntent(doc, colorProfile); 

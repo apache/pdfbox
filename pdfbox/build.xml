@@ -49,16 +49,6 @@
     <property name="fontbox.test.dir" value="../${fontbox.project.name}/src/test/java" />
     <property name="fontbox.testfiles.dir" value="../${fontbox.project.name}/src/test/resources" />
 
-    <!-- jempbox -->
-    <property name="jempbox.project.name" value="jempbox"/>
-    <property name="jempbox.release.name" value="${jempbox.project.name}-${project.version}" />
-    <property name="jempbox.src.dir" value="../${jempbox.project.name}/src/main/java" />
-    <property name="jempbox.target.dir" value="../${jempbox.project.name}/target" />
-    <property name="jempbox.jar" value="${jempbox.target.dir}/${jempbox.release.name}.jar" />
-    <property name="jempbox.dest.dir" value="${jempbox.target.dir}/classes" />
-    <property name="jempbox.test.dir" value="../${jempbox.project.name}/src/test/java" />
-    <property name="jempbox.testfiles.dir" value="../${jempbox.project.name}/src/test/resources" />
-
     <property name="maven.repo1" value="http://repo1.maven.org/maven2" />
     <property name="maven.repo2" value="http://repo2.maven.org/maven2" />
 
@@ -99,7 +89,6 @@
         <pathelement path="${logging.jar}" />
         <pathelement path="${junit.jar}" />
         <pathelement path="${fontbox.jar}" />
-        <pathelement path="${jempbox.jar}" />
         <pathelement path="${pdfbox.dest.dir}" />
         <pathelement path="${pdfbox.resources.dir}" />
     </path>
@@ -111,13 +100,6 @@
         <pathelement path="${fontbox.resources.dir}" />
     </path>
 
-    <path id="jempbox.build.classpath">
-        <pathelement path="${logging.jar}" />
-        <pathelement path="${junit.jar}" />
-        <pathelement path="${jempbox.dest.dir}" />
-        <pathelement path="${jempbox.resources.dir}" />
-    </path>
-
     <target name="pdfbox.clean" description="Remove all generated files">
         <delete dir="${pdfbox.target.dir}"/>
         <delete dir="${bin.dir}"/>
@@ -127,10 +109,6 @@
 
     <target name="fontbox.clean" description="Remove all generated files">
         <delete dir="${fontbox.target.dir}"/>
-    </target>
-
-    <target name="jempbox.clean" description="Remove all generated files">
-        <delete dir="${jempbox.target.dir}"/>
     </target>
 
     <target name="pdfbox.init">
@@ -146,11 +124,7 @@
         <mkdir dir="${fontbox.dest.dir}"/>
     </target>
 
-    <target name="jempbox.init">
-        <mkdir dir="${jempbox.dest.dir}"/>
-    </target>
-
-    <target name="pdfbox.compile" depends="fontbox.package,jempbox.package,pdfbox.init"
+    <target name="pdfbox.compile" depends="fontbox.package,pdfbox.init"
             description="Compile Java source files">
         <!-- required encoding flag to be able to build using ibm-jdk on redhat ES-->
         <javac srcdir="${pdfbox.src.dir}" destdir="${pdfbox.dest.dir}"
@@ -172,17 +146,6 @@
                classpathref="fontbox.build.classpath" encoding="ISO-8859-1"/>
     </target>
 
-    <target name="jempbox.compile" depends="jempbox.init"
-            description="Compile Java source files">
-        <!-- required encoding flag to be able to build using ibm-jdk on redhat ES-->
-        <javac srcdir="${jempbox.src.dir}" destdir="${jempbox.dest.dir}"
-               target="1.6" source="1.6" debug="on" deprecation="on"
-               classpathref="jempbox.build.classpath" encoding="ISO-8859-1"/>
-        <javac srcdir="${jempbox.test.dir}" destdir="${jempbox.dest.dir}"
-               target="1.6" source="1.6" debug="on" deprecation="on"
-               classpathref="jempbox.build.classpath" encoding="ISO-8859-1"/>
-    </target>
-
     <target name="test" depends="testextract,test-junit,testimage" description="Run all the junit tests"/>
 
     <target name="testextract" depends="clean,pdfbox.compile" description="Test text extraction">
@@ -201,7 +164,6 @@
                 <pathelement path="${pdfbox.dest.dir}"/>
                 <pathelement path="${pdfbox.resources.dir}" />
                 <pathelement path="${fontbox.dest.dir}"/>
-                <pathelement path="${jempbox.dest.dir}"/>
             </classpath>
             <formatter usefile="false" type="plain" />
             <test name="org.apache.pdfbox.util.TestTextStripper" />
@@ -225,7 +187,6 @@
                 <pathelement path="${pdfbox.dest.dir}"/>
                 <pathelement path="${pdfbox.resources.dir}" />
                 <pathelement path="${fontbox.dest.dir}"/>
-                <pathelement path="${jempbox.dest.dir}"/>
             </classpath>
             <formatter usefile="false" type="plain" />
             <test name="org.apache.pdfbox.util.TestPDFToImage" />
@@ -245,7 +206,6 @@
                 <pathelement path="${pdfbox.dest.dir}"/>
                 <pathelement path="${pdfbox.resources.dir}" />
                 <pathelement path="${fontbox.dest.dir}"/>
-                <pathelement path="${jempbox.dest.dir}"/>
             </classpath>
             <formatter usefile="false" type="plain" />
             <test name="org.apache.pdfbox.TestAll" />
@@ -296,17 +256,6 @@
         </antcall>
     </target>
 
-    <target name="get.externallibs.jempbox">
-        <antcall target="downloadfile">
-            <param name="sourcefile" value="${junit.url}"/>
-            <param name="destfile" value="${junit.jar}"/>
-        </antcall>
-        <antcall target="downloadfile">
-            <param name="sourcefile" value="${logging.url}"/>
-            <param name="destfile" value="${logging.jar}"/>
-        </antcall>
-    </target>
-
     <target name="pdfbox.package" depends="get.externallibs.pdfbox,pdfbox.compile" description="Package pdfbox into a jar file">
         <propertyfile file="${pdfbox.resources.dir}/org/apache/pdfbox/resources/pdfbox.version">
             <entry  key="pdfbox.version" value="${pdfbox.release.name}"/>
@@ -340,25 +289,11 @@
         </jar>
     </target>
 
-    <target name="jempbox.package" depends="get.externallibs.jempbox,jempbox.compile" description="Package jempbox into a jar file">
-        <jar jarfile="${jempbox.jar}">
-            <fileset dir="${jempbox.dest.dir}"/>
-            <metainf dir="." includes="*.txt"/>
-            <manifest>
-                <attribute name="Built-By" value="${user.name}"/>
-                <attribute name="Implementation-Title" value="Apache JempBox"/>
-                <attribute name="Implementation-Version" value="${project.version}"/>
-                <attribute name="Implementation-Vendor" value="The Apache Software Foundation"/>
-                <attribute name="Implementation-URL" value="http://pdfbox.apache.org/"/>
-            </manifest>
-        </jar>
-    </target>
-
     <!-- We use Maven to create the release packages. Keep this target for -->
     <!-- now for backwards compatibility with old build scripts and habits -->
     <target name="dist" depends="pdfbox.clean,pdfbox.package,build.NET"/>
 
-    <target name="clean" depends="fontbox.clean,jempbox.clean,pdfbox.clean"/>
+    <target name="clean" depends="fontbox.clean,pdfbox.clean"/>
 
     <target name="checkForIKVM">
         <condition property="IKVMAvailable">
@@ -447,22 +382,6 @@
             <arg value="-out:${bin.dir}\${fontbox.release.name}.dll" />
             <arg value="${fontbox.jar}" />
         </exec>
-        <echo>Building JempBox</echo>
-        <exec executable="${ikvmc}">
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Charsets.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Text.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Core.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Media.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Misc.dll" />
-            <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Security.dll" />
-            <arg value="-reference:bin/junit.dll" />
-            <arg value="-target:library" />
-            <arg value="-compressresources" />
-            <arg value="-version:${project.version}.0" />
-            <arg value="-out:${bin.dir}\${jempbox.release.name}.dll" />
-            <arg value="${jempbox.jar}" />
-        </exec>
         <echo>Building Commons Logging</echo>
         <exec executable="${ikvmc}">
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Util.dll" />
@@ -491,7 +410,6 @@
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.Security.dll" />
             <arg value="-reference:${ikvm.dir}/bin/IKVM.OpenJDK.SwingAWT.dll" />
             <arg value="-reference:bin/${fontbox.release.name}.dll" />
-            <arg value="-reference:bin/${jempbox.release.name}.dll" />
             <arg value="-reference:bin/${bcprov.name}.dll" />
             <arg value="-reference:bin/${bcmail.name}.dll" />
             <arg value="-reference:bin/junit.dll" />

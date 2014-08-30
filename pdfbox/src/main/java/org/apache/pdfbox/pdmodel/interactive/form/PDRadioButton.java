@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSDictionary;
@@ -45,16 +44,15 @@ public final class PDRadioButton extends PDButton
 
     /**
      * From the PDF Spec <br/>
-     * If set, a group of radio buttons within a radio button field that
-     * use the same value for the on state will turn on and off in unison; that is if
-     * one is checked, they are all checked. If clear, the buttons are mutually exclusive
-     * (the same behavior as HTML radio buttons).
+     * If set, a group of radio buttons within a radio button field that use the same value for the on state will turn
+     * on and off in unison; that is if one is checked, they are all checked. If clear, the buttons are mutually
+     * exclusive (the same behavior as HTML radio buttons).
      *
      * @param radiosInUnison The new flag for radiosInUnison.
      */
     public void setRadiosInUnison(boolean radiosInUnison)
     {
-        getDictionary().setFlag( COSName.FF, FLAG_RADIOS_IN_UNISON, radiosInUnison );
+        getDictionary().setFlag(COSName.FF, FLAG_RADIOS_IN_UNISON, radiosInUnison);
     }
 
     /**
@@ -63,68 +61,46 @@ public final class PDRadioButton extends PDButton
      */
     public boolean isRadiosInUnison()
     {
-        return getDictionary().getFlag( COSName.FF, FLAG_RADIOS_IN_UNISON );
+        return getDictionary().getFlag(COSName.FF, FLAG_RADIOS_IN_UNISON);
     }
 
-    /**
-     * This setValue method iterates the collection of radiobuttons
-     * and checks or unchecks each radiobutton according to the
-     * given value.
-     * If the value is not represented by any of the radiobuttons,
-     * then none will be checked.
-     *
-     * {@inheritDoc}
-     */
     @Override
-    public void setValue(String value) throws IOException
+    public COSName getValue()
     {
-        getDictionary().setString( COSName.V, value );
-        List<COSObjectable> kids = getKids();
-        for (COSObjectable kid : kids)
+        return getDictionary().getCOSName(COSName.V);
+    }
+
+    @Override
+    public void setValue(Object value)
+    {
+        if (value == null)
         {
-            if ( kid instanceof PDCheckbox )
+            getDictionary().removeItem(COSName.V);
+        }
+        else if (value instanceof COSName)
+        {
+            getDictionary().setItem(COSName.V, (COSName) value);
+            List<COSObjectable> kids = getKids();
+            for (COSObjectable kid : kids)
             {
-                PDCheckbox btn = (PDCheckbox)kid;
-                if( btn.getOnValue().equals(value) )
+                if (kid instanceof PDCheckbox)
                 {
-                    btn.check();
-                }
-                else
-                {
-                    btn.unCheck();
+                    PDCheckbox btn = (PDCheckbox) kid;
+                    if (btn.getOnValue().equals(value))
+                    {
+                        btn.check();
+                    }
+                    else
+                    {
+                        btn.unCheck();
+                    }
                 }
             }
         }
-    }
-
-    /**
-     * getValue gets the fields value to as a string.
-     *
-     * @return The string value of this field.
-     *
-     * @throws IOException If there is an error getting the value.
-     */
-    @Override
-    public String getValue() throws IOException
-    {
-        String retval = null;
-        List<COSObjectable> kids = getKids();
-        for (COSObjectable kid : kids)
+        else
         {
-            if ( kid instanceof PDCheckbox )
-            {
-                PDCheckbox btn = (PDCheckbox)kid;
-                if( btn.isChecked() )
-                {
-                    retval = btn.getOnValue();
-                }
-            }
+            throw new RuntimeException("The value of a redio button has to be a name object.");
         }
-        if( retval == null )
-        {
-            retval = getDictionary().getNameAsString( COSName.V );
-        }
-        return retval;
     }
 
 }

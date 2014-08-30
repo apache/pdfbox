@@ -24,17 +24,43 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
 
 /**
- * A choice field contains several text items,
- * one or more of which shall be selected as the field value.
+ * A choice field contains several text items, one or more of which shall be selected as the field value.
+ * 
  * @author sug
  * @author John Hewson
  */
 public abstract class PDChoice extends PDVariableText
 {
+
+    /**
+     * A Ff flag.
+     */
+    public static final int FLAG_COMBO = 1 << 17;
+    /**
+     * A Ff flag.
+     */
+    public static final int FLAG_EDIT = 1 << 18;
+    /**
+     * A Ff flag.
+     */
+    public static final int FLAG_SORT = 1 << 19;
+    /**
+     * A Ff flag.
+     */
+    public static final int FLAG_MULTI_SELECT = 1 << 21;
+    /**
+     * A Ff flag.
+     */
+    public static final int FLAG_DO_NOT_SPELL_CHECK = 1 << 22;
+    /**
+     * A Ff flag.
+     */
+    public static final int FLAG_COMMIT_ON_SEL_CHANGE = 1 << 26;
+
     /**
      * Constructor.
      * 
-     * @param theAcroForm The form that this field is part of.
+     * @param acroForm The form that this field is part of.
      * @param field the PDF object to represent as a field.
      * @param parentNode the parent node of the node to be created
      */
@@ -43,12 +69,168 @@ public abstract class PDChoice extends PDVariableText
         super(acroForm, field, parentNode);
     }
 
+    /**
+     * This will get the option values "Opt".
+     *
+     * @return COSArray containing all options.
+     */
+    public COSArray getOptions()
+    {
+        return (COSArray) getDictionary().getDictionaryObject(COSName.OPT);
+    }
+
+    /**
+     * This will set the options.
+     *
+     * @param values COSArray containing all possible options.
+     */
+    public void setOptions(COSArray values)
+    {
+        if (values != null)
+        {
+            getDictionary().setItem(COSName.OPT, values);
+        }
+        else
+        {
+            getDictionary().removeItem(COSName.OPT);
+        }
+    }
+
+    /**
+     * This will get the indices of the selected options "I".
+     *
+     * @return COSArray containing the indices of all selected options.
+     */
+    public COSArray getSelectedOptions()
+    {
+        return (COSArray) getDictionary().getDictionaryObject(COSName.I);
+    }
+
+    /**
+     * This will set the indices of the selected options "I".
+     *
+     * @param values COSArray containing the indices of all selected options.
+     */
+    public void setSelectedOptions(COSArray values)
+    {
+        if (values != null)
+        {
+            getDictionary().setItem(COSName.I, values);
+        }
+        else
+        {
+            getDictionary().removeItem(COSName.I);
+        }
+    }
+
+    /**
+     * Determines if Sort is set.
+     * 
+     * @return true if the options are sorted.
+     */
+    public boolean isSort()
+    {
+        return getDictionary().getFlag( COSName.FF, FLAG_SORT );
+    }
+
+    /**
+     * Set the Sort bit.
+     *
+     * @param sort The value for Sort.
+     */
+    public void setSort( boolean sort )
+    {
+        getDictionary().setFlag( COSName.FF, FLAG_SORT, sort );
+    }
+
+    /**
+     * Determines if MultiSelect is set.
+     * 
+     * @return true if multi select is allowed.
+     */
+    public boolean isMultiSelect()
+    {
+        return getDictionary().getFlag( COSName.FF, FLAG_MULTI_SELECT );
+    }
+
+    /**
+     * Set the MultiSelect bit.
+     *
+     * @param multiSelect The value for MultiSelect.
+     */
+    public void setMultiSelect( boolean multiSelect )
+    {
+        getDictionary().setFlag( COSName.FF, FLAG_MULTI_SELECT, multiSelect );
+    }
+
+    /**
+     * Determines if DoNotSpellCheck is set.
+     * 
+     * @return true if spell checker is disabled.
+     */
+    public boolean isDoNotSpellCheck()
+    {
+        return getDictionary().getFlag( COSName.FF, FLAG_DO_NOT_SPELL_CHECK );
+    }
+
+    /**
+     * Set the DoNotSpellCheck bit.
+     *
+     * @param doNotSpellCheck The value for DoNotSpellCheck.
+     */
+    public void setDoNotSpellCheck( boolean doNotSpellCheck )
+    {
+        getDictionary().setFlag( COSName.FF, FLAG_DO_NOT_SPELL_CHECK, doNotSpellCheck );
+    }
+
+    /**
+     * Determines if CommitOnSelChange is set.
+     * 
+     * @return true if value shall be committed as soon as a selection is made.
+     */
+    public boolean isCommitOnSelChange()
+    {
+        return getDictionary().getFlag( COSName.FF, FLAG_COMMIT_ON_SEL_CHANGE );
+    }
+
+    /**
+     * Set the CommitOnSelChange bit.
+     *
+     * @param commitOnSelChange The value for CommitOnSelChange.
+     */
+    public void setCommitOnSelChange( boolean commitOnSelChange )
+    {
+        getDictionary().setFlag( COSName.FF, FLAG_COMMIT_ON_SEL_CHANGE, commitOnSelChange );
+    }
+
+    /**
+     * getValue gets the value of the "V" entry.
+     * 
+     * @return The value of this entry.
+     * 
+     */
+    @Override
+    public COSArray getValue()
+    {
+        COSBase value = getDictionary().getDictionaryObject( COSName.V);
+        if (value instanceof COSString)
+        {
+            COSArray array = new COSArray();
+            array.add(value);
+            return array;
+        }
+        else if (value instanceof COSArray)
+        {
+            return (COSArray)value;
+        }
+        return null;
+    }
+
     // returns the "Opt" index for the given string
     protected int getSelectedIndex(String optionValue)
     {
         int indexSelected = -1;
-        COSArray options = (COSArray)getDictionary().getDictionaryObject(COSName.OPT);
-
+        COSArray options = getOptions();
         // YXJ: Changed the order of the loops. Acrobat produces PDF's
         // where sometimes there is 1 string and the rest arrays.
         // This code works either way.
@@ -57,34 +239,30 @@ public abstract class PDChoice extends PDVariableText
             COSBase option = options.getObject(i);
             if (option instanceof COSArray)
             {
-                COSArray keyValuePair = (COSArray)option;
-                COSString key = (COSString)keyValuePair.getObject(0);
-                COSString value = (COSString)keyValuePair.getObject(1);
+                COSArray keyValuePair = (COSArray) option;
+                COSString key = (COSString) keyValuePair.getObject(0);
+                COSString value = (COSString) keyValuePair.getObject(1);
                 if (optionValue.equals(key.getString()) || optionValue.equals(value.getString()))
                 {
-                    // have the parent draw the appearance stream with the value
-                    // but then use the key as the V entry
-                    getDictionary().setItem(COSName.V, key);
                     indexSelected = i;
                 }
             }
             else
             {
-                COSString value = (COSString)option;
+                COSString value = (COSString) option;
                 if (optionValue.equals(value.getString()))
                 {
                     indexSelected = i;
                 }
             }
         }
-
         return indexSelected;
     }
 
     // implements "MultiSelect"
     protected void selectMultiple(int selectedIndex)
     {
-        COSArray indexArray = (COSArray)getDictionary().getDictionaryObject(COSName.I);
+        COSArray indexArray = getSelectedOptions();
         if (indexArray != null)
         {
             indexArray.clear();

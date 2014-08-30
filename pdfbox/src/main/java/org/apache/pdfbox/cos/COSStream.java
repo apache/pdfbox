@@ -479,12 +479,9 @@ public class COSStream extends COSDictionary implements Closeable
      */
     public OutputStream createFilteredStream( COSBase expectedLength ) throws IOException
     {
-        IOUtils.closeQuietly(unFilteredStream);
-        unFilteredStream = null;
-        IOUtils.closeQuietly(filteredStream);
-        filteredStream = new RandomAccessFileOutputStream( file );
-        filteredStream.setExpectedLength( expectedLength );
-        return new BufferedOutputStream( filteredStream, BUFFER_SIZE );
+        OutputStream out = createFilteredStream();
+        filteredStream.setExpectedLength(expectedLength);
+        return out;
     }
 
     /**
@@ -496,6 +493,11 @@ public class COSStream extends COSDictionary implements Closeable
      */
     public void setFilters(COSBase filters) throws IOException
     {
+        if (unFilteredStream == null)
+        {
+            // don't lose stream contents
+            doDecode();
+        }
         setItem(COSName.FILTER, filters);
         // kill cached filtered streams
         IOUtils.closeQuietly(filteredStream);

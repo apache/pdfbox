@@ -117,8 +117,8 @@ public class NonSequentialPDFParser extends PDFParser
      */
     protected SecurityHandler securityHandler = null;
 
-    private String keyStoreFilename = null;
-    private String alias = null;
+    private final String keyStoreFilename = null;
+    private final String alias = null;
     private String password = "";
     private int readTrailBytes = DEFAULT_TRAIL_BYTECOUNT; // how many trailing
                                                           // bytes to read for
@@ -129,7 +129,7 @@ public class NonSequentialPDFParser extends PDFParser
      * needed; cons: some information of catalog might not be available (e.g. outline). Catalog parsing without pages is
      * not an option since a number of entries will also refer to page objects (like OpenAction).
      */
-    private boolean parseMinimalCatalog = "true".equals(System.getProperty(SYSPROP_PARSEMINIMAL));
+    private final boolean parseMinimalCatalog = "true".equals(System.getProperty(SYSPROP_PARSEMINIMAL));
 
     private boolean initialParseDone = false;
     private boolean allPagesParsed = false;
@@ -266,11 +266,10 @@ public class NonSequentialPDFParser extends PDFParser
      */
     private File createTmpFile(InputStream input) throws IOException
     {
-        File tmpFile = null;
         FileOutputStream fos = null;
         try
         {
-            tmpFile = File.createTempFile(TMP_FILE_PREFIX, ".pdf");
+            File tmpFile = File.createTempFile(TMP_FILE_PREFIX, ".pdf");
             fos = new FileOutputStream(tmpFile);
             IOUtils.copy(input, fos);
             isTmpPDFFile = true;
@@ -520,7 +519,7 @@ public class NonSequentialPDFParser extends PDFParser
 
     // ------------------------------------------------------------------------
     /** Get current offset in file at which next byte would be read. */
-    private final long getPdfSourceOffset()
+    private long getPdfSourceOffset()
     {
         return pdfSource.getOffset();
     }
@@ -557,7 +556,7 @@ public class NonSequentialPDFParser extends PDFParser
         // pdfSource.close();
     }
 
-    private final void closeFileStream() throws IOException
+    private void closeFileStream() throws IOException
     {
         if (pdfSource != null)
         {
@@ -985,7 +984,7 @@ public class NonSequentialPDFParser extends PDFParser
     /**
      * Creates a unique object id using object number and object generation number. (requires object number &lt; 2^31))
      */
-    private final long getObjectId(final COSObject obj)
+    private long getObjectId(final COSObject obj)
     {
         return (obj.getObjectNumber().longValue() << 32) | obj.getGenerationNumber().longValue();
     }
@@ -994,7 +993,7 @@ public class NonSequentialPDFParser extends PDFParser
      * Adds all from newObjects to toBeParsedList if it is not an COSObject or we didn't add this COSObject already
      * (checked via addedObjects).
      */
-    private final void addNewToList(final Queue<COSBase> toBeParsedList,
+    private void addNewToList(final Queue<COSBase> toBeParsedList,
             final Collection<COSBase> newObjects, final Set<Long> addedObjects)
     {
         for (COSBase newObject : newObjects)
@@ -1102,7 +1101,7 @@ public class NonSequentialPDFParser extends PDFParser
                         Long fileOffset = xrefTrailerResolver.getXrefTable().get(objKey);
                         // it is allowed that object references point to null,
                         // thus we have to test
-                        if (fileOffset != null)
+                        if (fileOffset != null && fileOffset != 0)
                         {
                             if (fileOffset > 0)
                             {
@@ -1118,7 +1117,7 @@ public class NonSequentialPDFParser extends PDFParser
                                 if ((fileOffset == null) || (fileOffset <= 0))
                                 {
                                     throw new IOException(
-                                            "Invalid object stream xref object reference: "
+                                            "Invalid object stream xref object reference for key '" + objKey + "': "
                                                     + fileOffset);
                                 }
 
@@ -1561,7 +1560,7 @@ public class NonSequentialPDFParser extends PDFParser
             }
             if (useReadUntilEnd)
             {
-                out = stream.createFilteredStream(streamLengthObj);
+                out = stream.createFilteredStream();
                 readUntilEndStream(new EndstreamOutputStream(out));
             }
             String endStream = readString();
@@ -1830,7 +1829,7 @@ public class NonSequentialPDFParser extends PDFParser
             return 0;
         }
         // the offset seems to be wrong -> seek backward to find the object we are looking for
-        long currentOffset = objectOffset;
+        long currentOffset;
         for (int i = 1; i < 20; i++)
         {
             currentOffset = objectOffset - (i * 10);

@@ -54,9 +54,10 @@
         <version>${project.version}</version>
     </dependency>
     <dependency>
-		<groupId>org.apache.pdfbox</groupId>
-        <artifactId>jempbox</artifactId>
-        <version>${project.version}</version>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>xmpbox</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
         <groupId>org.apache.lucene</groupId>

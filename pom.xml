@@ -45,7 +45,6 @@
   <modules>
     <module>parent</module>
     <module>fontbox</module>
-    <module>jempbox</module>
     <module>xmpbox</module>
     <module>pdfbox</module>
     <module>preflight</module>
@@ -103,7 +102,6 @@
                       <fileset dir="${basedir}">
                         <include name="RELEASE-NOTES.txt" />
                         <include name="target/*-src.zip*" />
-                        <include name="jempbox/target/*-${project.version}.jar*" />
                         <include name="fontbox/target/*-${project.version}.jar*" />
                         <include name="pdfbox/target/*-${project.version}.jar*" />
                         <include name="xmpbox/target/*-${project.version}.jar*" />

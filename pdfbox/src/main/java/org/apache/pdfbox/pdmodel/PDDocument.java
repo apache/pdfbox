@@ -850,7 +850,6 @@ public class PDDocument implements Closeable
     {
         StandardDecryptionMaterial m = new StandardDecryptionMaterial(password);
         openProtection(m);
-        document.dereferenceObjectStreams();
     }
 
     /**
@@ -1397,6 +1396,7 @@ public class PDDocument implements Closeable
             getEncryption().getSecurityHandler().decryptDocument(this, decryptionMaterial);
             document.dereferenceObjectStreams();
             document.setEncryptionDictionary(null);
+            getDocumentCatalog();
         }
         else
         {
