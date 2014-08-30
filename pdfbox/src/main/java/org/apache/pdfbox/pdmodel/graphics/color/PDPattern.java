@@ -116,12 +116,12 @@ public final class PDPattern extends PDSpecialColorSpace
             if (tilingPattern.getPaintType() == PDTilingPattern.PAINT_COLORED)
             {
                 // colored tiling pattern
-                return new TilingPaint(renderer, tilingPattern);
+                return new TilingPaint(renderer, tilingPattern, subStreamMatrix, xform);
             }
             else
             {
                 // uncolored tiling pattern
-                return new TilingPaint(renderer, tilingPattern, underlyingColorSpace, color);
+                return new TilingPaint(renderer, tilingPattern, underlyingColorSpace, color, subStreamMatrix, xform);
             }
         }
         else
