@@ -355,9 +355,9 @@ public class PDDocument implements Closeable
 
         // Set the AcroForm Fields
         List<PDFieldTreeNode> acroFormFields = acroForm.getFields();
-        COSDictionary acroFormDict = acroForm.getDictionary();
-        acroFormDict.setDirect(true);
-        acroFormDict.setInt(COSName.SIG_FLAGS, 3);
+        acroForm.getDictionary().setDirect(true);
+        acroForm.setSignaturesExist(true);
+        acroForm.setAppendOnly(true);
 
         boolean checkFields = false;
         for (PDFieldTreeNode field : acroFormFields)
@@ -386,7 +386,7 @@ public class PDDocument implements Closeable
             // Set rectangle for non-visual signature to 0 0 0 0
             signatureField.getWidget().setRectangle(new PDRectangle()); // rectangle array [ 0 0 0 0 ]
             // Clear AcroForm / Set DefaultRessource
-            acroFormDict.setItem(COSName.DR, null);
+            acroForm.setDefaultResources(null);
             // Set empty Appearance-Dictionary
             PDAppearanceDictionary ap = new PDAppearanceDictionary();
             COSStream apsStream = getDocument().createCOSStream();
@@ -408,7 +408,7 @@ public class PDDocument implements Closeable
 
             boolean annotNotFound = true;
             boolean sigFieldNotFound = true;
-
+            COSDictionary acroFormDict = acroForm.getDictionary();
             for (COSObject cosObject : cosObjects)
             {
                 if (!annotNotFound && !sigFieldNotFound)
@@ -508,9 +508,9 @@ public class PDDocument implements Closeable
         COSDictionary acroFormDict = acroForm.getDictionary();
         acroFormDict.setDirect(true);
         acroFormDict.setNeedToBeUpdate(true);
-        if (acroFormDict.getInt(COSName.SIG_FLAGS) < 1)
+        if (!acroForm.isSignaturesExist())
         {
-            acroFormDict.setInt(COSName.SIG_FLAGS, 1); // 1 if at least one signature field is available
+            acroForm.setSignaturesExist(true); // 1 if at least one signature field is available
         }
 
         List<PDFieldTreeNode> field = acroForm.getFields();

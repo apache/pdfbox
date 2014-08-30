@@ -80,36 +80,36 @@ public class TestFields extends TestCase
             PDTextField textBox = new PDTextField(form);
 
             //assert that default is false.
-            assertFalse( textBox.shouldComb() );
+            assertFalse( textBox.isComb() );
 
             //try setting and clearing a single field
             textBox.setComb( true );
-            assertTrue( textBox.shouldComb() );
+            assertTrue( textBox.isComb() );
             textBox.setComb( false );
-            assertFalse( textBox.shouldComb() );
+            assertFalse( textBox.isComb() );
 
             //try setting and clearing multiple fields
             textBox.setComb( true );
             textBox.setDoNotScroll( true );
-            assertTrue( textBox.shouldComb() );
+            assertTrue( textBox.isComb() );
             assertTrue( textBox.doNotScroll() );
 
             textBox.setComb( false );
             textBox.setDoNotScroll( false );
-            assertFalse( textBox.shouldComb() );
+            assertFalse( textBox.isComb() );
             assertFalse( textBox.doNotScroll() );
 
             //assert that setting a field to false multiple times works
             textBox.setComb( false );
-            assertFalse( textBox.shouldComb() );
+            assertFalse( textBox.isComb() );
             textBox.setComb( false );
-            assertFalse( textBox.shouldComb() );
+            assertFalse( textBox.isComb() );
 
             //assert that setting a field to true multiple times works
             textBox.setComb( true );
-            assertTrue( textBox.shouldComb() );
+            assertTrue( textBox.isComb() );
             textBox.setComb( true );
-            assertTrue( textBox.shouldComb() );
+            assertTrue( textBox.isComb() );
 
 
 

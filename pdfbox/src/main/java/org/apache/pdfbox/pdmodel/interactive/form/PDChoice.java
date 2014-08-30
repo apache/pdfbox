@@ -31,31 +31,14 @@ import org.apache.pdfbox.cos.COSString;
  */
 public abstract class PDChoice extends PDVariableText
 {
-
     /**
-     * A Ff flag.
+     *  Ff-flags
      */
-    public static final int FLAG_COMBO = 1 << 17;
-    /**
-     * A Ff flag.
-     */
-    public static final int FLAG_EDIT = 1 << 18;
-    /**
-     * A Ff flag.
-     */
-    public static final int FLAG_SORT = 1 << 19;
-    /**
-     * A Ff flag.
-     */
-    public static final int FLAG_MULTI_SELECT = 1 << 21;
-    /**
-     * A Ff flag.
-     */
-    public static final int FLAG_DO_NOT_SPELL_CHECK = 1 << 22;
-    /**
-     * A Ff flag.
-     */
-    public static final int FLAG_COMMIT_ON_SEL_CHANGE = 1 << 26;
+    public  static final int FLAG_COMBO = 1 << 17;
+    private static final int FLAG_SORT = 1 << 19;
+    private static final int FLAG_MULTI_SELECT = 1 << 21;
+    private static final int FLAG_DO_NOT_SPELL_CHECK = 1 << 22;
+    private static final int FLAG_COMMIT_ON_SEL_CHANGE = 1 << 26;
 
     /**
      * Constructor.
@@ -201,6 +184,26 @@ public abstract class PDChoice extends PDVariableText
     public void setCommitOnSelChange( boolean commitOnSelChange )
     {
         getDictionary().setFlag( COSName.FF, FLAG_COMMIT_ON_SEL_CHANGE, commitOnSelChange );
+    }
+
+    /**
+     * Determines if Combo is set.
+     * 
+     * @return true if value the choice is a combo box..
+     */
+    public boolean isCombo()
+    {
+        return getDictionary().getFlag( COSName.FF, FLAG_COMBO );
+    }
+
+    /**
+     * Set the Combo bit.
+     *
+     * @param combo The value for Combo.
+     */
+    public void setCombo( boolean combo )
+    {
+        getDictionary().setFlag( COSName.FF, FLAG_COMBO, combo );
     }
 
     /**

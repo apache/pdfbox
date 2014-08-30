@@ -31,33 +31,15 @@ import org.apache.pdfbox.cos.COSString;
 public abstract class PDVariableText extends PDField
 {
     /**
-     * A Ff flag.
+     * Ff flags.
      */
-    public static final int FLAG_MULTILINE = 1 << 12;
-    /**
-     * A Ff flag.
-     */
-    public static final int FLAG_PASSWORD = 1 << 13;
-    /**
-     * A Ff flag.
-     */
-    public static final int FLAG_FILE_SELECT = 1 << 20;
-    /**
-     * A Ff flag.
-     */
-    public static final int FLAG_DO_NOT_SPELL_CHECK = 1 << 22;
-    /**
-     * A Ff flag.
-     */
-    public static final int FLAG_DO_NOT_SCROLL = 1 << 23;
-    /**
-     * A Ff flag.
-     */
-    public static final int FLAG_COMB = 1 << 24;
-    /**
-     * A Ff flag.
-     */
-    public static final int FLAG_RICH_TEXT = 1 << 25;
+    private static final int FLAG_MULTILINE = 1 << 12;
+    private static final int FLAG_PASSWORD = 1 << 13;
+    private static final int FLAG_FILE_SELECT = 1 << 20;
+    private static final int FLAG_DO_NOT_SPELL_CHECK = 1 << 22;
+    private static final int FLAG_DO_NOT_SCROLL = 1 << 23;
+    private static final int FLAG_COMB = 1 << 24;
+    private static final int FLAG_RICH_TEXT = 1 << 25;
 
 
     /**
@@ -195,7 +177,7 @@ public abstract class PDVariableText extends PDField
     /**
      * @return true if the field is not suppose to comb the text display.
      */
-    public boolean shouldComb()
+    public boolean isComb()
     {
         return getDictionary().getFlag( COSName.FF, FLAG_COMB );
     }
@@ -253,6 +235,12 @@ public abstract class PDVariableText extends PDField
                 defaultAppearance = ((PDVariableText)parent).getDefaultAppearance();
             }
         }
+        // the default appearance is inheritable
+        // the acroform should provide a default appearance
+        if (defaultAppearance == null)
+        {
+            defaultAppearance = getAcroForm().getDefaultAppearance(); 
+        }
         return defaultAppearance;
     }
 
@@ -291,6 +279,12 @@ public abstract class PDVariableText extends PDField
         if( number != null )
         {
             retval = number.intValue();
+        }
+        else
+        {
+            // the Q value is inheritable
+            // the acroform should provide a Q default value
+            retval = getAcroForm().getQ();
         }
         return retval;
     }

@@ -28,6 +28,10 @@ import org.apache.pdfbox.cos.COSString;
  */
 public final class PDComboBox extends PDChoice
 {
+    /**
+     *  Ff-flag
+     */
+    private static final int FLAG_EDIT = 1 << 18;
 
     /**
      * Constructor.
@@ -39,6 +43,26 @@ public final class PDComboBox extends PDChoice
     public PDComboBox(PDAcroForm acroForm, COSDictionary field, PDFieldTreeNode parentNode)
     {
         super(acroForm, field, parentNode);
+    }
+
+    /**
+     * Determines if Edit is set.
+     * 
+     * @return true if the combo box shall include an editable text box as well as a drop-down list.
+     */
+    public boolean isEdit()
+    {
+        return getDictionary().getFlag( COSName.FF, FLAG_EDIT );
+    }
+
+    /**
+     * Set the Edit bit.
+     *
+     * @param edit The value for Edit.
+     */
+    public void setEdit( boolean edit )
+    {
+        getDictionary().setFlag( COSName.FF, FLAG_EDIT, edit );
     }
 
     /**

@@ -39,34 +39,28 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 public abstract class PDFieldTreeNode implements COSObjectable
 {
     /**
-     * A Ff flag.
+     * Ff flags.
      */
-    public static final int FLAG_READ_ONLY = 1;
-    /**
-     * A Ff flag.
-     */
-    public static final int FLAG_REQUIRED = 1 << 1;
-    /**
-     * A Ff flag.
-     */
-    public static final int FLAG_NO_EXPORT = 1 << 2;
+    private static final int FLAG_READ_ONLY = 1;
+    private static final int FLAG_REQUIRED = 1 << 1;
+    private static final int FLAG_NO_EXPORT = 1 << 2;
 
     /**
      * Field type Text.
      */
-    public static final String FIELD_TYPE_TEXT = "Tx";
+    private static final String FIELD_TYPE_TEXT = "Tx";
     /**
      * Field type Button.
      */
-    public static final String FIELD_TYPE_BUTTON = "Btn";
+    private static final String FIELD_TYPE_BUTTON = "Btn";
     /**
      * Field type Button.
      */
-    public static final String FIELD_TYPE_CHOICE = "Ch";
+    private static final String FIELD_TYPE_CHOICE = "Ch";
     /**
      * Field type Button.
      */
-    public static final String FIELD_TYPE_SIGNATURE = "Sig";
+    private static final String FIELD_TYPE_SIGNATURE = "Sig";
 
     private PDAcroForm acroForm;
 
@@ -614,7 +608,7 @@ public abstract class PDFieldTreeNode implements COSObjectable
         if (FIELD_TYPE_CHOICE.equals(fieldType))
         {
             int flags = field.getInt(COSName.FF, 0);
-            if ((flags & PDVariableText.FLAG_COMB) != 0)
+            if ((flags & PDChoice.FLAG_COMBO) != 0)
             {
                 return new PDComboBox(form, field, parentNode);
             }

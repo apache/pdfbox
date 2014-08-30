@@ -50,10 +50,6 @@ public final class PDListBox extends PDChoice
     public void setValue(Object value)
     {
         // TODO move to superclass PDCoice??
-        if ((getFieldFlags() & FLAG_EDIT) != 0)
-        {
-            throw new IllegalArgumentException("The list box isn't editable.");
-        }
         if (value != null)
         {
             if (value instanceof String)
