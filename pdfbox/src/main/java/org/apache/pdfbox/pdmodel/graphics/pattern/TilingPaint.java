@@ -50,7 +50,8 @@ public class TilingPaint extends TexturePaint
      * Creates a new colored tiling Paint.
      * @param pattern tiling pattern dictionary
      */
-    public TilingPaint(PDFRenderer renderer, PDTilingPattern pattern) throws IOException
+    public TilingPaint(PDFRenderer renderer, PDTilingPattern pattern, 
+            Matrix matrix, AffineTransform xform) throws IOException
     {
         super(getImage(renderer, pattern, null ,null), getTransformedRect(pattern));
     }
@@ -62,7 +63,7 @@ public class TilingPaint extends TexturePaint
      * @param color color for this tiling
      */
     public TilingPaint(PDFRenderer renderer, PDTilingPattern pattern, PDColorSpace colorSpace,
-                       PDColor color) throws IOException
+                       PDColor color, Matrix matrix, AffineTransform xform) throws IOException
     {
         super(getImage(renderer, pattern, colorSpace, color), getTransformedRect(pattern));
     }

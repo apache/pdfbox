@@ -43,8 +43,6 @@ import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontFactory;
-import org.apache.pdfbox.pdmodel.font.PDType0Font;
-import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
@@ -68,6 +66,7 @@ public class PDFStreamEngine
 
     private Matrix textMatrix;
     private Matrix textLineMatrix;
+    protected Matrix subStreamMatrix = new Matrix();
 
     private final Stack<PDGraphicsState> graphicsStack = new Stack<PDGraphicsState>();
     private final Stack<PDResources> streamResourcesStack = new Stack<PDResources>();
@@ -250,6 +249,8 @@ public class PDFStreamEngine
 
     private void processSubStream(COSStream cosStream) throws IOException
     {
+        Matrix oldSubStreamMatrix = subStreamMatrix;
+        subStreamMatrix = getGraphicsState().getCurrentTransformationMatrix();
         List<COSBase> arguments = new ArrayList<COSBase>();
         PDFStreamParser parser = new PDFStreamParser(cosStream, forceParsing);
         try
@@ -281,6 +282,7 @@ public class PDFStreamEngine
         {
             parser.close();
         }
+        subStreamMatrix = oldSubStreamMatrix;
     }
 
     /**
@@ -598,6 +600,14 @@ public class PDFStreamEngine
         textMatrix = value;
     }
 
+    /**
+     * @return Returns the subStreamMatrix.
+     */
+    protected Matrix getSubStreamMatrix()
+    {
+        return subStreamMatrix;
+    }
+    
     /**
      * @return Returns the resources.
      */

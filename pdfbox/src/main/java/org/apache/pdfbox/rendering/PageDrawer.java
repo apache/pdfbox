@@ -560,15 +560,19 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     {
         PDGraphicsState graphicsState = getGraphicsState();
         return applySoftMaskToPaint(graphicsState.getStrokingColorSpace()
-                .toPaint(renderer, graphicsState.getStrokingColor(), (int)pageSize.getHeight()),
-                         graphicsState.getSoftMask());
+                .toPaint(renderer, graphicsState.getStrokingColor(),
+                        getSubStreamMatrix(), graphics.getTransform(),
+                        (int) pageSize.getHeight()),
+                graphicsState.getSoftMask());
     }
 
     // returns the non-stroking AWT Paint
     private Paint getNonStrokingPaint() throws IOException
     {
         return getGraphicsState().getNonStrokingColorSpace()
-                .toPaint(renderer, getGraphicsState().getNonStrokingColor(), (int)pageSize.getHeight());
+                .toPaint(renderer, getGraphicsState().getNonStrokingColor(),
+                        getSubStreamMatrix(), graphics.getTransform(),
+                        (int) pageSize.getHeight());
     }
 
     // create a new stroke based on the current CTM and the current stroke
@@ -711,6 +715,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         linePath.reset();
     }
     
+    @Override
     public void drawImage(PDImage pdImage) throws IOException
     {
         Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
@@ -721,8 +726,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // fill the image with paint
             PDColorSpace colorSpace = getGraphicsState().getNonStrokingColorSpace();
             PDColor color = getGraphicsState().getNonStrokingColor();
-            BufferedImage image = pdImage.getStencilImage(colorSpace.toPaint(renderer, color,
-                                                          (int)pageSize.getHeight()));
+            BufferedImage image = pdImage.getStencilImage(
+                    colorSpace.toPaint(renderer, color,
+                            getSubStreamMatrix(), graphics.getTransform(),
+                            (int) pageSize.getHeight()));
 
             // draw the image
             drawBufferedImage(image, at);
