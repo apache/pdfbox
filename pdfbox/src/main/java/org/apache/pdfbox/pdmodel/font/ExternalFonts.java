@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.cff.CFFCIDFont;
 import org.apache.fontbox.cff.CFFFont;
 import org.apache.fontbox.cff.CFFType1Font;
+import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.Type1Equivalent;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.type1.Type1Font;
@@ -49,6 +52,27 @@ public final class ExternalFonts
 
     private static final Log log = LogFactory.getLog(ExternalFonts.class);
     private static FontProvider fontProvider;
+
+    /** TTF fallback font, used as as a last resort */
+    private static TrueTypeFont ttfFallbackFont;
+    static
+    {
+        try
+        {
+            String name = "org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf";
+            TTFParser ttfParser = new TTFParser();
+            InputStream fontStream = org.apache.fontbox.util.ResourceLoader.loadResource(name);
+            if (fontStream == null)
+            {
+                throw new IOException("Error loading resource: " + name);
+            }
+            ttfFallbackFont = ttfParser.parseTTF(fontStream);
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * Sets the font service provider.
@@ -76,34 +100,44 @@ public final class ExternalFonts
     {
         // substitutes for standard 14 fonts
         substitutes.put("Courier",
-                Arrays.asList("CourierNew", "CourierNewPSMT"));
+                Arrays.asList("CourierNew", "CourierNewPSMT", "LiberationMono", "NimbusMonL-Regu"));
         substitutes.put("Courier-Bold",
-                Arrays.asList("CourierNewPS-BoldMT", "CourierNew-Bold"));
+                Arrays.asList("CourierNewPS-BoldMT", "CourierNew-Bold", "LiberationMono-Bold",
+                              "NimbusMonL-Bold"));
         substitutes.put("Courier-Oblique",
-                Arrays.asList("CourierNewPS-ItalicMT","CourierNew-Italic"));
+                Arrays.asList("CourierNewPS-ItalicMT","CourierNew-Italic",
+                              "LiberationMono-Italic", "NimbusMonL-ReguObli"));
         substitutes.put("Courier-BoldOblique",
-                Arrays.asList("CourierNewPS-BoldItalicMT","CourierNew-BoldItalic"));
+                Arrays.asList("CourierNewPS-BoldItalicMT","CourierNew-BoldItalic",
+                              "LiberationMono-BoldItalic", "NimbusMonL-BoldObli"));
         substitutes.put("Helvetica",
-                Arrays.asList("ArialMT", "Arial"));
+                Arrays.asList("ArialMT", "Arial", "LiberationSans", "NimbusSanL-Regu"));
         substitutes.put("Helvetica-Bold",
-                Arrays.asList("Arial-BoldMT", "Arial-Bold"));
+                Arrays.asList("Arial-BoldMT", "Arial-Bold", "LiberationSans-Bold",
+                              "NimbusSanL-Bold"));
         substitutes.put("Helvetica-Oblique",
-                Arrays.asList("Arial-ItalicMT", "Arial-Italic", "Helvetica-Italic"));
+                Arrays.asList("Arial-ItalicMT", "Arial-Italic", "Helvetica-Italic",
+                              "LiberationSans-Italic", "NimbusSanL-ReguItal"));
         substitutes.put("Helvetica-BoldOblique",
-                Arrays.asList("Arial-BoldItalicMT", "Helvetica-BoldItalic"));
+                Arrays.asList("Arial-BoldItalicMT", "Helvetica-BoldItalic",
+                              "LiberationSans-BoldItalic", "NimbusSanL-BoldItal"));
         substitutes.put("Times-Roman",
-                Arrays.asList("TimesNewRomanPSMT", "TimesNewRoman", "TimesNewRomanPS"));
+                Arrays.asList("TimesNewRomanPSMT", "TimesNewRoman", "TimesNewRomanPS",
+                              "LiberationSerif", "NimbusRomNo9L-Regu"));
         substitutes.put("Times-Bold",
                 Arrays.asList("TimesNewRomanPS-BoldMT", "TimesNewRomanPS-Bold",
-                              "TimesNewRoman-Bold"));
+                              "TimesNewRoman-Bold", "LiberationSerif-Bold",
+                              "NimbusRomNo9L-Medi"));
         substitutes.put("Times-Italic",
                 Arrays.asList("TimesNewRomanPS-ItalicMT", "TimesNewRomanPS-Italic",
-                              "TimesNewRoman-Italic"));
+                              "TimesNewRoman-Italic", "LiberationSerif-Italic",
+                              "NimbusRomNo9L-ReguItal"));
         substitutes.put("Times-BoldItalic",
                 Arrays.asList("TimesNewRomanPS-BoldItalicMT", "TimesNewRomanPS-BoldItalic",
-                             "TimesNewRoman-BoldItalic"));
-        substitutes.put("Symbol",Arrays.asList("SymbolMT"));
-        substitutes.put("ZapfDingbats", Arrays.asList("ZapfDingbatsITC"));
+                             "TimesNewRoman-BoldItalic", "LiberationSerif-BoldItalic",
+                             "NimbusRomNo9L-MediItal"));
+        substitutes.put("Symbol",Arrays.asList("SymbolMT", "StandardSymL"));
+        substitutes.put("ZapfDingbats", Arrays.asList("ZapfDingbatsITC", "Dingbats"));
 
         // the Adobe Supplement to the ISO 32000 specifies some alternative names for some
         // of the standard 14 fonts, so we map these to our fallbacks above
@@ -165,7 +199,45 @@ public final class ExternalFonts
      * Returns the fallback font, used for rendering when no other fonts are available,
      * we attempt to find a good fallback based on the font descriptor.
      */
-    public static TrueTypeFont getFallbackFont(PDFontDescriptor fontDescriptor)
+    public static Type1Equivalent getType1FallbackFont(PDFontDescriptor fontDescriptor)
+    {
+        String fontName = getFallbackFontName(fontDescriptor);
+        Type1Equivalent type1Equivalent = getType1EquivalentFont(fontName);
+        if (type1Equivalent == null)
+        {
+            String message = fontProvider.toDebugString();
+            if (message != null)
+            {
+                // if we couldn't get a PFB font by now then there's no point continuing
+                log.error("No fallback font for '" + fontName + "', dumping debug information:");
+                log.error(message);
+            }
+            throw new IllegalStateException("No fonts available on the system for " + fontName);
+        }
+        return type1Equivalent;
+    }
+
+    /**
+     * Returns the fallback font, used for rendering when no other fonts are available,
+     * we attempt to find a good fallback based on the font descriptor.
+     */
+    public static TrueTypeFont getTrueTypeFallbackFont(PDFontDescriptor fontDescriptor)
+    {
+        String fontName = getFallbackFontName(fontDescriptor);
+        TrueTypeFont ttf = getTrueTypeFont(fontName);
+        if (ttf == null)
+        {
+            // we have to return something here as TTFs aren't strictly required on the system
+            log.error("No TTF fallback font for '" + fontName + "'");
+            return ttfFallbackFont;
+        }
+        return ttf;
+    }
+
+    /**
+     * Attempts to find a good fallback based on the font descriptor.
+     */
+    private static String getFallbackFontName(PDFontDescriptor fontDescriptor)
     {
         String fontName;
         if (fontDescriptor != null)
@@ -237,19 +309,7 @@ public final class ExternalFonts
             // if there is no FontDescriptor then we just fall back to Times Roman
             fontName = "Times-Roman";
         }
-
-        TrueTypeFont ttf = getTrueTypeFont(fontName);
-        if (ttf == null)
-        {
-            String message = fontProvider.toDebugString();
-            if (message != null)
-            {
-                log.error("No fallback font for '" + fontName + "', dumping debug information:");
-                log.error(message);
-            }
-            throw new IllegalStateException("No fonts available on the system for " + fontName);
-        }
-        return ttf;
+        return fontName;
     }
 
     /**
