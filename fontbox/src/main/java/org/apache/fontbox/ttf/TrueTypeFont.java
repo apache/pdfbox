@@ -406,9 +406,8 @@ public class TrueTypeFont implements Type1Equivalent
     {
         readPostScriptNames();
 
-        GlyphData[] glyphs = getGlyph().getGlyphs();
         Integer gid = postScriptNames.get(name);
-        if (gid == null || gid < 0 || gid >= glyphs.length)
+        if (gid == null || gid < 0 || gid >= getMaximumProfile().getNumGlyphs())
         {
             return 0;
         }
@@ -420,21 +419,21 @@ public class TrueTypeFont implements Type1Equivalent
     {
         readPostScriptNames();
 
-        GlyphData[] glyphs = getGlyph().getGlyphs();
         Integer gid = postScriptNames.get(name);
-        if (gid == null || gid < 0 || gid >= glyphs.length)
+        if (gid == null || gid < 0 || gid >= getMaximumProfile().getNumGlyphs())
         {
             gid = 0;
         }
 
         // some glyphs have no outlines (e.g. space, table, newline)
-        if (glyphs[gid] == null)
+        GlyphData glyph = getGlyph().getGlyph(gid);
+        if (glyph == null)
         {
             return new GeneralPath();
         }
         else
         {
-            GeneralPath path = glyphs[gid].getPath();
+            GeneralPath path = glyph.getPath();
 
             // scale to 1000upem, per PostScript convention
             float scale = 1000f / getUnitsPerEm();
@@ -466,8 +465,7 @@ public class TrueTypeFont implements Type1Equivalent
         readPostScriptNames();
 
         Integer gid = postScriptNames.get(name);
-        GlyphData[] glyphs = getGlyph().getGlyphs();
-        return !(gid == null || gid < 0 || gid >= glyphs.length);
+        return !(gid == null || gid < 0 || gid >= getMaximumProfile().getNumGlyphs());
     }
 
     @Override

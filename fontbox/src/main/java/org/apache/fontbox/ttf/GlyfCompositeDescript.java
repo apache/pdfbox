@@ -41,7 +41,7 @@ public class GlyfCompositeDescript extends GlyfDescript
     private static final Log LOG = LogFactory.getLog(GlyfCompositeDescript.class);
 
     private final List<GlyfCompositeComp> components = new ArrayList<GlyfCompositeComp>();
-    private GlyphData[] glyphs = null;
+    private GlyphTable glyphTable = null;
     private boolean beingResolved = false;
     private boolean resolved = false;
 
@@ -56,7 +56,7 @@ public class GlyfCompositeDescript extends GlyfDescript
     {
         super((short) -1, bais);
 
-        glyphs = glyphTable.getGlyphs();
+        this.glyphTable = glyphTable;
 
         // Get all of the composite components
         GlyfCompositeComp comp;
@@ -265,14 +265,19 @@ public class GlyfCompositeDescript extends GlyfDescript
 
     private GlyphDescription getGlypDescription(int index)
     {
-        if (glyphs != null && index < glyphs.length)
+        try
         {
-            GlyphData glyph = glyphs[index];
+            GlyphData glyph = glyphTable.getGlyph(index);
             if (glyph != null)
             {
                 return glyph.getDescription();
             }
+            return null;
         }
-        return null;
+        catch (IOException e)
+        {
+            LOG.error(e);
+            return null;
+        }
     }
 }

@@ -49,7 +49,7 @@ public class CIDType2Container extends FontContainer
         try
         {
             // if glyph exists we can check the width
-            if (this.ttf != null && this.ttf.getGlyph().getGlyphs().length > glyphIndex)
+            if (this.ttf != null && this.ttf.getMaximumProfile().getNumGlyphs() > glyphIndex)
             {
             /*
              * In a Mono space font program, the length of the AdvanceWidth array must be one. According to the TrueType
