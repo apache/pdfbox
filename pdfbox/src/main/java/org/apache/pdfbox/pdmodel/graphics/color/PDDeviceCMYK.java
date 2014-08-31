@@ -52,18 +52,12 @@ public final class PDDeviceCMYK extends PDDeviceColorSpace
         }
     }
 
-    private final ICC_ColorSpace awtColorSpace;
     private static final PDColor INITIAL_COLOR = new PDColor(new float[] { 0, 0, 0, 1 });
+    private final ICC_ColorSpace awtColorSpace;
 
     private PDDeviceCMYK() throws IOException
     {
-        awtColorSpace = getAWTColorSpace();
-    }
-
-    // loads the ICC color profile for CMYK
-    private static ICC_ColorSpace getAWTColorSpace() throws IOException
-    {
-        ICC_ColorSpace colorSpace;
+        // loads the ICC color profile for CMYK
         InputStream profile = null;
         try
         {
@@ -76,13 +70,17 @@ public final class PDDeviceCMYK extends PDDeviceColorSpace
                 throw new IOException("Default CMYK color profile could not be loaded");
             }
             ICC_Profile iccProfile = ICC_Profile.getInstance(profile);
-            colorSpace = new ICC_ColorSpace(iccProfile);
+            awtColorSpace = new ICC_ColorSpace(iccProfile);
+
+            // there is a JVM bug which results in a CMMException which appears to be a race
+            // condition caused by lazy initialization of the color transform, so we perform
+            // an initial color conversion while we're still in a static context, see PDFBOX-2184
+            awtColorSpace.toRGB(new float[] { 0, 0, 0, 0 });
         }
         finally
         {
             IOUtils.closeQuietly(profile);
         }
-        return colorSpace;
     }
 
     @Override
