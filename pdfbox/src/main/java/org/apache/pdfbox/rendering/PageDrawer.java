@@ -138,6 +138,19 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     }
 
     /**
+     * Sets high-quality rendering hints on the current Graphics2D.
+     */
+    private void setRenderingHints()
+    {
+        graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                                  RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        graphics.setRenderingHint(RenderingHints.KEY_RENDERING,
+                                  RenderingHints.VALUE_RENDER_QUALITY);
+        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                                  RenderingHints.VALUE_ANTIALIAS_ON);
+    }
+
+    /**
      * This will draw the page to the requested context.
      * 
      * @param g The graphics context to draw onto.
@@ -149,13 +162,14 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     {
         graphics = (Graphics2D) g;
         xform = graphics.getTransform();
-        this.pageSize = pageSize;
-        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+        setRenderingHints();
+
         graphics.translate(0, (int) pageSize.getHeight());
         graphics.scale(1, -1);
         // TODO use getStroke() to set the initial stroke
         graphics.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
+
+        this.pageSize = pageSize;
 
         // Only if there is some content, we have to process it.
         // Otherwise we are done here and we will produce an empty page
@@ -280,8 +294,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     {
         pageSize = pageDimension;
         graphics = g;
-        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+        setRenderingHints();
 
         initStream(pageDimension);
 
@@ -371,8 +384,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
      */
     private void drawGlyph2D(Glyph2D glyph2D, int code, AffineTransform at) throws IOException
     {
-        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
         PDGraphicsState state = getGraphicsState();
         RenderingMode renderingMode = state.getTextState().getRenderingMode();
 
@@ -628,7 +639,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
         graphics.setPaint(strokingPaint);
         graphics.setStroke(getStroke());
-        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         setClip();
         graphics.draw(linePath);
         linePath.reset();
@@ -647,7 +657,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
         graphics.setPaint(nonStrokingPaint);
         linePath.setWindingRule(windingRule);
-        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         setClip();
         graphics.fill(linePath);
         linePath.reset();
@@ -740,8 +749,20 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
         else
         {
+            if (!pdImage.getInterpolate())
+            {
+                graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                                          RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+            }
+
             // draw the image
             drawBufferedImage(pdImage.getImage(), at);
+
+            if (!pdImage.getInterpolate())
+            {
+                graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                                          RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+            }
         }
     }
 
@@ -760,8 +781,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                             imageTransform.getScaleX(), imageTransform.getScaleY()));
             awtPaint = applySoftMaskToPaint(awtPaint, softMask);
             graphics.setPaint(awtPaint);
-            graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                    RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
             Rectangle2D unitRect = new Rectangle2D.Float(0, 0, 1, 1);
             graphics.fill(at.createTransformedShape(unitRect));
         }
@@ -785,7 +804,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
         graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
         graphics.setPaint(paint);
-        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         graphics.setClip(null);
         lastClip = null;
         graphics.fill(getGraphicsState().getCurrentClippingPath());

@@ -27,6 +27,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 
 /**
  * An image in a PDF document.
+ *
  * @author John Hewson
  */
 public interface PDImage extends COSObjectable
@@ -49,14 +50,12 @@ public interface PDImage extends COSObjectable
 
     /**
      * Returns a stream containing this image's data.
-     * @return stream containing the image data
      * @throws IOException if the
      */
     public PDStream getStream() throws IOException;
 
     /**
      * Returns true if the image is a stencil mask.
-     * @return true if the image is a stencil mask.
      */
     public boolean isStencil();
 
@@ -69,7 +68,6 @@ public interface PDImage extends COSObjectable
 
     /**
      * Returns bits per component of this image, or -1 if one has not been set.
-     * @return The number of bits per component.
      */
     public int getBitsPerComponent();
 
@@ -80,8 +78,7 @@ public interface PDImage extends COSObjectable
     public void setBitsPerComponent(int bitsPerComponent);
 
     /**
-     * Returns the image's color space
-     * @return The color space for this image.
+     * Returns the image's color space.
      * @throws IOException If there is an error getting the color space.
      */
     public PDColorSpace getColorSpace() throws IOException;
@@ -94,7 +91,6 @@ public interface PDImage extends COSObjectable
 
     /**
      * Returns height of this image, or -1 if one has not been set.
-     * @return The height.
      */
     public int getHeight();
 
@@ -106,7 +102,6 @@ public interface PDImage extends COSObjectable
 
     /**
      * Returns the width of this image, or -1 if one has not been set.
-     * @return The width.
      */
     public int getWidth();
 
@@ -124,7 +119,17 @@ public interface PDImage extends COSObjectable
 
     /**
      * Returns the decode array.
-     * @return the decode array.
      */
     public COSArray getDecode();
+
+    /**
+     * Returns true if the image should be interpolated when rendered.
+     */
+    public boolean getInterpolate();
+
+
+    /**
+     * Sets the Interpolate flag, true for high-quality image scaling.
+     */
+    public void setInterpolate(boolean value);
 }
