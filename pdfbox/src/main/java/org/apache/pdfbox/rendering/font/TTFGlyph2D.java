@@ -139,14 +139,14 @@ public class TTFGlyph2D implements Glyph2D
         }
         else
         {
-            GlyphData[] glyphData = ttf.getGlyph().getGlyphs();
-            if (gid >= glyphData.length)
+            GlyphData glyph = ttf.getGlyph().getGlyph(gid);
+            if (gid >= ttf.getMaximumProfile().getNumGlyphs())
             {
                 LOG.warn(font.getName() + ": Glyph not found: " + gid);
                 glyphPath = new GeneralPath();
                 glyphs.put(gid, glyphPath);
             }
-            else if (glyphData[gid] == null)
+            else if (glyph == null)
             {
                 // empty glyph (e.g. space, newline)
                 glyphPath = new GeneralPath();
@@ -154,7 +154,6 @@ public class TTFGlyph2D implements Glyph2D
             }
             else
             {
-                GlyphData glyph = glyphData[gid];
                 glyphPath = glyph.getPath();
                 if (hasScaling)
                 {

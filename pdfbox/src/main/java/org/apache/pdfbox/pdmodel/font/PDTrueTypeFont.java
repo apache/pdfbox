@@ -190,7 +190,7 @@ public class PDTrueTypeFont extends PDSimpleFont
     public float getHeight(int code) throws IOException
     {
         int gid = codeToGID(code);
-        GlyphData glyph = ttf.getGlyph().getGlyphs()[gid];
+        GlyphData glyph = ttf.getGlyph().getGlyph(gid);
         if (glyph != null)
         {
             return glyph.getBoundingBox().getHeight();
