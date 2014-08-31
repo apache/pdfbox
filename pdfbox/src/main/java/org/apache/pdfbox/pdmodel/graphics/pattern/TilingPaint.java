@@ -168,7 +168,7 @@ public class TilingPaint extends TexturePaint
         // transform without the translation
         AffineTransform at = new AffineTransform(
                 xform.getScaleX(), xform.getShearY(),
-                xform.getShearX(), -xform.getScaleY(),
+                -xform.getShearX(), xform.getScaleY(),
                 0, 0);
         graphics.transform(at);
         drawer.drawTilingPattern(graphics, pattern, pdRect, matrix, colorSpace, color);

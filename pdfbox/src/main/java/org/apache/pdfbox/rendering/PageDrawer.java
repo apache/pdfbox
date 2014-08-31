@@ -89,6 +89,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     private Graphics2D graphics;
 
+    // initial transform
+    private AffineTransform xform;
+    
     // clipping winding rule used for the clipping path
     private int clipWindingRule = -1;
     private GeneralPath linePath = new GeneralPath();
@@ -145,6 +148,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     public void drawPage(Graphics g, PDRectangle pageSize) throws IOException
     {
         graphics = (Graphics2D) g;
+        xform = graphics.getTransform();
         this.pageSize = pageSize;
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
@@ -561,7 +565,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         PDGraphicsState graphicsState = getGraphicsState();
         return applySoftMaskToPaint(graphicsState.getStrokingColorSpace()
                 .toPaint(renderer, graphicsState.getStrokingColor(),
-                        getSubStreamMatrix(), graphics.getTransform(),
+                        getSubStreamMatrix(), xform,
                         (int) pageSize.getHeight()),
                 graphicsState.getSoftMask());
     }
@@ -571,7 +575,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     {
         return getGraphicsState().getNonStrokingColorSpace()
                 .toPaint(renderer, getGraphicsState().getNonStrokingColor(),
-                        getSubStreamMatrix(), graphics.getTransform(),
+                        getSubStreamMatrix(), xform,
                         (int) pageSize.getHeight());
     }
 
@@ -728,7 +732,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             PDColor color = getGraphicsState().getNonStrokingColor();
             BufferedImage image = pdImage.getStencilImage(
                     colorSpace.toPaint(renderer, color,
-                            getSubStreamMatrix(), graphics.getTransform(),
+                            getSubStreamMatrix(), xform,
                             (int) pageSize.getHeight()));
 
             // draw the image
