@@ -37,11 +37,11 @@ import java.io.IOException;
  */
 public final class PDDeviceRGB extends PDDeviceColorSpace
 {
-    /**  This is the single instance of this class. */
-    public static final PDDeviceRGB INSTANCE = new PDDeviceRGB();
-
     private static final ColorSpace COLOR_SPACE_RGB = ColorSpace.getInstance(ColorSpace.CS_sRGB);
     private static final PDColor INITIAL_COLOR = new PDColor(new float[] { 0, 0, 0 });
+
+    /**  This is the single instance of this class. */
+    public static final PDDeviceRGB INSTANCE = new PDDeviceRGB();
 
     private PDDeviceRGB()
     {
