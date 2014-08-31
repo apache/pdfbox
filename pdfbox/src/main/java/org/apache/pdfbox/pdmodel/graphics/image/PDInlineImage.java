@@ -183,6 +183,18 @@ public final class PDInlineImage implements PDImage
         parameters.setInt(COSName.W, width);
     }
 
+    @Override
+    public boolean getInterpolate()
+    {
+        return parameters.getBoolean(COSName.I, COSName.INTERPOLATE, false);
+    }
+
+    @Override
+    public void setInterpolate(boolean value)
+    {
+        parameters.setBoolean(COSName.I, value);
+    }
+
     /**
      * Returns a list of filters applied to this stream, or null if there are
      * none.

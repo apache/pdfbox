@@ -260,6 +260,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName INDEX = new COSName("Index");
     public static final COSName INDEXED = new COSName("Indexed");
     public static final COSName INFO = new COSName("Info");
+    public static final COSName INTERPOLATE = new COSName("Interpolate");
     public static final COSName ITALIC_ANGLE = new COSName("ItalicAngle");
     // J
     public static final COSName JAVA_SCRIPT = new COSName("JavaScript");

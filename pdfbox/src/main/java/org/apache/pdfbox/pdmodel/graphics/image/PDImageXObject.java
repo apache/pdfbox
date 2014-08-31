@@ -423,6 +423,18 @@ public final class PDImageXObject extends PDXObject implements PDImage
     }
 
     @Override
+    public boolean getInterpolate()
+    {
+        return getCOSStream().getBoolean(COSName.INTERPOLATE, false);
+    }
+
+    @Override
+    public void setInterpolate(boolean value)
+    {
+        getCOSStream().setBoolean(COSName.INTERPOLATE, value);
+    }
+
+    @Override
     public void setDecode(COSArray decode)
     {
         getCOSStream().setItem(COSName.DECODE, decode);
