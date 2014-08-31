@@ -137,19 +137,11 @@ public class TilingPaint extends TexturePaint
                 Transparency.TRANSLUCENT, DataBuffer.TYPE_BYTE);
 
         Rectangle2D rect = getTransformedRect(pattern, matrix);
-        int width = Math.round((float) rect.getWidth());
-        int height = Math.round((float) rect.getHeight());
+        float width = (float)rect.getWidth();
+        float height = (float)rect.getHeight();
 
-        int rasterWidth = (int) (width * Math.abs(xform.getScaleX()));
-        int rasterHeight = (int) (height * Math.abs(xform.getScaleY()));
-        if (rasterWidth < 1)
-        {
-            rasterWidth = 1;
-        }
-        if (rasterHeight < 1)
-        {
-            rasterHeight = 1;
-        }
+        int rasterWidth = Math.max(1, (int)Math.ceil(width * Math.abs(xform.getScaleX())));
+        int rasterHeight = Math.max(1, (int)Math.ceil(height * Math.abs(xform.getScaleY())));
 
         // create raster
         WritableRaster raster = cm.createCompatibleWritableRaster(rasterWidth, rasterHeight);
