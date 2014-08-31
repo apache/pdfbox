@@ -120,29 +120,22 @@ public class TTFGlyph2D implements Glyph2D
         {
             glyphPath = glyphs.get(gid);
         }
-        else if (gid == 0)
-        {
-            if (isCIDFont)
-            {
-                int cid = ((PDType0Font) font).codeToCID(code);
-                String cidHex = String.format("%04x", cid);
-                LOG.warn("No glyph for " + code + " (CID " + cidHex + ") in font " + font.getName());
-            }
-            else
-            {
-                LOG.warn("No glyph for " + code + " in font " + font.getName());
-            }
-
-            // GID 0 is not drawn, see PDFBOX-1735
-            glyphPath = new GeneralPath();
-            glyphs.put(gid, glyphPath);
-        }
         else
         {
             GlyphData glyph = ttf.getGlyph().getGlyph(gid);
-            if (gid >= ttf.getMaximumProfile().getNumGlyphs())
+            if (gid == 0 || gid >= ttf.getMaximumProfile().getNumGlyphs())
             {
-                LOG.warn(font.getName() + ": Glyph not found: " + gid);
+                if (isCIDFont)
+                {
+                    int cid = ((PDType0Font) font).codeToCID(code);
+                    String cidHex = String.format("%04x", cid);
+                    LOG.warn("No glyph for " + code + " (CID " + cidHex + ") in font " +
+                             font.getName());
+                }
+                else
+                {
+                    LOG.warn("No glyph for " + code + " in font " + font.getName());
+                }
                 glyphPath = new GeneralPath();
                 glyphs.put(gid, glyphPath);
             }

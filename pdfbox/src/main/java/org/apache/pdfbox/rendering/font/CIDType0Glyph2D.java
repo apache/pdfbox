@@ -32,7 +32,7 @@ import org.apache.pdfbox.pdmodel.font.PDCIDFontType0;
  */
 public class CIDType0Glyph2D implements Glyph2D
 {
-    private static final Log LOG = LogFactory.getLog(Type1Glyph2D.class);
+    private static final Log LOG = LogFactory.getLog(CIDType0Glyph2D.class);
 
     private final HashMap<Integer, GeneralPath> cache = new HashMap<Integer, GeneralPath>();
     private final PDCIDFontType0 font;
@@ -56,15 +56,6 @@ public class CIDType0Glyph2D implements Glyph2D
         if (cache.containsKey(code))
         {
             return cache.get(code);
-        }
-
-        // don't draw CID 0
-        if (cid == 0)
-        {
-            LOG.warn("No glyph for " + code + " (CID 0000) in font " + fontName);
-            GeneralPath path = new GeneralPath();
-            cache.put(code, path);
-            return path;
         }
 
         try
