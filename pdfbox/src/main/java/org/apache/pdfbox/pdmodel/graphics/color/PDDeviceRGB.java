@@ -45,6 +45,10 @@ public final class PDDeviceRGB extends PDDeviceColorSpace
 
     private PDDeviceRGB()
     {
+        // there is a JVM bug which results in a CMMException which appears to be a race
+        // condition caused by lazy initialization of the color transform, so we perform
+        // an initial color conversion while we're still in a static context, see PDFBOX-2184
+        COLOR_SPACE_RGB.toRGB(new float[] { 0, 0, 0 });
     }
 
     @Override
