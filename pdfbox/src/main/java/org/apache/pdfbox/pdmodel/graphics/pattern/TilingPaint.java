@@ -29,8 +29,9 @@ import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
@@ -48,11 +49,6 @@ import org.apache.pdfbox.util.Matrix;
  */
 public class TilingPaint extends TexturePaint
 {
-    /**
-     * Logger instance.
-     */
-    private static final Log LOG = LogFactory.getLog(TilingPaint.class);
-
     /**
      * Creates a new colored tiling Paint.
      *
@@ -140,8 +136,8 @@ public class TilingPaint extends TexturePaint
         float width = (float)rect.getWidth();
         float height = (float)rect.getHeight();
 
-        int rasterWidth = Math.max(1, (int)Math.ceil(width * Math.abs(xform.getScaleX())));
-        int rasterHeight = Math.max(1, (int)Math.ceil(height * Math.abs(xform.getScaleY())));
+        int rasterWidth = Math.max(1, ceiling(width * Math.abs(xform.getScaleX())));
+        int rasterHeight = Math.max(1, ceiling(height * Math.abs(xform.getScaleY())));
 
         // create raster
         WritableRaster raster = cm.createCompatibleWritableRaster(rasterWidth, rasterHeight);
@@ -167,6 +163,17 @@ public class TilingPaint extends TexturePaint
         graphics.dispose();
 
         return image;
+    }
+
+    /**
+     * Returns the closest integer which is larger than the given number.
+     * Uses BigDecimal to avoid floating point error which would cause gaps in the tiling.
+     */
+    private static int ceiling(double num)
+    {
+        BigDecimal decimal = new BigDecimal(num);
+        decimal.setScale(5, RoundingMode.CEILING); // 5 decimal places of accuracy
+        return decimal.intValue();
     }
 
     @Override
