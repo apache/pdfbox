@@ -103,8 +103,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     private Area textClippingArea;
 
     private final Map<PDFont, Glyph2D> fontGlyph2D = new HashMap<PDFont, Glyph2D>();
-
-    private PDRectangle pageSize;
     
     /**
      * Default constructor, loads properties from file.
@@ -168,8 +166,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         graphics.scale(1, -1);
         // TODO use getStroke() to set the initial stroke
         graphics.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
-
-        this.pageSize = pageSize;
 
         // Only if there is some content, we have to process it.
         // Otherwise we are done here and we will produce an empty page
@@ -292,7 +288,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                                   Matrix matrix, PDColorSpace colorSpace, PDColor color)
                                   throws IOException
     {
-        pageSize = pageDimension;
         graphics = g;
         setRenderingHints();
 
@@ -576,8 +571,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         PDGraphicsState graphicsState = getGraphicsState();
         return applySoftMaskToPaint(graphicsState.getStrokingColorSpace()
                 .toPaint(renderer, graphicsState.getStrokingColor(),
-                        getSubStreamMatrix(), xform,
-                        (int) pageSize.getHeight()),
+                         getSubStreamMatrix(), xform),
                 graphicsState.getSoftMask());
     }
 
@@ -586,8 +580,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     {
         return getGraphicsState().getNonStrokingColorSpace()
                 .toPaint(renderer, getGraphicsState().getNonStrokingColor(),
-                        getSubStreamMatrix(), xform,
-                        (int) pageSize.getHeight());
+                         getSubStreamMatrix(), xform);
     }
 
     // create a new stroke based on the current CTM and the current stroke
@@ -740,9 +733,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             PDColorSpace colorSpace = getGraphicsState().getNonStrokingColorSpace();
             PDColor color = getGraphicsState().getNonStrokingColor();
             BufferedImage image = pdImage.getStencilImage(
-                    colorSpace.toPaint(renderer, color,
-                            getSubStreamMatrix(), xform,
-                            (int) pageSize.getHeight()));
+                    colorSpace.toPaint(renderer, color, getSubStreamMatrix(), xform));
 
             // draw the image
             drawBufferedImage(image, at);

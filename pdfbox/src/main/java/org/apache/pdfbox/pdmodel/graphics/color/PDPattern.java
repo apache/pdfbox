@@ -105,9 +105,8 @@ public final class PDPattern extends PDSpecialColorSpace
     }
 
     @Override
-    public Paint toPaint(PDFRenderer renderer, PDColor color, 
-            Matrix substreamMatrix, AffineTransform xform, 
-            int pageHeight) throws IOException
+    public Paint toPaint(PDFRenderer renderer, PDColor color, Matrix substreamMatrix,
+                         AffineTransform xform) throws IOException
     {
         PDAbstractPattern pattern = getPattern(color);
         if (pattern instanceof PDTilingPattern)
