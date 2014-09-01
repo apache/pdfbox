@@ -239,18 +239,15 @@ public abstract class PDColorSpace implements COSObjectable
 
     /**
      * Returns the AWT paint which corresponds to the given color value in this color space
-     * and the height of the current page.
-     * This is for use with pattern color spaces
+     * and the height of the current page. This is for use with pattern color spaces.
      * @param color the color value
      * @param subStreamMatrix the substream matrix
      * @param xform the graphics transform
-     * @param pageHeight the height of the current page, used by pattern color spaces
      * @return an AWT paint
      * @throws IOException if the color conversion fails
      */
-    public Paint toPaint(PDFRenderer renderer, PDColor color, 
-            Matrix subStreamMatrix, AffineTransform xform, 
-            int pageHeight) throws IOException
+    public Paint toPaint(PDFRenderer renderer, PDColor color, Matrix subStreamMatrix,
+                         AffineTransform xform) throws IOException
     {
         float[] rgb = toRGB(color.getComponents());
         return new Color(rgb[0], rgb[1], rgb[2]);
@@ -261,5 +258,4 @@ public abstract class PDColorSpace implements COSObjectable
     {
         return array;
     }
-
 }
