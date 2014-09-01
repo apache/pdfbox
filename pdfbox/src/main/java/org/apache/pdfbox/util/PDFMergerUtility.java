@@ -18,6 +18,7 @@ package org.apache.pdfbox.util;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -120,34 +121,24 @@ public class PDFMergerUtility
      * Add a source file to the list of files to merge.
      *
      * @param source Full path and file name of source document.
+     * 
+     * @throws FileNotFoundException If the file doesn't exist
      */
-    public void addSource(String source)
+    public void addSource(String source) throws FileNotFoundException
     {
-        try
-        {
-            sources.add(new FileInputStream(new File(source)));
-        }
-        catch (Exception e)
-        {
-            throw new RuntimeException(e);
-        }
+        sources.add(new FileInputStream(new File(source)));
     }
 
     /**
      * Add a source file to the list of files to merge.
      *
      * @param source File representing source document
+     * 
+     * @throws FileNotFoundException If the file doesn't exist
      */
-    public void addSource(File source)
+    public void addSource(File source) throws FileNotFoundException
     {
-        try
-        {
-            sources.add(new FileInputStream(source));
-        }
-        catch (Exception e)
-        {
-            throw new RuntimeException(e);
-        }
+        sources.add(new FileInputStream(source));
     }
 
     /**
@@ -313,10 +304,6 @@ public class PDFMergerUtility
             {
                 throw new IOException(e);
             }
-        }
-        catch (Exception e)
-        {
-            throw new RuntimeException(e);
         }
 
         COSArray destThreads = (COSArray) destCatalog.getCOSDictionary().getDictionaryObject(COSName.THREADS);
