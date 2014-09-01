@@ -365,7 +365,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             // all other fonts use vectors
             Glyph2D glyph2D = createGlyph2D(font);
-            drawGlyph2D(glyph2D, code, at);
+            drawGlyph2D(glyph2D, font, code, displacement, at);
         }
     }
 
@@ -373,11 +373,14 @@ public class PageDrawer extends PDFGraphicsStreamEngine
      * Render the font using the Glyph2D interface.
      * 
      * @param glyph2D the Glyph2D implementation provided a GeneralPath for each glyph
+     * @param font the font
      * @param code character code
+     * @param displacement the glyph's displacement (advance)
      * @param at the transformation
      * @throws IOException if something went wrong
      */
-    private void drawGlyph2D(Glyph2D glyph2D, int code, AffineTransform at) throws IOException
+    private void drawGlyph2D(Glyph2D glyph2D, PDFont font, int code, Vector displacement,
+                             AffineTransform at) throws IOException
     {
         PDGraphicsState state = getGraphicsState();
         RenderingMode renderingMode = state.getTextState().getRenderingMode();
@@ -385,6 +388,19 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         GeneralPath path = glyph2D.getPathForCharacterCode(code);
         if (path != null)
         {
+            // stretch non-embedded glyph if it does not match the width contained in the PDF
+            if (!font.isEmbedded())
+            {
+                float fontWidth = font.getWidthFromFont(code);
+                if (fontWidth > 0 && // ignore spaces
+                        Math.abs(fontWidth - displacement.getX() * 1000) > 0.0001)
+                {
+                    float pdfWidth = displacement.getX() * 1000;
+                    at.scale(pdfWidth / fontWidth, 1);
+                }
+            }
+
+            // render glyph
             Shape glyph = at.createTransformedShape(path);
 
             if (renderingMode.isFill())

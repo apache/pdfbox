@@ -106,7 +106,7 @@ public class PDType3Font extends PDSimpleFont
     }
 
     @Override
-    protected float getWidthFromFont(int code)
+    public float getWidthFromFont(int code)
     {
        // todo: could these be extracted from the font's stream?
        throw new UnsupportedOperationException("not suppported");

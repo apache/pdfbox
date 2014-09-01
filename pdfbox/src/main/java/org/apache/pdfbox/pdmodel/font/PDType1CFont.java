@@ -182,10 +182,10 @@ public class PDType1CFont extends PDSimpleFont implements PDType1Equivalent
     }
 
     @Override
-    protected float getWidthFromFont(int code) throws IOException
+    public float getWidthFromFont(int code) throws IOException
     {
         String name = codeToName(code);
-        int width = cffFont.getType1CharString(name).getWidth();
+        float width = type1Equivalent.getWidth(name);
 
         Point2D p = new Point2D.Float(width, 0);
         fontMatrixTransform.transform(p, p);
