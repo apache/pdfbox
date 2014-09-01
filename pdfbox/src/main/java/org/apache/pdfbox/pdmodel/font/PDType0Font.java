@@ -226,7 +226,7 @@ public class PDType0Font extends PDFont
     }
 
     @Override
-    protected float getWidthFromFont(int code) throws IOException
+    public float getWidthFromFont(int code) throws IOException
     {
         return descendantFont.getWidthFromFont(code);
     }

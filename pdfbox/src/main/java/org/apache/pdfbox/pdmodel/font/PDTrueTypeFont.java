@@ -174,7 +174,7 @@ public class PDTrueTypeFont extends PDSimpleFont
     }
 
     @Override
-    protected float getWidthFromFont(int code) throws IOException
+    public float getWidthFromFont(int code) throws IOException
     {
         int gid = codeToGID(code);
         float width = ttf.getAdvanceWidth(gid);

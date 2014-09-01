@@ -225,7 +225,7 @@ public abstract class PDFont implements COSObjectable
      * @return width in glyph space
      * @throws IOException if the font could not be read
      */
-    protected abstract float getWidthFromFont(int code) throws IOException;
+    public abstract float getWidthFromFont(int code) throws IOException;
 
     /**
      * Returns true if the font file is embedded in the PDF.

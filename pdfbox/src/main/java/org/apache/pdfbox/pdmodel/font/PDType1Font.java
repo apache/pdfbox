@@ -285,7 +285,7 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
     }
 
     @Override
-    protected float getWidthFromFont(int code) throws IOException
+    public float getWidthFromFont(int code) throws IOException
     {
         String name = codeToName(code);
         if (afm != null)
