@@ -114,17 +114,14 @@ public final class PDPattern extends PDSpecialColorSpace
             PDTilingPattern tilingPattern = (PDTilingPattern) pattern;
                         
             Matrix patternMatrix = tilingPattern.getMatrix();
-            Matrix substreamMatrixClone = substreamMatrix.clone();
-            substreamMatrixClone.setValue(2, 0, 0);
-            substreamMatrixClone.setValue(2, 1, 0);
             Matrix matrix;
             if (patternMatrix == null)
             {
-                matrix = substreamMatrixClone;
+                matrix = substreamMatrix;
             }
             else
             {
-                matrix = patternMatrix.multiply(substreamMatrixClone);
+                matrix = patternMatrix.multiply(substreamMatrix);
             }
             
             if (tilingPattern.getPaintType() == PDTilingPattern.PAINT_COLORED)
