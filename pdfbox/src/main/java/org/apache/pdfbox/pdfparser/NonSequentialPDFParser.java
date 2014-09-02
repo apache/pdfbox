@@ -1564,11 +1564,18 @@ public class NonSequentialPDFParser extends PDFParser
                 readUntilEndStream(new EndstreamOutputStream(out));
             }
             String endStream = readString();
-            if (!endStream.equals("endstream"))
+            if (endStream.equals("endobj") && isLenient)
+            {
+                LOG.warn("stream ends with 'endobj' instead of 'endstream' at offset "
+                        + pdfSource.getOffset());
+                // avoid follow-up warning about missing endobj
+                pdfSource.unread("endobj".getBytes("ISO-8859-1"));
+            }
+            else if (!endStream.equals("endstream"))
             {
                 throw new IOException(
-                        "Error reading stream using length value. Expected='endstream' actual='"
-                                + endStream + "' at offset " + pdfSource.getOffset());
+                        "Error reading stream, expected='endstream' actual='"
+                        + endStream + "' at offset " + pdfSource.getOffset());
             }
         }
         finally
