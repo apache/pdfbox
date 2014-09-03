@@ -18,12 +18,13 @@ package org.apache.pdfbox.pdmodel.font;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.cff.CFFCIDFont;
 import org.apache.fontbox.cff.CFFFont;
 import org.apache.fontbox.cff.CFFParser;
@@ -31,6 +32,7 @@ import org.apache.fontbox.cff.CFFType1Font;
 import org.apache.fontbox.cff.Type2CharString;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.util.Matrix;
@@ -43,6 +45,8 @@ import org.apache.pdfbox.util.Matrix;
  */
 public class PDCIDFontType0 extends PDCIDFont
 {
+    private static final Log LOG = LogFactory.getLog(PDCIDFontType0.class);
+
     private final CFFCIDFont cidFont;  // Top DICT that uses CIDFont operators
     private final CFFType1Font t1Font; // Top DICT that does not use CIDFont operators
 
@@ -93,13 +97,42 @@ public class PDCIDFontType0 extends PDCIDFont
         else
         {
             // substitute
-            cidFont = ExternalFonts.getCFFCIDFont(getBaseFont());
-            t1Font = null;
-
-            if (cidFont == null)
+            CFFCIDFont cidSub = ExternalFonts.getCFFCIDFont(getBaseFont());
+            if (cidSub != null)
             {
-                // todo: log message + substitute? But what would we substitute with?
-                throw new UnsupportedOperationException("not implemented: missing CFF");
+                cidFont = cidSub;
+                t1Font = null;
+            }
+            else
+            {
+                COSDictionary cidSystemInfo = (COSDictionary)
+                        dict.getDictionaryObject(COSName.CIDSYSTEMINFO);
+
+                String registryOrdering = null;
+                if (cidSystemInfo != null)
+                {
+                    String registry = cidSystemInfo.getNameAsString(COSName.REGISTRY);
+                    String ordering = cidSystemInfo.getNameAsString(COSName.ORDERING);
+                    if (registry != null && ordering != null)
+                    {
+                        registryOrdering = registry + "-" + ordering;
+                    }
+                }
+
+                cidSub = ExternalFonts.getCFFCIDFontFallback(registryOrdering, getFontDescriptor());
+                cidFont = cidSub;
+                t1Font = null;
+
+                if (cidSub.getName().equals("AdobeBlank"))
+                {
+                    // this error often indicates that the user needs to install the Adobe Reader
+                    // Asian and Extended Language Pack
+                    LOG.error("Missing CID-keyed font " + getBaseFont());
+                }
+                else
+                {
+                    LOG.warn("Using fallback for CID-keyed font " + getBaseFont());
+                }
             }
             isEmbedded = false;
         }
@@ -142,7 +175,8 @@ public class PDCIDFontType0 extends PDCIDFont
         if (cidFont != null)
         {
             return cidFont.getFontBBox();
-        } else
+        }
+        else
         {
             return t1Font.getFontBBox();
         }
