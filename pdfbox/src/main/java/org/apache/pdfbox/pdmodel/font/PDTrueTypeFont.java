@@ -335,14 +335,4 @@ public class PDTrueTypeFont extends PDSimpleFont
         }
         cmapInitialized = true;
     }
-
-    @Override
-    public void clear()
-    {
-        super.clear();
-        cmapWinUnicode = null;
-        cmapWinSymbol = null;
-        cmapMacRoman = null;
-        cmapInitialized = false;
-    }
 }

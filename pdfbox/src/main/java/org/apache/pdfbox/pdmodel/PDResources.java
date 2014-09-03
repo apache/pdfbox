@@ -105,59 +105,15 @@ public class PDResources implements COSObjectable
      */
     public void clearCache()
     {
-        if (fonts != null)
-        {
-            for(PDFont font : fonts.values())
-            {
-                font.clear();
-            }
-            fonts.clear();
-            fonts = null;
-        }
-        if (fontMappings != null)
-        {
-            fontMappings.clear();
-            fontMappings = null;
-        }
-        if (colorspaces != null)
-        {
-            colorspaces.clear();
-            colorspaces = null;
-        }
-        if (xobjects != null)
-        {
-            for(PDXObject xobject : xobjects.values())
-            {
-                xobject.clearCache();
-            }
-            xobjects.clear();
-            xobjects = null;
-        }
-        if (xobjectMappings != null)
-        {
-            xobjectMappings.clear();
-            xobjectMappings = null;
-        }
-        if (images != null)
-        {
-            images.clear();
-            images = null;
-        }
-        if (graphicsStates != null)
-        {
-            graphicsStates.clear();
-            graphicsStates = null;
-        }
-        if (patterns != null)
-        {
-            patterns.clear();
-            patterns = null;
-        }
-        if (shadings != null)
-        {
-            shadings.clear();
-            shadings = null;
-        }
+        fonts = null;
+        fontMappings = null;
+        colorspaces = null;
+        xobjects = null;
+        xobjectMappings = null;
+        images = null;
+        graphicsStates = null;
+        patterns = null;
+        shadings = null;
     }
 
     /**

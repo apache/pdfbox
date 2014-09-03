@@ -41,8 +41,7 @@ public class PDType0Font extends PDFont
 {
     private static final Log LOG = LogFactory.getLog(PDType0Font.class);
 
-    private PDCIDFont descendantFont;
-    private COSDictionary descendantFontDictionary;
+    private final PDCIDFont descendantFont;
     private CMap cMap, cMapUCS2;
     private boolean isCMapPredefined;
 
@@ -55,7 +54,7 @@ public class PDType0Font extends PDFont
     {
         super(fontDictionary);
         COSArray descendantFonts = (COSArray)dict.getDictionaryObject(COSName.DESCENDANT_FONTS);
-        descendantFontDictionary = (COSDictionary)descendantFonts.getObject(0);
+        COSDictionary descendantFontDictionary = (COSDictionary) descendantFonts.getObject(0);
 
         if (descendantFontDictionary == null)
         {
@@ -304,18 +303,6 @@ public class PDType0Font extends PDFont
     public int codeToGID(int code) throws IOException
     {
         return descendantFont.codeToGID(code);
-    }
-
-    @Override
-    public void clear()
-    {
-        super.clear();
-        if (descendantFont != null)
-        {
-            descendantFont.clear();
-            descendantFont = null;
-        }
-        descendantFontDictionary = null;
     }
 
     @Override

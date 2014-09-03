@@ -251,16 +251,4 @@ public class PDType3Font extends PDSimpleFont
         }
         return stream;
     }
-
-    @Override
-    public void clear()
-    {
-        super.clear();
-        charProcs = null;
-        if (type3Resources != null)
-        {
-            type3Resources.clearCache();
-            type3Resources = null;
-        }
-    }
 }

@@ -242,7 +242,6 @@ public class ExtractImages
 
                     System.out.println( "Writing image:" + name );
                     write2file( image, name, directJPEG );
-                    image.clearCache();
                 }
                 // maybe there are more images embedded in a form object
                 else if (xobject instanceof PDFormXObject)

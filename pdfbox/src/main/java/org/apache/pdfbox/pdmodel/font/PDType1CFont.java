@@ -51,11 +51,11 @@ public class PDType1CFont extends PDSimpleFont implements PDType1Equivalent
 {
     private static final Log LOG = LogFactory.getLog(PDType1CFont.class);
 
-    private Map<String, Float> glyphHeights = new HashMap<String, Float>();
+    private final Map<String, Float> glyphHeights = new HashMap<String, Float>();
     private Float avgWidth = null;
-    private PDRectangle fontBBox = null;
+    private final PDRectangle fontBBox = null;
     private Matrix fontMatrix;
-    private AffineTransform fontMatrixTransform;
+    private final AffineTransform fontMatrixTransform;
 
     private final CFFType1Font cffFont; // embedded font
     private final Type1Equivalent type1Equivalent; // embedded or system font for rendering
@@ -249,17 +249,5 @@ public class PDType1CFont extends PDSimpleFont implements PDType1Equivalent
     {
         // todo: not implemented, highly suspect
         return 500;
-    }
-
-    @Override
-    public void clear()
-    {
-        super.clear();
-        fontBBox = null;
-        if (glyphHeights != null)
-        {
-            glyphHeights.clear();
-            glyphHeights = null;
-        }
     }
 }

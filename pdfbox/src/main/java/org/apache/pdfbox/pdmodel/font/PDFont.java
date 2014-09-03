@@ -499,13 +499,6 @@ public abstract class PDFont implements COSObjectable
      */
     public abstract boolean isVertical();
 
-    /**
-     * Calling this will release all cached information.
-     */
-    public void clear()
-    {
-    }
-
     @Override
     public boolean equals(Object other)
     {
