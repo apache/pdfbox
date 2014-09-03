@@ -128,11 +128,4 @@ public class PDXObject implements COSObjectable
     {
         return stream;
     }
-    
-    /**
-     * Calling this will release all cached information.
-     */
-    public void clearCache()
-    {
-    }
 }
