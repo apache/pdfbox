@@ -63,6 +63,7 @@ public abstract class PDColorSpace implements COSObjectable
      * @param colorSpaces the ColorSpace dictionary from the current resources, if any
      * @param patterns The Pattern dictionary from the current resources, if any
      * @return a new color space
+     * @throws MissingException if the color space is missing from the resources dictionary
      * @throws IOException if the color space is unknown or cannot be created
      */
     public static PDColorSpace create(COSBase colorSpace,
@@ -101,8 +102,7 @@ public abstract class PDColorSpace implements COSObjectable
             }
             else
             {
-                throw new IOException("The color space '" + name + "' does not exist in the " +
-                                      "current page's resources");
+                throw new MissingException("Missing color space: " + name.getName());
             }
         }
         else if (colorSpace instanceof COSArray)
@@ -257,5 +257,13 @@ public abstract class PDColorSpace implements COSObjectable
     public COSBase getCOSObject()
     {
         return array;
+    }
+
+    public static class MissingException extends IOException
+    {
+        private MissingException(String message)
+        {
+            super(message);
+        }
     }
 }
