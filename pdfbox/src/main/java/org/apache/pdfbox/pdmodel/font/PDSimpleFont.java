@@ -114,7 +114,16 @@ public abstract class PDSimpleFont extends PDFont
                 {
                     symbolic = builtIn != null;
                 }
-                this.encoding = new DictionaryEncoding(encodingDict, !symbolic, builtIn);
+
+                if (builtIn == null && !encodingDict.containsKey(COSName.BASE_ENCODING) && symbolic)
+                {
+                    // TTF built-in encoding is handled by PDTrueTypeFont#codeToGID
+                    this.encoding = null;
+                }
+                else
+                {
+                    this.encoding = new DictionaryEncoding(encodingDict, !symbolic, builtIn);
+                }
             }
         }
         else

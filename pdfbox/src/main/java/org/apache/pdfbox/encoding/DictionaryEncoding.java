@@ -77,9 +77,12 @@ public class DictionaryEncoding extends Encoding
         }
         else
         {
-            // and for a symbolic font, it is the font's built-in encoding."
-            baseEncoding = builtIn;
-            if (builtIn == null)
+            // and for a symbolic font, it is the font's built-in encoding.
+            if (builtIn != null)
+            {
+                baseEncoding = builtIn;
+            }
+            else
             {
                 throw new IllegalArgumentException("Built-in Encoding required for symbolic font");
             }
