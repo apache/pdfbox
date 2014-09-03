@@ -233,12 +233,12 @@ public abstract class PDSimpleFont extends PDFont
             if (name != null)
             {
                 LOG.warn("No Unicode mapping for " + name + " (" + code + ") in font " +
-                        getBaseFont());
+                        getName());
             }
             else
             {
                 LOG.warn("No Unicode mapping for character code " + code + " in font " +
-                        getBaseFont());
+                        getName());
             }
         }
 

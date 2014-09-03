@@ -29,11 +29,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.cff.CFFCIDFont;
 import org.apache.fontbox.cff.CFFFont;
+import org.apache.fontbox.cff.CFFParser;
 import org.apache.fontbox.cff.CFFType1Font;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.Type1Equivalent;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.type1.Type1Font;
+import org.apache.pdfbox.io.IOUtils;
 
 /**
  * External font service, locates non-embedded fonts via a pluggable FontProvider.
@@ -53,20 +55,33 @@ public final class ExternalFonts
     private static final Log log = LogFactory.getLog(ExternalFonts.class);
     private static FontProvider fontProvider;
 
-    /** TTF fallback font, used as as a last resort */
+    /** fallback fonts, used as as a last resort */
     private static TrueTypeFont ttfFallbackFont;
+    private static CFFCIDFont cidFallbackFont;
     static
     {
         try
         {
-            String name = "org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf";
-            TTFParser ttfParser = new TTFParser();
-            InputStream fontStream = org.apache.fontbox.util.ResourceLoader.loadResource(name);
-            if (fontStream == null)
+            // ttf
+            String ttfName = "org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf";
+            InputStream ttfStream = org.apache.fontbox.util.ResourceLoader.loadResource(ttfName);
+            if (ttfStream == null)
             {
-                throw new IOException("Error loading resource: " + name);
+                throw new IOException("Error loading resource: " + ttfName);
             }
-            ttfFallbackFont = ttfParser.parseTTF(fontStream);
+            TTFParser ttfParser = new TTFParser();
+            ttfFallbackFont = ttfParser.parseTTF(ttfStream);
+
+            // cff
+            String cffName = "org/apache/pdfbox/resources/otf/AdobeBlank.otf";
+            InputStream cffStream = org.apache.fontbox.util.ResourceLoader.loadResource(cffName);
+            if (cffStream == null)
+            {
+                throw new IOException("Error loading resource: " + cffName);
+            }
+            byte[] bytes = IOUtils.toByteArray(cffStream);
+            CFFParser cffParser = new CFFParser();
+            cidFallbackFont = (CFFCIDFont)cffParser.parse(bytes).get(0);
         }
         catch (IOException e)
         {
@@ -136,8 +151,14 @@ public final class ExternalFonts
                 Arrays.asList("TimesNewRomanPS-BoldItalicMT", "TimesNewRomanPS-BoldItalic",
                              "TimesNewRoman-BoldItalic", "LiberationSerif-BoldItalic",
                              "NimbusRomNo9L-MediItal"));
-        substitutes.put("Symbol",Arrays.asList("SymbolMT", "StandardSymL"));
+        substitutes.put("Symbol", Arrays.asList("SymbolMT", "StandardSymL"));
         substitutes.put("ZapfDingbats", Arrays.asList("ZapfDingbatsITC", "Dingbats"));
+
+        // extra substitute mechanism for CJK CIDFonts when all we know is the ROS
+        substitutes.put("$Adobe-CNS1", Arrays.asList("AdobeMingStd-Light"));
+        substitutes.put("$Adobe-Japan1", Arrays.asList("KozMinPr6N-Regular"));
+        substitutes.put("$Adobe-Korea1", Arrays.asList("AdobeGothicStd-Bold"));
+        substitutes.put("$Adobe-GB1", Arrays.asList("AdobeHeitiStd-Regular"));
 
         // the Adobe Supplement to the ISO 32000 specifies some alternative names for some
         // of the standard 14 fonts, so we map these to our fallbacks above
@@ -193,6 +214,34 @@ public final class ExternalFonts
     private static String windowsToPs(String windowsName)
     {
         return windowsName.replace(",", "-");
+    }
+
+    /**
+     * Finds a CFF CID-Keyed font with the given PostScript name, or a suitable substitute, or null.
+     *
+     * @param registryOrdering the CID system registry and ordering e.g. "Adobe-Japan1", if any
+     * @param fontDescriptor the font descriptor, if any
+     */
+    public static CFFCIDFont getCFFCIDFontFallback(String registryOrdering,
+                                                   PDFontDescriptor fontDescriptor)
+    {
+        // try ROS substitutes
+        // todo: this is a fairly primitive mechanism and could be improved
+        if (registryOrdering != null)
+        {
+            for (String substituteName : getSubstitutes("$" + registryOrdering))
+            {
+                CFFFont cff = getProvider().getCFFFont(substituteName);
+                if (cff != null)
+                {
+                    if (cff instanceof CFFCIDFont)
+                    {
+                        return (CFFCIDFont)cff;
+                    }
+                }
+            }
+        }
+        return cidFallbackFont;
     }
 
     /**
@@ -414,6 +463,7 @@ public final class ExternalFonts
                     return cff;
                 }
             }
+
             // then Windows name
             cff = getProvider().getCFFFont(windowsToPs(postScriptName));
         }
