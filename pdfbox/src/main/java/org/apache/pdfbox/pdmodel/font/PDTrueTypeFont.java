@@ -138,7 +138,8 @@ public class PDTrueTypeFont extends PDSimpleFont
     @Override
     protected Encoding readEncodingFromFont() throws IOException
     {
-        // TTF fonts don't have PostScript Encoding vectors
+        // for symbolic fonts the (3, 0) (Windows, Symbol) cmap is the font's built-in encoding
+        // but this is handled by codeToGID
         return null;
     }
 
@@ -215,9 +216,9 @@ public class PDTrueTypeFont extends PDSimpleFont
         extractCmapTable();
         int gid = 0;
 
-        if (getEncoding() != null && !isSymbolic()) // non-symbolic
+        if (!isSymbolic()) // non-symbolic
         {
-            String name = getEncoding().getName(code);
+            String name = encoding.getName(code);
             if (name.equals(".notdef"))
             {
                 return 0;
