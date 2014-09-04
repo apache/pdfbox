@@ -53,6 +53,8 @@ public final class PDPattern extends PDSpecialColorSpace
 
     /**
      * Creates a new pattern color space.
+     * 
+     * @param patterns The pattern map.
      */
     public PDPattern(Map<String, PDAbstractPattern> patterns)
     {
@@ -61,6 +63,9 @@ public final class PDPattern extends PDSpecialColorSpace
 
     /**
      * Creates a new uncolored tiling pattern color space.
+     * 
+     * @param patterns The pattern map.
+     * @param colorSpace The underlying colorspace.
      */
     public PDPattern(Map<String, PDAbstractPattern> patterns, PDColorSpace colorSpace)
     {
@@ -143,7 +148,7 @@ public final class PDPattern extends PDSpecialColorSpace
             PDShading shading = shadingPattern.getShading();
             if (shading == null)
             {
-                LOG.error("shadingPattern ist null, will be filled with transparency");
+                LOG.error("shadingPattern is null, will be filled with transparency");
                 return new Color(0,0,0,0);
             }
             Matrix patternMatrix = shadingPattern.getMatrix();
@@ -157,8 +162,12 @@ public final class PDPattern extends PDSpecialColorSpace
 
     /**
      * Returns the pattern for the given color.
+     * 
      * @param color color containing a pattern name
+     * 
      * @return pattern for the given color
+     * 
+     * @throws java.io.IOException if the pattern name was not found.
      */
     public final PDAbstractPattern getPattern(PDColor color) throws IOException
     {
