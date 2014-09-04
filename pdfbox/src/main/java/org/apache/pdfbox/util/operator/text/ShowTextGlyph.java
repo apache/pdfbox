@@ -16,14 +16,11 @@
  */
 package org.apache.pdfbox.util.operator.text;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSNumber;
 import java.io.IOException;
-import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.util.operator.Operator;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
 
@@ -38,40 +35,6 @@ public class ShowTextGlyph extends OperatorProcessor
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
         COSArray array = (COSArray)arguments.get(0);
-
-        List<Float> adjustments = new ArrayList<Float>();
-        List<byte[]> strings = new ArrayList<byte[]>();
-        boolean lastWasString = false;
-
-        for(int i = 0, len = array.size(); i < len; i++)
-        {
-            COSBase next = array.get(i);
-            if (next instanceof COSNumber)
-            {
-                adjustments.add(((COSNumber)next).floatValue());
-                lastWasString = false;
-            }
-            else if(next instanceof COSString)
-            {
-                if (lastWasString)
-                {
-                    adjustments.add(0f); // adjustment for previous string
-                }
-                strings.add(((COSString)next).getBytes());
-                lastWasString = true;
-            }
-            else
-            {
-                throw new IOException("Unknown type in array for TJ operation:" + next);
-            }
-        }
-
-        // adjustment for final string
-        if (lastWasString)
-        {
-            adjustments.add(0f);
-        }
-
-        context.showAdjustedText(strings, adjustments);
+        context.showTextStrings(array);
     }
 }

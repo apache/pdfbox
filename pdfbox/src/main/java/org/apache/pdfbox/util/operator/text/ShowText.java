@@ -36,6 +36,6 @@ public class ShowText extends OperatorProcessor
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
         COSString string = (COSString)arguments.get( 0 );
-        context.showText(string.getBytes());
+        context.showTextString(string.getBytes());
     }
 }

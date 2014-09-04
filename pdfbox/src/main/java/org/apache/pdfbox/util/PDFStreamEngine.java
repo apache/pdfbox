@@ -35,9 +35,12 @@ import java.util.Stack;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -313,23 +316,56 @@ public class PDFStreamEngine
      * @param string the encoded text
      * @throws IOException if there was an error showing the text
      */
-    public void showText(byte[] string) throws IOException
+    public void showTextString(byte[] string) throws IOException
     {
-        showText(string, 0);
+        showText(string);
     }
 
     /**
      * Called when a string of text with spacing adjustments is to be shown.
      *
-     * @param strings list of the encoded text
-     * @param adjustments spacing adjustment for each string
+     * @param array array of encoded text strings and adjustments
      * @throws IOException if there was an error showing the text
      */
-    public void showAdjustedText(List<byte[]> strings, List<Float> adjustments) throws IOException
+    public void showTextStrings(COSArray array) throws IOException
     {
-        for (int i = 0, len = strings.size(); i < len; i++)
+        PDTextState textState = getGraphicsState().getTextState();
+        float fontSize = textState.getFontSize();
+        float horizontalScaling = textState.getHorizontalScaling() / 100f;
+        float charSpacing = textState.getCharacterSpacing();
+        boolean isVertical = textState.getFont().isVertical();
+
+        for (COSBase obj : array)
         {
-            showText(strings.get(i), adjustments.get(i));
+            if (obj instanceof COSNumber)
+            {
+                float tj = ((COSNumber)obj).floatValue();
+
+                // calculate the combined displacements
+                float tx, ty;
+                if (isVertical)
+                {
+                    tx = 0;
+                    ty = -tj / 1000 * fontSize + charSpacing;
+                }
+                else
+                {
+                    tx = (-tj / 1000 * fontSize + charSpacing) * horizontalScaling;
+                    ty = 0;
+                }
+
+                // update the text matrix
+                textMatrix.concatenate(Matrix.getTranslatingInstance(tx, ty));
+            }
+            else if(obj instanceof COSString)
+            {
+                byte[] string = ((COSString)obj).getBytes();
+                showText(string);
+            }
+            else
+            {
+                throw new IOException("Unknown type in array for TJ operation:" + obj);
+            }
         }
     }
 
@@ -338,10 +374,9 @@ public class PDFStreamEngine
      * perform an action when encoded text is being processed.
      *
      * @param string the encoded text
-     * @param adjustment a position adjustment from a TJ array to be applied after the glyph
      * @throws IOException if there is an error processing the string
      */
-    protected void showText(byte[] string, float adjustment) throws IOException
+    protected void showText(byte[] string) throws IOException
     {
         PDGraphicsState state = getGraphicsState();
         PDTextState textState = state.getTextState();
@@ -378,12 +413,9 @@ public class PDFStreamEngine
             // 32 in a string when using a simple font or a composite font that defines code 32 as
             // a single-byte code.
             float wordSpacing = 0;
-            if (codeLength == 1)
+            if (codeLength == 1 && code == 32)
             {
-                if (code == 32)
-                {
-                    wordSpacing += textState.getWordSpacing();
-                }
+                wordSpacing += textState.getWordSpacing();
             }
 
             // text rendering matrix (text space -> device space)
@@ -407,24 +439,16 @@ public class PDFStreamEngine
             // process the decoded glyph
             showGlyph(textRenderingMatrix, font, code, unicode, w);
 
-            // TJ adjustment after final glyph
-            float tj = 0;
-            if (in.available() == 0)
-            {
-                tj = adjustment;
-            }
-
             // calculate the combined displacements
             float tx, ty;
             if (font.isVertical())
             {
                 tx = 0;
-                ty = (w.getY() - tj / 1000) * fontSize + charSpacing + wordSpacing;
+                ty = w.getY() * fontSize + charSpacing + wordSpacing;
             }
             else
             {
-                tx = ((w.getX() - tj / 1000) * fontSize + charSpacing + wordSpacing) *
-                        horizontalScaling;
+                tx = (w.getX() * fontSize + charSpacing + wordSpacing) * horizontalScaling;
                 ty = 0;
             }
 
