@@ -419,8 +419,8 @@ public class TrueTypeFont implements Type1Equivalent
     {
         readPostScriptNames();
 
-        Integer gid = postScriptNames.get(name);
-        if (gid == null || gid < 0 || gid >= getMaximumProfile().getNumGlyphs())
+        int gid = nameToGID(name);
+        if (gid < 0 || gid >= getMaximumProfile().getNumGlyphs())
         {
             gid = 0;
         }
@@ -449,20 +449,15 @@ public class TrueTypeFont implements Type1Equivalent
     {
         readPostScriptNames();
 
-        Integer gid = postScriptNames.get(name);
+        Integer gid = nameToGID(name);
 
-        if (gid != null)
+        int width = getAdvanceWidth(gid);
+        int unitsPerEM = getUnitsPerEm();
+        if (unitsPerEM != 1000)
         {
-            int width = getAdvanceWidth(gid);
-            int unitsPerEM = getUnitsPerEm();
-            if (unitsPerEM != 1000)
-            {
-                width *= 1000f / unitsPerEM;
-            }
-            return width;
+            width *= 1000f / unitsPerEM;
         }
-
-        throw new IOException(name + " is not in the 'post' table");
+        return width;
     }
 
     @Override
