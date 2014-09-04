@@ -138,12 +138,6 @@ public class PDType1CFont extends PDSimpleFont implements PDType1Equivalent
     }
 
     @Override
-    public boolean hasGlyph(String name) throws IOException
-    {
-        return type1Equivalent.hasGlyph(name);
-    }
-
-    @Override
     public String codeToName(int code)
     {
         return getEncoding().getName(code);

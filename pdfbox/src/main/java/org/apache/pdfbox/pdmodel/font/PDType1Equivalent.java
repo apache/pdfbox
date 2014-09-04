@@ -33,17 +33,12 @@ public interface PDType1Equivalent
     public String getName();
 
     /**
-     * Returns true if the font contains a glyph with the given name.
-     */
-    public boolean hasGlyph(String name) throws IOException;
-
-    /**
      * Returns the glyph name for the given character code.
      *
      * @param code character code
      * @return PostScript glyph name
      */
-    public String codeToName(int code);
+    public String codeToName(int code) throws IOException;
 
     /**
      * Returns the glyph path for the given character code.

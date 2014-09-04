@@ -34,6 +34,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.encoding.Encoding;
+import org.apache.pdfbox.encoding.GlyphList;
 import org.apache.pdfbox.encoding.StandardEncoding;
 import org.apache.pdfbox.encoding.Type1Encoding;
 import org.apache.pdfbox.encoding.WinAnsiEncoding;
@@ -98,6 +99,33 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
         {
             LOG.error("Something went wrong when reading the adobe afm files", e);
         }
+    }
+
+    // alternative names for glyphs which are commonly encountered
+    private static final Map<String, String> ALT_NAMES = new HashMap<String, String>();
+    static
+    {
+        ALT_NAMES.put("ff", "f_f");
+        ALT_NAMES.put("ffi", "f_f_i");
+        ALT_NAMES.put("ffl", "f_f_l");
+        ALT_NAMES.put("fi", "f_i");
+        ALT_NAMES.put("fl", "f_l");
+        ALT_NAMES.put("st", "s_t");
+        ALT_NAMES.put("IJ", "I_J");
+        ALT_NAMES.put("ij", "i_j");
+        ALT_NAMES.put("ellipsis", "elipsis"); // misspelled in ArialMT
+    }
+
+    // unicode names for ligatures, needed to undo mapping in org.apache.pdfbox.Encoding
+    private static final Map<String, String> LIGATURE_UNI_NAMES = new HashMap<String, String>();
+    static
+    {
+        LIGATURE_UNI_NAMES.put("ff", "uniFB00");
+        LIGATURE_UNI_NAMES.put("fi", "uniFB01");
+        LIGATURE_UNI_NAMES.put("fl", "uniFB02");
+        LIGATURE_UNI_NAMES.put("ffi", "uniFB03");
+        LIGATURE_UNI_NAMES.put("ffl", "uniFB04");
+        LIGATURE_UNI_NAMES.put("pi", "uni03C0");
     }
 
     // todo: replace with enum? or getters?
@@ -273,7 +301,7 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
     @Override
     public float getHeight(int code) throws IOException
     {
-        String name = getEncoding().getName(code);
+        String name = codeToName(code);
         if (afm != null)
         {
             return afm.getCharacterHeight(name); // todo: isn't this the y-advance, not the height?
@@ -377,23 +405,46 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
     }
 
     @Override
-    public boolean hasGlyph(String name) throws IOException
-    {
-        return type1Equivalent.hasGlyph(name);
-    }
-
-    @Override
-    public String codeToName(int code)
+    public String codeToName(int code) throws IOException
     {
         String name = getEncoding().getName(code);
-        if (name != null)
+        if (isEmbedded() || type1Equivalent.hasGlyph(name))
         {
             return name;
         }
         else
         {
-            return ".notdef";
+            // try alternative name
+            String altName = ALT_NAMES.get(name);
+            if (altName != null && !name.equals(".notdef") && type1Equivalent.hasGlyph(altName))
+            {
+                return altName;
+            }
+            else
+            {
+                // try unicode name
+                String unicodes = GlyphList.toUnicode(name);
+                if (unicodes != null)
+                {
+                    if (unicodes.length() == 1)
+                    {
+                        String uniName = String.format("uni%04X", unicodes.codePointAt(0));
+                        if (type1Equivalent.hasGlyph(uniName))
+                        {
+                            return uniName;
+                        }
+                    }
+                    else if (unicodes.length() > 1)
+                    {
+                        if (LIGATURE_UNI_NAMES.containsKey(name))
+                        {
+                           return LIGATURE_UNI_NAMES.get(name);
+                        }
+                    }
+                }
+            }
         }
+        return ".notdef";
     }
 
     @Override

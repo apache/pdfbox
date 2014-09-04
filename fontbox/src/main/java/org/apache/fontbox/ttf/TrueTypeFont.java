@@ -450,13 +450,19 @@ public class TrueTypeFont implements Type1Equivalent
         readPostScriptNames();
 
         Integer gid = postScriptNames.get(name);
-        int width = getAdvanceWidth(gid);
-        int unitsPerEM = getUnitsPerEm();
-        if (unitsPerEM != 1000)
+
+        if (gid != null)
         {
-            width *= 1000f / unitsPerEM;
+            int width = getAdvanceWidth(gid);
+            int unitsPerEM = getUnitsPerEm();
+            if (unitsPerEM != 1000)
+            {
+                width *= 1000f / unitsPerEM;
+            }
+            return width;
         }
-        return width;
+
+        throw new IOException(name + " is not in the 'post' table");
     }
 
     @Override
