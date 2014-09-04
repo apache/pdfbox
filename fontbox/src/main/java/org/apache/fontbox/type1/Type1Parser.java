@@ -680,6 +680,7 @@ final class Type1Parser
     private void readDef() throws IOException
     {
         readMaybe(Token.NAME, "readonly");
+        readMaybe(Token.NAME, "noaccess"); // allows "noaccess ND" (not in the Type 1 spec)
 
         Token token = read(Token.NAME);
         if (token.getText().equals("ND") || token.getText().equals("|-"))
