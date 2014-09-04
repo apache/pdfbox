@@ -141,7 +141,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     private void setRenderingHints()
     {
         graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                                  RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                                  RenderingHints.VALUE_INTERPOLATION_BICUBIC);
         graphics.setRenderingHint(RenderingHints.KEY_RENDERING,
                                   RenderingHints.VALUE_RENDER_QUALITY);
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
@@ -767,8 +767,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
             if (!pdImage.getInterpolate())
             {
-                graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                                          RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+                // JDK 1.7 has a bug where rendering hints are reset by the above call to
+                // the setRenderingHint method, so we re-set all hints, see PDFBOX-2302
+                setRenderingHints();
             }
         }
     }
