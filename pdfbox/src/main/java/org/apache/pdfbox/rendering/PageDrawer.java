@@ -328,7 +328,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     }
 
     @Override
-    protected void showText(byte[] string, float adjustment) throws IOException
+    protected void showText(byte[] string) throws IOException
     {
         PDGraphicsState state = getGraphicsState();
         RenderingMode renderingMode = state.getTextState().getRenderingMode();
@@ -339,7 +339,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             textClippingArea = new Area();
         }
 
-        super.showText(string, adjustment);
+        super.showText(string);
 
         // apply the buffered clip as one area
         if (renderingMode.isClip())
