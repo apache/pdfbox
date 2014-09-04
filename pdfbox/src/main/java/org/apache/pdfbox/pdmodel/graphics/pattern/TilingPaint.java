@@ -52,7 +52,13 @@ public class TilingPaint extends TexturePaint
     /**
      * Creates a new colored tiling Paint.
      *
+     * @param renderer renderer to render the page
      * @param pattern tiling pattern dictionary
+     * @param matrix initial substream transformation matrix
+     * @param xform initial graphics transform of the page
+     * 
+     * @throws java.io.IOException if something goes wrong while drawing the
+     * pattern
      */
     public TilingPaint(PDFRenderer renderer, PDTilingPattern pattern, Matrix matrix, AffineTransform xform) throws IOException
     {
@@ -62,9 +68,14 @@ public class TilingPaint extends TexturePaint
     /**
      * Creates a new uncolored tiling Paint.
      *
+     * @param renderer renderer to render the page
      * @param pattern tiling pattern dictionary
      * @param colorSpace color space for this tiling
      * @param color color for this tiling
+     * @param matrix initial substream transformation matrix
+     * @param xform initial graphics transform of the page
+     * 
+     * @throws java.io.IOException if something goes wrong while drawing the pattern
      */
     public TilingPaint(PDFRenderer renderer, PDTilingPattern pattern, PDColorSpace colorSpace,
             PDColor color, Matrix matrix, AffineTransform xform) throws IOException
