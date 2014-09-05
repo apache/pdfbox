@@ -132,4 +132,9 @@ public interface PDImage extends COSObjectable
      * Sets the Interpolate flag, true for high-quality image scaling.
      */
     public void setInterpolate(boolean value);
+
+    /**
+     * Returns the suffix for this image type, e.g. "jpg"
+     */
+    public String getSuffix();
 }

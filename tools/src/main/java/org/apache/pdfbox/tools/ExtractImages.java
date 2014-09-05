@@ -16,17 +16,15 @@
  */
 package org.apache.pdfbox.tools;
 
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
@@ -37,64 +35,60 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
-import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImage;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
-import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.graphics.image.TIFFInputStream;
 import org.apache.pdfbox.util.ImageIOUtil;
+import org.apache.pdfbox.util.PDFGraphicsStreamEngine;
 
 /**
- * This will read a read pdf and extract images. <br/><br/>
+ * Extracts the images from a PDF file.
  *
- * usage: java org.apache.pdfbox.tools.ExtractImages &lt;pdffile&gt; &lt;password&gt; [imageprefix]
+ * <p>usage: java org.apache.pdfbox.tools.ExtractImages &lt;pdffile&gt; &lt;password&gt; [imageprefix]
  *
- * @author  <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.7 $
+ * @author Ben Litchfield
  */
 public class ExtractImages
 {
-    private int imageCounter = 1;
-    private Set<COSStream> seen = new HashSet<COSStream>();
-
     private static final String PASSWORD = "-password";
     private static final String PREFIX = "-prefix";
-    private static final String ADDKEY = "-addkey";
     private static final String NONSEQ = "-nonSeq";
     private static final String DIRECTJPEG = "-directJPEG";
 
-    private static final List<String> DCT_FILTERS = new ArrayList<String>();
+    private static final List<String> JPEG = Arrays.asList(
+            COSName.DCT_DECODE.getName(),
+            COSName.DCT_DECODE_ABBREVIATION.getName());
 
-    static
-    {
-        DCT_FILTERS.add( COSName.DCT_DECODE.getName() );
-        DCT_FILTERS.add( COSName.DCT_DECODE_ABBREVIATION.getName() );
-    }
+    private boolean directJPEG;
+    private String prefix;
+
+    private Set<COSStream> seen = new HashSet<COSStream>();
+    private int imageCounter = 1;
 
     private ExtractImages()
     {
     }
 
     /**
-     * This is the entry point for the application.
+     * Entry point for the application.
      *
      * @param args The command-line arguments.
-     *
      * @throws Exception If there is an error decrypting the document.
      */
-    public static void main( String[] args ) throws Exception
+    public static void main(String[] args) throws Exception
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
         ExtractImages extractor = new ExtractImages();
-        extractor.extractImages( args );
+        extractor.run(args);
     }
 
-    private void extractImages( String[] args ) throws Exception
+    private void run(String[] args) throws Exception
     {
-        if( args.length < 1 || args.length > 4 )
+        if (args.length < 1 || args.length > 4)
         {
             usage();
         }
@@ -102,166 +96,230 @@ public class ExtractImages
         {
             String pdfFile = null;
             String password = "";
-            String prefix = null;
-            boolean addKey = false;
             boolean useNonSeqParser = false;
-            boolean directJPEG = false;
-            for( int i=0; i<args.length; i++ )
+            for(int i = 0; i < args.length; i++)
             {
-                if( args[i].equals( PASSWORD ) )
+                if (args[i].equals(PASSWORD))
                 {
                     i++;
-                    if( i >= args.length )
+                    if (i >= args.length)
                     {
                         usage();
                     }
                     password = args[i];
                 }
-                else if( args[i].equals( PREFIX ) )
+                else if (args[i].equals(PREFIX))
                 {
                     i++;
-                    if( i >= args.length )
+                    if (i >= args.length)
                     {
                         usage();
                     }
                     prefix = args[i];
                 }
-                else if( args[i].equals( ADDKEY ) )
-                {
-                    addKey = true;
-                }
-                else if( args[i].equals( NONSEQ ) )
+                else if (args[i].equals(NONSEQ))
                 {
                     useNonSeqParser = true;
                 }
-                else if( args[i].equals( DIRECTJPEG ) )
+                else if (args[i].equals(DIRECTJPEG))
                 {
                     directJPEG = true;
                 }
                 else
                 {
-                    if( pdfFile == null )
+                    if (pdfFile == null)
                     {
                         pdfFile = args[i];
                     }
                 }
             }
-            if(pdfFile == null)
+            if (pdfFile == null)
             {
                 usage();
             }
             else
             {
-                if( prefix == null && pdfFile.length() >4 )
+                if (prefix == null && pdfFile.length() >4)
                 {
-                    prefix = pdfFile.substring( 0, pdfFile.length() -4 );
+                    prefix = pdfFile.substring(0, pdfFile.length() -4);
                 }
 
-                PDDocument document = null;
-
-                try
-                {
-                    if (useNonSeqParser)
-                    {
-                        document = PDDocument.loadNonSeq(new File(pdfFile), null, password);
-                    }
-                    else
-                    {
-                        document = PDDocument.load( pdfFile );
-    
-                        if( document.isEncrypted() )
-                        {
-                            StandardDecryptionMaterial spm = new StandardDecryptionMaterial(password);
-                            document.openProtection(spm);
-                        }
-                    }
-                    AccessPermission ap = document.getCurrentAccessPermission();
-                    if( ! ap.canExtractContent() )
-                    {
-                        throw new IOException(
-                            "Error: You do not have permission to extract images." );
-                    }
-
-                    List pages = document.getDocumentCatalog().getAllPages();
-                    Iterator iter = pages.iterator();
-                    while( iter.hasNext() )
-                    {
-                        PDPage page = (PDPage)iter.next();
-                        PDResources resources = page.getResources();
-                        // extract all XObjectImages which are part of the page resources
-                        processResources(resources, prefix, addKey, directJPEG);
-                    }
-                }
-                finally
-                {
-                    if( document != null )
-                    {
-                        document.close();
-                    }
-                }
+                extract(pdfFile, password, useNonSeqParser);
             }
         }
     }
 
-    private void processResources(PDResources resources, String prefix, 
-            boolean addKey, boolean directJPEG) throws IOException
+    /**
+     * Print the usage requirements and exit.
+     */
+    private static void usage()
     {
-        if (resources == null)
+        System.err.println("Usage: java org.apache.pdfbox.tools.ExtractImages [OPTIONS] <PDF file>\n" +
+                "  -password  <password>        Password to decrypt document\n" +
+                "  -prefix  <image-prefix>      Image prefix(default to pdf name)\n" +
+                "  -nonSeq                      Enables the new non-sequential parser\n" +
+                "  -directJPEG                  Forces the direct extraction of JPEG images regardless of colorspace\n" +
+                "  <PDF file>                   The PDF document to use\n");
+        System.exit(1);
+    }
+
+    private void extract(String pdfFile, String password, boolean useNonSeq) throws IOException
+    {
+        PDDocument document = null;
+        try
         {
-            return;
-        }
-        Map<String, PDXObject> xobjects = resources.getXObjects();
-        if( xobjects != null )
-        {
-            Iterator<String> xobjectIter = xobjects.keySet().iterator();
-            while( xobjectIter.hasNext() )
+            if (useNonSeq)
             {
-                String key = xobjectIter.next();
-                PDXObject xobject = xobjects.get( key );
-                // write the images
-                if (xobject instanceof PDImageXObject)
-                {
-                    if (seen.contains(xobject.getCOSStream()))
-                    {
-                        // skip duplicate image
-                        continue;
-                    }
-                    seen.add(xobject.getCOSStream());
+                document = PDDocument.loadNonSeq(new File(pdfFile), null, password);
+            }
+            else
+            {
+                document = PDDocument.load(pdfFile);
 
-                    PDImageXObject image = (PDImageXObject)xobject;
-                    String name = null;
-                    if (addKey) 
-                    {
-                        name = prefix + "-" + imageCounter + "_" + key;
-                    }
-                    else 
-                    {
-                        name = prefix + "-" + imageCounter;
-                    }
-                    imageCounter++;
-
-                    System.out.println( "Writing image:" + name );
-                    write2file( image, name, directJPEG );
-                }
-                // maybe there are more images embedded in a form object
-                else if (xobject instanceof PDFormXObject)
+                if (document.isEncrypted())
                 {
-                    PDFormXObject xObjectForm = (PDFormXObject)xobject;
-                    PDResources formResources = xObjectForm.getResources();
-                    processResources(formResources, prefix, addKey, directJPEG);
+                    StandardDecryptionMaterial spm = new StandardDecryptionMaterial(password);
+                    document.openProtection(spm);
                 }
             }
+            AccessPermission ap = document.getCurrentAccessPermission();
+            if (! ap.canExtractContent())
+            {
+                throw new IOException("You do not have permission to extract images");
+            }
+
+            for (int i = 0; i < document.getNumberOfPages(); i++) // todo: ITERATOR would be much better
+            {
+                PDPage page = document.getPage(i);
+                ImageGraphicsEngine extractor = new ImageGraphicsEngine(page);
+                extractor.run();
+            }
         }
-        resources.clearCache();
+        finally
+        {
+            if (document != null)
+            {
+                document.close();
+            }
+        }
     }
-    
-    // get and write the unmodified JPEG stream
-    private void writeJpeg2OutputStream(PDImageXObject ximage, OutputStream out)
-            throws IOException
+
+    private class ImageGraphicsEngine extends PDFGraphicsStreamEngine
     {
-        InputStream data = ximage.getPDStream().getPartiallyFilteredStream(DCT_FILTERS);        
-        IOUtils.copy(data, out);
-        IOUtils.closeQuietly(data);
+        protected ImageGraphicsEngine(PDPage page) throws IOException
+        {
+            super(page);
+        }
+
+        public void run() throws IOException
+        {
+            PDPage page = getPage();
+            if (page.getContents() != null)
+            {
+                PDResources resources = page.findResources();
+                processStream(resources, page.getContents().getStream(), page.findCropBox());
+            }
+            else
+            {
+                initStream(page.findCropBox());
+            }
+        }
+
+        @Override
+        public void drawImage(PDImage pdImage) throws IOException
+        {
+            if (pdImage instanceof PDImageXObject)
+            {
+                PDImageXObject xobject = (PDImageXObject)pdImage;
+                if (seen.contains(xobject.getCOSStream()))
+                {
+                    // skip duplicate image
+                    return;
+                }
+                seen.add(xobject.getCOSStream());
+            }
+
+            // save image
+            String name = prefix + "-" + imageCounter;
+            imageCounter++;
+
+            System.out.println("Writing image: " + name);
+            write2file(pdImage, name, directJPEG);
+        }
+
+        @Override
+        public void appendRectangle(Point2D p0, Point2D p1, Point2D p2, Point2D p3)
+                throws IOException
+        {
+
+        }
+
+        @Override
+        public void clip(int windingRule) throws IOException
+        {
+
+        }
+
+        @Override
+        public void moveTo(float x, float y) throws IOException
+        {
+
+        }
+
+        @Override
+        public void lineTo(float x, float y) throws IOException
+        {
+
+        }
+
+        @Override
+        public void curveTo(float x1, float y1, float x2, float y2, float x3, float y3)
+                throws IOException
+        {
+
+        }
+
+        @Override
+        public Point2D getCurrentPoint() throws IOException
+        {
+            return new Point2D.Float(0, 0);
+        }
+
+        @Override
+        public void closePath() throws IOException
+        {
+
+        }
+
+        @Override
+        public void endPath() throws IOException
+        {
+
+        }
+
+        @Override
+        public void strokePath() throws IOException
+        {
+
+        }
+
+        @Override
+        public void fillPath(int windingRule) throws IOException
+        {
+
+        }
+
+        @Override
+        public void fillAndStrokePath(int windingRule) throws IOException
+        {
+
+        }
+
+        @Override
+        public void shadingFill(COSName shadingName) throws IOException
+        {
+
+        }
     }
 
     /**
@@ -270,48 +328,45 @@ public class ExtractImages
      * @param filename the filename
      * @throws IOException When somethings wrong with the corresponding file.
      */
-    private void write2file(PDImageXObject xobj, String filename, boolean directJPEG) throws IOException
+    private void write2file(PDImage pdImage, String filename, boolean directJPEG) throws IOException
     {
-        if (xobj.getSuffix() == null || xobj.getSuffix().isEmpty())
+        String suffix = pdImage.getSuffix();
+        if (suffix == null)
         {
-            System.err.println ("image has no suffix, skipped");
-            System.err.println ("filter(s): " + xobj.getCOSStream().getFilters());
-            return;
+            suffix = "png";
         }
 
         FileOutputStream out = null;
         try
         {
-            out = new FileOutputStream(filename + "." + xobj.getSuffix());
-            BufferedImage image = xobj.getImage();
+            out = new FileOutputStream(filename + "." + suffix);
+            BufferedImage image = pdImage.getImage();
             if (image != null)
             {
-                if ("tiff".equals(xobj.getSuffix()))
+                if ("tiff".equals(suffix))
                 {
-                    TIFFInputStream.writeToOutputStream(xobj, out);
+                    TIFFInputStream.writeToOutputStream(pdImage, out);
                 }
-                else if ("jpg".equals(xobj.getSuffix()))
+                else if ("jpg".equals(suffix))
                 {
-                    String colorSpaceName = xobj.getColorSpace().getName();
-                    if (directJPEG ||
-                            PDDeviceGray.INSTANCE.getName().equals(colorSpaceName) ||
-                            PDDeviceRGB.INSTANCE.getName().equals(colorSpaceName))
+                    String colorSpaceName = pdImage.getColorSpace().getName();
+                    if (directJPEG || PDDeviceGray.INSTANCE.getName().equals(colorSpaceName) ||
+                                      PDDeviceRGB.INSTANCE.getName().equals(colorSpaceName))
                     {
-                        // directJPEG option, RGB or Gray colorspace:
-                        // get and write the unmodified JPEG stream
-                        writeJpeg2OutputStream(xobj, out);
+                        // RGB or Gray colorspace: get and write the unmodifiedJPEG stream
+                        InputStream data = pdImage.getStream().getPartiallyFilteredStream(JPEG);
+                        IOUtils.copy(data, out);
+                        IOUtils.closeQuietly(data);
                     }
                     else
                     {
-                        // CMYK and other "unusual" colorspaces
-                        // create BufferedImage with correct colors and then save into a 
-                        // JPEG (some quality loss)
-                        ImageIOUtil.writeImage(xobj.getImage(), xobj.getSuffix(), out);
+                        // for CMYK and other "unusual" colorspaces, the JPEG will be converted
+                        ImageIOUtil.writeImage(image, suffix, out);
                     }
                 }
                 else 
                 {
-                    ImageIOUtil.writeImage(image, xobj.getSuffix(), out);
+                    ImageIOUtil.writeImage(image, suffix, out);
                 }
             }
             out.flush();
@@ -324,21 +379,4 @@ public class ExtractImages
             }
         }
     }
-
-    /**
-     * This will print the usage requirements and exit.
-     */
-    private static void usage()
-    {
-        System.err.println( "Usage: java org.apache.pdfbox.tools.ExtractImages [OPTIONS] <PDF file>\n" +
-            "  -password  <password>        Password to decrypt document\n" +
-            "  -prefix  <image-prefix>      Image prefix(default to pdf name)\n" +
-            "  -addkey                      add the internal image key to the file name\n" +
-            "  -nonSeq                      Enables the new non-sequential parser\n" +
-            "  -directJPEG                  Forces the direct extraction of JPEG images regardless of colorspace\n" +
-            "  <PDF file>                   The PDF document to use\n"
-            );
-        System.exit( 1 );
-    }
-
 }
