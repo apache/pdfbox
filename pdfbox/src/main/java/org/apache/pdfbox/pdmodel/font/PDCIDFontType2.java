@@ -63,6 +63,16 @@ public class PDCIDFontType2 extends PDCIDFont
 
         PDFontDescriptorDictionary fd = (PDFontDescriptorDictionary) getFontDescriptor();
         PDStream ff2Stream = fd.getFontFile2();
+        
+        if (ff2Stream == null)
+        {
+            PDStream ff3Stream = fd.getFontFile3();
+            if (ff3Stream != null)
+            {
+                LOG.info("fontfile3 not supported yet, subType is " + 
+                        ff3Stream.getStream().getNameAsString(COSName.SUBTYPE));
+            }
+        }
 
         if (ff2Stream != null)
         {
