@@ -287,6 +287,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
      * @param g The graphics context to draw onto.
      * @param pattern The tiling pattern to be used.
      * @param pageDimension The size of the page to draw.
+     * @param matrix initial substream transformation matrix.
+     * @param colorSpace color space for this tiling.
+     * @param color color for this tiling.
+     * 
      * @throws IOException If there is an IO error while drawing the page.
      */
     public void drawTilingPattern(Graphics2D g, PDTilingPattern pattern, PDRectangle pageDimension,
