@@ -332,7 +332,6 @@ public class PDFStreamEngine
         PDTextState textState = getGraphicsState().getTextState();
         float fontSize = textState.getFontSize();
         float horizontalScaling = textState.getHorizontalScaling() / 100f;
-        float charSpacing = textState.getCharacterSpacing();
         boolean isVertical = textState.getFont().isVertical();
 
         for (COSBase obj : array)
@@ -346,11 +345,11 @@ public class PDFStreamEngine
                 if (isVertical)
                 {
                     tx = 0;
-                    ty = -tj / 1000 * fontSize + charSpacing;
+                    ty = -tj / 1000 * fontSize;
                 }
                 else
                 {
-                    tx = (-tj / 1000 * fontSize + charSpacing) * horizontalScaling;
+                    tx = -tj / 1000 * fontSize * horizontalScaling;
                     ty = 0;
                 }
 
