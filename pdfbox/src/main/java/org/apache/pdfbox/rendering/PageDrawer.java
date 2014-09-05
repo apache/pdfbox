@@ -28,6 +28,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -109,7 +110,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
      * 
      * @param renderer renderer to render the page.
      * @param page the page that is to be rendered.
-     * 
      * @throws IOException If there is an error loading properties from the file.
      */
     public PageDrawer(PDFRenderer renderer, PDPage page) throws IOException
@@ -121,8 +121,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     /**
      * Tiling pattern constructor, loads properties from file.
      * 
-     * @param renderer renderer to render the page.
-     * 
+     * @param renderer renderer to render the page
      * @throws IOException If there is an error loading properties from the file.
      */
     PageDrawer(PDFRenderer renderer) throws IOException
@@ -133,7 +132,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     /**
      * Returns the parent renderer.
-     * @return the parent renderer.
      */
     public PDFRenderer getRenderer()
     {
@@ -154,11 +152,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     }
 
     /**
-     * This will draw the page to the requested context.
+     * Draws the page to the requested context.
      * 
      * @param g The graphics context to draw onto.
      * @param pageSize The size of the page to draw.
-     * 
      * @throws IOException If there is an IO error while drawing the page.
      */
     public void drawPage(Graphics g, PDRectangle pageSize) throws IOException
@@ -282,7 +279,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     }
 
     /**
-     * This will draw the pattern stream to the requested context.
+     * Draws the pattern stream to the requested context.
      *
      * @param g The graphics context to draw onto.
      * @param pattern The tiling pattern to be used.
@@ -290,7 +287,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
      * @param matrix initial substream transformation matrix.
      * @param colorSpace color space for this tiling.
      * @param color color for this tiling.
-     * 
      * @throws IOException If there is an IO error while drawing the page.
      */
     public void drawTilingPattern(Graphics2D g, PDTilingPattern pattern, PDRectangle pageDimension,
@@ -556,7 +552,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     /**
      * Generates AWT raster for a soft mask
      * 
-     * @param softMask
+     * @param softMask soft mask
      * @return AWT raster for soft mask
      * @throws IOException
      */
@@ -674,17 +670,90 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             nonStrokingPaint = Color.WHITE;
         }
         graphics.setPaint(nonStrokingPaint);
-        linePath.setWindingRule(windingRule);
         setClip();
+        linePath.setWindingRule(windingRule);
+
+        // disable anti-aliasing for rectangular paths, this is a workaround to avoid small stripes
+        // which occur when solid fills are used to simulate piecewise gradients, see PDFBOX-2302
+        boolean isRectangular = isRectangular(linePath);
+        if (isRectangular)
+        {
+            graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                                      RenderingHints.VALUE_ANTIALIAS_OFF);
+        }
+
         graphics.fill(linePath);
         linePath.reset();
+
+        if (isRectangular)
+        {
+            // JDK 1.7 has a bug where rendering hints are reset by the above call to
+            // the setRenderingHint method, so we re-set all hints, see PDFBOX-2302
+            setRenderingHints();
+        }
+    }
+
+    /**
+     * Returns true if the given path is rectangular.
+     */
+    private boolean isRectangular(GeneralPath path)
+    {
+        PathIterator iter = path.getPathIterator(null);
+        double[] coords = new double[6];
+        int count = 0;
+        int[] xs = new int[4];
+        int[] ys = new int[4];
+        while (!iter.isDone())
+        {
+            switch(iter.currentSegment(coords))
+            {
+                case PathIterator.SEG_MOVETO:
+                    if (count == 0)
+                    {
+                        xs[count] = (int)Math.floor(coords[0]);
+                        ys[count] = (int)Math.floor(coords[1]);
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                    count++;
+                    break;
+
+                case PathIterator.SEG_LINETO:
+                    if (count < 4)
+                    {
+                        xs[count] = (int)Math.floor(coords[0]);
+                        ys[count] = (int)Math.floor(coords[1]);
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                    count++;
+                    break;
+
+                case PathIterator.SEG_CUBICTO:
+                    return false;
+
+                case PathIterator.SEG_CLOSE:
+                    break;
+            }
+            iter.next();
+        }
+
+        if (count == 4)
+        {
+            return xs[0] == xs[1] || xs[0] == xs[2] ||
+                   ys[0] == ys[1] || ys[0] == ys[3];
+        }
+        return false;
     }
 
     /**
      * Fills and then strokes the path.
      *
      * @param windingRule The winding rule this path will use.
-     *
      * @throws IOException If there is an IO error while filling the path.
      */
     @Override
@@ -943,7 +1012,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             finally 
             {
                 lastClip = lastClipOriginal;                
-                graphics.dispose();
+                graphics.dispose(); // TODO: BUG: Don't do this!
                 graphics = g2dOriginal;
             }
         }
