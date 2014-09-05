@@ -107,6 +107,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     /**
      * Default constructor, loads properties from file.
      * 
+     * @param renderer renderer to render the page.
+     * @param page the page that is to be rendered.
+     * 
      * @throws IOException If there is an error loading properties from the file.
      */
     public PageDrawer(PDFRenderer renderer, PDPage page) throws IOException
@@ -117,7 +120,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     /**
      * Tiling pattern constructor, loads properties from file.
-     *
+     * 
+     * @param renderer renderer to render the page.
+     * 
      * @throws IOException If there is an error loading properties from the file.
      */
     PageDrawer(PDFRenderer renderer) throws IOException
