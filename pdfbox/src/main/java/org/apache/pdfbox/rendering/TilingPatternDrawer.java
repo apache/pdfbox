@@ -28,6 +28,8 @@ public class TilingPatternDrawer extends PageDrawer
     /**
      * Tiling pattern constructor, loads properties from file.
      *
+     * @param renderer renderer to render the page.
+     * 
      * @throws java.io.IOException If there is an error loading properties from the file.
      */
     public TilingPatternDrawer(PDFRenderer renderer) throws IOException
