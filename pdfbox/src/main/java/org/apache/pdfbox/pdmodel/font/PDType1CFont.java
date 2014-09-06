@@ -82,6 +82,7 @@ public class PDType1CFont extends PDSimpleFont implements PDType1Equivalent
             }
         }
 
+        // note: this could be an OpenType file, fortunately CFFParser can handle that
         CFFParser cffParser = new CFFParser();
         cffFont = (CFFType1Font)cffParser.parse(bytes).get(0);
 
