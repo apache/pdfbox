@@ -261,7 +261,7 @@ public class PDCIDFontType2 extends PDCIDFont
                 }
 
                 // map to a Unicode value using the Adobe Glyph List
-                unicode = GlyphList.toUnicode(name);
+                unicode = GlyphList.DEFAULT.toUnicode(name);
             }
             else
             {

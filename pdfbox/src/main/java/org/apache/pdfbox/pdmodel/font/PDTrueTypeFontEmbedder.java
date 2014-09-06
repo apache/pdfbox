@@ -287,7 +287,7 @@ class PDTrueTypeFontEmbedder
             // pdf code to unicode by glyph list.
             if (!name.equals(".notdef"))
             {
-                String c = GlyphList.toUnicode(name);
+                String c = GlyphList.DEFAULT.toUnicode(name);
                 int charCode = c.codePointAt(0);
                 int gid = uniMap.getGlyphId(charCode);
                 if (gid != 0)

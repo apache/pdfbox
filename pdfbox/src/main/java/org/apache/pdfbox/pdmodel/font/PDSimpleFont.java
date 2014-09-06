@@ -60,7 +60,8 @@ public abstract class PDSimpleFont extends PDFont
     }
 
     protected Encoding encoding;
-    private final Set<Integer> noUnicode = new HashSet<Integer>();
+    protected GlyphList glyphList;
+    private final Set<Integer> noUnicode = new HashSet<Integer>(); // for logging
 
     /**
      * Constructor
@@ -130,6 +131,16 @@ public abstract class PDSimpleFont extends PDFont
         {
             this.encoding = readEncodingFromFont();
         }
+
+        // assign the glyph list based on the font
+        if (getBaseFont().equals("ZapfDingbats"))
+        {
+            glyphList = GlyphList.ZAPF_DINGBATS;
+        }
+        else
+        {
+            glyphList = GlyphList.DEFAULT;
+        }
     }
 
     /**
@@ -145,6 +156,14 @@ public abstract class PDSimpleFont extends PDFont
     public Encoding getEncoding()
     {
         return encoding;
+    }
+
+    /**
+     * Returns the Encoding vector.
+     */
+    public GlyphList getGlyphList()
+    {
+        return glyphList;
     }
 
     @Override
@@ -215,10 +234,10 @@ public abstract class PDSimpleFont extends PDFont
         //    b) Look up the name in the Adobe Glyph List to obtain the Unicode value
 
         String name = null;
-        if (getEncoding() != null)
+        if (encoding != null)
         {
             name = encoding.getName(code);
-            unicode = GlyphList.toUnicode(name);
+            unicode = glyphList.toUnicode(name); // todo: tie a final GlyphList instance to each PDFont in the constructor.
             if (unicode != null)
             {
                 return unicode;

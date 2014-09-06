@@ -423,7 +423,7 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
             else
             {
                 // try unicode name
-                String unicodes = GlyphList.toUnicode(name);
+                String unicodes = getGlyphList().toUnicode(name);
                 if (unicodes != null)
                 {
                     if (unicodes.length() == 1)

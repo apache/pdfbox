@@ -36,17 +36,18 @@ import java.util.StringTokenizer;
 public class GlyphList
 {
     private static final Log LOG = LogFactory.getLog(GlyphList.class);
-
-    private static final Map<String, String> NAME_TO_UNICODE = new HashMap<String, String>();
-    private static final Map<String, String> UNICODE_TO_NAME = new HashMap<String, String>();
+    public static final GlyphList DEFAULT;
+    public static final GlyphList ZAPF_DINGBATS;
 
     static
     {
+        DEFAULT = new GlyphList();
+
         // Loads the official glyph List based on adobes glyph list
-        loadGlyphs("org/apache/pdfbox/resources/glyphlist.properties");
+        DEFAULT.loadGlyphs("org/apache/pdfbox/resources/glyphlist.properties");
 
         // Loads some additional glyph mappings
-        loadGlyphs("org/apache/pdfbox/resources/additional_glyphlist.properties");
+        DEFAULT.loadGlyphs("org/apache/pdfbox/resources/additional_glyphlist.properties");
 
         // Load an external glyph list file that user can give as JVM property
         try
@@ -57,7 +58,7 @@ public class GlyphList
                 File external = new File(location);
                 if (external.exists())
                 {
-                    loadGlyphs(location);
+                    DEFAULT.loadGlyphs(location);
                 }
             }
         }
@@ -67,19 +68,25 @@ public class GlyphList
         }
 
         // todo: this is not desirable in many cases, should be done much later, e.g. TextStripper
-        NAME_TO_UNICODE.put("fi", "fi");
-        NAME_TO_UNICODE.put("fl", "fl");
-        NAME_TO_UNICODE.put("ffi", "ffi");
-        NAME_TO_UNICODE.put("ff", "ff");
-        NAME_TO_UNICODE.put("pi", "pi");
+        DEFAULT.nameToUnicode.put("fi", "fi");
+        DEFAULT.nameToUnicode.put("fl", "fl");
+        DEFAULT.nameToUnicode.put("ffi", "ffi");
+        DEFAULT.nameToUnicode.put("ff", "ff");
+        DEFAULT.nameToUnicode.put("pi", "pi");
 
-        for (Map.Entry<String, String> entry : NAME_TO_UNICODE.entrySet())
-        {
-            UNICODE_TO_NAME.put(entry.getValue(), entry.getKey());
-        }
+        // Zapf Dingbats has its own glyph list
+        ZAPF_DINGBATS = new GlyphList();
+        ZAPF_DINGBATS.loadGlyphs("org/apache/pdfbox/resources/zapf_dingbats.properties");
     }
 
-    private static void loadGlyphs(String path)
+    private final Map<String, String> nameToUnicode = new HashMap<String, String>();
+    private final Map<String, String> unicodeToName = new HashMap<String, String>();
+
+    private GlyphList()
+    {
+    }
+
+    private void loadGlyphs(String path)
     {
         try
         {
@@ -101,14 +108,17 @@ public class GlyphList
                     int characterCode = Integer.parseInt(tokenizer.nextToken(), 16);
                     value.append((char) characterCode);
                 }
-                if (NAME_TO_UNICODE.containsKey(glyphName))
+                if (nameToUnicode.containsKey(glyphName))
                 {
-                    LOG.warn("duplicate value for " + glyphName + " -> " + value);
+                    LOG.warn("duplicate value for " + glyphName + " -> " + value + " " +
+                             nameToUnicode.get(glyphName));
                 }
                 else
                 {
-                    NAME_TO_UNICODE.put(glyphName, value.toString());
+                    nameToUnicode.put(glyphName, value.toString());
                 }
+                // reverse mapping
+                unicodeToName.put(value.toString(), glyphName);
             }
         }
         catch (IOException io)
@@ -123,9 +133,9 @@ public class GlyphList
      * @param c Unicode character
      * @return PostScript glyph name, or ".notdef"
      */
-    public static String unicodeToName(char c)
+    public String unicodeToName(char c)
     {
-        String name = UNICODE_TO_NAME.get(Character.toString(c));
+        String name = unicodeToName.get(Character.toString(c));
         if (name == null)
         {
             return ".notdef";
@@ -139,14 +149,14 @@ public class GlyphList
      * @param name PostScript glyph name
      * @return Unicode character(s), or null.
      */
-    public static String toUnicode(String name)
+    public String toUnicode(String name)
     {
         if (name == null)
         {
             return null;
         }
 
-        String unicode = NAME_TO_UNICODE.get(name);
+        String unicode = nameToUnicode.get(name);
         if (unicode == null)
         {
             // test if we have a suffix and if so remove it
@@ -200,7 +210,7 @@ public class GlyphList
                     LOG.warn("Not a number in Unicode character name: " + name);
                 }
             }
-            NAME_TO_UNICODE.put(name, unicode);
+            nameToUnicode.put(name, unicode);
         }
         return unicode;
     }
