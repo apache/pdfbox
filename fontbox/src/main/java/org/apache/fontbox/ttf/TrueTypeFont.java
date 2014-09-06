@@ -38,7 +38,7 @@ public class TrueTypeFont implements Type1Equivalent
     private int numberOfGlyphs = -1;
     private int unitsPerEm = -1;
     private int[] advanceWidths = null;
-    private Map<String,TTFTable> tables = new HashMap<String,TTFTable>();
+    protected Map<String,TTFTable> tables = new HashMap<String,TTFTable>();
     private TTFDataStream data;
     private Map<String, Integer> postScriptNames;
     

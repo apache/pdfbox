@@ -50,7 +50,7 @@ public class TestTTFParser
 
         TTFParser parser = new TTFParser();
 
-        TrueTypeFont arial = parser.parseTTF(arialIs);
+        TrueTypeFont arial = parser.parse(arialIs);
 
         CmapTable cmap = arial.getCmap();
         Assert.assertNotNull(cmap);

@@ -23,7 +23,7 @@ import java.io.IOException;
  * 
  * @author Ben Litchfield (ben@benlitchfield.com)
  */
-public class TTFTable 
+public class TTFTable
 {
     private String tag;
     private long checkSum;

@@ -84,7 +84,7 @@ class PDTrueTypeFontEmbedder
         try
         {
             stream2 = stream.createInputStream();
-            ttf = new TTFParser().parseTTF(stream2);
+            ttf = new TTFParser().parse(stream2);
             fd = createFontDescriptor(dict, ttf);
         }
         finally

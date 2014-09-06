@@ -105,7 +105,7 @@ public class PDTrueTypeFont extends PDSimpleFont
                 {
                     // embedded
                     TTFParser ttfParser = new TTFParser(true);
-                    ttfFont = ttfParser.parseTTF(ff2Stream.createInputStream());
+                    ttfFont = ttfParser.parse(ff2Stream.createInputStream());
                 }
                 catch (NullPointerException e) // TTF parser is buggy
                 {
