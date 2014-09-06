@@ -81,7 +81,7 @@ public class TrueTypeDescriptorHelper extends FontDescriptorHelper<TrueTypeConta
         {
 
             bis = new ByteArrayInputStream(fontFile.getByteArray());
-            TrueTypeFont ttf = new TTFParser(true).parseTTF(bis);
+            TrueTypeFont ttf = new TTFParser(true).parse(bis);
 
             if (fontDescriptor.isSymbolic() && ttf.getCmap().getCmaps().length != 1)
             {

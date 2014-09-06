@@ -45,7 +45,7 @@ public class TestTTFParser extends TestCase
         //Set the default to something not UTC and see if a UTC timeZone is returned
         TimeZone.setDefault(TimeZone.getTimeZone("America/Los Angeles"));
         TTFParser parser = new TTFParser();
-        TrueTypeFont ttf = parser.parseTTF(testFile);
+        TrueTypeFont ttf = parser.parse(testFile);
         Calendar created = ttf.getHeader().getCreated();
         assertEquals(created.getTimeZone(), utc);
 

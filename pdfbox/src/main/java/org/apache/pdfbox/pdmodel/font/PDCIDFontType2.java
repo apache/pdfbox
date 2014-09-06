@@ -24,6 +24,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.cmap.CMap;
 import org.apache.fontbox.ttf.CmapSubtable;
 import org.apache.fontbox.ttf.CmapTable;
+import org.apache.fontbox.ttf.OTFParser;
+import org.apache.fontbox.ttf.OpenTypeFont;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.util.BoundingBox;
@@ -63,16 +65,7 @@ public class PDCIDFontType2 extends PDCIDFont
 
         PDFontDescriptorDictionary fd = (PDFontDescriptorDictionary) getFontDescriptor();
         PDStream ff2Stream = fd.getFontFile2();
-        
-        if (ff2Stream == null)
-        {
-            PDStream ff3Stream = fd.getFontFile3();
-            if (ff3Stream != null)
-            {
-                LOG.info("fontfile3 not supported yet, subType is " + 
-                        ff3Stream.getStream().getNameAsString(COSName.SUBTYPE));
-            }
-        }
+        PDStream ff3Stream = fd.getFontFile3();
 
         if (ff2Stream != null)
         {
@@ -80,7 +73,7 @@ public class PDCIDFontType2 extends PDCIDFont
             {
                 // embedded
                 TTFParser ttfParser = new TTFParser(true);
-                ttf = ttfParser.parseTTF(ff2Stream.createInputStream());
+                ttf = ttfParser.parse(ff2Stream.createInputStream());
                 isEmbedded = true;
             }
             catch (NullPointerException e) // TTF parser is buggy
@@ -90,6 +83,38 @@ public class PDCIDFontType2 extends PDCIDFont
             catch (IOException e)
             {
                 throw new IOException("Could not read embedded TTF for font " + getBaseFont(), e);
+            }
+        }
+        else if (ff3Stream != null)
+        {
+            try
+            {
+                // embedded
+                OTFParser otfParser = new OTFParser(true);
+                OpenTypeFont otf = otfParser.parse(ff3Stream.createInputStream());
+                ttf = otf;
+                isEmbedded = true;
+
+                if (otf.isPostScript())
+                {
+                    // todo: we need more abstraction to support CFF fonts here
+                    throw new IOException("Not implemented: OpenType font with CFF table " +
+                                          getBaseFont());
+                }
+
+                if (otf.hasLayoutTables())
+                {
+                    LOG.error("OpenType Layout tables used in font " + getBaseFont() +
+                              " are not implemented in PDFBox and will be ignored");
+                }
+            }
+            catch (NullPointerException e) // TTF parser is buggy
+            {
+                throw new IOException("Could not read embedded OTF for font " + getBaseFont(), e);
+            }
+            catch (IOException e)
+            {
+                throw new IOException("Could not read embedded OTF for font " + getBaseFont(), e);
             }
         }
         else

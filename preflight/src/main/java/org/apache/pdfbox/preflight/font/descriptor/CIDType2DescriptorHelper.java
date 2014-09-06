@@ -106,7 +106,7 @@ public class CIDType2DescriptorHelper extends FontDescriptorHelper<CIDType2Conta
              * According to PDF Reference, CIDFontType2 is a TrueType font. Remark : Java.awt.Font throws exception when
              * a CIDFontType2 is parsed even if it is valid.
              */
-            ttf = new TTFParser(true).parseTTF(new ByteArrayInputStream(fontFile.getByteArray()));
+            ttf = new TTFParser(true).parse(new ByteArrayInputStream(fontFile.getByteArray()));
             this.fContainer.setTtf(ttf);
         }
         catch (Exception e)

@@ -70,7 +70,7 @@ public final class ExternalFonts
                 throw new IOException("Error loading resource: " + ttfName);
             }
             TTFParser ttfParser = new TTFParser();
-            ttfFallbackFont = ttfParser.parseTTF(ttfStream);
+            ttfFallbackFont = ttfParser.parse(ttfStream);
 
             // cff
             String cffName = "org/apache/pdfbox/resources/otf/AdobeBlank.otf";

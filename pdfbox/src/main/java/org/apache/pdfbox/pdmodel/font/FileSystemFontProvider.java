@@ -105,7 +105,7 @@ final class FileSystemFontProvider implements FontProvider
         TrueTypeFont ttf = null;
         try
         {
-            ttf = ttfParser.parseTTF(otfFile);
+            ttf = ttfParser.parse(otfFile);
         }
         catch (NullPointerException e) // TTF parser is buggy
         {
@@ -204,7 +204,7 @@ final class FileSystemFontProvider implements FontProvider
             TTFParser ttfParser = new TTFParser(false, true);
             try
             {
-                ttf = ttfParser.parseTTF(file);
+                ttf = ttfParser.parse(file);
 
                 ttfFonts.put(postScriptName, ttf);
                 if (LOG.isDebugEnabled())
