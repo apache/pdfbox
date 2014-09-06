@@ -116,18 +116,6 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
         ALT_NAMES.put("ellipsis", "elipsis"); // misspelled in ArialMT
     }
 
-    // unicode names for ligatures, needed to undo mapping in org.apache.pdfbox.Encoding
-    private static final Map<String, String> LIGATURE_UNI_NAMES = new HashMap<String, String>();
-    static
-    {
-        LIGATURE_UNI_NAMES.put("ff", "uniFB00");
-        LIGATURE_UNI_NAMES.put("fi", "uniFB01");
-        LIGATURE_UNI_NAMES.put("fl", "uniFB02");
-        LIGATURE_UNI_NAMES.put("ffi", "uniFB03");
-        LIGATURE_UNI_NAMES.put("ffl", "uniFB04");
-        LIGATURE_UNI_NAMES.put("pi", "uni03C0");
-    }
-
     // todo: replace with enum? or getters?
     public static final PDType1Font TIMES_ROMAN = new PDType1Font("Times-Roman");
     public static final PDType1Font TIMES_BOLD = new PDType1Font("Times-Bold");
@@ -432,13 +420,6 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
                         if (type1Equivalent.hasGlyph(uniName))
                         {
                             return uniName;
-                        }
-                    }
-                    else if (unicodes.length() > 1)
-                    {
-                        if (LIGATURE_UNI_NAMES.containsKey(name))
-                        {
-                           return LIGATURE_UNI_NAMES.get(name);
                         }
                     }
                 }

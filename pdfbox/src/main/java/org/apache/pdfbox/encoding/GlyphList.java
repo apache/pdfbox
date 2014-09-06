@@ -67,13 +67,6 @@ public class GlyphList
             // PDFBOX-1946 ignore and continue
         }
 
-        // todo: this is not desirable in many cases, should be done much later, e.g. TextStripper
-        DEFAULT.nameToUnicode.put("fi", "fi");
-        DEFAULT.nameToUnicode.put("fl", "fl");
-        DEFAULT.nameToUnicode.put("ffi", "ffi");
-        DEFAULT.nameToUnicode.put("ff", "ff");
-        DEFAULT.nameToUnicode.put("pi", "pi");
-
         // Zapf Dingbats has its own glyph list
         ZAPF_DINGBATS = new GlyphList();
         ZAPF_DINGBATS.loadGlyphs("org/apache/pdfbox/resources/zapf_dingbats.properties");
@@ -108,17 +101,23 @@ public class GlyphList
                     int characterCode = Integer.parseInt(tokenizer.nextToken(), 16);
                     value.append((char) characterCode);
                 }
+                String unicode = value.toString();
+
                 if (nameToUnicode.containsKey(glyphName))
                 {
-                    LOG.warn("duplicate value for " + glyphName + " -> " + value + " " +
+                    LOG.warn("duplicate value for " + glyphName + " -> " + unicode + " " +
                              nameToUnicode.get(glyphName));
                 }
                 else
                 {
-                    nameToUnicode.put(glyphName, value.toString());
+                    nameToUnicode.put(glyphName, unicode);
                 }
+
                 // reverse mapping
-                unicodeToName.put(value.toString(), glyphName);
+                if (!unicodeToName.containsKey(unicode))
+                {
+                    unicodeToName.put(unicode, glyphName);
+                }
             }
         }
         catch (IOException io)
