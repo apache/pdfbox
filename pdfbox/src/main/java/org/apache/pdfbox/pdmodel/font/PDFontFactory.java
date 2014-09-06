@@ -66,6 +66,14 @@ public class PDFontFactory
         }
         else if (COSName.MM_TYPE1.equals(subType))
         {
+            COSBase fd = dictionary.getDictionaryObject(COSName.FONT_DESC);
+            if (fd != null && fd instanceof COSDictionary)
+            {
+                if (((COSDictionary)fd).containsKey(COSName.FONT_FILE3))
+                {
+                    return new PDType1CFont(dictionary);
+                }
+            }
             return new PDMMType1Font(dictionary);
         }
         else if (COSName.TRUE_TYPE.equals(subType))
