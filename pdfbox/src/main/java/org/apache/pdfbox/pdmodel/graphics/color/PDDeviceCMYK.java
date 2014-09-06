@@ -36,10 +36,10 @@ import java.util.Properties;
  * @author John Hewson
  * @author Ben Litchfield
  */
-public final class PDDeviceCMYK extends PDDeviceColorSpace
+public class PDDeviceCMYK extends PDDeviceColorSpace
 {
     /**  The single instance of this class. */
-    public static final PDDeviceCMYK INSTANCE;
+    public static PDDeviceCMYK INSTANCE;
     static
     {
         try
