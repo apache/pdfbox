@@ -133,7 +133,7 @@ public abstract class PDSimpleFont extends PDFont
         }
 
         // assign the glyph list based on the font
-        if (getBaseFont().equals("ZapfDingbats"))
+        if ("ZapfDingbats".equals(getBaseFont()))
         {
             glyphList = GlyphList.ZAPF_DINGBATS;
         }
