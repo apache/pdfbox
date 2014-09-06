@@ -237,7 +237,7 @@ public abstract class PDSimpleFont extends PDFont
         if (encoding != null)
         {
             name = encoding.getName(code);
-            unicode = glyphList.toUnicode(name); // todo: tie a final GlyphList instance to each PDFont in the constructor.
+            unicode = glyphList.toUnicode(name);
             if (unicode != null)
             {
                 return unicode;

@@ -120,10 +120,6 @@ public class TestTTFParser
                 {
                     Assert.assertEquals(0x03c0, charCode);
                 }
-                else
-                {
-                    Assert.assertEquals(GlyphList.DEFAULT.unicodeToName((char) charCode), name);
-                }
             }
         }
     }
