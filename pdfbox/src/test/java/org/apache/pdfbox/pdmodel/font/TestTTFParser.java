@@ -94,27 +94,27 @@ public class TestTTFParser
                         || "product".equals(name) || "integral".equals(name) || "Omega".equals(name)
                         || "radical".equals(name) || "tilde".equals(name))
                 {
-                    Assert.assertTrue(GlyphList.unicodeToName((char) charCode).startsWith(name));
+                    Assert.assertTrue(GlyphList.DEFAULT.unicodeToName((char) charCode).startsWith(name));
                 }
                 else if ("bar".equals(name))
                 {
-                    Assert.assertTrue(GlyphList.unicodeToName((char) charCode).endsWith(name));
+                    Assert.assertTrue(GlyphList.DEFAULT.unicodeToName((char) charCode).endsWith(name));
                 }
                 else if ("sfthyphen".equals(name))
                 {
-                    Assert.assertEquals("softhyphen", GlyphList.unicodeToName((char) charCode));
+                    Assert.assertEquals("softhyphen", GlyphList.DEFAULT.unicodeToName((char) charCode));
                 }
-                else if ("periodcentered".equals(name) && !GlyphList.unicodeToName((char) charCode).equals(name))
+                else if ("periodcentered".equals(name) && !GlyphList.DEFAULT.unicodeToName((char) charCode).equals(name))
                 {
-                    Assert.assertEquals("bulletoperator", GlyphList.unicodeToName((char) charCode));
+                    Assert.assertEquals("bulletoperator", GlyphList.DEFAULT.unicodeToName((char) charCode));
                 }
                 else if ("fraction".equals(name))
                 {
-                    Assert.assertEquals("divisionslash", GlyphList.unicodeToName((char) charCode));
+                    Assert.assertEquals("divisionslash", GlyphList.DEFAULT.unicodeToName((char) charCode));
                 }
                 else if ("mu".equals(name))
                 {
-                    Assert.assertEquals("mu1", GlyphList.unicodeToName((char) charCode));
+                    Assert.assertEquals("mu1", GlyphList.DEFAULT.unicodeToName((char) charCode));
                 }
                 else if ("pi".equals(name))
                 {
@@ -122,7 +122,7 @@ public class TestTTFParser
                 }
                 else
                 {
-                    Assert.assertEquals(GlyphList.unicodeToName((char) charCode), name);
+                    Assert.assertEquals(GlyphList.DEFAULT.unicodeToName((char) charCode), name);
                 }
             }
         }

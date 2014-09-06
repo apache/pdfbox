@@ -228,7 +228,7 @@ public class PDTrueTypeFont extends PDSimpleFont
                 // (3, 1) - (Windows, Unicode)
                 if (cmapWinUnicode != null)
                 {
-                    String unicode = GlyphList.toUnicode(name);
+                    String unicode = GlyphList.DEFAULT.toUnicode(name);
                     if (unicode != null)
                     {
                         gid = unicode.codePointAt(0);
