@@ -129,4 +129,14 @@ public class PDRange implements COSObjectable
     {
         rangeArray.set( startingIndex*2+1, new COSFloat( max ) );
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString()
+    {
+        return "PDRange{" + getMin() + ", " + getMax() + '}';
+    }
+    
 }
