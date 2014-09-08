@@ -285,13 +285,11 @@ public class PDDeviceN extends PDSpecialColorSpace
 
         // use the tint transform to convert the sample into
         // the alternate color space (this is usually 1:many)
-        WritableRaster altRaster = Raster.createBandedRaster(DataBuffer.TYPE_BYTE,
-                width, height, alternateColorSpace.getNumberOfComponents(), new Point(0, 0));
-
-        int numAltComponents = alternateColorSpace.getNumberOfComponents();
+        BufferedImage rgbImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        WritableRaster rgbRaster = rgbImage.getRaster();
+        int[] rgb = new int[3];
         int numSrcComponents = getColorantNames().size();
         float[] src = new float[numSrcComponents];
-        int[] alt = new int[numAltComponents];
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
@@ -309,18 +307,20 @@ public class PDDeviceN extends PDSpecialColorSpace
 
                 // convert to alternate color space via tint transform
                 float[] result = tintTransform.eval(src);
-                for (int s = 0; s < numAltComponents; s++)
+                
+                // convert from alternate color space to RGB
+                float[] rgbFloat = alternateColorSpace.toRGB(result);
+                
+                for (int s = 0; s < 3; s++)
                 {
                     // scale to 0..255
-                    alt[s] = (int)(result[s] * 255f);
-                }
+                    rgb[s] = (int) (rgbFloat[s] * 255f);
+                }                
 
-                altRaster.setPixel(x, y, alt);
+                rgbRaster.setPixel(x, y, rgb);
             }
         }
-
-        // convert the alternate color space to RGB
-        return alternateColorSpace.toRGBImage(altRaster);
+        return rgbImage;
     }
 
     @Override
@@ -417,7 +417,7 @@ public class PDDeviceN extends PDSpecialColorSpace
     }
 
     @Override
-    public int getNumberOfComponents()
+    public final int getNumberOfComponents()
     {
         return getColorantNames().size();
     }
