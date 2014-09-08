@@ -113,7 +113,7 @@ public class PDFBox
 
     private static void showMessageAndExit() 
     {
-        System.err.println("PDFDBox version: \""+ Version.getVersion()+ "\"");
+        System.err.println("PDFBox version: \""+ Version.getVersion()+ "\"");
         System.err.println("\nUsage: java pdfbox-app-x.y.z.jar <command> <args..>");
         System.err.println("\nPossible commands are:\n");
         System.err.println("  ConvertColorspace");
