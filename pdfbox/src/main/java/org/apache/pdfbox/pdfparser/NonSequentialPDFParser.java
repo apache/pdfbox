@@ -1014,7 +1014,7 @@ public class NonSequentialPDFParser extends PDFParser
      * Adds newObject to toBeParsedList if it is not an COSObject or we didn't add this COSObject already (checked via
      * addedObjects).
      */
-    private final void addNewToList(final Queue<COSBase> toBeParsedList, final COSBase newObject,
+    private void addNewToList(final Queue<COSBase> toBeParsedList, final COSBase newObject,
             final Set<Long> addedObjects)
     {
         if (newObject instanceof COSObject)
@@ -1570,6 +1570,13 @@ public class NonSequentialPDFParser extends PDFParser
                         + pdfSource.getOffset());
                 // avoid follow-up warning about missing endobj
                 pdfSource.unread("endobj".getBytes("ISO-8859-1"));
+            }
+            else if (endStream.length() > 9 && isLenient && endStream.substring(0,9).equals("endstream"))
+            {
+                LOG.warn("stream ends with '" + endStream + "' instead of 'endstream' at offset "
+                        + pdfSource.getOffset());
+                // unread the "extra" bytes
+                pdfSource.unread(endStream.substring(9).getBytes("ISO-8859-1"));
             }
             else if (!endStream.equals("endstream"))
             {
