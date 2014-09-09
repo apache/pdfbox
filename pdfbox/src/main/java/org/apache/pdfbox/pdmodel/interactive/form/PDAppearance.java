@@ -358,16 +358,34 @@ public class PDAppearance
                             ContentStreamWriter writer = new ContentStreamWriter(output);
                             float fontSize = calculateFontSize(pdFont, appearanceStream.getBoundingBox(), tokens, null);
                             boolean foundString = false;
-                            for (int i = 0; i < tokens.size(); i++)
+                            
+                            // Don't replace the string content of the 
+                            // current appearance stream value for a choice list
+                            // PDFBOX-2249
+                            // TODO: Shall be addressed properly in a future release
+                            if (parent instanceof PDChoiceField) 
                             {
-                                if (tokens.get(i) instanceof COSString)
+                                // Nothing to do here
+                                // enforces 
+                            }
+                            else
+                            {
+                                // This part works only in certain circumstances
+                                // retained for the moment for compatibility
+                                // TODO: handle properly in a future release
+                                //
+                                for (int i = 0; i < tokens.size(); i++)
                                 {
-                                    foundString = true;
-                                    COSString drawnString = ((COSString) tokens.get(i));
-                                    drawnString.reset();
-                                    drawnString.append(apValue.getBytes("ISO-8859-1"));
+                                    if (tokens.get(i) instanceof COSString)
+                                    {
+                                        foundString = true;
+                                        COSString drawnString = ((COSString) tokens.get(i));
+                                        drawnString.reset();
+                                        drawnString.append(apValue.getBytes("ISO-8859-1"));
+                                    }
                                 }
                             }
+                            
                             int setFontIndex = tokens.indexOf(PDFOperator.getOperator("Tf"));
                             tokens.set(setFontIndex - 1, new COSFloat(fontSize));
                             if (foundString)
@@ -647,19 +665,15 @@ public class PDAppearance
         // display starts with the first entry in Opt.
         int topIndex = ((PDChoiceField) parent).getTopIndex();
 
-        if ("Ch".equals(parent.findFieldType()) && ((parent.getFieldFlags() & (0x1000000)) == 0))
-        {
+        float highlightBoxHeight = pdFont.getFontBoundingBox().getHeight() / 1000 * fontSize;
 
-            float highlightBoxHeight = pdFont.getFontBoundingBox().getHeight() / 1000 * fontSize;
-
-            printWriter.println(paddingEdge.getLowerLeftX() + " "
-                    + (paddingEdge.getUpperRightY() - highlightBoxHeight * (selectedIndex - topIndex + 1)) + " "
-                    + paddingEdge.getWidth() + " " + (highlightBoxHeight) + " re");
-            printWriter.println("f");
-            printWriter.println("0 g");
-            printWriter.println("0 G");
-            printWriter.println("1 w");
-        }
+        printWriter.println(paddingEdge.getLowerLeftX() + " "
+                + (paddingEdge.getUpperRightY() - highlightBoxHeight * (selectedIndex - topIndex + 1)) + " "
+                + paddingEdge.getWidth() + " " + (highlightBoxHeight) + " re");
+        printWriter.println("f");
+        printWriter.println("0 g");
+        printWriter.println("0 G");
+        printWriter.println("1 w");
 
         // start of text output
         printWriter.println("BT");
