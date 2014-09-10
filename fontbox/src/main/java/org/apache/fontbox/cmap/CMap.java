@@ -130,7 +130,7 @@ public class CMap
             CodespaceRange shortest = null;
             for (CodespaceRange range : codespaceRanges)
             {
-                if (range.isPartialMatch(bytes.get(i), i));
+                if (range.isPartialMatch(bytes.get(i), i))
                 {
                     if (match == null)
                     {
