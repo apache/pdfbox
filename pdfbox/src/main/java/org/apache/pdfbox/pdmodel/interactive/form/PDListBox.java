@@ -16,10 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
-import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSString;
 
 /**
  * A scrollable list box. Contains several text items, one or more of which shall be selected as the field value.
@@ -38,51 +36,6 @@ public final class PDListBox extends PDChoice
     public PDListBox(PDAcroForm acroForm, COSDictionary field, PDFieldTreeNode parentNode)
     {
         super(acroForm, field, parentNode);
-    }
-
-    /**
-     * setValue sets the entry "V" to the given value.
-     * 
-     * @param value the value
-     * 
-     */
-    @Override
-    public void setValue(Object value)
-    {
-        // TODO move to superclass PDCoice??
-        if (value != null)
-        {
-            if (value instanceof String)
-            {
-                getDictionary().setString(COSName.V, (String)value);
-                int index = getSelectedIndex((String) value);
-                if (index == -1)
-                {
-                    throw new IllegalArgumentException(
-                            "The list box does not contain the given value.");
-                }
-                selectMultiple(index);
-            }
-            if (value instanceof String[])
-            {
-                if (!isMultiSelect())
-                {
-                    throw new IllegalArgumentException("The list box does allow multiple selection.");
-                }
-                String[] stringValues = (String[])value;
-                COSArray stringArray = new COSArray();
-                for (int i =0; i<stringValues.length;i++)
-                {
-                    stringArray.add(new COSString(stringValues[i]));
-                }
-                getDictionary().setItem(COSName.V, stringArray);
-            }
-        }
-        else
-        {
-            getDictionary().removeItem(COSName.V);
-        }
-        // TODO create/update appearance
     }
 
     /**
