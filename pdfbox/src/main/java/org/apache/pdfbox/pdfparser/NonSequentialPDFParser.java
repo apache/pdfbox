@@ -1298,6 +1298,10 @@ public class NonSequentialPDFParser extends PDFParser
                             {
                                 decrypt((COSString) entry.getValue(), objNr, objGenNr);
                             }
+                            else if (entry.getValue() instanceof COSArray)
+                            {
+                                securityHandler.decryptArray((COSArray) entry.getValue(), objNr, objGenNr);
+                            }                            
                         }
                     }
                     else if (pb instanceof COSArray)
