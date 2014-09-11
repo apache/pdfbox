@@ -16,10 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
-import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSString;
 
 /**
  * A combo box consisting of a drop-down list.
@@ -74,43 +72,11 @@ public final class PDComboBox extends PDChoice
     @Override
     public void setValue(Object value)
     {
-        // TODO move to superclass PDCoice??
         if ((getFieldFlags() & FLAG_EDIT) != 0)
         {
             throw new IllegalArgumentException("The combo box isn't editable.");
         }
-        if (value != null)
-        {
-            if (value instanceof String)
-            {
-                getDictionary().setString(COSName.V, (String)value);
-                int index = getSelectedIndex((String)value);
-                if (index == -1)
-                {
-                    throw new IllegalArgumentException("The combo box does not contain the given value.");
-                }
-                selectMultiple(index);
-            }
-            if (value instanceof String[])
-            {
-                if (!isMultiSelect())
-                {
-                    throw new IllegalArgumentException("The combo box does allow multiple selection.");
-                }
-                String[] stringValues = (String[])value;
-                COSArray stringArray = new COSArray();
-                for (int i =0; i<stringValues.length;i++)
-                {
-                    stringArray.add(new COSString(stringValues[i]));
-                }
-                getDictionary().setItem(COSName.V, stringArray);
-            }
-        }
-        else
-        {
-            getDictionary().removeItem(COSName.V);
-        }
-        // TODO create/update appearance
+        super.setValue(value);
     }
 
 }

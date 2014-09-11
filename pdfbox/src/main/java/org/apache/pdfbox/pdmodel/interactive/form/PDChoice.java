@@ -207,6 +207,50 @@ public abstract class PDChoice extends PDVariableText
     }
 
     /**
+     * setValue sets the entry "V" to the given value.
+     * 
+     * @param value the value
+     * 
+     */
+    @Override
+    public void setValue(Object value)
+    {
+        if (value != null)
+        {
+            if (value instanceof String)
+            {
+                getDictionary().setString(COSName.V, (String)value);
+                int index = getSelectedIndex((String) value);
+                if (index == -1)
+                {
+                    throw new IllegalArgumentException(
+                            "The list box does not contain the given value.");
+                }
+                selectMultiple(index);
+            }
+            if (value instanceof String[])
+            {
+                if (!isMultiSelect())
+                {
+                    throw new IllegalArgumentException("The list box does allow multiple selection.");
+                }
+                String[] stringValues = (String[])value;
+                COSArray stringArray = new COSArray();
+                for (int i =0; i<stringValues.length;i++)
+                {
+                    stringArray.add(new COSString(stringValues[i]));
+                }
+                getDictionary().setItem(COSName.V, stringArray);
+            }
+        }
+        else
+        {
+            getDictionary().removeItem(COSName.V);
+        }
+        // TODO create/update appearance
+    }
+
+    /**
      * getValue gets the value of the "V" entry.
      * 
      * @return The value of this entry.
@@ -230,7 +274,7 @@ public abstract class PDChoice extends PDVariableText
     }
 
     // returns the "Opt" index for the given string
-    protected int getSelectedIndex(String optionValue)
+    private int getSelectedIndex(String optionValue)
     {
         int indexSelected = -1;
         COSArray options = getOptions();
@@ -263,7 +307,7 @@ public abstract class PDChoice extends PDVariableText
     }
 
     // implements "MultiSelect"
-    protected void selectMultiple(int selectedIndex)
+    private void selectMultiple(int selectedIndex)
     {
         COSArray indexArray = getSelectedOptions();
         if (indexArray != null)
