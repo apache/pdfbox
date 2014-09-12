@@ -94,7 +94,10 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
         // scale radius to device space
         coords[2] *= xform.getScaleX();
         coords[5] *= xform.getScaleX();
-
+        // a radius is always positive
+        coords[2] = Math.abs(coords[2]);
+        coords[5] = Math.abs(coords[5]);
+        
         // domain values
         if (this.radialShadingType.getDomain() != null)
         {
