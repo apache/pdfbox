@@ -107,6 +107,11 @@ public class PDFObjectStreamParser extends BaseParser
             {
                 object = new COSObject(cosObject);
                 object.setGenerationNumber( COSInteger.ZERO );
+                if (objectCounter >= objectNumbers.size())
+                {
+                    LOG.error("/ObjStm (object stream) has more objects than /N " + numberOfObjects);
+                    break;
+                }
                 COSInteger objNum =
                     COSInteger.get( objectNumbers.get( objectCounter).intValue() );
                 object.setObjectNumber( objNum );
