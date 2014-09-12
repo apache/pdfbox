@@ -738,15 +738,16 @@ public class PDFParser extends BaseParser
         String str = readString();
         byte[] b = str.getBytes("ISO-8859-1");
         pdfSource.unread(b, 0, b.length);
+        
+        // signal start of new XRef
+        xrefTrailerResolver.nextXrefObj( startByteOffset, XRefType.TABLE );
+
         if (str.startsWith("trailer"))
         {
             LOG.warn("skipping empty xref table");
             return false;
         }
         
-        // signal start of new XRef
-        xrefTrailerResolver.nextXrefObj( startByteOffset, XRefType.TABLE );
-
         /*
          * Xref tables can have multiple sections.
          * Each starts with a starting object id and a count.
