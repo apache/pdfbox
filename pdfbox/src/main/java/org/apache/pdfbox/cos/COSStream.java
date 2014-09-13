@@ -89,10 +89,11 @@ public class COSStream extends COSDictionary implements Closeable
      * Constructor.  Creates a new stream with an empty dictionary.
      *
      */
-    protected COSStream( RandomAccessBuffer randomBuffer )
+    protected COSStream( RandomAccess randomBuffer )
     {
         super();
         buffer = randomBuffer;
+        
     }
 
     /**
@@ -101,7 +102,7 @@ public class COSStream extends COSDictionary implements Closeable
      * @param dictionary The dictionary that is associated with this stream.
      * 
      */
-    protected COSStream( COSDictionary dictionary, RandomAccessBuffer randomBuffer  )
+    protected COSStream( COSDictionary dictionary, RandomAccess randomBuffer  )
     {
         super( dictionary );
         buffer = randomBuffer;

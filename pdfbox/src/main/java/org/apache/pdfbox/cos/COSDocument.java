@@ -28,6 +28,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdfparser.NonSequentialPDFParser;
 import org.apache.pdfbox.pdfparser.PDFObjectStreamParser;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
@@ -86,6 +87,10 @@ public class COSDocument extends COSBase implements Closeable
 
     private boolean isXRefStream;
     
+    private final File scratchDirectory;
+    
+    private final boolean useScratchFiles;
+    
     /**
      * Flag to skip malformed or otherwise unparseable input where possible.
      */
@@ -103,7 +108,22 @@ public class COSDocument extends COSBase implements Closeable
      */
     public COSDocument(boolean forceParsingValue) 
     {
-        forceParsing = forceParsingValue;
+        this(null, forceParsingValue, false);
+    }
+
+    /**
+     * Constructor that will use the given random access file for storage
+     * of the PDF streams. The client of this method is responsible for
+     * deleting the storage if necessary that this file will write to. The
+     * close method will close the file though.
+     *
+     * @param scratchFileValue the random access file to use for storage
+     * @param forceParsingValue flag to skip malformed or otherwise unparseable
+     *                     document content where possible
+     */
+    public COSDocument(boolean forceParsingValue, boolean useScratchFiles) 
+    {
+        this(null, forceParsingValue, useScratchFiles);
     }
 
     /**
@@ -115,11 +135,27 @@ public class COSDocument extends COSBase implements Closeable
      *                   or <code>null</code> to use the system default
      * @param forceParsingValue flag to skip malformed or otherwise unparseable
      *                     document content where possible
-     * @throws IOException if something went wrong
      */
-    public COSDocument(File scratchDir, boolean forceParsingValue) throws IOException 
+    public COSDocument(File scratchDir, boolean forceParsingValue) 
+    {
+        this(scratchDir, forceParsingValue, false);
+    }
+
+    /**
+     * Constructor that will use a temporary file in the given directory
+     * for storage of the PDF streams. The temporary file is automatically
+     * removed when this document gets closed.
+     *
+     * @param scratchDir directory for the temporary file,
+     *                   or <code>null</code> to use the system default
+     * @param forceParsingValue flag to skip malformed or otherwise unparseable
+     *                     document content where possible
+     */
+    public COSDocument(File scratchDir, boolean forceParsingValue, boolean useScratchFiles) 
     {
         forceParsing = forceParsingValue;
+        scratchDirectory = scratchDir;
+        this.useScratchFiles = useScratchFiles;
     }
 
     /**
@@ -127,7 +163,7 @@ public class COSDocument extends COSBase implements Closeable
      */
     public COSDocument()
     {
-        this(false);
+        this(false, false);
     }
 
     /**
@@ -140,7 +176,7 @@ public class COSDocument extends COSBase implements Closeable
      */
     public COSDocument(File scratchDir) throws IOException 
     {
-        this(scratchDir, false);
+        this(scratchDir, false, false);
     }
 
     /**
@@ -150,7 +186,19 @@ public class COSDocument extends COSBase implements Closeable
      */
     public COSStream createCOSStream()
     {
-        return new COSStream( );
+        RandomAccessFile scratchFile = null;
+        if (useScratchFiles)
+        {
+            scratchFile = createScratchFile();
+        }
+        if (scratchFile != null)
+        {
+            return new COSStream( scratchFile );
+        }
+        else
+        {
+            return new COSStream( );
+        }
     }
 
     /**
@@ -162,9 +210,36 @@ public class COSDocument extends COSBase implements Closeable
      */
     public COSStream createCOSStream(COSDictionary dictionary)
     {
-        return new COSStream( dictionary );
+        RandomAccessFile scratchFile = null;
+        if (useScratchFiles)
+        {
+            scratchFile = createScratchFile();
+        }
+        if (scratchFile != null)
+        {
+            return new COSStream( dictionary, scratchFile );
+        }
+        else
+        {
+            return new COSStream( dictionary );
+        }
     }
 
+    private RandomAccessFile createScratchFile()
+    {
+        RandomAccessFile buffer = null;
+        try 
+        {
+            File scratchFile = File.createTempFile("PDFBox", null, scratchDirectory);
+            scratchFile.deleteOnExit();
+            buffer = new RandomAccessFile(scratchFile, "rw");
+        }
+        catch (IOException exception)
+        {
+            LOG.error("Can't create temp file, using memory buffer instead", exception);
+        }
+        return buffer;
+    }
     /**
      * This will get the first dictionary object by type.
      *
