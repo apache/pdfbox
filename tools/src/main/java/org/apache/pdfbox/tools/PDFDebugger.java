@@ -398,7 +398,7 @@ public class PDFDebugger extends javax.swing.JFrame
     {
         if (useNonSeqParser)
         {
-            document = PDDocument.loadNonSeq(file, null, password);
+            document = PDDocument.loadNonSeq(file, password);
         }
         else
         {

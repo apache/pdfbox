@@ -384,7 +384,7 @@ public class PDFReader extends JFrame
         document = null;
         if (useNonSeqParser)
         {
-            document = PDDocument.loadNonSeq(file, null, password);
+            document = PDDocument.loadNonSeq(file, password);
         }
         else
         {

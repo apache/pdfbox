@@ -27,8 +27,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
  * A PDStream represents a stream in a PDF document.  Streams are tied to a single
  * PDF document.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.3 $
+ * @author Ben Litchfield
  */
 public class PDObjectStream extends PDStream
 {
@@ -53,7 +52,7 @@ public class PDObjectStream extends PDStream
     {
         COSStream cosStream = document.getDocument().createCOSStream();
         PDObjectStream strm = new PDObjectStream( cosStream );
-        strm.getStream().setName( COSName.TYPE, "ObjStm" );
+        strm.getStream().setItem( COSName.TYPE, COSName.OBJ_STM );
         return strm;
     }
 

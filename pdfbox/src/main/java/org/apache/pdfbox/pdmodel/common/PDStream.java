@@ -45,8 +45,7 @@ import org.apache.pdfbox.pdmodel.common.filespecification.PDFileSpecification;
  * A PDStream represents a stream in a PDF document. Streams are tied to a
  * single PDF document.
  * 
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.17 $
+ * @author Ben Litchfield
  */
 public class PDStream implements COSObjectable
 {

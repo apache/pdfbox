@@ -34,7 +34,6 @@ import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.pdfparser.XrefTrailerResolver.XRefType;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
@@ -43,8 +42,7 @@ import org.apache.pdfbox.persistence.util.COSObjectKey;
 /**
  * This class will handle the parsing of the PDF document.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.53 $
+ * @author Ben Litchfield
  */
 public class PDFParser extends BaseParser
 {
@@ -78,8 +76,6 @@ public class PDFParser extends BaseParser
      */
     private File tempDirectory = null;
 
-    private RandomAccess raf = null;
-
     /**
      * Constructor.
      *
@@ -89,35 +85,21 @@ public class PDFParser extends BaseParser
      */
     public PDFParser( InputStream input ) throws IOException 
     {
-        this(input, null, FORCE_PARSING);
-    }
-
-    /**
-     * Constructor to allow control over RandomAccessFile.
-     * @param input The input stream that contains the PDF document.
-     * @param rafi The RandomAccessFile to be used in internal COSDocument
-     *
-     * @throws IOException If there is an error initializing the stream.
-     */
-    public PDFParser(InputStream input, RandomAccess rafi) throws IOException 
-    {
-        this(input, rafi, FORCE_PARSING);
+        this(input, FORCE_PARSING);
     }
 
     /**
      * Constructor to allow control over RandomAccessFile.
      * Also enables parser to skip corrupt objects to try and force parsing
      * @param input The input stream that contains the PDF document.
-     * @param rafi The RandomAccessFile to be used in internal COSDocument
      * @param force When true, the parser will skip corrupt pdf objects and
      * will continue parsing at the next object in the file
      *
      * @throws IOException If there is an error initializing the stream.
      */
-    public PDFParser(InputStream input, RandomAccess rafi, boolean force) throws IOException 
+    public PDFParser(InputStream input, boolean force) throws IOException 
     {
         super(input, force);
-        this.raf = rafi;
     }
 
     /**
@@ -157,20 +139,13 @@ public class PDFParser extends BaseParser
     {
         try
         {
-            if ( raf == null )
+            if( tempDirectory != null )
             {
-                if( tempDirectory != null )
-                {
-                    document = new COSDocument( tempDirectory );
-                }
-                else
-                {
-                    document = new COSDocument();
-                }
+                document = new COSDocument( tempDirectory );
             }
             else
             {
-                document = new COSDocument( raf );
+                document = new COSDocument();
             }
             setDocument( document );
 
@@ -599,7 +574,7 @@ public class PDFParser extends BaseParser
                 pdfSource.unread( ' ' );
                 if( pb instanceof COSDictionary )
                 {
-                    pb = parseCOSStream( (COSDictionary)pb, getDocument().getScratchFile() );
+                    pb = parseCOSStream( (COSDictionary)pb );
 
                     // test for XRef type
                     final COSStream strmObj = (COSStream) pb;

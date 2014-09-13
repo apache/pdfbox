@@ -278,7 +278,7 @@ public class TestFDF extends TestCase
         if( string != null )
         {
             ByteArrayInputStream stream = new ByteArrayInputStream( string.getBytes() );
-            parser = new PDFStreamParser( stream, doc.getDocument().getScratchFile() );
+            parser = new PDFStreamParser( stream );
             parser.parse();
             tokens = parser.getTokens();
         }

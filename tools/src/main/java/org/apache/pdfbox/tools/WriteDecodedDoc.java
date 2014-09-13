@@ -83,7 +83,7 @@ public class WriteDecodedDoc
         {
             if (useNonSeqParser) 
             {
-                doc = PDDocument.loadNonSeq(new File(in), null, password);
+                doc = PDDocument.loadNonSeq(new File(in), password);
                 doc.setAllSecurityToBeRemoved(true);
             }
             else

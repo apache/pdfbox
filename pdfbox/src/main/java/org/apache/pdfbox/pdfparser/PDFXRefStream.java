@@ -33,12 +33,10 @@ import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.apache.pdfbox.pdfwriter.COSWriterXRefEntry;
 
 /**
  * @author Alexander Funk
- * @version $Revision: $
  */
 public class PDFXRefStream implements PDFXRef
 {
@@ -62,7 +60,7 @@ public class PDFXRefStream implements PDFXRef
      */
     public PDFXRefStream()
     {
-        this.stream = new COSStream(new COSDictionary(), new RandomAccessBuffer());
+        this.stream = new COSStream(new COSDictionary());
         streamData = new TreeMap<Integer, Object>();
         objectNumbers = new TreeSet<Integer>();
     }

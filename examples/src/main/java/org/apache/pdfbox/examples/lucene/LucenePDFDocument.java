@@ -433,7 +433,7 @@ public class LucenePDFDocument
         {
             if (useNonSeqParser)
             {
-                pdfDocument = PDDocument.loadNonSeq(is, null, "");
+                pdfDocument = PDDocument.loadNonSeq(is, "");
             }
             else
             {
