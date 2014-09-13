@@ -170,7 +170,7 @@ public class ExtractImages
         {
             if (useNonSeq)
             {
-                document = PDDocument.loadNonSeq(new File(pdfFile), null, password);
+                document = PDDocument.loadNonSeq(new File(pdfFile), password);
             }
             else
             {

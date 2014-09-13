@@ -32,7 +32,6 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -217,7 +216,7 @@ public class Overlay
     {
         List<COSStream> contentStreams = createContentStreamList(contents);
         // concatenate streams
-        COSStream concatStream = new COSStream(new RandomAccessBuffer());
+        COSStream concatStream = new COSStream();
         OutputStream out = concatStream.createUnfilteredStream();
         for (COSStream contentStream : contentStreams)
         {
@@ -383,7 +382,7 @@ public class Overlay
 
     private COSStream createStream(String content) throws IOException
     {
-        COSStream stream = new COSStream(new RandomAccessBuffer());
+        COSStream stream = new COSStream();
         OutputStream out = stream.createUnfilteredStream();
         out.write(content.getBytes("ISO-8859-1"));
         out.close();

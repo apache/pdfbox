@@ -38,7 +38,6 @@ import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.pdfparser.BaseParser;
 import org.apache.pdfbox.pdfparser.NonSequentialPDFParser;
 import org.apache.pdfbox.pdfparser.PDFParser;
@@ -934,21 +933,6 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * This will load a document from a url.
-     * 
-     * @param url The url to load the PDF from.
-     * @param scratchFile A location to store temp PDFBox data for this document.
-     * 
-     * @return The document that was loaded.
-     * 
-     * @throws IOException If there is an error reading from the stream.
-     */
-    public static PDDocument load(URL url, RandomAccess scratchFile) throws IOException
-    {
-        return load(url.openStream(), scratchFile);
-    }
-
-    /**
      * This will load a document from a file.
      * 
      * @param filename The name of the file to load.
@@ -981,21 +965,6 @@ public class PDDocument implements Closeable
     /**
      * This will load a document from a file.
      * 
-     * @param filename The name of the file to load.
-     * @param scratchFile A location to store temp PDFBox data for this document.
-     * 
-     * @return The document that was loaded.
-     * 
-     * @throws IOException If there is an error reading from the stream.
-     */
-    public static PDDocument load(String filename, RandomAccess scratchFile) throws IOException
-    {
-        return load(new File(filename), scratchFile, false);
-    }
-
-    /**
-     * This will load a document from a file.
-     * 
      * @param file The name of the file to load.
      * 
      * @return The document that was loaded.
@@ -1020,7 +989,11 @@ public class PDDocument implements Closeable
      */
     public static PDDocument load(File file, boolean force) throws IOException
     {
-        return load(file, null, force);
+        PDFParser parser = new PDFParser(new FileInputStream(file), force);
+        parser.parse();
+        PDDocument doc = parser.getPDDocument();
+        doc.incrementalFile = file;
+        return doc;
     }
 
     /**
@@ -1034,7 +1007,9 @@ public class PDDocument implements Closeable
      */
     public static PDDocument load(InputStream input) throws IOException
     {
-        return load(input, null);
+        PDFParser parser = new PDFParser(input);
+        parser.parse();
+        return parser.getPDDocument();
     }
 
     /**
@@ -1050,75 +1025,7 @@ public class PDDocument implements Closeable
      */
     public static PDDocument load(InputStream input, boolean force) throws IOException
     {
-        return load(input, null, force);
-    }
-
-    /**
-     * This will load a document from an input stream.
-     *
-     * @param file The name of the file to load.
-     * @param scratchFile A location to store temp PDFBox data for this document.
-     * @return The document that was loaded.
-     *
-     * @throws IOException If there is an error reading from the stream.
-     */
-    public static PDDocument load(File file, RandomAccess scratchFile) throws IOException
-    {
-        return load(file, scratchFile, false);
-    }
-
-    /**
-     * This will load a document from an input stream.
-     *
-     * @param file The name of the file to load.
-     * @param scratchFile A location to store temp PDFBox data for this document.
-     * @param force When true, the parser will skip corrupt pdf objects and will continue parsing at the next object in
-     *            the file
-     * @return The document that was loaded.
-     *
-     * @throws IOException If there is an error reading from the stream.
-     */
-    public static PDDocument load(File file, RandomAccess scratchFile, boolean force) throws IOException
-    {
-        PDFParser parser = new PDFParser(new FileInputStream(file), scratchFile, force);
-        parser.parse();
-        PDDocument doc = parser.getPDDocument();
-        doc.incrementalFile = file;
-        return doc;
-    }
-
-    /**
-     * This will load a document from an input stream.
-     * 
-     * @param input The stream that contains the document.
-     * @param scratchFile A location to store temp PDFBox data for this document.
-     * 
-     * @return The document that was loaded.
-     * 
-     * @throws IOException If there is an error reading from the stream.
-     */
-    public static PDDocument load(InputStream input, RandomAccess scratchFile) throws IOException
-    {
-        PDFParser parser = new PDFParser(input, scratchFile);
-        parser.parse();
-        return parser.getPDDocument();
-    }
-
-    /**
-     * This will load a document from an input stream. Allows for skipping corrupt pdf objects
-     * 
-     * @param input The stream that contains the document.
-     * @param scratchFile A location to store temp PDFBox data for this document.
-     * @param force When true, the parser will skip corrupt pdf objects and will continue parsing at the next object in
-     *            the file
-     * 
-     * @return The document that was loaded.
-     * 
-     * @throws IOException If there is an error reading from the stream.
-     */
-    public static PDDocument load(InputStream input, RandomAccess scratchFile, boolean force) throws IOException
-    {
-        PDFParser parser = new PDFParser(input, scratchFile, force);
+        PDFParser parser = new PDFParser(input, force);
         parser.parse();
         return parser.getPDDocument();
     }
@@ -1127,31 +1034,29 @@ public class PDDocument implements Closeable
      * Parses PDF with non sequential parser.
      * 
      * @param file file to be loaded
-     * @param scratchFile location to store temp PDFBox data for this document
      * 
      * @return loaded document
      * 
      * @throws IOException in case of a file reading or parsing error
      */
-    public static PDDocument loadNonSeq(File file, RandomAccess scratchFile) throws IOException
+    public static PDDocument loadNonSeq(File file) throws IOException
     {
-        return loadNonSeq(file, scratchFile, "");
+        return loadNonSeq(file, "");
     }
 
     /**
      * Parses PDF with non sequential parser.
      * 
      * @param file file to be loaded
-     * @param scratchFile location to store temp PDFBox data for this document
      * @param password password to be used for decryption
      * 
      * @return loaded document
      * 
      * @throws IOException in case of a file reading or parsing error
      */
-    public static PDDocument loadNonSeq(File file, RandomAccess scratchFile, String password) throws IOException
+    public static PDDocument loadNonSeq(File file, String password) throws IOException
     {
-        NonSequentialPDFParser parser = new NonSequentialPDFParser(file, scratchFile, password);
+        NonSequentialPDFParser parser = new NonSequentialPDFParser(file, password);
         parser.parse();
         return parser.getPDDocument();
     }
@@ -1160,32 +1065,30 @@ public class PDDocument implements Closeable
      * Parses PDF with non sequential parser.
      * 
      * @param input stream that contains the document.
-     * @param scratchFile location to store temp PDFBox data for this document
      * 
      * @return loaded document
      * 
      * @throws IOException in case of a file reading or parsing error
      */
-    public static PDDocument loadNonSeq(InputStream input, RandomAccess scratchFile) throws IOException
+    public static PDDocument loadNonSeq(InputStream input) throws IOException
     {
-        return loadNonSeq(input, scratchFile, "");
+        return loadNonSeq(input, "");
     }
 
     /**
      * Parses PDF with non sequential parser.
      * 
      * @param input stream that contains the document.
-     * @param scratchFile location to store temp PDFBox data for this document
      * @param password password to be used for decryption
      * 
      * @return loaded document
      * 
      * @throws IOException in case of a file reading or parsing error
      */
-    public static PDDocument loadNonSeq(InputStream input, RandomAccess scratchFile, String password)
+    public static PDDocument loadNonSeq(InputStream input, String password)
             throws IOException
     {
-        NonSequentialPDFParser parser = new NonSequentialPDFParser(input, scratchFile, password);
+        NonSequentialPDFParser parser = new NonSequentialPDFParser(input, password);
         parser.parse();
         return parser.getPDDocument();
     }

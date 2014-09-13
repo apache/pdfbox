@@ -70,7 +70,6 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.pdfparser.BaseParser;
 import org.apache.pdfbox.pdfparser.NonSequentialPDFParser;
 import org.apache.pdfbox.pdfparser.PDFObjectStreamParser;
@@ -103,21 +102,16 @@ public class PreflightParser extends NonSequentialPDFParser
 
     protected PreflightContext ctx;
 
-    public PreflightParser(File file, RandomAccess rafi) throws IOException
+    public PreflightParser(File file) throws IOException
     {
-        super(file, rafi);
+        super(file);
         this.setLenient(false);
         this.originalDocument = new FileDataSource(file);
     }
 
-    public PreflightParser(File file) throws IOException
-    {
-        this(file, null);
-    }
-
     public PreflightParser(String filename) throws IOException
     {
-        this(new File(filename), null);
+        this(new File(filename));
     }
 
     public PreflightParser(DataSource input) throws IOException
@@ -441,10 +435,10 @@ public class PreflightParser extends NonSequentialPDFParser
      * {@link #checkStreamKeyWord()} and {@link #checkEndstreamKeyWord()}
      */
     @Override
-    protected COSStream parseCOSStream(COSDictionary dic, RandomAccess file) throws IOException
+    protected COSStream parseCOSStream(COSDictionary dic) throws IOException
     {
         checkStreamKeyWord();
-        COSStream result = super.parseCOSStream(dic, file);
+        COSStream result = super.parseCOSStream(dic);
         checkEndstreamKeyWord();
         return result;
     }
@@ -741,7 +735,7 @@ public class PreflightParser extends NonSequentialPDFParser
                     pdfSource.seek(endObjectOffset);
                     if (pb instanceof COSDictionary)
                     {
-                        COSStream stream = parseCOSStream((COSDictionary) pb, getDocument().getScratchFile());
+                        COSStream stream = parseCOSStream((COSDictionary) pb);
                         if (securityHandler != null)
                         {
                             securityHandler.decryptStream(stream, objNr, objGenNr);

@@ -33,7 +33,6 @@ import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.util.operator.Operator;
 
@@ -46,7 +45,7 @@ import org.apache.pdfbox.util.operator.Operator;
 public class PDFStreamParser extends BaseParser
 {
     private List<Object> streamObjects = new ArrayList<Object>( 100 );
-    private final RandomAccess file;
+//    private final RandomAccess file;
     private final int    maxBinCharTestLength = 10;
     private final byte[] binCharTestArr = new byte[maxBinCharTestLength];
 
@@ -60,26 +59,24 @@ public class PDFStreamParser extends BaseParser
      *                     input where possible
      * @throws IOException If there is an error reading from the stream.
      */
-    public PDFStreamParser(
-            InputStream stream, RandomAccess raf, boolean forceParsing)
+    public PDFStreamParser(InputStream stream,  boolean forceParsing)
             throws IOException 
     {
         super(stream, forceParsing);
-        file = raf;
+//        file = raf;
     }
 
     /**
      * Constructor that takes a stream to parse.
      *
      * @param stream The stream to read data from.
-     * @param raf The random access file.
      *
      * @throws IOException If there is an error reading from the stream.
      */
-    public PDFStreamParser(InputStream stream, RandomAccess raf)
+    public PDFStreamParser(InputStream stream)
             throws IOException 
     {
-        this(stream, raf, FORCE_PARSING);
+        this(stream, FORCE_PARSING);
     }
 
     /**
@@ -91,7 +88,7 @@ public class PDFStreamParser extends BaseParser
      */
     public PDFStreamParser( PDStream stream ) throws IOException
     {
-       this( stream.createInputStream(), stream.getStream().getScratchFile() );
+       this( stream.createInputStream() );
     }
 
     /**
@@ -106,7 +103,7 @@ public class PDFStreamParser extends BaseParser
     public PDFStreamParser(COSStream stream, boolean forceParsing)
             throws IOException 
     {
-       this(stream.getUnfilteredStream(), stream.getScratchFile(), forceParsing);
+       this(stream.getUnfilteredStream(), forceParsing);
     }
 
     /**
@@ -118,7 +115,7 @@ public class PDFStreamParser extends BaseParser
      */
     public PDFStreamParser( COSStream stream ) throws IOException
     {
-       this( stream.getUnfilteredStream(), stream.getScratchFile() );
+       this( stream.getUnfilteredStream() );
     }
 
     /**
@@ -253,7 +250,7 @@ public class PDFStreamParser extends BaseParser
                     skipSpaces();
                     if((char)pdfSource.peek() == 's')
                     {
-                        retval = parseCOSStream( pod, file );
+                        retval = parseCOSStream( pod );
                     }
                     else
                     {

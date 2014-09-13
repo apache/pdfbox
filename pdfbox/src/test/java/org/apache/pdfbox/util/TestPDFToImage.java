@@ -215,7 +215,7 @@ public class TestPDFToImage extends TestCase
             {
                 // Check for version difference between load() and loadNonSeq()
                 new FileOutputStream(new File(outDir + file.getName() + ".parseseqerror")).close();
-                PDDocument doc2 = PDDocument.load(file, null);
+                PDDocument doc2 = PDDocument.load(file);
                 if (doc2.getDocument().getVersion() != document.getDocument().getVersion())
                 {
                     new FileOutputStream(new File(outDir + file.getName() + ".versiondiff")).close();

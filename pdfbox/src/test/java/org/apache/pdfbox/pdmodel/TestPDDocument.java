@@ -25,7 +25,6 @@ import java.io.InputStream;
 import java.util.Arrays;
 
 import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.io.RandomAccessBuffer;
 
 import junit.framework.TestCase;
 
@@ -65,7 +64,7 @@ public class TestPDDocument extends TestCase
         assertEquals("%%EOF\n", new String(Arrays.copyOfRange(pdf, pdf.length - 6, pdf.length), "UTF-8"));
 
         // Load
-        PDDocument loadDoc = PDDocument.load(new ByteArrayInputStream(pdf), new RandomAccessBuffer());
+        PDDocument loadDoc = PDDocument.load(new ByteArrayInputStream(pdf));
         assertEquals(1, loadDoc.getNumberOfPages());
         loadDoc.close();
     }
@@ -94,7 +93,7 @@ public class TestPDDocument extends TestCase
         assertEquals("%%EOF\n", new String(Arrays.copyOfRange(pdf, pdf.length - 6, pdf.length), "UTF-8"));
 
         // Load
-        PDDocument loadDoc = PDDocument.load(targetFile, new RandomAccessBuffer());
+        PDDocument loadDoc = PDDocument.load(targetFile);
         assertEquals(1, loadDoc.getNumberOfPages());
         loadDoc.close();
     }
@@ -120,7 +119,7 @@ public class TestPDDocument extends TestCase
         assertEquals("%%EOF\n", new String(Arrays.copyOfRange(pdf, pdf.length - 6, pdf.length), "UTF-8"));
 
         // Load
-        PDDocument loadDoc = PDDocument.loadNonSeq(new ByteArrayInputStream(pdf), new RandomAccessBuffer());
+        PDDocument loadDoc = PDDocument.loadNonSeq(new ByteArrayInputStream(pdf));
         assertEquals(1, loadDoc.getNumberOfPages());
         loadDoc.close();
     }
@@ -149,7 +148,7 @@ public class TestPDDocument extends TestCase
         assertEquals("%%EOF\n", new String(Arrays.copyOfRange(pdf, pdf.length - 6, pdf.length), "UTF-8"));
 
         // Load
-        PDDocument loadDoc = PDDocument.loadNonSeq(targetFile, new RandomAccessBuffer());
+        PDDocument loadDoc = PDDocument.loadNonSeq(targetFile);
         assertEquals(1, loadDoc.getNumberOfPages());
         loadDoc.close();
     }

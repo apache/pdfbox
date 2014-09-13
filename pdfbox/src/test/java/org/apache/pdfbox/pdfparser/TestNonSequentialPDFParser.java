@@ -29,7 +29,6 @@ import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 
-import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -76,7 +75,7 @@ public class TestNonSequentialPDFParser {
 
 	@Test
 	public void testNonSequentialPDFParserFileRandomAccess() throws IOException {
-		NonSequentialPDFParser nsp = new NonSequentialPDFParser(new File(PATH_OF_PDF), new RandomAccessBuffer());
+		NonSequentialPDFParser nsp = new NonSequentialPDFParser(new File(PATH_OF_PDF));
 		executeParserTest(nsp);
 	}
 

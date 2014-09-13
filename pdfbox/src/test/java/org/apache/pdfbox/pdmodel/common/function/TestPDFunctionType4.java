@@ -22,7 +22,6 @@ import java.io.OutputStream;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.io.RandomAccessBuffer;
 
 import junit.framework.TestCase;
 
@@ -46,7 +45,7 @@ public class TestPDFunctionType4 extends TestCase
         rangeArray.setFloatArray(range);
         dict.setItem("Range", rangeArray);
 
-        COSStream functionStream = new COSStream(dict, new RandomAccessBuffer());
+        COSStream functionStream = new COSStream(dict);
         OutputStream out = functionStream.createUnfilteredStream();
         byte[] data = function.getBytes("US-ASCII");
         out.write(data, 0, data.length);

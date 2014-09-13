@@ -231,7 +231,7 @@ public class VisualSignatureParser extends BaseParser
                 pdfSource.unread(' ');
                 if(pb instanceof COSDictionary) 
                 {
-                    pb = parseCOSStream((COSDictionary) pb, getDocument().getScratchFile());
+                    pb = parseCOSStream((COSDictionary) pb);
 
                 } 
                 else 

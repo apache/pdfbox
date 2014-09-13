@@ -39,7 +39,6 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.PushBackInputStream;
-import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.persistence.util.COSObjectKey;
 
 /**
@@ -403,16 +402,15 @@ public abstract class BaseParser
     /**
      * This will read a COSStream from the input stream.
      *
-     * @param file The file to write the stream to when reading.
      * @param dic The dictionary that goes with this stream.
      *
      * @return The parsed pdf stream.
      *
      * @throws IOException If there is an error reading the stream.
      */
-    protected COSStream parseCOSStream( COSDictionary dic, RandomAccess file ) throws IOException
+    protected COSStream parseCOSStream( COSDictionary dic ) throws IOException
     {
-        COSStream stream = new COSStream( dic, file );
+        COSStream stream = new COSStream( dic );
         OutputStream out = null;
         try
         {

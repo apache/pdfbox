@@ -160,7 +160,7 @@ public final class PDAppearanceString
         if( string != null )
         {
             ByteArrayInputStream stream = new ByteArrayInputStream( string.getBytes() );
-            parser = new PDFStreamParser( stream, acroForm.getDocument().getDocument().getScratchFile() );
+            parser = new PDFStreamParser( stream );
             parser.parse();
             tokens = parser.getTokens();
         }
@@ -351,7 +351,7 @@ public final class PDAppearanceString
         if( defaultAppearance != null )
         {
             String daString = defaultAppearance.getString();
-            PDFStreamParser daParser = new PDFStreamParser(new ByteArrayInputStream( daString.getBytes("ISO-8859-1") ), null );
+            PDFStreamParser daParser = new PDFStreamParser(new ByteArrayInputStream( daString.getBytes("ISO-8859-1") ) );
             daParser.parse();
             List<Object> daTokens = daParser.getTokens();
             fontSize = calculateFontSize( pdFont, boundingBox, tokens, daTokens );
@@ -424,7 +424,7 @@ public final class PDAppearanceString
             {
                 String data = da.getString();
                 PDFStreamParser streamParser = new PDFStreamParser(
-                        new ByteArrayInputStream( data.getBytes("ISO-8859-1") ), null );
+                        new ByteArrayInputStream( data.getBytes("ISO-8859-1") ) );
                 streamParser.parse();
                 tokens = streamParser.getTokens();
             }

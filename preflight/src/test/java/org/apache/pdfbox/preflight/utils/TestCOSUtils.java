@@ -37,7 +37,6 @@ import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.persistence.util.COSObjectKey;
 import org.junit.Test;
@@ -116,7 +115,7 @@ public class TestCOSUtils
     {
         try
         {
-            COSObject co = new COSObject(new COSStream(null));
+            COSObject co = new COSObject(new COSStream());
             co.setGenerationNumber(COSInteger.ZERO);
             co.setObjectNumber(COSInteger.get(10));
 
@@ -223,11 +222,6 @@ public class TestCOSUtils
         IOCOSDocument(File scratchDir) throws IOException
         {
             super(scratchDir);
-        }
-
-        IOCOSDocument(RandomAccess file)
-        {
-            super(file);
         }
 
         @Override

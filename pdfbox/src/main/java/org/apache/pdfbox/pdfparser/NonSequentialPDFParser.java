@@ -52,8 +52,6 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.PushBackInputStream;
-import org.apache.pdfbox.io.RandomAccess;
-import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
 import org.apache.pdfbox.pdfparser.XrefTrailerResolver.XRefType;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -158,24 +156,25 @@ public class NonSequentialPDFParser extends PDFParser
     }
 
     /**
-     * Constructs parser for given file using given buffer for temporary storage.
+     * Constructs parser for given file using given buffer for temporary
+     * storage.
      * 
      * @param file the pdf to be parsed
-     * @param raBuf the buffer to be used for parsing
      * 
      * @throws IOException If something went wrong.
      */
     /**
-     * Constructs parser for given file using given buffer for temporary storage.
+     * Constructs parser for given file using given buffer for temporary
+     * storage.
      * 
      * @param file the pdf to be parsed
      * @param raBuf the buffer to be used for parsing
      * 
      * @throws IOException If something went wrong.
      */
-    public NonSequentialPDFParser(File file, RandomAccess raBuf) throws IOException
+    public NonSequentialPDFParser(File file) throws IOException
     {
-        this(file, raBuf, "");
+        this(file,  "");
     }
 
     /**
@@ -195,16 +194,16 @@ public class NonSequentialPDFParser extends PDFParser
      * 
      * @throws IOException If something went wrong.
      */
-    public NonSequentialPDFParser(File file, RandomAccess raBuf, String decryptionPassword)
+    public NonSequentialPDFParser(File file, String decryptionPassword)
             throws IOException
     {
-        super(EMPTY_INPUT_STREAM, null, false);
+        super(EMPTY_INPUT_STREAM, false);
         pdfFile = file;
         raStream = new RandomAccessBufferedFileInputStream(pdfFile);
-        init(file, raBuf, decryptionPassword);
+        init(file, decryptionPassword);
     }
 
-    private void init(File file, RandomAccess raBuf, String decryptionPassword) throws IOException
+    private void init(File file, String decryptionPassword) throws IOException
     {
         String eofLookupRangeStr = System.getProperty(SYSPROP_EOFLOOKUPRANGE);
         if (eofLookupRangeStr != null)
@@ -220,8 +219,7 @@ public class NonSequentialPDFParser extends PDFParser
             }
         }
 
-        setDocument((raBuf == null) ? new COSDocument(new RandomAccessBuffer(), false) : new COSDocument(
-                raBuf, false));
+        setDocument(new COSDocument(false));
 
         pdfSource = new PushBackInputStream(raStream, 4096);
 
@@ -236,24 +234,23 @@ public class NonSequentialPDFParser extends PDFParser
      */
     public NonSequentialPDFParser(InputStream input) throws IOException
     {
-        this(input, null, "");
+        this(input, "");
     }
 
     /**
      * Constructor.
      * 
      * @param input input stream representing the pdf.
-     * @param raBuf the buffer to be used for parsing
      * @param decryptionPassword password to be used for decryption.
      * @throws IOException If something went wrong.
      */
-    public NonSequentialPDFParser(InputStream input, RandomAccess raBuf, String decryptionPassword)
+    public NonSequentialPDFParser(InputStream input, String decryptionPassword)
             throws IOException
     {
-        super(EMPTY_INPUT_STREAM, null, false);
+        super(EMPTY_INPUT_STREAM, false);
         pdfFile = createTmpFile(input);
         raStream = new RandomAccessBufferedFileInputStream(pdfFile);
-        init(pdfFile, raBuf, decryptionPassword);
+        init(pdfFile, decryptionPassword);
     }
 
     /**
@@ -511,7 +508,7 @@ public class NonSequentialPDFParser extends PDFParser
         readPattern(OBJ_MARKER);
 
         COSDictionary dict = parseCOSDictionary();
-        COSStream xrefStream = parseCOSStream(dict, getDocument().getScratchFile());
+        COSStream xrefStream = parseCOSStream(dict);
         parseXrefStream(xrefStream, (int) objByteOffset, isStandalone);
 
         return dict.getLong(COSName.PREV);
@@ -1246,8 +1243,7 @@ public class NonSequentialPDFParser extends PDFParser
                     pdfSource.unread(' ');
                     if (pb instanceof COSDictionary)
                     {
-                        COSStream stream = parseCOSStream((COSDictionary) pb, getDocument()
-                                .getScratchFile());
+                        COSStream stream = parseCOSStream((COSDictionary) pb);
 
                         if (securityHandler != null)
                         {
@@ -1473,7 +1469,6 @@ public class NonSequentialPDFParser extends PDFParser
      * 'endstream' to be found after stream data is read.
      * 
      * @param dic dictionary that goes with this stream.
-     * @param file file to write the stream to when reading.
      * 
      * @return parsed pdf stream.
      * 
@@ -1481,9 +1476,9 @@ public class NonSequentialPDFParser extends PDFParser
      * does not end with 'endstream' after data read, stream too short etc.
      */
     @Override
-    protected COSStream parseCOSStream(COSDictionary dic, RandomAccess file) throws IOException
+    protected COSStream parseCOSStream(COSDictionary dic) throws IOException
     {
-        final COSStream stream = new COSStream(dic, file);
+        final COSStream stream = new COSStream(dic);
         OutputStream out = null;
         try
         {

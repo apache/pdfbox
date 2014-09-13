@@ -28,9 +28,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.io.RandomAccess;
-import org.apache.pdfbox.io.RandomAccessBuffer;
-import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdfparser.NonSequentialPDFParser;
 import org.apache.pdfbox.pdfparser.PDFObjectStreamParser;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
@@ -40,7 +37,7 @@ import org.apache.pdfbox.persistence.util.COSObjectKey;
  * This is the in-memory representation of the PDF document.  You need to call
  * close() on this object when you are done using it!!
  *
- * @author <a href="ben@benlitchfield.com">Ben Litchfield</a>
+ * @author Ben Litchfield
  * 
  */
 public class COSDocument extends COSBase implements Closeable
@@ -76,13 +73,6 @@ public class COSDocument extends COSBase implements Closeable
      */
     private SignatureInterface signatureInterface;
 
-    /**
-     * This file will store the streams in order to conserve memory.
-     */
-    private final RandomAccess scratchFile;
-
-    private final File tmpFile;
-
     private String headerString = "%PDF-" + version;
 
     private boolean warnMissingClose = true;
@@ -111,10 +101,8 @@ public class COSDocument extends COSBase implements Closeable
      * @param forceParsingValue flag to skip malformed or otherwise unparseable
      *                     document content where possible
      */
-    public COSDocument(RandomAccess scratchFileValue, boolean forceParsingValue) 
+    public COSDocument(boolean forceParsingValue) 
     {
-        scratchFile = scratchFileValue;
-        tmpFile = null;
         forceParsing = forceParsingValue;
     }
 
@@ -131,8 +119,6 @@ public class COSDocument extends COSBase implements Closeable
      */
     public COSDocument(File scratchDir, boolean forceParsingValue) throws IOException 
     {
-        tmpFile = File.createTempFile("pdfbox-", ".tmp", scratchDir);
-        scratchFile = new RandomAccessFile(tmpFile, "rw");
         forceParsing = forceParsingValue;
     }
 
@@ -141,7 +127,7 @@ public class COSDocument extends COSBase implements Closeable
      */
     public COSDocument()
     {
-        this(new RandomAccessBuffer(), false);
+        this(false);
     }
 
     /**
@@ -158,47 +144,13 @@ public class COSDocument extends COSBase implements Closeable
     }
 
     /**
-     * Constructor that will use the following random access file for storage
-     * of the PDF streams.  The client of this method is responsible for deleting
-     * the storage if necessary that this file will write to.  The close method
-     * will close the file though.
-     *
-     * @param file The random access file to use for storage.
-     */
-    public COSDocument(RandomAccess file) 
-    {
-        this(file, false);
-    }
-
-    /**
-     * This will get the scratch file for this document.
-     *
-     * @return The scratch file.
-     * 
-     * 
-     */
-    public RandomAccess getScratchFile()
-    {
-        // TODO the direct access to the scratch file should be removed.
-        if (!closed)
-        {
-            return scratchFile;
-        }
-        else
-        {
-            LOG.error("Can't access the scratch file as it is already closed!");
-            return null;
-        }
-    }
-
-    /**
      * Create a new COSStream using the underlying scratch file.
      * 
      * @return the new COSStream
      */
     public COSStream createCOSStream()
     {
-        return new COSStream( getScratchFile() );
+        return new COSStream( );
     }
 
     /**
@@ -210,7 +162,7 @@ public class COSDocument extends COSBase implements Closeable
      */
     public COSStream createCOSStream(COSDictionary dictionary)
     {
-        return new COSStream( dictionary, getScratchFile() );
+        return new COSStream( dictionary );
     }
 
     /**
@@ -577,11 +529,6 @@ public class COSDocument extends COSBase implements Closeable
     {
         if (!closed) 
         {
-            scratchFile.close();
-            if (tmpFile != null) 
-            {
-                tmpFile.delete();
-            }
             if (trailer != null)
             {
             	trailer.clear();

@@ -134,7 +134,7 @@ public class PDFSplit
             {
                 if (useNonSeqParser) 
                 {
-                    document = PDDocument.loadNonSeq(new File(pdfFile), null, password);
+                    document = PDDocument.loadNonSeq(new File(pdfFile), password);
                 }
                 else
                 {
