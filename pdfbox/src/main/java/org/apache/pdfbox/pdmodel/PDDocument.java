@@ -1041,7 +1041,21 @@ public class PDDocument implements Closeable
      */
     public static PDDocument loadNonSeq(File file) throws IOException
     {
-        return loadNonSeq(file, "");
+        return loadNonSeq(file, "", false);
+    }
+
+    /**
+     * Parses PDF with non sequential parser.
+     * 
+     * @param file file to be loaded
+     * 
+     * @return loaded document
+     * 
+     * @throws IOException in case of a file reading or parsing error
+     */
+    public static PDDocument loadNonSeq(File file, boolean useScratchFiles) throws IOException
+    {
+        return loadNonSeq(file, "", useScratchFiles);
     }
 
     /**
@@ -1056,7 +1070,22 @@ public class PDDocument implements Closeable
      */
     public static PDDocument loadNonSeq(File file, String password) throws IOException
     {
-        NonSequentialPDFParser parser = new NonSequentialPDFParser(file, password);
+        return loadNonSeq(file, password, false);
+    }
+
+    /**
+     * Parses PDF with non sequential parser.
+     * 
+     * @param file file to be loaded
+     * @param password password to be used for decryption
+     * 
+     * @return loaded document
+     * 
+     * @throws IOException in case of a file reading or parsing error
+     */
+    public static PDDocument loadNonSeq(File file, String password, boolean useScratchFiles) throws IOException
+    {
+        NonSequentialPDFParser parser = new NonSequentialPDFParser(file, password, useScratchFiles);
         parser.parse();
         return parser.getPDDocument();
     }
@@ -1072,7 +1101,21 @@ public class PDDocument implements Closeable
      */
     public static PDDocument loadNonSeq(InputStream input) throws IOException
     {
-        return loadNonSeq(input, "");
+        return loadNonSeq(input, "", false);
+    }
+
+    /**
+     * Parses PDF with non sequential parser.
+     * 
+     * @param input stream that contains the document.
+     * 
+     * @return loaded document
+     * 
+     * @throws IOException in case of a file reading or parsing error
+     */
+    public static PDDocument loadNonSeq(InputStream input, boolean useScratchFiles) throws IOException
+    {
+        return loadNonSeq(input, "", useScratchFiles);
     }
 
     /**
@@ -1088,7 +1131,23 @@ public class PDDocument implements Closeable
     public static PDDocument loadNonSeq(InputStream input, String password)
             throws IOException
     {
-        NonSequentialPDFParser parser = new NonSequentialPDFParser(input, password);
+        return loadNonSeq(input, password, false);
+    }
+
+    /**
+     * Parses PDF with non sequential parser.
+     * 
+     * @param input stream that contains the document.
+     * @param password password to be used for decryption
+     * 
+     * @return loaded document
+     * 
+     * @throws IOException in case of a file reading or parsing error
+     */
+    public static PDDocument loadNonSeq(InputStream input, String password, boolean useScratchFiles)
+            throws IOException
+    {
+        NonSequentialPDFParser parser = new NonSequentialPDFParser(input, password, useScratchFiles);
         parser.parse();
         return parser.getPDDocument();
     }

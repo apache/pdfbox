@@ -203,6 +203,24 @@ public abstract class BaseParser
     }
 
     /**
+     * Returns a new instance of a COSStream.
+     * 
+     * @param dictionary the dictionary belonging to the stream
+     * @return the new COSStream
+     */
+    protected final COSStream createCOSStream(COSDictionary dictionary)
+    {
+        if (document != null)
+        {
+            return document.createCOSStream(dictionary);
+        }
+        else
+        {
+            return null;
+        }
+    }
+    
+    /**
      * Set the document for this stream.
      *
      * @param doc The current document.
@@ -410,7 +428,7 @@ public abstract class BaseParser
      */
     protected COSStream parseCOSStream( COSDictionary dic ) throws IOException
     {
-        COSStream stream = new COSStream( dic );
+        COSStream stream = createCOSStream( dic );
         OutputStream out = null;
         try
         {

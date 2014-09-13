@@ -74,7 +74,7 @@ public class TestNonSequentialPDFParser {
 	}
 
 	@Test
-	public void testNonSequentialPDFParserFileRandomAccess() throws IOException {
+	public void testNonSequentialPDFParserFile() throws IOException {
 		NonSequentialPDFParser nsp = new NonSequentialPDFParser(new File(PATH_OF_PDF));
 		executeParserTest(nsp);
 	}
@@ -85,6 +85,23 @@ public class TestNonSequentialPDFParser {
 		executeParserTest(nsp);
 	}
 
+    @Test
+    public void testNonSequentialPDFParserStringScratchFile() throws Exception {
+        NonSequentialPDFParser nsp = new NonSequentialPDFParser(PATH_OF_PDF, true);
+        executeParserTest(nsp);
+    }
+
+    @Test
+    public void testNonSequentialPDFParserFileScratchFile() throws IOException {
+        NonSequentialPDFParser nsp = new NonSequentialPDFParser(new File(PATH_OF_PDF), true);
+        executeParserTest(nsp);
+    }
+
+    @Test
+    public void testNonSequentialPDFParserInputStreamScratchFile() throws IOException {
+        NonSequentialPDFParser nsp = new NonSequentialPDFParser(new FileInputStream(PATH_OF_PDF), true);
+        executeParserTest(nsp);
+    }
 	
 	private void executeParserTest(NonSequentialPDFParser nsp) throws IOException {
 	  nsp.parse();
