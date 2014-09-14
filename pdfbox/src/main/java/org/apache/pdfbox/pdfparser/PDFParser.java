@@ -76,6 +76,8 @@ public class PDFParser extends BaseParser
      */
     private File tempDirectory = null;
 
+    private final boolean useScratchFile;
+
     /**
      * Constructor.
      *
@@ -99,7 +101,23 @@ public class PDFParser extends BaseParser
      */
     public PDFParser(InputStream input, boolean force) throws IOException 
     {
+        this(input, force, false);
+    }
+
+    /**
+     * Constructor to allow control over RandomAccessFile.
+     * Also enables parser to skip corrupt objects to try and force parsing
+     * @param input The input stream that contains the PDF document.
+     * @param force When true, the parser will skip corrupt pdf objects and
+     * will continue parsing at the next object in the file
+     * @param useScratchFiles enables the usage of a scratch file if set to true
+     *
+     * @throws IOException If there is an error initializing the stream.
+     */
+    public PDFParser(InputStream input, boolean force, boolean useScratchFiles) throws IOException 
+    {
         super(input, force);
+        useScratchFile = useScratchFiles;
     }
 
     /**
@@ -141,11 +159,15 @@ public class PDFParser extends BaseParser
         {
             if( tempDirectory != null )
             {
-                document = new COSDocument( tempDirectory, false, true );
+                document = new COSDocument( tempDirectory, forceParsing, true );
+            }
+            else if(useScratchFile)
+            {
+                document = new COSDocument( null, forceParsing, true );
             }
             else
             {
-                document = new COSDocument();
+                document = new COSDocument(forceParsing);
             }
             setDocument( document );
 

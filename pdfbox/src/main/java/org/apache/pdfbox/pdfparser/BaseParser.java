@@ -126,7 +126,7 @@ public abstract class BaseParser
     /**
      * Default value of the {@link #forceParsing} flag.
      */
-    protected static final boolean FORCE_PARSING =
+    public static final boolean FORCE_PARSING =
         Boolean.getBoolean("org.apache.pdfbox.forceParsing");
 
     /**
