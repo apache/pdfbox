@@ -20,6 +20,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.Closeable;
+import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -33,6 +34,7 @@ import org.apache.pdfbox.filter.FilterFactory;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.io.RandomAccessBuffer;
+import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.io.RandomAccessFileInputStream;
 import org.apache.pdfbox.io.RandomAccessFileOutputStream;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
@@ -40,7 +42,7 @@ import org.apache.pdfbox.pdfparser.PDFStreamParser;
 /**
  * This class represents a stream object in a PDF document.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
+ * @author Ben Litchfield
  */
 public class COSStream extends COSDictionary implements Closeable
 {
@@ -69,8 +71,7 @@ public class COSStream extends COSDictionary implements Closeable
      */
     public COSStream( )
     {
-        super();
-        buffer = new RandomAccessBuffer();
+        this(false, null);
     }
 
     /**
@@ -81,19 +82,24 @@ public class COSStream extends COSDictionary implements Closeable
      */
     public COSStream( COSDictionary dictionary )
     {
-        super( dictionary );
-        buffer = new RandomAccessBuffer();
+        this(dictionary, false, null);
     }
 
     /**
      * Constructor.  Creates a new stream with an empty dictionary.
      *
      */
-    protected COSStream( RandomAccess randomBuffer )
+    public COSStream( boolean useScratchFiles, File scratchDirectory )
     {
         super();
-        buffer = randomBuffer;
-        
+        if (useScratchFiles)
+        {
+            buffer = createScratchFile(scratchDirectory);
+        }
+        if (buffer == null)
+        {
+            buffer = new RandomAccessBuffer();
+        }
     }
 
     /**
@@ -102,10 +108,33 @@ public class COSStream extends COSDictionary implements Closeable
      * @param dictionary The dictionary that is associated with this stream.
      * 
      */
-    protected COSStream( COSDictionary dictionary, RandomAccess randomBuffer  )
+    public COSStream( COSDictionary dictionary, boolean useScratchFiles, File scratchDirectory  )
     {
         super( dictionary );
-        buffer = randomBuffer;
+        if (useScratchFiles)
+        {
+            buffer = createScratchFile(scratchDirectory);
+        }
+        if (buffer == null)
+        {
+            buffer = new RandomAccessBuffer();
+        }
+    }
+
+    private RandomAccessFile createScratchFile(File scratchDirectory)
+    {
+        RandomAccessFile buffer = null;
+        try 
+        {
+            File scratchFile = File.createTempFile("PDFBox", null, scratchDirectory);
+            scratchFile.deleteOnExit();
+            buffer = new RandomAccessFile(scratchFile, "rw");
+        }
+        catch (IOException exception)
+        {
+            LOG.error("Can't create temp file, using memory buffer instead", exception);
+        }
+        return buffer;
     }
 
     /**
