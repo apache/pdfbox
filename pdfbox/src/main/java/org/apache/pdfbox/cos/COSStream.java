@@ -102,6 +102,8 @@ public class COSStream extends COSDictionary implements Closeable
      * to new objects.
      *
      * @param stream The stream that have the new values in it.
+     * 
+     * @deprecated will be removed
      */
     public void replaceWithStream( COSStream stream )
     {
@@ -116,6 +118,8 @@ public class COSStream extends COSDictionary implements Closeable
      * This will get the scratch file associated with this stream.
      *
      * @return The scratch file where this stream is being stored.
+     * 
+     * @deprecated the direct access to the scratch file will be removed.
      */
     public RandomAccess getScratchFile()
     {

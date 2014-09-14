@@ -173,7 +173,7 @@ public class COSDocument extends COSBase implements Closeable
      *
      * @return The scratch file.
      * 
-     * 
+     * @deprecated direct access to the scratch file will be removed
      */
     public RandomAccess getScratchFile()
     {
@@ -218,6 +218,8 @@ public class COSDocument extends COSBase implements Closeable
      *
      * @return This will return an object with the specified type.
      * @throws IOException If there is an error getting the object
+     * 
+     * @deprecated use {@link COSDocument#getObjectByType(COSName)} instead
      */
     public COSObject getObjectByType( String type ) throws IOException
     {
