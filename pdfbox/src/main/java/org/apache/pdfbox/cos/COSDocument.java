@@ -28,7 +28,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdfparser.NonSequentialPDFParser;
 import org.apache.pdfbox.pdfparser.PDFObjectStreamParser;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
@@ -186,19 +185,7 @@ public class COSDocument extends COSBase implements Closeable
      */
     public COSStream createCOSStream()
     {
-        RandomAccessFile scratchFile = null;
-        if (useScratchFiles)
-        {
-            scratchFile = createScratchFile();
-        }
-        if (scratchFile != null)
-        {
-            return new COSStream( scratchFile );
-        }
-        else
-        {
-            return new COSStream( );
-        }
+        return new COSStream( useScratchFiles, scratchDirectory);
     }
 
     /**
@@ -210,36 +197,9 @@ public class COSDocument extends COSBase implements Closeable
      */
     public COSStream createCOSStream(COSDictionary dictionary)
     {
-        RandomAccessFile scratchFile = null;
-        if (useScratchFiles)
-        {
-            scratchFile = createScratchFile();
-        }
-        if (scratchFile != null)
-        {
-            return new COSStream( dictionary, scratchFile );
-        }
-        else
-        {
-            return new COSStream( dictionary );
-        }
+        return new COSStream( dictionary, useScratchFiles, scratchDirectory );
     }
 
-    private RandomAccessFile createScratchFile()
-    {
-        RandomAccessFile buffer = null;
-        try 
-        {
-            File scratchFile = File.createTempFile("PDFBox", null, scratchDirectory);
-            scratchFile.deleteOnExit();
-            buffer = new RandomAccessFile(scratchFile, "rw");
-        }
-        catch (IOException exception)
-        {
-            LOG.error("Can't create temp file, using memory buffer instead", exception);
-        }
-        return buffer;
-    }
     /**
      * This will get the first dictionary object by type.
      *
