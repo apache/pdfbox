@@ -480,7 +480,7 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * This will add a signaturefield to the document.
+     * This will add a signature field to the document.
      * 
      * @param sigFields are the PDSignatureFields that should be added to the document
      * @param signatureInterface is a interface which provides signing capabilities
@@ -1048,6 +1048,7 @@ public class PDDocument implements Closeable
      * Parses PDF with non sequential parser.
      * 
      * @param file file to be loaded
+     * @param useScratchFiles enables the usage of a scratch file if set to true
      * 
      * @return loaded document
      * 
@@ -1078,6 +1079,7 @@ public class PDDocument implements Closeable
      * 
      * @param file file to be loaded
      * @param password password to be used for decryption
+     * @param useScratchFiles enables the usage of a scratch file if set to true
      * 
      * @return loaded document
      * 
@@ -1108,6 +1110,7 @@ public class PDDocument implements Closeable
      * Parses PDF with non sequential parser.
      * 
      * @param input stream that contains the document.
+     * @param useScratchFiles enables the usage of a scratch file if set to true
      * 
      * @return loaded document
      * 
@@ -1139,6 +1142,7 @@ public class PDDocument implements Closeable
      * 
      * @param input stream that contains the document.
      * @param password password to be used for decryption
+     * @param useScratchFiles enables the usage of a scratch file if set to true
      * 
      * @return loaded document
      * 
@@ -1324,6 +1328,8 @@ public class PDDocument implements Closeable
      * @see org.apache.pdfbox.pdmodel.encryption.PublicKeyProtectionPolicy
      * 
      * @param policy The protection policy.
+     * 
+     * @throws IOException if there isn't any suitable security handler.
      */
     public void protect(ProtectionPolicy policy) throws IOException
     {
