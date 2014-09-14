@@ -933,6 +933,23 @@ public class PDDocument implements Closeable
     }
 
     /**
+     * This will load a document from a url. Used for skipping corrupt pdf objects
+     * 
+     * @param url The url to load the PDF from.
+     * @param force When true, the parser will skip corrupt pdf objects and will continue parsing at the next object in
+     *            the file
+     * @param useScratchFiles enables the usage of a scratch file if set to true
+     * 
+     * @return The document that was loaded.
+     * 
+     * @throws IOException If there is an error reading from the stream.
+     */
+    public static PDDocument load(URL url, boolean force, boolean useScratchFiles) throws IOException
+    {
+        return load(url.openStream(), force, useScratchFiles);
+    }
+
+    /**
      * This will load a document from a file.
      * 
      * @param filename The name of the file to load.
@@ -963,6 +980,23 @@ public class PDDocument implements Closeable
     }
 
     /**
+     * This will load a document from a file. Allows for skipping corrupt pdf objects
+     * 
+     * @param filename The name of the file to load.
+     * @param force When true, the parser will skip corrupt pdf objects and will continue parsing at the next object in
+     *            the file
+     * @param useScratchFiles enables the usage of a scratch file if set to true
+     * 
+     * @return The document that was loaded.
+     * 
+     * @throws IOException If there is an error reading from the stream.
+     */
+    public static PDDocument load(String filename, boolean force, boolean useScratchFiles) throws IOException
+    {
+        return load(new File(filename), force, useScratchFiles);
+    }
+
+    /**
      * This will load a document from a file.
      * 
      * @param file The name of the file to load.
@@ -973,7 +1007,7 @@ public class PDDocument implements Closeable
      */
     public static PDDocument load(File file) throws IOException
     {
-        return load(file, false);
+        return load(file, BaseParser.FORCE_PARSING, false);
     }
 
     /**
@@ -989,7 +1023,24 @@ public class PDDocument implements Closeable
      */
     public static PDDocument load(File file, boolean force) throws IOException
     {
-        PDFParser parser = new PDFParser(new FileInputStream(file), force);
+        return load(file, force , false);
+    }
+
+    /**
+     * This will load a document from a file. Allows for skipping corrupt pdf objects
+     *
+     * @param file The name of the file to load.
+     * @param force When true, the parser will skip corrupt pdf objects and will continue parsing at the next object in
+     *            the file
+     * @param useScratchFiles enables the usage of a scratch file if set to true
+     *
+     * @return The document that was loaded.
+     *
+     * @throws IOException If there is an error reading from the stream.
+     */
+    public static PDDocument load(File file, boolean force, boolean useScratchFiles) throws IOException
+    {
+        PDFParser parser = new PDFParser(new FileInputStream(file), force, useScratchFiles);
         parser.parse();
         PDDocument doc = parser.getPDDocument();
         doc.incrementalFile = file;
@@ -1007,9 +1058,7 @@ public class PDDocument implements Closeable
      */
     public static PDDocument load(InputStream input) throws IOException
     {
-        PDFParser parser = new PDFParser(input);
-        parser.parse();
-        return parser.getPDDocument();
+        return load(input, BaseParser.FORCE_PARSING, false);
     }
 
     /**
@@ -1025,11 +1074,27 @@ public class PDDocument implements Closeable
      */
     public static PDDocument load(InputStream input, boolean force) throws IOException
     {
-        PDFParser parser = new PDFParser(input, force);
+        return load(input, force, false);
+    }
+
+    /**
+     * This will load a document from an input stream. Allows for skipping corrupt pdf objects
+     * 
+     * @param input The stream that contains the document.
+     * @param force When true, the parser will skip corrupt pdf objects and will continue parsing at the next object in
+     *            the file
+     * @param useScratchFiles enables the usage of a scratch file if set to true
+     * 
+     * @return The document that was loaded.
+     * 
+     * @throws IOException If there is an error reading from the stream.
+     */
+    public static PDDocument load(InputStream input, boolean force, boolean useScratchFiles) throws IOException
+    {
+        PDFParser parser = new PDFParser(input, force, useScratchFiles);
         parser.parse();
         return parser.getPDDocument();
     }
-
     /**
      * Parses PDF with non sequential parser.
      * 
