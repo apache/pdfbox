@@ -234,7 +234,7 @@ public abstract class PDVariableText extends PDField
     }
 
     /**
-     * @return true if the field is not suppose to comb the text display.
+     * @return true if the field is supposed to comb the text display.
      */
     public boolean shouldComb()
     {
