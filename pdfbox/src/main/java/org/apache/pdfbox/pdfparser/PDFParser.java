@@ -141,7 +141,7 @@ public class PDFParser extends BaseParser
         {
             if( tempDirectory != null )
             {
-                document = new COSDocument( tempDirectory );
+                document = new COSDocument( tempDirectory, false, true );
             }
             else
             {

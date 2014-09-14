@@ -53,6 +53,9 @@ public class COSStream extends COSDictionary implements Closeable
 
     private static final int BUFFER_SIZE=16384;
 
+    /**
+     * internal buffer, either held in memory or within a scratch file.
+     */
     private RandomAccess buffer;
     /**
      * The stream with all of the filters applied.
@@ -87,14 +90,17 @@ public class COSStream extends COSDictionary implements Closeable
 
     /**
      * Constructor.  Creates a new stream with an empty dictionary.
-     *
+     * 
+     * @param useScratchFiles enables the usage of a scratch file if set to true
+     * @param scratchDirectory directory to be used to create the scratch file. If null java.io.temp is used instead.
+     *     
      */
     public COSStream( boolean useScratchFiles, File scratchDirectory )
     {
         super();
         if (useScratchFiles)
         {
-            buffer = createScratchFile(scratchDirectory);
+            createScratchFile(scratchDirectory);
         }
         if (buffer == null)
         {
@@ -106,6 +112,8 @@ public class COSStream extends COSDictionary implements Closeable
      * Constructor.
      *
      * @param dictionary The dictionary that is associated with this stream.
+     * @param useScratchFiles enables the usage of a scratch file if set to true
+     * @param scratchDirectory directory to be used to create the scratch file. If null java.io.temp is used instead.
      * 
      */
     public COSStream( COSDictionary dictionary, boolean useScratchFiles, File scratchDirectory  )
@@ -113,7 +121,7 @@ public class COSStream extends COSDictionary implements Closeable
         super( dictionary );
         if (useScratchFiles)
         {
-            buffer = createScratchFile(scratchDirectory);
+            createScratchFile(scratchDirectory);
         }
         if (buffer == null)
         {
@@ -121,12 +129,18 @@ public class COSStream extends COSDictionary implements Closeable
         }
     }
 
-    private RandomAccessFile createScratchFile(File scratchDirectory)
+    /**
+     * Create a scratch file to be used as buffer to decrease memory foot print.
+     * 
+     * @param scratchDirectory directory to be used to create the scratch file. If null java.io.temp is used instead.
+     * 
+     */
+    private void createScratchFile(File scratchDirectory)
     {
-        RandomAccessFile buffer = null;
         try 
         {
             File scratchFile = File.createTempFile("PDFBox", null, scratchDirectory);
+            // mark scratch file to deleted automatically after usage
             scratchFile.deleteOnExit();
             buffer = new RandomAccessFile(scratchFile, "rw");
         }
@@ -134,23 +148,6 @@ public class COSStream extends COSDictionary implements Closeable
         {
             LOG.error("Can't create temp file, using memory buffer instead", exception);
         }
-        return buffer;
-    }
-
-    /**
-     * This will replace this object with the data from the new object.  This
-     * is used to easily maintain referential integrity when changing references
-     * to new objects.
-     *
-     * @param stream The stream that have the new values in it.
-     */
-    public void replaceWithStream( COSStream stream )
-    {
-        this.clear();
-        this.addAll( stream );
-        buffer = stream.buffer;
-        filteredStream = stream.filteredStream;
-        unFilteredStream = stream.unFilteredStream;
     }
 
     /**
@@ -170,7 +167,7 @@ public class COSStream extends COSDictionary implements Closeable
     /**
      * This will get the stream with all of the filters applied.
      *
-     * @return the bytes of the physical (endoced) stream
+     * @return the bytes of the physical (encoded) stream
      *
      * @throws IOException when encoding/decoding causes an exception
      */
@@ -275,12 +272,6 @@ public class COSStream extends COSDictionary implements Closeable
         }
     }
 
-    /**
-     * visitor pattern double dispatch method.
-     *
-     * @param visitor The object to notify when visiting this object.
-     * @return any object, depending on the visitor implementation, or null
-     */
     @Override
     public Object accept(ICOSVisitor visitor) throws IOException
     {
