@@ -421,7 +421,7 @@ public class NonSequentialPDFParser extends PDFParser
         }
         
         // ---- prepare encryption if necessary
-        COSBase trailerEncryptItem = document.getTrailer().getDictionaryObject(COSName.ENCRYPT);
+        COSBase trailerEncryptItem = document.getTrailer().getItem(COSName.ENCRYPT);
         if (trailerEncryptItem != null)
         {
             if (trailerEncryptItem instanceof COSObject)
