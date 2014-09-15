@@ -57,7 +57,7 @@ import org.apache.pdfbox.util.PDFOperator;
  * the solution.
  *
  * @author sug
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
+ * @author Ben Litchfield
  * @version $Revision: 1.20 $
  */
 public class PDAppearance
@@ -360,10 +360,10 @@ public class PDAppearance
                             boolean foundString = false;
                             
                             // Don't replace the string content of the 
-                            // current appearance stream value for a choice list
-                            // PDFBOX-2249
+                            // current appearance stream value for a choice list PDFBOX-2249
+                            // and if the comb flag is set PDFBOX-91
                             // TODO: Shall be addressed properly in a future release
-                            if (parent instanceof PDChoiceField) 
+                            if (parent instanceof PDChoiceField || parent.shouldComb()) 
                             {
                                 // Nothing to do here
                                 // enforces 
@@ -553,7 +553,16 @@ public class PDAppearance
         {
             boundingBox = fieldWidget.getRectangle().createRetranslatedRectangle();
         }
+        
+        // Handle a field with the comb flag being set differently to 
+        // address PDFBOX-91
+        // TODO: Shall be addressed properly in a future release
+        if (parent.shouldComb()) {
+            insertGeneratedPaddingEdge(printWriter, appearanceStream);
+        }
+
         printWriter.println("BT");
+        
         if (defaultAppearance != null)
         {
             String daString = defaultAppearance.getString();
@@ -570,46 +579,112 @@ public class PDAppearance
             ContentStreamWriter daWriter = new ContentStreamWriter(output);
             daWriter.writeTokens(daTokens);
         }
-        printWriter.println(getTextPosition(boundingBox, pdFont, fontSize, tokens));
-        int q = getQ();
-        if (q == PDTextbox.QUADDING_LEFT)
-        {
-            // do nothing because left is default
-        }
-        else if (q == PDTextbox.QUADDING_CENTERED || q == PDTextbox.QUADDING_RIGHT)
-        {
-            float fieldWidth = boundingBox.getWidth();
-            float stringWidth = (pdFont.getStringWidth(value) / 1000) * fontSize;
-            float adjustAmount = fieldWidth - stringWidth - 4;
-
-            if (q == PDTextbox.QUADDING_CENTERED)
+        
+        // Handle a field with the comb flag being set differently to 
+        // address PDFBOX-91
+        // TODO: Shall be addressed properly in a future release
+        if (parent.shouldComb() && parent.getDictionary().getInt("MaxLen") != -1) {
+            insertGeneratedCombAppearance(printWriter, pdFont, appearanceStream, fontSize);
+        } else {
+            printWriter.println(getTextPosition(boundingBox, pdFont, fontSize, tokens));
+            int q = getQ();
+            if (q == PDTextbox.QUADDING_LEFT)
             {
-                adjustAmount = adjustAmount / 2.0f;
+                // do nothing because left is default
             }
-
-            printWriter.println(adjustAmount + " 0 Td");
-        }
-        else
-        {
-            throw new IOException("Error: Unknown justification value:" + q);
-        }
-        // add the value as hex string to deal with non ISO-8859-1 data values
-        if (!isMultiLineValue(value))
-        {
-            printWriter.println("<" + new COSString(value).getHexString() + "> Tj");
-        }
-        else
-        {
-            String[] lines = value.split("\n");
-            for (int i = 0; i < lines.length; i++)
+            else if (q == PDTextbox.QUADDING_CENTERED || q == PDTextbox.QUADDING_RIGHT)
             {
-                boolean lastLine = i == (lines.length - 1);
-                String endingTag = lastLine ? "> Tj\n" : "> Tj 0 -13 Td";
-                printWriter.print("<" + new COSString(lines[i]).getHexString() + endingTag);
+                float fieldWidth = boundingBox.getWidth();
+                float stringWidth = (pdFont.getStringWidth(value) / 1000) * fontSize;
+                float adjustAmount = fieldWidth - stringWidth - 4;
+    
+                if (q == PDTextbox.QUADDING_CENTERED)
+                {
+                    adjustAmount = adjustAmount / 2.0f;
+                }
+    
+                printWriter.println(adjustAmount + " 0 Td");
+            }
+            else
+            {
+                throw new IOException("Error: Unknown justification value:" + q);
+            }
+            // add the value as hex string to deal with non ISO-8859-1 data values
+            if (!isMultiLineValue(value))
+            {
+                printWriter.println("<" + new COSString(value).getHexString() + "> Tj");
+            }
+            else
+            {
+                String[] lines = value.split("\n");
+                for (int i = 0; i < lines.length; i++)
+                {
+                    boolean lastLine = i == (lines.length - 1);
+                    String endingTag = lastLine ? "> Tj\n" : "> Tj 0 -13 Td";
+                    printWriter.print("<" + new COSString(lines[i]).getHexString() + endingTag);
+                }
             }
         }
         printWriter.println("ET");
         printWriter.flush();
+    }
+
+    private void insertGeneratedPaddingEdge(PrintWriter printWriter, PDAppearanceStream appearanceStream) {
+        // create paddingEdge and contentArea from bounding box
+        // Default the contentArea to the boundingBox
+        // taking the padding into account
+        paddingEdge = applyPadding(appearanceStream.getBoundingBox(), DEFAULT_PADDING);
+        
+        // print the paddingEdge
+        printWriter.println("q");
+
+        printWriter.println(paddingEdge.getLowerLeftX() + " " + paddingEdge.getLowerLeftY() + " "
+                + paddingEdge.getWidth() + " " + paddingEdge.getHeight() + " " + " re");
+        printWriter.println("W");
+        printWriter.println("n");
+    }
+    
+    private void insertGeneratedCombAppearance(PrintWriter printWriter, PDFont pdFont,
+            PDAppearanceStream appearanceStream, float fontSize) throws IOException
+    {
+        
+        // TODO:    Currently the quadding is not taken into account
+        //          so the comb is always filled from left to right.
+        
+        int maxLen = parent.getDictionary().getInt("MaxLen");
+        
+        int numChars = maxLen;
+        
+        if (value.length() < maxLen)
+        {
+            numChars = value.length();
+        } 
+        
+        float combWidth = appearanceStream.getBoundingBox().getWidth() / maxLen;
+        float ascentAtFontSize = pdFont.getFontDescriptor().getAscent() / 1000 * fontSize;
+        float baselineOffset = paddingEdge.getLowerLeftY() +  (appearanceStream.getBoundingBox().getHeight() - ascentAtFontSize)/2;
+        
+        float prevCharWidth = 0f;
+        float currCharWidth = 0f;
+        
+        float xOffset =  combWidth/2;
+
+        String combString = "";
+        
+        for (int i = 0; i < numChars; i++) 
+        {
+            combString = value.substring(i, i+1);
+            currCharWidth = pdFont.getStringWidth(combString) / 1000 * fontSize/2;
+            
+            xOffset = xOffset + prevCharWidth/2 - currCharWidth/2;
+            
+            printWriter.println(xOffset + " " + baselineOffset + " Td");
+            printWriter.println("<" + new COSString(combString).getHexString() + "> Tj");
+
+            baselineOffset = 0;
+            prevCharWidth = currCharWidth;
+            xOffset = combWidth;
+        }
     }
 
     private void insertGeneratedListboxAppearance(PDAnnotationWidget fieldWidget, OutputStream output, PDFont pdFont,
