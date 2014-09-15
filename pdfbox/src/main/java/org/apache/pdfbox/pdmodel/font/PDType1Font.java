@@ -157,7 +157,7 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
 
         // todo: could load the PFB font here if we wanted to support Standard 14 embedding
         type1font = null;
-        type1Equivalent = null;
+        type1Equivalent = ExternalFonts.getType1EquivalentFont(getBaseFont());
         isEmbedded = false;
     }
 
