@@ -74,8 +74,12 @@ public class Overlay
     private String defaultOverlayFilename = null;
     private String firstPageOverlayFilename = null;
     private String lastPageOverlayFilename = null;
+    private String allPagesOverlayFilename = null;
     private String oddPageOverlayFilename = null;
     private String evenPageOverlayFilename = null;
+    
+    private int numberOfOverlayPages = 0;
+    private boolean useAllOverlayPages = false;
 
     /**
      * This will add overlays to a documents.
@@ -91,6 +95,7 @@ public class Overlay
         PDDocument defaultOverlay = null;
         PDDocument firstPageOverlay = null;
         PDDocument lastPageOverlay = null;
+        PDDocument allPagesOverlay = null;
         PDDocument oddPageOverlay = null;
         PDDocument evenPageOverlay = null;
         try
@@ -121,6 +126,13 @@ public class Overlay
                 evenPageOverlay = loadPDF(evenPageOverlayFilename, useNonSeqParser);
                 evenPageOverlayPage = getLayoutPage(evenPageOverlay);
             }
+            if (allPagesOverlayFilename != null)
+            {
+                allPagesOverlay = loadPDF(allPagesOverlayFilename, useNonSeqParser);
+                specificPageOverlayPage = getLayoutPages(allPagesOverlay);
+                useAllOverlayPages = true;
+                numberOfOverlayPages = specificPageOverlayPage.size();
+            }
             for (Map.Entry<Integer, String> e : specificPageOverlayFile.entrySet())
             {
                 PDDocument doc = loadPDF(e.getValue(), useNonSeqParser);
@@ -149,6 +161,10 @@ public class Overlay
             if (lastPageOverlay != null)
             {
                 lastPageOverlay.close();
+            }
+            if (allPagesOverlay != null)
+            {
+                allPagesOverlay.close();
             }
             if (oddPageOverlay != null)
             {
@@ -211,7 +227,26 @@ public class Overlay
         return new LayoutPage(page.getMediaBox(), createContentStream(contents),
                 resources.getCOSDictionary());
     }
-
+    
+    private HashMap<Integer,LayoutPage> getLayoutPages(PDDocument doc) throws IOException
+    {
+        PDDocumentCatalog catalog = doc.getDocumentCatalog();
+        int numberOfPages = doc.getNumberOfPages();
+        HashMap<Integer,LayoutPage> layoutPages = new HashMap<Integer, Overlay.LayoutPage>(numberOfPages);
+        for (int i=0;i<numberOfPages;i++)
+        {
+            PDPage page = (PDPage) catalog.getAllPages().get(i);
+            COSBase contents = page.getCOSDictionary().getDictionaryObject(COSName.CONTENTS);
+            PDResources resources = page.findResources();
+            if (resources == null)
+            {
+                resources = new PDResources();
+            }
+            layoutPages.put(i,new LayoutPage(page.getMediaBox(), createContentStream(contents), resources.getCOSDictionary()));
+        }
+        return layoutPages;
+    }
+    
     private COSStream createContentStream(COSBase contents) throws IOException
     {
         List<COSStream> contentStreams = createContentStreamList(contents);
@@ -319,7 +354,7 @@ public class Overlay
             throws IOException
     {
         LayoutPage layoutPage = null;
-        if (specificPageOverlayPage.containsKey(pageNumber))
+        if (!useAllOverlayPages && specificPageOverlayPage.containsKey(pageNumber))
         {
             layoutPage = specificPageOverlayPage.get(pageNumber);
         }
@@ -342,6 +377,16 @@ public class Overlay
         else if (defaultOverlayPage != null)
         {
             layoutPage = defaultOverlayPage;
+        }
+        else if (useAllOverlayPages)
+        {
+            int usePageNum = pageNumber % numberOfOverlayPages;
+            layoutPage = specificPageOverlayPage.get(usePageNum);
+        }
+        else if (useAllOverlayPages)
+        {
+            int usePageNum = pageNumber % numberOfOverlayPages;
+            layoutPage = specificPageOverlayPage.get(usePageNum);
         }
         if (layoutPage != null)
         {
@@ -478,6 +523,16 @@ public class Overlay
     public void setLastPageOverlayFile(String lastPageOverlayFile)
     {
         lastPageOverlayFilename = lastPageOverlayFile;
+    }
+
+    /**
+     * Sets the all pages overlay file.
+     * 
+     * @param allPagesOverlayFile the all pages overlay file
+     */
+    public void setAllPagesOverlayFile(String allPagesOverlayFile)
+    {
+        allPagesOverlayFilename = allPagesOverlayFile;
     }
 
     /**
