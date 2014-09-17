@@ -36,6 +36,7 @@ import org.apache.fontbox.ttf.Type1Equivalent;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.type1.Type1Font;
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.util.ResourceLoader;
 
 /**
  * External font service, locates non-embedded fonts via a pluggable FontProvider.
@@ -56,15 +57,15 @@ public final class ExternalFonts
     private static FontProvider fontProvider;
 
     /** fallback fonts, used as as a last resort */
-    private static TrueTypeFont ttfFallbackFont;
-    private static CFFCIDFont cidFallbackFont;
+    private static final TrueTypeFont ttfFallbackFont;
+    private static final CFFCIDFont cidFallbackFont;
     static
     {
         try
         {
             // ttf
             String ttfName = "org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf";
-            InputStream ttfStream = org.apache.fontbox.util.ResourceLoader.loadResource(ttfName);
+            InputStream ttfStream = ResourceLoader.loadResource(ttfName);
             if (ttfStream == null)
             {
                 throw new IOException("Error loading resource: " + ttfName);
@@ -74,7 +75,7 @@ public final class ExternalFonts
 
             // cff
             String cffName = "org/apache/pdfbox/resources/otf/AdobeBlank.otf";
-            InputStream cffStream = org.apache.fontbox.util.ResourceLoader.loadResource(cffName);
+            InputStream cffStream = ResourceLoader.loadResource(cffName);
             if (cffStream == null)
             {
                 throw new IOException("Error loading resource: " + cffName);

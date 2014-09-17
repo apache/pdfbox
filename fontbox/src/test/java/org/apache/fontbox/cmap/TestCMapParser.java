@@ -40,7 +40,7 @@ public class TestCMapParser extends TestCase
         File inDir = new File(resourceDir);
 
         CMapParser parser = new CMapParser();
-        CMap cMap = parser.parse(resourceDir, new FileInputStream(new File(inDir, "CMapTest")));
+        CMap cMap = parser.parse(new FileInputStream(new File(inDir, "CMapTest")));
 
         // char mappings
         byte[] bytes1 = {0, 1};

@@ -31,7 +31,6 @@ import java.util.Map;
  */
 class CMapManager
 {
-    protected static final String CMAP_RESOURCE_ROOT = "org/apache/pdfbox/resources/cmap/";
     protected static Map<String, CMap> cMapCache =
             Collections.synchronizedMap(new HashMap<String, CMap>());
 
@@ -47,18 +46,13 @@ class CMapManager
         {
             return cmap;
         }
-        return parseCMap(ResourceLoader.loadResource(CMAP_RESOURCE_ROOT + cMapName), true);
-    }
 
-    /**
-     * Parse an embedded CMap.
-     *
-     * @param cMapStream the CMap to be read
-     * @return the parsed CMap
-     */
-    public static CMap parseCMap(InputStream cMapStream) throws IOException
-    {
-        return parseCMap(cMapStream, true);
+        CMapParser parser = new CMapParser();
+        CMap targetCmap = parser.parsePredefined(cMapName);
+
+        // limit the cache to predefined CMaps
+        cMapCache.put(targetCmap.getName(), targetCmap);
+        return targetCmap;
     }
 
     /**
@@ -67,18 +61,13 @@ class CMapManager
      * @param cMapStream the CMap to be read
      * @return the parsed CMap
      */
-    private static CMap parseCMap(InputStream cMapStream, boolean isPredefined) throws IOException
+    public static CMap parseCMap(InputStream cMapStream) throws IOException
     {
         CMap targetCmap = null;
         if (cMapStream != null)
         {
             CMapParser parser = new CMapParser();
-            targetCmap = parser.parse(CMAP_RESOURCE_ROOT, cMapStream);
-            // limit the cache to predefined CMaps
-            if (isPredefined)
-            {
-                cMapCache.put(targetCmap.getName(), targetCmap);
-            }
+            targetCmap = parser.parse(cMapStream);
         }
         return targetCmap;
     }

@@ -21,12 +21,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.fontbox.util.ResourceLoader;
 
 /**
  * Parses a CMap stream.
@@ -51,19 +50,16 @@ public class CMapParser
      * Parse a CMAP file on the file system.
      * 
      * @param file The file to parse.
-     * 
      * @return A parsed CMAP file.
-     * 
      * @throws IOException If there is an issue while parsing the CMAP.
      */
     public CMap parse(File file) throws IOException
     {
-        String rootDir = file.getParent() + File.separator;
         FileInputStream input = null;
         try
         {
             input = new FileInputStream(file);
-            return parse(rootDir, input);
+            return parse(input);
         }
         finally
         {
@@ -72,21 +68,39 @@ public class CMapParser
                 input.close();
             }
         }
+    }
 
+    /**
+     * Parses a predefined CMap.
+     *
+     * @param name CMap name.
+     * @throws IOException If the CMap could not be parsed.
+     */
+    public CMap parsePredefined(String name) throws IOException
+    {
+        InputStream input = null;
+        try
+        {
+            input = getExternalCMap(name);
+            return parse(input);
+        }
+        finally
+        {
+            if (input != null)
+            {
+                input.close();
+            }
+        }
     }
 
     /**
      * This will parse the stream and create a cmap object.
      *
-     * @param resourceRoot The root path to the cmap file.  This will be used
-     *                     to find referenced cmap files.  It can be null.
      * @param input The CMAP stream to parse.
-     * 
      * @return The parsed stream as a java object.
-     *
      * @throws IOException If there is an error parsing the stream.
      */
-    public CMap parse(String resourceRoot, InputStream input) throws IOException
+    public CMap parse(InputStream input) throws IOException
     {
         PushbackInputStream cmapStream = new PushbackInputStream(input);
         CMap result = new CMap();
@@ -100,12 +114,8 @@ public class CMapParser
                 if (op.op.equals("usecmap"))
                 {
                     LiteralName useCmapName = (LiteralName) previousToken;
-                    InputStream useStream = ResourceLoader.loadResource(resourceRoot + useCmapName.name);
-                    if (useStream == null)
-                    {
-                        throw new IOException("Error: Could not find referenced cmap stream " + useCmapName.name);
-                    }
-                    CMap useCMap = parse(resourceRoot, useStream);
+                    InputStream useStream = getExternalCMap(useCmapName.name);
+                    CMap useCMap = parse(useStream);
                     result.useCmap(useCMap);
                 }
                 else if (op.op.equals("endcmap"))
@@ -360,6 +370,19 @@ public class CMapParser
             previousToken = token;
         }
         return result;
+    }
+
+    /**
+     * Returns an input stream containing the given "use" CMap.
+     */
+    protected InputStream getExternalCMap(String name) throws IOException
+    {
+        URL url = getClass().getResource(name);
+        if (url == null)
+        {
+            throw new IOException("Error: Could not find referenced cmap stream " + name);
+        }
+        return url.openStream();
     }
 
     private Object parseNextToken(PushbackInputStream is) throws IOException
