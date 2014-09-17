@@ -498,7 +498,7 @@ public abstract class SecurityHandler
      * @throws CryptographyException If an error occurs during decryption.
      * @throws IOException If there is an error accessing the data.
      */
-    private void decryptArray(COSArray array, long objNum, long genNum) throws CryptographyException, IOException
+    public void decryptArray(COSArray array, long objNum, long genNum) throws CryptographyException, IOException
     {
         for (int i = 0; i < array.size(); i++)
         {
