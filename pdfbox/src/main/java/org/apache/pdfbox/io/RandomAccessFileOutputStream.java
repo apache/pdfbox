@@ -75,9 +75,9 @@ public class RandomAccessFileOutputStream extends OutputStream
     }
 
     /**
-     * The number of bytes written to the stream.
+     * The number of bytes written or expected in the stream.
      *
-     * @return The number of bytes read to the stream.
+     * @return The number of bytes written or expected in the stream.
      */
     public long getLength()
     {
