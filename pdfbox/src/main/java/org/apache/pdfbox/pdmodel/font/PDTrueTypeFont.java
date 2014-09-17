@@ -77,6 +77,19 @@ public class PDTrueTypeFont extends PDSimpleFont
         return new PDTrueTypeFont(doc, new FileInputStream(file));
     }
 
+    /**
+     * Loads a TTF to be embedded into a document.
+     *
+     * @param doc The PDF document that will hold the embedded font.
+     * @param input a ttf file stream
+     * @return a PDTrueTypeFont instance.
+     * @throws IOException If there is an error loading the data.
+     */
+    public static PDTrueTypeFont loadTTF(PDDocument doc, InputStream input) throws IOException
+    {
+        return new PDTrueTypeFont(doc, input);
+    }
+
     private CmapSubtable cmapWinUnicode = null;
     private CmapSubtable cmapWinSymbol = null;
     private CmapSubtable cmapMacRoman = null;
