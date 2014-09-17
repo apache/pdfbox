@@ -651,7 +651,7 @@ public abstract class BaseParser
      *
      * @throws IOException
      */
-    private void readUntilEndStream( final OutputStream out ) throws IOException
+    protected void readUntilEndStream( final OutputStream out ) throws IOException
     {
 
         int bufSize;
