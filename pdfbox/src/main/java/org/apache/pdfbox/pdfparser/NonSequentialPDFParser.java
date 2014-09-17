@@ -1350,7 +1350,16 @@ public class NonSequentialPDFParser extends PDFParser
                             }
                             else if (entry.getValue() instanceof COSArray)
                             {
-                                securityHandler.decryptArray((COSArray) entry.getValue(), objNr, objGenNr);
+                                try
+                                {
+                                    securityHandler.decryptArray((COSArray) entry.getValue(), objNr, objGenNr);
+                                }
+                                catch (CryptographyException ce)
+                                {
+                                    throw new IOException("Error decrypting stream object " + objNr + ": "
+                                            + ce.getMessage()
+                                    /* , ce // TODO: remove remark with Java 1.6 */);
+                                }
                             }                             
                         }
                     }
