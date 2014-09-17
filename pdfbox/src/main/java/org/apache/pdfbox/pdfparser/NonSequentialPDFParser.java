@@ -1661,116 +1661,12 @@ public class NonSequentialPDFParser extends PDFParser
 	    	{
 	    		streamLengthIsValid = false;
 	    		LOG.error("The end of the stream doesn't point to the correct offset, using workaround to read the stream");
+                        LOG.error("Stream start offset: " + originOffset);
+                        LOG.error("Expected endofstream offset: " + expectedEndOfStream);                          
 	    	}
     		pdfSource.seek(originOffset);
     	}
     	return streamLengthIsValid;
-    }
-    
-    private void readUntilEndStream(final OutputStream out) throws IOException
-    {
-        int bufSize;
-        int charMatchCount = 0;
-        byte[] keyw = ENDSTREAM;
-
-        final int quickTestOffset = 5; // last character position of shortest
-                                       // keyword ('endobj')
-
-        // read next chunk into buffer; already matched chars are added to
-        // beginning of buffer
-        while ((bufSize = pdfSource.read(streamCopyBuf, charMatchCount, streamCopyBufLen - charMatchCount)) > 0)
-        {
-            // number of already matching chars
-            int startingMatchCount = charMatchCount;
-            int bIdx = charMatchCount;
-            int quickTestIdx;
-
-            // iterate over buffer, trying to find keyword match
-            for (int maxQuicktestIdx = bufSize - quickTestOffset; bIdx < bufSize; bIdx++)
-            {
-                // reduce compare operations by first test last character we
-                // would have to
-                // match if current one matches; if it is not a character from
-                // keywords
-                // we can move behind the test character;
-                // this shortcut is inspired by Boyer–Moore string search
-                // algorithm
-                // and can reduce parsing time by approx. 20%
-                if ((charMatchCount == 0) && ((quickTestIdx = bIdx + quickTestOffset) < maxQuicktestIdx))
-                {
-
-                    final byte ch = streamCopyBuf[quickTestIdx];
-                    if ((ch > 't') || (ch < 'a'))
-                    {
-                        // last character we would have to match if current
-                        // character would match
-                        // is not a character from keywords -> jump behind and
-                        // start over
-                        bIdx = quickTestIdx;
-                        continue;
-                    }
-                }
-
-                final byte ch = streamCopyBuf[bIdx]; // could be negative - but
-                                                     // we only compare to ASCII
-                if (ch == keyw[charMatchCount])
-                {
-                    if (++charMatchCount == keyw.length)
-                    {
-                        // match found
-                        bIdx++;
-                        break;
-                    }
-                }
-                else
-                {
-                    if ((charMatchCount == 3) && (ch == ENDOBJ[charMatchCount]))
-                    {
-                        // maybe ENDSTREAM is missing but we could have ENDOBJ
-                        keyw = ENDOBJ;
-                        charMatchCount++;
-                    }
-                    else
-                    {
-                        // no match; incrementing match start by 1 would be dumb
-                        // since we already know matched chars
-                        // depending on current char read we may already have
-                        // beginning of a new match:
-                        // 'e': first char matched;
-                        // 'n': if we are at match position idx 7 we already
-                        // read 'e' thus 2 chars matched
-                        // for each other char we have to start matching first
-                        // keyword char beginning with next
-                        // read position
-                        charMatchCount = (ch == E) ? 1 : ((ch == N) && (charMatchCount == 7)) ? 2 : 0;
-                        // search again for 'endstream'
-                        keyw = ENDSTREAM;
-                    }
-                }
-            } // for
-
-            int contentBytes = Math.max(0, bIdx - charMatchCount);
-
-            // write buffer content until first matched char to output stream
-            if (contentBytes > 0)
-            {
-                out.write(streamCopyBuf, 0, contentBytes);
-            }
-            if (charMatchCount == keyw.length)
-            {
-                // keyword matched; 
-            	// unread matched keyword (endstream/endobj) and following buffered content
-       		pdfSource.unread(streamCopyBuf, contentBytes, bufSize - contentBytes - keyw.length + startingMatchCount);
-                break;
-            }
-            else
-            {
-                // copy matched chars at start of buffer
-                System.arraycopy(keyw, 0, streamCopyBuf, 0, charMatchCount);
-            }
-        } // while
-
-        out.flush(); // this writes a lonely CR or drops trailing CR LF and LF
     }
     
     /**
