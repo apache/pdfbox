@@ -1615,7 +1615,7 @@ public class NonSequentialPDFParser extends PDFParser
             }
             if (useReadUntilEnd)
             {
-                out = stream.createFilteredStream(streamLengthObj);
+                out = stream.createFilteredStream();
                 readUntilEndStream(new EndstreamOutputStream(out));
             }
             String endStream = readString();
