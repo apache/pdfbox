@@ -22,38 +22,25 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import java.io.IOException;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
  * Split a document into several other documents.
  *
- * @author Mario Ivankovits (mario@ops.co.at)
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.7 $
+ * @author Mario Ivankovits
+ * @author Ben Litchfield
  */
 public class Splitter
 {
+    private PDDocument sourceDocument;
+    private PDDocument currentDestinationDocument;
 
-    /**
-     * The source PDF document.
-     */
-    protected PDDocument pdfDocument;
-
-    /**
-     * The current PDF document that contains the splitted page.
-     */
-    protected PDDocument currentDocument = null;
-
-    private int splitAtPage = 1;
+    private int splitLength = 1;
     private int startPage = Integer.MIN_VALUE;
     private int endPage = Integer.MAX_VALUE;
-    private List<PDDocument> newDocuments = null;
+    private List<PDDocument> destinationDocuments;
 
-    /**
-     * The current page number that we are processing, zero based.
-     */
-    protected int pageNumber = 0;
+    private int pageNumber = 0;
 
     /**
      * This will take a document and split into several other documents.
@@ -64,14 +51,12 @@ public class Splitter
      *
      * @throws IOException If there is an IOError
      */
-    public List<PDDocument> split( PDDocument document ) throws IOException
+    public List<PDDocument> split(PDDocument document) throws IOException
     {
-        newDocuments = new ArrayList<PDDocument>();
-        pdfDocument = document;
-
-        List pages = pdfDocument.getDocumentCatalog().getAllPages();
-        processPages(pages);
-        return newDocuments;
+        destinationDocuments = new ArrayList<PDDocument>();
+        sourceDocument = document;
+        processPages();
+        return destinationDocuments;
     }
 
     /**
@@ -83,88 +68,57 @@ public class Splitter
      *
      * @param split The number of pages each split document should contain.
      */
-    public void setSplitAtPage( int split )
+    public void setSplitAtPage(int split)
     {
-        if( split <= 0 )
+        if(split <= 0)
         {
-            throw new RuntimeException( "Error split must be at least one page." );
+            throw new RuntimeException("Error split must be at least one page.");
         }
-        splitAtPage = split;
-    }
-
-    /**
-     * This will return how many pages each split document will contain.
-     *
-     * @return The split parameter.
-     */
-    public int getSplitAtPage()
-    {
-        return splitAtPage;
+        splitLength = split;
     }
 
     /**
      * This will set the start page.
-     * 
+     *
      * @param start the start page
      */
-    public void setStartPage( int start )
+    public void setStartPage(int start)
     {
-        if( start <= 0 )
+        if(start <= 0)
         {
-            throw new RuntimeException( "Error split must be at least one page." );
+            throw new RuntimeException("Error split must be at least one page.");
         }
         startPage = start;
-    }
-    /**
-     * This will return the start page.
-     *
-     * @return The start page.
-     */
-    public int getStartPage()
-    {
-        return startPage;
     }
 
     /**
      * This will set the end page.
-     * 
+     *
      * @param end the end page
      */
-    public void setEndPage( int end )
+    public void setEndPage(int end)
     {
-        if( end <= 0 )
+        if(end <= 0)
         {
-            throw new RuntimeException( "Error split must be at least one page." );
+            throw new RuntimeException("Error split must be at least one page.");
         }
         endPage = end;
-    }
-    
-    /**
-     * This will return the end page.
-     *
-     * @return The end page.
-     */
-    public int getEndPage()
-    {
-        return endPage;
     }
 
     /**
      * Interface method to handle the start of the page processing.
      *
-     * @param pages The list of pages from the source document.
-     *
      * @throws IOException If an IO error occurs.
      */
-    protected void processPages(List pages) throws IOException
+    private void processPages() throws IOException
     {
-        Iterator iter = pages.iterator();
-        while( iter.hasNext() )
+        for (int i = 0; i < sourceDocument.getNumberOfPages(); i++)
         {
-            PDPage page = (PDPage)iter.next();
-            if (pageNumber+1 >= startPage && pageNumber+1 <= endPage)
+            PDPage page = sourceDocument.getPage(i);
+            if (pageNumber + 1 >= startPage && pageNumber + 1 <= endPage)
             {
-                processNextPage( page );
+                processPage(page);
+                pageNumber++;
             }
             else
             {
@@ -187,7 +141,7 @@ public class Splitter
      * <code>
      * protected void createNewDocumentIfNecessary()
      * {
-     *     if( isPrime( pageNumber ) )
+     *     if(isPrime(pageNumber))
      *     {
      *         super.createNewDocumentIfNecessary();
      *     }
@@ -196,11 +150,12 @@ public class Splitter
      *
      * @throws IOException If there is an error creating the new document.
      */
-    protected void createNewDocumentIfNecessary() throws IOException
+    private void createNewDocumentIfNecessary() throws IOException
     {
-        if (isNewDocNecessary())
+        if (splitAtPage(pageNumber) || currentDestinationDocument == null)
         {
-            createNewDocument();
+            currentDestinationDocument = createNewDocument();
+            destinationDocuments.add(currentDestinationDocument);
         }
     }
 
@@ -209,26 +164,24 @@ public class Splitter
      *
      * @return true If a new document should be created.
      */
-    protected boolean isNewDocNecessary()
+    protected boolean splitAtPage(int pageNumber)
     {
-        return pageNumber % splitAtPage == 0 || currentDocument == null;
+        return pageNumber % splitLength == 0;
     }
 
     /**
-     * Create a new document to write the splitted contents to.
+     * Create a new document to write the split contents to.
      *
      * @throws IOException If there is an problem creating the new document.
      */
-    protected void createNewDocument() throws IOException
+    protected PDDocument createNewDocument() throws IOException
     {
-        currentDocument = new PDDocument();
-        currentDocument.setDocumentInformation(pdfDocument.getDocumentInformation());
-        currentDocument.getDocumentCatalog().setViewerPreferences(
-        pdfDocument.getDocumentCatalog().getViewerPreferences());
-        newDocuments.add(currentDocument);
+        PDDocument document = new PDDocument();
+        document.setDocumentInformation(getSourceDocument().getDocumentInformation());
+        document.getDocumentCatalog().setViewerPreferences(
+                getSourceDocument().getDocumentCatalog().getViewerPreferences());
+        return document;
     }
-
-
 
     /**
      * Interface to start processing a new page.
@@ -237,15 +190,30 @@ public class Splitter
      *
      * @throws IOException If there is an error creating the new document.
      */
-    protected void processNextPage( PDPage page ) throws IOException
+    protected void processPage(PDPage page) throws IOException
     {
         createNewDocumentIfNecessary();
-        PDPage imported = currentDocument.importPage( page );
-        imported.setCropBox( page.findCropBox() );
-        imported.setMediaBox( page.findMediaBox() );
+        PDPage imported = getDestinationDocument().importPage(page);
+        imported.setCropBox(page.findCropBox());
+        imported.setMediaBox(page.findMediaBox());
         // only the resources of the page will be copied
-        imported.setResources( page.getResources() );
-        imported.setRotation( page.findRotation() );
-        pageNumber++;
+        imported.setResources(page.getResources());
+        imported.setRotation(page.findRotation());
+    }
+
+    /**
+     * The source PDF document.
+     */
+    protected final PDDocument getSourceDocument()
+    {
+        return sourceDocument;
+    }
+
+    /**
+     * The source PDF document.
+     */
+    protected final PDDocument getDestinationDocument()
+    {
+        return currentDestinationDocument;
     }
 }
