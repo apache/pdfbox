@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.font;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,7 +37,6 @@ import org.apache.fontbox.ttf.Type1Equivalent;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.type1.Type1Font;
 import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.util.ResourceLoader;
 
 /**
  * External font service, locates non-embedded fonts via a pluggable FontProvider.
@@ -65,21 +65,23 @@ public final class ExternalFonts
         {
             // ttf
             String ttfName = "org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf";
-            InputStream ttfStream = ResourceLoader.loadResource(ttfName);
-            if (ttfStream == null)
+            URL url = ExternalFonts.class.getClassLoader().getResource(ttfName);
+            if (url == null)
             {
                 throw new IOException("Error loading resource: " + ttfName);
             }
+            InputStream ttfStream = url.openStream();
             TTFParser ttfParser = new TTFParser();
             ttfFallbackFont = ttfParser.parse(ttfStream);
 
             // cff
             String cffName = "org/apache/pdfbox/resources/otf/AdobeBlank.otf";
-            InputStream cffStream = ResourceLoader.loadResource(cffName);
-            if (cffStream == null)
+            url = ExternalFonts.class.getClassLoader().getResource(cffName);
+            if (url == null)
             {
-                throw new IOException("Error loading resource: " + cffName);
+                throw new IOException("Error loading resource: " + ttfName);
             }
+            InputStream cffStream = url.openStream();
             byte[] bytes = IOUtils.toByteArray(cffStream);
             CFFParser cffParser = new CFFParser();
             cidFallbackFont = (CFFCIDFont)cffParser.parse(bytes).get(0);

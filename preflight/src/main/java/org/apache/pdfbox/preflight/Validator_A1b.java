@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
@@ -44,7 +43,7 @@ import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.SyntaxValidationException;
 import org.apache.pdfbox.preflight.parser.PreflightParser;
 import org.apache.pdfbox.preflight.parser.XmlResultParser;
-import org.apache.pdfbox.util.ResourceLoader;
+import org.apache.pdfbox.util.Version;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -141,8 +140,7 @@ public class Validator_A1b
     }
 
     private static void usage () throws IOException {
-        Properties props = ResourceLoader.loadProperties("org/apache/pdfbox/resources/pdfbox.properties", false);
-        String version = props.getProperty( "pdfbox.version", "unknown" );
+        String version = Version.getVersion();
 
         System.out.println("Usage : java org.apache.pdfbox.preflight.Validator_A1b [xml] [mode] <file path>");
         System.out.println();

@@ -16,24 +16,14 @@
  */
 package org.apache.pdfbox.tools;
 
-import java.io.IOException;
-
-import java.util.Properties;
-
-import org.apache.pdfbox.util.ResourceLoader;
-
-
 /**
  * A simple command line utility to get the version of PDFBox.
  *
  * @author <a href="ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.5 $
  */
-public class Version
+class Version
 {
-    private static final String PDFBOX_VERSION_PROPERTIES =
-        "org/apache/pdfbox/resources/pdfbox.properties";
-
     private Version()
     {
         //should not be constructed.
@@ -46,18 +36,15 @@ public class Version
      */
     public static String getVersion()
     {
-        String version = "unknown";
-        try
+        String version = org.apache.pdfbox.util.Version.getVersion();
+        if (version != null)
         {
-            Properties props = ResourceLoader.loadProperties( PDFBOX_VERSION_PROPERTIES, false );
-            return props.getProperty( "pdfbox.version", version );
+            return version;
         }
-        catch( IOException io )
+        else
         {
-            //if there is a problem loading the properties then don't throw an
-            //exception, 'unknown' will be returned instead.
+            return "unknown";
         }
-        return version;
     }
 
     /**
@@ -85,5 +72,4 @@ public class Version
     {
         System.err.println( "usage: " + Version.class.getName() );
     }
-
 }
