@@ -31,7 +31,6 @@ import java.util.Properties;
  */
 public class ResourceLoader
 {
-
     /**
      * private constructor for utility class.
      */
@@ -49,7 +48,7 @@ public class ResourceLoader
      *
      * @throws IOException If there is an error while attempting to load the resource.
      */
-    public static InputStream loadResource( String resourceName ) throws IOException
+    private static InputStream loadResource( String resourceName ) throws IOException
     {
         ClassLoader loader = null;
         try
@@ -136,36 +135,5 @@ public class ResourceLoader
             }
         }
         return properties;
-    }
-
-    /**
-     * This will attempt to load the resource given the resource name.
-     *
-     * @param resourceName The resource to try and load.
-     * @param defaults A stream of default properties.
-     *
-     * @return The resource as a stream or null if it could not be found.
-     *
-     * @throws IOException If there is an error loading the properties.
-     */
-    public static Properties loadProperties( String resourceName, Properties defaults ) throws IOException
-    {
-        InputStream is = null;
-        try
-        {
-            is = loadResource( resourceName );
-            if( is != null )
-            {
-                defaults.load( is );
-            }
-        }
-        finally
-        {
-            if( is != null )
-            {
-                is.close();
-            }
-        }
-        return defaults;
     }
 }

@@ -19,6 +19,7 @@ package org.apache.pdfbox.pdmodel.font;
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,13 +35,11 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.encoding.Encoding;
-import org.apache.pdfbox.encoding.GlyphList;
 import org.apache.pdfbox.encoding.StandardEncoding;
 import org.apache.pdfbox.encoding.Type1Encoding;
 import org.apache.pdfbox.encoding.WinAnsiEncoding;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.util.ResourceLoader;
 
 /**
  * A PostScript Type 1 Font.
@@ -57,47 +56,51 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
     private static final Map<String, FontMetrics> AFM_MAP;
     static
     {
-        AFM_MAP = new HashMap<String, FontMetrics>();
-        addMetric("Courier-Bold");
-        addMetric("Courier-BoldOblique");
-        addMetric("Courier");
-        addMetric("Courier-Oblique");
-        addMetric("Helvetica");
-        addMetric("Helvetica-Bold");
-        addMetric("Helvetica-BoldOblique");
-        addMetric("Helvetica-Oblique");
-        addMetric("Symbol");
-        addMetric("Times-Bold");
-        addMetric("Times-BoldItalic");
-        addMetric("Times-Italic");
-        addMetric("Times-Roman");
-        addMetric("ZapfDingbats");
-    }
-
-    private static void addMetric(String name)
-    {
-        String prefix = name; // todo: HACK
         try
         {
-            String resource = "org/apache/pdfbox/resources/afm/" + prefix + ".afm";
-            InputStream afmStream = ResourceLoader.loadResource(resource);
-            if (afmStream != null)
+            AFM_MAP = new HashMap<String, FontMetrics>();
+            addMetric("Courier-Bold");
+            addMetric("Courier-BoldOblique");
+            addMetric("Courier");
+            addMetric("Courier-Oblique");
+            addMetric("Helvetica");
+            addMetric("Helvetica-Bold");
+            addMetric("Helvetica-BoldOblique");
+            addMetric("Helvetica-Oblique");
+            addMetric("Symbol");
+            addMetric("Times-Bold");
+            addMetric("Times-BoldItalic");
+            addMetric("Times-Italic");
+            addMetric("Times-Roman");
+            addMetric("ZapfDingbats");
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void addMetric(String fontName) throws IOException
+    {
+        String resourceName = "org/apache/pdfbox/resources/afm/" + fontName + ".afm";
+        URL url = PDType1Font.class.getClassLoader().getResource(resourceName);
+        if (url != null)
+        {
+            InputStream afmStream = url.openStream();
+            try
             {
-                try
-                {
-                    AFMParser parser = new AFMParser(afmStream);
-                    FontMetrics metric = parser.parse();
-                    AFM_MAP.put(name, metric);
-                }
-                finally
-                {
-                    afmStream.close();
-                }
+                AFMParser parser = new AFMParser(afmStream);
+                FontMetrics metric = parser.parse();
+                AFM_MAP.put(fontName, metric);
+            }
+            finally
+            {
+                afmStream.close();
             }
         }
-        catch (Exception e)
+        else
         {
-            LOG.error("Something went wrong when reading the adobe afm files", e);
+            throw new IOException(resourceName + " not found");
         }
     }
 

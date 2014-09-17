@@ -16,9 +16,9 @@
  */
 package org.apache.pdfbox.encoding;
 
+import java.net.URL;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.util.ResourceLoader;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,35 +41,42 @@ public class GlyphList
 
     static
     {
-        DEFAULT = new GlyphList();
-
-        // Loads the official glyph List based on adobes glyph list
-        DEFAULT.loadGlyphs("org/apache/pdfbox/resources/glyphlist.properties");
-
-        // Loads some additional glyph mappings
-        DEFAULT.loadGlyphs("org/apache/pdfbox/resources/additional_glyphlist.properties");
-
-        // Load an external glyph list file that user can give as JVM property
         try
         {
-            String location = System.getProperty("glyphlist_ext");
-            if (location != null)
+            DEFAULT = new GlyphList();
+
+            // Loads the official glyph List based on adobes glyph list
+            DEFAULT.loadGlyphs("org/apache/pdfbox/resources/glyphlist.properties");
+
+            // Loads some additional glyph mappings
+            DEFAULT.loadGlyphs("org/apache/pdfbox/resources/additional_glyphlist.properties");
+
+            // Load an external glyph list file that user can give as JVM property
+            try
             {
-                File external = new File(location);
-                if (external.exists())
+                String location = System.getProperty("glyphlist_ext");
+                if (location != null)
                 {
-                    DEFAULT.loadGlyphs(location);
+                    File external = new File(location);
+                    if (external.exists())
+                    {
+                        DEFAULT.loadGlyphs(location);
+                    }
                 }
             }
-        }
-        catch (SecurityException e)  // can occur on System.getProperty
-        {
-            // PDFBOX-1946 ignore and continue
-        }
+            catch (SecurityException e)  // can occur on System.getProperty
+            {
+                // PDFBOX-1946 ignore and continue
+            }
 
-        // Zapf Dingbats has its own glyph list
-        ZAPF_DINGBATS = new GlyphList();
-        ZAPF_DINGBATS.loadGlyphs("org/apache/pdfbox/resources/zapf_dingbats.properties");
+            // Zapf Dingbats has its own glyph list
+            ZAPF_DINGBATS = new GlyphList();
+            ZAPF_DINGBATS.loadGlyphs("org/apache/pdfbox/resources/zapf_dingbats.properties");
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     private final Map<String, String> nameToUnicode = new HashMap<String, String>();
@@ -79,50 +86,47 @@ public class GlyphList
     {
     }
 
-    private void loadGlyphs(String path)
+    private void loadGlyphs(String resourceName) throws IOException
     {
-        try
+        URL url = GlyphList.class.getClassLoader().getResource(resourceName);
+        if (url == null)
         {
-            Properties glyphProperties = ResourceLoader.loadProperties(path, false);
-            if (glyphProperties == null)
-            {
-                throw new MissingResourceException("Glyphlist not found: " + path,
-                        Encoding.class.getName(), path);
-            }
-            Enumeration<?> names = glyphProperties.propertyNames();
-            for (Object name : Collections.list(names))
-            {
-                String glyphName = name.toString();
-                String unicodeValue = glyphProperties.getProperty(glyphName);
-                StringTokenizer tokenizer = new StringTokenizer(unicodeValue, " ", false);
-                StringBuilder value = new StringBuilder();
-                while (tokenizer.hasMoreTokens())
-                {
-                    int characterCode = Integer.parseInt(tokenizer.nextToken(), 16);
-                    value.append((char) characterCode);
-                }
-                String unicode = value.toString();
-
-                if (nameToUnicode.containsKey(glyphName))
-                {
-                    LOG.warn("duplicate value for " + glyphName + " -> " + unicode + " " +
-                             nameToUnicode.get(glyphName));
-                }
-                else
-                {
-                    nameToUnicode.put(glyphName, unicode);
-                }
-
-                // reverse mapping
-                if (!unicodeToName.containsKey(unicode))
-                {
-                    unicodeToName.put(unicode, glyphName);
-                }
-            }
+            throw new MissingResourceException("Glyphlist not found: " + resourceName,
+                    GlyphList.class.getName(), resourceName);
         }
-        catch (IOException io)
+
+        Properties properties = new Properties();
+        properties.load(url.openStream());
+
+        Enumeration<?> names = properties.propertyNames();
+        for (Object name : Collections.list(names))
         {
-            LOG.error("error while reading the glyph property file.", io);
+            String glyphName = name.toString();
+            String unicodeValue = properties.getProperty(glyphName);
+            StringTokenizer tokenizer = new StringTokenizer(unicodeValue, " ", false);
+            StringBuilder value = new StringBuilder();
+            while (tokenizer.hasMoreTokens())
+            {
+                int characterCode = Integer.parseInt(tokenizer.nextToken(), 16);
+                value.append((char) characterCode);
+            }
+            String unicode = value.toString();
+
+            if (nameToUnicode.containsKey(glyphName))
+            {
+                LOG.warn("duplicate value for " + glyphName + " -> " + unicode + " " +
+                        nameToUnicode.get(glyphName));
+            }
+            else
+            {
+                nameToUnicode.put(glyphName, unicode);
+            }
+
+            // reverse mapping
+            if (!unicodeToName.containsKey(unicode))
+            {
+                unicodeToName.put(unicode, glyphName);
+            }
         }
     }
 
