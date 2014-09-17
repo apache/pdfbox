@@ -1626,6 +1626,13 @@ public class NonSequentialPDFParser extends PDFParser
                 // avoid follow-up warning about missing endobj
                 pdfSource.unread("endobj".getBytes("ISO-8859-1"));
             }
+            else if (endStream.length() > 9 && isLenient && endStream.substring(0,9).equals("endstream"))
+            {
+                LOG.warn("stream ends with '" + endStream + "' instead of 'endstream' at offset "
+                        + pdfSource.getOffset());
+                // unread the "extra" bytes
+                pdfSource.unread(endStream.substring(9).getBytes("ISO-8859-1"));
+            }
             else if (!endStream.equals("endstream"))
             {
                 throw new IOException(
