@@ -178,6 +178,10 @@ public abstract class PDSimpleFont extends PDFont
         {
             return getBaseFont().equals("Symbol") || getBaseFont().equals("ZapfDingbats");
         }
+        else if (getBaseFont().startsWith("Symbol"))
+        {
+            return true;
+        }
         else
         {
             if (encoding == null)
