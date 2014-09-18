@@ -439,10 +439,9 @@ public class DateConverter
     public static void adjustTimeZoneNicely(GregorianCalendar cal, TimeZone tz) 
     {
         cal.setTimeZone(tz);
-        int offset = (cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET))
-                / MILLIS_PER_HOUR;
-        cal.add(Calendar.HOUR, -offset);
-    }
+        int offset = (cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET)) / 
+                MILLIS_PER_MINUTE;
+        cal.add(Calendar.MINUTE, -offset);    }
     
     /**
      * Parses the end of a date string for a time zone and, if one is found,
