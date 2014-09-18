@@ -136,7 +136,6 @@
                 <configuration>
                     <excludes>
                         <exclude>src/main/resources/org/apache/pdfbox/resources/afm/*</exclude>
-                        <exclude>src/main/resources/org/apache/pdfbox/resources/cmap/*</exclude>
                         <exclude>src/main/resources/org/apache/pdfbox/resources/icc/*</exclude>
                         <exclude>src/main/resources/META-INF/services/*</exclude>
                         <exclude>src/test/resources/input/rendering/*.ai</exclude>
