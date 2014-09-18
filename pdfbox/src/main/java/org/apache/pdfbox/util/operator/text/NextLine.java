@@ -44,4 +44,10 @@ public class NextLine extends OperatorProcessor
         // use Td instead of repeating code
         context.processOperator("Td", args);
     }
+
+    @Override
+    public String getName()
+    {
+        return "T*";
+    }
 }

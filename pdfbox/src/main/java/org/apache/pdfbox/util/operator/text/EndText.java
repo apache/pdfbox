@@ -37,4 +37,10 @@ public class EndText extends OperatorProcessor
         context.setTextLineMatrix(null);
         context.endText();
     }
+
+    @Override
+    public String getName()
+    {
+        return "ET";
+    }
 }

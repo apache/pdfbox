@@ -34,4 +34,10 @@ public final class ClosePath extends GraphicsOperatorProcessor
     {
         context.closePath();
     }
+
+    @Override
+    public String getName()
+    {
+        return "h";
+    }
 }

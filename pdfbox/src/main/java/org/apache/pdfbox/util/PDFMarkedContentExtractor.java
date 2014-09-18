@@ -16,12 +16,10 @@
  */
 package org.apache.pdfbox.util;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Stack;
 
 import org.apache.pdfbox.cos.COSDictionary;
@@ -30,20 +28,21 @@ import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDMarkedConte
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.text.TextNormalize;
 import org.apache.pdfbox.text.TextPosition;
+import org.apache.pdfbox.util.operator.markedcontent.BeginMarkedContentSequence;
+import org.apache.pdfbox.util.operator.markedcontent.BeginMarkedContentSequenceWithProperties;
+import org.apache.pdfbox.util.operator.markedcontent.EndMarkedContentSequence;
 
 /**
  * This is an stream engine to extract the marked content of a pdf.
- * @author koch
- * @version $Revision$
+ *
+ * @author Johannes Koch
  */
 public class PDFMarkedContentExtractor extends PDFTextStreamEngine
 {
     private boolean suppressDuplicateOverlappingText = true;
     private List<PDMarkedContent> markedContents = new ArrayList<PDMarkedContent>();
     private Stack<PDMarkedContent> currentMarkedContents = new Stack<PDMarkedContent>();
-
-    private Map<String, List<TextPosition>> characterListMapping =
-        new HashMap<String, List<TextPosition>>();
+    private Map<String, List<TextPosition>> characterListMapping = new HashMap<String, List<TextPosition>>();
 
     /**
      * encoding that text will be written in (or null).
@@ -57,55 +56,30 @@ public class PDFMarkedContentExtractor extends PDFTextStreamEngine
     private TextNormalize normalize = null;
 
     /**
-     * Instantiate a new PDFTextStripper object. This object will load
-     * properties from PDFMarkedContentExtractor.properties and will not
-     * do anything special to convert the text to a more encoding-specific
-     * output.
-     *
-     * @throws IOException If there is an error loading the properties.
+     * Instantiate a new PDFTextStripper object. Will not do anything special to convert
+     * the text to a more encoding-specific output.
      */
-    public PDFMarkedContentExtractor() throws IOException
+    public PDFMarkedContentExtractor()
     {
-        super( ResourceLoader.loadProperties(
-                "org/apache/pdfbox/resources/PDFMarkedContentExtractor.properties", true ) );
-        this.outputEncoding = null;
-        this.normalize = new TextNormalize(this.outputEncoding);
-    }
-
-
-    /**
-     * Instantiate a new PDFTextStripper object.  Loading all of the operator mappings
-     * from the properties object that is passed in.  Does not convert the text
-     * to more encoding-specific output.
-     *
-     * @param props The properties containing the mapping of operators to PDFOperator
-     * classes.
-     *
-     * @throws IOException If there is an error reading the properties.
-     */
-    public PDFMarkedContentExtractor( Properties props ) throws IOException
-    {
-        super( props );
-        this.outputEncoding = null;
-        this.normalize = new TextNormalize(this.outputEncoding);
+        this(null);
     }
 
     /**
-     * Instantiate a new PDFTextStripper object. This object will load
-     * properties from PDFMarkedContentExtractor.properties and will apply
-     * encoding-specific conversions to the output text.
+     * Constructor. Will apply encoding-specific conversions to the output text.
      *
      * @param encoding The encoding that the output will be written in.
-     * @throws IOException If there is an error reading the properties.
      */
-    public PDFMarkedContentExtractor( String encoding ) throws IOException
+    public PDFMarkedContentExtractor(String encoding)
     {
-        super( ResourceLoader.loadProperties(
-                "org/apache/pdfbox/resources/PDFMarkedContentExtractor.properties", true ));
+        addOperator(new BeginMarkedContentSequenceWithProperties());
+        addOperator(new BeginMarkedContentSequence());
+        addOperator(new EndMarkedContentSequence());
+        // todo: DP - Marked Content Point
+        // todo: MP - Marked Content Point with Properties
+
         this.outputEncoding = encoding;
         this.normalize = new TextNormalize(this.outputEncoding);
     }
-
 
     /**
      * This will determine of two floating point numbers are within a specified variance.
@@ -118,7 +92,6 @@ public class PDFMarkedContentExtractor extends PDFTextStreamEngine
     {
         return second > first - variance && second < first + variance;
     }
-
 
     public void beginMarkedContentSequence(COSName tag, COSDictionary properties)
     {
@@ -154,7 +127,6 @@ public class PDFMarkedContentExtractor extends PDFTextStreamEngine
             this.currentMarkedContents.peek().addXObject(xobject);
         }
     }
-
 
     /**
      * This will process a TextPosition object and add the
@@ -263,10 +235,8 @@ public class PDFMarkedContentExtractor extends PDFTextStreamEngine
         }
     }
 
-
     public List<PDMarkedContent> getMarkedContents()
     {
         return this.markedContents;
     }
-
 }

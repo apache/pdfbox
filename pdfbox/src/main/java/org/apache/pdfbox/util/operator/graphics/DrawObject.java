@@ -108,4 +108,10 @@ public final class DrawObject extends GraphicsOperatorProcessor
             }
         }
     }
+
+    @Override
+    public String getName()
+    {
+        return "Do";
+    }
 }

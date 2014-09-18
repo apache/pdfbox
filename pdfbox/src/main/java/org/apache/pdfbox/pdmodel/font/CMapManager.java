@@ -18,7 +18,6 @@ package org.apache.pdfbox.pdmodel.font;
 
 import org.apache.fontbox.cmap.CMap;
 import org.apache.fontbox.cmap.CMapParser;
-import org.apache.pdfbox.util.ResourceLoader;
 
 import java.io.IOException;
 import java.io.InputStream;

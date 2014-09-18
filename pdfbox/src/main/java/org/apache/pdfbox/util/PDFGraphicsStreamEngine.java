@@ -22,6 +22,68 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImage;
 
 import java.awt.geom.Point2D;
 import java.io.IOException;
+import org.apache.pdfbox.util.operator.color.SetNonStrokingColor;
+import org.apache.pdfbox.util.operator.color.SetNonStrokingColorN;
+import org.apache.pdfbox.util.operator.color.SetNonStrokingColorSpace;
+import org.apache.pdfbox.util.operator.color.SetNonStrokingDeviceCMYKColor;
+import org.apache.pdfbox.util.operator.color.SetNonStrokingDeviceGrayColor;
+import org.apache.pdfbox.util.operator.color.SetNonStrokingDeviceRGBColor;
+import org.apache.pdfbox.util.operator.color.SetStrokingColor;
+import org.apache.pdfbox.util.operator.color.SetStrokingColorN;
+import org.apache.pdfbox.util.operator.color.SetStrokingColorSpace;
+import org.apache.pdfbox.util.operator.color.SetStrokingDeviceCMYKColor;
+import org.apache.pdfbox.util.operator.color.SetStrokingDeviceGrayColor;
+import org.apache.pdfbox.util.operator.color.SetStrokingDeviceRGBColor;
+import org.apache.pdfbox.util.operator.graphics.AppendRectangleToPath;
+import org.apache.pdfbox.util.operator.graphics.BeginInlineImage;
+import org.apache.pdfbox.util.operator.graphics.ClipEvenOddRule;
+import org.apache.pdfbox.util.operator.graphics.ClipNonZeroRule;
+import org.apache.pdfbox.util.operator.graphics.CloseAndStrokePath;
+import org.apache.pdfbox.util.operator.graphics.CloseFillEvenOddAndStrokePath;
+import org.apache.pdfbox.util.operator.graphics.CloseFillNonZeroAndStrokePath;
+import org.apache.pdfbox.util.operator.graphics.ClosePath;
+import org.apache.pdfbox.util.operator.graphics.CurveTo;
+import org.apache.pdfbox.util.operator.graphics.CurveToReplicateFinalPoint;
+import org.apache.pdfbox.util.operator.graphics.CurveToReplicateInitialPoint;
+import org.apache.pdfbox.util.operator.graphics.DrawObject;
+import org.apache.pdfbox.util.operator.graphics.EndPath;
+import org.apache.pdfbox.util.operator.graphics.FillEvenOddAndStrokePath;
+import org.apache.pdfbox.util.operator.graphics.FillEvenOddRule;
+import org.apache.pdfbox.util.operator.graphics.FillNonZeroAndStrokePath;
+import org.apache.pdfbox.util.operator.graphics.FillNonZeroRule;
+import org.apache.pdfbox.util.operator.graphics.LegacyFillNonZeroRule;
+import org.apache.pdfbox.util.operator.graphics.LineTo;
+import org.apache.pdfbox.util.operator.graphics.MoveTo;
+import org.apache.pdfbox.util.operator.graphics.ShadingFill;
+import org.apache.pdfbox.util.operator.graphics.StrokePath;
+import org.apache.pdfbox.util.operator.state.Concatenate;
+import org.apache.pdfbox.util.operator.state.Restore;
+import org.apache.pdfbox.util.operator.state.Save;
+import org.apache.pdfbox.util.operator.state.SetFlatness;
+import org.apache.pdfbox.util.operator.state.SetGraphicsStateParameters;
+import org.apache.pdfbox.util.operator.state.SetLineCapStyle;
+import org.apache.pdfbox.util.operator.state.SetLineDashPattern;
+import org.apache.pdfbox.util.operator.state.SetLineJoinStyle;
+import org.apache.pdfbox.util.operator.state.SetLineMiterLimit;
+import org.apache.pdfbox.util.operator.state.SetLineWidth;
+import org.apache.pdfbox.util.operator.state.SetMatrix;
+import org.apache.pdfbox.util.operator.state.SetRenderingIntent;
+import org.apache.pdfbox.util.operator.text.BeginText;
+import org.apache.pdfbox.util.operator.text.EndText;
+import org.apache.pdfbox.util.operator.text.SetFontAndSize;
+import org.apache.pdfbox.util.operator.text.SetTextHorizontalScaling;
+import org.apache.pdfbox.util.operator.text.ShowTextAdjusted;
+import org.apache.pdfbox.util.operator.text.ShowTextLine;
+import org.apache.pdfbox.util.operator.text.ShowTextLineAndSpace;
+import org.apache.pdfbox.util.operator.text.MoveText;
+import org.apache.pdfbox.util.operator.text.MoveTextSetLeading;
+import org.apache.pdfbox.util.operator.text.NextLine;
+import org.apache.pdfbox.util.operator.text.SetCharSpacing;
+import org.apache.pdfbox.util.operator.text.SetTextLeading;
+import org.apache.pdfbox.util.operator.text.SetTextRenderingMode;
+import org.apache.pdfbox.util.operator.text.SetTextRise;
+import org.apache.pdfbox.util.operator.text.SetWordSpacing;
+import org.apache.pdfbox.util.operator.text.ShowText;
 
 /**
  * PDFStreamEngine subclass for advanced processing of graphics.
@@ -35,16 +97,74 @@ public abstract class PDFGraphicsStreamEngine extends PDFStreamEngine
     private final PDPage page;
 
     /**
-     * Default constructor, loads properties from file.
-     *
-     * @throws java.io.IOException If there is an error loading properties from the file.
+     * Constructor.
      */
-    protected PDFGraphicsStreamEngine(PDPage page) throws IOException
+    protected PDFGraphicsStreamEngine(PDPage page)
     {
-        super(ResourceLoader
-                .loadProperties("org/apache/pdfbox/resources/PDFGraphicsStreamEngine.properties",
-                                true));
         this.page = page;
+
+        addOperator(new CloseFillNonZeroAndStrokePath());
+        addOperator(new FillNonZeroAndStrokePath());
+        addOperator(new CloseFillEvenOddAndStrokePath());
+        addOperator(new FillEvenOddAndStrokePath());
+        addOperator(new BeginInlineImage());
+        addOperator(new BeginText());
+        addOperator(new CurveTo());
+        addOperator(new Concatenate());
+        addOperator(new SetStrokingColorSpace());
+        addOperator(new SetNonStrokingColorSpace());
+        addOperator(new SetLineDashPattern());
+        addOperator(new DrawObject()); // special graphics version
+        addOperator(new EndText());
+        addOperator(new FillNonZeroRule());
+        addOperator(new LegacyFillNonZeroRule());
+        addOperator(new FillEvenOddRule());
+        addOperator(new SetStrokingDeviceGrayColor());
+        addOperator(new SetNonStrokingDeviceGrayColor());
+        addOperator(new SetGraphicsStateParameters());
+        addOperator(new ClosePath());
+        addOperator(new SetFlatness());
+        addOperator(new SetLineJoinStyle());
+        addOperator(new SetLineCapStyle());
+        addOperator(new SetStrokingDeviceCMYKColor());
+        addOperator(new SetNonStrokingDeviceCMYKColor());
+        addOperator(new LineTo());
+        addOperator(new MoveTo());
+        addOperator(new SetLineMiterLimit());
+        addOperator(new EndPath());
+        addOperator(new Save());
+        addOperator(new Restore());
+        addOperator(new AppendRectangleToPath());
+        addOperator(new SetStrokingDeviceRGBColor());
+        addOperator(new SetNonStrokingDeviceRGBColor());
+        addOperator(new SetRenderingIntent());
+        addOperator(new CloseAndStrokePath());
+        addOperator(new StrokePath());
+        addOperator(new SetStrokingColor());
+        addOperator(new SetNonStrokingColor());
+        addOperator(new SetStrokingColorN());
+        addOperator(new SetNonStrokingColorN());
+        addOperator(new ShadingFill());
+        addOperator(new NextLine());
+        addOperator(new SetCharSpacing());
+        addOperator(new MoveText());
+        addOperator(new MoveTextSetLeading());
+        addOperator(new SetFontAndSize());
+        addOperator(new ShowText());
+        addOperator(new ShowTextAdjusted());
+        addOperator(new SetTextLeading());
+        addOperator(new SetMatrix());
+        addOperator(new SetTextRenderingMode());
+        addOperator(new SetTextRise());
+        addOperator(new SetWordSpacing());
+        addOperator(new SetTextHorizontalScaling());
+        addOperator(new CurveToReplicateInitialPoint());
+        addOperator(new SetLineWidth());
+        addOperator(new ClipNonZeroRule());
+        addOperator(new ClipEvenOddRule());
+        addOperator(new CurveToReplicateFinalPoint());
+        addOperator(new ShowTextLine());
+        addOperator(new ShowTextLineAndSpace());
     }
 
     /**

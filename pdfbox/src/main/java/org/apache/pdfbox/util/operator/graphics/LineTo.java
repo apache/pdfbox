@@ -41,4 +41,10 @@ public class LineTo extends GraphicsOperatorProcessor
         Point2D pos = context.transformedPoint(x.doubleValue(), y.doubleValue());
         context.lineTo((float) pos.getX(), (float) pos.getY());
     }
+
+    @Override
+    public String getName()
+    {
+        return "l";
+    }
 }

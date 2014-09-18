@@ -14,28 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.util.operator.text;
 
-import java.util.List;
-
-import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSNumber;
-import org.apache.pdfbox.util.operator.Operator;
-import org.apache.pdfbox.util.operator.OperatorProcessor;
-
-import java.io.IOException;
+package org.apache.pdfbox.util.operator.graphics;
 
 /**
- * Tz: Set horizontal text scaling.
+ * F Fill path using non zero winding rule. Included only for compatibility with Acrobat.
  *
- * @author Ben Litchfield
+ * @author John Hewson
  */
-public class SetHorizontalTextScaling extends OperatorProcessor
+public final class LegacyFillNonZeroRule extends FillNonZeroRule
 {
     @Override
-    public void process(Operator operator, List<COSBase> arguments) throws IOException
+    public String getName()
     {
-        COSNumber scaling = (COSNumber)arguments.get(0);
-        context.getGraphicsState().getTextState().setHorizontalScaling(scaling.floatValue());
+        return "F";
     }
 }

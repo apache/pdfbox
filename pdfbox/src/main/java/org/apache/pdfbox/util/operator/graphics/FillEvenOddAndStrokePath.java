@@ -36,4 +36,10 @@ public final class FillEvenOddAndStrokePath extends GraphicsOperatorProcessor
     {
         context.fillAndStrokePath(GeneralPath.WIND_EVEN_ODD);
     }
+
+    @Override
+    public String getName()
+    {
+        return "B*";
+    }
 }

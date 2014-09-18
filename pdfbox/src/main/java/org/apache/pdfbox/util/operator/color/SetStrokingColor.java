@@ -20,7 +20,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 
 /**
- * SC,SCN: Sets the colour to use for stroking stroking operations.
+ * SC: Sets the colour to use for stroking stroking operations.
  *
  * @author John Hewson
  */
@@ -51,5 +51,11 @@ public class SetStrokingColor extends SetColor
     protected PDColorSpace getColorSpace()
     {
         return context.getGraphicsState().getStrokingColorSpace();
+    }
+
+    @Override
+    public String getName()
+    {
+        return "SC";
     }
 }

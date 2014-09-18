@@ -35,4 +35,10 @@ public final class CloseFillNonZeroAndStrokePath extends GraphicsOperatorProcess
         context.processOperator("h", operands);  // ClosePath
         context.processOperator("B", operands);  // FillNonZeroAndStroke
     }
+
+    @Override
+    public String getName()
+    {
+        return "b";
+    }
 }

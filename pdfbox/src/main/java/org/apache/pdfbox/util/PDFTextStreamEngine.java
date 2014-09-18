@@ -28,7 +28,28 @@ import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
 import org.apache.pdfbox.text.TextPosition;
 
 import java.io.IOException;
-import java.util.Properties;
+import org.apache.pdfbox.util.operator.DrawObject;
+import org.apache.pdfbox.util.operator.state.Concatenate;
+import org.apache.pdfbox.util.operator.state.Restore;
+import org.apache.pdfbox.util.operator.state.Save;
+import org.apache.pdfbox.util.operator.state.SetGraphicsStateParameters;
+import org.apache.pdfbox.util.operator.state.SetMatrix;
+import org.apache.pdfbox.util.operator.text.BeginText;
+import org.apache.pdfbox.util.operator.text.EndText;
+import org.apache.pdfbox.util.operator.text.SetFontAndSize;
+import org.apache.pdfbox.util.operator.text.SetTextHorizontalScaling;
+import org.apache.pdfbox.util.operator.text.ShowTextAdjusted;
+import org.apache.pdfbox.util.operator.text.ShowTextLine;
+import org.apache.pdfbox.util.operator.text.ShowTextLineAndSpace;
+import org.apache.pdfbox.util.operator.text.MoveText;
+import org.apache.pdfbox.util.operator.text.MoveTextSetLeading;
+import org.apache.pdfbox.util.operator.text.NextLine;
+import org.apache.pdfbox.util.operator.text.SetCharSpacing;
+import org.apache.pdfbox.util.operator.text.SetTextLeading;
+import org.apache.pdfbox.util.operator.text.SetTextRenderingMode;
+import org.apache.pdfbox.util.operator.text.SetTextRise;
+import org.apache.pdfbox.util.operator.text.SetWordSpacing;
+import org.apache.pdfbox.util.operator.text.ShowText;
 
 /**
  * PDFStreamEngine subclass for advanced processing of text via TextPosition.
@@ -44,20 +65,33 @@ public class PDFTextStreamEngine extends PDFStreamEngine
     private int pageRotation;
     private PDRectangle pageSize;
 
-    private PDFTextStreamEngine()
-    {
-    }
-
     /**
-     * Constructor with engine properties. The property keys are all PDF operators, the values are
-     * class names used to execute those operators. An empty value means that the operator will be
-     * silently ignored.
-     *
-     * @param properties The engine properties.
+     * Constructor.
      */
-    public PDFTextStreamEngine(Properties properties)
+    public PDFTextStreamEngine()
     {
-        super(properties);
+        addOperator(new BeginText());
+        addOperator(new Concatenate());
+        addOperator(new DrawObject()); // special text version
+        addOperator(new EndText());
+        addOperator(new SetGraphicsStateParameters());
+        addOperator(new Save());
+        addOperator(new Restore());
+        addOperator(new NextLine());
+        addOperator(new SetCharSpacing());
+        addOperator(new MoveText());
+        addOperator(new MoveTextSetLeading());
+        addOperator(new SetFontAndSize());
+        addOperator(new ShowText());
+        addOperator(new ShowTextAdjusted());
+        addOperator(new SetTextLeading());
+        addOperator(new SetMatrix());
+        addOperator(new SetTextRenderingMode());
+        addOperator(new SetTextRise());
+        addOperator(new SetWordSpacing());
+        addOperator(new SetTextHorizontalScaling());
+        addOperator(new ShowTextLine());
+        addOperator(new ShowTextLineAndSpace());
     }
 
     /**

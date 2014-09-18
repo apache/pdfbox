@@ -48,4 +48,10 @@ public class BeginMarkedContentSequence extends OperatorProcessor
             ((PDFMarkedContentExtractor) this.context).beginMarkedContentSequence(tag, null);
         }
     }
+
+    @Override
+    public String getName()
+    {
+        return "BMC";
+    }
 }

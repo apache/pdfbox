@@ -38,4 +38,10 @@ public class SetTextRise extends OperatorProcessor
         COSNumber rise = (COSNumber)arguments.get(0);
         context.getGraphicsState().getTextState().setRise( rise.floatValue() );
     }
+
+    @Override
+    public String getName()
+    {
+        return "Ts";
+    }
 }

@@ -38,4 +38,10 @@ public class SetLineMiterLimit extends OperatorProcessor
         COSNumber miterLimit = (COSNumber)arguments.get( 0 );
         context.getGraphicsState().setMiterLimit( miterLimit.floatValue() );
     }
+
+    @Override
+    public String getName()
+    {
+        return "w";
+    }
 }

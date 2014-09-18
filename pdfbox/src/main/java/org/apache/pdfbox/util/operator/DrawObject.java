@@ -62,4 +62,10 @@ public class DrawObject extends OperatorProcessor
             context.showForm(form);
         }
     }
+
+    @Override
+    public String getName()
+    {
+        return "Do";
+    }
 }

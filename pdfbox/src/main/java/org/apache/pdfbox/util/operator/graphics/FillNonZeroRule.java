@@ -24,15 +24,21 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.util.operator.Operator;
 
 /**
- * f,F Fill path using non zero winding rule.
+ * f Fill path using non zero winding rule.
  *
  * @author Ben Litchfield
  */
-public final class FillNonZeroRule extends GraphicsOperatorProcessor
+public class FillNonZeroRule extends GraphicsOperatorProcessor
 {
     @Override
-    public void process(Operator operator, List<COSBase> operands) throws IOException
+    public final void process(Operator operator, List<COSBase> operands) throws IOException
     {
         context.fillPath(GeneralPath.WIND_NON_ZERO);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "f";
     }
 }

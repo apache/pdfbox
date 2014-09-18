@@ -46,4 +46,10 @@ public final class CurveToReplicateFinalPoint extends GraphicsOperatorProcessor
                         (float) point3.getX(), (float) point3.getY(),
                         (float) point3.getX(), (float) point3.getY());
     }
+
+    @Override
+    public String getName()
+    {
+        return "y";
+    }
 }

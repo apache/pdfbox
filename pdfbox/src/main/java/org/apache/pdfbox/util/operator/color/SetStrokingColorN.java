@@ -14,32 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.util.operator.text;
 
-import java.util.List;
-
-import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSNumber;
-import org.apache.pdfbox.util.operator.Operator;
-import org.apache.pdfbox.util.operator.OperatorProcessor;
+package org.apache.pdfbox.util.operator.color;
 
 /**
- * Tw: Set word spacing.
+ * SCN: Sets the colour to use for stroking stroking operations.
+ * Supports Pattern, Separation, DeviceN and ICCBased colour spaces.
  *
- * @author Laurent Huault
+ * @author John Hewson
  */
-public class SetWordSpacing extends OperatorProcessor
+public class SetStrokingColorN extends SetStrokingColor
 {
-    @Override
-    public void process(Operator operator, List<COSBase> arguments)
-    {
-        COSNumber wordSpacing = (COSNumber)arguments.get( 0 );
-        context.getGraphicsState().getTextState().setWordSpacing( wordSpacing.floatValue() );
-    }
-
     @Override
     public String getName()
     {
-        return "Tw";
+        return "SCN";
     }
 }

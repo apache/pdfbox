@@ -29,7 +29,7 @@ import java.io.IOException;
  *
  * @author Laurent Huault
  */
-public class SetMoveAndShow extends OperatorProcessor
+public class ShowTextLineAndSpace extends OperatorProcessor
 {
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
@@ -37,5 +37,11 @@ public class SetMoveAndShow extends OperatorProcessor
         context.processOperator("Tw", arguments.subList(0,1));
         context.processOperator("Tc", arguments.subList(1,2));
         context.processOperator("'", arguments.subList(2,3));
+    }
+
+    @Override
+    public String getName()
+    {
+        return "\"";
     }
 }

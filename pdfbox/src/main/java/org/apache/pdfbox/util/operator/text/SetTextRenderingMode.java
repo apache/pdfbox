@@ -40,4 +40,10 @@ public class SetTextRenderingMode extends OperatorProcessor
         RenderingMode renderingMode = RenderingMode.fromInt(mode.intValue());
         context.getGraphicsState().getTextState().setRenderingMode(renderingMode);
     }
+
+    @Override
+    public String getName()
+    {
+        return "Tr";
+    }
 }

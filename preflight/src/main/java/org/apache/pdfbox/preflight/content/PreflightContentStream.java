@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSInteger;
@@ -51,7 +52,6 @@ import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.font.container.FontContainer;
 import org.apache.pdfbox.preflight.font.util.GlyphException;
 import org.apache.pdfbox.util.operator.Operator;
-import org.apache.pdfbox.util.operator.OperatorProcessor;
 
 public class PreflightContentStream extends PreflightStreamEngine
 {
@@ -136,45 +136,34 @@ public class PreflightContentStream extends PreflightStreamEngine
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.pdfbox.util.PDFStreamEngine#processOperator(org.apache.pdfbox .util.PDFOperator, java.util.List)
-     */
-    protected void processOperator(Operator operator, List arguments) throws IOException
+    @Override
+    protected void processOperator(Operator operator, List<COSBase> arguments) throws IOException
     {
-        /*
-         * Here is a copy of the super method because the else block is different. (If the operator is unknown, throw an
-         * exception)
-         */
-        String operation = operator.getOperation();
-        OperatorProcessor processor = (OperatorProcessor) contentStreamEngineOperators.get(operation);
-        if (processor != null)
-        {
-            processor.setContext(this);
-            processor.process(operator, arguments);
-        }
-        else
-        {
-            registerError("The operator \"" + operation + "\" isn't supported.",
-                    ERROR_SYNTAX_CONTENT_STREAM_UNSUPPORTED_OP);
-            return;
-        }
+        super.processOperator(operator, arguments);
+
+        // todo: why are the checks below done here and not in OperatorProcessor classes?
 
         /*
-         * Process Specific Validation. The Generic Processing is useless for PDFA validation
+         * Process Specific Validation. The Generic Processing is useless for PDF/A validation
          */
-        if ("BI".equals(operation))
+        if ("BI".equals(operator.getName()))
         {
             validImageFilter(operator);
             validImageColorSpace(operator);
         }
 
         checkShowTextOperators(operator, arguments);
-        checkColorOperators(operation);
+        checkColorOperators(operator.getName());
         validRenderingIntent(operator, arguments);
         checkSetColorSpaceOperators(operator, arguments);
         validNumberOfGraphicStates(operator);
+    }
+
+    @Override
+    protected void unsupportedOperator(Operator operator, List<COSBase> arguments)
+    {
+        registerError("The operator \"" + operator.getName() + "\" isn't supported.",
+                ERROR_SYNTAX_CONTENT_STREAM_UNSUPPORTED_OP);
     }
 
     /**
@@ -190,7 +179,7 @@ public class PreflightContentStream extends PreflightStreamEngine
     protected void checkShowTextOperators(Operator operator, List<?> arguments) throws ContentStreamException,
             IOException
     {
-        String op = operator.getOperation();
+        String op = operator.getName();
         if ("Tj".equals(op) || "'".equals(op) || "\"".equals(op))
         {
             validStringDefinition(operator, arguments);
@@ -219,11 +208,11 @@ public class PreflightContentStream extends PreflightStreamEngine
         /*
          * For a Text operator, the arguments list should contain only one COSString object
          */
-        if ("\"".equals(operator.getOperation()))
+        if ("\"".equals(operator.getName()))
         {
             if (arguments.size() != 3)
             {
-                registerError("Invalid argument for the operator : " + operator.getOperation(),
+                registerError("Invalid argument for the operator : " + operator.getName(),
                         ERROR_SYNTAX_CONTENT_STREAM_INVALID_ARGUMENT);
                 return;
             }
@@ -233,7 +222,7 @@ public class PreflightContentStream extends PreflightStreamEngine
             if (!(arg0 instanceof COSInteger || arg0 instanceof COSFloat)
                     || !(arg1 instanceof COSInteger || arg1 instanceof COSFloat))
             {
-                registerError("Invalid argument for the operator : " + operator.getOperation(),
+                registerError("Invalid argument for the operator : " + operator.getName(),
                         ERROR_SYNTAX_CONTENT_STREAM_INVALID_ARGUMENT);
                 return;
             }
@@ -244,7 +233,7 @@ public class PreflightContentStream extends PreflightStreamEngine
             }
             else
             {
-                registerError("Invalid argument for the operator : " + operator.getOperation(),
+                registerError("Invalid argument for the operator : " + operator.getName(),
                         ERROR_SYNTAX_CONTENT_STREAM_INVALID_ARGUMENT);
                 return;
             }
@@ -258,7 +247,7 @@ public class PreflightContentStream extends PreflightStreamEngine
             }
             else if (!(objStr instanceof COSInteger))
             {
-                registerError("Invalid argument for the operator : " + operator.getOperation(),
+                registerError("Invalid argument for the operator : " + operator.getName(),
                         ERROR_SYNTAX_CONTENT_STREAM_INVALID_ARGUMENT);
                 return;
             }
@@ -290,7 +279,7 @@ public class PreflightContentStream extends PreflightStreamEngine
             }
             else if (!(object instanceof COSInteger || object instanceof COSFloat))
             {
-                registerError("Invalid argument for the operator : " + operator.getOperation(),
+                registerError("Invalid argument for the operator : " + operator.getName(),
                         ERROR_SYNTAX_CONTENT_STREAM_INVALID_ARGUMENT);
                 return;
             }

@@ -34,4 +34,10 @@ public final class EndPath extends GraphicsOperatorProcessor
     {
         context.endPath();
     }
+
+    @Override
+    public String getName()
+    {
+        return "n";
+    }
 }

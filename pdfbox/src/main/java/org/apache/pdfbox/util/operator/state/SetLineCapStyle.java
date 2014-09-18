@@ -38,4 +38,10 @@ public class SetLineCapStyle extends OperatorProcessor
         int lineCapStyle = ((COSNumber)arguments.get( 0 )).intValue();
         context.getGraphicsState().setLineCap( lineCapStyle );
     }
+
+    @Override
+    public String getName()
+    {
+        return "J";
+    }
 }

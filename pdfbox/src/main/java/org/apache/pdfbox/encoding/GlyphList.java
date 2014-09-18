@@ -46,10 +46,10 @@ public class GlyphList
             DEFAULT = new GlyphList();
 
             // Loads the official glyph List based on adobes glyph list
-            DEFAULT.loadGlyphs("org/apache/pdfbox/resources/glyphlist.properties");
+            DEFAULT.loadGlyphs("org/apache/pdfbox/resources/glyphlist/glyphlist.properties");
 
             // Loads some additional glyph mappings
-            DEFAULT.loadGlyphs("org/apache/pdfbox/resources/additional_glyphlist.properties");
+            DEFAULT.loadGlyphs("org/apache/pdfbox/resources/glyphlist/additional_glyphlist.properties");
 
             // Load an external glyph list file that user can give as JVM property
             try
@@ -71,7 +71,7 @@ public class GlyphList
 
             // Zapf Dingbats has its own glyph list
             ZAPF_DINGBATS = new GlyphList();
-            ZAPF_DINGBATS.loadGlyphs("org/apache/pdfbox/resources/zapf_dingbats.properties");
+            ZAPF_DINGBATS.loadGlyphs("org/apache/pdfbox/resources/glyphlist/zapf_dingbats.properties");
         }
         catch (IOException e)
         {

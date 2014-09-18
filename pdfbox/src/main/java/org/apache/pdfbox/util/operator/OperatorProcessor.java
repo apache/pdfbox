@@ -63,4 +63,9 @@ public abstract class OperatorProcessor
      * @throws IOException if the operator cannot be processed
      */
     public abstract void process(Operator operator, List<COSBase> operands) throws IOException;
+
+    /**
+     * Returns the name of this operator, e.g. "BI".
+     */
+    public abstract String getName();
 }

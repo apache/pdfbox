@@ -55,4 +55,10 @@ public class Concatenate extends OperatorProcessor
         context.getGraphicsState().setCurrentTransformationMatrix(
                 newMatrix.multiply(context.getGraphicsState().getCurrentTransformationMatrix()));
     }
+
+    @Override
+    public String getName()
+    {
+        return "cm";
+    }
 }

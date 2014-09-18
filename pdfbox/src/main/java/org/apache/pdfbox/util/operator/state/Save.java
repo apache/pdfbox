@@ -34,4 +34,10 @@ public class Save extends OperatorProcessor
     {
         context.saveGraphicsState();
     }
+
+    @Override
+    public String getName()
+    {
+        return "q";
+    }
 }

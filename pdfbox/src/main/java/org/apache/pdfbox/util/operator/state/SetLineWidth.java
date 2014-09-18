@@ -38,4 +38,10 @@ public class SetLineWidth extends OperatorProcessor
         COSNumber width = (COSNumber)arguments.get( 0 );
         context.getGraphicsState().setLineWidth( width.floatValue() );
     }
+
+    @Override
+    public String getName()
+    {
+        return "w";
+    }
 }

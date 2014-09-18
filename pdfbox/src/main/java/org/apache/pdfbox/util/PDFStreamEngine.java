@@ -23,14 +23,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
 import java.util.Stack;
 
 import org.apache.commons.logging.Log;
@@ -64,7 +60,6 @@ public class PDFStreamEngine
 {
     private static final Log LOG = LogFactory.getLog(PDFStreamEngine.class);
 
-    private final Set<String> unsupportedOperators = new HashSet<String>();
     private final Map<String, OperatorProcessor> operators = new HashMap<String, OperatorProcessor>();
 
     private Matrix textMatrix;
@@ -82,55 +77,6 @@ public class PDFStreamEngine
      */
     public PDFStreamEngine()
     {
-    }
-
-    /**
-     * Constructor with engine properties. The property keys are all PDF operators, the values are
-     * class names used to execute those operators. An empty value means that the operator will be
-     * silently ignored.
-     * 
-     * @param properties The engine properties.
-     */
-    public PDFStreamEngine(Properties properties)
-    {
-        if (properties == null)
-        {
-            throw new NullPointerException("properties cannot be null");
-        }
-        Enumeration<?> names = properties.propertyNames();
-        for (Object name : Collections.list(names))
-        {
-            String operator = name.toString();
-            String processorClassName = properties.getProperty(operator);
-            if ("".equals(processorClassName))
-            {
-                unsupportedOperators.add(operator);
-            }
-            else
-            {
-                try
-                {
-                    Class<?> cls = Class.forName(processorClassName);
-                    OperatorProcessor processor = (OperatorProcessor) cls.newInstance();
-                    registerOperatorProcessor(operator, processor);
-                }
-                catch (ClassNotFoundException e)
-                {
-                    // should not happen
-                    throw new RuntimeException(e);
-                }
-                catch (InstantiationException e)
-                {
-                  // should not happen
-                  throw new RuntimeException(e);
-                }
-                catch (IllegalAccessException e)
-                {
-                  // should not happen
-                  throw new RuntimeException(e);
-                }
-            }
-        }
     }
 
     /**
@@ -158,11 +104,24 @@ public class PDFStreamEngine
      * 
      * @param operator The operator as a string.
      * @param op Processor instance.
+     * @deprecated Use {@link #addOperator(OperatorProcessor)} instead
      */
+    @Deprecated
     public void registerOperatorProcessor(String operator, OperatorProcessor op)
     {
         op.setContext(this);
         operators.put(operator, op);
+    }
+
+    /**
+     * Adds an operator processor to the engine.
+     *
+     * @param op operator processor
+     */
+    public final void addOperator(OperatorProcessor op)
+    {
+        op.setContext(this);
+        operators.put(op.getName(), op);
     }
 
     /**
@@ -502,8 +461,8 @@ public class PDFStreamEngine
      */
     protected void processOperator(Operator operator, List<COSBase> arguments) throws IOException
     {
-        String operation = operator.getOperation();
-        OperatorProcessor processor = operators.get(operation);
+        String name = operator.getName();
+        OperatorProcessor processor = operators.get(name);
         if (processor != null)
         {
             processor.setContext(this);
@@ -511,15 +470,19 @@ public class PDFStreamEngine
         }
         else
         {
-            if (!unsupportedOperators.contains(operation))
-            {
-                if (LOG.isDebugEnabled())
-                {
-                    LOG.debug("unsupported/disabled operation: " + operation);
-                }
-                unsupportedOperators.add(operation);
-            }
+            unsupportedOperator(operator, arguments);
         }
+    }
+
+    /**
+     * Called when an unsupported operator is encountered.
+     *
+     * @param operator The unknown operator.
+     * @param arguments The list of arguments.
+     */
+    protected void unsupportedOperator(Operator operator, List<COSBase> arguments)
+    {
+        // overridden in subclasses
     }
 
     /**

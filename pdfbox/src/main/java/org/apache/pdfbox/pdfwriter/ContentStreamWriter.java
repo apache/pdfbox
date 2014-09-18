@@ -136,7 +136,7 @@ public class ContentStreamWriter
         else if( o instanceof Operator)
         {
             Operator op = (Operator)o;
-            if( op.getOperation().equals( "BI" ) )
+            if( op.getName().equals( "BI" ) )
             {
                 output.write( "BI".getBytes("ISO-8859-1") );
                 COSDictionary dic = op.getImageParameters();
@@ -154,7 +154,7 @@ public class ContentStreamWriter
             }
             else
             {
-                output.write( op.getOperation().getBytes("ISO-8859-1") );
+                output.write( op.getName().getBytes("ISO-8859-1") );
                 output.write( EOL );
             }
         }

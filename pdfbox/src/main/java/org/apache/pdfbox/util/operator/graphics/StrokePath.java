@@ -35,4 +35,10 @@ public final class StrokePath extends GraphicsOperatorProcessor
     {
         context.strokePath();
     }
+
+    @Override
+    public String getName()
+    {
+        return "S";
+    }
 }

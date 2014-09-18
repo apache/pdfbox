@@ -14,27 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.util.operator.text;
 
-import java.util.List;
-
-import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
-import java.io.IOException;
-import org.apache.pdfbox.util.operator.Operator;
-import org.apache.pdfbox.util.operator.OperatorProcessor;
+package org.apache.pdfbox.util.operator.color;
 
 /**
- * TJ: Show text, with position adjustments.
+ * scn: Sets the colour to use for stroking non-stroking operations.
+ * Supports Pattern, Separation, DeviceN and ICCBased colour spaces.
  *
- * @author Laurent Huault
+ * @author John Hewson
  */
-public class ShowTextGlyph extends OperatorProcessor
+public class SetNonStrokingColorN extends SetNonStrokingColor
 {
     @Override
-    public void process(Operator operator, List<COSBase> arguments) throws IOException
+    public String getName()
     {
-        COSArray array = (COSArray)arguments.get(0);
-        context.showTextStrings(array);
+        return "scn";
     }
 }

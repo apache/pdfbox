@@ -49,4 +49,10 @@ public class CurveTo extends GraphicsOperatorProcessor
                         (float) point2.getX(), (float) point2.getY(),
                         (float) point3.getX(), (float) point3.getY());
     }
+
+    @Override
+    public String getName()
+    {
+        return "c";
+    }
 }

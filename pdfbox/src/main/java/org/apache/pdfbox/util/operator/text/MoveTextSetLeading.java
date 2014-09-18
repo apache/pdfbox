@@ -44,4 +44,10 @@ public class MoveTextSetLeading extends OperatorProcessor
         context.processOperator("TL", args);
         context.processOperator("Td", arguments);
     }
+
+    @Override
+    public String getName()
+    {
+        return "TD";
+    }
 }

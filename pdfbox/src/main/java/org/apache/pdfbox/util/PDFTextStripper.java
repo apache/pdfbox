@@ -180,40 +180,18 @@ public class PDFTextStripper extends PDFTextStreamEngine
     private boolean inParagraph;
 
     /**
-     * Instantiate a new PDFTextStripper object. This object will load
-     * properties from PDFTextStripper.properties and will not do
+     * Instantiate a new PDFTextStripper object. Will not do
      * anything special to convert the text to a more encoding-specific output.
      *
      * @throws IOException If there is an error loading the properties.
      */
     public PDFTextStripper() throws IOException
     {
-        super(ResourceLoader.loadProperties(
-                "org/apache/pdfbox/resources/PDFTextStripper.properties", true));
-        this.outputEncoding = null;
-        normalize = new TextNormalize(this.outputEncoding);
+        this(null);
     }
 
     /**
-     * Instantiate a new PDFTextStripper object.  Loading all of the operator mappings
-     * from the properties object that is passed in.  Does not convert the text
-     * to more encoding-specific output.
-     *
-     * @param props The properties containing the mapping of operators to PDFOperator
-     * classes.
-     *
-     * @throws IOException If there is an error reading the properties.
-     */
-    public PDFTextStripper(Properties props) throws IOException
-    {
-        super(props);
-        this.outputEncoding = null;
-        normalize = new TextNormalize(this.outputEncoding);
-    }
-
-    /**
-     * Instantiate a new PDFTextStripper object. This object will load
-     * properties from PDFTextStripper.properties and will apply
+     * Instantiate a new PDFTextStripper object. Will apply
      * encoding-specific conversions to the output text.
      *
      * @param encoding The encoding that the output will be written in.
@@ -221,8 +199,6 @@ public class PDFTextStripper extends PDFTextStreamEngine
      */
     public PDFTextStripper(String encoding) throws IOException
     {
-        super(ResourceLoader.loadProperties(
-                "org/apache/pdfbox/resources/PDFTextStripper.properties", true));
         this.outputEncoding = encoding;
         normalize = new TextNormalize(this.outputEncoding);
     }

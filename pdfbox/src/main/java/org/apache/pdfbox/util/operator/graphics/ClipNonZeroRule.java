@@ -35,4 +35,10 @@ public class ClipNonZeroRule extends GraphicsOperatorProcessor
     {
         context.clip(GeneralPath.WIND_NON_ZERO);
     }
+
+    @Override
+    public String getName()
+    {
+        return "W";
+    }
 }

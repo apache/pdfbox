@@ -41,4 +41,10 @@ public class SetGraphicsStateParameters extends OperatorProcessor
         PDExtendedGraphicsState gs = context.getGraphicsStates().get( graphicsName.getName() );
         gs.copyIntoGraphicsState( context.getGraphicsState() );
     }
+
+    @Override
+    public String getName()
+    {
+        return "gs";
+    }
 }

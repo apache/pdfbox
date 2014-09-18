@@ -42,4 +42,10 @@ public class MoveText extends OperatorProcessor
         context.setTextLineMatrix( td.multiply( context.getTextLineMatrix() ) );
         context.setTextMatrix( context.getTextLineMatrix().clone() );
     }
+
+    @Override
+    public String getName()
+    {
+        return "Td";
+    }
 }
