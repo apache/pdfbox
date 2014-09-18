@@ -53,7 +53,7 @@ public class PDDeviceCMYK extends PDDeviceColorSpace
     private static final PDColor INITIAL_COLOR = new PDColor(new float[] { 0, 0, 0, 1 });
     private final ICC_ColorSpace awtColorSpace;
 
-    private PDDeviceCMYK() throws IOException
+    protected PDDeviceCMYK() throws IOException
     {
         // loads the ICC color profile for CMYK
         ICC_Profile iccProfile = getICCProfile();
