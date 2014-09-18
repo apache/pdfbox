@@ -189,6 +189,12 @@ public abstract class CFFCharset
         {
             throw new IllegalStateException("Not a CIDFont");
         }
-        return gidToCid.get(gid);
+
+        Integer cid = gidToCid.get(gid);
+        if (cid != null)
+        {
+            return cid;
+        }
+        return 0;
     }
 }
