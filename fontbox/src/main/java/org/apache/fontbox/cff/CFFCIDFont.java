@@ -199,9 +199,9 @@ public class CFFCIDFont extends CFFFont
         return privDict.containsKey("nominalWidthX") ? ((Number)privDict.get("nominalWidthX")).intValue() : 0;
     }
 
-    private IndexData getLocalSubrIndex(int cid)
+    private IndexData getLocalSubrIndex(int gid)
     {
-        int fdArrayIndex = this.fdSelect.getFDIndex(cid);
+        int fdArrayIndex = this.fdSelect.getFDIndex(gid);
         if (fdArrayIndex == -1)
         {
             return new IndexData(0);
@@ -229,7 +229,7 @@ public class CFFCIDFont extends CFFFont
                 bytes = charStrings.get(0); // .notdef
             }
             Type2CharStringParser parser = new Type2CharStringParser(fontName, cid);
-            List<Object> type2seq = parser.parse(bytes, globalSubrIndex, getLocalSubrIndex(cid));
+            List<Object> type2seq = parser.parse(bytes, globalSubrIndex, getLocalSubrIndex(gid));
             type2 = new CIDKeyedType2CharString(reader, fontName, cid, gid, type2seq, getDefaultWidthX(cid), getNominalWidthX(cid));
             charStringCache.put(cid, type2);
         }

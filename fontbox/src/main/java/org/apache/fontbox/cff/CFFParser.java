@@ -819,7 +819,7 @@ public class CFFParser
         {
             for (int i = 0; i < nbRanges; ++i)
             {
-                if (range3[i].first >= gid)
+                if (range3[i].first <= gid)
                 {
                     if (i + 1 < nbRanges)
                     {
