@@ -47,4 +47,10 @@ public class SetCharSpacing extends OperatorProcessor
             }
         }
     }
+
+    @Override
+    public String getName()
+    {
+        return "Tc";
+    }
 }

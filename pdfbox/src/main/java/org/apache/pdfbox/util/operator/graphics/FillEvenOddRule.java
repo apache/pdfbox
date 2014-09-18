@@ -35,4 +35,10 @@ public final class FillEvenOddRule extends GraphicsOperatorProcessor
     {
         context.fillPath(GeneralPath.WIND_EVEN_ODD);
     }
+
+    @Override
+    public String getName()
+    {
+        return "f*";
+    }
 }

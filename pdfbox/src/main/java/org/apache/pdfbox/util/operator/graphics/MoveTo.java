@@ -39,4 +39,10 @@ public final class MoveTo extends GraphicsOperatorProcessor
         Point2D pos = context.transformedPoint(x.doubleValue(), y.doubleValue());
         context.moveTo((float) pos.getX(), (float) pos.getY());
     }
+
+    @Override
+    public String getName()
+    {
+        return "m";
+    }
 }

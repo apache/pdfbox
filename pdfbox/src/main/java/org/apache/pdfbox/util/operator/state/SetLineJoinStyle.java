@@ -38,4 +38,10 @@ public class SetLineJoinStyle extends OperatorProcessor
         int lineJoinStyle = ((COSNumber)arguments.get( 0 )).intValue();
         context.getGraphicsState().setLineJoin( lineJoinStyle );
     }
+
+    @Override
+    public String getName()
+    {
+        return "j";
+    }
 }

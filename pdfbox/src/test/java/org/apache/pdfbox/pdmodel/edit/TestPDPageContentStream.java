@@ -58,7 +58,7 @@ public class TestPDPageContentStream extends TestCase
         assertEquals(0.2f, ((COSFloat)pageTokens.get(1)).floatValue());
         assertEquals(0.3f, ((COSFloat)pageTokens.get(2)).floatValue());
         assertEquals(0.4f, ((COSFloat)pageTokens.get(3)).floatValue());
-        assertEquals("k", ((Operator) pageTokens.get(4)).getOperation());
+        assertEquals("k", ((Operator) pageTokens.get(4)).getName());
 
         // same as above but for PDPageContentStream#setStrokingColor
         page = new PDPage();
@@ -84,6 +84,6 @@ public class TestPDPageContentStream extends TestCase
         assertEquals(0.6f, ((COSFloat)pageTokens.get(1)).floatValue());
         assertEquals(0.7f, ((COSFloat)pageTokens.get(2)).floatValue());
         assertEquals(0.8f, ((COSFloat)pageTokens.get(3)).floatValue());
-        assertEquals("K", ((Operator)pageTokens.get(4)).getOperation());
+        assertEquals("K", ((Operator)pageTokens.get(4)).getName());
     }
 }

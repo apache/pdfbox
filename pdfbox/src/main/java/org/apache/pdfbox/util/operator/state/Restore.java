@@ -46,4 +46,10 @@ public class Restore extends OperatorProcessor
             LOG.error("GRestore: no graphics state left to be restored.");
         }
     }
+
+    @Override
+    public String getName()
+    {
+        return "Q";
+    }
 }

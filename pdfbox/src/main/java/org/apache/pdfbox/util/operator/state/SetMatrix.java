@@ -52,4 +52,10 @@ public class SetMatrix extends OperatorProcessor
         context.setTextMatrix( textMatrix );
         context.setTextLineMatrix( textMatrix.clone() );
     }
+
+    @Override
+    public String getName()
+    {
+        return "Tm";
+    }
 }

@@ -45,7 +45,6 @@ import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.util.operator.Operator;
-import org.apache.pdfbox.util.operator.Operator;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
 
 /**
@@ -54,6 +53,12 @@ import org.apache.pdfbox.util.operator.OperatorProcessor;
  */
 public class StubOperator extends OperatorProcessor
 {
+    private String name;
+
+    public StubOperator(String name)
+    {
+        this.name = name;
+    }
 
     /*
      * (non-Javadoc)
@@ -64,7 +69,7 @@ public class StubOperator extends OperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
-        String op = operator.getOperation();
+        String op = operator.getName();
         if ("S".equals(op))
         {
             checkNoOperands(arguments);
@@ -420,5 +425,11 @@ public class StubOperator extends OperatorProcessor
         ContentStreamException ex = new ContentStreamException(details);
         ex.setErrorCode(errorCode);
         return ex;
+    }
+
+    @Override
+    public String getName()
+    {
+        return name;
     }
 }

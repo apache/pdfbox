@@ -37,4 +37,10 @@ public class FillNonZeroAndStrokePath extends GraphicsOperatorProcessor
     {
         context.fillAndStrokePath(GeneralPath.WIND_NON_ZERO);
     }
+
+    @Override
+    public String getName()
+    {
+        return "B";
+    }
 }

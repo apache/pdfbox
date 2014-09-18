@@ -29,12 +29,18 @@ import java.io.IOException;
  *
  * @author Laurent Huault
  */
-public class MoveAndShow extends OperatorProcessor
+public class ShowTextLine extends OperatorProcessor
 {
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
         context.processOperator("T*", null);
         context.processOperator("Tj", arguments);
+    }
+
+    @Override
+    public String getName()
+    {
+        return "'";
     }
 }

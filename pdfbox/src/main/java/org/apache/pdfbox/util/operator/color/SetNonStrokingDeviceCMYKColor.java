@@ -37,4 +37,10 @@ public class SetNonStrokingDeviceCMYKColor extends SetNonStrokingColor
         context.getGraphicsState().setNonStrokingColorSpace(PDDeviceCMYK.INSTANCE);
         super.process(operator, arguments);
     }
+
+    @Override
+    public String getName()
+    {
+        return "k";
+    }
 }

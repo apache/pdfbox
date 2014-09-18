@@ -53,4 +53,10 @@ public final class AppendRectangleToPath extends GraphicsOperatorProcessor
 
         context.appendRectangle(p0, p1, p2, p3);
     }
+
+    @Override
+    public String getName()
+    {
+        return "re";
+    }
 }

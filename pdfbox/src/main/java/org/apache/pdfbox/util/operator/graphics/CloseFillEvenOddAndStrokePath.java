@@ -36,4 +36,10 @@ public final class CloseFillEvenOddAndStrokePath extends GraphicsOperatorProcess
         context.processOperator("h", operands);  // ClosePath
         context.processOperator("B*", operands); // FillEvenOddAndStroke
     }
+
+    @Override
+    public String getName()
+    {
+        return "F";
+    }
 }

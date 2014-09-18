@@ -20,7 +20,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 
 /**
- * sc,scn: Sets the colour to use for stroking non-stroking operations.
+ * sc: Sets the colour to use for stroking non-stroking operations.
  *
  * @author John Hewson
  */
@@ -51,5 +51,11 @@ public class SetNonStrokingColor extends SetColor
     protected PDColorSpace getColorSpace()
     {
         return context.getGraphicsState().getNonStrokingColorSpace();
+    }
+
+    @Override
+    public String getName()
+    {
+        return "sc";
     }
 }

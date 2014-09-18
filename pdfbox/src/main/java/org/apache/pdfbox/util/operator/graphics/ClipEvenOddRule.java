@@ -35,4 +35,10 @@ public final class ClipEvenOddRule extends GraphicsOperatorProcessor
     {
         context.clip(GeneralPath.WIND_EVEN_ODD);
     }
+
+    @Override
+    public String getName()
+    {
+        return "W*";
+    }
 }

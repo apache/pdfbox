@@ -43,4 +43,10 @@ public class SetStrokingDeviceRGBColor extends SetStrokingColor
         context.getGraphicsState().setStrokingColorSpace(PDDeviceRGB.INSTANCE);
         super.process(operator, arguments);
     }
+
+    @Override
+    public String getName()
+    {
+        return "RG";
+    }
 }

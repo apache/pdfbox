@@ -39,4 +39,10 @@ public final class BeginInlineImage extends GraphicsOperatorProcessor
                                           context.getResources().getColorSpaces());
         context.drawImage(image);
     }
+
+    @Override
+    public String getName()
+    {
+        return "BI";
+    }
 }

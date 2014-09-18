@@ -18,28 +18,29 @@ package org.apache.pdfbox.util.operator.text;
 
 import java.util.List;
 
+import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSNumber;
+import java.io.IOException;
 import org.apache.pdfbox.util.operator.Operator;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
 
 /**
- * Tw: Set word spacing.
+ * TJ: Show text, with position adjustments.
  *
  * @author Laurent Huault
  */
-public class SetWordSpacing extends OperatorProcessor
+public class ShowTextAdjusted extends OperatorProcessor
 {
     @Override
-    public void process(Operator operator, List<COSBase> arguments)
+    public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
-        COSNumber wordSpacing = (COSNumber)arguments.get( 0 );
-        context.getGraphicsState().getTextState().setWordSpacing( wordSpacing.floatValue() );
+        COSArray array = (COSArray)arguments.get(0);
+        context.showTextStrings(array);
     }
 
     @Override
     public String getName()
     {
-        return "Tw";
+        return "TJ";
     }
 }

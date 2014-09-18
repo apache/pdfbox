@@ -82,11 +82,11 @@ public class Operator
     }
 
     /**
-     * This will get the operation that this operator represents.
+     * This will get the name of the operator.
      *
      * @return The string representation of the operation.
      */
-    public String getOperation()
+    public String getName()
     {
         return theOperator;
     }

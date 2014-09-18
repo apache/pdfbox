@@ -56,4 +56,10 @@ public class SetStrokingColorSpace extends OperatorProcessor
             LOG.error("Missing color space: " + name.getName());
         }
     }
+
+    @Override
+    public String getName()
+    {
+        return "CS";
+    }
 }

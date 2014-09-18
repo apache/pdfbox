@@ -23,23 +23,25 @@ import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.util.operator.Operator;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
 
+import java.io.IOException;
+
 /**
- * Tw: Set word spacing.
+ * Tz: Set horizontal text scaling.
  *
- * @author Laurent Huault
+ * @author Ben Litchfield
  */
-public class SetWordSpacing extends OperatorProcessor
+public class SetTextHorizontalScaling extends OperatorProcessor
 {
     @Override
-    public void process(Operator operator, List<COSBase> arguments)
+    public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
-        COSNumber wordSpacing = (COSNumber)arguments.get( 0 );
-        context.getGraphicsState().getTextState().setWordSpacing( wordSpacing.floatValue() );
+        COSNumber scaling = (COSNumber)arguments.get(0);
+        context.getGraphicsState().getTextState().setHorizontalScaling(scaling.floatValue());
     }
 
     @Override
     public String getName()
     {
-        return "Tw";
+        return "Tz";
     }
 }

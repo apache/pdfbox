@@ -36,4 +36,10 @@ public class CloseAndStrokePath extends GraphicsOperatorProcessor
         context.processOperator( "h", arguments );
         context.processOperator( "S", arguments );
     }
+
+    @Override
+    public String getName()
+    {
+        return "s";
+    }
 }

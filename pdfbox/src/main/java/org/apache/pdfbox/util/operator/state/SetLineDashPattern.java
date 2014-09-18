@@ -53,4 +53,10 @@ public class SetLineDashPattern extends OperatorProcessor
         PDLineDashPattern lineDash = new PDLineDashPattern(dashArray, dashPhase);
         context.getGraphicsState().setLineDashPattern(lineDash);
     }
+
+    @Override
+    public String getName()
+    {
+        return "d";
+    }
 }

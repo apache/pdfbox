@@ -36,4 +36,10 @@ public class SetStrokingDeviceCMYKColor extends SetStrokingColor
         context.getGraphicsState().setStrokingColorSpace(PDDeviceCMYK.INSTANCE);
         super.process(operator, arguments);
     }
+
+    @Override
+    public String getName()
+    {
+        return "K";
+    }
 }

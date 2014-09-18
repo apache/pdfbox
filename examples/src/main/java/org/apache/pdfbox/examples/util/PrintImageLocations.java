@@ -27,10 +27,9 @@ import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.util.Matrix;
-import org.apache.pdfbox.util.operator.Operator;
+import org.apache.pdfbox.util.operator.DrawObject;
 import org.apache.pdfbox.util.operator.Operator;
 import org.apache.pdfbox.util.PDFStreamEngine;
-import org.apache.pdfbox.util.ResourceLoader;
 
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
@@ -38,6 +37,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
+import org.apache.pdfbox.util.operator.state.Concatenate;
+import org.apache.pdfbox.util.operator.state.Restore;
+import org.apache.pdfbox.util.operator.state.Save;
+import org.apache.pdfbox.util.operator.state.SetGraphicsStateParameters;
+import org.apache.pdfbox.util.operator.state.SetMatrix;
 
 /**
  * This is an example on how to get the x/y coordinates of image locations.
@@ -49,8 +53,6 @@ import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
  */
 public class PrintImageLocations extends PDFStreamEngine
 {
-    
-    private static final String INVOKE_OPERATOR = "Do";
     /**
      * Default constructor.
      *
@@ -58,8 +60,12 @@ public class PrintImageLocations extends PDFStreamEngine
      */
     public PrintImageLocations() throws IOException
     {
-        super( ResourceLoader.loadProperties(
-                "org/apache/pdfbox/resources/PDFTextStripper.properties", true ) );
+        addOperator(new Concatenate());
+        addOperator(new DrawObject());
+        addOperator(new SetGraphicsStateParameters());
+        addOperator(new Save());
+        addOperator(new Restore());
+        addOperator(new SetMatrix());
     }
 
     /**
@@ -124,8 +130,8 @@ public class PrintImageLocations extends PDFStreamEngine
      */
     protected void processOperator( Operator operator, List arguments ) throws IOException
     {
-        String operation = operator.getOperation();
-        if( INVOKE_OPERATOR.equals(operation) )
+        String operation = operator.getName();
+        if( "Do".equals(operation) )
         {
             COSName objectName = (COSName)arguments.get( 0 );
             Map<String, PDXObject> xobjects = getResources().getXObjects();

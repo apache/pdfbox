@@ -37,4 +37,10 @@ public class SetNonStrokingDeviceGrayColor extends SetNonStrokingColor
         context.getGraphicsState().setNonStrokingColorSpace(PDDeviceGray.INSTANCE);
         super.process(operator, arguments);
     }
+
+    @Override
+    public String getName()
+    {
+        return "g";
+    }
 }

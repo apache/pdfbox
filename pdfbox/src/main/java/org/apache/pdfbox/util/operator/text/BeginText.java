@@ -39,4 +39,10 @@ public class BeginText extends OperatorProcessor
         context.setTextLineMatrix( new Matrix() );
         context.beginText();
     }
+
+    @Override
+    public String getName()
+    {
+        return "BT";
+    }
 }

@@ -35,4 +35,10 @@ public final class ShadingFill extends GraphicsOperatorProcessor
     {
         context.shadingFill((COSName) operands.get(0));
     }
+
+    @Override
+    public String getName()
+    {
+        return "sh";
+    }
 }

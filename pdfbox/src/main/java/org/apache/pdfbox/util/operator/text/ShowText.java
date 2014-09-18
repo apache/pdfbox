@@ -38,4 +38,10 @@ public class ShowText extends OperatorProcessor
         COSString string = (COSString)arguments.get( 0 );
         context.showTextString(string.getBytes());
     }
+
+    @Override
+    public String getName()
+    {
+        return "Tj";
+    }
 }

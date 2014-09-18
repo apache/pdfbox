@@ -36,7 +36,6 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDInlineImage;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.content.PreflightStreamEngine;
 import org.apache.pdfbox.util.operator.Operator;
-import org.apache.pdfbox.util.operator.Operator;
 
 /**
  * This class is used to parse a glyph of a Type3 font program. If the glyph is parsed without error, the width of the
@@ -86,7 +85,7 @@ public class PreflightType3Stream extends PreflightStreamEngine
     protected void processOperator(Operator operator, List arguments) throws IOException
     {
         super.processOperator(operator, arguments);
-        String operation = operator.getOperation();
+        String operation = operator.getName();
 
         if (operation.equals("BI"))
         {

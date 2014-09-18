@@ -39,4 +39,10 @@ public class EndMarkedContentSequence extends OperatorProcessor
             ((PDFMarkedContentExtractor) this.context).endMarkedContentSequence();
         }
     }
+
+    @Override
+    public String getName()
+    {
+        return "EMC";
+    }
 }

@@ -14,32 +14,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.util.operator.text;
 
+package org.apache.pdfbox.util.operator.state;
+
+import java.io.IOException;
 import java.util.List;
-
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.util.operator.Operator;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
 
 /**
- * Tw: Set word spacing.
+ * i: Set the flatness tolerance.
  *
- * @author Laurent Huault
+ * @author John Hewson
  */
-public class SetWordSpacing extends OperatorProcessor
+public class SetFlatness extends OperatorProcessor
 {
     @Override
-    public void process(Operator operator, List<COSBase> arguments)
+    public void process(Operator operator, List<COSBase> operands) throws IOException
     {
-        COSNumber wordSpacing = (COSNumber)arguments.get( 0 );
-        context.getGraphicsState().getTextState().setWordSpacing( wordSpacing.floatValue() );
+        COSNumber value = (COSNumber)operands.get(0);
+        context.getGraphicsState().setFlatness(value.floatValue());
     }
 
     @Override
     public String getName()
     {
-        return "Tw";
+        return "i";
     }
 }
