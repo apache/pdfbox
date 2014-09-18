@@ -480,7 +480,7 @@ public class PDFStreamEngine
      * @param operator The unknown operator.
      * @param arguments The list of arguments.
      */
-    protected void unsupportedOperator(Operator operator, List<COSBase> arguments)
+    protected void unsupportedOperator(Operator operator, List<COSBase> arguments) throws IOException
     {
         // overridden in subclasses
     }
