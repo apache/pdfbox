@@ -60,7 +60,7 @@
         <artifactId>apache-rat-plugin</artifactId>
         <configuration>
             <excludes>
-                <exclude>src/main/resources/org/apache/fontbox/resources/cmap/*</exclude>
+                <exclude>src/main/resources/org/apache/fontbox/cmap/*</exclude>
             </excludes>
         </configuration>
     </plugin>
