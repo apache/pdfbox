@@ -349,7 +349,7 @@ public class PDCIDFontType2 extends PDCIDFont
     }
 
     @Override
-    protected float getWidthFromFont(int code) throws IOException
+    public float getWidthFromFont(int code) throws IOException
     {
         int gid = codeToGID(code);
         int width = ttf.getAdvanceWidth(gid);

@@ -42,7 +42,7 @@ import org.apache.pdfbox.util.Vector;
  * 
  * @author Ben Litchfield
  */
-public abstract class PDFont implements COSObjectable
+public abstract class PDFont implements COSObjectable, PDFontLike
 {
     private static final Log LOG = LogFactory.getLog(PDFont.class);
     private static final Matrix DEFAULT_FONT_MATRIX = new Matrix(0.001f, 0, 0, 0.001f, 0, 0);
@@ -102,16 +102,14 @@ public abstract class PDFont implements COSObjectable
         }
     }
 
-    /**
-     * Returns the font descriptor, may be null.
-     */
+    @Override
     public PDFontDescriptor getFontDescriptor()
     {
         return fontDescriptor;
     }
 
     /**
-     * Sets the font descriptor.
+     * Sets the font descriptor. For internal PDFBox use only.
      */
     void setFontDescriptor(PDFontDescriptor fontDescriptor)
     {
@@ -157,14 +155,7 @@ public abstract class PDFont implements COSObjectable
         return dict;
     }
 
-    /**
-     * Returns the position vector (v), in text space, for the given character.
-     * This represents the position of vertical origin relative to horizontal origin, for
-     * horizontal writing it will always be (0, 0). For vertical writing both x and y are set.
-     *
-     * @param code character code
-     * @return position vector
-     */
+    @Override
     public Vector getPositionVector(int code)
     {
         throw new UnsupportedOperationException("Horizontal fonts have no position vector");
@@ -182,11 +173,7 @@ public abstract class PDFont implements COSObjectable
         return new Vector(getWidth(code) / 1000, 0);
     }
 
-    /**
-     * Returns the advance width of the given character, in glyph space.
-     *
-     * @param code character code
-     */
+    @Override
     public float getWidth(int code) throws IOException
     {
         // Acrobat overrides the widths in the font program on the conforming reader's system with
@@ -218,31 +205,18 @@ public abstract class PDFont implements COSObjectable
         }
     }
 
-    /**
-     * Returns the width of a glyph in the embedded font file.
-     *
-     * @param code character code
-     * @return width in glyph space
-     * @throws IOException if the font could not be read
-     */
+    @Override
     public abstract float getWidthFromFont(int code) throws IOException;
 
-    /**
-     * Returns true if the font file is embedded in the PDF.
-     */
+    @Override
     public abstract boolean isEmbedded();
 
-    /**
-     * Returns the height of the given character, in glyph space. This can be expensive to
-     * calculate. Results are only approximate.
-     * 
-     * @param code character code
-     */
+    @Override
     public abstract float getHeight(int code) throws IOException;
 
     /**
      * Returns the width of the given Unicode string.
-     * 
+     *
      * @param string The string to get the width of.
      * @return The width of the string in 1000 units of text space, ie 333 567...
      * @throws IOException If there is an error getting the width information.
@@ -260,7 +234,7 @@ public abstract class PDFont implements COSObjectable
 
     /**
      * This will get the average font width for all characters.
-     * 
+     *
      * @return The width is in 1000 unit of text space, ie 333 or 777
      */
     // todo: this method is highly suspicious, the average glyph width is not usually a good metric
@@ -404,25 +378,10 @@ public abstract class PDFont implements COSObjectable
         return null;
     }
 
-    /**
-     * Returns the PostScript name of the font.
-     */
-    public String getBaseFont()
-    {
-        return dict.getNameAsString(COSName.BASE_FONT);
-    }
+    @Override
+    public abstract String getName();
 
-    /**
-     * Returns the name of this font, either the PostScript "BaseName" or the Type 3 "Name".
-     */
-    public String getName()
-    {
-        return getBaseFont();
-    }
-
-    /**
-     * Returns the font's bounding box.
-     */
+    @Override
     public abstract BoundingBox getBoundingBox() throws IOException;
 
     /**
@@ -447,9 +406,7 @@ public abstract class PDFont implements COSObjectable
         return widths;
     }
 
-    /**
-     * Returns the font matrix, which represents the transformation from glyph space to text space.
-     */
+    @Override
     public Matrix getFontMatrix()
     {
         return DEFAULT_FONT_MATRIX;

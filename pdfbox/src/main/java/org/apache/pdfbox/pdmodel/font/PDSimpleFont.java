@@ -139,7 +139,7 @@ public abstract class PDSimpleFont extends PDFont
         }
 
         // assign the glyph list based on the font
-        if ("ZapfDingbats".equals(getBaseFont()))
+        if ("ZapfDingbats".equals(getName()))
         {
             glyphList = GlyphList.ZAPF_DINGBATS;
         }
@@ -182,7 +182,7 @@ public abstract class PDSimpleFont extends PDFont
         }
         else if (isStandard14())
         {
-            return getBaseFont().equals("Symbol") || getBaseFont().equals("ZapfDingbats");
+            return getName().equals("Symbol") || getName().equals("ZapfDingbats");
         }
         else
         {
@@ -288,6 +288,6 @@ public abstract class PDSimpleFont extends PDFont
      */
     public boolean isStandard14()
     {
-        return !isEmbedded() && STANDARD_14.contains(getBaseFont());
+        return !isEmbedded() && STANDARD_14.contains(getName());
     }
 }

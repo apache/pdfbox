@@ -528,7 +528,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         if (glyph2D == null)
         {
             // todo: make sure this never happens
-            throw new UnsupportedOperationException("No font for " + font.getBaseFont());
+            throw new UnsupportedOperationException("No font for " + font.getName());
         }
 
         return glyph2D;

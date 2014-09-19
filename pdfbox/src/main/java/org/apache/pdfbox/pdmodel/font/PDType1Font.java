@@ -273,6 +273,14 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
         return null;
     }
 
+    /**
+     * Returns the PostScript name of the font.
+     */
+    public String getBaseFont()
+    {
+        return dict.getNameAsString(COSName.BASE_FONT);
+    }
+
     @Override
     public PDFontDescriptor getFontDescriptor()
     {
