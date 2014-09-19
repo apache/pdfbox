@@ -140,7 +140,7 @@ public abstract class PDSimpleFont extends PDFont
 
         // TTFs may have null encoding, but if it's standard 14 then we know it's Standard Encoding
         if (this.encoding == null && isStandard14() &&
-                !getName().equals("Symbol") ||
+                !getName().equals("Symbol") &&
                 !getName().equals("ZapfDingbats"))
         {
             this.encoding = StandardEncoding.INSTANCE;
