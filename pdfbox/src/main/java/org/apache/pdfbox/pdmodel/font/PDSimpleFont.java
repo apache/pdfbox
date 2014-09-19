@@ -133,10 +133,19 @@ public abstract class PDSimpleFont extends PDFont
         }
 
         // TTFs may have null encoding, but if it's non-symbolic then we have Standard Encoding
-        if (this.encoding == null && getSymbolicFlag() != null && getSymbolicFlag())
+        if (this.encoding == null && getSymbolicFlag() != null && !getSymbolicFlag())
         {
             this.encoding = StandardEncoding.INSTANCE;
         }
+
+        // TTFs may have null encoding, but if it's standard 14 then we know it's Standard Encoding
+        if (this.encoding == null && isStandard14() &&
+                !getName().equals("Symbol") ||
+                !getName().equals("ZapfDingbats"))
+        {
+            this.encoding = StandardEncoding.INSTANCE;
+        }
+        // todo: what about Symbol and ZapfDingbats?
 
         // assign the glyph list based on the font
         if ("ZapfDingbats".equals(getName()))
