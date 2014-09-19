@@ -368,7 +368,7 @@ public class TrueTypeFont implements Type1Equivalent
     }
 
     @Override
-    public String getFullName() throws IOException
+    public String getName() throws IOException
     {
         if (getNaming() != null)
         {

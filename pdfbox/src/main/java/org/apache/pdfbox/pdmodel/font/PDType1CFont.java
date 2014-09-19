@@ -110,12 +110,8 @@ public class PDType1CFont extends PDSimpleFont implements PDType1Equivalent
         fontMatrixTransform.scale(1000, 1000);
     }
 
-    /**
-     * Returns the embedded or system font for rendering. This font is a Type 1-equivalent, but
-     * may not be a Type 1 font, it could be a CFF font or TTF font. If there is no suitable font
-     * then the fallback font will be returned: this method never returns null.
-     */
-    public Type1Equivalent getFontForRendering()
+    @Override
+    public Type1Equivalent getType1Equivalent()
     {
         return type1Equivalent;
     }

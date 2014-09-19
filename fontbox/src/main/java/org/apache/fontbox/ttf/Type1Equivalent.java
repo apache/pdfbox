@@ -33,7 +33,7 @@ public interface Type1Equivalent
     /**
      * The PostScript name of the font.
      */
-    public String getFullName() throws IOException;
+    public String getName() throws IOException;
 
     /**
      * Returns the Type 1 CharString for the character with the given name.
