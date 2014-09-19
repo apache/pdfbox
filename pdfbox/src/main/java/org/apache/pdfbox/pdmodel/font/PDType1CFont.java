@@ -33,8 +33,8 @@ import org.apache.fontbox.cff.CFFType1Font;
 import org.apache.fontbox.ttf.Type1Equivalent;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.encoding.Encoding;
-import org.apache.pdfbox.encoding.GlyphList;
 import org.apache.pdfbox.encoding.Type1Encoding;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -118,6 +118,14 @@ public class PDType1CFont extends PDSimpleFont implements PDType1Equivalent
     public Type1Equivalent getFontForRendering()
     {
         return type1Equivalent;
+    }
+
+    /**
+     * Returns the PostScript name of the font.
+     */
+    public String getBaseFont()
+    {
+        return dict.getNameAsString(COSName.BASE_FONT);
     }
 
     @Override

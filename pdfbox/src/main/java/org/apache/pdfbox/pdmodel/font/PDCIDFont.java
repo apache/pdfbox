@@ -34,9 +34,11 @@ import org.apache.pdfbox.util.Vector;
  * A CIDFont. A CIDFont is a PDF object that contains information about a CIDFont program. Although
  * its Type value is Font, a CIDFont is not actually a font.
  *
+ * <p>It is not usually necessary to use this class directly, prefer
+ *
  * @author Ben Litchfield
  */
-public abstract class PDCIDFont implements COSObjectable
+public abstract class PDCIDFont implements COSObjectable, PDFontLike
 {
     protected final PDType0Font parent;
 
@@ -172,11 +174,13 @@ public abstract class PDCIDFont implements COSObjectable
         return dict.getNameAsString(COSName.BASE_FONT);
     }
 
-    /**
-     * This will get the font descriptor for this font. A font descriptor is required for a CIDFont.
-     *
-     * @return The font descriptor for this font.
-     */
+    @Override
+    public String getName()
+    {
+        return getBaseFont();
+    }
+
+    @Override
     public PDFontDescriptor getFontDescriptor()
     {
         if (fontDescriptor == null)
@@ -190,9 +194,7 @@ public abstract class PDCIDFont implements COSObjectable
         return fontDescriptor;
     }
 
-    /**
-     * Returns the font matrix, which represents the transformation from glyph space to text space.
-     */
+    @Override
     public abstract Matrix getFontMatrix();
 
     /**
@@ -205,9 +207,7 @@ public abstract class PDCIDFont implements COSObjectable
         return parent;
     }
 
-    /**
-     * Returns the font's bounding box.
-     */
+    @Override
     public abstract BoundingBox getBoundingBox() throws IOException;
 
     /**
@@ -260,12 +260,7 @@ public abstract class PDCIDFont implements COSObjectable
         return new Vector(w0 / 2, dw2[0]);
     }
 
-    /**
-     * Returns the position vector (v) in 1/1000 text space, for the given character code.
-     *
-     * @param code character code
-     * @return position vector (v)
-     */
+    @Override
     public Vector getPositionVector(int code)
     {
         int cid = codeToCID(code);
@@ -300,19 +295,10 @@ public abstract class PDCIDFont implements COSObjectable
         }
     }
 
-    /**
-     * This will get the font height for a character.
-     *
-     * @param code character code
-     * @return The height is in 1000 unit of text space, ie 333 or 777
-     */
+    @Override
     public abstract float getHeight(int code) throws IOException;
 
-    /**
-     * Returns the width of the given character.
-     *
-     * @param code character code
-     */
+    @Override
     public float getWidth(int code) throws IOException
     {
         // these widths are supposed to be consistent with the actual widths given in the CIDFont
@@ -338,25 +324,14 @@ public abstract class PDCIDFont implements COSObjectable
         }
     }
 
-    /**
-     * Returns the width of a glyph in the embedded font file.
-     *
-     * @param code character code
-     * @return width in glyph space
-     * @throws IOException if the font could not be read
-     */
-    protected abstract float getWidthFromFont(int code) throws IOException;
+    @Override
+    public abstract float getWidthFromFont(int code) throws IOException;
 
-    /**
-     * Returns true if the font file is embedded in the PDF.
-     */
+    @Override
     public abstract boolean isEmbedded();
 
-    /**
-     * This will get the average font width for all characters.
-     *
-     * @return The width is in 1000 unit of text space, ie 333 or 777
-     */
+    @Override
+    // todo: this method is highly suspicious, the average glyph width is not usually a good metric
     public float getAverageFontWidth()
     {
         float totalWidths = 0.0f;
@@ -414,13 +389,4 @@ public abstract class PDCIDFont implements COSObjectable
      * @return GID
      */
     public abstract int codeToGID(int code) throws IOException;
-
-    public void clear()
-    {
-        if (widths != null)
-        {
-            widths.clear();
-            widths = null;
-        }
-    }
 }

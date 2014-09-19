@@ -32,6 +32,7 @@ import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.encoding.GlyphList;
 import org.apache.pdfbox.encoding.MacOSRomanEncoding;
@@ -148,6 +149,14 @@ public class PDTrueTypeFont extends PDSimpleFont
         readEncoding();
     }
 
+    /**
+     * Returns the PostScript name of the font.
+     */
+    public String getBaseFont()
+    {
+        return dict.getNameAsString(COSName.BASE_FONT);
+    }
+
     @Override
     protected Encoding readEncodingFromFont() throws IOException
     {
@@ -171,6 +180,12 @@ public class PDTrueTypeFont extends PDSimpleFont
     public int readCode(InputStream in) throws IOException
     {
         return in.read();
+    }
+
+    @Override
+    public String getName()
+    {
+        return getBaseFont();
     }
 
     @Override

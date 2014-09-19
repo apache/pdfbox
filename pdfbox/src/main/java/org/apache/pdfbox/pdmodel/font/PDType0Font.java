@@ -153,6 +153,14 @@ public class PDType0Font extends PDFont
     }
 
     /**
+     * Returns the PostScript name of the font.
+     */
+    public String getBaseFont()
+    {
+        return dict.getNameAsString(COSName.BASE_FONT);
+    }
+
+    /**
      * Returns the descendant font.
      */
     public PDCIDFont getDescendantFont()
@@ -269,6 +277,12 @@ public class PDType0Font extends PDFont
             // if no value has been produced, there is no way to obtain Unicode for the character.
             return null;
         }
+    }
+
+    @Override
+    public String getName()
+    {
+        return getBaseFont();
     }
 
     @Override
