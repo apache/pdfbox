@@ -33,7 +33,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 public abstract class Encoding implements COSObjectable
 {
     /**
-     * This will get an encoding by name.
+     * This will get an encoding by name. May return null.
      *
      * @param name The name of the encoding to get.
      * @return The encoding that matches the name.

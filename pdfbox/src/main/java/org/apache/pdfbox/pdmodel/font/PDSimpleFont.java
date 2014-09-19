@@ -98,7 +98,7 @@ public abstract class PDSimpleFont extends PDFont
                 this.encoding = Encoding.getInstance(encodingName);
                 if (this.encoding == null)
                 {
-                    LOG.warn("Unknown encoding: " + encodingName);
+                    LOG.warn("Unknown encoding: " + encodingName.getName());
                     this.encoding = readEncodingFromFont(); // fallback
                 }
             }
