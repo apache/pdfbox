@@ -319,7 +319,7 @@ public class PreflightContentStream extends PreflightStreamEngine
         else if (fontContainer == null)
         {
             // Font Must be embedded if the RenderingMode isn't 3
-            registerError(font.getBaseFont() + " is unknown wasn't found by the FontHelperValdiator",
+            registerError(font.getName() + " is unknown wasn't found by the FontHelperValdiator",
                     ERROR_FONTS_UNKNOWN_FONT_REF);
             return;
         }

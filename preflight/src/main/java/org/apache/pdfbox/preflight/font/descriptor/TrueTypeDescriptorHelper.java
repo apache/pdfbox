@@ -97,7 +97,7 @@ public class TrueTypeDescriptorHelper extends FontDescriptorHelper<TrueTypeConta
         catch (IOException e)
         {
             this.fContainer.push(new ValidationError(ERROR_FONTS_TRUETYPE_DAMAGED, "The FontFile can't be read for "
-                    + this.font.getBaseFont()));
+                    + this.font.getName()));
         }
         finally
         {
