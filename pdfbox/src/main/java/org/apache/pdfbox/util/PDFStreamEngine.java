@@ -121,12 +121,6 @@ public class PDFStreamEngine
     public final void addOperator(OperatorProcessor op)
     {
         op.setContext(this);
-        if (operators.containsKey(op.getName()))
-        {
-            LOG.warn("Operator name '" + op.getName() + "' for " + 
-                    op.getClass().getName() + " already registered for " + 
-                    operators.get(op.getName()).getClass().getName());
-        }
         operators.put(op.getName(), op);
     }
 
