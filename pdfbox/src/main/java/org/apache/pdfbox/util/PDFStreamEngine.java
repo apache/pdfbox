@@ -312,8 +312,7 @@ public class PDFStreamEngine
                     ty = 0;
                 }
 
-                // update the text matrix
-                textMatrix.concatenate(Matrix.getTranslatingInstance(tx, ty));
+                applyTextAdjustment(tx, ty);
             }
             else if(obj instanceof COSString)
             {
@@ -325,6 +324,18 @@ public class PDFStreamEngine
                 throw new IOException("Unknown type in array for TJ operation:" + obj);
             }
         }
+    }
+
+    /**
+     * Applies a text position adjustment from the TJ operator. May be overridden in subclasses.
+     *
+     * @param tx x-translation
+     * @param ty y-translation
+     */
+    protected void applyTextAdjustment(float tx, float ty)
+    {
+        // update the text matrix
+        textMatrix.concatenate(Matrix.getTranslatingInstance(tx, ty));
     }
 
     /**
