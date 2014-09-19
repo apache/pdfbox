@@ -303,7 +303,8 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
         String name = codeToName(code);
         if (afm != null)
         {
-            return afm.getCharacterHeight(name); // todo: isn't this the y-advance, not the height?
+            String afmName = getEncoding().getName(code);
+            return afm.getCharacterHeight(afmName); // todo: isn't this the y-advance, not the height?
         }
         else
         {
@@ -317,7 +318,8 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
         String name = codeToName(code);
         if (afm != null)
         {
-            return afm.getCharacterWidth(name);
+            String afmName = getEncoding().getName(code);
+            return afm.getCharacterWidth(afmName);
         }
         else
         {
