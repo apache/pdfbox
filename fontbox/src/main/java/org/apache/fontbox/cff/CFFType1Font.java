@@ -56,7 +56,7 @@ public class CFFType1Font extends CFFFont implements Type1Equivalent
     }
 
     @Override
-    public String getFullName()
+    public String getName()
     {
         return fontName;
     }

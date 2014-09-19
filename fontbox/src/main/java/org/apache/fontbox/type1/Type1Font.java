@@ -142,6 +142,12 @@ public final class Type1Font implements Type1CharStringReader, Type1Equivalent
     }
 
     @Override
+    public String getName()
+    {
+        return fontName;
+    }
+
+    @Override
     public GeneralPath getPath(String name) throws IOException
     {
         return getType1CharString(name).getPath();
@@ -293,10 +299,9 @@ public final class Type1Font implements Type1CharStringReader, Type1Equivalent
 
     /**
      * Returns the full name.
-     * 
+     *
      * @return the full name
      */
-    @Override
     public String getFullName()
     {
         return fullName;
