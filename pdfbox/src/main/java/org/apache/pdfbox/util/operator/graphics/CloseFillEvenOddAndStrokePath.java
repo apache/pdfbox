@@ -24,7 +24,7 @@ import org.apache.pdfbox.util.operator.Operator;
 import java.io.IOException;
 
 /**
- * F Close, fill and stroke the path with even-odd winding rule.
+ * b* Close, fill and stroke the path with even-odd winding rule.
  *
  * @author Andreas Lehmkühler
  */
