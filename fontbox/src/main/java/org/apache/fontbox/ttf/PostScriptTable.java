@@ -301,4 +301,16 @@ public class PostScriptTable extends TTFTable
     {
         this.glyphNames = glyphNamesValue;
     }
+
+    /**
+     * @return Returns the glyph name.
+     */
+    public String getName(int gid)
+    {
+        if (gid < 0 || gid > glyphNames.length)
+        {
+            return null;
+        }
+        return glyphNames[gid];
+    }
 }

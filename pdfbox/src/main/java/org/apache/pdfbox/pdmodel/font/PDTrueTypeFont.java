@@ -244,9 +244,9 @@ public class PDTrueTypeFont extends PDSimpleFont
                     String unicode = GlyphList.DEFAULT.toUnicode(name);
                     if (unicode != null)
                     {
-                        gid = unicode.codePointAt(0);
+                        int uni = unicode.codePointAt(0);
+                        gid = cmapWinUnicode.getGlyphId(uni);
                     }
-                    gid = cmapWinUnicode.getGlyphId(gid);
                 }
 
                 // (1, 0) - (Macintosh, Roman)
