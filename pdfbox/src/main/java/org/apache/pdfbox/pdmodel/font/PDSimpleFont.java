@@ -132,8 +132,8 @@ public abstract class PDSimpleFont extends PDFont
             this.encoding = readEncodingFromFont();
         }
 
-        // TTFs may have null encoding, but if they're non-symbolic then we know it's Adobe encoding
-        if (this.encoding == null && !isSymbolic())
+        // TTFs may have null encoding, but if it's non-symbolic then we have Standard Encoding
+        if (this.encoding == null && getSymbolicFlag() != null && getSymbolicFlag())
         {
             this.encoding = StandardEncoding.INSTANCE;
         }
@@ -184,19 +184,22 @@ public abstract class PDSimpleFont extends PDFont
         {
             return getBaseFont().equals("Symbol") || getBaseFont().equals("ZapfDingbats");
         }
-        else if (getBaseFont().startsWith("Symbol"))
-        {
-            return true;
-        }
         else
         {
             if (encoding == null)
             {
                 // sanity check, should never happen
-                throw new IllegalStateException("recursive definition");
+                if (!(this instanceof PDTrueTypeFont))
+                {
+                    throw new IllegalStateException("PDFBox bug: encoding should not be null!");
+                }
+
+                // TTF without its non-symbolic flag set must be symbolic
+                return true;
             }
-            else if (encoding instanceof WinAnsiEncoding ||encoding instanceof MacRomanEncoding ||
-                encoding instanceof StandardEncoding)
+            else if (encoding instanceof WinAnsiEncoding ||
+                     encoding instanceof MacRomanEncoding ||
+                     encoding instanceof StandardEncoding)
             {
                 return false;
             }
