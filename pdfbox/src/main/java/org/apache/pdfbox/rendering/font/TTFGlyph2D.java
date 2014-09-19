@@ -123,23 +123,7 @@ public class TTFGlyph2D implements Glyph2D
         else
         {
             GlyphData glyph = ttf.getGlyph().getGlyph(gid);
-            if (gid == 0 || gid >= ttf.getMaximumProfile().getNumGlyphs())
-            {
-                if (isCIDFont)
-                {
-                    int cid = ((PDType0Font) font).codeToCID(code);
-                    String cidHex = String.format("%04x", cid);
-                    LOG.warn("No glyph for " + code + " (CID " + cidHex + ") in font " +
-                             font.getName());
-                }
-                else
-                {
-                    LOG.warn("No glyph for " + code + " in font " + font.getName());
-                }
-                glyphPath = new GeneralPath();
-                glyphs.put(gid, glyphPath);
-            }
-            else if (glyph == null)
+            if (glyph == null)
             {
                 // empty glyph (e.g. space, newline)
                 glyphPath = new GeneralPath();
@@ -147,6 +131,21 @@ public class TTFGlyph2D implements Glyph2D
             }
             else
             {
+                if (gid == 0 || gid >= ttf.getMaximumProfile().getNumGlyphs())
+                {
+                    if (isCIDFont)
+                    {
+                        int cid = ((PDType0Font) font).codeToCID(code);
+                        String cidHex = String.format("%04x", cid);
+                        LOG.warn("No glyph for " + code + " (CID " + cidHex + ") in font " +
+                                font.getName());
+                    }
+                    else
+                    {
+                        LOG.warn("No glyph for " + code + " in font " + font.getName());
+                    }
+                }
+
                 glyphPath = glyph.getPath();
                 if (hasScaling)
                 {
