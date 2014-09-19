@@ -61,7 +61,7 @@ public class FontLike
     {
         if (font != null)
         {
-            return font.getBaseFont();
+            return font.getName();
         }
         else
         {
