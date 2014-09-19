@@ -54,6 +54,11 @@ public class DictionaryEncoding extends Encoding
         {
             this.baseEncoding = Encoding.getInstance(baseEncoding);
         }
+
+        if (this.baseEncoding == null)
+        {
+            throw new IllegalArgumentException("Invalid encoding: " + baseEncoding);
+        }
     }
 
     /**
@@ -65,28 +70,34 @@ public class DictionaryEncoding extends Encoding
     {
         encoding = fontEncoding;
 
+        Encoding base = null;
         if (encoding.containsKey(COSName.BASE_ENCODING))
         {
             COSName name = encoding.getCOSName(COSName.BASE_ENCODING);
-            baseEncoding = Encoding.getInstance(name);
+            base = Encoding.getInstance(name); // may be null
         }
-        else if (isNonSymbolic)
+
+        if (base == null)
         {
-            // Otherwise, for a nonsymbolic font, it is StandardEncoding
-            baseEncoding = StandardEncoding.INSTANCE;
-        }
-        else
-        {
-            // and for a symbolic font, it is the font's built-in encoding.
-            if (builtIn != null)
+            if (isNonSymbolic)
             {
-                baseEncoding = builtIn;
+                // Otherwise, for a nonsymbolic font, it is StandardEncoding
+                base = StandardEncoding.INSTANCE;
             }
             else
             {
-                throw new IllegalArgumentException("Built-in Encoding required for symbolic font");
+                // and for a symbolic font, it is the font's built-in encoding.
+                if (builtIn != null)
+                {
+                    base = builtIn;
+                }
+                else
+                {
+                    throw new IllegalArgumentException("Built-in Encoding required for symbolic font");
+                }
             }
         }
+        baseEncoding = base;
 
         codeToName.putAll( baseEncoding.codeToName );
         names.addAll( baseEncoding.names );
