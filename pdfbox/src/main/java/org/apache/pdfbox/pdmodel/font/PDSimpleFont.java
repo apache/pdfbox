@@ -132,6 +132,12 @@ public abstract class PDSimpleFont extends PDFont
             this.encoding = readEncodingFromFont();
         }
 
+        // TTFs may have null encoding, but if they're non-symbolic then we know it's Adobe encoding
+        if (this.encoding == null && !isSymbolic())
+        {
+            this.encoding = StandardEncoding.INSTANCE;
+        }
+
         // assign the glyph list based on the font
         if ("ZapfDingbats".equals(getBaseFont()))
         {
@@ -222,7 +228,7 @@ public abstract class PDSimpleFont extends PDFont
     }
 
     @Override
-    public String toUnicode(int code)
+    public String toUnicode(int code) throws IOException
     {
         // first try to use a ToUnicode CMap
         String unicode = super.toUnicode(code);
