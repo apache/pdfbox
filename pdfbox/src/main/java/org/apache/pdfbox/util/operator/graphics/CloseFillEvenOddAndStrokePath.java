@@ -40,6 +40,6 @@ public final class CloseFillEvenOddAndStrokePath extends GraphicsOperatorProcess
     @Override
     public String getName()
     {
-        return "F";
+        return "b*";
     }
 }
