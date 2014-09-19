@@ -26,9 +26,9 @@ import org.apache.pdfbox.util.operator.OperatorProcessor;
 import java.io.IOException;
 
 /**
- * w: Set miter limit.
+ * M: Set miter limit.
  *
- * @author Andreas LehmkÃ¼hler
+ * @author Andreas Lehmkühler
  */
 public class SetLineMiterLimit extends OperatorProcessor
 {
@@ -42,6 +42,6 @@ public class SetLineMiterLimit extends OperatorProcessor
     @Override
     public String getName()
     {
-        return "w";
+        return "M";
     }
 }
