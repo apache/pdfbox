@@ -380,12 +380,7 @@ public class Overlay
         }
         else if (useAllOverlayPages)
         {
-            int usePageNum = pageNumber % numberOfOverlayPages;
-            layoutPage = specificPageOverlayPage.get(usePageNum);
-        }
-        else if (useAllOverlayPages)
-        {
-            int usePageNum = pageNumber % numberOfOverlayPages;
+            int usePageNum = (pageNumber -1 ) % numberOfOverlayPages;
             layoutPage = specificPageOverlayPage.get(usePageNum);
         }
         if (layoutPage != null)
