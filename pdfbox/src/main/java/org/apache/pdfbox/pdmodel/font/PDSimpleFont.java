@@ -59,6 +59,14 @@ public abstract class PDSimpleFont extends PDFont
         ));
     }
 
+    /**
+     * Returns true if this font is one of the "standard 14" fonts.
+     */
+    public static boolean isStandard14(String name)
+    {
+        return STANDARD_14.contains(name);
+    }
+
     protected Encoding encoding;
     protected GlyphList glyphList;
     private final Set<Integer> noUnicode = new HashSet<Integer>(); // for logging
