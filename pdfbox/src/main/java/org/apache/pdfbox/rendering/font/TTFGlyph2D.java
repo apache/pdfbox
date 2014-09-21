@@ -21,9 +21,12 @@ package org.apache.pdfbox.rendering.font;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
+import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.ttf.GlyphData;
@@ -105,6 +108,25 @@ public class TTFGlyph2D implements Glyph2D
         }
     }
 
+    // todo: HACK!
+    private static Set<String> STANDARD_14 = new HashSet<String>();
+    static
+    {
+        // standard 14 names
+        STANDARD_14.addAll(Arrays.asList(
+                "Courier", "Courier-Bold", "Courier-Oblique", "Courier-BoldOblique", "Helvetica",
+                "Helvetica-Bold", "Helvetica-Oblique", "Helvetica-BoldOblique", "Times-Roman",
+                "Times-Bold", "Times-Italic", "Times-BoldItalic", "Symbol", "ZapfDingbats"
+        ));
+        // alternative names from Adobe Supplement to the ISO 32000
+        STANDARD_14.addAll(Arrays.asList(
+                "CourierCourierNew", "CourierNew", "CourierNew,Italic", "CourierNew,Bold",
+                "CourierNew,BoldItalic", "Arial", "Arial,Italic", "Arial,Bold", "Arial,BoldItalic",
+                "TimesNewRoman", "TimesNewRoman,Italic", "TimesNewRoman,Bold", "TimesNewRoman,BoldItalic"
+        ));
+    }
+
+
     /**
      * Returns the path describing the glyph for the given glyphId.
      *
@@ -122,7 +144,31 @@ public class TTFGlyph2D implements Glyph2D
         }
         else
         {
+            if (gid == 0 || gid >= ttf.getMaximumProfile().getNumGlyphs())
+            {
+                if (isCIDFont)
+                {
+                    int cid = ((PDType0Font) font).codeToCID(code);
+                    String cidHex = String.format("%04x", cid);
+                    LOG.warn("No glyph for " + code + " (CID " + cidHex + ") in font " +
+                            font.getName());
+                }
+                else
+                {
+                    LOG.warn("No glyph for " + code + " in font " + font.getName());
+                }
+            }
+
+            // ------
+
             GlyphData glyph = ttf.getGlyph().getGlyph(gid);
+
+            // todo: MEGA HACK! (for CIDFont "known") - sort of works (width issues?)
+            if (gid == 0 && !font.isEmbedded() && STANDARD_14.contains(font.getName()))
+            {
+                glyph = null;
+            }
+
             if (glyph == null)
             {
                 // empty glyph (e.g. space, newline)
@@ -131,21 +177,6 @@ public class TTFGlyph2D implements Glyph2D
             }
             else
             {
-                if (gid == 0 || gid >= ttf.getMaximumProfile().getNumGlyphs())
-                {
-                    if (isCIDFont)
-                    {
-                        int cid = ((PDType0Font) font).codeToCID(code);
-                        String cidHex = String.format("%04x", cid);
-                        LOG.warn("No glyph for " + code + " (CID " + cidHex + ") in font " +
-                                font.getName());
-                    }
-                    else
-                    {
-                        LOG.warn("No glyph for " + code + " in font " + font.getName());
-                    }
-                }
-
                 glyphPath = glyph.getPath();
                 if (hasScaling)
                 {
