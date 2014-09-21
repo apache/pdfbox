@@ -440,6 +440,15 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
     @Override
     public GeneralPath getPath(String name) throws IOException
     {
-        return type1Equivalent.getPath(name);
+        // Adobe's Standard 14 fonts have an empty .notdef glyph, but Microsoft's don't
+        // so we need to fake this glyph otherwise we get unwanted rectangles, see PDFBOX-2372
+        if (".notdef".equals(name) && isStandard14())
+        {
+            return new GeneralPath();
+        }
+        else
+        {
+            return type1Equivalent.getPath(name);
+        }
     }
 }
