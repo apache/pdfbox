@@ -34,6 +34,7 @@ import org.apache.fontbox.ttf.HeaderTable;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.pdmodel.font.PDCIDFontType2;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
 import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 
@@ -108,25 +109,6 @@ public class TTFGlyph2D implements Glyph2D
         }
     }
 
-    // todo: HACK!
-    private static Set<String> STANDARD_14 = new HashSet<String>();
-    static
-    {
-        // standard 14 names
-        STANDARD_14.addAll(Arrays.asList(
-                "Courier", "Courier-Bold", "Courier-Oblique", "Courier-BoldOblique", "Helvetica",
-                "Helvetica-Bold", "Helvetica-Oblique", "Helvetica-BoldOblique", "Times-Roman",
-                "Times-Bold", "Times-Italic", "Times-BoldItalic", "Symbol", "ZapfDingbats"
-        ));
-        // alternative names from Adobe Supplement to the ISO 32000
-        STANDARD_14.addAll(Arrays.asList(
-                "CourierCourierNew", "CourierNew", "CourierNew,Italic", "CourierNew,Bold",
-                "CourierNew,BoldItalic", "Arial", "Arial,Italic", "Arial,Bold", "Arial,BoldItalic",
-                "TimesNewRoman", "TimesNewRoman,Italic", "TimesNewRoman,Bold", "TimesNewRoman,BoldItalic"
-        ));
-    }
-
-
     /**
      * Returns the path describing the glyph for the given glyphId.
      *
@@ -163,8 +145,10 @@ public class TTFGlyph2D implements Glyph2D
 
             GlyphData glyph = ttf.getGlyph().getGlyph(gid);
 
-            // todo: MEGA HACK! (for CIDFont "known") - sort of works (width issues?)
-            if (gid == 0 && !font.isEmbedded() && STANDARD_14.contains(font.getName()))
+            // workaround for Type0 "Standard 14" font handling, as Adobe has GID 0 as empty
+            // while Microsoft uses a rectangle, which we don't want to appear
+            if (isCIDFont && gid == 0 && !font.isEmbedded() &&
+                PDSimpleFont.isStandard14(font.getName()))
             {
                 glyph = null;
             }
