@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -40,6 +41,7 @@ import org.apache.pdfbox.encoding.Type1Encoding;
 import org.apache.pdfbox.encoding.WinAnsiEncoding;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.util.Matrix;
 
 /**
  * A PostScript Type 1 Font.
@@ -139,6 +141,7 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
     private final Type1Font type1font; // embedded font
     private final Type1Equivalent type1Equivalent; // embedded or system font for rendering
     private final boolean isEmbedded;
+    private Matrix fontMatrix;
 
     /**
      * Creates a Type 1 standard 14 font for embedding.
@@ -450,5 +453,35 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
         {
             return type1Equivalent.getPath(name);
         }
+    }
+
+    @Override
+    public Matrix getFontMatrix()
+    {
+        if (fontMatrix == null)
+        {
+            // PDF specified that Type 1 fonts use a 1000upem matrix, but some fonts specify
+            // their own custom matrix anyway, for example PDFBOX-2298
+            if (type1font != null)
+            {
+                List<Number> numbers = type1font.getFontMatrix();
+                if (numbers != null && numbers.size() == 6)
+                {
+                    fontMatrix = new Matrix(
+                            numbers.get(0).floatValue(), numbers.get(1).floatValue(),
+                            numbers.get(2).floatValue(), numbers.get(3).floatValue(),
+                            numbers.get(4).floatValue(), numbers.get(5).floatValue());
+                }
+                else
+                {
+                    return super.getFontMatrix();
+                }
+            }
+            else
+            {
+                fontMatrix = DEFAULT_FONT_MATRIX;
+            }
+        }
+        return fontMatrix;
     }
 }
