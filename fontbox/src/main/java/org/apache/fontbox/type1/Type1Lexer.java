@@ -165,6 +165,12 @@ class Type1Lexer
                     {
                         // otherwise this must be a name
                         String name = readRegular();
+                        if (name == null)
+                        {
+                            // the stream is corrupt
+                            throw new DamagedFontException("Could not read token at position " +
+                                                           buffer.position());
+                        }
 
                         if (name.equals("RD") || name.equals("-|"))
                         {
@@ -331,7 +337,12 @@ class Type1Lexer
                 sb.append(c);
             }
         }
-        return sb.toString();
+        String regular = sb.toString();
+        if (regular.length() == 0)
+        {
+            return null;
+        }
+        return regular;
     }
 
     /**
