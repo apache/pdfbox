@@ -30,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.afm.AFMParser;
 import org.apache.fontbox.afm.FontMetrics;
 import org.apache.fontbox.ttf.Type1Equivalent;
+import org.apache.fontbox.type1.DamagedFontException;
 import org.apache.fontbox.type1.Type1Font;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -220,6 +221,10 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
                     byte[] segment2 = Arrays.copyOfRange(bytes, length1, length1 + length2);
 
                     t1 =  Type1Font.createWithSegments(segment1, segment2);
+                }
+                catch (DamagedFontException e)
+                {
+                    LOG.warn("Can't read damaged embedded Type1 font " + fd.getFontName());
                 }
                 catch (IOException e)
                 {
