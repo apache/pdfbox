@@ -45,7 +45,7 @@ import org.apache.pdfbox.util.Vector;
 public abstract class PDFont implements COSObjectable, PDFontLike
 {
     private static final Log LOG = LogFactory.getLog(PDFont.class);
-    private static final Matrix DEFAULT_FONT_MATRIX = new Matrix(0.001f, 0, 0, 0.001f, 0, 0);
+    protected static final Matrix DEFAULT_FONT_MATRIX = new Matrix(0.001f, 0, 0, 0.001f, 0, 0);
 
     protected final COSDictionary dict;
     private final CMap toUnicodeCMap;
