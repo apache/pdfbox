@@ -57,11 +57,9 @@ public class GlyphList
                 String location = System.getProperty("glyphlist_ext");
                 if (location != null)
                 {
-                    File external = new File(location);
-                    if (external.exists())
-                    {
-                        DEFAULT.loadGlyphs(location);
-                    }
+                    // not supported in 2.0, see PDFBOX-2379
+                    throw new UnsupportedOperationException("glyphlist_ext is no longer supported, " +
+                      "use GlyphList.DEFAULT.addGlyphs(Properties) instead");
                 }
             }
             catch (SecurityException e)  // can occur on System.getProperty
@@ -97,7 +95,17 @@ public class GlyphList
 
         Properties properties = new Properties();
         properties.load(url.openStream());
+        addGlyphs(properties);
+    }
 
+    /**
+     * Adds a glyph list stored in a .properties file to this GlyphList.
+     *
+     * @param properties Glyphlist in the form Name=XXXX where X is Unicode hex.
+     * @throws IOException if the properties could not be read
+     */
+    public synchronized void addGlyphs(Properties properties) throws IOException
+    {
         Enumeration<?> names = properties.propertyNames();
         for (Object name : Collections.list(names))
         {
