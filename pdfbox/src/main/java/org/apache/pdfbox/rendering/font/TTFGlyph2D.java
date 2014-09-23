@@ -141,14 +141,11 @@ public class TTFGlyph2D implements Glyph2D
                 }
             }
 
-            // ------
-
             GlyphData glyph = ttf.getGlyph().getGlyph(gid);
 
             // workaround for Type0 "Standard 14" font handling, as Adobe has GID 0 as empty
             // while Microsoft uses a rectangle, which we don't want to appear
-            if (isCIDFont && gid == 0 && !font.isEmbedded() &&
-                PDSimpleFont.isStandard14(font.getName()))
+            if (gid == 0 && !font.isEmbedded() && PDSimpleFont.isStandard14(font.getName()))
             {
                 glyph = null;
             }
