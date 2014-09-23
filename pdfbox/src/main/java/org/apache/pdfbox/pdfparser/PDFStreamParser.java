@@ -483,10 +483,13 @@ public class PDFStreamParser extends BaseParser
                     }
                 }
             }
-            // a PDF operator is 1-3 bytes long
-            if (endOpIdx == -1 || startOpIdx == -1 || endOpIdx - startOpIdx > 3)
+            if (readBytes == maxBinCharTestLength) // only if not close to eof
             {
-                noBinData = false;
+                // a PDF operator is 1-3 bytes long
+                if (endOpIdx == -1 || startOpIdx == -1 || endOpIdx - startOpIdx > 3)
+                {
+                    noBinData = false;
+                }
             }
             pdfSource.unread(binCharTestArr, 0, readBytes);
         }
