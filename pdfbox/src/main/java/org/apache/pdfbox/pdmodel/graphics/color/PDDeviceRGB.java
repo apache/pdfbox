@@ -37,18 +37,18 @@ import java.io.IOException;
  */
 public final class PDDeviceRGB extends PDDeviceColorSpace
 {
-    private static final ColorSpace COLOR_SPACE_RGB = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-    private static final PDColor INITIAL_COLOR = new PDColor(new float[] { 0, 0, 0 });
-
     /**  This is the single instance of this class. */
     public static final PDDeviceRGB INSTANCE = new PDDeviceRGB();
+
+    private final ColorSpace colorSpaceRGB = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+    private final PDColor initialColor = new PDColor(new float[] { 0, 0, 0 }, this);
 
     private PDDeviceRGB()
     {
         // there is a JVM bug which results in a CMMException which appears to be a race
         // condition caused by lazy initialization of the color transform, so we perform
         // an initial color conversion while we're still in a static context, see PDFBOX-2184
-        COLOR_SPACE_RGB.toRGB(new float[] { 0, 0, 0 });
+        colorSpaceRGB.toRGB(new float[]{0, 0, 0});
     }
 
     @Override
@@ -74,19 +74,19 @@ public final class PDDeviceRGB extends PDDeviceColorSpace
     @Override
     public PDColor getInitialColor()
     {
-        return INITIAL_COLOR;
+        return initialColor;
     }
 
     @Override
     public float[] toRGB(float[] value)
     {
-        return COLOR_SPACE_RGB.toRGB(value);
+        return colorSpaceRGB.toRGB(value);
     }
 
     @Override
     public BufferedImage toRGBImage(WritableRaster raster) throws IOException
     {
-        ColorModel colorModel = new ComponentColorModel(COLOR_SPACE_RGB,
+        ColorModel colorModel = new ComponentColorModel(colorSpaceRGB,
                 false, false, Transparency.OPAQUE, raster.getDataBuffer().getDataType());
 
         return new BufferedImage(colorModel, raster, false, null);

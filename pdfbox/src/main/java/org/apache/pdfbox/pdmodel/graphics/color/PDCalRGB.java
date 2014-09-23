@@ -33,9 +33,8 @@ import org.apache.pdfbox.util.Matrix;
  */
 public class PDCalRGB extends PDCIEBasedColorSpace
 {
-    private static final PDColor INITIAL_COLOR = new PDColor(new float[] { 0, 0, 0 });
-
     protected COSDictionary dictionary;
+    private final PDColor initialColor = new PDColor(new float[] { 0, 0, 0 }, this);
 
     /**
      * Creates a new CalRGB color space.
@@ -79,7 +78,7 @@ public class PDCalRGB extends PDCIEBasedColorSpace
     @Override
     public PDColor getInitialColor()
     {
-        return INITIAL_COLOR;
+        return initialColor;
     }
 
     @Override

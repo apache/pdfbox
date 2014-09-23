@@ -23,6 +23,7 @@ import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.graphics.PDLineDashPattern;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 
 /**
  * The Box Style specifies visual characteristics for displaying box areas.
@@ -99,7 +100,7 @@ public class PDBoxStyle implements COSObjectable
             colorValues.add( COSInteger.ZERO );
             dictionary.setItem( "C", colorValues );
         }
-        PDColor color = new PDColor(colorValues.toFloatArray());
+        PDColor color = new PDColor(colorValues.toFloatArray(), PDDeviceRGB.INSTANCE);
         return color;
     }
 

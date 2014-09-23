@@ -199,7 +199,8 @@ public final class PDLab extends PDCIEBasedColorSpace
             initialColor = new PDColor(new float[] {
                     0,
                     Math.max(0, getARange().getMin()),
-                    Math.max(0, getBRange().getMin()) });
+                    Math.max(0, getBRange().getMin()) },
+                    this);
         }
         return initialColor;
     }

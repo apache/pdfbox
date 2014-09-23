@@ -41,7 +41,7 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
  */
 public final class PDIndexed extends PDSpecialColorSpace
 {
-    private static final PDColor INITIAL_COLOR = new PDColor(new float[] { 0 });
+    private final PDColor initialColor = new PDColor(new float[] { 0 }, this);
 
     private COSArray array;
     private PDColorSpace baseColorSpace = null;
@@ -98,7 +98,7 @@ public final class PDIndexed extends PDSpecialColorSpace
     @Override
     public PDColor getInitialColor()
     {
-        return INITIAL_COLOR;
+        return initialColor;
     }
 
     //
