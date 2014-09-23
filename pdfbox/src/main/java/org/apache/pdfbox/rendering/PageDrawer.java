@@ -836,8 +836,16 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             if (!pdImage.getInterpolate())
             {
-                graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                                          RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+                boolean isScaledUp = Math.round(pdImage.getWidth()) < Math.round(at.getScaleX()) ||
+                                     Math.round(pdImage.getHeight()) < Math.round(at.getScaleY());
+
+                // if the image is scaled down, we use smooth interpolation, eg PDFBOX-2364
+                // only when scaled up do we use nearest neighbour, eg PDFBOX-2302 / mori-cvpr01.pdf
+                if (isScaledUp)
+                {
+                    graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                                              RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+                }
             }
 
             // draw the image
