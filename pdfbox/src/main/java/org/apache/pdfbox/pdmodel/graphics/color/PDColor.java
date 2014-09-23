@@ -36,19 +36,21 @@ import java.util.Arrays;
 public final class PDColor
 {
     /** The color black in the DeviceGray color space. */
-    public static PDColor DEVICE_GRAY_BLACK = new PDColor(new float[] { 0 });
+    public static PDColor DEVICE_GRAY_BLACK = new PDColor(new float[] { 0 }, PDDeviceGray.INSTANCE);
 
     /** A pattern which leaves no marks on the page. */
     public static PDColor EMPTY_PATTERN = new PDColor(new float[] { }, null);
 
     private final float[] components;
     private final String patternName;
+    private final PDColorSpace colorSpace;
 
     /**
      * Creates a PDColor containing the given color value.
      * @param array a COS array containing the color value
+     * @param colorSpace color space in which the color value is defined
      */
-    public PDColor(COSArray array)
+    public PDColor(COSArray array, PDColorSpace colorSpace)
     {
         if (array.get(array.size() - 1) instanceof COSName)
         {
@@ -72,37 +74,44 @@ public final class PDColor
             }
             patternName = null;
         }
+        this.colorSpace = colorSpace;
     }
 
     /**
      * Creates a PDColor containing the given color component values.
      * @param components array of color component values
+     * @param colorSpace color space in which the components are defined
      */
-    public PDColor(float[] components)
+    public PDColor(float[] components, PDColorSpace colorSpace)
     {
         this.components = components.clone();
         this.patternName = null;
+        this.colorSpace = colorSpace;
     }
 
     /**
      * Creates a PDColor containing the given pattern name.
      * @param patternName the name of a pattern in a pattern dictionary
+     * @param colorSpace color space in which the pattern is defined
      */
-    public PDColor(String patternName)
+    public PDColor(String patternName, PDColorSpace colorSpace)
     {
         this.components = new float[0];
         this.patternName = patternName;
+        this.colorSpace = colorSpace;
     }
 
     /**
      * Creates a PDColor containing the given color component values and pattern name.
      * @param components array of color component values
      * @param patternName the name of a pattern in a pattern dictionary
+     * @param colorSpace color space in which the pattern/components are defined
      */
-    public PDColor(float[] components, String patternName)
+    public PDColor(float[] components, String patternName, PDColorSpace colorSpace)
     {
         this.components = components.clone();
         this.patternName = patternName;
+        this.colorSpace = colorSpace;
     }
 
     /**
@@ -134,12 +143,11 @@ public final class PDColor
 
     /**
      * Returns the packed RGB value for this color, if any.
-     * @param colorSpace color space
      * @return RGB
-     * @throws IOException
-     * @throws java.lang.IllegalStateException if this color value is a pattern.
+     * @throws IOException if the color conversion fails
+     * @throws IllegalStateException if this color value is a pattern.
      */
-    public int toRGB(PDColorSpace colorSpace) throws IOException
+    public int toRGB() throws IOException
     {
         float[] floats = colorSpace.toRGB(components);
         int r = Math.round(floats[0] * 255);
@@ -161,6 +169,14 @@ public final class PDColor
         array.setFloatArray(components);
         array.add(new COSString(patternName));
         return array;
+    }
+
+    /**
+     * Returns the color space in which this color value is defined.
+     */
+    public PDColorSpace getColorSpace()
+    {
+        return colorSpace;
     }
 
     @Override

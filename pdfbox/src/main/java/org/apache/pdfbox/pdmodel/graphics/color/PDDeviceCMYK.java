@@ -50,7 +50,7 @@ public class PDDeviceCMYK extends PDDeviceColorSpace
         }
     }
 
-    private static final PDColor INITIAL_COLOR = new PDColor(new float[] { 0, 0, 0, 1 });
+    private final PDColor initialColor = new PDColor(new float[] { 0, 0, 0, 1 }, this);
     private final ICC_ColorSpace awtColorSpace;
 
     protected PDDeviceCMYK() throws IOException
@@ -112,7 +112,7 @@ public class PDDeviceCMYK extends PDDeviceColorSpace
     @Override
     public PDColor getInitialColor()
     {
-        return INITIAL_COLOR;
+        return initialColor;
     }
 
     @Override

@@ -645,12 +645,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     {
         graphics.setComposite(getGraphicsState().getStrokingJavaComposite());
         Paint strokingPaint = getStrokingPaint();
-        if (strokingPaint == null)
-        {
-            LOG.info("ColorSpace " + getGraphicsState().getStrokingColorSpace().getName() +
-                     " doesn't provide a stroking color, using white instead!");
-            strokingPaint = Color.WHITE;// ((PageDrawer)context).strokePath();
-        }
         graphics.setPaint(strokingPaint);
         graphics.setStroke(getStroke());
         setClip();
@@ -663,12 +657,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     {
         graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
         Paint nonStrokingPaint = getNonStrokingPaint();
-        if (nonStrokingPaint == null)
-        {
-            LOG.info("ColorSpace " + getGraphicsState().getNonStrokingColorSpace().getName() +
-                    " doesn't provide a non-stroking color, using white instead!");
-            nonStrokingPaint = Color.WHITE;
-        }
         graphics.setPaint(nonStrokingPaint);
         setClip();
         linePath.setWindingRule(windingRule);

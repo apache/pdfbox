@@ -30,6 +30,7 @@ import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureElement;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionFactory;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
@@ -340,7 +341,7 @@ public class PDOutlineItem extends PDOutlineNode
             csValues.growToSize( 3, new COSFloat( 0 ) );
             node.setItem( COSName.C, csValues );
         }
-        retval = new PDColor(csValues.toFloatArray());
+        retval = new PDColor(csValues.toFloatArray(), PDDeviceRGB.INSTANCE);
         return retval;
     }
 

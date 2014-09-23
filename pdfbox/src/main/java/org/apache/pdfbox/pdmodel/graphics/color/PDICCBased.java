@@ -115,7 +115,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
             {
                 initial[c] = Math.max(0, getRangeForComponent(c).getMin());
             }
-            initialColor = new PDColor(initial);
+            initialColor = new PDColor(initial, this);
 
             // create a color in order to trigger a ProfileDataException
             // or CMMException due to invalid profiles, see PDFBOX-1295 and PDFBOX-1740

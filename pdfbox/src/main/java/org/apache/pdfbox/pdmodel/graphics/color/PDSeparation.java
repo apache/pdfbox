@@ -41,7 +41,7 @@ import org.apache.pdfbox.pdmodel.common.function.PDFunction;
  */
 public class PDSeparation extends PDSpecialColorSpace
 {
-    private static final PDColor INITIAL_COLOR = new PDColor(new float[] { 1 });
+    private final PDColor initialColor = new PDColor(new float[] { 1 }, this);
 
     // array indexes
     private static final int COLORANT_NAMES = 1;
@@ -94,7 +94,7 @@ public class PDSeparation extends PDSpecialColorSpace
     @Override
     public PDColor getInitialColor()
     {
-        return INITIAL_COLOR;
+        return initialColor;
     }
 
     @Override

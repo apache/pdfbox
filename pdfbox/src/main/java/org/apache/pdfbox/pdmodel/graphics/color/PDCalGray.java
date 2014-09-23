@@ -28,7 +28,7 @@ import org.apache.pdfbox.cos.COSName;
  */
 public final class PDCalGray extends PDCalRGB
 {
-    private static final PDColor INITIAL_COLOR = new PDColor(new float[] { 0 });
+    private final PDColor initialColor = new PDColor(new float[] { 0 }, this);
 
     /**
      * Create a new CalGray color space.
@@ -72,7 +72,7 @@ public final class PDCalGray extends PDCalRGB
     @Override
     public PDColor getInitialColor()
     {
-        return INITIAL_COLOR;
+        return initialColor;
     }
 
     @Override
