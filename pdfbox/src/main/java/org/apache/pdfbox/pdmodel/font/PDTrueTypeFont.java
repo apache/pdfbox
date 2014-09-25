@@ -108,10 +108,10 @@ public class PDTrueTypeFont extends PDSimpleFont
     {
         super(fontDictionary);
 
-        PDFontDescriptorDictionary fd = (PDFontDescriptorDictionary) super.getFontDescriptor();
         TrueTypeFont ttfFont = null;
-        if (fd != null)
+        if (getFontDescriptor() != null)
         {
+            PDFontDescriptor fd = super.getFontDescriptor();
             PDStream ff2Stream = fd.getFontFile2();
             if (ff2Stream != null)
             {
@@ -205,6 +205,11 @@ public class PDTrueTypeFont extends PDSimpleFont
     @Override
     public float getWidthFromFont(int code) throws IOException
     {
+        if (getStandard14AFM() != null)
+        {
+            return getStandard14Width(code);
+        }
+
         int gid = codeToGID(code);
         float width = ttf.getAdvanceWidth(gid);
         float unitsPerEM = ttf.getUnitsPerEm();

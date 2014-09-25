@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.afm.FontMetrics;
 import org.apache.fontbox.cmap.CMap;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSArray;
@@ -49,7 +50,8 @@ public abstract class PDFont implements COSObjectable, PDFontLike
 
     protected final COSDictionary dict;
     private final CMap toUnicodeCMap;
-    private  PDFontDescriptor fontDescriptor;
+    private final FontMetrics afmStandard14; // AFM for standard 14 fonts
+    private final PDFontDescriptor fontDescriptor;
 
     private List<Integer> widths;
     private float avgFontWidth;
@@ -64,6 +66,23 @@ public abstract class PDFont implements COSObjectable, PDFontLike
         dict = new COSDictionary();
         dict.setItem(COSName.TYPE, COSName.FONT);
         toUnicodeCMap = null;
+        fontDescriptor = null;
+        afmStandard14 = null;
+    }
+
+    /**
+     * Constructor for Standard 14.
+     */
+    protected PDFont(String baseFont)
+    {
+        dict = new COSDictionary();
+        toUnicodeCMap = null;
+        fontDescriptor = null;
+        afmStandard14 = Standard14Fonts.getAFM(getName()); // may be null (it usually is)
+        if (afmStandard14 == null)
+        {
+            throw new IllegalArgumentException("No AFM for font " + baseFont);
+        }
     }
 
     /**
@@ -75,11 +94,23 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     {
         dict = fontDictionary;
 
+        // standard 14 fonts use an AFM
+        afmStandard14 = Standard14Fonts.getAFM(getName()); // may be null (it usually is)
+        if (afmStandard14 != null)
+        {
+            isSymbolic = afmStandard14.getEncodingScheme().equals("FontSpecific");
+        }
+
         // font descriptor
         COSDictionary fd = (COSDictionary) dict.getDictionaryObject(COSName.FONT_DESC);
         if (fd != null)
         {
-            fontDescriptor = new PDFontDescriptorDictionary(fd);
+            fontDescriptor = new PDFontDescriptor(fd);
+        }
+        else if (afmStandard14 != null)
+        {
+            // build font descriptor from the AFM
+            fontDescriptor = PDType1FontEmbedder.buildFontDescriptor(afmStandard14);
         }
         else
         {
@@ -102,18 +133,18 @@ public abstract class PDFont implements COSObjectable, PDFontLike
         }
     }
 
+    /**
+     * Returns the AFM if this is a Standard 14 font.
+     */
+    protected final FontMetrics getStandard14AFM()
+    {
+        return afmStandard14;
+    }
+
     @Override
     public PDFontDescriptor getFontDescriptor()
     {
         return fontDescriptor;
-    }
-
-    /**
-     * Sets the font descriptor. For internal PDFBox use only.
-     */
-    void setFontDescriptor(PDFontDescriptor fontDescriptor)
-    {
-        this.fontDescriptor = fontDescriptor;
     }
 
     /**
@@ -183,26 +214,24 @@ public abstract class PDFont implements COSObjectable, PDFontLike
         // embedded", however PDFBOX-427 shows that it also applies to embedded fonts.
 
         // Type1, Type1C, Type3
-        int firstChar = dict.getInt(COSName.FIRST_CHAR, -1);
-        int lastChar = dict.getInt(COSName.LAST_CHAR, -1);
-        if (getWidths().size() > 0 && code >= firstChar && code <= lastChar)
+        if (dict.containsKey(COSName.WIDTHS) || dict.containsKey(COSName.MISSING_WIDTH))
         {
-            return getWidths().get(code - firstChar).floatValue();
-        }
-        else
-        {
+            int firstChar = dict.getInt(COSName.FIRST_CHAR, -1);
+            int lastChar = dict.getInt(COSName.LAST_CHAR, -1);
+            if (getWidths().size() > 0 && code >= firstChar && code <= lastChar)
+            {
+                return getWidths().get(code - firstChar).floatValue();
+            }
+
             PDFontDescriptor fd = getFontDescriptor();
-            if (fd instanceof PDFontDescriptorDictionary &&
-                    ((PDFontDescriptorDictionary) fd).hasWidths())
+            if (fd != null)
             {
-                return fd.getMissingWidth();
-            }
-            else
-            {
-                // if there's nothing to override with, then obviously we fall back to the font
-                return getWidthFromFont(code);
+                return fd.getMissingWidth(); // default is 0
             }
         }
+
+        // if there's nothing to override with, then obviously we fall back to the font
+        return getWidthFromFont(code);
     }
 
     @Override
@@ -293,7 +322,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      */
     public String toUnicode(int code) throws IOException
     {
-        // if the font dictionary contains a ToUnicode CMap, use that CMap
+        // if the font dictionary containsName a ToUnicode CMap, use that CMap
         if (toUnicodeCMap != null)
         {
             if (toUnicodeCMap.getName() != null && toUnicodeCMap.getName().startsWith("Identity-"))
@@ -455,6 +484,29 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      * Returns true if the font uses vertical writing mode.
      */
     public abstract boolean isVertical();
+
+    /**
+     * Returns true if this font is one of the "Standard 14" fonts and receives special handling.
+     */
+    public boolean isStandard14()
+    {
+        // this logic is based on Acrobat's behaviour, see see PDFBOX-2372
+
+        // symbolic fonts are never standard: they don't use the Adobe Standard Roman character set
+        if (isSymbolic())
+        {
+            return false;
+        }
+
+        // embedded fonts never get special treatment
+        if (isEmbedded())
+        {
+            return false;
+        }
+
+        // if the name matches, this is a Standard 14 font
+        return Standard14Fonts.containsName(getName());
+    }
 
     @Override
     public boolean equals(Object other)

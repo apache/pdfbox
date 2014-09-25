@@ -73,9 +73,9 @@ public class PDType1CFont extends PDSimpleFont implements PDType1Equivalent
 
         PDFontDescriptor fd = getFontDescriptor();
         byte[] bytes = null;
-        if (fd != null && fd instanceof PDFontDescriptorDictionary) // <-- todo: must be true
+        if (fd != null)
         {
-            PDStream ff3Stream = ((PDFontDescriptorDictionary) fd).getFontFile3();
+            PDStream ff3Stream = fd.getFontFile3();
             if (ff3Stream != null)
             {
                 bytes = IOUtils.toByteArray(ff3Stream.createInputStream());
@@ -127,9 +127,8 @@ public class PDType1CFont extends PDSimpleFont implements PDType1Equivalent
     @Override
     public GeneralPath getPath(String name) throws IOException
     {
-        // Adobe's Standard 14 fonts have an empty .notdef glyph, but Microsoft's don't
-        // so we need to fake this glyph otherwise we get unwanted rectangles, see PDFBOX-2372
-        if (!isEmbedded() && ".notdef".equals(name) && isStandard14())
+        // Acrobat only draws .notdef for embedded or "Standard 14" fonts, see PDFBOX-2372
+        if (name.equals(".notdef") && !isEmbedded() && !isStandard14())
         {
             return new GeneralPath();
         }
@@ -192,6 +191,11 @@ public class PDType1CFont extends PDSimpleFont implements PDType1Equivalent
     @Override
     public float getWidthFromFont(int code) throws IOException
     {
+        if (getStandard14AFM() != null)
+        {
+            return getStandard14Width(code);
+        }
+
         String name = codeToName(code);
         float width = type1Equivalent.getWidth(name);
 

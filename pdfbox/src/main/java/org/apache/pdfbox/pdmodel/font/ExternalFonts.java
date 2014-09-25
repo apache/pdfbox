@@ -163,26 +163,16 @@ public final class ExternalFonts
         substitutes.put("$Adobe-Korea1", Arrays.asList("AdobeGothicStd-Bold"));
         substitutes.put("$Adobe-GB1", Arrays.asList("AdobeHeitiStd-Regular"));
 
-        // the Adobe Supplement to the ISO 32000 specifies some alternative names for some
-        // of the standard 14 fonts, so we map these to our fallbacks above
-        substitutes.put("CourierCourierNew", copySubstitutes("Courier"));
-        substitutes.put("CourierNew", copySubstitutes("Courier"));
-        substitutes.put("CourierNew,Italic", copySubstitutes("Courier-Oblique"));
-        substitutes.put("CourierNew,Bold", copySubstitutes("Courier-Bold"));
-        substitutes.put("CourierNew,BoldItalic", copySubstitutes("Courier-BoldOblique"));
-        substitutes.put("Arial", copySubstitutes("Helvetica"));
-        substitutes.put("Arial,Italic", copySubstitutes("Helvetica-Oblique"));
-        substitutes.put("Arial,Bold", copySubstitutes("Helvetica-Bold"));
-        substitutes.put("Arial,BoldItalic", copySubstitutes("Helvetica-BoldOblique"));
-        substitutes.put("TimesNewRoman", copySubstitutes("Times-Roman"));
-        substitutes.put("TimesNewRoman,Italic", copySubstitutes("Times-Italic"));
-        substitutes.put("TimesNewRoman,Bold", copySubstitutes("Times-Bold"));
-        substitutes.put("TimesNewRoman,BoldItalic", copySubstitutes("Times-BoldItalic"));
-
-        // Acrobat treats these fonts as "standard 14" too (at least Acrobat preflight says so)
-        substitutes.put("Symbol,Italic", copySubstitutes("Symbol"));
-        substitutes.put("Symbol,Bold", copySubstitutes("Symbol"));
-        substitutes.put("Symbol,BoldItalic", copySubstitutes("Symbol"));
+        // Acrobat also uses alternative names for Standard 14 fonts, which we map to those above
+        // these include names such as "Arial" and "TimesNewRoman"
+        for (String baseName : Standard14Fonts.getNames())
+        {
+            if (!substitutes.containsKey(baseName))
+            {
+                String mappedName = Standard14Fonts.getMappedFontName(baseName);
+                substitutes.put(baseName, copySubstitutes(mappedName));
+            }
+        }
     }
 
     /**

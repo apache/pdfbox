@@ -39,7 +39,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.pdmodel.font.PDFontDescriptorDictionary;
+import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
@@ -56,7 +56,7 @@ public class CIDType0DescriptorHelper extends FontDescriptorHelper<CIDType0Conta
     }
 
     @Override
-    public PDStream extractFontFile(PDFontDescriptorDictionary fontDescriptor)
+    public PDStream extractFontFile(PDFontDescriptor fontDescriptor)
     {
         PDStream ff3 = fontDescriptor.getFontFile3();
         if (ff3 != null)
@@ -96,12 +96,12 @@ public class CIDType0DescriptorHelper extends FontDescriptorHelper<CIDType0Conta
      * 
      * @param pfDescriptor
      */
-    protected void checkCIDSet(PDFontDescriptorDictionary pfDescriptor)
+    protected void checkCIDSet(PDFontDescriptor pfDescriptor)
     {
         if (FontValidator.isSubSet(pfDescriptor.getFontName()))
         {
             COSDocument cosDocument = context.getDocument().getDocument();
-            COSBase cidset = pfDescriptor.getCOSDictionary().getItem(COSName.getPDFName(FONT_DICTIONARY_KEY_CIDSET));
+            COSBase cidset = pfDescriptor.getCOSObject().getItem(COSName.getPDFName(FONT_DICTIONARY_KEY_CIDSET));
             if (cidset == null || !COSUtils.isStream(cidset, cosDocument))
             {
                 this.fContainer.push(new ValidationResult.ValidationError(ERROR_FONTS_CIDSET_MISSING_FOR_SUBSET,
@@ -111,7 +111,7 @@ public class CIDType0DescriptorHelper extends FontDescriptorHelper<CIDType0Conta
     }
 
     @Override
-    protected void processFontFile(PDFontDescriptorDictionary fontDescriptor, PDStream fontFile)
+    protected void processFontFile(PDFontDescriptor fontDescriptor, PDStream fontFile)
     {
         /*
          * try to load the font using the java.awt.font object. if the font is invalid, an exception will be thrown

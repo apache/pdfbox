@@ -19,7 +19,6 @@ package org.apache.pdfbox.pdmodel.font;
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -27,8 +26,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.fontbox.afm.AFMParser;
-import org.apache.fontbox.afm.FontMetrics;
 import org.apache.fontbox.ttf.Type1Equivalent;
 import org.apache.fontbox.type1.DamagedFontException;
 import org.apache.fontbox.type1.Type1Font;
@@ -52,60 +49,6 @@ import org.apache.pdfbox.util.Matrix;
 public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
 {
     private static final Log LOG = LogFactory.getLog(PDType1Font.class);
-
-    /**
-     * The static map of the default Adobe font metrics.
-     */
-    private static final Map<String, FontMetrics> AFM_MAP;
-    static
-    {
-        try
-        {
-            AFM_MAP = new HashMap<String, FontMetrics>();
-            addMetric("Courier-Bold");
-            addMetric("Courier-BoldOblique");
-            addMetric("Courier");
-            addMetric("Courier-Oblique");
-            addMetric("Helvetica");
-            addMetric("Helvetica-Bold");
-            addMetric("Helvetica-BoldOblique");
-            addMetric("Helvetica-Oblique");
-            addMetric("Symbol");
-            addMetric("Times-Bold");
-            addMetric("Times-BoldItalic");
-            addMetric("Times-Italic");
-            addMetric("Times-Roman");
-            addMetric("ZapfDingbats");
-        }
-        catch (IOException e)
-        {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static void addMetric(String fontName) throws IOException
-    {
-        String resourceName = "org/apache/pdfbox/resources/afm/" + fontName + ".afm";
-        URL url = PDType1Font.class.getClassLoader().getResource(resourceName);
-        if (url != null)
-        {
-            InputStream afmStream = url.openStream();
-            try
-            {
-                AFMParser parser = new AFMParser(afmStream);
-                FontMetrics metric = parser.parse();
-                AFM_MAP.put(fontName, metric);
-            }
-            finally
-            {
-                afmStream.close();
-            }
-        }
-        else
-        {
-            throw new IOException(resourceName + " not found");
-        }
-    }
 
     // alternative names for glyphs which are commonly encountered
     private static final Map<String, String> ALT_NAMES = new HashMap<String, String>();
@@ -138,7 +81,6 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
     public static final PDType1Font SYMBOL = new PDType1Font("Symbol");
     public static final PDType1Font ZAPF_DINGBATS = new PDType1Font("ZapfDingbats");
 
-    private final FontMetrics afm; // for standard 14 fonts
     private final Type1Font type1font; // embedded font
     private final Type1Equivalent type1Equivalent; // embedded or system font for rendering
     private final boolean isEmbedded;
@@ -155,12 +97,6 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
         dict.setName(COSName.BASE_FONT, baseFont);
         encoding = new WinAnsiEncoding();
         dict.setItem(COSName.ENCODING, COSName.WIN_ANSI_ENCODING);
-
-        afm = getAFMFromBaseFont(baseFont);
-        if (afm == null)
-        {
-            throw new IllegalArgumentException("No AFM for font " + baseFont);
-        }
 
         // todo: could load the PFB font here if we wanted to support Standard 14 embedding
         type1font = null;
@@ -180,7 +116,6 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
     {
         PDType1FontEmbedder embedder = new PDType1FontEmbedder(doc, dict, afmIn, pfbIn);
         encoding = embedder.getFontEncoding();
-        afm = null; // only used for standard 14 fonts, not AFM fonts as we already have the PFB
         type1font = embedder.getType1Font();
         type1Equivalent = embedder.getType1Font();
         isEmbedded = true;
@@ -196,17 +131,17 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
         super(fontDictionary);
         PDFontDescriptor fd = getFontDescriptor();
         Type1Font t1 = null;
-        if (fd != null && fd instanceof PDFontDescriptorDictionary) // <-- todo: must be true
+        if (fd != null)
         {
             // a Type1 font may contain a Type1C font
-            PDStream fontFile3 = ((PDFontDescriptorDictionary) fd).getFontFile3();
+            PDStream fontFile3 = fd.getFontFile3();
             if (fontFile3 != null)
             {
                 throw new IllegalArgumentException("Use PDType1CFont for FontFile3");
             }
 
             // or it may contain a PFB
-            PDStream fontFile = ((PDFontDescriptorDictionary) fd).getFontFile();
+            PDStream fontFile = fd.getFontFile();
             if (fontFile != null)
             {
                 try
@@ -260,25 +195,7 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
                 type1Equivalent = ExternalFonts.getType1FallbackFont(getFontDescriptor());
             }
         }
-
-        // todo: for standard 14 only. todo: move this to a subclass "PDStandardType1Font" ?
-        afm = getAFMFromBaseFont(getBaseFont()); // may be null (it usually is)
-
         readEncoding();
-    }
-
-    // todo: move this to a subclass?
-    private FontMetrics getAFMFromBaseFont(String baseFont)
-    {
-        if (baseFont != null)
-        {
-            if (baseFont.contains("+"))
-            {
-                baseFont = baseFont.substring(baseFont.indexOf('+') + 1);
-            }
-            return AFM_MAP.get(baseFont);
-        }
-        return null;
     }
 
     /**
@@ -290,29 +207,13 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
     }
 
     @Override
-    public PDFontDescriptor getFontDescriptor()
-    {
-        PDFontDescriptor fd = super.getFontDescriptor();
-        if (fd == null)
-        {
-            if (afm != null)
-            {
-                // this is for embedding fonts into PDFs, rather than for reading, though it works.
-                fd = new PDFontDescriptorAFM(afm);
-                setFontDescriptor(fd);
-            }
-        }
-        return fd;
-    }
-
-    @Override
     public float getHeight(int code) throws IOException
     {
         String name = codeToName(code);
-        if (afm != null)
+        if (getStandard14AFM() != null)
         {
             String afmName = getEncoding().getName(code);
-            return afm.getCharacterHeight(afmName); // todo: isn't this the y-advance, not the height?
+            return getStandard14AFM().getCharacterHeight(afmName); // todo: isn't this the y-advance, not the height?
         }
         else
         {
@@ -324,10 +225,9 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
     public float getWidthFromFont(int code) throws IOException
     {
         String name = codeToName(code);
-        if (afm != null)
+        if (getStandard14AFM() != null)
         {
-            String afmName = getEncoding().getName(code);
-            return afm.getCharacterWidth(afmName);
+            return getStandard14Width(code);
         }
         else
         {
@@ -344,9 +244,9 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
     @Override
     public float getAverageFontWidth()
     {
-        if (afm != null)
+        if (getStandard14AFM() != null)
         {
-            return afm.getAverageCharacterWidth();
+            return getStandard14AFM().getAverageCharacterWidth();
         }
         else
         {
@@ -363,10 +263,10 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
     @Override
     protected Encoding readEncodingFromFont() throws IOException
     {
-        if (afm != null)
+        if (getStandard14AFM() != null)
         {
             // read from AFM
-            return new Type1Encoding(afm);
+            return new Type1Encoding(getStandard14AFM());
         }
         else
         {
@@ -448,9 +348,8 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
     @Override
     public GeneralPath getPath(String name) throws IOException
     {
-        // Adobe's Standard 14 fonts have an empty .notdef glyph, but Microsoft's don't
-        // so we need to fake this glyph otherwise we get unwanted rectangles, see PDFBOX-2372
-        if (!isEmbedded() && ".notdef".equals(name) && isStandard14())
+        // Acrobat only draws .notdef for embedded or "Standard 14" fonts, see PDFBOX-2372
+        if (name.equals(".notdef") && !isEmbedded() && !isStandard14())
         {
             return new GeneralPath();
         }

@@ -68,9 +68,9 @@ public class PDCIDFontType0 extends PDCIDFont
 
         PDFontDescriptor fd = getFontDescriptor();
         byte[] bytes = null;
-        if (fd != null && fd instanceof PDFontDescriptorDictionary) // <-- todo: must be true
+        if (fd != null)
         {
-            PDStream ff3Stream = ((PDFontDescriptorDictionary) fd).getFontFile3();
+            PDStream ff3Stream = fd.getFontFile3();
             if (ff3Stream != null)
             {
                 bytes = IOUtils.toByteArray(ff3Stream.createInputStream());

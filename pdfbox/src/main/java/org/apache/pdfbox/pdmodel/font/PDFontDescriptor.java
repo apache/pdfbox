@@ -16,132 +16,56 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
-import java.io.IOException;
-
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.common.PDStream;
 
 /**
- * This class represents an interface to the font description.  This will depend
- * on the font type for the actual implementation.  If it is a AFM/cmap/or embedded font.
+ * A font descriptor.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.2 $
+ * @author Ben Litchfield
  */
-public abstract class PDFontDescriptor
+public final class PDFontDescriptor implements COSObjectable
 {
-    /**
-     * A font descriptor flag.  See PDF Reference for description.
-     */
     private static final int FLAG_FIXED_PITCH = 1;
-    /**
-     * A font descriptor flag.  See PDF Reference for description.
-     */
     private static final int FLAG_SERIF = 2;
-    /**
-     * A font descriptor flag.  See PDF Reference for description.
-     */
     private static final int FLAG_SYMBOLIC = 4;
-    /**
-     * A font descriptor flag.  See PDF Reference for description.
-     */
     private static final int FLAG_SCRIPT = 8;
-    /**
-     * A font descriptor flag.  See PDF Reference for description.
-     */
     private static final int FLAG_NON_SYMBOLIC = 32;
-    /**
-     * A font descriptor flag.  See PDF Reference for description.
-     */
     private static final int FLAG_ITALIC = 64;
-    /**
-     * A font descriptor flag.  See PDF Reference for description.
-     */
     private static final int FLAG_ALL_CAP = 65536;
-    /**
-     * A font descriptor flag.  See PDF Reference for description.
-     */
     private static final int FLAG_SMALL_CAP = 131072;
-    /**
-     * A font descriptor flag.  See PDF Reference for description.
-     */
     private static final int FLAG_FORCE_BOLD = 262144;
 
+    private final COSDictionary dic;
+    private float xHeight = Float.NEGATIVE_INFINITY;
+    private float capHeight = Float.NEGATIVE_INFINITY;
+    private int flags = -1;
+
 
     /**
-     * Get the font name.
-     *
-     * @return The name of the font.
+     * Package-private constructor, for embedding.
      */
-    public abstract String getFontName();
+    PDFontDescriptor()
+    {
+        dic = new COSDictionary();
+        dic.setItem( COSName.TYPE, COSName.FONT_DESC );
+    }
 
     /**
-     * This will set the font name.
+     * Creates a PDFontDescriptor from a COS dictionary.
      *
-     * @param fontName The new name for the font.
+     * @param desc The wrapped COS Dictionary.
      */
-    public abstract void setFontName( String fontName );
-
-    /**
-     * A string representing the preferred font family.
-     *
-     * @return The font family.
-     */
-    public abstract String getFontFamily();
-
-    /**
-     * This will set the font family.
-     *
-     * @param fontFamily The font family.
-     */
-    public abstract void setFontFamily( String fontFamily );
-
-    /**
-     * A string representing the preferred font stretch.
-     * According to the PDF Spec:
-     * The font stretch value; it must be one of the following (ordered from
-     * narrowest to widest): UltraCondensed, ExtraCondensed, Condensed, SemiCondensed,
-     * Normal, SemiExpanded, Expanded, ExtraExpanded or UltraExpanded.
-     *
-     * @return The font stretch.
-     */
-    public abstract String getFontStretch();
-
-    /**
-     * This will set the font stretch.
-     *
-     * @param fontStretch The font stretch
-     */
-    public abstract void setFontStretch( String fontStretch );
-
-    /**
-     * The weight of the font.  According to the PDF spec "possible values are
-     * 100, 200, 300, 400, 500, 600, 700, 800 or 900"  Where a higher number is
-     * more weight and appears to be more bold.
-     *
-     * @return The font weight.
-     */
-    public abstract float getFontWeight();
-
-    /**
-     * Set the weight of the font.
-     *
-     * @param fontWeight The new weight of the font.
-     */
-    public abstract void setFontWeight( float fontWeight );
-
-    /**
-     * This will get the font flags.
-     *
-     * @return The font flags.
-     */
-    public abstract int getFlags();
-
-    /**
-     * This will set the font flags.
-     *
-     * @param flags The new font flags.
-     */
-    public abstract void setFlags( int flags );
+    public PDFontDescriptor( COSDictionary desc )
+    {
+        dic = desc;
+    }
 
     /**
      * A convenience method that checks the flag bit.
@@ -343,189 +267,543 @@ public abstract class PDFontDescriptor
     }
 
     /**
-     * This will get the fonts bouding box.
+     * Convert this standard java object to a COS object.
      *
-     * @return The fonts bouding box.
+     * @return The cos object that matches this Java object.
      */
-    public abstract PDRectangle getFontBoundingBox();
+    public COSDictionary getCOSObject()
+    {
+        return dic;
+    }
+
+    /**
+     * Get the font name.
+     *
+     * @return The name of the font.
+     */
+    public String getFontName()
+    {
+        String retval = null;
+        COSName name = (COSName)dic.getDictionaryObject( COSName.FONT_NAME );
+        if( name != null )
+        {
+            retval = name.getName();
+        }
+        return retval;
+    }
+
+    /**
+     * This will set the font name.
+     *
+     * @param fontName The new name for the font.
+     */
+    public void setFontName( String fontName )
+    {
+        COSName name = null;
+        if( fontName != null )
+        {
+            name = COSName.getPDFName( fontName );
+        }
+        dic.setItem( COSName.FONT_NAME, name );
+    }
+
+    /**
+     * A string representing the preferred font family.
+     *
+     * @return The font family.
+     */
+    public String getFontFamily()
+    {
+        String retval = null;
+        COSString name = (COSString)dic.getDictionaryObject( COSName.FONT_FAMILY );
+        if( name != null )
+        {
+            retval = name.getString();
+        }
+        return retval;
+    }
+
+    /**
+     * This will set the font family.
+     *
+     * @param fontFamily The font family.
+     */
+    public void setFontFamily( String fontFamily )
+    {
+        COSString name = null;
+        if( fontFamily != null )
+        {
+            name = new COSString( fontFamily );
+        }
+        dic.setItem( COSName.FONT_FAMILY, name );
+    }
+
+    /**
+     * The weight of the font.  According to the PDF spec "possible values are
+     * 100, 200, 300, 400, 500, 600, 700, 800 or 900"  Where a higher number is
+     * more weight and appears to be more bold.
+     *
+     * @return The font weight.
+     */
+    public float getFontWeight()
+    {
+        return dic.getFloat( COSName.FONT_WEIGHT,0 );
+    }
+
+    /**
+     * Set the weight of the font.
+     *
+     * @param fontWeight The new weight of the font.
+     */
+    public void setFontWeight( float fontWeight )
+    {
+        dic.setFloat( COSName.FONT_WEIGHT, fontWeight );
+    }
+
+    /**
+     * A string representing the preferred font stretch.
+     * According to the PDF Spec:
+     * The font stretch value; it must be one of the following (ordered from
+     * narrowest to widest): UltraCondensed, ExtraCondensed, Condensed, SemiCondensed,
+     * Normal, SemiExpanded, Expanded, ExtraExpanded or UltraExpanded.
+     *
+     * @return The stretch of the font.
+     */
+    public String getFontStretch()
+    {
+        String retval = null;
+        COSName name = (COSName)dic.getDictionaryObject( COSName.FONT_STRETCH );
+        if( name != null )
+        {
+            retval = name.getName();
+        }
+        return retval;
+    }
+
+    /**
+     * This will set the font stretch.
+     *
+     * @param fontStretch The new stretch for the font.
+     */
+    public void setFontStretch( String fontStretch )
+    {
+        COSName name = null;
+        if( fontStretch != null )
+        {
+            name = COSName.getPDFName( fontStretch );
+        }
+        dic.setItem( COSName.FONT_STRETCH, name );
+    }
+
+    /**
+     * This will get the font flags.
+     *
+     * @return The font flags.
+     */
+    public int getFlags()
+    {
+        if (flags == -1)
+        {
+            flags = dic.getInt( COSName.FLAGS, 0 );
+        }
+        return flags;
+    }
+
+    /**
+     * This will set the font flags.
+     *
+     * @param flags The new font flags.
+     */
+    public void setFlags( int flags )
+    {
+        dic.setInt( COSName.FLAGS, flags );
+        this.flags = flags;
+    }
+
+    /**
+     * This will get the fonts bounding box.
+     *
+     * @return The fonts bounding box.
+     */
+    public PDRectangle getFontBoundingBox()
+    {
+        COSArray rect = (COSArray)dic.getDictionaryObject( COSName.FONT_BBOX );
+        PDRectangle retval = null;
+        if( rect != null )
+        {
+            retval = new PDRectangle( rect );
+        }
+        return retval;
+    }
 
     /**
      * Set the fonts bounding box.
      *
      * @param rect The new bouding box.
      */
-    public abstract void setFontBoundingBox( PDRectangle rect );
+    public void setFontBoundingBox( PDRectangle rect )
+    {
+        COSArray array = null;
+        if( rect != null )
+        {
+            array = rect.getCOSArray();
+        }
+        dic.setItem( COSName.FONT_BBOX, array );
+    }
 
     /**
      * This will get the italic angle for the font.
      *
      * @return The italic angle.
      */
-    public abstract float getItalicAngle();
+    public float getItalicAngle()
+    {
+        return dic.getFloat( COSName.ITALIC_ANGLE, 0 );
+    }
 
     /**
      * This will set the italic angle for the font.
      *
      * @param angle The new italic angle for the font.
      */
-    public abstract void setItalicAngle( float angle );
+    public void setItalicAngle( float angle )
+    {
+        dic.setFloat( COSName.ITALIC_ANGLE, angle );
+    }
 
     /**
      * This will get the ascent for the font.
      *
      * @return The ascent.
      */
-    public abstract float getAscent();
+    public float getAscent()
+    {
+        return dic.getFloat( COSName.ASCENT, 0 );
+    }
 
     /**
      * This will set the ascent for the font.
      *
      * @param ascent The new ascent for the font.
      */
-    public abstract void setAscent( float ascent );
+    public void setAscent( float ascent )
+    {
+        dic.setFloat( COSName.ASCENT, ascent );
+    }
 
     /**
      * This will get the descent for the font.
      *
      * @return The descent.
      */
-    public abstract float getDescent();
+    public float getDescent()
+    {
+        return dic.getFloat( COSName.DESCENT, 0 );
+    }
 
     /**
      * This will set the descent for the font.
      *
      * @param descent The new descent for the font.
      */
-    public abstract void setDescent( float descent );
+    public void setDescent( float descent )
+    {
+        dic.setFloat( COSName.DESCENT, descent );
+    }
 
     /**
      * This will get the leading for the font.
      *
      * @return The leading.
      */
-    public abstract float getLeading();
+    public float getLeading()
+    {
+        return dic.getFloat( COSName.LEADING, 0 );
+    }
 
     /**
      * This will set the leading for the font.
      *
      * @param leading The new leading for the font.
      */
-    public abstract void setLeading( float leading );
+    public void setLeading( float leading )
+    {
+        dic.setFloat( COSName.LEADING, leading );
+    }
 
     /**
      * This will get the CapHeight for the font.
      *
      * @return The cap height.
      */
-    public abstract float getCapHeight();
+    public float getCapHeight()
+    {
+        if(capHeight==Float.NEGATIVE_INFINITY)
+        {
+            /* We observed a negative value being returned with
+             * the Scheherazade font. PDFBOX-429 was logged for this.
+             * We are not sure if returning the absolute value
+             * is the correct fix, but it seems to work.  */
+            capHeight = java.lang.Math.abs(dic.getFloat( COSName.CAP_HEIGHT, 0 ));
+        }
+        return capHeight;
+    }
+
 
     /**
      * This will set the cap height for the font.
      *
      * @param capHeight The new cap height for the font.
      */
-    public abstract void setCapHeight( float capHeight );
+    public void setCapHeight( float capHeight )
+    {
+        dic.setFloat( COSName.CAP_HEIGHT, capHeight );
+        this.capHeight = capHeight;
+    }
 
     /**
      * This will get the x height for the font.
      *
      * @return The x height.
      */
-    public abstract float getXHeight();
+    public float getXHeight()
+    {
+        if(xHeight==Float.NEGATIVE_INFINITY)
+        {
+            /* We observed a negative value being returned with
+             * the Scheherazade font. PDFBOX-429 was logged for this.
+             * We are not sure if returning the absolute value
+             * is the correct fix, but it seems to work.  */
+            xHeight = java.lang.Math.abs(dic.getFloat( COSName.XHEIGHT, 0 ));
+        }
+        return xHeight;
+    }
 
     /**
      * This will set the x height for the font.
      *
      * @param xHeight The new x height for the font.
      */
-    public abstract void setXHeight( float xHeight );
+    public void setXHeight( float xHeight )
+    {
+        dic.setFloat( COSName.XHEIGHT, xHeight );
+        this.xHeight = xHeight;
+    }
 
     /**
      * This will get the stemV for the font.
      *
      * @return The stem v value.
      */
-    public abstract float getStemV();
+    public float getStemV()
+    {
+        return dic.getFloat( COSName.STEM_V, 0 );
+    }
 
     /**
      * This will set the stem V for the font.
      *
      * @param stemV The new stem v for the font.
      */
-    public abstract void setStemV( float stemV );
+    public void setStemV( float stemV )
+    {
+        dic.setFloat( COSName.STEM_V, stemV );
+    }
 
     /**
      * This will get the stemH for the font.
      *
      * @return The stem h value.
      */
-    public abstract float getStemH();
+    public float getStemH()
+    {
+        return dic.getFloat( COSName.STEM_H, 0 );
+    }
 
     /**
      * This will set the stem H for the font.
      *
      * @param stemH The new stem h for the font.
      */
-    public abstract void setStemH( float stemH );
+    public void setStemH( float stemH )
+    {
+        dic.setFloat( COSName.STEM_H, stemH );
+    }
 
     /**
-     * This will get the average width for the font.  This is part of the
-     * definition in the font description.  If it is not present then PDFBox
-     * will make an attempt to calculate it.
+     * This will get the average width for the font.
      *
      * @return The average width value.
-     *
-     * @throws IOException If there is an error calculating the average width.
      */
-    public abstract float getAverageWidth() throws IOException;
+    public float getAverageWidth()
+    {
+        return dic.getFloat( COSName.AVG_WIDTH, 0 );
+    }
 
     /**
      * This will set the average width for the font.
      *
      * @param averageWidth The new average width for the font.
      */
-    public abstract void setAverageWidth( float averageWidth );
+    public void setAverageWidth( float averageWidth )
+    {
+        dic.setFloat( COSName.AVG_WIDTH, averageWidth );
+    }
 
     /**
      * This will get the max width for the font.
      *
      * @return The max width value.
      */
-    public abstract float getMaxWidth();
+    public float getMaxWidth()
+    {
+        return dic.getFloat( COSName.MAX_WIDTH, 0 );
+    }
 
     /**
      * This will set the max width for the font.
      *
      * @param maxWidth The new max width for the font.
      */
-    public abstract void setMaxWidth( float maxWidth );
+    public void setMaxWidth( float maxWidth )
+    {
+        dic.setFloat( COSName.MAX_WIDTH, maxWidth );
+    }
 
     /**
-     * This will get the character set for the font.
-     *
-     * @return The character set value.
+     * Returns true if widths are present in the font descriptor.
      */
-    public abstract String getCharSet();
-
-    /**
-     * This will set the character set for the font.
-     *
-     * @param charSet The new character set for the font.
-     */
-    public abstract void setCharacterSet( String charSet );
+    public boolean hasWidths()
+    {
+        return dic.containsKey(COSName.WIDTHS) || dic.containsKey(COSName.MISSING_WIDTH);
+    }
 
     /**
      * This will get the missing width for the font.
      *
      * @return The missing width value.
      */
-    public abstract float getMissingWidth();
+    public float getMissingWidth()
+    {
+        return dic.getFloat( COSName.MISSING_WIDTH, 0 );
+    }
 
     /**
      * This will set the missing width for the font.
      *
      * @param missingWidth The new missing width for the font.
      */
-    public abstract void setMissingWidth( float missingWidth );
+    public void setMissingWidth( float missingWidth )
+    {
+        dic.setFloat( COSName.MISSING_WIDTH, missingWidth );
+    }
 
+    /**
+     * This will get the character set for the font.
+     *
+     * @return The character set value.
+     */
+    public String getCharSet()
+    {
+        String retval = null;
+        COSString name = (COSString)dic.getDictionaryObject( COSName.CHAR_SET );
+        if( name != null )
+        {
+            retval = name.getString();
+        }
+        return retval;
+    }
+
+    /**
+     * This will set the character set for the font.
+     *
+     * @param charSet The new character set for the font.
+     */
+    public void setCharacterSet( String charSet )
+    {
+        COSString name = null;
+        if( charSet != null )
+        {
+            name = new COSString( charSet );
+        }
+        dic.setItem( COSName.CHAR_SET, name );
+    }
+
+    /**
+     * A stream containing a Type 1 font program.
+     *
+     * @return A stream containing a Type 1 font program.
+     */
+    public PDStream getFontFile()
+    {
+        PDStream retval = null;
+        COSStream stream = (COSStream)dic.getDictionaryObject( COSName.FONT_FILE );
+        if( stream != null )
+        {
+            retval = new PDStream( stream );
+        }
+        return retval;
+    }
+
+    /**
+     * Set the type 1 font program.
+     *
+     * @param type1Stream The type 1 stream.
+     */
+    public void setFontFile( PDStream type1Stream )
+    {
+        dic.setItem( COSName.FONT_FILE, type1Stream );
+    }
+
+    /**
+     * A stream containing a true type font program.
+     *
+     * @return A stream containing a true type font program.
+     */
+    public PDStream getFontFile2()
+    {
+        PDStream retval = null;
+        COSStream stream = (COSStream)dic.getDictionaryObject( COSName.FONT_FILE2 );
+        if( stream != null )
+        {
+            retval = new PDStream( stream );
+        }
+        return retval;
+    }
+
+    /**
+     * Set the true type font program.
+     *
+     * @param ttfStream The true type stream.
+     */
+    public void setFontFile2( PDStream ttfStream )
+    {
+        dic.setItem( COSName.FONT_FILE2, ttfStream );
+    }
+
+    /**
+     * A stream containing a font program that is not true type or type 1.
+     *
+     * @return A stream containing a font program.
+     */
+    public PDStream getFontFile3()
+    {
+        PDStream retval = null;
+        COSStream stream = (COSStream)dic.getDictionaryObject( COSName.FONT_FILE3 );
+        if( stream != null )
+        {
+            retval = new PDStream( stream );
+        }
+        return retval;
+    }
+
+    /**
+     * Set a stream containing a font program that is not true type or type 1.
+     *
+     * @param stream The font program stream.
+     */
+    public void setFontFile3( PDStream stream )
+    {
+        dic.setItem( COSName.FONT_FILE3, stream );
+    }
 }

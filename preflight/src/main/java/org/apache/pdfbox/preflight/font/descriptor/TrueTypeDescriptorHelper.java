@@ -35,7 +35,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.pdmodel.font.PDFontDescriptorDictionary;
+import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.font.container.TrueTypeContainer;
@@ -48,7 +48,7 @@ public class TrueTypeDescriptorHelper extends FontDescriptorHelper<TrueTypeConta
         super(context, font, fontContainer);
     }
 
-    public PDStream extractFontFile(PDFontDescriptorDictionary fontDescriptor)
+    public PDStream extractFontFile(PDFontDescriptor fontDescriptor)
     {
         PDStream fontFile = fontDescriptor.getFontFile2();
         COSStream stream = (fontFile == null ? null : fontFile.getStream());
@@ -70,7 +70,7 @@ public class TrueTypeDescriptorHelper extends FontDescriptorHelper<TrueTypeConta
         return fontFile;
     }
 
-    protected void processFontFile(PDFontDescriptorDictionary fontDescriptor, PDStream fontFile)
+    protected void processFontFile(PDFontDescriptor fontDescriptor, PDStream fontFile)
     {
         /*
          * Try to load the font using the TTFParser object. If the font is invalid, an exception will be thrown. Because

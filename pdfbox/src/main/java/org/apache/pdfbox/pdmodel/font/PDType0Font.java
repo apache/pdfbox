@@ -320,6 +320,12 @@ public class PDType0Font extends PDFont
     }
 
     @Override
+    public boolean isStandard14()
+    {
+        return false;
+    }
+
+    @Override
     public String toString()
     {
         String descendant = null;

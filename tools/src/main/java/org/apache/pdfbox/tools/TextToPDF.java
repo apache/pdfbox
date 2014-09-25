@@ -79,7 +79,7 @@ public class TextToPDF
         {
 
             final int margin = 40;
-            float height = font.getFontDescriptor().getFontBoundingBox().getHeight()/1000;
+            float height = font.getBoundingBox().getHeight() / 1000;
 
             //calculate font height and increase by 5 percent.
             height = height*fontSize*1.05f;
