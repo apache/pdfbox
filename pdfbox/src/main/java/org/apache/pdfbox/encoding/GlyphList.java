@@ -16,60 +16,69 @@
  */
 package org.apache.pdfbox.encoding;
 
-import java.net.URL;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.Properties;
-import java.util.StringTokenizer;
 
 /**
- * PostScript glyph list, maps glyph names to Unicode characters.
+ * PostScript glyph list, maps glyph names to sequences of Unicode characters.
+ * Instances of GlyphList are immutable.
  */
-public class GlyphList
+public final class GlyphList
 {
     private static final Log LOG = LogFactory.getLog(GlyphList.class);
-    public static final GlyphList DEFAULT;
-    public static final GlyphList ZAPF_DINGBATS;
+    private static final GlyphList DEFAULT;
+    private static final GlyphList ZAPF_DINGBATS;
+
+    /**
+     * Returns the Adobe Glyph List (AGL).
+     */
+    public static GlyphList getAdobeGlyphList()
+    {
+        return DEFAULT;
+    }
+
+    /**
+     * Returns the Zapf Dingbats glyph list.
+     */
+    public static GlyphList getZapfDingbats()
+    {
+        return ZAPF_DINGBATS;
+    }
 
     static
     {
         try
         {
-            DEFAULT = new GlyphList();
+            ClassLoader loader = GlyphList.class.getClassLoader();
+            String path = "org/apache/pdfbox/resources/glyphlist/";
 
-            // Loads the official glyph List based on adobes glyph list
-            DEFAULT.loadGlyphs("org/apache/pdfbox/resources/glyphlist/glyphlist.properties");
+            // Adobe Glyph List (AGL)
+            DEFAULT = new GlyphList(loader.getResourceAsStream(path + "glyphlist.txt"));
 
-            // Loads some additional glyph mappings
-            DEFAULT.loadGlyphs("org/apache/pdfbox/resources/glyphlist/additional_glyphlist.properties");
+            // Zapf Dingbats has its own glyph list
+            ZAPF_DINGBATS = new GlyphList(loader.getResourceAsStream(path + "zapfdingbats.txt"));
 
-            // Load an external glyph list file that user can give as JVM property
+            // not supported in PDFBox 2.0, but we issue a warning, see PDFBOX-2379
             try
             {
                 String location = System.getProperty("glyphlist_ext");
                 if (location != null)
                 {
-                    // not supported in 2.0, see PDFBOX-2379
-                    throw new UnsupportedOperationException("glyphlist_ext is no longer supported, " +
-                      "use GlyphList.DEFAULT.addGlyphs(Properties) instead");
+                    throw new UnsupportedOperationException("glyphlist_ext is no longer supported, "
+                            + "use GlyphList.DEFAULT.addGlyphs(Properties) instead");
                 }
             }
             catch (SecurityException e)  // can occur on System.getProperty
             {
                 // PDFBOX-1946 ignore and continue
             }
-
-            // Zapf Dingbats has its own glyph list
-            ZAPF_DINGBATS = new GlyphList();
-            ZAPF_DINGBATS.loadGlyphs("org/apache/pdfbox/resources/glyphlist/zapf_dingbats.properties");
         }
         catch (IOException e)
         {
@@ -77,76 +86,111 @@ public class GlyphList
         }
     }
 
-    private final Map<String, String> nameToUnicode = new HashMap<String, String>();
-    private final Map<String, String> unicodeToName = new HashMap<String, String>();
-
-    private GlyphList()
-    {
-    }
-
-    private void loadGlyphs(String resourceName) throws IOException
-    {
-        URL url = GlyphList.class.getClassLoader().getResource(resourceName);
-        if (url == null)
-        {
-            throw new MissingResourceException("Glyphlist not found: " + resourceName,
-                    GlyphList.class.getName(), resourceName);
-        }
-
-        Properties properties = new Properties();
-        properties.load(url.openStream());
-        addGlyphs(properties);
-    }
+    private final Map<String, String> nameToUnicode;
+    private final Map<String, String> unicodeToName;
 
     /**
-     * Adds a glyph list stored in a .properties file to this GlyphList.
+     * Creates a new GlyphList from a glyph list file.
      *
-     * @param properties Glyphlist in the form Name=XXXX where X is Unicode hex.
-     * @throws IOException if the properties could not be read
+     * @param input glyph list in Adobe format
+     * @throws IOException if the glyph list could not be read
      */
-    public synchronized void addGlyphs(Properties properties) throws IOException
+    public GlyphList(InputStream input) throws IOException
     {
-        Enumeration<?> names = properties.propertyNames();
-        for (Object name : Collections.list(names))
+        nameToUnicode = new HashMap<String, String>();
+        unicodeToName = new HashMap<String, String>();
+        loadList(input);
+    }
+
+    /**
+     * Creates a new GlyphList from multiple glyph list files.
+     *
+     * @param glyphList an existing glyph list to be copied
+     * @param input glyph list in Adobe format
+     * @throws IOException if the glyph list could not be read
+     */
+    public GlyphList(GlyphList glyphList, InputStream input) throws IOException
+    {
+        nameToUnicode = new HashMap<String, String>(glyphList.nameToUnicode);
+        unicodeToName = new HashMap<String, String>(glyphList.unicodeToName);
+        loadList(input);
+    }
+
+    private void loadList(InputStream input) throws IOException
+    {
+        BufferedReader in = new BufferedReader(new InputStreamReader(input));
+        try
         {
-            String glyphName = name.toString();
-            String unicodeValue = properties.getProperty(glyphName);
-            StringTokenizer tokenizer = new StringTokenizer(unicodeValue, " ", false);
-            StringBuilder value = new StringBuilder();
-            while (tokenizer.hasMoreTokens())
+            while (in.ready())
             {
-                int characterCode = Integer.parseInt(tokenizer.nextToken(), 16);
-                value.append((char) characterCode);
-            }
-            String unicode = value.toString();
+                String line = in.readLine();
+                if (!line.startsWith("#"))
+                {
+                    String[] parts = line.split(";");
+                    if (parts.length < 2)
+                    {
+                        throw new IOException("Invalid glyph list entry: " + line);
+                    }
 
-            if (nameToUnicode.containsKey(glyphName))
-            {
-                LOG.warn("duplicate value for " + glyphName + " -> " + unicode + " " +
-                        nameToUnicode.get(glyphName));
-            }
-            else
-            {
-                nameToUnicode.put(glyphName, unicode);
-            }
+                    String name = parts[0];
+                    String[] unicodeList = parts[1].split(" ");
 
-            // reverse mapping
-            if (!unicodeToName.containsKey(unicode))
-            {
-                unicodeToName.put(unicode, glyphName);
+                    if (nameToUnicode.containsKey(name))
+                    {
+                        LOG.warn("duplicate value for " + name + " -> " + parts[1] + " " +
+                                 nameToUnicode.get(name));
+                    }
+
+                    int[] codePoints = new int[unicodeList.length];
+                    int index = 0;
+                    for (String hex : unicodeList)
+                    {
+                        codePoints[index++] = Integer.parseInt(hex, 16);
+                    }
+                    String string = new String(codePoints, 0 , codePoints.length);
+
+                    // forward mapping
+                    nameToUnicode.put(name, string);
+
+                    // reverse mapping
+                    if (!unicodeToName.containsKey(string))
+                    {
+                        unicodeToName.put(string, name);
+                    }
+                }
             }
+        }
+        finally
+        {
+            in.close();
         }
     }
 
     /**
-     * This will take a character code and get the name from the code.
+     * Returns the name for the given Unicode code point.
      *
-     * @param c Unicode character
+     * @param codePoint Unicode code point
      * @return PostScript glyph name, or ".notdef"
      */
-    public String unicodeToName(char c)
+    public String codePointToName(int codePoint)
     {
-        String name = unicodeToName.get(Character.toString(c));
+        String name = unicodeToName.get(new String(new int[] { codePoint }, 0 , 1));
+        if (name == null)
+        {
+            return ".notdef";
+        }
+        return name;
+    }
+
+    /**
+     * Returns the name for a given sequence of Unicode characters.
+     *
+     * @param unicodeSequence sequence of Unicode characters
+     * @return PostScript glyph name, or ".notdef"
+     */
+    public String sequenceToName(String unicodeSequence)
+    {
+        String name = unicodeToName.get(unicodeSequence);
         if (name == null)
         {
             return ".notdef";

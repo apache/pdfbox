@@ -163,7 +163,7 @@ public class TrueTypeContainer extends FontContainer
         {
             Encoding fontEncoding = this.trueTypeFont.getEncoding();
             String name = fontEncoding.getName(cid);
-            String character = GlyphList.DEFAULT.toUnicode(name);
+            String character = GlyphList.getAdobeGlyphList().toUnicode(name);
             if (character == null)
             {
                 return notFoundGlyphID;

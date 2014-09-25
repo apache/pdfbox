@@ -34,6 +34,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.encoding.Encoding;
+import org.apache.pdfbox.encoding.GlyphList;
 import org.apache.pdfbox.encoding.StandardEncoding;
 import org.apache.pdfbox.encoding.Type1Encoding;
 import org.apache.pdfbox.encoding.WinAnsiEncoding;
@@ -125,10 +126,12 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
      * Creates a Type 1 font from a Font dictionary in a PDF.
      * 
      * @param fontDictionary font dictionary
+     * @param glyphList A custom glyph list for Unicode mapping
      */
-    public PDType1Font(COSDictionary fontDictionary) throws IOException
+    public PDType1Font(COSDictionary fontDictionary, GlyphList glyphList) throws IOException
     {
-        super(fontDictionary);
+        super(fontDictionary, glyphList);
+
         PDFontDescriptor fd = getFontDescriptor();
         Type1Font t1 = null;
         if (fd != null)

@@ -35,6 +35,7 @@ import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.encoding.Encoding;
+import org.apache.pdfbox.encoding.GlyphList;
 import org.apache.pdfbox.encoding.Type1Encoding;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -65,11 +66,12 @@ public class PDType1CFont extends PDSimpleFont implements PDType1Equivalent
      * Constructor.
      * 
      * @param fontDictionary the corresponding dictionary
+     * @param glyphList a custom glyph list for Unicode mapping
      * @throws IOException it something went wrong
      */
-    public PDType1CFont(COSDictionary fontDictionary) throws IOException
+    public PDType1CFont(COSDictionary fontDictionary, GlyphList glyphList) throws IOException
     {
-        super(fontDictionary);
+        super(fontDictionary, glyphList);
 
         PDFontDescriptor fd = getFontDescriptor();
         byte[] bytes = null;
@@ -229,8 +231,8 @@ public class PDType1CFont extends PDSimpleFont implements PDType1Equivalent
         float width = 0;
         for (int i = 0; i < string.length(); i++)
         {
-            String character = string.substring(i, i + 1);
-            String name = getGlyphList().unicodeToName(character.charAt(0));
+            int codePoint = string.codePointAt(i);
+            String name = getGlyphList().codePointToName(codePoint);
             width += cffFont.getType1CharString(name).getWidth();
         }
         return width;

@@ -497,22 +497,6 @@ public class CmapSubtable
     }
 
     /**
-     * @return Returns the glyphIdToCharacterCode.
-     */
-    public int[] getGlyphIdToCharacterCode()
-    {
-        return glyphIdToCharacterCode;
-    }
-
-    /**
-     * @param glyphIdToCharacterCodeValue The glyphIdToCharacterCode to set.
-     */
-    public void setGlyphIdToCharacterCode(int[] glyphIdToCharacterCodeValue)
-    {
-        glyphIdToCharacterCode = glyphIdToCharacterCodeValue;
-    }
-
-    /**
      * @return Returns the platformEncodingId.
      */
     public int getPlatformEncodingId()
@@ -554,6 +538,21 @@ public class CmapSubtable
     {
         Integer glyphId = characterCodeToGlyphId.get(characterCode);
         return glyphId == null ? 0 : glyphId;
+    }
+
+    /**
+     * Returns the character code for the given GID.
+     *
+     * @param gid glyph id
+     * @return character code
+     */
+    public int getCharacterCode(int gid)
+    {
+        if (gid < 0 || gid >= glyphIdToCharacterCode.length)
+        {
+            return 0;
+        }
+        return glyphIdToCharacterCode[gid];
     }
 
     @Override
