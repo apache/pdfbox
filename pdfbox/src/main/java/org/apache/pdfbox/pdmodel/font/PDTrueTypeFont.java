@@ -205,7 +205,7 @@ public class PDTrueTypeFont extends PDSimpleFont
     @Override
     public float getWidthFromFont(int code) throws IOException
     {
-        if (getStandard14AFM() != null)
+        if (getStandard14AFM() != null && getEncoding() != null)
         {
             return getStandard14Width(code);
         }
