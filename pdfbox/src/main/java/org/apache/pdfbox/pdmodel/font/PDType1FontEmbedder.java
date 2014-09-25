@@ -136,10 +136,13 @@ class PDType1FontEmbedder
      */
     static PDFontDescriptor buildFontDescriptor(FontMetrics metrics)
     {
+        boolean isSymbolic = metrics.getEncodingScheme().equals("FontSpecific");
+
         PDFontDescriptor fd = new PDFontDescriptor();
         fd.setFontName(metrics.getFontName());
         fd.setFontFamily(metrics.getFamilyName());
-        fd.setNonSymbolic(true);
+        fd.setNonSymbolic(!isSymbolic);
+        fd.setSymbolic(isSymbolic);
         fd.setFontBoundingBox(new PDRectangle(metrics.getFontBBox()));
         fd.setItalicAngle(metrics.getItalicAngle());
         fd.setAscent(metrics.getAscender());
