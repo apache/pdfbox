@@ -66,8 +66,13 @@ class PDType1FontEmbedder
     {
         dict.setItem(COSName.SUBTYPE, COSName.TYPE1);
 
-        PDFontDescriptorDictionary fd = new PDFontDescriptorDictionary();
-        dict.setItem(COSName.FONT_DESC, fd);
+        // read the afm
+        AFMParser afmParser = new AFMParser(afmStream);
+        metrics = afmParser.parse();
+        this.fontEncoding = encodingFromAFM(metrics);
+
+        // build font descriptor
+        PDFontDescriptor fd = buildFontDescriptor(metrics);
 
         // read the pfb
         byte[] pfbBytes = IOUtils.toByteArray(pfbStream);
@@ -83,24 +88,9 @@ class PDType1FontEmbedder
         fontStream.addCompression();
         fd.setFontFile(fontStream);
 
-        // read the afm
-        AFMParser afmParser = new AFMParser(afmStream);
-        metrics = afmParser.parse();
-        this.fontEncoding = encodingFromAFM(metrics);
-
         // set the values
+        dict.setItem(COSName.FONT_DESC, fd);
         dict.setName(COSName.BASE_FONT, metrics.getFontName());
-        fd.setFontName(metrics.getFontName());
-        fd.setFontFamily(metrics.getFamilyName());
-        fd.setNonSymbolic(true);
-        fd.setFontBoundingBox(new PDRectangle(metrics.getFontBBox()));
-        fd.setItalicAngle(metrics.getItalicAngle());
-        fd.setAscent(metrics.getAscender());
-        fd.setDescent(metrics.getDescender());
-        fd.setCapHeight(metrics.getCapHeight());
-        fd.setXHeight(metrics.getXHeight());
-        fd.setAverageWidth(metrics.getAverageCharacterWidth());
-        fd.setCharacterSet(metrics.getCharacterSet());
 
         // get firstchar, lastchar
         int firstchar = 255;
@@ -137,6 +127,28 @@ class PDType1FontEmbedder
         dict.setInt(COSName.FIRST_CHAR, 0);
         dict.setInt(COSName.LAST_CHAR, 255);
         dict.setItem(COSName.WIDTHS, COSArrayList.converterToCOSArray(widths));
+    }
+
+    /**
+     * Returns a PDFontDescriptor for the given AFM.
+     *
+     * @param metrics AFM
+     */
+    static PDFontDescriptor buildFontDescriptor(FontMetrics metrics)
+    {
+        PDFontDescriptor fd = new PDFontDescriptor();
+        fd.setFontName(metrics.getFontName());
+        fd.setFontFamily(metrics.getFamilyName());
+        fd.setNonSymbolic(true);
+        fd.setFontBoundingBox(new PDRectangle(metrics.getFontBBox()));
+        fd.setItalicAngle(metrics.getItalicAngle());
+        fd.setAscent(metrics.getAscender());
+        fd.setDescent(metrics.getDescender());
+        fd.setCapHeight(metrics.getCapHeight());
+        fd.setXHeight(metrics.getXHeight());
+        fd.setAverageWidth(metrics.getAverageCharacterWidth());
+        fd.setCharacterSet(metrics.getCharacterSet());
+        return fd;
     }
 
     // This will generate a Encoding from the AFM-Encoding, because the AFM-Enconding isn't exported

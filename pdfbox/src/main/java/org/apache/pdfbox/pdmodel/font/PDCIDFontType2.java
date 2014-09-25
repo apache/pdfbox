@@ -63,7 +63,7 @@ public class PDCIDFontType2 extends PDCIDFont
     {
         super(fontDictionary, parent);
 
-        PDFontDescriptorDictionary fd = (PDFontDescriptorDictionary) getFontDescriptor();
+        PDFontDescriptor fd = getFontDescriptor();
         PDStream ff2Stream = fd.getFontFile2();
         PDStream ff3Stream = fd.getFontFile3();
 

@@ -51,7 +51,6 @@ import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
-import org.apache.pdfbox.pdmodel.font.PDFontDescriptorDictionary;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.font.container.FontContainer;
@@ -69,7 +68,7 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
     protected PreflightContext context;
     protected PDFont font;
 
-    protected PDFontDescriptorDictionary fontDescriptor;
+    protected PDFontDescriptor fontDescriptor;
 
     public FontDescriptorHelper(PreflightContext context, PDFont font, T fontContainer)
     {
@@ -83,11 +82,11 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
     {
         PDFontDescriptor fd = this.font.getFontDescriptor();
         // Only a PDFontDescriptorDictionary provides a way to embedded the font program.
-        if (fd != null && fd instanceof PDFontDescriptorDictionary)
+        if (fd != null)
         {
-            fontDescriptor = (PDFontDescriptorDictionary) fd;
+            fontDescriptor = fd;
 
-            if (checkMandatoryFields(fontDescriptor.getCOSDictionary()))
+            if (checkMandatoryFields(fontDescriptor.getCOSObject()))
             {
                 if (hasOnlyOneFontFile(fontDescriptor))
                 {
@@ -141,7 +140,7 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
         return areFieldsPresent;
     }
 
-    public abstract PDStream extractFontFile(PDFontDescriptorDictionary fontDescriptor);
+    public abstract PDStream extractFontFile(PDFontDescriptor fontDescriptor);
 
     /**
      * Return true if the FontDescriptor has only one FontFile entry.
@@ -149,7 +148,7 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
      * @param fontDescriptor
      * @return
      */
-    protected boolean hasOnlyOneFontFile(PDFontDescriptorDictionary fontDescriptor)
+    protected boolean hasOnlyOneFontFile(PDFontDescriptor fontDescriptor)
     {
         PDStream ff1 = fontDescriptor.getFontFile();
         PDStream ff2 = fontDescriptor.getFontFile2();
@@ -157,7 +156,7 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
         return (ff1 != null ^ ff2 != null ^ ff3 != null);
     }
 
-    protected boolean fontFileNotEmbedded(PDFontDescriptorDictionary fontDescriptor)
+    protected boolean fontFileNotEmbedded(PDFontDescriptor fontDescriptor)
     {
         PDStream ff1 = fontDescriptor.getFontFile();
         PDStream ff2 = fontDescriptor.getFontFile2();
@@ -165,7 +164,7 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
         return (ff1 == null && ff2 == null && ff3 == null);
     }
 
-    protected abstract void processFontFile(PDFontDescriptorDictionary fontDescriptor, PDStream fontFile);
+    protected abstract void processFontFile(PDFontDescriptor fontDescriptor, PDStream fontFile);
 
     /**
      * Type0, Type1 and TrueType FontValidator call this method to check the FontFile meta data.

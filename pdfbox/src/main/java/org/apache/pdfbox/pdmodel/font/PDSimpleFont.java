@@ -29,7 +29,6 @@ import org.apache.pdfbox.encoding.StandardEncoding;
 import org.apache.pdfbox.encoding.WinAnsiEncoding;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -41,31 +40,6 @@ import java.util.Set;
 public abstract class PDSimpleFont extends PDFont
 {
     private static final Log LOG = LogFactory.getLog(PDSimpleFont.class);
-
-    private static Set<String> STANDARD_14 = new HashSet<String>();
-    static
-    {
-        // standard 14 names
-        STANDARD_14.addAll(Arrays.asList(
-           "Courier", "Courier-Bold", "Courier-Oblique", "Courier-BoldOblique", "Helvetica",
-           "Helvetica-Bold", "Helvetica-Oblique", "Helvetica-BoldOblique", "Times-Roman",
-           "Times-Bold", "Times-Italic","Times-BoldItalic", "Symbol", "ZapfDingbats"
-        ));
-        // alternative names from Adobe Supplement to the ISO 32000
-        STANDARD_14.addAll(Arrays.asList(
-           "CourierCourierNew", "CourierNew", "CourierNew,Italic", "CourierNew,Bold",
-           "CourierNew,BoldItalic", "Arial", "Arial,Italic", "Arial,Bold", "Arial,BoldItalic",
-           "TimesNewRoman", "TimesNewRoman,Italic", "TimesNewRoman,Bold", "TimesNewRoman,BoldItalic"
-        ));
-    }
-
-    /**
-     * Returns true if this font is one of the "standard 14" fonts.
-     */
-    public static boolean isStandard14(String name)
-    {
-        return STANDARD_14.contains(name);
-    }
 
     protected Encoding encoding;
     protected GlyphList glyphList;
@@ -301,10 +275,40 @@ public abstract class PDSimpleFont extends PDFont
     }
 
     /**
-     * Returns true if this font is one of the "standard 14" fonts.
+     * Returns the glyph width from the AFM if this is a Standard 14 font.
+     * @param code character code
+     * @return width in 1/1000 text space
      */
+    protected final float getStandard14Width(int code)
+    {
+        if (getStandard14AFM() != null)
+        {
+            String nameInAFM = getEncoding().getName(code);
+
+            // the Adobe AFMs don't include .notdef, but Acrobat uses 250, test with PDFBOX-2334
+            if (nameInAFM.equals(".notdef"))
+            {
+                return 250f;
+            }
+
+            return getStandard14AFM().getCharacterWidth(nameInAFM);
+        }
+        throw new IllegalStateException("No AFM");
+    }
+
     public boolean isStandard14()
     {
-        return !isEmbedded() && STANDARD_14.contains(getName());
+        // this logic is based on Acrobat's behaviour, see see PDFBOX-2372
+        // the Encoding entry cannot have Differences if we want "standard 14" font handling
+        if (getEncoding() != null && getEncoding() instanceof DictionaryEncoding)
+        {
+            DictionaryEncoding dictionary = (DictionaryEncoding)getEncoding();
+            if (dictionary.getDifferences().size() > 0)
+            {
+                // todo: do we need to check if entries actually differ from the base encoding?
+                return false;
+            }
+        }
+        return super.isStandard14();
     }
 }

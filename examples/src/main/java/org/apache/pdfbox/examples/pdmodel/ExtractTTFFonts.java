@@ -32,7 +32,6 @@ import org.apache.pdfbox.pdmodel.font.PDCIDFont;
 import org.apache.pdfbox.pdmodel.font.PDCIDFontType2;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
-import org.apache.pdfbox.pdmodel.font.PDFontDescriptorDictionary;
 import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
@@ -221,10 +220,9 @@ public class ExtractTTFFonts
 
     private void writeFont(PDFontDescriptor fd, String name) throws IOException
     {
-        PDFontDescriptorDictionary fdd = (PDFontDescriptorDictionary) fd;
         if (fd != null)
         {
-            PDStream ff2Stream = fdd.getFontFile2();
+            PDStream ff2Stream = fd.getFontFile2();
             if (ff2Stream != null)
             {
                 System.out.println("Writing font:" + name);

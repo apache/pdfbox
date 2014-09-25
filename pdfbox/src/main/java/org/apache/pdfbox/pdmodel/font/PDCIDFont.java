@@ -188,7 +188,7 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike
             COSDictionary fd = (COSDictionary) dict.getDictionaryObject(COSName.FONT_DESC);
             if (fd != null)
             {
-                fontDescriptor = new PDFontDescriptorDictionary(fd);
+                fontDescriptor = new PDFontDescriptor(fd);
             }
         }
         return fontDescriptor;

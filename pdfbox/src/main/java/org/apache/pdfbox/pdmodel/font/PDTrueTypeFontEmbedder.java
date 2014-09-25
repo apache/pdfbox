@@ -80,7 +80,7 @@ class PDTrueTypeFontEmbedder
 
         // as the stream was close within the PDStream constructor, we have to recreate it
         InputStream stream2 = null;
-        PDFontDescriptorDictionary fd;
+        PDFontDescriptor fd;
         try
         {
             stream2 = stream.createInputStream();
@@ -97,10 +97,10 @@ class PDTrueTypeFontEmbedder
     }
 
     // creates a new font descriptor dictionary for the given TTF
-    private PDFontDescriptorDictionary createFontDescriptor(COSDictionary dict, TrueTypeFont ttf)
+    private PDFontDescriptor createFontDescriptor(COSDictionary dict, TrueTypeFont ttf)
             throws IOException
     {
-        PDFontDescriptorDictionary fd = new PDFontDescriptorDictionary();
+        PDFontDescriptor fd = new PDFontDescriptor();
 
         NamingTable naming = ttf.getNaming();
         List<NameRecord> records = naming.getNameRecords();

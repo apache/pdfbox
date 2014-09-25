@@ -21,12 +21,9 @@ package org.apache.pdfbox.rendering.font;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
-import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.ttf.GlyphData;
@@ -34,7 +31,6 @@ import org.apache.fontbox.ttf.HeaderTable;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.pdmodel.font.PDCIDFontType2;
 import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
 import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 
@@ -143,9 +139,8 @@ public class TTFGlyph2D implements Glyph2D
 
             GlyphData glyph = ttf.getGlyph().getGlyph(gid);
 
-            // workaround for Type0 "Standard 14" font handling, as Adobe has GID 0 as empty
-            // while Microsoft uses a rectangle, which we don't want to appear
-            if (gid == 0 && !font.isEmbedded() && PDSimpleFont.isStandard14(font.getName()))
+            // Acrobat only draws GID 0 for embedded or "Standard 14" fonts, see PDFBOX-2372
+            if (gid == 0 && !font.isEmbedded() && !font.isStandard14())
             {
                 glyph = null;
             }

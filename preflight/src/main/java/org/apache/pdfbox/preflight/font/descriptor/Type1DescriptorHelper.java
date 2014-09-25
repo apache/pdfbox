@@ -43,7 +43,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.pdmodel.font.PDFontDescriptorDictionary;
+import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
 import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
@@ -81,7 +81,7 @@ public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container>
     }
 
     @Override
-    public PDStream extractFontFile(PDFontDescriptorDictionary fontDescriptor)
+    public PDStream extractFontFile(PDFontDescriptor fontDescriptor)
     {
         PDStream ff1 = fontDescriptor.getFontFile();
         PDStream ff3 = fontDescriptor.getFontFile3();
@@ -118,7 +118,7 @@ public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container>
     }
 
     @Override
-    protected void processFontFile(PDFontDescriptorDictionary fontDescriptor, PDStream fontFile)
+    protected void processFontFile(PDFontDescriptor fontDescriptor, PDStream fontFile)
     {
         if (isFontFile1)
         {
@@ -137,7 +137,7 @@ public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container>
      * @param fontDescriptor
      * @param fontFile
      */
-    protected void processFontFile1(PDFontDescriptorDictionary fontDescriptor, PDStream fontFile)
+    protected void processFontFile1(PDFontDescriptor fontDescriptor, PDStream fontFile)
     {
         ByteArrayInputStream bis = null;
         try
@@ -178,7 +178,7 @@ public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container>
      * @return
      * @throws ValidationException
      */
-    protected void processFontFile3(PDFontDescriptorDictionary fontDescriptor, PDStream fontFile)
+    protected void processFontFile3(PDFontDescriptor fontDescriptor, PDStream fontFile)
     {
         try
         {

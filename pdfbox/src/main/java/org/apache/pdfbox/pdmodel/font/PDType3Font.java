@@ -92,7 +92,7 @@ public class PDType3Font extends PDSimpleFont
         else
         {
             PDFontDescriptor fd = getFontDescriptor();
-            if (fd instanceof PDFontDescriptorDictionary)
+            if (fd != null)
             {
                 return fd.getMissingWidth();
             }
