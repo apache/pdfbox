@@ -103,10 +103,11 @@ public class PDTrueTypeFont extends PDSimpleFont
      * Creates a new TrueType font from a Font dictionary.
      *
      * @param fontDictionary The font dictionary according to the PDF specification.
+     * @param glyphList A custom glyph list for Unicode mapping
      */
-    public PDTrueTypeFont(COSDictionary fontDictionary) throws IOException
+    public PDTrueTypeFont(COSDictionary fontDictionary, GlyphList glyphList) throws IOException
     {
-        super(fontDictionary);
+        super(fontDictionary, glyphList);
 
         TrueTypeFont ttfFont = null;
         if (getFontDescriptor() != null)
@@ -261,7 +262,7 @@ public class PDTrueTypeFont extends PDSimpleFont
                 // (3, 1) - (Windows, Unicode)
                 if (cmapWinUnicode != null)
                 {
-                    String unicode = GlyphList.DEFAULT.toUnicode(name);
+                    String unicode = GlyphList.getAdobeGlyphList().toUnicode(name);
                     if (unicode != null)
                     {
                         int uni = unicode.codePointAt(0);

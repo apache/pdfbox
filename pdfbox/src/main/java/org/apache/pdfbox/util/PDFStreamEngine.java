@@ -37,6 +37,7 @@ import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.encoding.GlyphList;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -332,7 +333,7 @@ public class PDFStreamEngine
      * @param tx x-translation
      * @param ty y-translation
      */
-    protected void applyTextAdjustment(float tx, float ty)
+    protected void applyTextAdjustment(float tx, float ty) throws IOException
     {
         // update the text matrix
         textMatrix.concatenate(Matrix.getTranslatingInstance(tx, ty));
@@ -514,7 +515,16 @@ public class PDFStreamEngine
             return Collections.emptyMap();
         }
 
-        return streamResourcesStack.peek().getFonts();
+        return streamResourcesStack.peek().getFonts(getGlyphList());
+    }
+
+    /**
+     * Returns the glyph list for Unicode mapping, the default is the Adobe Glyph List.
+     * @throws IOException if the glyph list could not be loaded
+     */
+    protected GlyphList getGlyphList() throws IOException
+    {
+        return GlyphList.getAdobeGlyphList();
     }
 
     /**

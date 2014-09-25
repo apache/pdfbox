@@ -16,9 +16,11 @@
  */
 package org.apache.pdfbox.util;
 
+import java.io.InputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.encoding.GlyphList;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
@@ -64,6 +66,7 @@ public class PDFTextStreamEngine extends PDFStreamEngine
 
     private int pageRotation;
     private PDRectangle pageSize;
+    private GlyphList glyphList;
 
     /**
      * Constructor.
@@ -233,5 +236,18 @@ public class PDFTextStreamEngine extends PDFStreamEngine
     protected void processTextPosition(TextPosition text)
     {
         // subclasses can override to provide specific functionality
+    }
+
+    @Override
+    protected GlyphList getGlyphList() throws IOException
+    {
+        if (glyphList == null)
+        {
+            // load additional glyph list for Unicode mapping
+            String path = "org/apache/pdfbox/resources/glyphlist/additional.txt";
+            InputStream input = GlyphList.class.getClassLoader().getResourceAsStream(path);
+            glyphList = new GlyphList(GlyphList.getAdobeGlyphList(), input);
+        }
+        return glyphList;
     }
 }

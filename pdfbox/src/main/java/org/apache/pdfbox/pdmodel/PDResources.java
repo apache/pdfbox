@@ -27,6 +27,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
+import org.apache.pdfbox.encoding.GlyphList;
 import org.apache.pdfbox.pdmodel.common.COSDictionaryMap;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.font.PDFont;
@@ -134,10 +135,21 @@ public class PDResources implements COSObjectable
 
     /**
      * This will get the map of fonts. This will never return null.
-     * 
+     *
      * @return The map of fonts.
      */
     public Map<String, PDFont> getFonts() throws IOException
+    {
+        return getFonts((GlyphList) null);
+    }
+
+    /**
+     * This will get the map of fonts. This will never return null.
+     *
+     * @param glyphList A custom glyph list for Unicode mapping.
+     * @return The map of fonts.
+     */
+    public Map<String, PDFont> getFonts(GlyphList glyphList) throws IOException
     {
         if (fonts == null)
         {
@@ -168,7 +180,7 @@ public class PDResources implements COSObjectable
                         }
                         else
                         {
-                            PDFont newFont = PDFontFactory.createFont((COSDictionary) font);
+                            PDFont newFont = PDFontFactory.createFont((COSDictionary)font, glyphList);
                             fonts.put(fontName.getName(), newFont);
                             seenFonts.put((COSDictionary) font, newFont);
                         }

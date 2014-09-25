@@ -27,6 +27,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.encoding.Encoding;
+import org.apache.pdfbox.encoding.GlyphList;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.util.Matrix;
@@ -49,10 +50,11 @@ public class PDType3Font extends PDSimpleFont
      * Constructor.
      *
      * @param fontDictionary The font dictionary according to the PDF specification.
+     * @param glyphList a custom glyph list for Unicode mapping
      */
-    public PDType3Font(COSDictionary fontDictionary) throws IOException
+    public PDType3Font(COSDictionary fontDictionary, GlyphList glyphList) throws IOException
     {
-        super(fontDictionary);
+        super(fontDictionary, glyphList);
         readEncoding();
     }
 

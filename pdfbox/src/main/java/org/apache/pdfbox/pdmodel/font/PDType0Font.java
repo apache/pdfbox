@@ -259,7 +259,7 @@ public class PDType0Font extends PDFont
             // this nonsymbolic behaviour isn't well documented, test with PDFBOX-1422,
             // also see PDCIDFontType2#cidToGID()
             String name = StandardEncoding.INSTANCE.getName(code);
-            return GlyphList.DEFAULT.toUnicode(name);
+            return GlyphList.getAdobeGlyphList().toUnicode(name);
         }
         else if (isCMapPredefined && cMapUCS2 != null)
         {

@@ -28,7 +28,6 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -36,9 +35,6 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
-
-import org.apache.fontbox.encoding.Encoding;
-import org.apache.fontbox.encoding.MacRomanEncoding;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -959,57 +955,17 @@ public class TTFSubsetter
         List<String> additionalNames = new ArrayList<String>();
         Map<String,Integer> additionalNamesIndices = new HashMap<String,Integer>();
         
-        if (glyphNames == null) 
+        if (glyphNames != null)
         {
-            Encoding enc = MacRomanEncoding.INSTANCE;
-            int[] gidToUC = this.baseCmap.getGlyphIdToCharacterCode();
-            for (Integer glyphId : this.glyphIds) 
-            {
-                int uc = gidToUC[glyphId];
-                String name = null;
-                if (uc < 0x8000) 
-                {
-                    try 
-                    {
-                        name = enc.getNameFromCharacter((char)uc);
-                    }
-                    catch (IOException e) 
-                    {
-                        // TODO
-                    }
-                }
-                if (name == null) 
-                {
-                    name = String.format(Locale.ENGLISH,"uni%04X",uc);
-                }
-                Integer macId = WGL4Names.MAC_GLYPH_NAMES_INDICES.get(name);
-                if (macId == null) 
-                {
-                    Integer idx = additionalNamesIndices.get(name);
-                    if (idx == null) 
-                    {
-                        idx = additionalNames.size();
-                        additionalNames.add(name);
-                        additionalNamesIndices.put(name,idx);
-                    }
-                    writeUint16(dos,idx+258);
-                }
-                else 
-                {
-                    writeUint16(dos, macId);
-                }
-            }
-        }
-        else 
-        { 
-            for (Integer glyphId : this.glyphIds) 
+            for (Integer glyphId : this.glyphIds)
             {
                 String name = glyphNames[glyphId];
+
                 Integer macId = WGL4Names.MAC_GLYPH_NAMES_INDICES.get(name);
-                if (macId == null) 
+                if (macId == null)
                 {
                     Integer idx = additionalNamesIndices.get(name);
-                    if (idx == null) 
+                    if (idx == null)
                     {
                         idx = additionalNames.size();
                         additionalNames.add(name);
@@ -1017,7 +973,7 @@ public class TTFSubsetter
                     }
                     writeUint16(dos,idx+258);
                 }
-                else 
+                else
                 {
                     writeUint16(dos, macId);
                 }

@@ -43,6 +43,7 @@ public abstract class PDSimpleFont extends PDFont
 
     protected Encoding encoding;
     protected GlyphList glyphList;
+    private final GlyphList defaultGlyphList;
     private final Set<Integer> noUnicode = new HashSet<Integer>(); // for logging
 
     /**
@@ -51,16 +52,26 @@ public abstract class PDSimpleFont extends PDFont
     protected PDSimpleFont()
     {
         super();
+        defaultGlyphList = GlyphList.getAdobeGlyphList();
     }
 
     /**
      * Constructor.
      *
      * @param fontDictionary Font dictionary.
+     * @param glyphList a custom glyph list for Unicode mapping
      */
-    protected PDSimpleFont(COSDictionary fontDictionary) throws IOException
+    protected PDSimpleFont(COSDictionary fontDictionary, GlyphList glyphList) throws IOException
     {
         super(fontDictionary);
+        if (glyphList == null)
+        {
+            defaultGlyphList = GlyphList.getAdobeGlyphList();
+        }
+        else
+        {
+            defaultGlyphList = glyphList;
+        }
     }
 
     /**
@@ -132,11 +143,11 @@ public abstract class PDSimpleFont extends PDFont
         // assign the glyph list based on the font
         if ("ZapfDingbats".equals(getName()))
         {
-            glyphList = GlyphList.ZAPF_DINGBATS;
+            glyphList = GlyphList.getZapfDingbats();
         }
         else
         {
-            glyphList = GlyphList.DEFAULT;
+            glyphList = defaultGlyphList; // by default this is the AGL, but it can be overridden
         }
     }
 
