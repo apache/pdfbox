@@ -150,8 +150,11 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
                     int length1 = stream.getInt(COSName.LENGTH1);
                     int length2 = stream.getInt(COSName.LENGTH2);
 
-                    // the PFB embedded as two segments back-to-back
+                    // repair Length1 if necessary
                     byte[] bytes = fontFile.getByteArray();
+                    length1 = repairLength1(bytes, length1);
+
+                    // the PFB embedded as two segments back-to-back
                     byte[] segment1 = Arrays.copyOfRange(bytes, 0, length1);
                     byte[] segment2 = Arrays.copyOfRange(bytes, length1, length1 + length2);
 
@@ -196,6 +199,45 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
             }
         }
         readEncoding();
+    }
+
+    /**
+     * Some Type 1 fonts have an invalid Length1, which causes the binary segment of the font
+     * to be truncated, see PDFBOX-2350.
+     *
+     * @param bytes Type 1 stream bytes
+     * @param length1 Length1 from the Type 1 stream
+     * @return repaired Length1 value
+     */
+    private int repairLength1(byte[] bytes, int length1)
+    {
+        // scan backwards from the end of the first segment to find 'exec'
+        int offset = Math.max(0, length1 - 4);
+        while (offset > 0)
+        {
+            if (bytes[offset + 0] == 'e' &&
+                bytes[offset + 1] == 'x' &&
+                bytes[offset + 2] == 'e' &&
+                bytes[offset + 3] == 'c')
+            {
+                offset += 4;
+                // skip additional CR LF characters
+                while (offset < length1 && (bytes[offset] == '\r' || bytes[offset] == '\n'))
+                {
+                    offset++;
+                }
+                break;
+            }
+            offset--;
+        }
+
+        if (length1 - offset != 0 && offset > 0)
+        {
+            LOG.warn("Ignored invalid Length1 for Type 1 font " + getName());
+            return offset;
+        }
+
+        return length1;
     }
 
     /**
