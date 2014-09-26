@@ -44,7 +44,6 @@ import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDThreadBead;
-import org.apache.pdfbox.text.PositionWrapper;
 import org.apache.pdfbox.text.TextNormalize;
 import org.apache.pdfbox.text.TextPosition;
 import org.apache.pdfbox.text.TextPositionComparator;
@@ -164,7 +163,6 @@ public class PDFTextStripper extends PDFTextStreamEngine
     private Map<String, TreeMap<Float, TreeSet<Float>>> characterListMapping =
         new HashMap<String, TreeMap<Float, TreeSet<Float>>>();
 
-    protected String outputEncoding;
     protected PDDocument document;
     protected Writer output;
 
@@ -187,20 +185,7 @@ public class PDFTextStripper extends PDFTextStreamEngine
      */
     public PDFTextStripper() throws IOException
     {
-        this(null);
-    }
-
-    /**
-     * Instantiate a new PDFTextStripper object. Will apply
-     * encoding-specific conversions to the output text.
-     *
-     * @param encoding The encoding that the output will be written in.
-     * @throws IOException If there is an error reading the properties.
-     */
-    public PDFTextStripper(String encoding) throws IOException
-    {
-        this.outputEncoding = encoding;
-        normalize = new TextNormalize(this.outputEncoding);
+        normalize = new TextNormalize();
     }
 
     /**
@@ -1885,6 +1870,115 @@ public class PDFTextStripper extends PDFTextStreamEngine
         public List<TextPosition> getTextPositions()
         {
             return textPositions;
+        }
+    }
+
+    /**
+     * wrapper of TextPosition that adds flags to track
+     * status as linestart and paragraph start positions.
+     * <p>
+     * This is implemented as a wrapper since the TextPosition
+     * class doesn't provide complete access to its
+     * state fields to subclasses.  Also, conceptually TextPosition is
+     * immutable while these flags need to be set post-creation so
+     * it makes sense to put these flags in this separate class.
+     * </p>
+     * @author m.martinez@ll.mit.edu
+     */
+    private static final class PositionWrapper
+    {
+        private boolean isLineStart = false;
+        private boolean isParagraphStart = false;
+        private boolean isPageBreak = false;
+        private boolean isHangingIndent = false;
+        private boolean isArticleStart = false;
+
+        private TextPosition position = null;
+
+        /**
+         * Returns the underlying TextPosition object.
+         * @return the text position
+         */
+        public TextPosition getTextPosition()
+        {
+            return position;
+        }
+
+        public boolean isLineStart()
+        {
+            return isLineStart;
+        }
+
+        /**
+         * Sets the isLineStart() flag to true.
+         */
+        public void setLineStart()
+        {
+            this.isLineStart = true;
+        }
+
+
+        public boolean isParagraphStart()
+        {
+            return isParagraphStart;
+        }
+
+        /**
+         * sets the isParagraphStart() flag to true.
+         */
+        public void setParagraphStart()
+        {
+            this.isParagraphStart = true;
+        }
+
+
+        public boolean isArticleStart()
+        {
+            return isArticleStart;
+        }
+
+
+        /**
+         * Sets the isArticleStart() flag to true.
+         */
+        public void setArticleStart()
+        {
+            this.isArticleStart = true;
+        }
+
+        public boolean isPageBreak()
+        {
+            return isPageBreak;
+        }
+
+        /**
+         * Sets the isPageBreak() flag to true.
+         */
+        public void setPageBreak()
+        {
+            this.isPageBreak = true;
+        }
+
+        public boolean isHangingIndent()
+        {
+            return isHangingIndent;
+        }
+
+        /**
+         * Sets the isHangingIndent() flag to true.
+         */
+        public void setHangingIndent()
+        {
+            this.isHangingIndent = true;
+        }
+
+        /**
+         * Constructs a PositionWrapper around the specified TextPosition object.
+         * @param position the text position
+         */
+        public PositionWrapper(TextPosition position)
+        {
+            this.position = position;
         }
     }
 }

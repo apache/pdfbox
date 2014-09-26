@@ -47,7 +47,7 @@ public class TestPDFText2HTML extends TestCase {
     }
 
     public void testEscapeTitle() throws IOException {
-        PDFTextStripper stripper = new PDFText2HTML("UTF-8");
+        PDFTextStripper stripper = new PDFText2HTML();
         PDDocument doc = createDocument("<script>\u3042", PDType1Font.HELVETICA, "<foo>");
         String text = stripper.getText(doc);
        
@@ -59,7 +59,7 @@ public class TestPDFText2HTML extends TestCase {
     }
 
     public void testStyle() throws IOException {
-        PDFTextStripper stripper = new PDFText2HTML("UTF-8");
+        PDFTextStripper stripper = new PDFText2HTML();
         PDDocument doc = createDocument("t", PDType1Font.HELVETICA_BOLD, "<bold>");
         String text = stripper.getText(doc);
 

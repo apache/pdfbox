@@ -47,11 +47,6 @@ public class PDFMarkedContentExtractor extends PDFTextStreamEngine
     private Map<String, List<TextPosition>> characterListMapping = new HashMap<String, List<TextPosition>>();
 
     /**
-     * encoding that text will be written in (or null).
-     */
-    protected String outputEncoding; 
-
-    /**
      * The normalizer is used to remove text ligatures/presentation forms
      * and to correct the direction of right to left text, such as Arabic and Hebrew.
      */
@@ -79,8 +74,7 @@ public class PDFMarkedContentExtractor extends PDFTextStreamEngine
         // todo: DP - Marked Content Point
         // todo: MP - Marked Content Point with Properties
 
-        this.outputEncoding = encoding;
-        this.normalize = new TextNormalize(this.outputEncoding);
+        this.normalize = new TextNormalize();
     }
 
     /**

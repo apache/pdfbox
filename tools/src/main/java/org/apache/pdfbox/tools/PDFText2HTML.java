@@ -44,12 +44,11 @@ public class PDFText2HTML extends PDFTextStripper
 
     /**
      * Constructor.
-     * @param encoding The encoding to be used
      * @throws IOException If there is an error during initialization.
      */
-    public PDFText2HTML(String encoding) throws IOException
+    public PDFText2HTML() throws IOException
     {
-        super(encoding);
+        super();
         setLineSeparator(LINE_SEPARATOR);
         setParagraphStart("<p>");
         setParagraphEnd("</p>"+ LINE_SEPARATOR);
@@ -73,11 +72,7 @@ public class PDFText2HTML extends PDFTextStripper
                 + "\"http://www.w3.org/TR/html4/loose.dtd\">\n");
         buf.append("<html><head>");
         buf.append("<title>" + escape(getTitle()) + "</title>\n");
-        if(outputEncoding != null)
-        {
-            buf.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset="
-                    + this.outputEncoding + "\">\n");
-        }
+        buf.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=\"UTF-16\">\n");
         buf.append("</head>\n");
         buf.append("<body>\n");
         super.writeString(buf.toString());

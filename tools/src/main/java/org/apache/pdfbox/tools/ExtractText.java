@@ -252,14 +252,14 @@ public class ExtractText
                     }
                 }
 
-                PDFTextStripper stripper = null;
+                PDFTextStripper stripper;
                 if(toHTML)
                 {
-                    stripper = new PDFText2HTML(encoding);
+                    stripper = new PDFText2HTML();
                 }
                 else
                 {
-                    stripper = new PDFTextStripper(encoding);
+                    stripper = new PDFTextStripper();
                 }
                 stripper.setForceParsing( force );
                 stripper.setSortByPosition( sort );

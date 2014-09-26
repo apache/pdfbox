@@ -107,7 +107,7 @@ public class TestTextStripper extends TestCase
     public TestTextStripper( String name ) throws IOException
     {
         super( name );
-        stripper = new PDFTextStripper(encoding);
+        stripper = new PDFTextStripper();
         stripper.setLineSeparator("\n");
     }
 
