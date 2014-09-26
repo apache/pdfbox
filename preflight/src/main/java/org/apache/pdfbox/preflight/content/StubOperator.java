@@ -44,8 +44,8 @@ import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.util.operator.Operator;
-import org.apache.pdfbox.util.operator.OperatorProcessor;
+import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 
 /**
  * This implementation of OperatorProcessor allow the operator validation according PDF/A rules without compute the

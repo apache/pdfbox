@@ -51,7 +51,7 @@ import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.font.container.FontContainer;
 import org.apache.pdfbox.preflight.font.util.GlyphException;
-import org.apache.pdfbox.util.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.Operator;
 
 public class PreflightContentStream extends PreflightStreamEngine
 {
