@@ -19,6 +19,7 @@ package org.apache.pdfbox.util;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -44,7 +45,6 @@ import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDThreadBead;
-import org.apache.pdfbox.text.TextNormalize;
 import org.apache.pdfbox.text.TextPosition;
 import org.apache.pdfbox.text.TextPositionComparator;
 
@@ -167,25 +167,17 @@ public class PDFTextStripper extends PDFTextStreamEngine
     protected Writer output;
 
     /**
-     * The normalizer is used to remove text ligatures/presentation forms
-     * and to correct the direction of right to left text, such as Arabic and Hebrew.
-     */
-    private TextNormalize normalize = null;
-
-    /**
      * True if we started a paragraph but haven't ended it yet.
      */
     private boolean inParagraph;
 
     /**
-     * Instantiate a new PDFTextStripper object. Will not do
-     * anything special to convert the text to a more encoding-specific output.
+     * Instantiate a new PDFTextStripper object.
      *
      * @throws IOException If there is an error loading the properties.
      */
     public PDFTextStripper() throws IOException
     {
-        normalize = new TextNormalize();
     }
 
     /**
@@ -934,13 +926,13 @@ public class PDFTextStripper extends PDFTextStreamEngine
                 TextPosition previousTextPosition = textList.get(textList.size() - 1);
                 if (text.isDiacritic() && previousTextPosition.contains(text))
                 {
-                    previousTextPosition.mergeDiacritic(text, normalize);
+                    previousTextPosition.mergeDiacritic(text);
                 }
                 // If the previous TextPosition was the diacritic, merge it into this
                 // one and remove it from the list.
                 else if (previousTextPosition.isDiacritic() && text.contains(previousTextPosition))
                 {
-                    text.mergeDiacritic(previousTextPosition, normalize);
+                    text.mergeDiacritic(previousTextPosition);
                     textList.remove(textList.size()-1);
                     textList.add(text);
                 }
@@ -1783,7 +1775,61 @@ public class PDFTextStripper extends PDFTextStreamEngine
      */
     private WordWithTextPositions createWord(String word, List<TextPosition> wordPositions)
     {
-        return new WordWithTextPositions(normalize.normalizePresentationForm(word), wordPositions);
+        return new WordWithTextPositions(normalizeWord(word), wordPositions);
+    }
+
+    /**
+     * Normalize certain Unicode characters. For example, convert the
+     * single "fi" ligature to "f" and "i". Also normalises Arabic and Hebrew presentation forms.
+     *
+     * @param word Word to normalize
+     * @return Normalized word
+     */
+    private String normalizeWord(String word)
+    {
+        StringBuilder builder = null;
+        int p = 0;
+        int q = 0;
+        int strLength = word.length();
+        for (; q < strLength; q++)
+        {
+            // We only normalize if the codepoint is in a given range.
+            // Otherwise, NFKC converts too many things that would cause
+            // confusion. For example, it converts the micro symbol in
+            // extended Latin to the value in the Greek script. We normalize
+            // the Unicode Alphabetic and Arabic A&B Presentation forms.
+            char c = word.charAt(q);
+            if (0xFB00 <= c && c <= 0xFDFF || 0xFE70 <= c && c <= 0xFEFF)
+            {
+                if (builder == null)
+                {
+                    builder = new StringBuilder(strLength * 2);
+                }
+                builder.append(word.substring(p, q));
+                // Some fonts map U+FDF2 differently than the Unicode spec.
+                // They add an extra U+0627 character to compensate.
+                // This removes the extra character for those fonts.
+                if(c == 0xFDF2 && q > 0 && (word.charAt(q-1) == 0x0627 || word.charAt(q-1) == 0xFE8D))
+                {
+                    builder.append("\u0644\u0644\u0647");
+                }
+                else
+                {
+                    // Trim because some decompositions have an extra space, such as U+FC5E
+                    builder.append(Normalizer.normalize(word.substring(q, q + 1), Normalizer.Form.NFKC).trim());
+                }
+                p = q + 1;
+            }
+        }
+        if (builder == null)
+        {
+            return word;
+        }
+        else
+        {
+            builder.append(word.substring(p, q));
+            return builder.toString();
+        }
     }
 
     /**

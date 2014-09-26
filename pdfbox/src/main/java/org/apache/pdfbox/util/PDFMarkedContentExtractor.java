@@ -28,7 +28,6 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDMarkedContent;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
-import org.apache.pdfbox.text.TextNormalize;
 import org.apache.pdfbox.text.TextPosition;
 import org.apache.pdfbox.contentstream.operator.markedcontent.BeginMarkedContentSequence;
 import org.apache.pdfbox.contentstream.operator.markedcontent.BeginMarkedContentSequenceWithProperties;
@@ -47,14 +46,7 @@ public class PDFMarkedContentExtractor extends PDFTextStreamEngine
     private Map<String, List<TextPosition>> characterListMapping = new HashMap<String, List<TextPosition>>();
 
     /**
-     * The normalizer is used to remove text ligatures/presentation forms
-     * and to correct the direction of right to left text, such as Arabic and Hebrew.
-     */
-    private TextNormalize normalize = null;
-
-    /**
-     * Instantiate a new PDFTextStripper object. Will not do anything special to convert
-     * the text to a more encoding-specific output.
+     * Instantiate a new PDFTextStripper object.
      */
     public PDFMarkedContentExtractor() throws IOException
     {
@@ -73,8 +65,6 @@ public class PDFMarkedContentExtractor extends PDFTextStreamEngine
         addOperator(new EndMarkedContentSequence());
         // todo: DP - Marked Content Point
         // todo: MP - Marked Content Point with Properties
-
-        this.normalize = new TextNormalize();
     }
 
     /**
@@ -209,13 +199,13 @@ public class PDFMarkedContentExtractor extends PDFTextStreamEngine
                 TextPosition previousTextPosition = (TextPosition)textList.get(textList.size()-1);
                 if(text.isDiacritic() && previousTextPosition.contains(text))
                 {
-                    previousTextPosition.mergeDiacritic(text, this.normalize);
+                    previousTextPosition.mergeDiacritic(text);
                 }
                 /* If the previous TextPosition was the diacritic, merge it into this
                  * one and remove it from the list. */
                 else if(previousTextPosition.isDiacritic() && text.contains(previousTextPosition))
                 {
-                    text.mergeDiacritic(previousTextPosition, this.normalize);
+                    text.mergeDiacritic(previousTextPosition);
                     textList.remove(textList.size()-1);
                     textList.add(text);
                 }

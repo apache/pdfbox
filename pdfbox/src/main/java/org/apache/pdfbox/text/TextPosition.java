@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.text;
 
+import java.text.Normalizer;
+import java.util.HashMap;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.util.Matrix;
 
@@ -26,6 +28,50 @@ import org.apache.pdfbox.util.Matrix;
  */
 public final class TextPosition
 {
+    private static final HashMap<Integer, String> DIACRITICS = createDiacritics();
+
+    // Adds non-decomposing diacritics to the hash with their related combining character.
+    // These are values that the unicode spec claims are equivalent but are not mapped in the form
+    // NFKC normalization method. Determined by going through the Combining Diacritical Marks
+    // section of the Unicode spec and identifying which characters are not  mapped to by the
+    // normalization.
+    private static HashMap<Integer, String> createDiacritics()
+    {
+        HashMap<Integer, String> map = new HashMap<Integer, String>();
+        map.put(0x0060, "\u0300");
+        map.put(0x02CB, "\u0300");
+        map.put(0x0027, "\u0301");
+        map.put(0x02B9, "\u0301");
+        map.put(0x02CA, "\u0301");
+        map.put(0x005e, "\u0302");
+        map.put(0x02C6, "\u0302");
+        map.put(0x007E, "\u0303");
+        map.put(0x02C9, "\u0304");
+        map.put(0x00B0, "\u030A");
+        map.put(0x02BA, "\u030B");
+        map.put(0x02C7, "\u030C");
+        map.put(0x02C8, "\u030D");
+        map.put(0x0022, "\u030E");
+        map.put(0x02BB, "\u0312");
+        map.put(0x02BC, "\u0313");
+        map.put(0x0486, "\u0313");
+        map.put(0x055A, "\u0313");
+        map.put(0x02BD, "\u0314");
+        map.put(0x0485, "\u0314");
+        map.put(0x0559, "\u0314");
+        map.put(0x02D4, "\u031D");
+        map.put(0x02D5, "\u031E");
+        map.put(0x02D6, "\u031F");
+        map.put(0x02D7, "\u0320");
+        map.put(0x02B2, "\u0321");
+        map.put(0x02CC, "\u0329");
+        map.put(0x02B7, "\u032B");
+        map.put(0x02CD, "\u0331");
+        map.put(0x005F, "\u0332");
+        map.put(0x204E, "\u0359");
+        return map;
+    }
+
     // text matrix for the start of the text object, coordinates are in display units
     // and have not been adjusted
     private final Matrix textMatrix;
@@ -473,9 +519,8 @@ public final class TextPosition
      * contains() method to test if two objects overlap.
      *
      * @param diacritic TextPosition to merge into the current TextPosition.
-     * @param normalize Instance of TextNormalize class to be used to normalize diacritic
      */
-    public void mergeDiacritic(TextPosition diacritic, TextNormalize normalize)
+    public void mergeDiacritic(TextPosition diacritic)
     {
         if (diacritic.getUnicode().length() > 1)
         {
@@ -501,7 +546,7 @@ public final class TextPosition
             {
                 if (i == 0)
                 {
-                    insertDiacritic(i, diacritic, normalize);
+                    insertDiacritic(i, diacritic);
                 }
                 else
                 {
@@ -513,11 +558,11 @@ public final class TextPosition
 
                     if (percentage1 >= percentage2)
                     {
-                        insertDiacritic(i, diacritic, normalize);
+                        insertDiacritic(i, diacritic);
                     }
                     else
                     {
-                        insertDiacritic(i - 1, diacritic, normalize);
+                        insertDiacritic(i - 1, diacritic);
                     }
                 }
                 wasAdded = true;
@@ -526,20 +571,20 @@ public final class TextPosition
             // character the diacritic belongs to
             else if (diacXStart < currCharXStart && diacXEnd > currCharXEnd)
             {
-                insertDiacritic(i, diacritic, normalize);
+                insertDiacritic(i, diacritic);
                 wasAdded = true;
             }
             // otherwise, The diacritic modifies this character because its completely
             // contained by the character width
             else if (diacXStart >= currCharXStart && diacXEnd <= currCharXEnd)
             {
-                insertDiacritic(i, diacritic, normalize);
+                insertDiacritic(i, diacritic);
                 wasAdded = true;
             }
             // last character in the TextPosition so we add diacritic to the end
             else if (diacXStart >= currCharXStart && diacXEnd > currCharXEnd && i == strLen - 1)
             {
-                insertDiacritic(i, diacritic, normalize);
+                insertDiacritic(i, diacritic);
                 wasAdded = true;
             }
 
@@ -554,9 +599,8 @@ public final class TextPosition
      *
      * @param i current character
      * @param diacritic The diacritic TextPosition
-     * @param normalize Instance of TextNormalize class to be used to normalize diacritic
      */
-    private void insertDiacritic(int i, TextPosition diacritic, TextNormalize normalize)
+    private void insertDiacritic(int i, TextPosition diacritic)
     {
         // we add the diacritic to the right or left of the character depending on the direction
         // of the character. Note that this is only required because the text is currently stored in
@@ -574,7 +618,7 @@ public final class TextPosition
             dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_EMBEDDING ||
             dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_OVERRIDE)
         {
-            sb.append(normalize.normalizeDiacritic(diacritic.getUnicode()));
+            sb.append(combineDiacritic(diacritic.getUnicode()));
             widths2[i] = 0;
             sb.append(unicode.charAt(i));
             widths2[i + 1] = widths[i];
@@ -583,7 +627,7 @@ public final class TextPosition
         {
             sb.append(unicode.charAt(i));
             widths2[i] = widths[i];
-            sb.append(normalize.normalizeDiacritic(diacritic.getUnicode()));
+            sb.append(combineDiacritic(diacritic.getUnicode()));
             widths2[i + 1] = 0;
         }
 
@@ -593,6 +637,29 @@ public final class TextPosition
 
         unicode = sb.toString();
         widths = widths2;
+    }
+
+    /**
+     * Combine the diacritic, for example, convert non-combining diacritic characters to their
+     * combining counterparts.
+     *
+     * @param str String to normalize
+     * @return Normalized string
+     */
+    private String combineDiacritic(String str)
+    {
+        // Unicode contains special combining forms of the diacritic characters which we want to use
+        int codePoint = str.codePointAt(0);
+
+        // convert the characters not defined in the Unicode spec
+        if (DIACRITICS.containsKey(codePoint))
+        {
+            return DIACRITICS.get(codePoint);
+        }
+        else
+        {
+            return Normalizer.normalize(str, Normalizer.Form.NFKC).trim();
+        }
     }
 
     /**
@@ -609,7 +676,8 @@ public final class TextPosition
         return type == Character.NON_SPACING_MARK ||
                type == Character.MODIFIER_SYMBOL ||
                type == Character.MODIFIER_LETTER;
-    }
+
+  }
 
     /**
      * Show the string data for this text position.
