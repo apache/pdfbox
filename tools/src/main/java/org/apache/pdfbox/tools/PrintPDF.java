@@ -23,7 +23,7 @@ import javax.print.PrintService;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
-import org.apache.pdfbox.rendering.PDFPrinter;
+import org.apache.pdfbox.printing.PDFPrinter;
 
 /**
  * This is a command line program that will print a PDF document.

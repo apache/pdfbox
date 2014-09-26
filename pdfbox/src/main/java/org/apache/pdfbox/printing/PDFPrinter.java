@@ -14,13 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.rendering;
+package org.apache.pdfbox.printing;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.rendering.printing.Orientation;
-import org.apache.pdfbox.rendering.printing.Scaling;
+import org.apache.pdfbox.printing.Orientation;
+import org.apache.pdfbox.printing.Scaling;
 
 import javax.print.attribute.PrintRequestAttributeSet;
 import java.awt.BasicStroke;
@@ -38,6 +38,7 @@ import java.awt.print.PrinterException;
 import java.awt.print.PrinterIOException;
 import java.awt.print.PrinterJob;
 import java.io.IOException;
+import org.apache.pdfbox.rendering.PDFRenderer;
 
 /**
  * Prints a PDF document using AWT.
@@ -188,7 +189,7 @@ public class PDFPrinter
 
     /**
      * Prints the given document using the default printer without prompting the user.
-     * The image is generated using {@link PageDrawer}.
+     * The image is generated using {@link org.apache.pdfbox.rendering.PageDrawer}.
      * This is a convenience method to create the java.awt.print.PrinterJob.
      * Advanced printing tasks can be performed using {@link #getPageable()} instead.
      *
@@ -202,7 +203,7 @@ public class PDFPrinter
 
     /**
      * Prints the given document using the default printer without prompting the user.
-     * The image is generated using {@link PageDrawer}.
+     * The image is generated using {@link org.apache.pdfbox.rendering.PageDrawer}.
      * This is a convenience method to create the java.awt.print.PrinterJob.
      * Advanced printing tasks can be performed using {@link #getPageable()} instead.
      *
