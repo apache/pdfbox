@@ -36,33 +36,15 @@ import org.apache.pdfbox.pdmodel.graphics.blend.BlendMode;
  */
 public class PDExternalGraphicsState implements COSObjectable
 {
-    /**
-     * Rendering intent constants, see PDF Reference 1.5 Section 4.5.4 Rendering Intents.
-     */
-    public static final String RENDERING_INTENT_ABSOLUTE_COLORIMETRIC = "AbsoluteColorimetric";
-    /**
-     * Rendering intent constants, see PDF Reference 1.5 Section 4.5.4 Rendering Intents.
-     */
-    public static final String RENDERING_INTENT_RELATIVE_COLORIMETRIC = "RelativeColorimetric";
-    /**
-     * Rendering intent constants, see PDF Reference 1.5 Section 4.5.4 Rendering Intents.
-     */
-    public static final String RENDERING_INTENT_SATURATION = "Saturation";
-    /**
-     * Rendering intent constants, see PDF Reference 1.5 Section 4.5.4 Rendering Intents.
-     */
-    public static final String RENDERING_INTENT_PERCEPTUAL = "Perceptual";
-
-
-    private COSDictionary graphicsState;
+    private final COSDictionary dict;
 
     /**
      * Default constructor, creates blank graphics state.
      */
     public PDExternalGraphicsState()
     {
-        graphicsState = new COSDictionary();
-        graphicsState.setItem( COSName.TYPE, COSName.EXT_G_STATE );
+        dict = new COSDictionary();
+        dict.setItem(COSName.TYPE, COSName.EXT_G_STATE);
     }
 
     /**
@@ -72,7 +54,7 @@ public class PDExternalGraphicsState implements COSObjectable
      */
     public PDExternalGraphicsState(COSDictionary dictionary)
     {
-        graphicsState = dictionary;
+        dict = dictionary;
     }
 
     /**
@@ -84,7 +66,7 @@ public class PDExternalGraphicsState implements COSObjectable
      */
     public void copyIntoGraphicsState( PDGraphicsState gs ) throws IOException
     {
-        for( COSName key : graphicsState.keySet() )
+        for( COSName key : dict.keySet() )
         {
             if( key.equals( COSName.LW ) )
             {
@@ -169,7 +151,7 @@ public class PDExternalGraphicsState implements COSObjectable
      */
     public COSDictionary getCOSDictionary()
     {
-        return graphicsState;
+        return dict;
     }
 
     /**
@@ -179,7 +161,7 @@ public class PDExternalGraphicsState implements COSObjectable
      */
     public COSBase getCOSObject()
     {
-        return graphicsState;
+        return dict;
     }
 
     /**
@@ -209,7 +191,7 @@ public class PDExternalGraphicsState implements COSObjectable
      */
     public int getLineCapStyle()
     {
-        return graphicsState.getInt( COSName.LC );
+        return dict.getInt( COSName.LC );
     }
 
     /**
@@ -219,7 +201,7 @@ public class PDExternalGraphicsState implements COSObjectable
      */
     public void setLineCapStyle( int style )
     {
-        graphicsState.setInt( COSName.LC, style );
+        dict.setInt(COSName.LC, style);
     }
 
     /**
@@ -229,7 +211,7 @@ public class PDExternalGraphicsState implements COSObjectable
      */
     public int getLineJoinStyle()
     {
-        return graphicsState.getInt( COSName.LJ );
+        return dict.getInt( COSName.LJ );
     }
 
     /**
@@ -239,7 +221,7 @@ public class PDExternalGraphicsState implements COSObjectable
      */
     public void setLineJoinStyle( int style )
     {
-        graphicsState.setInt( COSName.LJ, style );
+        dict.setInt(COSName.LJ, style);
     }
 
 
@@ -271,7 +253,7 @@ public class PDExternalGraphicsState implements COSObjectable
     public PDLineDashPattern getLineDashPattern()
     {
         PDLineDashPattern retval = null;
-        COSArray dp = (COSArray)graphicsState.getDictionaryObject( COSName.D );
+        COSArray dp = (COSArray) dict.getDictionaryObject( COSName.D );
         if( dp != null )
         {
             COSArray array = new COSArray();
@@ -291,7 +273,7 @@ public class PDExternalGraphicsState implements COSObjectable
      */
     public void setLineDashPattern( PDLineDashPattern dashPattern )
     {
-        graphicsState.setItem(COSName.D, dashPattern.getCOSObject());
+        dict.setItem(COSName.D, dashPattern.getCOSObject());
     }
 
     /**
@@ -299,9 +281,17 @@ public class PDExternalGraphicsState implements COSObjectable
      *
      * @return null or the RI value in the dictionary.
      */
-    public String getRenderingIntent()
+    public RenderingIntent getRenderingIntent()
     {
-        return graphicsState.getNameAsString( "RI" );
+        String ri = dict.getNameAsString( "RI" );
+        if (ri != null)
+        {
+            return RenderingIntent.valueOf(ri);
+        }
+        else
+        {
+            return null;
+        }
     }
 
     /**
@@ -311,7 +301,7 @@ public class PDExternalGraphicsState implements COSObjectable
      */
     public void setRenderingIntent( String ri )
     {
-        graphicsState.setName("RI", ri);
+        dict.setName("RI", ri);
     }
 
     /**
@@ -321,7 +311,7 @@ public class PDExternalGraphicsState implements COSObjectable
      */
     public boolean getStrokingOverprintControl()
     {
-        return graphicsState.getBoolean(COSName.OP, false);
+        return dict.getBoolean(COSName.OP, false);
     }
 
     /**
@@ -331,7 +321,7 @@ public class PDExternalGraphicsState implements COSObjectable
      */
     public void setStrokingOverprintControl( boolean op )
     {
-        graphicsState.setBoolean(COSName.OP, op);
+        dict.setBoolean(COSName.OP, op);
     }
 
     /**
@@ -342,7 +332,7 @@ public class PDExternalGraphicsState implements COSObjectable
      */
     public boolean getNonStrokingOverprintControl()
     {
-        return graphicsState.getBoolean( COSName.OP_NS, getStrokingOverprintControl() );
+        return dict.getBoolean( COSName.OP_NS, getStrokingOverprintControl() );
     }
 
     /**
@@ -352,7 +342,7 @@ public class PDExternalGraphicsState implements COSObjectable
      */
     public void setNonStrokingOverprintControl( boolean op )
     {
-        graphicsState.setBoolean( COSName.OP_NS, op );
+        dict.setBoolean(COSName.OP_NS, op);
     }
 
     /**
@@ -383,7 +373,7 @@ public class PDExternalGraphicsState implements COSObjectable
     public PDFontSetting getFontSetting()
     {
         PDFontSetting setting = null;
-        COSBase base = graphicsState.getDictionaryObject( COSName.FONT );
+        COSBase base = dict.getDictionaryObject( COSName.FONT );
         if (base instanceof COSArray)
         {
             COSArray font = (COSArray)base;
@@ -402,7 +392,7 @@ public class PDExternalGraphicsState implements COSObjectable
      */
     public void setFontSetting( PDFontSetting fs )
     {
-        graphicsState.setItem(COSName.FONT, fs);
+        dict.setItem(COSName.FONT, fs);
     }
 
     /**
@@ -452,7 +442,7 @@ public class PDExternalGraphicsState implements COSObjectable
      */
     public boolean getAutomaticStrokeAdjustment()
     {
-        return graphicsState.getBoolean(COSName.SA, false);
+        return dict.getBoolean(COSName.SA, false);
     }
 
     /**
@@ -462,7 +452,7 @@ public class PDExternalGraphicsState implements COSObjectable
      */
     public void setAutomaticStrokeAdjustment( boolean sa )
     {
-        graphicsState.setBoolean(COSName.SA, sa);
+        dict.setBoolean(COSName.SA, sa);
     }
 
     /**
@@ -512,7 +502,7 @@ public class PDExternalGraphicsState implements COSObjectable
      */
     public boolean getAlphaSourceFlag()
     {
-        return graphicsState.getBoolean(COSName.AIS, false);
+        return dict.getBoolean(COSName.AIS, false);
     }
 
     /**
@@ -522,7 +512,7 @@ public class PDExternalGraphicsState implements COSObjectable
      */
     public void setAlphaSourceFlag( boolean alpha )
     {
-        graphicsState.setBoolean(COSName.AIS, alpha);
+        dict.setBoolean(COSName.AIS, alpha);
     }
 
     /**
@@ -531,7 +521,7 @@ public class PDExternalGraphicsState implements COSObjectable
      * @return the blending mode
      */
     public BlendMode getBlendMode() {
-        return BlendMode.getInstance(graphicsState.getDictionaryObject(COSName.BM));
+        return BlendMode.getInstance(dict.getDictionaryObject(COSName.BM));
     }
 
     /**
@@ -540,7 +530,7 @@ public class PDExternalGraphicsState implements COSObjectable
      * @return the soft mask
      */
     public PDSoftMask getSoftMask() {
-        return PDSoftMask.create(graphicsState.getDictionaryObject(COSName.SMASK));
+        return PDSoftMask.create(dict.getDictionaryObject(COSName.SMASK));
     }
 
     /**
@@ -552,7 +542,7 @@ public class PDExternalGraphicsState implements COSObjectable
      */
     public boolean getTextKnockoutFlag()
     {
-        return graphicsState.getBoolean( COSName.TK,true );
+        return dict.getBoolean( COSName.TK,true );
     }
 
     /**
@@ -562,7 +552,7 @@ public class PDExternalGraphicsState implements COSObjectable
      */
     public void setTextKnockoutFlag( boolean tk )
     {
-        graphicsState.setBoolean( COSName.TK, tk );
+        dict.setBoolean(COSName.TK, tk);
     }
 
     /**
@@ -575,7 +565,7 @@ public class PDExternalGraphicsState implements COSObjectable
     private Float getFloatItem( COSName key )
     {
         Float retval = null;
-        COSNumber value = (COSNumber)graphicsState.getDictionaryObject( key );
+        COSNumber value = (COSNumber) dict.getDictionaryObject( key );
         if( value != null )
         {
             retval = value.floatValue();
@@ -593,11 +583,11 @@ public class PDExternalGraphicsState implements COSObjectable
     {
         if( value == null )
         {
-            graphicsState.removeItem( key );
+            dict.removeItem(key);
         }
         else
         {
-            graphicsState.setItem( key, new COSFloat( value) );
+            dict.setItem(key, new COSFloat(value));
         }
     }
 }

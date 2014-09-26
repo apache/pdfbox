@@ -15,33 +15,52 @@
  * limitations under the License.
  */
 
-package org.apache.pdfbox.contentstream.operator.state;
-
-import java.io.IOException;
-import java.util.List;
-import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.contentstream.operator.Operator;
-import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
-import org.apache.pdfbox.pdmodel.graphics.state.RenderingIntent;
+package org.apache.pdfbox.pdmodel.graphics.state;
 
 /**
- * ri: Set the rendering intent.
+ * Rendering intent.
  *
  * @author John Hewson
  */
-public class SetRenderingIntent extends OperatorProcessor
+public enum RenderingIntent
 {
-    @Override
-    public void process(Operator operator, List<COSBase> operands) throws IOException
+    /**
+     * Absolute Colorimetric.
+     */
+    ABSOLUTE_COLORIMETRIC("AbsoluteColorimetric"),
+
+    /**
+     * Relative Colorimetric.
+     */
+    RELATIVE_COLORIMETRIC("RelativeColorimetric"),
+
+    /**
+     * Saturation.
+     */
+    SATURATION("Saturation"),
+
+    /**
+     * Neither fill nor stroke text (invisible)
+     */
+    PERCEPTUAL("Perceptual");
+
+    public static RenderingIntent fromString(String value)
     {
-        COSName value = (COSName)operands.get(0);
-        context.getGraphicsState().setRenderingIntent(RenderingIntent.valueOf(value.getName()));
+        return RenderingIntent.valueOf(value);
     }
 
-    @Override
-    public String getName()
+    private final String value;
+
+    RenderingIntent(String value)
     {
-        return "ri";
+        this.value = value;
+    }
+
+    /**
+     * Returns the string value, as used in a PDF file.
+     */
+    public String stringValue()
+    {
+        return value;
     }
 }

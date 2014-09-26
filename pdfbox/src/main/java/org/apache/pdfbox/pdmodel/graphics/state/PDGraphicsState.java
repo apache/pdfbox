@@ -51,7 +51,7 @@ public class PDGraphicsState implements Cloneable
     private int lineJoin = BasicStroke.JOIN_MITER;
     private float miterLimit = 10;
     private PDLineDashPattern lineDashPattern = new PDLineDashPattern();
-    private String renderingIntent;
+    private RenderingIntent renderingIntent;
     private boolean strokeAdjustment = false;
     private BlendMode blendMode = BlendMode.COMPATIBLE;
     private PDSoftMask softMask;
@@ -434,7 +434,7 @@ public class PDGraphicsState implements Cloneable
      *
      * @return The rendering intent
      */
-    public String getRenderingIntent()
+    public RenderingIntent getRenderingIntent()
     {
         return renderingIntent;
     }
@@ -444,7 +444,7 @@ public class PDGraphicsState implements Cloneable
      *
      * @param value The new rendering intent.
      */
-    public void setRenderingIntent(String value)
+    public void setRenderingIntent(RenderingIntent value)
     {
         renderingIntent = value;
     }
