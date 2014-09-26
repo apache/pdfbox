@@ -30,13 +30,11 @@ import org.apache.pdfbox.pdmodel.graphics.PDLineDashPattern;
 import org.apache.pdfbox.pdmodel.graphics.blend.BlendMode;
 
 /**
- * This class represents the graphics state dictionary that is stored in the PDF document.
- * The PDGraphicsStateValue holds the current runtime values as a stream is being executed.
+ * An external graphics state dictionary.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.5 $
+ * @author Ben Litchfield
  */
-public class PDExtendedGraphicsState implements COSObjectable
+public class PDExternalGraphicsState implements COSObjectable
 {
     /**
      * Rendering intent constants, see PDF Reference 1.5 Section 4.5.4 Rendering Intents.
@@ -61,7 +59,7 @@ public class PDExtendedGraphicsState implements COSObjectable
     /**
      * Default constructor, creates blank graphics state.
      */
-    public PDExtendedGraphicsState()
+    public PDExternalGraphicsState()
     {
         graphicsState = new COSDictionary();
         graphicsState.setItem( COSName.TYPE, COSName.EXT_G_STATE );
@@ -72,7 +70,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      *
      * @param dictionary The existing graphics state.
      */
-    public PDExtendedGraphicsState( COSDictionary dictionary )
+    public PDExternalGraphicsState(COSDictionary dictionary)
     {
         graphicsState = dictionary;
     }

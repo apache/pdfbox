@@ -430,7 +430,7 @@ public class PDGraphicsState implements Cloneable
     /**
      * This will get the rendering intent.
      *
-     * @see org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState
+     * @see PDExternalGraphicsState
      *
      * @return The rendering intent
      */

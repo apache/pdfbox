@@ -31,7 +31,7 @@ import org.apache.pdfbox.pdmodel.common.COSDictionaryMap;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontFactory;
-import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
+import org.apache.pdfbox.pdmodel.graphics.state.PDExternalGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDAbstractPattern;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
@@ -53,7 +53,7 @@ public class PDResources implements COSObjectable
     private Map<String, PDXObject> xobjects = null;
     private Map<PDXObject, String> xobjectMappings = null;
     private HashMap<String, PDImageXObject> images = null;
-    private Map<String, PDExtendedGraphicsState> graphicsStates = null;
+    private Map<String, PDExternalGraphicsState> graphicsStates = null;
     private Map<String, PDAbstractPattern> patterns = null;
     private Map<String, PDShading> shadings = null;
 
@@ -338,18 +338,18 @@ public class PDResources implements COSObjectable
      * 
      * @return The map of extended graphic state objects.
      */
-    public Map<String, PDExtendedGraphicsState> getGraphicsStates()
+    public Map<String, PDExternalGraphicsState> getGraphicsStates()
     {
         if (graphicsStates == null)
         {
             COSDictionary states = (COSDictionary) resources.getDictionaryObject(COSName.EXT_G_STATE);
             if (states != null)
             {
-                graphicsStates = new HashMap<String, PDExtendedGraphicsState>();
+                graphicsStates = new HashMap<String, PDExternalGraphicsState>();
                 for (COSName name : states.keySet())
                 {
                     COSDictionary dictionary = (COSDictionary) states.getDictionaryObject(name);
-                    graphicsStates.put(name.getName(), new PDExtendedGraphicsState(dictionary));
+                    graphicsStates.put(name.getName(), new PDExternalGraphicsState(dictionary));
                 }
             }
         }
@@ -361,7 +361,7 @@ public class PDResources implements COSObjectable
      * 
      * @param states The new map of states.
      */
-    public void setGraphicsStates(Map<String, PDExtendedGraphicsState> states)
+    public void setGraphicsStates(Map<String, PDExternalGraphicsState> states)
     {
         graphicsStates = states;
         if (states != null)
@@ -371,7 +371,7 @@ public class PDResources implements COSObjectable
             while (iter.hasNext())
             {
                 String name = (String) iter.next();
-                PDExtendedGraphicsState state = states.get(name);
+                PDExternalGraphicsState state = states.get(name);
                 dic.setItem(COSName.getPDFName(name), state.getCOSObject());
             }
             resources.setItem(COSName.EXT_G_STATE, dic);

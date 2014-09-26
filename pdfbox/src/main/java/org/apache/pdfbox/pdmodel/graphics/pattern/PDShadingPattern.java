@@ -24,7 +24,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
-import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
+import org.apache.pdfbox.pdmodel.graphics.state.PDExternalGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
 import org.apache.pdfbox.util.Matrix;
 
@@ -34,7 +34,7 @@ import org.apache.pdfbox.util.Matrix;
  */
 public class PDShadingPattern extends PDAbstractPattern
 {
-    private PDExtendedGraphicsState extendedGraphicsState;
+    private PDExternalGraphicsState extendedGraphicsState;
     private PDShading shading;
     private COSArray matrix = null;
 
@@ -107,14 +107,14 @@ public class PDShadingPattern extends PDAbstractPattern
      * This will get the extended graphics state for this pattern.
      * @return The extended graphics state for this pattern.
      */
-    public PDExtendedGraphicsState getExtendedGraphicsState()
+    public PDExternalGraphicsState getExtendedGraphicsState()
     {
         if (extendedGraphicsState == null) 
         {
             COSDictionary dictionary = (COSDictionary)getCOSDictionary().getDictionaryObject( COSName.EXT_G_STATE );
             if( dictionary != null )
             {
-                extendedGraphicsState = new PDExtendedGraphicsState( dictionary );
+                extendedGraphicsState = new PDExternalGraphicsState( dictionary );
             }
         }
         return extendedGraphicsState;
@@ -124,7 +124,7 @@ public class PDShadingPattern extends PDAbstractPattern
      * This will set the extended graphics state for this pattern.
      * @param extendedGraphicsState The new extended graphics state for this pattern.
      */
-    public void setExtendedGraphicsState( PDExtendedGraphicsState extendedGraphicsState )
+    public void setExtendedGraphicsState( PDExternalGraphicsState extendedGraphicsState )
     {
         this.extendedGraphicsState = extendedGraphicsState;
         if (extendedGraphicsState != null)
