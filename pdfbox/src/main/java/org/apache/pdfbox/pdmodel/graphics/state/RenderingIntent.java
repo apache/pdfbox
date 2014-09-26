@@ -40,14 +40,9 @@ public enum RenderingIntent
     SATURATION("Saturation"),
 
     /**
-     * Neither fill nor stroke text (invisible)
+     * Perceptual.
      */
     PERCEPTUAL("Perceptual");
-
-    public static RenderingIntent fromString(String value)
-    {
-        return RenderingIntent.valueOf(value);
-    }
 
     private final String value;
 
