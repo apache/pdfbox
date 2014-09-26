@@ -23,7 +23,6 @@ package org.apache.pdfbox.preflight.font.util;
 
 import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VALUE_ENCODING_MAC;
 import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VALUE_ENCODING_MAC_EXP;
-import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VALUE_ENCODING_PDFDOC;
 import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VALUE_ENCODING_WIN;
 
 import java.io.ByteArrayInputStream;
@@ -38,10 +37,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.cff.Type1CharStringParser;
 import org.apache.fontbox.cff.Type1FontUtil;
-import org.apache.pdfbox.encoding.Encoding;
-import org.apache.pdfbox.encoding.MacRomanEncoding;
-import org.apache.pdfbox.encoding.StandardEncoding;
-import org.apache.pdfbox.encoding.WinAnsiEncoding;
+import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
+import org.apache.pdfbox.pdmodel.font.encoding.MacRomanEncoding;
+import org.apache.pdfbox.pdmodel.font.encoding.StandardEncoding;
+import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
 
 public final class Type1Parser
 {

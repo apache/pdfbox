@@ -19,7 +19,6 @@ package org.apache.pdfbox.pdmodel.font;
 import org.apache.pdfbox.cos.COSDictionary;
 
 import java.io.IOException;
-import org.apache.pdfbox.encoding.GlyphList;
 
 /**
  * Type 1 Multiple Master Font.

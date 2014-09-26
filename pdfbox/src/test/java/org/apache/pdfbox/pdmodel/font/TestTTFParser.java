@@ -24,9 +24,6 @@ import org.apache.fontbox.ttf.NameRecord;
 import org.apache.fontbox.ttf.PostScriptTable;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
-import org.apache.pdfbox.encoding.Encoding;
-import org.apache.pdfbox.encoding.GlyphList;
-import org.apache.pdfbox.encoding.WinAnsiEncoding;
 import org.junit.Assert;
 import org.junit.Test;
 

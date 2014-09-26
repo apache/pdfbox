@@ -21,12 +21,12 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.encoding.DictionaryEncoding;
-import org.apache.pdfbox.encoding.Encoding;
-import org.apache.pdfbox.encoding.GlyphList;
-import org.apache.pdfbox.encoding.MacRomanEncoding;
-import org.apache.pdfbox.encoding.StandardEncoding;
-import org.apache.pdfbox.encoding.WinAnsiEncoding;
+import org.apache.pdfbox.pdmodel.font.encoding.DictionaryEncoding;
+import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
+import org.apache.pdfbox.pdmodel.font.encoding.GlyphList;
+import org.apache.pdfbox.pdmodel.font.encoding.MacRomanEncoding;
+import org.apache.pdfbox.pdmodel.font.encoding.StandardEncoding;
+import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
 
 import java.io.IOException;
 import java.util.HashSet;

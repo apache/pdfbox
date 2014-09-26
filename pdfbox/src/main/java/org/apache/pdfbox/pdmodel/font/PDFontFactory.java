@@ -23,7 +23,6 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.encoding.GlyphList;
 
 /**
  * Creates the appropriate font subtype based on information in the dictionary.
