@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSBoolean;
@@ -46,6 +48,11 @@ import org.apache.pdfbox.util.PDFOperator;
  */
 public class PDFStreamParser extends BaseParser
 {
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(PDFStreamParser.class);
+    
     private List<Object> streamObjects = new ArrayList<Object>( 100 );
     private final RandomAccess file;
     private final int    maxBinCharTestLength = 10;
@@ -398,8 +405,7 @@ public class PDFStreamParser extends BaseParser
                 while( !(lastByte == 'E' &&
                          currentByte == 'I' &&
                          hasNextSpaceOrReturn() &&
-                         hasNoFollowingBinData( pdfSource ) &&
-                         !hasPrecedingAscii85Data(imageData)) &&
+                         hasNoFollowingBinData( pdfSource )) &&
                        !pdfSource.isEOF() )
                 {
                     imageData.write( lastByte );
@@ -494,35 +500,13 @@ public class PDFStreamParser extends BaseParser
             }
             pdfSource.unread(binCharTestArr, 0, readBytes);
         }
+        if (!noBinData)
+        {
+            LOG.warn("ignoring 'EI' assumed to be in the middle of inline image");
+        }
         return noBinData;
     }
 
-    /**
-     * Check whether the output stream ends with 70 ASCII85 data bytes
-     * (33..117). This method is to be called when "EI" and then space/LF/CR
-     * are detected.
-     *
-     * @param imageData output data stream without the "EI"
-     * @return true if this is an ASCII85 line so the "EI" is to be considered
-     * part of the data stream, false if not
-     */
-    private boolean hasPrecedingAscii85Data(ByteArrayOutputStream imageData)
-    {
-        if (imageData.size() < 70)
-        {
-            return false;
-        }
-        byte[] tab = imageData.toByteArray();
-        for (int i = tab.length - 1; i >= tab.length - 70; --i)
-        {
-            if (tab[i] < 33 || tab[i] > 117)
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-    
     /**
      * This will read an operator from the stream.
      *
