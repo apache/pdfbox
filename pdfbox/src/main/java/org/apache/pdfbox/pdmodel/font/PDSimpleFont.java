@@ -43,7 +43,6 @@ public abstract class PDSimpleFont extends PDFont
 
     protected Encoding encoding;
     protected GlyphList glyphList;
-    private final GlyphList defaultGlyphList;
     private final Set<Integer> noUnicode = new HashSet<Integer>(); // for logging
 
     /**
@@ -52,26 +51,16 @@ public abstract class PDSimpleFont extends PDFont
     protected PDSimpleFont()
     {
         super();
-        defaultGlyphList = GlyphList.getAdobeGlyphList();
     }
 
     /**
      * Constructor.
      *
      * @param fontDictionary Font dictionary.
-     * @param glyphList a custom glyph list for Unicode mapping
      */
-    protected PDSimpleFont(COSDictionary fontDictionary, GlyphList glyphList) throws IOException
+    protected PDSimpleFont(COSDictionary fontDictionary) throws IOException
     {
         super(fontDictionary);
-        if (glyphList == null)
-        {
-            defaultGlyphList = GlyphList.getAdobeGlyphList();
-        }
-        else
-        {
-            defaultGlyphList = glyphList;
-        }
     }
 
     /**
@@ -147,7 +136,7 @@ public abstract class PDSimpleFont extends PDFont
         }
         else
         {
-            glyphList = defaultGlyphList; // by default this is the AGL, but it can be overridden
+            glyphList = GlyphList.getAdobeGlyphList();
         }
     }
 
@@ -235,6 +224,24 @@ public abstract class PDSimpleFont extends PDFont
     @Override
     public String toUnicode(int code) throws IOException
     {
+        return toUnicode(code, GlyphList.getAdobeGlyphList());
+    }
+
+    @Override
+    public String toUnicode(int code, GlyphList customGlyphList) throws IOException
+    {
+        // allow the glyph list to be overridden for the purpose of extracting Unicode
+        // we only do this when the font's glyph list is the AGL, to avoid breaking Zapf Dingbats
+        GlyphList unicodeGlyphList;
+        if (this.glyphList == GlyphList.getAdobeGlyphList())
+        {
+            unicodeGlyphList = customGlyphList;
+        }
+        else
+        {
+            unicodeGlyphList = this.glyphList;
+        }
+
         // first try to use a ToUnicode CMap
         String unicode = super.toUnicode(code);
         if (unicode != null)
@@ -252,7 +259,7 @@ public abstract class PDSimpleFont extends PDFont
         if (encoding != null)
         {
             name = encoding.getName(code);
-            unicode = glyphList.toUnicode(name);
+            unicode = unicodeGlyphList.toUnicode(name);
             if (unicode != null)
             {
                 return unicode;

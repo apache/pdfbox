@@ -66,12 +66,11 @@ public class PDType1CFont extends PDSimpleFont implements PDType1Equivalent
      * Constructor.
      * 
      * @param fontDictionary the corresponding dictionary
-     * @param glyphList a custom glyph list for Unicode mapping
      * @throws IOException it something went wrong
      */
-    public PDType1CFont(COSDictionary fontDictionary, GlyphList glyphList) throws IOException
+    public PDType1CFont(COSDictionary fontDictionary) throws IOException
     {
-        super(fontDictionary, glyphList);
+        super(fontDictionary);
 
         PDFontDescriptor fd = getFontDescriptor();
         byte[] bytes = null;

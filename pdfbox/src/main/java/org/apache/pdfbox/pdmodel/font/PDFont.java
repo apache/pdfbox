@@ -32,6 +32,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.encoding.GlyphList;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
@@ -309,6 +310,18 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      * @throws IOException if the CMap or stream cannot be read
      */
     public abstract int readCode(InputStream in) throws IOException;
+
+    /**
+     * Returns the Unicode character sequence which corresponds to the given character code.
+     *
+     * @param code character code
+     * @param customGlyphList a custom glyph list to use instead of the Adobe Glyph List
+     * @return Unicode character(s)
+     */
+    public String toUnicode(int code, GlyphList customGlyphList) throws IOException
+    {
+        return toUnicode(code);
+    }
 
     /**
      * Returns the Unicode character sequence which corresponds to the given character code.

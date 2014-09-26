@@ -71,7 +71,7 @@ public class PDFTextStreamEngine extends PDFStreamEngine
     /**
      * Constructor.
      */
-    public PDFTextStreamEngine()
+    public PDFTextStreamEngine() throws IOException
     {
         addOperator(new BeginText());
         addOperator(new Concatenate());
@@ -95,6 +95,11 @@ public class PDFTextStreamEngine extends PDFStreamEngine
         addOperator(new SetTextHorizontalScaling());
         addOperator(new ShowTextLine());
         addOperator(new ShowTextLineAndSpace());
+
+        // load additional glyph list for Unicode mapping
+        String path = "org/apache/pdfbox/resources/glyphlist/additional.txt";
+        InputStream input = GlyphList.class.getClassLoader().getResourceAsStream(path);
+        glyphList = new GlyphList(GlyphList.getAdobeGlyphList(), input);
     }
 
     /**
@@ -202,6 +207,9 @@ public class PDFTextStreamEngine extends PDFStreamEngine
         float spaceWidthDisplay = spaceWidthText * fontSizeText * horizontalScalingText *
                 textRenderingMatrix.getXScale()  * ctm.getXScale();
 
+        // use our additional glyph list for Unicode mapping
+        unicode = font.toUnicode(code, glyphList);
+
         // when there is no Unicode mapping available, Acrobat simply coerces the character code
         // into Unicode, so we do the same. Subclasses of PDFStreamEngine don't necessarily want
         // this, which is why we leave it until this point in PDFTextStreamEngine.
@@ -236,18 +244,5 @@ public class PDFTextStreamEngine extends PDFStreamEngine
     protected void processTextPosition(TextPosition text)
     {
         // subclasses can override to provide specific functionality
-    }
-
-    @Override
-    protected GlyphList getGlyphList() throws IOException
-    {
-        if (glyphList == null)
-        {
-            // load additional glyph list for Unicode mapping
-            String path = "org/apache/pdfbox/resources/glyphlist/additional.txt";
-            InputStream input = GlyphList.class.getClassLoader().getResourceAsStream(path);
-            glyphList = new GlyphList(GlyphList.getAdobeGlyphList(), input);
-        }
-        return glyphList;
     }
 }
