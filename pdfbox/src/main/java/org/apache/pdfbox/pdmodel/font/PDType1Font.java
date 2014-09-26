@@ -126,11 +126,10 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
      * Creates a Type 1 font from a Font dictionary in a PDF.
      * 
      * @param fontDictionary font dictionary
-     * @param glyphList A custom glyph list for Unicode mapping
      */
-    public PDType1Font(COSDictionary fontDictionary, GlyphList glyphList) throws IOException
+    public PDType1Font(COSDictionary fontDictionary) throws IOException
     {
-        super(fontDictionary, glyphList);
+        super(fontDictionary);
 
         PDFontDescriptor fd = getFontDescriptor();
         Type1Font t1 = null;

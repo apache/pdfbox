@@ -515,16 +515,7 @@ public class PDFStreamEngine
             return Collections.emptyMap();
         }
 
-        return streamResourcesStack.peek().getFonts(getGlyphList());
-    }
-
-    /**
-     * Returns the glyph list for Unicode mapping, the default is the Adobe Glyph List.
-     * @throws IOException if the glyph list could not be loaded
-     */
-    protected GlyphList getGlyphList() throws IOException
-    {
-        return GlyphList.getAdobeGlyphList();
+        return streamResourcesStack.peek().getFonts();
     }
 
     /**

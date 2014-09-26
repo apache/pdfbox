@@ -140,17 +140,6 @@ public class PDResources implements COSObjectable
      */
     public Map<String, PDFont> getFonts() throws IOException
     {
-        return getFonts((GlyphList) null);
-    }
-
-    /**
-     * This will get the map of fonts. This will never return null.
-     *
-     * @param glyphList A custom glyph list for Unicode mapping.
-     * @return The map of fonts.
-     */
-    public Map<String, PDFont> getFonts(GlyphList glyphList) throws IOException
-    {
         if (fonts == null)
         {
             // at least an empty map will be returned
@@ -180,7 +169,7 @@ public class PDResources implements COSObjectable
                         }
                         else
                         {
-                            PDFont newFont = PDFontFactory.createFont((COSDictionary)font, glyphList);
+                            PDFont newFont = PDFontFactory.createFont((COSDictionary)font);
                             fonts.put(fontName.getName(), newFont);
                             seenFonts.put((COSDictionary) font, newFont);
                         }

@@ -46,20 +46,6 @@ public class PDFontFactory
      */
     public static PDFont createFont(COSDictionary dictionary) throws IOException
     {
-        return createFont(dictionary, null);
-    }
-
-    /**
-     * Creates a new PDFont instance with the appropriate subclass.
-     *
-     * @param dictionary a font dictionary
-     * @param glyphList the default glyph list to use for Unicode mapping
-     * @return a PDFont instance, based on the SubType entry of the dictionary
-     * @throws IOException
-     */
-    public static PDFont createFont(COSDictionary dictionary,
-                                    GlyphList glyphList) throws IOException
-    {
         COSName type = dictionary.getCOSName(COSName.TYPE, COSName.FONT);
         if (!COSName.FONT.equals(type))
         {
@@ -74,10 +60,10 @@ public class PDFontFactory
             {
                 if (((COSDictionary)fd).containsKey(COSName.FONT_FILE3))
                 {
-                    return new PDType1CFont(dictionary, glyphList);
+                    return new PDType1CFont(dictionary);
                 }
             }
-            return new PDType1Font(dictionary, glyphList);
+            return new PDType1Font(dictionary);
         }
         else if (COSName.MM_TYPE1.equals(subType))
         {
@@ -86,18 +72,18 @@ public class PDFontFactory
             {
                 if (((COSDictionary)fd).containsKey(COSName.FONT_FILE3))
                 {
-                    return new PDType1CFont(dictionary, glyphList);
+                    return new PDType1CFont(dictionary);
                 }
             }
-            return new PDMMType1Font(dictionary, glyphList);
+            return new PDMMType1Font(dictionary);
         }
         else if (COSName.TRUE_TYPE.equals(subType))
         {
-            return new PDTrueTypeFont(dictionary, glyphList);
+            return new PDTrueTypeFont(dictionary);
         }
         else if (COSName.TYPE3.equals(subType))
         {
-            return new PDType3Font(dictionary, glyphList);
+            return new PDType3Font(dictionary);
         }
         else if (COSName.TYPE0.equals(subType))
         {
@@ -116,7 +102,7 @@ public class PDFontFactory
             // assuming Type 1 font (see PDFBOX-1988) because it seems that Adobe Reader does this
             // however, we may need more sophisticated logic perhaps looking at the FontFile
             LOG.warn("Invalid font subtype '" + subType + "'");
-            return new PDType1Font(dictionary, glyphList);
+            return new PDType1Font(dictionary);
         }
     }
 

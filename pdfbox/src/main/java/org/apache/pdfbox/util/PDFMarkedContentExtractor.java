@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.util;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,7 +60,7 @@ public class PDFMarkedContentExtractor extends PDFTextStreamEngine
      * Instantiate a new PDFTextStripper object. Will not do anything special to convert
      * the text to a more encoding-specific output.
      */
-    public PDFMarkedContentExtractor()
+    public PDFMarkedContentExtractor() throws IOException
     {
         this(null);
     }
@@ -69,7 +70,7 @@ public class PDFMarkedContentExtractor extends PDFTextStreamEngine
      *
      * @param encoding The encoding that the output will be written in.
      */
-    public PDFMarkedContentExtractor(String encoding)
+    public PDFMarkedContentExtractor(String encoding) throws IOException
     {
         addOperator(new BeginMarkedContentSequenceWithProperties());
         addOperator(new BeginMarkedContentSequence());

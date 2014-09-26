@@ -32,10 +32,9 @@ public class PDMMType1Font extends PDType1Font
      * Creates an MMType1Font from a Font dictionary in a PDF.
      *
      * @param fontDictionary font dictionary
-     * @param glyphList a custom glyph list for Unicode mapping
      */
-    public PDMMType1Font(COSDictionary fontDictionary, GlyphList glyphList) throws IOException
+    public PDMMType1Font(COSDictionary fontDictionary) throws IOException
     {
-        super(fontDictionary, glyphList);
+        super(fontDictionary);
     }
 }

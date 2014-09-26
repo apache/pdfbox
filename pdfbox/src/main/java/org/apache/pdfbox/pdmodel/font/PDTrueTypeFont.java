@@ -103,11 +103,10 @@ public class PDTrueTypeFont extends PDSimpleFont
      * Creates a new TrueType font from a Font dictionary.
      *
      * @param fontDictionary The font dictionary according to the PDF specification.
-     * @param glyphList A custom glyph list for Unicode mapping
      */
-    public PDTrueTypeFont(COSDictionary fontDictionary, GlyphList glyphList) throws IOException
+    public PDTrueTypeFont(COSDictionary fontDictionary) throws IOException
     {
-        super(fontDictionary, glyphList);
+        super(fontDictionary);
 
         TrueTypeFont ttfFont = null;
         if (getFontDescriptor() != null)
