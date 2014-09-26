@@ -43,7 +43,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontFactory;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
-import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
+import org.apache.pdfbox.pdmodel.graphics.state.PDExternalGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.state.PDTextState;
@@ -562,7 +562,7 @@ public class PDFStreamEngine
     /**
      * @return Returns the graphicsStates.
      */
-    public Map<String, PDExtendedGraphicsState> getGraphicsStates()
+    public Map<String, PDExternalGraphicsState> getGraphicsStates()
     {
         return streamResourcesStack.peek().getGraphicsStates();
     }
