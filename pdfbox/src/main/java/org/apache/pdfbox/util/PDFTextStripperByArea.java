@@ -54,20 +54,6 @@ public class PDFTextStripperByArea extends PDFTextStripper
         super();
     }
 
-    /**
-     * Instantiate a new PDFTextStripperArea object. Will apply
-     * encoding-specific conversions to the output text.
-     * 
-     * @param encoding
-     *            The encoding that the output will be written in.
-     * @throws IOException
-     *             If there is an error reading the properties.
-     */
-    public PDFTextStripperByArea(String encoding) throws IOException
-    {
-        super(encoding);
-    }
-    
    /**
      * Add a new region to group text by.
      *

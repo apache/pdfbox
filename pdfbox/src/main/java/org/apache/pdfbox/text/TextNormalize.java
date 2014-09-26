@@ -71,15 +71,11 @@ public class TextNormalize
         return map;
     }
 
-    private String outputEncoding;
-
     /**
-     * 
-     * @param encoding The Encoding that the text will eventually be written as (or null)
+     * Constructor.
      */
-    public TextNormalize(String encoding)
+    public TextNormalize()
     {
-        outputEncoding = encoding;
     }
 
     /**
@@ -146,23 +142,16 @@ public class TextNormalize
     public String normalizeDiacritic(String str)
     {
         // Unicode contains special combining forms of the diacritic characters which we want to use
-        if (outputEncoding != null && outputEncoding.toUpperCase().startsWith("UTF"))
+        int codePoint = str.codePointAt(0);
+
+        // convert the characters not defined in the Unicode spec
+        if (DIACRITICS.containsKey(codePoint))
         {
-            Integer c = (int) str.charAt(0);
-            // convert the characters not defined in the Unicode spec
-            if (DIACRITICS.containsKey(c))
-            {
-                return DIACRITICS.get(c);
-            }
-            else
-            {
-                return Normalizer.normalize(str, Normalizer.Form.NFKC).trim();
-            }
+            return DIACRITICS.get(codePoint);
         }
         else
         {
-            return str;
+            return Normalizer.normalize(str, Normalizer.Form.NFKC).trim();
         }
     }
-
 }
