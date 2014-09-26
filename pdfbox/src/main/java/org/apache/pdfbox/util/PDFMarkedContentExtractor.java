@@ -23,15 +23,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import org.apache.pdfbox.contentstream.PDFTextStreamEngine;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDMarkedContent;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.text.TextNormalize;
 import org.apache.pdfbox.text.TextPosition;
-import org.apache.pdfbox.util.operator.markedcontent.BeginMarkedContentSequence;
-import org.apache.pdfbox.util.operator.markedcontent.BeginMarkedContentSequenceWithProperties;
-import org.apache.pdfbox.util.operator.markedcontent.EndMarkedContentSequence;
+import org.apache.pdfbox.contentstream.operator.markedcontent.BeginMarkedContentSequence;
+import org.apache.pdfbox.contentstream.operator.markedcontent.BeginMarkedContentSequenceWithProperties;
+import org.apache.pdfbox.contentstream.operator.markedcontent.EndMarkedContentSequence;
 
 /**
  * This is an stream engine to extract the marked content of a pdf.

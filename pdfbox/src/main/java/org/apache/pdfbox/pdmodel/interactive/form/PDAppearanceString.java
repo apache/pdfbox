@@ -51,7 +51,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 
-import org.apache.pdfbox.util.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.Operator;
 
 /**
  * A default appearance string contains any graphics state or text state operators needed to

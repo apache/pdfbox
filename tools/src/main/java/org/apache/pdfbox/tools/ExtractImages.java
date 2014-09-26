@@ -41,7 +41,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.graphics.image.TIFFInputStream;
 import org.apache.pdfbox.util.ImageIOUtil;
-import org.apache.pdfbox.util.PDFGraphicsStreamEngine;
+import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
 
 /**
  * Extracts the images from a PDF file.
