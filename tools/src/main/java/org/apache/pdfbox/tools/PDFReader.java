@@ -33,7 +33,7 @@ import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
-import org.apache.pdfbox.rendering.PDFPrinter;
+import org.apache.pdfbox.printing.PDFPrinter;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.tools.gui.PageWrapper;
 import org.apache.pdfbox.tools.gui.ReaderBottomPanel;
