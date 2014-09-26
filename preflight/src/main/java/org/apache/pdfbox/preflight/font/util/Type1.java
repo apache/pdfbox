@@ -21,12 +21,11 @@
 
 package org.apache.pdfbox.preflight.font.util;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.pdfbox.encoding.Encoding;
+import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
 import org.apache.pdfbox.preflight.PreflightConstants;
 
 public class Type1

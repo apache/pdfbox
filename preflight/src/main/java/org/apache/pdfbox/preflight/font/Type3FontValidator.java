@@ -23,7 +23,6 @@ package org.apache.pdfbox.preflight.font;
 
 import static org.apache.pdfbox.preflight.PreflightConfiguration.RESOURCES_PROCESS;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_DICTIONARY_INVALID;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_ENCODING;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_METRICS;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_TYPE3_DAMAGED;
 
@@ -38,8 +37,8 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.encoding.DictionaryEncoding;
-import org.apache.pdfbox.encoding.Encoding;
+import org.apache.pdfbox.pdmodel.font.encoding.DictionaryEncoding;
+import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
