@@ -41,8 +41,7 @@ import org.apache.pdfbox.contentstream.operator.Operator;
 /**
  * This will parse a PDF byte stream and extract operands and such.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision$
+ * @author Ben Litchfield
  */
 public class PDFStreamParser extends BaseParser
 {
@@ -52,8 +51,8 @@ public class PDFStreamParser extends BaseParser
     private static final Log LOG = LogFactory.getLog(PDFStreamParser.class);
 
     private List<Object> streamObjects = new ArrayList<Object>( 100 );
-    private final int    MAXBINCHARTESTLENGTH = 10;
-    private final byte[] binCharTestArr = new byte[MAXBINCHARTESTLENGTH];
+    private final int MAX_BIN_CHAR_TEST_LENGTH = 10;
+    private final byte[] binCharTestArr = new byte[MAX_BIN_CHAR_TEST_LENGTH];
 
     /**
      * Constructor that takes a stream to parse.
@@ -342,13 +341,13 @@ public class PDFStreamParser extends BaseParser
                 buf.append( c );
                 pdfSource.read();
 
-                boolean dotNotRead = (c != '.');
-                while( Character.isDigit(( c = (char)pdfSource.peek()) ) || (dotNotRead && (c == '.')) )
+                boolean dotNotRead = c != '.';
+                while( Character.isDigit(c = (char)pdfSource.peek()) || dotNotRead && c == '.')
                 {
                     buf.append( c );
                     pdfSource.read();
 
-                    if (dotNotRead && (c == '.'))
+                    if (dotNotRead && c == '.')
                     {
                         dotNotRead = false;
                     }
@@ -451,7 +450,7 @@ public class PDFStreamParser extends BaseParser
             throws IOException
     {
         // as suggested in PDFBOX-1164
-        final int readBytes = pdfSource.read(binCharTestArr, 0, MAXBINCHARTESTLENGTH);
+        final int readBytes = pdfSource.read(binCharTestArr, 0, MAX_BIN_CHAR_TEST_LENGTH);
         boolean noBinData = true;
         int startOpIdx = -1;
         int endOpIdx = -1;
@@ -461,7 +460,7 @@ public class PDFStreamParser extends BaseParser
             for (int bIdx = 0; bIdx < readBytes; bIdx++)
             {
                 final byte b = binCharTestArr[bIdx];
-                if ((b < 0x09) || ((b > 0x0a) && (b < 0x20) && (b != 0x0d)))
+                if (b < 0x09 || b > 0x0a && b < 0x20 && b != 0x0d)
                 {
                     // control character or > 0x7f -> we have binary data
                     noBinData = false;
@@ -472,7 +471,8 @@ public class PDFStreamParser extends BaseParser
                 {
                     startOpIdx = bIdx;
                 }
-                else if (startOpIdx != -1 && endOpIdx == -1 && (b == 9 || b == 0x20 || b == 0x0a || b == 0x0d))
+                else if (startOpIdx != -1 && endOpIdx == -1 &&
+                         (b == 9 || b == 0x20 || b == 0x0a || b == 0x0d))
                 {
                     if (bIdx == startOpIdx + 1)
                     {
@@ -485,7 +485,7 @@ public class PDFStreamParser extends BaseParser
                     }
                 }
             }
-            if (readBytes == MAXBINCHARTESTLENGTH) // only if not close to eof
+            if (readBytes == MAX_BIN_CHAR_TEST_LENGTH) // only if not close to eof
             {
                 // a PDF operator is 1-3 bytes long
                 if (endOpIdx == -1 || startOpIdx == -1 || endOpIdx - startOpIdx > 3)
