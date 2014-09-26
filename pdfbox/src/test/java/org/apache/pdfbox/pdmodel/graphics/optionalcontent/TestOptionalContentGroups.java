@@ -33,7 +33,7 @@ import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentProperties.BaseState;
-import org.apache.pdfbox.pdmodel.PDPropertyList;
+import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDPropertyList;
 
 /**
  * Tests optional content group functionality (also called layers).
