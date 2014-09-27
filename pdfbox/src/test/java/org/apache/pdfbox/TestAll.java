@@ -52,6 +52,7 @@ import org.apache.pdfbox.util.TestDateUtil;
 import org.apache.pdfbox.util.TestLayerUtility;
 import org.apache.pdfbox.util.TestMatrix;
 import org.apache.pdfbox.util.TestPDFText2HTML;
+import org.apache.pdfbox.pdfparser.PDFStreamParserTest;
 
 /**
  * This is a holder for all test cases in the pdfbox system.
@@ -131,7 +132,7 @@ public class TestAll extends TestCase
         suite.addTestSuite(PDColorStateTest.class);
 
         suite.addTestSuite(EndstreamOutputStreamTest.class);
-        
+        suite.addTestSuite(PDFStreamParserTest.class);        
 
         return suite;
     }
