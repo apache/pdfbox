@@ -301,7 +301,15 @@ public class PDCIDFontType2 extends PDCIDFont
             else
             {
                 // "Identity" is the default CIDToGIDMap
-                return cid;
+                if (cid < ttf.getNumberOfGlyphs())
+                {
+                    return cid;
+                }
+                else
+                {
+                    // out of range CIDs map to GID 0
+                    return 0;
+                }
             }
         }
     }
