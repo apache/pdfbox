@@ -36,7 +36,7 @@ public class SetRenderingIntent extends OperatorProcessor
     public void process(Operator operator, List<COSBase> operands) throws IOException
     {
         COSName value = (COSName)operands.get(0);
-        context.getGraphicsState().setRenderingIntent(RenderingIntent.valueOf(value.getName()));
+        context.getGraphicsState().setRenderingIntent(RenderingIntent.fromString(value.getName()));
     }
 
     @Override

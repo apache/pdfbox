@@ -44,6 +44,27 @@ public enum RenderingIntent
      */
     PERCEPTUAL("Perceptual");
 
+    public static RenderingIntent fromString(String value)
+    {
+        if (value.equals("AbsoluteColorimetric"))
+        {
+            return ABSOLUTE_COLORIMETRIC;
+        }
+        else if (value.equals("RelativeColorimetric"))
+        {
+          return RELATIVE_COLORIMETRIC;
+        }
+        else if (value.equals("Saturation"))
+        {
+          return SATURATION;
+        }
+        else if (value.equals("Perceptual"))
+        {
+          return PERCEPTUAL;
+        }
+        throw new IllegalArgumentException(value);
+    }
+
     private final String value;
 
     RenderingIntent(String value)
