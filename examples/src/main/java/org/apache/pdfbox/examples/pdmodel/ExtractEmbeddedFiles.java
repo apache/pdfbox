@@ -17,6 +17,7 @@
 package org.apache.pdfbox.examples.pdmodel;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
@@ -25,12 +26,15 @@ import java.util.Map;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDEmbeddedFilesNameTreeNode;
+import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDComplexFileSpecification;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationFileAttachment;
 
 /**
  * This is an example on how to extract all embedded files from a PDF document.
@@ -99,6 +103,23 @@ public class ExtractEmbeddedFiles
                         }
                     }
                 }
+                
+                // extract files from annotations
+                List<PDPage> allPages = document.getDocumentCatalog().getAllPages();
+                for (PDPage pdPage : allPages)
+                {
+                    for (PDAnnotation annotation : pdPage.getAnnotations())
+                    {
+                        if (annotation instanceof PDAnnotationFileAttachment)
+                        {
+                            PDAnnotationFileAttachment annotationFileAttachment = (PDAnnotationFileAttachment) annotation;
+                            PDComplexFileSpecification fileSpec = (PDComplexFileSpecification) annotationFileAttachment.getFile();
+                            PDEmbeddedFile embeddedFile = getEmbeddedFile(fileSpec);
+                            extractFile(filePath, fileSpec.getFilename(), embeddedFile);
+                        }
+                    }
+                }
+                
             }
             finally
             {
@@ -110,7 +131,6 @@ public class ExtractEmbeddedFiles
         }
     }
 
-
     private static void extractFiles(Map<String,COSObjectable> names, String filePath) 
             throws IOException
     {
@@ -118,13 +138,19 @@ public class ExtractEmbeddedFiles
         {
             PDComplexFileSpecification fileSpec = (PDComplexFileSpecification)names.get(filename);
             PDEmbeddedFile embeddedFile = getEmbeddedFile(fileSpec);
-            String embeddedFilename = filePath+filename;
-            File file = new File(filePath+filename);
-            System.out.println("Writing "+ embeddedFilename);
-            FileOutputStream fos = new FileOutputStream(file);
-            fos.write(embeddedFile.getByteArray());
-            fos.close();
+            extractFile(filePath, filename, embeddedFile);
         }
+    }
+
+    private static void extractFile(String filePath, String filename, PDEmbeddedFile embeddedFile)
+            throws IOException, FileNotFoundException
+    {
+        String embeddedFilename = filePath + filename;
+        File file = new File(filePath + filename);
+        System.out.println("Writing " + embeddedFilename);
+        FileOutputStream fos = new FileOutputStream(file);
+        fos.write(embeddedFile.getByteArray());
+        fos.close();
     }
     
     private static PDEmbeddedFile getEmbeddedFile(PDComplexFileSpecification fileSpec )
@@ -153,6 +179,7 @@ public class ExtractEmbeddedFiles
         }
         return embeddedFile;
     }
+    
     /**
      * This will print the usage for this program.
      */
