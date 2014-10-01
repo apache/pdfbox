@@ -47,7 +47,17 @@ public class PDColorState implements Cloneable
      * 
      * @see #setIccOverrideColor(Color)
      */
-    private static volatile Color iccOverrideColor = Color.getColor("org.apache.pdfbox.ICC_override_color");
+    private static volatile Color iccOverrideColor = null;
+    static
+    {
+        try
+        {
+            iccOverrideColor = Color.getColor("org.apache.pdfbox.ICC_override_color");
+        }
+        catch (SecurityException e)
+        {
+        }
+    }
 
     /**
      * Sets the default color to replace all colors in {@link ICC_ColorSpace ICC color spaces}. This will work around a
