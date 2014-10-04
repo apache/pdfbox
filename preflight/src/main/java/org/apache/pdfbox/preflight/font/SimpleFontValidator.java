@@ -40,6 +40,7 @@ public abstract class SimpleFontValidator<T extends FontContainer> extends FontV
     {
         super(context, font.getCOSObject(), fContainer);
         this.fontDictionary = font.getCOSObject();
+        this.font = font;
     }
 
     public SimpleFontValidator(PreflightContext context, COSDictionary fontDictionary, T fContainer)
@@ -56,6 +57,7 @@ public abstract class SimpleFontValidator<T extends FontContainer> extends FontV
      * 
      * @return
      */
+    @Override
     public void validate() throws ValidationException
     {
         checkMandatoryField();
