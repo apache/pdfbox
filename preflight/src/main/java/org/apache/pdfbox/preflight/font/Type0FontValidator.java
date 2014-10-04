@@ -67,6 +67,7 @@ public class Type0FontValidator extends FontValidator<Type0Container>
     {
         super(context, font.getCOSObject(), new Type0Container(font));
         cosDocument = this.context.getDocument().getDocument();
+        this.font = font;
     }
 
     @Override
