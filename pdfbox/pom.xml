@@ -143,6 +143,9 @@
                         <exclude>src/test/resources/input/rendering/*.ai</exclude>
                         <exclude>src/test/resources/output/*</exclude>
                         <exclude>release.properties</exclude>
+                        <exclude>src/test/resources/org/apache/pdfbox/encryption/*.der</exclude>
+                        <exclude>src/test/resources/org/apache/pdfbox/encryption/*.pfx</exclude>
+                        <exclude>src/test/resources/org/apache/pdfbox/filter/*.bin</exclude>
                     </excludes>
                 </configuration>
             </plugin>
