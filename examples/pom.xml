@@ -95,6 +95,15 @@
       </resource>
     </resources>
     <plugins>
+      <plugin>
+        <groupId>org.apache.rat</groupId>
+        <artifactId>apache-rat-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>src/test/resources/org/apache/pdfbox/examples/signature/*</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
