@@ -173,7 +173,7 @@ public abstract class FontContainer
         {
             GlyphException e = new GlyphException(PreflightConstants.ERROR_FONTS_GLYPH_MISSING, cid, "The character \""
                     + cid + "\" in the font program \"" + this.font.getBaseFont()
-                    + "\"is missing from the Charater Encoding.");
+                    + "\" is missing from the Charater Encoding.");
             markCIDAsInvalid(cid, e);
             throw e;
         }
@@ -183,7 +183,7 @@ public abstract class FontContainer
         {
             GlyphException e = new GlyphException(PreflightConstants.ERROR_FONTS_METRICS, cid,
                     "Width of the character \"" + cid + "\" in the font program \"" + this.font.getBaseFont()
-                            + "\"is inconsistent with the width in the PDF dictionary.");
+                            + "\" is inconsistent with the width in the PDF dictionary.");
             markCIDAsInvalid(cid, e);
             throw e;
         }
