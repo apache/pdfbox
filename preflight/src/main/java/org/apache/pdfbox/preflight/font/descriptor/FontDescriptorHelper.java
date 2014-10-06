@@ -49,8 +49,8 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
+import org.apache.pdfbox.pdmodel.font.PDFontLike;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.font.container.FontContainer;
@@ -66,11 +66,11 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
     protected T fContainer;
 
     protected PreflightContext context;
-    protected PDFont font;
+    protected PDFontLike font;
 
     protected PDFontDescriptor fontDescriptor;
 
-    public FontDescriptorHelper(PreflightContext context, PDFont font, T fontContainer)
+    public FontDescriptorHelper(PreflightContext context, PDFontLike font, T fontContainer)
     {
         super();
         this.fContainer = fontContainer;

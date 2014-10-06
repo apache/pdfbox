@@ -39,17 +39,21 @@ public class TrueTypeFontValidator extends SimpleFontValidator<TrueTypeContainer
 {
     public TrueTypeFontValidator(PreflightContext context, PDTrueTypeFont font)
     {
-        super(context, font, new TrueTypeContainer(font));
+        super(context, font, font.getCOSObject(), new TrueTypeContainer(font));
     }
 
+    @Override
     protected void createFontDescriptorHelper()
     {
-        this.descriptorHelper = new TrueTypeDescriptorHelper(context, font, fontContainer);
+        this.descriptorHelper = new TrueTypeDescriptorHelper(context, (PDTrueTypeFont) font, fontContainer);
     }
 
+    @Override
     protected void checkEncoding()
     {
-        PDFontDescriptor fd = this.font.getFontDescriptor();
+        PDTrueTypeFont ttFont = (PDTrueTypeFont) font;
+                
+        PDFontDescriptor fd = ttFont.getFontDescriptor();
         if (fd != null)
         {
             /*
@@ -57,7 +61,7 @@ public class TrueTypeFontValidator extends SimpleFontValidator<TrueTypeContainer
              */
             if (fd.isNonSymbolic())
             {
-                Encoding encodingValue = this.font.getEncoding();
+                Encoding encodingValue = ttFont.getEncoding();
                 if (encodingValue == null
                         || !(encodingValue instanceof MacRomanEncoding || encodingValue instanceof WinAnsiEncoding))
                 {
@@ -70,7 +74,7 @@ public class TrueTypeFontValidator extends SimpleFontValidator<TrueTypeContainer
              * For symbolic font, no encoding entry is allowed and only one encoding entry is expected into the FontFile
              * CMap (Check latter when the FontFile stream will be checked)
              */
-            if (fd.isSymbolic() && ((COSDictionary) this.font.getCOSObject()).getItem(COSName.ENCODING) != null)
+            if (fd.isSymbolic() && ((COSDictionary) fontDictionary).getItem(COSName.ENCODING) != null)
             {
                 this.fontContainer.push(new ValidationError(ERROR_FONTS_ENCODING,
                         "The Encoding should be missing for the Symbolic TTF"));

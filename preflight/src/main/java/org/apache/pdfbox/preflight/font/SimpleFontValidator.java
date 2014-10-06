@@ -25,7 +25,7 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_DICTION
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
+import org.apache.pdfbox.pdmodel.font.PDFontLike;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
@@ -33,20 +33,14 @@ import org.apache.pdfbox.preflight.font.container.FontContainer;
 
 public abstract class SimpleFontValidator<T extends FontContainer> extends FontValidator<T>
 {
-    protected PDSimpleFont font;
+    protected PDFontLike font;
     protected COSDictionary fontDictionary;
 
-    public SimpleFontValidator(PreflightContext context, PDSimpleFont font, T fContainer)
-    {
-        super(context, font.getCOSObject(), fContainer);
-        this.fontDictionary = font.getCOSObject();
-        this.font = font;
-    }
-
-    public SimpleFontValidator(PreflightContext context, COSDictionary fontDictionary, T fContainer)
+    public SimpleFontValidator(PreflightContext context, PDFontLike font, COSDictionary fontDictionary, T fContainer)
     {
         super(context, fontDictionary, fContainer);
         this.fontDictionary = fontDictionary;
+        this.font = font;
     }
 
     /**

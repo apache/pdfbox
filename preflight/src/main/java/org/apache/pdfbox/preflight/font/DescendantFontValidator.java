@@ -46,7 +46,8 @@ public abstract class DescendantFontValidator<T extends FontContainer> extends S
 
     public DescendantFontValidator(PreflightContext context, PDCIDFont font, T fContainer)
     {
-        super(context, font.getCOSObject(), fContainer);
+        super(context, font, font.getCOSObject(), fContainer);
+        this.font = font;
         cosDocument = context.getDocument().getDocument();
     }
 

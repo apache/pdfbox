@@ -48,6 +48,7 @@ public class TrueTypeDescriptorHelper extends FontDescriptorHelper<TrueTypeConta
         super(context, font, fontContainer);
     }
 
+    @Override
     public PDStream extractFontFile(PDFontDescriptor fontDescriptor)
     {
         PDStream fontFile = fontDescriptor.getFontFile2();
@@ -70,6 +71,7 @@ public class TrueTypeDescriptorHelper extends FontDescriptorHelper<TrueTypeConta
         return fontFile;
     }
 
+    @Override
     protected void processFontFile(PDFontDescriptor fontDescriptor, PDStream fontFile)
     {
         /*
