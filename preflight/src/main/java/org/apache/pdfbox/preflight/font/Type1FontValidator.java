@@ -44,18 +44,19 @@ public class Type1FontValidator extends SimpleFontValidator<Type1Container>
 
     public Type1FontValidator(PreflightContext context, PDSimpleFont font)
     {
-        super(context, font, new Type1Container(font));
+        super(context, font, font.getCOSObject(), new Type1Container(font));
     }
 
     @Override
     protected void createFontDescriptorHelper()
     {
-        this.descriptorHelper = new Type1DescriptorHelper(context, font, fontContainer);
+        this.descriptorHelper = new Type1DescriptorHelper(context, (PDSimpleFont) font, fontContainer);
     }
 
+    @Override
     protected void checkEncoding()
     {
-        COSBase encoding = ((COSDictionary) font.getCOSObject()).getItem(COSName.ENCODING);
+        COSBase encoding = ((COSDictionary) fontDictionary).getItem(COSName.ENCODING);
         if (encoding != null)
         {
             COSDocument cosDocument = context.getDocument().getDocument();

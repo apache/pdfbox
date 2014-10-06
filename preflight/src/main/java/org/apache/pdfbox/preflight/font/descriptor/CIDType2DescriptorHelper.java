@@ -35,8 +35,8 @@ import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
+import org.apache.pdfbox.pdmodel.font.PDFontLike;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
@@ -47,7 +47,7 @@ import org.apache.pdfbox.preflight.utils.COSUtils;
 public class CIDType2DescriptorHelper extends FontDescriptorHelper<CIDType2Container>
 {
 
-    public CIDType2DescriptorHelper(PreflightContext context, PDFont font, CIDType2Container fontContainer)
+    public CIDType2DescriptorHelper(PreflightContext context, PDFontLike font, CIDType2Container fontContainer)
     {
         super(context, font, fontContainer);
     }
