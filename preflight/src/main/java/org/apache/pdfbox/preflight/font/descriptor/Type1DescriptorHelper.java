@@ -157,15 +157,16 @@ public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container>
             Type1 parsedData = parserForMetrics.parse();
 
             this.fContainer.setType1Font(parsedData);
-
         }
         catch (IOException e)
         {
-            this.fContainer.push(new ValidationError(ERROR_FONTS_TYPE1_DAMAGED, "The FontFile can't be read"));
+            this.fContainer.push(new ValidationError(ERROR_FONTS_TYPE1_DAMAGED, 
+                    "The FontFile can't be read for " + font.getName() + ": " + e.getMessage()));
         }
         catch (FontFormatException e)
         {
-            this.fContainer.push(new ValidationError(ERROR_FONTS_TYPE1_DAMAGED, "The FontFile is damaged"));
+            this.fContainer.push(new ValidationError(ERROR_FONTS_TYPE1_DAMAGED, 
+                    "The FontFile is damaged for " + font.getName() + ": " + e.getMessage()));
         }
         finally
         {

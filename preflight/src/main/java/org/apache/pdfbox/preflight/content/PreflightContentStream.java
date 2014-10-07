@@ -235,7 +235,6 @@ public class PreflightContentStream extends PreflightStreamEngine
             {
                 registerError("Invalid argument for the operator : " + operator.getName(),
                         ERROR_SYNTAX_CONTENT_STREAM_INVALID_ARGUMENT);
-                return;
             }
         }
         else
@@ -249,7 +248,6 @@ public class PreflightContentStream extends PreflightStreamEngine
             {
                 registerError("Invalid argument for the operator : " + operator.getName(),
                         ERROR_SYNTAX_CONTENT_STREAM_INVALID_ARGUMENT);
-                return;
             }
         }
     }
@@ -345,14 +343,14 @@ public class PreflightContentStream extends PreflightStreamEngine
             }
             catch (IOException e)
             {
-                registerError("Encoding can't interpret the character code", ERROR_FONTS_ENCODING_ERROR);
+                registerError("Encoding can't interpret the character code", ERROR_FONTS_ENCODING_ERROR, e);
                 return;
             }
             catch (GlyphException e)
             {
                 if (renderingMode != RenderingMode.NEITHER)
                 {
-                    registerError(e.getMessage(), e.getErrorCode());
+                    registerError(e.getMessage(), e.getErrorCode(), e);
                     return;
                 }
             }
