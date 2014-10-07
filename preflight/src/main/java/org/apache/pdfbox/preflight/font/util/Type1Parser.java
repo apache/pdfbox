@@ -332,7 +332,7 @@ public final class Type1Parser
 
     private void goToBeginOfCharStringElements(PeekInputStream stream) throws IOException
     {
-        byte[] token = new byte[0];
+        byte[] token;
         do
         {
             token = readToken(stream);
@@ -373,7 +373,7 @@ public final class Type1Parser
         }
         catch (NumberFormatException e)
         {
-            throw new IOException("Number of CharStrings elements is expected.");
+            throw new IOException("Number of CharStrings elements was expected but we received " + word);
         }
     }
 
@@ -420,7 +420,7 @@ public final class Type1Parser
         int BUFFER_SIZE = 1024;
         byte[] buffer = new byte[BUFFER_SIZE];
         ByteArrayOutputStream eexecPart = new ByteArrayOutputStream();
-        int lr = 0;
+        int lr;
         int total = 0;
         do
         {
@@ -459,7 +459,8 @@ public final class Type1Parser
         {
             currentCharacter = readNextCharacter(stream);
             bytes.add((byte) (currentCharacter & 0xFF));
-        } while (!('\n' == currentCharacter || '\r' == currentCharacter));
+        }
+        while (!('\n' == currentCharacter || '\r' == currentCharacter));
 
         if ('\r' == currentCharacter && '\n' == stream.peek())
         {
@@ -477,7 +478,7 @@ public final class Type1Parser
 
     private byte[] readToken(PeekInputStream stream) throws IOException
     {
-        byte[] token = new byte[0];
+        byte[] token;
         skipBlankSeparators(stream);
 
         int nextByte = stream.peek();
@@ -511,7 +512,7 @@ public final class Type1Parser
         int opened = 0;
         List<Integer> buffer = new ArrayList<Integer>();
 
-        int currentByte = 0;
+        int currentByte;
         do
         {
             currentByte = readNextCharacter(stream);
@@ -530,7 +531,8 @@ public final class Type1Parser
             }
 
             buffer.add(currentByte);
-        } while (opened != 0);
+        } 
+        while (opened != 0);
 
         return convertListOfIntToByteArray(buffer);
     }
@@ -540,7 +542,7 @@ public final class Type1Parser
         int opened = 0;
         List<Integer> buffer = new ArrayList<Integer>();
 
-        int currentByte = 0;
+        int currentByte;
         do
         {
             currentByte = readNextCharacter(stream);
@@ -559,7 +561,8 @@ public final class Type1Parser
             }
 
             buffer.add(currentByte);
-        } while (opened != 0);
+        }
+        while (opened != 0);
 
         return convertListOfIntToByteArray(buffer);
     }
@@ -569,7 +572,7 @@ public final class Type1Parser
         int opened = 0;
         List<Integer> buffer = new ArrayList<Integer>();
 
-        int currentByte = 0;
+        int currentByte;
         do
         {
             currentByte = readNextCharacter(stream);
@@ -588,7 +591,8 @@ public final class Type1Parser
             }
 
             buffer.add(currentByte);
-        } while (opened != 0);
+        }
+        while (opened != 0);
 
         return convertListOfIntToByteArray(buffer);
     }
@@ -606,7 +610,8 @@ public final class Type1Parser
             }
             buffer.add(currentByte);
             nextByte = stream.peek();
-        } while (isNotBlankSperator(nextByte) && isNotBeginOfName(nextByte) && isNotSeparator(nextByte));
+        }
+        while (isNotBlankSperator(nextByte) && isNotBeginOfName(nextByte) && isNotSeparator(nextByte));
 
         return convertListOfIntToByteArray(buffer);
     }

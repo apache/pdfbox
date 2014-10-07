@@ -576,12 +576,23 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
      */
     protected void registerError(String msg, String errorCode)
     {
-        registerError(msg, errorCode, false);
+        registerError(msg, errorCode, null);
+    }
+
+    public void registerError(String msg, String errorCode, Throwable cause)
+    {
+        registerError(msg, errorCode, false, cause);
     }
     
     protected void registerError(String msg, String errorCode, boolean warning)
     {
-        ValidationError error = new ValidationError(errorCode, msg);
+        registerError(msg, errorCode, warning, null);
+    }
+
+    public void registerError(String msg, String errorCode, boolean warning,
+            Throwable cause)
+    {
+        ValidationError error = new ValidationError(errorCode, msg, cause);
         error.setWarning(warning);
         this.context.addValidationError(error);
     }

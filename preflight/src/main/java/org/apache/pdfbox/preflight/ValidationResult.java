@@ -182,11 +182,25 @@ public class ValidationResult
         private String details;
 
         /**
-         * false : this error can't be ignore true : this error can be ignore
+         * false: this error can't be ignored; true: this error can be ignored
          */
         private boolean isWarning = false;
 
         // TODO Add here COSObject or the PDObject that is linked to the error may a automatic fix can be done.
+
+        private Throwable t = null;
+
+        public Throwable getThrowable()
+        {
+            return t;
+        }
+
+        private Throwable cause = null;
+
+        public Throwable getCause()
+        {
+            return cause;
+        }
 
         /**
          * Create a validation error with the given error code
@@ -277,6 +291,28 @@ public class ValidationResult
                 // default Unkown error
                 this.details = "Unknown error";
             }
+            t = new Exception();
+        }
+
+        /**
+         * Create a validation error with the given error code and the error
+         * explanation.
+         *
+         * @param errorCode the error code
+         * @param details the error explanation
+         * @param cause the error cause
+         */
+        public ValidationError(String errorCode, String details, Throwable cause)
+        {
+            this(errorCode);
+            if (details != null)
+            {
+                StringBuilder sb = new StringBuilder(this.details.length() + details.length() + 2);
+                sb.append(this.details).append(", ").append(details);
+                this.details = sb.toString();
+            }
+            this.cause = cause;
+            t = new Exception();
         }
 
         /**
@@ -289,14 +325,8 @@ public class ValidationResult
          */
         public ValidationError(String errorCode, String details)
         {
-            this(errorCode);
-            if (details != null)
-            {
-                StringBuilder sb = new StringBuilder(this.details.length() + details.length() + 2);
-                sb.append(this.details).append(", ").append(details);
-                this.details = sb.toString();
-            }
-        }
+            this(errorCode, details, null);
+        }        
 
         /**
          * @return the error code
