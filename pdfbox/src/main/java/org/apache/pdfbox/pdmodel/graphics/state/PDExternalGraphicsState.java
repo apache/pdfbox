@@ -119,11 +119,11 @@ public class PDExternalGraphicsState implements COSObjectable
             }
             else if( key.equals( COSName.CA ) )
             {
-                gs.setAlphaConstants( getStrokingAlpaConstant() );
+                gs.setAlphaConstants( getStrokingAlphaConstant() );
             }
             else if( key.equals( COSName.CA_NS ) )
             {
-                gs.setNonStrokeAlphaConstants(getNonStrokingAlpaConstant() );
+                gs.setNonStrokeAlphaConstants(getNonStrokingAlphaConstant() );
             }
             else if( key.equals( COSName.AIS ) )
             {
@@ -159,6 +159,7 @@ public class PDExternalGraphicsState implements COSObjectable
      *
      * @return The cos object that matches this Java object.
      */
+    @Override
     public COSBase getCOSObject()
     {
         return dict;
@@ -286,7 +287,7 @@ public class PDExternalGraphicsState implements COSObjectable
         String ri = dict.getNameAsString( "RI" );
         if (ri != null)
         {
-            return RenderingIntent.valueOf(ri);
+            return RenderingIntent.fromString(ri);
         }
         else
         {
@@ -373,14 +374,11 @@ public class PDExternalGraphicsState implements COSObjectable
     public PDFontSetting getFontSetting()
     {
         PDFontSetting setting = null;
-        COSBase base = dict.getDictionaryObject( COSName.FONT );
+        COSBase base = dict.getDictionaryObject(COSName.FONT);
         if (base instanceof COSArray)
         {
-            COSArray font = (COSArray)base;
-            if( font != null )
-            {
-                setting = new PDFontSetting( font );
-            }
+            COSArray font = (COSArray) base;
+            setting = new PDFontSetting(font);
         }
         return setting;
     }
@@ -460,7 +458,7 @@ public class PDExternalGraphicsState implements COSObjectable
      *
      * @return The stroking alpha constant or null if one has not been set.
      */
-    public Float getStrokingAlpaConstant()
+    public Float getStrokingAlphaConstant()
     {
         return getFloatItem(COSName.CA);
     }
@@ -480,7 +478,7 @@ public class PDExternalGraphicsState implements COSObjectable
      *
      * @return The non stroking alpha constant or null if one has not been set.
      */
-    public Float getNonStrokingAlpaConstant()
+    public Float getNonStrokingAlphaConstant()
     {
         return getFloatItem( COSName.CA_NS );
     }
@@ -529,7 +527,8 @@ public class PDExternalGraphicsState implements COSObjectable
      *
      * @return the soft mask
      */
-    public PDSoftMask getSoftMask() {
+    public PDSoftMask getSoftMask()
+    {
         return PDSoftMask.create(dict.getDictionaryObject(COSName.SMASK));
     }
 
