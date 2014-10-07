@@ -135,11 +135,11 @@ public class PDExtendedGraphicsState implements COSObjectable
             }
             else if( key.equals( COSName.CA ) )
             {
-                gs.setAlphaConstants( getStrokingAlpaConstant().floatValue() );
+                gs.setAlphaConstants( getStrokingAlphaConstant().floatValue() );
             }
             else if( key.equals( COSName.CA_NS ) )
             {
-                gs.setNonStrokeAlphaConstants(getNonStrokingAlpaConstant().floatValue() );
+                gs.setNonStrokeAlphaConstants(getNonStrokingAlphaConstant().floatValue() );
             }
             else if( key.equals( COSName.AIS ) )
             {
@@ -451,7 +451,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      *
      * @return The stroking alpha constant or null if one has not been set.
      */
-    public Float getStrokingAlpaConstant()
+    public Float getStrokingAlphaConstant()
     {
         return getFloatItem( COSName.CA );
     }
@@ -471,7 +471,7 @@ public class PDExtendedGraphicsState implements COSObjectable
      *
      * @return The non stroking alpha constant or null if one has not been set.
      */
-    public Float getNonStrokingAlpaConstant()
+    public Float getNonStrokingAlphaConstant()
     {
         return getFloatItem( COSName.CA_NS );
     }
