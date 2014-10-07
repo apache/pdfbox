@@ -128,7 +128,7 @@ public class CIDType0DescriptorHelper extends FontDescriptorHelper<CIDType0Conta
         }
         catch (IOException e)
         {
-            this.fContainer.push(new ValidationError(ERROR_FONTS_CID_DAMAGED, "The FontFile can't be read"));
+            this.fContainer.push(new ValidationError(ERROR_FONTS_CID_DAMAGED, "The FontFile can't be read", e));
         }
     }
 
