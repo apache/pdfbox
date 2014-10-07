@@ -47,7 +47,6 @@ public abstract class DescendantFontValidator<T extends FontContainer> extends S
     public DescendantFontValidator(PreflightContext context, PDCIDFont font, T fContainer)
     {
         super(context, font, font.getCOSObject(), fContainer);
-        this.font = font;
         cosDocument = context.getDocument().getDocument();
     }
 
@@ -78,7 +77,6 @@ public abstract class DescendantFontValidator<T extends FontContainer> extends S
      * </UL>
      * 
      * @param sysinfo
-     * @return
      */
     protected void checkCIDSystemInfo(COSBase sysinfo)
     {
@@ -94,7 +92,6 @@ public abstract class DescendantFontValidator<T extends FontContainer> extends S
             {
                 this.fontContainer.push(new ValidationError(ERROR_FONTS_CIDKEYED_SYSINFO));
             }
-
         }
         else
         {
@@ -104,24 +101,26 @@ public abstract class DescendantFontValidator<T extends FontContainer> extends S
 
     /**
      * This method checks the CIDtoGIDMap entry of the Font dictionary. call the
-     * {@linkplain #checkCIDToGIDMap(COSBase, boolean)} with right parameters according to the instance of
-     * DescendantFontValidator
-     * 
+     * {@linkplain #checkCIDToGIDMap(COSBase, boolean)} with right parameters
+     * according to the instance of DescendantFontValidator
+     *
      * @param ctog
      */
     protected abstract void checkCIDToGIDMap(COSBase ctog);
 
     /**
-     * This method checks the CIDtoGIDMap entry of the Font dictionary. This element must be a Stream or a Name. If it
-     * is a name, it must be "Identity" otherwise, the PDF file isn't a PDF/A-1b.
-     * 
-     * If the validation fails the list of errors in the FontContainer is updated.
-     * 
-     * If the CIDtoGIDMap is a Stream, it is parsed as a CMap and the result is returned.
-     * 
+     * This method checks the CIDtoGIDMap entry of the Font dictionary. This
+     * element must be a Stream or a Name. If it is a name, it must be
+     * "Identity" otherwise, the PDF file isn't a PDF/A-1b.
+     *
+     * If the validation fails the list of errors in the FontContainer is
+     * updated.
+     *
+     * If the CIDtoGIDMap is a Stream, it is parsed as a CMap and the result is
+     * returned.
+     *
      * @param ctog
-     * @param mandatory
-     *            true for CIDType2 , false for CIDType0
+     * @param mandatory true for CIDType2 , false for CIDType0
      * @return
      */
     protected CIDToGIDMap checkCIDToGIDMap(COSBase ctog, boolean mandatory)
