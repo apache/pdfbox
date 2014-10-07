@@ -65,17 +65,52 @@ public abstract class SimpleFontValidator<T extends FontContainer> extends FontV
 
     protected void checkMandatoryField()
     {
-        boolean areFieldsPResent = fontDictionary.containsKey(COSName.TYPE);
-        areFieldsPResent &= fontDictionary.containsKey(COSName.SUBTYPE);
-        areFieldsPResent &= fontDictionary.containsKey(COSName.BASE_FONT);
-        areFieldsPResent &= fontDictionary.containsKey(COSName.FIRST_CHAR);
-        areFieldsPResent &= fontDictionary.containsKey(COSName.LAST_CHAR);
-        areFieldsPResent &= fontDictionary.containsKey(COSName.WIDTHS);
-
-        if (!areFieldsPResent)
+        String missingFields = "";
+        boolean areFieldsPresent = fontDictionary.containsKey(COSName.TYPE);
+        if (!areFieldsPresent)
         {
+            missingFields = "type, ";
+        }
+        boolean subType = fontDictionary.containsKey(COSName.SUBTYPE);
+        areFieldsPresent &= subType;
+        if (!subType)
+        {
+            missingFields += "subType, ";
+        }
+        boolean baseFont = fontDictionary.containsKey(COSName.BASE_FONT);
+        areFieldsPresent &= baseFont;
+        if (!baseFont)
+        {
+            missingFields += "baseFont, ";
+        }
+        boolean firstChar = fontDictionary.containsKey(COSName.FIRST_CHAR);
+        areFieldsPresent &= firstChar;
+        if (!firstChar)
+        {
+            missingFields += "firstChar, ";
+        }
+        boolean lastChar = fontDictionary.containsKey(COSName.LAST_CHAR);
+        areFieldsPresent &= lastChar;
+        if (!lastChar)
+        {
+            missingFields += "lastChar, ";
+        }
+        boolean widths = fontDictionary.containsKey(COSName.WIDTHS);
+        areFieldsPresent &= widths;
+        if (!widths)
+        {
+            missingFields += "widths, ";
+        }
+
+        if (!areFieldsPresent)
+        {
+            if (missingFields.endsWith(", "))
+            {
+                missingFields = missingFields.substring(0, missingFields.length() - 2);
+            }
             this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID,
-                    "Some required fields are missing from the Font dictionary."));
+                    this.font.getName()
+                    + ": some required fields are missing from the Font dictionary: " + missingFields + "."));
         }
     }
 
