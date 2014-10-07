@@ -123,19 +123,69 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
 
     protected boolean checkMandatoryFields(COSDictionary fDescriptor)
     {
+        String missingFields = "";
         boolean areFieldsPresent = fDescriptor.containsKey(FONT_DICTIONARY_KEY_FONTNAME);
-        areFieldsPresent &= fDescriptor.containsKey(FONT_DICTIONARY_KEY_FLAGS);
-        areFieldsPresent &= fDescriptor.containsKey(FONT_DICTIONARY_KEY_ITALICANGLE);
-        areFieldsPresent &= fDescriptor.containsKey(FONT_DICTIONARY_KEY_CAPHEIGHT);
-        areFieldsPresent &= fDescriptor.containsKey(FONT_DICTIONARY_KEY_FONTBBOX);
-        areFieldsPresent &= fDescriptor.containsKey(FONT_DICTIONARY_KEY_ASCENT);
-        areFieldsPresent &= fDescriptor.containsKey(FONT_DICTIONARY_KEY_DESCENT);
-        areFieldsPresent &= fDescriptor.containsKey(FONT_DICTIONARY_KEY_STEMV);
-        areFieldsPresent &= fDescriptor.containsKey(COSName.FONT_NAME);
         if (!areFieldsPresent)
         {
+            missingFields += FONT_DICTIONARY_KEY_FONTNAME + ", ";
+        }
+        boolean flags = fDescriptor.containsKey(FONT_DICTIONARY_KEY_FLAGS);
+        areFieldsPresent &= flags;
+        if (!flags)
+        {
+            missingFields += FONT_DICTIONARY_KEY_FLAGS + ", ";
+        }
+        boolean italicAngle = fDescriptor.containsKey(FONT_DICTIONARY_KEY_ITALICANGLE);
+        areFieldsPresent &= italicAngle;
+        if (!italicAngle)
+        {
+            missingFields += FONT_DICTIONARY_KEY_ITALICANGLE + ", ";
+        }
+        boolean capHeight = fDescriptor.containsKey(FONT_DICTIONARY_KEY_CAPHEIGHT);
+        areFieldsPresent &= capHeight;
+        if (!capHeight)
+        {
+            missingFields += FONT_DICTIONARY_KEY_CAPHEIGHT + ", ";
+        }
+        boolean fontBox = fDescriptor.containsKey(FONT_DICTIONARY_KEY_FONTBBOX);
+        areFieldsPresent &= fontBox;
+        if (!fontBox)
+        {
+            missingFields += FONT_DICTIONARY_KEY_FONTBBOX + ", ";
+        }
+        boolean ascent = fDescriptor.containsKey(FONT_DICTIONARY_KEY_ASCENT);
+        areFieldsPresent &= ascent;
+        if (!ascent)
+        {
+            missingFields += FONT_DICTIONARY_KEY_ASCENT + ", ";
+        }
+        boolean descent = fDescriptor.containsKey(FONT_DICTIONARY_KEY_DESCENT);
+        areFieldsPresent &= descent;
+        if (!descent)
+        {
+            missingFields += FONT_DICTIONARY_KEY_DESCENT + ", ";
+        }
+        boolean stemV = fDescriptor.containsKey(FONT_DICTIONARY_KEY_STEMV);
+        areFieldsPresent &= stemV;
+        if (!stemV)
+        {
+            missingFields += FONT_DICTIONARY_KEY_STEMV + ", ";
+        }
+        boolean name = fDescriptor.containsKey(COSName.FONT_NAME);
+        areFieldsPresent &= name;
+        if (!name)
+        {
+            missingFields += COSName.FONT_NAME + ", ";
+        }
+        if (!areFieldsPresent)
+        {
+            if (missingFields.endsWith(", "))
+            {
+                missingFields = missingFields.substring(0, missingFields.length() - 2);
+            }
             this.fContainer.push(new ValidationError(ERROR_FONTS_DESCRIPTOR_INVALID,
-                    "Some mandatory fields are missing from the FontDescriptor"));
+                    this.font.getName()
+                    + ": some mandatory fields are missing from the FontDescriptor: " + missingFields));
         }
         return areFieldsPresent;
     }
