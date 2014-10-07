@@ -61,6 +61,7 @@ public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container>
         super(context, font, fontContainer);
     }
 
+    @Override
     protected boolean checkMandatoryFields(COSDictionary fDescriptor)
     {
         boolean result = super.checkMandatoryFields(fDescriptor);
@@ -131,9 +132,9 @@ public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container>
     }
 
     /**
-     * Try to load the font using the java.awt.font object. if the font is invalid, an exception will be pushed in the
-     * font container
-     * 
+     * Try to load the font using the java.awt.font object. if the font is
+     * invalid, an exception will be pushed in the font container
+     *
      * @param fontDescriptor
      * @param fontFile
      */

@@ -74,6 +74,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
         this.font = font;
     }
 
+    @Override
     public void validate() throws ValidationException
     {
         checkMandatoryField();
@@ -103,7 +104,8 @@ public class Type3FontValidator extends FontValidator<Type3Container>
     }
 
     /**
-     * Check that the FontBBox element has the right format as declared in the PDF reference document.
+     * Check that the FontBBox element has the right format as declared in the
+     * PDF reference document.
      */
     private void checkFontBBox()
     {
@@ -126,17 +128,15 @@ public class Type3FontValidator extends FontValidator<Type3Container>
                     "The FontBBox element is invalid"));
             return;
         }
-        else
+        
+        for (int i = 0; i < 4; i++)
         {
-            for (int i = 0; i < 4; i++)
+            COSBase elt = bbox.get(i);
+            if (!(COSUtils.isFloat(elt, cosDocument) || COSUtils.isInteger(elt, cosDocument)))
             {
-                COSBase elt = bbox.get(i);
-                if (!(COSUtils.isFloat(elt, cosDocument) || COSUtils.isInteger(elt, cosDocument)))
-                {
-                    this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID,
-                            "An element of FontBBox isn't a number"));
-                    return;
-                }
+                this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID,
+                        "An element of FontBBox isn't a number"));
+                return;
             }
         }
     }
@@ -165,40 +165,38 @@ public class Type3FontValidator extends FontValidator<Type3Container>
                     "The FontMatrix element is invalid"));
             return;
         }
-        else
+
+        for (int i = 0; i < 6; i++)
         {
-            for (int i = 0; i < 6; i++)
+            COSBase elt = matrix.get(i);
+            if (!(COSUtils.isFloat(elt, cosDocument) || COSUtils.isInteger(elt, cosDocument)))
             {
-                COSBase elt = matrix.get(i);
-                if (!(COSUtils.isFloat(elt, cosDocument) || COSUtils.isInteger(elt, cosDocument)))
-                {
-                    this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID,
-                            "An element of FontMatrix isn't a number"));
-                    return;
-                }
+                this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID,
+                        "An element of FontMatrix isn't a number"));
+                return;
             }
         }
     }
 
-    @Override
     /**
-     * For a Type3 font, the mapping between the Character Code and the Character
-     * name is entirely defined in the Encoding Entry. The Encoding Entry can be a
-     * Name (For the 5 predefined Encoding) or a Dictionary. If it is a
-     * dictionary, the "Differences" array contains the correspondence between a
-     * character code and a set of character name which are different from the
-     * encoding entry of the dictionary.
-     * 
+     * For a Type3 font, the mapping between the Character Code and the
+     * Character name is entirely defined in the Encoding Entry. The Encoding
+     * Entry can be a Name (For the 5 predefined Encoding) or a Dictionary. If
+     * it is a dictionary, the "Differences" array contains the correspondence
+     * between a character code and a set of character name which are different
+     * from the encoding entry of the dictionary.
+     *
      * This method checks that the encoding is :
      * <UL>
      * <li>An existing encoding name.
-     * <li>A dictionary with an existing encoding name (the name is optional) and
-     * a well formed "Differences" array (the array is optional)
+     * <li>A dictionary with an existing encoding name (the name is optional)
+     * and a well formed "Differences" array (the array is optional)
      * </UL>
-     * 
-     * At the end of this method, if the validation succeed the Font encoding is kept in the {@link #encoding} attribute
-     * @return
+     *
+     * At the end of this method, if the validation succeed the Font encoding is
+     * kept in the {@link #encoding} attribute
      */
+    @Override
     protected void checkEncoding()
     {
         COSBase fontEncoding = fontDictionary.getItem(COSName.ENCODING);
