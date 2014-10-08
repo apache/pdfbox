@@ -50,15 +50,23 @@ public class PDFMerger
     private void merge( String[] args ) throws Exception
     {
         String destinationFileName = "";
-        String sourceFileName = null;
+        String sourceFileName;
 
-        if ( args.length < 3 )
+        boolean nonSeq = false;
+        int firstFileArgPos = 0;
+        if (args.length > 0 && args[0].equals("-nonSeq"))
+        {
+            nonSeq = true;
+            firstFileArgPos = 1;
+        }
+
+        if ( args.length - firstFileArgPos < 3 )
         {
             usage();
         }
 
         PDFMergerUtility merger = new PDFMergerUtility();
-        for( int i=0; i<args.length-1; i++ )
+        for( int i=firstFileArgPos; i<args.length-1; i++ )
         {
             sourceFileName = args[i];
             merger.addSource(sourceFileName);
@@ -68,7 +76,14 @@ public class PDFMerger
 
         merger.setDestinationFileName(destinationFileName);
 
-        merger.mergeDocuments();
+        if (nonSeq)
+        {
+            merger.mergeDocumentsNonSeq(null);
+        }
+        else
+        {
+            merger.mergeDocuments();
+        }
     }
 
     /**
@@ -76,7 +91,8 @@ public class PDFMerger
      */
     private static void usage()
     {
-        System.err.println( "Usage: java -jar pdfbox-app-x.y.z.jar PDFMerger <Source PDF File 2..n> <Destination PDF File>\n" +
+        System.err.println( "Usage: java -jar pdfbox-app-x.y.z.jar PDFMerger [-nonSeq] <Source PDF File 2..n> <Destination PDF File>\n" +
+            "  -nonSeq                      use the non-sequential parser\n" +
             "  <Source PDF File 2..n>       2 or more source PDF documents to merge\n" +
             "  <Destination PDF File>       The PDF document to save the merged documents to\n"
             );
