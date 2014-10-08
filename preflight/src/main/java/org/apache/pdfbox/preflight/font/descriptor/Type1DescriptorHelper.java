@@ -47,7 +47,6 @@ import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
 import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
-import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.font.container.Type1Container;
 import org.apache.pdfbox.preflight.font.util.Type1;
 import org.apache.pdfbox.preflight.font.util.Type1Parser;
@@ -132,7 +131,7 @@ public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container>
     }
 
     /**
-     * Try to load the font using the java.awt.font object. if the font is
+     * Try to load the font using the java.awt.font object. If the font is
      * invalid, an exception will be pushed in the font container
      *
      * @param fontDescriptor
@@ -175,10 +174,10 @@ public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container>
     }
 
     /**
-     * Type1C is a CFF font format, extract all CFFFont object from the stream
+     * Type1C is a CFF font format, extract all CFFFont objects from the stream
      *
-     * @return
-     * @throws ValidationException
+     * @param fontDescriptor The font descriptor
+     * @param fontFile The font file
      */
     protected void processFontFile3(PDFontDescriptor fontDescriptor, PDStream fontFile)
     {
@@ -194,7 +193,7 @@ public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container>
         }
         catch (IOException e)
         {
-            this.fContainer.push(new ValidationError(ERROR_FONTS_CID_DAMAGED, "The FontFile can't be read"));
+            this.fContainer.push(new ValidationError(ERROR_FONTS_CID_DAMAGED, "The FontFile can't be read", e));
         }
     }
 }

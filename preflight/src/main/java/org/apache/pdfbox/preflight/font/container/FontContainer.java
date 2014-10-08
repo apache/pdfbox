@@ -159,13 +159,14 @@ public abstract class FontContainer
     protected abstract float getFontProgramWidth(int cid) throws GlyphException;
 
     /**
-     * Test if both width are consistent. At the end of this method, the CID is marked as valid or invalid.
-     * 
+     * Test if both widths are consistent. At the end of this method, the CID is
+     * marked as valid or invalid.
+     *
      * @param cid
      * @param expectedWidth
-     * @param foundWidth
-     *            the glyph width found in the font program, a negative value if the CID is missing from the font.
-     * @throws GlyphException
+     * @param foundWidth the glyph width found in the font program, a negative
+     * value if the CID is missing from the font.
+     * @throws GlyphException the appropriate exception if the CID is invalid.
      */
     protected void checkWidthsConsistency(int cid, float expectedWidth, float foundWidth) throws GlyphException
     {
@@ -182,8 +183,8 @@ public abstract class FontContainer
         if (Math.abs(foundWidth - expectedWidth) > 1)
         {
             GlyphException e = new GlyphException(PreflightConstants.ERROR_FONTS_METRICS, cid,
-                    "Width of the character \"" + cid + "\" in the font program \"" + this.font.getBaseFont()
-                            + "\" is inconsistent with the width in the PDF dictionary.");
+                    "Width (" + foundWidth + ") of the character \"" + cid + "\" in the font program \"" + this.font.getBaseFont()
+                            + "\" is inconsistent with the width (" + expectedWidth + ") in the PDF dictionary.");
             markCIDAsInvalid(cid, e);
             throw e;
         }

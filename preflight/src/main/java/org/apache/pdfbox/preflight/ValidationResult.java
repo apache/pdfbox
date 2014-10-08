@@ -369,6 +369,7 @@ public class ValidationResult
             return errorCode.hashCode();
         }
 
+        @Override
         public boolean equals (Object o) {
             if (o instanceof ValidationError) {
                 ValidationError ve = (ValidationError)o;
