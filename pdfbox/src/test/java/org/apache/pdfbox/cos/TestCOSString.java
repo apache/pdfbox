@@ -19,6 +19,7 @@ package org.apache.pdfbox.cos;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -419,5 +420,24 @@ public class TestCOSString extends TestCOSBase
         assertFalse(str1.hashCode() == str3.hashCode());
         str3.setForceLiteralForm(true);
         assertTrue(str1.hashCode() == str3.hashCode());
+    }
+    
+    /**
+     * Test testCompareFromHexString() - tests that Strings created from hex
+     * compare correctly (JDK bug PDFBOX-2401)
+     */
+    public void testCompareFromHexString() throws IOException
+    {
+        COSString test1 = COSString.createFromHexString("000000FF000000");
+        COSString test2 = COSString.createFromHexString("000000FF00FFFF");
+        assertEquals(test1, test1);
+        assertEquals(test2, test2);
+        assertFalse(test1.getHexString().equals(test2.getHexString()));
+        assertFalse(Arrays.equals(test1.getBytes(), test2.getBytes()));
+        assertFalse(test1.equals(test2));
+        assertFalse(test2.equals(test1));
+
+        // if this test fails, then the JDK bug has been fixed!
+        assertEquals(test1.getString(), test2.getString());
     }
 }
