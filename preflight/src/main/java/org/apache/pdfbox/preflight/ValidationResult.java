@@ -216,7 +216,7 @@ public class ValidationResult
             }
             else if (errorCode.startsWith(PreflightConstants.ERROR_SYNTAX_HEADER))
             {
-                this.details = "Body Syntax error";
+                this.details = "Header Syntax error";
             }
             else if (errorCode.startsWith(PreflightConstants.ERROR_SYNTAX_BODY))
             {
