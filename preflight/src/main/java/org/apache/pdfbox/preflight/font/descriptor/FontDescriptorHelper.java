@@ -185,7 +185,7 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
             }
             this.fContainer.push(new ValidationError(ERROR_FONTS_DESCRIPTOR_INVALID,
                     this.font.getName()
-                    + ": some mandatory fields are missing from the FontDescriptor: " + missingFields));
+                    + ": some mandatory fields are missing from the FontDescriptor: " + missingFields + "."));
         }
         return areFieldsPresent;
     }
