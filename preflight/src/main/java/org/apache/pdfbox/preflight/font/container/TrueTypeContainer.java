@@ -142,7 +142,7 @@ public class TrueTypeContainer extends FontContainer
         }
         catch (IOException e)
         {
-            throw new GlyphException(PreflightConstants.ERROR_FONTS_GLYPH, cid, "Unexpected error during the width validtion for the character CID(" + cid+") : " + e.getMessage());
+            throw new GlyphException(PreflightConstants.ERROR_FONTS_GLYPH, cid, "Unexpected error during the width validation for the character CID(" + cid+") : " + e.getMessage());
         }
     }
 
