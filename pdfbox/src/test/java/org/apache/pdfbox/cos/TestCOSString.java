@@ -422,9 +422,9 @@ public class TestCOSString extends TestCOSBase
         assertTrue(str1.hashCode() == str3.hashCode());
     }
     
-    /**
+   /**
      * Test testCompareFromHexString() - tests that Strings created from hex
-     * compare correctly (JDK bug PDFBOX-2401)
+     * compare correctly (PDFBOX-2401)
      */
     public void testCompareFromHexString() throws IOException
     {
@@ -436,8 +436,6 @@ public class TestCOSString extends TestCOSBase
         assertFalse(Arrays.equals(test1.getBytes(), test2.getBytes()));
         assertFalse(test1.equals(test2));
         assertFalse(test2.equals(test1));
-
-        // if this test fails, then the JDK bug has been fixed!
-        assertEquals(test1.getString(), test2.getString());
+        assertFalse(test1.getString().equals(test2.getString()));
     }
 }
