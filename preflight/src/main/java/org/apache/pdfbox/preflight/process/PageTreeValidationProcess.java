@@ -24,8 +24,6 @@ package org.apache.pdfbox.preflight.process;
 import static org.apache.pdfbox.preflight.PreflightConfiguration.PAGE_PROCESS;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_NOCATALOG;
 
-import java.util.List;
-
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.preflight.PreflightContext;
@@ -41,10 +39,10 @@ public class PageTreeValidationProcess extends AbstractProcess
         PDDocumentCatalog catalog = context.getDocument().getDocumentCatalog();
         if (catalog != null)
         {
-            List<?> pages = catalog.getAllPages();
-            for (int i = 0; i < pages.size(); ++i)
+            int numPages = context.getDocument().getNumberOfPages();
+            for (int i = 0; i < numPages; i++)
             {
-                validatePage(context, (PDPage) pages.get(i));
+                validatePage(context, context.getDocument().getPage(i));
             }
         }
         else
