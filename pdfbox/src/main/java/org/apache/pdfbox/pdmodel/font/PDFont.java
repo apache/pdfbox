@@ -518,6 +518,9 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     }
 
     @Override
+    public abstract boolean isDamaged();
+
+    @Override
     public boolean equals(Object other)
     {
         return other instanceof PDFont && ((PDFont) other).getCOSObject() == this.getCOSObject();

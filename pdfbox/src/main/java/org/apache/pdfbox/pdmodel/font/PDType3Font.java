@@ -178,6 +178,13 @@ public class PDType3Font extends PDSimpleFont
         return fontMatrix;
     }
 
+    @Override
+    public boolean isDamaged()
+    {
+        // there's no font file to load
+        return false;
+    }
+
     /**
      * Returns the optional resources of the type3 stream.
      *

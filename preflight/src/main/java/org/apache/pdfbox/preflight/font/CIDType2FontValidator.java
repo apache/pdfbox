@@ -26,11 +26,9 @@ import org.apache.pdfbox.pdmodel.font.PDCIDFontType2;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.font.container.CIDType2Container;
 import org.apache.pdfbox.preflight.font.descriptor.CIDType2DescriptorHelper;
-import org.apache.pdfbox.preflight.font.util.CIDToGIDMap;
 
 public class CIDType2FontValidator extends DescendantFontValidator<CIDType2Container>
 {
-
     public CIDType2FontValidator(PreflightContext context, PDCIDFontType2 font)
     {
         super(context, font, new CIDType2Container(font));
@@ -39,8 +37,7 @@ public class CIDType2FontValidator extends DescendantFontValidator<CIDType2Conta
     @Override
     protected void checkCIDToGIDMap(COSBase ctog)
     {
-        CIDToGIDMap cidToGid = checkCIDToGIDMap(ctog, true);
-        this.fontContainer.setCidToGid(cidToGid);
+        checkCIDToGIDMap(ctog, true);
     }
 
     @Override
@@ -48,5 +45,4 @@ public class CIDType2FontValidator extends DescendantFontValidator<CIDType2Conta
     {
         this.descriptorHelper = new CIDType2DescriptorHelper(context, font, fontContainer);
     }
-
 }

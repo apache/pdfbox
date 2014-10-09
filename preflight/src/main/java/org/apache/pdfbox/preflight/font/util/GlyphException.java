@@ -26,17 +26,17 @@ public class GlyphException extends Exception
     private String errorCode;
     private int invalidCid;
 
-    public GlyphException(String code, int cid)
+    public GlyphException(String errorCode, int cid)
     {
         super();
-        this.errorCode = code;
+        this.errorCode = errorCode;
         this.invalidCid = cid;
     }
 
-    public GlyphException(String code, int cid, String message)
+    public GlyphException(String errorCode, int cid, String message)
     {
         super(message);
-        this.errorCode = code;
+        this.errorCode = errorCode;
         this.invalidCid = cid;
     }
 

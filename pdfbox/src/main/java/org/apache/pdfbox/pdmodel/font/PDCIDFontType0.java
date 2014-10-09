@@ -52,6 +52,7 @@ public class PDCIDFontType0 extends PDCIDFont
 
     private final Map<Integer, Float> glyphHeights = new HashMap<Integer, Float>();
     private final boolean isEmbedded;
+    private final boolean isDamaged;
 
     private Float avgWidth = null;
     private Matrix fontMatrix;
@@ -81,7 +82,18 @@ public class PDCIDFontType0 extends PDCIDFont
         {
             // embedded
             CFFParser cffParser = new CFFParser();
-            CFFFont cffFont = cffParser.parse(bytes).get(0);
+            boolean fontIsDamaged = false;
+            CFFFont cffFont = null;
+            try
+            {
+                cffFont = cffParser.parse(bytes).get(0);
+            }
+            catch (IOException e)
+            {
+                LOG.error("Can't read the embedded CFF font " + fd.getFontName(), e);
+                fontIsDamaged = true;
+            }
+
             if (cffFont instanceof CFFCIDFont)
             {
                 cidFont = (CFFCIDFont)cffFont;
@@ -93,6 +105,7 @@ public class PDCIDFontType0 extends PDCIDFont
                 t1Font = (CFFType1Font)cffFont;
             }
             isEmbedded = true;
+            isDamaged = fontIsDamaged;
         }
         else
         {
@@ -135,6 +148,7 @@ public class PDCIDFontType0 extends PDCIDFont
                 }
             }
             isEmbedded = false;
+            isDamaged = false;
         }
         fontMatrixTransform = getFontMatrix().createAffineTransform();
         fontMatrixTransform.scale(1000, 1000);
@@ -258,6 +272,12 @@ public class PDCIDFontType0 extends PDCIDFont
     public boolean isEmbedded()
     {
         return isEmbedded;
+    }
+
+    @Override
+    public boolean isDamaged()
+    {
+        return isDamaged;
     }
 
     @Override

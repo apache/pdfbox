@@ -36,16 +36,19 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
+import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.font.container.TrueTypeContainer;
 
 public class TrueTypeDescriptorHelper extends FontDescriptorHelper<TrueTypeContainer>
 {
+    private final PDTrueTypeFont pdTrueTypeFont;
 
-    public TrueTypeDescriptorHelper(PreflightContext context, PDFont font, TrueTypeContainer fontContainer)
+    public TrueTypeDescriptorHelper(PreflightContext context, PDTrueTypeFont font, TrueTypeContainer fontContainer)
     {
         super(context, font, fontContainer);
+        pdTrueTypeFont = font;
     }
 
     @Override
@@ -74,36 +77,29 @@ public class TrueTypeDescriptorHelper extends FontDescriptorHelper<TrueTypeConta
     @Override
     protected void processFontFile(PDFontDescriptor fontDescriptor, PDStream fontFile)
     {
-        /*
-         * Try to load the font using the TTFParser object. If the font is invalid, an exception will be thrown. Because
-         * of it is a Embedded Font Program, some tables are required and other are optional see PDF Reference (§5.8)
-         */
-        ByteArrayInputStream bis = null;
-        try
+        if (font.isDamaged())
         {
-
-            bis = new ByteArrayInputStream(fontFile.getByteArray());
-            TrueTypeFont ttf = new TTFParser(true).parse(bis);
-
-            if (fontDescriptor.isSymbolic() && ttf.getCmap().getCmaps().length != 1)
-            {
-                this.fContainer.push(new ValidationError(ERROR_FONTS_ENCODING,
-                        "The Encoding should be missing for the Symbolic TTF"));
-            }
-            else
-            {
-                ((TrueTypeContainer) this.fContainer).setTrueTypeFont(ttf);
-                // TODO check the WIdth consistency too
-            }
+            this.fContainer.push(new ValidationError(ERROR_FONTS_TRUETYPE_DAMAGED,
+                    "The FontFile can't be read for " + this.font.getName()));
         }
-        catch (IOException e)
+        else
         {
-            this.fContainer.push(new ValidationError(ERROR_FONTS_TRUETYPE_DAMAGED, "The FontFile can't be read for "
-                    + this.font.getName()));
-        }
-        finally
-        {
-            IOUtils.closeQuietly(bis);
+            // there must be exactly one encoding in the "cmap" table if the font is symbolic
+            TrueTypeFont ttf = pdTrueTypeFont.getTrueTypeFont();
+            try
+            {
+                if (pdTrueTypeFont.isSymbolic() && ttf.getCmap().getCmaps().length != 1)
+                {
+                    this.fContainer.push(new ValidationError(ERROR_FONTS_ENCODING,
+                            "Symbolic TrueType font has more than one 'cmap' entry for " +
+                            this.font.getName()));
+                }
+            }
+            catch (IOException e)
+            {
+                this.fContainer.push(new ValidationError(ERROR_FONTS_TRUETYPE_DAMAGED,
+                        "The TTF 'cmap' could not be read for " + this.font.getName()));
+            }
         }
     }
 }

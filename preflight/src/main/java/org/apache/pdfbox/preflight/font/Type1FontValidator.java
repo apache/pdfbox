@@ -33,6 +33,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.font.container.Type1Container;
@@ -42,7 +43,7 @@ import org.apache.pdfbox.preflight.utils.COSUtils;
 public class Type1FontValidator extends SimpleFontValidator<Type1Container>
 {
 
-    public Type1FontValidator(PreflightContext context, PDSimpleFont font)
+    public Type1FontValidator(PreflightContext context, PDType1Font font)
     {
         super(context, font, font.getCOSObject(), new Type1Container(font));
     }
@@ -50,7 +51,7 @@ public class Type1FontValidator extends SimpleFontValidator<Type1Container>
     @Override
     protected void createFontDescriptorHelper()
     {
-        this.descriptorHelper = new Type1DescriptorHelper(context, (PDSimpleFont) font, fontContainer);
+        this.descriptorHelper = new Type1DescriptorHelper(context, (PDType1Font) font, fontContainer);
     }
 
     @Override

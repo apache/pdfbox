@@ -124,7 +124,7 @@ public class TestIsartor
             {
                 result = e.getResult();
             }
-            assertFalse(path.getName() + " : Isartor file should be invalid", result.isValid());
+            assertFalse(path.getName() + " : Isartor file should be invalid (expected " + this.expectedError + ")", result.isValid());
             assertTrue(path.getName() + " : Should find at least one error", result.getErrorsList().size() > 0);
 
             // could contain more than one error

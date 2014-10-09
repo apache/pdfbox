@@ -22,41 +22,18 @@
 package org.apache.pdfbox.preflight.font.container;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.fontbox.cff.CFFCIDFont;
-import org.apache.fontbox.cff.CFFFont;
 import org.apache.pdfbox.pdmodel.font.PDCIDFontType0;
-import org.apache.pdfbox.preflight.font.util.FontLike;
 
-public class CIDType0Container extends FontContainer
+public class CIDType0Container extends FontContainer<PDCIDFontType0>
 {
-    protected List<CFFFont> lCFonts = new ArrayList<CFFFont>();
-
     public CIDType0Container(PDCIDFontType0 font)
     {
-        super(new FontLike(font));
+        super(font);
     }
 
     @Override
-    protected float getFontProgramWidth(int cid)
+    public boolean hasGlyph(int code) throws IOException
     {
-        CFFCIDFont cffFont = (CFFCIDFont)lCFonts.get(0);
-        try
-        {
-            // fixme: this does not take into account the PDF's CMap or the FontDescriptor's default width
-            return cffFont.getType2CharString(cid).getWidth();
-        }
-        catch (IOException e)
-        {
-            return -1;
-        }
+        return font.codeToGID(code) != 0;
     }
-
-    public void setlCFonts(List<CFFFont> lCFonts)
-    {
-        this.lCFonts = lCFonts;
-    }
-
 }
