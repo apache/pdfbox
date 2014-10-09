@@ -35,6 +35,8 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
+import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Equivalent;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
@@ -42,7 +44,7 @@ import org.apache.pdfbox.preflight.font.container.Type1Container;
 
 public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container>
 {
-    public Type1DescriptorHelper(PreflightContext context, PDType1Font font, Type1Container fontContainer)
+    public Type1DescriptorHelper(PreflightContext context, PDType1Equivalent font, Type1Container fontContainer)
     {
         super(context, font, fontContainer);
     }
