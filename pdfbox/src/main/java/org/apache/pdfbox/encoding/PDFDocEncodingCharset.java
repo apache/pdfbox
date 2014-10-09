@@ -40,7 +40,7 @@ public class PDFDocEncodingCharset extends SingleByteCharset
         char[] encoding = new char[256];
 
         //Initialize with basically ISO-8859-1
-        for (int i = 0; i < 255; i++)
+        for (int i = 0; i < 256; i++)
         {
             encoding[i] = (char)i;
         }
