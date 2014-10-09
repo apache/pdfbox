@@ -21,6 +21,7 @@
 
 package org.apache.xmpbox.schema;
 
+import java.io.ByteArrayOutputStream;
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.type.OECFType;
 import org.apache.xmpbox.type.TextType;
@@ -34,9 +35,6 @@ import java.io.InputStream;
 
 public class TestExifXmp
 {
-
-
-
     @Test
     public void testNonStrict() throws Exception
     {
@@ -52,7 +50,8 @@ public class TestExifXmp
     }
 
     @Test
-    public void testGenerate () throws Exception {
+    public void testGenerate () throws Exception
+    {
         XMPMetadata metadata = XMPMetadata.createXMPMetadata();
         TypeMapping tmapping = metadata.getTypeMapping();
         ExifSchema exif = new ExifSchema(metadata);
@@ -63,9 +62,7 @@ public class TestExifXmp
         exif.addProperty(oecf);
 
         XmpSerializer serializer = new XmpSerializer();
-        serializer.serialize(metadata,System.out,false);
 
-
-
+        serializer.serialize(metadata, new ByteArrayOutputStream(), false);
     }
 }
