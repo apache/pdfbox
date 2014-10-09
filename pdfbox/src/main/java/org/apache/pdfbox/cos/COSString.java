@@ -22,7 +22,6 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -482,9 +481,7 @@ public class COSString extends COSBase
         if (obj instanceof COSString)
         {
             COSString strObj = (COSString) obj;
-            // Workaround because different String objects with 
-            // 0x00 and 0xFF content are equal in java?!
-            return Arrays.equals(this.getBytes(), strObj.getBytes()) && this.forceHexForm == strObj.forceHexForm;
+            return this.getString().equals(strObj.getString()) && forceHexForm == strObj.forceHexForm;
         }
         return false;
     }
