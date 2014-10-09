@@ -14,10 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.util;
+package org.apache.pdfbox.tools;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,9 +36,6 @@ import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
 
 import junit.framework.TestCase;
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.assertTrue;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,11 +44,10 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
-import org.apache.pdfbox.pdmodel.graphics.image.NullOutputStream;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
-import org.apache.pdfbox.util.ImageIOUtil;
+import org.apache.pdfbox.tools.imageio.ImageIOUtil;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -91,7 +88,8 @@ public class TestImageIOUtils extends TestCase
                         {
                             suffix = "JPEG2000";
                         }
-                        boolean writeOK = ImageIOUtil.writeImage(imageObject.getImage(), suffix, new NullOutputStream());
+                        boolean writeOK = ImageIOUtil.writeImage(imageObject.getImage(), suffix,
+                                new ByteArrayOutputStream());
                         assertTrue(writeOK);
                     }
                 }
@@ -117,7 +115,7 @@ public class TestImageIOUtils extends TestCase
         LOG.info("Preparing to convert " + file.getName());
         try
         {
-            float dpi = 120;
+            float dpi = 36; // low DPI so that rendering is FAST
             document = PDDocument.load(file);
 
             // Save image resources of first page

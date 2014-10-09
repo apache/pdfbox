@@ -38,7 +38,6 @@ import org.apache.pdfbox.pdmodel.edit.TestPDPageContentStream;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.TestOptionalContentGroups;
 import org.apache.pdfbox.pdmodel.interactive.form.TestFields;
 import org.apache.pdfbox.util.TestDateUtil;
-import org.apache.pdfbox.util.TestImageIOUtils;
 import org.apache.pdfbox.util.TestMatrix;
 
 /**
@@ -97,7 +96,6 @@ public class TestAll extends TestCase
 
         suite.addTestSuite( TestIOUtils.class );
         suite.addTestSuite( TestRandomAccessBuffer.class );
-        suite.addTestSuite( TestImageIOUtils.class );
         suite.addTestSuite( TestPackedBitArray.class );
         suite.addTestSuite( TestCCITTFaxG31DDecodeInputStream.class );
 

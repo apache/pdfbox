@@ -236,7 +236,7 @@ public class TestPDFToImage extends TestCase
                 new File(fileName + ".rendererror").delete();
                 LOG.info("Writing: " + fileName);
                 new FileOutputStream(new File(fileName + ".writeerror")).close();
-                ImageIOUtil.writeImage(image, fileName, 96);
+                ImageIO.write(image, "PNG", new File(fileName));
                 new File(fileName + ".writeerror").delete();
             }
 

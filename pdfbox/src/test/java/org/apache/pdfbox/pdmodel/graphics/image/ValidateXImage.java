@@ -16,6 +16,7 @@
 package org.apache.pdfbox.pdmodel.graphics.image;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
@@ -23,13 +24,15 @@ import java.util.Set;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertTrue;
+
+
+import javax.imageio.ImageIO;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.rendering.PDFRenderer;
-import org.apache.pdfbox.util.ImageIOUtil;
 
 /**
  * Helper class to do some validations for PDImageXObject.
@@ -58,11 +61,11 @@ public class ValidateXImage
         assertEquals(ximage.getWidth(), ximage.getImage().getWidth());
         assertEquals(ximage.getHeight(), ximage.getImage().getHeight());
 
-        boolean writeOk = ImageIOUtil.writeImage(ximage.getImage(),
-                format, new NullOutputStream());
+        boolean writeOk = ImageIO.write(ximage.getImage(),
+                format, new ByteArrayOutputStream());
         assertTrue(writeOk);
-        writeOk = ImageIOUtil.writeImage(ximage.getOpaqueImage(),
-                format, new NullOutputStream());
+        writeOk = ImageIO.write(ximage.getOpaqueImage(),
+                format, new ByteArrayOutputStream());
         assertTrue(writeOk);
     }
 

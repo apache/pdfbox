@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.util;
+package org.apache.pdfbox.tools.imageio;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,8 +24,8 @@ import javax.imageio.metadata.IIOInvalidTreeException;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
 import java.awt.image.BufferedImage;
-import static org.apache.pdfbox.util.MetaUtil.SUN_TIFF_FORMAT;
-import static org.apache.pdfbox.util.MetaUtil.debugLogMetadata;
+import static org.apache.pdfbox.tools.imageio.MetaUtil.SUN_TIFF_FORMAT;
+import static org.apache.pdfbox.tools.imageio.MetaUtil.debugLogMetadata;
 
 /**
  * Used by ImageIOUtil to write TIFF files.

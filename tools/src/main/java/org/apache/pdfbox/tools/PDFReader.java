@@ -40,7 +40,7 @@ import org.apache.pdfbox.tools.gui.ReaderBottomPanel;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
-import org.apache.pdfbox.util.ImageIOUtil;
+import org.apache.pdfbox.tools.imageio.ImageIOUtil;
 
 /**
  * An proof-of-concept application to read PDF documents, with very basic functionality.
