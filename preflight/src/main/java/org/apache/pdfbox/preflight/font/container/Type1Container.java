@@ -22,89 +22,23 @@
 package org.apache.pdfbox.preflight.font.container;
 
 import java.io.IOException;
-import java.util.List;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
-import org.apache.fontbox.cff.CFFFont;
-import org.apache.fontbox.cff.CFFType1Font;
-import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
-import org.apache.pdfbox.preflight.PreflightConstants;
-import org.apache.pdfbox.preflight.font.util.GlyphException;
-import org.apache.pdfbox.preflight.font.util.Type1;
-
-public class Type1Container extends FontContainer
+public class Type1Container extends FontContainer<PDType1Font>
 {
-    /**
-     * Represent the missingWidth value of the FontDescriptor dictionary. According to the PDF Reference, if this value
-     * is missing, the default one is 0.
-     */
-    private float defaultGlyphWidth = 0;
-
-    /**
-     * true if information come from the FontFile1 Stream, false if they come from the FontFile3
-     */
-    protected boolean isFontFile1 = true;
-
-    protected Type1 type1Font;
-    protected List<CFFFont> lCFonts;
-
-    private PDSimpleFont simpleFont;
-
-    public Type1Container(PDSimpleFont font)
+    public Type1Container(PDType1Font font)
     {
         super(font);
-        this.simpleFont = font;
     }
 
     @Override
-    protected float getFontProgramWidth(int cid) throws GlyphException
+    public boolean hasGlyph(int code) throws IOException
     {
-        // fixme: Type 1 fonts don't use CIDs, so this method makes little sense,
-        //        when making changes I've assumed that "cid" is actually the character code
-        //        from the PDF content stream.
-
-        float widthResult = -1;
-        try
+        if (font.isEmbedded())
         {
-            if (isFontFile1)
-            {
-                if (type1Font != null)
-                {
-                    widthResult = this.type1Font.getWidthOfCID(cid);
-                }
-            }
-            else
-            {
-                // assuming that "cid" is actually the character code
-                String name = simpleFont.getEncoding().getName(cid);
-                if (name.equals(".notdef"))
-                {
-                    throw new GlyphException(PreflightConstants.ERROR_FONTS_GLYPH_MISSING, cid, "Unknown character CID(" + cid+")");
-                }
-
-                CFFType1Font cffFont = (CFFType1Font)lCFonts.get(0);
-                widthResult = cffFont.getType1CharString(name).getWidth();
-            }
+            String name = font.codeToName(code);
+            return font.getType1Font().hasGlyph(name);
         }
-        catch (IOException e)
-        {
-            throw new GlyphException(PreflightConstants.ERROR_FONTS_GLYPH, cid, "Unexpected error during the width validation for the character CID(" + cid+") : " + e.getMessage());
-        }
-
-        return widthResult;
-    }
-
-    public void setType1Font(Type1 type1Font)
-    {
-        this.type1Font = type1Font;
-    }
-
-    public void setFontFile1(boolean isFontFile1)
-    {
-        this.isFontFile1 = isFontFile1;
-    }
-
-    public void setCFFFontObjects(List<CFFFont> lCFonts)
-    {
-        this.lCFonts = lCFonts;
+        return false;
     }
 }

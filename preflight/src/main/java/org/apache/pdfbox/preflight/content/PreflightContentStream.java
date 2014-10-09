@@ -324,7 +324,7 @@ public class PreflightContentStream extends PreflightStreamEngine
         else if (!fontContainer.isValid() && !fontContainer.errorsAleadyMerged())
         {
             context.addValidationErrors(fontContainer.getAllErrors());
-            fontContainer.setErrorsAleadyMerged(true);
+            fontContainer.setErrorsAlreadyMerged(true);
             return;
         }
         if (!fontContainer.isValid() && fontContainer.errorsAleadyMerged())

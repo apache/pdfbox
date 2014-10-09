@@ -26,8 +26,11 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_CIDKEYE
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_DICTIONARY_INVALID;
 import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VALUE_CMAP_IDENTITY;
 
+
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import java.io.InputStream;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
@@ -37,7 +40,6 @@ import org.apache.pdfbox.pdmodel.font.PDCIDFont;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.font.container.FontContainer;
-import org.apache.pdfbox.preflight.font.util.CIDToGIDMap;
 import org.apache.pdfbox.preflight.utils.COSUtils;
 
 public abstract class DescendantFontValidator<T extends FontContainer> extends SimpleFontValidator<T>
@@ -123,10 +125,8 @@ public abstract class DescendantFontValidator<T extends FontContainer> extends S
      * @param mandatory true for CIDType2 , false for CIDType0
      * @return
      */
-    protected CIDToGIDMap checkCIDToGIDMap(COSBase ctog, boolean mandatory)
+    protected void checkCIDToGIDMap(COSBase ctog, boolean mandatory)
     {
-        CIDToGIDMap cidToGidMap = null;
-
         if (COSUtils.isString(ctog, cosDocument))
         {
             // ---- valid only if the string is Identity
@@ -141,9 +141,12 @@ public abstract class DescendantFontValidator<T extends FontContainer> extends S
         {
             try
             {
-                COSStream ctogMap = COSUtils.getAsStream(ctog, cosDocument);
-                cidToGidMap = new CIDToGIDMap();
-                cidToGidMap.parseStream(ctogMap);
+                COSStream stream = COSUtils.getAsStream(ctog, cosDocument);
+
+                // todo: check the map's content? (won't pdfbox do this?)
+                InputStream is = stream.getUnfilteredStream();
+                ByteArrayOutputStream os = new ByteArrayOutputStream();
+                byte[] map = os.toByteArray();
             }
             catch (IOException e)
             {
@@ -155,6 +158,5 @@ public abstract class DescendantFontValidator<T extends FontContainer> extends S
         {
             this.fontContainer.push(new ValidationError(ERROR_FONTS_CIDKEYED_CIDTOGID));
         }
-        return cidToGidMap;
     }
 }

@@ -89,6 +89,11 @@ public interface PDFontLike
     public abstract boolean isEmbedded();
 
     /**
+     * Returns true if the embedded font file is damaged.
+     */
+    public abstract boolean isDamaged();
+
+    /**
      * This will get the average font width for all characters.
      *
      * @return The width is in 1000 unit of text space, ie 333 or 777

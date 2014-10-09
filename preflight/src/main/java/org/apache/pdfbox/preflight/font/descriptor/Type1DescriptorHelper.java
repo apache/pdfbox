@@ -22,40 +22,27 @@
 package org.apache.pdfbox.preflight.font.descriptor;
 
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_CHARSET_MISSING_FOR_SUBSET;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_CID_DAMAGED;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_FONT_FILEX_INVALID;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_TRUETYPE_DAMAGED;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_TYPE1_DAMAGED;
 import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_KEY_LENGTH2;
 import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_KEY_LENGTH3;
 import static org.apache.pdfbox.preflight.font.FontValidator.isSubSet;
 
-import java.awt.Font;
-import java.awt.FontFormatException;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.List;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.fontbox.cff.CFFFont;
-import org.apache.fontbox.cff.CFFParser;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
-import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.font.container.Type1Container;
-import org.apache.pdfbox.preflight.font.util.Type1;
-import org.apache.pdfbox.preflight.font.util.Type1Parser;
 
 public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container>
 {
-    private boolean isFontFile1 = true;
-
-    public Type1DescriptorHelper(PreflightContext context, PDFont font, Type1Container fontContainer)
+    public Type1DescriptorHelper(PreflightContext context, PDType1Font font, Type1Container fontContainer)
     {
         super(context, font, fontContainer);
     }
@@ -111,8 +98,6 @@ public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container>
         }
         else
         {
-            this.isFontFile1 = false;
-            this.fContainer.setFontFile1(isFontFile1);
             return ff3;
         }
     }
@@ -120,80 +105,10 @@ public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container>
     @Override
     protected void processFontFile(PDFontDescriptor fontDescriptor, PDStream fontFile)
     {
-        if (isFontFile1)
+        if (font.isDamaged())
         {
-            processFontFile1(fontDescriptor, fontFile);
-        }
-        else
-        {
-            processFontFile3(fontDescriptor, fontFile);
-        }
-    }
-
-    /**
-     * Try to load the font using the java.awt.font object. If the font is
-     * invalid, an exception will be pushed in the font container
-     *
-     * @param fontDescriptor
-     * @param fontFile
-     */
-    protected void processFontFile1(PDFontDescriptor fontDescriptor, PDStream fontFile)
-    {
-        ByteArrayInputStream bis = null;
-        try
-        {
-            bis = new ByteArrayInputStream(fontFile.getByteArray());
-            Font.createFont(Font.TYPE1_FONT, bis);
-            IOUtils.closeQuietly(bis);
-
-            // Parse the Type1 Font program in order to extract Glyph Width
-            COSStream streamObj = fontFile.getStream();
-            int length1 = streamObj.getInt(COSName.LENGTH1);
-            int length2 = streamObj.getInt(COSName.LENGTH2);
-            bis = new ByteArrayInputStream(fontFile.getByteArray());
-            Type1Parser parserForMetrics = Type1Parser.createParserWithEncodingObject(bis, length1, length2,
-                    ((PDSimpleFont) font).getEncoding());
-            Type1 parsedData = parserForMetrics.parse();
-
-            this.fContainer.setType1Font(parsedData);
-        }
-        catch (IOException e)
-        {
-            this.fContainer.push(new ValidationError(ERROR_FONTS_TYPE1_DAMAGED, 
-                    "The FontFile can't be read for " + font.getName() + ": " + e.getMessage(), e));
-        }
-        catch (FontFormatException e)
-        {
-            this.fContainer.push(new ValidationError(ERROR_FONTS_TYPE1_DAMAGED, 
-                    "The FontFile is damaged for " + font.getName() + ": " + e.getMessage(), e));
-        }
-        finally
-        {
-            IOUtils.closeQuietly(bis);
-        }
-    }
-
-    /**
-     * Type1C is a CFF font format, extract all CFFFont objects from the stream
-     *
-     * @param fontDescriptor The font descriptor
-     * @param fontFile The font file
-     */
-    protected void processFontFile3(PDFontDescriptor fontDescriptor, PDStream fontFile)
-    {
-        try
-        {
-            CFFParser cffParser = new CFFParser();
-            List<CFFFont> lCFonts = cffParser.parse(fontFile.getByteArray());
-            if (lCFonts == null || lCFonts.isEmpty())
-            {
-                this.fContainer.push(new ValidationError(ERROR_FONTS_CID_DAMAGED, "The FontFile can't be read"));
-            }
-            this.fContainer.setCFFFontObjects(lCFonts);
-        }
-        catch (IOException e)
-        {
-            this.fContainer.push(new ValidationError(ERROR_FONTS_CID_DAMAGED, "The FontFile can't be read", e));
+            this.fContainer.push(new ValidationError(ERROR_FONTS_TYPE1_DAMAGED,
+                    "The FontFile can't be read for " + this.font.getName()));
         }
     }
 }

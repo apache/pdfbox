@@ -326,6 +326,12 @@ public class PDType0Font extends PDFont
     }
 
     @Override
+    public boolean isDamaged()
+    {
+        return descendantFont.isDamaged();
+    }
+
+    @Override
     public String toString()
     {
         String descendant = null;

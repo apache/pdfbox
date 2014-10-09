@@ -52,6 +52,7 @@ public class PDCIDFontType2 extends PDCIDFont
     private final int[] cid2gid;
     private final boolean hasIdentityCid2Gid;
     private final boolean isEmbedded;
+    private final boolean isDamaged;
     private Matrix fontMatrix;
 
     /**
@@ -67,22 +68,25 @@ public class PDCIDFontType2 extends PDCIDFont
         PDStream ff2Stream = fd.getFontFile2();
         PDStream ff3Stream = fd.getFontFile3();
 
+        TrueTypeFont ttfFont = null;
+        boolean fontIsDamaged = false;
         if (ff2Stream != null)
         {
             try
             {
                 // embedded
                 TTFParser ttfParser = new TTFParser(true);
-                ttf = ttfParser.parse(ff2Stream.createInputStream());
-                isEmbedded = true;
+                ttfFont = ttfParser.parse(ff2Stream.createInputStream());
             }
             catch (NullPointerException e) // TTF parser is buggy
             {
-                throw new IOException("Could not read embedded TTF for font " + getBaseFont(), e);
+                LOG.warn("Could not read embedded TTF for font " + getBaseFont(), e);
+                fontIsDamaged = true;
             }
             catch (IOException e)
             {
-                throw new IOException("Could not read embedded TTF for font " + getBaseFont(), e);
+                LOG.warn("Could not read embedded TTF for font " + getBaseFont(), e);
+                fontIsDamaged = true;
             }
         }
         else if (ff3Stream != null)
@@ -92,8 +96,7 @@ public class PDCIDFontType2 extends PDCIDFont
                 // embedded
                 OTFParser otfParser = new OTFParser(true);
                 OpenTypeFont otf = otfParser.parse(ff3Stream.createInputStream());
-                ttf = otf;
-                isEmbedded = true;
+                ttfFont = otf;
 
                 if (otf.isPostScript())
                 {
@@ -110,40 +113,38 @@ public class PDCIDFontType2 extends PDCIDFont
             }
             catch (NullPointerException e) // TTF parser is buggy
             {
-                throw new IOException("Could not read embedded OTF for font " + getBaseFont(), e);
+                fontIsDamaged = true;
+                LOG.warn("Could not read embedded OTF for font " + getBaseFont(), e);
             }
             catch (IOException e)
             {
-                throw new IOException("Could not read embedded OTF for font " + getBaseFont(), e);
+                fontIsDamaged = true;
+                LOG.warn("Could not read embedded OTF for font " + getBaseFont(), e);
             }
         }
-        else
+        isEmbedded = ttfFont != null;
+        isDamaged = fontIsDamaged;
+
+        if (ttfFont == null)
         {
             // substitute
             TrueTypeFont ttfSubstitute = ExternalFonts.getTrueTypeFont(getBaseFont());
             if (ttfSubstitute != null)
             {
-                ttf = ttfSubstitute;
+                ttfFont = ttfSubstitute;
             }
             else
             {
                 // fallback
                 LOG.warn("Using fallback font for " + getBaseFont());
-                ttf = ExternalFonts.getTrueTypeFallbackFont(getFontDescriptor());
+                ttfFont = ExternalFonts.getTrueTypeFallbackFont(getFontDescriptor());
             }
-            isEmbedded = false;
         }
+        ttf = ttfFont;
 
         cid2gid = readCIDToGIDMap();
         COSBase map = dict.getDictionaryObject(COSName.CID_TO_GID_MAP);
-        if (map instanceof COSName && ((COSName) map).getName().equals("Identity"))
-        {
-            hasIdentityCid2Gid = true;
-        }
-        else
-        {
-            hasIdentityCid2Gid = false;
-        }
+        hasIdentityCid2Gid = map instanceof COSName && ((COSName) map).getName().equals("Identity");
     }
 
     @Override
@@ -373,6 +374,12 @@ public class PDCIDFontType2 extends PDCIDFont
     public boolean isEmbedded()
     {
         return isEmbedded;
+    }
+
+    @Override
+    public boolean isDamaged()
+    {
+        return isDamaged;
     }
 
     /**

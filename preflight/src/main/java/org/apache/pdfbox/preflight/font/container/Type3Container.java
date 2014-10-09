@@ -21,24 +21,23 @@
 
 package org.apache.pdfbox.preflight.font.container;
 
-import org.apache.pdfbox.pdmodel.font.PDFont;
+import java.io.IOException;
+import org.apache.pdfbox.pdmodel.font.PDType3Font;
 
 /**
  * Because Type3 font program is an inner type of the PDF file, this font container is quite different from the other
  * because all character/glyph are already checked.
  */
-public class Type3Container extends FontContainer
+public class Type3Container extends FontContainer<PDType3Font>
 {
-
-    public Type3Container(PDFont font)
+    public Type3Container(PDType3Font font)
     {
         super(font);
     }
 
     @Override
-    protected float getFontProgramWidth(int cid)
+    public boolean hasGlyph(int code) throws IOException
     {
-        return 0;
+        return font.getCharStream(code) != null;
     }
-
 }

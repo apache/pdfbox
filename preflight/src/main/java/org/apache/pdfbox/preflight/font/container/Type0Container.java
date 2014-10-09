@@ -21,31 +21,19 @@
 
 package org.apache.pdfbox.preflight.font.container;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
-import org.apache.pdfbox.preflight.font.util.GlyphException;
 
 public class Type0Container extends FontContainer
 {
-
-    protected FontContainer delegateFontContainer;
+    private FontContainer delegateFontContainer;
 
     public Type0Container(PDFont font)
     {
         super(font);
-    }
-
-    @Override
-    protected float getFontProgramWidth(int cid) throws GlyphException
-    {
-        float width = 0;
-        if (this.delegateFontContainer != null)
-        {
-            width = this.delegateFontContainer.getFontProgramWidth(cid);
-        }
-        return width;
     }
 
     public void setDelegateFontContainer(FontContainer delegateFontContainer)
@@ -80,5 +68,11 @@ public class Type0Container extends FontContainer
             result &= this.delegateFontContainer.isEmbeddedFont();
         }
         return result;
+    }
+
+    @Override
+    public boolean hasGlyph(int code) throws IOException
+    {
+        return this.delegateFontContainer.hasGlyph(code);
     }
 }

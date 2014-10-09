@@ -28,6 +28,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.cff.CFFFont;
 import org.apache.fontbox.cff.CFFParser;
 import org.apache.fontbox.cff.CFFType1Font;
 import org.apache.fontbox.ttf.Type1Equivalent;
@@ -60,6 +61,7 @@ public class PDType1CFont extends PDSimpleFont implements PDType1Equivalent
     private final CFFType1Font cffFont; // embedded font
     private final Type1Equivalent type1Equivalent; // embedded or system font for rendering
     private final boolean isEmbedded;
+    private final boolean isDamaged;
 
     /**
      * Constructor.
@@ -82,9 +84,21 @@ public class PDType1CFont extends PDSimpleFont implements PDType1Equivalent
             }
         }
 
-        // note: this could be an OpenType file, fortunately CFFParser can handle that
-        CFFParser cffParser = new CFFParser();
-        cffFont = (CFFType1Font)cffParser.parse(bytes).get(0);
+        boolean fontIsDamaged = false;
+        CFFType1Font cffEmbedded = null;
+        try
+        {
+            // note: this could be an OpenType file, fortunately CFFParser can handle that
+            CFFParser cffParser = new CFFParser();
+            cffEmbedded = (CFFType1Font)cffParser.parse(bytes).get(0);
+        }
+        catch (IOException e)
+        {
+            LOG.error("Can't read the embedded Type1C font " + getName(), e);
+            fontIsDamaged = true;
+        }
+        isDamaged = fontIsDamaged;
+        cffFont = cffEmbedded;
 
         if (cffFont != null)
         {
@@ -186,6 +200,12 @@ public class PDType1CFont extends PDSimpleFont implements PDType1Equivalent
             }
         }
         return fontMatrix;
+    }
+
+    @Override
+    public boolean isDamaged()
+    {
+        return isDamaged;
     }
 
     @Override

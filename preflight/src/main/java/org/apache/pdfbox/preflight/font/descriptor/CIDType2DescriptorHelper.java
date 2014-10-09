@@ -26,10 +26,6 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_CID_DAM
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_FONT_FILEX_INVALID;
 import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_KEY_CIDSET;
 
-import java.io.ByteArrayInputStream;
-
-import org.apache.fontbox.ttf.TTFParser;
-import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
@@ -78,9 +74,7 @@ public class CIDType2DescriptorHelper extends FontDescriptorHelper<CIDType2Conta
         PDStream ff2 = fontDescriptor.getFontFile2();
         if (ff2 != null)
         {
-            /*
-             * Stream validation should be done by the StreamValidateHelper. Process font specific check
-             */
+            // Stream validation should be done by the StreamValidateHelper. Process font specific check
             COSStream stream = ff2.getStream();
             if (stream == null)
             {
@@ -96,26 +90,9 @@ public class CIDType2DescriptorHelper extends FontDescriptorHelper<CIDType2Conta
     @Override
     protected void processFontFile(PDFontDescriptor fontDescriptor, PDStream fontFile)
     {
-        /*
-         * try to load the font using the java.awt.font object. if the font is invalid, an exception will be thrown
-         */
-        TrueTypeFont ttf = null;
-        try
+        if (font.isDamaged())
         {
-            /*
-             * According to PDF Reference, CIDFontType2 is a TrueType font. Remark : Java.awt.Font throws exception when
-             * a CIDFontType2 is parsed even if it is valid.
-             */
-            ttf = new TTFParser(true).parse(new ByteArrayInputStream(fontFile.getByteArray()));
-            this.fContainer.setTtf(ttf);
-        }
-        catch (Exception e)
-        {
-            /*
-             * Exceptionally, Exception is catched Here because of damaged font can throw NullPointer Exception...
-             */
             this.fContainer.push(new ValidationError(ERROR_FONTS_CID_DAMAGED, "The FontFile can't be read"));
         }
     }
-
 }

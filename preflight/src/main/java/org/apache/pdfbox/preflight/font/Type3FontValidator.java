@@ -307,13 +307,13 @@ public class Type3FontValidator extends FontValidator<Type3Container>
                     if (width == fontProgamWidth)
                     {
                         // Glyph is OK, we keep the CID.
-                        this.fontContainer.markCIDAsValid(cid);
+                        this.fontContainer.markAsValid(cid);
                     }
                     else
                     {
                         GlyphException glyphEx = new GlyphException(ERROR_FONTS_METRICS, cid,
                                 "The character with CID\"" + cid + "\" should have a width equals to " + width);
-                        this.fontContainer.markCIDAsInvalid(cid, glyphEx);
+                        this.fontContainer.markAsInvalid(cid, glyphEx);
                     }
                 }
                 catch (ContentStreamException e)
@@ -374,7 +374,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
              */
             GlyphException glyphEx = new GlyphException(ERROR_FONTS_METRICS, cid, "The CharProcs \"" + charName
                     + "\" doesn't exist");
-            this.fontContainer.markCIDAsInvalid(cid, glyphEx);
+            this.fontContainer.markAsInvalid(cid, glyphEx);
         }
         return charStream;
     }
