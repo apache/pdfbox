@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.tools;
+package org.apache.pdfbox.tools.imageio;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -47,7 +47,6 @@ import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
-import org.apache.pdfbox.tools.imageio.ImageIOUtil;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -58,7 +57,6 @@ import org.w3c.dom.NodeList;
 public class TestImageIOUtils extends TestCase
 {
     private static final Log LOG = LogFactory.getLog(TestImageIOUtils.class);
-
     
     /**
      * Check whether the resource images can be saved.
@@ -236,6 +234,7 @@ public class TestImageIOUtils extends TestCase
         BufferedImage image = renderer.renderImageWithDPI(0, dpi, imageType);
         String fileName = outputPrefix + 1;
         LOG.info("Writing: " + fileName + "." + imageFormat);
+        System.out.println("  " + fileName + "." + imageFormat); // for Maven (keep me!)
         boolean res = ImageIOUtil.writeImage(image, fileName + "." + imageFormat, Math.round(dpi));
         assertTrue("ImageIOUtil.writeImage() failed for file " + fileName, res);
         if ("jpg".equals(imageFormat) || "gif".equals(imageFormat))
