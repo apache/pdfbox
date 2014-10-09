@@ -26,7 +26,7 @@ import org.apache.fontbox.ttf.Type1Equivalent;
  *
  * @author John Hewson
  */
-public interface PDType1Equivalent
+public interface PDType1Equivalent extends PDFontLike
 {
     /**
      * Returns the name of this font.

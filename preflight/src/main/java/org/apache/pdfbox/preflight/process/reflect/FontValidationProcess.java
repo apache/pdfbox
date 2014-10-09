@@ -90,7 +90,7 @@ public class FontValidationProcess extends AbstractProcess
         }
         else if (FONT_DICTIONARY_VALUE_MMTYPE.equals(subtype) || FONT_DICTIONARY_VALUE_TYPE1.equals(subtype))
         {
-            return new Type1FontValidator(context, (PDType1Font)font);
+            return new Type1FontValidator(context, (PDSimpleFont)font);
         }
         else if (FONT_DICTIONARY_VALUE_TYPE3.equals(subtype))
         {
