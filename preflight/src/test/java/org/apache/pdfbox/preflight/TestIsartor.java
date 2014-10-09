@@ -36,8 +36,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.SyntaxValidationException;
-import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.parser.PreflightParser;
+import org.apache.pdfbox.preflight.utils.ByteArrayDataSource;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -52,27 +52,50 @@ import static org.junit.Assert.fail;
 @RunWith(Parameterized.class)
 public class TestIsartor
 {
+    private static final String FILTER_FILE = "isartor.filter";
+    private static FileOutputStream isartorResultFile;
+    private static final Log logger = LogFactory.getLog(TestIsartor.class);
 
-    public static final String FILTER_FILE = "isartor.filter";
-
-    protected static FileOutputStream isartorResultFile = null;
-
-    protected String expectedError;
-
-    protected File path;
-
-    protected static final Log logger = LogFactory.getLog(TestIsartor.class);
-
-    public TestIsartor(File path, String error)
+    @Parameters(name = "{0}")
+    public static Collection<Object[]> initializeParameters() throws Exception
     {
-        this.path = path;
-        this.expectedError = error;
+        String filter = System.getProperty(FILTER_FILE);
+
+        // load expected errors
+        File f = new File("src/test/resources/expected_errors.txt");
+        InputStream expected = new FileInputStream(f);
+        Properties props = new Properties();
+        props.load(expected);
+        IOUtils.closeQuietly(expected);
+
+        // prepare config
+        List<Object[]> data = new ArrayList<Object[]>();
+
+        File isartor = new File("target/pdfs/Isartor testsuite/PDFA-1b");
+        if (isartor.isDirectory())
+        {
+            Collection<?> pdfFiles = FileUtils.listFiles(isartor, new String[] {"pdf","PDF"}, true);
+            for (Object  pdfFile : pdfFiles)
+            {
+                String fn = ((File)pdfFile).getName();
+                if (filter == null || fn.contains(filter))
+                {
+                    String path = props.getProperty(fn);
+                    String error = new StringTokenizer(path, "//").nextToken().trim();
+                    data.add(new Object[] { (File)pdfFile, error });
+                }
+            }
+        }
+        else
+        {
+            fail("Isartor data set has not been downloaded! Try running Maven?");
+        }
+        return data;
     }
 
     @BeforeClass
     public static void beforeClass() throws Exception
     {
-
         String irp = System.getProperty("isartor.results.path");
         if (irp != null)
         {
@@ -102,30 +125,46 @@ public class TestIsartor
         }
     }
 
+    private final String expectedError;
+    private final File file;
+
+    public TestIsartor(File path, String error)
+    {
+        System.out.println("  " + path.getName());
+        this.file = path;
+        this.expectedError = error;
+    }
+
     @Test()
     public void validate() throws Exception
     {
         PreflightDocument document = null;
         try
         {
-            InputStream input = new FileInputStream(path);
-
-            ValidationResult result = null;
+            InputStream input = new FileInputStream(file);
+            ValidationResult result;
             try
             {
-                PreflightParser parser = new PreflightParser(new org.apache.pdfbox.preflight.utils.ByteArrayDataSource(
-                        input));
+                PreflightParser parser = new PreflightParser(new ByteArrayDataSource(input));
                 parser.parse();
                 document = (PreflightDocument) parser.getPDDocument();
-                document.validate();
+                // to speeds up tests, skip validation of page count is over the limit
+                if (document.getNumberOfPages() < 8191)
+                {
+                    document.validate();
+                }
                 result = document.getResult();
             }
             catch (SyntaxValidationException e)
             {
                 result = e.getResult();
             }
-            assertFalse(path.getName() + " : Isartor file should be invalid (expected " + this.expectedError + ")", result.isValid());
-            assertTrue(path.getName() + " : Should find at least one error", result.getErrorsList().size() > 0);
+
+            assertFalse(file.getName() + " : Isartor file should be invalid (expected " +
+                    this.expectedError + ")", result.isValid());
+
+            assertTrue(file.getName() + " : Should find at least one error",
+                    result.getErrorsList().size() > 0);
 
             // could contain more than one error
             boolean found = false;
@@ -141,8 +180,8 @@ public class TestIsartor
                 }
                 if (isartorResultFile != null)
                 {
-                    String log = path.getName().replace(".pdf", "") + "#" + error.getErrorCode() + "#" + error.getDetails()
-                            + "\n";
+                    String log = file.getName().replace(".pdf", "") + "#" + error.getErrorCode() +
+                            "#" + error.getDetails() + "\n";
                     isartorResultFile.write(log.getBytes());
                 }
             }
@@ -157,61 +196,27 @@ public class TestIsartor
                         message.append(error.getErrorCode()).append(" ");
                     }
                     fail(String.format("%s : Invalid error code returned. Expected %s, found [%s]",
-                            path.getName(),
-                            expectedError,
-                            message.toString().trim()
-                    ));
-
+                            file.getName(), expectedError, message.toString().trim()));
                 }
                 // if one of the error code of the list is the expected one, we consider test valid
             }
             else
             {
-                assertEquals(path.getName() + " : Invalid error code returned.", this.expectedError, result
-                        .getErrorsList().get(0).getErrorCode());
+                assertEquals(file.getName() + " : Invalid error code returned.", this.expectedError,
+                        result.getErrorsList().get(0).getErrorCode());
             }
         }
-        catch (Exception e) {
-            fail(String.format("%s : %s raised , message=%s",
-                    path.getName(),
-                    e.getClass().getSimpleName()
-                    , e.getMessage()
-            ));
+        catch (Exception e)
+        {
+            fail(String.format("%s : %s raised , message=%s", file.getName(),
+                    e.getClass().getSimpleName(), e.getMessage()));
         }
         finally
         {
             if (document != null)
+            {
                 document.close();
-        }
-    }
-
-    @Parameters(name = "{0}")
-    public static Collection<Object[]> initializeParameters() throws Exception
-    {
-        String filter = System.getProperty(FILTER_FILE);
-        // load expected errors
-        File f = new File("src/test/resources/expected_errors.txt");
-        InputStream expected = new FileInputStream(f);
-        Properties props = new Properties();
-        props.load(expected);
-        IOUtils.closeQuietly(expected);
-        // prepare config
-        List<Object[]> data = new ArrayList<Object[]>();
-
-        File isartor = new File("target/pdfs/Isartor testsuite/PDFA-1b");
-            if (isartor.isDirectory()) {
-            Collection<?> pdfFiles = FileUtils.listFiles(isartor,new String[] {"pdf","PDF"},true);
-            for (Object  pdfFile : pdfFiles) {
-                String fn = ((File)pdfFile).getName();
-                if (filter==null || (filter!=null && fn.contains(filter))) {
-                    String error = new StringTokenizer(props.getProperty(fn), "//").nextToken().trim();
-                    Object[] tmp = new Object[]{(File) pdfFile, error};
-                    data.add(tmp);
-                }
             }
-        } else {
-            logger.warn("Isartor data set not present, skipping Isartor validation");
         }
-        return data;
     }
 }

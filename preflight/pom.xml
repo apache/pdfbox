@@ -23,11 +23,6 @@
 
 	<packaging>bundle</packaging>
 
-  <properties>
-      <skip.external.resources>true</skip.external.resources>
-  </properties>
-
-
 	<parent>
 		<groupId>org.apache.pdfbox</groupId>
 		<artifactId>pdfbox-parent</artifactId>
@@ -55,7 +50,7 @@
 							<excludes>
 								<exclude>**/integration/**</exclude>
 							</excludes>
-                            <argLine>-Xmx768m</argLine>
+              <argLine>-Xmx768m</argLine>
 						</configuration>
 					</execution>
 					<execution>
@@ -162,13 +157,11 @@
                             <url>http://www.pdfa.org/wp-content/uploads/2011/08/isartor-pdfa-2008-08-13.zip</url>
                             <unpack>true</unpack>
                             <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
-                            <!--<md5></md5>-->
-                            <skip>${skip.external.resources}</skip>
+                            <md5>9f129c834bc6f9f8dabad4491c4c10ec</md5>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
-
 		</plugins>
 	</build>
 
