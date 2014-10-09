@@ -23,8 +23,15 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Iterator;
 
+import javax.imageio.IIOImage;
+import javax.imageio.ImageTypeSpecifier;
+import javax.imageio.ImageWriter;
+import javax.imageio.metadata.IIOMetadata;
+import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
+import javax.imageio.stream.ImageOutputStream;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.filter.MissingImageReaderException;
 import org.apache.pdfbox.io.IOUtils;
@@ -32,7 +39,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
-import org.apache.pdfbox.util.ImageIOUtil;
+import org.w3c.dom.Element;
 
 /**
  * Factory for creating a PDImageXObject containing a JPEG compressed image.
@@ -170,10 +177,12 @@ public final class JPEGFactory extends ImageFactory
         }
         if (image.getTransparency() == Transparency.BITMASK)
         {
-            throw new UnsupportedOperationException("BITMASK Transparency JPEG compression is not useful, use LosslessImageFactory instead");
+            throw new UnsupportedOperationException("BITMASK Transparency JPEG compression is not" +
+                    " useful, use LosslessImageFactory instead");
         }
         WritableRaster alphaRaster = image.getAlphaRaster();
-        BufferedImage alphaImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+        BufferedImage alphaImage = new BufferedImage(image.getWidth(), image.getHeight(),
+                BufferedImage.TYPE_BYTE_GRAY);
         alphaImage.setData(alphaRaster);
         return alphaImage;
     }
@@ -188,7 +197,7 @@ public final class JPEGFactory extends ImageFactory
 
         // create XObject
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIOUtil.writeImage(awtColorImage, "jpeg", baos, dpi, quality);
+        encodeImageToJPEGStream(awtColorImage, quality, dpi, baos);
         ByteArrayInputStream byteStream = new ByteArrayInputStream(baos.toByteArray());
         
         
@@ -205,5 +214,50 @@ public final class JPEGFactory extends ImageFactory
         }
 
         return pdImage;
+    }
+
+    private static void encodeImageToJPEGStream(BufferedImage image, float quality, int dpi,
+                                                OutputStream out) throws IOException
+    {
+        // encode to JPEG
+        ImageOutputStream ios = null;
+        ImageWriter imageWriter = null;
+        try
+        {
+            // find JAI writer
+            imageWriter = ImageIO.getImageWritersBySuffix("jpeg").next();
+            ios = ImageIO.createImageOutputStream(out);
+            imageWriter.setOutput(ios);
+
+            // add compression
+            JPEGImageWriteParam jpegParam = (JPEGImageWriteParam)imageWriter.getDefaultWriteParam();
+            jpegParam.setCompressionMode(JPEGImageWriteParam.MODE_EXPLICIT);
+            jpegParam.setCompressionQuality(quality);
+
+            // add metadata
+            ImageTypeSpecifier imageTypeSpecifier = new ImageTypeSpecifier(image);
+            IIOMetadata data = imageWriter.getDefaultImageMetadata(imageTypeSpecifier, jpegParam);
+            Element tree = (Element)data.getAsTree("javax_imageio_jpeg_image_1.0");
+            Element jfif = (Element)tree.getElementsByTagName("app0JFIF").item(0);
+            jfif.setAttribute("Xdensity", Integer.toString(dpi));
+            jfif.setAttribute("Ydensity", Integer.toString(dpi));
+            jfif.setAttribute("resUnits", "1"); // 1 = dots/inch
+
+            // write
+            imageWriter.write(data, new IIOImage(image, null, null), jpegParam);
+        }
+        finally
+        {
+            // clean up
+            IOUtils.closeQuietly(out);
+            if (ios != null)
+            {
+                ios.close();
+            }
+            if (imageWriter != null)
+            {
+                imageWriter.dispose();
+            }
+        }
     }
 }

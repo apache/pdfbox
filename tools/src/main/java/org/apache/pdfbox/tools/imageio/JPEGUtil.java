@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.util;
+package org.apache.pdfbox.tools.imageio;
 
 import javax.imageio.metadata.IIOInvalidTreeException;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
-import static org.apache.pdfbox.util.MetaUtil.JPEG_NATIVE_FORMAT;
-import static org.apache.pdfbox.util.MetaUtil.debugLogMetadata;
+import static org.apache.pdfbox.tools.imageio.MetaUtil.JPEG_NATIVE_FORMAT;
+import static org.apache.pdfbox.tools.imageio.MetaUtil.debugLogMetadata;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -39,11 +39,11 @@ class JPEGUtil
      */
     static void updateMetadata(IIOMetadata metadata, int dpi) throws IIOInvalidTreeException
     {
-        debugLogMetadata(metadata, JPEG_NATIVE_FORMAT);
+        MetaUtil.debugLogMetadata(metadata, MetaUtil.JPEG_NATIVE_FORMAT);
 
         // https://svn.apache.org/viewvc/xmlgraphics/commons/trunk/src/java/org/apache/xmlgraphics/image/writer/imageio/ImageIOJPEGImageWriter.java
         // http://docs.oracle.com/javase/6/docs/api/javax/imageio/metadata/doc-files/jpeg_metadata.html
-        Element root = (Element) metadata.getAsTree(JPEG_NATIVE_FORMAT);
+        Element root = (Element) metadata.getAsTree(MetaUtil.JPEG_NATIVE_FORMAT);
         NodeList jvarNodeList = root.getElementsByTagName("JPEGvariety");
         Element jvarChild;
         if (jvarNodeList.getLength() == 0)
@@ -86,6 +86,6 @@ class JPEGUtil
         {
             jfifChild.setAttribute("thumbHeight", "0");
         }
-        metadata.setFromTree(JPEG_NATIVE_FORMAT, root); // mergeTree doesn't work for ARGB
+        metadata.setFromTree(MetaUtil.JPEG_NATIVE_FORMAT, root); // mergeTree doesn't work for ARGB
     }
 }

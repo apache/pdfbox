@@ -40,7 +40,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.graphics.image.TIFFInputStream;
-import org.apache.pdfbox.util.ImageIOUtil;
+import org.apache.pdfbox.tools.imageio.ImageIOUtil;
 import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
 
 /**

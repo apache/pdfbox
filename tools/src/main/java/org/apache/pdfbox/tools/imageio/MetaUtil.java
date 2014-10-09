@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.apache.pdfbox.util;
+package org.apache.pdfbox.tools.imageio;
 
 import java.io.StringWriter;
 import javax.imageio.metadata.IIOMetadata;

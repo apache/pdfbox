@@ -32,7 +32,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
-import org.apache.pdfbox.util.ImageIOUtil;
+import org.apache.pdfbox.tools.imageio.ImageIOUtil;
 
 /**
  * Convert a PDF document to an image.

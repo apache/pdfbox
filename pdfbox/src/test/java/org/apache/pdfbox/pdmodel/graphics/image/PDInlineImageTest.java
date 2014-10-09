@@ -31,7 +31,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.rendering.PDFRenderer;
-import org.apache.pdfbox.util.ImageIOUtil;
 
 /**
  * Unit tests for PDInlineImage
@@ -114,7 +113,7 @@ public class PDInlineImageTest extends TestCase
         assertEquals(height, image2.getHeight());
 
         // write and read
-        boolean writeOk = ImageIOUtil.writeImage(image1, "png", 
+        boolean writeOk = ImageIO.write(image1, "png",
                 new FileOutputStream(new File(testResultsDir + "/inline-grid1.png")));
         assertTrue(writeOk);
         BufferedImage bim1 = ImageIO.read(new File(testResultsDir + "/inline-grid1.png"));
@@ -122,7 +121,7 @@ public class PDInlineImageTest extends TestCase
         assertEquals(width, bim1.getWidth());
         assertEquals(height, bim1.getHeight());
         
-        writeOk = ImageIOUtil.writeImage(image2, "png", 
+        writeOk = ImageIO.write(image2, "png",
                 new FileOutputStream(new File(testResultsDir + "/inline-grid2.png")));
         assertTrue(writeOk);
         BufferedImage bim2 = ImageIO.read(new File(testResultsDir + "/inline-grid2.png"));

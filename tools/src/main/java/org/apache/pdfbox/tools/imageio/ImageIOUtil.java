@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.util;
+package org.apache.pdfbox.tools.imageio;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -34,7 +34,7 @@ import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageOutputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import static org.apache.pdfbox.util.MetaUtil.STANDARD_METADATA_FORMAT;
+import static org.apache.pdfbox.tools.imageio.MetaUtil.STANDARD_METADATA_FORMAT;
 import org.w3c.dom.NodeList;
 
 /**
@@ -291,7 +291,7 @@ public class ImageIOUtil
     // sets the DPI metadata
     private static void setDPI(IIOMetadata metadata, int dpi, String formatName)
     {
-        IIOMetadataNode root = (IIOMetadataNode) metadata.getAsTree(STANDARD_METADATA_FORMAT);
+        IIOMetadataNode root = (IIOMetadataNode) metadata.getAsTree(MetaUtil.STANDARD_METADATA_FORMAT);
 
         IIOMetadataNode dimension = getOrCreateChildNode(root, "Dimension");
 
@@ -312,7 +312,7 @@ public class ImageIOUtil
 
         try
         {
-            metadata.mergeTree(STANDARD_METADATA_FORMAT, root);
+            metadata.mergeTree(MetaUtil.STANDARD_METADATA_FORMAT, root);
         }
         catch (IIOInvalidTreeException e)
         {
