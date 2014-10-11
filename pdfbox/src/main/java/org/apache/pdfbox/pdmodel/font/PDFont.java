@@ -62,7 +62,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     /**
      * Constructor for embedding.
      */
-    protected PDFont()
+    PDFont()
     {
         dict = new COSDictionary();
         dict.setItem(COSName.TYPE, COSName.FONT);
@@ -74,16 +74,16 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     /**
      * Constructor for Standard 14.
      */
-    protected PDFont(String baseFont)
+    PDFont(String baseFont)
     {
         dict = new COSDictionary();
         toUnicodeCMap = null;
-        fontDescriptor = null;
-        afmStandard14 = Standard14Fonts.getAFM(getName()); // may be null (it usually is)
+        afmStandard14 = Standard14Fonts.getAFM(baseFont);
         if (afmStandard14 == null)
         {
             throw new IllegalArgumentException("No AFM for font " + baseFont);
         }
+        fontDescriptor = PDType1FontEmbedder.buildFontDescriptor(afmStandard14);
     }
 
     /**

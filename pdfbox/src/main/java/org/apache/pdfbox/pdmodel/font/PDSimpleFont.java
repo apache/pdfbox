@@ -48,9 +48,17 @@ public abstract class PDSimpleFont extends PDFont
     /**
      * Constructor
      */
-    protected PDSimpleFont()
+    PDSimpleFont()
     {
         super();
+    }
+
+    /**
+     * Constructor for Standard 14.
+     */
+    PDSimpleFont(String baseFont)
+    {
+        super(baseFont);
     }
 
     /**
@@ -58,7 +66,7 @@ public abstract class PDSimpleFont extends PDFont
      *
      * @param fontDictionary Font dictionary.
      */
-    protected PDSimpleFont(COSDictionary fontDictionary) throws IOException
+    PDSimpleFont(COSDictionary fontDictionary) throws IOException
     {
         super(fontDictionary);
     }
