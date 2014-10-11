@@ -618,7 +618,7 @@ public class PDPage implements COSObjectable, Printable
     /**
      * This will set the rotation for this page.
      *
-     * @param rotation The new rotation for this page.
+     * @param rotation The new rotation for this page in degrees.
      */
     public void setRotation( int rotation )
     {
