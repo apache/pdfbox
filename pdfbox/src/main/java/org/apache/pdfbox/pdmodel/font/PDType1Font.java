@@ -94,6 +94,8 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
      */
     private PDType1Font(String baseFont)
     {
+        super(baseFont);
+        
         dict.setItem(COSName.SUBTYPE, COSName.TYPE1);
         dict.setName(COSName.BASE_FONT, baseFont);
         encoding = new WinAnsiEncoding();
