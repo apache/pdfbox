@@ -323,41 +323,13 @@ public abstract class BaseParser
                                 if(read==D)
                                 {
                                     read = pdfSource.read();
-                                    if(read==S) 
+                                    boolean isStream = read == S && pdfSource.read() == T && pdfSource.read() == R
+                                            && pdfSource.read() == E && pdfSource.read() == A && pdfSource.read() == M;
+
+                                    boolean isObj = !isStream && read == O && pdfSource.read() == B && pdfSource.read() == J;
+                                    if (isStream || isObj)
                                     {
-                                        read = pdfSource.read();
-                                        if(read==T) 
-                                        {
-                                            read = pdfSource.read();
-                                            if(read==R) 
-                                            {
-                                                read = pdfSource.read();
-                                                if(read==E) 
-                                                {
-                                                    read = pdfSource.read();
-                                                    if(read==A) 
-                                                    {
-                                                        read = pdfSource.read();
-                                                        if(read==M) 
-                                                        {
-                                                            return obj; // we're done reading this object!
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    } 
-                                    else if(read==O) 
-                                    {
-                                        read = pdfSource.read();
-                                        if(read==B) 
-                                        {
-                                            read = pdfSource.read();
-                                            if(read==J) 
-                                            {
-                                                return obj; // we're done reading this object!
-                                            }
-                                        }
+                                        return obj; // we're done reading this object!
                                     }
                                 }
                             }
