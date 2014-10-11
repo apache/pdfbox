@@ -1645,6 +1645,8 @@ public class NonSequentialPDFParser extends PDFParser
         {
             streamLengthIsValid = false;
             LOG.error("The end of the stream is out of range, using workaround to read the stream");
+            LOG.error("Stream start offset: " + originOffset);
+            LOG.error("Expected endofstream offset: " + expectedEndOfStream);
         }
         else
         {
