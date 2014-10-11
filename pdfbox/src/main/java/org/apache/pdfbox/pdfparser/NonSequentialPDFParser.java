@@ -1359,7 +1359,7 @@ public class NonSequentialPDFParser extends PDFParser
 
                 if (!endObjectKey.startsWith("endobj"))
                 {
-                    if (endObjectKey.endsWith(" obj") && isLenient)
+                    if (isLenient)
                     {
                         LOG.warn("Object (" + readObjNr + ":" + readObjGen + ") at offset "
                                 + offsetOrObjstmObNr + " does not end with 'endobj' but with '"
