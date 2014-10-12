@@ -578,6 +578,10 @@ public class COSWriter implements ICOSVisitor, Closeable
         {
           trailer.removeItem( COSName.PREV );
         }
+        if (!doc.isXRefStream())
+        {
+            trailer.removeItem( COSName.XREF_STM );
+        }
         // Remove a checksum if present
         trailer.removeItem( COSName.DOC_CHECKSUM );
         
