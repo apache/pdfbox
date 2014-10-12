@@ -37,6 +37,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.XmpConstants;
 import org.apache.xmpbox.schema.XMPSchema;
@@ -67,6 +69,12 @@ import org.xml.sax.SAXException;
 
 public class DomXmpParser
 {
+
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(DomXmpParser.class);
+
 
     private DocumentBuilder dBuilder;
 
@@ -230,19 +238,37 @@ public class DomXmpParser
                 {
                     String namespace = attr.getNamespaceURI();
                     XMPSchema schema = xmp.getSchema(namespace);
-                    if (schema == null)
+                    if (schema == null && tm.getSchemaFactory(namespace) != null)
                     {
                         schema = tm.getSchemaFactory(namespace).createXMPSchema(xmp, attr.getPrefix());
                         loadAttributes(schema, description);
                     }
-                    ComplexPropertyContainer container = schema.getContainer();
-                    PropertyType type = checkPropertyDefinition(xmp,
-                            new QName(attr.getNamespaceURI(), attr.getLocalName()));
-                    AbstractSimpleProperty sp = tm.instanciateSimpleProperty(namespace, schema.getPrefix(),
-                            attr.getLocalName(), attr.getValue(), type.type());
-                    container.addProperty(sp);
+                    // Only process when a schema was successfully found
+                    if( schema != null )
+                    {
+                        ComplexPropertyContainer container = schema.getContainer();
+                        PropertyType type = checkPropertyDefinition(xmp,
+                                new QName(attr.getNamespaceURI(), attr.getLocalName()));
+                        
+                        //Default to text if no type is found
+                        if( type == null) 
+                        {
+                            type = TypeMapping.createPropertyType(Types.Text, Cardinality.Simple);
+                        }
+                                           
+                        try
+                        {
+                            AbstractSimpleProperty sp = tm.instanciateSimpleProperty(namespace, schema.getPrefix(),
+                                    attr.getLocalName(), attr.getValue(), type.type());
+                            container.addProperty(sp);
+                        }
+                        catch( IllegalArgumentException exception)
+                        {
+                            //Swallow, and continue adding additional properties
+                            LOG.warn("Unable to add property: "+ attr.getLocalName() + " value: "+attr.getValue(),exception);
+                        }
+                    }
                 }
-
             }
             // parse children elements as properties
             for (Element property : properties)
