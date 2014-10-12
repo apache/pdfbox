@@ -1509,10 +1509,10 @@ public class COSWriter implements ICOSVisitor, Closeable
                         md.update( values.next().toString().getBytes("ISO-8859-1") );
                     }
                 }
-                idArray = new COSArray();
                 // reuse origin documentID if available as first value
                 COSString firstID = missingID ? new COSString( md.digest() ) : (COSString)idArray.get(0);
                 COSString secondID = new COSString( md.digest() );
+                idArray = new COSArray();
                 idArray.add( firstID );
                 idArray.add( secondID );
                 trailer.setItem( COSName.ID, idArray );
