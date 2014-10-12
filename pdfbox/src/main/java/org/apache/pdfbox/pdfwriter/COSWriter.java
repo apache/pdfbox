@@ -1481,7 +1481,13 @@ public class COSWriter implements ICOSVisitor, Closeable
         COSDocument cosDoc = document.getDocument();
         COSDictionary trailer = cosDoc.getTrailer();
         COSArray idArray = (COSArray)trailer.getDictionaryObject( COSName.ID );
-        if( idArray == null || incrementalUpdate)
+        boolean missingID = true;
+        // check for an existing documentID
+        if (idArray != null && idArray.size() == 2)
+        {
+            missingID = false;
+        }
+        if( missingID || incrementalUpdate)
         {
             try
             {
@@ -1500,9 +1506,11 @@ public class COSWriter implements ICOSVisitor, Closeable
                     }
                 }
                 idArray = new COSArray();
-                COSString id = new COSString( md.digest() );
-                idArray.add( id );
-                idArray.add( id );
+                // reuse origin documentID if available as first value
+                COSString firstID = missingID ? new COSString( md.digest() ) : (COSString)idArray.get(0);
+                COSString secondID = new COSString( md.digest() );
+                idArray.add( firstID );
+                idArray.add( secondID );
                 trailer.setItem( COSName.ID, idArray );
             }
             catch( NoSuchAlgorithmException e )
