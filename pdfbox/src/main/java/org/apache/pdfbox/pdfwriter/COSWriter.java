@@ -19,7 +19,6 @@ package org.apache.pdfbox.pdfwriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -214,7 +213,7 @@ public class COSWriter implements ICOSVisitor, Closeable
     
     private int[] byterangePosition = new int[2];
     
-    private FileInputStream in;
+    private InputStream in;
 
     /**
      * COSWriter constructor comment.
@@ -236,7 +235,7 @@ public class COSWriter implements ICOSVisitor, Closeable
      * @param os The wrapped output stream.
      * @param is input stream
      */
-    public COSWriter(OutputStream os, FileInputStream is)
+    public COSWriter(OutputStream os, InputStream is)
     {
       this(os);
       in = is;
