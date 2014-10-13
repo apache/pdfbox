@@ -21,6 +21,8 @@ import java.awt.print.Pageable;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
@@ -1364,7 +1366,8 @@ public class PDDocument implements Pageable, Closeable
      */
     public void saveIncremental( String fileName ) throws IOException, COSVisitorException
     {
-        saveIncremental( new FileInputStream( fileName ) , new FileOutputStream( fileName , true) );
+        saveIncremental(new BufferedInputStream(new FileInputStream(fileName)), 
+                new BufferedOutputStream(new FileOutputStream(fileName, true)));
     }
     
     /** 
@@ -1375,7 +1378,7 @@ public class PDDocument implements Pageable, Closeable
      * @throws IOException if something went wrong
      * @throws COSVisitorException  if something went wrong
      */
-    public void saveIncremental( FileInputStream input, OutputStream output ) throws IOException, COSVisitorException
+    public void saveIncremental(InputStream input, OutputStream output) throws IOException, COSVisitorException
     {
         //update the count in case any pages have been added behind the scenes.
         getDocumentCatalog().getPages().updateCount();
