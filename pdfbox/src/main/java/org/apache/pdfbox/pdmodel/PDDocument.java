@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
@@ -1287,7 +1289,8 @@ public class PDDocument implements Closeable
     @Deprecated
     public void saveIncremental(String fileName) throws IOException
     {
-        saveIncremental(new FileInputStream(fileName), new FileOutputStream(fileName, true));
+        saveIncremental(new BufferedInputStream(new FileInputStream(fileName)),
+                new BufferedOutputStream(new FileOutputStream(fileName, true)));
     }
 
     /**
