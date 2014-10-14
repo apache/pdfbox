@@ -46,7 +46,7 @@ public abstract class PDSimpleFont extends PDFont
     private final Set<Integer> noUnicode = new HashSet<Integer>(); // for logging
 
     /**
-     * Constructor
+     * Constructor for embedding.
      */
     PDSimpleFont()
     {

@@ -178,8 +178,10 @@ public class PDTrueTypeFont extends PDSimpleFont
         PDTrueTypeFontEmbedder embedder = new PDTrueTypeFontEmbedder(document, dict, ttfStream);
         encoding = embedder.getFontEncoding();
         ttf = embedder.getTrueTypeFont();
+        setFontDescriptor(embedder.getFontDescriptor());
         isEmbedded = true;
         isDamaged = false;
+        glyphList = GlyphList.getAdobeGlyphList();
     }
 
     @Override
