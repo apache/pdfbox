@@ -52,8 +52,8 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     protected final COSDictionary dict;
     private final CMap toUnicodeCMap;
     private final FontMetrics afmStandard14; // AFM for standard 14 fonts
-    private final PDFontDescriptor fontDescriptor;
 
+    private PDFontDescriptor fontDescriptor;
     private List<Integer> widths;
     private float avgFontWidth;
     private float fontWidthOfSpace = -1f;
@@ -143,6 +143,16 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     {
         return fontDescriptor;
     }
+
+    /**
+     * Sets the font descriptor when embedding a font.
+     */
+    protected final void setFontDescriptor(PDFontDescriptor fontDescriptor)
+    {
+        this.fontDescriptor = fontDescriptor;
+    }
+
+    /**
 
     /**
      * Reads a CMap given a COS Stream or Name. May return null if a predefined CMap does not exist.
@@ -243,19 +253,21 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     /**
      * Returns the width of the given Unicode string.
      *
-     * @param string The string to get the width of.
+     * @param text The text to get the width of.
      * @return The width of the string in 1000 units of text space, ie 333 567...
      * @throws IOException If there is an error getting the width information.
      */
-    public float getStringWidth(String string) throws IOException
+    public float getStringWidth(String text) throws IOException
     {
-        byte[] data = string.getBytes("ISO-8859-1"); // todo: *no*, these are *not* character codes
-        float totalWidth = 0;
-        for (int i = 0; i < data.length; i++)
+        float width = 0;
+        int offset = 0, length = text.length();
+        while (offset < length)
         {
-            totalWidth += getWidth(data[i]);
+            int codePoint = text.codePointAt(offset);
+            offset += Character.charCount(codePoint);
+            width += getWidth(codePoint); // todo: *no* getWidth expects a PDF char code, not a Unicode code point
         }
-        return totalWidth;
+        return width;
     }
 
     /**
@@ -406,7 +418,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      * Returns the value of the symbolic flag,  allowing for the fact that the result may be
      * indeterminate.
      */
-    protected Boolean getSymbolicFlag()
+    protected final Boolean getSymbolicFlag()
     {
         if (getFontDescriptor() != null)
         {
