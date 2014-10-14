@@ -171,14 +171,16 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         // Only if there is some content, we have to process it.
         // Otherwise we are done here and we will produce an empty page
         PDPage page = getPage();
+        
+        PDRectangle adjustedCropBox = page.calcAdjustedCropBox();
+        
         if (page.getContents() != null)
         {
-            PDResources resources = page.findResources();
-            processStream(resources, page.getContents().getStream(), page.findCropBox());
+            processStream(page.findResources(), page.getContents().getStream(), adjustedCropBox);
         }
         else
         {
-            initStream(page.findCropBox());
+            initStream(adjustedCropBox);
         }
 
         for (PDAnnotation annotation : page.getAnnotations())
