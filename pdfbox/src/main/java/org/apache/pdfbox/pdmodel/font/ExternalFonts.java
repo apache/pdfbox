@@ -101,9 +101,9 @@ public final class ExternalFonts
     }
 
     /**
-     * Gets the font service provider. Defaults to using FileSystemFontProvider.
+     * Returns the font service provider. Defaults to using FileSystemFontProvider.
      */
-    private static FontProvider getProvider()
+    public static FontProvider getProvider()
     {
         if (fontProvider == null)
         {
