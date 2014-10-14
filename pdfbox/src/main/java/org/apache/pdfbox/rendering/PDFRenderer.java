@@ -122,9 +122,9 @@ public class PDFRenderer
     {
         PDPage page = document.getPage(pageIndex);
 
-        PDRectangle cropBox = page.calcAdjustedCropBox();
-        float widthPt = cropBox.getWidth();
-        float heightPt = cropBox.getHeight();
+        PDRectangle adjustedCropBox = page.calcAdjustedCropBox();
+        float widthPt = adjustedCropBox.getWidth();
+        float heightPt = adjustedCropBox.getHeight();
         int widthPx = Math.round(widthPt * scale);
         int heightPx = Math.round(heightPt * scale);
         int rotationAngle = page.findRotation();
@@ -186,8 +186,8 @@ public class PDFRenderer
     {
         PDPage page = document.getPage(pageIndex);
         // TODO need width/wight calculations? should these be in PageDrawer?
-        PDRectangle cropBox = page.calcAdjustedCropBox();
-        renderPage(page, graphics, (int)cropBox.getWidth(), (int)cropBox.getHeight(), scale, scale);
+        PDRectangle adjustedCropBox = page.calcAdjustedCropBox();
+        renderPage(page, graphics, (int)adjustedCropBox.getWidth(), (int)adjustedCropBox.getHeight(), scale, scale);
     }
 
     // renders a page to the given graphics
@@ -200,7 +200,7 @@ public class PDFRenderer
         graphics.scale(scaleX, scaleY);
         // TODO should we be passing the scale to PageDrawer rather than messing with Graphics?
 
-        PDRectangle cropBox = page.calcAdjustedCropBox();
+        PDRectangle adjustedCropBox = page.calcAdjustedCropBox();
         int rotationAngle = page.findRotation();
         if (rotationAngle != 0)
         {
@@ -209,14 +209,14 @@ public class PDFRenderer
             switch (rotationAngle)
             {
                 case 90:
-                    translateX = cropBox.getHeight();
+                    translateX = adjustedCropBox.getHeight();
                     break;
                 case 270:
-                    translateY = cropBox.getWidth();
+                    translateY = adjustedCropBox.getWidth();
                     break;
                 case 180:
-                    translateX = cropBox.getWidth();
-                    translateY = cropBox.getHeight();
+                    translateX = adjustedCropBox.getWidth();
+                    translateY = adjustedCropBox.getHeight();
                     break;
             }
             graphics.translate(translateX, translateY);
@@ -225,7 +225,7 @@ public class PDFRenderer
 
         // TODO: need to make it easy to use a custom PageDrawer and TilingPatternDrawer
         PageDrawer drawer = new PageDrawer(this, page);
-        drawer.drawPage(graphics, cropBox);
+        drawer.drawPage(graphics, adjustedCropBox);
 
         if (clearResourcesAutomatically)
         {
