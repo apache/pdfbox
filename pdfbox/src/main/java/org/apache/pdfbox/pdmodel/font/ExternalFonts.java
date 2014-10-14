@@ -205,7 +205,7 @@ public final class ExternalFonts
      */
     private static List<String> getSubstitutes(String postScriptName)
     {
-        List<String> subs = substitutes.get(postScriptName);
+        List<String> subs = substitutes.get(postScriptName.replaceAll(" ", ""));
         if (subs != null)
         {
             return subs;
@@ -221,7 +221,7 @@ public final class ExternalFonts
      */
     private static String windowsToPs(String windowsName)
     {
-        return windowsName.replace(",", "-");
+        return windowsName.replaceAll(",", "-");
     }
 
     /**
