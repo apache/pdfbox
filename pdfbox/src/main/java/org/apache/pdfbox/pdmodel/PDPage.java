@@ -50,7 +50,7 @@ public class PDPage implements COSObjectable
     private static final int DEFAULT_USER_SPACE_UNIT_DPI = 72;
     private static final float MM_TO_UNITS = 1 / (10 * 2.54f) * DEFAULT_USER_SPACE_UNIT_DPI;
 
-    private COSDictionary page;
+    private final COSDictionary page;
     private PDResources pageResources;
 
     /**
@@ -124,6 +124,7 @@ public class PDPage implements COSObjectable
      * 
      * @return The cos object that matches this Java object.
      */
+    @Override
     public COSBase getCOSObject()
     {
         return page;
@@ -536,6 +537,62 @@ public class PDPage implements COSObjectable
         {
             page.setItem(COSName.ART_BOX, artBox.getCOSArray());
         }
+    }
+    
+    /**
+     * Calculate the adjusted crop box from the cropbox and the mediabox as
+     * required by the PDF spec. Use this instead of {@link #findCropBox()} 
+     * when drawing a page.
+     *
+     * @return the adjusted crop box.
+     */
+    public PDRectangle calcAdjustedCropBox()
+    {
+        PDRectangle adjustedCropBox = new PDRectangle();
+        
+        // "the region to which the contents of the page shall be clipped"
+        PDRectangle tmpCropBox = findCropBox();
+        
+        // "Content falling outside this boundary may safely be discarded"
+        PDRectangle tmpMediaBox = findMediaBox();
+        
+        // "The crop, bleed, trim, and art boxes shall not ordinarily extend
+        // beyond the boundaries of the media box. If they do, they are
+        // effectively reduced to their intersection with the media box.
+        if (tmpMediaBox.getLowerLeftX() > tmpCropBox.getLowerLeftX())
+        {
+            adjustedCropBox.setLowerLeftX(tmpMediaBox.getLowerLeftX());
+        }
+        else
+        {
+            adjustedCropBox.setLowerLeftX(tmpCropBox.getLowerLeftX());
+        }
+        if (tmpMediaBox.getLowerLeftY() > tmpCropBox.getLowerLeftY())
+        {
+            adjustedCropBox.setLowerLeftY(tmpMediaBox.getLowerLeftY());
+        }
+        else
+        {
+            adjustedCropBox.setLowerLeftY(tmpCropBox.getLowerLeftY());
+        }
+        if (tmpMediaBox.getUpperRightX() < tmpCropBox.getUpperRightX())
+        {
+            adjustedCropBox.setUpperRightX(tmpMediaBox.getUpperRightX());
+        }
+        else
+        {
+            adjustedCropBox.setUpperRightX(tmpCropBox.getUpperRightX());
+        }
+        if (tmpMediaBox.getUpperRightY() < tmpCropBox.getUpperRightY())
+        {
+            adjustedCropBox.setUpperRightY(tmpMediaBox.getUpperRightY());
+        }
+        else
+        {
+            adjustedCropBox.setUpperRightY(tmpCropBox.getUpperRightY());
+        }
+        
+        return adjustedCropBox;
     }
 
     // todo BoxColorInfo
