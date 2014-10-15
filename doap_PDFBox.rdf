@@ -137,11 +137,19 @@
         <browse rdf:resource="http://svn.apache.org/viewvc/pdfbox"/>
       </SVNRepository>
     </repository>
-    <asfext:implements><asfext:Standard>
-      <asfext:title>Portable document format (PDF)</asfext:title>
-      <asfext:body>Adobe Systems Incorporated</asfext:body>
-      <asfext:id>ISO 32000-1</asfext:id>
-      <asfext:url rdf:resource="http://www.adobe.com/devnet/pdf/pdf_reference.html"/>
-    </asfext:Standard></asfext:implements>
+    <asfext:implements>
+        <asfext:Standard>
+            <asfext:title>Portable document format (PDF)</asfext:title>
+            <asfext:body>ISO International Organization for Standardization</asfext:body>
+            <asfext:id>ISO 32000-1</asfext:id>
+            <asfext:url rdf:resource="http://www.iso.org"/>
+        </asfext:Standard>
+        <asfext:Standard>
+            <asfext:title>Portable document format (PDF)</asfext:title>
+            <asfext:body>Authorised copy of the ISO standard with identical technical content from Adobe Systems Incorporated</asfext:body>
+            <asfext:id>ISO 32000-1</asfext:id>
+            <asfext:url rdf:resource="http://www.adobe.com/devnet/pdf/pdf_reference.html"/>
+        </asfext:Standard>
+      </asfext:implements>
   </Project>
 </rdf:RDF>
