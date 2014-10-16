@@ -914,14 +914,19 @@ public class PDFParser extends BaseParser
         COSObject root = (COSObject) parsedTrailer.getItem(COSName.ROOT);
         if (root != null)
         {
-            COSName version =  (COSName) root.getItem(COSName.VERSION);
-            if (version != null)
+            COSBase item = root.getItem(COSName.VERSION);
+            if (item instanceof COSName)
             {
+                COSName version = (COSName) item;
                 float trailerVersion = Float.valueOf(version.getName());
                 if (trailerVersion > document.getVersion())
                 {
                     document.setVersion(trailerVersion);
                 }
+            }
+            else if (item != null)
+            {
+                LOG.warn("Incorrect /Version entry is ignored: " + item);
             }
         }
     }
