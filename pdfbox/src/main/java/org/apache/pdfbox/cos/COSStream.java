@@ -178,6 +178,33 @@ public class COSStream extends COSDictionary implements Closeable
     }
     
     /**
+     * This will set the expected length of the encoded stream. Call this method
+     * if the previously set expected length is wrong, to avoid further trouble.
+     * 
+     * @param length the expected length of the encoded stream.
+     */
+    public void setFilteredLength(long length)
+    {
+        filteredStream.setExpectedLength(COSInteger.get(length));
+    }
+
+    /**
+     * This will get the length of the data written in the encoded stream.
+     *
+     * @return the length of the data written in the encoded stream as long
+     *
+     * @throws IOException
+     */
+    public long getFilteredLengthWritten() throws IOException
+    {
+        if (filteredStream == null)
+        {
+            doEncode();
+        }
+        return filteredStream.getLengthWritten();
+    }
+ 
+    /**
      * This will get the logical content stream with none of the filters.
      *
      * @return the bytes of the logical (decoded) stream
