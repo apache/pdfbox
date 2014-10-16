@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -32,6 +33,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.exceptions.WrappedIOException;
@@ -67,6 +69,11 @@ public class PDFParser extends BaseParser
      * File.
      */
     private List<ConflictObj> conflictList = new ArrayList<ConflictObj>();
+    
+    /**
+     * A list of COSStream objects to check for length correctness
+     */
+    private final HashSet<COSStream> streamLengthCheckSet = new HashSet<COSStream>();
 
     /** Collects all Xref/trailer objects and resolves them into single
      *  object using startxref reference. 
@@ -239,6 +246,8 @@ public class PDFParser extends BaseParser
             document.setTrailer( xrefTrailerResolver.getTrailer() );
             document.addXRefTable( xrefTrailerResolver.getXrefTable() );
 
+            fixStreamsLength();
+
             if( !document.isEncrypted() )
             {
                 document.dereferenceObjectStreams();
@@ -270,6 +279,35 @@ public class PDFParser extends BaseParser
         finally
         {
             pdfSource.close();
+        }
+    }
+
+    /**
+     * Check whether streams with previously unknown length have the correct
+     * length and fix that length if needed.
+     *
+     * @throws IOException
+     */
+    private void fixStreamsLength() throws IOException
+    {
+        for (COSObject obj : document.getObjects())
+        {
+            if (obj.getObject() instanceof COSStream
+                    && streamLengthCheckSet.contains((COSStream) obj.getObject()))
+            {
+                COSStream stream = (COSStream) obj.getObject();
+
+                long filteredLength = stream.getFilteredLength();
+                long filteredLengthWritten = stream.getFilteredLengthWritten();
+                if (Math.abs(filteredLength - filteredLengthWritten) > 2)
+                {
+                    // adjust the length, but only if the difference is > 2,
+                    // i.e. don't bother with CR LF differences
+                    LOG.warn("/Length of " + obj + " corrected from " + filteredLength + " to " + filteredLengthWritten);
+                    stream.setLong(COSName.LENGTH, filteredLengthWritten);
+                    stream.setFilteredLength(filteredLengthWritten);
+                }
+            }
         }
     }
 
@@ -610,6 +648,19 @@ public class PDFParser extends BaseParser
 
                     // test for XRef type
                     final COSStream strmObj = (COSStream) pb;
+                    
+                    // remember streams without length to check them later
+                    COSBase streamLength = strmObj.getItem(COSName.LENGTH);
+                    int length = -1;
+                    if (streamLength instanceof COSNumber)
+                    {
+                        length = ((COSNumber) streamLength).intValue();
+                    }
+                    if (length == -1)
+                    {
+                        streamLengthCheckSet.add(strmObj);
+                    }
+                    
                     final COSName objectType = (COSName)strmObj.getItem( COSName.TYPE );
                     if( objectType != null && objectType.equals( COSName.XREF ) )
                     {
