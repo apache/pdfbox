@@ -193,8 +193,9 @@ public class PDCcitt extends PDXObjectImage
         IOUtils.closeQuietly(is);
         BufferedImage image = new BufferedImage(colorModel, raster, false, null);
         // maybe a decode array is defined
+        // ignore it there is a mask, because this is handled later
         COSArray decode = getDecode();
-        if (decode != null && decode.getInt(0) == 1)
+        if (!hasMask() && decode != null && decode.getInt(0) == 1)
         {
             invertBitmap(bufferData);
         }
