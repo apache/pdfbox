@@ -118,22 +118,6 @@ public class PDResources implements COSObjectable
     }
 
     /**
-     * This will get the map of fonts. This will never return null. The keys are string and the values are PDFont
-     * objects.
-     * 
-     * @param fontCache A map of existing PDFont objects to reuse.
-     * @return The map of fonts.
-     * 
-     * @throws IOException If there is an error getting the fonts.
-     * 
-     * @deprecated due to some side effects font caching is no longer supported, use {@link #getFonts()} instead
-     */
-    public Map<String, PDFont> getFonts(Map<String, PDFont> fontCache) throws IOException
-    {
-        return getFonts();
-    }
-
-    /**
      * This will get the map of fonts. This will never return null.
      *
      * @return The map of fonts.
