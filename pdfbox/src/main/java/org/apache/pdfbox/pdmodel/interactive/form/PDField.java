@@ -20,6 +20,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.interactive.action.PDFormFieldAdditionalActions;
+import org.apache.pdfbox.util.appearance.AppearanceGenerator;
 
 /**
  * A field in an interactive form.
@@ -120,6 +121,12 @@ public abstract class PDField extends PDFieldTreeNode
             fieldType = getParent().getFieldType();
         }
         return fieldType;
+    }
+    
+    protected void updateFieldAppearances() {
+    	if (!getAcroForm().isNeedAppearances()) {
+    		AppearanceGenerator.generateFieldAppearances(this);
+    	}
     }
 
 
