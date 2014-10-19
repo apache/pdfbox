@@ -53,6 +53,7 @@ import org.apache.xmpbox.xml.XmpParsingException.ErrorType;
 public class MetadataValidationProcess extends AbstractProcess
 {
 
+    @Override
     public void validate(PreflightContext ctx) throws ValidationException
     {
         try
@@ -93,7 +94,7 @@ public class MetadataValidationProcess extends AbstractProcess
             catch (DifferentRDFAboutException e)
             {
                 addValidationError(ctx, new ValidationError(
-                        PreflightConstants.ERROR_METADATA_RDF_ABOUT_ATTRIBUTE_INEQUAL_VALUE, e.getMessage()));
+                        PreflightConstants.ERROR_METADATA_RDF_ABOUT_ATTRIBUTE_INEQUAL_VALUE, e.getMessage(), e));
             }
 
         }
@@ -105,7 +106,7 @@ public class MetadataValidationProcess extends AbstractProcess
             }
             else
             {
-                addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_METADATA_MAIN, "Unexpected error"));
+                addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_METADATA_MAIN, "Unexpected error", e));
             }
         }
         catch (XmpParsingException e)
@@ -113,22 +114,22 @@ public class MetadataValidationProcess extends AbstractProcess
             if (e.getErrorType() == ErrorType.NoValueType)
             {
                 addValidationError(ctx,
-                        new ValidationError(PreflightConstants.ERROR_METADATA_UNKNOWN_VALUETYPE, e.getMessage()));
+                        new ValidationError(PreflightConstants.ERROR_METADATA_UNKNOWN_VALUETYPE, e.getMessage(), e));
             }
             else if (e.getErrorType() == ErrorType.RequiredProperty)
             {
                 addValidationError(ctx,
-                        new ValidationError(PreflightConstants.ERROR_METADATA_PROPERTY_MISSING, e.getMessage()));
+                        new ValidationError(PreflightConstants.ERROR_METADATA_PROPERTY_MISSING, e.getMessage(), e));
             }
             else if (e.getErrorType() == ErrorType.InvalidPrefix)
             {
                 addValidationError(ctx, new ValidationError(
-                        PreflightConstants.ERROR_METADATA_ABSENT_DESCRIPTION_SCHEMA, e.getMessage()));
+                        PreflightConstants.ERROR_METADATA_ABSENT_DESCRIPTION_SCHEMA, e.getMessage(), e));
             }
             else if (e.getErrorType() == ErrorType.InvalidType)
             {
                 addValidationError(ctx,
-                        new ValidationError(PreflightConstants.ERROR_METADATA_PROPERTY_UNKNOWN, e.getMessage()));
+                        new ValidationError(PreflightConstants.ERROR_METADATA_PROPERTY_UNKNOWN, e.getMessage(), e));
             }
             else if (e.getErrorType() == ErrorType.XpacketBadEnd)
             {
@@ -137,16 +138,16 @@ public class MetadataValidationProcess extends AbstractProcess
             else if (e.getErrorType() == ErrorType.NoSchema)
             {
                 addValidationError(ctx, new ValidationError(
-                        PreflightConstants.ERROR_METADATA_ABSENT_DESCRIPTION_SCHEMA, e.getMessage()));
+                        PreflightConstants.ERROR_METADATA_ABSENT_DESCRIPTION_SCHEMA, e.getMessage(), e));
             }
             else if (e.getErrorType() == ErrorType.InvalidPdfaSchema)
             {
                 addValidationError(ctx,
-                        new ValidationError(PreflightConstants.ERROR_METADATA_WRONG_NS_URI, e.getMessage()));
+                        new ValidationError(PreflightConstants.ERROR_METADATA_WRONG_NS_URI, e.getMessage(), e));
             }
             else
             {
-                addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_METADATA_FORMAT, e.getMessage()));
+                addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_METADATA_FORMAT, e.getMessage(), e));
             }
         }
         catch (IOException e)
