@@ -93,7 +93,8 @@ public final class PDTextField extends PDVariableText
         {
             getDictionary().removeItem(COSName.V);
         }
-        // TODO create/update appearance
+        
+        updateFieldAppearances();
     }
 
     /**
