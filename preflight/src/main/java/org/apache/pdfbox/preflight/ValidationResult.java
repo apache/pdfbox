@@ -188,15 +188,36 @@ public class ValidationResult
 
         // TODO Add here COSObject or the PDObject that is linked to the error may a automatic fix can be done.
 
+        /**
+         * Always record the place in the source code where the ValidationError
+         * was created, in case the ValidationError was not caused by a
+         * Throwable.
+         */
         private Throwable t = null;
 
+        /**
+         * Get the place where the ValidationError was created, useful if the
+         * ValidationError was not caused by a Throwable.
+         *
+         * @return The place where the ValidationError was created.
+         */
         public Throwable getThrowable()
         {
             return t;
         }
 
+        /**
+         * The underlying cause if the ValidationError was caused by a Throwable.
+         */
         private Throwable cause = null;
 
+        /**
+         * Get the underlying cause if the ValidationError was caused by a
+         * Throwable.
+         *
+         * @return The underlying cause if the ValidationError was caused by a
+         * Throwable, or null if not.
+         */
         public Throwable getCause()
         {
             return cause;
@@ -316,12 +337,11 @@ public class ValidationResult
         }
 
         /**
-         * Create a validation error with the given error code and the error explanation.
-         * 
-         * @param errorCode
-         *            the error code
-         * @param details
-         *            the error explanation
+         * Create a validation error with the given error code and the error
+         * explanation.
+         *
+         * @param errorCode the error code
+         * @param details the error explanation
          */
         public ValidationError(String errorCode, String details)
         {
