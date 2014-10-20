@@ -1157,7 +1157,7 @@ public class NonSequentialPDFParser extends PDFParser
                         Long fileOffset = xrefTrailerResolver.getXrefTable().get(objKey);
                         // it is allowed that object references point to null,
                         // thus we have to test
-                        if (fileOffset != null)
+                        if (fileOffset != null && fileOffset != 0)
                         {
                             if (fileOffset > 0)
                             {
@@ -1171,7 +1171,9 @@ public class NonSequentialPDFParser extends PDFParser
                                 fileOffset = xrefTrailerResolver.getXrefTable().get(new COSObjectKey(-fileOffset, 0));
                                 if ((fileOffset == null) || (fileOffset <= 0))
                                 {
-                                    throw new IOException("Invalid object stream xref object reference: " + fileOffset);
+                                    throw new IOException(
+                                            "Invalid object stream xref object reference for key '" + objKey + "': "
+                                                    + fileOffset);
                                 }
 
                                 List<COSObject> stmObjects = objToBeParsed.get(fileOffset);
