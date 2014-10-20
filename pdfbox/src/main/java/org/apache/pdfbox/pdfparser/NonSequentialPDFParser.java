@@ -1919,8 +1919,11 @@ public class NonSequentialPDFParser extends PDFParser
                         pdfSource.seek(tempOffset);
                         if (pdfSource.peek() == 32)
                         {
+                            while (tempOffset > MINIMUM_SEARCH_OFFSET && pdfSource.peek() == 32)
+                            {
+                                pdfSource.seek(--tempOffset);
+                            }
                             int length = 0;
-                            pdfSource.seek(--tempOffset);
                             while (tempOffset > MINIMUM_SEARCH_OFFSET && pdfSource.peek() > 47
                                     && pdfSource.peek() < 58)
                             {
@@ -1945,7 +1948,7 @@ public class NonSequentialPDFParser extends PDFParser
                                 if (objectID != null)
                                 {
                                     bfSearchObjectOffsets.put(
-                                            createObjectString(objectID, genID), tempOffset++);
+                                            createObjectString(objectID, genID), ++tempOffset);
                                 }
                             }
                         }
