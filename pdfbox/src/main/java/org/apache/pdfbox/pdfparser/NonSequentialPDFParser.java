@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -37,6 +38,7 @@ import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -83,10 +85,10 @@ import org.apache.pdfbox.persistence.util.COSObjectKey;
  */
 public class NonSequentialPDFParser extends PDFParser
 {
-    private static final byte[] XREF = new byte[] { 'x', 'r', 'e', 'f' };
-
-    private static final int E = 'e';
-    private static final int N = 'n';
+    private static final byte[] XREF_TABLE = new byte[] { 'x', 'r', 'e', 'f' };
+    private static final byte[] XREF_STREAM = new byte[] { '/','X', 'R', 'e', 'f' };
+    private static final long MINIMUM_SEARCH_OFFSET = 6;
+    
     private static final int X = 'x';
 
     public static final String SYSPROP_PARSEMINIMAL = "org.apache.pdfbox.pdfparser.nonSequentialPDFParser.parseMinimal";
@@ -116,6 +118,12 @@ public class NonSequentialPDFParser extends PDFParser
      * is parser using auto healing capacity ?
      */
     private boolean isLenient = true;
+
+    /**
+     * Contains all found objects of a brute force search
+     */
+    private HashMap<String, Long> bfSearchObjectOffsets = null;
+    private Vector<Long> bfSearchXRefOffsets = null;
 
     /**
      * The security handler.
@@ -336,7 +344,11 @@ public class NonSequentialPDFParser extends PDFParser
         long startXrefOffset = document.getStartXref();
         // check the startxref offset
         if (isLenient) {
-            startXrefOffset -= calculateFixingOffset(startXrefOffset);
+            long fixedOffset = checkXRefOffset(startXrefOffset);
+            if (fixedOffset > -1)
+            {
+            	startXrefOffset = fixedOffset;
+            }
             document.setStartXref(startXrefOffset);
         }
         long prev = startXrefOffset;
@@ -383,13 +395,13 @@ public class NonSequentialPDFParser extends PDFParser
                 prev = trailer.getInt(COSName.PREV);
                 if (isLenient && prev > -1)
                 {
-                	// check the xref table reference
-                	long fixingOffset = calculateFixingOffset(prev);
-	            	if (fixingOffset != 0)
-	            	{
-	            		prev -= fixingOffset;
-	            		trailer.setLong(COSName.PREV, prev);
-	            	}
+                    // check the xref table reference
+                    long fixedOffset = checkXRefOffset(prev);
+                    if (fixedOffset > -1 && fixedOffset != prev)
+                    {
+                        prev = fixedOffset;
+                        trailer.setLong(COSName.PREV, prev);
+                    }
                 }
             }
             else
@@ -398,14 +410,14 @@ public class NonSequentialPDFParser extends PDFParser
                 prev = parseXrefObjStream(prev, true);
                 if (isLenient && prev > -1)
                 {
-                	// check the xref table reference
-                	long fixingOffset = calculateFixingOffset(prev);
-	            	if (fixingOffset != 0)
-	            	{
-	            		prev -= fixingOffset;
-	                    COSDictionary trailer = xrefTrailerResolver.getCurrentTrailer();
-	            		trailer.setLong(COSName.PREV, prev);
-	            	}
+                    // check the xref table reference
+                    long fixedOffset = checkXRefOffset(prev);
+                    if (fixedOffset > -1 && fixedOffset != prev)
+                    {
+                        prev = fixedOffset;
+                        COSDictionary trailer = xrefTrailerResolver.getCurrentTrailer();
+                        trailer.setLong(COSName.PREV, prev);
+                    }
                 }
             }
         }
@@ -1560,34 +1572,31 @@ public class NonSequentialPDFParser extends PDFParser
             // PDF Ref 1.7, chap. 3.2.7:
             // 'stream' should be followed by either a CRLF (0x0d 0x0a) or LF
             // but nothing else.
+            int whitespace = pdfSource.read();
+            
+            // see brother_scan_cover.pdf, it adds whitespaces
+            // after the stream but before the start of the
+            // data, so just read those first
+            while (whitespace == 0x20)
             {
-                int whitespace = pdfSource.read();
+            	whitespace = pdfSource.read();
+            }
 
-                // see brother_scan_cover.pdf, it adds whitespaces
-                // after the stream but before the start of the
-                // data, so just read those first
-                while (whitespace == 0x20)
-                {
-                    whitespace = pdfSource.read();
-                }
-
-                if (whitespace == 0x0D)
-                {
-                    whitespace = pdfSource.read();
-                    if (whitespace != 0x0A)
-                    {
-                        // the spec says this is invalid but it happens in the
-                        // real
-                        // world so we must support it
-                        pdfSource.unread(whitespace);
-                    }
-                }
-                else if (whitespace != 0x0A)
-                {
-                    // no whitespace after 'stream'; PDF ref. says 'should' so
-                    // that is ok
-                    pdfSource.unread(whitespace);
-                }
+            if (whitespace == 0x0D)
+            {
+            	whitespace = pdfSource.read();
+            	if (whitespace != 0x0A)
+            	{
+            		// the spec says this is invalid but it happens in the
+            		// real world so we must support it
+            		pdfSource.unread(whitespace);
+            	}
+            }
+            else if (whitespace != 0x0A)
+            {
+            	// no whitespace after 'stream'; PDF ref. says 'should' so
+            	// that is ok
+            	pdfSource.unread(whitespace);
             }
 
             /*
@@ -1692,24 +1701,24 @@ public class NonSequentialPDFParser extends PDFParser
     }
     
     /**
+     * Check if the cross reference table/stream can be found at the current offset.
      * 
      * @param startXRefOffset
-     * @return the calculated offset
+     * @return the revised offset
      * @throws IOException
      */
-    private long calculateFixingOffset(long startXRefOffset) throws IOException
+    private long checkXRefOffset(long startXRefOffset) throws IOException
     {
-    	setPdfSource(startXRefOffset);
-    	if (pdfSource.peek() == X && calculateFixingOffset(startXRefOffset, XREF) == 0)
-    	{
-    		return 0;
-    	}
+        setPdfSource(startXRefOffset);
+        if (pdfSource.peek() == X && checkBytesAtOffset(XREF_TABLE))
+        {
+            return startXRefOffset;
+        }
         int nextValue = pdfSource.peek();
+        // maybe there isn't a xref table but a xref stream
         // is the next character a digit?
         if (nextValue > 47 && nextValue < 57)
         {
-            // save the origin offset
-            long originOffset = pdfSource.getOffset();
             try
             {
                 // Maybe it's a XRef stream
@@ -1717,37 +1726,19 @@ public class NonSequentialPDFParser extends PDFParser
                 readGenerationNumber();
                 readPattern(OBJ_MARKER);
                 setPdfSource(startXRefOffset);
-                return 0;
+                return startXRefOffset;
             }
             catch (IOException exception)
             {
-                setPdfSource(startXRefOffset);
-            }
-            finally
-            {
-                pdfSource.seek(originOffset);
+            	// there wasn't an object of a xref stream
+            	// try to repair the offset
+                pdfSource.seek(startXRefOffset);
             }
         }
-        // TODO try to repair for XRef streams
-        return  calculateFixingOffset(startXRefOffset, XREF);
+        // try to find a fixed offset
+        return calculateXRefFixedOffset(startXRefOffset);
     }
 
-    /**
-     * Try to dereference the given object at the given offset and calculate a new
-     * offset if necessary.
-     * 
-     * @param objectOffset the offset where to look at
-     * @param objectID the object ID
-     * @param genID the generation number
-     * @return the difference to the origin offset
-     * @throws IOException if something went wrong
-     */
-    private long calculateFixingOffset(long objectOffset, long objectID, long genID) throws IOException
-    {
-    	String objString = Long.toString(objectID) + " " + Long.toString(genID)+ " obj";
-    	return calculateFixingOffset(objectOffset, objString.getBytes("ISO-8859-1"));
-    }
-    
     /**
      * Check if the given bytes can be found at the current offset.
      * 
@@ -1782,83 +1773,29 @@ public class NonSequentialPDFParser extends PDFParser
     }
     
     /**
-     * Check if the given bytes can be found at the given offset.
-     * The method seeks 200 bytes backward/forward if the given string
-     * can't be found at the given offset and returns the difference 
-     * of the new offset to the origin one.
+     * Try to find a fixed offset for the given xref table/stream.
      * 
      * @param objectOffset the given offset where to look at
-     * @param string the bytes to look for
-     * @return the difference to the origin one
+     * @return the fixed offset
+     * 
      * @throws IOException if something went wrong
      */
-    private long calculateFixingOffset(long objectOffset, byte[] string) throws IOException
+    private long calculateXRefFixedOffset(long objectOffset) throws IOException
     {
-    	if (objectOffset < 0)
-    	{
-    		LOG.error("Invalid object offset " + objectOffset + " for object " + new String(string));
-    		return 0;
-    	}
-    	long originOffset = pdfSource.getOffset();
-    	pdfSource.seek(objectOffset);
-    	// most likely the object can be found at the given offset
-    	if (checkBytesAtOffset(string))
-    	{
-        	pdfSource.seek(originOffset);
-			return 0;
-		}
-    	// the offset seems to be wrong -> seek backward to find the object we are looking for
-    	long currentOffset = objectOffset;
-    	for (int i=1; i<20;i++)
-    	{
-    		currentOffset = objectOffset - (i*10);
-    		if (currentOffset > 0)
-    		{
-	    		pdfSource.seek(currentOffset);
-	    		for (int j=0; j<10;j++)
-	    		{
-	    			if (checkBytesAtOffset(string))
-	    			{
-	    				pdfSource.seek(originOffset);
-						LOG.debug("Fixed reference for object "+new String(string)+" "+objectOffset + " -> "+(objectOffset - currentOffset));
-	    				return objectOffset - currentOffset;
-	    			}
-	    			else
-	    			{
-	    				currentOffset++;
-	    				pdfSource.read();
-	    			}
-	    		}
-    		}
-    	}
-    	// no luck by seeking backward -> seek forward to find the object we are looking for
-		pdfSource.seek(objectOffset);
-		currentOffset = objectOffset;
-		do
-		{
-			if (checkBytesAtOffset(string))
-			{
-				pdfSource.seek(originOffset);
-				if (currentOffset != 0)
-				{
-					LOG.debug("Fixed reference for object "+new String(string)+" "+objectOffset + " -> "+(objectOffset - currentOffset));
-				}
-				return objectOffset - currentOffset;
-			}
-			else
-			{
-				// next byte
-				currentOffset++;
-				if (pdfSource.read() == -1)
-				{
-					throw new IOException("Premature end of file while dereferencing object "+ new String(string) + " at offset " + objectOffset);
-				}
-			}
-		}
-		while(currentOffset < objectOffset+200);
-		pdfSource.seek(originOffset);
-		LOG.error("Can't find the object " + new String(string) + " at offset " + objectOffset);
-    	return 0;
+        if (objectOffset < 0)
+        {
+            LOG.error("Invalid object offset " + objectOffset + " when searching for a xref table/stream");
+            return 0;
+        }
+        // start a brute force search for all xref tables and try to find the offset we are looking for
+        long newOffset = bfSearchForXRef(objectOffset);
+        if (newOffset > -1)
+        {
+            LOG.debug("Fixed reference for xref table/stream " + objectOffset + " -> " + newOffset);
+            return newOffset;
+        }
+        LOG.error("Can't find the object axref table/stream at offset " + objectOffset);
+        return 0;
     }
 
     /**
@@ -1869,28 +1806,290 @@ public class NonSequentialPDFParser extends PDFParser
      */
     private void checkXrefOffsets() throws IOException
     {
-    	Map<COSObjectKey, Long>xrefOffset = xrefTrailerResolver.getXrefTable();
-    	if (xrefOffset != null)
-    	{
-    		for (COSObjectKey objectKey : xrefOffset.keySet())
-    		{
-    			Long objectOffset = xrefOffset.get(objectKey);
-    			// a negative offset number represents a object number itself
-    			// see type 2 entry in xref stream
-    			if (objectOffset != null && objectOffset > 0)
-    			{
-        			long objectNr = objectKey.getNumber();
-        			long objectGen = objectKey.getGeneration();
-    				long fixingOffset = calculateFixingOffset(objectOffset, objectNr, objectGen);
-    				if (fixingOffset != 0)
-    				{
-    					long newOffset = objectOffset - fixingOffset;
-    					xrefOffset.put(objectKey, newOffset);
-    					LOG.debug("Fixed reference for object "+objectNr+" "+objectGen+" "+objectOffset + " -> "+newOffset);
-    				}
-    			}
-    		}
-    	}
+        Map<COSObjectKey, Long> xrefOffset = xrefTrailerResolver.getXrefTable();
+        if (xrefOffset != null)
+        {
+            for (COSObjectKey objectKey : xrefOffset.keySet())
+            {
+                Long objectOffset = xrefOffset.get(objectKey);
+                // a negative offset number represents a object number itself
+                // see type 2 entry in xref stream
+                if (objectOffset != null && objectOffset > 0)
+                {
+                    long objectNr = objectKey.getNumber();
+                    long objectGen = objectKey.getGeneration();
+                    String objectString = createObjectString(objectNr, objectGen);
+                    if (!checkObjectId(objectString, objectOffset))
+                    {
+                        long newOffset = bfSearchForObject(objectString);
+                        if (newOffset > -1)
+                        {
+                            xrefOffset.put(objectKey, newOffset);
+                            LOG.debug("Fixed reference for object " + objectNr + " " + objectGen
+                                    + " " + objectOffset + " -> " + newOffset);
+                        }
+                        else
+                        {
+                            LOG.error("Can't find the object " + objectNr + " " + objectGen
+                                    + " (origin offset " + objectOffset + ")");
+                        }
+                    }
+                }
+            }
+        }
     }
 
+    /**
+     * Check if the given string can be found at the given offset.
+     * 
+     * @param objectString the string we are looking for
+     * @param offset the given where to look
+     * @return returns true if the given string can be found at the givwen offset
+     * @throws IOException if something went wrong
+     */
+    private boolean checkObjectId(String objectString, long offset) throws IOException
+    {
+        boolean objectFound = false;
+        long originOffset = pdfSource.getOffset();
+        pdfSource.seek(offset);
+        objectFound = checkBytesAtOffset(objectString.getBytes("ISO-8859-1"));
+        pdfSource.seek(originOffset);
+        return objectFound;
+    }
+
+    /**
+     * Create a string for the given object id.
+     * 
+     * @param objectID the object id
+     * @param genID the generation id
+     * @return the generated string
+     */
+    private String createObjectString(long objectID, long genID)
+    {
+        return Long.toString(objectID) + " " + Long.toString(genID) + " obj";
+    }
+
+    /**
+     * Search for the offset of the given object among the objects found by a brute force search.
+     * 
+     * @param objectString the object we are looking for
+     * @return the offset of the object
+     * @throws IOException if something went wrong
+     */
+    private long bfSearchForObject(String objectString) throws IOException
+    {
+        long newOffset = -1;
+        bfSearchForObjects();
+        if (bfSearchObjectOffsets.containsKey(objectString))
+        {
+            newOffset = bfSearchObjectOffsets.get(objectString);
+        }
+        return newOffset;
+    }
+
+    /**
+     * Brute force search for every object in the pdf.
+     *   
+     * @throws IOException if something went wrong
+     */
+    private void bfSearchForObjects() throws IOException
+    {
+        if (bfSearchObjectOffsets == null)
+        {
+            bfSearchObjectOffsets = new HashMap<String, Long>();
+            long originOffset = pdfSource.getOffset();
+            long currentOffset = MINIMUM_SEARCH_OFFSET;
+            String objString = " obj";
+            byte[] string = objString.getBytes("ISO-8859-1");
+            do
+            {
+                pdfSource.seek(currentOffset);
+                if (checkBytesAtOffset(string))
+                {
+                    long tempOffset = currentOffset - 1;
+                    pdfSource.seek(tempOffset);
+                    int genID = pdfSource.peek();
+                    // is the next char a digit?
+                    if (genID > 47 && genID < 58)
+                    {
+                        genID -= 48;
+                        tempOffset--;
+                        pdfSource.seek(tempOffset);
+                        if (pdfSource.peek() == 32)
+                        {
+                            int length = 0;
+                            pdfSource.seek(--tempOffset);
+                            while (tempOffset > MINIMUM_SEARCH_OFFSET && pdfSource.peek() > 47
+                                    && pdfSource.peek() < 58)
+                            {
+                                pdfSource.seek(--tempOffset);
+                                length++;
+                            }
+                            if (length > 0)
+                            {
+                                pdfSource.read();
+                                byte[] objIDBytes = pdfSource.readFully(length);
+                                String objIdString = new String(objIDBytes, 0,
+                                        objIDBytes.length, "ISO-8859-1");
+                                Long objectID = null;
+                                try
+                                {
+                                    objectID = Long.valueOf(objIdString);
+                                }
+                                catch (NumberFormatException excpetion)
+                                {
+                                    objectID = null;
+                                }
+                                if (objectID != null)
+                                {
+                                    bfSearchObjectOffsets.put(
+                                            createObjectString(objectID, genID), tempOffset++);
+                                }
+                            }
+                        }
+                    }
+                }
+                currentOffset++;
+            } while (!pdfSource.isEOF());
+            // reestablish origin position
+            pdfSource.seek(originOffset);
+        }
+    }
+
+    /**
+     * Search for the offset of the given xref table/stream among those found by a brute force search.
+     * 
+     * @return the offset of the xref entry
+     * @throws IOException if something went wrong
+     */
+    private long bfSearchForXRef(long xrefOffset) throws IOException
+    {
+    	long newOffset = -1;
+    	bfSearchForXRefs();
+    	if (bfSearchXRefOffsets != null)
+    	{
+	    	long currentDifference = -1;
+	    	int currentOffsetIndex = -1;
+	    	int numberOfOffsets = bfSearchXRefOffsets.size();
+	    	// find the most likely value
+	    	// TODO to be optimized, this won't work in every case
+	    	for (int i=0; i<numberOfOffsets; i++)
+	    	{
+	    		long newDifference = xrefOffset - bfSearchXRefOffsets.get(i);
+	    		// find the nearest offset
+	    		if (currentDifference == -1 || (Math.abs(currentDifference) > Math.abs(newDifference)))
+	    		{
+	    			currentDifference = newDifference;
+	        		currentOffsetIndex = i;
+	    		}
+	    	}
+	    	if (currentOffsetIndex > -1)
+	    	{
+	    		newOffset = bfSearchXRefOffsets.remove(currentOffsetIndex);
+	    	}
+    	}
+        return newOffset;
+    }
+
+    /**
+     * Brute force search for all xref entries.
+     * 
+     * @throws IOException if something went wrong
+     */
+    private void bfSearchForXRefs() throws IOException
+    {
+    	if (bfSearchXRefOffsets == null)
+    	{
+            // a pdf may contain more than one xref entry
+    		bfSearchXRefOffsets = new Vector<Long>();
+    		long originOffset = pdfSource.getOffset();
+	        pdfSource.seek(MINIMUM_SEARCH_OFFSET);
+	        // search for xref tables
+	        while(!pdfSource.isEOF())
+	        {
+	            if (checkBytesAtOffset(XREF_TABLE))
+	            {
+	                long newOffset = pdfSource.getOffset(); 
+	                pdfSource.seek(newOffset-1);
+	                // ensure that we don't read "startxref" instead of "xref"
+	                if (isWhitespace())
+	                {
+	                    bfSearchXRefOffsets.add(newOffset);
+	                }
+	                pdfSource.seek(newOffset+4);
+	            }
+	            pdfSource.read();
+	        }
+	        pdfSource.seek(MINIMUM_SEARCH_OFFSET);
+	        // search for XRef streams
+            String objString = " obj";
+            byte[] string = objString.getBytes("ISO-8859-1");
+	        while(!pdfSource.isEOF())
+	        {
+	            if (checkBytesAtOffset(XREF_STREAM))
+	            {
+	            	// search backwards for the beginning of the stream
+	                long newOffset = -1;
+	            	long xrefOffset = pdfSource.getOffset();
+	            	long currentOffset = xrefOffset;
+	            	boolean objFound = false;
+	            	for (int i=1; i<30 && !objFound;i++)
+	            	{
+	            		currentOffset = xrefOffset - (i*10);
+	            		if (currentOffset > 0)
+	            		{
+	        	    		pdfSource.seek(currentOffset);
+	        	    		for (int j=0; j<10;j++)
+	        	    		{
+	        	    			if (checkBytesAtOffset(string))
+	        	    			{
+	        	                    long tempOffset = currentOffset - 1;
+	        	                    pdfSource.seek(tempOffset);
+	        	                    int genID = pdfSource.peek();
+	        	                    // is the next char a digit?
+	        	                    if (genID > 47 && genID < 58)
+	        	                    {
+	        	                        genID -= 48;
+	        	                        tempOffset--;
+	        	                        pdfSource.seek(tempOffset);
+	        	                        if (pdfSource.peek() == 32)
+	        	                        {
+	        	                            int length = 0;
+	        	                            pdfSource.seek(--tempOffset);
+	        	                            while (tempOffset > MINIMUM_SEARCH_OFFSET && pdfSource.peek() > 47
+	        	                                    && pdfSource.peek() < 58)
+	        	                            {
+	        	                                pdfSource.seek(--tempOffset);
+	        	                                length++;
+	        	                            }
+	        	                            if (length > 0)
+	        	                            {
+	        	                                pdfSource.read();
+	        	        		            	newOffset = pdfSource.getOffset();
+	        	                            }
+	        	                        }
+	        	                    }
+	        						LOG.debug("Fixed reference for xref stream "+xrefOffset + " -> "+newOffset);
+	        		            	objFound = true;
+	        		            	break;
+	        	    			}
+	        	    			else
+	        	    			{
+	        	    				currentOffset++;
+	        	    				pdfSource.read();
+	        	    			}
+	        	    		}
+	            		}
+	            	}
+	            	if (newOffset > -1)
+	            	{
+		                bfSearchXRefOffsets.add(newOffset);
+	            	}
+    				pdfSource.seek(xrefOffset+5);
+	            }
+	            pdfSource.read();
+	        }
+	        pdfSource.seek(originOffset);
+    	}
+    }
 }
