@@ -358,9 +358,10 @@ public abstract class PDXObjectImage extends PDXObject
     }
 
     /**
-     * This will get the color space or null if none exists.
+     * This will get the color space.
      *
-     * @return The color space for this image.
+     * @return The color space for this image or null if none exists or if it
+     * isn't known yet.
      *
      * @throws IOException If there is an error getting the colorspace.
      */
@@ -373,7 +374,7 @@ public abstract class PDXObjectImage extends PDXObject
             retval = PDColorSpaceFactory.createColorSpace( cs );
             if (retval == null)
             {
-                LOG.info("About to return NULL from createColorSpace branch");
+                LOG.debug("About to return NULL from createColorSpace branch");
             }
         }
         else
@@ -397,8 +398,9 @@ public abstract class PDXObjectImage extends PDXObject
             }
             else
             {
-                LOG.info("About to return NULL from unhandled branch."
-                        + " filter = " + filter);
+                LOG.debug("Colorspace can't be determined at this time, "
+                        + "about to return NULL from unhandled branch. filter = " + filter);
+                LOG.debug("Can happen e.g. when constructing PDJpeg from ImageStream");
             }
         }
         return retval;
