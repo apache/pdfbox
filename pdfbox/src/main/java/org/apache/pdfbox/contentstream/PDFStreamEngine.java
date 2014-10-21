@@ -194,6 +194,7 @@ public class PDFStreamEngine
         {
             streamResourcesStack.push(resources);
             processSubStream(cosStream);
+            streamResourcesStack.pop();
         }
         else
         {
