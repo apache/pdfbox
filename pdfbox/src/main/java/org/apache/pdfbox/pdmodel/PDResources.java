@@ -307,7 +307,7 @@ public final class PDResources implements COSObjectable
      */
     public COSName add(PDShading shading)
     {
-        return add(COSName.SHADING, "cs1", shading);
+        return add(COSName.SHADING, "sh", shading);
     }
 
     /**
