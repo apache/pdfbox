@@ -444,15 +444,8 @@ public class PDFStreamEngine
      */
     public void processOperator(String operation, List<COSBase> arguments) throws IOException
     {
-        try
-        {
-            Operator operator = Operator.getOperator(operation);
-            processOperator(operator, arguments);
-        }
-        catch (IOException e)
-        {
-            LOG.warn(e, e);
-        }
+        Operator operator = Operator.getOperator(operation);
+        processOperator(operator, arguments);
     }
 
     /**
