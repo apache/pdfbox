@@ -193,8 +193,14 @@ public class PDFStreamEngine
         if (resources != null)
         {
             streamResourcesStack.push(resources);
-            processSubStream(cosStream);
-            streamResourcesStack.pop();
+            try
+            {
+                processSubStream(cosStream);
+            }
+            finally
+            {
+                streamResourcesStack.pop();
+            }
         }
         else
         {
