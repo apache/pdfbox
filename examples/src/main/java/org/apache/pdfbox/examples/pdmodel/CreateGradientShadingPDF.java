@@ -16,8 +16,6 @@
 package org.apache.pdfbox.examples.pdmodel;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
@@ -29,7 +27,6 @@ import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.function.PDFunctionType2;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
-import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType2;
 
 /**
@@ -92,9 +89,7 @@ public class CreateGradientShadingPDF
 
             // create and add to shading resources
             page.setResources(new PDResources());
-            Map<String, PDShading> shadings = new HashMap<String, PDShading>();
-            shadings.put("sh1", shading);
-            page.getResources().setShadings(shadings);
+            page.getResources().put(COSName.getPDFName("sh1"), shading);
 
             // invoke shading from content stream
             PDPageContentStream contentStream = new PDPageContentStream(document, page, true, false);

@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Locale;
 import javax.imageio.ImageIO;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -162,8 +163,7 @@ public class RubberStampWithImage
             float x, float y, float width, float height ) throws IOException
     {
         // This is similar to PDPageContentStream.drawXObject()
-        String xObjectPrefix = "Im";
-        String xObjectId = resources.addXObject(xobject, xObjectPrefix);
+        COSName xObjectId = resources.add(xobject);
 
         appendRawCommands( os, SAVE_GRAPHICS_STATE );
         appendRawCommands( os, formatDecimal.format( width ) );
@@ -181,7 +181,7 @@ public class RubberStampWithImage
         appendRawCommands( os, CONCATENATE_MATRIX );
         appendRawCommands( os, SPACE );
         appendRawCommands( os, "/" );
-        appendRawCommands( os, xObjectId );
+        appendRawCommands( os, xObjectId.getName() );
         appendRawCommands( os, SPACE );
         appendRawCommands( os, XOBJECT_DO );
         appendRawCommands( os, SPACE );

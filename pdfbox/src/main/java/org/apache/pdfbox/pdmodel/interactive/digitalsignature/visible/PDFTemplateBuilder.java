@@ -21,6 +21,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -225,8 +226,8 @@ public interface PDFTemplateBuilder
 	 * @throws IOException
 	 */
 	public void injectAppearanceStreams(PDStream holderFormStream, PDStream innterFormStream,
-                                        PDStream imageFormStream, String imageObjectName,
-                                        String imageName, String innerFormName,
+                                        PDStream imageFormStream, COSName imageObjectName,
+                                        COSName imageName, COSName innerFormName,
                                         PDVisibleSignDesigner properties) throws IOException;
 	
 	/**

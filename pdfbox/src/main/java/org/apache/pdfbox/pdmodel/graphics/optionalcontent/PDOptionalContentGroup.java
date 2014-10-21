@@ -16,30 +16,22 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.optionalcontent;
 
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.common.COSObjectable;
+import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDPropertyList;
 
 /**
- * This class represents an optional content group (OCG).
- *
- * @since PDF 1.5
- * @version $Revision$
+ * An optional content group (OCG).
  */
-public class PDOptionalContentGroup implements COSObjectable
+public class PDOptionalContentGroup extends PDPropertyList
 {
-
-    private COSDictionary ocg;
-
     /**
      * Creates a new optional content group (OCG).
      * @param name the name of the content group
      */
     public PDOptionalContentGroup(String name)
     {
-        this.ocg = new COSDictionary();
-        this.ocg.setItem(COSName.TYPE, COSName.OCG);
+        this.dict.setItem(COSName.TYPE, COSName.OCG);
         setName(name);
     }
 
@@ -49,18 +41,12 @@ public class PDOptionalContentGroup implements COSObjectable
      */
     public PDOptionalContentGroup(COSDictionary dict)
     {
+        super(dict);
         if (!dict.getItem(COSName.TYPE).equals(COSName.OCG))
         {
             throw new IllegalArgumentException(
                     "Provided dictionary is not of type '" + COSName.OCG + "'");
         }
-        this.ocg = dict;
-    }
-
-    /** {@inheritDoc} */
-    public COSBase getCOSObject()
-    {
-        return this.ocg;
     }
 
     /**
@@ -69,7 +55,7 @@ public class PDOptionalContentGroup implements COSObjectable
      */
     public String getName()
     {
-        return this.ocg.getString(COSName.NAME);
+        return dict.getString(COSName.NAME);
     }
 
     /**
@@ -78,16 +64,14 @@ public class PDOptionalContentGroup implements COSObjectable
      */
     public void setName(String name)
     {
-        this.ocg.setString(COSName.NAME, name);
+        dict.setString(COSName.NAME, name);
     }
 
     //TODO Add support for "Intent" and "Usage"
 
-    /** {@inheritDoc} */
     @Override
     public String toString()
     {
         return super.toString() + " (" + getName() + ")";
     }
-
 }

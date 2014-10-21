@@ -35,7 +35,6 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentGroup;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentProperties;
-import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDPropertyList;
 
 /**
  * Tests the {@link LayerUtility} class.
@@ -100,9 +99,8 @@ public class TestLayerUtility extends TestCase
             //assertEquals("1.5", catalog.getVersion());
 
             PDPage page = (PDPage)catalog.getAllPages().get(0);
-            PDPropertyList props = page.findResources().getProperties();
-            assertNotNull(props);
-            PDOptionalContentGroup ocg = props.getOptionalContentGroup(COSName.getPDFName("MC0"));
+            PDOptionalContentGroup ocg = (PDOptionalContentGroup)page.findResources()
+                    .getProperties(COSName.getPDFName("MC0"));
             assertNotNull(ocg);
             assertEquals("overlay", ocg.getName());
 

@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -39,6 +38,7 @@ import junit.framework.TestCase;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -70,31 +70,27 @@ public class TestImageIOUtils extends TestCase
         {
             return;
         }
-        Map<String, PDXObject> xobjects = resources.getXObjects();
-        if (xobjects != null)
+        for (COSName name : resources.getXObjectNames())
         {
-            for (String key : xobjects.keySet())
+            PDXObject xobject = resources.getXObject(name);
+            if (xobject instanceof PDImageXObject)
             {
-                PDXObject xobject = xobjects.get(key);
-                if (xobject instanceof PDImageXObject)
+                PDImageXObject imageObject = (PDImageXObject) xobject;
+                String suffix = imageObject.getSuffix();
+                if (suffix != null)
                 {
-                    PDImageXObject imageObject = (PDImageXObject) xobject;
-                    String suffix = imageObject.getSuffix();
-                    if (suffix != null)
+                    if ("jpx".equals(suffix))
                     {
-                        if ("jpx".equals(suffix))
-                        {
-                            suffix = "JPEG2000";
-                        }
-                        boolean writeOK = ImageIOUtil.writeImage(imageObject.getImage(), suffix,
-                                new ByteArrayOutputStream());
-                        assertTrue(writeOK);
+                        suffix = "JPEG2000";
                     }
+                    boolean writeOK = ImageIOUtil.writeImage(imageObject.getImage(), suffix,
+                            new ByteArrayOutputStream());
+                    assertTrue(writeOK);
                 }
-                else if (xobject instanceof PDFormXObject)
-                {
-                    checkSaveResources(((PDFormXObject) xobject).getResources());
-                }
+            }
+            else if (xobject instanceof PDFormXObject)
+            {
+                checkSaveResources(((PDFormXObject) xobject).getResources());
             }
         }
     }

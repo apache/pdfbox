@@ -40,7 +40,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDThreadBead;
 
 /**
- * This represents a single page in a PDF document.
+ * A page in a PDF document.
  * 
  * @author Ben Litchfield
  */
@@ -50,8 +50,7 @@ public class PDPage implements COSObjectable
     private static final int DEFAULT_USER_SPACE_UNIT_DPI = 72;
     private static final float MM_TO_UNITS = 1 / (10 * 2.54f) * DEFAULT_USER_SPACE_UNIT_DPI;
 
-    private final COSDictionary page;
-    private PDResources pageResources;
+    // todo: make the constants below an enum
 
     /**
      * A page size of LETTER or 8.5x11.
@@ -86,6 +85,10 @@ public class PDPage implements COSObjectable
      * A page size of A6 Paper.
      */
     public static final PDRectangle PAGE_SIZE_A6 = new PDRectangle(105 * MM_TO_UNITS, 148 * MM_TO_UNITS);
+
+    private final COSDictionary page;
+    private PDResources pageResources;
+    private PDRectangle mediaBox = null;
 
     /**
      * Creates a new instance of PDPage with a size of 8.5x11.
@@ -286,8 +289,6 @@ public class PDPage implements COSObjectable
         }
         return mediaBox;
     }
-
-    private PDRectangle mediaBox = null;
 
     /**
      * This will find the MediaBox for this page by looking up the hierarchy until it finds them.
@@ -819,16 +820,5 @@ public class PDPage implements COSObjectable
     public int hashCode()
     {
         return this.getCOSDictionary().hashCode();
-    }
-    
-    /**
-     * Calling this will release all cached information.
-     */
-    public void clearCache()
-    {
-        if (pageResources != null)
-        {
-            pageResources.clearCache();
-        }
     }
 }

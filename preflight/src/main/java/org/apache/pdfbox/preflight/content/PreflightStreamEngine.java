@@ -307,17 +307,13 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
                 {
                     // The color space is unknown. Try to access the resources dictionary,
                     // the color space can be a reference.
-                    Map<String, PDColorSpace> colorSpaces = this.getResources().getColorSpaces();
-                    if (colorSpaces != null)
+                    PDColorSpace pdCS = this.getResources().getColorSpace(COSName.getPDFName(colorSpace));
+                    if (pdCS != null)
                     {
-                        PDColorSpace pdCS = colorSpaces.get(colorSpace);
-                        if (pdCS != null)
-                        {
-                            cs = ColorSpaces.valueOf(pdCS.getName());
-                            PreflightConfiguration cfg = context.getConfig();
-                            ColorSpaceHelperFactory csFact = cfg.getColorSpaceHelperFact();
-                            csHelper = csFact.getColorSpaceHelper(context, pdCS, ColorSpaceRestriction.ONLY_DEVICE);
-                        }
+                        cs = ColorSpaces.valueOf(pdCS.getName());
+                        PreflightConfiguration cfg = context.getConfig();
+                        ColorSpaceHelperFactory csFact = cfg.getColorSpaceHelperFact();
+                        csHelper = csFact.getColorSpaceHelper(context, pdCS, ColorSpaceRestriction.ONLY_DEVICE);
                     }
                 }
 
@@ -535,17 +531,13 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
             /*
              * The color space is unknown. Try to access the resources dictionary, the color space can be a reference.
              */
-            Map<String, PDColorSpace> colorSpaces = this.getResources().getColorSpaces();
-            if (colorSpaces != null)
+            PDColorSpace pdCS = this.getResources().getColorSpace(COSName.getPDFName(colorSpaceName));
+            if (pdCS != null)
             {
-                PDColorSpace pdCS = colorSpaces.get(colorSpaceName);
-                if (pdCS != null)
-                {
-                    cs = ColorSpaces.valueOf(pdCS.getName());
-                    PreflightConfiguration cfg = context.getConfig();
-                    ColorSpaceHelperFactory csFact = cfg.getColorSpaceHelperFact();
-                    csHelper = csFact.getColorSpaceHelper(context, pdCS, ColorSpaceRestriction.NO_RESTRICTION);
-                }
+                cs = ColorSpaces.valueOf(pdCS.getName());
+                PreflightConfiguration cfg = context.getConfig();
+                ColorSpaceHelperFactory csFact = cfg.getColorSpaceHelperFact();
+                csHelper = csFact.getColorSpaceHelper(context, pdCS, ColorSpaceRestriction.NO_RESTRICTION);
             }
         }
 

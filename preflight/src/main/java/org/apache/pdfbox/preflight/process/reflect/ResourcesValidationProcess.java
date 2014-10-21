@@ -26,10 +26,7 @@ import static org.apache.pdfbox.preflight.PreflightConfiguration.FONT_PROCESS;
 import static org.apache.pdfbox.preflight.PreflightConfiguration.GRAPHIC_PROCESS;
 import static org.apache.pdfbox.preflight.PreflightConfiguration.SHADDING_PATTERN_PROCESS;
 import static org.apache.pdfbox.preflight.PreflightConfiguration.TILING_PATTERN_PROCESS;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_DICTIONARY_INVALID;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_TRUETYPE_DAMAGED;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_PATTERN_DEFINITION;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_PDF_PROCESSING_MISSING;
 import static org.apache.pdfbox.preflight.PreflightConstants.TRANPARENCY_DICTIONARY_KEY_EXTGSTATE;
 
 import java.io.IOException;
@@ -45,11 +42,6 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontFactory;
-import org.apache.pdfbox.pdmodel.font.PDMMType1Font;
-import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
-import org.apache.pdfbox.pdmodel.font.PDType0Font;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDAbstractPattern;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
@@ -98,7 +90,7 @@ public class ResourcesValidationProcess extends AbstractProcess
      */
     protected void validateFonts(PreflightContext context, PDResources resources) throws ValidationException
     {
-        Map<String, PDFont> mapOfFonts = getFonts(resources.getCOSDictionary(), context);
+        Map<String, PDFont> mapOfFonts = getFonts(resources.getCOSObject(), context);
         if (mapOfFonts != null)
         {
             for (Entry<String, PDFont> entry : mapOfFonts.entrySet())
@@ -217,7 +209,7 @@ public class ResourcesValidationProcess extends AbstractProcess
      */
     protected void validateExtGStates(PreflightContext context, PDResources resources) throws ValidationException
     {
-        COSBase egsEntry = resources.getCOSDictionary().getItem(TRANPARENCY_DICTIONARY_KEY_EXTGSTATE);
+        COSBase egsEntry = resources.getCOSObject().getItem(TRANPARENCY_DICTIONARY_KEY_EXTGSTATE);
         COSDocument cosDocument = context.getDocument().getDocument();
         COSDictionary extGState = COSUtils.getAsDictionary(egsEntry, cosDocument);
         if (egsEntry != null)
@@ -237,13 +229,10 @@ public class ResourcesValidationProcess extends AbstractProcess
     {
         try
         {
-            Map<String, PDShading> shadingResources = resources.getShadings();
-            if (shadingResources != null)
+            for (COSName name : resources.getShadingNames())
             {
-                for (Entry<String, PDShading> entry : shadingResources.entrySet())
-                {
-                    ContextHelper.validateElement(context, entry.getValue(), SHADDING_PATTERN_PROCESS);
-                }
+                PDShading shading = resources.getShading(name);
+                ContextHelper.validateElement(context, shading, SHADDING_PATTERN_PROCESS);
             }
         }
         catch (IOException e)
@@ -263,15 +252,12 @@ public class ResourcesValidationProcess extends AbstractProcess
     {
         try
         {
-            Map<String, PDAbstractPattern> patternResources = resources.getPatterns();
-            if (patternResources != null)
+            for (COSName name : resources.getPatternNames())
             {
-                for (Entry<String, PDAbstractPattern> entry : patternResources.entrySet())
+                PDAbstractPattern pattern = resources.getPattern(name);
+                if (pattern instanceof PDTilingPattern)
                 {
-                    if (entry.getValue() instanceof PDTilingPattern)
-                    {
-                        ContextHelper.validateElement(context, entry.getValue(), TILING_PATTERN_PROCESS);
-                    }
+                    ContextHelper.validateElement(context, pattern, TILING_PATTERN_PROCESS);
                 }
             }
         }
@@ -284,7 +270,7 @@ public class ResourcesValidationProcess extends AbstractProcess
     protected void validateXObjects(PreflightContext context, PDResources resources) throws ValidationException
     {
         COSDocument cosDocument = context.getDocument().getDocument();
-        COSDictionary mapOfXObj = COSUtils.getAsDictionary(resources.getCOSDictionary().getItem(COSName.XOBJECT),
+        COSDictionary mapOfXObj = COSUtils.getAsDictionary(resources.getCOSObject().getItem(COSName.XOBJECT),
                 cosDocument);
         if (mapOfXObj != null)
         {

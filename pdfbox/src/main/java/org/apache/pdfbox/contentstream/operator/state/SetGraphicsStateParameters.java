@@ -38,7 +38,7 @@ public class SetGraphicsStateParameters extends OperatorProcessor
     {
         // set parameters from graphics state parameter dictionary
         COSName graphicsName = (COSName)arguments.get( 0 );
-        PDExternalGraphicsState gs = context.getGraphicsStates().get( graphicsName.getName() );
+        PDExternalGraphicsState gs = context.getResources().getExtGState(graphicsName);
         gs.copyIntoGraphicsState( context.getGraphicsState() );
     }
 

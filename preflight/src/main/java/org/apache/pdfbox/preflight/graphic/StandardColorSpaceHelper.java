@@ -40,6 +40,7 @@ import java.util.Map;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceN;
@@ -416,22 +417,29 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
         // get default color space
         PreflightPath vPath = context.getValidationPath();
         PDResources resources = vPath.getClosestPathElement(PDResources.class);
-        if (resources != null && resources.getColorSpaces() != null)
+        if (resources != null)
         {
             PDColorSpace defaultCS = null;
 
-            Map<String, PDColorSpace> colorsSpaces = resources.getColorSpaces();
-            if (pdcs.getName().equals(ColorSpaces.DeviceCMYK.getLabel()))
+            try
             {
-                defaultCS = colorsSpaces.get("DefaultCMYK");
+                if (pdcs.getName().equals(ColorSpaces.DeviceCMYK.getLabel()))
+                {
+                    defaultCS = resources.getColorSpace(COSName.DEFAULT_CMYK);
+                }
+                else if (pdcs.getName().equals(ColorSpaces.DeviceRGB.getLabel()))
+                {
+                    defaultCS = resources.getColorSpace(COSName.DEFAULT_RGB);
+                }
+                else if (pdcs.getName().equals(ColorSpaces.DeviceGray.getLabel()))
+                {
+                    defaultCS = resources.getColorSpace(COSName.DEFAULT_GRAY);
+                }
             }
-            else if (pdcs.getName().equals(ColorSpaces.DeviceRGB.getLabel()))
+            catch (IOException e)
             {
-                defaultCS = colorsSpaces.get("DefaultRGB");
-            }
-            else if (pdcs.getName().equals(ColorSpaces.DeviceGray.getLabel()))
-            {
-                defaultCS = colorsSpaces.get("DefaultGray");
+                context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE,
+                        "Unable to read default color space : " + e.getMessage()));
             }
 
             if (defaultCS != null)

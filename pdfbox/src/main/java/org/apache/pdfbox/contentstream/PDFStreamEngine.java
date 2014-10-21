@@ -22,7 +22,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -43,9 +42,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontFactory;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
-import org.apache.pdfbox.pdmodel.graphics.state.PDExternalGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
-import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.state.PDTextState;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
@@ -196,14 +193,7 @@ public class PDFStreamEngine
         if (resources != null)
         {
             streamResourcesStack.push(resources);
-            try
-            {
-                processSubStream(cosStream);
-            }
-            finally
-            {
-                streamResourcesStack.pop().clearCache();
-            }
+            processSubStream(cosStream);
         }
         else
         {
@@ -499,35 +489,6 @@ public class PDFStreamEngine
     }
 
     /**
-     * @return Returns the XObjects.
-     */
-    public Map<String, PDXObject> getXObjects()
-    {
-        return streamResourcesStack.peek().getXObjects();
-    }
-
-    /**
-     * @return Returns the fonts.
-     */
-    public Map<String, PDFont> getFonts() throws IOException
-    {
-        if (streamResourcesStack.isEmpty())
-        {
-            return Collections.emptyMap();
-        }
-
-        return streamResourcesStack.peek().getFonts();
-    }
-
-    /**
-     * @param value The fonts to set.
-     */
-    public void setFonts(Map<String, PDFont> value)
-    {
-        streamResourcesStack.peek().setFonts(value);
-    }
-
-    /**
      * Pushes the current graphics state to the stack.
      */
     public void saveGraphicsState()
@@ -557,14 +518,6 @@ public class PDFStreamEngine
     public PDGraphicsState getGraphicsState()
     {
         return graphicsStack.peek();
-    }
-
-    /**
-     * @return Returns the graphicsStates.
-     */
-    public Map<String, PDExternalGraphicsState> getGraphicsStates()
-    {
-        return streamResourcesStack.peek().getGraphicsStates();
     }
 
     /**

@@ -268,7 +268,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     public void insertInnerFormToHolerResources(PDFormXObject innerForm,
                                                 PDResources holderFormResources)
     {
-        String name = holderFormResources.addXObject(innerForm, "FRM");
+        COSName name = holderFormResources.add(innerForm, "FRM");
         pdfStructure.setInnerFormName(name);
         log.info("Alerady inserted inner form  inside holder form");
     }
@@ -312,8 +312,8 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
         // imageForm.getResources().setFonts(fonts);
 
         imageFormResources.getCOSObject().setDirect(true);
-        String imageFormName = innerFormResource.addXObject(imageForm, "n");
-        String imageName = imageFormResources.addXObject(img, "img");
+        COSName imageFormName = innerFormResource.add(imageForm, "n");
+        COSName imageName = imageFormResources.add(img, "img");
         pdfStructure.setImageForm(imageForm);
         pdfStructure.setImageFormName(imageFormName);
         pdfStructure.setImageName(imageName);
@@ -325,27 +325,27 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
                                    PDResources innerFormResources,  PDResources imageFormResources,
                                    PDResources holderFormResources, COSArray procSet)
     {
-        innerForm.getResources().getCOSDictionary().setItem(COSName.PROC_SET, procSet);
+        innerForm.getResources().getCOSObject().setItem(COSName.PROC_SET, procSet);
         page.getCOSDictionary().setItem(COSName.PROC_SET, procSet);
-        innerFormResources.getCOSDictionary().setItem(COSName.PROC_SET, procSet);
-        imageFormResources.getCOSDictionary().setItem(COSName.PROC_SET, procSet);
-        holderFormResources.getCOSDictionary().setItem(COSName.PROC_SET, procSet);
+        innerFormResources.getCOSObject().setItem(COSName.PROC_SET, procSet);
+        imageFormResources.getCOSObject().setItem(COSName.PROC_SET, procSet);
+        holderFormResources.getCOSObject().setItem(COSName.PROC_SET, procSet);
         log.info("inserted ProcSet to PDF");
     }
 
     @Override
     public void injectAppearanceStreams(PDStream holderFormStream, PDStream innterFormStream,
-                                        PDStream imageFormStream, String imageObjectName,
-                                        String imageName, String innerFormName,
+                                        PDStream imageFormStream, COSName imageObjectName,
+                                        COSName imageName, COSName innerFormName,
                                         PDVisibleSignDesigner properties) throws IOException
     {
         // 100 means that document width is 100% via the rectangle. if rectangle
         // is 500px, images 100% is 500px.
         // String imgFormComment = "q "+imageWidthSize+ " 0 0 50 0 0 cm /" +
         // imageName + " Do Q\n" + builder.toString();
-        String imgFormComment = "q " + 100 + " 0 0 50 0 0 cm /" + imageName + " Do Q\n";
-        String holderFormComment = "q 1 0 0 1 0 0 cm /" + innerFormName + " Do Q \n";
-        String innerFormComment = "q 1 0 0 1 0 0 cm /" + imageObjectName + " Do Q\n";
+        String imgFormComment = "q " + 100 + " 0 0 50 0 0 cm /" + imageName.getName() + " Do Q\n";
+        String holderFormComment = "q 1 0 0 1 0 0 cm /" + innerFormName.getName() + " Do Q \n";
+        String innerFormComment = "q 1 0 0 1 0 0 cm /" + imageObjectName.getName() + " Do Q\n";
 
         appendRawCommands(pdfStructure.getHolderFormStream().createOutputStream(),
                 holderFormComment);

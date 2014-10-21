@@ -19,7 +19,6 @@ package org.apache.pdfbox.contentstream.operator.graphics;
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,8 +47,7 @@ public final class DrawObject extends GraphicsOperatorProcessor
     public void process(Operator operator, List<COSBase> operands) throws IOException
     {
         COSName objectName = (COSName)operands.get(0);
-        Map<String, PDXObject> xobjects = context.getResources().getXObjects();
-        PDXObject xobject = xobjects.get(objectName.getName());
+        PDXObject xobject = context.getResources().getXObject(objectName);
 
         if (xobject == null)
         {

@@ -23,6 +23,7 @@ import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -139,9 +140,9 @@ public class PDFTemplateCreator
         pdfBuilder.injectProcSetArray(innerForm, page, innerFormResource, imageFormResources,
                 holderFormResources, pdfStructure.getProcSet());
 
-        String imgFormName = pdfStructure.getImageFormName();
-        String imgName = pdfStructure.getImageName();
-        String innerFormName = pdfStructure.getInnerFormName();
+        COSName imgFormName = pdfStructure.getImageFormName();
+        COSName imgName = pdfStructure.getImageName();
+        COSName innerFormName = pdfStructure.getInnerFormName();
 
         // now create Streams of AP
         pdfBuilder.injectAppearanceStreams(holderFormStream, imageFormStream, imageFormStream,

@@ -34,7 +34,6 @@ import static org.apache.pdfbox.preflight.PreflightConstants.XOBJECT_DICTIONARY_
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -114,16 +113,21 @@ public class SinglePageValidationProcess extends AbstractProcess
         PDResources resources = page.getResources();
         if (resources != null)
         {
-            Map<String, PDColorSpace> colorSpaces = resources.getColorSpaces();
-            if (colorSpaces != null)
+            PreflightConfiguration config = context.getConfig();
+            ColorSpaceHelperFactory colorSpaceFactory = config.getColorSpaceHelperFact();
+            for (COSName name : resources.getColorSpaceNames())
             {
-                PreflightConfiguration config = context.getConfig();
-                ColorSpaceHelperFactory colorSpaceFactory = config.getColorSpaceHelperFact();
-                for (PDColorSpace pdCS : colorSpaces.values())
+                try
                 {
+                    PDColorSpace pdCS = resources.getColorSpace(name);
                     ColorSpaceHelper csHelper = colorSpaceFactory.getColorSpaceHelper(context, pdCS,
                             ColorSpaceRestriction.NO_RESTRICTION);
                     csHelper.validate();
+                }
+                catch (IOException e)
+                {
+                    // fixme: this code was previously in PDResources
+                    // LOG.error("error while creating a colorspace", exception);
                 }
             }
         }

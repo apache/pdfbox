@@ -22,7 +22,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -31,6 +30,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.filter.DecodeResult;
 import org.apache.pdfbox.filter.Filter;
 import org.apache.pdfbox.filter.FilterFactory;
+import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.PDMemoryStream;
 import org.apache.pdfbox.pdmodel.common.PDStream;
@@ -49,8 +49,8 @@ public final class PDInlineImage implements PDImage
     // image parameters
     private final COSDictionary parameters;
 
-    // color spaces in current resource dictionary
-    private final Map<String, PDColorSpace> colorSpaces;
+    // the current resources, contains named color spaces
+    private final PDResources resources;
 
     // image data
     private final PDStream stream;
@@ -60,13 +60,13 @@ public final class PDInlineImage implements PDImage
      *
      * @param parameters the image parameters
      * @param data the image data
-     * @param colorSpaces the color spaces in the current resources parameters
+     * @param resources the current resources
      */
-    public PDInlineImage(COSDictionary parameters, byte[] data,
-            Map<String, PDColorSpace> colorSpaces) throws IOException
+    public PDInlineImage(COSDictionary parameters, byte[] data, PDResources resources)
+            throws IOException
     {
         this.parameters = parameters;
-        this.colorSpaces = colorSpaces;
+        this.resources = resources;
 
         DecodeResult decodeResult = null;
         List<String> filters = getFilters();
@@ -134,7 +134,7 @@ public final class PDInlineImage implements PDImage
         if (cs != null)
         {
             // TODO: handling of abbreviated color space names belongs here, not in the factory
-            return PDColorSpace.create(cs, colorSpaces, null);
+            return PDColorSpace.create(cs, resources);
         }
         else if (isStencil())
         {

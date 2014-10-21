@@ -25,7 +25,6 @@ import org.apache.pdfbox.util.PDFMarkedContentExtractor;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Do: Draws an XObject.
@@ -39,9 +38,7 @@ public class DrawObject extends OperatorProcessor
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
         COSName name = (COSName) arguments.get(0);
-
-        Map<String,PDXObject> xobjects = context.getXObjects();
-        PDXObject xobject = xobjects.get(name.getName());
+        PDXObject xobject =  context.getResources().getXObject(name);
         if (context instanceof PDFMarkedContentExtractor)
         {
             ((PDFMarkedContentExtractor) context).xobject(xobject);

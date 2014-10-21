@@ -25,7 +25,6 @@ import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertTrue;
 
-
 import javax.imageio.ImageIO;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
@@ -104,17 +103,27 @@ public class ValidateXImage
         contentStream.close();
         
         // check that the resource map is up-to-date
-        assertEquals(1, document.getPage(0).getResources().getXObjects().size());
+        assertEquals(1, count(document.getPage(0).getResources().getXObjectNames()));
 
         document.save(pdfFile);
         document.close();
 
         document = PDDocument.loadNonSeq(pdfFile, null);
-        assertEquals(1, document.getPage(0).getResources().getXObjects().size());
+        assertEquals(1, count(document.getPage(0).getResources().getXObjectNames()));
         new PDFRenderer(document).renderImage(0);
         document.close();
     }
-    
+
+    private static int count(Iterable<COSName> iterable)
+    {
+        int count = 0;
+        for (COSName name : iterable)
+        {
+            count++;
+        }
+        return count;
+    }
+
     /**
      * Check whether the images are identical.
      *
