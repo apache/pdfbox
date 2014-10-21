@@ -15,7 +15,10 @@
  */
 package org.apache.pdfbox.examples.pdmodel;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
+import javax.imageio.ImageIO;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
@@ -27,11 +30,14 @@ import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.function.PDFunctionType2;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
+import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType2;
+import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType3;
+import org.apache.pdfbox.rendering.PDFRenderer;
 
 /**
- * This example creates a PDF with type 2 (axial) shading with a type 2
- * (exponential) function.
+ * This example creates a PDF with type 2 (axial) and 3 (radial) shadings with a
+ * type 2 (exponential) function.
  *
  * @author Tilman Hausherr
  */
@@ -54,7 +60,8 @@ public class CreateGradientShadingPDF
             PDPage page = new PDPage();
             document.addPage(page);
 
-            // function attributes
+            // type 2 (exponential) function with attributes
+            // can be used by both shadings
             COSDictionary fdict = new COSDictionary();
             fdict.setInt(COSName.FUNCTION_TYPE, 2);
             COSArray domain = new COSArray();
@@ -74,29 +81,60 @@ public class CreateGradientShadingPDF
             fdict.setInt(COSName.N, 1);
             PDFunctionType2 func = new PDFunctionType2(fdict);
 
-            PDShadingType2 shading = new PDShadingType2(new COSDictionary());
+            // axial shading with attributes
+            PDShadingType2 axialShading = new PDShadingType2(new COSDictionary());
+            axialShading.setColorSpace(PDDeviceRGB.INSTANCE);
+            axialShading.setShadingType(PDShading.SHADING_TYPE2);
+            COSArray coords1 = new COSArray();
+            coords1.add(COSInteger.get(100));
+            coords1.add(COSInteger.get(400));
+            coords1.add(COSInteger.get(400));
+            coords1.add(COSInteger.get(600));
+            axialShading.setCoords(coords1);
+            axialShading.setFunction(func);
 
-            // shading attributes
-            shading.setColorSpace(PDDeviceRGB.INSTANCE);
-            shading.setShadingType(PDShadingType2.SHADING_TYPE2);
-            COSArray coords = new COSArray();
-            coords.add(COSInteger.get(100));
-            coords.add(COSInteger.get(400));
-            coords.add(COSInteger.get(400));
-            coords.add(COSInteger.get(600));
-            shading.setCoords(coords);
-            shading.setFunction(func);
+            // radial shading with attributes
+            PDShadingType3 radialShading = new PDShadingType3(new COSDictionary());
+            radialShading.setColorSpace(PDDeviceRGB.INSTANCE);
+            radialShading.setShadingType(PDShading.SHADING_TYPE3);
+            COSArray coords2 = new COSArray();
+            coords2.add(COSInteger.get(100));
+            coords2.add(COSInteger.get(400));
+            coords2.add(COSInteger.get(50)); // radius1
+            coords2.add(COSInteger.get(400));
+            coords2.add(COSInteger.get(600));
+            coords2.add(COSInteger.get(150)); // radius2
+            radialShading.setCoords(coords2);
+            radialShading.setFunction(func);
 
-            // create and add to shading resources
-            page.setResources(new PDResources());
-            page.getResources().put(COSName.getPDFName("sh1"), shading);
+            // create resources
+            PDResources resources = new PDResources();
+            page.setResources(resources);
+            
+            // add shading to resources
+
+            // use put() if you want a specific name
+            resources.put(COSName.getPDFName("shax"), axialShading);
+            
+            // use add() if you want PDFBox to decide the name for you
+            COSName radialShadingName = resources.add(radialShading);
 
             // invoke shading from content stream
+            // the raw command is "/name sh"
+            // replace "name" with the name of the shading
+            // compress parameter is set to false so that you can see the stream in a text editor
             PDPageContentStream contentStream = new PDPageContentStream(document, page, true, false);
-            contentStream.appendRawCommands("/sh1 sh\n");
+            contentStream.appendRawCommands("/shax sh\n");
+            contentStream.appendRawCommands("/" + radialShadingName.getName() + " sh\n");
             contentStream.close();
             
             document.save(file);
+            document.close();
+            
+            // render the PDF and save it into a PNG file
+            document = PDDocument.loadNonSeq(new File(file));
+            BufferedImage bim = new PDFRenderer(document).renderImageWithDPI(0, 300);
+            ImageIO.write(bim, "png", new File(file + ".png"));
             document.close();
         }
         finally
