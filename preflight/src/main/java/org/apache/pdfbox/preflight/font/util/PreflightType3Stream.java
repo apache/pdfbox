@@ -91,7 +91,7 @@ public class PreflightType3Stream extends PreflightStreamEngine
         {
             image = new PDInlineImage(operator.getImageParameters(),
                                       operator.getImageData(),
-                                      getResources().getColorSpaces());
+                                      getResources());
 
             validImageFilter(operator);
             validImageColorSpace(operator);

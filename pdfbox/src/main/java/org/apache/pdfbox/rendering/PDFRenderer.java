@@ -37,26 +37,13 @@ public class PDFRenderer
     protected final PDDocument document;
     // TODO keep rendering state such as caches here
 
-    private boolean clearResourcesAutomatically;
-
     /**
      * Creates a new PDFRenderer.
      * @param document the document to render
      */
     public PDFRenderer(PDDocument document)
     {
-        this(document, true);
-    }
-
-    /**
-     * Creates a new PDFRenderer.
-     * @param document the document to render
-     * @param clearResourcesAutomatically true to clear cached page resources after rendering
-     */
-    public PDFRenderer(PDDocument document, boolean clearResourcesAutomatically)
-    {
         this.document = document;
-        this.clearResourcesAutomatically = clearResourcesAutomatically;
     }
 
     /**
@@ -226,10 +213,5 @@ public class PDFRenderer
         // TODO: need to make it easy to use a custom PageDrawer and TilingPatternDrawer
         PageDrawer drawer = new PageDrawer(this, page);
         drawer.drawPage(graphics, adjustedCropBox);
-
-        if (clearResourcesAutomatically)
-        {
-            page.clearCache();
-        }
     }
 }

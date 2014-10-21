@@ -20,8 +20,8 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
+import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
-import org.apache.pdfbox.pdmodel.graphics.pattern.PDAbstractPattern;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
 import java.awt.Color;
@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.awt.color.ColorSpace;
 import java.awt.geom.AffineTransform;
 import java.awt.image.ColorModel;
-import java.util.Map;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -54,26 +53,24 @@ public abstract class PDColorSpace implements COSObjectable
      */
     public static PDColorSpace create(COSBase colorSpace) throws IOException
     {
-        return create(colorSpace, null, null);
+        return create(colorSpace, null);
     }
 
     /**
      * Creates a color space given a name or array.
      * @param colorSpace the color space COS object
-     * @param colorSpaces the ColorSpace dictionary from the current resources, if any
-     * @param patterns The Pattern dictionary from the current resources, if any
+     * @param resources the current resources.
      * @return a new color space
      * @throws MissingException if the color space is missing from the resources dictionary
      * @throws IOException if the color space is unknown or cannot be created
      */
     public static PDColorSpace create(COSBase colorSpace,
-                                      Map<String, PDColorSpace> colorSpaces,
-                                      Map<String, PDAbstractPattern> patterns)
+                                      PDResources resources)
                                       throws IOException
     {
         if (colorSpace instanceof COSObject)
         {
-            return create(((COSObject) colorSpace).getObject(), colorSpaces, patterns);
+            return create(((COSObject) colorSpace).getObject(), resources);
         }
         else if (colorSpace instanceof COSName)
         {
@@ -93,16 +90,20 @@ public abstract class PDColorSpace implements COSObjectable
             }
             else if (name == COSName.PATTERN)
             {
-                return new PDPattern(patterns);
+                return new PDPattern(resources);
             }
-            else if (colorSpaces != null && colorSpaces.get(name.getName()) != null)
+            else if (resources != null)
             {
-                // a color space resource
-                return colorSpaces.get(name.getName());
+                PDColorSpace cs = resources.getColorSpace(name);
+                if (cs == null)
+                {
+                    throw new MissingException("Missing color space: " + name.getName());
+                }
+                return cs;
             }
             else
             {
-                throw new MissingException("Missing color space: " + name.getName());
+                throw new MissingException("Unknown color space: " + name.getName());
             }
         }
         else if (colorSpace instanceof COSArray)
@@ -144,11 +145,11 @@ public abstract class PDColorSpace implements COSObjectable
             {
                 if (array.size() == 1)
                 {
-                    return new PDPattern(patterns);
+                    return new PDPattern(resources);
                 }
                 else
                 {
-                    return new PDPattern(patterns, PDColorSpace.create(array.get(1)));
+                    return new PDPattern(resources, PDColorSpace.create(array.get(1)));
                 }
             }
             else if (name == COSName.DEVICECMYK || name == COSName.CMYK ||
@@ -156,7 +157,7 @@ public abstract class PDColorSpace implements COSObjectable
                      name == COSName.DEVICEGRAY || name == COSName.PATTERN)
             {
                 // not allowed in an array, but we sometimes encounter these regardless
-                return create(name, colorSpaces, patterns);
+                return create(name, resources);
             }
             else
             {

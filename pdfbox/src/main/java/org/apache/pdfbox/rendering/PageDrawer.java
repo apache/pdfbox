@@ -881,7 +881,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     @Override
     public void shadingFill(COSName shadingName) throws IOException
     {
-        PDShading shading = getResources().getShadings().get(shadingName.getName());
+        PDShading shading = getResources().getShading(shadingName);
         Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
         Paint paint = shading.toPaint(ctm);
 

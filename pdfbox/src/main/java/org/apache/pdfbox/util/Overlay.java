@@ -56,8 +56,6 @@ public class Overlay
         FOREGROUND, BACKGROUND
     };
 
-    private static final String XOBJECT_PREFIX = "OL";
-
     private LayoutPage defaultOverlayPage;
     private LayoutPage firstPageOverlayPage;
     private LayoutPage lastPageOverlayPage;
@@ -225,7 +223,7 @@ public class Overlay
             resources = new PDResources();
         }
         return new LayoutPage(page.getMediaBox(), createContentStream(contents),
-                resources.getCOSDictionary());
+                resources.getCOSObject());
     }
     
     private HashMap<Integer,LayoutPage> getLayoutPages(PDDocument doc) throws IOException
@@ -242,7 +240,7 @@ public class Overlay
             {
                 resources = new PDResources();
             }
-            layoutPages.put(i,new LayoutPage(page.getMediaBox(), createContentStream(contents), resources.getCOSDictionary()));
+            layoutPages.put(i,new LayoutPage(page.getMediaBox(), createContentStream(contents), resources.getCOSObject()));
         }
         return layoutPages;
     }
@@ -391,13 +389,13 @@ public class Overlay
                 resources = new PDResources();
                 page.setResources(resources);
             }
-            String xObjectId = createOverlayXObject(page, layoutPage,
+            COSName xObjectId = createOverlayXObject(page, layoutPage,
                     layoutPage.overlayContentStream);
             array.add(createOverlayStream(page, layoutPage, xObjectId));
         }
     }
 
-    private String createOverlayXObject(PDPage page, LayoutPage layoutPage, COSStream contentStream)
+    private COSName createOverlayXObject(PDPage page, LayoutPage layoutPage, COSStream contentStream)
     {
         PDFormXObject xobjForm = new PDFormXObject(new PDStream(contentStream));
         xobjForm.setResources(new PDResources(layoutPage.overlayResources));
@@ -405,10 +403,10 @@ public class Overlay
         xobjForm.setBBox( layoutPage.overlayMediaBox.createRetranslatedRectangle());
         xobjForm.setMatrix(new AffineTransform());
         PDResources resources = page.findResources();
-        return resources.addXObject(xobjForm, XOBJECT_PREFIX);
+        return resources.add(xobjForm, "OL");
     }
 
-    private COSStream createOverlayStream(PDPage page, LayoutPage layoutPage, String xObjectId)
+    private COSStream createOverlayStream(PDPage page, LayoutPage layoutPage, COSName xObjectId)
             throws IOException
     {
         // create a new content stream that executes the XObject content
@@ -417,7 +415,7 @@ public class Overlay
         float hShift = (pageMediaBox.getWidth() - layoutPage.overlayMediaBox.getWidth()) / 2.0f;
         float vShift = (pageMediaBox.getHeight() - layoutPage.overlayMediaBox.getHeight()) / 2.0f;
         return createStream("q\nq " + scale + " 0 0 " + scale + " " + hShift + " " + vShift
-                + " cm /" + xObjectId + " Do Q\nQ\n");
+                + " cm /" + xObjectId.getName() + " Do Q\nQ\n");
     }
 
     private COSStream createStream(String content) throws IOException

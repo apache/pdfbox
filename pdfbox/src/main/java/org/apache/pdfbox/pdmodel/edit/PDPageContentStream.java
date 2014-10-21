@@ -320,9 +320,7 @@ public class PDPageContentStream implements Closeable
      */
     public void setFont(PDFont font, float fontSize) throws IOException
     {
-        String fontMapping = resources.addFont(font);
-        appendRawCommands("/");
-        appendRawCommands(fontMapping);
+        appendCOSName(resources.add(font));
         appendRawCommands(SPACE);
         appendRawCommands(fontSize);
         appendRawCommands(SPACE);
@@ -462,13 +460,12 @@ public class PDPageContentStream implements Closeable
         {
             xObjectPrefix = "Form";
         }
-        String objMapping = resources.addXObject(xobject, xObjectPrefix);
+        COSName objMapping = resources.add(xobject, xObjectPrefix);
         saveGraphicsState();
         appendRawCommands(SPACE);
         concatenate2CTM(transform);
         appendRawCommands(SPACE);
-        appendRawCommands("/");
-        appendRawCommands(objMapping);
+        appendCOSName(objMapping);
         appendRawCommands(SPACE);
         appendRawCommands(XOBJECT_DO);
         restoreGraphicsState();
@@ -680,12 +677,12 @@ public class PDPageContentStream implements Closeable
         }
         else
         {
-            COSDictionary colorSpaces = (COSDictionary) resources.getCOSDictionary().getDictionaryObject(
+            COSDictionary colorSpaces = (COSDictionary) resources.getCOSObject().getDictionaryObject(
                     COSName.COLORSPACE);
             if (colorSpaces == null)
             {
                 colorSpaces = new COSDictionary();
-                resources.getCOSDictionary().setItem(COSName.COLORSPACE, colorSpaces);
+                resources.getCOSObject().setItem(COSName.COLORSPACE, colorSpaces);
             }
             key = colorSpaces.getKeyForValue(colorSpace.getCOSObject());
 

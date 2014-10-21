@@ -22,6 +22,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.filter.DecodeResult;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
@@ -35,7 +36,6 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -54,7 +54,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
 
     private BufferedImage cachedImage;
     private PDColorSpace colorSpace;
-    private Map<String, PDColorSpace> colorSpaces;  // from current resource dictionary
+    private PDResources resources; // current resource dictionary (has color spaces)
 
     /**
      * Creates a thumbnail Image XObject from the given COSBase and name.
@@ -96,7 +96,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
     {
         super(new PDStream(document, filteredStream, true), COSName.IMAGE);
         getCOSStream().setItem(COSName.FILTER, cosFilter);
-        colorSpaces = null;
+        resources = null;
         colorSpace = null;
         setBitsPerComponent(bitsPerComponent);
         setWidth(width);
@@ -107,20 +107,19 @@ public final class PDImageXObject extends PDXObject implements PDImage
     /**
      * Creates an Image XObject with the given stream as its contents and current color spaces.
      * @param stream the XObject stream to read
-     * @param colorSpaces the color spaces in the current resources dictionary, null for masks
+     * @param resources the current resources
      * @throws java.io.IOException if there is an error creating the XObject.
      */
-    public PDImageXObject(PDStream stream, Map<String, PDColorSpace> colorSpaces) throws IOException
+    public PDImageXObject(PDStream stream, PDResources resources) throws IOException
     {
-        this(stream, colorSpaces, stream.getStream().getDecodeResult());
+        this(stream, resources, stream.getStream().getDecodeResult());
     }
 
     // repairs parameters using decode result
-    private PDImageXObject(PDStream stream, Map<String, PDColorSpace> colorSpaces,
-                           DecodeResult decodeResult)
+    private PDImageXObject(PDStream stream, PDResources resources, DecodeResult decodeResult)
     {
         super(repair(stream, decodeResult), COSName.IMAGE);
-        this.colorSpaces = colorSpaces;
+        this.resources = resources;
         this.colorSpace = decodeResult.getJPXColorSpace();
     }
 
@@ -370,7 +369,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
             COSBase cosBase = getCOSStream().getDictionaryObject(COSName.COLORSPACE, COSName.CS);
             if (cosBase != null)
             {
-                colorSpace = PDColorSpace.create(cosBase, colorSpaces, null);
+                colorSpace = PDColorSpace.create(cosBase, resources);
             }
             else if (isStencil())
             {

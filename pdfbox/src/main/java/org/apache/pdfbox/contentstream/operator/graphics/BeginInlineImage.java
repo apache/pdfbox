@@ -36,7 +36,7 @@ public final class BeginInlineImage extends GraphicsOperatorProcessor
     {
         PDImage image = new PDInlineImage(operator.getImageParameters(),
                                           operator.getImageData(),
-                                          context.getResources().getColorSpaces());
+                                          context.getResources());
         context.drawImage(image);
     }
 

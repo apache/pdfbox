@@ -33,19 +33,14 @@ import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentProperties.BaseState;
-import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDPropertyList;
 
 /**
  * Tests optional content group functionality (also called layers).
- *
- * @version $Revision$
  */
 public class TestOptionalContentGroups extends TestCase
 {
-
     private File testResultsDir = new File("target/test-output");
 
-    /** {@inheritDoc} */
     @Override
     protected void setUp() throws Exception
     {
@@ -101,16 +96,13 @@ public class TestOptionalContentGroups extends TestCase
             assertTrue(ocprops.setGroupEnabled("disabled", false));
             assertFalse(ocprops.isGroupEnabled("disabled"));
 
-
-            //Add mapping to page
-            PDPropertyList props = new PDPropertyList();
-            resources.setProperties(props);
+            //Add property lists to page resources
             COSName mc0 = COSName.getPDFName("MC0");
-            props.putMapping(mc0, background);
             COSName mc1 = COSName.getPDFName("MC1");
-            props.putMapping(mc1, enabled);
             COSName mc2 = COSName.getPDFName("MC2");
-            props.putMapping(mc2, disabled);
+            resources.put(mc0, background);
+            resources.put(mc1, enabled);
+            resources.put(mc2, disabled);
 
             //Setup page content stream and paint background/title
             PDPageContentStream contentStream = new PDPageContentStream(doc, page, false, false);
@@ -182,13 +174,12 @@ public class TestOptionalContentGroups extends TestCase
             assertEquals("1.5", catalog.getVersion());
 
             PDPage page = (PDPage)catalog.getAllPages().get(0);
-            PDPropertyList props = page.findResources().getProperties();
-            assertNotNull(props);
-            PDOptionalContentGroup ocg = props.getOptionalContentGroup(COSName.getPDFName("MC0"));
+            PDOptionalContentGroup ocg = (PDOptionalContentGroup)page.getResources()
+                    .getProperties(COSName.getPDFName("MC0"));
             assertNotNull(ocg);
             assertEquals("background", ocg.getName());
 
-            assertNull(props.getOptionalContentGroup(COSName.getPDFName("inexistent")));
+            assertNull(page.getResources().getProperties(COSName.getPDFName("inexistent")));
 
             PDOptionalContentProperties ocgs = catalog.getOCProperties();
             assertEquals(BaseState.ON, ocgs.getBaseState());

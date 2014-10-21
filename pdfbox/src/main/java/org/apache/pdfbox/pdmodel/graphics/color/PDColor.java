@@ -19,7 +19,6 @@ package org.apache.pdfbox.pdmodel.graphics.color;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
-import org.apache.pdfbox.cos.COSString;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -42,7 +41,7 @@ public final class PDColor
     public static PDColor EMPTY_PATTERN = new PDColor(new float[] { }, null);
 
     private final float[] components;
-    private final String patternName;
+    private final COSName patternName;
     private final PDColorSpace colorSpace;
 
     /**
@@ -62,7 +61,7 @@ public final class PDColor
             }
 
             // pattern name (required)
-            patternName = ((COSName)array.get(array.size() - 1)).getName();
+            patternName = (COSName)array.get(array.size() - 1);
         }
         else
         {
@@ -94,7 +93,7 @@ public final class PDColor
      * @param patternName the name of a pattern in a pattern dictionary
      * @param colorSpace color space in which the pattern is defined
      */
-    public PDColor(String patternName, PDColorSpace colorSpace)
+    public PDColor(COSName patternName, PDColorSpace colorSpace)
     {
         this.components = new float[0];
         this.patternName = patternName;
@@ -107,7 +106,7 @@ public final class PDColor
      * @param patternName the name of a pattern in a pattern dictionary
      * @param colorSpace color space in which the pattern/components are defined
      */
-    public PDColor(float[] components, String patternName, PDColorSpace colorSpace)
+    public PDColor(float[] components, COSName patternName, PDColorSpace colorSpace)
     {
         this.components = components.clone();
         this.patternName = patternName;
@@ -127,7 +126,7 @@ public final class PDColor
      * Returns the pattern name from this color value.
      * @return the pattern name from this color value
      */
-    public String getPatternName()
+    public COSName getPatternName()
     {
         return patternName;
     }
@@ -167,7 +166,7 @@ public final class PDColor
     {
         COSArray array = new COSArray();
         array.setFloatArray(components);
-        array.add(new COSString(patternName));
+        array.add(patternName);
         return array;
     }
 

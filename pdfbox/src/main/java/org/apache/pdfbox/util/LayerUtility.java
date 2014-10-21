@@ -39,7 +39,6 @@ import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentGroup;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentProperties;
-import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDPropertyList;
 
 /**
  * This class allows to import pages as Form XObjects into a PDF file and use them to create
@@ -242,12 +241,12 @@ public class LayerUtility
         ocprops.addGroup(layer);
 
         PDResources resources = targetPage.findResources();
-        PDPropertyList props = resources.getProperties();
+        /*PDPropertyList props = resources.getProperties();
         if (props == null)
         {
             props = new PDPropertyList();
             resources.setProperties(props);
-        }
+        }*/
 
         //Find first free resource name with the pattern "MC<index>"
         int index = 0;
@@ -256,11 +255,10 @@ public class LayerUtility
         do
         {
             resourceName = COSName.getPDFName("MC" + index);
-            ocg = props.getOptionalContentGroup(resourceName);
             index++;
-        } while (ocg != null);
+        } while (resources.getProperties(resourceName) != null);
         //Put mapping for our new layer/OCG
-        props.putMapping(resourceName, layer);
+        resources.put(resourceName, layer);
 
         PDPageContentStream contentStream = new PDPageContentStream(
                 targetDoc, targetPage, true, !DEBUG);

@@ -130,7 +130,7 @@ public class PDAppearanceStream implements COSObjectable
         COSDictionary dict = null;
         if( resources != null )
         {
-            dict = resources.getCOSDictionary();
+            dict = resources.getCOSObject();
         }
         stream.setItem( COSName.RESOURCES, dict );
     }

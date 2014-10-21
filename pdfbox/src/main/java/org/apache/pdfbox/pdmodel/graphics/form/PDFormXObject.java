@@ -17,7 +17,6 @@
 package org.apache.pdfbox.pdmodel.graphics.form;
 
 import java.awt.geom.AffineTransform;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -133,23 +132,12 @@ public final class PDFormXObject extends PDXObject
      */
     public PDResources getResources()
     {
-        PDResources retval = null;
         COSDictionary resources = (COSDictionary) getCOSStream().getDictionaryObject(COSName.RESOURCES);
         if (resources != null)
         {
-            retval = new PDResources(resources);
-            // check for a possible recursion
-            if (name != null)
-            {
-                Map<String, PDXObject> xobjects = retval.getXObjects();
-                if (xobjects != null && xobjects.containsKey(name))
-                {
-                    retval.removeXObject(name);
-                    LOG.debug("Removed XObjectForm "+name+" to avoid a recursion");
-                }
-            }
+            return new PDResources(resources);
         }
-        return retval;
+        return null;
     }
 
     /**

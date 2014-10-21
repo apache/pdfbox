@@ -431,12 +431,11 @@ public final class PDAppearanceString
 
             int setFontIndex = tokens.indexOf( Operator.getOperator("Tf"));
             COSName cosFontName = (COSName)tokens.get( setFontIndex-2 );
-            String fontName = cosFontName.getName();
-            retval = (PDFont)streamResources.getFonts().get( fontName );
+            retval = streamResources.getFont( cosFontName );
             if( retval == null )
             {
-                retval = (PDFont)formResources.getFonts().get( fontName );
-                streamResources.addFont(retval, fontName);
+                retval = formResources.getFont( cosFontName );
+                streamResources.put(cosFontName, retval);
             }
         }
         return retval;

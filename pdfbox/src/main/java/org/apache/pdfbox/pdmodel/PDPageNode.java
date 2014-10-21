@@ -280,7 +280,7 @@ public class PDPageNode implements COSObjectable
         }
         else
         {
-            node.setItem(COSName.RESOURCES, resources.getCOSDictionary());
+            node.setItem(COSName.RESOURCES, resources.getCOSObject());
         }
     }
 

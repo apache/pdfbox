@@ -35,7 +35,6 @@ import java.awt.geom.AffineTransform;
 import java.io.IOException;
 
 import java.util.List;
-import java.util.Map;
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.contentstream.operator.state.Concatenate;
 import org.apache.pdfbox.contentstream.operator.state.Restore;
@@ -134,8 +133,7 @@ public class PrintImageLocations extends PDFStreamEngine
         if( "Do".equals(operation) )
         {
             COSName objectName = (COSName)arguments.get( 0 );
-            Map<String, PDXObject> xobjects = getResources().getXObjects();
-            PDXObject xobject = (PDXObject)xobjects.get( objectName.getName() );
+            PDXObject xobject = getResources().getXObject( objectName );
             if( xobject instanceof PDImageXObject)
             {
                 PDImageXObject image = (PDImageXObject)xobject;

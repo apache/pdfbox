@@ -44,10 +44,7 @@ public class SetStrokingColorSpace extends OperatorProcessor
 
         try
         {
-            PDColorSpace cs = PDColorSpace.create(name,
-                    context.getResources().getColorSpaces(),
-                    context.getResources().getPatterns());
-
+            PDColorSpace cs = PDColorSpace.create(name, context.getResources());
             context.getGraphicsState().setStrokingColorSpace(cs);
             context.getGraphicsState().setStrokingColor(cs.getInitialColor());
         }
