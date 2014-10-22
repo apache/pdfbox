@@ -50,56 +50,6 @@ import org.apache.pdfbox.pdmodel.interactive.viewerpreferences.PDViewerPreferenc
  */
 public class PDDocumentCatalog implements COSObjectable
 {
-    /**
-     * Page mode where neither the outline nor the thumbnails are displayed.
-     */
-    public static final String PAGE_MODE_USE_NONE = "UseNone";
-    /**
-     * Show bookmarks when pdf is opened.
-     */
-    public static final String PAGE_MODE_USE_OUTLINES = "UseOutlines";
-    /**
-     * Show thumbnails when pdf is opened.
-     */
-    public static final String PAGE_MODE_USE_THUMBS = "UseThumbs";
-    /**
-     * Full screen mode with no menu bar, window controls.
-     */
-    public static final String PAGE_MODE_FULL_SCREEN = "FullScreen";
-    /**
-     * Optional content group panel is visible when opened.
-     */
-    public static final String PAGE_MODE_USE_OPTIONAL_CONTENT = "UseOC";
-    /**
-     * Attachments panel is visible.
-     */
-    public static final String PAGE_MODE_USE_ATTACHMENTS = "UseAttachments";
-
-    /**
-     * Display one page at a time.
-     */
-    public static final String PAGE_LAYOUT_SINGLE_PAGE = "SinglePage";
-    /**
-     * Display the pages in one column.
-     */
-    public static final String PAGE_LAYOUT_ONE_COLUMN = "OneColumn";
-    /**
-     * Display the pages in two columns, with odd numbered pagse on the left.
-     */
-    public static final String PAGE_LAYOUT_TWO_COLUMN_LEFT = "TwoColumnLeft";
-    /**
-     * Display the pages in two columns, with odd numbered pagse on the right.
-     */
-    public static final String PAGE_LAYOUT_TWO_COLUMN_RIGHT ="TwoColumnRight";
-    /**
-     * Display the pages two at a time, with odd-numbered pages on the left.
-     */
-    public static final String PAGE_LAYOUT_TWO_PAGE_LEFT = "TwoPageLeft";
-    /**
-     * Display the pages two at a time, with odd-numbered pages on the right.
-     */
-    public static final String PAGE_LAYOUT_TWO_PAGE_RIGHT = "TwoPageRight";
-
     private final COSDictionary root;
     private final PDDocument document;
     private PDAcroForm cachedAcroForm;
@@ -483,43 +433,59 @@ public class PDDocumentCatalog implements COSObjectable
     }
 
     /**
-     * Sets the page display mode, see the PAGE_MODE_XXX constants.
+     * Returns the page display mode.
      *
-     * @return A string representing the page mode.
+     * @return the new page mode.
      */
-    public String getPageMode()
+    public PageMode getPageMode()
     {
-        return root.getNameAsString(COSName.PAGE_MODE, PAGE_MODE_USE_NONE);
+        String mode = root.getNameAsString(COSName.PAGE_MODE);
+        if (mode != null)
+        {
+            return PageMode.fromString(mode);
+        }
+        else
+        {
+            return PageMode.USE_NONE;
+        }
     }
 
     /**
-     * Sets the page mode. See the PAGE_MODE_XXX constants for valid values.
+     * Sets the page mode.
      *
      * @param mode The new page mode.
      */
-    public void setPageMode(String mode)
+    public void setPageMode(PageMode mode)
     {
-        root.setName(COSName.PAGE_MODE, mode);
+        root.setName(COSName.PAGE_MODE, mode.stringValue());
     }
 
     /**
-     * Sets the page layout, see the PAGE_LAYOUT_XXX constants.
+     * Gets the page layout.
      *
-     * @return A string representing the page layout.
+     * @return the page layout.
      */
-    public String getPageLayout()
+    public PageLayout getPageLayout()
     {
-        return root.getNameAsString(COSName.PAGE_LAYOUT, PAGE_LAYOUT_SINGLE_PAGE);
+        String mode = root.getNameAsString(COSName.PAGE_LAYOUT);
+        if (mode != null)
+        {
+            return PageLayout.fromString(mode);
+        }
+        else
+        {
+            return PageLayout.SINGLE_PAGE;
+        }
     }
 
     /**
-     * Sets the page layout. See the PAGE_LAYOUT_XXX constants for valid values.
+     * Sets the page layout.
      *
      * @param layout The new page layout.
      */
-    public void setPageLayout(String layout)
+    public void setPageLayout(PageLayout layout)
     {
-        root.setName(COSName.PAGE_LAYOUT, layout);
+        root.setName(COSName.PAGE_LAYOUT, layout.stringValue());
     }
 
     /**
