@@ -224,9 +224,9 @@ public class CatalogValidationProcess extends AbstractProcess
      */
     protected void validateActions(PreflightContext ctx) throws ValidationException
     {
-        ContextHelper.validateElement(ctx, catalog.getCOSDictionary(), ACTIONS_PROCESS);
+        ContextHelper.validateElement(ctx, catalog.getCOSObject(), ACTIONS_PROCESS);
         // AA entry if forbidden in PDF/A-1
-        COSBase aa = catalog.getCOSDictionary().getItem(DICTIONARY_KEY_ADDITIONAL_ACTION);
+        COSBase aa = catalog.getCOSObject().getItem(DICTIONARY_KEY_ADDITIONAL_ACTION);
         if (aa != null)
         {
             addValidationError(ctx, new ValidationError(ERROR_ACTION_FORBIDDEN_ADDITIONAL_ACTION,
@@ -299,7 +299,7 @@ public class CatalogValidationProcess extends AbstractProcess
     public void validateOutputIntent(PreflightContext ctx) throws ValidationException
     {
         COSDocument cosDocument = ctx.getDocument().getDocument();
-        COSBase cBase = catalog.getCOSDictionary().getItem(COSName.getPDFName(DOCUMENT_DICTIONARY_KEY_OUTPUT_INTENTS));
+        COSBase cBase = catalog.getCOSObject().getItem(COSName.getPDFName(DOCUMENT_DICTIONARY_KEY_OUTPUT_INTENTS));
         COSArray outputIntents = COSUtils.getAsArray(cBase, cosDocument);
 
         Map<COSObjectKey, Boolean> tmpDestOutputProfile = new HashMap<COSObjectKey, Boolean>();

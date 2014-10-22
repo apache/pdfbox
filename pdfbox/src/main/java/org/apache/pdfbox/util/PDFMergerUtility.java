@@ -307,12 +307,12 @@ public class PDFMergerUtility
             }
         }
 
-        COSArray destThreads = (COSArray) destCatalog.getCOSDictionary().getDictionaryObject(COSName.THREADS);
-        COSArray srcThreads = (COSArray) cloner.cloneForNewDocument(destCatalog.getCOSDictionary().getDictionaryObject(
+        COSArray destThreads = (COSArray) destCatalog.getCOSObject().getDictionaryObject(COSName.THREADS);
+        COSArray srcThreads = (COSArray) cloner.cloneForNewDocument(destCatalog.getCOSObject().getDictionaryObject(
                 COSName.THREADS));
         if (destThreads == null)
         {
-            destCatalog.getCOSDictionary().setItem(COSName.THREADS, srcThreads);
+            destCatalog.getCOSObject().setItem(COSName.THREADS, srcThreads);
         }
         else
         {
@@ -325,7 +325,7 @@ public class PDFMergerUtility
         {
             if (destNames == null)
             {
-                destCatalog.getCOSDictionary().setItem(COSName.NAMES, cloner.cloneForNewDocument(srcNames));
+                destCatalog.getCOSObject().setItem(COSName.NAMES, cloner.cloneForNewDocument(srcNames));
             }
             else
             {
@@ -360,9 +360,9 @@ public class PDFMergerUtility
             destCatalog.setPageMode(srcPageMode);
         }
 
-        COSDictionary destLabels = (COSDictionary) destCatalog.getCOSDictionary().getDictionaryObject(
+        COSDictionary destLabels = (COSDictionary) destCatalog.getCOSObject().getDictionaryObject(
                 COSName.PAGE_LABELS);
-        COSDictionary srcLabels = (COSDictionary) srcCatalog.getCOSDictionary()
+        COSDictionary srcLabels = (COSDictionary) srcCatalog.getCOSObject()
                 .getDictionaryObject(COSName.PAGE_LABELS);
         if (srcLabels != null)
         {
@@ -373,7 +373,7 @@ public class PDFMergerUtility
                 destLabels = new COSDictionary();
                 destNums = new COSArray();
                 destLabels.setItem(COSName.NUMS, destNums);
-                destCatalog.getCOSDictionary().setItem(COSName.PAGE_LABELS, destLabels);
+                destCatalog.getCOSObject().setItem(COSName.PAGE_LABELS, destLabels);
             }
             else
             {
@@ -392,14 +392,14 @@ public class PDFMergerUtility
             }
         }
 
-        COSStream destMetadata = (COSStream) destCatalog.getCOSDictionary().getDictionaryObject(COSName.METADATA);
-        COSStream srcMetadata = (COSStream) srcCatalog.getCOSDictionary().getDictionaryObject(COSName.METADATA);
+        COSStream destMetadata = (COSStream) destCatalog.getCOSObject().getDictionaryObject(COSName.METADATA);
+        COSStream srcMetadata = (COSStream) srcCatalog.getCOSObject().getDictionaryObject(COSName.METADATA);
         if (destMetadata == null && srcMetadata != null)
         {
             PDStream newStream = new PDStream(destination, srcMetadata.getUnfilteredStream(), false);
             newStream.getStream().mergeInto(srcMetadata);
             newStream.addCompression();
-            destCatalog.getCOSDictionary().setItem(COSName.METADATA, newStream);
+            destCatalog.getCOSObject().setItem(COSName.METADATA, newStream);
         }
 
         // merge logical structure hierarchy if logical structure information is available in both source pdf and
