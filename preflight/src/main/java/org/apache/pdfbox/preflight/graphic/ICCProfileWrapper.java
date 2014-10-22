@@ -123,7 +123,7 @@ public class ICCProfileWrapper
     {
         PreflightDocument document = context.getDocument();
         PDDocumentCatalog catalog = document.getDocumentCatalog();
-        COSBase cBase = catalog.getCOSDictionary().getItem(COSName.getPDFName(DOCUMENT_DICTIONARY_KEY_OUTPUT_INTENTS));
+        COSBase cBase = catalog.getCOSObject().getItem(COSName.getPDFName(DOCUMENT_DICTIONARY_KEY_OUTPUT_INTENTS));
         COSArray outputIntents = COSUtils.getAsArray(cBase, document.getDocument());
 
         for (int i = 0; outputIntents != null && i < outputIntents.size(); ++i)

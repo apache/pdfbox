@@ -39,7 +39,7 @@ public class PDDocumentNameDictionary implements COSObjectable
      */
     public PDDocumentNameDictionary( PDDocumentCatalog cat )
     {
-        COSBase names = cat.getCOSDictionary().getDictionaryObject(COSName.NAMES);
+        COSBase names = cat.getCOSObject().getDictionaryObject(COSName.NAMES);
         if (names != null)
         {
             nameDictionary = (COSDictionary)names;
@@ -47,7 +47,7 @@ public class PDDocumentNameDictionary implements COSObjectable
         else
         {
             nameDictionary = new COSDictionary();
-            cat.getCOSDictionary().setItem(COSName.NAMES, nameDictionary);
+            cat.getCOSObject().setItem(COSName.NAMES, nameDictionary);
         }
         catalog = cat;
     }
@@ -100,7 +100,7 @@ public class PDDocumentNameDictionary implements COSObjectable
         //so check there as well.
         if( dic == null )
         {
-            dic = (COSDictionary)catalog.getCOSDictionary().getDictionaryObject( COSName.DESTS );
+            dic = (COSDictionary)catalog.getCOSObject().getDictionaryObject( COSName.DESTS );
         }
 
         if( dic != null )
@@ -125,7 +125,7 @@ public class PDDocumentNameDictionary implements COSObjectable
         //names dictionary for now unless there is a reason to do
         //something else.
         //clear the potentially out of date Dests reference.
-        catalog.getCOSDictionary().setItem( COSName.DESTS, (COSObjectable)null);
+        catalog.getCOSObject().setItem( COSName.DESTS, (COSObjectable)null);
     }
 
     /**
