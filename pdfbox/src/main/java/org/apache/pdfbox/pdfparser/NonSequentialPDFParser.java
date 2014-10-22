@@ -343,13 +343,11 @@ public class NonSequentialPDFParser extends PDFParser
 
         long startXrefOffset = document.getStartXref();
         // check the startxref offset
-        if (isLenient) {
-            long fixedOffset = checkXRefOffset(startXrefOffset);
-            if (fixedOffset > -1)
-            {
-            	startXrefOffset = fixedOffset;
-            }
-            document.setStartXref(startXrefOffset);
+        long fixedOffset = checkXRefOffset(startXrefOffset);
+        if (fixedOffset > -1)
+        {
+        	startXrefOffset = fixedOffset;
+        	document.setStartXref(startXrefOffset);
         }
         long prev = startXrefOffset;
         // ---- parse whole chain of xref tables/object streams using PREV
@@ -388,15 +386,22 @@ public class NonSequentialPDFParser extends PDFParser
                 if(trailer.containsKey(COSName.XREF_STM))
                 {
                     int streamOffset = trailer.getInt(COSName.XREF_STM);
+                    // check the xref stream reference
+                    fixedOffset = checkXRefOffset(streamOffset);
+                    if (fixedOffset > -1 && fixedOffset != streamOffset)
+                    {
+                    	streamOffset = (int)fixedOffset;
+                        trailer.setInt(COSName.XREF_STM, streamOffset);
+                    }
                     setPdfSource(streamOffset);
                     skipSpaces();
                     parseXrefObjStream(prev, false); 
                 }
                 prev = trailer.getInt(COSName.PREV);
-                if (isLenient && prev > -1)
+                if (prev > -1)
                 {
                     // check the xref table reference
-                    long fixedOffset = checkXRefOffset(prev);
+                    fixedOffset = checkXRefOffset(prev);
                     if (fixedOffset > -1 && fixedOffset != prev)
                     {
                         prev = fixedOffset;
@@ -408,10 +413,10 @@ public class NonSequentialPDFParser extends PDFParser
             {
                 // parse xref stream
                 prev = parseXrefObjStream(prev, true);
-                if (isLenient && prev > -1)
+                if (prev > -1)
                 {
                     // check the xref table reference
-                    long fixedOffset = checkXRefOffset(prev);
+                    fixedOffset = checkXRefOffset(prev);
                     if (fixedOffset > -1 && fixedOffset != prev)
                     {
                         prev = fixedOffset;
@@ -428,9 +433,7 @@ public class NonSequentialPDFParser extends PDFParser
         document.setTrailer(trailer);
 
         // check the offsets of all referenced objects
-        if (isLenient) {
-            checkXrefOffsets();
-        }
+        checkXrefOffsets();
         
         // ---- prepare encryption if necessary
         COSBase trailerEncryptItem = document.getTrailer().getItem(COSName.ENCRYPT);
@@ -1711,6 +1714,11 @@ public class NonSequentialPDFParser extends PDFParser
      */
     private long checkXRefOffset(long startXRefOffset) throws IOException
     {
+    	// repair mode isn't available in non-lenient mode
+    	if (!isLenient)
+    	{
+    		return startXRefOffset;
+    	}
         setPdfSource(startXRefOffset);
         if (pdfSource.peek() == X && checkBytesAtOffset(XREF_TABLE))
         {
@@ -1808,6 +1816,11 @@ public class NonSequentialPDFParser extends PDFParser
      */
     private void checkXrefOffsets() throws IOException
     {
+    	// repair mode isn't available in non-lenient mode
+    	if (!isLenient)
+    	{
+    		return;
+    	}
         Map<COSObjectKey, Long> xrefOffset = xrefTrailerResolver.getXrefTable();
         if (xrefOffset != null)
         {
