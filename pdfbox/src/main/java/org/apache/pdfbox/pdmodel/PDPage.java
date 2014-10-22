@@ -48,8 +48,6 @@ public class PDPage implements COSObjectable
 {
     private static final Log LOG = LogFactory.getLog(PDPage.class);
 
-    // todo: make the constants below an enum
-
     private final COSDictionary page;
     private PDResources pageResources;
     private PDRectangle mediaBox;
