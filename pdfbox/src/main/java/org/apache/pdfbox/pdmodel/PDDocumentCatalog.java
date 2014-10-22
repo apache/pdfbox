@@ -55,7 +55,7 @@ public class PDDocumentCatalog implements COSObjectable
     private PDAcroForm cachedAcroForm;
 
     /**
-     * Constructor.
+     * Constructor. AcroForm.
      *
      * @param doc The document that this catalog is part of.
      */
@@ -133,14 +133,9 @@ public class PDDocumentCatalog implements COSObjectable
      *
      * @return A list of PDPage objects.
      */
-    public List getAllPages()
+    public List<PDPage> getAllPages()
     {
-        List retval = new ArrayList();
-        PDPageNode rootNode = getPages();
-        //old (slower):
-        //getPageObjects(rootNode, retval);
-        rootNode.getAllKids(retval);
-        return retval;
+        return getPages().getAllKids();
     }
 
     /**

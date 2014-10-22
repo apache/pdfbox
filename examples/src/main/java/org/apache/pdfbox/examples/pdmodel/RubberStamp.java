@@ -61,12 +61,11 @@ public class RubberStamp
                 {
                     throw new IOException( "Encrypted documents are not supported for this example" );
                 }
-                List allpages = new ArrayList();
-                document.getDocumentCatalog().getPages().getAllKids(allpages);
+                List<PDPage> allpages = document.getDocumentCatalog().getPages().getAllKids();
 
                 for (int i=0; i < allpages.size(); i++)
                 {
-                    PDPage apage = (PDPage) allpages.get(i);
+                    PDPage apage = allpages.get(i);
                     List annotations = apage.getAnnotations();
 
                     PDAnnotationRubberStamp rs = new PDAnnotationRubberStamp();
