@@ -216,7 +216,7 @@ public class Overlay
     {
         PDDocumentCatalog catalog = doc.getDocumentCatalog();
         PDPage page = (PDPage) catalog.getAllPages().get(0);
-        COSBase contents = page.getCOSDictionary().getDictionaryObject(COSName.CONTENTS);
+        COSBase contents = page.getCOSObject().getDictionaryObject(COSName.CONTENTS);
         PDResources resources = page.findResources();
         if (resources == null)
         {
@@ -234,7 +234,7 @@ public class Overlay
         for (int i=0;i<numberOfPages;i++)
         {
             PDPage page = (PDPage) catalog.getAllPages().get(i);
-            COSBase contents = page.getCOSDictionary().getDictionaryObject(COSName.CONTENTS);
+            COSBase contents = page.getCOSObject().getDictionaryObject(COSName.CONTENTS);
             PDResources resources = page.findResources();
             if (resources == null)
             {
@@ -297,7 +297,7 @@ public class Overlay
         int pageCount = 0;
         for (PDPage page : pages)
         {
-            COSDictionary pageDictionary = page.getCOSDictionary();
+            COSDictionary pageDictionary = page.getCOSObject();
             COSBase contents = pageDictionary.getDictionaryObject(COSName.CONTENTS);
             COSArray contentArray = new COSArray();
             switch (position)

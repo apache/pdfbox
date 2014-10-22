@@ -461,7 +461,7 @@ public class PDFMergerUtility
         while (pageIter.hasNext())
         {
             PDPage page = pageIter.next();
-            PDPage newPage = new PDPage((COSDictionary) cloner.cloneForNewDocument(page.getCOSDictionary()));
+            PDPage newPage = new PDPage((COSDictionary) cloner.cloneForNewDocument(page.getCOSObject()));
             newPage.setCropBox(page.findCropBox());
             newPage.setMediaBox(page.findMediaBox());
             newPage.setRotation(page.findRotation());
@@ -470,7 +470,7 @@ public class PDFMergerUtility
             if (mergeStructTree)
             {
                 updateStructParentEntries(newPage, destParentTreeNextKey);
-                objMapping.put(page.getCOSDictionary(), newPage.getCOSDictionary());
+                objMapping.put(page.getCOSObject(), newPage.getCOSObject());
                 List<PDAnnotation> oldAnnots = page.getAnnotations();
                 List<PDAnnotation> newAnnots = newPage.getAnnotations();
                 for (int i = 0; i < oldAnnots.size(); i++)

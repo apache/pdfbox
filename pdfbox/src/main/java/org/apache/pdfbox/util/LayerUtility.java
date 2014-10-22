@@ -94,7 +94,7 @@ public class LayerUtility
 
         //Wrap the existing page's content in a save/restore pair (q/Q) to have a controlled
         //environment to add additional content.
-        COSDictionary pageDictionary = page.getCOSDictionary();
+        COSDictionary pageDictionary = page.getCOSObject();
         COSBase contents = pageDictionary.getDictionaryObject(COSName.CONTENTS);
         if (contents instanceof COSStream)
         {
@@ -159,7 +159,7 @@ public class LayerUtility
         form.setResources(formRes);
 
         //Transfer some values from page to form
-        transferDict(page.getCOSDictionary(), form.getCOSStream(), PAGE_TO_FORM_FILTER, true);
+        transferDict(page.getCOSObject(), form.getCOSStream(), PAGE_TO_FORM_FILTER, true);
 
         Matrix matrix = form.getMatrix();
         AffineTransform at = matrix != null ? matrix.createAffineTransform() : new AffineTransform();

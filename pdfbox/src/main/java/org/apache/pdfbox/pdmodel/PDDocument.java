@@ -604,7 +604,7 @@ public class PDDocument implements Closeable
      */
     public PDPage importPage(PDPage page) throws IOException
     {
-        PDPage importedPage = new PDPage(new COSDictionary(page.getCOSDictionary()));
+        PDPage importedPage = new PDPage(new COSDictionary(page.getCOSObject()));
         InputStream is = null;
         OutputStream os = null;
         try

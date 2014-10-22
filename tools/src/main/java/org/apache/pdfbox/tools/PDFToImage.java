@@ -251,7 +251,7 @@ public class PDFToImage
                 if ( cropBoxLowerLeftX!=0 || cropBoxLowerLeftY!=0
                         || cropBoxUpperRightX!=0 || cropBoxUpperRightY!=0 )
                 {
-                    changeCropBoxes(document,
+                    changeCropBox(document,
                             cropBoxLowerLeftX, cropBoxLowerLeftY,
                             cropBoxUpperRightX, cropBoxUpperRightY);
                 }
@@ -323,7 +323,7 @@ public class PDFToImage
         return retval.toString();
     }
 
-    private static void changeCropBoxes(PDDocument document,float a, float b, float c,float d)
+    private static void changeCropBox(PDDocument document, float a, float b, float c, float d)
     {
         List pages = document.getDocumentCatalog().getAllPages();
         for( int i = 0; i < pages.size(); i++ )
@@ -335,7 +335,6 @@ public class PDFToImage
               rectangle.setLowerLeftY(b);
               rectangle.setUpperRightX(c);
               rectangle.setUpperRightY(d);
-              page.setMediaBox(rectangle);
               page.setCropBox(rectangle);
 
         }

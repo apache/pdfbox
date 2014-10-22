@@ -55,8 +55,8 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     @Override
     public void createPage(PDVisibleSignDesigner properties)
     {
-        PDPage page = new PDPage();
-        page.setMediaBox(new PDRectangle(properties.getPageWidth(), properties.getPageHeight()));
+        PDPage page = new PDPage(new PDRectangle(properties.getPageWidth(),
+                                                 properties.getPageHeight()));
         pdfStructure.setPage(page);
         log.info("PDF page has been created");
     }
@@ -326,7 +326,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
                                    PDResources holderFormResources, COSArray procSet)
     {
         innerForm.getResources().getCOSObject().setItem(COSName.PROC_SET, procSet);
-        page.getCOSDictionary().setItem(COSName.PROC_SET, procSet);
+        page.getCOSObject().setItem(COSName.PROC_SET, procSet);
         innerFormResources.getCOSObject().setItem(COSName.PROC_SET, procSet);
         imageFormResources.getCOSObject().setItem(COSName.PROC_SET, procSet);
         holderFormResources.getCOSObject().setItem(COSName.PROC_SET, procSet);

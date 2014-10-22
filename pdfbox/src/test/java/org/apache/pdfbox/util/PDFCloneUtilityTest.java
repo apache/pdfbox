@@ -44,7 +44,7 @@ public class PDFCloneUtilityTest extends TestCase
         srcDoc.addPage(pdPage);
         new PDPageContentStream(srcDoc, pdPage, true, true).close();
         new PDPageContentStream(srcDoc, pdPage, true, true).close();
-        new PDFCloneUtility(dstDoc).cloneForNewDocument(pdPage.getCOSDictionary());
+        new PDFCloneUtility(dstDoc).cloneForNewDocument(pdPage.getCOSObject());
         srcDoc.close();
         dstDoc.close();
     }

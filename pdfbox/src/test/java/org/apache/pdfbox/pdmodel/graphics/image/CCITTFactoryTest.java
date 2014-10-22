@@ -28,6 +28,7 @@ import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.checkIdent;
@@ -64,7 +65,7 @@ public class CCITTFactoryTest extends TestCase
         validate(ximage3, 1, 344, 287, "tiff", PDDeviceGray.INSTANCE.getName());
         BufferedImage bim3 = ImageIO.read(new File(tiffG3Path));
         checkIdent(bim3, ximage3.getOpaqueImage());
-        PDPage page = new PDPage(PDPage.PAGE_SIZE_A4);
+        PDPage page = new PDPage(PDRectangle.A4);
         document.addPage(page);
         PDPageContentStream contentStream = new PDPageContentStream(document, page, true, false);
         contentStream.drawXObject(ximage3, 0, 0, ximage3.getWidth(), ximage3.getHeight());
@@ -75,7 +76,7 @@ public class CCITTFactoryTest extends TestCase
         validate(ximage4, 1, 344, 287, "tiff", PDDeviceGray.INSTANCE.getName());
         BufferedImage bim4 = ImageIO.read(new File(tiffG3Path));
         checkIdent(bim4, ximage4.getOpaqueImage());
-        page = new PDPage(PDPage.PAGE_SIZE_A4);
+        page = new PDPage(PDRectangle.A4);
         document.addPage(page);
         contentStream = new PDPageContentStream(document, page, true, false);
         contentStream.drawXObject(ximage4, 0, 0, ximage4.getWidth(), ximage4.getHeight());
@@ -119,7 +120,7 @@ public class CCITTFactoryTest extends TestCase
             BufferedImage bim = imageReader.read(pdfPageNum);
             validate(ximage, 1, bim.getWidth(), bim.getHeight(), "tiff", PDDeviceGray.INSTANCE.getName());
             checkIdent(bim, ximage.getOpaqueImage());
-            PDPage page = new PDPage(PDPage.PAGE_SIZE_A4);
+            PDPage page = new PDPage(PDRectangle.A4);
             float fX = ximage.getWidth() / page.getMediaBox().getWidth();
             float fY = ximage.getHeight() / page.getMediaBox().getHeight();
             float factor = Math.max(fX, fY);
