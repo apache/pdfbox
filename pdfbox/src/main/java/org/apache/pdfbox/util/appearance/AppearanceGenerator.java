@@ -28,48 +28,59 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDVariableText;
 /**
  * (Re-) Generate the appearance for a field.
  * 
- * The fields appearance defines the 'look' the field has when it's rendered
- * for display or printing.
+ * The fields appearance defines the 'look' the field has when it's rendered for display or printing.
  * 
  */
 
-public class AppearanceGenerator {
-	
-	private static final Log LOG = LogFactory.getLog(AppearanceGenerator.class);
-	
-	private AppearanceGenerator() {
-	}
-	
-	
-	/**
-	 * Generate the appearances for a single field.
-	 * 
-	 * @param field The field which appearances need to be generated.
-	 */
-	public static void generateFieldAppearances(PDField field) {
-		// TODO: handle appearance generation for other field types
-		if (field instanceof PDVariableText) {
-			
-			PDAppearanceString pdAppearance = new PDAppearanceString(field.getAcroForm(), (PDVariableText) field);
-			
-			Object fieldValue = field.getValue();
-			
-			// in case there is no value being set generate the visual 
-			// appearance with an empty String
-			if (fieldValue == null) {
-				fieldValue = "";
-			}
-			
-			// TODO: implement the handling for additional values.
-			if (fieldValue instanceof COSString) {
-				try {
-					pdAppearance.setAppearanceValue(((COSString) fieldValue).getString());
-				} catch (IOException e) {
-					LOG.error("Unable to generate the field appearance.", e);
-				}
-			} else {
-				LOG.warn("Can't generate the appearance for values typed " + fieldValue.getClass().getName() + ".");
-			}
-		}
-	}
+public class AppearanceGenerator
+{
+
+    private static final Log LOG = LogFactory.getLog(AppearanceGenerator.class);
+
+    private AppearanceGenerator()
+    {
+    }
+
+    /**
+     * Generate the appearances for a single field.
+     * 
+     * @param field The field which appearances need to be generated.
+     */
+    public static void generateFieldAppearances(PDField field)
+    {
+        // TODO: handle appearance generation for other field types
+        if (field instanceof PDVariableText)
+        {
+
+            PDAppearanceString pdAppearance = new PDAppearanceString(field.getAcroForm(),
+                    (PDVariableText) field);
+
+            Object fieldValue = field.getValue();
+
+            // in case there is no value being set generate the visual
+            // appearance with an empty String
+            if (fieldValue == null)
+            {
+                fieldValue = "";
+            }
+
+            // TODO: implement the handling for additional values.
+            if (fieldValue instanceof COSString)
+            {
+                try
+                {
+                    pdAppearance.setAppearanceValue(((COSString) fieldValue).getString());
+                }
+                catch (IOException e)
+                {
+                    LOG.debug("Unable to generate the field appearance.", e);
+                }
+            }
+            else
+            {
+                LOG.debug("Can't generate the appearance for values typed "
+                        + fieldValue.getClass().getName() + ".");
+            }
+        }
+    }
 }

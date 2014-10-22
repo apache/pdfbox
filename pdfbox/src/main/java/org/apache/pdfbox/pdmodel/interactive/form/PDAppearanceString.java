@@ -46,22 +46,21 @@ import org.apache.pdfbox.pdmodel.interactive.action.PDFormFieldAdditionalActions
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
-import org.apache.pdfbox.util.appearance.AppearanceGenerator;
 import org.apache.pdfbox.contentstream.operator.Operator;
 
 /**
- * A default appearance string contains any graphics state or text state operators needed to
- * establish the graphics state parameters, such as text size and colour, for displaying the field?s
- * variable text. Only operators that are allowed within text objects shall occur in this string.
+ * A default appearance string contains any graphics state or text state operators needed to establish the graphics
+ * state parameters, such as text size and colour, for displaying the field?s variable text. Only operators that are
+ * allowed within text objects shall occur in this string.
  *
  * @author Stephan Gerhard
  * @author Ben Litchfield
  */
 public final class PDAppearanceString
 {
-	
-	private static final Log LOG = LogFactory.getLog(AppearanceGenerator.class);
-		
+
+    private static final Log LOG = LogFactory.getLog(PDAppearanceString.class);
+
     private final PDVariableText parent;
 
     private String value;
@@ -70,13 +69,11 @@ public final class PDAppearanceString
     private final PDAcroForm acroForm;
     private List<COSObjectable> widgets = new ArrayList<COSObjectable>();
 
-
     /**
-     * Constructs a COSAppearnce from the given field.
+     * Constructs a COSAppearance from the given field.
      *
-     * @param theAcroForm the acro form that this field is part of.
+     * @param theAcroForm the AcroForm that this field is part of.
      * @param field the field which you wish to control the appearance of
-     * @throws IOException If there is an error creating the appearance.
      */
     public PDAppearanceString(PDAcroForm theAcroForm, PDVariableText field)
     {
@@ -84,17 +81,18 @@ public final class PDAppearanceString
         parent = field;
 
         widgets = field.getKids();
-        if( widgets == null )
+        if (widgets == null)
         {
             widgets = new ArrayList<COSObjectable>();
-            widgets.add( field.getWidget() );
+            widgets.add(field.getWidget());
         }
         defaultAppearance = getDefaultAppearance();
     }
 
     /**
-     * Returns the default apperance of a textbox. If the textbox
-     * does not have one, then it will be taken from the AcroForm.
+     * Returns the default appearance of a textbox. If the textbox does not have one,
+     * then it will be taken from the AcroForm.
+     * 
      * @return The DA element
      */
     private COSString getDefaultAppearance()
@@ -103,13 +101,13 @@ public final class PDAppearanceString
         COSString dap = parent.getDefaultAppearance();
         if (dap == null)
         {
-            COSArray kids = (COSArray)parent.getDictionary().getDictionaryObject( COSName.KIDS );
-            if( kids != null && kids.size() > 0 )
+            COSArray kids = (COSArray) parent.getDictionary().getDictionaryObject(COSName.KIDS);
+            if (kids != null && kids.size() > 0)
             {
-                COSDictionary firstKid = (COSDictionary)kids.getObject( 0 );
-                dap = (COSString)firstKid.getDictionaryObject( COSName.DA );
+                COSDictionary firstKid = (COSDictionary) kids.getObject(0);
+                dap = (COSString) firstKid.getDictionaryObject(COSName.DA);
             }
-            if( dap == null )
+            if (dap == null)
             {
                 dap = (COSString) acroForm.getDictionary().getDictionaryObject(COSName.DA);
             }
@@ -120,14 +118,14 @@ public final class PDAppearanceString
     private int getQ()
     {
         int q = parent.getQ();
-        if( parent.getDictionary().getDictionaryObject( COSName.Q ) == null )
+        if (parent.getDictionary().getDictionaryObject(COSName.Q) == null)
         {
-            COSArray kids = (COSArray)parent.getDictionary().getDictionaryObject( COSName.KIDS );
-            if( kids != null && kids.size() > 0 )
+            COSArray kids = (COSArray) parent.getDictionary().getDictionaryObject(COSName.KIDS);
+            if (kids != null && kids.size() > 0)
             {
-                COSDictionary firstKid = (COSDictionary)kids.getObject( 0 );
-                COSNumber qNum = (COSNumber)firstKid.getDictionaryObject( COSName.Q );
-                if( qNum != null )
+                COSDictionary firstKid = (COSDictionary) kids.getObject(0);
+                COSNumber qNum = (COSNumber) firstKid.getDictionaryObject(COSName.Q);
+                if (qNum != null)
                 {
                     q = qNum.intValue();
                 }
@@ -141,39 +139,39 @@ public final class PDAppearanceString
      *
      * @return The tokens in the original appearance stream
      */
-    private List<Object> getStreamTokens( PDAppearanceStream appearanceStream ) throws IOException
+    private List<Object> getStreamTokens(PDAppearanceStream appearanceStream) throws IOException
     {
         List<Object> tokens = new ArrayList<Object>();
-        if( appearanceStream != null )
+        if (appearanceStream != null)
         {
-            tokens = getStreamTokens( appearanceStream.getStream() );
+            tokens = getStreamTokens(appearanceStream.getStream());
         }
         return tokens;
     }
 
-    private List<Object> getStreamTokens( COSString string ) throws IOException
+    private List<Object> getStreamTokens(COSString string) throws IOException
     {
         PDFStreamParser parser;
 
-        List<Object> tokens =  new ArrayList<Object>();
-        if( string != null )
+        List<Object> tokens = new ArrayList<Object>();
+        if (string != null)
         {
-            ByteArrayInputStream stream = new ByteArrayInputStream( string.getBytes() );
-            parser = new PDFStreamParser( stream );
+            ByteArrayInputStream stream = new ByteArrayInputStream(string.getBytes());
+            parser = new PDFStreamParser(stream);
             parser.parse();
             tokens = parser.getTokens();
         }
         return tokens;
     }
 
-    private List<Object> getStreamTokens( COSStream stream ) throws IOException
+    private List<Object> getStreamTokens(COSStream stream) throws IOException
     {
         PDFStreamParser parser;
 
         List<Object> tokens = new ArrayList<Object>();
-        if( stream != null )
+        if (stream != null)
         {
-            parser = new PDFStreamParser( stream );
+            parser = new PDFStreamParser(stream);
             parser.parse();
             tokens = parser.getTokens();
         }
@@ -181,15 +179,15 @@ public final class PDAppearanceString
     }
 
     /**
-     * Tests if the apperance stream already contains content.
+     * Tests if the appearance stream already contains content.
      * 
      * @param streamTokens individual tokens within the appearance stream
      *
      * @return true if it contains any content
      */
-    private boolean containsMarkedContent( List<Object> streamTokens )
+    private boolean containsMarkedContent(List<Object> streamTokens)
     {
-        return streamTokens.contains( Operator.getOperator("BMC") );
+        return streamTokens.contains(Operator.getOperator("BMC"));
     }
 
     /**
@@ -203,90 +201,90 @@ public final class PDAppearanceString
     {
         value = apValue;
         Iterator<COSObjectable> widgetIter = widgets.iterator();
-        while( widgetIter.hasNext() )
+        while (widgetIter.hasNext())
         {
             COSObjectable next = widgetIter.next();
             PDField field = null;
             PDAnnotationWidget widget;
-            if( next instanceof PDField )
+            if (next instanceof PDField)
             {
-                field = (PDField)next;
+                field = (PDField) next;
                 widget = field.getWidget();
             }
             else
             {
-                widget = (PDAnnotationWidget)next;
+                widget = (PDAnnotationWidget) next;
             }
             PDFormFieldAdditionalActions actions = null;
-            if( field != null )
+            if (field != null)
             {
                 actions = field.getActions();
             }
-            if( actions != null &&
-                actions.getF() != null &&
-                widget.getDictionary().getDictionaryObject( COSName.AP ) ==null)
+            if (actions != null && actions.getF() != null
+                    && widget.getDictionary().getDictionaryObject(COSName.AP) == null)
             {
-                //do nothing because the field will be formatted by acrobat
-                //when it is opened.  See FreedomExpressions.pdf for an example of this.
+                // do nothing because the field will be formatted by acrobat
+                // when it is opened. See FreedomExpressions.pdf for an example of this.
             }
             else
             {
 
                 PDAppearanceDictionary appearance = widget.getAppearance();
-                if( appearance == null )
+                if (appearance == null)
                 {
                     appearance = new PDAppearanceDictionary();
-                    widget.setAppearance( appearance );
+                    widget.setAppearance(appearance);
                 }
 
-                Map<String,PDAppearanceStream> normalAppearance = appearance.getNormalAppearance();
-                PDAppearanceStream appearanceStream = normalAppearance.get( "default" );
-                if( appearanceStream == null )
+                Map<String, PDAppearanceStream> normalAppearance = appearance.getNormalAppearance();
+                PDAppearanceStream appearanceStream = normalAppearance.get("default");
+                if (appearanceStream == null)
                 {
                     COSStream cosStream = acroForm.getDocument().getDocument().createCOSStream();
-                    appearanceStream = new PDAppearanceStream( cosStream );
-                    appearanceStream.setBoundingBox( widget.getRectangle().createRetranslatedRectangle() );
-                    appearance.setNormalAppearance( appearanceStream );
+                    appearanceStream = new PDAppearanceStream(cosStream);
+                    appearanceStream.setBoundingBox(widget.getRectangle()
+                            .createRetranslatedRectangle());
+                    appearance.setNormalAppearance(appearanceStream);
                 }
 
-                List<Object> tokens = getStreamTokens( appearanceStream );
-                List<Object> daTokens = getStreamTokens( getDefaultAppearance() );
-                PDFont pdFont = getFontAndUpdateResources( tokens, appearanceStream );
+                List<Object> tokens = getStreamTokens(appearanceStream);
+                List<Object> daTokens = getStreamTokens(getDefaultAppearance());
+                PDFont pdFont = getFontAndUpdateResources(tokens, appearanceStream);
 
-                if (!containsMarkedContent( tokens ))
+                if (!containsMarkedContent(tokens))
                 {
                     ByteArrayOutputStream output = new ByteArrayOutputStream();
 
-                    //BJL 9/25/2004 Must prepend existing stream
-                    //because it might have operators to draw things like
-                    //rectangles and such
-                    ContentStreamWriter writer = new ContentStreamWriter( output );
-                    writer.writeTokens( tokens );
+                    // BJL 9/25/2004 Must prepend existing stream
+                    // because it might have operators to draw things like
+                    // rectangles and such
+                    ContentStreamWriter writer = new ContentStreamWriter(output);
+                    writer.writeTokens(tokens);
 
-                    output.write( " /Tx BMC\n".getBytes("ISO-8859-1") );
-                    insertGeneratedAppearance( widget, output, pdFont, tokens, appearanceStream );
-                    output.write( " EMC".getBytes("ISO-8859-1") );
-                    writeToStream( output.toByteArray(), appearanceStream );
+                    output.write(" /Tx BMC\n".getBytes("ISO-8859-1"));
+                    insertGeneratedAppearance(widget, output, pdFont, tokens, appearanceStream);
+                    output.write(" EMC".getBytes("ISO-8859-1"));
+                    writeToStream(output.toByteArray(), appearanceStream);
                 }
                 else
                 {
-                    if( tokens != null )
+                    if (tokens != null)
                     {
-                        if( daTokens != null )
+                        if (daTokens != null)
                         {
-                            int bmcIndex = tokens.indexOf( Operator.getOperator("BMC"));
-                            int emcIndex = tokens.indexOf( Operator.getOperator("EMC"));
-                            if( bmcIndex != -1 && emcIndex != -1 &&
-                                emcIndex == bmcIndex+1 )
+                            int bmcIndex = tokens.indexOf(Operator.getOperator("BMC"));
+                            int emcIndex = tokens.indexOf(Operator.getOperator("EMC"));
+                            if (bmcIndex != -1 && emcIndex != -1 && emcIndex == bmcIndex + 1)
                             {
-                                //if the EMC immediately follows the BMC index then should
-                                //insert the daTokens inbetween the two markers.
-                                tokens.addAll( emcIndex, daTokens );
+                                // if the EMC immediately follows the BMC index then should
+                                // insert the daTokens inbetween the two markers.
+                                tokens.addAll(emcIndex, daTokens);
                             }
                         }
                         ByteArrayOutputStream output = new ByteArrayOutputStream();
-                        ContentStreamWriter writer = new ContentStreamWriter( output );
-                        float fontSize = calculateFontSize( pdFont, appearanceStream.getBoundingBox(), tokens, null );
+                        ContentStreamWriter writer = new ContentStreamWriter(output);
+                        float fontSize = calculateFontSize(pdFont,
+                                appearanceStream.getBoundingBox(), tokens, null);
                         boolean foundString = false;
                         for (Object token : tokens)
                         {
@@ -295,117 +293,128 @@ public final class PDAppearanceString
                                 foundString = true;
                                 COSString drawnString = (COSString) token;
                                 drawnString.reset();
-                                drawnString.append( apValue.getBytes("ISO-8859-1") );
+                                drawnString.append(apValue.getBytes("ISO-8859-1"));
                             }
                         }
-                        int setFontIndex = tokens.indexOf( Operator.getOperator("Tf"));
-                        tokens.set( setFontIndex-1, new COSFloat( fontSize ) );
-                        if( foundString )
+                        int setFontIndex = tokens.indexOf(Operator.getOperator("Tf"));
+                        tokens.set(setFontIndex - 1, new COSFloat(fontSize));
+                        if (foundString)
                         {
-                            writer.writeTokens( tokens );
+                            writer.writeTokens(tokens);
                         }
                         else
                         {
-                            int bmcIndex = tokens.indexOf( Operator.getOperator("BMC") );
-                            int emcIndex = tokens.indexOf( Operator.getOperator("EMC") );
+                            int bmcIndex = tokens.indexOf(Operator.getOperator("BMC"));
+                            int emcIndex = tokens.indexOf(Operator.getOperator("EMC"));
 
-                            if( bmcIndex != -1 )
+                            if (bmcIndex != -1)
                             {
-                                writer.writeTokens( tokens, 0, bmcIndex+1 );
+                                writer.writeTokens(tokens, 0, bmcIndex + 1);
                             }
                             else
                             {
-                                writer.writeTokens( tokens );
+                                writer.writeTokens(tokens);
                             }
-                            output.write( "\n".getBytes("ISO-8859-1") );
-                            insertGeneratedAppearance( widget, output,
-                                pdFont, tokens, appearanceStream );
-                            if( emcIndex != -1 )
+                            output.write("\n".getBytes("ISO-8859-1"));
+                            insertGeneratedAppearance(widget, output, pdFont, tokens,
+                                    appearanceStream);
+                            if (emcIndex != -1)
                             {
-                                writer.writeTokens( tokens, emcIndex, tokens.size() );
+                                writer.writeTokens(tokens, emcIndex, tokens.size());
                             }
                         }
-                        writeToStream( output.toByteArray(), appearanceStream );
+                        writeToStream(output.toByteArray(), appearanceStream);
                     }
                     else
                     {
-                        //hmm?
+                        // hmm?
                     }
                 }
             }
         }
     }
 
-    private void insertGeneratedAppearance( PDAnnotationWidget fieldWidget, OutputStream output,
-        PDFont pdFont, List<Object> tokens, PDAppearanceStream appearanceStream ) throws IOException
+    private void insertGeneratedAppearance(PDAnnotationWidget fieldWidget, OutputStream output,
+            PDFont pdFont, List<Object> tokens, PDAppearanceStream appearanceStream)
+            throws IOException
     {
-        PrintWriter printWriter = new PrintWriter( output, true );
+        PrintWriter printWriter = new PrintWriter(output, true);
         float fontSize = 0.0f;
         PDRectangle boundingBox = appearanceStream.getBoundingBox();
-        if( boundingBox == null )
+        if (boundingBox == null)
         {
             boundingBox = fieldWidget.getRectangle().createRetranslatedRectangle();
         }
-        printWriter.println( "BT" );
-        if( defaultAppearance != null )
+        printWriter.println("BT");
+        if (defaultAppearance != null)
         {
             String daString = defaultAppearance.getString();
-            PDFStreamParser daParser = new PDFStreamParser(new ByteArrayInputStream( daString.getBytes("ISO-8859-1") ) );
+            PDFStreamParser daParser = new PDFStreamParser(new ByteArrayInputStream(
+                    daString.getBytes("ISO-8859-1")));
             daParser.parse();
             List<Object> daTokens = daParser.getTokens();
-            fontSize = calculateFontSize( pdFont, boundingBox, tokens, daTokens );
-            int fontIndex = daTokens.indexOf( Operator.getOperator("Tf") );
-            if(fontIndex != -1 )
+            fontSize = calculateFontSize(pdFont, boundingBox, tokens, daTokens);
+            int fontIndex = daTokens.indexOf(Operator.getOperator("Tf"));
+            if (fontIndex != -1)
             {
-                daTokens.set( fontIndex-1, new COSFloat( fontSize ) );
+                daTokens.set(fontIndex - 1, new COSFloat(fontSize));
             }
             ContentStreamWriter daWriter = new ContentStreamWriter(output);
-            daWriter.writeTokens( daTokens );
+            daWriter.writeTokens(daTokens);
         }
-          
+
         PDRectangle borderEdge = getSmallestDrawnRectangle(boundingBox, tokens);
-        
+
         // Acrobat calculates the left and right padding dependent on the offset of the border edge
-        // TODO: verify the vertical alignment calculation
+        // This calculation works for forms having been generated by Acrobat.
+        // Need to revisit this for forms being generated with other software.
         float paddingLeft = Math.max(2, Math.round(4 * borderEdge.getLowerLeftX()));
-        float paddingRight = Math.max(2, Math.round(4 * (boundingBox.getUpperRightX() - borderEdge.getUpperRightX())));
+        float paddingRight = Math.max(2,
+                Math.round(4 * (boundingBox.getUpperRightX() - borderEdge.getUpperRightX())));
         float verticalOffset = getVerticalOffset(boundingBox, pdFont, fontSize, tokens);
-        
-        // Acrobat shifts the value so it aligns to the bottom if 
+
+        // Acrobat shifts the value so it aligns to the bottom if
         // the font's caps are larger than the height of the borderEdge
-        // TODO: verify this with more samples
-        //       verify fontHeight calculation which was taken from getVerticalOffset()
+        //
+        // This is based on a small sample of test files and might not be generally the case.
+        // The fontHeight calculation has been taken from getVerticalOffset().
+        // We potentially need to revisit that calculation
         float fontHeight = boundingBox.getHeight() - verticalOffset * 2;
-        
-        if (fontHeight + 2 * borderEdge.getLowerLeftX() > borderEdge.getHeight()) {
-        	verticalOffset = pdFont.getBoundingBox().getHeight()/1000 * fontSize - borderEdge.getHeight();
-        }
-        
-        float leftOffset = 0f;
-        
-        // Acrobat aligns left regardless of the quadding if the text is wider then the remaining width
-        float stringWidth = (pdFont.getStringWidth( value )/1000)*fontSize;
-        int q = getQ();
-        if (q == PDTextField.QUADDING_LEFT || stringWidth > borderEdge.getWidth() - paddingLeft - paddingRight)
+
+        if (fontHeight + 2 * borderEdge.getLowerLeftX() > borderEdge.getHeight())
         {
-        	leftOffset = paddingLeft;
-        } 
+            verticalOffset = pdFont.getBoundingBox().getHeight() / 1000 * fontSize
+                    - borderEdge.getHeight();
+        }
+
+        float leftOffset = 0f;
+
+        // Acrobat aligns left regardless of the quadding if the text is wider than the remaining width
+        float stringWidth = (pdFont.getStringWidth(value) / 1000) * fontSize;
+        int q = getQ();
+        if (q == PDTextField.QUADDING_LEFT
+                || stringWidth > borderEdge.getWidth() - paddingLeft - paddingRight)
+        {
+            leftOffset = paddingLeft;
+        }
         else if (q == PDTextField.QUADDING_CENTERED)
         {
-        	leftOffset = (boundingBox.getWidth() - stringWidth) / 2; 
-        } else if (q == PDTextField.QUADDING_RIGHT)
-        {
-        	leftOffset = boundingBox.getWidth() - stringWidth - paddingRight;
-        	
-        } else 
-        {
-        	// Unknown quadding value - default to left
-        	printWriter.println(paddingLeft + " " + verticalOffset + " Td");
-        	LOG.info("Unknown justification value, defaulting to left: " + q);
+            leftOffset = (boundingBox.getWidth() - stringWidth) / 2;
         }
-        
+        else if (q == PDTextField.QUADDING_RIGHT)
+        {
+            leftOffset = boundingBox.getWidth() - stringWidth - paddingRight;
+
+        }
+        else
+        {
+            // Unknown quadding value - default to left
+            printWriter.println(paddingLeft + " " + verticalOffset + " Td");
+            LOG.debug("Unknown justification value, defaulting to left: " + q);
+        }
+
         printWriter.println(leftOffset + " " + verticalOffset + " Td");
-        
+
         // add the value as hex string to deal with non ISO-8859-1 data values
         if (!isMultiLineValue(value))
         {
@@ -420,40 +429,41 @@ public final class PDAppearanceString
                 String endingTag = lastLine ? "> Tj\n" : "> Tj 0 -13 Td";
                 printWriter.print("<" + new COSString(lines[i]).getHexString() + endingTag);
             }
-        }        
-        printWriter.println("ET" );
+        }
+        printWriter.println("ET");
         printWriter.flush();
     }
 
-    private PDFont getFontAndUpdateResources( List<Object> tokens, PDAppearanceStream appearanceStream ) throws IOException
+    private PDFont getFontAndUpdateResources(List<Object> tokens,
+            PDAppearanceStream appearanceStream) throws IOException
     {
         PDFont retval = null;
         PDResources streamResources = appearanceStream.getResources();
         PDResources formResources = acroForm.getDefaultResources();
-        if( formResources != null )
+        if (formResources != null)
         {
-            if( streamResources == null )
+            if (streamResources == null)
             {
                 streamResources = new PDResources();
-                appearanceStream.setResources( streamResources );
+                appearanceStream.setResources(streamResources);
             }
 
             COSString da = getDefaultAppearance();
-            if( da != null )
+            if (da != null)
             {
                 String data = da.getString();
-                PDFStreamParser streamParser = new PDFStreamParser(
-                        new ByteArrayInputStream( data.getBytes("ISO-8859-1") ) );
+                PDFStreamParser streamParser = new PDFStreamParser(new ByteArrayInputStream(
+                        data.getBytes("ISO-8859-1")));
                 streamParser.parse();
                 tokens = streamParser.getTokens();
             }
 
-            int setFontIndex = tokens.indexOf( Operator.getOperator("Tf"));
-            COSName cosFontName = (COSName)tokens.get( setFontIndex-2 );
-            retval = streamResources.getFont( cosFontName );
-            if( retval == null )
+            int setFontIndex = tokens.indexOf(Operator.getOperator("Tf"));
+            COSName cosFontName = (COSName) tokens.get(setFontIndex - 2);
+            retval = streamResources.getFont(cosFontName);
+            if (retval == null)
             {
-                retval = formResources.getFont( cosFontName );
+                retval = formResources.getFont(cosFontName);
                 streamResources.put(cosFontName, retval);
             }
         }
@@ -464,61 +474,61 @@ public final class PDAppearanceString
     {
         return (parent.isMultiline() && value.contains("\n"));
     }
-    
+
     /**
      * Writes the stream to the actual stream in the COSStream.
      *
      * @throws IOException If there is an error writing to the stream
      */
-    private void writeToStream( byte[] data, PDAppearanceStream appearanceStream ) throws IOException
+    private void writeToStream(byte[] data, PDAppearanceStream appearanceStream) throws IOException
     {
         OutputStream out = appearanceStream.getStream().createUnfilteredStream();
-        out.write( data );
+        out.write(data);
         out.flush();
     }
 
-
     /**
      * w in an appearance stream represents the lineWidth.
+     * 
      * @return the linewidth
      */
-    private float getLineWidth( List<Object> tokens )
+    private float getLineWidth(List<Object> tokens)
     {
 
         float retval = 1;
-        if( tokens != null )
+        if (tokens != null)
         {
             int btIndex = tokens.indexOf(Operator.getOperator("BT"));
             int wIndex = tokens.indexOf(Operator.getOperator("w"));
-            //the w should only be used if it is before the first BT.
-            if( (wIndex > 0) && (wIndex < btIndex) )
+            // the w should only be used if it is before the first BT.
+            if ((wIndex > 0) && (wIndex < btIndex))
             {
-                retval = ((COSNumber)tokens.get(wIndex-1)).floatValue();
+                retval = ((COSNumber) tokens.get(wIndex - 1)).floatValue();
             }
         }
         return retval;
     }
 
-    private PDRectangle getSmallestDrawnRectangle( PDRectangle boundingBox, List<Object> tokens )
+    private PDRectangle getSmallestDrawnRectangle(PDRectangle boundingBox, List<Object> tokens)
     {
         PDRectangle smallest = boundingBox;
-        for( int i=0; i<tokens.size(); i++ )
+        for (int i = 0; i < tokens.size(); i++)
         {
-            Object next = tokens.get( i );
-            if( next == Operator.getOperator("re") )
+            Object next = tokens.get(i);
+            if (next == Operator.getOperator("re"))
             {
-                COSNumber x = (COSNumber)tokens.get( i-4 );
-                COSNumber y = (COSNumber)tokens.get( i-3 );
-                COSNumber width = (COSNumber)tokens.get( i-2 );
-                COSNumber height = (COSNumber)tokens.get( i-1 );
+                COSNumber x = (COSNumber) tokens.get(i - 4);
+                COSNumber y = (COSNumber) tokens.get(i - 3);
+                COSNumber width = (COSNumber) tokens.get(i - 2);
+                COSNumber height = (COSNumber) tokens.get(i - 1);
                 PDRectangle potentialSmallest = new PDRectangle();
-                potentialSmallest.setLowerLeftX( x.floatValue() );
-                potentialSmallest.setLowerLeftY( y.floatValue() );
-                potentialSmallest.setUpperRightX( x.floatValue() + width.floatValue() );
-                potentialSmallest.setUpperRightY( y.floatValue() + height.floatValue() );
-                if( smallest == null ||
-                    smallest.getLowerLeftX() < potentialSmallest.getLowerLeftX() ||
-                    smallest.getUpperRightY() > potentialSmallest.getUpperRightY() )
+                potentialSmallest.setLowerLeftX(x.floatValue());
+                potentialSmallest.setLowerLeftY(y.floatValue());
+                potentialSmallest.setUpperRightX(x.floatValue() + width.floatValue());
+                potentialSmallest.setUpperRightY(y.floatValue() + height.floatValue());
+                if (smallest == null
+                        || smallest.getLowerLeftX() < potentialSmallest.getLowerLeftX()
+                        || smallest.getUpperRightY() > potentialSmallest.getUpperRightY())
                 {
                     smallest = potentialSmallest;
                 }
@@ -529,97 +539,95 @@ public final class PDAppearanceString
     }
 
     /**
-     * My "not so great" method for calculating the fontsize.
-     * It does not work superb, but it handles ok.
+     * My "not so great" method for calculating the fontsize. It does not work superb, but it handles ok.
+     * 
      * @return the calculated font-size
      *
      * @throws IOException If there is an error getting the font height.
      */
-    private float calculateFontSize( PDFont pdFont, PDRectangle boundingBox, List<Object> tokens, List<Object> daTokens )
-        throws IOException
+    private float calculateFontSize(PDFont pdFont, PDRectangle boundingBox, List<Object> tokens,
+            List<Object> daTokens) throws IOException
     {
         float fontSize = 0;
-        if( daTokens != null )
+        if (daTokens != null)
         {
-            //daString looks like   "BMC /Helv 3.4 Tf EMC"
-            int fontIndex = daTokens.indexOf( Operator.getOperator("Tf") );
-            if(fontIndex != -1 )
+            // daString looks like "BMC /Helv 3.4 Tf EMC"
+            int fontIndex = daTokens.indexOf(Operator.getOperator("Tf"));
+            if (fontIndex != -1)
             {
-                fontSize = ((COSNumber)daTokens.get(fontIndex-1)).floatValue();
+                fontSize = ((COSNumber) daTokens.get(fontIndex - 1)).floatValue();
             }
         }
-        
+
         float widthBasedFontSize = Float.MAX_VALUE;
-        
-        if( parent.doNotScroll() )
+
+        if (parent.doNotScroll())
         {
-            //if we don't scroll then we will shrink the font to fit into the text area.
-            float widthAtFontSize1 = pdFont.getStringWidth( value )/1000.f;
+            // if we don't scroll then we will shrink the font to fit into the text area.
+            float widthAtFontSize1 = pdFont.getStringWidth(value) / 1000.f;
             float availableWidth = getAvailableWidth(boundingBox, getLineWidth(tokens));
             widthBasedFontSize = availableWidth / widthAtFontSize1;
         }
-        else if( fontSize == 0 )
+        else if (fontSize == 0)
         {
-            float lineWidth = getLineWidth( tokens );
+            float lineWidth = getLineWidth(tokens);
             float height = 0;
-            if( pdFont instanceof PDFont )
+            if (pdFont instanceof PDFont)
             {
-                height = ((PDFont)pdFont).getFontDescriptor().getFontBoundingBox().getHeight();
+                height = ((PDFont) pdFont).getFontDescriptor().getFontBoundingBox().getHeight();
             }
             else
             {
-                //now much we can do, so lets assume font is square and use width
-                //as the height
+                // now much we can do, so lets assume font is square and use width
+                // as the height
                 height = pdFont.getAverageFontWidth();
             }
-            height = height/1000f;
+            height = height / 1000f;
 
-            float availHeight = getAvailableHeight( boundingBox, lineWidth );
-            fontSize = Math.min((availHeight/height), widthBasedFontSize);
+            float availHeight = getAvailableHeight(boundingBox, lineWidth);
+            fontSize = Math.min((availHeight / height), widthBasedFontSize);
         }
         return fontSize;
     }
-    
-    
+
     /**
-     * Calculates where to start putting the text in the box.
-     * The positioning is not quite as accurate as when Acrobat
+     * Calculates where to start putting the text in the box. The positioning is not quite as accurate as when Acrobat
      * places the elements, but it works though.
      *
      * @return the sting for representing the start position of the text
      *
      * @throws IOException If there is an error calculating the text position.
      */
-    private float getVerticalOffset( PDRectangle boundingBox, PDFont pdFont, float fontSize, List<Object> tokens )
-        throws IOException
+    private float getVerticalOffset(PDRectangle boundingBox, PDFont pdFont, float fontSize,
+            List<Object> tokens) throws IOException
     {
-        float lineWidth = getLineWidth( tokens );
+        float lineWidth = getLineWidth(tokens);
         float verticalOffset = 0.0f;
-        if(parent.isMultiline())
+        if (parent.isMultiline())
         {
-            int rows = (int) (getAvailableHeight( boundingBox, lineWidth ) / ((int) fontSize));
-            verticalOffset = ((rows)*fontSize)-fontSize;
+            int rows = (int) (getAvailableHeight(boundingBox, lineWidth) / ((int) fontSize));
+            verticalOffset = ((rows) * fontSize) - fontSize;
         }
         else
         {
-            if( pdFont instanceof PDFont )
+            if (pdFont instanceof PDFont)
             {
-                //BJL 9/25/2004
-                //This algorithm is a little bit of black magic.  It does
-                //not appear to be documented anywhere.  Through examining a few
-                //PDF documents and the value that Acrobat places in there I
-                //have determined that the below method of computing the position
-                //is correct for certain documents, but maybe not all.  It does
-                //work f1040ez.pdf and Form_1.pdf
-                PDFontDescriptor fd = ((PDFont)pdFont).getFontDescriptor();
+                // BJL 9/25/2004
+                // This algorithm is a little bit of black magic. It does
+                // not appear to be documented anywhere. Through examining a few
+                // PDF documents and the value that Acrobat places in there I
+                // have determined that the below method of computing the position
+                // is correct for certain documents, but maybe not all. It does
+                // work f1040ez.pdf and Form_1.pdf
+                PDFontDescriptor fd = ((PDFont) pdFont).getFontDescriptor();
                 float bBoxHeight = boundingBox.getHeight();
                 float fontHeight = fd.getFontBoundingBox().getHeight() + 2 * fd.getDescent();
-                fontHeight = (fontHeight/1000) * fontSize;
-                verticalOffset = (bBoxHeight - fontHeight)/2;
+                fontHeight = (fontHeight / 1000) * fontSize;
+                verticalOffset = (bBoxHeight - fontHeight) / 2;
             }
             else
             {
-                LOG.info( "Unable to calculate the vertical offset for non-simple fonts - using 0 instead" );
+                LOG.debug("Unable to calculate the vertical offset for non-simple fonts - using 0 instead");
             }
         }
         return verticalOffset;
@@ -627,18 +635,20 @@ public final class PDAppearanceString
 
     /**
      * calculates the available width of the box.
+     * 
      * @return the calculated available width of the box
      */
-    private float getAvailableWidth( PDRectangle boundingBox, float lineWidth )
+    private float getAvailableWidth(PDRectangle boundingBox, float lineWidth)
     {
         return boundingBox.getWidth() - 2 * lineWidth;
     }
 
     /**
      * calculates the available height of the box.
+     * 
      * @return the calculated available height of the box
      */
-    private float getAvailableHeight( PDRectangle boundingBox, float lineWidth )
+    private float getAvailableHeight(PDRectangle boundingBox, float lineWidth)
     {
         return boundingBox.getHeight() - 2 * lineWidth;
     }

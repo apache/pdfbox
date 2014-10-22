@@ -123,10 +123,18 @@ public abstract class PDField extends PDFieldTreeNode
         return fieldType;
     }
     
-    protected void updateFieldAppearances() {
-    	if (!getAcroForm().isNeedAppearances()) {
-    		AppearanceGenerator.generateFieldAppearances(this);
-    	}
+    /**
+     * Update the fields appearance stream.
+     * 
+     * The fields appearance stream needs to be updated to reflect the new field
+     * value. This will be done only if the NeedAppearances flag has not been set.
+     */
+    protected void updateFieldAppearances()
+    {
+        if (!getAcroForm().isNeedAppearances())
+        {
+            AppearanceGenerator.generateFieldAppearances(this);
+        }
     }
 
 
