@@ -21,12 +21,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
@@ -34,23 +35,18 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
-
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdfwriter.ContentStreamWriter;
-
 import org.apache.pdfbox.pdmodel.PDResources;
-
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
-
 import org.apache.pdfbox.pdmodel.interactive.action.PDFormFieldAdditionalActions;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
-
+import org.apache.pdfbox.util.appearance.AppearanceGenerator;
 import org.apache.pdfbox.contentstream.operator.Operator;
 
 /**
@@ -63,6 +59,9 @@ import org.apache.pdfbox.contentstream.operator.Operator;
  */
 public final class PDAppearanceString
 {
+	
+	private static final Log LOG = LogFactory.getLog(AppearanceGenerator.class);
+		
     private final PDVariableText parent;
 
     private String value;
@@ -363,30 +362,50 @@ public final class PDAppearanceString
             ContentStreamWriter daWriter = new ContentStreamWriter(output);
             daWriter.writeTokens( daTokens );
         }
-        printWriter.println( getTextPosition( boundingBox, pdFont, fontSize, tokens ) );
+          
+        PDRectangle borderEdge = getSmallestDrawnRectangle(boundingBox, tokens);
+        
+        // Acrobat calculates the left and right padding dependent on the offset of the border edge
+        // TODO: verify the vertical alignment calculation
+        float paddingLeft = Math.max(2, Math.round(4 * borderEdge.getLowerLeftX()));
+        float paddingRight = Math.max(2, Math.round(4 * (boundingBox.getUpperRightX() - borderEdge.getUpperRightX())));
+        float verticalOffset = getVerticalOffset(boundingBox, pdFont, fontSize, tokens);
+        
+        // Acrobat shifts the value so it aligns to the bottom if 
+        // the font's caps are larger than the height of the borderEdge
+        // TODO: verify this with more samples
+        //       verify fontHeight calculation which was taken from getVerticalOffset()
+        float fontHeight = boundingBox.getHeight() - verticalOffset * 2;
+        
+        if (fontHeight + 2 * borderEdge.getLowerLeftX() > borderEdge.getHeight()) {
+        	verticalOffset = pdFont.getBoundingBox().getHeight()/1000 * fontSize - borderEdge.getHeight();
+        }
+        
+        float leftOffset = 0f;
+        
+        // Acrobat aligns left regardless of the quadding if the text is wider then the remaining width
+        float stringWidth = (pdFont.getStringWidth( value )/1000)*fontSize;
         int q = getQ();
-        if( q == PDTextField.QUADDING_LEFT )
+        if (q == PDTextField.QUADDING_LEFT || stringWidth > borderEdge.getWidth() - paddingLeft - paddingRight)
         {
-            //do nothing because left is default
-        }
-        else if( q == PDTextField.QUADDING_CENTERED ||
-                 q == PDTextField.QUADDING_RIGHT )
+        	leftOffset = paddingLeft;
+        } 
+        else if (q == PDTextField.QUADDING_CENTERED)
         {
-            float fieldWidth = boundingBox.getWidth();
-            float stringWidth = (pdFont.getStringWidth( value )/1000)*fontSize;
-            float adjustAmount = fieldWidth - stringWidth - 4;
-
-            if( q == PDTextField.QUADDING_CENTERED )
-            {
-                adjustAmount = adjustAmount/2.0f;
-            }
-
-            printWriter.println( adjustAmount + " 0 Td" );
-        }
-        else
+        	leftOffset = (boundingBox.getWidth() - stringWidth) / 2; 
+        } else if (q == PDTextField.QUADDING_RIGHT)
         {
-            throw new IOException( "Error: Unknown justification value:" + q );
+        	leftOffset = boundingBox.getWidth() - stringWidth - paddingRight;
+        	
+        } else 
+        {
+        	// Unknown quadding value - default to left
+        	printWriter.println(paddingLeft + " " + verticalOffset + " Td");
+        	LOG.info("Unknown justification value, defaulting to left: " + q);
         }
+        
+        printWriter.println(leftOffset + " " + verticalOffset + " Td");
+        
         // add the value as hex string to deal with non ISO-8859-1 data values
         if (!isMultiLineValue(value))
         {
@@ -542,7 +561,6 @@ public final class PDAppearanceString
         else if( fontSize == 0 )
         {
             float lineWidth = getLineWidth( tokens );
-            float stringWidth = pdFont.getStringWidth( value );
             float height = 0;
             if( pdFont instanceof PDFont )
             {
@@ -561,7 +579,8 @@ public final class PDAppearanceString
         }
         return fontSize;
     }
-
+    
+    
     /**
      * Calculates where to start putting the text in the box.
      * The positioning is not quite as accurate as when Acrobat
@@ -571,15 +590,15 @@ public final class PDAppearanceString
      *
      * @throws IOException If there is an error calculating the text position.
      */
-    private String getTextPosition( PDRectangle boundingBox, PDFont pdFont, float fontSize, List<Object> tokens )
+    private float getVerticalOffset( PDRectangle boundingBox, PDFont pdFont, float fontSize, List<Object> tokens )
         throws IOException
     {
         float lineWidth = getLineWidth( tokens );
-        float pos = 0.0f;
+        float verticalOffset = 0.0f;
         if(parent.isMultiline())
         {
             int rows = (int) (getAvailableHeight( boundingBox, lineWidth ) / ((int) fontSize));
-            pos = ((rows)*fontSize)-fontSize;
+            verticalOffset = ((rows)*fontSize)-fontSize;
         }
         else
         {
@@ -596,16 +615,14 @@ public final class PDAppearanceString
                 float bBoxHeight = boundingBox.getHeight();
                 float fontHeight = fd.getFontBoundingBox().getHeight() + 2 * fd.getDescent();
                 fontHeight = (fontHeight/1000) * fontSize;
-                pos = (bBoxHeight - fontHeight)/2;
+                verticalOffset = (bBoxHeight - fontHeight)/2;
             }
             else
             {
-                throw new IOException( "Error: Don't know how to calculate the position for non-simple fonts" );
+                LOG.info( "Unable to calculate the vertical offset for non-simple fonts - using 0 instead" );
             }
         }
-        PDRectangle innerBox = getSmallestDrawnRectangle( boundingBox, tokens );
-        float xInset = 2+ 2*(boundingBox.getWidth() - innerBox.getWidth());
-        return Math.round(xInset) + " "+ pos + " Td";
+        return verticalOffset;
     }
 
     /**

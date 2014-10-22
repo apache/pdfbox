@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAppearanceString;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDVariableText;
@@ -60,9 +61,9 @@ public class AppearanceGenerator {
 			}
 			
 			// TODO: implement the handling for additional values.
-			if (fieldValue instanceof String) {
+			if (fieldValue instanceof COSString) {
 				try {
-					pdAppearance.setAppearanceValue((String) fieldValue);
+					pdAppearance.setAppearanceValue(((COSString) fieldValue).getString());
 				} catch (IOException e) {
 					LOG.error("Unable to generate the field appearance.", e);
 				}
