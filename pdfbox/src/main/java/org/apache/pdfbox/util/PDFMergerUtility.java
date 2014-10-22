@@ -42,6 +42,7 @@ import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.PageMode;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.PDNumberTreeNode;
 import org.apache.pdfbox.pdmodel.common.PDStream;
@@ -352,8 +353,8 @@ public class PDFMergerUtility
             }
         }
 
-        String destPageMode = destCatalog.getPageMode();
-        String srcPageMode = srcCatalog.getPageMode();
+        PageMode destPageMode = destCatalog.getPageMode();
+        PageMode srcPageMode = srcCatalog.getPageMode();
         if (destPageMode == null)
         {
             destCatalog.setPageMode(srcPageMode);
