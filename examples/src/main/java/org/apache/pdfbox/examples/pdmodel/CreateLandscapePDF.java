@@ -56,8 +56,7 @@ public class CreateLandscapePDF
             doc = new PDDocument();
 
             PDFont font = PDType1Font.HELVETICA;
-            PDPage page = new PDPage();
-            page.setMediaBox(PDPage.PAGE_SIZE_A4);
+            PDPage page = new PDPage(PDRectangle.A4);
             page.setRotation(90);
             doc.addPage(page);
             PDRectangle pageSize = page.findMediaBox();

@@ -47,79 +47,42 @@ import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDThreadBead;
 public class PDPage implements COSObjectable
 {
     private static final Log LOG = LogFactory.getLog(PDPage.class);
-    private static final int DEFAULT_USER_SPACE_UNIT_DPI = 72;
-    private static final float MM_TO_UNITS = 1 / (10 * 2.54f) * DEFAULT_USER_SPACE_UNIT_DPI;
 
     // todo: make the constants below an enum
 
-    /**
-     * A page size of LETTER or 8.5x11.
-     */
-    public static final PDRectangle PAGE_SIZE_LETTER = new PDRectangle(8.5f * DEFAULT_USER_SPACE_UNIT_DPI,
-            11f * DEFAULT_USER_SPACE_UNIT_DPI);
-    /**
-     * A page size of A0 Paper.
-     */
-    public static final PDRectangle PAGE_SIZE_A0 = new PDRectangle(841 * MM_TO_UNITS, 1189 * MM_TO_UNITS);
-    /**
-     * A page size of A1 Paper.
-     */
-    public static final PDRectangle PAGE_SIZE_A1 = new PDRectangle(594 * MM_TO_UNITS, 841 * MM_TO_UNITS);
-    /**
-     * A page size of A2 Paper.
-     */
-    public static final PDRectangle PAGE_SIZE_A2 = new PDRectangle(420 * MM_TO_UNITS, 594 * MM_TO_UNITS);
-    /**
-     * A page size of A3 Paper.
-     */
-    public static final PDRectangle PAGE_SIZE_A3 = new PDRectangle(297 * MM_TO_UNITS, 420 * MM_TO_UNITS);
-    /**
-     * A page size of A4 Paper.
-     */
-    public static final PDRectangle PAGE_SIZE_A4 = new PDRectangle(210 * MM_TO_UNITS, 297 * MM_TO_UNITS);
-    /**
-     * A page size of A5 Paper.
-     */
-    public static final PDRectangle PAGE_SIZE_A5 = new PDRectangle(148 * MM_TO_UNITS, 210 * MM_TO_UNITS);
-    /**
-     * A page size of A6 Paper.
-     */
-    public static final PDRectangle PAGE_SIZE_A6 = new PDRectangle(105 * MM_TO_UNITS, 148 * MM_TO_UNITS);
-
     private final COSDictionary page;
     private PDResources pageResources;
-    private PDRectangle mediaBox = null;
+    private PDRectangle mediaBox;
+    private PDPageNode parent;
 
     /**
-     * Creates a new instance of PDPage with a size of 8.5x11.
+     * Creates a new PDPage instance for embedding, with a size of U.S. Letter (8.5 x 11 inches).
      */
     public PDPage()
     {
-        page = new COSDictionary();
-        page.setItem(COSName.TYPE, COSName.PAGE);
-        setMediaBox(PAGE_SIZE_LETTER);
+        this(PDRectangle.LETTER);
     }
 
     /**
-     * Creates a new instance of PDPage.
+     * Creates a new instance of PDPage for embedding.
      * 
-     * @param size The MediaBox or the page.
+     * @param mediaBox The MediaBox of the page.
      */
-    public PDPage(PDRectangle size)
+    public PDPage(PDRectangle mediaBox)
     {
         page = new COSDictionary();
         page.setItem(COSName.TYPE, COSName.PAGE);
-        setMediaBox(size);
+        page.setItem(COSName.MEDIA_BOX, mediaBox);
     }
 
     /**
-     * Creates a new instance of PDPage.
+     * Creates a new instance of PDPage for reading.
      * 
-     * @param pageDic The existing page dictionary.
+     * @param pageDictionary A page dictionary in a PDF document.
      */
-    public PDPage(COSDictionary pageDic)
+    public PDPage(COSDictionary pageDictionary)
     {
-        page = pageDic;
+        page = pageDictionary;
     }
 
     /**
@@ -128,24 +91,14 @@ public class PDPage implements COSObjectable
      * @return The cos object that matches this Java object.
      */
     @Override
-    public COSBase getCOSObject()
+    public COSDictionary getCOSObject()
     {
         return page;
     }
 
     /**
-     * This will get the underlying dictionary that this class acts on.
-     * 
-     * @return The underlying dictionary for this class.
-     */
-    public COSDictionary getCOSDictionary()
-    {
-        return page;
-    }
-
-    /**
-     * This is the parent page node. The parent is a required element of the page. This will be null until this page is
-     * added to the document.
+     * This is the parent page node. The parent is a required element of the page. This will be null
+     * until this page is added to the document.
      * 
      * @return The parent to this page.
      */
@@ -161,8 +114,6 @@ public class PDPage implements COSObjectable
         }
         return parent;
     }
-
-    private PDPageNode parent = null;
 
     /**
      * This will set the parent of this page.
@@ -187,7 +138,6 @@ public class PDPage implements COSObjectable
      * This will get the date that the content stream was last modified. This may return null.
      * 
      * @return The date the content stream was last modified.
-     * 
      * @throws IOException If there is an error accessing the date information.
      */
     public Calendar getLastModified() throws IOException
@@ -196,8 +146,9 @@ public class PDPage implements COSObjectable
     }
 
     /**
-     * This will get the resources at this page and not look up the hierarchy. This attribute is inheritable, and
-     * findResources() should probably used. This will return null if no resources are available at this level.
+     * This will get the resources at this page and not look up the hierarchy. This attribute is
+     * inheritable, and findResources() should probably used. This will return null if no resources
+     * are available at this level.
      * 
      * @return The resources at this level in the hierarchy.
      */
@@ -269,11 +220,12 @@ public class PDPage implements COSObjectable
     }
 
     /**
-     * A rectangle, expressed in default user space units, defining the boundaries of the physical medium on which the
-     * page is intended to be displayed or printed
+     * A rectangle, expressed in default user space units, defining the boundaries of the physical
+     * medium on which the page is intended to be displayed or printed
      * 
-     * This will get the MediaBox at this page and not look up the hierarchy. This attribute is inheritable, and
-     * findMediaBox() should probably used. This will return null if no MediaBox are available at this level.
+     * <p>This will get the MediaBox at this page and not look up the hierarchy. This attribute is
+     * inheritable, and findMediaBox() should probably used. This will return null if no MediaBox
+     * are available at this level.
      * 
      * @return The MediaBox at this level in the hierarchy.
      */
@@ -304,8 +256,8 @@ public class PDPage implements COSObjectable
         }
         if (retval == null)
         {
-            LOG.debug("Can't find MediaBox, using LETTER as default pagesize!");
-            retval = PDPage.PAGE_SIZE_LETTER;
+            LOG.warn("Can't find MediaBox, will use U.S. Letter");
+            retval = PDRectangle.LETTER;
         }
         return retval;
     }
@@ -313,28 +265,29 @@ public class PDPage implements COSObjectable
     /**
      * This will set the mediaBox for this page.
      * 
-     * @param mediaBoxValue The new mediaBox for this page.
+     * @param mediaBox The new mediaBox for this page.
      */
-    public void setMediaBox(PDRectangle mediaBoxValue)
+    public void setMediaBox(PDRectangle mediaBox)
     {
-        this.mediaBox = mediaBoxValue;
-        if (mediaBoxValue == null)
+        this.mediaBox = mediaBox;
+        if (mediaBox == null)
         {
             page.removeItem(COSName.MEDIA_BOX);
         }
         else
         {
-            page.setItem(COSName.MEDIA_BOX, mediaBoxValue.getCOSArray());
+            page.setItem(COSName.MEDIA_BOX, mediaBox);
         }
     }
 
     /**
-     * A rectangle, expressed in default user space units, defining the visible region of default user space. When the
-     * page is displayed or printed, its contents are to be clipped (cropped) to this rectangle and then imposed on the
-     * output medium in some implementationdefined manner
+     * A rectangle, expressed in default user space units, defining the visible region of default
+     * user space. When the page is displayed or printed, its contents are to be clipped (cropped)
+     * to this rectangle and then imposed on the output medium in some implementation defined manner
      * 
-     * This will get the CropBox at this page and not look up the hierarchy. This attribute is inheritable, and
-     * findCropBox() should probably used. This will return null if no CropBox is available at this level.
+     * <p>This will get the CropBox at this page and not look up the hierarchy. This attribute is
+     * inheritable, and findCropBox() should probably used. This will return null if no CropBox is
+     * available at this level.
      * 
      * @return The CropBox at this level in the hierarchy.
      */
@@ -393,8 +346,8 @@ public class PDPage implements COSObjectable
     }
 
     /**
-     * This will search for a crop box in the parent and return null if it is not found. It will NOT default to the
-     * media box if it cannot be found.
+     * This will search for a crop box in the parent and return null if it is not found. It will NOT
+     * default to the media box if it cannot be found.
      * 
      * @param node The node
      */
@@ -427,8 +380,9 @@ public class PDPage implements COSObjectable
     }
 
     /**
-     * A rectangle, expressed in default user space units, defining the region to which the contents of the page should
-     * be clipped when output in a production environment. The default is the CropBox.
+     * A rectangle, expressed in default user space units, defining the region to which the contents
+     * of the page should be clipped when output in a production environment. The default is the
+     * CropBox.
      * 
      * @return The BleedBox attribute.
      */
@@ -460,13 +414,13 @@ public class PDPage implements COSObjectable
         }
         else
         {
-            page.setItem(COSName.BLEED_BOX, bleedBox.getCOSArray());
+            page.setItem(COSName.BLEED_BOX, bleedBox);
         }
     }
 
     /**
-     * A rectangle, expressed in default user space units, defining the intended dimensions of the finished page after
-     * trimming. The default is the CropBox.
+     * A rectangle, expressed in default user space units, defining the intended dimensions of the
+     * finished page after trimming. The default is the CropBox.
      * 
      * @return The TrimBox attribute.
      */
@@ -498,13 +452,14 @@ public class PDPage implements COSObjectable
         }
         else
         {
-            page.setItem(COSName.TRIM_BOX, trimBox.getCOSArray());
+            page.setItem(COSName.TRIM_BOX, trimBox);
         }
     }
 
     /**
-     * A rectangle, expressed in default user space units, defining the extent of the page's meaningful content
-     * (including potential white space) as intended by the page's creator The default isthe CropBox.
+     * A rectangle, expressed in default user space units, defining the extent of the page's
+     * meaningful content (including potential white space) as intended by the page's creator The
+     * default is the CropBox.
      * 
      * @return The ArtBox attribute.
      */
@@ -536,14 +491,13 @@ public class PDPage implements COSObjectable
         }
         else
         {
-            page.setItem(COSName.ART_BOX, artBox.getCOSArray());
+            page.setItem(COSName.ART_BOX, artBox);
         }
     }
     
     /**
-     * Calculate the adjusted crop box from the cropbox and the mediabox as
-     * required by the PDF spec. Use this instead of {@link #findCropBox()} 
-     * when drawing a page.
+     * Calculate the adjusted crop box from the cropbox and the mediabox as required by the PDF
+     * spec. Use this instead of {@link #findCropBox()} when drawing a page.
      *
      * @return the adjusted crop box.
      */
@@ -596,15 +550,14 @@ public class PDPage implements COSObjectable
         return adjustedCropBox;
     }
 
-    // todo BoxColorInfo
-    // todo Contents
-
     /**
-     * A value representing the rotation. This will be null if not set at this level The number of degrees by which the
-     * page should be rotated clockwise when displayed or printed. The value must be a multiple of 90.
+     * A value representing the rotation. This will be null if not set at this level The number of
+     * degrees by which the page should be rotated clockwise when displayed or printed. The value
+     * must be a multiple of 90.
      * 
-     * This will get the rotation at this page and not look up the hierarchy. This attribute is inheritable, and
-     * findRotation() should probably used. This will return null if no rotation is available at this level.
+     * <p>This will get the rotation at this page and not look up the hierarchy. This attribute is
+     * inheritable, and findRotation() should probably used. This will return null if no rotation
+     * is available at this level.
      * 
      * @return The rotation at this level in the hierarchy.
      */
@@ -655,11 +608,10 @@ public class PDPage implements COSObjectable
     }
 
     /**
-     * This will get the contents of the PDF Page, in the case that the contents of the page is an array then then the
-     * entire array of streams will be be wrapped and appear as a single stream.
+     * This will get the contents of the PDF Page, in the case that the contents of the page is an
+     * array then then the entire array of streams will be be wrapped and appear as a single stream.
      * 
      * @return The page content stream.
-     * 
      * @throws IOException If there is an error obtaining the stream.
      */
     public PDStream getContents() throws IOException
@@ -678,8 +630,8 @@ public class PDPage implements COSObjectable
     }
 
     /**
-     * This will get a list of PDThreadBead objects, which are article threads in the document. This will return an
-     * empty list of there are no thread beads.
+     * This will get a list of PDThreadBead objects, which are article threads in the document.
+     * This will return an empty list of there are no thread beads.
      * 
      * @return A list of article threads on this page.
      */
@@ -717,8 +669,8 @@ public class PDPage implements COSObjectable
     }
 
     /**
-     * Get the metadata that is part of the document catalog. This will return null if there is no meta data for this
-     * object.
+     * Get the metadata that is part of the document catalog. This will return null if there is
+     * no meta data for this object.
      * 
      * @return The metadata for this object.
      */
@@ -773,7 +725,6 @@ public class PDPage implements COSObjectable
      * This will return a list of the Annotations for this page.
      * 
      * @return List of the PDAnnotation objects.
-     * 
      * @throws IOException If there is an error while creating the annotations.
      */
     public List<PDAnnotation> getAnnotations() throws IOException
@@ -789,7 +740,6 @@ public class PDPage implements COSObjectable
         else
         {
             List<PDAnnotation> actuals = new ArrayList<PDAnnotation>();
-
             for (int i = 0; i < annots.size(); i++)
             {
                 COSBase item = annots.getObject(i);
@@ -803,11 +753,11 @@ public class PDPage implements COSObjectable
     /**
      * This will set the list of annotations.
      * 
-     * @param annots The new list of annotations.
+     * @param annotations The new list of annotations.
      */
-    public void setAnnotations(List<PDAnnotation> annots)
+    public void setAnnotations(List<PDAnnotation> annotations)
     {
-        page.setItem(COSName.ANNOTS, COSArrayList.converterToCOSArray(annots));
+        page.setItem(COSName.ANNOTS, COSArrayList.converterToCOSArray(annotations));
     }
 
     @Override
@@ -819,6 +769,6 @@ public class PDPage implements COSObjectable
     @Override
     public int hashCode()
     {
-        return this.getCOSDictionary().hashCode();
+        return page.hashCode();
     }
 }

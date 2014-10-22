@@ -98,7 +98,7 @@ public class SinglePageValidationProcess extends AbstractProcess
      */
     protected void validateActions(PreflightContext context, PDPage page) throws ValidationException
     {
-        ContextHelper.validateElement(context, page.getCOSDictionary(), ACTIONS_PROCESS);
+        ContextHelper.validateElement(context, page.getCOSObject(), ACTIONS_PROCESS);
     }
 
     /**
@@ -143,7 +143,7 @@ public class SinglePageValidationProcess extends AbstractProcess
      */
     protected void validateGraphicObjects(PreflightContext context, PDPage page) throws ValidationException
     {
-        COSBase thumbBase = page.getCOSDictionary().getItem(PAGE_DICTIONARY_VALUE_THUMB);
+        COSBase thumbBase = page.getCOSObject().getItem(PAGE_DICTIONARY_VALUE_THUMB);
         if (thumbBase != null)
         {
             try
@@ -229,7 +229,7 @@ public class SinglePageValidationProcess extends AbstractProcess
      */
     protected void validateGroupTransparency(PreflightContext context, PDPage page) throws ValidationException
     {
-        COSBase baseGroup = page.getCOSDictionary().getItem(XOBJECT_DICTIONARY_KEY_GROUP);
+        COSBase baseGroup = page.getCOSObject().getItem(XOBJECT_DICTIONARY_KEY_GROUP);
         COSDictionary groupDictionary = COSUtils.getAsDictionary(baseGroup, context.getDocument().getDocument());
         if (groupDictionary != null)
         {

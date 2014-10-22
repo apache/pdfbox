@@ -57,8 +57,7 @@ public class UsingTextMatrix
 
             // Page 1
             PDFont font = PDType1Font.HELVETICA;
-            PDPage page = new PDPage();
-            page.setMediaBox(PDPage.PAGE_SIZE_A4);
+            PDPage page = new PDPage(PDRectangle.A4);
             doc.addPage(page);
             float fontSize = 12.0f;
 
@@ -88,8 +87,7 @@ public class UsingTextMatrix
             contentStream.close();
 
             // Page 2
-            page = new PDPage();
-            page.setMediaBox(PDPage.PAGE_SIZE_A4);
+            page = new PDPage(PDRectangle.A4);
             doc.addPage(page);
             fontSize = 1.0f;
 
@@ -107,8 +105,7 @@ public class UsingTextMatrix
             contentStream.close();
 
             // Page 3
-            page = new PDPage();
-            page.setMediaBox(PDPage.PAGE_SIZE_A4);
+            page = new PDPage(PDRectangle.A4);
             doc.addPage(page);
             fontSize = 1.0f;
 
