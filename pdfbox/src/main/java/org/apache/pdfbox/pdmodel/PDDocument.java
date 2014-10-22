@@ -285,8 +285,7 @@ public class PDDocument implements Closeable
         // Get the first page
         PDDocumentCatalog root = getDocumentCatalog();
         PDPageNode rootPages = root.getPages();
-        List<PDPage> kids = new ArrayList<PDPage>();
-        rootPages.getAllKids(kids);
+        List<PDPage> kids = rootPages.getAllKids();
 
         int size = (int) rootPages.getCount();
         PDPage page;

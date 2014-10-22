@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSArray;
@@ -140,8 +139,7 @@ public abstract class PDPageDestination extends PDDestination
                 }
                 // now parent is the pages node
                 PDPageNode pages = new PDPageNode((COSDictionary) parent);
-                List<PDPage> allPages = new ArrayList<PDPage>();
-                pages.getAllKids(allPages);
+                List<PDPage> allPages = pages.getAllKids();
                 retval = allPages.indexOf(new PDPage((COSDictionary) page)) + 1;
             }
         }

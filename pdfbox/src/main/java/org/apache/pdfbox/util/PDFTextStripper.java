@@ -281,7 +281,7 @@ public class PDFTextStripper extends PDFTextStreamEngine
      *
      * @throws IOException If there is an error parsing the text.
      */
-    protected void processPages(List<COSObjectable> pages) throws IOException
+    protected void processPages(List<PDPage> pages) throws IOException
     {
         if (startBookmark != null)
         {
@@ -315,8 +315,7 @@ public class PDFTextStripper extends PDFTextStreamEngine
         }
     }
 
-    private int getPageNumber(PDOutlineItem bookmark, List<COSObjectable> allPages)
-            throws IOException
+    private int getPageNumber(PDOutlineItem bookmark, List<PDPage> allPages) throws IOException
     {
         int pageNumber = -1;
         PDPage page = bookmark.findDestinationPage(document);
