@@ -110,13 +110,14 @@ public class PDDocumentCatalog implements COSObjectable
     }
 
     /**
-     * Sets the acro form for this catalog.
+     * Sets the AcroForm for this catalog.
      *
-     * @param acro The new acro form.
+     * @param acroForm The new AcroForm.
      */
-    public void setAcroForm(PDAcroForm acro)
+    public void setAcroForm(PDAcroForm acroForm)
     {
-        root.setItem(COSName.ACRO_FORM, acro);
+        root.setItem(COSName.ACRO_FORM, acroForm);
+        cachedAcroForm = null;
     }
 
     /**
