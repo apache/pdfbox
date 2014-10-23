@@ -850,11 +850,15 @@ public class PDPage implements COSObjectable, Printable
         else
         {
             List<PDAnnotation> actuals = new ArrayList<PDAnnotation>();
-
             for (int i=0; i < annots.size(); i++)
             {
                 COSBase item = annots.getObject(i);
-                actuals.add( PDAnnotation.createAnnotation( item ) );
+            	if (item == null)
+            	{
+            		LOG.debug("Skipped annotation due to a null reference.");
+            		continue;
+            	}
+                actuals.add(PDAnnotation.createAnnotation(item));
             }
             retval = new COSArrayList<PDAnnotation>(actuals, annots);
         }
