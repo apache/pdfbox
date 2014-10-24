@@ -1255,7 +1255,7 @@ public class PDDocument implements Closeable
      */
     public void save(OutputStream output) throws IOException
     {
-        if (documentCatalog == null)
+        if (document == null)
         {
             throw new IOException("Cannot save a document which has been closed");
         }
