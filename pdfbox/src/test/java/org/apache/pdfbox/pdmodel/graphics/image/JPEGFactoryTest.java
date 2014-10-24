@@ -111,9 +111,11 @@ public class JPEGFactoryTest extends TestCase
      */
     public void testCreateFromImageINT_ARGB() throws IOException
     {
-        // workaround Open JDK 6 bug
-        if (System.getProperty("java.runtime.name").equals("OpenJDK Runtime Environment") &&
-            System.getProperty("java.specification.version").equals("1.6"))
+        // workaround Open JDK bug
+        // http://bugs.java.com/bugdatabase/view_bug.do?bug_id=7044758
+        if (System.getProperty("java.runtime.name").equals("OpenJDK Runtime Environment")
+                && (System.getProperty("java.specification.version").equals("1.6")
+                || System.getProperty("java.specification.version").equals("1.7")))
         {
             return;
         }
@@ -142,7 +144,7 @@ public class JPEGFactoryTest extends TestCase
         assertNotNull(ximage.getSoftMask());
         validate(ximage.getSoftMask(), 8, width, height, "jpg", PDDeviceGray.INSTANCE.getName());
         assertTrue(colorCount(ximage.getSoftMask().getImage()) > image.getHeight() / 10);
-        
+
         doWritePDF(document, ximage, testResultsDir, "jpeg-intargb.pdf");
     }
 
@@ -152,9 +154,11 @@ public class JPEGFactoryTest extends TestCase
      */
     public void testCreateFromImage4BYTE_ABGR() throws IOException
     {
-        // workaround Open JDK 6 bug
-        if (System.getProperty("java.runtime.name").equals("OpenJDK Runtime Environment") &&
-            System.getProperty("java.specification.version").equals("1.6"))
+        // workaround Open JDK bug
+        // http://bugs.java.com/bugdatabase/view_bug.do?bug_id=7044758
+        if (System.getProperty("java.runtime.name").equals("OpenJDK Runtime Environment")
+                && (System.getProperty("java.specification.version").equals("1.6")
+                || System.getProperty("java.specification.version").equals("1.7")))
         {
             return;
         }
