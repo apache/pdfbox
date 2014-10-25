@@ -32,12 +32,11 @@ import java.util.HashSet;
 import java.util.List;
 
 /**
- * todo: this class wraps an entire page tree! Make it into a generic tree wrapper.
- * todo: Try to explain why things are the way they are.
+ * The page tree, which defines the ordering of pages in the document in an efficient manner.
  *
  * @author John Hewson
  */
-public class PDPageTree implements COSObjectable, Iterable<PDPage> // todo 'PDTree<T>'
+public class PDPageTree implements COSObjectable, Iterable<PDPage>
 {
     private final COSDictionary root;
 
