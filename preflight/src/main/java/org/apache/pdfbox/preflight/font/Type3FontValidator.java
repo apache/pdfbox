@@ -36,13 +36,12 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.pdmodel.font.PDType3CharProc;
 import org.apache.pdfbox.pdmodel.font.encoding.DictionaryEncoding;
 import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontFactory;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
@@ -61,7 +60,7 @@ import org.apache.pdfbox.preflight.utils.ContextHelper;
 
 public class Type3FontValidator extends FontValidator<Type3Container>
 {
-    protected PDFont font;
+    protected PDType3Font font;
     protected COSDictionary fontDictionary;
     protected COSDocument cosDocument;
     protected Encoding encoding;
@@ -290,30 +289,27 @@ public class Type3FontValidator extends FontValidator<Type3Container>
         }
 
         // Check width consistency
-        PDResources pResources = getPDResources();
         for (int i = 0; i < expectedLength; i++)
         {
-            int cid = fc + i;
+            int code = fc + i;
             float width = widths.get(i);
 
-            COSStream charStream = getCharacterStreamDescription(cid, charProcs);
-
-            if (charStream != null)
+            PDType3CharProc charProc = getCharProc(code);
+            if (charProc != null)
             {
                 try
                 {
-
-                    float fontProgamWidth = getWidthFromCharacterStream(pResources, charStream);
-                    if (width == fontProgamWidth)
+                    float fontProgramWidth = getWidthFromCharProc(charProc);
+                    if (width == fontProgramWidth)
                     {
                         // Glyph is OK, we keep the CID.
-                        this.fontContainer.markAsValid(cid);
+                        this.fontContainer.markAsValid(code);
                     }
                     else
                     {
-                        GlyphException glyphEx = new GlyphException(ERROR_FONTS_METRICS, cid,
-                                "The character with CID\"" + cid + "\" should have a width equals to " + width);
-                        this.fontContainer.markAsInvalid(cid, glyphEx);
+                        GlyphException glyphEx = new GlyphException(ERROR_FONTS_METRICS, code,
+                                "The character with CID\"" + code + "\" should have a width equals to " + width);
+                        this.fontContainer.markAsInvalid(code, glyphEx);
                     }
                 }
                 catch (ContentStreamException e)
@@ -349,39 +345,18 @@ public class Type3FontValidator extends FontValidator<Type3Container>
         return widths;
     }
 
-    private PDResources getPDResources()
+    private PDType3CharProc getCharProc(int code) throws ValidationException
     {
-        COSBase res = this.fontDictionary.getItem(COSName.RESOURCES);
-        PDResources pResources = null;
-        COSDictionary resAsDict = COSUtils.getAsDictionary(res, cosDocument);
-        if (resAsDict != null)
+        PDType3CharProc charProc = font.getCharProc(code);
+        if (charProc == null)
         {
-            pResources = new PDResources(resAsDict);
+            // There are no character description, we declare the Glyph as Invalid. If the character
+            // is used in a Stream, the GlyphDetail will throw an exception.
+            GlyphException glyphEx = new GlyphException(ERROR_FONTS_METRICS, code,
+                    "The CharProcs \"" + font.getEncoding().getName(code)  + "\" doesn't exist");
+            this.fontContainer.markAsInvalid(code, glyphEx);
         }
-        return pResources;
-    }
-
-    private COSStream getCharacterStreamDescription(int cid, COSDictionary charProcs) throws ValidationException
-    {
-        String charName = getCharNameFromEncoding(cid);
-        COSBase item = charProcs.getItem(COSName.getPDFName(charName));
-        COSStream charStream = COSUtils.getAsStream(item, cosDocument);
-        if (charStream == null)
-        {
-            /*
-             * There are no character description, we declare the Glyph as Invalid. If the character is used in a
-             * Stream, the GlyphDetail will throw an exception.
-             */
-            GlyphException glyphEx = new GlyphException(ERROR_FONTS_METRICS, cid, "The CharProcs \"" + charName
-                    + "\" doesn't exist");
-            this.fontContainer.markAsInvalid(cid, glyphEx);
-        }
-        return charStream;
-    }
-
-    private String getCharNameFromEncoding(int cid) throws ValidationException
-    {
-        return this.encoding.getName(cid);
+        return charProc;
     }
 
     /**
@@ -389,19 +364,17 @@ public class Type3FontValidator extends FontValidator<Type3Container>
      * 
      * @return the width of the character
      */
-    private float getWidthFromCharacterStream(PDResources resources, COSStream charStream) throws IOException
+    private float getWidthFromCharProc(PDType3CharProc charProc) throws IOException
     {
         PreflightPath vPath = context.getValidationPath();
-        PreflightType3Stream parser = new PreflightType3Stream(context, vPath.getClosestPathElement(PDPage.class));
-        parser.processStream(resources, charStream, new PDRectangle(0, 0, 1000, 1000)); // dummy bbox
+        PreflightType3Stream parser = new PreflightType3Stream(context, vPath.getClosestPathElement(PDPage.class), charProc);
+        parser.showType3Character(charProc);
         return parser.getWidth();
     }
 
     /**
      * If the Resources entry is present, this method check its content. Only fonts and Images are checked because this
      * resource describes glyphs.
-     * 
-     * @return
      */
     private void checkResources() throws ValidationException
     {

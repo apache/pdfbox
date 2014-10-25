@@ -61,7 +61,7 @@ public class UsingTextMatrix
             doc.addPage(page);
             float fontSize = 12.0f;
 
-            PDRectangle pageSize = page.findMediaBox();
+            PDRectangle pageSize = page.getMediaBox();
             float centeredXPosition = (pageSize.getWidth() - fontSize/1000f)/2f;
             float stringWidth = font.getStringWidth( message );
             float centeredYPosition = (pageSize.getHeight() - (stringWidth*fontSize)/1000f)/3f;

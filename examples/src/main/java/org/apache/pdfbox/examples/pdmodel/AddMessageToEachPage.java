@@ -17,7 +17,6 @@
 package org.apache.pdfbox.examples.pdmodel;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -62,17 +61,15 @@ public class AddMessageToEachPage
         {
             doc = PDDocument.load( file );
 
-            List allPages = doc.getDocumentCatalog().getAllPages();
             PDFont font = PDType1Font.HELVETICA_BOLD;
             float fontSize = 36.0f;
 
-            for( int i=0; i<allPages.size(); i++ )
+            for( PDPage page : doc.getPages() )
             {
-                PDPage page = (PDPage)allPages.get( i );
-                PDRectangle pageSize = page.findMediaBox();
+                PDRectangle pageSize = page.getMediaBox();
                 float stringWidth = font.getStringWidth( message )*fontSize/1000f;
                 // calculate to center of the page
-                int rotation = page.findRotation(); 
+                int rotation = page.getRotation();
                 boolean rotate = rotation == 90 || rotation == 270;
                 float pageWidth = rotate ? pageSize.getHeight() : pageSize.getWidth();
                 float pageHeight = rotate ? pageSize.getWidth() : pageSize.getHeight();

@@ -63,7 +63,7 @@ public class AddImageToPDF
             doc = PDDocument.load( inputFile );
 
             //we will add the image to the first page.
-            PDPage page = (PDPage)doc.getDocumentCatalog().getAllPages().get( 0 );
+            PDPage page = doc.getPage(0);
 
             PDImageXObject ximage;
             if( image.toLowerCase().endsWith( ".jpg" ) )

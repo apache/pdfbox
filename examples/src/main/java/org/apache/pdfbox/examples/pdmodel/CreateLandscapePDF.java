@@ -59,7 +59,7 @@ public class CreateLandscapePDF
             PDPage page = new PDPage(PDRectangle.A4);
             page.setRotation(90);
             doc.addPage(page);
-            PDRectangle pageSize = page.findMediaBox();
+            PDRectangle pageSize = page.getMediaBox();
             float pageWidth = pageSize.getWidth();
             float fontSize = 12;
             float stringWidth = font.getStringWidth( message )*fontSize/1000f;

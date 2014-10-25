@@ -25,7 +25,6 @@ import org.apache.pdfbox.text.TextPosition;
 
 import java.io.IOException;
 
-import java.util.List;
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 
 /**
@@ -81,16 +80,15 @@ public class PrintTextLocations extends PDFTextStripper
                     }
                 }
                 PrintTextLocations printer = new PrintTextLocations();
-                List allPages = document.getDocumentCatalog().getAllPages();
-                for( int i=0; i<allPages.size(); i++ )
+                int pageNum = 0;
+                for( PDPage page : document.getPages() )
                 {
-                    PDPage page = (PDPage)allPages.get( i );
-                    System.out.println( "Processing page: " + i );
-                    PDStream contents = page.getContents();
+                    pageNum++;
+                    System.out.println( "Processing page: " + pageNum );
+                    PDStream contents = page.getStream();
                     if( contents != null )
                     {
-                        printer.processStream( page.findResources(), page.getContents().getStream(),
-                        		page.findCropBox(), page.findRotation() );
+                        printer.processPage(page);
                     }
                 }
             }

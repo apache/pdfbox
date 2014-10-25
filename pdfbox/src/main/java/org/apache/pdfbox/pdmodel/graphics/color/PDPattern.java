@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.graphics.color;
 
 import java.awt.Color;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDAbstractPattern;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDShadingPattern;
@@ -110,7 +111,7 @@ public final class PDPattern extends PDSpecialColorSpace
     }
 
     @Override
-    public Paint toPaint(PDFRenderer renderer, PDColor color, Matrix substreamMatrix,
+    public Paint toPaint(PDFRenderer renderer, PDPage page, PDColor color, Matrix substreamMatrix,
                          AffineTransform xform) throws IOException
     {
         PDAbstractPattern pattern = getPattern(color);
@@ -132,13 +133,13 @@ public final class PDPattern extends PDSpecialColorSpace
             if (tilingPattern.getPaintType() == PDTilingPattern.PAINT_COLORED)
             {
                 // colored tiling pattern
-                return new TilingPaint(renderer, tilingPattern, 
+                return new TilingPaint(renderer, page, tilingPattern,
                         matrix, xform);
             }
             else
             {
                 // uncolored tiling pattern
-                return new TilingPaint(renderer, tilingPattern, underlyingColorSpace, color, 
+                return new TilingPaint(renderer, page, tilingPattern, underlyingColorSpace, color,
                         matrix, xform);
             }
         }

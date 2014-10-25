@@ -109,12 +109,12 @@ public class PDFRenderer
     {
         PDPage page = document.getPage(pageIndex);
 
-        PDRectangle adjustedCropBox = page.calcAdjustedCropBox();
+        PDRectangle adjustedCropBox = page.getCropBox();
         float widthPt = adjustedCropBox.getWidth();
         float heightPt = adjustedCropBox.getHeight();
         int widthPx = Math.round(widthPt * scale);
         int heightPx = Math.round(heightPt * scale);
-        int rotationAngle = page.findRotation();
+        int rotationAngle = page.getRotation();
 
         // normalize the rotation angle
         if (rotationAngle < 0)
@@ -173,7 +173,7 @@ public class PDFRenderer
     {
         PDPage page = document.getPage(pageIndex);
         // TODO need width/wight calculations? should these be in PageDrawer?
-        PDRectangle adjustedCropBox = page.calcAdjustedCropBox();
+        PDRectangle adjustedCropBox = page.getCropBox();
         renderPage(page, graphics, (int)adjustedCropBox.getWidth(), (int)adjustedCropBox.getHeight(), scale, scale);
     }
 
@@ -187,8 +187,8 @@ public class PDFRenderer
         graphics.scale(scaleX, scaleY);
         // TODO should we be passing the scale to PageDrawer rather than messing with Graphics?
 
-        PDRectangle adjustedCropBox = page.calcAdjustedCropBox();
-        int rotationAngle = page.findRotation();
+        PDRectangle adjustedCropBox = page.getCropBox();
+        int rotationAngle = page.getRotation();
         if (rotationAngle != 0)
         {
             float translateX = 0;

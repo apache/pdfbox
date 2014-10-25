@@ -27,10 +27,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -84,10 +82,6 @@ public class PDDocument implements Closeable
     // the COSDocument will not have an "Encrypt" dictionary anymore and this object must be used
     private PDEncryption encryption;
 
-    // associates object ids with a page number. Used to determine the page number for bookmarks
-    // (or page numbers for anything else for which you have an object id for that matter)
-    private Map<String, Integer> pageMap;
-
     // holds a flag which tells us if we should remove all security from this documents.
     private boolean allSecurityToBeRemoved;
 
@@ -128,100 +122,6 @@ public class PDDocument implements Closeable
         pages.setItem(COSName.COUNT, COSInteger.ZERO);
     }
 
-    private void generatePageMap()
-    {
-        pageMap = new HashMap<String, Integer>();
-        // these page nodes could be references to pages,
-        // or references to arrays which have references to pages
-        // or references to arrays which have references to arrays which have references to pages
-        // or ... (I think you get the idea...)
-        processListOfPageReferences(getDocumentCatalog().getPages().getKids());
-    }
-
-    private void processListOfPageReferences(List<Object> pageNodes)
-    {
-        int numberOfNodes = pageNodes.size();
-        for (int i = 0; i < numberOfNodes; ++i)
-        {
-            Object pageOrArray = pageNodes.get(i);
-            if (pageOrArray instanceof PDPage)
-            {
-                COSArray pageArray = ((COSArrayList) (((PDPage) pageOrArray).getParent()).getKids()).toList();
-                parseCatalogObject((COSObject) pageArray.get(i));
-            }
-            else if (pageOrArray instanceof PDPageNode)
-            {
-                processListOfPageReferences(((PDPageNode) pageOrArray).getKids());
-            }
-        }
-    }
-
-    // either adds the page passed in, or, if it's a pointer to an array of pages,
-    // it will recursively call itself and process everything in the list
-    private void parseCatalogObject(COSObject thePageOrArrayObject)
-    {
-        COSBase arrayCountBase = thePageOrArrayObject.getItem(COSName.COUNT);
-        int arrayCount = -1;
-        if (arrayCountBase instanceof COSInteger)
-        {
-            arrayCount = ((COSInteger) arrayCountBase).intValue();
-        }
-
-        COSBase kidsBase = thePageOrArrayObject.getItem(COSName.KIDS);
-        int kidsCount = -1;
-        if (kidsBase instanceof COSArray)
-        {
-            kidsCount = ((COSArray) kidsBase).size();
-        }
-
-        if (arrayCount == -1 || kidsCount == -1)
-        {
-            // these cases occur when we have a page, not an array of pages
-            String objStr = String.valueOf(thePageOrArrayObject.getObjectNumber().intValue());
-            String genStr = String.valueOf(thePageOrArrayObject.getGenerationNumber().intValue());
-            getPageMap().put(objStr + "," + genStr, getPageMap().size() + 1);
-        }
-        else
-        {
-            // we either have an array of page pointers, or an array of arrays
-            if (arrayCount == kidsCount)
-            {
-                // process the kids... they're all references to pages
-                COSArray kidsArray = (COSArray) kidsBase;
-                for (int i = 0; i < kidsArray.size(); ++i)
-                {
-                    COSObject thisObject = (COSObject) kidsArray.get(i);
-                    String objStr = String.valueOf(thisObject.getObjectNumber().intValue());
-                    String genStr = String.valueOf(thisObject.getGenerationNumber().intValue());
-                    getPageMap().put(objStr + "," + genStr, getPageMap().size() + 1);
-                }
-            }
-            else
-            {
-                // this object is an array of references to other arrays
-                COSArray list = (COSArray) kidsBase;
-                for (int arrayCounter = 0; arrayCounter < list.size(); ++arrayCounter)
-                {
-                    parseCatalogObject((COSObject) list.get(arrayCounter));
-                }
-            }
-        }
-    }
-
-    /**
-     * This will return the Map containing the mapping from object-ids to pagenumbers.
-     * 
-     * @return the pageMap
-     */
-    public final Map<String, Integer> getPageMap()
-    {
-        if (pageMap == null)
-        {
-            generatePageMap();
-        }
-        return pageMap;
-    }
-
     /**
      * This will add a page to the document. This is a convenience method, that will add the page to the root of the
      * hierarchy and set the parent of the page to the root.
@@ -230,10 +130,7 @@ public class PDDocument implements Closeable
      */
     public void addPage(PDPage page)
     {
-        PDPageNode rootPages = getDocumentCatalog().getPages();
-        rootPages.getKids().add(page);
-        page.setParent(rootPages);
-        rootPages.updateCount();
+        getPages().add(page);
     }
 
     /**
@@ -283,37 +180,24 @@ public class PDDocument implements Closeable
         //
 
         // Get the first page
-        PDDocumentCatalog root = getDocumentCatalog();
-        PDPageNode rootPages = root.getPages();
-        List<PDPage> kids = rootPages.getAllKids();
-
-        int size = (int) rootPages.getCount();
-        PDPage page;
-        if (size == 0)
+        PDDocumentCatalog catalog = getDocumentCatalog();
+        int pageCount = (int)catalog.getPages().getCount();
+        if (pageCount == 0)
         {
             throw new IllegalStateException("Cannot sign an empty document");
         }
-        if (options.getPage() > size)
-        {
-            page = kids.get(size - 1);
-        }
-        else if (options.getPage() <= 0)
-        {
-            page = kids.get(0);
-        }
-        else
-        {
-            page = kids.get(options.getPage() - 1);
-        }
+
+        int startIndex = Math.max(Math.min(options.getPage(), 0), pageCount - 1);
+        PDPage page = catalog.getPages().get(startIndex);
 
         // Get the AcroForm from the Root-Dictionary and append the annotation
-        PDAcroForm acroForm = root.getAcroForm();
-        root.getCOSObject().setNeedToBeUpdate(true);
+        PDAcroForm acroForm = catalog.getAcroForm();
+        catalog.getCOSObject().setNeedToBeUpdate(true);
 
         if (acroForm == null)
         {
             acroForm = new PDAcroForm(this);
-            root.setAcroForm(acroForm);
+            catalog.setAcroForm(acroForm);
         }
         else
         {
@@ -557,37 +441,20 @@ public class PDDocument implements Closeable
      * Remove the page from the document.
      * 
      * @param page The page to remove from the document.
-     * 
-     * @return true if the page was found false otherwise.
      */
-    public boolean removePage(PDPage page)
+    public void removePage(PDPage page)
     {
-        PDPageNode parent = page.getParent();
-        boolean retval = parent.getKids().remove(page);
-        if (retval)
-        {
-            // do a recursive updateCount starting at the root of the document
-            getDocumentCatalog().getPages().updateCount();
-        }
-        return retval;
+        getPages().remove(page);
     }
 
     /**
      * Remove the page from the document.
      * 
      * @param pageNumber 0 based index to page number.
-     * @return true if the page was found false otherwise.
      */
-    public boolean removePage(int pageNumber)
+    public void removePage(int pageNumber)
     {
-        boolean removed = false;
-        List allPages = getDocumentCatalog().getAllPages();
-        if (allPages.size() > pageNumber)
-        {
-            PDPage page = (PDPage) allPages.get(pageNumber);
-            removed = removePage(page);
-        }
-        return removed;
+        getPages().remove(pageNumber);
     }
 
     /**
@@ -608,7 +475,7 @@ public class PDDocument implements Closeable
         OutputStream os = null;
         try
         {
-            PDStream src = page.getContents();
+            PDStream src = page.getStream();
             if (src != null)
             {
                 PDStream dest = new PDStream(document.createCOSStream());
@@ -1259,8 +1126,6 @@ public class PDDocument implements Closeable
         {
             throw new IOException("Cannot save a document which has been closed");
         }
-        // update the count in case any pages have been added behind the scenes.
-        getDocumentCatalog().getPages().updateCount();
         COSWriter writer = null;
         try
         {
@@ -1303,8 +1168,6 @@ public class PDDocument implements Closeable
      */
     public void saveIncremental(InputStream input, OutputStream output) throws IOException
     {
-        // update the count in case any pages have been added behind the scenes.
-        getDocumentCatalog().getPages().updateCount();
         COSWriter writer = null;
         try
         {
@@ -1340,12 +1203,19 @@ public class PDDocument implements Closeable
 
     /**
      * Returns the page at the given index.
+     *
      * @param pageIndex the page index
      * @return the page at the given index.
      */
-    public PDPage getPage(int pageIndex)
+    public PDPage getPage(int pageIndex) // todo: REPLACE most calls to this method with BELOW method
     {
-        return (PDPage) getDocumentCatalog().getAllPages().get(pageIndex);
+        return getDocumentCatalog().getPages().get(pageIndex);
+    }
+
+    // todo: new!
+    public PDPageTree getPages()
+    {
+        return getDocumentCatalog().getPages();
     }
 
     /**
@@ -1355,8 +1225,7 @@ public class PDDocument implements Closeable
      */
     public int getNumberOfPages()
     {
-        PDDocumentCatalog cat = getDocumentCatalog();
-        return (int) cat.getPages().getCount();
+        return (int)getDocumentCatalog().getPages().getCount();
     }
 
     /**
@@ -1370,11 +1239,6 @@ public class PDDocument implements Closeable
         documentCatalog = null;
         documentInformation = null;
         encryption = null;
-        if (pageMap != null)
-        {
-            pageMap.clear();
-            pageMap = null;
-        }
         if (document != null)
         {
             document.close();

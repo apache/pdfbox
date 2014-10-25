@@ -18,7 +18,6 @@ package org.apache.pdfbox.pdmodel.graphics.image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
@@ -86,8 +85,7 @@ public class CCITTFactoryTest extends TestCase
         document.close();
         
         document = PDDocument.loadNonSeq(new File(testResultsDir, "singletiff.pdf"), null);
-        List pages = document.getDocumentCatalog().getAllPages();
-        assertEquals(2, pages.size());
+        assertEquals(2, document.getNumberOfPages());
         
         document.close();  
     }
@@ -137,8 +135,7 @@ public class CCITTFactoryTest extends TestCase
         document.close();
         
         document = PDDocument.loadNonSeq(new File(testResultsDir, "multitiff.pdf"), null);
-        List pages = document.getDocumentCatalog().getAllPages();
-        assertEquals(countTiffImages, pages.size());
+        assertEquals(countTiffImages, document.getNumberOfPages());
         
         document.close();  
         imageReader.dispose();

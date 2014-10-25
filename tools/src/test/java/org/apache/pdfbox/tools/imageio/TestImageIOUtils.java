@@ -27,7 +27,6 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -40,7 +39,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
@@ -113,8 +111,7 @@ public class TestImageIOUtils extends TestCase
             document = PDDocument.load(file);
 
             // Save image resources of first page
-            List<PDPage> pdPages = document.getDocumentCatalog().getAllPages();
-            checkSaveResources(pdPages.get(0).getResources());
+            checkSaveResources(document.getPage(0).getResources());
 
             // testing PNG
             writeImage(document, imageType, outDir + file.getName() + "-", ImageType.RGB, dpi);

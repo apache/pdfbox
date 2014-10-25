@@ -271,8 +271,7 @@ public class PDOutlineItem extends PDOutlineNode
             int pageNumber = pageDestination.getPageNumber();
             if( pageNumber != -1 )
             {
-                List allPages = doc.getDocumentCatalog().getAllPages();
-                page = (PDPage)allPages.get( pageNumber );
+                page = doc.getPage( pageNumber - 1 );
             }
         }
 

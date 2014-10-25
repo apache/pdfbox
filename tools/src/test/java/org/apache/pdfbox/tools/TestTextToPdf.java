@@ -56,10 +56,9 @@ public class TestTextToPdf extends TestCase
 
         // In order for the PDF document to be openable by Adobe Reader, it needs
         // to have some pages in it. So we'll check that.
-        PDDocumentCatalog docCatalog = pdfDoc.getDocumentCatalog();
-        List allPages = docCatalog.getAllPages();
-        assertNotNull("All Pages was unexpectedly null.", allPages);
-        assertEquals("Wrong number of pages.", 1, allPages.size());
+        int pageCount = pdfDoc.getNumberOfPages();
+        assertNotNull("All Pages was unexpectedly zero.", pageCount);
+        assertEquals("Wrong number of pages.", 1, pageCount);
         pdfDoc.close();
     }
 

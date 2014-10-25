@@ -67,10 +67,10 @@ public class ReplaceURLs
             else
             {
                 doc = PDDocument.load( args[0] );
-                List allPages = doc.getDocumentCatalog().getAllPages();
-                for( int i=0; i<allPages.size(); i++ )
+                int pageNum = 0;
+                for( PDPage page : doc.getPages() )
                 {
-                    PDPage page = (PDPage)allPages.get( i );
+                    pageNum++;
                     List annotations = page.getAnnotations();
 
                     for( int j=0; j<annotations.size(); j++ )
@@ -85,7 +85,7 @@ public class ReplaceURLs
                                 PDActionURI uri = (PDActionURI)action;
                                 String oldURI = uri.getURI();
                                 String newURI = "http://www.pdfbox.org";
-                                System.out.println( "Page " + (i+1) +": Replacing " + oldURI + " with " + newURI );
+                                System.out.println( "Page " + pageNum +": Replacing " + oldURI + " with " + newURI );
                                 uri.setURI( newURI );
                             }
                         }

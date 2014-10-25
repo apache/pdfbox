@@ -130,7 +130,7 @@ public class LayerUtility
      */
     public PDFormXObject importPageAsForm(PDDocument sourceDoc, int pageNumber) throws IOException
     {
-        PDPage page = (PDPage)sourceDoc.getDocumentCatalog().getAllPages().get(pageNumber);
+        PDPage page = sourceDoc.getPage(pageNumber);
         return importPageAsForm(sourceDoc, page);
     }
 
@@ -147,13 +147,13 @@ public class LayerUtility
      */
     public PDFormXObject importPageAsForm(PDDocument sourceDoc, PDPage page) throws IOException
     {
-        COSStream pageStream = (COSStream)page.getContents().getCOSObject();
+        COSStream pageStream = (COSStream)page.getStream().getCOSObject();
         PDStream newStream = new PDStream(targetDoc,
                 pageStream.getUnfilteredStream(), false);
         PDFormXObject form = new PDFormXObject(newStream);
 
         //Copy resources
-        PDResources pageRes = page.findResources();
+        PDResources pageRes = page.getResources();
         PDResources formRes = new PDResources();
         cloner.cloneMerge(pageRes, formRes);
         form.setResources(formRes);
@@ -163,8 +163,8 @@ public class LayerUtility
 
         Matrix matrix = form.getMatrix();
         AffineTransform at = matrix != null ? matrix.createAffineTransform() : new AffineTransform();
-        PDRectangle mediaBox = page.findMediaBox();
-        PDRectangle cropBox = page.findCropBox();
+        PDRectangle mediaBox = page.getMediaBox();
+        PDRectangle cropBox = page.getCropBox();
         PDRectangle viewBox = (cropBox != null ? cropBox : mediaBox);
 
         //Handle the /Rotation entry on the page dict
@@ -240,7 +240,7 @@ public class LayerUtility
         PDOptionalContentGroup layer = new PDOptionalContentGroup(layerName);
         ocprops.addGroup(layer);
 
-        PDResources resources = targetPage.findResources();
+        PDResources resources = targetPage.getResources();
         /*PDPropertyList props = resources.getProperties();
         if (props == null)
         {
@@ -292,7 +292,7 @@ public class LayerUtility
     private static int getNormalizedRotation(PDPage page)
     {
         //Handle the /Rotation entry on the page dict
-        int rotation = page.findRotation();
+        int rotation = page.getRotation();
         while (rotation >= 360)
         {
             rotation -= 360;

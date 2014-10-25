@@ -190,7 +190,7 @@ public class PDPageContentStream implements Closeable
             boolean resetContext) throws IOException
     {
         // Get the pdstream from the source page instead of creating a new one
-        PDStream contents = sourcePage.getContents();
+        PDStream contents = sourcePage.getStream();
         boolean hasContent = contents != null;
 
         // If request specifies the need to append to the document

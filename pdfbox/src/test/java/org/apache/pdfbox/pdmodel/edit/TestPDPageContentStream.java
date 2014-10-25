@@ -44,7 +44,7 @@ public class TestPDPageContentStream extends TestCase
         contentStream.close();
 
         // now read the PDF stream and verify that the CMYK values are correct
-        COSStream stream = page.getContents().getStream();
+        COSStream stream = page.getStream().getStream();
         PDFStreamParser parser = new PDFStreamParser(stream);
         parser.parse();
         java.util.List<Object>  pageTokens = parser.getTokens();
@@ -70,7 +70,7 @@ public class TestPDPageContentStream extends TestCase
         contentStream.close();
 
         // now read the PDF stream and verify that the CMYK values are correct
-        stream = page.getContents().getStream();
+        stream = page.getStream().getStream();
         parser = new PDFStreamParser(stream);
         parser.parse();
         pageTokens = parser.getTokens();

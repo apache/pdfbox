@@ -69,11 +69,9 @@ public class RemoveAllText
                     System.err.println( "Error: Encrypted documents are not supported for this example." );
                     System.exit( 1 );
                 }
-                List allPages = document.getDocumentCatalog().getAllPages();
-                for( int i=0; i<allPages.size(); i++ )
+                for( PDPage page : document.getPages() )
                 {
-                    PDPage page = (PDPage)allPages.get( i );
-                    PDFStreamParser parser = new PDFStreamParser(page.getContents());
+                    PDFStreamParser parser = new PDFStreamParser(page.getStream());
                     parser.parse();
                     List tokens = parser.getTokens();
                     List newTokens = new ArrayList();

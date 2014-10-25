@@ -105,10 +105,9 @@ public class ExtractEmbeddedFiles
                 }
                 
                 // extract files from annotations
-                List<PDPage> allPages = document.getDocumentCatalog().getAllPages();
-                for (PDPage pdPage : allPages)
+                for (PDPage page : document.getPages())
                 {
-                    for (PDAnnotation annotation : pdPage.getAnnotations())
+                    for (PDAnnotation annotation : page.getAnnotations())
                     {
                         if (annotation instanceof PDAnnotationFileAttachment)
                         {

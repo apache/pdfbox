@@ -38,6 +38,6 @@ public class Type3Container extends FontContainer<PDType3Font>
     @Override
     public boolean hasGlyph(int code) throws IOException
     {
-        return font.getCharStream(code) != null;
+        return font.getCharProc(code) != null;
     }
 }

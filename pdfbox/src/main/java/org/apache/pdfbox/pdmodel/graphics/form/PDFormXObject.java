@@ -18,13 +18,13 @@ package org.apache.pdfbox.pdmodel.graphics.form;
 
 import java.awt.geom.AffineTransform;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.contentstream.PDContentStream;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -51,10 +51,8 @@ final and all fields private.
  * 
  * @author Ben Litchfield
  */
-public final class PDFormXObject extends PDXObject
+public final class PDFormXObject extends PDXObject implements PDContentStream
 {
-    private static final Log LOG = LogFactory.getLog(PDFormXObject.class);
-
     // name of XObject in resources, to prevent recursion
     private String name;
 
@@ -124,12 +122,19 @@ public final class PDFormXObject extends PDXObject
         return group;
     }
 
+    @Override
+    public COSStream getContentStream()
+    {
+        return getCOSStream();
+    }
+
     /**
      * This will get the resources at this page and not look up the hierarchy.
      * This attribute is inheritable, and findResources() should probably used.
      * This will return null if no resources are available at this level.
      * @return The resources at this level in the hierarchy.
      */
+    @Override
     public PDResources getResources()
     {
         COSDictionary resources = (COSDictionary) getCOSStream().getDictionaryObject(COSName.RESOURCES);
@@ -156,6 +161,7 @@ public final class PDFormXObject extends PDXObject
      * These boundaries are used to clip the form XObject and to determine its size for caching.
      * @return The BBox of the form.
      */
+    @Override
     public PDRectangle getBBox()
     {
         PDRectangle retval = null;

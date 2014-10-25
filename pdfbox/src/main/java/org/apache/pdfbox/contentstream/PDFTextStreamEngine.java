@@ -19,9 +19,8 @@ package org.apache.pdfbox.contentstream;
 import java.io.InputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.font.encoding.GlyphList;
-import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
@@ -107,18 +106,15 @@ public class PDFTextStreamEngine extends PDFStreamEngine
     /**
      * This will initialise and process the contents of the stream.
      *
-     * @param resources The location to retrieve resources.
-     * @param cosStream the Stream to execute.
-     * @param pageSize the size of the page
-     * @param rotation the page rotation
+     * @param page the page to process
      * @throws java.io.IOException if there is an error accessing the stream.
      */
-    public void processStream(PDResources resources, COSStream cosStream, PDRectangle pageSize,
-                              int rotation) throws IOException
+    @Override
+    public void processPage(PDPage page) throws IOException
     {
-        this.pageRotation = rotation;
-        this.pageSize = pageSize;
-        super.processStream(resources, cosStream, pageSize);
+        this.pageRotation = page.getRotation();
+        this.pageSize = page.getCropBox();
+        super.processPage(page);
     }
 
     /**

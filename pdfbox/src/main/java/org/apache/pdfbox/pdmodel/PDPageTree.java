@@ -1,0 +1,362 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.apache.pdfbox.pdmodel;
+
+import java.util.ArrayDeque;
+import java.util.Iterator;
+import java.util.Queue;
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSInteger;
+import org.apache.pdfbox.cos.COSName;
+
+import org.apache.pdfbox.pdmodel.common.COSObjectable;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
+/**
+ * todo: this class wraps an entire page tree! Make it into a generic tree wrapper.
+ * todo: Try to explain why things are the way they are.
+ *
+ * @author John Hewson
+ */
+public class PDPageTree implements COSObjectable, Iterable<PDPage> // todo 'PDTree<T>'
+{
+    private final COSDictionary root;
+
+    /**
+     * Constructor for embedding.
+     */
+    public PDPageTree()
+    {
+        root = new COSDictionary();
+        root.setItem(COSName.TYPE, COSName.PAGES);
+        root.setItem(COSName.KIDS, new COSArray());
+        root.setItem(COSName.COUNT, COSInteger.ZERO);
+    }
+
+    /**
+     * Constructor for reading.
+     *
+     * @param root A page tree root.
+     */
+    public PDPageTree(COSDictionary root)
+    {
+        if (root == null)
+        {
+            throw new IllegalArgumentException("root cannot be null");
+        }
+        if (root.getCOSName(COSName.TYPE) != COSName.PAGES)
+        {
+            throw new IllegalArgumentException("root must be of type Pages");
+        }
+        this.root = root;
+    }
+
+    /**
+     * Returns the given attribute, inheriting from parent tree nodes if necessary.
+     *
+     * @param node page object
+     * @param key the key to look up
+     * @return COS value for the given key
+     */
+    public static COSBase getInheritedAttribute(COSDictionary node, COSName key)
+    {
+        COSBase value = node.getDictionaryObject(key);
+        if (value != null)
+        {
+            return value;
+        }
+
+        COSDictionary parent = (COSDictionary) node.getDictionaryObject(COSName.PARENT, COSName.P);
+        if (parent != null)
+        {
+            return getInheritedAttribute(parent, key);
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns an iterator which walks all pages in the tree, in order.
+     */
+    @Override
+    public Iterator<PDPage> iterator()
+    {
+        return new PageIterator(root);
+    }
+
+    /**
+     * Helper to get kids from malformed PDFs.
+     * @param node page tree node
+     * @return list of kids
+     */
+    private List<COSDictionary> getKids(COSDictionary node)
+    {
+        List<COSDictionary> result = new ArrayList<COSDictionary>();
+
+        COSArray kids = (COSArray)node.getDictionaryObject(COSName.KIDS);
+        if (kids == null)
+        {
+            // probably a malformed PDF
+            return result;
+        }
+
+        for (int i = 0, size = kids.size(); i < size; i++)
+        {
+            result.add((COSDictionary)kids.getObject(i));
+        }
+
+        return result;
+    }
+
+    /**
+     * Iterator which walks all pages in the tree, in order.
+     */
+    private class PageIterator implements Iterator<PDPage>
+    {
+        private final Queue<COSDictionary> queue = new ArrayDeque<COSDictionary>();
+
+        private PageIterator(COSDictionary node)
+        {
+            enqueueKids(node);
+        }
+
+        private void enqueueKids(COSDictionary node)
+        {
+            if (node.getCOSName(COSName.TYPE) == COSName.PAGES)
+            {
+                queue.addAll(getKids(node));
+            }
+        }
+
+        @Override
+        public boolean hasNext()
+        {
+            return !queue.isEmpty();
+        }
+
+        @Override
+        public PDPage next()
+        {
+            COSDictionary next = queue.poll();
+            enqueueKids(next);
+            return new PDPage(next);
+        }
+
+        @Override
+        public void remove()
+        {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    /**
+     * Returns the page at the given index.
+     *
+     * @param index zero-based index
+     */
+    public PDPage get(int index)
+    {
+        return new PDPage(get(index + 1, root, 0));
+    }
+
+    /**
+     * Returns the given COS page using a depth-first search.
+     *
+     * @param pageNum 1-based page number
+     * @param node page tree node to search
+     * @param encountered number of pages encountered so far
+     * @return COS dictionary of the Page object
+     */
+    private COSDictionary get(int pageNum, COSDictionary node, int encountered)
+    {
+        if (pageNum < 0)
+        {
+            throw new IndexOutOfBoundsException("Index out of bounds: " + pageNum);
+        }
+
+        if (node.getCOSName(COSName.TYPE) == COSName.PAGES)
+        {
+            int count = node.getInt(COSName.COUNT, 0);
+            if (pageNum <= encountered + count)
+            {
+                // it's a kid of this node
+                for (COSDictionary kid : getKids(node))
+                {
+                    // which kid?
+                    if (kid.getCOSName(COSName.TYPE) == COSName.PAGES)
+                    {
+                        int kidCount = kid.getInt(COSName.COUNT, 0);
+                        if (pageNum <= encountered + kidCount)
+                        {
+                            // it's this kid
+                            return get(pageNum, kid, encountered);
+                        }
+                        else
+                        {
+                            encountered += kidCount;
+                        }
+                    }
+                    else
+                    {
+                        // single page
+                        encountered++;
+                        if (pageNum == encountered)
+                        {
+                            // it's this page
+                            return get(pageNum, kid, encountered);
+                        }
+                    }
+                }
+
+                throw new IllegalStateException();
+            }
+            else
+            {
+                throw new IndexOutOfBoundsException("Index out of bounds: " + pageNum);
+            }
+        }
+        else
+        {
+            if (encountered == pageNum)
+            {
+                return node;
+            }
+            else
+            {
+                throw new IllegalStateException();
+            }
+        }
+    }
+
+    /**
+     * Returns the index of the given page, or -1 if it does not exist.
+     */
+    public int indexOf(PDPage page)
+    {
+        int num = 0;
+        COSDictionary node = page.getCOSObject();
+        do
+        {
+            if (node.getCOSName(COSName.TYPE) == COSName.PAGES)
+            {
+                // count kids up until this node
+                for (COSDictionary kid : getKids(node))
+                {
+                    if (kid == node)
+                    {
+                        break;
+                    }
+                    num++;
+                }
+            }
+            else
+            {
+                num++;
+            }
+            node = (COSDictionary) node.getDictionaryObject(COSName.PARENT, COSName.P);
+        }
+        while (node != null);
+        return num - 1;
+    }
+
+    /**
+     * Returns the number of leaf nodes (page objects) that are descendants of this root within the
+     * page tree.
+     */
+    public long getCount() // todo: make this an 'int'? What is the page limit?
+    {
+        return root.getInt(COSName.COUNT, 0);
+    }
+
+    @Override
+    public COSDictionary getCOSObject()
+    {
+        return root;
+    }
+
+    /**
+     * Removes the page with the given index from the page tree.
+     * @param index zero-based page index
+     */
+    public void remove(int index)
+    {
+        COSDictionary node = get(index + 1, root, 0);
+        remove(node);
+    }
+
+    /**
+     * Removes the given page from the page tree.
+     */
+    public void remove(PDPage page)
+    {
+        remove(page.getCOSObject());
+    }
+
+    /**
+     * Removes the given COS page.
+     */
+    private void remove(COSDictionary node)
+    {
+        // remove from parent's kids
+        COSDictionary parent = (COSDictionary) node.getDictionaryObject(COSName.PARENT, COSName.P);
+        COSArray kids = (COSArray)parent.getDictionaryObject(COSName.KIDS);
+        kids.remove(node);
+
+        // update ancestor counts
+        do
+        {
+            node = (COSDictionary) node.getDictionaryObject(COSName.PARENT, COSName.P);
+            if (node != null)
+            {
+                node.setInt(COSName.COUNT, node.getInt(COSName.COUNT) - 1);
+            }
+        }
+        while (node != null);
+    }
+
+    /**
+     * Adds the given page to this page tree.
+     */
+    public void add(PDPage page)
+    {
+        // set parent
+        COSDictionary node = page.getCOSObject();
+        node.setItem(COSName.PARENT, root);
+
+        // todo: re-balance tree? (or at least group new pages into tree nodes of e.g. 20)
+
+        // add to parent's kids
+        COSArray kids = (COSArray)root.getDictionaryObject(COSName.KIDS);
+        kids.add(node);
+
+        // update ancestor counts
+        do
+        {
+            node = (COSDictionary) node.getDictionaryObject(COSName.PARENT, COSName.P);
+            if (node != null)
+            {
+                node.setInt(COSName.COUNT, node.getInt(COSName.COUNT) + 1);
+            }
+        }
+        while (node != null);
+    }
+}

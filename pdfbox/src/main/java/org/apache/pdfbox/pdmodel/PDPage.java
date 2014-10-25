@@ -18,12 +18,9 @@ package org.apache.pdfbox.pdmodel;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.contentstream.PDContentStream;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -32,6 +29,7 @@ import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
+import org.apache.pdfbox.pdmodel.common.COSStreamArray;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
@@ -44,14 +42,11 @@ import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDThreadBead;
  * 
  * @author Ben Litchfield
  */
-public class PDPage implements COSObjectable
+public class PDPage implements COSObjectable, PDContentStream
 {
-    private static final Log LOG = LogFactory.getLog(PDPage.class);
-
     private final COSDictionary page;
     private PDResources pageResources;
     private PDRectangle mediaBox;
-    private PDPageNode parent;
 
     /**
      * Creates a new PDPage instance for embedding, with a size of U.S. Letter (8.5 x 11 inches).
@@ -94,89 +89,42 @@ public class PDPage implements COSObjectable
         return page;
     }
 
-    /**
-     * This is the parent page node. The parent is a required element of the page. This will be null
-     * until this page is added to the document.
-     * 
-     * @return The parent to this page.
-     */
-    public PDPageNode getParent()
+    @Override
+    public COSStream getContentStream()
     {
-        if (parent == null)
+        COSBase base = page.getDictionaryObject(COSName.CONTENTS);
+        if (base instanceof COSStream)
         {
-            COSDictionary parentDic = (COSDictionary) page.getDictionaryObject(COSName.PARENT, COSName.P);
-            if (parentDic != null)
+            return (COSStream)base;
+        }
+        else if (base instanceof COSArray)
+        {
+            if (((COSArray)base).size() > 0)
             {
-                parent = new PDPageNode(parentDic);
+                return new COSStreamArray((COSArray)base);
             }
         }
-        return parent;
+        return null;
     }
 
     /**
-     * This will set the parent of this page.
-     * 
-     * @param parentNode The parent to this page node.
+     * A dictionary containing any resources required by the page.
      */
-    public void setParent(PDPageNode parentNode)
-    {
-        parent = parentNode;
-        page.setItem(COSName.PARENT, parent.getDictionary());
-    }
-
-    /**
-     * This will update the last modified time for the page object.
-     */
-    public void updateLastModified()
-    {
-        page.setDate(COSName.LAST_MODIFIED, new GregorianCalendar());
-    }
-
-    /**
-     * This will get the date that the content stream was last modified. This may return null.
-     * 
-     * @return The date the content stream was last modified.
-     * @throws IOException If there is an error accessing the date information.
-     */
-    public Calendar getLastModified() throws IOException
-    {
-        return page.getDate(COSName.LAST_MODIFIED);
-    }
-
-    /**
-     * This will get the resources at this page and not look up the hierarchy. This attribute is
-     * inheritable, and findResources() should probably used. This will return null if no resources
-     * are available at this level.
-     * 
-     * @return The resources at this level in the hierarchy.
-     */
+    @Override
     public PDResources getResources()
     {
         if (pageResources == null)
         {
-            COSDictionary resources = (COSDictionary) page.getDictionaryObject(COSName.RESOURCES);
+            COSDictionary resources = (COSDictionary)
+                    PDPageTree.getInheritedAttribute(page, COSName.RESOURCES);
+
+            // note: it's an error for resources to not be present
             if (resources != null)
             {
                 pageResources = new PDResources(resources);
             }
         }
         return pageResources;
-    }
-
-    /**
-     * This will find the resources for this page by looking up the hierarchy until it finds them.
-     * 
-     * @return The resources at this level in the hierarchy.
-     */
-    public PDResources findResources()
-    {
-        PDResources retval = getResources();
-        PDPageNode parentNode = getParent();
-        if (retval == null && parentNode != null)
-        {
-            retval = parentNode.findResources();
-        }
-        return retval;
     }
 
     /**
@@ -217,47 +165,27 @@ public class PDPage implements COSObjectable
         page.setInt(COSName.STRUCT_PARENTS, structParents);
     }
 
+    @Override
+    public PDRectangle getBBox()
+    {
+        return getCropBox();
+    }
+
     /**
      * A rectangle, expressed in default user space units, defining the boundaries of the physical
-     * medium on which the page is intended to be displayed or printed
-     * 
-     * <p>This will get the MediaBox at this page and not look up the hierarchy. This attribute is
-     * inheritable, and findMediaBox() should probably used. This will return null if no MediaBox
-     * are available at this level.
-     * 
-     * @return The MediaBox at this level in the hierarchy.
+     * medium on which the page is intended to be displayed or printed.
      */
     public PDRectangle getMediaBox()
     {
         if (mediaBox == null)
         {
-            COSArray array = (COSArray) page.getDictionaryObject(COSName.MEDIA_BOX);
+            COSArray array = (COSArray) PDPageTree.getInheritedAttribute(page, COSName.MEDIA_BOX);
             if (array != null)
             {
                 mediaBox = new PDRectangle(array);
             }
         }
         return mediaBox;
-    }
-
-    /**
-     * This will find the MediaBox for this page by looking up the hierarchy until it finds them.
-     * 
-     * @return The MediaBox at this level in the hierarchy.
-     */
-    public PDRectangle findMediaBox()
-    {
-        PDRectangle retval = getMediaBox();
-        if (retval == null && getParent() != null)
-        {
-            retval = getParent().findMediaBox();
-        }
-        if (retval == null)
-        {
-            LOG.warn("Can't find MediaBox, will use U.S. Letter");
-            retval = PDRectangle.LETTER;
-        }
-        return retval;
     }
 
     /**
@@ -281,83 +209,19 @@ public class PDPage implements COSObjectable
     /**
      * A rectangle, expressed in default user space units, defining the visible region of default
      * user space. When the page is displayed or printed, its contents are to be clipped (cropped)
-     * to this rectangle and then imposed on the output medium in some implementation defined manner
-     * 
-     * <p>This will get the CropBox at this page and not look up the hierarchy. This attribute is
-     * inheritable, and findCropBox() should probably used. This will return null if no CropBox is
-     * available at this level.
-     * 
-     * @return The CropBox at this level in the hierarchy.
+     * to this rectangle.
      */
     public PDRectangle getCropBox()
     {
-        PDRectangle retval = null;
-        COSArray array = (COSArray) page.getDictionaryObject(COSName.CROP_BOX);
+        COSArray array = (COSArray) PDPageTree.getInheritedAttribute(page, COSName.CROP_BOX);
         if (array != null)
         {
-            retval = new PDRectangle(array);
-        }
-        return retval;
-    }
-
-    /**
-     * This will find the CropBox for this page by looking up the hierarchy until it finds them.
-     * 
-     * @return The CropBox at this level in the hierarchy.
-     */
-    public PDRectangle findCropBox()
-    {
-        PDRectangle retval = getCropBox();
-        PDPageNode parentNode = getParent();
-        if (retval == null && parentNode != null)
-        {
-            retval = findParentCropBox(parentNode);
-        }
-
-        // default value for cropbox is the media box
-        if (retval == null)
-        {
-            retval = findMediaBox();
-        }
-        return retval;
-    }
-
-    /**
-     * This will find the CropBox with rotation applied, for this page by looking up the hierarchy
-     * until it finds them.
-     *
-     * @return The CropBox at this level in the hierarchy.
-     */
-    public PDRectangle findRotatedCropBox()
-    {
-        PDRectangle cropBox = findCropBox();
-        int rotation = findRotation();
-        if (rotation == 90 || rotation == 270)
-        {
-            return new PDRectangle(cropBox.getLowerLeftY(), cropBox.getLowerLeftX(),
-                                   cropBox.getHeight(), cropBox.getWidth());
+            return clipToMediaBox(new PDRectangle(array));
         }
         else
         {
-            return cropBox;
+            return getMediaBox();
         }
-    }
-
-    /**
-     * This will search for a crop box in the parent and return null if it is not found. It will NOT
-     * default to the media box if it cannot be found.
-     * 
-     * @param node The node
-     */
-    private PDRectangle findParentCropBox(PDPageNode node)
-    {
-        PDRectangle rect = node.getCropBox();
-        PDPageNode parentNode = node.getParent();
-        if (rect == null && parentNode != null)
-        {
-            rect = findParentCropBox(parentNode);
-        }
-        return rect;
     }
 
     /**
@@ -390,11 +254,11 @@ public class PDPage implements COSObjectable
         COSArray array = (COSArray) page.getDictionaryObject(COSName.BLEED_BOX);
         if (array != null)
         {
-            retval = new PDRectangle(array);
+            retval = clipToMediaBox(new PDRectangle(array));
         }
         else
         {
-            retval = findCropBox();
+            retval = getCropBox();
         }
         return retval;
     }
@@ -428,11 +292,11 @@ public class PDPage implements COSObjectable
         COSArray array = (COSArray) page.getDictionaryObject(COSName.TRIM_BOX);
         if (array != null)
         {
-            retval = new PDRectangle(array);
+            retval = clipToMediaBox(new PDRectangle(array));
         }
         else
         {
-            retval = findCropBox();
+            retval = getCropBox();
         }
         return retval;
     }
@@ -467,11 +331,11 @@ public class PDPage implements COSObjectable
         COSArray array = (COSArray) page.getDictionaryObject(COSName.ART_BOX);
         if (array != null)
         {
-            retval = new PDRectangle(array);
+            retval = clipToMediaBox(new PDRectangle(array));
         }
         else
         {
-            retval = findCropBox();
+            retval = getCropBox();
         }
         return retval;
     }
@@ -494,105 +358,32 @@ public class PDPage implements COSObjectable
     }
     
     /**
-     * Calculate the adjusted crop box from the cropbox and the mediabox as required by the PDF
-     * spec. Use this instead of {@link #findCropBox()} when drawing a page.
-     *
-     * @return the adjusted crop box.
+     * Clips the given box to the bounds of the media box.
      */
-    public PDRectangle calcAdjustedCropBox()
+    private PDRectangle clipToMediaBox(PDRectangle box)
     {
-        PDRectangle adjustedCropBox = new PDRectangle();
-        
-        // "the region to which the contents of the page shall be clipped"
-        PDRectangle tmpCropBox = findCropBox();
-        
-        // "Content falling outside this boundary may safely be discarded"
-        PDRectangle tmpMediaBox = findMediaBox();
-        
-        // "The crop, bleed, trim, and art boxes shall not ordinarily extend
-        // beyond the boundaries of the media box. If they do, they are
-        // effectively reduced to their intersection with the media box.
-        if (tmpMediaBox.getLowerLeftX() > tmpCropBox.getLowerLeftX())
-        {
-            adjustedCropBox.setLowerLeftX(tmpMediaBox.getLowerLeftX());
-        }
-        else
-        {
-            adjustedCropBox.setLowerLeftX(tmpCropBox.getLowerLeftX());
-        }
-        if (tmpMediaBox.getLowerLeftY() > tmpCropBox.getLowerLeftY())
-        {
-            adjustedCropBox.setLowerLeftY(tmpMediaBox.getLowerLeftY());
-        }
-        else
-        {
-            adjustedCropBox.setLowerLeftY(tmpCropBox.getLowerLeftY());
-        }
-        if (tmpMediaBox.getUpperRightX() < tmpCropBox.getUpperRightX())
-        {
-            adjustedCropBox.setUpperRightX(tmpMediaBox.getUpperRightX());
-        }
-        else
-        {
-            adjustedCropBox.setUpperRightX(tmpCropBox.getUpperRightX());
-        }
-        if (tmpMediaBox.getUpperRightY() < tmpCropBox.getUpperRightY())
-        {
-            adjustedCropBox.setUpperRightY(tmpMediaBox.getUpperRightY());
-        }
-        else
-        {
-            adjustedCropBox.setUpperRightY(tmpCropBox.getUpperRightY());
-        }
-        
-        return adjustedCropBox;
+        PDRectangle mediaBox = getMediaBox();
+        PDRectangle result = new PDRectangle();
+        result.setLowerLeftX(Math.max(mediaBox.getLowerLeftX(), box.getLowerLeftX()));
+        result.setLowerLeftY(Math.max(mediaBox.getLowerLeftY(), box.getLowerLeftY()));
+        result.setUpperRightX(Math.min(mediaBox.getUpperRightX(), box.getUpperRightX()));
+        result.setUpperRightY(Math.min(mediaBox.getUpperRightY(), box.getUpperRightY()));
+        return result;
     }
 
     /**
      * A value representing the rotation. This will be null if not set at this level The number of
      * degrees by which the page should be rotated clockwise when displayed or printed. The value
      * must be a multiple of 90.
-     * 
-     * <p>This will get the rotation at this page and not look up the hierarchy. This attribute is
-     * inheritable, and findRotation() should probably used. This will return null if no rotation
-     * is available at this level.
-     * 
-     * @return The rotation at this level in the hierarchy.
      */
-    public Integer getRotation()
+    public int getRotation()
     {
-        Integer retval = null;
-        COSNumber value = (COSNumber) page.getDictionaryObject(COSName.ROTATE);
+        COSNumber value = (COSNumber) PDPageTree.getInheritedAttribute(page, COSName.ROTATE);
         if (value != null)
         {
-            retval = value.intValue();
+           return value.intValue();
         }
-        return retval;
-    }
-
-    /**
-     * This will find the rotation for this page by looking up the hierarchy until it finds them.
-     * 
-     * @return The rotation at this level in the hierarchy.
-     */
-    public int findRotation()
-    {
-        int retval = 0;
-        Integer rotation = getRotation();
-        if (rotation != null)
-        {
-            retval = rotation;
-        }
-        else
-        {
-            PDPageNode parentNode = getParent();
-            if (parentNode != null)
-            {
-                retval = parentNode.findRotation();
-            }
-        }
-
-        return retval;
+        return 0;
     }
 
     /**
@@ -612,7 +403,7 @@ public class PDPage implements COSObjectable
      * @return The page content stream.
      * @throws IOException If there is an error obtaining the stream.
      */
-    public PDStream getContents() throws IOException
+    public PDStream getStream() throws IOException
     {
         return PDStream.createFromCOS(page.getDictionaryObject(COSName.CONTENTS));
     }
@@ -743,7 +534,6 @@ public class PDPage implements COSObjectable
                 COSBase item = annots.getObject(i);
             	if (item == null)
             	{
-            		LOG.debug("Skipped annotation due to a null reference.");
             		continue;
             	}
                 actuals.add(PDAnnotation.createAnnotation(item));

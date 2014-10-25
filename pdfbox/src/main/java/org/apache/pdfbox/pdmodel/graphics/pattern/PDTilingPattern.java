@@ -18,11 +18,13 @@ package org.apache.pdfbox.pdmodel.graphics.pattern;
 
 import java.awt.geom.AffineTransform;
 
+import org.apache.pdfbox.contentstream.PDContentStream;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.util.Matrix;
@@ -31,7 +33,7 @@ import org.apache.pdfbox.util.Matrix;
  * A tiling pattern dictionary.
  * @author Andreas Lehmkühler
  */
-public class PDTilingPattern extends PDAbstractPattern
+public class PDTilingPattern extends PDAbstractPattern implements PDContentStream
 {
     /** paint type 1 = colored tiling pattern. */
     public static final int PAINT_COLORED = 1;
@@ -165,6 +167,12 @@ public class PDTilingPattern extends PDAbstractPattern
         return getCOSDictionary().getFloat( COSName.Y_STEP, 0 );
     }
 
+    @Override
+    public COSStream getContentStream()
+    {
+        return (COSStream)getCOSObject();
+    }
+
     /**
      * This will get the resources for this pattern.
      * This will return null if no resources are available at this level.
@@ -203,8 +211,9 @@ public class PDTilingPattern extends PDAbstractPattern
      * below), giving the coordinates of the left, bottom, right, and top edges,
      * respectively, of the pattern's bounding box.
      *
-     * @return The BBox of the form.
+     * @return The BBox of the pattern.
      */
+    @Override
     public PDRectangle getBBox()
     {
         PDRectangle retval = null;

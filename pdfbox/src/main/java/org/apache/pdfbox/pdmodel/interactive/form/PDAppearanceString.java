@@ -242,7 +242,7 @@ public final class PDAppearanceString
                 {
                     COSStream cosStream = acroForm.getDocument().getDocument().createCOSStream();
                     appearanceStream = new PDAppearanceStream(cosStream);
-                    appearanceStream.setBoundingBox(widget.getRectangle()
+                    appearanceStream.setBBox(widget.getRectangle()
                             .createRetranslatedRectangle());
                     appearance.setNormalAppearance(appearanceStream);
                 }
@@ -284,7 +284,7 @@ public final class PDAppearanceString
                         ByteArrayOutputStream output = new ByteArrayOutputStream();
                         ContentStreamWriter writer = new ContentStreamWriter(output);
                         float fontSize = calculateFontSize(pdFont,
-                                appearanceStream.getBoundingBox(), tokens, null);
+                                appearanceStream.getBBox(), tokens, null);
                         boolean foundString = false;
                         for (Object token : tokens)
                         {
@@ -340,7 +340,7 @@ public final class PDAppearanceString
     {
         PrintWriter printWriter = new PrintWriter(output, true);
         float fontSize = 0.0f;
-        PDRectangle boundingBox = appearanceStream.getBoundingBox();
+        PDRectangle boundingBox = appearanceStream.getBBox();
         if (boundingBox == null)
         {
             boundingBox = fieldWidget.getRectangle().createRetranslatedRectangle();

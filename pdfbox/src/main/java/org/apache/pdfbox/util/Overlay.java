@@ -137,8 +137,7 @@ public class Overlay
                 specificPageOverlay.put(e.getKey(), doc);
                 specificPageOverlayPage.put(e.getKey(), getLayoutPage(doc));
             }
-            PDDocumentCatalog pdfCatalog = sourcePDFDocument.getDocumentCatalog();
-            processPages(pdfCatalog.getAllPages());
+            processPages(sourcePDFDocument);
 
             sourcePDFDocument.save(outputFilename);
         }
@@ -214,10 +213,9 @@ public class Overlay
 
     private LayoutPage getLayoutPage(PDDocument doc) throws IOException
     {
-        PDDocumentCatalog catalog = doc.getDocumentCatalog();
-        PDPage page = (PDPage) catalog.getAllPages().get(0);
+        PDPage page = doc.getPage(0);
         COSBase contents = page.getCOSObject().getDictionaryObject(COSName.CONTENTS);
-        PDResources resources = page.findResources();
+        PDResources resources = page.getResources();
         if (resources == null)
         {
             resources = new PDResources();
@@ -233,9 +231,9 @@ public class Overlay
         HashMap<Integer,LayoutPage> layoutPages = new HashMap<Integer, Overlay.LayoutPage>(numberOfPages);
         for (int i=0;i<numberOfPages;i++)
         {
-            PDPage page = (PDPage) catalog.getAllPages().get(i);
+            PDPage page = doc.getPage(i);
             COSBase contents = page.getCOSObject().getDictionaryObject(COSName.CONTENTS);
-            PDResources resources = page.findResources();
+            PDResources resources = page.getResources();
             if (resources == null)
             {
                 resources = new PDResources();
@@ -292,10 +290,10 @@ public class Overlay
         return contentStreams;
     }
 
-    private void processPages(List<PDPage> pages) throws IOException
+    private void processPages(PDDocument document) throws IOException
     {
         int pageCount = 0;
-        for (PDPage page : pages)
+        for (PDPage page : document.getPages())
         {
             COSDictionary pageDictionary = page.getCOSObject();
             COSBase contents = pageDictionary.getDictionaryObject(COSName.CONTENTS);
@@ -321,11 +319,11 @@ public class Overlay
                 // restore state
                 contentArray.add(createStream("Q\n"));
                 // overlay content
-                overlayPage(contentArray, page, pageCount + 1, pages.size());
+                overlayPage(contentArray, page, pageCount + 1, document.getNumberOfPages());
                 break;
             case BACKGROUND:
                 // overlay content
-                overlayPage(contentArray, page, pageCount + 1, pages.size());
+                overlayPage(contentArray, page, pageCount + 1, document.getNumberOfPages());
                 // original content
                 if (contents instanceof COSStream)
                 {
@@ -383,7 +381,7 @@ public class Overlay
         }
         if (layoutPage != null)
         {
-            PDResources resources = page.findResources();
+            PDResources resources = page.getResources();
             if (resources == null)
             {
                 resources = new PDResources();
@@ -402,7 +400,7 @@ public class Overlay
         xobjForm.setFormType(1);
         xobjForm.setBBox( layoutPage.overlayMediaBox.createRetranslatedRectangle());
         xobjForm.setMatrix(new AffineTransform());
-        PDResources resources = page.findResources();
+        PDResources resources = page.getResources();
         return resources.add(xobjForm, "OL");
     }
 

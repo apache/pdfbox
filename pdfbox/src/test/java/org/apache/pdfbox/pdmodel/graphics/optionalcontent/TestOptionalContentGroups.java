@@ -65,7 +65,7 @@ public class TestOptionalContentGroups extends TestCase
             //Create new page
             PDPage page = new PDPage();
             doc.addPage(page);
-            PDResources resources = page.findResources();
+            PDResources resources = page.getResources();
             if( resources == null )
             {
                 resources = new PDResources();
@@ -173,7 +173,7 @@ public class TestOptionalContentGroups extends TestCase
             PDDocumentCatalog catalog = doc.getDocumentCatalog();
             assertEquals("1.5", catalog.getVersion());
 
-            PDPage page = (PDPage)catalog.getAllPages().get(0);
+            PDPage page = doc.getPage(0);
             PDOptionalContentGroup ocg = (PDOptionalContentGroup)page.getResources()
                     .getProperties(COSName.getPDFName("MC0"));
             assertNotNull(ocg);

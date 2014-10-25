@@ -16,8 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination;
 
-import java.util.List;
-
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -25,7 +23,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageNode;
+import org.apache.pdfbox.pdmodel.PDPageTree;
 
 /**
  * This represents a destination to a page, see subclasses for specific parameters.
@@ -121,7 +119,8 @@ public abstract class PDPageDestination extends PDDestination
      * @see org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem
      * @return page number, or -1 if the destination type is unknown
      */
-    public int findPageNumber() {
+    public int findPageNumber()
+    {
         int retval = -1;
         if( array.size() > 0 )
         {
@@ -138,9 +137,8 @@ public abstract class PDPageDestination extends PDDestination
                     parent = ((COSDictionary) parent).getDictionaryObject(COSName.PARENT, COSName.P);
                 }
                 // now parent is the pages node
-                PDPageNode pages = new PDPageNode((COSDictionary) parent);
-                List<PDPage> allPages = pages.getAllKids();
-                retval = allPages.indexOf(new PDPage((COSDictionary) page)) + 1;
+                PDPageTree pages = new PDPageTree((COSDictionary) parent);
+                return pages.indexOf(new PDPage((COSDictionary) page)) + 1;
             }
         }
         return retval;

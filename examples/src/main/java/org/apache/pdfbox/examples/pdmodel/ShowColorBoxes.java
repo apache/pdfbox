@@ -63,7 +63,7 @@ public class ShowColorBoxes
             PDPageContentStream contentStream = new PDPageContentStream(doc, page);
             //first fill the entire background with cyan
             contentStream.setNonStrokingColor( Color.CYAN );
-            contentStream.fillRect( 0,0, page.findMediaBox().getWidth(), page.findMediaBox().getHeight() );
+            contentStream.fillRect( 0,0, page.getMediaBox().getWidth(), page.getMediaBox().getHeight() );
 
             //then draw a red box in the lower left hand corner
             contentStream.setNonStrokingColor( Color.RED );

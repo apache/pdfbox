@@ -23,7 +23,6 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocume
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * This is an example on how to an action to go to the second page when the PDF is opened.
@@ -65,8 +64,7 @@ public class GoToSecondBookmarkOnOpen
                     System.exit( 1 );
                 }
 
-                List pages = document.getDocumentCatalog().getAllPages();
-                if( pages.size() < 2 )
+                if( document.getNumberOfPages() < 2 )
                 {
                     throw new IOException( "Error: The PDF must have at least 2 pages.");
                 }

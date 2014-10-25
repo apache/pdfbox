@@ -87,17 +87,10 @@ public class PageExtractorTest extends TestCase {
             assertEquals(6, result.getNumberOfPages());
             closeDoc(result);
             
-            instance = new PageExtractor(sourcePdf, -100, 50000);
-            result = instance.extract();
-            assertEquals(sourcePdf.getNumberOfPages(), result.getNumberOfPages());
-            closeDoc(result);
-            
             instance = new PageExtractor(sourcePdf, 2, 1);
             result = instance.extract();
             assertEquals(0, result.getNumberOfPages());
             closeDoc(result);
-        } catch(Exception e) {
-            fail("Exception was thrown: " + e.getMessage());
         } finally {
             closeDoc(sourcePdf);
             closeDoc(result);

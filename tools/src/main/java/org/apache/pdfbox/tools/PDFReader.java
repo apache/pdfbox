@@ -32,6 +32,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 
+import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.printing.PDFPrinter;
 import org.apache.pdfbox.rendering.PDFRenderer;
@@ -63,7 +64,7 @@ public class PDFReader extends JFrame
 
     private PDFRenderer renderer;
     private PDDocument document = null;
-    private List<PDPage> pages = null;
+    private PDPageTree pages = null;
 
     private int currentPage = 0;
     private int numberOfPages = 0;
@@ -347,8 +348,8 @@ public class PDFReader extends JFrame
 
         File file = new File(filename);
         parseDocument(file, password);
-        pages = document.getDocumentCatalog().getAllPages();
-        numberOfPages = pages.size();
+        pages = document.getPages();
+        numberOfPages = document.getNumberOfPages();
         currentFilename = file.getAbsolutePath();
         currentPage = 0;
         updateTitle();

@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
@@ -60,9 +61,9 @@ public class TilingPaint extends TexturePaint
      * @throws java.io.IOException if something goes wrong while drawing the
      * pattern
      */
-    public TilingPaint(PDFRenderer renderer, PDTilingPattern pattern, Matrix matrix, AffineTransform xform) throws IOException
+    public TilingPaint(PDFRenderer renderer, PDPage page, PDTilingPattern pattern, Matrix matrix, AffineTransform xform) throws IOException
     {
-        super(getImage(renderer, pattern, null, null, matrix, xform), getTransformedRect(pattern, matrix));
+        super(getImage(renderer, page, pattern, null, null, matrix, xform), getTransformedRect(pattern, matrix));
     }
 
     /**
@@ -77,10 +78,10 @@ public class TilingPaint extends TexturePaint
      * 
      * @throws java.io.IOException if something goes wrong while drawing the pattern
      */
-    public TilingPaint(PDFRenderer renderer, PDTilingPattern pattern, PDColorSpace colorSpace,
+    public TilingPaint(PDFRenderer renderer, PDPage page, PDTilingPattern pattern, PDColorSpace colorSpace,
             PDColor color, Matrix matrix, AffineTransform xform) throws IOException
     {
-        super(getImage(renderer, pattern, colorSpace, color, matrix, xform), getTransformedRect(pattern, matrix));
+        super(getImage(renderer, page, pattern, colorSpace, color, matrix, xform), getTransformedRect(pattern, matrix));
     }
 
     //  gets rect in parent content stream coordinates
@@ -136,7 +137,7 @@ public class TilingPaint extends TexturePaint
     }
 
     // gets image in parent stream coordinates
-    private static BufferedImage getImage(PDFRenderer renderer, PDTilingPattern pattern,
+    private static BufferedImage getImage(PDFRenderer renderer, PDPage page, PDTilingPattern pattern,
             PDColorSpace colorSpace, PDColor color, Matrix matrix, AffineTransform xform) throws IOException
     {
         ColorSpace outputCS = ColorSpace.getInstance(ColorSpace.CS_sRGB);
@@ -160,7 +161,7 @@ public class TilingPaint extends TexturePaint
         matrix.setValue(2, 1, matrix.getValue(2, 1) - (float) p.getY()); // ty
 
         // TODO: need to make it easy to use a custom TilingPatternDrawer
-        PageDrawer drawer = new TilingPatternDrawer(renderer);
+        PageDrawer drawer = new TilingPatternDrawer(renderer, page);
         PDRectangle pdRect = new PDRectangle(0, 0, width, height);
 
         Graphics2D graphics = image.createGraphics();

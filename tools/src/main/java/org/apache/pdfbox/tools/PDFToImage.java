@@ -325,17 +325,15 @@ public class PDFToImage
 
     private static void changeCropBox(PDDocument document, float a, float b, float c, float d)
     {
-        List pages = document.getDocumentCatalog().getAllPages();
-        for( int i = 0; i < pages.size(); i++ )
+        for (PDPage page : document.getPages())
         {
-              System.out.println("resizing page");
-              PDPage page = (PDPage)pages.get( i );
-              PDRectangle rectangle = new PDRectangle();
-              rectangle.setLowerLeftX(a);
-              rectangle.setLowerLeftY(b);
-              rectangle.setUpperRightX(c);
-              rectangle.setUpperRightY(d);
-              page.setCropBox(rectangle);
+            System.out.println("resizing page");
+            PDRectangle rectangle = new PDRectangle();
+            rectangle.setLowerLeftX(a);
+            rectangle.setLowerLeftY(b);
+            rectangle.setUpperRightX(c);
+            rectangle.setUpperRightY(d);
+            page.setCropBox(rectangle);
 
         }
     }

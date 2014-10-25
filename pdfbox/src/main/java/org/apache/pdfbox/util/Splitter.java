@@ -194,11 +194,11 @@ public class Splitter
     {
         createNewDocumentIfNecessary();
         PDPage imported = getDestinationDocument().importPage(page);
-        imported.setCropBox(page.findCropBox());
-        imported.setMediaBox(page.findMediaBox());
+        imported.setCropBox(page.getCropBox());
+        imported.setMediaBox(page.getMediaBox());
         // only the resources of the page will be copied
         imported.setResources(page.getResources());
-        imported.setRotation(page.findRotation());
+        imported.setRotation(page.getRotation());
     }
 
     /**

@@ -40,9 +40,9 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.font.PDCIDFontType0;
 import org.apache.pdfbox.pdmodel.font.PDCIDFontType2;
+import org.apache.pdfbox.pdmodel.font.PDType3CharProc;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImage;
 import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
 import org.apache.pdfbox.rendering.font.CIDType0Glyph2D;
@@ -105,7 +105,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     private final Map<PDFont, Glyph2D> fontGlyph2D = new HashMap<PDFont, Glyph2D>();
     
     /**
-     * Default constructor, loads properties from file.
+     * Constructor.
      * 
      * @param renderer renderer to render the page.
      * @param page the page that is to be rendered.
@@ -114,18 +114,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     public PageDrawer(PDFRenderer renderer, PDPage page) throws IOException
     {
         super(page);
-        this.renderer = renderer;
-    }
-
-    /**
-     * Tiling pattern constructor, loads properties from file.
-     * 
-     * @param renderer renderer to render the page
-     * @throws IOException If there is an error loading properties from the file.
-     */
-    PageDrawer(PDFRenderer renderer) throws IOException
-    {
-        super(null);
         this.renderer = renderer;
     }
 
@@ -168,20 +156,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         // TODO use getStroke() to set the initial stroke
         graphics.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
 
-        // Only if there is some content, we have to process it.
-        // Otherwise we are done here and we will produce an empty page
         PDPage page = getPage();
-        
-        PDRectangle adjustedCropBox = page.calcAdjustedCropBox();
-        
-        if (page.getContents() != null)
-        {
-            processStream(page.findResources(), page.getContents().getStream(), adjustedCropBox);
-        }
-        else
-        {
-            initStream(adjustedCropBox);
-        }
+        processPage(page);
 
         for (PDAnnotation annotation : page.getAnnotations())
         {
@@ -202,7 +178,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                     {
                         saveGraphicsState();
 
-                        PDRectangle bBox = appearance.getBoundingBox();
+                        PDRectangle bBox = appearance.getBBox();
                         
                         Rectangle2D rect2D = new Rectangle2D.Float(
                                 rect.getLowerLeftX(), 
@@ -268,7 +244,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
                         graphics.translate((int) point.getX(), (int) point.getY());
                         lastClip = null;
-                        processSubStream(appearance.getResources(), appearance.getStream());
+                        processChildStream(appearance);
                         graphics.translate(-(int) point.getX(), -(int) point.getY());
                        
                         restoreGraphicsState();
@@ -297,12 +273,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         graphics = g;
         setRenderingHints();
 
-        initStream(pageDimension);
-
-        // transformPoint ctm
-        Matrix concat = matrix.multiply(getGraphicsState().getCurrentTransformationMatrix());
-        getGraphicsState().setCurrentTransformationMatrix(concat);
-
         // color
         if (colorSpace != null)
         {
@@ -312,7 +282,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             getGraphicsState().setStrokingColor(color);
         }
 
-        processSubStream(pattern.getResources(), (COSStream)pattern.getCOSObject());
+        processChildStreamWithMatrix(pattern, getPage(), matrix, pageDimension);
     }
 
     // sets the clipping path using caching for performance, we track lastClip manually because
@@ -442,8 +412,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
      */
     private void drawType3String(PDType3Font font, int code, AffineTransform at) throws IOException
     {
-        COSStream stream = font.getCharStream(code);
-        if (stream != null)
+        PDType3CharProc charProc = font.getCharProc(code);
+        if (charProc != null)
         {
             // save the current graphics state and matrices
             saveGraphicsState();
@@ -453,7 +423,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             Matrix ctm = new Matrix();
             ctm.setFromAffineTransform(at);
             getGraphicsState().setCurrentTransformationMatrix(ctm);
-            processSubStream(font.getType3Resources(), stream);
+            processChildStream(charProc);
 
             // restore the saved graphics state and matrices
             restoreGraphicsState();
@@ -592,7 +562,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     {
         PDGraphicsState graphicsState = getGraphicsState();
         return applySoftMaskToPaint(graphicsState.getStrokingColorSpace()
-                .toPaint(renderer, graphicsState.getStrokingColor(),
+                .toPaint(renderer, getPage(), graphicsState.getStrokingColor(),
                          getSubStreamMatrix(), xform),
                 graphicsState.getSoftMask());
     }
@@ -601,7 +571,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     private Paint getNonStrokingPaint() throws IOException
     {
         return getGraphicsState().getNonStrokingColorSpace()
-                .toPaint(renderer, getGraphicsState().getNonStrokingColor(),
+                .toPaint(renderer, getPage(), getGraphicsState().getNonStrokingColor(),
                          getSubStreamMatrix(), xform);
     }
 
@@ -816,7 +786,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             PDColorSpace colorSpace = getGraphicsState().getNonStrokingColorSpace();
             PDColor color = getGraphicsState().getNonStrokingColor();
             BufferedImage image = pdImage.getStencilImage(
-                    colorSpace.toPaint(renderer, color, getSubStreamMatrix(), xform));
+                    colorSpace.toPaint(renderer, getPage(), color, getSubStreamMatrix(), xform));
 
             // draw the image
             drawBufferedImage(image, at);
@@ -904,12 +874,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         saveGraphicsState();
         try
         {
-            PDResources pdResources = form.getResources();
-            if (pdResources == null)
-            {
-                pdResources = getResources();
-            }
-
             // if there is an optional form matrix, we have to map the form space to the user space
             Matrix matrix = form.getMatrix();
             if(matrix != null)
@@ -920,7 +884,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
             PDRectangle bBox = form.getBBox();
             GeneralPath path = transformedPDRectanglePath(bBox);
-            return new TransparencyGroup(path, pdResources, form.getCOSStream());
+            return new TransparencyGroup(path, form);
         }
         finally
         {
@@ -945,11 +909,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
          * Creates a buffered image for a transparency group result.
          *
          * @param clippingPath clipping path (in current graphics2D coordinates)
-         * @param resources Global resources
-         * @param content Content of the transparency group to create
          */
-        private TransparencyGroup(GeneralPath clippingPath, PDResources resources,
-                                  COSStream content) throws IOException
+        private TransparencyGroup(GeneralPath clippingPath, PDFormXObject form) throws IOException
         {
             Graphics2D g2dOriginal = graphics;
             Area lastClipOriginal = lastClip;
@@ -1004,7 +965,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             graphics = g;
             try
             {
-                processSubStream(resources, content);
+                processChildStream(form);
             }
             finally 
             {
