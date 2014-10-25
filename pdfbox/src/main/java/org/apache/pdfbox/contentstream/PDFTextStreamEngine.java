@@ -64,7 +64,7 @@ import org.apache.pdfbox.contentstream.operator.text.ShowText;
  */
 public class PDFTextStreamEngine extends PDFStreamEngine
 {
-    private static final Log log = LogFactory.getLog(PDFStreamEngine.class);
+    private static final Log log = LogFactory.getLog(PDFTextStreamEngine.class);
 
     private int pageRotation;
     private PDRectangle pageSize;

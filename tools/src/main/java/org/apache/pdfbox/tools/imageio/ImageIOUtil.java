@@ -34,7 +34,6 @@ import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageOutputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import static org.apache.pdfbox.tools.imageio.MetaUtil.STANDARD_METADATA_FORMAT;
 import org.w3c.dom.NodeList;
 
 /**

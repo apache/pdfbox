@@ -34,7 +34,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class MetaUtil
 {
-    private static final Log LOG = LogFactory.getLog(TIFFUtil.class);
+    private static final Log LOG = LogFactory.getLog(MetaUtil.class);
 
     static final String SUN_TIFF_FORMAT = "com_sun_media_imageio_plugins_tiff_image_1.0";
     static final String JPEG_NATIVE_FORMAT = "javax_imageio_jpeg_image_1.0";
