@@ -39,7 +39,7 @@ import org.apache.pdfbox.util.Vector;
  */
 public class PDType3Font extends PDSimpleFont
 {
-    private static final Log LOG = LogFactory.getLog(PDFont.class);
+    private static final Log LOG = LogFactory.getLog(PDType3Font.class);
 
 	private PDResources type3Resources = null;
     private COSDictionary charProcs = null;

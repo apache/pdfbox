@@ -21,7 +21,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.pdfparser.BaseParser;
 import org.apache.pdfbox.util.Overlay;
 import org.apache.pdfbox.util.Overlay.Position;
 
@@ -34,7 +33,7 @@ import org.apache.pdfbox.util.Overlay.Position;
  */
 public class OverlayPDF 
 {
-    private static final Log LOG = LogFactory.getLog(BaseParser.class);
+    private static final Log LOG = LogFactory.getLog(OverlayPDF.class);
 
     // Command line options
     private static final String POSITION = "-position";
