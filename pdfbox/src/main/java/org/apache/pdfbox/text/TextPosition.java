@@ -602,34 +602,18 @@ public final class TextPosition
      */
     private void insertDiacritic(int i, TextPosition diacritic)
     {
-        // we add the diacritic to the right or left of the character depending on the direction
-        // of the character. Note that this is only required because the text is currently stored in
-        // presentation order and not in logical order
-        int dir = Character.getDirectionality(unicode.charAt(i));
         StringBuilder sb = new StringBuilder();
-
         sb.append(unicode.substring(0, i));
 
         float[] widths2 = new float[widths.length + 1];
         System.arraycopy(widths, 0, widths2, 0, i);
 
-        if (dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT ||
-            dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC ||
-            dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_EMBEDDING ||
-            dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_OVERRIDE)
-        {
-            sb.append(combineDiacritic(diacritic.getUnicode()));
-            widths2[i] = 0;
-            sb.append(unicode.charAt(i));
-            widths2[i + 1] = widths[i];
-        }
-        else
-        {
-            sb.append(unicode.charAt(i));
-            widths2[i] = widths[i];
-            sb.append(combineDiacritic(diacritic.getUnicode()));
-            widths2[i + 1] = 0;
-        }
+        // Unicode combining diacritics always go after the base character, regardless of whether
+        // the string is in presentation order or logical order
+        sb.append(unicode.charAt(i));
+        widths2[i] = widths[i];
+        sb.append(combineDiacritic(diacritic.getUnicode()));
+        widths2[i + 1] = 0;
 
         // get the rest of the string
         sb.append(unicode.substring(i + 1, unicode.length()));
@@ -670,7 +654,7 @@ public final class TextPosition
         String text = this.getUnicode();
         if (text.length() != 1)
         {
-            return false; 
+            return false;
         }
         int type = Character.getType(text.charAt(0));
         return type == Character.NON_SPACING_MARK ||
