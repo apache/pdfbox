@@ -1163,6 +1163,8 @@ public class PDFTextStripper extends PDFStreamEngine
      * explicitly using this method.
      *
      * @param separator The desired page separator string.
+     * 
+     * @deprecated use {@link #setPageStart(String) and {@link #setPageEnd(String)} instead
      */
     public void setPageSeparator(String separator)
     {
@@ -1197,6 +1199,8 @@ public class PDFTextStripper extends PDFStreamEngine
      * This will get the page separator.
      *
      * @return The page separator string.
+     * 
+     * @deprecated use {@link #getPageStart()} and {@link #getPageEnd()} instead
      */
     public String getPageSeparator()
     {
