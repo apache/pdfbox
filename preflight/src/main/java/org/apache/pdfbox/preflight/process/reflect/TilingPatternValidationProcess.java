@@ -65,23 +65,23 @@ public class TilingPatternValidationProcess extends AbstractProcess
 
     protected void parseResources(PreflightContext context, PDPage page, PDTilingPattern pattern)
             throws ValidationException
-            {
+    {
         PDResources resources = pattern.getResources();
         if (resources != null)
         {
             ContextHelper.validateElement(context, resources, RESOURCES_PROCESS);
         }
-            }
+    }
 
     /**
      * Validate the Pattern content like Color and Show Text Operators using an instance of ContentStreamWrapper.
      */
     protected void parsePatternContent(PreflightContext context, PDPage page, PDTilingPattern pattern)
             throws ValidationException
-            {
+    {
         PreflightContentStream csWrapper = new PreflightContentStream(context, page);
-        csWrapper.validPatternContentStream((COSStream) pattern.getCOSObject());
-            }
+        csWrapper.validPatternContentStream(pattern);
+    }
 
     /**
      * This method checks if required fields are present.

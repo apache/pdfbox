@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.interactive.annotation;
 
 import java.awt.geom.AffineTransform;
 
+import org.apache.pdfbox.contentstream.PDContentStream;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -32,17 +33,18 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.util.Matrix;
 
-
 /**
  * This class represents an appearance for an annotation.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.4 $
+ * @author Ben Litchfield
  */
-public class PDAppearanceStream implements COSObjectable
+public class PDAppearanceStream implements COSObjectable, PDContentStream
 {
     private COSStream stream = null;
 
+    private PDAppearanceStream()
+    {
+    }
 
     /**
      * Constructor.
@@ -78,7 +80,8 @@ public class PDAppearanceStream implements COSObjectable
      *
      * @return The bounding box for this appearance.
      */
-    public PDRectangle getBoundingBox()
+    @Override
+    public PDRectangle getBBox()
     {
         PDRectangle box = null;
         COSArray bbox = (COSArray)stream.getDictionaryObject( COSName.BBOX );
@@ -94,7 +97,7 @@ public class PDAppearanceStream implements COSObjectable
      *
      * @param rectangle The new bounding box.
      */
-    public void setBoundingBox( PDRectangle rectangle )
+    public void setBBox(PDRectangle rectangle)
     {
         COSArray array = null;
         if( rectangle != null )
@@ -104,11 +107,18 @@ public class PDAppearanceStream implements COSObjectable
         stream.setItem( COSName.BBOX, array );
     }
 
+    @Override
+    public COSStream getContentStream()
+    {
+        return getStream();
+    }
+
     /**
      * This will get the resources for this appearance stream.
      *
      * @return The appearance stream resources.
      */
+    @Override
     public PDResources getResources()
     {
         PDResources retval = null;

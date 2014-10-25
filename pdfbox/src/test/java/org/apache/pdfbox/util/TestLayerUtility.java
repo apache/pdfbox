@@ -70,8 +70,7 @@ public class TestLayerUtility extends TestCase
         {
             LayerUtility layerUtil = new LayerUtility(targetDoc);
             PDFormXObject form = layerUtil.importPageAsForm(overlay1Doc, 0);
-            PDDocumentCatalog catalog = targetDoc.getDocumentCatalog();
-            PDPage targetPage = (PDPage)catalog.getAllPages().get(0);
+            PDPage targetPage = targetDoc.getPage(0);
             layerUtil.wrapInSaveRestore(targetPage);
             AffineTransform at = new AffineTransform();
             PDOptionalContentGroup ocg = layerUtil.appendFormAsLayer(
@@ -98,8 +97,8 @@ public class TestLayerUtility extends TestCase
             //assertEquals("%PDF-1.5", doc.getDocument().getHeaderString());
             //assertEquals("1.5", catalog.getVersion());
 
-            PDPage page = (PDPage)catalog.getAllPages().get(0);
-            PDOptionalContentGroup ocg = (PDOptionalContentGroup)page.findResources()
+            PDPage page = doc.getPage(0);
+            PDOptionalContentGroup ocg = (PDOptionalContentGroup)page.getResources()
                     .getProperties(COSName.getPDFName("MC0"));
             assertNotNull(ocg);
             assertEquals("overlay", ocg.getName());
@@ -123,7 +122,7 @@ public class TestLayerUtility extends TestCase
             //Create new page
             PDPage page = new PDPage();
             doc.addPage(page);
-            PDResources resources = page.findResources();
+            PDResources resources = page.getResources();
             if( resources == null )
             {
                 resources = new PDResources();
@@ -178,7 +177,7 @@ public class TestLayerUtility extends TestCase
             //Create new page
             PDPage page = new PDPage();
             doc.addPage(page);
-            PDResources resources = page.findResources();
+            PDResources resources = page.getResources();
             if( resources == null )
             {
                 resources = new PDResources();
@@ -195,7 +194,7 @@ public class TestLayerUtility extends TestCase
             String text = "OVERLAY";
             //float sw = font.getStringWidth(text);
             //Too bad, base 14 fonts don't return character metrics.
-            PDRectangle crop = page.findCropBox();
+            PDRectangle crop = page.getCropBox();
             float cx = crop.getWidth() / 2f;
             float cy = crop.getHeight() / 2f;
             AffineTransform transform = new AffineTransform();

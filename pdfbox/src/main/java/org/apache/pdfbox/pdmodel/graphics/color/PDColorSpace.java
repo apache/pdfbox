@@ -20,6 +20,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
+import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.rendering.PDFRenderer;
@@ -247,7 +248,7 @@ public abstract class PDColorSpace implements COSObjectable
      * @return an AWT paint
      * @throws IOException if the color conversion fails
      */
-    public Paint toPaint(PDFRenderer renderer, PDColor color, Matrix subStreamMatrix,
+    public Paint toPaint(PDFRenderer renderer, PDPage page, PDColor color, Matrix subStreamMatrix,
                          AffineTransform xform) throws IOException
     {
         float[] rgb = toRGB(color.getComponents());

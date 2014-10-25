@@ -22,8 +22,6 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPa
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 
-import java.util.List;
-
 /**
  * This is an example on how to add bookmarks to a PDF document.  It simply
  * adds 1 bookmark for every page.
@@ -69,15 +67,15 @@ public class CreateBookmarks
                 PDOutlineItem pagesOutline = new PDOutlineItem();
                 pagesOutline.setTitle( "All Pages" );
                 outline.appendChild( pagesOutline );
-                List pages = document.getDocumentCatalog().getAllPages();
-                for( int i=0; i<pages.size(); i++ )
+                int pageNum = 0;
+                for( PDPage page : document.getPages() )
                 {
-                    PDPage page = (PDPage)pages.get( i );
+                    pageNum++;
                     PDPageFitWidthDestination dest = new PDPageFitWidthDestination();
                     dest.setPage( page );
                     PDOutlineItem bookmark = new PDOutlineItem();
                     bookmark.setDestination( dest );
-                    bookmark.setTitle( "Page " + (i+1) );
+                    bookmark.setTitle( "Page " + pageNum );
                     pagesOutline.appendChild( bookmark );
                 }
                 pagesOutline.openNode();

@@ -20,7 +20,6 @@ import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -112,9 +111,9 @@ public class PDVisibleSignDesigner
             throw new IllegalArgumentException("First page of pdf is 1, not " + page);
         }
 
-        List<?> pages = document.getDocumentCatalog().getAllPages();
-        PDPage firstPage =(PDPage) pages.get(page - 1);
-        PDRectangle mediaBox = firstPage.findMediaBox();
+
+        PDPage firstPage = document.getPage(page - 1);
+        PDRectangle mediaBox = firstPage.getMediaBox();
         pageHeight(mediaBox.getHeight());
         pageWidth = mediaBox.getWidth();
 

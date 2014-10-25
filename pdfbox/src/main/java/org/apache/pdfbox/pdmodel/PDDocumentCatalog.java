@@ -117,25 +117,12 @@ public class PDDocumentCatalog implements COSObjectable
     }
 
     /**
-     * This will get the root node for the pages.
-     *
-     * @return The parent page node.
+     * Returns all pages in the document, as a page tree.
      */
-    public PDPageNode getPages()
+    public PDPageTree getPages()
     {
-        return new PDPageNode((COSDictionary)root.getDictionaryObject(COSName.PAGES));
-    }
-
-    /**
-     * The PDF document contains a hierarchical structure of PDPageNode and PDPages, which is mostly
-     * just a way to store this information. This method will return a flat list of all PDPage
-     * objects in this document.
-     *
-     * @return A list of PDPage objects.
-     */
-    public List<PDPage> getAllPages()
-    {
-        return getPages().getAllKids();
+        // todo: cache me?
+        return new PDPageTree((COSDictionary)root.getDictionaryObject(COSName.PAGES));
     }
 
     /**

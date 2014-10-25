@@ -23,7 +23,6 @@ import org.apache.pdfbox.util.PDFTextStripperByArea;
 
 import java.awt.Rectangle;
 
-import java.util.List;
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 
 /**
@@ -78,8 +77,7 @@ public class ExtractTextByArea
                 stripper.setSortByPosition( true );
                 Rectangle rect = new Rectangle( 10, 280, 275, 60 );
                 stripper.addRegion( "class1", rect );
-                List allPages = document.getDocumentCatalog().getAllPages();
-                PDPage firstPage = (PDPage)allPages.get( 0 );
+                PDPage firstPage = document.getPage(0);
                 stripper.extractRegions( firstPage );
                 System.out.println( "Text in the area:" + rect );
                 System.out.println( stripper.getTextForRegion( "class1" ) );

@@ -29,9 +29,8 @@ import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSNumber;
-import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDType3CharProc;
 import org.apache.pdfbox.pdmodel.graphics.image.PDInlineImage;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.content.PreflightStreamEngine;
@@ -43,31 +42,37 @@ import org.apache.pdfbox.contentstream.operator.Operator;
  */
 public class PreflightType3Stream extends PreflightStreamEngine
 {
+    private final PDType3CharProc charProc;
+
     private boolean firstOperator = true;
     private float width = 0;
 
     private PDInlineImage image = null;
     private BoundingBox box = null;
 
-    public PreflightType3Stream(PreflightContext context, PDPage page)
+    public PreflightType3Stream(PreflightContext context, PDPage page, PDType3CharProc charProc)
     {
         super(context, page);
+        this.charProc = charProc;
+    }
+
+    @Override
+    public void showType3Character(PDType3CharProc charProc) throws IOException
+    {
+        processChildStream(charProc, new PDPage()); // dummy page (resource lookup may fail)
     }
 
     /**
      * This will parse a type3 stream and create an image from it.
-     * 
-     * @param type3Stream
-     *            The stream containing the operators to draw the image.
      * 
      * @return The image that was created.
      * 
      * @throws IOException
      *             If there is an error processing the stream.
      */
-    public Image createImage(COSStream type3Stream) throws IOException
+    public Image createImage() throws IOException
     {
-        processStream(null, type3Stream, new PDRectangle(0, 0, 1000, 1000)); // dummy bbox
+        showType3Character(charProc);
         return image.getImage();
     }
 

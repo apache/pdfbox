@@ -19,7 +19,6 @@ package org.apache.pdfbox.examples.pdmodel;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Iterator;
 
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
@@ -132,10 +131,8 @@ public class ExtractTTFFonts
                         StandardDecryptionMaterial sdm = new StandardDecryptionMaterial(password);
                         document.openProtection(sdm);
                     }
-                    Iterator<PDPage> iter = document.getDocumentCatalog().getAllPages().iterator();
-                    while (iter.hasNext())
+                    for (PDPage page : document.getPages())
                     {
-                        PDPage page = iter.next();
                         PDResources resources = page.getResources();
                         // extract all fonts which are part of the page resources
                         processResources(resources, prefix, addKey);

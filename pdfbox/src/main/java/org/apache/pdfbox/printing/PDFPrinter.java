@@ -19,8 +19,6 @@ package org.apache.pdfbox.printing;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.printing.Orientation;
-import org.apache.pdfbox.printing.Scaling;
 
 import javax.print.attribute.PrintRequestAttributeSet;
 import java.awt.BasicStroke;
@@ -309,7 +307,7 @@ public class PDFPrinter
             // auto portrait/landscape
             if (orientation == Orientation.AUTO)
             {
-                Dimension cropBox = page.findRotatedCropBox().createDimension();
+                Dimension cropBox = getRotatedCropBox(page).createDimension();
                 if (cropBox.getWidth() > cropBox.getHeight())
                 {
                     format.setOrientation(PageFormat.LANDSCAPE);
@@ -348,6 +346,27 @@ public class PDFPrinter
         }
     }
 
+    /**
+     * This will find the CropBox with rotation applied, for this page by looking up the hierarchy
+     * until it finds them.
+     *
+     * @return The CropBox at this level in the hierarchy.
+     */
+    private PDRectangle getRotatedCropBox(PDPage page)
+    {
+        PDRectangle cropBox = page.getCropBox();
+        int rotation = page.getRotation();
+        if (rotation == 90 || rotation == 270)
+        {
+            return new PDRectangle(cropBox.getLowerLeftY(), cropBox.getLowerLeftX(),
+                    cropBox.getHeight(), cropBox.getWidth());
+        }
+        else
+        {
+            return cropBox;
+        }
+    }
+
     protected class PDFPrintable implements Printable
     {
         @Override
@@ -363,7 +382,7 @@ public class PDFPrinter
                 Graphics2D graphics2D = (Graphics2D)graphics;
 
                 PDPage page = document.getPage(pageIndex);
-                PDRectangle cropBox = page.findRotatedCropBox();
+                PDRectangle cropBox = getRotatedCropBox(page);
 
                 // the imageable area is the area within the page margins
                 final double imageableWidth = pageFormat.getImageableWidth();

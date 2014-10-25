@@ -67,11 +67,11 @@ public class PrintURLs
             else
             {
                 doc = PDDocument.load( args[0] );
-                List allPages = doc.getDocumentCatalog().getAllPages();
-                for( int i=0; i<allPages.size(); i++ )
+                int pageNum = 0;
+                for( PDPage page : doc.getPages() )
                 {
+                    pageNum++;
                     PDFTextStripperByArea stripper = new PDFTextStripperByArea();
-                    PDPage page = (PDPage)allPages.get( i );
                     List annotations = page.getAnnotations();
                     //first setup text extraction regions
                     for( int j=0; j<annotations.size(); j++ )
@@ -86,10 +86,10 @@ public class PrintURLs
                             float y = rect.getUpperRightY();
                             float width = rect.getWidth();
                             float height = rect.getHeight();
-                            int rotation = page.findRotation();
+                            int rotation = page.getRotation();
                             if( rotation == 0 )
                             {
-                                PDRectangle pageSize = page.findMediaBox();
+                                PDRectangle pageSize = page.getMediaBox();
                                 y = pageSize.getHeight() - y;
                             }
                             else if( rotation == 90 )
@@ -115,7 +115,7 @@ public class PrintURLs
                             if( action instanceof PDActionURI )
                             {
                                 PDActionURI uri = (PDActionURI)action;
-                                System.out.println( "Page " + (i+1) +":'" + urlText + "'=" + uri.getURI() );
+                                System.out.println( "Page " + pageNum +":'" + urlText + "'=" + uri.getURI() );
                             }
                         }
                     }

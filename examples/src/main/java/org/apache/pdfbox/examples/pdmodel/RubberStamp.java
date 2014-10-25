@@ -22,7 +22,6 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationRubberStamp;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -61,16 +60,13 @@ public class RubberStamp
                 {
                     throw new IOException( "Encrypted documents are not supported for this example" );
                 }
-                List<PDPage> allpages = document.getDocumentCatalog().getPages().getAllKids();
-
-                for (int i=0; i < allpages.size(); i++)
+                for (PDPage page : document.getPages())
                 {
-                    PDPage apage = allpages.get(i);
-                    List annotations = apage.getAnnotations();
+                    List annotations = page.getAnnotations();
 
                     PDAnnotationRubberStamp rs = new PDAnnotationRubberStamp();
                     rs.setName(PDAnnotationRubberStamp.NAME_TOP_SECRET);
-                    rs.setRectangle(new PDRectangle(100,100));
+                    rs.setRectangle(new PDRectangle(100, 100));
                     rs.setContents("A top secret note");
 
                     annotations.add(rs);

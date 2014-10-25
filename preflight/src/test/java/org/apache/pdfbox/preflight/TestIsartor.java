@@ -206,11 +206,6 @@ public class TestIsartor
                         result.getErrorsList().get(0).getErrorCode());
             }
         }
-        catch (Exception e)
-        {
-            fail(String.format("%s : %s raised , message=%s", file.getName(),
-                    e.getClass().getSimpleName(), e.getMessage()));
-        }
         finally
         {
             if (document != null)

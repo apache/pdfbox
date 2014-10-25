@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.text.TextPosition;
@@ -110,11 +109,10 @@ public class PDFTextStripperByArea extends PDFTextStripper
             regionText.put( regionName, new StringWriter() );
         }
 
-        PDStream contentStream = page.getContents();
+        PDStream contentStream = page.getStream();
         if( contentStream != null )
         {
-            COSStream contents = contentStream.getStream();
-            processPage( page, contents );
+            processPage( page );
         }
     }
 

@@ -35,10 +35,9 @@ import java.util.Vector;
 import java.util.regex.Pattern;
 
 import org.apache.pdfbox.contentstream.PDFTextStreamEngine;
-import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.common.COSObjectable;
+import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
@@ -270,7 +269,7 @@ public class PDFTextStripper extends PDFTextStreamEngine
                 throw new IOException("Invalid password for encrypted document", e);
             }
         }
-        processPages(document.getDocumentCatalog().getAllPages());
+        processPages(document.getPages());
         endDocument(document);
     }
 
@@ -281,19 +280,15 @@ public class PDFTextStripper extends PDFTextStreamEngine
      *
      * @throws IOException If there is an error parsing the text.
      */
-    protected void processPages(List<PDPage> pages) throws IOException
+    protected void processPages(PDPageTree pages) throws IOException
     {
-        if (startBookmark != null)
-        {
-            startBookmarkPageNumber = getPageNumber(startBookmark, pages);
-        }
-        if (endBookmark != null)
-        {
-            endBookmarkPageNumber = getPageNumber(endBookmark, pages);
-        }
+        PDPage startPage = startBookmark == null ? null :
+                startBookmark.findDestinationPage(document);
 
-        if (startBookmarkPageNumber == -1 && startBookmark != null &&
-            endBookmarkPageNumber == -1 && endBookmark != null &&
+        PDPage endPage = endBookmark == null ? null :
+                endBookmark.findDestinationPage(document);
+
+        if (startPage != null && endPage != null &&
             startBookmark.getCOSObject() == endBookmark.getCOSObject())
         {
             // this is a special case where both the start and end bookmark
@@ -302,28 +297,16 @@ public class PDFTextStripper extends PDFTextStreamEngine
             startBookmarkPageNumber = 0;
             endBookmarkPageNumber = 0;
         }
-        for (COSObjectable page : pages)
+
+        for (PDPage page : pages)
         {
-            PDPage nextPage = (PDPage) page;
-            PDStream contentStream = nextPage.getContents();
+            PDStream contentStream = page.getStream();
             currentPageNo++;
             if (contentStream != null)
             {
-                COSStream contents = contentStream.getStream();
-                processPage(nextPage, contents);
+                processPage(page);
             }
         }
-    }
-
-    private int getPageNumber(PDOutlineItem bookmark, List<PDPage> allPages) throws IOException
-    {
-        int pageNumber = -1;
-        PDPage page = bookmark.findDestinationPage(document);
-        if (page != null)
-        {
-            pageNumber = allPages.indexOf(page) + 1; // use one based indexing
-        }
-        return pageNumber;
     }
 
     /**
@@ -354,11 +337,11 @@ public class PDFTextStripper extends PDFTextStreamEngine
      * This will process the contents of a page.
      *
      * @param page The page to process.
-     * @param content The contents of the page.
      *
      * @throws IOException If there is an error processing the page.
      */
-    protected void processPage(PDPage page, COSStream content) throws IOException
+    @Override
+    public void processPage(PDPage page) throws IOException
     {
         if (currentPageNo >= startPage && currentPageNo <= endPage &&
                 (startBookmarkPageNumber == -1 || currentPageNo >= startBookmarkPageNumber) &&
@@ -385,7 +368,7 @@ public class PDFTextStripper extends PDFTextStreamEngine
                 }
             }
             characterListMapping.clear();
-            processStream(page.findResources(), content, page.findCropBox(), page.findRotation());
+            super.processPage(page);
             writePage();
             endPage(page);
         }

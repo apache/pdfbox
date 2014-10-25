@@ -18,7 +18,6 @@
 package org.apache.pdfbox.util;
 
 import java.io.IOException;
-import java.util.List;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 
@@ -70,17 +69,13 @@ public class PageExtractor {
         extractedDocument.getDocumentCatalog().setViewerPreferences(
                 sourceDocument.getDocumentCatalog().getViewerPreferences());
         
-        List<PDPage> pages = (List<PDPage>)sourceDocument.getDocumentCatalog().getAllPages();
-        int pageCounter = 1;
-        for(PDPage page : pages) {
-            if(pageCounter >= startPage && pageCounter <= endPage) {
-                PDPage imported = extractedDocument.importPage(page);
-                imported.setCropBox(page.findCropBox());
-                imported.setMediaBox(page.findMediaBox());
-                imported.setResources(page.findResources());
-                imported.setRotation(page.findRotation());
-            }
-            pageCounter++;
+        for (int i = startPage; i <= endPage; i++) {
+            PDPage page = sourceDocument.getPage(i - 1);
+            PDPage imported = extractedDocument.importPage(page);
+            imported.setCropBox(page.getCropBox());
+            imported.setMediaBox(page.getMediaBox());
+            imported.setResources(page.getResources());
+            imported.setRotation(page.getRotation());
         }
             
         return extractedDocument;

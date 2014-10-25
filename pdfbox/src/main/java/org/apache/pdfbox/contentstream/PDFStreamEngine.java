@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.contentstream;
 
+import java.awt.Rectangle;
+import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.io.ByteArrayInputStream;
@@ -34,14 +36,16 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
-import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
+import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontFactory;
+import org.apache.pdfbox.pdmodel.font.PDType3CharProc;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
+import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
 import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.state.PDTextState;
 import org.apache.pdfbox.util.Matrix;
@@ -66,7 +70,10 @@ public class PDFStreamEngine
     protected Matrix subStreamMatrix = new Matrix();
 
     private final Stack<PDGraphicsState> graphicsStack = new Stack<PDGraphicsState>();
-    private final Stack<PDResources> streamResourcesStack = new Stack<PDResources>();
+
+    private PDResources resources;
+    private PDPage currentPage;
+    private boolean isProcessingPage;
 
     // skip malformed or otherwise unparseable input where possible
     private boolean forceParsing;
@@ -124,43 +131,37 @@ public class PDFStreamEngine
     }
 
     /**
-     * Initialises a stream for processing.
-     *
-     * @param drawingSize the size of the page
+     * Initialises the stream engine for the given page.
      */
-    protected void initStream(PDRectangle drawingSize)
+    private void initPage(PDPage page)
     {
+        if (page == null)
+        {
+            throw new IllegalArgumentException("Page cannot be null");
+        }
+        currentPage = page;
         graphicsStack.clear();
-        graphicsStack.push(new PDGraphicsState(drawingSize));
+        graphicsStack.push(new PDGraphicsState(page.getCropBox()));
         textMatrix = null;
         textLineMatrix = null;
-        streamResourcesStack.clear();
+        resources = null;
     }
 
     /**
      * This will initialise and process the contents of the stream.
-     * 
-     * @param resources the location to retrieve resources
-     * @param cosStream the Stream to execute
-     * @param drawingSize the size of the page
+     *
+     * @param page the page to process
      * @throws IOException if there is an error accessing the stream
      */
-    public void processStream(PDResources resources, COSStream cosStream, PDRectangle drawingSize)
-            throws IOException
+    public void processPage(PDPage page) throws IOException
     {
-        initStream(drawingSize);
-        processSubStream(resources, cosStream);
-    }
-
-    /**
-     * Shows a form from the content stream.
-     *
-     * @param form form XObject
-     * @throws IOException if the form cannot be processed
-     */
-    public void showForm(PDFormXObject form) throws IOException
-    {
-        processSubStream(form.getResources(), form.getCOSStream());
+        initPage(page);
+        if (page.getStream() != null)
+        {
+            isProcessingPage = true;
+            processStream(page);
+            isProcessingPage = false;
+        }
     }
 
     /**
@@ -175,67 +176,143 @@ public class PDFStreamEngine
     }
 
     /**
-     * Process a sub stream of the current stream.
-     * 
-     * @param resources the resources used when processing the stream
-     * @param cosStream the stream to process
+     * Shows a form from the content stream.
+     *
+     * @param form form XObject
+     * @throws IOException if the form cannot be processed
+     */
+    public void showForm(PDFormXObject form) throws IOException
+    {
+        processChildStream(form);
+    }
+
+    /**
+     * Shows a Type 3 character.
+     *
+     * @param charProc Type 3 character procedure
+     * @throws IOException if the character cannot be processed
+     */
+    public void showType3Character(PDType3CharProc charProc) throws IOException
+    {
+        processChildStream(charProc);
+    }
+
+    /**
+     * Process a child stream of the current page. For use with #processPage(PDPage).
+     *
+     * @param contentStream the child content stream
      * @throws IOException if there is an exception while processing the stream
      */
-    public void processSubStream(PDResources resources, COSStream cosStream) throws IOException
+    public void processChildStream(PDContentStream contentStream) throws IOException
     {
-        // sanity check
-        if (graphicsStack.isEmpty())
+        if (currentPage == null)
         {
-            throw new IllegalStateException("Call to processSubStream() before processStream() " +
-                                            "or initStream()");
+            throw new IllegalStateException("No current page, call " +
+                    "#processChildStream(PDContentStream, PDPage) instead");
         }
+        processStream(contentStream);
+    }
 
-        if (resources != null)
+    // todo: a temporary workaround for tiling patterns (overrides matrix and bbox)
+    public final void processChildStreamWithMatrix(PDTilingPattern contentStream, PDPage page,
+                                                 Matrix matrix, PDRectangle bbox) throws IOException
+    {
+        initPage(page);
+
+        // transform ctm
+        Matrix concat = matrix.multiply(getGraphicsState().getCurrentTransformationMatrix());
+        getGraphicsState().setCurrentTransformationMatrix(concat);
+
+        processStream(contentStream, bbox);
+        currentPage = null;
+    }
+
+    /**
+     * Process a child stream of the given page. Cannot be used with #processPage(PDPage).
+     *
+     * @param contentStream the child content stream
+     * @throws IOException if there is an exception while processing the stream
+     */
+    protected void processChildStream(PDContentStream contentStream, PDPage page) throws IOException
+    {
+        if (isProcessingPage)
         {
-            streamResourcesStack.push(resources);
-            try
-            {
-                processSubStream(cosStream);
-            }
-            finally
-            {
-                streamResourcesStack.pop();
-            }
+            throw new IllegalStateException("Current page has already been set via " +
+                    " #processPage(PDPage) call #processChildStream(PDContentStream) instead");
+        }
+        initPage(page);
+        processStream(contentStream);
+        currentPage = null;
+    }
+
+    /**
+     * Process a content stream.
+     *
+     * @param contentStream the content stream
+     * @throws IOException if there is an exception while processing the stream
+     */
+    private void processStream(PDContentStream contentStream) throws IOException
+    {
+        processStream(contentStream, null);
+    }
+
+    /**
+     * Process a content stream.
+     *
+     * @param contentStream the content stream
+     *  @param patternBBox fixme: temporary workaround for tiling patterns
+     * @throws IOException if there is an exception while processing the stream
+     */
+    private void processStream(PDContentStream contentStream, PDRectangle patternBBox) throws IOException
+    {
+        // resource lookup: first look for stream resources, then fallback to the current page
+        PDResources streamResources = contentStream.getResources();
+        if (contentStream.getResources() != null)
+        {
+            resources = streamResources;
         }
         else
         {
-            processSubStream(cosStream);
+            resources = currentPage.getResources();
         }
-    }
 
-    private void processSubStream(COSStream cosStream) throws IOException
-    {
+        // bounding box (for clipping)
+        PDRectangle bbox = contentStream.getBBox();
+        if (patternBBox  !=null)
+        {
+            bbox = patternBBox;
+        }
+        if (contentStream != currentPage && bbox != null)
+        {
+            Area clip = new Area(new GeneralPath(new Rectangle(bbox.createDimension())));
+            saveGraphicsState();
+            getGraphicsState().intersectClippingPath(clip);
+        }
+
+        // fixme: stream matrix
         Matrix oldSubStreamMatrix = subStreamMatrix;
         subStreamMatrix = getGraphicsState().getCurrentTransformationMatrix();
+
         List<COSBase> arguments = new ArrayList<COSBase>();
-        PDFStreamParser parser = new PDFStreamParser(cosStream, forceParsing);
+        PDFStreamParser parser = new PDFStreamParser(contentStream.getContentStream(), forceParsing);
         try
         {
             Iterator<Object> iter = parser.getTokenIterator();
             while (iter.hasNext())
             {
-                Object next = iter.next();
-                if (LOG.isTraceEnabled())
+                Object token = iter.next();
+                if (token instanceof COSObject)
                 {
-                    LOG.trace("processing substream token: " + next);
+                    arguments.add(((COSObject) token).getObject());
                 }
-                if (next instanceof COSObject)
+                else if (token instanceof Operator)
                 {
-                    arguments.add(((COSObject) next).getObject());
-                }
-                else if (next instanceof Operator)
-                {
-                    processOperator((Operator) next, arguments);
+                    processOperator((Operator) token, arguments);
                     arguments = new ArrayList<COSBase>();
                 }
                 else
                 {
-                    arguments.add((COSBase) next);
+                    arguments.add((COSBase) token);
                 }
             }
         }
@@ -243,6 +320,13 @@ public class PDFStreamEngine
         {
             parser.close();
         }
+
+        if (contentStream != currentPage && bbox != null)
+        {
+            restoreGraphicsState();
+        }
+
+        // fixme: stream matrix
         subStreamMatrix = oldSubStreamMatrix;
     }
 
@@ -553,7 +637,7 @@ public class PDFStreamEngine
     }
 
     /**
-     * @return Returns the subStreamMatrix.
+     * Returns the subStreamMatrix.
      */
     protected Matrix getSubStreamMatrix()
     {
@@ -561,11 +645,19 @@ public class PDFStreamEngine
     }
     
     /**
-     * @return Returns the resources.
+     * Returns the stream' resources.
      */
     public PDResources getResources()
     {
-        return streamResourcesStack.peek();
+        return resources;
+    }
+
+    /**
+     * Returns the current page.
+     */
+    public PDPage getCurrentPage()
+    {
+        return currentPage;
     }
 
     /**

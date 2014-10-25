@@ -33,17 +33,14 @@ import java.util.List;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSInteger;
-import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
+import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
 import org.apache.pdfbox.pdmodel.graphics.state.PDTextState;
 import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
 import org.apache.pdfbox.preflight.PreflightContext;
@@ -70,11 +67,10 @@ public class PreflightContentStream extends PreflightStreamEngine
     {
         try
         {
-            PDStream pstream = this.processeedPage.getContents();
+            PDStream pstream = this.processeedPage.getStream();
             if (pstream != null)
             {
-                processStream(processeedPage.findResources(), pstream.getStream(), 
-                		processeedPage.findCropBox());
+                processPage(this.processeedPage);
             }
         }
         catch (ContentStreamException e)
@@ -90,16 +86,23 @@ public class PreflightContentStream extends PreflightStreamEngine
     /**
      * Process the validation of a XObject Form
      * 
-     * @param xobj
+     * @param form
      * @return A list of validation error. This list is empty if the validation succeed.
      * @throws ValidationException
      */
-    public void validXObjContentStream(PDFormXObject xobj) throws ValidationException
+    public void validXObjContentStream(PDFormXObject form) throws ValidationException
     {
         try
         {
-            initStream(xobj.getBBox());
-            processSubStream(xobj.getResources(), xobj.getCOSStream());
+            // workaround for preflight not finding widget annotation parent PDPage
+            if (processeedPage == null)
+            {
+                processChildStream(form, new PDPage()); // dummy page, resource lookup may fail
+            }
+            else
+            {
+                processChildStream(form, processeedPage);
+            }
         }
         catch (ContentStreamException e)
         {
@@ -118,13 +121,11 @@ public class PreflightContentStream extends PreflightStreamEngine
      * @return A list of validation error. This list is empty if the validation succeed.
      * @throws ValidationException
      */
-    public void validPatternContentStream(COSStream pattern) throws ValidationException
+    public void validPatternContentStream(PDTilingPattern pattern) throws ValidationException
     {
         try
         {
-            COSDictionary res = (COSDictionary) pattern.getDictionaryObject(COSName.RESOURCES);
-            initStream(processeedPage.findCropBox());
-            processSubStream(new PDResources(res), pattern);
+            processChildStream(pattern, processeedPage);
         }
         catch (ContentStreamException e)
         {

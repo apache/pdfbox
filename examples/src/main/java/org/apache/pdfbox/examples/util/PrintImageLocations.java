@@ -17,11 +17,9 @@
 package org.apache.pdfbox.examples.util;
 
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSStream;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
@@ -100,13 +98,12 @@ public class PrintImageLocations extends PDFStreamEngine
                     }
                 }
                 PrintImageLocations printer = new PrintImageLocations();
-                List allPages = document.getDocumentCatalog().getAllPages();
-                for( int i=0; i<allPages.size(); i++ )
+                int pageNum = 0;
+                for( PDPage page : document.getPages() )
                 {
-                    PDPage page = (PDPage)allPages.get( i );
-                    System.out.println( "Processing page: " + i );
-                    printer.processStream( page.findResources(), page.getContents().getStream(),
-                    		page.findCropBox() );
+                    pageNum++;
+                    System.out.println( "Processing page: " + pageNum );
+                    printer.processPage(page);
                 }
             }
             finally
@@ -171,8 +168,6 @@ public class PrintImageLocations extends PDFStreamEngine
                 saveGraphicsState();
                 
                 PDFormXObject form = (PDFormXObject)xobject;
-                COSStream invoke = (COSStream)form.getCOSObject();
-                PDResources pdResources = form.getResources();
                 // if there is an optional form matrix, we have to map the form space to the user space
                 Matrix matrix = form.getMatrix();
                 if (matrix != null) 
@@ -180,7 +175,7 @@ public class PrintImageLocations extends PDFStreamEngine
                     Matrix xobjectCTM = matrix.multiply( getGraphicsState().getCurrentTransformationMatrix());
                     getGraphicsState().setCurrentTransformationMatrix(xobjectCTM);
                 }
-                processSubStream( pdResources, invoke );
+                processChildStream(form);
                 
                 // restore the graphics state
                 restoreGraphicsState();

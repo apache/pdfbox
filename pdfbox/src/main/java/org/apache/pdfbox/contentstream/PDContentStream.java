@@ -14,27 +14,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.rendering;
 
-import java.io.IOException;
-import org.apache.pdfbox.pdmodel.PDPage;
+package org.apache.pdfbox.contentstream;
+
+import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 
 /**
- * Tiling pattern drawer.
+ * A content stream.
  *
  * @author John Hewson
  */
-public class TilingPatternDrawer extends PageDrawer
+public interface PDContentStream
 {
     /**
-     * Tiling pattern constructor, loads properties from file.
-     *
-     * @param renderer renderer to render the page.
-     * 
-     * @throws java.io.IOException If there is an error loading properties from the file.
+     * Returns the underlying COS stream.
      */
-    public TilingPatternDrawer(PDFRenderer renderer, PDPage page) throws IOException
-    {
-        super(renderer, page);
-    }
+    public COSStream getContentStream();
+
+    /**
+     * Returns this stream's resources, if any.
+     */
+    public PDResources getResources();
+
+    /**
+     * Returns the bounding box of the contents, if any.
+     */
+    public PDRectangle getBBox();
+
+    // todo: Matrix
 }

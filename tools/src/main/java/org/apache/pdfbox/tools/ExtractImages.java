@@ -32,7 +32,6 @@ import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImage;
@@ -213,16 +212,7 @@ public class ExtractImages
 
         public void run() throws IOException
         {
-            PDPage page = getPage();
-            if (page.getContents() != null)
-            {
-                PDResources resources = page.findResources();
-                processStream(resources, page.getContents().getStream(), page.findCropBox());
-            }
-            else
-            {
-                initStream(page.findCropBox());
-            }
+            processPage(getPage());
         }
 
         @Override

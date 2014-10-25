@@ -456,18 +456,15 @@ public class PDFMergerUtility
             }
         }
 
-        List<PDPage> pages = srcCatalog.getAllPages();
-        Iterator<PDPage> pageIter = pages.iterator();
         HashMap<COSDictionary, COSDictionary> objMapping = new HashMap<COSDictionary, COSDictionary>();
-        while (pageIter.hasNext())
+        for (PDPage page : srcCatalog.getPages())
         {
-            PDPage page = pageIter.next();
             PDPage newPage = new PDPage((COSDictionary) cloner.cloneForNewDocument(page.getCOSObject()));
-            newPage.setCropBox(page.findCropBox());
-            newPage.setMediaBox(page.findMediaBox());
-            newPage.setRotation(page.findRotation());
+            newPage.setCropBox(page.getCropBox());
+            newPage.setMediaBox(page.getMediaBox());
+            newPage.setRotation(page.getRotation());
             // this is smart enough to just create references for resources that are used on multiple pages
-            newPage.setResources(new PDResources((COSDictionary) cloner.cloneForNewDocument(page.findResources())));
+            newPage.setResources(new PDResources((COSDictionary) cloner.cloneForNewDocument(page.getResources())));
             if (mergeStructTree)
             {
                 updateStructParentEntries(newPage, destParentTreeNextKey);
