@@ -60,7 +60,6 @@ public class PreflightContentStream extends PreflightStreamEngine
     /**
      * Process the validation of a PageContent (The page is initialized by the constructor)
      *
-     * @return A list of validation error. This list is empty if the validation succeed.
      * @throws ValidationException
      */
     public void validPageContentStream() throws ValidationException
@@ -86,8 +85,7 @@ public class PreflightContentStream extends PreflightStreamEngine
     /**
      * Process the validation of a XObject Form
      * 
-     * @param form
-     * @return A list of validation error. This list is empty if the validation succeed.
+     * @param form the PDFormXObject to be validated.
      * @throws ValidationException
      */
     public void validXObjContentStream(PDFormXObject form) throws ValidationException
@@ -117,8 +115,7 @@ public class PreflightContentStream extends PreflightStreamEngine
     /**
      * Process the validation of a Tiling Pattern
      * 
-     * @param pattern
-     * @return A list of validation error. This list is empty if the validation succeed.
+     * @param pattern the PDTilingPattern to be validated.
      * @throws ValidationException
      */
     public void validPatternContentStream(PDTilingPattern pattern) throws ValidationException

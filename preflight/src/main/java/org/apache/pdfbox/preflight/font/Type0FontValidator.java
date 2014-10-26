@@ -238,7 +238,6 @@ public class Type0FontValidator extends FontValidator<Type0Container>
      * using the CMapParser of the fontbox api.
      * 
      * @param aCMap
-     * @return
      */
     private void processCMapAsStream(COSStream aCMap)
     {
@@ -301,7 +300,7 @@ public class Type0FontValidator extends FontValidator<Type0Container>
      * </UL>
      * 
      * @param sysinfo
-     * @return
+     * @return the validation result.
      */
     protected boolean checkCIDSystemInfo(COSBase sysinfo)
     {
@@ -335,7 +334,6 @@ public class Type0FontValidator extends FontValidator<Type0Container>
      * is Identity-H or Identity-V so this method is called by the checkCMap method.
      * 
      * @param cmap
-     * @return
      */
     private void compareCIDSystemInfo(COSDictionary cmap)
     {

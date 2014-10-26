@@ -50,7 +50,7 @@ public class LineAnnotationValidator extends AnnotationValidator
     /**
      * In addition of the AnnotationValidator.validate() method, this method executes the the checkIColors method.
      * 
-     * @see org.apache.padaf.preflight.annotation.AnnotationValidator#validate(java.util.List)
+     * @see AnnotationValidator#validate()
      */
     @Override
     public boolean validate() throws ValidationException
@@ -64,9 +64,7 @@ public class LineAnnotationValidator extends AnnotationValidator
      * Return true if the IC field is present in the Annotation dictionary and if the RGB profile is used in the
      * DestOutputProfile of the OutputIntent dictionary.
      * 
-     * @param errors
-     *            list of errors with is updated if no RGB profile is found when the IC element is present
-     * @return
+     * @return the state of the IC field validation.
      */
     protected boolean checkIColors() throws ValidationException
     {
@@ -85,7 +83,7 @@ public class LineAnnotationValidator extends AnnotationValidator
     /*
      * (non-Javadoc)
      * 
-     * @seenet.awl.edoc.pdfa.validation.annotation.AnnotationValidator# checkMandatoryFields(java.util.List)
+     * @see AnnotationValidator#checkMandatoryFields()
      */
     protected boolean checkSpecificMandatoryFields()
     {

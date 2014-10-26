@@ -406,7 +406,7 @@ public class StubOperator extends OperatorProcessor
     /**
      * Create a ContentStreamException with ERROR_SYNTAX_CONTENT_STREAM_INVALID_ARGUMENT.
      * 
-     * @return
+     * @return the ContentStreamException created.
      */
     private ContentStreamException createInvalidArgumentsError()
     {
@@ -418,7 +418,7 @@ public class StubOperator extends OperatorProcessor
     /**
      * Create a ContentStreamException with ERROR_SYNTAX_CONTENT_STREAM_INVALID_ARGUMENT.
      * 
-     * @return
+     * @return the ContentStreamException created.
      */
     private ContentStreamException createLimitError(String errorCode, String details)
     {

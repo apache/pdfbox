@@ -38,8 +38,7 @@ public class RDFAboutAttributeConcordanceValidation
 
     /**
      * 
-     * @param metadata
-     * @return
+     * @param metadata the XMP metadata.
      * @throws DifferentRDFAboutException
      * @throws ValidationException
      */

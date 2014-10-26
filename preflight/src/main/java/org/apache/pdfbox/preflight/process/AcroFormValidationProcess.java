@@ -76,9 +76,8 @@ public class AcroFormValidationProcess extends AbstractProcess
      * 
      * If the entry is invalid, the ERROR_SYNTAX_DICT_INVALID (1.2.3) error is return.
      * 
-     * @param ctx
-     * @param acroForm
-     * @param result
+     * @param ctx the preflight context.
+     * @param acroForm the AcroForm.
      */
     protected void checkNeedAppearences(PreflightContext ctx, PDAcroForm acroForm)
     {
@@ -92,9 +91,11 @@ public class AcroFormValidationProcess extends AbstractProcess
     /**
      * This function explores all fields and their children to check if the A or AA entry is present.
      * 
-     * @param ctx
-     * @param acroForm
-     * @param result
+     * @see #valideField(PreflightContext, PDField) 
+     * 
+     * @param ctx the preflight context.
+     * @param lFields the list of fields.
+     * @return the result of the check for A or AA entries.
      * @throws IOException
      */
     protected boolean exploreFields(PreflightContext ctx, List<?> lFields) throws IOException
@@ -119,9 +120,9 @@ public class AcroFormValidationProcess extends AbstractProcess
      * ERROR_ACTION_FORBIDDEN_WIDGET_ACTION_FIELD (6.2.4) is added to the error list. (Remark : The widget validation
      * will be done by the AnnotationValidationHelper, but some actions are authorized in a standard Widget)
      * 
-     * @param ctx
-     * @param aField
-     * @return
+     * @param ctx the preflight context.
+     * @param aField an acro forms field.
+     * @return the result of the check for A or AA entries.
      * @throws IOException
      */
     protected boolean valideField(PreflightContext ctx, PDField aField) throws IOException

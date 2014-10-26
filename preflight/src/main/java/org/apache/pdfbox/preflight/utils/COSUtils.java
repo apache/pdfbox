@@ -46,9 +46,9 @@ public class COSUtils
     /**
      * return true if the elt is a COSDictionary or a reference to a COSDictionary
      * 
-     * @param elt
-     * @param doc
-     * @return
+     * @param elt the object to check.
+     * @param doc the document.
+     * @return true if the object is a COSDictionary or a reference to it.
      */
     public static boolean isDictionary(COSBase elt, COSDocument doc)
     {
@@ -71,9 +71,9 @@ public class COSUtils
     /**
      * return true if the elt is a COSString or a reference to a COSString
      * 
-     * @param elt
-     * @param doc
-     * @return
+     * @param elt the object to check.
+     * @param doc the document.
+     * @return true if the object is a COSString or a reference to it.
      */
     public static boolean isString(COSBase elt, COSDocument doc)
     {
@@ -97,9 +97,9 @@ public class COSUtils
     /**
      * return true if the elt is a COSStream or a reference to a COSStream
      * 
-     * @param elt
-     * @param doc
-     * @return
+     * @param elt the object to check.
+     * @param doc the document.
+     * @return true if the object is a COSStream or a reference to it.
      */
     public static boolean isStream(COSBase elt, COSDocument doc)
     {
@@ -123,9 +123,9 @@ public class COSUtils
     /**
      * return true if the elt is a COSInteger or a reference to a COSInteger
      * 
-     * @param elt
-     * @param doc
-     * @return
+     * @param elt the object to check.
+     * @param doc the document.
+     * @return true if the object is a COSInteger or a reference to it.
      */
     public static boolean isInteger(COSBase elt, COSDocument doc)
     {
@@ -149,9 +149,9 @@ public class COSUtils
     /**
      * return true if elt is COSInteger or COSFloat
      * 
-     * @param elt
-     * @param doc
-     * @return boolean
+     * @param elt the object to check.
+     * @param doc the document.
+     * @return true if the object is a COSInteger, COSFloat or a reference to it.
      */
     public static boolean isNumeric(COSBase elt, COSDocument doc)
     {
@@ -159,11 +159,11 @@ public class COSUtils
     }
 
     /**
-     * return true if the elt is a COSInteger or a reference to a COSInteger
+     * return true if the elt is a COSFloat or a reference to a COSFloat
      * 
-     * @param elt
-     * @param doc
-     * @return
+     * @param elt the object to check.
+     * @param doc the document.
+     * @return true if the object is a COSFloat or a reference to it.
      */
     public static boolean isFloat(COSBase elt, COSDocument doc)
     {
@@ -187,9 +187,9 @@ public class COSUtils
     /**
      * return true if the elt is a COSArray or a reference to a COSArray
      * 
-     * @param elt
-     * @param doc
-     * @return
+     * @param elt the object to check.
+     * @param doc the document.
+     * @return true if the object is a COSArray or a reference to it.
      */
     public static boolean isArray(COSBase elt, COSDocument doc)
     {
@@ -214,9 +214,9 @@ public class COSUtils
      * Return the COSBase object as COSArray if the COSBase object is an instance of COSArray or a reference to a
      * COSArray object. In other cases, this method returns null;
      * 
-     * @param cbase
-     * @param cDoc
-     * @return
+     * @param cbase the object to get.
+     * @param cDoc the document.
+     * @return the object as COSArray if the object is a COSArray or a reference to it. Returns null otherwise.
      */
     public static COSArray getAsArray(COSBase cbase, COSDocument cDoc)
     {
@@ -254,9 +254,9 @@ public class COSUtils
      * Return the COSBase object as COSString if the COSBase object is an instance of COSString or a reference to a
      * COSString object. In other cases, this method returns null;
      * 
-     * @param cbase
-     * @param cDoc
-     * @return
+     * @param cbase the object to get.
+     * @param cDoc the document.
+     * @return the object as COSString if the object is a COSString or a reference to it. Returns null otherwise.
      */
     public static String getAsString(COSBase cbase, COSDocument cDoc)
     {
@@ -302,9 +302,9 @@ public class COSUtils
      * Return the COSBase object as COSDictionary if the COSBase object is an instance of COSDictionary or a reference
      * to a COSDictionary object. In other cases, this method returns null;
      * 
-     * @param cbase
-     * @param cDoc
-     * @return
+     * @param cbase the object to get.
+     * @param cDoc the document.
+     * @return the object as COSDictionary if the object is a COSDictionary or a reference to it. Returns null otherwise.
      */
     public static COSDictionary getAsDictionary(COSBase cbase, COSDocument cDoc)
     {
@@ -342,9 +342,9 @@ public class COSUtils
      * Return the COSBase object as COSStream if the COSBase object is an instance of COSStream or a reference to a
      * COSStream object. In other cases, this method returns null;
      * 
-     * @param cbase
-     * @param cDoc
-     * @return
+     * @param cbase the object to get.
+     * @param cDoc the document.
+     * @return the object as COSStream if the object is a COSStream or a reference to it. Returns null otherwise.
      */
     public static COSStream getAsStream(COSBase cbase, COSDocument cDoc)
     {
@@ -382,9 +382,9 @@ public class COSUtils
      * Return the COSBase object as Float if the COSBase object is an instance of COSFloat or a reference to a COSFloat
      * object. In other cases, this method returns null;
      * 
-     * @param cbase
-     * @param cDoc
-     * @return
+     * @param cbase the object to get.
+     * @param cDoc the document.
+     * @return the object as Float if the object is a COSFloat or a reference to it. Returns null otherwise.
      */
     public static Float getAsFloat(COSBase cbase, COSDocument cDoc)
     {
@@ -434,9 +434,9 @@ public class COSUtils
      * Return the COSBase object as Integer if the COSBase object is an instance of COSInteger or a reference to a
      * COSInteger object. In other cases, this method returns null;
      * 
-     * @param cbase
-     * @param cDoc
-     * @return
+     * @param cbase the object to get.
+     * @param cDoc the document.
+     * @return the object as Integer if the object is a COSInteger or a reference to it. Returns null otherwise.
      */
     public static Integer getAsInteger(COSBase cbase, COSDocument cDoc)
     {
@@ -486,7 +486,7 @@ public class COSUtils
      * Close the given Document. If the close method of the document throws an
      * exception, it is logged using a commons logger (Level : WARN)
      *
-     * @param document
+     * @param document the document.
      */
     public static void closeDocumentQuietly(COSDocument document)
     {
@@ -507,7 +507,7 @@ public class COSUtils
      * Close the given Document. If the close method of the document throws an
      * exception, it is logged using a commons logger (Level : WARN)
       * 
-     * @param document
+     * @param document the document.
      */
     public static void closeDocumentQuietly(PDDocument document)
     {

@@ -44,7 +44,7 @@ public class ColorSpaceHelperFactory
      *            the High level PDFBox object which represents the ColorSpace
      * @param csr
      *            the color space restriction
-     * @return
+     * @return the ColorSpaceHelper instance. 
      */
     public ColorSpaceHelper getColorSpaceHelper(PreflightContext context, PDColorSpace cs, ColorSpaceRestriction csr)
     {

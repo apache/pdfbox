@@ -64,9 +64,9 @@ public abstract class AnnotationValidatorFactory
     /**
      * Return an instance of AnnotationValidator.
      * 
-     * @param ctx
-     * @param annotDic
-     * @return
+     * @param ctx the preflight context.
+     * @param annotDic the annotation dictionary.
+     * @return the AnnotationValidator instance.
      */
     public final AnnotationValidator getAnnotationValidator(PreflightContext ctx, COSDictionary annotDic)
             throws ValidationException

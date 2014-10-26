@@ -63,7 +63,7 @@ public class PdfElementParser extends BaseParser
     /**
      * Return the COSDocument used to create this object.
      * 
-     * @return
+     * @return the document.
      */
     public COSDocument getDocument()
     {

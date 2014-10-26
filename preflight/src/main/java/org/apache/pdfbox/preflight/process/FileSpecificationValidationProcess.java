@@ -70,11 +70,9 @@ public class FileSpecificationValidationProcess extends AbstractProcess
     /**
      * Validate a FileSpec dictionary, a FileSpec dictionary mustn't have the EF (EmbeddedFile) entry.
      * 
-     * @param ctx
-     *            The document handler
-     * @param cObj
-     *            the FileSpec Dictionary
-     * @return
+     * @param ctx the preflight context.
+     * @param fileSpec the FileSpec Dictionary.
+     * @return the list of validation errors.
      */
     public List<ValidationError> validateFileSpecification(PreflightContext ctx, COSDictionary fileSpec)
     {

@@ -123,7 +123,6 @@ public abstract class DescendantFontValidator<T extends FontContainer> extends S
      *
      * @param ctog
      * @param mandatory true for CIDType2 , false for CIDType0
-     * @return
      */
     protected void checkCIDToGIDMap(COSBase ctog, boolean mandatory)
     {

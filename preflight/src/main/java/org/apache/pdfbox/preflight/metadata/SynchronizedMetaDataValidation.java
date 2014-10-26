@@ -52,12 +52,9 @@ public class SynchronizedMetaDataValidation
     /**
      * Analyze if Title embedded in Document Information dictionary and in XMP properties are synchronized
      * 
-     * @param dico
-     *            Document Information Dictionary
-     * @param dc
-     *            Dublin Core Schema
-     * @param ve
-     *            The list of validation errors
+     * @param dico the Document Information Dictionary.
+     * @param dc the Dublin Core Schema.
+     * @param ve the list of validation errors.
      */
     protected void analyzeTitleProperty(PDDocumentInformation dico, DublinCoreSchema dc, List<ValidationError> ve)
     {
@@ -496,7 +493,7 @@ public class SynchronizedMetaDataValidation
      * @param prefFound
      * @param prefExpected
      * @param schema
-     * @return
+     * @return the generated validation error.
      */
     protected ValidationError unexpectedPrefixFoundError(String prefFound, String prefExpected, String schema)
     {

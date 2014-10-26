@@ -65,7 +65,7 @@ public class ICCProfileWrapper
     /**
      * Call the ICC_ColorSpace.getType method and return the value.
      * 
-     * @return
+     * @return the color space type.
      */
     public int getColorSpaceType()
     {
@@ -83,7 +83,7 @@ public class ICCProfileWrapper
     /**
      * Return true if the ColourSpace is RGB
      * 
-     * @return
+     * @return true if the ColourSpace is RGB. 
      */
     public boolean isRGBColorSpace()
     {
@@ -93,7 +93,7 @@ public class ICCProfileWrapper
     /**
      * Return true if the ColourSpace is CMYK
      * 
-     * @return
+     * @return true if the ColourSpace is CMYK.
      */
     public boolean isCMYKColorSpace()
     {
@@ -103,7 +103,7 @@ public class ICCProfileWrapper
     /**
      * Return true if the ColourSpace is Gray scale
      * 
-     * @return
+     * @return true if the ColourSpace is gray scale.
      */
     public boolean isGrayColorSpace()
     {

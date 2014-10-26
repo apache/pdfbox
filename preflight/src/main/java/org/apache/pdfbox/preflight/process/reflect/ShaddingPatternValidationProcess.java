@@ -71,9 +71,9 @@ public class ShaddingPatternValidationProcess extends AbstractProcess
      * 
      * This method is called by the validate method.
      * 
-     * @param shadingRes
-     *            the Shading pattern to check
-     * @return true if the Shading pattern is valid, false otherwise.
+     * @param context the preflight context.
+     * @param page the page to check.
+     * @param shadingRes the Shading pattern to check.
      * @throws ValidationException
      */
     protected void checkColorSpace(PreflightContext context, PDPage page, PDShading shadingRes)
@@ -97,7 +97,9 @@ public class ShaddingPatternValidationProcess extends AbstractProcess
      * Check the Extended Graphic State contains in the ShadingPattern dictionary if it is present. To check this
      * ExtGState, this method uses the net.awl.edoc.pdfa.validation.graphics.ExtGStateContainer object.
      * 
-     * @return true is the ExtGState is missing or valid, false otherwise.
+     * @param context the preflight context.
+     * @param page the page to check.
+     * @param shadingRes the Shading pattern to check.
      * @throws ValidationException
      */
     protected void checkGraphicState(PreflightContext context, PDPage page, PDShading shadingRes)
