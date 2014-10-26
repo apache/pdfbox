@@ -374,7 +374,7 @@ public abstract class PDFieldTreeNode implements COSObjectable
     /**
      * Set the parent of this field.
      * 
-     * @param parent The parent to this field.
+     * @param parentNode The parent to this field.
      */
     public void setParent(PDFieldTreeNode parentNode)
     {
@@ -600,6 +600,7 @@ public abstract class PDFieldTreeNode implements COSObjectable
      * Creates a COSField subclass from the given field.
      * @param form the form that the field is part of
      * @param field the dictionary representing a field element
+     * @param parentNode the parent node of the node to be created 
      * @return the corresponding PDField instance
      */
     public static PDFieldTreeNode createField(PDAcroForm form, COSDictionary field, PDFieldTreeNode parentNode)

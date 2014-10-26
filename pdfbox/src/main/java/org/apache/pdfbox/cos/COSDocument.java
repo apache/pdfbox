@@ -76,7 +76,10 @@ public class COSDocument extends COSBase implements Closeable
 
     private boolean warnMissingClose = true;
     
-    /** signal that document is already decrypted, e.g. with {@link NonSequentialPDFParser} */
+    /** 
+     * signal that document is already decrypted, 
+     * e.g. with {@link org.apache.pdfbox.pdfparser.NonSequentialPDFParser} 
+     */
     private boolean isDecrypted = false;
     
     private long startXref;
@@ -299,9 +302,10 @@ public class COSDocument extends COSBase implements Closeable
         return version;
     }
 
-    /** Signals that the document is decrypted completely.
-     *  Needed e.g. by {@link NonSequentialPDFParser} to circumvent
-     *  additional decryption later on. */
+    /** 
+     * Signals that the document is decrypted completely.
+     * Needed e.g. by {@link org.apache.pdfbox.pdfparser.NonSequentialPDFParser} to circumvent
+     * additional decryption later on. */
     public void setDecrypted()
     {
         isDecrypted = true;

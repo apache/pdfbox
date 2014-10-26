@@ -29,7 +29,7 @@ import org.apache.pdfbox.cos.COSString;
 public final class PDTextField extends PDVariableText
 {
     /**
-     * @see PDFieldTreeNode#PDFieldTreeNode(PDAcroForm)(PDAcroForm,COSDictionary)
+     * @see PDFieldTreeNode#PDFieldTreeNode(PDAcroForm)
      *
      * @param theAcroForm The acroform.
      */
