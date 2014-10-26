@@ -46,11 +46,13 @@ class CMSProcessableInputStream implements CMSTypedData
         in = is;
     }
 
+    @Override
     public Object getContent()
     {
-        return null;
+        return in;
     }
 
+    @Override
     public void write(OutputStream out) throws IOException, CMSException
     {
         // read the content only one time
