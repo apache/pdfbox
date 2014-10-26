@@ -56,7 +56,6 @@ public class PreflightType3Stream extends PreflightStreamEngine
         this.charProc = charProc;
     }
 
-    @Override
     public void showType3Character(PDType3CharProc charProc) throws IOException
     {
         processChildStream(charProc, new PDPage()); // dummy page (resource lookup may fail)
