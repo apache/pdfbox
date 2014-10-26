@@ -58,7 +58,7 @@ import org.bouncycastle.operator.bc.BcRSAContentSignerBuilder;
 /**
  * This is an example for visual signing a pdf with bouncy castle.
 
- * {@see CreateSignature}
+ * @see CreateSignature
  * @author Vakhtang Koroghlishvili
  */
 public class CreateVisibleSignature implements SignatureInterface
