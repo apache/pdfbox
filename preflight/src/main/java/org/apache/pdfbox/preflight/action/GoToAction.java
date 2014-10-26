@@ -40,18 +40,14 @@ public class GoToAction extends AbstractActionManager
 
     /**
      * 
-     * @param amFact
-     *            Instance of ActionManagerFactory used to create ActionManager to check Next actions.
-     * @param adict
-     *            the COSDictionary of the action wrapped by this class.
-     * @param cDoc
-     *            the COSDocument from which the action comes from.
-     * @param aa
-     *            The name of the key which identify the action in a additional action dictionary.
+     * @param amFact Instance of ActionManagerFactory used to create ActionManager to check Next actions.
+     * @param adict the COSDictionary of the action wrapped by this class.
+     * @param ctx the preflight context.
+     * @param aaKey the name of the key which identifies the action in an additional action dictionary.
      */
-    public GoToAction(ActionManagerFactory amFact, COSDictionary adict, PreflightContext ctx, String aa)
+    public GoToAction(ActionManagerFactory amFact, COSDictionary adict, PreflightContext ctx, String aaKey)
     {
-        super(amFact, adict, ctx, aa);
+        super(amFact, adict, ctx, aaKey);
     }
 
     /*

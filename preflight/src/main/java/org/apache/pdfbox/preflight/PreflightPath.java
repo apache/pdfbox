@@ -55,7 +55,7 @@ public class PreflightPath
      * 
      * @param position
      * @param expectedType
-     * @return
+     * @return the object at the given position.
      */
     @SuppressWarnings("unchecked")
     public <T> T getPathElement(int position, Class<T> expectedType)
@@ -93,7 +93,7 @@ public class PreflightPath
     /**
      * Looks at the object at the top of this stack without removing it from the stack.
      * 
-     * @return
+     * @return the object at the top of the stack.
      */
     public Object peek()
     {

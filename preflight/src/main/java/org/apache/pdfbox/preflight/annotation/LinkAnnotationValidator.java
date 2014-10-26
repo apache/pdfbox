@@ -53,7 +53,7 @@ public class LinkAnnotationValidator extends AnnotationValidator
     /**
      * In addition of the AnnotationValidator.validate() method, this method executes the the checkDest method.
      * 
-     * @see org.apache.padaf.preflight.annotation.AnnotationValidator#validate()
+     * @see AnnotationValidator#validate()
      */
     @Override
     public boolean validate() throws ValidationException
@@ -66,7 +66,7 @@ public class LinkAnnotationValidator extends AnnotationValidator
     /**
      * Check if the Dest element is authorized according to the A entry
      * 
-     * @return
+     * @return if the Dest element is authorized according to the A entry.
      */
     protected boolean checkDest()
     {

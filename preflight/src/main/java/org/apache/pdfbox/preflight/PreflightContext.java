@@ -176,8 +176,8 @@ public class PreflightContext implements Closeable
     /**
      * Add a FontContainer to allow TextObject validation.
      * 
-     * @param fKey
-     * @param fc
+     * @param cBase the COSBase for the font container.
+     * @param fc the font container.
      */
     public void addFontContainer(COSBase cBase, FontContainer fc)
     {
@@ -188,8 +188,8 @@ public class PreflightContext implements Closeable
      * Return the FontContainer identified by the COSBase. If the given object is missing from the
      * {@link #fontContainers} map, the null value is returned.
      * 
-     * @param fKey
-     * @return
+     * @param cBase the COSBase for the font container
+     * @return the font container.
      */
     public FontContainer getFontContainer(COSBase cBase)
     {
@@ -245,7 +245,7 @@ public class PreflightContext implements Closeable
     /**
      * Add the given errors the PreflightDocument
      * 
-     * @param error
+     * @param errors the list of validation errors.
      */
     public void addValidationErrors(List<ValidationError> errors)
     {

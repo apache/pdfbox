@@ -70,9 +70,9 @@ public class ActionManagerFactory
      * 
      * If there are no action, an empty list is returned.
      * 
-     * @param dictionary
-     * @param cDoc
-     * @return
+     * @param ctx the preflight context.
+     * @param dictionary the dictionary to retrieve the actions from.
+     * @return the list of actions from the given dictionary.
      * @throws ValidationException
      */
     public final List<AbstractActionManager> getActionManagers(PreflightContext ctx, COSDictionary dictionary)
@@ -185,11 +185,9 @@ public class ActionManagerFactory
      * Returns all actions contained by the Next entry. If the action dictionary doesn't have Next action, the result is
      * an empty list.
      * 
-     * @param actionDictionary
-     *            the action dictionary which contains Next entry
-     * @param cDoc
-     *            the COSDocument which contains actions.
-     * @return
+     * @param ctx the preflight context.
+     * @param actionDictionary the dictionary to retrieve the actions from.
+     * @return the list of actions from the given dictionary.
      * @throws ValidationException
      */
     public final List<AbstractActionManager> getNextActions(PreflightContext ctx, COSDictionary actionDictionary)
@@ -226,12 +224,12 @@ public class ActionManagerFactory
      * 
      * If the action type isn't authorized in a PDF/A file, an instance of InvalidAction is returned.
      * 
-     * @param ctx
+     * @param ctx the preflight context.
      * @param action
      *            the action dictionary used to instantiate the ActionManager
-     * @param isAA
+     * @param aaKey
      *            the Action identifier if it is an additional action
-     * @return
+     * @return the ActionManager instance.
      * @throws ValidationException
      */
     protected AbstractActionManager createActionManager(PreflightContext ctx, COSDictionary action, String aaKey)

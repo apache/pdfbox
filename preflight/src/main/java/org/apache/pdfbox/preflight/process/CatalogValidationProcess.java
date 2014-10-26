@@ -373,9 +373,8 @@ public class CatalogValidationProcess extends AbstractProcess
      * null is returned.
      * 
      * @param destOutputProfile
-     * @param tmpDestOutputProfile
-     * @param ctx
-     * @return
+     * @param mapDestOutputProfile
+     * @param ctx the preflight context.
      * @throws ValidationException
      */
     protected void validateICCProfile(COSBase destOutputProfile, Map<COSObjectKey, Boolean> mapDestOutputProfile,

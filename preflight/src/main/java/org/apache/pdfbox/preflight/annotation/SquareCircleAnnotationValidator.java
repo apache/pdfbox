@@ -49,7 +49,7 @@ public class SquareCircleAnnotationValidator extends AnnotationValidator
     /**
      * In addition of the AnnotationValidator.validate() method, this method executes the the checkIColors method.
      * 
-     * @see org.apache.padaf.preflight.annotation.AnnotationValidator#validate(java.util.List)
+     * @see AnnotationValidator#validate()
      */
     @Override
     public boolean validate() throws ValidationException
@@ -63,9 +63,7 @@ public class SquareCircleAnnotationValidator extends AnnotationValidator
      * Return true if the IC field is present in the Annotation dictionary and if the RGB profile is used in the
      * DestOutputProfile of the OutputIntent dictionary.
      * 
-     * @param errors
-     *            list of errors with is updated if no RGB profile is found when the IC element is present
-     * @return
+     * @return the validation state of the IC field.
      */
     protected boolean checkIColors() throws ValidationException
     {

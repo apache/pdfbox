@@ -92,8 +92,7 @@ public class TrailerValidationProcess extends AbstractProcess
     /**
      * Extracts and compares first and last trailers for PDF version between 1.1 and 1.4
      * 
-     * @param ctx
-     * @param result
+     * @param ctx the preflight context.
      */
     protected void checkTrailersForLinearizedPDF14(PreflightContext ctx)
     {
@@ -119,8 +118,7 @@ public class TrailerValidationProcess extends AbstractProcess
     /**
      * Accesses and compares First and Last trailers for a PDF version higher than 1.4.
      * 
-     * @param ctx
-     * @param result
+     * @param ctx the preflight context.
      */
     protected void checkTrailersForLinearizedPDF15(PreflightContext ctx)
     {
@@ -181,9 +179,9 @@ public class TrailerValidationProcess extends AbstractProcess
      * Return true if the ID of the first dictionary is the same as the id of the last dictionary Return false
      * otherwise.
      * 
-     * @param first
-     * @param last
-     * @return
+     * @param first the first dictionary for comparison.
+     * @param last the last dictionary for comparison.
+     * @return true if the IDs of the first and last dictionary are the same.
      */
     protected boolean compareIds(COSDictionary first, COSDictionary last, COSDocument cosDocument)
     {
@@ -231,8 +229,8 @@ public class TrailerValidationProcess extends AbstractProcess
     /**
      * check if all keys are authorized in a trailer dictionary and if the type is valid.
      * 
-     * @param ctx
-     * @param trailer
+     * @param ctx the preflight context.
+     * @param trailer the trailer dictionary.
      */
     protected void checkMainTrailer(PreflightContext ctx, COSDictionary trailer)
     {
@@ -358,8 +356,8 @@ public class TrailerValidationProcess extends AbstractProcess
      * According to the PDF Reference, A linearized PDF contain a dictionary as first object (linearized dictionary) and
      * only this one in the first section.
      * 
-     * @param document
-     * @return
+     * @param document the document to validate.
+     * @return the linearization dictionary or null.
      */
     protected COSDictionary getLinearizedDictionary(PDDocument document)
     {
@@ -381,8 +379,8 @@ public class TrailerValidationProcess extends AbstractProcess
     /**
      * Check if mandatory keys of linearized dictionary are present.
      * 
-     * @param ctx
-     * @param linearizedDict
+     * @param ctx the preflight context.
+     * @param linearizedDict the linearization dictionary.
      */
     protected void checkLinearizedDictionnary(PreflightContext ctx, COSDictionary linearizedDict)
     {

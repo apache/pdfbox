@@ -196,7 +196,7 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
      * Return true if the FontDescriptor has only one FontFile entry.
      * 
      * @param fontDescriptor
-     * @return
+     * @return true if the FontDescriptor has only one FontFile entry.
      */
     protected boolean hasOnlyOneFontFile(PDFontDescriptor fontDescriptor)
     {

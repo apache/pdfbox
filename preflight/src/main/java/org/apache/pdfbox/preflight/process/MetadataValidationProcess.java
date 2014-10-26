@@ -192,8 +192,8 @@ public class MetadataValidationProcess extends AbstractProcess
     /**
      * Check if metadata dictionary has no stream filter
      * 
-     * @param doc
-     * @return
+     * @param doc the document to check.
+     * @return the list of validation errors.
      */
     protected List<ValidationError> checkStreamFilterUsage(PDDocument doc)
     {

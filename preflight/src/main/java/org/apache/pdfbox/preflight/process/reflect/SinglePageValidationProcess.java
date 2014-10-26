@@ -91,9 +91,8 @@ public class SinglePageValidationProcess extends AbstractProcess
     /**
      * This method checks additional actions contained in the given Page object.
      * 
-     * @param context
-     * @param page
-     * @return
+     * @param context the preflight context.
+     * @param page the page to check.
      * @throws ValidationException
      */
     protected void validateActions(PreflightContext context, PDPage page) throws ValidationException
@@ -105,8 +104,8 @@ public class SinglePageValidationProcess extends AbstractProcess
      * Check that all ColorSpace present in the Resource dictionary are conforming to the ISO 19005:2005-1
      * specification.
      * 
-     * @param context
-     * @param page
+     * @param context the preflight context.
+     * @param page the page to check.
      */
     protected void validateColorSpaces(PreflightContext context, PDPage page) throws ValidationException
     {
@@ -137,8 +136,8 @@ public class SinglePageValidationProcess extends AbstractProcess
      * Check that all XObject references in the PDResource of the page and in the Thumb entry are confirming to the
      * PDF/A specification.
      * 
-     * @param context
-     * @param page
+     * @param context the preflight context.
+     * @param page the page to check.
      * @throws ValidationException
      */
     protected void validateGraphicObjects(PreflightContext context, PDPage page) throws ValidationException
@@ -170,9 +169,8 @@ public class SinglePageValidationProcess extends AbstractProcess
 
     /**
      * 
-     * @param page
-     * @param context
-     * @return
+     * @param context the preflight context.
+     * @param page the page to check.
      * @throws ValidationException
      */
     protected void validateContent(PreflightContext context, PDPage page) throws ValidationException
@@ -191,8 +189,8 @@ public class SinglePageValidationProcess extends AbstractProcess
 
     /**
      * 
-     * @param page
-     * @return
+     * @param context the preflight context.
+     * @param page the page to check.
      * @throws ValidationException
      */
     protected void validateAnnotation(PreflightContext context, PDPage page) throws ValidationException
@@ -223,8 +221,8 @@ public class SinglePageValidationProcess extends AbstractProcess
     /**
      * Check that the group dictionary doesn't have a Transparency attribute
      * 
-     * @param context
-     * @param page
+     * @param context the preflight context.
+     * @param page the page to check.
      * @throws ValidationException
      */
     protected void validateGroupTransparency(PreflightContext context, PDPage page) throws ValidationException

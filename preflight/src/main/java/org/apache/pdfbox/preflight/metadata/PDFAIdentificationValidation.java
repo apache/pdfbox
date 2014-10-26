@@ -48,11 +48,8 @@ public class PDFAIdentificationValidation
     /**
      * Check if PDFAIdentification is valid
      * 
-     * @param document
-     *            the PDF Document
-     * @param metadata
-     *            the XMP MetaData
-     * @return List of validation errors
+     * @param metadata the XMP MetaData.
+     * @return the list of validation errors.
      * @throws ValidationException
      */
     public List<ValidationError> validatePDFAIdentifer(XMPMetadata metadata) throws ValidationException
@@ -92,7 +89,7 @@ public class PDFAIdentificationValidation
      * @param prefFound
      * @param prefExpected
      * @param schema
-     * @return
+     * @return the validation error.
      */
     protected ValidationError unexpectedPrefixFoundError(String prefFound, String prefExpected, String schema)
     {

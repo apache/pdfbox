@@ -96,11 +96,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
     /**
      * Method called by the validate method. According to the ColorSpace, a specific ColorSpace method is called.
      * 
-     * @param pdcs
-     *            the color space object to check.
-     * @param result
-     *            the list of error to update if the validation fails.
-     * @return true if the validation succeed, false otherwise.
+     * @param pdcs the color space object to check.
      */
     protected final void processAllColorSpace(PDColorSpace pdcs)
     {

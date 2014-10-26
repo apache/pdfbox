@@ -91,7 +91,7 @@ public class PdfParseException extends ParseException
     /**
      * Get the validation error code
      * 
-     * @return
+     * @return the validation error code.
      */
     public String getErrorCode()
     {

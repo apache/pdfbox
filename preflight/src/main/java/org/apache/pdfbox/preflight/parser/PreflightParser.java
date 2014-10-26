@@ -124,7 +124,7 @@ public class PreflightParser extends NonSequentialPDFParser
     /**
      * Create an instance of ValidationResult with a ValidationError(UNKNOWN_ERROR)
      * 
-     * @return
+     * @return the ValidationError instance.
      */
     protected static ValidationResult createUnknownErrorResult()
     {
@@ -543,7 +543,7 @@ public class PreflightParser extends NonSequentialPDFParser
     /**
      * Check that the hexa string contains only an even number of Hexadecimal characters. Once it is done, reset the
      * offset at the beginning of the string and call {@link BaseParser#parseCOSString()}
-     * @deprecated Not needed anymore. Use {@link #COSString()} instead. PDFBOX-1437
+     * @deprecated Not needed anymore. Use {@link #parseCOSString()} instead. PDFBOX-1437
      */
     @Override
     @Deprecated

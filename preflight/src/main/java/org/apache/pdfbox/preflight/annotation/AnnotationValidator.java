@@ -103,7 +103,7 @@ public abstract class AnnotationValidator
      * Check if the CA value is 1.0. Return true if the CA element is missing or if the value is 1.0. Return false
      * otherwise and update the list of errors present in the DocumentHandler.
      * 
-     * @return
+     * @return true if the CA element is missing or if the value is 1.0.
      */
     protected boolean checkCA()
     {
@@ -125,7 +125,7 @@ public abstract class AnnotationValidator
      * Return true if the C field is present in the Annotation dictionary and if the RGB profile is used in the
      * DestOutputProfile of the OutputIntent dictionary.
      * 
-     * @return
+     * @return true if the C field is present and the RGB profile is used.
      */
     protected boolean checkColors() throws ValidationException
     {
@@ -164,7 +164,7 @@ public abstract class AnnotationValidator
      * 
      * If the AP content isn't valid, this method return false and updates the errors list.
      * 
-     * @return
+     * @return the validation state of the AP content.
      */
     protected boolean checkAP() throws ValidationException
     {
@@ -211,7 +211,7 @@ public abstract class AnnotationValidator
      * errors list is updated and the method returns false. Otherwise, the method returns true and the errors list
      * doesn't change.
      * 
-     * @return
+     * @return the validation state of the annotations actions.
      * @throws ValidationException
      */
     protected boolean checkActions() throws ValidationException
@@ -284,7 +284,7 @@ public abstract class AnnotationValidator
 
     /**
      * Override this method to check the presence of specific fields
-     * @return
+     * @return the presence of specific fields.
      */
     protected boolean checkSpecificMandatoryFields()
     {

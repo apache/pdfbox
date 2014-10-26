@@ -87,9 +87,8 @@ public class StreamValidationProcess extends AbstractProcess
      * This method checks if one of declared Filter is LZWdecode. If LZW is found, the result list is updated with an
      * error code.
      * 
-     * @param stream
-     * @param handler
-     * @param result
+     * @param stream the stream to check.
+     * @param context the preflight context.
      */
     protected void checkFilters(COSStream stream, PreflightContext context)
     {
@@ -339,8 +338,8 @@ public class StreamValidationProcess extends AbstractProcess
      * Check dictionary entries. Only the Length entry is mandatory. In a PDF/A file, F, FFilter and FDecodeParms are
      * forbidden
      * 
-     * @param streamObj
-     * @param result
+     * @param context the preflight context.
+     * @param streamObj the stream to check.
      */
     protected void checkDictionaryEntries(PreflightContext context, COSStream streamObj)
     {

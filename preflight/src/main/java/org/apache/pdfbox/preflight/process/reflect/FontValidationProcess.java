@@ -78,8 +78,9 @@ public class FontValidationProcess extends AbstractProcess
     /**
      * Create the right "Validator" object for the given font type
      * 
-     * @param font
-     * @return
+     * @param context the preflight context.
+     * @param font the font object.
+     * @return the font validator instance for the font type.
      */
     protected FontValidator<? extends FontContainer> getFontValidator(PreflightContext context, PDFont font)
     {

@@ -113,11 +113,9 @@ public abstract class AbstractActionManager
     }
 
     /**
-     * Call the valid(boolean, List) method with the additonalActionAuth set to false.
+     * Call the {@link AbstractActionManager#valid(boolean)} method with the additonalActionAuth set to false.
      * 
-     * @param error
-     *            the validation error list to updated if the validation fails.
-     * @return
+     * @return the validation state.
      * @throws ValidationException
      */
     public boolean valid() throws ValidationException
@@ -138,7 +136,7 @@ public abstract class AbstractActionManager
      * 
      * @param additonalActionAuth
      *            boolean to know if an additional action is authorized.
-     * @return
+     * @return the validation state of the Action dictionary.
      * @throws ValidationException
      */
     public boolean valid(boolean additonalActionAuth) throws ValidationException

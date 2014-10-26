@@ -52,6 +52,12 @@ import org.apache.pdfbox.preflight.utils.COSUtils;
 public class ExtGStateValidationProcess extends AbstractProcess
 {
 
+    /**
+     * Validate the ExtGState dictionaries.
+     * 
+     * @param context the context which contains the Resource dictionary.
+     * @throws ValidationException thrown if a the Extended Graphic State isn't valid.
+     */
     public void validate(PreflightContext context) throws ValidationException
     {
         PreflightPath vPath = context.getValidationPath();
@@ -71,14 +77,12 @@ public class ExtGStateValidationProcess extends AbstractProcess
     }
 
     /**
-     * Create a list Of ExtGState dictionaries using the given Resource dictionary and the COSDocument.
+     * Create a list of ExtGState dictionaries using the given Resource dictionary and the COSDocument.
      * 
-     * @param context
-     *            the context which contains the Resource dictionary
-     * @param resources
-     *            a resource COSDictionary
-     * @throws ValidationException
-     *             thrown if a the Extended Graphic State isn't valid
+     * @param context the context which contains the Resource dictionary.
+     * @param egsEntry a resource COSDictionary.
+     * @return the list of ExtGState dictionaries.
+     * @throws ValidationException thrown if a the Extended Graphic State isn't valid.
      */
     public List<COSDictionary> extractExtGStateDictionaries(PreflightContext context, COSDictionary egsEntry)
             throws ValidationException
@@ -110,6 +114,9 @@ public class ExtGStateValidationProcess extends AbstractProcess
     /**
      * Validate all ExtGState dictionaries of this container
      * 
+     * @param context the preflight context.
+     * @param listOfExtGState a list of ExtGState COSDictionaries.
+     * 
      */
     protected void validateTransparencyRules(PreflightContext context, List<COSDictionary> listOfExtGState)
     {
@@ -127,8 +134,8 @@ public class ExtGStateValidationProcess extends AbstractProcess
      * This method checks the SMask value of the ExtGState dictionary. The Soft Mask is optional but must be "None" if
      * it is present.
      * 
-     * @param egs
-     *            the Graphic state to check
+     * @param context the preflight context.
+     * @param egs the Graphic state to check
      */
     private void checkSoftMask(PreflightContext context, COSDictionary egs)
     {
@@ -149,8 +156,7 @@ public class ExtGStateValidationProcess extends AbstractProcess
      * This method checks the BM value of the ExtGState dictionary. The Blend Mode is optional but must be "Normal" or
      * "Compatible" if it is present.
      * 
-     * @param egs
-     *            the graphic state to check
+     * @param context the preflight context     * @param egs the graphic state to check
      */
     private void checkBlendMode(PreflightContext context, COSDictionary egs)
     {
@@ -171,8 +177,8 @@ public class ExtGStateValidationProcess extends AbstractProcess
      * This method checks the "CA" and "ca" values of the ExtGState dictionary. They are optional but must be 1.0 if
      * they are present.
      * 
-     * @param egs
-     *            the graphic state to check
+     * @param context the preflight context.
+     * @param egs the graphic state to check
      */
     private void checkCA(PreflightContext context, COSDictionary egs)
     {
@@ -208,8 +214,8 @@ public class ExtGStateValidationProcess extends AbstractProcess
     /**
      * Check the TR entry. A valid ExtGState hasn't TR entry.
      * 
-     * @param egs
-     *            the graphic state to check
+     * @param context the preflight context
+     * @param egs the graphic state to check
      */
     protected void checkTRKey(PreflightContext context, COSDictionary egs)
     {
@@ -223,8 +229,7 @@ public class ExtGStateValidationProcess extends AbstractProcess
     /**
      * Check the TR2 entry. A valid ExtGState hasn't TR2 entry or a TR2 entry equals to "default".
      * 
-     * @param egs
-     *            the graphic state to check
+     * @param egs the graphic state to check
      */
     protected void checkTR2Key(PreflightContext context, COSDictionary egs)
     {
