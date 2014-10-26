@@ -187,17 +187,6 @@ public class PDFStreamEngine
     }
 
     /**
-     * Shows a Type 3 character.
-     *
-     * @param charProc Type 3 character procedure
-     * @throws IOException if the character cannot be processed
-     */
-    public void showType3Character(PDType3CharProc charProc) throws IOException
-    {
-        processChildStream(charProc);
-    }
-
-    /**
      * Process a child stream of the current page. For use with #processPage(PDPage).
      *
      * @param contentStream the child content stream
@@ -260,14 +249,15 @@ public class PDFStreamEngine
      * Process a content stream.
      *
      * @param contentStream the content stream
-     *  @param patternBBox fixme: temporary workaround for tiling patterns
+     * @param patternBBox fixme: temporary workaround for tiling patterns
      * @throws IOException if there is an exception while processing the stream
      */
     private void processStream(PDContentStream contentStream, PDRectangle patternBBox) throws IOException
     {
         // resource lookup: first look for stream resources, then fallback to the current page
+        PDResources parentResources = resources;
         PDResources streamResources = contentStream.getResources();
-        if (contentStream.getResources() != null)
+        if (streamResources != null)
         {
             resources = streamResources;
         }
@@ -285,6 +275,7 @@ public class PDFStreamEngine
         if (contentStream != currentPage && bbox != null)
         {
             Area clip = new Area(new GeneralPath(new Rectangle(bbox.createDimension())));
+            clip.transform(getGraphicsState().getCurrentTransformationMatrix().createAffineTransform());
             saveGraphicsState();
             getGraphicsState().intersectClippingPath(clip);
         }
@@ -325,6 +316,9 @@ public class PDFStreamEngine
         {
             restoreGraphicsState();
         }
+
+        // restore page resources
+        resources = parentResources;
 
         // fixme: stream matrix
         subStreamMatrix = oldSubStreamMatrix;
