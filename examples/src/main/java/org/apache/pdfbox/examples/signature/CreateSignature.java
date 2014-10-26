@@ -286,7 +286,7 @@ class CMSProcessableInputStream implements CMSProcessable
 
   public Object getContent()
   {
-    return null;
+    return in;
   }
 
   public void write(OutputStream out) throws IOException, CMSException
