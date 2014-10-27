@@ -24,7 +24,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,6 +43,7 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
 import org.apache.pdfbox.pdmodel.interactive.action.PDFormFieldAdditionalActions;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceEntry;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.contentstream.operator.Operator;
@@ -228,7 +228,6 @@ public final class PDAppearanceString
             }
             else
             {
-
                 PDAppearanceDictionary appearance = widget.getAppearance();
                 if (appearance == null)
                 {
@@ -236,8 +235,8 @@ public final class PDAppearanceString
                     widget.setAppearance(appearance);
                 }
 
-                Map<String, PDAppearanceStream> normalAppearance = appearance.getNormalAppearance();
-                PDAppearanceStream appearanceStream = normalAppearance.get("default");
+                PDAppearanceEntry normalAppearance = appearance.getNormalAppearance();
+                PDAppearanceStream appearanceStream = normalAppearance.getAppearanceStream();
                 if (appearanceStream == null)
                 {
                     COSStream cosStream = acroForm.getDocument().getDocument().createCOSStream();

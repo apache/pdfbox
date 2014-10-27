@@ -31,10 +31,9 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDGamma;
 
 /**
- * This class represents a PDF annotation.
+ * A PDF annotation.
  * 
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * 
+ * @author Ben Litchfield
  */
 public abstract class PDAnnotation implements COSObjectable
 {
@@ -265,27 +264,25 @@ public abstract class PDAnnotation implements COSObjectable
     }
 
     /**
-     * This will get the name of the current appearance stream if any.
-     * 
-     * @return The name of the appearance stream.
+     * Returns the annotations appearance state, which selects the applicable appearance stream
+     * from an appearance subdictionary.
      */
-    public String getAppearanceStream()
+    public COSName getAppearanceState()
     {
-        String retval = null;
         COSName name = (COSName) getDictionary().getDictionaryObject(COSName.AS);
         if (name != null)
         {
-            retval = name.getName();
+            return name;
         }
-        return retval;
+        return null;
     }
 
     /**
-     * This will set the annotations appearance stream name.
+     * This will set the annotations appearance state name.
      * 
      * @param as The name of the appearance stream.
      */
-    public void setAppearanceStream(String as)
+    public void setAppearanceState(String as)
     {
         if (as == null)
         {
@@ -323,9 +320,38 @@ public abstract class PDAnnotation implements COSObjectable
         COSDictionary ap = null;
         if (appearance != null)
         {
-            ap = appearance.getDictionary();
+            ap = appearance.getCOSObject();
         }
         dictionary.setItem(COSName.AP, ap);
+    }
+
+    /**
+     * Returns the appearance stream for this annotation, if any. The annotation state is taken
+     * into account, if present.
+     */
+    public PDAppearanceStream getNormalAppearanceStream()
+    {
+        PDAppearanceDictionary appearanceDict = getAppearance();
+        if (appearanceDict == null)
+        {
+            return null;
+        }
+
+        PDAppearanceEntry normalAppearance = appearanceDict.getNormalAppearance();
+        if (normalAppearance == null)
+        {
+            return null;
+        }
+
+        if (normalAppearance.isSubDictionary())
+        {
+            COSName state = getAppearanceState();
+            return normalAppearance.getSubDictionary().get(state);
+        }
+        else
+        {
+            return normalAppearance.getAppearanceStream();
+        }
     }
 
     /**

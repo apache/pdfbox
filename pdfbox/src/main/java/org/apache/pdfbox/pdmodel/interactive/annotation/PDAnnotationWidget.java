@@ -230,7 +230,7 @@ public class PDAnnotationWidget extends PDAnnotation
     // TODO where to get acroForm from?
 //    public PDField getParent() throws IOException
 //    {
-//        COSBase parent = this.getDictionary().getDictionaryObject(COSName.PARENT);
+//        COSBase parent = this.getCOSObject().getDictionaryObject(COSName.PARENT);
 //        if (parent instanceof COSDictionary)
 //        {
 //            PDAcroForm acroForm = null;

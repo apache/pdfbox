@@ -45,6 +45,7 @@ import org.apache.pdfbox.pdmodel.font.PDCIDFontType2;
 import org.apache.pdfbox.pdmodel.font.PDType3CharProc;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImage;
 import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceEntry;
 import org.apache.pdfbox.rendering.font.CIDType0Glyph2D;
 import org.apache.pdfbox.rendering.font.Glyph2D;
 import org.apache.pdfbox.rendering.font.TTFGlyph2D;
@@ -155,103 +156,95 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         // TODO use getStroke() to set the initial stroke
         graphics.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
 
-        PDPage page = getPage();
-        processPage(page);
+        processPage(getPage());
+        showAnnotations();
 
-        for (PDAnnotation annotation : page.getAnnotations())
+        graphics = null;
+    }
+
+    private void showAnnotations() throws IOException
+    {
+        for (PDAnnotation annotation : getPage().getAnnotations())
         {
-            PDRectangle rect = annotation.getRectangle();
-            String appearanceName = annotation.getAppearanceStream();
-            PDAppearanceDictionary appearDictionary = annotation.getAppearance();
-            if (appearDictionary != null)
+            PDAppearanceStream appearanceStream = annotation.getNormalAppearanceStream();
+            if (appearanceStream != null)
             {
-                if (appearanceName == null)
+                saveGraphicsState();
+
+                PDRectangle rect = annotation.getRectangle();
+                Rectangle2D rect2D = new Rectangle2D.Float(
+                        rect.getLowerLeftX(),
+                        rect.getLowerLeftY(),
+                        rect.getWidth(),
+                        rect.getHeight());
+
+                Matrix matrix = appearanceStream.getMatrix();
+                if (matrix == null)
                 {
-                    appearanceName = "default";
+                    matrix = new Matrix();
                 }
-                Map<String, PDAppearanceStream> appearanceMap = appearDictionary.getNormalAppearance();
-                if (appearanceMap != null)
-                {
-                    PDAppearanceStream appearance = appearanceMap.get(appearanceName);
-                    if (appearance != null)
-                    {
-                        saveGraphicsState();
 
-                        PDRectangle bBox = appearance.getBBox();
-                        
-                        Rectangle2D rect2D = new Rectangle2D.Float(
-                                rect.getLowerLeftX(), 
-                                rect.getLowerLeftY(), 
-                                rect.getWidth(), 
-                                rect.getHeight());
-                        Matrix matrix = appearance.getMatrix();
-                        if (matrix == null)
-                        {
-                            matrix = new Matrix();
-                        }
-                        
-                        // PDF Spec 12.5.5:
-                        // a) The appearance's bounding box (specified by its BBox entry) 
-                        // shall be transformed, using Matrix, to produce a quadrilateral 
-                        // with arbitrary orientation.
-                        Point2D p1 = new Point2D.Float(bBox.getLowerLeftX(), bBox.getLowerLeftY());
-                        Point2D p2 = new Point2D.Float(bBox.getUpperRightX(), bBox.getUpperRightY());
-                        matrix.createAffineTransform().transform(p1, p1);
-                        matrix.createAffineTransform().transform(p2, p2);
-                        Rectangle2D transformedBBox = new Rectangle2D.Float(
-                                (float) Math.min(p1.getX(), p2.getX()),
-                                (float) Math.min(p1.getY(), p2.getY()),
-                                (float) Math.abs(p2.getX() - p1.getX()),
-                                (float) Math.abs(p2.getY() - p1.getY()));
+                // PDF Spec 12.5.5:
+                // a) The appearance's bounding box (specified by its BBox entry)
+                // shall be transformed, using Matrix, to produce a quadrilateral
+                // with arbitrary orientation.
+                PDRectangle bBox = appearanceStream.getBBox();
+                Point2D p1 = new Point2D.Float(bBox.getLowerLeftX(), bBox.getLowerLeftY());
+                Point2D p2 = new Point2D.Float(bBox.getUpperRightX(), bBox.getUpperRightY());
+                matrix.createAffineTransform().transform(p1, p1);
+                matrix.createAffineTransform().transform(p2, p2);
+                Rectangle2D transformedBBox = new Rectangle2D.Float(
+                        (float) Math.min(p1.getX(), p2.getX()),
+                        (float) Math.min(p1.getY(), p2.getY()),
+                        (float) Math.abs(p2.getX() - p1.getX()),
+                        (float) Math.abs(p2.getY() - p1.getY()));
 
-                        // PDF Spec 12.5.5:
-                        // b) A matrix A shall be computed that scales and translates 
-                        // the transformed appearance box to align with the edges
-                        // of the annotation's rectangle
-                        //
-                        // code inspired from
-                        // http://stackoverflow.com/a/14015713/535646
-                        AffineTransform at = new AffineTransform();
-                        at.translate(rect2D.getMinX(), rect2D.getMinY());
-                        at.scale(rect2D.getWidth() / transformedBBox.getWidth(), rect2D.getHeight() / transformedBBox.getHeight());
-                        at.translate(-transformedBBox.getMinX(), -transformedBBox.getMinY());
-                        Matrix matrixA = new Matrix();
-                        matrixA.setFromAffineTransform(at);
-                        
-                        // PDF Spec 12.5.5:
-                        // c) Matrix shall be concatenated with A to form a matrix AA 
-                        // that maps from the appearance's coordinate system to 
-                        // the annotation's rectangle in default user space
-                        Matrix matrixAA = matrix.multiply(matrixA);
-                        
-                        Point2D point = new Point2D.Float(matrixAA.getXPosition(), matrixAA.getYPosition());
-                        matrixAA.setValue(2, 0, 0);
-                        matrixAA.setValue(2, 1, 0);
-                        
-                        getGraphicsState().setCurrentTransformationMatrix(matrixAA);
+                // PDF Spec 12.5.5:
+                // b) A matrix A shall be computed that scales and translates
+                // the transformed appearance box to align with the edges
+                // of the annotation's rectangle
+                //
+                // code inspired from
+                // http://stackoverflow.com/a/14015713/535646
+                AffineTransform at = new AffineTransform();
+                at.translate(rect2D.getMinX(), rect2D.getMinY());
+                at.scale(rect2D.getWidth() / transformedBBox.getWidth(),
+                         rect2D.getHeight() / transformedBBox.getHeight());
+                at.translate(-transformedBBox.getMinX(), -transformedBBox.getMinY());
+                Matrix matrixA = new Matrix();
+                matrixA.setFromAffineTransform(at);
 
-                        // Calculate clipping
-                        // PDF Spec 12.5.5:
-                        // a self-contained content stream that shall be rendered 
-                        // inside the annotation rectangle
-                        Rectangle2D clipRect2D = new Rectangle2D.Float(
-                                (float) (rect2D.getMinX()-point.getX()),
-                                (float) (rect2D.getMinY()-point.getY()),
-                                (float) rect2D.getWidth(),
-                                (float) rect2D.getHeight());
-                        getGraphicsState().intersectClippingPath(new Area(clipRect2D));
+                // PDF Spec 12.5.5:
+                // c) Matrix shall be concatenated with A to form a matrix AA
+                // that maps from the appearance's coordinate system to
+                // the annotation's rectangle in default user space
+                Matrix matrixAA = matrix.multiply(matrixA);
 
-                        graphics.translate((int) point.getX(), (int) point.getY());
-                        lastClip = null;
-                        processChildStream(appearance);
-                        graphics.translate(-(int) point.getX(), -(int) point.getY());
-                       
-                        restoreGraphicsState();
-                    }
-                }
+                Point2D point = new Point2D.Float(matrixAA.getXPosition(), matrixAA.getYPosition());
+                matrixAA.setValue(2, 0, 0);
+                matrixAA.setValue(2, 1, 0);
+
+                getGraphicsState().setCurrentTransformationMatrix(matrixAA);
+
+                // Calculate clipping
+                // PDF Spec 12.5.5:
+                // a self-contained content stream that shall be rendered
+                // inside the annotation rectangle
+                Rectangle2D clipRect2D = new Rectangle2D.Float(
+                        (float) (rect2D.getMinX()-point.getX()),
+                        (float) (rect2D.getMinY()-point.getY()),
+                        (float) rect2D.getWidth(),
+                        (float) rect2D.getHeight());
+                getGraphicsState().intersectClippingPath(new Area(clipRect2D));
+
+                graphics.translate((int) point.getX(), (int) point.getY());
+                lastClip = null;
+                processChildStream(appearanceStream);
+                graphics.translate(-(int) point.getX(), -(int) point.getY());
+
+                restoreGraphicsState();
             }
         }
-        graphics = null;
     }
 
     /**
