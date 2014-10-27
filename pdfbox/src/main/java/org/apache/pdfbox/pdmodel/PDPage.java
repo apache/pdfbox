@@ -116,7 +116,7 @@ public class PDPage implements COSObjectable, PDContentStream
         if (pageResources == null)
         {
             COSDictionary resources = (COSDictionary)
-                    PDPageTree.getInheritedAttribute(page, COSName.RESOURCES);
+                    PDPageTree.getInheritableAttribute(page, COSName.RESOURCES);
 
             // note: it's an error for resources to not be present
             if (resources != null)
@@ -179,7 +179,7 @@ public class PDPage implements COSObjectable, PDContentStream
     {
         if (mediaBox == null)
         {
-            COSArray array = (COSArray) PDPageTree.getInheritedAttribute(page, COSName.MEDIA_BOX);
+            COSArray array = (COSArray) PDPageTree.getInheritableAttribute(page, COSName.MEDIA_BOX);
             if (array != null)
             {
                 mediaBox = new PDRectangle(array);
@@ -213,7 +213,7 @@ public class PDPage implements COSObjectable, PDContentStream
      */
     public PDRectangle getCropBox()
     {
-        COSArray array = (COSArray) PDPageTree.getInheritedAttribute(page, COSName.CROP_BOX);
+        COSArray array = (COSArray) PDPageTree.getInheritableAttribute(page, COSName.CROP_BOX);
         if (array != null)
         {
             return clipToMediaBox(new PDRectangle(array));
@@ -378,7 +378,7 @@ public class PDPage implements COSObjectable, PDContentStream
      */
     public int getRotation()
     {
-        COSNumber value = (COSNumber) PDPageTree.getInheritedAttribute(page, COSName.ROTATE);
+        COSNumber value = (COSNumber) PDPageTree.getInheritableAttribute(page, COSName.ROTATE);
         if (value != null)
         {
            return value.intValue();
