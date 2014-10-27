@@ -114,7 +114,7 @@ public final class PublicKeySecurityHandler extends SecurityHandler
         PDEncryption dictionary = doc.getEncryption();
 
         prepareForDecryption( dictionary, doc.getDocument().getDocumentID(),
-        											decryptionMaterial );
+                decryptionMaterial );
         
         proceedDecryption();
     }
@@ -135,103 +135,105 @@ public final class PublicKeySecurityHandler extends SecurityHandler
                                      DecryptionMaterial decryptionMaterial)
                                      throws IOException
     {
-	      if(!(decryptionMaterial instanceof PublicKeyDecryptionMaterial))
-	      {
-	          throw new IOException(
-	              "Provided decryption material is not compatible with the document");
-	      }
-	
-          decryptMetadata = encryption.isEncryptMetaData();
-          if(encryption.getLength() != 0)
-          {
-              this.keyLength = encryption.getLength();
-          }
-    
-	      PublicKeyDecryptionMaterial material = (PublicKeyDecryptionMaterial)decryptionMaterial;
-	
-	      try
-	      {
-	          boolean foundRecipient = false;
-	
-	          // the decrypted content of the enveloped data that match
-	          // the certificate in the decryption material provided
-	          byte[] envelopedData = null;
-	
-	          // the bytes of each recipient in the recipients array
-	          byte[][] recipientFieldsBytes = new byte[encryption.getRecipientsLength()][];
-	
-	          int recipientFieldsLength = 0;
-	
-	          for(int i=0; i< encryption.getRecipientsLength(); i++)
-	          {
-	              COSString recipientFieldString = encryption.getRecipientStringAt(i);
-	              byte[] recipientBytes = recipientFieldString.getBytes();
-	              CMSEnvelopedData data = new CMSEnvelopedData(recipientBytes);
-	              Iterator<?> recipCertificatesIt = data.getRecipientInfos().getRecipients().iterator();
-	              while(recipCertificatesIt.hasNext())
-	              {
-	                  RecipientInformation ri =
-	                      (RecipientInformation)recipCertificatesIt.next();
-	                  // Impl: if a matching certificate was previously found it is an error,
-	                  // here we just don't care about it
-	                  if(ri.getRID().match(material.getCertificate()) && !foundRecipient)
-	                  {
-	                      foundRecipient = true;
-	                      PrivateKey privateKey = (PrivateKey)material.getPrivateKey();
-	                      envelopedData = ri.getContent(new JceKeyTransEnvelopedRecipient(privateKey).setProvider("BC"));
-	                      break;
-	                  }
-	              }
-	              recipientFieldsBytes[i] = recipientBytes;
-	              recipientFieldsLength += recipientBytes.length;
-	          }
-	          if(!foundRecipient || envelopedData == null)
-	          {
-	              throw new IOException("The certificate matches no recipient entry");
-	          }
-	          if(envelopedData.length != 24)
-	          {
-	              throw new IOException("The enveloped data does not contain 24 bytes");
-	          }
-	          // now envelopedData contains:
-	          // - the 20 bytes seed
-	          // - the 4 bytes of permission for the current user
-	
-	          byte[] accessBytes = new byte[4];
-	          System.arraycopy(envelopedData, 20, accessBytes, 0, 4);
-	
-	          currentAccessPermission = new AccessPermission(accessBytes);
-	          currentAccessPermission.setReadOnly();
-	
-	           // what we will put in the SHA1 = the seed + each byte contained in the recipients array
-	          byte[] sha1Input = new byte[recipientFieldsLength + 20];
-	
-	          // put the seed in the sha1 input
-	          System.arraycopy(envelopedData, 0, sha1Input, 0, 20);
-	
-	          // put each bytes of the recipients array in the sha1 input
-	          int sha1InputOffset = 20;
-                  for (byte[] recipientFieldsByte : recipientFieldsBytes)
-                  {
-                      System.arraycopy(recipientFieldsByte, 0, sha1Input, sha1InputOffset, recipientFieldsByte.length);
-                      sha1InputOffset += recipientFieldsByte.length;
-                  }
-	
-	          MessageDigest md = MessageDigests.getSHA1();
-	          byte[] mdResult = md.digest(sha1Input);
-	
-	          // we have the encryption key ...
-	          encryptionKey = new byte[this.keyLength/8];
-	          System.arraycopy(mdResult, 0, encryptionKey, 0, this.keyLength/8);
-	      }
-	      catch(CMSException e)
-	      {
-	          throw new IOException(e);
-	      }
-	      catch(KeyStoreException e)
-	      {
-	          throw new IOException(e);
-	      }
+        if (!(decryptionMaterial instanceof PublicKeyDecryptionMaterial))
+        {
+            throw new IOException(
+                    "Provided decryption material is not compatible with the document");
+        }
+
+        decryptMetadata = encryption.isEncryptMetaData();
+        if (encryption.getLength() != 0)
+        {
+            this.keyLength = encryption.getLength();
+        }
+
+        PublicKeyDecryptionMaterial material = (PublicKeyDecryptionMaterial) decryptionMaterial;
+
+        try
+        {
+            boolean foundRecipient = false;
+
+            // the decrypted content of the enveloped data that match
+            // the certificate in the decryption material provided
+            byte[] envelopedData = null;
+
+            // the bytes of each recipient in the recipients array
+            byte[][] recipientFieldsBytes = new byte[encryption.getRecipientsLength()][];
+
+            int recipientFieldsLength = 0;
+
+            for (int i = 0; i < encryption.getRecipientsLength(); i++)
+            {
+                COSString recipientFieldString = encryption.getRecipientStringAt(i);
+                byte[] recipientBytes = recipientFieldString.getBytes();
+                CMSEnvelopedData data = new CMSEnvelopedData(recipientBytes);
+                Iterator<?> recipCertificatesIt = data.getRecipientInfos().getRecipients()
+                        .iterator();
+                while (recipCertificatesIt.hasNext())
+                {
+                    RecipientInformation ri = (RecipientInformation) recipCertificatesIt.next();
+                    // Impl: if a matching certificate was previously found it is an error,
+                    // here we just don't care about it
+                    if (ri.getRID().match(material.getCertificate()) && !foundRecipient)
+                    {
+                        foundRecipient = true;
+                        PrivateKey privateKey = (PrivateKey) material.getPrivateKey();
+                        envelopedData = ri.getContent(new JceKeyTransEnvelopedRecipient(privateKey)
+                                .setProvider("BC"));
+                        break;
+                    }
+                }
+                recipientFieldsBytes[i] = recipientBytes;
+                recipientFieldsLength += recipientBytes.length;
+            }
+            if (!foundRecipient || envelopedData == null)
+            {
+                throw new IOException("The certificate matches no recipient entry");
+            }
+            if (envelopedData.length != 24)
+            {
+                throw new IOException("The enveloped data does not contain 24 bytes");
+            }
+            // now envelopedData contains:
+            // - the 20 bytes seed
+            // - the 4 bytes of permission for the current user
+
+            byte[] accessBytes = new byte[4];
+            System.arraycopy(envelopedData, 20, accessBytes, 0, 4);
+
+            currentAccessPermission = new AccessPermission(accessBytes);
+            currentAccessPermission.setReadOnly();
+
+            // what we will put in the SHA1 = the seed + each byte contained in the recipients array
+            byte[] sha1Input = new byte[recipientFieldsLength + 20];
+
+            // put the seed in the sha1 input
+            System.arraycopy(envelopedData, 0, sha1Input, 0, 20);
+
+            // put each bytes of the recipients array in the sha1 input
+            int sha1InputOffset = 20;
+            for (byte[] recipientFieldsByte : recipientFieldsBytes)
+            {
+                System.arraycopy(recipientFieldsByte, 0, sha1Input, sha1InputOffset,
+                        recipientFieldsByte.length);
+                sha1InputOffset += recipientFieldsByte.length;
+            }
+
+            MessageDigest md = MessageDigests.getSHA1();
+            byte[] mdResult = md.digest(sha1Input);
+
+            // we have the encryption key ...
+            encryptionKey = new byte[this.keyLength / 8];
+            System.arraycopy(mdResult, 0, encryptionKey, 0, this.keyLength / 8);
+        }
+        catch (CMSException e)
+        {
+            throw new IOException(e);
+        }
+        catch (KeyStoreException e)
+        {
+            throw new IOException(e);
+        }
     }
     
     /**

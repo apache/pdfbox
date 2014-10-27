@@ -532,10 +532,10 @@ public class PDPage implements COSObjectable, PDContentStream
             for (int i = 0; i < annots.size(); i++)
             {
                 COSBase item = annots.getObject(i);
-            	if (item == null)
-            	{
-            		continue;
-            	}
+                if (item == null)
+                {
+                    continue;
+                }
                 actuals.add(PDAnnotation.createAnnotation(item));
             }
             retval = new COSArrayList<PDAnnotation>(actuals, annots);

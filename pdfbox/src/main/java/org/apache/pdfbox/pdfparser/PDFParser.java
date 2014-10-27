@@ -69,7 +69,7 @@ public class PDFParser extends BaseParser
     private List<ConflictObj> conflictList = new ArrayList<ConflictObj>();
     
     /**
-     * COSStream objects to check for length correctness
+     * COSStream objects to check for length correctness.
      */
     private final HashSet<COSStream> streamLengthCheckSet = new HashSet<COSStream>();
 
@@ -1065,16 +1065,16 @@ public class PDFParser extends BaseParser
      */
     @Override
     public void clearResources() {
-    	super.clearResources();
-    	if (conflictList != null)
-    	{
-    		conflictList.clear();
-    		conflictList = null;
-    	}
-    	if (xrefTrailerResolver != null)
-    	{
-    		xrefTrailerResolver.clearResources();
-    		xrefTrailerResolver = null;
-    	}
+        super.clearResources();
+        if (conflictList != null)
+        {
+            conflictList.clear();
+            conflictList = null;
+        }
+        if (xrefTrailerResolver != null)
+        {
+            xrefTrailerResolver.clearResources();
+            xrefTrailerResolver = null;
+        }
     }
 }

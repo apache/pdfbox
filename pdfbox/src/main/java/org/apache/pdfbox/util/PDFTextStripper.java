@@ -220,11 +220,11 @@ public class PDFTextStripper extends PDFTextStreamEngine
         document = null;
         if (charactersByArticle != null)
         {
-        	charactersByArticle.clear();
+            charactersByArticle.clear();
         }
         if (characterListMapping != null)
         {
-        	characterListMapping.clear();
+            characterListMapping.clear();
         }
         startBookmark = null;
         endBookmark = null;
@@ -476,17 +476,17 @@ public class PDFTextStripper extends PDFTextStreamEngine
             if (getSortByPosition())
             {
                 TextPositionComparator comparator = new TextPositionComparator();
-                				
+
                 // because the TextPositionComparator is not transitive, but 
                 // JDK7+ enforces transitivity on comparators, we need to use
                 // a custom quicksort implementation (which is slower, unfortunately).
                 if(useCustomQuicksort) 
                 {
-                	QuickSort.sort( textList, comparator );
+                    QuickSort.sort( textList, comparator );
                 } 
                 else 
                 {
-                	Collections.sort( textList, comparator );
+                    Collections.sort( textList, comparator );
                 }
             }
             Iterator<TextPosition> textIter = textList.iterator();
@@ -1663,7 +1663,7 @@ public class PDFTextStripper extends PDFTextStreamEngine
      */
     protected void setListItemPatterns(List<Pattern> patterns)
     {
-    	listOfPatterns = patterns;
+        listOfPatterns = patterns;
     }
 
     /**
