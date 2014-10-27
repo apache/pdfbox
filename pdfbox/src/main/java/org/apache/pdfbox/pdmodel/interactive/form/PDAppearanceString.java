@@ -50,7 +50,7 @@ import org.apache.pdfbox.contentstream.operator.Operator;
 
 /**
  * A default appearance string contains any graphics state or text state operators needed to establish the graphics
- * state parameters, such as text size and colour, for displaying the field?s variable text. Only operators that are
+ * state parameters, such as text size and colour, for displaying the field's variable text. Only operators that are
  * allowed within text objects shall occur in this string.
  *
  * @author Stephan Gerhard
@@ -415,18 +415,18 @@ public final class PDAppearanceString
         printWriter.println(leftOffset + " " + verticalOffset + " Td");
 
         // add the value as hex string to deal with non ISO-8859-1 data values
-        if (!isMultiLineValue(value))
+        if (!isMultiLineValue(value) || stringWidth > borderEdge.getWidth() - paddingLeft - paddingRight)
         {
             printWriter.println("<" + new COSString(value).getHexString() + "> Tj");
         }
         else
         {
-            String[] lines = value.split("\n");
-            for (int i = 0; i < lines.length; i++)
+            String[] paragraphs = value.split("\n");
+            for (int i = 0; i < paragraphs.length; i++)
             {
-                boolean lastLine = i == (lines.length - 1);
+                boolean lastLine = i == (paragraphs.length - 1);
                 String endingTag = lastLine ? "> Tj\n" : "> Tj 0 -13 Td";
-                printWriter.print("<" + new COSString(lines[i]).getHexString() + endingTag);
+                printWriter.print("<" + new COSString(paragraphs[i]).getHexString() + endingTag);
             }
         }
         printWriter.println("ET");

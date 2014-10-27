@@ -41,7 +41,7 @@ public class PDType3Font extends PDSimpleFont
 {
     private static final Log LOG = LogFactory.getLog(PDType3Font.class);
 
-	private PDResources resources;
+    private PDResources resources;
     private COSDictionary charProcs;
     private Matrix fontMatrix;
 
@@ -197,7 +197,7 @@ public class PDType3Font extends PDSimpleFont
             COSDictionary resources = (COSDictionary) dict.getDictionaryObject(COSName.RESOURCES);
             if (resources != null)
             {
-            	this.resources = new PDResources(resources);
+                this.resources = new PDResources(resources);
             }
         }
         return resources;
@@ -236,7 +236,7 @@ public class PDType3Font extends PDSimpleFont
     {
         if (charProcs == null)
         {
-        	charProcs = (COSDictionary) dict.getDictionaryObject(COSName.CHAR_PROCS);
+            charProcs = (COSDictionary) dict.getDictionaryObject(COSName.CHAR_PROCS);
         }
         return charProcs;
     }
@@ -253,7 +253,7 @@ public class PDType3Font extends PDSimpleFont
         if (name != null)
         {
             COSStream stream;
-        	stream = (COSStream)getCharProcs().getDictionaryObject(COSName.getPDFName(name));
+            stream = (COSStream)getCharProcs().getDictionaryObject(COSName.getPDFName(name));
             return new PDType3CharProc(this, stream);
         }
         return null;

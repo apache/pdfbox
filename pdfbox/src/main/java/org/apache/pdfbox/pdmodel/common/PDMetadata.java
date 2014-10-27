@@ -95,8 +95,8 @@ public class PDMetadata extends PDStream
     public void importXMPMetadata( byte[] xmp )
         throws IOException
     {
-    	OutputStream os = createOutputStream();
-    	os.write(xmp);
-    	os.close();
+        OutputStream os = createOutputStream();
+        os.write(xmp);
+        os.close();
     }
 }
