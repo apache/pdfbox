@@ -42,6 +42,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.graphics.color.PDCIEBasedColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
+import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
 import org.apache.pdfbox.preflight.PreflightConfiguration;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
@@ -382,24 +383,23 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
         {
             if (!validColorSpace(cs, ColorSpaceType.ALL))
             {
-                // The default fill color needs an OutputIntent
                 registerError("The operator \"" + operation + "\" can't be used without Color Profile",
                         ERROR_GRAPHIC_INVALID_COLOR_SPACE_MISSING);
             }
         }
     }
 
-    private boolean validColorSpace(PDColorSpace colorSpace, ColorSpaceType expectedType)
+    private boolean validColorSpace(PDColorSpace colorSpace, ColorSpaceType expectedIccType)
             throws ContentStreamException
     {
         if (colorSpace == null)
         {
-            return validColorSpaceDestOutputProfile(expectedType);
+            return validColorSpaceDestOutputProfile(expectedIccType);
         }
         else
         {
-            return isDeviceIndependent(colorSpace, expectedType) ||
-                   validColorSpaceDestOutputProfile(expectedType);
+            return isDeviceIndependent(colorSpace, expectedIccType) ||
+                   validColorSpaceDestOutputProfile(expectedIccType);
         }
     }
 
@@ -445,17 +445,22 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
      * Return true if the given ColorSpace is an independent device ColorSpace.
      * If the color space is an ICCBased, check the embedded profile color (RGB or CMYK)
      */
-    private boolean isDeviceIndependent(PDColorSpace cs, ColorSpaceType expectedType)
+    private boolean isDeviceIndependent(PDColorSpace cs, ColorSpaceType expectedIccType)
     {
         if (cs instanceof PDICCBased)
         {
             int type = ((PDICCBased)cs).getColorSpaceType();
-            switch (expectedType)
+            switch (expectedIccType)
             {
                 case RGB: return type == ICC_ColorSpace.TYPE_RGB;
                 case CMYK: return type == ICC_ColorSpace.TYPE_CMYK;
                 default: return true;
             }
+        }
+        else if (cs instanceof PDSeparation)
+        {
+            return isDeviceIndependent(((PDSeparation)cs).getAlternateColorSpace(),
+                    expectedIccType);
         }
         else
         {

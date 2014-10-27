@@ -159,6 +159,15 @@ public class PDSeparation extends PDSpecialColorSpace
      * Returns the colorant name.
      * @return the name of the colorant
      */
+    public PDColorSpace getAlternateColorSpace()
+    {
+       return alternateColorSpace;
+    }
+
+    /**
+     * Returns the colorant name.
+     * @return the name of the colorant
+     */
     public String getColorantName()
     {
         COSName name = (COSName)array.getObject(COLORANT_NAMES);
