@@ -49,6 +49,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
 import org.apache.pdfbox.pdmodel.font.PDFontLike;
 import org.apache.pdfbox.preflight.PreflightContext;
@@ -81,12 +82,18 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
     public void validate()
     {
         PDFontDescriptor fd = this.font.getFontDescriptor();
+        boolean isStandard14 = false;
+        if (this.font instanceof PDFont)
+        {
+            isStandard14 = ((PDFont)font).isStandard14();
+        }
+
         // Only a PDFontDescriptorDictionary provides a way to embedded the font program.
         if (fd != null)
         {
             fontDescriptor = fd;
 
-            if (checkMandatoryFields(fontDescriptor.getCOSObject()))
+            if (isStandard14 || checkMandatoryFields(fontDescriptor.getCOSObject()))
             {
                 if (hasOnlyOneFontFile(fontDescriptor))
                 {
