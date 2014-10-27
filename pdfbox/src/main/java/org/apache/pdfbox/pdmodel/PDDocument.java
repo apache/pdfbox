@@ -281,7 +281,7 @@ public class PDDocument implements Closeable
             cosObject.setItem(COSName.BBOX, new PDRectangle());
 
             ap.setNormalAppearance(aps);
-            ap.getDictionary().setDirect(true);
+            ap.getCOSObject().setDirect(true);
             signatureField.getWidget().setAppearance(ap);
         }
         else
@@ -327,7 +327,7 @@ public class PDDocument implements Closeable
                         // Appearance Dictionary auslesen und setzen
                         PDAppearanceDictionary ap = new PDAppearanceDictionary(
                                 (COSDictionary) cosBaseDict.getItem(COSName.AP));
-                        ap.getDictionary().setDirect(true);
+                        ap.getCOSObject().setDirect(true);
                         signatureField.getWidget().setAppearance(ap);
 
                         // AcroForm DefaultRessource auslesen und setzen

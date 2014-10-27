@@ -171,7 +171,7 @@ public abstract class AnnotationValidator
         PDAppearanceDictionary ap = this.pdAnnot.getAppearance();
         if (ap != null)
         {
-            COSDictionary apDict = ap.getDictionary();
+            COSDictionary apDict = ap.getCOSObject();
             // Only N entry is authorized
             if (apDict.getItem(COSName.D) != null || apDict.getItem(COSName.R) != null)
             {

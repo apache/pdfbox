@@ -20,7 +20,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -32,6 +31,7 @@ import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceEntry;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
@@ -244,8 +244,8 @@ public class TestFDF extends TestCase
     private void testContentStreamContains( PDDocument doc, PDFieldTreeNode field, String expected ) throws Exception
     {
         PDAnnotationWidget widget = field.getWidget();
-        Map<String,PDAppearanceStream> normalAppearance = widget.getAppearance().getNormalAppearance();
-        PDAppearanceStream appearanceStream = normalAppearance.get( "default" );
+        PDAppearanceEntry normalAppearance = widget.getAppearance().getNormalAppearance();
+        PDAppearanceStream appearanceStream = normalAppearance.getAppearanceStream();
         COSStream actual = appearanceStream.getStream();
 
         List<Object> actualTokens = getStreamTokens( doc, actual );
@@ -255,8 +255,8 @@ public class TestFDF extends TestCase
     private void testContentStreams( PDDocument doc, PDFieldTreeNode field, String expected ) throws Exception
     {
         PDAnnotationWidget widget = field.getWidget();
-        Map<String,PDAppearanceStream> normalAppearance = widget.getAppearance().getNormalAppearance();
-        PDAppearanceStream appearanceStream = normalAppearance.get( "default" );
+        PDAppearanceEntry normalAppearance = widget.getAppearance().getNormalAppearance();
+        PDAppearanceStream appearanceStream = normalAppearance.getAppearanceStream();
         COSStream actual = appearanceStream.getStream();
 
         List<Object> actualTokens = getStreamTokens( doc, actual );

@@ -16,37 +16,23 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.annotation;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSStream;
 
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
-import org.apache.pdfbox.pdmodel.common.COSDictionaryMap;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
- * This class represents a PDF /AP entry the appearance dictionary.
+ * An appearance dictionary specifying how the annotation shall be presented visually on the page.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.4 $
+ * @author Ben Litchfield
  */
 public class PDAppearanceDictionary implements COSObjectable
 {
+    private final COSDictionary dictionary;
 
     /**
-     * Log instance.
-     */
-    private static final Log LOG = LogFactory.getLog(PDAppearanceDictionary.class);
-
-    private COSDictionary dictionary;
-
-    /**
-     * Constructor.
+     * Constructor for embedding.
      */
     public PDAppearanceDictionary()
     {
@@ -56,7 +42,7 @@ public class PDAppearanceDictionary implements COSObjectable
     }
 
     /**
-     * Constructor.
+     * Constructor for reading.
      *
      * @param dict The annotations dictionary.
      */
@@ -65,20 +51,8 @@ public class PDAppearanceDictionary implements COSObjectable
         dictionary = dict;
     }
 
-    /**
-     * returns the dictionary.
-     * @return the dictionary
-     */
-    public COSDictionary getDictionary()
-    {
-        return dictionary;
-    }
-
-    /**
-     * returns the dictionary.
-     * @return the dictionary
-     */
-    public COSBase getCOSObject()
+    @Override
+    public COSDictionary getCOSObject()
     {
         return dictionary;
     }
@@ -90,38 +64,17 @@ public class PDAppearanceDictionary implements COSObjectable
      *
      * @return A list of key(java.lang.String) value(PDAppearanceStream) pairs
      */
-    public Map<String,PDAppearanceStream> getNormalAppearance()
+    public PDAppearanceEntry getNormalAppearance()
     {
-        COSBase ap = dictionary.getDictionaryObject( COSName.N );
-        if ( ap == null )
+        COSBase entry = dictionary.getDictionaryObject( COSName.N );
+        if ( entry == null )
         { 
             return null; 
         }
-        else if( ap instanceof COSStream )
+        else
         {
-            COSStream aux = (COSStream) ap;
-            ap = new COSDictionary();
-            ((COSDictionary)ap).setItem(COSName.DEFAULT, aux );
+            return new PDAppearanceEntry(entry);
         }
-        COSDictionary map = (COSDictionary)ap;
-        Map<String, PDAppearanceStream> actuals = new HashMap<String, PDAppearanceStream>();
-        Map<String, PDAppearanceStream> retval = new COSDictionaryMap<String, PDAppearanceStream>( actuals, map );
-        for( COSName asName : map.keySet() )
-        {
-            COSBase stream = map.getDictionaryObject( asName );
-            // PDFBOX-1599: this is just a workaround. The given PDF provides "null" as stream 
-            // which leads to a COSName("null") value and finally to a ClassCastExcpetion
-            if (stream instanceof COSStream)
-            {
-                COSStream as = (COSStream)stream;
-                actuals.put( asName.getName(), new PDAppearanceStream( as ) );
-            }
-            else
-            {
-                LOG.debug("non-conformance workaround: ignore null value for appearance stream.");
-            }
-        }
-        return retval;
     }
 
     /**
@@ -129,11 +82,11 @@ public class PDAppearanceDictionary implements COSObjectable
      * appearance then you should use the key "default", and when the PDF is written
      * back to the filesystem then there will only be one stream.
      *
-     * @param appearanceMap The updated map with the appearance.
+     * @param entry appearance stream or subdictionary
      */
-    public void setNormalAppearance( Map<String,PDAppearanceStream> appearanceMap )
+    public void setNormalAppearance( PDAppearanceEntry entry )
     {
-        dictionary.setItem( COSName.N, COSDictionaryMap.convert( appearanceMap ) );
+        dictionary.setItem( COSName.N, entry );
     }
 
     /**
@@ -155,42 +108,17 @@ public class PDAppearanceDictionary implements COSObjectable
      *
      * @return A list of key(java.lang.String) value(PDAppearanceStream) pairs
      */
-    public Map<String,PDAppearanceStream> getRolloverAppearance()
+    public PDAppearanceEntry getRolloverAppearance()
     {
-        Map<String,PDAppearanceStream> retval = null;
-        COSBase ap = dictionary.getDictionaryObject( COSName.R );
-        if( ap == null )
+        COSBase entry = dictionary.getDictionaryObject( COSName.R );
+        if( entry == null )
         {
-            retval = getNormalAppearance();
+            return getNormalAppearance();
         }
         else
         {
-            if( ap instanceof COSStream )
-            {
-                COSStream aux = (COSStream) ap;
-                ap = new COSDictionary();
-                ((COSDictionary)ap).setItem(COSName.DEFAULT, aux );
-            }
-            COSDictionary map = (COSDictionary)ap;
-            Map<String, PDAppearanceStream> actuals = new HashMap<String, PDAppearanceStream>();
-            retval = new COSDictionaryMap<String, PDAppearanceStream>( actuals, map );
-            for( COSName asName : map.keySet() )
-            {
-                COSBase stream = map.getDictionaryObject( asName );
-                // PDFBOX-1599: this is just a workaround. The given PDF provides "null" as stream 
-                // which leads to a COSName("null") value and finally to a ClassCastExcpetion
-                if (stream instanceof COSStream)
-                {
-                    COSStream as = (COSStream)stream;
-                    actuals.put( asName.getName(), new PDAppearanceStream( as ) );
-                }
-                else
-                {
-                    LOG.debug("non-conformance workaround: ignore null value for appearance stream.");
-                }
-            }
+            return new PDAppearanceEntry(entry);
         }
-        return retval;
     }
 
     /**
@@ -198,11 +126,11 @@ public class PDAppearanceDictionary implements COSObjectable
      * appearance then you should use the key "default", and when the PDF is written
      * back to the filesystem then there will only be one stream.
      *
-     * @param appearanceMap The updated map with the appearance.
+     * @param entry appearance stream or subdictionary
      */
-    public void setRolloverAppearance( Map<String,PDAppearanceStream> appearanceMap )
+    public void setRolloverAppearance( PDAppearanceEntry entry )
     {
-        dictionary.setItem( COSName.R, COSDictionaryMap.convert( appearanceMap ) );
+        dictionary.setItem( COSName.R, entry );
     }
 
     /**
@@ -224,43 +152,17 @@ public class PDAppearanceDictionary implements COSObjectable
      *
      * @return A list of key(java.lang.String) value(PDAppearanceStream) pairs
      */
-    public Map<String,PDAppearanceStream> getDownAppearance()
+    public PDAppearanceEntry getDownAppearance()
     {
-        Map<String,PDAppearanceStream> retval = null;
-        COSBase ap = dictionary.getDictionaryObject( COSName.D );
-        if( ap == null )
+        COSBase entry = dictionary.getDictionaryObject( COSName.D );
+        if( entry == null )
         {
-            retval = getNormalAppearance();
+            return getNormalAppearance();
         }
         else
         {
-            if( ap instanceof COSStream )
-            {
-                COSStream aux = (COSStream) ap;
-                ap = new COSDictionary();
-                ((COSDictionary)ap).setItem(COSName.DEFAULT, aux );
-            }
-            COSDictionary map = (COSDictionary)ap;
-            Map<String, PDAppearanceStream> actuals =
-                new HashMap<String, PDAppearanceStream>();
-            retval = new COSDictionaryMap<String, PDAppearanceStream>( actuals, map );
-            for( COSName asName : map.keySet() )
-            {
-                COSBase stream = map.getDictionaryObject( asName );
-                // PDFBOX-1599: this is just a workaround. The given PDF provides "null" as stream 
-                // which leads to a COSName("null") value and finally to a ClassCastExcpetion
-                if (stream instanceof COSStream)
-                {
-                    COSStream as = (COSStream)stream;
-                    actuals.put( asName.getName(), new PDAppearanceStream( as ) );
-                }
-                else
-                {
-                    LOG.debug("non-conformance workaround: ignore null value for appearance stream.");
-                }
-            }
+            return new PDAppearanceEntry(entry);
         }
-        return retval;
     }
 
     /**
@@ -268,11 +170,11 @@ public class PDAppearanceDictionary implements COSObjectable
      * appearance then you should use the key "default", and when the PDF is written
      * back to the filesystem then there will only be one stream.
      *
-     * @param appearanceMap The updated map with the appearance.
+     * @param entry appearance stream or subdictionary
      */
-    public void setDownAppearance( Map<String,PDAppearanceStream> appearanceMap )
+    public void setDownAppearance( PDAppearanceEntry entry )
     {
-        dictionary.setItem( COSName.D, COSDictionaryMap.convert( appearanceMap ) );
+        dictionary.setItem( COSName.D, entry );
     }
     
     /**
@@ -285,5 +187,4 @@ public class PDAppearanceDictionary implements COSObjectable
     {
         dictionary.setItem( COSName.D, ap.getStream() );
     }
-
 }
