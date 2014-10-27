@@ -181,7 +181,7 @@ public class PDDocument implements Closeable
 
         // Get the first page
         PDDocumentCatalog catalog = getDocumentCatalog();
-        int pageCount = (int)catalog.getPages().getCount();
+        int pageCount = catalog.getPages().getCount();
         if (pageCount == 0)
         {
             throw new IllegalStateException("Cannot sign an empty document");
@@ -1225,7 +1225,7 @@ public class PDDocument implements Closeable
      */
     public int getNumberOfPages()
     {
-        return (int)getDocumentCatalog().getPages().getCount();
+        return getDocumentCatalog().getPages().getCount();
     }
 
     /**
