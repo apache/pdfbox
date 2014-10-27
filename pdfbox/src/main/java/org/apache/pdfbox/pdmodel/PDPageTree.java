@@ -28,7 +28,6 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -76,7 +75,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
      * @param key the key to look up
      * @return COS value for the given key
      */
-    public static COSBase getInheritedAttribute(COSDictionary node, COSName key)
+    public static COSBase getInheritableAttribute(COSDictionary node, COSName key)
     {
         COSBase value = node.getDictionaryObject(key);
         if (value != null)
@@ -87,7 +86,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
         COSDictionary parent = (COSDictionary) node.getDictionaryObject(COSName.PARENT, COSName.P);
         if (parent != null)
         {
-            return getInheritedAttribute(parent, key);
+            return getInheritableAttribute(parent, key);
         }
 
         return null;
