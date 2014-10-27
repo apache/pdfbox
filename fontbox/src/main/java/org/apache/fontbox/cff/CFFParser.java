@@ -598,8 +598,8 @@ public class CFFParser
         }
         else
         {
-        	// technically this maps to .notdef, but we need a unique sid name
-        	return "SID" + index;
+            // technically this maps to .notdef, but we need a unique sid name
+            return "SID" + index;
         }
     }
 
