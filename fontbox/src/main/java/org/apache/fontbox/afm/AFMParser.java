@@ -336,7 +336,7 @@ public class AFMParser
      */
     public FontMetrics parse() throws IOException
     {
-    	return parseFontMetric();
+        return parseFontMetric();
     }
 
     /**

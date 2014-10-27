@@ -66,16 +66,16 @@ public class Type2CharStringParser
      */
     public List<Object> parse(byte[] bytes, IndexData globalSubrIndex, IndexData localSubrIndex) throws IOException
     {
-    	return parse(bytes, globalSubrIndex, localSubrIndex, true);
+        return parse(bytes, globalSubrIndex, localSubrIndex, true);
     }
     
     private List<Object> parse(byte[] bytes, IndexData globalSubrIndex, IndexData localSubrIndex, boolean init) throws IOException
     {
         if (init) 
         {
-	        hstemCount = 0;
-	        vstemCount = 0;
-	        sequence = new ArrayList<Object>();
+            hstemCount = 0;
+            vstemCount = 0;
+            sequence = new ArrayList<Object>();
         }
         DataInput input = new DataInput(bytes);
         boolean localSubroutineIndexProvided = localSubrIndex != null && localSubrIndex.getCount() > 0;
@@ -86,8 +86,8 @@ public class Type2CharStringParser
             int b0 = input.readUnsignedByte();
             if (b0 == 10 && localSubroutineIndexProvided) 
             { // process subr command
-            	Integer operand=(Integer)sequence.remove(sequence.size()-1);
-            	//get subrbias
+                Integer operand=(Integer)sequence.remove(sequence.size()-1);
+                //get subrbias
                 int bias = 0;
                 int nSubrs = localSubrIndex.getCount();
                 
@@ -114,7 +114,7 @@ public class Type2CharStringParser
                         sequence.remove(sequence.size()-1); // remove "return" command
                     }
                 }
-            	
+
             } 
             else if (b0 == 29 && globalSubroutineIndexProvided) 
             { // process globalsubr command
@@ -147,7 +147,7 @@ public class Type2CharStringParser
                         sequence.remove(sequence.size()-1); // remove "return" command
                     }
                 }
-                	
+
             } 
             else if (b0 >= 0 && b0 <= 27)
             {
