@@ -280,7 +280,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
      * Returns the number of leaf nodes (page objects) that are descendants of this root within the
      * page tree.
      */
-    public long getCount() // todo: make this an 'int'? What is the page limit?
+    public int getCount()
     {
         return root.getInt(COSName.COUNT, 0);
     }
