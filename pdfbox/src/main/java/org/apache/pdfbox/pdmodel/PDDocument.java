@@ -95,6 +95,9 @@ public class PDDocument implements Closeable
     // the File to read incremental data from
     private File incrementalFile;
 
+    // the access permissions of the document
+    private AccessPermission accessPermission;
+    
     /**
      * Creates an empty PDF document.
      * You need to add at least one page for the document to be valid.
@@ -1250,6 +1253,7 @@ public class PDDocument implements Closeable
             parser.clearResources();
             parser = null;
         }
+        accessPermission = null;
     }
 
     /**
@@ -1293,7 +1297,9 @@ public class PDDocument implements Closeable
     {
         if (isEncrypted())
         {
-            getEncryption().getSecurityHandler().decryptDocument(this, decryptionMaterial);
+            SecurityHandler securityHandler = getEncryption().getSecurityHandler();
+            securityHandler.decryptDocument(this, decryptionMaterial);
+            accessPermission = securityHandler.getCurrentAccessPermission();
             document.dereferenceObjectStreams();
             document.setEncryptionDictionary(null);
             getDocumentCatalog();
@@ -1314,22 +1320,11 @@ public class PDDocument implements Closeable
      */
     public AccessPermission getCurrentAccessPermission()
     {
-        if (isEncrypted() && getEncryption().hasSecurityHandler())
+        if (accessPermission == null)
         {
-            try
-            {
-                return getEncryption().getSecurityHandler().getCurrentAccessPermission();
-            }
-            catch (IOException e)
-            {
-                // will never happen because we checked hasSecurityHandler() first
-                throw new RuntimeException(e);
-            }
+            accessPermission = AccessPermission.getOwnerAccessPermission();
         }
-        else
-        {
-            return AccessPermission.getOwnerAccessPermission();
-        }
+        return accessPermission;
     }
 
     /**
