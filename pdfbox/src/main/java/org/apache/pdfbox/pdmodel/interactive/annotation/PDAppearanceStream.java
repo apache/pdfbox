@@ -14,180 +14,96 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.pdfbox.pdmodel.interactive.annotation;
 
-import java.awt.geom.AffineTransform;
-
-import org.apache.pdfbox.contentstream.PDContentStream;
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
-
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.common.COSObjectable;
-
-import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.util.Matrix;
 
 /**
- * This class represents an appearance for an annotation.
+ * An appearance stream is a form XObject, a self-contained content stream that shall be rendered
+ * inside the annotation rectangle.
  *
  * @author Ben Litchfield
+ * @author John Hewson
  */
-public class PDAppearanceStream implements COSObjectable, PDContentStream
+public class PDAppearanceStream extends PDFormXObject
 {
-    private COSStream stream = null;
-
-    private PDAppearanceStream()
-    {
-    }
+    private final PDAnnotation parent;
 
     /**
-     * Constructor.
-     *
-     * @param s The cos stream for this appearance.
+     * Creates a Form XObject for reading.
+     * @param stream The XObject stream
      */
-    public PDAppearanceStream( COSStream s )
+    public PDAppearanceStream(COSStream stream, PDAnnotation parent)
     {
-        stream = s;
+        super(new PDStream(stream));
+        this.parent = parent;
     }
 
     /**
-     * This will return the underlying stream.
-     *
-     * @return The wrapped stream.
+     * Creates a Form Image XObject for writing, in the given document.
+     * @param document The current document
      */
-    public COSStream getStream()
+    public PDAppearanceStream(PDDocument document, PDAnnotation parent)
     {
-        return stream;
+        super(document);
+        this.parent = parent;
     }
 
     /**
-     * {@inheritDoc}
-     */
-    public COSBase getCOSObject()
-    {
-        return stream;
-    }
-
-    /**
-     * Get the bounding box for this appearance.  This may return null in which
-     * case the Rectangle from the annotation should be used.
-     *
-     * @return The bounding box for this appearance.
+     * Returns the matrix "A", which transforms the appearance box to align with the edges of the
+     * annotation?s rectangle.
      */
     @Override
-    public PDRectangle getBBox()
-    {
-        PDRectangle box = null;
-        COSArray bbox = (COSArray)stream.getDictionaryObject( COSName.BBOX );
-        if( bbox != null )
-        {
-            box = new PDRectangle( bbox );
-        }
-        return box;
-    }
-
-    /**
-     * This will set the bounding box for this appearance stream.
-     *
-     * @param rectangle The new bounding box.
-     */
-    public void setBBox(PDRectangle rectangle)
-    {
-        COSArray array = null;
-        if( rectangle != null )
-        {
-            array = rectangle.getCOSArray();
-        }
-        stream.setItem( COSName.BBOX, array );
-    }
-
-    @Override
-    public COSStream getContentStream()
-    {
-        return getStream();
-    }
-
-    /**
-     * This will get the resources for this appearance stream.
-     *
-     * @return The appearance stream resources.
-     */
-    @Override
-    public PDResources getResources()
-    {
-        PDResources retval = null;
-        COSDictionary dict = (COSDictionary)stream.getDictionaryObject( COSName.RESOURCES );
-        if( dict != null )
-        {
-            retval = new PDResources( dict );
-        }
-        return retval;
-    }
-
-    /**
-     * This will set the new resources.
-     *
-     * @param resources The new resources.
-     */
-    public void setResources( PDResources resources )
-    {
-        COSDictionary dict = null;
-        if( resources != null )
-        {
-            dict = resources.getCOSObject();
-        }
-        stream.setItem( COSName.RESOURCES, dict );
-    }
-
-    /**
-     * Gets the optional matrix for this appearance.  This may return null.
-     *
-     * @return The matrix of this appearance.
-     */
     public Matrix getMatrix()
     {
-        Matrix retval = null;
-        COSArray array = (COSArray)stream.getDictionaryObject( COSName.MATRIX );
-        if( array != null )
-        {
-            retval = new Matrix();
-            retval.setValue(0, 0, ((COSNumber) array.get(0)).floatValue());
-            retval.setValue(0, 1, ((COSNumber) array.get(1)).floatValue());
-            retval.setValue(1, 0, ((COSNumber) array.get(2)).floatValue());
-            retval.setValue(1, 1, ((COSNumber) array.get(3)).floatValue());
-            retval.setValue(2, 0, ((COSNumber) array.get(4)).floatValue());
-            retval.setValue(2, 1, ((COSNumber) array.get(5)).floatValue());
-        }
-        return retval;
+        PDRectangle bbox = getBBox();
+        PDRectangle rect = parent.getRectangle();
+        Matrix matrix = getActualMatrix();
+
+        // transformed appearance box
+        PDRectangle transformedBox = bbox.transform(matrix);
+
+        // compute a matrix which scales and translates the transformed appearance box to align
+        // with the edges of the annotation's rectangle
+        Matrix a = Matrix.getTranslatingInstance(rect.getLowerLeftX(), rect.getLowerLeftY());
+        a.concatenate(Matrix.getScaleInstance(rect.getWidth() / transformedBox.getWidth(),
+                                              rect.getHeight() / transformedBox.getHeight()));
+        a.concatenate(Matrix.getTranslatingInstance(-transformedBox.getLowerLeftX(),
+                                                    -transformedBox.getLowerLeftY()));
+        return a;
     }
 
     /**
-     * Sets the optional Matrix entry for this appearance.
-     * @param transform the transformation matrix
+     * Returns the actual /Matrix entry, unlike other forms this needs to be transformed using
+     * the parent annotation's /Rect before it can be used to render the content stream.
      */
-    public void setMatrix(AffineTransform transform)
+    private Matrix getActualMatrix()
     {
-        if (transform != null)
+        COSArray array = (COSArray)getContentStream().getDictionaryObject(COSName.MATRIX);
+        if( array != null )
         {
-            COSArray matrix = new COSArray();
-            double[] values = new double[6];
-            transform.getMatrix(values);
-            for (double v : values)
-            {
-                matrix.add(new COSFloat((float)v));
-            }
-            stream.setItem(COSName.MATRIX, matrix);
+            Matrix matrix = new Matrix();
+            matrix.setValue(0, 0, ((COSNumber) array.get(0)).floatValue());
+            matrix.setValue(0, 1, ((COSNumber) array.get(1)).floatValue());
+            matrix.setValue(1, 0, ((COSNumber) array.get(2)).floatValue());
+            matrix.setValue(1, 1, ((COSNumber) array.get(3)).floatValue());
+            matrix.setValue(2, 0, ((COSNumber) array.get(4)).floatValue());
+            matrix.setValue(2, 1, ((COSNumber) array.get(5)).floatValue());
+            return matrix;
         }
         else
         {
-            stream.removeItem(COSName.MATRIX);
+            // the default value is the identity matrix
+            return new Matrix();
         }
     }
-
 }

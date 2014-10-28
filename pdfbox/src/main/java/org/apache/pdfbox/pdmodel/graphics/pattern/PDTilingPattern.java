@@ -242,10 +242,10 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
     }
 
     /**
-     * This will get the optional Matrix of a Pattern.
-     * It maps the form space into the user space.
+     * This will get the optional Matrix of a Pattern. It maps the form space to user space.
      * @return the form matrix
      */
+    @Override
     public Matrix getMatrix()
     {
         Matrix matrix = null;
@@ -259,6 +259,11 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
             matrix.setValue(1, 1, ((COSNumber) array.get(3)).floatValue());
             matrix.setValue(2, 0, ((COSNumber) array.get(4)).floatValue());
             matrix.setValue(2, 1, ((COSNumber) array.get(5)).floatValue());
+        }
+        else
+        {
+            // default value is the identity matrix
+            matrix = new Matrix();
         }
         return matrix;
     }

@@ -51,7 +51,7 @@ final and all fields private.
  * 
  * @author Ben Litchfield
  */
-public final class PDFormXObject extends PDXObject implements PDContentStream
+public class PDFormXObject extends PDXObject implements PDContentStream
 {
     // name of XObject in resources, to prevent recursion
     private String name;
@@ -190,9 +190,10 @@ public final class PDFormXObject extends PDXObject implements PDContentStream
     }
 
     /**
-     * This will get the optional Matrix of an XObjectForm. It maps the form space into the user space
+     * This will get the optional Matrix of an XObjectForm. It maps the form space to user space.
      * @return the form matrix
      */
+    @Override
     public Matrix getMatrix()
     {
         Matrix retval = null;
@@ -206,6 +207,11 @@ public final class PDFormXObject extends PDXObject implements PDContentStream
             retval.setValue(1, 1, ((COSNumber) array.get(3)).floatValue());
             retval.setValue(2, 0, ((COSNumber) array.get(4)).floatValue());
             retval.setValue(2, 1, ((COSNumber) array.get(5)).floatValue());
+        }
+        else
+        {
+            // default value is the identity matrix
+            retval = new Matrix();
         }
         return retval;
     }

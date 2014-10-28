@@ -36,6 +36,7 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.interactive.action.PDPageAdditionalActions;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDThreadBead;
+import org.apache.pdfbox.util.Matrix;
 
 /**
  * A page in a PDF document.
@@ -169,6 +170,13 @@ public class PDPage implements COSObjectable, PDContentStream
     public PDRectangle getBBox()
     {
         return getCropBox();
+    }
+
+    @Override
+    public Matrix getMatrix()
+    {
+        // todo: take into account user-space unit redefinition?
+        return new Matrix();
     }
 
     /**

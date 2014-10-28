@@ -566,7 +566,7 @@ public class FDFField implements COSObjectable
         COSDictionary dict = (COSDictionary)field.getDictionaryObject( COSName.AP );
         if( dict != null )
         {
-            retval = new PDAppearanceDictionary( dict );
+            retval = new PDAppearanceDictionary( dict, null );
         }
         return retval;
     }

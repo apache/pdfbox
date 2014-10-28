@@ -138,7 +138,7 @@ public class PDFTextStreamEngine extends PDFStreamEngine
         float glyphHeight = font.getBoundingBox().getHeight() / 2;
 
         // transformPoint from glyph space -> text space
-        float height = (float)font.getFontMatrix().transformPoint(0, glyphHeight).getY();
+        float height = font.getFontMatrix().transformPoint(0, glyphHeight).y;
 
         // (modified) combined displacement, this is calculated *without* taking the character
         // spacing and word spacing into account, due to legacy code in TextStripper

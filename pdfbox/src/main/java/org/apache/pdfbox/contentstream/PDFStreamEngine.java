@@ -43,11 +43,12 @@ import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontFactory;
-import org.apache.pdfbox.pdmodel.font.PDType3CharProc;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
 import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.state.PDTextState;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
 import org.apache.pdfbox.contentstream.operator.Operator;
@@ -217,6 +218,33 @@ public class PDFStreamEngine
     }
 
     /**
+     * Shows the given annotation.
+     *
+     * @param annotation An annotation on the current page.
+     * @throws IOException If an error occurred reading the annotation
+     */
+    public void showAnnotation(PDAnnotation annotation) throws IOException
+    {
+        PDAppearanceStream appearanceStream = getAppearance(annotation);
+        if (appearanceStream != null)
+        {
+            processStream(appearanceStream, null);
+        }
+    }
+
+    /**
+     * Returns the appearance stream to process for the given annotation. May be used to render
+     * a specific appearance such as "hover".
+     *
+     * @param annotation The current annotation.
+     * @return The stream to process.
+     */
+    public PDAppearanceStream getAppearance(PDAnnotation annotation)
+    {
+        return annotation.getNormalAppearanceStream();
+    }
+
+    /**
      * Process a child stream of the given page. Cannot be used with #processPage(PDPage).
      *
      * @param contentStream the child content stream
@@ -266,18 +294,26 @@ public class PDFStreamEngine
             resources = currentPage.getResources();
         }
 
+        saveGraphicsState();
+
+        // transform the CTM using the stream's matrix
+        getGraphicsState().getCurrentTransformationMatrix().concatenate(contentStream.getMatrix());
+
         // bounding box (for clipping)
         PDRectangle bbox = contentStream.getBBox();
-        if (patternBBox  !=null)
+        if (patternBBox !=null)
         {
             bbox = patternBBox;
         }
-        if (contentStream != currentPage && bbox != null)
+        if (bbox != null)
         {
             Area clip = new Area(new GeneralPath(new Rectangle(bbox.createDimension())));
+
+            // content stream space to user space
+            clip.transform(contentStream.getMatrix().createAffineTransform());
+
+            // CTM transform (user space => device space)
             clip.transform(getGraphicsState().getCurrentTransformationMatrix().createAffineTransform());
-            saveGraphicsState();
-            getGraphicsState().intersectClippingPath(clip);
         }
 
         // fixme: stream matrix
@@ -312,10 +348,7 @@ public class PDFStreamEngine
             parser.close();
         }
 
-        if (contentStream != currentPage && bbox != null)
-        {
-            restoreGraphicsState();
-        }
+        restoreGraphicsState();
 
         // restore page resources
         resources = parentResources;

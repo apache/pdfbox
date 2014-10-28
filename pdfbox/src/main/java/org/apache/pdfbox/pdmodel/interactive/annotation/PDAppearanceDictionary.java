@@ -30,6 +30,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 public class PDAppearanceDictionary implements COSObjectable
 {
     private final COSDictionary dictionary;
+    private PDAnnotation parent;
 
     /**
      * Constructor for embedding.
@@ -44,11 +45,12 @@ public class PDAppearanceDictionary implements COSObjectable
     /**
      * Constructor for reading.
      *
-     * @param dict The annotations dictionary.
+     * @param dictionary The annotations dictionary.
      */
-    public PDAppearanceDictionary( COSDictionary dict )
+    public PDAppearanceDictionary( COSDictionary dictionary, PDAnnotation parent )
     {
-        dictionary = dict;
+        this.dictionary = dictionary;
+        this.parent = parent;
     }
 
     @Override
@@ -73,7 +75,7 @@ public class PDAppearanceDictionary implements COSObjectable
         }
         else
         {
-            return new PDAppearanceEntry(entry);
+            return new PDAppearanceEntry(entry, parent);
         }
     }
 
@@ -97,7 +99,7 @@ public class PDAppearanceDictionary implements COSObjectable
      */
     public void setNormalAppearance( PDAppearanceStream ap )
     {
-        dictionary.setItem( COSName.N, ap.getStream() );
+        dictionary.setItem( COSName.N, ap );
     }
 
     /**
@@ -117,7 +119,7 @@ public class PDAppearanceDictionary implements COSObjectable
         }
         else
         {
-            return new PDAppearanceEntry(entry);
+            return new PDAppearanceEntry(entry, parent);
         }
     }
 
@@ -141,7 +143,7 @@ public class PDAppearanceDictionary implements COSObjectable
      */
     public void setRolloverAppearance( PDAppearanceStream ap )
     {
-        dictionary.setItem( COSName.R, ap.getStream() );
+        dictionary.setItem( COSName.R, ap );
     }
 
     /**
@@ -161,7 +163,7 @@ public class PDAppearanceDictionary implements COSObjectable
         }
         else
         {
-            return new PDAppearanceEntry(entry);
+            return new PDAppearanceEntry(entry, parent);
         }
     }
 
@@ -185,6 +187,6 @@ public class PDAppearanceDictionary implements COSObjectable
      */
     public void setDownAppearance( PDAppearanceStream ap )
     {
-        dictionary.setItem( COSName.D, ap.getStream() );
+        dictionary.setItem( COSName.D, ap );
     }
 }
