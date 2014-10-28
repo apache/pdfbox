@@ -24,6 +24,7 @@ import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import javax.crypto.Cipher;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.PublicKeyDecryptionMaterial;
@@ -62,6 +63,12 @@ public class TestPublicKeyEncryption extends TestCase
     @Override
     protected void setUp() throws Exception 
     {
+        if (Cipher.getMaxAllowedKeyLength("AES") != Integer.MAX_VALUE)
+        {
+            // we need strong encryption for these tests
+            fail("JCE unlimited strength jurisdiction policy files are not installed");
+        }
+        
         permission1 = new AccessPermission();
         permission1.setCanAssembleDocument(false);
         permission1.setCanExtractContent(false);
