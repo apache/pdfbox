@@ -59,6 +59,7 @@ public class TestPublicKeyEncryption extends TestCase
     /**
      * {@inheritDoc}
      */
+    @Override
     protected void setUp() throws Exception 
     {
         permission1 = new AccessPermission();
@@ -102,6 +103,7 @@ public class TestPublicKeyEncryption extends TestCase
     /**
      * {@inheritDoc}
      */
+    @Override
     protected void tearDown() throws Exception 
     {
         document.close();
@@ -125,6 +127,10 @@ public class TestPublicKeyEncryption extends TestCase
             Assert.assertTrue(encrypted.isEncrypted());
             encrypted.openProtection(decryption2);
             fail("No exception when using an incorrect decryption key");
+        }
+        catch (IOException ex)
+        {
+            // do nothing
         }
         finally 
         {
