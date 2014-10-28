@@ -309,7 +309,7 @@ public class PDFStreamEngine
         {
             Area clip = new Area(new GeneralPath(bbox.toRectangle2D()));
             clip.transform(getGraphicsState().getCurrentTransformationMatrix().createAffineTransform());
-            //getGraphicsState().intersectClippingPath(clip);
+            getGraphicsState().intersectClippingPath(clip);
         }
 
         // fixme: stream matrix

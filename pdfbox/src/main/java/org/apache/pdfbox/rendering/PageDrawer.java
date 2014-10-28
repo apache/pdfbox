@@ -290,6 +290,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             {
                 graphics.setComposite(state.getNonStrokingJavaComposite());
                 graphics.setPaint(getNonStrokingPaint());
+                setClip();
                 graphics.fill(glyph);
             }
 
@@ -298,6 +299,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 graphics.setComposite(state.getStrokingJavaComposite());
                 graphics.setPaint(getStrokingPaint());
                 graphics.setStroke(getStroke());
+                setClip();
                 graphics.draw(glyph);
             }
 
@@ -323,6 +325,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             lastClip = null;
             processChildStream(charProc);
+            lastClip = null;
         }
         else
         {
