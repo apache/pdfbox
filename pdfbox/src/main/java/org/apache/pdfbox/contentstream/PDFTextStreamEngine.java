@@ -68,6 +68,7 @@ public class PDFTextStreamEngine extends PDFStreamEngine
     private int pageRotation;
     private PDRectangle pageSize;
     private GlyphList glyphList;
+    private Matrix legacyCTM;
 
     /**
      * Constructor.
@@ -117,6 +118,13 @@ public class PDFTextStreamEngine extends PDFStreamEngine
         super.processPage(page);
     }
 
+    @Override
+    protected void showText(byte[] string) throws IOException
+    {
+        legacyCTM = getGraphicsState().getCurrentTransformationMatrix().clone();
+        super.showText(string);
+    }
+
     /**
      * This method was originally written by Ben Litchfield for PDFStreamEngine.
      */
@@ -129,7 +137,7 @@ public class PDFTextStreamEngine extends PDFStreamEngine
         //
 
         PDGraphicsState state = getGraphicsState();
-        Matrix ctm = state.getCurrentTransformationMatrix();
+        Matrix ctm = legacyCTM;
         float fontSize = state.getTextState().getFontSize();
         float horizontalScaling = state.getTextState().getHorizontalScaling() / 100f;
         Matrix textMatrix = getTextMatrix();
