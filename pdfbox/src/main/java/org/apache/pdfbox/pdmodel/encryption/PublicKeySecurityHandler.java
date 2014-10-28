@@ -19,6 +19,7 @@ package org.apache.pdfbox.pdmodel.encryption;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.security.AlgorithmParameterGenerator;
 import java.security.AlgorithmParameters;
 import java.security.GeneralSecurityException;
@@ -39,7 +40,12 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1Primitive;
@@ -57,14 +63,14 @@ import org.bouncycastle.asn1.cms.RecipientInfo;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.TBSCertificateStructure;
+import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.CMSEnvelopedData;
 import org.bouncycastle.cms.CMSException;
+import org.bouncycastle.cms.KeyTransRecipientId;
+import org.bouncycastle.cms.RecipientId;
 import org.bouncycastle.cms.RecipientInformation;
 import org.bouncycastle.cms.jcajce.JceKeyTransEnvelopedRecipient;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
  * This class implements the public key security handler described in the PDF specification.
@@ -74,6 +80,11 @@ import org.apache.pdfbox.pdmodel.PDDocument;
  */
 public final class PublicKeySecurityHandler extends SecurityHandler
 {
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(PublicKeySecurityHandler.class);
+
     /** The filter name. */
     public static final String FILTER = "Adobe.PubSec";
 
@@ -107,14 +118,14 @@ public final class PublicKeySecurityHandler extends SecurityHandler
      *
      * @throws IOException If there is an error accessing data.
      */
+    @Override
     public void decryptDocument(PDDocument doc, DecryptionMaterial decryptionMaterial) throws IOException
     {
         this.document = doc;
 
         PDEncryption dictionary = doc.getEncryption();
 
-        prepareForDecryption( dictionary, doc.getDocument().getDocumentID(),
-                decryptionMaterial );
+        prepareForDecryption( dictionary, doc.getDocument().getDocumentID(), decryptionMaterial );
         
         proceedDecryption();
     }
@@ -131,9 +142,10 @@ public final class PublicKeySecurityHandler extends SecurityHandler
      *
      * @throws IOException If there is an error accessing data.
      */
+    @Override
     public void prepareForDecryption(PDEncryption encryption, COSArray documentIDArray,
-                                     DecryptionMaterial decryptionMaterial)
-                                     throws IOException
+            DecryptionMaterial decryptionMaterial)
+            throws IOException
     {
         if (!(decryptionMaterial instanceof PublicKeyDecryptionMaterial))
         {
@@ -161,26 +173,56 @@ public final class PublicKeySecurityHandler extends SecurityHandler
             byte[][] recipientFieldsBytes = new byte[encryption.getRecipientsLength()][];
 
             int recipientFieldsLength = 0;
-
-            for (int i = 0; i < encryption.getRecipientsLength(); i++)
+            int i = 0;
+            String extraInfo = "";
+            for (; i < encryption.getRecipientsLength(); i++)
             {
                 COSString recipientFieldString = encryption.getRecipientStringAt(i);
                 byte[] recipientBytes = recipientFieldString.getBytes();
                 CMSEnvelopedData data = new CMSEnvelopedData(recipientBytes);
-                Iterator<?> recipCertificatesIt = data.getRecipientInfos().getRecipients()
-                        .iterator();
+                Iterator<?> recipCertificatesIt = data.getRecipientInfos().getRecipients().iterator();
+                int j = 0;
                 while (recipCertificatesIt.hasNext())
                 {
                     RecipientInformation ri = (RecipientInformation) recipCertificatesIt.next();
                     // Impl: if a matching certificate was previously found it is an error,
                     // here we just don't care about it
-                    if (ri.getRID().match(material.getCertificate()) && !foundRecipient)
+                    X509Certificate certificate = material.getCertificate();
+                    X509CertificateHolder materialCert = null;
+                    if (null != certificate)
+                    {
+                        materialCert = new X509CertificateHolder(certificate.getEncoded());
+                    }
+                    RecipientId rid = ri.getRID();
+                    if (rid.match(materialCert) && !foundRecipient)
                     {
                         foundRecipient = true;
                         PrivateKey privateKey = (PrivateKey) material.getPrivateKey();
-                        envelopedData = ri.getContent(new JceKeyTransEnvelopedRecipient(privateKey)
-                                .setProvider("BC"));
+                        envelopedData = ri.getContent(new JceKeyTransEnvelopedRecipient(privateKey).setProvider("BC"));
                         break;
+                    }
+                    j++;
+                    if (LOG.isDebugEnabled() && certificate != null)
+                    {
+                        extraInfo += "\n" + j + ": ";
+                        if (rid instanceof KeyTransRecipientId)
+                        {
+                            KeyTransRecipientId ktRid = (KeyTransRecipientId) rid;
+                            BigInteger ridSerialNumber = ktRid.getSerialNumber();
+                            if (ridSerialNumber != null)
+                            {
+                                String certSerial = "unknown";
+                                BigInteger certSerialNumber = certificate.getSerialNumber();
+                                if (certSerialNumber != null)
+                                {
+                                    certSerial = certSerialNumber.toString(16);
+                                }
+                                extraInfo += "serial-#: rid " + ridSerialNumber.toString(16)
+                                        + " vs. cert " + certSerial + " issuer: rid \'"
+                                        + ktRid.getIssuer() + "\' vs. cert \'"
+                                        + (materialCert == null ? "null" : materialCert.getIssuer()) + "\' ";
+                            }
+                        }
                     }
                 }
                 recipientFieldsBytes[i] = recipientBytes;
@@ -188,7 +230,8 @@ public final class PublicKeySecurityHandler extends SecurityHandler
             }
             if (!foundRecipient || envelopedData == null)
             {
-                throw new IOException("The certificate matches no recipient entry");
+                throw new IOException("The certificate matches none of " + i
+                        + " recipient entries" + extraInfo);
             }
             if (envelopedData.length != 24)
             {
@@ -234,6 +277,10 @@ public final class PublicKeySecurityHandler extends SecurityHandler
         {
             throw new IOException(e);
         }
+        catch (CertificateEncodingException e)
+        {
+            throw new IOException(e);
+        }
     }
     
     /**
@@ -243,6 +290,7 @@ public final class PublicKeySecurityHandler extends SecurityHandler
      *
      * @throws IOException If there is an error while encrypting.
      */
+    @Override
     public void prepareDocumentForEncryption(PDDocument doc) throws IOException
     {
         if (keyLength == 256)
