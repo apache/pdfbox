@@ -772,6 +772,13 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     }
 
     @Override
+    public void showAnnotation(PDAnnotation annotation) throws IOException
+    {
+        lastClip = null;
+        super.showAnnotation(annotation);
+    }
+
+    @Override
     public void showTransparencyGroup(PDFormXObject form) throws IOException
     {
         TransparencyGroup group = createTransparencyGroup(form);

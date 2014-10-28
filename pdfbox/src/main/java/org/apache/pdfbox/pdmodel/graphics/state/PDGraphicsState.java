@@ -75,7 +75,7 @@ public class PDGraphicsState implements Cloneable
      */
     public PDGraphicsState(PDRectangle page)
     {
-        clippingPath = new Area(new GeneralPath(new Rectangle(page.createDimension())));
+        clippingPath = new Area(new GeneralPath(page.toRectangle2D()));
         if (page.getLowerLeftX() != 0 || page.getLowerLeftY() != 0)
         {
             //Compensate for offset

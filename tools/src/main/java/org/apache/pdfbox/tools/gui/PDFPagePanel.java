@@ -60,7 +60,7 @@ public class PDFPagePanel extends JPanel
         this.pageNum = pageNum;
 
         PDRectangle cropBox = page.getCropBox();
-        drawDimension = cropBox.createDimension();
+        drawDimension = new Dimension((int)cropBox.getWidth(), (int)cropBox.getHeight());
         int rotation = page.getRotation();
         if (rotation == 90 || rotation == 270)
         {

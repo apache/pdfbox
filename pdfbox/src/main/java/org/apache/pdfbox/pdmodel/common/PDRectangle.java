@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.common;
 
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSFloat;
@@ -280,30 +281,8 @@ public class PDRectangle implements COSObjectable
     }
 
     /**
-     * A convenience method to create a dimension object for AWT operations.
-     *
-     * @return A dimension that matches the width and height of this rectangle.
+     * Returns a copy of this rectangle which has been transformed using the given matrix.
      */
-    public Dimension createDimension()
-    {
-        return new Dimension( (int)getWidth(), (int)getHeight() );
-    }
-
-    /**
-    * This will move the rectangle the given relative amount.
-    *
-    * @param horizontalAmount positive values will move rectangle to the right, negative's to the left.
-    * @param verticalAmount positive values will move the rectangle up, negative's down.
-    */
-    public void move(float horizontalAmount, float verticalAmount)
-    {
-        setUpperRightX(getUpperRightX() + horizontalAmount);
-        setLowerLeftX(getLowerLeftX() + horizontalAmount);
-        setUpperRightY(getUpperRightY() + verticalAmount);
-        setLowerLeftY(getLowerLeftY() + verticalAmount);
-    }
-
-    // todo: new
     public PDRectangle transform(Matrix matrix)
     {
         Point2D.Float lowerLeft = matrix.transformPoint(getLowerLeftX(), getLowerLeftY());
@@ -327,6 +306,13 @@ public class PDRectangle implements COSObjectable
         return rectArray;
     }
 
+    /**
+     * Returns a new Rectangle2D which is equivalent to this PDRectangle.
+     */
+    public Rectangle2D toRectangle2D()
+    {
+        return new Rectangle2D.Float(getLowerLeftX(), getLowerLeftY(), getWidth(), getHeight());
+    }
 
     /**
      * This will return a string representation of this rectangle.
