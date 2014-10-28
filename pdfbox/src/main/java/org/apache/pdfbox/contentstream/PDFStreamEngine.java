@@ -17,7 +17,6 @@
 package org.apache.pdfbox.contentstream;
 
 import java.awt.geom.Area;
-import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -307,9 +306,8 @@ public class PDFStreamEngine
         }
         if (bbox != null)
         {
-            Area clip = new Area(new GeneralPath(bbox.toRectangle2D()));
-            clip.transform(getGraphicsState().getCurrentTransformationMatrix().createAffineTransform());
-            getGraphicsState().intersectClippingPath(clip);
+            PDRectangle clip = bbox.transform(getGraphicsState().getCurrentTransformationMatrix());
+            getGraphicsState().intersectClippingPath(new Area(clip.toRectangle2D()));
         }
 
         // fixme: stream matrix
@@ -699,31 +697,6 @@ public class PDFStreamEngine
         getGraphicsState().getCurrentTransformationMatrix().createAffineTransform()
                 .transform(position, 0, position, 0, 1);
         return new Point2D.Double(position[0], position[1]);
-    }
-
-    /**
-     * use the current transformation matrix to transformPoint a PDRectangle.
-     * 
-     * @param rect the PDRectangle to transformPoint
-     * @return the transformed coordinates as a GeneralPath
-     */
-    public GeneralPath transformedPDRectanglePath(PDRectangle rect)
-    {
-        float x1 = rect.getLowerLeftX();
-        float y1 = rect.getLowerLeftY();
-        float x2 = rect.getUpperRightX();
-        float y2 = rect.getUpperRightY();
-        Point2D p0 = transformedPoint(x1, y1);
-        Point2D p1 = transformedPoint(x2, y1);
-        Point2D p2 = transformedPoint(x2, y2);
-        Point2D p3 = transformedPoint(x1, y2);
-        GeneralPath path = new GeneralPath();
-        path.moveTo((float) p0.getX(), (float) p0.getY());
-        path.lineTo((float) p1.getX(), (float) p1.getY());
-        path.lineTo((float) p2.getX(), (float) p2.getY());
-        path.lineTo((float) p3.getX(), (float) p3.getY());
-        path.closePath();
-        return path;
     }
     
     // transforms a width using the CTM

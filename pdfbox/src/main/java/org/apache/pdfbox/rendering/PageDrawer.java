@@ -153,6 +153,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         // TODO use getStroke() to set the initial stroke
         graphics.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
 
+        // adjust for non-(0,0) crop box
+        graphics.translate(-pageSize.getLowerLeftX(), -pageSize.getLowerLeftY());
+
         processPage(getPage());
 
         for (PDAnnotation annotation : getPage().getAnnotations())
@@ -765,7 +768,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         super.showAnnotation(annotation);
     }
 
-    @Override
+    //@Override
     public void showTransparencyGroup(PDFormXObject form) throws IOException
     {
         TransparencyGroup group = createTransparencyGroup(form);
@@ -774,25 +777,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     private TransparencyGroup createTransparencyGroup(PDFormXObject form) throws IOException
     {
-        saveGraphicsState();
-        try
-        {
-            // if there is an optional form matrix, we have to map the form space to the user space
-            Matrix matrix = form.getMatrix();
-            if(matrix != null)
-            {
-                Matrix xCTM = matrix.multiply(getGraphicsState().getCurrentTransformationMatrix());
-                getGraphicsState().setCurrentTransformationMatrix(xCTM);
-            }
-
-            PDRectangle bBox = form.getBBox();
-            GeneralPath path = transformedPDRectanglePath(bBox);
-            return new TransparencyGroup(path, form);
-        }
-        finally
-        {
-            restoreGraphicsState();
-        }
+        return new TransparencyGroup(form);
     }
 
     /**
@@ -810,10 +795,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
         /**
          * Creates a buffered image for a transparency group result.
-         *
-         * @param clippingPath clipping path (in current graphics2D coordinates)
          */
-        private TransparencyGroup(GeneralPath clippingPath, PDFormXObject form) throws IOException
+        private TransparencyGroup(PDFormXObject form) throws IOException
         {
             Graphics2D g2dOriginal = graphics;
             Area lastClipOriginal = lastClip;
@@ -821,11 +804,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // check underlying g2d
 
             Area groupClip = new Area(getGraphicsState().getCurrentClippingPath());
-            if (clippingPath != null)
-            {
-                Area newArea = new Area(clippingPath);            
-                groupClip.intersect(newArea);
-            }
+            Area clippingPath = new Area(new GeneralPath(form.getBBox().toRectangle2D()));
+            Area newArea = new Area(clippingPath);
+            groupClip.intersect(newArea);
 
             AffineTransform at = g2dOriginal.getTransform();
             Shape clippingPathInPixels = at.createTransformedShape(groupClip);
@@ -892,9 +873,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             if (matrix != null)
             {
-                saveGraphicsState();
                 drawBufferedImage(image, matrix.createAffineTransform());
-                restoreGraphicsState();
             }
         }
 

@@ -178,7 +178,6 @@ public class PDFRenderer
     }
 
     // renders a page to the given graphics
-    // TODO need to be able to override this
     private void renderPage(PDPage page, Graphics2D graphics, int width, int height, float scaleX,
                             float scaleY) throws IOException
     {
@@ -187,7 +186,7 @@ public class PDFRenderer
         graphics.scale(scaleX, scaleY);
         // TODO should we be passing the scale to PageDrawer rather than messing with Graphics?
 
-        PDRectangle adjustedCropBox = page.getCropBox();
+        PDRectangle cropBox = page.getCropBox();
         int rotationAngle = page.getRotation();
         if (rotationAngle != 0)
         {
@@ -196,22 +195,21 @@ public class PDFRenderer
             switch (rotationAngle)
             {
                 case 90:
-                    translateX = adjustedCropBox.getHeight();
+                    translateX = cropBox.getHeight();
                     break;
                 case 270:
-                    translateY = adjustedCropBox.getWidth();
+                    translateY = cropBox.getWidth();
                     break;
                 case 180:
-                    translateX = adjustedCropBox.getWidth();
-                    translateY = adjustedCropBox.getHeight();
+                    translateX = cropBox.getWidth();
+                    translateY = cropBox.getHeight();
                     break;
             }
             graphics.translate(translateX, translateY);
             graphics.rotate((float) Math.toRadians(rotationAngle));
         }
 
-        // TODO: need to make it easy to use a custom PageDrawer and TilingPatternDrawer
         PageDrawer drawer = new PageDrawer(this, page);
-        drawer.drawPage(graphics, adjustedCropBox);
+        drawer.drawPage(graphics, cropBox);
     }
 }

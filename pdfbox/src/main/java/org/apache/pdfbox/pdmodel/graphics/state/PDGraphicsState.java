@@ -70,18 +70,12 @@ public class PDGraphicsState implements Cloneable
     private double smoothness = 0;
 
     /**
-     * Constructor with a given pagesize to initialize the clipping path.
+     * Constructor with a given page size to initialize the clipping path.
      * @param page the size of the page
      */
     public PDGraphicsState(PDRectangle page)
     {
         clippingPath = new Area(new GeneralPath(page.toRectangle2D()));
-        if (page.getLowerLeftX() != 0 || page.getLowerLeftY() != 0)
-        {
-            //Compensate for offset
-            this.currentTransformationMatrix = this.currentTransformationMatrix.multiply(
-                    Matrix.getTranslatingInstance(-page.getLowerLeftX(), -page.getLowerLeftY()));
-        }
     }
 
     /**
