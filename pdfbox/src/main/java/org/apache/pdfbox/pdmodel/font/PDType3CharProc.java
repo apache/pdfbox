@@ -22,6 +22,7 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.util.Matrix;
 
 /**
  * A Type 3 character procedure. This is a standalone PDF content stream.
@@ -66,6 +67,12 @@ public final class PDType3CharProc implements COSObjectable, PDContentStream
     public PDRectangle getBBox()
     {
         return font.getFontBBox();
+    }
+
+    @Override
+    public Matrix getMatrix()
+    {
+        return font.getFontMatrix();
     }
 
     // todo: add methods for getting the character's width from the stream

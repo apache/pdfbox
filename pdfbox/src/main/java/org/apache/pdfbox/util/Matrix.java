@@ -318,14 +318,14 @@ public class Matrix implements Cloneable
      * @param x x-coordinate
      * @param y y-coordinate
      */
-    public Point2D transformPoint(double x, double y) {
+    public Point2D.Float transformPoint(float x, float y) {
         float a = single[0];
         float b = single[1];
         float c = single[3];
         float d = single[4];
         float e = single[6];
         float f = single[7];
-        return new Point2D.Double(x * a + y * c + e, x * b + y * d + f);
+        return new Point2D.Float(x * a + y * c + e, x * b + y * d + f);
     }
 
     /**

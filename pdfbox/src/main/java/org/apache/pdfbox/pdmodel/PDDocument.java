@@ -273,9 +273,10 @@ public class PDDocument implements Closeable
             acroForm.setDefaultResources(null);
             // Set empty Appearance-Dictionary
             PDAppearanceDictionary ap = new PDAppearanceDictionary();
+
             COSStream apsStream = getDocument().createCOSStream();
             apsStream.createUnfilteredStream();
-            PDAppearanceStream aps = new PDAppearanceStream(apsStream);
+            PDAppearanceStream aps = new PDAppearanceStream(apsStream, null);
             COSDictionary cosObject = (COSDictionary) aps.getCOSObject();
             cosObject.setItem(COSName.SUBTYPE, COSName.FORM);
             cosObject.setItem(COSName.BBOX, new PDRectangle());
@@ -326,7 +327,7 @@ public class PDDocument implements Closeable
 
                         // Appearance Dictionary auslesen und setzen
                         PDAppearanceDictionary ap = new PDAppearanceDictionary(
-                                (COSDictionary) cosBaseDict.getItem(COSName.AP));
+                                (COSDictionary) cosBaseDict.getItem(COSName.AP), null);
                         ap.getCOSObject().setDirect(true);
                         signatureField.getWidget().setAppearance(ap);
 

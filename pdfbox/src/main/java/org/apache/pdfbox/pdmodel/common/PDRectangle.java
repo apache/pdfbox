@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.common;
 
+import java.awt.geom.Point2D;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSFloat;
@@ -24,6 +25,7 @@ import org.apache.pdfbox.cos.COSNumber;
 import org.apache.fontbox.util.BoundingBox;
 
 import java.awt.Dimension;
+import org.apache.pdfbox.util.Matrix;
 
 /**
  * A rectangle in a PDF document.
@@ -299,6 +301,20 @@ public class PDRectangle implements COSObjectable
         setLowerLeftX(getLowerLeftX() + horizontalAmount);
         setUpperRightY(getUpperRightY() + verticalAmount);
         setLowerLeftY(getLowerLeftY() + verticalAmount);
+    }
+
+    // todo: new
+    public PDRectangle transform(Matrix matrix)
+    {
+        Point2D.Float lowerLeft = matrix.transformPoint(getLowerLeftX(), getLowerLeftY());
+        Point2D.Float upperRight = matrix.transformPoint(getUpperRightX(), getUpperRightY());
+
+        PDRectangle rect = new PDRectangle();
+        rect.setLowerLeftX(lowerLeft.x);
+        rect.setLowerLeftY(lowerLeft.y);
+        rect.setUpperRightX(upperRight.x);
+        rect.setUpperRightY(upperRight.y);
+        return rect;
     }
 
     /**

@@ -20,7 +20,6 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
-import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.PDFMarkedContentExtractor;
 
 import java.io.IOException;
@@ -47,15 +46,6 @@ public class DrawObject extends OperatorProcessor
         if(xobject instanceof PDFormXObject)
         {
             PDFormXObject form = (PDFormXObject)xobject;
-
-            // if there is an optional form matrix, we have to map the form space to the user space
-            Matrix matrix = form.getMatrix();
-            if (matrix != null) 
-            {
-                Matrix xobjectCTM = matrix.multiply(context.getGraphicsState().getCurrentTransformationMatrix());
-                context.getGraphicsState().setCurrentTransformationMatrix(xobjectCTM);
-            }
-
             context.showForm(form);
         }
     }

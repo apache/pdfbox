@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.contentstream.operator.graphics;
 
-import java.awt.geom.GeneralPath;
 import java.io.IOException;
 import java.util.List;
 
@@ -25,12 +24,9 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.filter.MissingImageReaderException;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
-import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
-import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.contentstream.operator.Operator;
 
 /**
@@ -79,30 +75,7 @@ public final class DrawObject extends GraphicsOperatorProcessor
             }
             else
             {
-                // save the graphics state
-                context.saveGraphicsState();
-
-                // if there is an optional form matrix, we have to map the form space to the user space
-                Matrix matrix = form.getMatrix();
-                if (matrix != null)
-                {
-                    Matrix xobjectCTM = matrix.multiply(
-                                    context.getGraphicsState().getCurrentTransformationMatrix());
-                    context.getGraphicsState().setCurrentTransformationMatrix(xobjectCTM);
-                }
-
-                // clip to the form's BBox
-                if (form.getBBox() != null)
-                {
-                    PDGraphicsState graphicsState = context.getGraphicsState();
-                    PDRectangle bBox = form.getBBox();
-                    GeneralPath bboxPath = context.transformedPDRectanglePath(bBox);
-                    graphicsState.intersectClippingPath(bboxPath);
-                }
                 getContext().showForm(form);
-
-                // restore the graphics state
-                context.restoreGraphicsState();
             }
         }
     }

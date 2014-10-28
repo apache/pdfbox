@@ -35,6 +35,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 public class PDAppearanceEntry implements COSObjectable
 {
     private COSBase entry;
+    private PDAnnotation parent;
 
     private PDAppearanceEntry()
     {
@@ -43,10 +44,12 @@ public class PDAppearanceEntry implements COSObjectable
     /**
      * Constructor for reading.
      * @param entry
+     * @param parent
      */
-    public PDAppearanceEntry(COSBase entry)
+    public PDAppearanceEntry(COSBase entry, PDAnnotation parent)
     {
         this.entry = entry;
+        this.parent = parent;
     }
 
     @Override
@@ -82,7 +85,7 @@ public class PDAppearanceEntry implements COSObjectable
         {
             throw new IllegalStateException();
         }
-        return new PDAppearanceStream((COSStream)entry);
+        return new PDAppearanceStream((COSStream)entry, parent);
     }
 
     /**
@@ -107,7 +110,7 @@ public class PDAppearanceEntry implements COSObjectable
             // the file from PDFBOX-1599 contains /null as its entry, so we skip non-stream entries
             if(value instanceof COSStream)
             {
-                map.put(name, new PDAppearanceStream((COSStream)value));
+                map.put(name, new PDAppearanceStream((COSStream)value, parent));
             }
         }
 

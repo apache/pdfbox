@@ -246,7 +246,7 @@ public class TestFDF extends TestCase
         PDAnnotationWidget widget = field.getWidget();
         PDAppearanceEntry normalAppearance = widget.getAppearance().getNormalAppearance();
         PDAppearanceStream appearanceStream = normalAppearance.getAppearanceStream();
-        COSStream actual = appearanceStream.getStream();
+        COSStream actual = appearanceStream.getCOSStream();
 
         List<Object> actualTokens = getStreamTokens( doc, actual );
         assertTrue( actualTokens.contains( new COSString( expected ) ) );
@@ -257,7 +257,7 @@ public class TestFDF extends TestCase
         PDAnnotationWidget widget = field.getWidget();
         PDAppearanceEntry normalAppearance = widget.getAppearance().getNormalAppearance();
         PDAppearanceStream appearanceStream = normalAppearance.getAppearanceStream();
-        COSStream actual = appearanceStream.getStream();
+        COSStream actual = appearanceStream.getCOSStream();
 
         List<Object> actualTokens = getStreamTokens( doc, actual );
         List<Object> expectedTokens = getStreamTokens( doc, expected );
