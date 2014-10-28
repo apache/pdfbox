@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.contentstream;
 
-import java.awt.Rectangle;
 import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
@@ -280,7 +279,8 @@ public class PDFStreamEngine
      * @param patternBBox fixme: temporary workaround for tiling patterns
      * @throws IOException if there is an exception while processing the stream
      */
-    private void processStream(PDContentStream contentStream, PDRectangle patternBBox) throws IOException
+    private void processStream(PDContentStream contentStream, PDRectangle patternBBox)
+            throws IOException
     {
         // resource lookup: first look for stream resources, then fallback to the current page
         PDResources parentResources = resources;
@@ -309,7 +309,7 @@ public class PDFStreamEngine
         {
             Area clip = new Area(new GeneralPath(bbox.toRectangle2D()));
             clip.transform(getGraphicsState().getCurrentTransformationMatrix().createAffineTransform());
-            getGraphicsState().intersectClippingPath(clip);
+            //getGraphicsState().intersectClippingPath(clip);
         }
 
         // fixme: stream matrix
@@ -512,7 +512,10 @@ public class PDFStreamEngine
             Vector w = font.getDisplacement(code);
 
             // process the decoded glyph
+            saveGraphicsState();
+            getGraphicsState().setCurrentTransformationMatrix(textRenderingMatrix);
             showGlyph(textRenderingMatrix, font, code, unicode, w);
+            restoreGraphicsState();
 
             // calculate the combined displacements
             float tx, ty;

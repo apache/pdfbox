@@ -68,7 +68,6 @@ import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
 import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
 import org.apache.pdfbox.util.Vector;
@@ -238,18 +237,17 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     protected void showGlyph(Matrix textRenderingMatrix, PDFont font, int code, String unicode,
                              Vector displacement) throws IOException
     {
-        AffineTransform at = textRenderingMatrix.createAffineTransform();
-        at.concatenate(font.getFontMatrix().createAffineTransform());
-
         if (font instanceof PDType3Font)
         {
             // Type3 fonts use PDF streams for each character
-            drawType3String((PDType3Font) font, code, at);
+            drawType3Glyph((PDType3Font) font, code);
         }
         else
         {
             // all other fonts use vectors
             Glyph2D glyph2D = createGlyph2D(font);
+            AffineTransform at = textRenderingMatrix.createAffineTransform();
+            at.concatenate(font.getFontMatrix().createAffineTransform());
             drawGlyph2D(glyph2D, font, code, displacement, at);
         }
     }
@@ -315,30 +313,16 @@ public class PageDrawer extends PDFGraphicsStreamEngine
      * 
      * @param font the type3 font
      * @param code internal PDF character codes of glyph
-     * @param at the transformation
      * 
      * @throws IOException if something went wrong
      */
-    private void drawType3String(PDType3Font font, int code, AffineTransform at) throws IOException
+    private void drawType3Glyph(PDType3Font font, int code) throws IOException
     {
         PDType3CharProc charProc = font.getCharProc(code);
         if (charProc != null)
         {
-            // save the current graphics state and matrices
-            saveGraphicsState();
-            Matrix textMatrix = getTextMatrix();
-            Matrix textLineMatrix = getTextLineMatrix();
-
-            Matrix ctm = new Matrix();
-            ctm.setFromAffineTransform(at);
-            getGraphicsState().setCurrentTransformationMatrix(ctm);
+            lastClip = null;
             processChildStream(charProc);
-
-            // restore the saved graphics state and matrices
-            restoreGraphicsState();
-            setTextLineMatrix(textLineMatrix);
-            setTextMatrix(textMatrix);
-
         }
         else
         {

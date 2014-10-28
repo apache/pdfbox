@@ -61,6 +61,7 @@ public class Matrix implements Cloneable
         single[4] = ((COSNumber)array.get(3)).floatValue();
         single[6] = ((COSNumber)array.get(4)).floatValue();
         single[7] = ((COSNumber)array.get(5)).floatValue();
+        single[8] = 1;
     }
 
     /**
