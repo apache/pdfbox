@@ -175,7 +175,7 @@ public class PDPage implements COSObjectable, PDContentStream
     @Override
     public Matrix getMatrix()
     {
-        // todo: take into account user-space unit redefinition?
+        // todo: take into account user-space unit redefinition as scale?
         return new Matrix();
     }
 
