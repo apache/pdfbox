@@ -410,8 +410,15 @@ public class DomXmpParser
         if (bagOrSeq == null)
         {
             // not an array
+            String whatFound = "nothing";
+            if (property.getFirstChild() != null)
+            {
+                whatFound = property.getFirstChild().getClass().getName();
+            }
             throw new XmpParsingException(ErrorType.Format, "Invalid array definition, expecting " + type.card()
-                    + " and found nothing [prefix="+prefix+"; name="+name+"]");
+                    + " and found "
+                    + whatFound
+                    + " [prefix=" + prefix + "; name=" + name + "]");
         }
         if (!bagOrSeq.getLocalName().equals(type.card().name()))
         {
