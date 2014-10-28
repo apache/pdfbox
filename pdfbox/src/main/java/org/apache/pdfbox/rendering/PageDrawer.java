@@ -237,22 +237,14 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     }
 
     @Override
-    protected void showGlyph(Matrix textRenderingMatrix, PDFont font, int code, String unicode,
-                             Vector displacement) throws IOException
+    protected void showFontGlyph(Matrix textRenderingMatrix, PDFont font, int code, String unicode,
+                                 Vector displacement) throws IOException
     {
-        if (font instanceof PDType3Font)
-        {
-            // Type3 fonts use PDF streams for each character
-            drawType3Glyph((PDType3Font) font, code);
-        }
-        else
-        {
-            // all other fonts use vectors
-            Glyph2D glyph2D = createGlyph2D(font);
-            AffineTransform at = textRenderingMatrix.createAffineTransform();
-            at.concatenate(font.getFontMatrix().createAffineTransform());
-            drawGlyph2D(glyph2D, font, code, displacement, at);
-        }
+        AffineTransform at = textRenderingMatrix.createAffineTransform();
+        at.concatenate(font.getFontMatrix().createAffineTransform());
+
+        Glyph2D glyph2D = createGlyph2D(font);
+        drawGlyph2D(glyph2D, font, code, displacement, at);
     }
 
     /**
@@ -321,13 +313,13 @@ public class PageDrawer extends PDFGraphicsStreamEngine
      * 
      * @throws IOException if something went wrong
      */
-    private void drawType3Glyph(PDType3Font font, int code) throws IOException
+    private void drawType3Glyph(PDType3Font font, int code, Matrix textRenderingMatrix) throws IOException
     {
         PDType3CharProc charProc = font.getCharProc(code);
         if (charProc != null)
         {
             lastClip = null;
-            processChildStream(charProc);
+            processType3Stream(charProc, textRenderingMatrix);
             lastClip = null;
         }
         else
