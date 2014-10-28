@@ -41,6 +41,8 @@ import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontFactory;
+import org.apache.pdfbox.pdmodel.font.PDType3CharProc;
+import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
 import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
@@ -201,6 +203,39 @@ public class PDFStreamEngine
         processStream(contentStream);
     }
 
+    /**
+     * Processes a Type 3 character stream.
+     *
+     * @param charProc Type 3 character procedure
+     * @param textRenderingMatrix the Text Rendering Matrix
+     */
+    protected void processType3Stream(PDType3CharProc charProc, Matrix textRenderingMatrix)
+            throws IOException
+    {
+        if (currentPage == null)
+        {
+            throw new IllegalStateException("No current page, call " +
+                    "#processChildStream(PDContentStream, PDPage) instead");
+        }
+
+        PDResources parent = pushResources(charProc);
+        saveGraphicsState();
+
+        // replace the CTM with the TRM
+        getGraphicsState().setCurrentTransformationMatrix(textRenderingMatrix);
+
+        // transform the CTM using the stream's matrix (this is the FontMatrix)
+        getGraphicsState().getCurrentTransformationMatrix().concatenate(charProc.getMatrix());
+
+        // clip to bounding box
+        clipToRect(charProc.getBBox());
+
+        processStreamOperators(charProc);
+
+        restoreGraphicsState();
+        popResources(parent);
+    }
+
     // todo: a temporary workaround for tiling patterns (overrides matrix and bbox)
     public final void processChildStreamWithMatrix(PDTilingPattern contentStream, PDPage page,
                                                  Matrix matrix, PDRectangle bbox) throws IOException
@@ -281,18 +316,7 @@ public class PDFStreamEngine
     private void processStream(PDContentStream contentStream, PDRectangle patternBBox)
             throws IOException
     {
-        // resource lookup: first look for stream resources, then fallback to the current page
-        PDResources parentResources = resources;
-        PDResources streamResources = contentStream.getResources();
-        if (streamResources != null)
-        {
-            resources = streamResources;
-        }
-        else
-        {
-            resources = currentPage.getResources();
-        }
-
+        PDResources parent = pushResources(contentStream);
         saveGraphicsState();
 
         // transform the CTM using the stream's matrix
@@ -304,12 +328,26 @@ public class PDFStreamEngine
         {
             bbox = patternBBox;
         }
-        if (bbox != null)
-        {
-            PDRectangle clip = bbox.transform(getGraphicsState().getCurrentTransformationMatrix());
-            getGraphicsState().intersectClippingPath(new Area(clip.toRectangle2D()));
-        }
+        clipToRect(bbox);
 
+        // fixme: stream matrix
+        Matrix oldSubStreamMatrix = subStreamMatrix;
+        subStreamMatrix = getGraphicsState().getCurrentTransformationMatrix();
+
+        processStreamOperators(contentStream);
+
+        restoreGraphicsState();
+        popResources(parent);
+
+        // fixme: stream matrix
+        subStreamMatrix = oldSubStreamMatrix;
+    }
+
+    /**
+     * Processes the operators of the given content stream.
+     */
+    private void processStreamOperators(PDContentStream contentStream) throws IOException
+    {
         // fixme: stream matrix
         Matrix oldSubStreamMatrix = subStreamMatrix;
         subStreamMatrix = getGraphicsState().getCurrentTransformationMatrix();
@@ -342,13 +380,48 @@ public class PDFStreamEngine
             parser.close();
         }
 
-        restoreGraphicsState();
-
-        // restore page resources
-        resources = parentResources;
-
         // fixme: stream matrix
         subStreamMatrix = oldSubStreamMatrix;
+    }
+
+    /**
+     * Pushes the given stream's resources, returning the previous resources.
+     */
+    private PDResources pushResources(PDContentStream contentStream)
+    {
+        // resource lookup: first look for stream resources, then fallback to the current page
+        PDResources parentResources = resources;
+        PDResources streamResources = contentStream.getResources();
+        if (streamResources != null)
+        {
+            resources = streamResources;
+        }
+        else
+        {
+            resources = currentPage.getResources();
+        }
+        return parentResources;
+    }
+
+    /**
+     * Pops the current resources, replacing them with the given resources.
+     */
+    private void popResources(PDResources parentResources)
+    {
+        resources = parentResources;
+    }
+
+    /**
+     * Transforms the given rectangle using the CTM and then intersects it with the current
+     * clipping area.
+     */
+    private void clipToRect(PDRectangle rectangle)
+    {
+        if (rectangle != null)
+        {
+            PDRectangle clip = rectangle.transform(getGraphicsState().getCurrentTransformationMatrix());
+            getGraphicsState().intersectClippingPath(new Area(clip.toRectangle2D()));
+        }
     }
 
     /**
@@ -511,7 +584,6 @@ public class PDFStreamEngine
 
             // process the decoded glyph
             saveGraphicsState();
-            getGraphicsState().setCurrentTransformationMatrix(textRenderingMatrix);
             showGlyph(textRenderingMatrix, font, code, unicode, w);
             restoreGraphicsState();
 
@@ -547,7 +619,52 @@ public class PDFStreamEngine
     protected void showGlyph(Matrix textRenderingMatrix, PDFont font, int code, String unicode,
                              Vector displacement) throws IOException
     {
+        if (font instanceof PDType3Font)
+        {
+            showType3Glyph(textRenderingMatrix, (PDType3Font)font, code, unicode, displacement);
+        }
+        else
+        {
+            showFontGlyph(textRenderingMatrix, font, code, unicode, displacement);
+        }
+    }
+
+    /**
+     * Called when a glyph is to be processed.This method is intended for overriding in subclasses,
+     * the default implementation does nothing.
+     *
+     * @param textRenderingMatrix the current text rendering matrix, T<sub>rm</sub>
+     * @param font the current font
+     * @param code internal PDF character code for the glyph
+     * @param unicode the Unicode text for this glyph, or null if the PDF does provide it
+     * @param displacement the displacement (i.e. advance) of the glyph in text space
+     * @throws IOException if the glyph cannot be processed
+     */
+    protected void showFontGlyph(Matrix textRenderingMatrix, PDFont font, int code, String unicode,
+                                 Vector displacement) throws IOException
+    {
         // overridden in subclasses
+    }
+
+    /**
+     * Called when a glyph is to be processed.This method is intended for overriding in subclasses,
+     * the default implementation does nothing.
+     *
+     * @param textRenderingMatrix the current text rendering matrix, T<sub>rm</sub>
+     * @param font the current font
+     * @param code internal PDF character code for the glyph
+     * @param unicode the Unicode text for this glyph, or null if the PDF does provide it
+     * @param displacement the displacement (i.e. advance) of the glyph in text space
+     * @throws IOException if the glyph cannot be processed
+     */
+    protected void showType3Glyph(Matrix textRenderingMatrix, PDType3Font font, int code,
+                                  String unicode, Vector displacement) throws IOException
+    {
+        PDType3CharProc charProc = font.getCharProc(code);
+        if (charProc != null)
+        {
+            processType3Stream(charProc, textRenderingMatrix);
+        }
     }
 
     /**
