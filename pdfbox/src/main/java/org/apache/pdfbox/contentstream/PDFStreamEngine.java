@@ -299,21 +299,17 @@ public class PDFStreamEngine
         // transform the CTM using the stream's matrix
         getGraphicsState().getCurrentTransformationMatrix().concatenate(contentStream.getMatrix());
 
-        // bounding box (for clipping)
+        // clip to bounding box
         PDRectangle bbox = contentStream.getBBox();
-        if (patternBBox !=null)
+        if (patternBBox != null)
         {
             bbox = patternBBox;
         }
         if (bbox != null)
         {
-            Area clip = new Area(new GeneralPath(new Rectangle(bbox.createDimension())));
-
-            // content stream space to user space
-            clip.transform(contentStream.getMatrix().createAffineTransform());
-
-            // CTM transform (user space => device space)
+            Area clip = new Area(new GeneralPath(bbox.toRectangle2D()));
             clip.transform(getGraphicsState().getCurrentTransformationMatrix().createAffineTransform());
+            getGraphicsState().intersectClippingPath(clip);
         }
 
         // fixme: stream matrix

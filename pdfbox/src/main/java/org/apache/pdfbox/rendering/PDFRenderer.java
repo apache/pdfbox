@@ -109,9 +109,9 @@ public class PDFRenderer
     {
         PDPage page = document.getPage(pageIndex);
 
-        PDRectangle adjustedCropBox = page.getCropBox();
-        float widthPt = adjustedCropBox.getWidth();
-        float heightPt = adjustedCropBox.getHeight();
+        PDRectangle cropbBox = page.getCropBox();
+        float widthPt = cropbBox.getWidth();
+        float heightPt = cropbBox.getHeight();
         int widthPx = Math.round(widthPt * scale);
         int heightPx = Math.round(heightPt * scale);
         int rotationAngle = page.getRotation();

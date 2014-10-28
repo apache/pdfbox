@@ -307,7 +307,7 @@ public class PDFPrinter
             // auto portrait/landscape
             if (orientation == Orientation.AUTO)
             {
-                Dimension cropBox = getRotatedCropBox(page).createDimension();
+                PDRectangle cropBox = getRotatedCropBox(page);
                 if (cropBox.getWidth() > cropBox.getHeight())
                 {
                     format.setOrientation(PageFormat.LANDSCAPE);
