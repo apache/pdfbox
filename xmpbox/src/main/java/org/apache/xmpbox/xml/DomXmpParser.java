@@ -350,6 +350,7 @@ public class DomXmpParser
                     Element inner = DomHelper.getFirstChildElement(property);
                     if (inner != null)
                     {
+                        nsFinder.push(inner);
                         AbstractStructuredType ast = parseLiDescription(xmp, DomHelper.getQName(property), inner);
                         ast.setPrefix(prefix);
                         container.addProperty(ast);
@@ -481,6 +482,7 @@ public class DomXmpParser
         Element liChild = DomHelper.getUniqueElementChild(liElement);
         if (liChild != null)
         {
+            nsFinder.push(liChild);
             return parseLiDescription(xmp, descriptor, liChild);
         }
         else
@@ -527,7 +529,7 @@ public class DomXmpParser
     {
         TypeMapping tm = xmp.getTypeMapping();
         List<Element> elements = DomHelper.getElementChildren(liElement);
-        if (elements.size() == 0)
+        if (elements.isEmpty())
         {
             // The list is empty
             return null;
