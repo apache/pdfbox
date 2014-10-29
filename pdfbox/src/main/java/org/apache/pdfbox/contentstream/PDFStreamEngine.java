@@ -262,8 +262,7 @@ public class PDFStreamEngine
         // transform the CTM using the stream's matrix (this is the FontMatrix)
         getGraphicsState().getCurrentTransformationMatrix().concatenate(charProc.getMatrix());
 
-        // clip to bounding box
-        clipToRect(charProc.getBBox());
+        // note: we don't clip to the BBox as it is often wrong, see PDFBOX-1917
 
         processStreamOperators(charProc);
 
