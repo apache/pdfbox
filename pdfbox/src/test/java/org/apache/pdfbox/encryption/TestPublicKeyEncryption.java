@@ -31,6 +31,7 @@ import org.apache.pdfbox.pdmodel.encryption.PublicKeyDecryptionMaterial;
 import org.apache.pdfbox.pdmodel.encryption.PublicKeyProtectionPolicy;
 import org.apache.pdfbox.pdmodel.encryption.PublicKeyRecipient;
 import junit.framework.TestCase;
+import org.apache.pdfbox.pdmodel.encryption.PublicKeySecurityHandler;
 import org.junit.Assert;
 
 /**
@@ -128,20 +129,25 @@ public class TestPublicKeyEncryption extends TestCase
         policy.addRecipient(recipient1);
         document.protect(policy);
 
-        PDDocument encrypted = reload(document);
+        PDDocument encryptedDoc = reload(document);
         try 
         {
-            Assert.assertTrue(encrypted.isEncrypted());
-            encrypted.openProtection(decryption2);
+            Assert.assertTrue(encryptedDoc.isEncrypted());
+            PublicKeySecurityHandler securityHandler
+                    = (PublicKeySecurityHandler) encryptedDoc.getEncryption().getSecurityHandler();
+            securityHandler.setVerbose(true);
+            encryptedDoc.openProtection(decryption2);
             fail("No exception when using an incorrect decryption key");
         }
         catch (IOException ex)
         {
-            // do nothing
+            String msg = ex.getMessage();
+            Assert.assertTrue("not the expected exception: " + msg, 
+                    msg.contains("serial-#: rid 2 vs. cert 3"));
         }
         finally 
         {
-            encrypted.close();
+            encryptedDoc.close();
         }
     }
 
@@ -158,14 +164,14 @@ public class TestPublicKeyEncryption extends TestCase
         policy.addRecipient(recipient1);
         document.protect(policy);
 
-        PDDocument encrypted = reload(document);
+        PDDocument encryptedDoc = reload(document);
         try 
         {
-            Assert.assertTrue(encrypted.isEncrypted());
-            encrypted.openProtection(decryption1);
+            Assert.assertTrue(encryptedDoc.isEncrypted());
+            encryptedDoc.openProtection(decryption1);
 
             AccessPermission permission =
-                encrypted.getCurrentAccessPermission();
+                encryptedDoc.getCurrentAccessPermission();
             Assert.assertFalse(permission.canAssembleDocument());
             Assert.assertFalse(permission.canExtractContent());
             Assert.assertTrue(permission.canExtractForAccessibility());
@@ -177,7 +183,7 @@ public class TestPublicKeyEncryption extends TestCase
         } 
         finally 
         {
-            encrypted.close();
+            encryptedDoc.close();
         }
     }
 
@@ -195,13 +201,13 @@ public class TestPublicKeyEncryption extends TestCase
         document.protect(policy);
 
         // open first time
-        PDDocument encrypted1 = reload(document);
+        PDDocument encryptedDoc1 = reload(document);
         try 
         {
-            encrypted1.openProtection(decryption1);
+            encryptedDoc1.openProtection(decryption1);
 
             AccessPermission permission =
-                encrypted1.getCurrentAccessPermission();
+                encryptedDoc1.getCurrentAccessPermission();
             Assert.assertFalse(permission.canAssembleDocument());
             Assert.assertFalse(permission.canExtractContent());
             Assert.assertTrue(permission.canExtractForAccessibility());
@@ -213,17 +219,17 @@ public class TestPublicKeyEncryption extends TestCase
         } 
         finally 
         {
-            encrypted1.close();
+            encryptedDoc1.close();
         }
 
         // open second time
-        PDDocument encrypted2 = reload(document);
+        PDDocument encryptedDoc2 = reload(document);
         try 
         {
-            encrypted2.openProtection(decryption2);
+            encryptedDoc2.openProtection(decryption2);
 
             AccessPermission permission =
-                encrypted2.getCurrentAccessPermission();
+                encryptedDoc2.getCurrentAccessPermission();
             Assert.assertFalse(permission.canAssembleDocument());
             Assert.assertFalse(permission.canExtractContent());
             Assert.assertTrue(permission.canExtractForAccessibility());
@@ -235,7 +241,7 @@ public class TestPublicKeyEncryption extends TestCase
         } 
         finally 
         {
-            encrypted2.close();
+            encryptedDoc2.close();
         }
     }
 
