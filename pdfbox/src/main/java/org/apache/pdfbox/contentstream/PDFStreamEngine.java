@@ -313,18 +313,26 @@ public class PDFStreamEngine
         popResources(parent);
     }
 
-    // todo: a temporary workaround for tiling patterns (overrides matrix and bbox)
-    public final void processChildStreamWithMatrix(PDTilingPattern contentStream, PDPage page,
-                                                 Matrix matrix, PDRectangle bbox) throws IOException
+    /**
+     * Processes the given tiling pattern.
+     *
+     * @param tilingPattern tiling patten
+     */
+    protected final void processTilingPattern(PDTilingPattern tilingPattern) throws IOException
     {
-        initPage(page);
+        PDResources parent = pushResources(tilingPattern);
+        saveGraphicsState();
 
-        // transform ctm
-        Matrix concat = matrix.multiply(getGraphicsState().getCurrentTransformationMatrix());
-        getGraphicsState().setCurrentTransformationMatrix(concat);
+        // note: we don't transform the CTM using the stream's matrix, as TilingPaint handles this
 
-        processStream(contentStream, bbox);
-        currentPage = null;
+        // clip to bounding box
+        PDRectangle bbox = tilingPattern.getBBox();
+        clipToRect(bbox);
+
+        processStreamOperators(tilingPattern);
+
+        restoreGraphicsState();
+        popResources(parent);
     }
 
     /**

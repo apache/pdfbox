@@ -17,6 +17,7 @@
 package org.apache.pdfbox.rendering;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Paint;
@@ -42,8 +43,11 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.font.PDCIDFontType0;
 import org.apache.pdfbox.pdmodel.font.PDCIDFontType2;
-import org.apache.pdfbox.pdmodel.font.PDType3CharProc;
+import org.apache.pdfbox.pdmodel.graphics.color.PDPattern;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImage;
+import org.apache.pdfbox.pdmodel.graphics.pattern.PDAbstractPattern;
+import org.apache.pdfbox.pdmodel.graphics.pattern.PDShadingPattern;
+import org.apache.pdfbox.pdmodel.graphics.pattern.TilingPaint;
 import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
 import org.apache.pdfbox.rendering.font.CIDType0Glyph2D;
 import org.apache.pdfbox.rendering.font.Glyph2D;
@@ -56,7 +60,6 @@ import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType1CFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.pdmodel.graphics.PDLineDashPattern;
 import org.apache.pdfbox.pdmodel.graphics.state.PDSoftMask;
 import org.apache.pdfbox.pdmodel.graphics.blend.SoftMaskPaint;
@@ -83,9 +86,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     // parent document renderer
     private final PDFRenderer renderer;
 
+    // the graphics device to draw to, xform is the initial transform of the device (i.e. DPI)
     private Graphics2D graphics;
-
-    // initial transform
     private AffineTransform xform;
     
     // clipping winding rule used for the clipping path
@@ -145,6 +147,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     {
         graphics = (Graphics2D) g;
         xform = graphics.getTransform();
+
         setRenderingHints();
 
         graphics.translate(0, (int) pageSize.getHeight());
@@ -170,29 +173,93 @@ public class PageDrawer extends PDFGraphicsStreamEngine
      *
      * @param g The graphics context to draw onto.
      * @param pattern The tiling pattern to be used.
-     * @param pageDimension The size of the page to draw.
-     * @param matrix initial substream transformation matrix.
      * @param colorSpace color space for this tiling.
      * @param color color for this tiling.
      * @throws IOException If there is an IO error while drawing the page.
      */
-    public void drawTilingPattern(Graphics2D g, PDTilingPattern pattern, PDRectangle pageDimension,
-                                  Matrix matrix, PDColorSpace colorSpace, PDColor color)
-                                  throws IOException
+    public void drawTilingPattern(Graphics2D g, PDTilingPattern pattern, PDColorSpace colorSpace,
+                                  PDColor color) throws IOException
     {
+        Graphics2D oldGraphics = graphics;
         graphics = g;
-        setRenderingHints();
 
-        // color
+        GeneralPath oldLinePath = linePath;
+        linePath = new GeneralPath();
+
+        Area oldLastClip = lastClip;
+        lastClip = null;
+
+        setRenderingHints();
+        saveGraphicsState();
+
+        // non-colored patterns have to be given a color
         if (colorSpace != null)
         {
+            color = new PDColor(color.getComponents(), colorSpace);
             getGraphicsState().setNonStrokingColorSpace(colorSpace);
             getGraphicsState().setNonStrokingColor(color);
             getGraphicsState().setStrokingColorSpace(colorSpace);
             getGraphicsState().setStrokingColor(color);
         }
 
-        processChildStreamWithMatrix(pattern, getPage(), matrix, pageDimension);
+        processTilingPattern(pattern);
+
+        restoreGraphicsState();
+        graphics = oldGraphics;
+        linePath = oldLinePath;
+        lastClip = oldLastClip;
+    }
+
+    /**
+     * Returns an AWT paint for the given PDColor.
+     */
+    private Paint getPaint(PDColor color) throws IOException
+    {
+        PDColorSpace colorSpace = color.getColorSpace();
+        if (!(colorSpace instanceof PDPattern))
+        {
+            float[] rgb = colorSpace.toRGB(color.getComponents());
+            return new Color(rgb[0], rgb[1], rgb[2]);
+        }
+        else
+        {
+            PDPattern patternSpace = (PDPattern)colorSpace;
+            PDAbstractPattern pattern = patternSpace.getPattern(color);
+            if (pattern instanceof PDTilingPattern)
+            {
+                PDTilingPattern tilingPattern = (PDTilingPattern) pattern;
+
+                if (tilingPattern.getPaintType() == PDTilingPattern.PAINT_COLORED)
+                {
+                    // colored tiling pattern
+                    return new TilingPaint(this, tilingPattern, xform);
+                }
+                else
+                {
+                    // uncolored tiling pattern
+                    return new TilingPaint(this, tilingPattern,
+                            patternSpace.getUnderlyingColorSpace(), color, xform);
+                }
+            }
+            else
+            {
+                PDShadingPattern shadingPattern = (PDShadingPattern)pattern;
+                PDShading shading = shadingPattern.getShading();
+                if (shading == null)
+                {
+                    LOG.error("shadingPattern is null, will be filled with transparency");
+                    return new Color(0,0,0,0);
+                }
+
+                // fixme: shading needs to use the correct matrix
+                Matrix patternMatrix = shadingPattern.getMatrix();
+                if (patternMatrix == null)
+                {
+                    patternMatrix = new Matrix();
+                }
+                return shading.toPaint(patternMatrix);
+            }
+        }
     }
 
     // sets the clipping path using caching for performance, we track lastClip manually because
@@ -301,29 +368,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             {
                 textClippingArea.add(new Area(glyph));
             }
-        }
-    }
-
-    /**
-     * Render the text using a type 3 font.
-     * 
-     * @param font the type3 font
-     * @param code internal PDF character codes of glyph
-     * 
-     * @throws IOException if something went wrong
-     */
-    private void drawType3Glyph(PDType3Font font, int code, Matrix textRenderingMatrix) throws IOException
-    {
-        PDType3CharProc charProc = font.getCharProc(code);
-        if (charProc != null)
-        {
-            lastClip = null;
-            processType3Stream(charProc, textRenderingMatrix);
-            lastClip = null;
-        }
-        else
-        {
-            LOG.error("Stream for Type 3 character " + code + " not found");
         }
     }
 
@@ -450,19 +494,15 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     // returns the stroking AWT Paint
     private Paint getStrokingPaint() throws IOException
     {
-        PDGraphicsState graphicsState = getGraphicsState();
-        return applySoftMaskToPaint(graphicsState.getStrokingColorSpace()
-                .toPaint(renderer, getPage(), graphicsState.getStrokingColor(),
-                         getSubStreamMatrix(), xform),
-                graphicsState.getSoftMask());
+        return applySoftMaskToPaint(
+                getPaint(getGraphicsState().getStrokingColor()),
+                getGraphicsState().getSoftMask());
     }
 
     // returns the non-stroking AWT Paint
     private Paint getNonStrokingPaint() throws IOException
     {
-        return getGraphicsState().getNonStrokingColorSpace()
-                .toPaint(renderer, getPage(), getGraphicsState().getNonStrokingColor(),
-                        getSubStreamMatrix(), xform);
+        return getPaint(getGraphicsState().getNonStrokingColor());
     }
 
     // create a new stroke based on the current CTM and the current stroke
@@ -671,10 +711,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         if (pdImage.isStencil())
         {
             // fill the image with paint
-            PDColorSpace colorSpace = getGraphicsState().getNonStrokingColorSpace();
             PDColor color = getGraphicsState().getNonStrokingColor();
-            BufferedImage image = pdImage.getStencilImage(
-                    colorSpace.toPaint(renderer, getPage(), color, getSubStreamMatrix(), xform));
+            BufferedImage image = pdImage.getStencilImage(getPaint(color));
 
             // draw the image
             drawBufferedImage(image, at);

@@ -17,11 +17,14 @@
 package org.apache.pdfbox.pdmodel.graphics.pattern;
 
 import java.awt.Graphics2D;
+import java.awt.Paint;
+import java.awt.PaintContext;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.TexturePaint;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -32,146 +35,95 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
-import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.rendering.PageDrawer;
-import org.apache.pdfbox.rendering.TilingPatternDrawer;
-import org.apache.pdfbox.util.Matrix;
 
 /**
- * AWT Paint for a tiling pattern, which consists of a small repeating graphical
- * figure.
+ * AWT Paint for a tiling pattern, which consists of a small repeating graphical figure.
  *
  * @author Andreas Lehmkühler
  * @author John Hewson
  */
-public class TilingPaint extends TexturePaint
+public class TilingPaint implements Paint
 {
+    private final PDTilingPattern pattern;
+    private final TexturePaint paint;
+
     /**
      * Creates a new colored tiling Paint.
      *
-     * @param renderer renderer to render the page
+     * @param drawer renderer to render the page
      * @param pattern tiling pattern dictionary
-     * @param matrix initial substream transformation matrix
-     * @param xform initial graphics transform of the page
-     * 
+     *
      * @throws java.io.IOException if something goes wrong while drawing the
      * pattern
      */
-    public TilingPaint(PDFRenderer renderer, PDPage page, PDTilingPattern pattern, Matrix matrix, AffineTransform xform) throws IOException
+    public TilingPaint(PageDrawer drawer, PDTilingPattern pattern, AffineTransform xform)
+            throws IOException
     {
-        super(getImage(renderer, page, pattern, null, null, matrix, xform), getTransformedRect(pattern, matrix));
+        this.paint = new TexturePaint(getImage(drawer, pattern, null, null, xform),
+                                      getAnchorRect(pattern));
+        this.pattern = pattern;
     }
 
     /**
      * Creates a new uncolored tiling Paint.
      *
-     * @param renderer renderer to render the page
+     * @param drawer renderer to render the page
      * @param pattern tiling pattern dictionary
      * @param colorSpace color space for this tiling
      * @param color color for this tiling
-     * @param matrix initial substream transformation matrix
-     * @param xform initial graphics transform of the page
-     * 
+     *
      * @throws java.io.IOException if something goes wrong while drawing the pattern
      */
-    public TilingPaint(PDFRenderer renderer, PDPage page, PDTilingPattern pattern, PDColorSpace colorSpace,
-            PDColor color, Matrix matrix, AffineTransform xform) throws IOException
+    public TilingPaint(PageDrawer drawer, PDTilingPattern pattern, PDColorSpace colorSpace,
+                       PDColor color, AffineTransform xform) throws IOException
     {
-        super(getImage(renderer, page, pattern, colorSpace, color, matrix, xform), getTransformedRect(pattern, matrix));
+        this.paint = new TexturePaint(getImage(drawer, pattern, colorSpace, color, xform),
+                                      getAnchorRect(pattern));
+        this.pattern = pattern;
     }
 
-    //  gets rect in parent content stream coordinates
-    private static Rectangle2D getTransformedRect(PDTilingPattern pattern, Matrix matrix)
+    // note: this is not called in TexturePaint subclasses, which is why we wrap TexturePaint
+    @Override
+    public PaintContext createContext(ColorModel cm, Rectangle deviceBounds, Rectangle2D userBounds,
+                                      AffineTransform xform, RenderingHints hints)
     {
-        float x = pattern.getBBox().getLowerLeftX();
-        float y = pattern.getBBox().getLowerLeftY();
-        float width = pattern.getBBox().getWidth();
-        float height = pattern.getBBox().getHeight();
-
-        // xStep and yStep, but ignore 32767 steps
-        if (pattern.getXStep() != 0 && pattern.getXStep() != Short.MAX_VALUE)
-        {
-            width = pattern.getXStep();
-        }
-        if (pattern.getYStep() != 0 && pattern.getYStep() != Short.MAX_VALUE)
-        {
-            height = pattern.getYStep();
-        }
-
-        Rectangle2D rectangle;
-        AffineTransform at = matrix.createAffineTransform();
-        Point2D p1 = new Point2D.Float(x, y);
-        Point2D p2 = new Point2D.Float(x + width, y + height);
-        at.transform(p1, p1);
-        at.transform(p2, p2);
-        // at.createTransformedShape(rect).getBounds2D() gets empty rectangle
-        // when negative numbers, so we do it the hard way
-        rectangle = new Rectangle2D.Float(
-                (float) Math.min(p1.getX(), p2.getX()),
-                (float) Math.min(p1.getY(), p2.getY()),
-                (float) Math.abs(p2.getX() - p1.getX()),
-                (float) Math.abs(p2.getY() - p1.getY()));
-        return rectangle;
-    }
-
-    // get lower left coord of bbox
-    private static Point2D getTransformedPoint(PDTilingPattern pattern, Matrix matrix)
-    {
-        float x = pattern.getBBox().getLowerLeftX();
-        float y = pattern.getBBox().getLowerLeftY();
-        float width = pattern.getBBox().getWidth();
-        float height = pattern.getBBox().getHeight();
-
-        AffineTransform at = matrix.createAffineTransform();
-        Point2D p1 = new Point2D.Float(x, y);
-        Point2D p2 = new Point2D.Float(x + width, y + height);
-        at.transform(p1, p1);
-        at.transform(p2, p2);
-        return new Point2D.Float(
-                (float) Math.min(p1.getX(), p2.getX()),
-                (float) Math.min(p1.getY(), p2.getY()));
+        // todo: use userBounds or deviceBounds to avoid scaling issue with Tracemonkey?
+        AffineTransform xformPattern = (AffineTransform)xform.clone();
+        xformPattern.concatenate(pattern.getMatrix().createAffineTransform());
+        return paint.createContext(cm, deviceBounds, userBounds, xformPattern, hints);
     }
 
     // gets image in parent stream coordinates
-    private static BufferedImage getImage(PDFRenderer renderer, PDPage page, PDTilingPattern pattern,
-            PDColorSpace colorSpace, PDColor color, Matrix matrix, AffineTransform xform) throws IOException
+    private static BufferedImage getImage(PageDrawer drawer, PDTilingPattern pattern,
+                                          PDColorSpace colorSpace, PDColor color,
+                                          AffineTransform xform) throws IOException
     {
         ColorSpace outputCS = ColorSpace.getInstance(ColorSpace.CS_sRGB);
         ColorModel cm = new ComponentColorModel(outputCS, true, false,
                 Transparency.TRANSLUCENT, DataBuffer.TYPE_BYTE);
 
-        Rectangle2D rect = getTransformedRect(pattern, matrix);
-        float width = (float)rect.getWidth();
-        float height = (float)rect.getHeight();
+        Rectangle2D anchor = getAnchorRect(pattern);
+        float width = (float)Math.abs(anchor.getWidth());
+        float height = (float)Math.abs(anchor.getHeight());
 
-        int rasterWidth = Math.max(1, ceiling(width * Math.abs(xform.getScaleX())));
-        int rasterHeight = Math.max(1, ceiling(height * Math.abs(xform.getScaleY())));
+        // device transform (i.e. DPI)
+        width *= (float)xform.getScaleX();
+        height *= (float)xform.getScaleY();
+
+        int rasterWidth = Math.max(1, ceiling(width));
+        int rasterHeight = Math.max(1, ceiling(height));
 
         // create raster
         WritableRaster raster = cm.createCompatibleWritableRaster(rasterWidth, rasterHeight);
         BufferedImage image = new BufferedImage(cm, raster, false, null);
 
-        matrix = matrix.clone();
-        Point2D p = getTransformedPoint(pattern, matrix);
-        matrix.setValue(2, 0, matrix.getValue(2, 0) - (float) p.getX()); // tx
-        matrix.setValue(2, 1, matrix.getValue(2, 1) - (float) p.getY()); // ty
-
-        // TODO: need to make it easy to use a custom TilingPatternDrawer
-        PageDrawer drawer = new TilingPatternDrawer(renderer, page);
-        PDRectangle pdRect = new PDRectangle(0, 0, width, height);
-
         Graphics2D graphics = image.createGraphics();
-        // transform without the translation
-        AffineTransform at = new AffineTransform(
-                xform.getScaleX(), xform.getShearY(),
-                -xform.getShearX(), xform.getScaleY(),
-                0, 0);
-        graphics.transform(at);
-        drawer.drawTilingPattern(graphics, pattern, pdRect, matrix, colorSpace, color);
+        graphics.transform(xform); // device transform (i.e. DPI)
+        drawer.drawTilingPattern(graphics, pattern, colorSpace, color);
         graphics.dispose();
 
         return image;
@@ -192,5 +144,24 @@ public class TilingPaint extends TexturePaint
     public int getTransparency()
     {
         return Transparency.TRANSLUCENT;
+    }
+
+    // includes XStep/YStep
+    public static Rectangle2D getAnchorRect(PDTilingPattern pattern)
+    {
+        float xStep = pattern.getXStep();
+        if (xStep == 0)
+        {
+            xStep = pattern.getBBox().getWidth();
+        }
+
+        float yStep = pattern.getYStep();
+        if (yStep == 0)
+        {
+            yStep = pattern.getBBox().getHeight();
+        }
+
+        PDRectangle anchor = pattern.getBBox();
+        return new Rectangle2D.Float(anchor.getLowerLeftX(), anchor.getLowerLeftY(), xStep, yStep);
     }
 }
