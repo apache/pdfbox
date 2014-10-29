@@ -270,6 +270,49 @@ public class PDFStreamEngine
         popResources(parent);
     }
 
+    /**
+     * Process the given annotation with the specified appearance stream.
+     *
+     * @param annotation The annotation containing the appearance stream to process.
+     * @param appearance The appearance stream to process.
+     */
+    protected void processAnnotation(PDAnnotation annotation, PDAppearanceStream appearance)
+            throws IOException
+    {
+        PDResources parent = pushResources(appearance);
+        saveGraphicsState();
+
+        PDRectangle bbox = appearance.getBBox();
+        PDRectangle rect = annotation.getRectangle();
+        Matrix matrix = appearance.getMatrix();
+
+        // transformed appearance box
+        PDRectangle transformedBox = bbox.transform(matrix);
+
+        // compute a matrix which scales and translates the transformed appearance box to align
+        // with the edges of the annotation's rectangle
+        Matrix a = Matrix.getTranslatingInstance(rect.getLowerLeftX(), rect.getLowerLeftY());
+        a.concatenate(Matrix.getScaleInstance(rect.getWidth() / transformedBox.getWidth(),
+                                              rect.getHeight() / transformedBox.getHeight()));
+        a.concatenate(Matrix.getTranslatingInstance(-transformedBox.getLowerLeftX(),
+                                                    -transformedBox.getLowerLeftY()));
+
+        // Matrix shall be concatenated with A to form a matrix AA that maps from the appearance’s
+        // coordinate system to the annotation’s rectangle in default user space
+        Matrix aa = Matrix.concatenate(matrix, a);
+
+        // make matrix AA the CTM
+        getGraphicsState().setCurrentTransformationMatrix(aa);
+
+        // clip to bounding box
+        clipToRect(bbox);
+
+        processStreamOperators(appearance);
+
+        restoreGraphicsState();
+        popResources(parent);
+    }
+
     // todo: a temporary workaround for tiling patterns (overrides matrix and bbox)
     public final void processChildStreamWithMatrix(PDTilingPattern contentStream, PDPage page,
                                                  Matrix matrix, PDRectangle bbox) throws IOException
@@ -295,7 +338,7 @@ public class PDFStreamEngine
         PDAppearanceStream appearanceStream = getAppearance(annotation);
         if (appearanceStream != null)
         {
-            processStream(appearanceStream, null);
+            processAnnotation(annotation, appearanceStream);
         }
     }
 

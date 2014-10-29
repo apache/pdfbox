@@ -240,7 +240,7 @@ public final class PDAppearanceString
                 if (appearanceStream == null)
                 {
                     COSStream cosStream = acroForm.getDocument().getDocument().createCOSStream();
-                    appearanceStream = new PDAppearanceStream(cosStream, widget);
+                    appearanceStream = new PDAppearanceStream(cosStream);
                     appearanceStream.setBBox(widget.getRectangle()
                             .createRetranslatedRectangle());
                     appearance.setNormalAppearance(appearanceStream);

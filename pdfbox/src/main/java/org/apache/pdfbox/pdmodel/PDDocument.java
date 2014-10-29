@@ -279,7 +279,7 @@ public class PDDocument implements Closeable
 
             COSStream apsStream = getDocument().createCOSStream();
             apsStream.createUnfilteredStream();
-            PDAppearanceStream aps = new PDAppearanceStream(apsStream, null);
+            PDAppearanceStream aps = new PDAppearanceStream(apsStream);
             COSDictionary cosObject = (COSDictionary) aps.getCOSObject();
             cosObject.setItem(COSName.SUBTYPE, COSName.FORM);
             cosObject.setItem(COSName.BBOX, new PDRectangle());
@@ -330,7 +330,7 @@ public class PDDocument implements Closeable
 
                         // Appearance Dictionary auslesen und setzen
                         PDAppearanceDictionary ap = new PDAppearanceDictionary(
-                                (COSDictionary) cosBaseDict.getItem(COSName.AP), null);
+                                (COSDictionary) cosBaseDict.getItem(COSName.AP));
                         ap.getCOSObject().setDirect(true);
                         signatureField.getWidget().setAppearance(ap);
 

@@ -30,7 +30,6 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 public class PDAppearanceDictionary implements COSObjectable
 {
     private final COSDictionary dictionary;
-    private PDAnnotation parent;
 
     /**
      * Constructor for embedding.
@@ -47,10 +46,9 @@ public class PDAppearanceDictionary implements COSObjectable
      *
      * @param dictionary The annotations dictionary.
      */
-    public PDAppearanceDictionary( COSDictionary dictionary, PDAnnotation parent )
+    public PDAppearanceDictionary( COSDictionary dictionary )
     {
         this.dictionary = dictionary;
-        this.parent = parent;
     }
 
     @Override
@@ -75,7 +73,7 @@ public class PDAppearanceDictionary implements COSObjectable
         }
         else
         {
-            return new PDAppearanceEntry(entry, parent);
+            return new PDAppearanceEntry(entry);
         }
     }
 
@@ -119,7 +117,7 @@ public class PDAppearanceDictionary implements COSObjectable
         }
         else
         {
-            return new PDAppearanceEntry(entry, parent);
+            return new PDAppearanceEntry(entry);
         }
     }
 
@@ -163,7 +161,7 @@ public class PDAppearanceDictionary implements COSObjectable
         }
         else
         {
-            return new PDAppearanceEntry(entry, parent);
+            return new PDAppearanceEntry(entry);
         }
     }
 
