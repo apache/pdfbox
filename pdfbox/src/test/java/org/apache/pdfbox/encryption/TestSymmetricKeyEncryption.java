@@ -36,12 +36,14 @@ import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
 import org.apache.pdfbox.util.PDFTextStripper;
 import org.junit.Assert;
+import org.junit.Ignore;
 
 /**
  * Tests for public key encryption.
  *
  * @author Ralf Hauser
  */
+@Ignore
 public class TestSymmetricKeyEncryption extends TestCase
 {
     private final File testResultsDir = new File("target/test-output/crypto");
