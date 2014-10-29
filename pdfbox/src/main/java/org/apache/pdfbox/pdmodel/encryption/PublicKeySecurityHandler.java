@@ -91,6 +91,8 @@ public final class PublicKeySecurityHandler extends SecurityHandler
     private static final String SUBFILTER = "adbe.pkcs7.s4";
 
     private PublicKeyProtectionPolicy policy = null;
+    
+    private boolean verbose = false;
 
     /**
      * Constructor.
@@ -98,6 +100,16 @@ public final class PublicKeySecurityHandler extends SecurityHandler
     public PublicKeySecurityHandler()
     {
     }
+
+    /**
+     * Enable or disable verbose mode. Default is disabled.
+     * 
+     * @param verbose true if enabled, false if disabled.
+     */
+    public void setVerbose(boolean verbose)
+    {
+        this.verbose = verbose;
+    }    
 
     /**
      * Constructor used for encryption.
@@ -133,14 +145,20 @@ public final class PublicKeySecurityHandler extends SecurityHandler
     /**
      * Prepares everything to decrypt the document.
      *
-     * If {@link #decryptDocument(PDDocument, DecryptionMaterial)} is used, this method is
-     * called from there. Only if decryption of single objects is needed this should be called instead.
+     * If {@link #decryptDocument(PDDocument, DecryptionMaterial)} is used, this
+     * method is called from there. Only if decryption of single objects is
+     * needed this should be called instead.
      *
-     * @param encryption  encryption dictionary, can be retrieved via {@link PDDocument#getEncryption()}
-     * @param documentIDArray  document id which is returned via {@link org.apache.pdfbox.cos.COSDocument#getDocumentID()} (not used by this handler)
+     * @param encryption encryption dictionary, can be retrieved via
+     * {@link PDDocument#getEncryption()}
+     * @param documentIDArray document id which is returned via
+     * {@link org.apache.pdfbox.cos.COSDocument#getDocumentID()} (not used by
+     * this handler)
      * @param decryptionMaterial Information used to decrypt the document.
      *
-     * @throws IOException If there is an error accessing data.
+     * @throws IOException If there is an error accessing data. If verbose mode
+     * is enabled, the exception message will provide more details why the the
+     * match wasn't successful.
      */
     @Override
     public void prepareForDecryption(PDEncryption encryption, COSArray documentIDArray,
@@ -202,7 +220,7 @@ public final class PublicKeySecurityHandler extends SecurityHandler
                         break;
                     }
                     j++;
-                    if (LOG.isDebugEnabled() && certificate != null)
+                    if ((verbose || LOG.isDebugEnabled()) && certificate != null)
                     {
                         extraInfo += "\n" + j + ": ";
                         if (rid instanceof KeyTransRecipientId)
