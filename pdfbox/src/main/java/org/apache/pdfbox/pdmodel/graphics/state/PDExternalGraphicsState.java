@@ -119,7 +119,7 @@ public class PDExternalGraphicsState implements COSObjectable
             }
             else if( key.equals( COSName.CA ) )
             {
-                gs.setAlphaConstants( getStrokingAlphaConstant() );
+                gs.setAlphaConstant(getStrokingAlphaConstant());
             }
             else if( key.equals( COSName.CA_NS ) )
             {

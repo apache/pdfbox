@@ -43,6 +43,7 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontFactory;
 import org.apache.pdfbox.pdmodel.font.PDType3CharProc;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
+import org.apache.pdfbox.pdmodel.graphics.blend.BlendMode;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
 import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
@@ -173,7 +174,7 @@ public class PDFStreamEngine
      */
     public void showTransparencyGroup(PDFormXObject form) throws IOException
     {
-        showForm(form);
+        processTransparencyGroup(form);
     }
 
     /**
@@ -201,6 +202,40 @@ public class PDFStreamEngine
                     "#processChildStream(PDContentStream, PDPage) instead");
         }
         processStream(contentStream);
+    }
+
+    /**
+     * Processes a transparency group stream.
+     */
+    protected void processTransparencyGroup(PDFormXObject group)
+            throws IOException
+    {
+        if (currentPage == null)
+        {
+            throw new IllegalStateException("No current page, call " +
+                    "#processChildStream(PDContentStream, PDPage) instead");
+        }
+
+        PDResources parent = pushResources(group);
+        saveGraphicsState();
+
+        // transform the CTM using the stream's matrix (this is the FontMatrix)
+        getGraphicsState().getCurrentTransformationMatrix().concatenate(group.getMatrix());
+
+        // clip to bounding box
+        clipToRect(group.getBBox());
+
+        // render into a normal opaque buffer
+        PDGraphicsState state = getGraphicsState();
+        state.setBlendMode(BlendMode.NORMAL);
+        state.setAlphaConstant(1.0);
+        state.setNonStrokeAlphaConstants(1.0);
+        state.setSoftMask(null);
+
+        processStreamOperators(group);
+
+        restoreGraphicsState();
+        popResources(parent);
     }
 
     /**
@@ -330,17 +365,10 @@ public class PDFStreamEngine
         }
         clipToRect(bbox);
 
-        // fixme: stream matrix
-        Matrix oldSubStreamMatrix = subStreamMatrix;
-        subStreamMatrix = getGraphicsState().getCurrentTransformationMatrix();
-
         processStreamOperators(contentStream);
 
         restoreGraphicsState();
         popResources(parent);
-
-        // fixme: stream matrix
-        subStreamMatrix = oldSubStreamMatrix;
     }
 
     /**
