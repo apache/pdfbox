@@ -58,7 +58,6 @@ import org.apache.pdfbox.pdmodel.font.PDType1CFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.pdmodel.graphics.PDLineDashPattern;
-import org.apache.pdfbox.pdmodel.graphics.blend.BlendMode;
 import org.apache.pdfbox.pdmodel.graphics.state.PDSoftMask;
 import org.apache.pdfbox.pdmodel.graphics.blend.SoftMaskPaint;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
@@ -420,7 +419,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
      */
     private Raster createSoftMaskRaster(PDSoftMask softMask) throws IOException
     {
-        TransparencyGroup transparencyGroup = createTransparencyGroup(softMask.getGroup());
+        TransparencyGroup transparencyGroup = new TransparencyGroup(softMask.getGroup());
         COSName subtype = softMask.getSubType();
         if (COSName.ALPHA.equals(subtype))
         {
@@ -506,8 +505,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     public void strokePath() throws IOException
     {
         graphics.setComposite(getGraphicsState().getStrokingJavaComposite());
-        Paint strokingPaint = getStrokingPaint();
-        graphics.setPaint(strokingPaint);
+        graphics.setPaint(getStrokingPaint());
         graphics.setStroke(getStroke());
         setClip();
         graphics.draw(linePath);
@@ -518,8 +516,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     public void fillPath(int windingRule) throws IOException
     {
         graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
-        Paint nonStrokingPaint = getNonStrokingPaint();
-        graphics.setPaint(nonStrokingPaint);
+        graphics.setPaint(getNonStrokingPaint());
         setClip();
         linePath.setWindingRule(windingRule);
 
@@ -760,16 +757,11 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         super.showAnnotation(annotation);
     }
 
-    //@Override
+    @Override
     public void showTransparencyGroup(PDFormXObject form) throws IOException
     {
-        TransparencyGroup group = createTransparencyGroup(form);
+        TransparencyGroup group = new TransparencyGroup(form);
         group.draw();
-    }
-
-    private TransparencyGroup createTransparencyGroup(PDFormXObject form) throws IOException
-    {
-        return new TransparencyGroup(form);
     }
 
     /**
@@ -833,15 +825,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             }
             matrix = matrix1;
 
-            PDGraphicsState state = getGraphicsState();
-            state.setBlendMode(BlendMode.NORMAL);
-            state.setAlphaConstants(1.0);
-            state.setNonStrokeAlphaConstants(1.0);
-            state.setSoftMask(null);
             graphics = g;
             try
             {
-                processChildStream(form);
+                processTransparencyGroup(form);
             }
             finally 
             {

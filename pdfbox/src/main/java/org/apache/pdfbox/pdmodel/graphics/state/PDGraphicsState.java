@@ -18,7 +18,6 @@ package org.apache.pdfbox.pdmodel.graphics.state;
 
 import java.awt.BasicStroke;
 import java.awt.Composite;
-import java.awt.Rectangle;
 import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 
@@ -55,8 +54,8 @@ public class PDGraphicsState implements Cloneable
     private boolean strokeAdjustment = false;
     private BlendMode blendMode = BlendMode.COMPATIBLE;
     private PDSoftMask softMask;
-    private double alphaConstants = 1.0;
-    private double nonStrokingAlphaConstants = 1.0;
+    private double alphaConstant = 1.0;
+    private double nonStrokingAlphaConstant = 1.0;
     private boolean alphaSource = false;
 
     // DEVICE-DEPENDENT parameters
@@ -203,9 +202,9 @@ public class PDGraphicsState implements Cloneable
      *
      * @return The value of the stroke alpha constants parameter.
      */
-    public double getAlphaConstants()
+    public double getAlphaConstant()
     {
-        return alphaConstants;
+        return alphaConstant;
     }
 
     /**
@@ -213,9 +212,9 @@ public class PDGraphicsState implements Cloneable
      *
      * @param value The value of the stroke alpha constants parameter.
      */
-    public void setAlphaConstants(double value)
+    public void setAlphaConstant(double value)
     {
-        alphaConstants = value;
+        alphaConstant = value;
     }
 
     /**
@@ -225,7 +224,7 @@ public class PDGraphicsState implements Cloneable
      */
     public double getNonStrokeAlphaConstants()
     {
-        return nonStrokingAlphaConstants;
+        return nonStrokingAlphaConstant;
     }
 
     /**
@@ -235,7 +234,7 @@ public class PDGraphicsState implements Cloneable
      */
     public void setNonStrokeAlphaConstants(double value)
     {
-        nonStrokingAlphaConstants = value;
+        nonStrokingAlphaConstant = value;
     }
 
     /**
@@ -583,11 +582,11 @@ public class PDGraphicsState implements Cloneable
 
     public Composite getStrokingJavaComposite()
     {
-        return BlendComposite.getInstance(blendMode, (float) alphaConstants);
+        return BlendComposite.getInstance(blendMode, (float) alphaConstant);
     }
 
     public Composite getNonStrokingJavaComposite()
     {
-        return BlendComposite.getInstance(blendMode, (float) nonStrokingAlphaConstants);
+        return BlendComposite.getInstance(blendMode, (float) nonStrokingAlphaConstant);
     }
 }
