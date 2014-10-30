@@ -649,7 +649,16 @@ public class NonSequentialPDFParser extends PDFParser
 
         if (bufOff < 0)
         {
-            throw new IOException("Missing end of file marker '" + (new String(EOF_MARKER)) + "'");
+        	if (isLenient) 
+        	{
+        		// in lenient mode the '%%EOF' isn't needed
+        		bufOff = buf.length;
+        		LOG.debug("Missing end of file marker '" + (new String(EOF_MARKER)) + "'");
+        	} 
+        	else 
+        	{
+        		throw new IOException("Missing end of file marker '" + (new String(EOF_MARKER)) + "'");
+        	}
         }
         // ---- find last startxref preceding EOF marker
         bufOff = lastIndexOf(STARTXREF_MARKER, buf, bufOff);
