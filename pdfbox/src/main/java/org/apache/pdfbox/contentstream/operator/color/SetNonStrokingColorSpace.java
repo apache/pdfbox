@@ -44,7 +44,7 @@ public class SetNonStrokingColorSpace extends OperatorProcessor
 
         try
         {
-            PDColorSpace cs = PDColorSpace.create(name, context.getResources());
+            PDColorSpace cs = context.getResources().getColorSpace(name);
             context.getGraphicsState().setNonStrokingColorSpace(cs);
             context.getGraphicsState().setNonStrokingColor(cs.getInitialColor());
         }
