@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.encryption;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -23,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 import javax.crypto.Cipher;
 
 import junit.framework.TestCase;
@@ -34,6 +36,8 @@ import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.DecryptionMaterial;
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
+import org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.util.PDFTextStripper;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -206,6 +210,14 @@ public class TestSymmetricKeyEncryption extends TestCase
     public void testSymmEncrForKeySize(int keyLength,
             int sizePriorToEncr, PDDocument doc, String password, AccessPermission permission) throws IOException
     {
+        int numSrcPages = document.getNumberOfPages();
+        PDFRenderer pdfRenderer = new PDFRenderer(document);
+        ArrayList<BufferedImage> srcImgTab = new ArrayList<BufferedImage>();
+        for (int i = 0; i < numSrcPages; ++i)
+        {
+            srcImgTab.add(pdfRenderer.renderImage(i));
+        }
+
         PDDocument encryptedDoc = encrypt(keyLength, sizePriorToEncr, doc, "", permission);
 
         try
@@ -215,6 +227,14 @@ public class TestSymmetricKeyEncryption extends TestCase
             encryptedDoc.openProtection(decryptionMaterial);
 
             AccessPermission newPermission = encryptedDoc.getCurrentAccessPermission();
+
+            Assert.assertEquals(numSrcPages, encryptedDoc.getNumberOfPages());
+            pdfRenderer = new PDFRenderer(encryptedDoc);
+            for (int i = 0; i < encryptedDoc.getNumberOfPages(); ++i)
+            {
+                BufferedImage bim = pdfRenderer.renderImage(i);
+                ValidateXImage.checkIdent(bim, srcImgTab.get(i));
+            }
 
             File pdfFile = new File(testResultsDir, keyLength + "-bit-decrypted.pdf");
             encryptedDoc.save(pdfFile);
