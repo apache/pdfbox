@@ -96,6 +96,23 @@ public final class PDResources implements COSObjectable
      */
     public PDColorSpace getColorSpace(COSName name) throws IOException
     {
+        // check for default color spaces
+        if (name.equals(COSName.DEVICECMYK) &&
+            get(COSName.COLORSPACE, COSName.DEFAULT_CMYK) != null)
+        {
+            name = COSName.DEFAULT_CMYK;
+        }
+        else if (name.equals(COSName.DEVICERGB) &&
+                 get(COSName.COLORSPACE, COSName.DEFAULT_RGB) != null)
+        {
+            name = COSName.DEFAULT_RGB;
+        }
+        else if (name.equals(COSName.DEVICEGRAY) &&
+                 get(COSName.COLORSPACE, COSName.DEFAULT_RGB) != null)
+        {
+            name = COSName.DEFAULT_GRAY;
+        }
+
         COSBase object = get(COSName.COLORSPACE, name);
         if (object == null)
         {
