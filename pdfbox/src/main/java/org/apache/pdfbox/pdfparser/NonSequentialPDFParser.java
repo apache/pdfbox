@@ -110,6 +110,12 @@ public class NonSequentialPDFParser extends PDFParser
      */
     protected static final char[] OBJ_MARKER = new char[] { 'o', 'b', 'j' };
 
+    /**
+     * trailer-marker.
+     */
+    private static final char[] TRAILER_MARKER = new char[] { 't', 'r', 'a', 'i', 'l', 'e', 'r' };
+    
+    private long trailerOffset;
     private final File pdfFile;
     private long fileLen;
     private final RandomAccessBufferedFileInputStream raStream;
@@ -123,6 +129,7 @@ public class NonSequentialPDFParser extends PDFParser
      * Contains all found objects of a brute force search
      */
     private HashMap<String, Long> bfSearchObjectOffsets = null;
+    private HashMap<COSObjectKey, Long> bfSearchCOSObjectKeyOffsets = null;
     private Vector<Long> bfSearchXRefOffsets = null;
 
     /**
@@ -326,7 +333,6 @@ public class NonSequentialPDFParser extends PDFParser
         }
     }
 
-    // ------------------------------------------------------------------------
     /**
      * The initial parse will first parse only the trailer, the xrefstart and
      * all xref tables to have a pointer (offset) to all the pdf's objects. It
@@ -337,8 +343,140 @@ public class NonSequentialPDFParser extends PDFParser
      */
     protected void initialParse() throws IOException
     {
+    	COSDictionary trailer = null;
         // ---- parse startxref
-        setPdfSource(getStartxrefOffset());
+    	long startXRefOffset = getStartxrefOffset();
+    	if (startXRefOffset > 0)
+    	{
+    		trailer = parseXref(startXRefOffset);
+    	}
+    	else if (isFDFDocment || isLenient)
+    	{
+            // signal start of new XRef
+            xrefTrailerResolver.nextXrefObj( startXRefOffset );
+    		bfSearchForObjects();
+    		for (COSObjectKey objectKey : bfSearchCOSObjectKeyOffsets.keySet())
+    		{
+	            xrefTrailerResolver.setXRef(objectKey, bfSearchCOSObjectKeyOffsets.get(objectKey));
+    		}
+            // parse the last trailer.
+    		pdfSource.seek(trailerOffset);
+            if (!parseTrailer())
+            {
+                throw new IOException("Expected trailer object at position: "
+                        + pdfSource.getOffset());
+            }
+            xrefTrailerResolver.setStartxref(startXRefOffset);
+            trailer = xrefTrailerResolver.getCurrentTrailer();
+            document.setTrailer(trailer);
+    	}
+        // ---- prepare decryption if necessary
+    	prepareDecryption();
+
+        // PDFBOX-1557 - ensure that all COSObject are loaded in the trailer
+        // PDFBOX-1606 - after securityHandler has been instantiated
+        for (COSBase trailerEntry : trailer.getValues())
+        {
+            if (trailerEntry instanceof COSObject)
+            {
+                COSObject tmpObj = (COSObject) trailerEntry;
+                parseObjectDynamically(tmpObj, false);
+            }
+        }
+        // ---- parse catalog or root object
+        COSObject root = (COSObject) xrefTrailerResolver.getTrailer().getItem(COSName.ROOT);
+
+        if (root == null)
+        {
+            throw new IOException("Missing root object specification in trailer.");
+        }
+
+        parseObjectDynamically(root, false);
+
+        // ---- resolve all objects (including pages)
+        if (!parseMinimalCatalog)
+        {
+            COSObject catalogObj = document.getCatalog();
+            if (catalogObj != null)
+            {
+                if (catalogObj.getObject() instanceof COSDictionary)
+                {
+                    parseDictObjects((COSDictionary) catalogObj.getObject(), (COSName[]) null);
+                    allPagesParsed = true;
+                    document.setDecrypted();
+                }
+            }
+        }
+        
+        // PDFBOX-1922: read the version again now that all objects have been resolved
+        readVersionInTrailer(trailer);
+
+        initialParseDone = true;
+    }
+
+    /**
+     * Prepare for decryption.
+     * 
+     * @throws IOException if something went wrong
+     */
+    private void prepareDecryption() throws IOException
+    {
+        COSBase trailerEncryptItem = document.getTrailer().getItem(COSName.ENCRYPT);
+        if (trailerEncryptItem != null && !(trailerEncryptItem instanceof COSNull))
+        {
+            if (trailerEncryptItem instanceof COSObject)
+            {
+                COSObject trailerEncryptObj = (COSObject) trailerEncryptItem;
+                parseObjectDynamically(trailerEncryptObj, true);
+            }
+            try
+            {
+                PDEncryptionDictionary encParameters = new PDEncryptionDictionary(document.getEncryptionDictionary());
+
+                DecryptionMaterial decryptionMaterial = null;
+                if (keyStoreFilename != null)
+                {
+                    KeyStore ks = KeyStore.getInstance("PKCS12");
+                    ks.load(new FileInputStream(keyStoreFilename), password.toCharArray());
+
+                    decryptionMaterial = new PublicKeyDecryptionMaterial(ks, alias, password);
+                }
+                else
+                {
+                    decryptionMaterial = new StandardDecryptionMaterial(password);
+                }
+
+                securityHandler = SecurityHandlersManager.getInstance().getSecurityHandler(encParameters.getFilter());
+                securityHandler.prepareForDecryption(encParameters, document.getDocumentID(), decryptionMaterial);
+
+                AccessPermission permission = securityHandler.getCurrentAccessPermission();
+                if (!permission.canExtractContent())
+                {
+                    LOG.warn("PDF file '" + pdfFile.getPath() + "' does not allow extracting content.");
+                }
+
+            }
+            catch (Exception e)
+            {
+                throw new IOException("Error (" + e.getClass().getSimpleName()
+                        + ") while creating security handler for decryption: " + e.getMessage() /*
+                                                                                                 * , e TODO: remove
+                                                                                                 * remark with Java 1.6
+                                                                                                 */);
+            }
+        }
+    }
+    
+    /**
+     * Parses cross reference tables.
+     * 
+     * @param startXRefOffset start offset of the first table
+     * @return the trailer dictionary
+     * @throws IOException if something went wrong
+     */
+    private COSDictionary parseXref(long startXRefOffset) throws IOException
+    {
+        setPdfSource(startXRefOffset);
         parseStartXref();
 
         long startXrefOffset = document.getStartXref();
@@ -366,7 +504,7 @@ public class NonSequentialPDFParser extends PDFParser
                 // use existing parser to parse xref table
                 parseXrefTable(prev);
                 // parse the last trailer.
-                long trailerOffset = pdfSource.getOffset();
+                trailerOffset = pdfSource.getOffset();
                 //PDFBOX-1739 skip extra xref entries in RegisSTAR documents
                 while (isLenient && pdfSource.peek() != 't')
                 {
@@ -426,7 +564,6 @@ public class NonSequentialPDFParser extends PDFParser
                 }
             }
         }
-
         // ---- build valid xrefs out of the xref chain
         xrefTrailerResolver.setStartxref(startXrefOffset);
         COSDictionary trailer = xrefTrailerResolver.getTrailer();
@@ -434,95 +571,9 @@ public class NonSequentialPDFParser extends PDFParser
 
         // check the offsets of all referenced objects
         checkXrefOffsets();
-        
-        // ---- prepare encryption if necessary
-        COSBase trailerEncryptItem = document.getTrailer().getItem(COSName.ENCRYPT);
-        if (trailerEncryptItem != null && !(trailerEncryptItem instanceof COSNull))
-        {
-            if (trailerEncryptItem instanceof COSObject)
-            {
-                COSObject trailerEncryptObj = (COSObject) trailerEncryptItem;
-                parseObjectDynamically(trailerEncryptObj, true);
-            }
-            try
-            {
-                PDEncryptionDictionary encParameters = new PDEncryptionDictionary(document.getEncryptionDictionary());
-
-                DecryptionMaterial decryptionMaterial = null;
-                if (keyStoreFilename != null)
-                {
-                    KeyStore ks = KeyStore.getInstance("PKCS12");
-                    ks.load(new FileInputStream(keyStoreFilename), password.toCharArray());
-
-                    decryptionMaterial = new PublicKeyDecryptionMaterial(ks, alias, password);
-                }
-                else
-                {
-                    decryptionMaterial = new StandardDecryptionMaterial(password);
-                }
-
-                securityHandler = SecurityHandlersManager.getInstance().getSecurityHandler(encParameters.getFilter());
-                securityHandler.prepareForDecryption(encParameters, document.getDocumentID(), decryptionMaterial);
-
-                AccessPermission permission = securityHandler.getCurrentAccessPermission();
-                if (!permission.canExtractContent())
-                {
-                    LOG.warn("PDF file '" + pdfFile.getPath() + "' does not allow extracting content.");
-                }
-
-            }
-            catch (Exception e)
-            {
-                throw new IOException("Error (" + e.getClass().getSimpleName()
-                        + ") while creating security handler for decryption: " + e.getMessage() /*
-                                                                                                 * , e TODO: remove
-                                                                                                 * remark with Java 1.6
-                                                                                                 */);
-            }
-        }
-
-        // PDFBOX-1557 - ensure that all COSObject are loaded in the trailer
-        // PDFBOX-1606 - after securityHandler has been instantiated
-        for (COSBase trailerEntry : trailer.getValues())
-        {
-            if (trailerEntry instanceof COSObject)
-            {
-                COSObject tmpObj = (COSObject) trailerEntry;
-                parseObjectDynamically(tmpObj, false);
-            }
-        }
-        // ---- parse catalog or root object
-        COSObject root = (COSObject) xrefTrailerResolver.getTrailer().getItem(COSName.ROOT);
-
-        if (root == null)
-        {
-            throw new IOException("Missing root object specification in trailer.");
-        }
-
-        parseObjectDynamically(root, false);
-
-        // ---- resolve all objects (including pages)
-        if (!parseMinimalCatalog)
-        {
-            COSObject catalogObj = document.getCatalog();
-            if (catalogObj != null)
-            {
-                if (catalogObj.getObject() instanceof COSDictionary)
-                {
-                    parseDictObjects((COSDictionary) catalogObj.getObject(), (COSName[]) null);
-                    allPagesParsed = true;
-                    document.setDecrypted();
-                }
-            }
-        }
-        
-        // PDFBOX-1922: read the version again now that all objects have been resolved
-        readVersionInTrailer(trailer);
-
-        initialParseDone = true;
+        return trailer;
     }
 
-    // ------------------------------------------------------------------------
     /**
      * Parses an xref object stream starting with indirect object id.
      * 
@@ -665,7 +716,19 @@ public class NonSequentialPDFParser extends PDFParser
 
         if (bufOff < 0)
         {
-            throw new IOException("Missing 'startxref' marker.");
+        	if (isLenient) 
+        	{
+                trailerOffset = lastIndexOf(TRAILER_MARKER, buf, buf.length);
+                if (trailerOffset > 0)
+                {
+                	trailerOffset += skipBytes;
+                }
+        		return -1;
+        	}
+        	else
+        	{
+        		throw new IOException("Missing 'startxref' marker.");
+        	}
         }
         return skipBytes + bufOff;
     }
@@ -1921,6 +1984,7 @@ public class NonSequentialPDFParser extends PDFParser
         if (bfSearchObjectOffsets == null)
         {
             bfSearchObjectOffsets = new HashMap<String, Long>();
+            bfSearchCOSObjectKeyOffsets = new HashMap<COSObjectKey, Long>();
             long originOffset = pdfSource.getOffset();
             long currentOffset = MINIMUM_SEARCH_OFFSET;
             String objString = " obj";
@@ -1971,6 +2035,7 @@ public class NonSequentialPDFParser extends PDFParser
                                 {
                                     bfSearchObjectOffsets.put(
                                             createObjectString(objectID, genID), ++tempOffset);
+                                    bfSearchCOSObjectKeyOffsets.put(new COSObjectKey(objectID, genID), tempOffset);
                                 }
                             }
                         }

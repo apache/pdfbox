@@ -61,6 +61,8 @@ public class PDFParser extends BaseParser
     private static final String PDF_HEADER = "%PDF-";
     private static final String FDF_HEADER = "%FDF-";
     
+    protected boolean isFDFDocment = false;
+    
     private static final String PDF_DEFAULT_VERSION = "1.4";
     private static final String FDF_DEFAULT_VERSION = "1.0";
     
@@ -417,6 +419,7 @@ public class PDFParser extends BaseParser
         }
         else
         {
+        	isFDFDocment = true;
             if (!header.matches(FDF_HEADER + "\\d.\\d"))
             {
                 if (header.length() < FDF_HEADER.length() + 3)
