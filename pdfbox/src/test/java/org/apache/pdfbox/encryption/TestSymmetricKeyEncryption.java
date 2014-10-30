@@ -22,8 +22,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.ArrayList;
 import javax.crypto.Cipher;
 
@@ -31,6 +29,7 @@ import junit.framework.TestCase;
 import static junit.framework.TestCase.fail;
 
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.DecryptionMaterial;
@@ -38,7 +37,6 @@ import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
 import org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage;
 import org.apache.pdfbox.rendering.PDFRenderer;
-import org.apache.pdfbox.util.PDFTextStripper;
 import org.junit.Assert;
 
 /**
@@ -61,9 +59,7 @@ public class TestSymmetricKeyEncryption extends TestCase
     static byte[] inputFileAsByteArray = null;
     static byte[] inputInner = null;
 
-    static String textContent = null;
-
-    static int page0size = -1;
+    static long page0size = -1;
 
     /**
      * Simple test document that gets encrypted by the test cases.
@@ -111,24 +107,6 @@ public class TestSymmetricKeyEncryption extends TestCase
         {
             sizePriorToEncryption = inputFileAsByteArray.length;
             document = PDDocument.load(new ByteArrayInputStream(inputFileAsByteArray));
-            boolean extractText = false;
-            if (extractText)
-            {
-                PDFTextStripper stripper = new PDFTextStripper();
-                stripper.setForceParsing(true);
-                // stripper.setSortByPosition( sort );
-                // stripper.setShouldSeparateByBeads( separateBeads );
-                stripper.setStartPage(0);
-                stripper.setEndPage(10);
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                Writer output = new OutputStreamWriter(baos);
-                stripper.writeText(document, output);
-                textContent = new String(baos.toByteArray());
-                // content "" ;(
-            }
-            COSStream contentStream = document.getPage(0).getContentStream();
-            page0size = (int) contentStream.getFilteredLength();// was 2
-            // contentStream.size();
         }
         catch (Exception t)
         {
@@ -211,9 +189,16 @@ public class TestSymmetricKeyEncryption extends TestCase
         int numSrcPages = document.getNumberOfPages();
         PDFRenderer pdfRenderer = new PDFRenderer(document);
         ArrayList<BufferedImage> srcImgTab = new ArrayList<BufferedImage>();
+        ArrayList<ByteArrayOutputStream> srcContentStreamTab = new ArrayList<ByteArrayOutputStream>();
         for (int i = 0; i < numSrcPages; ++i)
         {
             srcImgTab.add(pdfRenderer.renderImage(i));
+            COSStream contentStream = document.getPage(i).getContentStream();
+            InputStream unfilteredStream = contentStream.getUnfilteredStream();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            IOUtils.copy(unfilteredStream, baos);
+            unfilteredStream.close();
+            srcContentStreamTab.add(baos);
         }
 
         PDDocument encryptedDoc = encrypt(keyLength, sizePriorToEncr, doc, "", permission);
@@ -230,38 +215,23 @@ public class TestSymmetricKeyEncryption extends TestCase
             pdfRenderer = new PDFRenderer(encryptedDoc);
             for (int i = 0; i < encryptedDoc.getNumberOfPages(); ++i)
             {
+                // compare content stream
                 BufferedImage bim = pdfRenderer.renderImage(i);
                 ValidateXImage.checkIdent(bim, srcImgTab.get(i));
+                
+                // compare content streams
+                COSStream contentStreamDecr = encryptedDoc.getPage(i).getContentStream();
+                InputStream unfilteredStream = contentStreamDecr.getUnfilteredStream();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                IOUtils.copy(unfilteredStream, baos);
+                unfilteredStream.close();
+                Assert.assertArrayEquals("content stream of page " + i + " not identical", 
+                        srcContentStreamTab.get(i).toByteArray(), 
+                        baos.toByteArray());            
             }
 
             File pdfFile = new File(testResultsDir, keyLength + "-bit-decrypted.pdf");
             encryptedDoc.save(pdfFile);
-            long sizeAfterDecr = pdfFile.length();
-            {
-                // for some reason, they are not identical :( 12263 vs 12418
-                // Assert.assertTrue(
-                // keyLength
-                // + "bit decrypted pdf should have same size as plain one",
-                // sizeAfterDecr == sizePriorToEncr);
-            }
-            // difference already at position 8
-            // for (int i = 0; i < 500 // byteArray.length
-            // ; i++) {
-            // byte b = byteArrayDecr[i];
-            // byte c = input[i];
-            // Assert.assertTrue(keyLength
-            // + "bit decrypted: character different in pos " +
-            // i+" of "+sizeAfterDecr,
-            // b == c);
-            // }
-            COSStream contentStreamDecr = encryptedDoc.getPage(0).getContentStream();
-            int decrSizePage0 = (int) contentStreamDecr.getFilteredLength();// was
-            // 2
-            // contentStream.size();
-            Assert.assertTrue(
-                    keyLength
-                    + "bit decrypted pdf page 0 should have same size as plain one",
-                    page0size == decrSizePage0);
 
             boolean canAssembleDocument = newPermission.canAssembleDocument();
             boolean canExtractContent = newPermission.canExtractContent();
@@ -306,9 +276,6 @@ public class TestSymmetricKeyEncryption extends TestCase
         Assert.assertTrue(keyLength
                 + "-bit encrypted pdf should not have same size as plain one",
                 sizeEncrypted != sizePriorToEncr);
-//        COSStream contentStream = encrypted.getPage(0).getContentStream();
-//        int encrPage0size = (int) contentStream.getFilteredLength();// was 2
-//                                                                    // contentStream.size();
 
         return encryptedDoc;
     }
