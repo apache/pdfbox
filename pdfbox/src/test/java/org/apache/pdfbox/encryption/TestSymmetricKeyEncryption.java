@@ -40,14 +40,12 @@ import org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.util.PDFTextStripper;
 import org.junit.Assert;
-import org.junit.Ignore;
 
 /**
  * Tests for public key encryption.
  *
  * @author Ralf Hauser
  */
-@Ignore
 public class TestSymmetricKeyEncryption extends TestCase
 {
     private final File testResultsDir = new File("target/test-output/crypto");
