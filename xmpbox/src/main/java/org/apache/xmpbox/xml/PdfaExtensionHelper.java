@@ -193,6 +193,11 @@ public final class PdfaExtensionHelper
                             }
                         }
                         // populate properties
+                        if (properties == null)
+                        {
+                            throw new XmpParsingException(ErrorType.RequiredProperty,
+                                    "Missing pdfaSchema:property in type definition");
+                        }
                         for (AbstractField af2 : properties.getAllProperties())
                         {
                             if (af2 instanceof PDFAPropertyType)
