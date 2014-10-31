@@ -89,12 +89,11 @@ public abstract class PDColorSpace implements COSObjectable
             }
             else if (resources != null)
             {
-                PDColorSpace cs = resources.getColorSpace(name);
-                if (cs == null)
+                if (!resources.hasColorSpace(name))
                 {
                     throw new MissingException("Missing color space: " + name.getName());
                 }
-                return cs;
+                return resources.getColorSpace(name);
             }
             else
             {
