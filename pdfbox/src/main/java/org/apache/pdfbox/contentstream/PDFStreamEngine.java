@@ -514,7 +514,7 @@ public class PDFStreamEngine
         if (rectangle != null)
         {
             PDRectangle clip = rectangle.transform(getGraphicsState().getCurrentTransformationMatrix());
-            getGraphicsState().intersectClippingPath(new Area(clip.toRectangle2D()));
+            getGraphicsState().intersectClippingPath(new Area(clip.toGeneralPath()));
         }
     }
 

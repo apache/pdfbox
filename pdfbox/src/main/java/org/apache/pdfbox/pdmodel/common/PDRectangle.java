@@ -16,8 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel.common;
 
+import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSFloat;
@@ -25,7 +25,6 @@ import org.apache.pdfbox.cos.COSNumber;
 
 import org.apache.fontbox.util.BoundingBox;
 
-import java.awt.Dimension;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -307,11 +306,22 @@ public class PDRectangle implements COSObjectable
     }
 
     /**
-     * Returns a new Rectangle2D which is equivalent to this PDRectangle.
+     * Returns a general path equivalent to this rectangle. This method avoids the problems
+     * caused by Rectangle2D not working well with -ve rectangles.
      */
-    public Rectangle2D toRectangle2D()
+    public GeneralPath toGeneralPath()
     {
-        return new Rectangle2D.Float(getLowerLeftX(), getLowerLeftY(), getWidth(), getHeight());
+        float x1 = getLowerLeftX();
+        float y1 = getLowerLeftY();
+        float x2 = getUpperRightX();
+        float y2 = getUpperRightY();
+        GeneralPath path = new GeneralPath();
+        path.moveTo(x1, y1);
+        path.lineTo(x2, y1);
+        path.lineTo(x2, y2);
+        path.lineTo(x1, y2);
+        path.closePath();
+        return path;
     }
 
     /**

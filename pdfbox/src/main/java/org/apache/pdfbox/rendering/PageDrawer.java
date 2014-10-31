@@ -826,7 +826,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // check underlying g2d
 
             Area groupClip = new Area(getGraphicsState().getCurrentClippingPath());
-            Area clippingPath = new Area(new GeneralPath(form.getBBox().toRectangle2D()));
+            Area clippingPath = new Area(form.getBBox().toGeneralPath());
             Area newArea = new Area(clippingPath);
             groupClip.intersect(newArea);
 

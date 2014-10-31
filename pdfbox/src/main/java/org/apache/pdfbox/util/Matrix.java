@@ -436,28 +436,6 @@ public class Matrix implements Cloneable
     }
 
     /**
-     * This will return a string representation of the matrix.
-     *
-     * @return The matrix as a string.
-     */
-    public String toString()
-    {
-        StringBuffer result = new StringBuffer( "" );
-        result.append( "[[" );
-        result.append( single[0] + "," );
-        result.append( single[1] + "," );
-        result.append( single[2] + "][");
-        result.append( single[3] + "," );
-        result.append( single[4] + "," );
-        result.append( single[5] + "][");
-        result.append( single[6] + "," );
-        result.append( single[7] + "," );
-        result.append( single[8] + "]]");
-
-        return result.toString();
-    }
-
-    /**
      * Get the xscaling factor of this matrix.
      * @return The x-scale.
      */
@@ -536,5 +514,19 @@ public class Matrix implements Cloneable
         array.add(new COSFloat(6));
         array.add(new COSFloat(7));
         return array;
+    }
+
+    @Override
+    public String toString()
+    {
+        StringBuffer sb = new StringBuffer( "" );
+        sb.append("[");
+        sb.append(single[0] + ",");
+        sb.append(single[1] + ",");
+        sb.append(single[3] + ",");
+        sb.append(single[4] + ",");
+        sb.append(single[6] + ",");
+        sb.append(single[7] + "]");
+        return sb.toString();
     }
 }
