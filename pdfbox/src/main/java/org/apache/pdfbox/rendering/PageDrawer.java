@@ -823,29 +823,25 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             Graphics2D g2dOriginal = graphics;
             Area lastClipOriginal = lastClip;
 
-            // check underlying g2d
+            // the current clipping path is already the group's (transformed) bbox
+            Area clip = new Area(getGraphicsState().getCurrentClippingPath());
 
-            Area groupClip = new Area(getGraphicsState().getCurrentClippingPath());
-            Area clippingPath = new Area(form.getBBox().toGeneralPath());
-            Area newArea = new Area(clippingPath);
-            groupClip.intersect(newArea);
+            // apply the underlying Graphics2D device's DPI transform
+            Shape deviceClip = xform.createTransformedShape(clip);
+            Rectangle2D bounds = deviceClip.getBounds2D();
 
-            AffineTransform at = g2dOriginal.getTransform();
-            Shape clippingPathInPixels = at.createTransformedShape(groupClip);
-            Rectangle2D bounds2D = clippingPathInPixels.getBounds2D();
-
-            minX = (int) Math.floor(bounds2D.getMinX());
-            minY = (int) Math.floor(bounds2D.getMinY());
-            int maxX = (int) Math.floor(bounds2D.getMaxX()) + 1;
-            int maxY = (int) Math.floor(bounds2D.getMaxY()) + 1;
+            minX = (int) Math.floor(bounds.getMinX());
+            minY = (int) Math.floor(bounds.getMinY());
+            int maxX = (int) Math.floor(bounds.getMaxX()) + 1;
+            int maxY = (int) Math.floor(bounds.getMaxY()) + 1;
 
             width = maxX - minX;
             height = maxY - minY;
             image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB); // FIXME - color space
             Graphics2D g = image.createGraphics();
             g.translate(-minX, -minY);
-            g.transform(at);
-            g.setClip(groupClip);
+            g.transform(xform);
+            g.setClip(clip);
 
             AffineTransform atInv;
             Matrix matrix1 = null;
