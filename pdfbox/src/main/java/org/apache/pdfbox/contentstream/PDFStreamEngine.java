@@ -478,6 +478,12 @@ public class PDFStreamEngine
         {
             resources = currentPage.getResources();
         }
+
+        // resources are required in PDF
+        if (resources == null)
+        {
+            resources = new PDResources();
+        }
         return parentResources;
     }
 
