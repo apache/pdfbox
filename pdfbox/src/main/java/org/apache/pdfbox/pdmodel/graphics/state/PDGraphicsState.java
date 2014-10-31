@@ -74,7 +74,7 @@ public class PDGraphicsState implements Cloneable
      */
     public PDGraphicsState(PDRectangle page)
     {
-        clippingPath = new Area(new GeneralPath(page.toRectangle2D()));
+        clippingPath = new Area(page.toGeneralPath());
     }
 
     /**
