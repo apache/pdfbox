@@ -269,7 +269,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
         catch (IOException e)
         {
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE,
-                    "Unable to read ICCBase color space. Caused by : " + e.getMessage()));
+                    "Unable to read ICCBase color space. Caused by : " + e.getMessage(), e));
         }
     }
 
@@ -328,7 +328,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
         catch (IOException e)
         {
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE,
-                    "Unable to read DeviceN color space : " + e.getMessage()));
+                    "Unable to read DeviceN color space : " + e.getMessage(), e));
         }
     }
 
@@ -395,7 +395,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
         catch (IOException e)
         {
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE,
-                    "Unable to read Separation color space : " + e.getMessage()));
+                    "Unable to read Separation color space : " + e.getMessage(), e));
         }
     }
 
@@ -438,7 +438,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
             catch (IOException e)
             {
                 context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE,
-                        "Unable to read default color space : " + e.getMessage()));
+                        "Unable to read default color space : " + e.getMessage(), e));
             }
 
             if (defaultCS != null)
