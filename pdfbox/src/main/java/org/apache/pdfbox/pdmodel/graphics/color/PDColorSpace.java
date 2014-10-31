@@ -71,6 +71,35 @@ public abstract class PDColorSpace implements COSObjectable
         {
             COSName name = (COSName)colorSpace;
 
+            // default color spaces
+            if (resources != null)
+            {
+                COSName defaultName = null;
+                if (name.equals(COSName.DEVICECMYK) &&
+                    resources.hasColorSpace(COSName.DEFAULT_CMYK))
+                {
+                    defaultName = COSName.DEFAULT_CMYK;
+                }
+                else if (name.equals(COSName.DEVICERGB) &&
+                         resources.hasColorSpace(COSName.DEFAULT_RGB))
+                {
+                    defaultName = COSName.DEFAULT_RGB;
+                }
+                else if (name.equals(COSName.DEVICEGRAY) &&
+                         resources.hasColorSpace(COSName.DEFAULT_GRAY))
+                {
+                    defaultName = COSName.DEFAULT_GRAY;
+                }
+
+                if (resources.hasColorSpace(defaultName))
+                {
+                    return resources.getColorSpace(defaultName);
+                }
+            }
+
+            // ---------------
+
+            // built-in color spaces
             if (name == COSName.DEVICECMYK || name == COSName.CMYK)
             {
                 return PDDeviceCMYK.INSTANCE;

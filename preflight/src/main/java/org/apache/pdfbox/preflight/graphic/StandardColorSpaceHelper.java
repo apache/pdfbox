@@ -419,15 +419,18 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
 
             try
             {
-                if (pdcs.getName().equals(ColorSpaces.DeviceCMYK.getLabel()))
+                if (pdcs.getName().equals(ColorSpaces.DeviceCMYK.getLabel()) &&
+                    resources.hasColorSpace(COSName.DEFAULT_CMYK))
                 {
                     defaultCS = resources.getColorSpace(COSName.DEFAULT_CMYK);
                 }
-                else if (pdcs.getName().equals(ColorSpaces.DeviceRGB.getLabel()))
+                else if (pdcs.getName().equals(ColorSpaces.DeviceRGB.getLabel()) &&
+                         resources.hasColorSpace(COSName.DEFAULT_RGB))
                 {
                     defaultCS = resources.getColorSpace(COSName.DEFAULT_RGB);
                 }
-                else if (pdcs.getName().equals(ColorSpaces.DeviceGray.getLabel()))
+                else if (pdcs.getName().equals(ColorSpaces.DeviceGray.getLabel()) &&
+                         resources.hasColorSpace(COSName.DEFAULT_GRAY))
                 {
                     defaultCS = resources.getColorSpace(COSName.DEFAULT_GRAY);
                 }
