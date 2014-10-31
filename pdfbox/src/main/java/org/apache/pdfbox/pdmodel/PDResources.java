@@ -108,18 +108,30 @@ public final class PDResources implements COSObjectable
             name = COSName.DEFAULT_RGB;
         }
         else if (name.equals(COSName.DEVICEGRAY) &&
-                 get(COSName.COLORSPACE, COSName.DEFAULT_RGB) != null)
+                 get(COSName.COLORSPACE, COSName.DEFAULT_GRAY) != null)
         {
             name = COSName.DEFAULT_GRAY;
         }
+        else if (name.equals(COSName.DEVICECMYK) ||
+                 name.equals(COSName.DEVICERGB) ||
+                 name.equals(COSName.DEVICEGRAY))
+        {
+            // built-in device color spaces
+            return PDColorSpace.create(name, this);
+        }
 
         COSBase object = get(COSName.COLORSPACE, name);
-        if (object == null)
+        if (object == null &&
+            name.equals(COSName.DEVICECMYK) ||
+            name.equals(COSName.DEVICERGB) ||
+            name.equals(COSName.DEVICEGRAY))
         {
+            // the named color space does not exist, but it's built-in
             return PDColorSpace.create(name, this);
         }
         else
         {
+            // finally handle named color spaces
             return PDColorSpace.create(object, this);
         }
     }
