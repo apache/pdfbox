@@ -264,7 +264,17 @@ public class PDFStreamEngine
 
         // note: we don't clip to the BBox as it is often wrong, see PDFBOX-1917
 
+        // save text matrices (Type 3 stream may contain BT/ET, see PDFBOX-2137)
+        Matrix textMatrixOld = textMatrix;
+        textMatrix = new Matrix();
+        Matrix textLineMatrixOld = textLineMatrix;
+        textLineMatrix = new Matrix();
+
         processStreamOperators(charProc);
+
+        // restore text matrices
+        textMatrix = textMatrixOld;
+        textLineMatrix = textLineMatrixOld;
 
         restoreGraphicsState();
         popResources(parent);
