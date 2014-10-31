@@ -36,7 +36,7 @@ public class SetStrokingDeviceCMYKColor extends SetStrokingColor
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
         PDColorSpace cs = context.getResources().getColorSpace(COSName.DEVICECMYK);
-        context.getGraphicsState().setNonStrokingColorSpace(cs);
+        context.getGraphicsState().setStrokingColorSpace(cs);
         super.process(operator, arguments);
     }
 
