@@ -116,9 +116,12 @@ public final class PDResources implements COSObjectable
         COSBase object = get(COSName.COLORSPACE, name);
         if (object == null)
         {
-            return null;
+            return PDColorSpace.create(name, this);
         }
-        return PDColorSpace.create(object, this);
+        else
+        {
+            return PDColorSpace.create(object, this);
+        }
     }
 
     /**
