@@ -96,7 +96,7 @@ public final class PDResources implements COSObjectable
      */
     public PDColorSpace getColorSpace(COSName name) throws IOException
     {
-        // check for default color spaces
+        // check for default color spaces - todo: move this into PDColorSpace.create?
         if (name.equals(COSName.DEVICECMYK) &&
             get(COSName.COLORSPACE, COSName.DEFAULT_CMYK) != null)
         {
@@ -120,20 +120,25 @@ public final class PDResources implements COSObjectable
             return PDColorSpace.create(name, this);
         }
 
+        // get the instance
         COSBase object = get(COSName.COLORSPACE, name);
-        if (object == null &&
-            name.equals(COSName.DEVICECMYK) ||
-            name.equals(COSName.DEVICERGB) ||
-            name.equals(COSName.DEVICEGRAY))
+        if (object != null)
         {
-            // the named color space does not exist, but it's built-in
-            return PDColorSpace.create(name, this);
+            return PDColorSpace.create(object, this);
         }
         else
         {
-            // finally handle named color spaces
-            return PDColorSpace.create(object, this);
+            return PDColorSpace.create(name, this);
         }
+    }
+
+    /**
+     * Returns true if the given color space name exists in these resources.
+     * @param name color space name
+     */
+    public boolean hasColorSpace(COSName name)
+    {
+        return get(COSName.COLORSPACE, name) != null;
     }
 
     /**
