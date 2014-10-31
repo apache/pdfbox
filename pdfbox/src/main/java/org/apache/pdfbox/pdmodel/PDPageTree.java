@@ -139,7 +139,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
 
         private void enqueueKids(COSDictionary node)
         {
-            if (node.getCOSName(COSName.TYPE) == COSName.PAGES)
+            if (isPageTreeNode(node))
             {
                 queue.addAll(getKids(node));
             }
@@ -173,7 +173,15 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
      */
     public PDPage get(int index)
     {
-        return new PDPage(get(index + 1, root, 0));
+        COSDictionary dict = get(index + 1, root, 0);
+
+        // sanity check
+        if (dict.getCOSName(COSName.TYPE) != COSName.PAGE)
+        {
+            throw new IllegalStateException("Expected Page but got " + dict);
+        }
+
+        return new PDPage(dict);
     }
 
     /**
@@ -191,7 +199,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
             throw new IndexOutOfBoundsException("Index out of bounds: " + pageNum);
         }
 
-        if (node.getCOSName(COSName.TYPE) == COSName.PAGES)
+        if (isPageTreeNode(node))
         {
             int count = node.getInt(COSName.COUNT, 0);
             if (pageNum <= encountered + count)
@@ -200,7 +208,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
                 for (COSDictionary kid : getKids(node))
                 {
                     // which kid?
-                    if (kid.getCOSName(COSName.TYPE) == COSName.PAGES)
+                    if (isPageTreeNode(kid))
                     {
                         int kidCount = kid.getInt(COSName.COUNT, 0);
                         if (pageNum <= encountered + kidCount)
@@ -246,6 +254,17 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
     }
 
     /**
+     * Returns true if the node is a page tree node (i.e. and intermediate).
+     */
+    private boolean isPageTreeNode(COSDictionary node )
+    {
+        // some files such as PDFBOX-2250-229205.pdf don't have Pages set as the Type, so we have
+        // to check for the presence of Kids too
+        return node.getCOSName(COSName.TYPE) == COSName.PAGES ||
+               node.containsKey(COSName.KIDS);
+    }
+
+    /**
      * Returns the index of the given page, or -1 if it does not exist.
      */
     public int indexOf(PDPage page)
@@ -254,7 +273,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
         COSDictionary node = page.getCOSObject();
         do
         {
-            if (node.getCOSName(COSName.TYPE) == COSName.PAGES)
+            if (isPageTreeNode(node))
             {
                 // count kids up until this node
                 for (COSDictionary kid : getKids(node))
