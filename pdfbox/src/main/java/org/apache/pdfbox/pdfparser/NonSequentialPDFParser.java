@@ -391,10 +391,20 @@ public class NonSequentialPDFParser extends PDFParser
             throw new IOException("Missing root object specification in trailer.");
         }
 
-        parseObjectDynamically(root, false);
+        COSBase rootObject = parseObjectDynamically(root, false);
 
-        // ---- resolve all objects (including pages)
-        if (!parseMinimalCatalog)
+        // ---- resolve all objects
+        if (isFDFDocment)
+        {
+        	// A FDF doesn't have a catalog, all FDF fields are within the root object
+            if (rootObject instanceof COSDictionary)
+            {
+                parseDictObjects((COSDictionary) rootObject, (COSName[]) null);
+                allPagesParsed = true;
+                document.setDecrypted();
+            }
+        }
+        else if(!parseMinimalCatalog)
         {
             COSObject catalogObj = document.getCatalog();
             if (catalogObj != null)
@@ -853,18 +863,21 @@ public class NonSequentialPDFParser extends PDFParser
                 initialParse();
             }
 
-            final int pageCount = getPageNumber();
-
-            if (!allPagesParsed)
+            // a FDF doesn't have any pages
+            if (!isFDFDocment)
             {
-                for (int pNr = 0; pNr < pageCount; pNr++)
-                {
-                    getPage(pNr);
-                }
-                allPagesParsed = true;
-                document.setDecrypted();
+	            final int pageCount = getPageNumber();
+	
+	            if (!allPagesParsed)
+	            {
+	                for (int pNr = 0; pNr < pageCount; pNr++)
+	                {
+	                    getPage(pNr);
+	                }
+	                allPagesParsed = true;
+	                document.setDecrypted();
+	            }
             }
-
             exceptionOccurred = false;
         }
         finally
