@@ -144,7 +144,7 @@ public final class PDAppearanceString
         List<Object> tokens = new ArrayList<Object>();
         if (appearanceStream != null)
         {
-            tokens = getStreamTokens(appearanceStream);
+            tokens = getStreamTokens(appearanceStream.getCOSStream());
         }
         return tokens;
     }
