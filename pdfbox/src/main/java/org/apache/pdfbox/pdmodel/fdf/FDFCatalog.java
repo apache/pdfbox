@@ -21,18 +21,15 @@ import java.io.Writer;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
-
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
-
 import org.w3c.dom.Element;
 
 /**
  * This represents an FDF catalog that is part of the FDF document.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.3 $
+ * @author Ben Litchfield
  */
 public class FDFCatalog implements COSObjectable
 {
@@ -109,7 +106,7 @@ public class FDFCatalog implements COSObjectable
      */
     public String getVersion()
     {
-        return catalog.getNameAsString( "Version" );
+        return catalog.getNameAsString( COSName.VERSION );
     }
 
     /**
@@ -119,7 +116,7 @@ public class FDFCatalog implements COSObjectable
      */
     public void setVersion( String version )
     {
-        catalog.setName( "Version", version );
+        catalog.setName( COSName.VERSION, version );
     }
 
     /**
@@ -129,7 +126,7 @@ public class FDFCatalog implements COSObjectable
      */
     public FDFDictionary getFDF()
     {
-        COSDictionary fdf = (COSDictionary)catalog.getDictionaryObject( "FDF" );
+        COSDictionary fdf = (COSDictionary)catalog.getDictionaryObject( COSName.FDF );
         FDFDictionary retval = null;
         if( fdf != null )
         {
@@ -150,7 +147,7 @@ public class FDFCatalog implements COSObjectable
      */
     public void setFDF( FDFDictionary fdf )
     {
-        catalog.setItem( "FDF", fdf );
+        catalog.setItem( COSName.FDF, fdf );
     }
 
     /**
@@ -161,7 +158,7 @@ public class FDFCatalog implements COSObjectable
     public PDSignature getSignature()
     {
         PDSignature signature = null;
-        COSDictionary sig = (COSDictionary)catalog.getDictionaryObject( "Sig" );
+        COSDictionary sig = (COSDictionary)catalog.getDictionaryObject( COSName.SIG );
         if( sig != null )
         {
             signature = new PDSignature( sig );
@@ -176,6 +173,6 @@ public class FDFCatalog implements COSObjectable
      */
     public void setSignature( PDSignature sig )
     {
-        catalog.setItem( "Sig", sig );
+        catalog.setItem( COSName.SIG, sig );
     }
 }

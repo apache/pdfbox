@@ -181,14 +181,14 @@ public abstract class FDFAnnotation implements COSObjectable
         FDFAnnotation retval = null;
         if( fdfDic != null )
         {
-	        if( FDFAnnotationText.SUBTYPE.equals( fdfDic.getNameAsString( COSName.SUBTYPE ) ) )
-	        {
-	            retval = new FDFAnnotationText( fdfDic );
-	        }
-	        else
-	        {
-	            LOG.warn("Unknown annotation type '" + fdfDic.getNameAsString( COSName.SUBTYPE ) + "'" );
-	        }
+        if( FDFAnnotationText.SUBTYPE.equals( fdfDic.getNameAsString( COSName.SUBTYPE ) ) )
+            {
+                retval = new FDFAnnotationText( fdfDic );
+            }
+            else
+            {
+                LOG.warn("Unknown annotation type '" + fdfDic.getNameAsString( COSName.SUBTYPE ) + "'" );
+            }
         }
         return retval;
     }

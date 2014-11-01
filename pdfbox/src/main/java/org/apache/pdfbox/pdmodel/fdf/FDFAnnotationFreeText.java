@@ -25,8 +25,7 @@ import org.w3c.dom.Element;
 /**
  * This represents a FreeText FDF annotation.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.1 $
+ * @author Ben Litchfield
  */
 public class FDFAnnotationFreeText extends FDFAnnotation
 {

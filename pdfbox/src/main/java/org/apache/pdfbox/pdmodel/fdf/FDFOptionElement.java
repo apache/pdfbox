@@ -26,8 +26,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
  * This represents an object that can be used in a Field's Opt entry to represent
  * an available option and a default appearance string.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.2 $
+ * @author Ben Litchfield
  */
 public class FDFOptionElement implements COSObjectable
 {

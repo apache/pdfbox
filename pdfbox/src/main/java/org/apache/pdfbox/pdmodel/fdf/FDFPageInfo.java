@@ -24,8 +24,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 /**
  * This represents an FDF page info that is part of the FDF page.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.2 $
+ * @author Ben Litchfield
  */
 public class FDFPageInfo implements COSObjectable
 {

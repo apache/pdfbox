@@ -48,8 +48,7 @@ import org.w3c.dom.NodeList;
 /**
  * This represents an FDF field that is part of the FDF document.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.5 $
+ * @author Ben Litchfield
  */
 public class FDFField implements COSObjectable
 {
@@ -180,7 +179,7 @@ public class FDFField implements COSObjectable
             {
                 actuals.add( new FDFField( (COSDictionary)kids.getObject( i ) ) );
             }
-            retval = new COSArrayList( actuals, kids );
+            retval = new COSArrayList<FDFField>( actuals, kids );
         }
         return retval;
     }
@@ -615,7 +614,7 @@ public class FDFField implements COSObjectable
     public FDFIconFit getIconFit()
     {
         FDFIconFit retval = null;
-        COSDictionary dic = (COSDictionary)field.getDictionaryObject( "IF" );
+        COSDictionary dic = (COSDictionary)field.getDictionaryObject( COSName.IF );
         if( dic != null )
         {
             retval = new FDFIconFit( dic );
@@ -630,7 +629,7 @@ public class FDFField implements COSObjectable
      */
     public void setIconFit( FDFIconFit fit )
     {
-        field.setItem( "IF", fit );
+        field.setItem( COSName.IF, fit );
     }
 
     /**
@@ -639,13 +638,13 @@ public class FDFField implements COSObjectable
      *
      * @return A list of all options.
      */
-    public List getOptions()
+    public List<Object> getOptions()
     {
-        List retval = null;
+        List<Object> retval = null;
         COSArray array = (COSArray)field.getDictionaryObject( COSName.OPT );
         if( array != null )
         {
-            List objects = new ArrayList();
+            List<Object> objects = new ArrayList<Object>();
             for( int i=0; i<array.size(); i++ )
             {
                 COSBase next = array.getObject( i );
@@ -659,7 +658,7 @@ public class FDFField implements COSObjectable
                     objects.add( new FDFOptionElement( value ) );
                 }
             }
-            retval = new COSArrayList( objects, array );
+            retval = new COSArrayList<Object>( objects, array );
         }
         return retval;
     }
@@ -670,7 +669,7 @@ public class FDFField implements COSObjectable
      *
      * @param options The options to set.
      */
-    public void setOptions( List options )
+    public void setOptions( List<Object> options )
     {
         COSArray value = COSArrayList.converterToCOSArray( options );
         field.setItem( COSName.OPT, value );
