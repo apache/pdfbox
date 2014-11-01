@@ -31,8 +31,7 @@ import org.w3c.dom.Text;
 /**
  * This class with handle some simple XML operations.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.3 $
+ * @author Ben Litchfield
  */
 final class XMLUtil
 {

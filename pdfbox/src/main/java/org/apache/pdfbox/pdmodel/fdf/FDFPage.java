@@ -22,15 +22,14 @@ import java.util.List;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 /**
  * This represents an FDF page that is part of the FDF document.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.3 $
+ * @author Ben Litchfield
  */
 public class FDFPage implements COSObjectable
 {
@@ -80,18 +79,18 @@ public class FDFPage implements COSObjectable
      *
      * @return A list of templates.
      */
-    public List getTemplates()
+    public List<FDFTemplate> getTemplates()
     {
-        List retval = null;
-        COSArray array = (COSArray)page.getDictionaryObject( "Templates" );
+        List<FDFTemplate> retval = null;
+        COSArray array = (COSArray)page.getDictionaryObject( COSName.TEMPLATES );
         if( array != null )
         {
-            List objects = new ArrayList();
+            List<FDFTemplate> objects = new ArrayList<FDFTemplate>();
             for( int i=0; i<array.size(); i++ )
             {
                 objects.add( new FDFTemplate( (COSDictionary)array.getObject( i ) ) );
             }
-            retval = new COSArrayList( objects, array );
+            retval = new COSArrayList<FDFTemplate>( objects, array );
         }
         return retval;
     }
@@ -101,9 +100,9 @@ public class FDFPage implements COSObjectable
      *
      * @param templates A list of templates for this Page.
      */
-    public void setTemplates( List templates )
+    public void setTemplates( List<FDFTemplate> templates )
     {
-        page.setItem( "Templates", COSArrayList.converterToCOSArray( templates ) );
+        page.setItem( COSName.TEMPLATES, COSArrayList.converterToCOSArray( templates ) );
     }
 
     /**
@@ -114,7 +113,7 @@ public class FDFPage implements COSObjectable
     public FDFPageInfo getPageInfo()
     {
         FDFPageInfo retval = null;
-        COSDictionary dict = (COSDictionary)page.getDictionaryObject( "Info" );
+        COSDictionary dict = (COSDictionary)page.getDictionaryObject( COSName.INFO );
         if( dict != null )
         {
             retval = new FDFPageInfo( dict );
@@ -129,6 +128,6 @@ public class FDFPage implements COSObjectable
      */
     public void setPageInfo( FDFPageInfo info )
     {
-        page.setItem( "Info", info );
+        page.setItem( COSName.INFO, info );
     }
 }

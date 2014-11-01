@@ -32,8 +32,7 @@ import org.apache.pdfbox.pdmodel.common.PDNamedTextStream;
 /**
  * This represents an FDF JavaScript dictionary that is part of the FDF document.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.4 $
+ * @author Ben Litchfield
  */
 public class FDFJavaScript implements COSObjectable
 {
@@ -84,7 +83,7 @@ public class FDFJavaScript implements COSObjectable
      */
     public PDTextStream getBefore()
     {
-        return PDTextStream.createTextStream( js.getDictionaryObject( "Before" ) );
+        return PDTextStream.createTextStream( js.getDictionaryObject( COSName.BEFORE ) );
     }
 
     /**
@@ -94,7 +93,7 @@ public class FDFJavaScript implements COSObjectable
      */
     public void setBefore( PDTextStream before )
     {
-        js.setItem( "Before", before );
+        js.setItem( COSName.BEFORE , before );
     }
 
     /**
@@ -104,7 +103,7 @@ public class FDFJavaScript implements COSObjectable
      */
     public PDTextStream getAfter()
     {
-        return PDTextStream.createTextStream( js.getDictionaryObject( "After" ) );
+        return PDTextStream.createTextStream( js.getDictionaryObject( COSName.AFTER ) );
     }
 
     /**
@@ -114,7 +113,7 @@ public class FDFJavaScript implements COSObjectable
      */
     public void setAfter( PDTextStream after )
     {
-        js.setItem( "After", after );
+        js.setItem( COSName.AFTER, after );
     }
 
     /**
@@ -124,14 +123,14 @@ public class FDFJavaScript implements COSObjectable
      *
      * @return A list of all named javascript entries.
      */
-    public List getNamedJavaScripts()
+    public List<PDNamedTextStream> getNamedJavaScripts()
     {
-        COSArray array = (COSArray)js.getDictionaryObject( "Doc" );
-        List namedStreams = new ArrayList();
+        COSArray array = (COSArray)js.getDictionaryObject( COSName.DOC );
+        List<PDNamedTextStream> namedStreams = new ArrayList<PDNamedTextStream>();
         if( array == null )
         {
             array = new COSArray();
-            js.setItem( "Doc", array );
+            js.setItem( COSName.DOC, array );
         }
         for( int i=0; i<array.size(); i++ )
         {
@@ -141,7 +140,7 @@ public class FDFJavaScript implements COSObjectable
             PDNamedTextStream namedStream = new PDNamedTextStream( name, stream );
             namedStreams.add( namedStream );
         }
-        return new COSArrayList( namedStreams, array );
+        return new COSArrayList<PDNamedTextStream>( namedStreams, array );
     }
 
     /**
@@ -149,9 +148,9 @@ public class FDFJavaScript implements COSObjectable
      *
      * @param namedStreams The named streams.
      */
-    public void setNamedJavaScripts( List namedStreams )
+    public void setNamedJavaScripts( List<PDNamedTextStream> namedStreams )
     {
         COSArray array = COSArrayList.converterToCOSArray( namedStreams );
-        js.setItem( "Doc", array );
+        js.setItem( COSName.DOC, array );
     }
 }
