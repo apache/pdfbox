@@ -358,6 +358,7 @@ public class PDAppearance
                             ContentStreamWriter writer = new ContentStreamWriter(output);
                             float fontSize = calculateFontSize(pdFont, appearanceStream.getBoundingBox(), tokens, null);
                             boolean foundString = false;
+                            int indexOfString = -1;
                             
                             // Don't replace the string content of the 
                             // current appearance stream value for a choice list PDFBOX-2249
@@ -376,12 +377,17 @@ public class PDAppearance
                                 //
                                 for (int i = 0; i < tokens.size(); i++)
                                 {
-                                    if (tokens.get(i) instanceof COSString)
+                                    Object token = tokens.get(i);
+                                    if (token instanceof COSString)
                                     {
                                         foundString = true;
-                                        COSString drawnString = ((COSString) tokens.get(i));
+                                        indexOfString = tokens.indexOf(token);
+                                        COSString drawnString = ((COSString) token);
                                         drawnString.reset();
                                         drawnString.append(apValue.getBytes("ISO-8859-1"));
+                                        // replace the first string only if the appearance stream 
+                                        // consists of more than one text
+                                        break;
                                     }
                                 }
                             }
@@ -390,7 +396,19 @@ public class PDAppearance
                             tokens.set(setFontIndex - 1, new COSFloat(fontSize));
                             if (foundString)
                             {
-                                writer.writeTokens(tokens);
+                                int indexOfET = tokens.indexOf(PDFOperator.getOperator("ET"));
+                                // the existing appearance stream may contain more than one text
+                                // so that we shall replace the first with the new value 
+                                // and skip the remaining parts
+                                if (indexOfString+2 != indexOfET)
+                                {
+                                    writer.writeTokens(tokens, 0, indexOfString+2);
+                                    writer.writeTokens(tokens, indexOfET, tokens.size());
+                                }
+                                else
+                                {
+                                    writer.writeTokens(tokens);
+                                }
                             }
                             else
                             {
@@ -930,14 +948,23 @@ public class PDAppearance
      * @throws IOException
      *             If there is an error getting the font height.
      */
-    private float calculateFontSize(PDFont pdFont, PDRectangle boundingBox, List tokens, List daTokens)
+    private float calculateFontSize(PDFont pdFont, PDRectangle boundingBox, List<Object> tokens, List<Object> daTokens)
             throws IOException
     {
         float fontSize = 0;
-        if (daTokens != null)
+        if (tokens != null)
+        {
+            // reuse the fontsize of an existing apperance stream
+            int fontIndex = tokens.indexOf(PDFOperator.getOperator("Tf"));
+            if (fontIndex != -1)
+            {
+                fontSize = ((COSNumber) tokens.get(fontIndex - 1)).floatValue();
+            }
+        }
+        else if (daTokens != null)
         {
             // daString looks like "BMC /Helv 3.4 Tf EMC"
-
+            // use the fontsize of the default existing apperance stream
             int fontIndex = daTokens.indexOf(PDFOperator.getOperator("Tf"));
             if (fontIndex != -1)
             {
