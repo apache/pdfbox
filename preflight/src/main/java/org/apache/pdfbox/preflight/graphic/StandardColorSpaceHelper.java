@@ -269,7 +269,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
         catch (IOException e)
         {
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE,
-                    "Unable to read ICCBase color space. Caused by : " + e.getMessage(), e));
+                    "Unable to read ICCBase color space. Caused by : " + e.getMessage()));
         }
     }
 
@@ -328,7 +328,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
         catch (IOException e)
         {
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE,
-                    "Unable to read DeviceN color space : " + e.getMessage(), e));
+                    "Unable to read DeviceN color space : " + e.getMessage()));
         }
     }
 
@@ -395,7 +395,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
         catch (IOException e)
         {
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE,
-                    "Unable to read Separation color space : " + e.getMessage(), e));
+                    "Unable to read Separation color space : " + e.getMessage()));
         }
     }
 
@@ -419,18 +419,15 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
 
             try
             {
-                if (pdcs.getName().equals(ColorSpaces.DeviceCMYK.getLabel()) &&
-                    resources.hasColorSpace(COSName.DEFAULT_CMYK))
+                if (pdcs.getName().equals(ColorSpaces.DeviceCMYK.getLabel()))
                 {
                     defaultCS = resources.getColorSpace(COSName.DEFAULT_CMYK);
                 }
-                else if (pdcs.getName().equals(ColorSpaces.DeviceRGB.getLabel()) &&
-                         resources.hasColorSpace(COSName.DEFAULT_RGB))
+                else if (pdcs.getName().equals(ColorSpaces.DeviceRGB.getLabel()))
                 {
                     defaultCS = resources.getColorSpace(COSName.DEFAULT_RGB);
                 }
-                else if (pdcs.getName().equals(ColorSpaces.DeviceGray.getLabel()) &&
-                         resources.hasColorSpace(COSName.DEFAULT_GRAY))
+                else if (pdcs.getName().equals(ColorSpaces.DeviceGray.getLabel()))
                 {
                     defaultCS = resources.getColorSpace(COSName.DEFAULT_GRAY);
                 }
@@ -438,7 +435,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
             catch (IOException e)
             {
                 context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE,
-                        "Unable to read default color space : " + e.getMessage(), e));
+                        "Unable to read default color space : " + e.getMessage()));
             }
 
             if (defaultCS != null)
