@@ -20,12 +20,13 @@ import java.awt.Color;
 import java.io.IOException;
 import java.util.Calendar;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
-
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
@@ -36,11 +37,12 @@ import org.w3c.dom.Element;
 /**
  * This represents an FDF annotation that is part of the FDF document.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.4 $
- */
+ * @author Ben Litchfield
+ * 
+ * */
 public abstract class FDFAnnotation implements COSObjectable
 {
+    private static final Log LOG = LogFactory.getLog(FDFAnnotation.class);
     /**
      * Annotation dictionary.
      */
@@ -52,7 +54,7 @@ public abstract class FDFAnnotation implements COSObjectable
     public FDFAnnotation()
     {
         annot = new COSDictionary();
-        annot.setName( "Type", "Annot" );
+        annot.setItem( COSName.TYPE, COSName.ANNOT );
     }
 
     /**
@@ -178,17 +180,16 @@ public abstract class FDFAnnotation implements COSObjectable
     public static FDFAnnotation create( COSDictionary fdfDic ) throws IOException
     {
         FDFAnnotation retval = null;
-        if( fdfDic == null )
+        if( fdfDic != null )
         {
-            //do nothing and return null
-        }
-        else if( FDFAnnotationText.SUBTYPE.equals( fdfDic.getNameAsString( COSName.SUBTYPE ) ) )
-        {
-            retval = new FDFAnnotationText( fdfDic );
-        }
-        else
-        {
-            throw new IOException( "Unknown annotation type '" + fdfDic.getNameAsString( COSName.SUBTYPE ) + "'" );
+	        if( FDFAnnotationText.SUBTYPE.equals( fdfDic.getNameAsString( COSName.SUBTYPE ) ) )
+	        {
+	            retval = new FDFAnnotationText( fdfDic );
+	        }
+	        else
+	        {
+	            LOG.warn("Unknown annotation type '" + fdfDic.getNameAsString( COSName.SUBTYPE ) + "'" );
+	        }
         }
         return retval;
     }
@@ -221,7 +222,7 @@ public abstract class FDFAnnotation implements COSObjectable
     public Integer getPage()
     {
         Integer retval = null;
-        COSNumber page = (COSNumber)annot.getDictionaryObject( "Page" );
+        COSNumber page = (COSNumber)annot.getDictionaryObject( COSName.PAGE );
         if( page != null )
         {
             retval = new Integer( page.intValue() );
@@ -283,7 +284,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public String getDate()
     {
-        return annot.getString( "date" );
+        return annot.getString( COSName.DATE );
     }
 
     /**
@@ -293,7 +294,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public void setDate( String date )
     {
-        annot.setString( "date", date );
+        annot.setString( COSName.DATE, date );
     }
 
     /**
@@ -519,7 +520,6 @@ public abstract class FDFAnnotation implements COSObjectable
         {
             retval = new PDRectangle( rectArray );
         }
-
         return retval;
     }
 
