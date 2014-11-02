@@ -219,18 +219,11 @@ public class PDFStreamEngine
         PDResources parent = pushResources(group);
         saveGraphicsState();
 
-        // transform the CTM using the stream's matrix (this is the FontMatrix)
+        // transform the CTM using the stream's matrix
         getGraphicsState().getCurrentTransformationMatrix().concatenate(group.getMatrix());
 
         // clip to bounding box
         clipToRect(group.getBBox());
-
-        // render into a normal opaque buffer
-        PDGraphicsState state = getGraphicsState();
-        state.setBlendMode(BlendMode.NORMAL);
-        state.setAlphaConstant(1.0);
-        state.setNonStrokeAlphaConstants(1.0);
-        state.setSoftMask(null);
 
         processStreamOperators(group);
 
