@@ -67,22 +67,6 @@ public class Type2CharString extends Type1CharString
     }
 
     /**
-     * Returns the advance width of this glyph.
-     */
-    public int getWidth()
-    {
-        int width = super.getWidth();
-        if (width == 0)
-        {
-            return defWidthX;
-        }
-        else
-        {
-            return width;
-        }
-    }
-
-    /**
      * Returns the Type 2 charstring sequence.
      */
     public List<Object> getType2Sequence()
