@@ -409,7 +409,7 @@ public class PDFParser extends BaseParser
         }
         else
         {
-        	isFDFDocment = true;
+            isFDFDocment = true;
             if (!header.matches(FDF_HEADER + "\\d.\\d"))
             {
                 if (header.length() < FDF_HEADER.length() + 3)
