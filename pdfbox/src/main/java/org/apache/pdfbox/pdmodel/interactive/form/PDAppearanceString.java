@@ -236,7 +236,8 @@ public final class PDAppearanceString
                 }
 
                 PDAppearanceEntry normalAppearance = appearance.getNormalAppearance();
-                PDAppearanceStream appearanceStream = normalAppearance.getAppearanceStream();
+                // TODO support more than one appearance stream
+                PDAppearanceStream appearanceStream = normalAppearance.isStream() ? normalAppearance.getAppearanceStream() : null;
                 if (appearanceStream == null)
                 {
                     COSStream cosStream = acroForm.getDocument().getDocument().createCOSStream();
