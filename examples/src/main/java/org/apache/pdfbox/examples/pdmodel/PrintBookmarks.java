@@ -16,16 +16,14 @@
  */
 package org.apache.pdfbox.examples.pdmodel;
 
-import org.apache.pdfbox.pdfparser.PDFParser;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineNode;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 
 /**
@@ -33,8 +31,8 @@ import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
  *
  * Usage: java org.apache.pdfbox.examples.pdmodel.PrintBookmarks &lt;input-pdf&gt;
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.2 $
+ * @author Ben Litchfield
+ * 
  */
 public class PrintBookmarks
 {
@@ -54,13 +52,9 @@ public class PrintBookmarks
         else
         {
             PDDocument document = null;
-            FileInputStream file = null;
             try
             {
-                file = new FileInputStream( args[0] );
-                PDFParser parser = new PDFParser( file );
-                parser.parse();
-                document = parser.getPDDocument();
+                document = PDDocument.load( args[0] );
                 if( document.isEncrypted() )
                 {
                     try
@@ -87,10 +81,6 @@ public class PrintBookmarks
             }
             finally
             {
-                if( file != null )
-                {
-                    file.close();
-                }
                 if( document != null )
                 {
                     document.close();

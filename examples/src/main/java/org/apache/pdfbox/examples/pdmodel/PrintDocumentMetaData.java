@@ -16,15 +16,12 @@
  */
 package org.apache.pdfbox.examples.pdmodel;
 
-import org.apache.pdfbox.pdfparser.PDFParser;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 
 import java.text.SimpleDateFormat;
@@ -37,8 +34,8 @@ import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
  *
  * Usage: java org.apache.pdfbox.examples.pdmodel.PrintDocumentMetaData &lt;input-pdf&gt;
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.11 $
+ * @author Ben Litchfield
+ * 
  */
 public class PrintDocumentMetaData
 {
@@ -58,13 +55,9 @@ public class PrintDocumentMetaData
         else
         {
             PDDocument document = null;
-            FileInputStream file = null;
             try
             {
-                file = new FileInputStream( args[0] );
-                PDFParser parser = new PDFParser( file );
-                parser.parse();
-                document = parser.getPDDocument();
+                document = PDDocument.load( args[0]);
                 if( document.isEncrypted() )
                 {
                     try
@@ -83,10 +76,6 @@ public class PrintDocumentMetaData
             }
             finally
             {
-                if( file != null )
-                {
-                    file.close();
-                }
                 if( document != null )
                 {
                     document.close();
