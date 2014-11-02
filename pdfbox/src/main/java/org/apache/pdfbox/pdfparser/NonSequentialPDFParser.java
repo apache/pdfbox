@@ -392,24 +392,24 @@ public class NonSequentialPDFParser extends PDFParser
      */
     protected void initialParse() throws IOException
     {
-    	COSDictionary trailer = null;
+        COSDictionary trailer = null;
         // ---- parse startxref
-    	long startXRefOffset = getStartxrefOffset();
-    	if (startXRefOffset > 0)
-    	{
-    		trailer = parseXref(startXRefOffset);
-    	}
-    	else if (isFDFDocment || isLenient)
-    	{
+        long startXRefOffset = getStartxrefOffset();
+        if (startXRefOffset > 0)
+        {
+            trailer = parseXref(startXRefOffset);
+        }
+        else if (isFDFDocment || isLenient)
+        {
             // signal start of new XRef
             xrefTrailerResolver.nextXrefObj( startXRefOffset, XRefType.TABLE );
-    		bfSearchForObjects();
-    		for (COSObjectKey objectKey : bfSearchCOSObjectKeyOffsets.keySet())
-    		{
-	            xrefTrailerResolver.setXRef(objectKey, bfSearchCOSObjectKeyOffsets.get(objectKey));
-    		}
+            bfSearchForObjects();
+            for (COSObjectKey objectKey : bfSearchCOSObjectKeyOffsets.keySet())
+            {
+                xrefTrailerResolver.setXRef(objectKey, bfSearchCOSObjectKeyOffsets.get(objectKey));
+            }
             // parse the last trailer.
-    		pdfSource.seek(trailerOffset);
+            pdfSource.seek(trailerOffset);
             if (!parseTrailer())
             {
                 throw new IOException("Expected trailer object at position: "
@@ -419,9 +419,9 @@ public class NonSequentialPDFParser extends PDFParser
             trailer = xrefTrailerResolver.getCurrentTrailer();
             document.setTrailer(trailer);
             document.setIsXRefStream(false);
-    	}
+        }
         // ---- prepare decryption if necessary
-    	prepareDecryption();
+        prepareDecryption();
 
         // PDFBOX-1557 - ensure that all COSObject are loaded in the trailer
         // PDFBOX-1606 - after securityHandler has been instantiated
@@ -446,7 +446,7 @@ public class NonSequentialPDFParser extends PDFParser
         // ---- resolve all objects
         if (isFDFDocment)
         {
-        	// A FDF doesn't have a catalog, all FDF fields are within the root object
+            // A FDF doesn't have a catalog, all FDF fields are within the root object
             if (rootObject instanceof COSDictionary)
             {
                 parseDictObjects((COSDictionary) rootObject, (COSName[]) null);
@@ -762,35 +762,35 @@ public class NonSequentialPDFParser extends PDFParser
 
         if (bufOff < 0)
         {
-        	if (isLenient) 
-        	{
-        		// in lenient mode the '%%EOF' isn't needed
-        		bufOff = buf.length;
-        		LOG.debug("Missing end of file marker '" + (new String(EOF_MARKER)) + "'");
-        	} 
-        	else 
-        	{
-        		throw new IOException("Missing end of file marker '" + (new String(EOF_MARKER)) + "'");
-        	}
+            if (isLenient) 
+            {
+                // in lenient mode the '%%EOF' isn't needed
+                bufOff = buf.length;
+                LOG.debug("Missing end of file marker '" + (new String(EOF_MARKER)) + "'");
+            } 
+            else 
+            {
+                throw new IOException("Missing end of file marker '" + (new String(EOF_MARKER)) + "'");
+            }
         }
         // ---- find last startxref preceding EOF marker
         bufOff = lastIndexOf(STARTXREF_MARKER, buf, bufOff);
 
         if (bufOff < 0)
         {
-        	if (isLenient) 
-        	{
+            if (isLenient) 
+            {
                 trailerOffset = lastIndexOf(TRAILER_MARKER, buf, buf.length);
                 if (trailerOffset > 0)
                 {
-                	trailerOffset += skipBytes;
+                    trailerOffset += skipBytes;
                 }
-        		return -1;
-        	}
-        	else
-        	{
-        		throw new IOException("Missing 'startxref' marker.");
-        	}
+                return -1;
+            }
+            else
+            {
+                throw new IOException("Missing 'startxref' marker.");
+            }
         }
         return skipBytes + bufOff;
     }
@@ -916,17 +916,17 @@ public class NonSequentialPDFParser extends PDFParser
             // a FDF doesn't have any pages
             if (!isFDFDocment)
             {
-	            final int pageCount = getPageNumber();
-	
-	            if (!allPagesParsed)
-	            {
-	                for (int pNr = 0; pNr < pageCount; pNr++)
-	                {
-	                    getPage(pNr);
-	                }
-	                allPagesParsed = true;
-	                document.setDecrypted();
-	            }
+                final int pageCount = getPageNumber();
+
+                if (!allPagesParsed)
+                {
+                    for (int pNr = 0; pNr < pageCount; pNr++)
+                    {
+                        getPage(pNr);
+                    }
+                    allPagesParsed = true;
+                    document.setDecrypted();
+                }
             }
             exceptionOccurred = false;
         }
