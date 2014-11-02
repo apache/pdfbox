@@ -125,14 +125,21 @@ public class FDFField implements COSObjectable
     {
         output.write( "<field name=\"" + getPartialFieldName() + "\">\n");
         Object value = getValue();
-        if( value != null )
+        if( value != null)
         {
-            output.write( "<value>" + value + "</value>\n" );
+            if (value instanceof String)
+            {
+                output.write( "<value>" + escapeXML((String)value) + "</value>\n" );
+            }
+            else if (value instanceof PDTextStream)
+            {
+                output.write( "<value>" + escapeXML(((PDTextStream)value).getAsString()) + "</value>\n" );
+            }
         }
         PDTextStream rt = getRichText();
         if( rt != null )
         {
-            output.write( "<value-richtext>" + rt.getAsString() + "</value-richtext>\n" );
+            output.write( "<value-richtext>" + escapeXML(rt.getAsString()) + "</value-richtext>\n" );
         }
         List<FDFField> kids = getKids();
         if( kids != null )
@@ -745,5 +752,49 @@ public class FDFField implements COSObjectable
     public void setRichText( PDTextStream rv )
     {
         field.setItem( COSName.RV, rv );
+    }
+    
+    /**
+     * Escape special characters.
+     * 
+     * @param input the string to be escaped
+     * 
+     * @return the resulting string
+     */
+    private String escapeXML(String input)
+    {
+        StringBuilder escapedXML = new StringBuilder();
+        for (int i = 0; i < input.length(); i++)
+        {
+            char c = input.charAt(i);
+            switch (c)
+            {
+            case '<':
+                escapedXML.append("&lt;");
+                break;
+            case '>':
+                escapedXML.append("&gt;");
+                break;
+            case '\"':
+                escapedXML.append("&quot;");
+                break;
+            case '&':
+                escapedXML.append("&amp;");
+                break;
+            case '\'':
+                escapedXML.append("&apos;");
+                break;
+            default:
+                if (c > 0x7e)
+                {
+                    escapedXML.append("&#" + ((int) c) + ";");
+                }
+                else
+                {
+                    escapedXML.append(c);
+                }
+            }
+        }
+        return escapedXML.toString();
     }
 }
