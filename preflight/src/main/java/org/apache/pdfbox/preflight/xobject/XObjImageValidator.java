@@ -129,10 +129,10 @@ public class XObjImageValidator extends AbstractXObjValidator
             }
 
             Integer bitsPerCompValue = COSUtils.getAsInteger(bitsPerComp, cosDocument);
-            if (bitsPerCompValue != 1)
+            if (bitsPerCompValue != null && bitsPerCompValue != 1)
             {
                 context.addValidationError(new ValidationError(ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY,
-                        "ImageMask entry is true, BitsPerComponent must be 1."));
+                        "ImageMask entry is true, BitsPerComponent must be absent or 1."));
             }
 
         }
