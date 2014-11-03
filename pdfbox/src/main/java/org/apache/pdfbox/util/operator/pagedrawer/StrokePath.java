@@ -44,6 +44,6 @@ public class StrokePath extends OperatorProcessor
      */
     public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
-    	((PageDrawer)context).strokePath();
+        ((PageDrawer)context).strokePath();
     }
 }

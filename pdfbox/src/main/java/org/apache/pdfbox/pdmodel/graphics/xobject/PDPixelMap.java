@@ -376,7 +376,7 @@ public class PDPixelMap extends PDXObjectImage
     
  
 
-	/**
+    /**
      * Writes the image as .png.
      *
      * {@inheritDoc}

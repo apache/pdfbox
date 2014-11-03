@@ -419,7 +419,7 @@ public class PDFParser extends BaseParser
         }
         else
         {
-        	isFDFDocment = true;
+            isFDFDocment = true;
             if (!header.matches(FDF_HEADER + "\\d.\\d"))
             {
                 if (header.length() < FDF_HEADER.length() + 3)
@@ -1078,17 +1078,18 @@ public class PDFParser extends BaseParser
      * {@inheritDoc}
      */
     @Override
-    public void clearResources() {
-    	super.clearResources();
-    	if (conflictList != null)
-    	{
-    		conflictList.clear();
-    		conflictList = null;
-    	}
-    	if (xrefTrailerResolver != null)
-    	{
-    		xrefTrailerResolver.clearResources();
-    		xrefTrailerResolver = null;
-    	}
+    public void clearResources()
+    {
+        super.clearResources();
+        if (conflictList != null)
+        {
+            conflictList.clear();
+            conflictList = null;
+        }
+        if (xrefTrailerResolver != null)
+        {
+            xrefTrailerResolver.clearResources();
+            xrefTrailerResolver = null;
+        }
     }
 }

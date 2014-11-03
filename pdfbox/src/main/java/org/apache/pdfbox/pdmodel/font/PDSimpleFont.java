@@ -412,22 +412,22 @@ public abstract class PDSimpleFont extends PDFont
 
         if (cmap == null && cmapName != null) 
         {
-        	InputStream cmapStream = null;
+            InputStream cmapStream = null;
             try 
             {
                 // look for a predefined CMap with the given name
                 cmapStream = ResourceLoader.loadResource(resourceRootCMAP + cmapName);
                 if (cmapStream != null)
                 {
-                	cmap = parseCmap(resourceRootCMAP, cmapStream);
-                	if (cmap == null && encodingName == null)
-                	{
-                		LOG.error("Error: Could not parse predefined CMAP file for '" + cmapName + "'");
-                	}
+                    cmap = parseCmap(resourceRootCMAP, cmapStream);
+                    if (cmap == null && encodingName == null)
+                    {
+                        LOG.error("Error: Could not parse predefined CMAP file for '" + cmapName + "'");
+                    }
                 }
                 else
                 {
-            		LOG.debug("Debug: '" + cmapName + "' isn't a predefined map, most likely it's embedded in the pdf itself.");
+                    LOG.debug("Debug: '" + cmapName + "' isn't a predefined map, most likely it's embedded in the pdf itself.");
                 }
             }
             catch(IOException exception) 
@@ -436,7 +436,7 @@ public abstract class PDSimpleFont extends PDFont
             }
             finally
             {
-            	IOUtils.closeQuietly(cmapStream);
+                IOUtils.closeQuietly(cmapStream);
             }
         }
     }

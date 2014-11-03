@@ -53,8 +53,7 @@ public class PushBackInputStream extends java.io.PushbackInputStream
             throw new IOException( "Error: input was null" );
         }
         
-        raInput = ( input instanceof RandomAccessRead ) ?
-										(RandomAccessRead) input : null;
+        raInput = (input instanceof RandomAccessRead) ? (RandomAccessRead) input : null;
     }
 
     /**
@@ -219,19 +218,20 @@ public class PushBackInputStream extends java.io.PushbackInputStream
      */
     public void seek( long newOffset ) throws IOException
     {
-    	if ( raInput == null )
-    			throw new IOException( "Provided stream of type " + in.getClass().getSimpleName() +
-    													 	 " is not seekable." );
-    	
-    	// clear unread buffer by skipping over all bytes of buffer
-    	int unreadLength = buf.length - pos;
-    	if ( unreadLength > 0 )
-    	{
-    			skip( unreadLength );
-    	}
-    	
-    	raInput.seek( newOffset );
-    	offset = newOffset;
+        if (raInput == null)
+        {
+            throw new IOException("Provided stream of type " + in.getClass().getSimpleName() + " is not seekable.");
+        }
+        
+        // clear unread buffer by skipping over all bytes of buffer
+        int unreadLength = buf.length - pos;
+        if (unreadLength > 0)
+        {
+            skip(unreadLength);
+        }
+
+        raInput.seek(newOffset);
+        offset = newOffset;
     }
 
 }

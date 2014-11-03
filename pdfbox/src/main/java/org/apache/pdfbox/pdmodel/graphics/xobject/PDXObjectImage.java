@@ -159,14 +159,14 @@ public abstract class PDXObjectImage extends PDXObject
             BufferedImage smaskBI = smask.getRGBImage();
             if (smaskBI != null)
             {
-	            COSArray decodeArray = smask.getDecode();
-	            CompositeImage compositeImage = new CompositeImage(baseImage, smaskBI);
-	            BufferedImage rgbImage = compositeImage.createMaskedImage(decodeArray);
-	            return rgbImage;
+                COSArray decodeArray = smask.getDecode();
+                CompositeImage compositeImage = new CompositeImage(baseImage, smaskBI);
+                BufferedImage rgbImage = compositeImage.createMaskedImage(decodeArray);
+                return rgbImage;
             }
             else
             {
-            	// this may happen if the smask is somehow broken, e.g. unsupported filter
+                // this may happen if the smask is somehow broken, e.g. unsupported filter
                 LOG.warn("masking getRGBImage returned NULL");
             }
         }
@@ -175,13 +175,14 @@ public abstract class PDXObjectImage extends PDXObject
     
     public boolean hasMask() throws IOException
     {
-    	return getImageMask() || getMask() != null || getSMaskImage() != null;
+        return getImageMask() || getMask() != null || getSMaskImage() != null;
     }
     
     
     public BufferedImage imageMask(BufferedImage baseImage) throws IOException 
     {
-    	BufferedImage stencilMask = new BufferedImage(baseImage.getWidth(), baseImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        BufferedImage stencilMask = new BufferedImage(baseImage.getWidth(), baseImage.getHeight(),
+                BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics = (Graphics2D)stencilMask.getGraphics();
         if (getStencilColor() != null)
         {
@@ -211,26 +212,28 @@ public abstract class PDXObjectImage extends PDXObject
     }
     
     public BufferedImage mask(BufferedImage baseImage) 
-    	throws IOException
+            throws IOException
     {
         COSBase mask = getMask();
         if (mask instanceof COSStream)
         {
-        	PDXObjectImage maskImageRef = (PDXObjectImage)PDXObject.createXObject((COSStream)mask);
-        	BufferedImage maskImage = maskImageRef.getRGBImage();
-       	 	if(maskImage == null)
-       	 	{
-    	   		 LOG.warn("masking getRGBImage returned NULL");
-    	   		 return baseImage;
-       	 	}
-       	 
-    	   	 BufferedImage newImage = new BufferedImage( maskImage.getWidth(), maskImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
-    	   	 Graphics2D graphics = (Graphics2D)newImage.getGraphics();
-    	   	 graphics.drawImage(baseImage, 0, 0, maskImage.getWidth(), maskImage.getHeight(), 0, 0, baseImage.getWidth(), baseImage.getHeight(), null);   
-    	   	 graphics.setComposite(AlphaComposite.DstIn);
-    	   	 graphics.drawImage(maskImage, null, 0, 0);
-    	   	 graphics.dispose();
-    	   	 return newImage;
+            PDXObjectImage maskImageRef = (PDXObjectImage) PDXObject.createXObject((COSStream) mask);
+            BufferedImage maskImage = maskImageRef.getRGBImage();
+            if (maskImage == null)
+            {
+                LOG.warn("masking getRGBImage returned NULL");
+                return baseImage;
+            }
+
+            BufferedImage newImage = new BufferedImage(maskImage.getWidth(), maskImage.getHeight(),
+                    BufferedImage.TYPE_INT_ARGB);
+            Graphics2D graphics = (Graphics2D) newImage.getGraphics();
+            graphics.drawImage(baseImage, 0, 0, maskImage.getWidth(), maskImage.getHeight(), 0, 0,
+                    baseImage.getWidth(), baseImage.getHeight(), null);
+            graphics.setComposite(AlphaComposite.DstIn);
+            graphics.drawImage(maskImage, null, 0, 0);
+            graphics.dispose();
+            return newImage;
         }
         else
         {

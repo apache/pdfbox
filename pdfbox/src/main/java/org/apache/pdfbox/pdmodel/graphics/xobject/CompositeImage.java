@@ -121,15 +121,15 @@ public class CompositeImage
      */
     public BufferedImage createStencilMaskedImage(COSArray decodeArray)
     {
-    	// default: 0 (black) == opaque
+        // default: 0 (black) == opaque
         int alphaValue = 0;
         if (decodeArray != null)
         {
-        	// invert the stencil mask: 1 (white) == opaque
+            // invert the stencil mask: 1 (white) == opaque
             alphaValue = decodeArray.getInt(0) > decodeArray.getInt(1) ? 1 : 0;
         }
 
-    	final int baseImageWidth = baseImage.getWidth();
+        final int baseImageWidth = baseImage.getWidth();
         final int baseImageHeight = baseImage.getHeight();
         WritableRaster maskRaster = smaskImage.getRaster();
         BufferedImage result = new BufferedImage(baseImageWidth, baseImageHeight, BufferedImage.TYPE_INT_ARGB);

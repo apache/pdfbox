@@ -32,7 +32,7 @@ import org.apache.pdfbox.util.PDFOperator;
  */
 public class GRestore extends OperatorProcessor
 {
-	
+
     /**
      * Log instance.
      */

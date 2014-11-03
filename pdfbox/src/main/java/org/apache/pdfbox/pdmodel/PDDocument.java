@@ -1537,24 +1537,24 @@ public class PDDocument implements Pageable, Closeable
      */
     public void close() throws IOException
     {
-    	documentCatalog = null;
-    	documentInformation = null;
-    	encParameters = null;
-    	if (pageMap != null)
-    	{
-    		pageMap.clear();
-    		pageMap = null;
-    	}
-    	securityHandler = null;
-    	if (document != null)
-    	{
-	        document.close();
-	        document = null;
-    	}
+        documentCatalog = null;
+        documentInformation = null;
+        encParameters = null;
+        if (pageMap != null)
+        {
+            pageMap.clear();
+            pageMap = null;
+        }
+        securityHandler = null;
+        if (document != null)
+        {
+            document.close();
+            document = null;
+        }
         if (parser != null)
         {
-        	parser.clearResources();
-        	parser = null;
+            parser.clearResources();
+            parser = null;
         }
     }
 

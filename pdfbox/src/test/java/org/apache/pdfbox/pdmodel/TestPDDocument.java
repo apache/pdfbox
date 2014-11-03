@@ -46,11 +46,11 @@ public class TestPDDocument extends TestCase
 
     private byte[] copyOfRange(byte[] array, int from, int to)
     {
-    	// java5 backport of java6-only Arrays.copyOfRange
-    	int length = to-from;
-    	byte[] subArray = new byte[length];
-    	System.arraycopy(array, from, subArray, 0, length);
-    	return subArray;
+        // java5 backport of java6-only Arrays.copyOfRange
+        int length = to - from;
+        byte[] subArray = new byte[length];
+        System.arraycopy(array, from, subArray, 0, length);
+        return subArray;
     }
     /**
      * Test document save/load using a stream.

@@ -63,12 +63,18 @@ public class COSStream extends COSDictionary implements Closeable
      */
     private RandomAccessFileOutputStream unFilteredStream;
 
-    private RandomAccess clone (RandomAccess file) {
-        if (file == null) {
+    private RandomAccess clone(RandomAccess file)
+    {
+        if (file == null)
+        {
             return null;
-        } else if (file instanceof RandomAccessFile) {
+        }
+        else if (file instanceof RandomAccessFile)
+        {
             return file;
-        } else {
+        }
+        else
+        {
             return ((RandomAccessBuffer)file).clone();
         }
     }
@@ -340,7 +346,7 @@ public class COSStream extends COSDictionary implements Closeable
                 {
                     input = new BufferedInputStream(
                         new RandomAccessFileInputStream( file, position, length ), BUFFER_SIZE );
-                	IOUtils.closeQuietly(unFilteredStream);
+                    IOUtils.closeQuietly(unFilteredStream);
                     unFilteredStream = new RandomAccessFileOutputStream( file );
                     filter.decode( input, unFilteredStream, this, filterIndex );
                     done = true;
@@ -352,7 +358,7 @@ public class COSStream extends COSDictionary implements Closeable
                 }
                 finally
                 {
-                	IOUtils.closeQuietly(input);
+                    IOUtils.closeQuietly(input);
                 }
             }
             if( !done )
@@ -368,7 +374,7 @@ public class COSStream extends COSDictionary implements Closeable
                     {
                         input = new BufferedInputStream(
                             new RandomAccessFileInputStream( file, position, length ), BUFFER_SIZE );
-                    	IOUtils.closeQuietly(unFilteredStream);
+                        IOUtils.closeQuietly(unFilteredStream);
                         unFilteredStream = new RandomAccessFileOutputStream( file );
                         filter.decode( input, unFilteredStream, this, filterIndex );
                         done = true;
@@ -380,7 +386,7 @@ public class COSStream extends COSDictionary implements Closeable
                     }
                     finally
                     {
-                    	IOUtils.closeQuietly(input);
+                        IOUtils.closeQuietly(input);
                     }
                 }
             }
@@ -468,9 +474,9 @@ public class COSStream extends COSDictionary implements Closeable
      */
     public OutputStream createFilteredStream() throws IOException
     {
-    	IOUtils.closeQuietly(unFilteredStream);
-    	unFilteredStream = null;
-    	IOUtils.closeQuietly(filteredStream);
+        IOUtils.closeQuietly(unFilteredStream);
+        unFilteredStream = null;
+        IOUtils.closeQuietly(filteredStream);
         filteredStream = new RandomAccessFileOutputStream( file );
         return new BufferedOutputStream( filteredStream, BUFFER_SIZE );
     }
@@ -488,9 +494,9 @@ public class COSStream extends COSDictionary implements Closeable
      */
     public OutputStream createFilteredStream( COSBase expectedLength ) throws IOException
     {
-      	IOUtils.closeQuietly(unFilteredStream);
-       	unFilteredStream = null;
-    	IOUtils.closeQuietly(filteredStream);
+        IOUtils.closeQuietly(unFilteredStream);
+        unFilteredStream = null;
+        IOUtils.closeQuietly(filteredStream);
         filteredStream = new RandomAccessFileOutputStream( file );
         filteredStream.setExpectedLength( expectedLength );
         return new BufferedOutputStream( filteredStream, BUFFER_SIZE );
@@ -507,7 +513,7 @@ public class COSStream extends COSDictionary implements Closeable
     {
         setItem(COSName.FILTER, filters);
         // kill cached filtered streams
-    	IOUtils.closeQuietly(filteredStream);
+        IOUtils.closeQuietly(filteredStream);
         filteredStream = null;
     }
 
@@ -522,33 +528,33 @@ public class COSStream extends COSDictionary implements Closeable
     {
         IOUtils.closeQuietly(filteredStream);
         filteredStream = null;
-    	IOUtils.closeQuietly(unFilteredStream);
+        IOUtils.closeQuietly(unFilteredStream);
         unFilteredStream = new RandomAccessFileOutputStream( file );
         return new BufferedOutputStream( unFilteredStream, BUFFER_SIZE );
     }
     
     public void close()
     {
-    	try
-    	{
-    		if (file != null)
-    		{
-    			file.close();
-    			file = null;
-    		}
-    	}
-    	catch (IOException exception)
-    	{
-    		LOG.error("Exception occured when closing the file.", exception);
-    	}
-    	if (filteredStream != null)
-    	{
-    		IOUtils.closeQuietly(filteredStream);
-    	}
-    	if (unFilteredStream != null)
-    	{
-    		IOUtils.closeQuietly(unFilteredStream);
-    	}
-    	clear();
+        try
+        {
+            if (file != null)
+            {
+                file.close();
+                file = null;
+            }
+        }
+        catch (IOException exception)
+        {
+            LOG.error("Exception occured when closing the file.", exception);
+        }
+        if (filteredStream != null)
+        {
+            IOUtils.closeQuietly(filteredStream);
+        }
+        if (unFilteredStream != null)
+        {
+            IOUtils.closeQuietly(unFilteredStream);
+        }
+        clear();
     }
 }
