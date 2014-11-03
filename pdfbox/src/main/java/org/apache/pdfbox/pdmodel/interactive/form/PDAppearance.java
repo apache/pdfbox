@@ -915,8 +915,6 @@ public class PDAppearance
             }
         }
         
-        System.out.println(fontSize + " " + daTokens);
-        
         float widthBasedFontSize = Float.MAX_VALUE;
 
         if (parent.doNotScroll())
