@@ -97,7 +97,6 @@ public final class PDAppearanceString
      */
     private COSString getDefaultAppearance()
     {
-
         COSString dap = parent.getDefaultAppearance();
         if (dap == null)
         {
@@ -151,13 +150,11 @@ public final class PDAppearanceString
 
     private List<Object> getStreamTokens(COSString string) throws IOException
     {
-        PDFStreamParser parser;
-
         List<Object> tokens = new ArrayList<Object>();
         if (string != null)
         {
             ByteArrayInputStream stream = new ByteArrayInputStream(string.getBytes());
-            parser = new PDFStreamParser(stream);
+            PDFStreamParser parser = new PDFStreamParser(stream);
             parser.parse();
             tokens = parser.getTokens();
         }
@@ -166,12 +163,10 @@ public final class PDAppearanceString
 
     private List<Object> getStreamTokens(COSStream stream) throws IOException
     {
-        PDFStreamParser parser;
-
         List<Object> tokens = new ArrayList<Object>();
         if (stream != null)
         {
-            parser = new PDFStreamParser(stream);
+            PDFStreamParser parser = new PDFStreamParser(stream);
             parser.parse();
             tokens = parser.getTokens();
         }
@@ -237,7 +232,8 @@ public final class PDAppearanceString
 
                 PDAppearanceEntry normalAppearance = appearance.getNormalAppearance();
                 // TODO support more than one appearance stream
-                PDAppearanceStream appearanceStream = normalAppearance.isStream() ? normalAppearance.getAppearanceStream() : null;
+                PDAppearanceStream appearanceStream = 
+                        normalAppearance.isStream() ? normalAppearance.getAppearanceStream() : null;
                 if (appearanceStream == null)
                 {
                     COSStream cosStream = acroForm.getDocument().getDocument().createCOSStream();
@@ -254,13 +250,11 @@ public final class PDAppearanceString
                 if (!containsMarkedContent(tokens))
                 {
                     ByteArrayOutputStream output = new ByteArrayOutputStream();
-
                     // BJL 9/25/2004 Must prepend existing stream
                     // because it might have operators to draw things like
                     // rectangles and such
                     ContentStreamWriter writer = new ContentStreamWriter(output);
                     writer.writeTokens(tokens);
-
                     output.write(" /Tx BMC\n".getBytes("ISO-8859-1"));
                     insertGeneratedAppearance(widget, output, pdFont, tokens, appearanceStream);
                     output.write(" EMC".getBytes("ISO-8859-1"));
@@ -285,7 +279,6 @@ public final class PDAppearanceString
                         ContentStreamWriter writer = new ContentStreamWriter(output);
                         float fontSize = calculateFontSize(pdFont,
                                 appearanceStream.getBBox(), tokens, daTokens);
-                        int indexOfString = -1;
                         int setFontIndex = tokens.indexOf(Operator.getOperator("Tf"));
                         tokens.set(setFontIndex - 1, new COSFloat(fontSize));
 
@@ -307,7 +300,6 @@ public final class PDAppearanceString
                             writer.writeTokens(tokens, emcIndex, tokens.size());
                         }
                         writeToStream(output.toByteArray(), appearanceStream);
-
                     }
                     else
                     {
@@ -388,7 +380,6 @@ public final class PDAppearanceString
         else if (q == PDTextField.QUADDING_RIGHT)
         {
             leftOffset = boundingBox.getWidth() - stringWidth - paddingRight;
-
         }
         else
         {
@@ -455,9 +446,9 @@ public final class PDAppearanceString
         return retval;
     }
 
-    private boolean isMultiLineValue(String value)
+    private boolean isMultiLineValue(String multiLineValue)
     {
-        return (parent.isMultiline() && value.contains("\n"));
+        return (parent.isMultiline() && multiLineValue.contains("\n"));
     }
 
     /**
@@ -479,7 +470,6 @@ public final class PDAppearanceString
      */
     private float getLineWidth(List<Object> tokens)
     {
-
         float retval = 1;
         if (tokens != null)
         {
@@ -517,7 +507,6 @@ public final class PDAppearanceString
                 {
                     smallest = potentialSmallest;
                 }
-
             }
         }
         return smallest;
@@ -558,19 +547,7 @@ public final class PDAppearanceString
         else if (fontSize == 0)
         {
             float lineWidth = getLineWidth(tokens);
-            float height = 0;
-            if (pdFont instanceof PDFont)
-            {
-                height = ((PDFont) pdFont).getFontDescriptor().getFontBoundingBox().getHeight();
-            }
-            else
-            {
-                // now much we can do, so lets assume font is square and use width
-                // as the height
-                height = pdFont.getAverageFontWidth();
-            }
-            height = height / 1000f;
-
+            float height = pdFont.getFontDescriptor().getFontBoundingBox().getHeight() / 1000f;
             float availHeight = getAvailableHeight(boundingBox, lineWidth);
             fontSize = Math.min((availHeight / height), widthBasedFontSize);
         }
@@ -597,26 +574,18 @@ public final class PDAppearanceString
         }
         else
         {
-            if (pdFont instanceof PDFont)
-            {
-                // BJL 9/25/2004
-                // This algorithm is a little bit of black magic. It does
-                // not appear to be documented anywhere. Through examining a few
-                // PDF documents and the value that Acrobat places in there I
-                // have determined that the below method of computing the position
-                // is correct for certain documents, but maybe not all. It does
-                // work f1040ez.pdf and Form_1.pdf
-                PDFontDescriptor fd = ((PDFont) pdFont).getFontDescriptor();
-                float bBoxHeight = boundingBox.getHeight();
-                float fontHeight = fd.getFontBoundingBox().getHeight() + 2 * fd.getDescent();
-                fontHeight = (fontHeight / 1000) * fontSize;
-                verticalOffset = (bBoxHeight - fontHeight) / 2;
-            }
-            else
-            {
-                LOG.debug("Unable to calculate the vertical offset for non-simple fonts - " +
-                          "using 0 instead");
-            }
+            // BJL 9/25/2004
+            // This algorithm is a little bit of black magic. It does
+            // not appear to be documented anywhere. Through examining a few
+            // PDF documents and the value that Acrobat places in there I
+            // have determined that the below method of computing the position
+            // is correct for certain documents, but maybe not all. It does
+            // work f1040ez.pdf and Form_1.pdf
+            PDFontDescriptor fd = pdFont.getFontDescriptor();
+            float bBoxHeight = boundingBox.getHeight();
+            float fontHeight = fd.getFontBoundingBox().getHeight() + 2 * fd.getDescent();
+            fontHeight = (fontHeight / 1000) * fontSize;
+            verticalOffset = (bBoxHeight - fontHeight) / 2;
         }
         return verticalOffset;
     }
