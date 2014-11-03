@@ -284,63 +284,30 @@ public final class PDAppearanceString
                         ByteArrayOutputStream output = new ByteArrayOutputStream();
                         ContentStreamWriter writer = new ContentStreamWriter(output);
                         float fontSize = calculateFontSize(pdFont,
-                                appearanceStream.getBBox(), tokens, null);
-                        boolean foundString = false;
+                                appearanceStream.getBBox(), tokens, daTokens);
                         int indexOfString = -1;
-                        for (Object token : tokens)
-                        {
-                            if (token instanceof COSString)
-                            {
-                                foundString = true;
-                                indexOfString = tokens.indexOf(token);
-                                COSString drawnString = (COSString) token;
-                                drawnString.reset();
-                                drawnString.append(apValue.getBytes("ISO-8859-1"));
-                                // replace the first string only if the appearance stream 
-                                // consists of more than one text
-                                break;
-                            }
-                        }
                         int setFontIndex = tokens.indexOf(Operator.getOperator("Tf"));
                         tokens.set(setFontIndex - 1, new COSFloat(fontSize));
-                        if (foundString)
+
+                        int bmcIndex = tokens.indexOf(Operator.getOperator("BMC"));
+                        int emcIndex = tokens.indexOf(Operator.getOperator("EMC"));
+
+                        if (bmcIndex != -1)
                         {
-                            int indexOfET = tokens.indexOf(Operator.getOperator("ET"));
-                            // the existing appearance stream may contain more than one text
-                            // so that we shall replace the first with the new value 
-                            // and skip the remaining parts
-                            if (indexOfString+2 != indexOfET)
-                            {
-                                writer.writeTokens(tokens, 0, indexOfString+2);
-                                writer.writeTokens(tokens, indexOfET, tokens.size());
-                            }
-                            else
-                            {
-                                writer.writeTokens(tokens);
-                            }
+                            writer.writeTokens(tokens, 0, bmcIndex + 1);
                         }
                         else
                         {
-                            int bmcIndex = tokens.indexOf(Operator.getOperator("BMC"));
-                            int emcIndex = tokens.indexOf(Operator.getOperator("EMC"));
-
-                            if (bmcIndex != -1)
-                            {
-                                writer.writeTokens(tokens, 0, bmcIndex + 1);
-                            }
-                            else
-                            {
-                                writer.writeTokens(tokens);
-                            }
-                            output.write("\n".getBytes("ISO-8859-1"));
-                            insertGeneratedAppearance(widget, output, pdFont, tokens,
-                                    appearanceStream);
-                            if (emcIndex != -1)
-                            {
-                                writer.writeTokens(tokens, emcIndex, tokens.size());
-                            }
+                            writer.writeTokens(tokens);
+                        }
+                        output.write("\n".getBytes("ISO-8859-1"));
+                        insertGeneratedAppearance(widget, output, pdFont, tokens, appearanceStream);
+                        if (emcIndex != -1)
+                        {
+                            writer.writeTokens(tokens, emcIndex, tokens.size());
                         }
                         writeToStream(output.toByteArray(), appearanceStream);
+
                     }
                     else
                     {
@@ -568,16 +535,7 @@ public final class PDAppearanceString
             List<Object> daTokens) throws IOException
     {
         float fontSize = 0;
-        if (tokens != null)
-        {
-            // reuse the fontsize of an existing apperance stream
-            int fontIndex = tokens.indexOf(Operator.getOperator("Tf"));
-            if (fontIndex != -1)
-            {
-                fontSize = ((COSNumber) tokens.get(fontIndex - 1)).floatValue();
-            }
-        }
-        else if (daTokens != null)
+        if (daTokens != null)
         {
             // daString looks like "BMC /Helv 3.4 Tf EMC"
             // use the fontsize of the default existing apperance stream
