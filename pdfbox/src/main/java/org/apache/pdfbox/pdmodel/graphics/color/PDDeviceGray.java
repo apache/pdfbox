@@ -85,24 +85,24 @@ public class PDDeviceGray extends PDColorSpace
      */
     public ColorModel createColorModel( int bpc ) throws IOException
     {
-    	ColorModel colorModel = null;
-    	if (bpc == 8)
-    	{
-    		ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_GRAY);
-            int[] nBits = {bpc};
-            colorModel = new ComponentColorModel(cs, nBits, false, false, Transparency.OPAQUE,DataBuffer.TYPE_BYTE);
-    	}
-    	else
-    	{
-        	int numEntries = 1 << bpc;
+        ColorModel colorModel = null;
+        if (bpc == 8)
+        {
+            ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_GRAY);
+            int[] nBits = { bpc };
+            colorModel = new ComponentColorModel(cs, nBits, false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
+        }
+        else
+        {
+            int numEntries = 1 << bpc;
             // calculate all possible values
             byte[] indexedValues = new byte[numEntries];
-            for (int i = 0; i < numEntries; i++) 
+            for (int i = 0; i < numEntries; i++)
             {
-            	indexedValues[i] = (byte)(i*255/(numEntries - 1));
+                indexedValues[i] = (byte) (i * 255 / (numEntries - 1));
             }
             colorModel = new IndexColorModel(bpc, numEntries, indexedValues, indexedValues, indexedValues);
-    	}
+        }
         return colorModel;
     }
 }

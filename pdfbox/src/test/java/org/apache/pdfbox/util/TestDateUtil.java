@@ -98,8 +98,8 @@ public class TestDateUtil extends TestCase
     
     public void testEmptyDate() throws Exception 
     {
-       	assertNull(DateConverter.toCalendar(""));
-    	assertNull(DateConverter.toCalendar(new COSString("")));
+        assertNull(DateConverter.toCalendar(""));
+        assertNull(DateConverter.toCalendar(new COSString("")));
     }
     
     /**

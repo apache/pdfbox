@@ -76,15 +76,15 @@ public class XrefTrailerResolver
          */
         public void clearResources()
         {
-        	if (trailer != null)
-        	{
-        		trailer.clear();
-        		trailer = null;
-        	}
-        	if (xrefTable != null)
-        	{
-        		xrefTable.clear();
-        	}
+            if (trailer != null)
+            {
+                trailer.clear();
+                trailer = null;
+            }
+            if (xrefTable != null)
+            {
+                xrefTable.clear();
+            }
         }
     }
 
@@ -95,20 +95,24 @@ public class XrefTrailerResolver
     /** Log instance. */
     private static final Log LOG = LogFactory.getLog( XrefTrailerResolver.class );
 
-    public final COSDictionary getFirstTrailer() {
-    	if (bytePosToXrefMap.isEmpty()) return null;
-    	
-    	Set<Long> offsets = bytePosToXrefMap.keySet();
-    	SortedSet<Long> sortedOffset = new TreeSet<Long>(offsets);
-    	return bytePosToXrefMap.get(sortedOffset.first()).trailer;
+    public final COSDictionary getFirstTrailer()
+    {
+        if (bytePosToXrefMap.isEmpty())
+            return null;
+
+        Set<Long> offsets = bytePosToXrefMap.keySet();
+        SortedSet<Long> sortedOffset = new TreeSet<Long>(offsets);
+        return bytePosToXrefMap.get(sortedOffset.first()).trailer;
     }
     
-    public final COSDictionary getLastTrailer() {
-    	if (bytePosToXrefMap.isEmpty()) return null;
-    	
-    	Set<Long> offsets = bytePosToXrefMap.keySet();
-    	SortedSet<Long> sortedOffset = new TreeSet<Long>(offsets);
-    	return bytePosToXrefMap.get(sortedOffset.last()).trailer;
+    public final COSDictionary getLastTrailer()
+    {
+        if (bytePosToXrefMap.isEmpty())
+            return null;
+
+        Set<Long> offsets = bytePosToXrefMap.keySet();
+        SortedSet<Long> sortedOffset = new TreeSet<Long>(offsets);
+        return bytePosToXrefMap.get(sortedOffset.last()).trailer;
     }
     
     /**
@@ -305,20 +309,20 @@ public class XrefTrailerResolver
      */
     public void clearResources()
     {
-    	if (curXrefTrailerObj != null)
-    	{
-    		curXrefTrailerObj.clearResources();
-    		curXrefTrailerObj = null;
-    	}
-    	if (resolvedXrefTrailer != null)
-    	{
-    		resolvedXrefTrailer.clearResources();
-    		resolvedXrefTrailer = null;
-    	}
-    	if (bytePosToXrefMap != null)
-    	{
-    		bytePosToXrefMap.clear();
-    	}
+        if (curXrefTrailerObj != null)
+        {
+            curXrefTrailerObj.clearResources();
+            curXrefTrailerObj = null;
+        }
+        if (resolvedXrefTrailer != null)
+        {
+            resolvedXrefTrailer.clearResources();
+            resolvedXrefTrailer = null;
+        }
+        if (bytePosToXrefMap != null)
+        {
+            bytePosToXrefMap.clear();
+        }
     }
 
 }

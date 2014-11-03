@@ -320,22 +320,23 @@ public abstract class PDCIDFont extends PDSimpleFont
             cmap = cmapObjects.get( cidSystemInfo );
             if (cmap == null)
             {
-            	InputStream cmapStream = null;
+                InputStream cmapStream = null;
                 try
                 {
                     // look for a predefined CMap with the given name
                     cmapStream = ResourceLoader.loadResource(resourceRootCMAP + cidSystemInfo);
                     if (cmapStream != null)
                     {
-                    	cmap = parseCmap(resourceRootCMAP, cmapStream);
-                    	if (cmap == null)
-                    	{
-                    		log.error("Error: Could not parse predefined CMAP file for '" + cidSystemInfo + "'");
-                    	}
+                        cmap = parseCmap(resourceRootCMAP, cmapStream);
+                        if (cmap == null)
+                        {
+                            log.error("Error: Could not parse predefined CMAP file for '" + cidSystemInfo + "'");
+                        }
                     }
                     else
                     {
-                		log.debug("Debug: '" + cidSystemInfo + "' isn't a predefined CMap, most likely it's embedded in the pdf itself.");
+                        log.debug("Debug: '" + cidSystemInfo
+                                + "' isn't a predefined CMap, most likely it's embedded in the pdf itself.");
                     }
                 }
                 catch(IOException exception) 
@@ -344,7 +345,7 @@ public abstract class PDCIDFont extends PDSimpleFont
                 }
                 finally
                 {
-                	IOUtils.closeQuietly(cmapStream);
+                    IOUtils.closeQuietly(cmapStream);
                 }
             }
         }

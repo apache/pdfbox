@@ -440,6 +440,7 @@ public class COSDocument extends COSBase implements Closeable
     /**
      * This will return a list of signature fields.
      *
+     * @param onlyEmptyFields only empty signature fields will be returned
      * @return list of signature dictionaries as COSDictionary
      * @throws IOException if no document catalog can be found
      */
@@ -584,8 +585,8 @@ public class COSDocument extends COSBase implements Closeable
             }
             if (trailer != null)
             {
-            	trailer.clear();
-            	trailer = null;
+                trailer.clear();
+                trailer = null;
             }
             // Clear object pool
             List<COSObject> list = getObjects();
@@ -597,15 +598,15 @@ public class COSDocument extends COSBase implements Closeable
                     // clear the resources of the pooled objects
                     if (cosObject instanceof COSStream)
                     {
-                    	((COSStream)cosObject).close();
+                        ((COSStream)cosObject).close();
                     }
                     else if (cosObject instanceof COSDictionary)
                     {
-                    	((COSDictionary)cosObject).clear();
+                        ((COSDictionary)cosObject).clear();
                     }
                     else if (cosObject instanceof COSArray)
                     {
-                    	((COSArray)cosObject).clear();
+                        ((COSArray)cosObject).clear();
                     }
                     // TODO are there other kind of COSObjects to be cleared?
                 }

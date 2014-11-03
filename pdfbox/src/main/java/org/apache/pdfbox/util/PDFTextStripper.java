@@ -312,11 +312,11 @@ public class PDFTextStripper extends PDFStreamEngine
         document = null;
         if (charactersByArticle != null)
         {
-        	charactersByArticle.clear();
+            charactersByArticle.clear();
         }
         if (characterListMapping != null)
         {
-        	characterListMapping.clear();
+            characterListMapping.clear();
         }
         startBookmark = null;
         endBookmark = null;
@@ -591,11 +591,11 @@ public class PDFTextStripper extends PDFStreamEngine
                 // a custom quicksort implementation (which is slower, unfortunately).
                 if(useCustomQuicksort) 
                 {
-                	QuickSort.sort( textList, comparator );
+                    QuickSort.sort( textList, comparator );
                 } 
                 else 
                 {
-                	Collections.sort( textList, comparator );
+                    Collections.sort( textList, comparator );
                 }
             }
             Iterator<TextPosition> textIter = textList.iterator();
@@ -1856,7 +1856,7 @@ public class PDFTextStripper extends PDFStreamEngine
      */
     protected void setListItemPatterns(List<Pattern> patterns)
     {
-    	listOfPatterns = patterns;
+        listOfPatterns = patterns;
     }
 
     /**

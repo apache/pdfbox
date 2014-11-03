@@ -35,63 +35,73 @@ import org.junit.Test;
 
 public class TestNonSequentialPDFParser {
 
-	private static final String PATH_OF_PDF = "src/test/resources/org/apache/pdfbox/pdfparser/gdb-refcard.pdf";
-	private static File tmpDirectory = new File(System.getProperty("java.io.tmpdir"));
+    private static final String PATH_OF_PDF = "src/test/resources/org/apache/pdfbox/pdfparser/gdb-refcard.pdf";
+    private static File tmpDirectory = new File(System.getProperty("java.io.tmpdir"));
 
-	private int numberOfTmpFiles = 0;
+    private int numberOfTmpFiles = 0;
 
-	/**
-	 * Initialize the number of tmp file before the test
-	 * @throws Exception
-	 */
-	@Before
-	public void setUp() throws Exception {
-		numberOfTmpFiles = getNumberOfTempFile();
-	}
+    /**
+     * Initialize the number of tmp file before the test
+     * 
+     * @throws Exception
+     */
+    @Before
+    public void setUp() throws Exception
+    {
+        numberOfTmpFiles = getNumberOfTempFile();
+    }
 
-	/**
-	 * Count the number of temporary files 
-	 * @return
-	 */
-	private int getNumberOfTempFile() {
-		int result = 0;
-		File[] tmpPdfs = tmpDirectory.listFiles(new FilenameFilter() {
-			public boolean accept(File dir, String name) {
-				return name.startsWith(NonSequentialPDFParser.TMP_FILE_PREFIX) && name.endsWith("pdf");
-			}
-		});
+    /**
+     * Count the number of temporary files
+     * 
+     * @return
+     */
+    private int getNumberOfTempFile()
+    {
+        int result = 0;
+        File[] tmpPdfs = tmpDirectory.listFiles(new FilenameFilter()
+        {
+            public boolean accept(File dir, String name)
+            {
+                return name.startsWith(NonSequentialPDFParser.TMP_FILE_PREFIX) && name.endsWith("pdf");
+            }
+        });
 
-		if (tmpPdfs != null) {
-			result = tmpPdfs.length;
-		}
+        if (tmpPdfs != null)
+        {
+            result = tmpPdfs.length;
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	@Test
-	public void testNonSequentialPDFParserString() throws Exception {
-		NonSequentialPDFParser nsp = new NonSequentialPDFParser(PATH_OF_PDF);
-		executeParserTest(nsp);
-	}
+    @Test
+    public void testNonSequentialPDFParserString() throws Exception
+    {
+        NonSequentialPDFParser nsp = new NonSequentialPDFParser(PATH_OF_PDF);
+        executeParserTest(nsp);
+    }
 
-	@Test
-	public void testNonSequentialPDFParserFileRandomAccess() throws IOException {
-		NonSequentialPDFParser nsp = new NonSequentialPDFParser(new File(PATH_OF_PDF), new RandomAccessBuffer());
-		executeParserTest(nsp);
-	}
+    @Test
+    public void testNonSequentialPDFParserFileRandomAccess() throws IOException
+    {
+        NonSequentialPDFParser nsp = new NonSequentialPDFParser(new File(PATH_OF_PDF), new RandomAccessBuffer());
+        executeParserTest(nsp);
+    }
 
-	@Test
-	public void testNonSequentialPDFParserInputStream() throws IOException {
-		NonSequentialPDFParser nsp = new NonSequentialPDFParser(new FileInputStream(PATH_OF_PDF));
-		executeParserTest(nsp);
-	}
+    @Test
+    public void testNonSequentialPDFParserInputStream() throws IOException
+    {
+        NonSequentialPDFParser nsp = new NonSequentialPDFParser(new FileInputStream(PATH_OF_PDF));
+        executeParserTest(nsp);
+    }
 
-	
-	private void executeParserTest(NonSequentialPDFParser nsp) throws IOException {
-	  nsp.parse();
-		assertNotNull(nsp.getDocument());
-		// number tmp file must be the same
-		assertEquals(numberOfTmpFiles, getNumberOfTempFile());
+    private void executeParserTest(NonSequentialPDFParser nsp) throws IOException
+    {
+        nsp.parse();
+        assertNotNull(nsp.getDocument());
+        // number tmp file must be the same
+        assertEquals(numberOfTmpFiles, getNumberOfTempFile());
   }
 
 }

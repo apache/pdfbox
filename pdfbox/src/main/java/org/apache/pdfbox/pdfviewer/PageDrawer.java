@@ -401,7 +401,7 @@ public class PageDrawer extends PDFStreamEngine
         BasicStroke currentStroke = null;
         if (stroke == null)
         {
-        	currentStroke = new BasicStroke(lineWidth);
+            currentStroke = new BasicStroke(lineWidth);
         }
         else
         {
