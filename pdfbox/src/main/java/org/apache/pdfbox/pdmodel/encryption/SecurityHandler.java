@@ -161,9 +161,14 @@ public abstract class SecurityHandler
 
         List<COSObject> allObjects = document.getDocument().getObjects();
         Iterator<COSObject> objectIter = allObjects.iterator();
+        COSDictionary encryptionDict = document.getEncryption().getCOSDictionary();
         while (objectIter.hasNext())
         {
-            decryptObject(objectIter.next());
+            COSObject nextObj = objectIter.next();
+            if (nextObj.getObject() != encryptionDict)
+            {
+                decryptObject(nextObj);
+            }
         }
         document.setEncryptionDictionary(null);
     }
@@ -484,6 +489,15 @@ public abstract class SecurityHandler
         ByteArrayInputStream data = new ByteArrayInputStream(string.getBytes());
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         encryptData(objNum, genNum, data, buffer, true /* decrypt */);
+        string.reset();
+        string.append(buffer.toByteArray());
+    }
+
+    public void encryptString(COSString string, long objNum, long genNum) throws IOException
+    {
+        ByteArrayInputStream data = new ByteArrayInputStream(string.getBytes());
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        encryptData(objNum, genNum, data, buffer, false /* decrypt */);
         string.reset();
         string.append(buffer.toByteArray());
     }

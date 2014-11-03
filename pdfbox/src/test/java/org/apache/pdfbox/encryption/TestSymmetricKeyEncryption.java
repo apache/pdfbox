@@ -113,7 +113,7 @@ public class TestSymmetricKeyEncryption extends TestCase
      */
     public void testProtection() throws Exception
     {
-        byte[] inputFileAsByteArray = getFileResourceAsByteArray("test.pdf");
+        byte[] inputFileAsByteArray = getFileResourceAsByteArray("Acroform-PDFBOX-2333.pdf");
         int sizePriorToEncryption = inputFileAsByteArray.length;
 
         PDDocument document = PDDocument.load(new ByteArrayInputStream(inputFileAsByteArray));
@@ -122,11 +122,9 @@ public class TestSymmetricKeyEncryption extends TestCase
         document = PDDocument.load(new ByteArrayInputStream(inputFileAsByteArray));
         testSymmEncrForKeySize(128, sizePriorToEncryption, document, PASSWORD, permission1);
 
-        //TODO
-        // 1) check permissions
-        // 2) 256 key length
-        //document = PDDocument.load(new ByteArrayInputStream(inputFileAsByteArray));
-        //testSymmEncrForKeySize(256, sizePriorToEncryption, document, PASSWORD, permission1);
+        //TODO check permissions
+        document = PDDocument.load(new ByteArrayInputStream(inputFileAsByteArray));
+        testSymmEncrForKeySize(256, sizePriorToEncryption, document, PASSWORD, permission1);
     }
 
     /**
@@ -152,9 +150,8 @@ public class TestSymmetricKeyEncryption extends TestCase
         docWithEmbeddedFile = PDDocument.load(new ByteArrayInputStream(inputFileWithEmbeddedFileAsByteArray));
         testSymmEncrForKeySizeInner(128, sizeOfFileWithEmbeddedFile, docWithEmbeddedFile, extractedEmbeddedFile);
 
-        //TODO enable when 256 key works
-        //docWithEmbeddedFile = PDDocument.load(new ByteArrayInputStream(inputFileWithEmbeddedFileAsByteArray));
-        //testSymmEncrForKeySizeInner(256, sizeOfFileWithEmbeddedFile, docWithEmbeddedFile, sizeOfEmbeddedFile);
+        docWithEmbeddedFile = PDDocument.load(new ByteArrayInputStream(inputFileWithEmbeddedFileAsByteArray));
+        testSymmEncrForKeySizeInner(256, sizeOfFileWithEmbeddedFile, docWithEmbeddedFile, extractedEmbeddedFile);
     }
 
     private void testSymmEncrForKeySize(int keyLength,
