@@ -315,8 +315,11 @@ public class DomXmpParser
                 if (DomHelper.isParseTypeResource(property))
                 {
                     AbstractStructuredType ast = parseLiDescription(xmp, DomHelper.getQName(property), property);
-                    ast.setPrefix(prefix);
-                    container.addProperty(ast);
+                    if (ast != null)
+                    {
+                        ast.setPrefix(prefix);
+                        container.addProperty(ast);
+                    }
                 }
                 else
                 {
