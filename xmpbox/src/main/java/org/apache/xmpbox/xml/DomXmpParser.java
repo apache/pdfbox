@@ -342,8 +342,11 @@ public class DomXmpParser
                 if (DomHelper.isParseTypeResource(property))
                 {
                     AbstractStructuredType ast = parseLiDescription(xmp, DomHelper.getQName(property), property);
-                    ast.setPrefix(prefix);
-                    container.addProperty(ast);
+                    if (ast != null)
+                    {
+                        ast.setPrefix(prefix);
+                        container.addProperty(ast);
+                    }
                 }
                 else
                 {
@@ -757,12 +760,14 @@ public class DomXmpParser
      */
     private void removeComments(Node root)
     {
-        if (root.getChildNodes().getLength()<=1) {
+        if (root.getChildNodes().getLength()<=1) 
+        {
             // There is only one node so we do not remove it
             return;
         }
         NodeList nl = root.getChildNodes();
-        for (int i=0; i < nl.getLength() ; i ++) {
+        for (int i=0; i < nl.getLength() ; i ++) 
+        {
             Node node = nl.item(i);
             if (node instanceof Comment)
             {
@@ -771,7 +776,7 @@ public class DomXmpParser
             }
             else if (node instanceof Text)
             {
-                if (node.getTextContent().trim().length() == 0)
+                if (node.getTextContent().trim().isEmpty())
                 {
                         root.removeChild(node);
                 }
@@ -837,7 +842,7 @@ public class DomXmpParser
     protected class NamespaceFinder
     {
 
-        private Stack<Map<String, String>> stack = new Stack<Map<String, String>>();
+        private final Stack<Map<String, String>> stack = new Stack<Map<String, String>>();
 
         protected void push(Element description)
         {
