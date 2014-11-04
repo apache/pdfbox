@@ -208,7 +208,7 @@ public class PDDocument implements Pageable, Closeable
             // these cases occur when we have a page, not an array of pages
             String objStr = String.valueOf(thePageOrArrayObject.getObjectNumber().intValue());
             String genStr = String.valueOf(thePageOrArrayObject.getGenerationNumber().intValue());
-            getPageMap().put(objStr+","+genStr, new Integer(getPageMap().size()+1));
+            getPageMap().put(objStr+","+genStr, getPageMap().size()+1);
         } 
         else 
         {
@@ -222,7 +222,7 @@ public class PDDocument implements Pageable, Closeable
                     COSObject thisObject = (COSObject)kidsArray.get(i);
                     String objStr = String.valueOf(thisObject.getObjectNumber().intValue());
                     String genStr = String.valueOf(thisObject.getGenerationNumber().intValue());
-                    getPageMap().put(objStr+","+genStr, new Integer(getPageMap().size()+1));
+                    getPageMap().put(objStr+","+genStr, getPageMap().size()+1);
                 }
             } 
             else 
@@ -331,7 +331,7 @@ public class PDDocument implements Pageable, Closeable
         rootPages.getAllKids(kids);
   
         int size = (int)rootPages.getCount();
-        PDPage page = null;
+        PDPage page;
         if (size == 0)
         {
             throw new SignatureException(SignatureException.INVALID_PAGE_FOR_SIGNATURE, "The PDF file has no pages");
@@ -484,13 +484,13 @@ public class PDDocument implements Pageable, Closeable
                     {
                         COSDictionary cosBaseDict = (COSDictionary)base;
               
-                        // Appearance Dictionary auslesen und setzen
+                        // read and set Appearance Dictionary
                         PDAppearanceDictionary ap = 
                                 new PDAppearanceDictionary((COSDictionary)cosBaseDict.getItem(COSName.AP));
                         ap.getDictionary().setDirect(true);
                         signatureField.getWidget().setAppearance(ap);
               
-                        // AcroForm DefaultRessource auslesen und setzen
+                        // read and set AcroForm DefaultRessource
                         COSBase dr = cosBaseDict.getItem(COSName.DR);
                         dr.setDirect(true);
                         dr.setNeedToBeUpdate(true);
@@ -663,7 +663,7 @@ public class PDDocument implements Pageable, Closeable
                 os = dest.createOutputStream();
 
                 byte[] buf = new byte[10240];
-                int amountRead = 0;
+                int amountRead;
                 is = src.createInputStream();
                 while((amountRead = is.read(buf,0,10240)) > -1)
                 {
