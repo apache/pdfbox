@@ -65,7 +65,7 @@ public class LosslessFactoryTest extends TestCase
         BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("png.png"));
 
         PDImageXObject ximage1 = LosslessFactory.createFromImage(document, image);
-        validate(ximage1, 8, 344, 287, "png", PDDeviceRGB.INSTANCE.getName());
+        validate(ximage1, 8, image.getWidth(), 287, "png", PDDeviceRGB.INSTANCE.getName());
         checkIdent(image, ximage1.getImage());
 
         // Create a grayscale image
@@ -74,16 +74,20 @@ public class LosslessFactoryTest extends TestCase
         g.drawImage(image, 0, 0, null);
         g.dispose();
         PDImageXObject ximage2 = LosslessFactory.createFromImage(document, grayImage);
-        validate(ximage2, 8, 344, 287, "png", PDDeviceGray.INSTANCE.getName());
+        validate(ximage2, 8, grayImage.getWidth(), grayImage.getHeight(), "png", PDDeviceGray.INSTANCE.getName());
         checkIdent(grayImage, ximage2.getImage());
 
         // Create a bitonal image
         BufferedImage bitonalImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
+
+        // avoid multiple of 8 to test padding
+        assertFalse(bitonalImage.getWidth() % 8 == 0);
+        
         g = bitonalImage.getGraphics();
         g.drawImage(image, 0, 0, null);
         g.dispose();
         PDImageXObject ximage3 = LosslessFactory.createFromImage(document, bitonalImage);
-        validate(ximage3, 1, 344, 287, "png", PDDeviceGray.INSTANCE.getName());
+        validate(ximage3, 1, bitonalImage.getWidth(), bitonalImage.getHeight(), "png", PDDeviceGray.INSTANCE.getName());
         checkIdent(bitonalImage, ximage3.getImage());
 
         // This part isn't really needed because this test doesn't break
@@ -134,12 +138,12 @@ public class LosslessFactoryTest extends TestCase
         }
 
         PDImageXObject ximage = LosslessFactory.createFromImage(document, argbImage);
-        validate(ximage, 8, 344, 287, "png", PDDeviceRGB.INSTANCE.getName());
+        validate(ximage, 8, argbImage.getWidth(), argbImage.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
         checkIdent(argbImage, ximage.getImage());
         checkIdentRGB(argbImage, ximage.getOpaqueImage());
 
         assertNotNull(ximage.getSoftMask());
-        validate(ximage.getSoftMask(), 8, 344, 287, "png", PDDeviceGray.INSTANCE.getName());
+        validate(ximage.getSoftMask(), 8, argbImage.getWidth(), argbImage.getHeight(), "png", PDDeviceGray.INSTANCE.getName());
         assertTrue(colorCount(ximage.getSoftMask().getImage()) > image.getHeight() / 10);
 
         doWritePDF(document, ximage, testResultsDir, "intargb.pdf");
@@ -238,7 +242,7 @@ public class LosslessFactoryTest extends TestCase
     {
         PDDocument document = new PDDocument();
 
-        int width = 256;
+        int width = 257;
         int height = 256;
 
         // create an ARGB image
@@ -298,6 +302,10 @@ public class LosslessFactoryTest extends TestCase
 
         // check whether the mask is a b/w cross
         BufferedImage maskImage = ximage.getSoftMask().getImage();
+        
+        // avoid multiple of 8 to test padding
+        assertFalse(maskImage.getWidth() % 8 == 0);
+        
         assertEquals(Transparency.OPAQUE, maskImage.getTransparency());
         for (int x = 0; x < width; ++x)
         {
