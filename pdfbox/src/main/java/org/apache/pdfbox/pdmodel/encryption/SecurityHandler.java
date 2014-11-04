@@ -493,6 +493,15 @@ public abstract class SecurityHandler
         string.append(buffer.toByteArray());
     }
 
+    /**
+     * This will encrypt a string.
+     *
+     * @param string the string to encrypt.
+     * @param objNum The object number.
+     * @param genNum The object generation number.
+     *
+     * @throws IOException If an error occurs writing the new string.
+     */
     public void encryptString(COSString string, long objNum, long genNum) throws IOException
     {
         ByteArrayInputStream data = new ByteArrayInputStream(string.getBytes());
