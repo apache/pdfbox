@@ -73,10 +73,10 @@ public class LosslessFactory
                 {
                     mcios.writeBits(image.getRGB(x, y) & 0xFF, bpc);
                 }
-            }
-            while (mcios.getBitOffset() != 0)
-            {
-                mcios.writeBit(0);
+                while (mcios.getBitOffset() != 0)
+                {
+                    mcios.writeBit(0);
+                }
             }
             mcios.flush();
             mcios.close();
@@ -147,13 +147,19 @@ public class LosslessFactory
         {
             bpc = 1;
             MemoryCacheImageOutputStream mcios = new MemoryCacheImageOutputStream(bos);
+            int width = alphaRaster.getSampleModel().getWidth();
+            int p = 0;
             for (int pixel : pixels)
             {
                 mcios.writeBit(pixel);
-            }
-            while (mcios.getBitOffset() != 0)
-            {
-                mcios.writeBit(0);
+                ++p;
+                if (p % width == 0)
+                {
+                    while (mcios.getBitOffset() != 0)
+                    {
+                        mcios.writeBit(0);
+                    }
+                }
             }
             mcios.flush();
             mcios.close();
