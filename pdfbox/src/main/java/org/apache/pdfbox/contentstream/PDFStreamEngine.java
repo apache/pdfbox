@@ -289,28 +289,32 @@ public class PDFStreamEngine
         PDRectangle rect = annotation.getRectangle();
         Matrix matrix = appearance.getMatrix();
 
-        // transformed appearance box
-        PDRectangle transformedBox = bbox.transform(matrix);
+        // zero-sized rectangles are not valid
+        if (rect.getWidth() > 0 && rect.getHeight() > 0)
+        {
+            // transformed appearance box
+            PDRectangle transformedBox = bbox.transform(matrix);
 
-        // compute a matrix which scales and translates the transformed appearance box to align
-        // with the edges of the annotation's rectangle
-        Matrix a = Matrix.getTranslatingInstance(rect.getLowerLeftX(), rect.getLowerLeftY());
-        a.concatenate(Matrix.getScaleInstance(rect.getWidth() / transformedBox.getWidth(),
-                                              rect.getHeight() / transformedBox.getHeight()));
-        a.concatenate(Matrix.getTranslatingInstance(-transformedBox.getLowerLeftX(),
-                                                    -transformedBox.getLowerLeftY()));
+            // compute a matrix which scales and translates the transformed appearance box to align
+            // with the edges of the annotation's rectangle
+            Matrix a = Matrix.getTranslatingInstance(rect.getLowerLeftX(), rect.getLowerLeftY());
+            a.concatenate(Matrix.getScaleInstance(rect.getWidth() / transformedBox.getWidth(),
+                    rect.getHeight() / transformedBox.getHeight()));
+            a.concatenate(Matrix.getTranslatingInstance(-transformedBox.getLowerLeftX(),
+                    -transformedBox.getLowerLeftY()));
 
-        // Matrix shall be concatenated with A to form a matrix AA that maps from the appearanceâ€™s
-        // coordinate system to the annotationâ€™s rectangle in default user space
-        Matrix aa = Matrix.concatenate(matrix, a);
+            // Matrix shall be concatenated with A to form a matrix AA that maps from the appearance€™s
+            // coordinate system to the annotationâ€™s rectangle in default user space
+            Matrix aa = Matrix.concatenate(matrix, a);
 
-        // make matrix AA the CTM
-        getGraphicsState().setCurrentTransformationMatrix(aa);
+            // make matrix AA the CTM
+            getGraphicsState().setCurrentTransformationMatrix(aa);
 
-        // clip to bounding box
-        clipToRect(bbox);
+            // clip to bounding box
+            clipToRect(bbox);
 
-        processStreamOperators(appearance);
+            processStreamOperators(appearance);
+        }
 
         restoreGraphicsState();
         popResources(parent);
