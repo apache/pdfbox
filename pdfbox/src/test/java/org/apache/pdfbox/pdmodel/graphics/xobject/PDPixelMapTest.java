@@ -84,6 +84,9 @@ public class PDPixelMapTest extends TestCase
         g = bitonalImage.getGraphics();
         g.drawImage(image, 0, 0, null);
         g.dispose();
+        
+        // avoid multiple of 8 to check padding
+        assertFalse(bitonalImage.getWidth() % 8 == 0);
 
         ximage = new PDPixelMap(document, bitonalImage);
         checkIdent(bitonalImage, ximage.getRGBImage());
@@ -334,7 +337,7 @@ public class PDPixelMapTest extends TestCase
     {
         PDDocument document = new PDDocument();
 
-        int width = 256;
+        int width = 257;
         int height = 256;
 
         // create an ARGB image
@@ -393,6 +396,10 @@ public class PDPixelMapTest extends TestCase
 
         // check whether the mask is a b/w cross
         BufferedImage maskImage = ximage.getSMaskImage().getRGBImage();
+        
+        // avoid multiple of 8 to check padding
+        assertFalse(maskImage.getWidth() % 8 == 0);
+        
         // returns Transparency.BITMASK in 1.8
         //assertEquals(Transparency.OPAQUE, maskImage.getTransparency());
         for (int x = 0; x < width; ++x)
