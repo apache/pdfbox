@@ -65,7 +65,7 @@ public class LosslessFactoryTest extends TestCase
         BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("png.png"));
 
         PDImageXObject ximage1 = LosslessFactory.createFromImage(document, image);
-        validate(ximage1, 8, image.getWidth(), 287, "png", PDDeviceRGB.INSTANCE.getName());
+        validate(ximage1, 8, image.getWidth(), image.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
         checkIdent(image, ximage1.getImage());
 
         // Create a grayscale image
