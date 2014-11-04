@@ -40,7 +40,6 @@ import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
-import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
 import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
 import org.apache.pdfbox.util.ImageIOUtil;
@@ -172,11 +171,11 @@ public class PDPixelMap extends PDXObjectImage
                             // grayscale images need one color per sample
                             mcios.writeBits(bi.getRGB(x, y) & 0xFF, bpc);
                         }
-                    }
-                    // padding
-                    while (mcios.getBitOffset() != 0)
-                    {
-                        mcios.writeBit(0);
+                        // padding
+                        while (mcios.getBitOffset() != 0)
+                        {
+                            mcios.writeBit(0);
+                        }
                     }
                     mcios.flush();
                     mcios.close();
@@ -269,7 +268,7 @@ public class PDPixelMap extends PDXObjectImage
                 return null;
             }
             // Get the ColorModel right
-            ColorModel cm = null;
+            ColorModel cm;
             if (colorspace instanceof PDIndexed)
             {
                 PDIndexed csIndexed = (PDIndexed)colorspace;
@@ -328,7 +327,7 @@ public class PDPixelMap extends PDXObjectImage
             }
             else if (bpc == 1)
             {
-                byte[] map = null;
+                byte[] map;
                 if (colorspace instanceof PDDeviceGray)
                 {
                     COSArray decode = getDecode();
