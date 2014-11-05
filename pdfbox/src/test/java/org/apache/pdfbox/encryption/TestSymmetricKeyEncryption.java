@@ -177,10 +177,6 @@ public class TestSymmetricKeyEncryption extends TestCase
 
         try
         {
-            Assert.assertTrue(encryptedDoc.isEncrypted());
-            DecryptionMaterial decryptionMaterial = new StandardDecryptionMaterial(PASSWORD);
-            encryptedDoc.openProtection(decryptionMaterial);
-
             AccessPermission newPermission = encryptedDoc.getCurrentAccessPermission();
 
             Assert.assertEquals(numSrcPages, encryptedDoc.getNumberOfPages());
@@ -230,7 +226,9 @@ public class TestSymmetricKeyEncryption extends TestCase
         }
     }
 
-    public PDDocument encrypt(int keyLength, int sizePriorToEncr,
+    // encrypt with keylength and permission, save, check sizes before and after encryption
+    // reopen, decrypt and return document
+    private PDDocument encrypt(int keyLength, int sizePriorToEncr,
             PDDocument doc, String prefix, AccessPermission permission) throws IOException
     {
         AccessPermission ap = new AccessPermission();
@@ -244,10 +242,16 @@ public class TestSymmetricKeyEncryption extends TestCase
         doc.save(pdfFile);
         doc.close();
         long sizeEncrypted = pdfFile.length();
-        PDDocument encryptedDoc = PDDocument.load(pdfFile);
         Assert.assertTrue(keyLength
                 + "-bit encrypted pdf should not have same size as plain one",
                 sizeEncrypted != sizePriorToEncr);
+
+        //TODO try replacing this block with loadNonSeq()
+        PDDocument encryptedDoc = PDDocument.load(pdfFile);
+        Assert.assertTrue(encryptedDoc.isEncrypted());
+        DecryptionMaterial decryptionMaterial = new StandardDecryptionMaterial(PASSWORD);
+        encryptedDoc.openProtection(decryptionMaterial);
+
         return encryptedDoc;
     }
 
@@ -287,10 +291,6 @@ public class TestSymmetricKeyEncryption extends TestCase
 
         try
         {
-            Assert.assertTrue(encryptedDoc.isEncrypted());
-            DecryptionMaterial decryptionMaterial = new StandardDecryptionMaterial(PASSWORD);
-            encryptedDoc.openProtection(decryptionMaterial);
-
             AccessPermission permission = encryptedDoc.getCurrentAccessPermission();
 
             File decryptedFile = new File(testResultsDir, "DecryptedContainsEmbedded-" + keyLength + "-bit.pdf");
