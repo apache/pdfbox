@@ -1443,28 +1443,30 @@ public class NonSequentialPDFParser extends PDFParser
                     }
                     else if (pb instanceof COSDictionary)
                     {
-                        for (Entry<COSName, COSBase> entry : ((COSDictionary) pb).entrySet())
+                        COSDictionary dict = (COSDictionary) pb;
+                        // skip signature dictionary
+                        if (!dict.getItem(COSName.TYPE).equals(COSName.SIG))
                         {
-                            // TODO: specially handle 'Contents' entry of
-                            // signature dictionary like in
-                            // SecurityHandler#decryptDictionary
-                            if (entry.getValue() instanceof COSString)
+                            for (Entry<COSName, COSBase> entry : dict.entrySet())
                             {
-                                decrypt((COSString) entry.getValue(), objNr, objGenNr);
+                                if (entry.getValue() instanceof COSString)
+                                {
+                                    decrypt((COSString) entry.getValue(), objNr, objGenNr);
+                                }
+                                else if (entry.getValue() instanceof COSArray)
+                                {
+                                    try
+                                    {
+                                        securityHandler.decryptArray((COSArray) entry.getValue(), objNr, objGenNr);
+                                    }
+                                    catch (CryptographyException ce)
+                                    {
+                                        throw new IOException("Error decrypting stream object " + objNr + ": "
+                                                + ce.getMessage()
+                                        /* , ce // TODO: remove remark with Java 1.6 */);
+                                    }
+                                }                             
                             }
-                            else if (entry.getValue() instanceof COSArray)
-                            {
-                                try
-                                {
-                                    securityHandler.decryptArray((COSArray) entry.getValue(), objNr, objGenNr);
-                                }
-                                catch (CryptographyException ce)
-                                {
-                                    throw new IOException("Error decrypting stream object " + objNr + ": "
-                                            + ce.getMessage()
-                                    /* , ce // TODO: remove remark with Java 1.6 */);
-                                }
-                            }                             
                         }
                     }
                     else if (pb instanceof COSArray)
