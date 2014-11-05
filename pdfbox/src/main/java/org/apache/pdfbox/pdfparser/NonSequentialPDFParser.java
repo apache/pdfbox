@@ -56,6 +56,7 @@ import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.PushBackInputStream;
 import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
 import org.apache.pdfbox.pdfparser.XrefTrailerResolver.XRefType;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.DecryptionMaterial;
@@ -143,6 +144,7 @@ public class NonSequentialPDFParser extends PDFParser
      */
     protected SecurityHandler securityHandler = null;
 
+    private AccessPermission accessPermission;
     private final String keyStoreFilename = null;
     private final String alias = null;
     private String password = "";
@@ -359,6 +361,13 @@ public class NonSequentialPDFParser extends PDFParser
         }
     }
 
+    @Override
+    public PDDocument getPDDocument() throws IOException
+    {
+        return new PDDocument( getDocument(), this, accessPermission );
+    }
+
+
     // ------------------------------------------------------------------------
     /**
      * Sets how many trailing bytes of PDF file are searched for EOF marker and 'startxref' marker. If not set we use
@@ -509,14 +518,7 @@ public class NonSequentialPDFParser extends PDFParser
                 securityHandler = encryption.getSecurityHandler();
                 securityHandler.prepareForDecryption(encryption, document.getDocumentID(),
                         decryptionMaterial);
-
-                AccessPermission permission = securityHandler.getCurrentAccessPermission();
-                if (!permission.canExtractContent())
-                {
-                    LOG.warn("PDF file '" + pdfFile.getPath()
-                            + "' does not allow extracting content.");
-                }
-
+                accessPermission = securityHandler.getCurrentAccessPermission();
             }
             catch (Exception e)
             {

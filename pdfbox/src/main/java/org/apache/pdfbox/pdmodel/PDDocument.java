@@ -529,8 +529,22 @@ public class PDDocument implements Closeable
      */
     public PDDocument(COSDocument doc, BaseParser usedParser)
     {
+        this(doc, usedParser, null);
+    }
+
+    /**
+     * Constructor that uses an existing document. The COSDocument that is passed in must be valid.
+     * 
+     * @param doc The COSDocument that this document wraps.
+     * @param usedParser the parser which is used to read the pdf
+     * @param permission he access permissions of the pdf
+     * 
+     */
+    public PDDocument(COSDocument doc, BaseParser usedParser, AccessPermission permission)
+    {
         document = doc;
         parser = usedParser;
+        accessPermission = permission;
     }
 
     /**
