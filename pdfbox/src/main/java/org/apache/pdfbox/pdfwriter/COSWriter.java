@@ -1400,7 +1400,7 @@ public class COSWriter implements ICOSVisitor, Closeable
         {
             if(willEncrypt)
             {
-                document.getSecurityHandler().decryptString(
+                document.getSecurityHandler().encryptString(
                     obj,
                     currentObjectKey.getNumber(),
                     currentObjectKey.getGeneration());
