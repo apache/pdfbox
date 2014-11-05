@@ -23,6 +23,8 @@ import junit.framework.TestSuite;
 import org.apache.pdfbox.cos.TestCOSFloat;
 import org.apache.pdfbox.cos.TestCOSInteger;
 import org.apache.pdfbox.cos.TestCOSString;
+import org.apache.pdfbox.encryption.TestPublicKeyEncryption;
+import org.apache.pdfbox.encryption.TestSymmetricKeyEncryption;
 import org.apache.pdfbox.filter.TestFilters;
 import org.apache.pdfbox.io.TestIOUtils;
 import org.apache.pdfbox.io.TestRandomAccessBuffer;
@@ -133,6 +135,9 @@ public class TestAll extends TestCase
 
         suite.addTestSuite(EndstreamOutputStreamTest.class);
         suite.addTestSuite(PDFStreamParserTest.class);        
+        
+        suite.addTestSuite(TestPublicKeyEncryption.class);
+        suite.addTestSuite(TestSymmetricKeyEncryption.class);
 
         return suite;
     }

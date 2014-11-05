@@ -58,7 +58,7 @@ public class PDUtils
      * @param expectedImage
      * @param actualImage
      */
-    static void checkIdent(BufferedImage expectedImage, BufferedImage actualImage)
+    static public void checkIdent(BufferedImage expectedImage, BufferedImage actualImage)
     {
         String errMsg = "";
 
