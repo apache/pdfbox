@@ -294,32 +294,34 @@ public class PreflightParser extends NonSequentialPDFParser
             }
 
             String secondLine = reader.readLine();
-            byte[] secondLineAsBytes = secondLine.getBytes(encoding.name());
-            if (secondLine != null && secondLineAsBytes.length >= 5)
+            if (secondLine != null)
             {
-                for (int i = 0; i < secondLineAsBytes.length; ++i)
+                byte[] secondLineAsBytes = secondLine.getBytes(encoding.name());
+                if (secondLineAsBytes.length >= 5)
                 {
-                    byte b = secondLineAsBytes[i];
-                    if (i == 0 && ((char) b != '%'))
+                    for (int i = 0; i < secondLineAsBytes.length; ++i)
                     {
-                        addValidationError(new ValidationError(PreflightConstants.ERROR_SYNTAX_HEADER,
-                                "Second line must contains at least 4 bytes greater than 127"));
-                        break;
-                    }
-                    else if (i > 0 && ((b & 0xFF) < 0x80))
-                    {
-                        addValidationError(new ValidationError(PreflightConstants.ERROR_SYNTAX_HEADER,
-                                "Second line must contains at least 4 bytes greater than 127"));
-                        break;
+                        byte b = secondLineAsBytes[i];
+                        if (i == 0 && ((char) b != '%'))
+                        {
+                            addValidationError(new ValidationError(PreflightConstants.ERROR_SYNTAX_HEADER,
+                                    "Second line must contains at least 4 bytes greater than 127"));
+                            break;
+                        }
+                        else if (i > 0 && ((b & 0xFF) < 0x80))
+                        {
+                            addValidationError(new ValidationError(PreflightConstants.ERROR_SYNTAX_HEADER,
+                                    "Second line must contains at least 4 bytes greater than 127"));
+                            break;
+                        }
                     }
                 }
+                else
+                {
+                    addValidationError(new ValidationError(PreflightConstants.ERROR_SYNTAX_HEADER,
+                            "Second line must contains at least 4 bytes greater than 127"));
+                }
             }
-            else
-            {
-                addValidationError(new ValidationError(PreflightConstants.ERROR_SYNTAX_HEADER,
-                        "Second line must contains at least 4 bytes greater than 127"));
-            }
-
         }
         catch (IOException e)
         {
