@@ -1452,9 +1452,8 @@ public class NonSequentialPDFParser extends PDFParser
                     else if (pb instanceof COSDictionary)
                     {
                         COSDictionary dict = (COSDictionary) pb;
-                        COSName type = dict.getCOSName(COSName.TYPE);
                         // skip dictionary containing the signature
-                        if (type ==  null || !type.equals(COSName.SIG))
+                        if (!COSName.SIG.equals(dict.getCOSName(COSName.TYPE)))
                         {
                             for (Entry<COSName, COSBase> entry : dict.entrySet())
                             {
