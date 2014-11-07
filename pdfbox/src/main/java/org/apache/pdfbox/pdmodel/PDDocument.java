@@ -328,17 +328,20 @@ public class PDDocument implements Closeable
                     {
                         COSDictionary cosBaseDict = (COSDictionary) base;
 
-                        // Appearance Dictionary auslesen und setzen
-                        PDAppearanceDictionary ap = new PDAppearanceDictionary(
-                                (COSDictionary) cosBaseDict.getItem(COSName.AP));
+                        // read and set Appearance Dictionary
+                        PDAppearanceDictionary ap = 
+                                new PDAppearanceDictionary((COSDictionary)cosBaseDict.getDictionaryObject(COSName.AP));
                         ap.getCOSObject().setDirect(true);
                         signatureField.getWidget().setAppearance(ap);
 
-                        // AcroForm DefaultRessource auslesen und setzen
+                        // read and set AcroForm DefaultResource
                         COSBase dr = cosBaseDict.getItem(COSName.DR);
-                        dr.setDirect(true);
-                        dr.setNeedToBeUpdate(true);
-                        acroFormDict.setItem(COSName.DR, dr);
+                        if (dr != null)
+                        {
+                            dr.setDirect(true);
+                            dr.setNeedToBeUpdate(true);
+                            acroFormDict.setItem(COSName.DR, dr);
+                        }
                         sigFieldNotFound = false;
                     }
                 }
