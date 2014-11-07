@@ -59,6 +59,7 @@ public class RealType extends AbstractSimpleProperty
      * 
      * @return float the property value
      */
+    @Override
     public Float getValue()
     {
         return realValue;
@@ -70,11 +71,12 @@ public class RealType extends AbstractSimpleProperty
      * @param value
      *            The value to set
      */
+    @Override
     public void setValue(Object value)
     {
         if (value instanceof Float)
         {
-            realValue = ((Float) value).floatValue();
+            realValue = (Float) value;
         }
         else if (value instanceof String)
         {
@@ -84,7 +86,7 @@ public class RealType extends AbstractSimpleProperty
         else
         {
             // invalid type of value
-            throw new IllegalArgumentException("Value given is not allowed for the Real type.");
+            throw new IllegalArgumentException("Value given is not allowed for the Real type: " + value);
         }
     }
 

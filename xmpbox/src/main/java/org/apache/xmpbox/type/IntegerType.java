@@ -59,6 +59,7 @@ public class IntegerType extends AbstractSimpleProperty
      * 
      * @return the property value
      */
+    @Override
     public Integer getValue()
     {
         return integerValue;
@@ -70,11 +71,12 @@ public class IntegerType extends AbstractSimpleProperty
      * @param value
      *            The value to set
      */
+    @Override
     public void setValue(Object value)
     {
         if (value instanceof Integer)
         {
-            integerValue = ((Integer) value).intValue();
+            integerValue = (Integer) value;
         }
         else if (value instanceof String)
         {
@@ -84,7 +86,7 @@ public class IntegerType extends AbstractSimpleProperty
         else
         {
             // invalid type of value
-            throw new IllegalArgumentException("Value given is not allowed for the Integer type.");
+            throw new IllegalArgumentException("Value given is not allowed for the Integer type: " + value);
         }
     }
 
