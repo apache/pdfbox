@@ -486,15 +486,18 @@ public class PDDocument implements Pageable, Closeable
               
                         // read and set Appearance Dictionary
                         PDAppearanceDictionary ap = 
-                                new PDAppearanceDictionary((COSDictionary)cosBaseDict.getItem(COSName.AP));
+                                new PDAppearanceDictionary((COSDictionary)cosBaseDict.getDictionaryObject(COSName.AP));
                         ap.getDictionary().setDirect(true);
                         signatureField.getWidget().setAppearance(ap);
               
-                        // read and set AcroForm DefaultRessource
+                        // read and set AcroForm DefaultResource
                         COSBase dr = cosBaseDict.getItem(COSName.DR);
-                        dr.setDirect(true);
-                        dr.setNeedToBeUpdate(true);
-                        acroFormDict.setItem(COSName.DR, dr);
+                        if (dr != null)
+                        {
+                            dr.setDirect(true);
+                            dr.setNeedToBeUpdate(true);
+                            acroFormDict.setItem(COSName.DR, dr);
+                        }
                         sigFieldNotFound=false;
                     }
                 }
