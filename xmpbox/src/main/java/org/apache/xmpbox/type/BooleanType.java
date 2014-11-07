@@ -62,6 +62,7 @@ public class BooleanType extends AbstractSimpleProperty
      * 
      * @return boolean the property value
      */
+    @Override
     public Boolean getValue()
     {
         return booleanValue;
@@ -74,11 +75,12 @@ public class BooleanType extends AbstractSimpleProperty
      *            The value to set
      * 
      */
+    @Override
     public void setValue(Object value)
     {
         if (value instanceof Boolean)
         {
-            booleanValue = ((Boolean) value).booleanValue();
+            booleanValue = (Boolean) value;
         }
         else if (value instanceof String)
         {

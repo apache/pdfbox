@@ -60,6 +60,7 @@ public class TextType extends AbstractSimpleProperty
      * @param value
      *            The value to set
      */
+    @Override
     public void setValue(Object value)
     {
         if (!(value instanceof String))

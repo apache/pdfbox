@@ -74,6 +74,7 @@ public class DateType extends AbstractSimpleProperty
      * 
      * @return boolean
      */
+    @Override
     public Calendar getValue()
     {
         return dateValue;
@@ -113,11 +114,14 @@ public class DateType extends AbstractSimpleProperty
      * @param value
      *            The value to set
      */
+    @Override
     public void setValue(Object value)
     {
         if (!isGoodType(value))
         {
-            throw new IllegalArgumentException("Value given is not allowed for the Date type : " + value.getClass());
+            throw new IllegalArgumentException(
+                    "Value given is not allowed for the Date type: " 
+                            + value.getClass() + ", value: " + value);
         }
         else
         {
@@ -136,6 +140,7 @@ public class DateType extends AbstractSimpleProperty
 
     }
 
+    @Override
     public String getStringValue()
     {
         return DateConverter.toISO8601(dateValue);
