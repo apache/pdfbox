@@ -358,14 +358,27 @@ public class COSDocument extends COSBase implements Closeable
         return version;
     }
 
-    /** Signals that the document is decrypted completely.
+    /** 
+     * Signals that the document is decrypted completely.
      *  Needed e.g. by {@link org.apache.pdfbox.pdfparser.NonSequentialPDFParser} to circumvent
-     *  additional decryption later on. */
+     *  additional decryption later on.
+     */
     public void setDecrypted()
     {
         isDecrypted = true;
     }
 
+    /** 
+     * Indicates if a encrypted pdf is already decrypted after parsing.
+     * Does make sense only if the {@link org.apache.pdfbox.pdfparser.NonSequentialPDFParser} is used.
+     * 
+     *  @return true indicates that the pdf is decrypted.
+     */
+    public boolean isDecrypted()
+    {
+        return isDecrypted;
+    }
+    
     /**
      * This will tell if this is an encrypted document.
      *
@@ -373,10 +386,6 @@ public class COSDocument extends COSBase implements Closeable
      */
     public boolean isEncrypted()
     {
-        if ( isDecrypted )
-        {
-            return false;
-        }
         boolean encrypted = false;
         if( trailer != null )
         {
