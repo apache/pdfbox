@@ -102,7 +102,7 @@ public class PDFAIdentificationValidation
 
     protected void checkConformanceLevel(List<ValidationError> ve, String value)
     {
-        if (!(value.equals("A") || value.equals("B")))
+        if (value == null || !(value.equals("A") || value.equals("B")))
         {
             ve.add(new ValidationError(ERROR_METADATA_INVALID_PDFA_CONFORMANCE));
         }
