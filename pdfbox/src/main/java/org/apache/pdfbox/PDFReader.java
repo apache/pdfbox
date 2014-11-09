@@ -391,16 +391,16 @@ public class PDFReader extends javax.swing.JFrame
         else
         {
             document = PDDocument.load(file);
-        }
-        if( document.isEncrypted() )
-        {
-            try
+            if( document.isEncrypted() )
             {
-                document.decrypt( password );
-            }
-            catch( org.apache.pdfbox.exceptions.CryptographyException e )
-            {
-                e.printStackTrace();
+                try
+                {
+                    document.decrypt( password );
+                }
+                catch( org.apache.pdfbox.exceptions.CryptographyException e )
+                {
+                    e.printStackTrace();
+                }
             }
         }
     }
