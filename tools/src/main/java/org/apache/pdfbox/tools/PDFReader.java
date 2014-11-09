@@ -390,20 +390,20 @@ public class PDFReader extends JFrame
         else
         {
             document = PDDocument.load(file);
+            if (document.isEncrypted())
+            {
+                try
+                {
+                    StandardDecryptionMaterial sdm = new StandardDecryptionMaterial(password);
+                    document.openProtection(sdm);
+                }
+                catch (InvalidPasswordException e)
+                {
+                    System.err.println("Error: The document is encrypted.");
+                }
+            }
         }
         renderer = new PDFRenderer(document);
-        if (document.isEncrypted())
-        {
-            try
-            {
-                StandardDecryptionMaterial sdm = new StandardDecryptionMaterial(password);
-                document.openProtection(sdm);
-            }
-            catch (InvalidPasswordException e)
-            {
-                System.err.println("Error: The document is encrypted.");
-            }
-        }
     }
 
     /**
