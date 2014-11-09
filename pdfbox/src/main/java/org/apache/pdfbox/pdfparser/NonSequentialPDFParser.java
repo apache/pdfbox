@@ -484,6 +484,29 @@ public class NonSequentialPDFParser extends PDFParser
     }
 
     /**
+     * Resolves all not already parsed objects of a dictionary recursively.
+     * 
+     * @param dictionaryObject dictionary to be parsed
+     * @throws IOException if something went wrong
+     * 
+     */
+    private void parseDictionaryRecursive(COSObject dictionaryObject) throws IOException
+    {
+        parseObjectDynamically(dictionaryObject, true);
+        COSDictionary dictionary = (COSDictionary)dictionaryObject.getObject();
+        for(COSBase value : dictionary.getValues())
+        {
+            if (value instanceof COSObject)
+            {
+                COSObject object = (COSObject)value;
+                if (object.getObject() == null)
+                {
+                    parseDictionaryRecursive(object);
+                }
+            }
+        }
+    }
+    /**
      * Prepare for decryption.
      * 
      * @throws IOException if something went wrong
@@ -496,7 +519,7 @@ public class NonSequentialPDFParser extends PDFParser
             if (trailerEncryptItem instanceof COSObject)
             {
                 COSObject trailerEncryptObj = (COSObject) trailerEncryptItem;
-                parseObjectDynamically(trailerEncryptObj, true);
+                parseDictionaryRecursive(trailerEncryptObj);
             }
             try
             {
