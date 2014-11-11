@@ -207,8 +207,6 @@ public class TestSymmetricKeyEncryption extends TestCase
                         baos.toByteArray());
             }
             
-            encryptedDoc.setAllSecurityToBeRemoved(true);
-
             File pdfFile = new File(testResultsDir, prefix + keyLength + "-bit-decrypted.pdf");
             encryptedDoc.setAllSecurityToBeRemoved(true);
             encryptedDoc.save(pdfFile);
