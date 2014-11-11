@@ -120,12 +120,16 @@ public class TestSymmetricKeyEncryption extends TestCase
         byte[] inputFileAsByteArray = getFileResourceAsByteArray("Acroform-PDFBOX-2333.pdf");
         int sizePriorToEncryption = inputFileAsByteArray.length;
 
-        PDDocument document = PDDocument.load(new ByteArrayInputStream(inputFileAsByteArray));
-        testSymmEncrForKeySize(40, sizePriorToEncryption, document, PASSWORD, permission1);
+        testSymmEncrForKeySize(40, sizePriorToEncryption, inputFileAsByteArray, PASSWORD, permission1, false);
+        testSymmEncrForKeySize(40, sizePriorToEncryption, inputFileAsByteArray, PASSWORD, permission1, true);
 
-        document = PDDocument.load(new ByteArrayInputStream(inputFileAsByteArray));
-        testSymmEncrForKeySize(128, sizePriorToEncryption, document, PASSWORD, permission1);
+        testSymmEncrForKeySize(128, sizePriorToEncryption, inputFileAsByteArray, PASSWORD, permission1, false);
+        testSymmEncrForKeySize(128, sizePriorToEncryption, inputFileAsByteArray, PASSWORD, permission1, true);
 
+        // AES256 not supported in 1.8
+        //testSymmEncrForKeySize(256, sizePriorToEncryption, inputFileAsByteArray, PASSWORD, permission1, false);
+        //testSymmEncrForKeySize(256, sizePriorToEncryption, inputFileAsByteArray, PASSWORD, permission1, true);
+        
         //TODO check permissions
     }
 
@@ -140,22 +144,27 @@ public class TestSymmetricKeyEncryption extends TestCase
         String testFileName = "preEnc_20141025_105451.pdf";
         byte[] inputFileWithEmbeddedFileAsByteArray = getFileResourceAsByteArray(testFileName);
 
-        PDDocument docWithEmbeddedFile;
         int sizeOfFileWithEmbeddedFile = inputFileWithEmbeddedFileAsByteArray.length;
 
         File extractedEmbeddedFile
                 = extractEmbeddedFile(new ByteArrayInputStream(inputFileWithEmbeddedFileAsByteArray), "innerFile.pdf");
 
-        docWithEmbeddedFile = PDDocument.load(new ByteArrayInputStream(inputFileWithEmbeddedFileAsByteArray));
-        testSymmEncrForKeySizeInner(40, sizeOfFileWithEmbeddedFile, docWithEmbeddedFile, extractedEmbeddedFile);
+        testSymmEncrForKeySizeInner(40, sizeOfFileWithEmbeddedFile, inputFileWithEmbeddedFileAsByteArray, extractedEmbeddedFile, false);
+        testSymmEncrForKeySizeInner(40, sizeOfFileWithEmbeddedFile, inputFileWithEmbeddedFileAsByteArray, extractedEmbeddedFile, true);
 
-        docWithEmbeddedFile = PDDocument.load(new ByteArrayInputStream(inputFileWithEmbeddedFileAsByteArray));
-        testSymmEncrForKeySizeInner(128, sizeOfFileWithEmbeddedFile, docWithEmbeddedFile, extractedEmbeddedFile);
+        testSymmEncrForKeySizeInner(128, sizeOfFileWithEmbeddedFile, inputFileWithEmbeddedFileAsByteArray, extractedEmbeddedFile, false);
+        testSymmEncrForKeySizeInner(128, sizeOfFileWithEmbeddedFile, inputFileWithEmbeddedFileAsByteArray, extractedEmbeddedFile, true);
+
+        // AES256 not supported in 1.8
+        //testSymmEncrForKeySizeInner(256, sizeOfFileWithEmbeddedFile, inputFileWithEmbeddedFileAsByteArray, extractedEmbeddedFile, false);
+        //testSymmEncrForKeySizeInner(256, sizeOfFileWithEmbeddedFile, inputFileWithEmbeddedFileAsByteArray, extractedEmbeddedFile, true);
     }
 
     private void testSymmEncrForKeySize(int keyLength,
-            int sizePriorToEncr, PDDocument document, String password, AccessPermission permission) throws IOException, BadSecurityHandlerException, CryptographyException, COSVisitorException
+            int sizePriorToEncr, byte [] inputFileAsByteArray, String password, 
+            AccessPermission permission, boolean nonSeq) throws IOException, COSVisitorException, BadSecurityHandlerException, CryptographyException
     {
+        PDDocument document = PDDocument.load(new ByteArrayInputStream(inputFileAsByteArray));
         String prefix = "Simple-";
         int numSrcPages = document.getNumberOfPages();
         ArrayList<BufferedImage> srcImgTab = new ArrayList<BufferedImage>();
@@ -172,14 +181,10 @@ public class TestSymmetricKeyEncryption extends TestCase
             srcContentStreamTab.add(baos);
         }
 
-        PDDocument encryptedDoc = encrypt(keyLength, sizePriorToEncr, document, prefix, permission);
+        PDDocument encryptedDoc = encrypt(keyLength, sizePriorToEncr, document, prefix, permission, nonSeq);
 
         try
         {
-            Assert.assertTrue(encryptedDoc.isEncrypted());
-            DecryptionMaterial decryptionMaterial = new StandardDecryptionMaterial(PASSWORD);
-            encryptedDoc.openProtection(decryptionMaterial);
-
             AccessPermission newPermission = encryptedDoc.getCurrentAccessPermission();
 
             Assert.assertEquals(numSrcPages, encryptedDoc.getNumberOfPages());
@@ -205,6 +210,7 @@ public class TestSymmetricKeyEncryption extends TestCase
             encryptedDoc.setAllSecurityToBeRemoved(true);
 
             File pdfFile = new File(testResultsDir, prefix + keyLength + "-bit-decrypted.pdf");
+            encryptedDoc.setAllSecurityToBeRemoved(true);
             encryptedDoc.save(pdfFile);
 
             boolean canAssembleDocument = newPermission.canAssembleDocument();
@@ -232,8 +238,11 @@ public class TestSymmetricKeyEncryption extends TestCase
         }
     }
 
-    public PDDocument encrypt(int keyLength, int sizePriorToEncr,
-            PDDocument doc, String prefix, AccessPermission permission) throws IOException, BadSecurityHandlerException, COSVisitorException
+    // encrypt with keylength and permission, save, check sizes before and after encryption
+    // reopen, decrypt and return document
+    private PDDocument encrypt(int keyLength, int sizePriorToEncr,
+            PDDocument doc, String prefix, AccessPermission permission,
+            boolean nonSeq) throws IOException, BadSecurityHandlerException, COSVisitorException, CryptographyException
     {
         AccessPermission ap = new AccessPermission();
         StandardProtectionPolicy spp = new StandardProtectionPolicy(PASSWORD, PASSWORD, ap);
@@ -246,10 +255,23 @@ public class TestSymmetricKeyEncryption extends TestCase
         doc.save(pdfFile);
         doc.close();
         long sizeEncrypted = pdfFile.length();
-        PDDocument encryptedDoc = PDDocument.load(pdfFile);
         Assert.assertTrue(keyLength
                 + "-bit encrypted pdf should not have same size as plain one",
                 sizeEncrypted != sizePriorToEncr);
+
+        PDDocument encryptedDoc;
+        if (nonSeq)
+        {
+            encryptedDoc = PDDocument.loadNonSeq(pdfFile, null, PASSWORD);
+        }
+        else
+        {
+            encryptedDoc = PDDocument.load(pdfFile);
+            Assert.assertTrue(encryptedDoc.isEncrypted());
+            DecryptionMaterial decryptionMaterial = new StandardDecryptionMaterial(PASSWORD);
+            encryptedDoc.openProtection(decryptionMaterial);
+        }
+
         return encryptedDoc;
     }
 
@@ -282,17 +304,15 @@ public class TestSymmetricKeyEncryption extends TestCase
     }
 
     private void testSymmEncrForKeySizeInner(int keyLength,
-            int sizePriorToEncr, PDDocument doc,
-            File embeddedFilePriorToEncryption) throws IOException, BadSecurityHandlerException, CryptographyException, COSVisitorException
+            int sizePriorToEncr, byte [] inputFileWithEmbeddedFileAsByteArray,
+            File embeddedFilePriorToEncryption, boolean nonSeq) 
+            throws IOException, BadSecurityHandlerException, CryptographyException, COSVisitorException
     {
-        PDDocument encryptedDoc = encrypt(keyLength, sizePriorToEncr, doc, "ContainsEmbedded-", permission1);
+        PDDocument document = PDDocument.load(new ByteArrayInputStream(inputFileWithEmbeddedFileAsByteArray));
+        PDDocument encryptedDoc = encrypt(keyLength, sizePriorToEncr, document, "ContainsEmbedded-", permission1, nonSeq);
 
         try
         {
-            Assert.assertTrue(encryptedDoc.isEncrypted());
-            DecryptionMaterial decryptionMaterial = new StandardDecryptionMaterial(PASSWORD);
-            encryptedDoc.openProtection(decryptionMaterial);
-
             AccessPermission permission = encryptedDoc.getCurrentAccessPermission();
 
             File decryptedFile = new File(testResultsDir, "DecryptedContainsEmbedded-" + keyLength + "-bit.pdf");
