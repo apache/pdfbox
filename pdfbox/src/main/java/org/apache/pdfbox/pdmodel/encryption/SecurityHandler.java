@@ -425,6 +425,11 @@ public abstract class SecurityHandler
         {
             return;
         }
+        // "The cross-reference stream shall not be encrypted"
+        if (COSName.XREF.equals(stream.getCOSName(COSName.TYPE)))
+        {
+            return;
+        }
         decryptDictionary(stream, objNum, genNum);
         InputStream encryptedStream = stream.getFilteredStream();
         encryptData(objNum, genNum, encryptedStream, stream.createFilteredStream(), true /* decrypt */);
