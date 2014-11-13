@@ -545,6 +545,10 @@ public class NonSequentialPDFParser extends PDFParser
             }
             catch (Exception e)
             {
+                if (e instanceof IOException)
+                {
+                    throw (IOException) e;
+                }
                 throw new IOException("Error (" + e.getClass().getSimpleName()
                         + ") while creating security handler for decryption",e);
             }
