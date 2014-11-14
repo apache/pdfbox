@@ -159,6 +159,7 @@ public class TestSymmetricKeyEncryption extends TestCase
         }
         catch (IOException ex)
         {
+            assertEquals("Cannot decrypt PDF, the password is incorrect", ex.getMessage());
         }
         try
         {
@@ -167,6 +168,7 @@ public class TestSymmetricKeyEncryption extends TestCase
         }
         catch (IOException ex)
         {
+            assertEquals("Cannot decrypt PDF, the password is incorrect", ex.getMessage());
         }
 
         inputFileAsByteArray = getFileResourceAsByteArray("PasswordSample-256bit.pdf");
@@ -181,6 +183,7 @@ public class TestSymmetricKeyEncryption extends TestCase
         }
         catch (IOException ex)
         {
+            assertEquals("Cannot decrypt PDF, the password is incorrect", ex.getMessage());
         }
         try
         {
@@ -189,6 +192,7 @@ public class TestSymmetricKeyEncryption extends TestCase
         }
         catch (IOException ex)
         {
+            assertEquals("Cannot decrypt PDF, the password is incorrect", ex.getMessage());
         }
     }
 
