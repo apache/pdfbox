@@ -896,7 +896,8 @@ public class PreflightParser extends NonSequentialPDFParser
             {
                 // EOL is authorized
                 if ((buf.length - tmpOffset) > 2
-                        || !(buf[tmpOffset] == 10 || buf[tmpOffset] == 13 || buf[tmpOffset + 1] == 10))
+                        || (buf.length - tmpOffset == 2 && (buf[tmpOffset] != 13 || buf[tmpOffset + 1] != 10))
+                        || (buf.length - tmpOffset == 1 && buf[tmpOffset] != 10))
                 {
                     addValidationError(new ValidationError(ERROR_SYNTAX_TRAILER_EOF,
                             "File contains data after the last %%EOF sequence"));
