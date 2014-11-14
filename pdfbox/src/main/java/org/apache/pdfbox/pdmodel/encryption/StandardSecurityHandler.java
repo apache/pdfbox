@@ -580,7 +580,7 @@ public final class StandardSecurityHandler extends SecurityHandler
             for( int i=0; i<50; i++ )
             {
                 md.reset();
-                md.update( digest );
+                md.update(digest, 0, (int) length);
                 digest = md.digest();
             }
         }
@@ -599,7 +599,7 @@ public final class StandardSecurityHandler extends SecurityHandler
             byte[] otemp = new byte[ owner.length ]; //sm
             System.arraycopy( owner, 0, otemp, 0, owner.length ); //sm
             rc4.write( owner, result);//sm
-
+            
             for( int i=19; i>=0; i-- )
             {
                 System.arraycopy( rc4Key, 0, iterationKey, 0, rc4Key.length );
