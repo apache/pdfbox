@@ -201,7 +201,7 @@ public final class StandardSecurityHandler extends SecurityHandler
 
         //some documents may have not document id, see
         //test\encryption\encrypted_doc_no_id.pdf
-        byte[] documentIDBytes = null;
+        byte[] documentIDBytes;
         if( documentIDArray != null && documentIDArray.size() >= 1 )
         {
             COSString id = (COSString)documentIDArray.getObject( 0 );
@@ -331,6 +331,7 @@ public final class StandardSecurityHandler extends SecurityHandler
      *
      * @throws IOException If there is an error accessing data.
      */
+    @Override
     public void prepareDocumentForEncryption(PDDocument doc) throws IOException
     {
         document = doc;
@@ -565,28 +566,10 @@ public final class StandardSecurityHandler extends SecurityHandler
      * @throws IOException If there is an error accessing data while generating the user password.
      */
     public byte[] getUserPassword( byte[] ownerPassword,  byte[] owner, int encRevision,
-                                   long length ) throws IOException
+                                   int length ) throws IOException
     {
         ByteArrayOutputStream result = new ByteArrayOutputStream();
-
-        byte[] ownerPadded = truncateOrPad( ownerPassword );
-
-        MessageDigest md = MessageDigests.getMD5();
-        md.update( ownerPadded );
-        byte[] digest = md.digest();
-
-        if( encRevision == 3 || encRevision == 4 )
-        {
-            for( int i=0; i<50; i++ )
-            {
-                md.reset();
-                md.update(digest, 0, (int) length);
-                digest = md.digest();
-            }
-        }
-
-        byte[] rc4Key = new byte[ (int)length ];
-        System.arraycopy( digest, 0, rc4Key, 0, (int)length );
+        byte[] rc4Key = computeRC4key(ownerPassword, encRevision, length);
 
         if( encRevision == 2 )
         {
@@ -723,7 +706,7 @@ public final class StandardSecurityHandler extends SecurityHandler
 
             if( encRevision == 3 || encRevision == 4)
             {
-                for( int i=0; i<50; i++ )
+                for( int i=0; i < 50; i++ )
                 {
                     md.reset();
                     md.update( digest, 0, length );
@@ -759,7 +742,7 @@ public final class StandardSecurityHandler extends SecurityHandler
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         byte[] encryptionKey = computeEncryptedKey( password, owner, null, null, null, permissions,
                 id, encRevision, length, encryptMetadata, true );
-
+        
         if( encRevision == 2 )
         {
             rc4.setKey( encryptionKey );
@@ -811,28 +794,12 @@ public final class StandardSecurityHandler extends SecurityHandler
     public byte[] computeOwnerPassword(byte[] ownerPassword, byte[] userPassword,
                                        int encRevision,  int length ) throws IOException
     {
-        byte[] ownerPadded = truncateOrPad( ownerPassword );
-
-        MessageDigest md = MessageDigests.getMD5();
-        md.update( ownerPadded );
-        byte[] digest = md.digest();
-
-        if( encRevision == 3 || encRevision == 4)
-        {
-            for( int i=0; i<50; i++ )
-            {
-                md.reset();
-                md.update( digest, 0, length );
-                digest = md.digest();
-            }
-        }
         if( encRevision == 2 && length != 5 )
         {
             throw new IOException("Expected length=5 actual=" + length );
         }
-
-        byte[] rc4Key = new byte[ length ];
-        System.arraycopy( digest, 0, rc4Key, 0, length );
+        
+        byte[] rc4Key = computeRC4key(ownerPassword, encRevision, length);
         byte[] paddedUser = truncateOrPad( userPassword );
 
         rc4.setKey( rc4Key );
@@ -858,6 +825,28 @@ public final class StandardSecurityHandler extends SecurityHandler
 
         return encrypted.toByteArray();
     }
+
+    // steps (a) to (d) of "Algorithm 3: Computing the encryption dictionary?s O (owner password) value".
+    private byte[] computeRC4key(byte[] ownerPassword, int encRevision, int length)
+    {
+        MessageDigest md = MessageDigests.getMD5();
+        byte[] digest = md.digest(truncateOrPad(ownerPassword));
+        if (encRevision == 3 || encRevision == 4)
+        {
+            for (int i = 0; i < 50; i++)
+            {
+                // this deviates from the spec - however, omitting the length
+                // parameter prevents the file to be opened in Adobe Reader
+                // with the owner password when the key length is 40 bit (= 5 bytes)
+                md.update(digest, 0, length);
+                digest = md.digest();
+            }
+        }
+        byte[] rc4Key = new byte[(int) length];
+        System.arraycopy(digest, 0, rc4Key, 0, length);
+        return rc4Key;
+    }
+
 
     /**
      * This will take the password and truncate or pad it as necessary.
