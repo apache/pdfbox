@@ -58,7 +58,7 @@ import org.junit.Assert;
  * Tests for symmetric key encryption.
  *
  * IMPORTANT! When making changes in the encryption / decryption methods, do
- * also check whether the six generated encrypted files (to be found in
+ * also check whether the four generated encrypted files (to be found in
  * pdfbox/target/test-output/crypto and named *encrypted.pdf) can be opened with
  * Adobe Reader by providing the owner password and the user password.
  *
