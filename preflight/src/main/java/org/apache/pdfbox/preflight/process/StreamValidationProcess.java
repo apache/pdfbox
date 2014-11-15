@@ -49,6 +49,7 @@ import org.apache.pdfbox.preflight.utils.FilterHelper;
 public class StreamValidationProcess extends AbstractProcess
 {
 
+    @Override
     public void validate(PreflightContext ctx) throws ValidationException
     {
         PDDocument pdfDoc = ctx.getDocument();
@@ -92,7 +93,7 @@ public class StreamValidationProcess extends AbstractProcess
      */
     protected void checkFilters(COSStream stream, PreflightContext context)
     {
-        COSBase bFilter = stream.getItem(COSName.FILTER);
+        COSBase bFilter = stream.getDictionaryObject(COSName.FILTER);
         if (bFilter != null)
         {
             COSDocument cosDocument = context.getDocument().getDocument();
@@ -250,7 +251,7 @@ public class StreamValidationProcess extends AbstractProcess
 
                     do
                     {
-                        int cr = 0;
+                        int cr;
                         if (nbBytesToRead > 1024)
                         {
                             cr = ra.read(buffer, 0, 1024);
