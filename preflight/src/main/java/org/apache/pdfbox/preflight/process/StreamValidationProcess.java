@@ -93,7 +93,7 @@ public class StreamValidationProcess extends AbstractProcess
      */
     protected void checkFilters(COSStream stream, PreflightContext context)
     {
-        COSBase bFilter = stream.getItem(COSName.FILTER);
+        COSBase bFilter = stream.getDictionaryObject(COSName.FILTER);
         if (bFilter != null)
         {
             COSDocument cosDocument = context.getDocument().getDocument();
