@@ -422,40 +422,19 @@ public class StandardSecurityHandler extends SecurityHandler
             byte[] ownerPassword,
             byte[] o,
             int encRevision,
-            long length )
+            int length )
             throws CryptographyException, IOException
     {
         try
         {
             ByteArrayOutputStream result = new ByteArrayOutputStream();
+            byte[] rc4Key = computeRC4key(ownerPassword, encRevision, length);
 
-            //3.3 STEP 1
-            byte[] ownerPadded = truncateOrPad( ownerPassword );
-
-            //3.3 STEP 2
-            MessageDigest md = MessageDigest.getInstance( "MD5" );
-            md.update( ownerPadded );
-            byte[] digest = md.digest();
-
-            //3.3 STEP 3
-            if( encRevision == 3 || encRevision == 4 )
-            {
-                for( int i=0; i<50; i++ )
-                {
-                    md.reset();
-                    md.update( digest, 0, (int) length );
-                    digest = md.digest();
-                }
-            }
             if( encRevision == 2 && length != 5 )
             {
                 throw new CryptographyException(
                     "Error: Expected length=5 actual=" + length );
             }
-
-            //3.3 STEP 4
-            byte[] rc4Key = new byte[ (int)length ];
-            System.arraycopy( digest, 0, rc4Key, 0, (int)length );
 
             //3.7 step 2
             if( encRevision == 2 )
@@ -682,34 +661,8 @@ public class StandardSecurityHandler extends SecurityHandler
         {
             try
             {
-                //STEP 1
-                byte[] ownerPadded = truncateOrPad( ownerPassword );
-
-                //STEP 2
-                MessageDigest md = MessageDigest.getInstance( "MD5" );
-                md.update( ownerPadded );
-                byte[] digest = md.digest();
-
-                //STEP 3
-                if( encRevision == 3 || encRevision == 4)
-                {
-                    for( int i=0; i<50; i++ )
-                    {
-                        md.reset();
-                        md.update( digest, 0, length );
-                        digest = md.digest();
-                    }
-                }
-                if( encRevision == 2 && length != 5 )
-                {
-                    throw new CryptographyException(
-                        "Error: Expected length=5 actual=" + length );
-                }
-
-                //STEP 4
-                byte[] rc4Key = new byte[ length ];
-                System.arraycopy( digest, 0, rc4Key, 0, length );
-
+                byte[] rc4Key = computeRC4key(ownerPassword, encRevision, length);
+                
                 //STEP 5
                 byte[] paddedUser = truncateOrPad( userPassword );
 
@@ -747,6 +700,43 @@ public class StandardSecurityHandler extends SecurityHandler
             }
         }
 
+    // steps (a) to (d) of "Algorithm 3: Computing the encryption dictionary's O (owner password) value".
+    private byte[] computeRC4key(byte[] ownerPassword, int encRevision, int length)
+            throws NoSuchAlgorithmException, CryptographyException
+    {
+        if (encRevision == 2 && length != 5)
+        {
+            throw new CryptographyException(
+                    "Error: Expected length=5 actual=" + length);
+        }
+
+        //3.3 STEP a
+        byte[] ownerPadded = truncateOrPad(ownerPassword);
+
+        //3.3 STEP b
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        md.update(ownerPadded);
+        byte[] digest = md.digest();
+
+        //3.3 STEP c
+        if (encRevision == 3 || encRevision == 4)
+        {
+            for (int i = 0; i < 50; i++)
+            {
+                // this deviates from the spec - however, omitting the length
+                // parameter prevents the file to be opened in Adobe Reader
+                // with the owner password when the key length is 40 bit (= 5 bytes)
+                md.reset();
+                md.update(digest, 0, length);
+                digest = md.digest();
+            }
+        }
+
+        //3.3 STEP d
+        byte[] rc4Key = new byte[(int) length];
+        System.arraycopy(digest, 0, rc4Key, 0, (int) length);
+        return rc4Key;
+    }
 
     /**
      * This will take the password and truncate or pad it as necessary.
