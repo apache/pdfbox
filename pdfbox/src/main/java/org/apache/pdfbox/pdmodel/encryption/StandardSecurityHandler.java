@@ -443,7 +443,7 @@ public class StandardSecurityHandler extends SecurityHandler
                 for( int i=0; i<50; i++ )
                 {
                     md.reset();
-                    md.update( digest );
+                    md.update( digest, 0, (int) length );
                     digest = md.digest();
                 }
             }
