@@ -34,8 +34,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
+import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
@@ -326,7 +328,14 @@ public abstract class SecurityHandler
                     byte[] buffer = new byte[256];
                     for (int n = 0; -1 != (n = data.read(buffer));)
                     {
-                        output.write(decryptCipher.update(buffer,0, n ));
+                        if (data.available() > 0)
+                        {
+                            output.write(decryptCipher.update(buffer,0, n ));
+                        }
+                        else
+                        {
+                            output.write(decryptCipher.doFinal(buffer,0, n ));
+                        }
                     }
                 }
                 catch (InvalidKeyException e)
@@ -338,6 +347,14 @@ public abstract class SecurityHandler
                     throw new IOException(e);
                 }
                 catch (NoSuchPaddingException e)
+                {
+                    throw new IOException(e);
+                }
+                catch (IllegalBlockSizeException e)
+                {
+                    throw new IOException(e);
+                }
+                catch (BadPaddingException e)
                 {
                     throw new IOException(e);
                 }
