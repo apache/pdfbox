@@ -167,7 +167,13 @@ public abstract class SecurityHandler
         while (objectIter.hasNext())
         {
             COSObject nextObj = objectIter.next();
-            if (nextObj.getObject() != encryptionDict)
+            COSBase nextCOSBase = nextObj.getObject();
+            boolean isSignatureDictionary = false;
+            if (nextCOSBase instanceof COSDictionary)
+            {
+               isSignatureDictionary = COSName.SIG.equals(((COSDictionary) nextCOSBase).getCOSName(COSName.TYPE));
+            }
+            if (!isSignatureDictionary && nextCOSBase!= encryptionDict)
             {
                 decryptObject(nextObj);
             }
@@ -365,7 +371,6 @@ public abstract class SecurityHandler
                 rc4.write(data, output);
             }
         }
-
         output.flush();
     }
 
