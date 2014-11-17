@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.crypto.Cipher;
-import javax.crypto.CipherInputStream;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
@@ -306,26 +305,14 @@ public abstract class SecurityHandler
             try
             {
                 Cipher decryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-
                 SecretKey aesKey = new SecretKeySpec(finalKey, "AES");
-
                 IvParameterSpec ips = new IvParameterSpec(iv);
-
                 decryptCipher.init(decrypt ? Cipher.DECRYPT_MODE : Cipher.ENCRYPT_MODE, aesKey, ips);
 
-                CipherInputStream cipherStream = new CipherInputStream(data, decryptCipher);
-
-                try
+                byte[] buffer = new byte[256];
+                for (int n = 0; -1 != (n = data.read(buffer));)
                 {
-                    byte[] buffer = new byte[4096];
-                    for (int n = 0; -1 != (n = cipherStream.read(buffer));)
-                    {
-                        output.write(buffer, 0, n);
-                    }
-                }
-                finally
-                {
-                    cipherStream.close();
+                	output.write(decryptCipher.update(buffer,0, n ));
                 }
             }
             catch (InvalidKeyException e)
