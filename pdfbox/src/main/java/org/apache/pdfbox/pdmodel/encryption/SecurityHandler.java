@@ -32,7 +32,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
@@ -52,8 +54,8 @@ import org.apache.pdfbox.exceptions.WrappedIOException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
- * This class represents a security handler as described in the PDF specifications.
- * A security handler is responsible of documents protection.
+ * This class represents a security handler as described in the PDF specifications. A security handler is responsible of
+ * documents protection.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @author Benoit Guillon (benoit.guillon@snv.jussieu.fr)
@@ -100,10 +102,10 @@ public abstract class SecurityHandler
      */
     protected ARCFour rc4 = new ARCFour();
 
-    /** 
-     * indicates if the Metadata have to be decrypted of not 
-     */ 
-    protected boolean decryptMetadata; 
+    /**
+     * indicates if the Metadata have to be decrypted of not
+     */
+    protected boolean decryptMetadata;
     private Set<COSBase> objects = new HashSet<COSBase>();
 
     private Set<COSDictionary> potentialSignatures = new HashSet<COSDictionary>();
@@ -114,8 +116,8 @@ public abstract class SecurityHandler
     private boolean aes;
 
     /**
-     * The access permission granted to the current user for the document. These
-     * permissions are computed during decryption and are in read only mode.
+     * The access permission granted to the current user for the document. These permissions are computed during
+     * decryption and are in read only mode.
      */
 
     protected AccessPermission currentAccessPermission = null;
@@ -123,25 +125,33 @@ public abstract class SecurityHandler
     /**
      * Prepare the document for encryption.
      *
-     * @param doc The document that will be encrypted.
+     * @param doc
+     *            The document that will be encrypted.
      *
-     * @throws CryptographyException If there is an error while preparing.
-     * @throws IOException If there is an error with the document.
+     * @throws CryptographyException
+     *             If there is an error while preparing.
+     * @throws IOException
+     *             If there is an error with the document.
      */
     public abstract void prepareDocumentForEncryption(PDDocument doc) throws CryptographyException, IOException;
 
     /**
      * Prepares everything to decrypt the document.
      * 
-     * If {@link #decryptDocument(PDDocument, DecryptionMaterial)} is used, this method is
-     * called from there. Only if decryption of single objects is needed this should be called instead.
+     * If {@link #decryptDocument(PDDocument, DecryptionMaterial)} is used, this method is called from there. Only if
+     * decryption of single objects is needed this should be called instead.
      *
-     * @param encDictionary  encryption dictionary, can be retrieved via {@link PDDocument#getEncryptionDictionary()}
-     * @param documentIDArray  document id which is returned via {@link COSDocument#getDocumentID()}
-     * @param decryptionMaterial Information used to decrypt the document.
+     * @param encDictionary
+     *            encryption dictionary, can be retrieved via {@link PDDocument#getEncryptionDictionary()}
+     * @param documentIDArray
+     *            document id which is returned via {@link COSDocument#getDocumentID()}
+     * @param decryptionMaterial
+     *            Information used to decrypt the document.
      *
-     * @throws IOException If there is an error accessing data.
-     * @throws CryptographyException If there is an error with decryption.
+     * @throws IOException
+     *             If there is an error accessing data.
+     * @throws CryptographyException
+     *             If there is an error with decryption.
      */
     public abstract void prepareForDecryption(PDEncryptionDictionary encDictionary, COSArray documentIDArray,
             DecryptionMaterial decryptionMaterial) throws CryptographyException, IOException;
@@ -149,20 +159,25 @@ public abstract class SecurityHandler
     /**
      * Prepare the document for decryption.
      *
-     * @param doc The document to decrypt.
-     * @param mat Information required to decrypt the document.
-     * @throws CryptographyException If there is an error while preparing.
-     * @throws IOException If there is an error with the document.
+     * @param doc
+     *            The document to decrypt.
+     * @param mat
+     *            Information required to decrypt the document.
+     * @throws CryptographyException
+     *             If there is an error while preparing.
+     * @throws IOException
+     *             If there is an error with the document.
      */
     public abstract void decryptDocument(PDDocument doc, DecryptionMaterial mat) throws CryptographyException,
             IOException;
 
     /**
-     * This method must be called by an implementation of this class to really proceed
-     * to decryption.
+     * This method must be called by an implementation of this class to really proceed to decryption.
      *
-     * @throws IOException If there is an error in the decryption.
-     * @throws CryptographyException If there is an error in the decryption.
+     * @throws IOException
+     *             If there is an error in the decryption.
+     * @throws CryptographyException
+     *             If there is an error in the decryption.
      */
     protected void proceedDecryption() throws IOException, CryptographyException
     {
@@ -223,16 +238,21 @@ public abstract class SecurityHandler
     /**
      * Encrypt a set of data.
      *
-     * @param objectNumber The data object number.
-     * @param genNumber The data generation number.
-     * @param data The data to encrypt.
-     * @param output The output to write the encrypted data to.
-     * @throws CryptographyException If there is an error during the encryption.
-     * @throws IOException If there is an error reading the data.
-     * @deprecated While this works fine for RC4 encryption, it will never decrypt AES data
-     *             You should use encryptData(objectNumber, genNumber, data, output, decrypt)
-     *             which can do everything.  This function is just here for compatibility
-     *             reasons and will be removed in the future.
+     * @param objectNumber
+     *            The data object number.
+     * @param genNumber
+     *            The data generation number.
+     * @param data
+     *            The data to encrypt.
+     * @param output
+     *            The output to write the encrypted data to.
+     * @throws CryptographyException
+     *             If there is an error during the encryption.
+     * @throws IOException
+     *             If there is an error reading the data.
+     * @deprecated While this works fine for RC4 encryption, it will never decrypt AES data You should use
+     *             encryptData(objectNumber, genNumber, data, output, decrypt) which can do everything. This function is
+     *             just here for compatibility reasons and will be removed in the future.
      */
     public void encryptData(long objectNumber, long genNumber, InputStream data, OutputStream output)
             throws CryptographyException, IOException
@@ -244,14 +264,21 @@ public abstract class SecurityHandler
     /**
      * Encrypt a set of data.
      *
-     * @param objectNumber The data object number.
-     * @param genNumber The data generation number.
-     * @param data The data to encrypt.
-     * @param output The output to write the encrypted data to.
-     * @param decrypt true to decrypt the data, false to encrypt it
+     * @param objectNumber
+     *            The data object number.
+     * @param genNumber
+     *            The data generation number.
+     * @param data
+     *            The data to encrypt.
+     * @param output
+     *            The output to write the encrypted data to.
+     * @param decrypt
+     *            true to decrypt the data, false to encrypt it
      *
-     * @throws CryptographyException If there is an error during the encryption.
-     * @throws IOException If there is an error reading the data.
+     * @throws CryptographyException
+     *             If there is an error during the encryption.
+     * @throws IOException
+     *             If there is an error reading the data.
      */
     public void encryptData(long objectNumber, long genNumber, InputStream data, OutputStream output, boolean decrypt)
             throws CryptographyException, IOException
@@ -312,7 +339,14 @@ public abstract class SecurityHandler
                 byte[] buffer = new byte[256];
                 for (int n = 0; -1 != (n = data.read(buffer));)
                 {
-                	output.write(decryptCipher.update(buffer,0, n ));
+                    if (data.available() > 0)
+                    {
+                        output.write(decryptCipher.update(buffer, 0, n));
+                    }
+                    else
+                    {
+                        output.write(decryptCipher.doFinal(buffer, 0, n));
+                    }
                 }
             }
             catch (InvalidKeyException e)
@@ -331,6 +365,14 @@ public abstract class SecurityHandler
             {
                 throw new WrappedIOException(e);
             }
+            catch (IllegalBlockSizeException e)
+            {
+                throw new WrappedIOException(e);
+            }
+            catch (BadPaddingException e)
+            {
+                throw new WrappedIOException(e);
+            }
         }
         else
         {
@@ -344,10 +386,13 @@ public abstract class SecurityHandler
     /**
      * This will decrypt an object in the document.
      *
-     * @param object The object to decrypt.
+     * @param object
+     *            The object to decrypt.
      *
-     * @throws CryptographyException If there is an error decrypting the stream.
-     * @throws IOException If there is an error getting the stream data.
+     * @throws CryptographyException
+     *             If there is an error decrypting the stream.
+     * @throws IOException
+     *             If there is an error getting the stream data.
      */
     private void decryptObject(COSObject object) throws CryptographyException, IOException
     {
@@ -360,12 +405,17 @@ public abstract class SecurityHandler
     /**
      * This will dispatch to the correct method.
      *
-     * @param obj The object to decrypt.
-     * @param objNum The object number.
-     * @param genNum The object generation Number.
+     * @param obj
+     *            The object to decrypt.
+     * @param objNum
+     *            The object number.
+     * @param genNum
+     *            The object generation Number.
      *
-     * @throws CryptographyException If there is an error decrypting the stream.
-     * @throws IOException If there is an error getting the stream data.
+     * @throws CryptographyException
+     *             If there is an error decrypting the stream.
+     * @throws IOException
+     *             If there is an error getting the stream data.
      */
     private void decrypt(COSBase obj, long objNum, long genNum) throws CryptographyException, IOException
     {
@@ -395,12 +445,17 @@ public abstract class SecurityHandler
     /**
      * This will decrypt a stream.
      *
-     * @param stream The stream to decrypt.
-     * @param objNum The object number.
-     * @param genNum The object generation number.
+     * @param stream
+     *            The stream to decrypt.
+     * @param objNum
+     *            The object number.
+     * @param genNum
+     *            The object generation number.
      *
-     * @throws CryptographyException If there is an error getting the stream.
-     * @throws IOException If there is an error getting the stream data.
+     * @throws CryptographyException
+     *             If there is an error getting the stream.
+     * @throws IOException
+     *             If there is an error getting the stream data.
      */
     public void decryptStream(COSStream stream, long objNum, long genNum) throws CryptographyException, IOException
     {
@@ -414,16 +469,20 @@ public abstract class SecurityHandler
     }
 
     /**
-     * This will encrypt a stream, but not the dictionary as the dictionary is
-     * encrypted by visitFromString() in COSWriter and we don't want to encrypt
-     * it twice.
+     * This will encrypt a stream, but not the dictionary as the dictionary is encrypted by visitFromString() in
+     * COSWriter and we don't want to encrypt it twice.
      *
-     * @param stream The stream to decrypt.
-     * @param objNum The object number.
-     * @param genNum The object generation number.
+     * @param stream
+     *            The stream to decrypt.
+     * @param objNum
+     *            The object number.
+     * @param genNum
+     *            The object generation number.
      *
-     * @throws CryptographyException If there is an error getting the stream.
-     * @throws IOException If there is an error getting the stream data.
+     * @throws CryptographyException
+     *             If there is an error getting the stream.
+     * @throws IOException
+     *             If there is an error getting the stream data.
      */
     public void encryptStream(COSStream stream, long objNum, long genNum) throws CryptographyException, IOException
     {
@@ -434,12 +493,17 @@ public abstract class SecurityHandler
     /**
      * This will decrypt a dictionary.
      *
-     * @param dictionary The dictionary to decrypt.
-     * @param objNum The object number.
-     * @param genNum The object generation number.
+     * @param dictionary
+     *            The dictionary to decrypt.
+     * @param objNum
+     *            The object number.
+     * @param genNum
+     *            The object generation number.
      *
-     * @throws CryptographyException If there is an error decrypting the document.
-     * @throws IOException If there is an error creating a new string.
+     * @throws CryptographyException
+     *             If there is an error decrypting the document.
+     * @throws IOException
+     *             If there is an error creating a new string.
      */
     private void decryptDictionary(COSDictionary dictionary, long objNum, long genNum) throws CryptographyException,
             IOException
@@ -448,7 +512,8 @@ public abstract class SecurityHandler
         {
             COSBase value = entry.getValue();
             // within a dictionary only the following kind of COS objects have to be decrypted
-            if (value instanceof COSString || value instanceof COSStream || value instanceof COSArray || value instanceof COSDictionary)
+            if (value instanceof COSString || value instanceof COSStream || value instanceof COSArray
+                    || value instanceof COSDictionary)
             {
                 // if we are a signature dictionary and contain a Contents entry then
                 // we don't decrypt it.
@@ -464,11 +529,15 @@ public abstract class SecurityHandler
     /**
      * This will encrypt a string.
      *
-     * @param string the string to encrypt.
-     * @param objNum The object number.
-     * @param genNum The object generation number.
+     * @param string
+     *            the string to encrypt.
+     * @param objNum
+     *            The object number.
+     * @param genNum
+     *            The object generation number.
      *
-     * @throws IOException If an error occurs writing the new string.
+     * @throws IOException
+     *             If an error occurs writing the new string.
      */
     public void encryptString(COSString string, long objNum, long genNum) throws CryptographyException, IOException
     {
@@ -478,16 +547,21 @@ public abstract class SecurityHandler
         string.reset();
         string.append(buffer.toByteArray());
     }
-    
+
     /**
      * This will decrypt a string.
      *
-     * @param string the string to decrypt.
-     * @param objNum The object number.
-     * @param genNum The object generation number.
+     * @param string
+     *            the string to decrypt.
+     * @param objNum
+     *            The object number.
+     * @param genNum
+     *            The object generation number.
      *
-     * @throws CryptographyException If an error occurs during decryption.
-     * @throws IOException If an error occurs writing the new string.
+     * @throws CryptographyException
+     *             If an error occurs during decryption.
+     * @throws IOException
+     *             If an error occurs writing the new string.
      */
     public void decryptString(COSString string, long objNum, long genNum) throws CryptographyException, IOException
     {
@@ -501,12 +575,17 @@ public abstract class SecurityHandler
     /**
      * This will decrypt an array.
      *
-     * @param array The array to decrypt.
-     * @param objNum The object number.
-     * @param genNum The object generation number.
+     * @param array
+     *            The array to decrypt.
+     * @param objNum
+     *            The object number.
+     * @param genNum
+     *            The object generation number.
      *
-     * @throws CryptographyException If an error occurs during decryption.
-     * @throws IOException If there is an error accessing the data.
+     * @throws CryptographyException
+     *             If an error occurs during decryption.
+     * @throws IOException
+     *             If there is an error accessing the data.
      */
     public void decryptArray(COSArray array, long objNum, long genNum) throws CryptographyException, IOException
     {
@@ -518,7 +597,8 @@ public abstract class SecurityHandler
 
     /**
      * Getter of the property <tt>keyLength</tt>.
-     * @return  Returns the keyLength.
+     * 
+     * @return Returns the keyLength.
      */
     public int getKeyLength()
     {
@@ -528,7 +608,8 @@ public abstract class SecurityHandler
     /**
      * Setter of the property <tt>keyLength</tt>.
      *
-     * @param keyLen  The keyLength to set.
+     * @param keyLen
+     *            The keyLength to set.
      */
     public void setKeyLength(int keyLen)
     {
@@ -536,8 +617,8 @@ public abstract class SecurityHandler
     }
 
     /**
-     * Returns the access permissions that were computed during document decryption.
-     * The returned object is in read only mode.
+     * Returns the access permissions that were computed during document decryption. The returned object is in read only
+     * mode.
      *
      * @return the access permissions or null if the document was not decrypted.
      */
@@ -549,7 +630,7 @@ public abstract class SecurityHandler
     /**
      * True if AES is used for encryption and decryption.
      * 
-     * @return true if AEs is used 
+     * @return true if AEs is used
      */
     public boolean isAES()
     {
@@ -559,7 +640,8 @@ public abstract class SecurityHandler
     /**
      * Set to true if AES for encryption and decryption should be used.
      * 
-     * @param aesValue if true AES will be used 
+     * @param aesValue
+     *            if true AES will be used
      * 
      */
     public void setAES(boolean aesValue)
