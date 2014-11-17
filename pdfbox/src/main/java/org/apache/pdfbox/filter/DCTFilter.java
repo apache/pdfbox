@@ -54,6 +54,13 @@ final class DCTFilter extends Filter
         try
         {
             iis = ImageIO.createImageInputStream(encoded);
+
+            // skip one LF if there
+            if (iis.read() != 0x0A)
+            {
+                iis.seek(0);
+            }
+            
             reader.setInput(iis);
 
             // get the raster using horrible JAI workarounds
