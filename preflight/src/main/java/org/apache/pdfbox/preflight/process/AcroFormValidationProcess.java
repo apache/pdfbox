@@ -104,7 +104,7 @@ public class AcroFormValidationProcess extends AbstractProcess
     protected boolean exploreFields(PreflightContext ctx, List<?> lFields) throws IOException
     {
         if (lFields != null)
-        { 
+        {
             // the list can be null if the Field doesn't have children
             for (Object obj : lFields)
             {
@@ -112,18 +112,18 @@ public class AcroFormValidationProcess extends AbstractProcess
                 {
                     if (!validateField(ctx, (PDFieldTreeNode) obj))
                     {
-                    return false;
+                        return false;
+                    }
                 }
-            }
                 else if (obj instanceof PDAnnotationWidget)
                 {
                     // "A field?s children in the hierarchy may also include widget annotations"
                     ContextHelper.validateElement(ctx, ((PDAnnotationWidget) obj).getDictionary(), ANNOTATIONS_PROCESS);
-        }
+                }
                 else
                 {
                     addValidationError(ctx, new ValidationError(ERROR_SYNTAX_BODY,
-                    "Field can only have fields or widget annotations as KIDS"));                    
+                            "Field can only have fields or widget annotations as KIDS"));
                 }
             }
         }
