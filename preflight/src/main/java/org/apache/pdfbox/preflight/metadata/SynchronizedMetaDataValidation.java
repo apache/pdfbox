@@ -61,6 +61,8 @@ public class SynchronizedMetaDataValidation
         String title = dico.getTitle();
         if (title != null)
         {
+            // automatically trim the provided string value
+            title = title.trim();
             if (dc != null)
             {
                 // Check the x-default value, if not found, check with the first value
@@ -130,6 +132,8 @@ public class SynchronizedMetaDataValidation
         String author = dico.getAuthor();
         if (author != null)
         {
+            // automatically trim the provided string value
+            author = author.trim();
             if (dc != null)
             {
                 if (dc.getCreatorsProperty() != null)
@@ -181,6 +185,8 @@ public class SynchronizedMetaDataValidation
         String subject = dico.getSubject();
         if (subject != null)
         {
+            // automatically trim the provided string value
+            subject = subject.trim();
             if (dc != null)
             {
                 // PDF/A Conformance Erratum (2007) specifies XMP Subject
@@ -228,6 +234,8 @@ public class SynchronizedMetaDataValidation
         String keyword = dico.getKeywords();
         if (keyword != null)
         {
+            // automatically trim the provided string value
+            keyword = keyword.trim();
             if (pdf != null)
             {
                 if (pdf.getKeywordsProperty() == null)
@@ -264,6 +272,8 @@ public class SynchronizedMetaDataValidation
         String producer = dico.getProducer();
         if (producer != null)
         {
+            // automatically trim the provided string value
+            producer = producer.trim();
             if (pdf != null)
             {
                 if (pdf.getProducerProperty() == null)
@@ -302,6 +312,8 @@ public class SynchronizedMetaDataValidation
         String creatorTool = dico.getCreator();
         if (creatorTool != null)
         {
+            // automatically trim the provided string value
+            creatorTool = creatorTool.trim();
             if (xmp != null)
             {
                 if (xmp.getCreatorToolProperty() == null)
