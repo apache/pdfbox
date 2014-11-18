@@ -27,6 +27,7 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ACTION_FORBID
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ACTION_FORBIDDEN_WIDGET_ACTION_FIELD;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_DICT_INVALID;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_NOCATALOG;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_BODY;
 
 import java.io.IOException;
 import java.util.List;
@@ -38,6 +39,7 @@ import org.apache.pdfbox.pdmodel.interactive.action.PDFormFieldAdditionalActions
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
+import org.apache.pdfbox.pdmodel.interactive.form.PDFieldTreeNode;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
@@ -46,6 +48,7 @@ import org.apache.pdfbox.preflight.utils.ContextHelper;
 public class AcroFormValidationProcess extends AbstractProcess
 {
 
+    @Override
     public void validate(PreflightContext ctx) throws ValidationException
     {
         PDDocumentCatalog catalog = ctx.getDocument().getDocumentCatalog();
@@ -67,7 +70,7 @@ public class AcroFormValidationProcess extends AbstractProcess
         }
         else
         {
-            ctx.addValidationError(new ValidationError(ERROR_SYNTAX_NOCATALOG, "There are no Catalog entry in the Document."));
+            ctx.addValidationError(new ValidationError(ERROR_SYNTAX_NOCATALOG, "There is no Catalog entry in the Document."));
         }
     }
 
@@ -89,24 +92,38 @@ public class AcroFormValidationProcess extends AbstractProcess
     }
 
     /**
-     * This function explores all fields and their children to check if the A or AA entry is present.
+     * This function explores all fields and their children to validate them.
      * 
-     * @see #valideField(PreflightContext, PDField) 
+     * @see #validateField(PreflightContext, PDField) 
      * 
      * @param ctx the preflight context.
-     * @param lFields the list of fields.
-     * @return the result of the check for A or AA entries.
+     * @param lFields the list of fields, can be null.
+     * @return the result of the validation.
      * @throws IOException
      */
     protected boolean exploreFields(PreflightContext ctx, List<?> lFields) throws IOException
     {
         if (lFields != null)
-        { // the list can be null is the Field doesn't have child
+        { 
+            // the list can be null if the Field doesn't have children
             for (Object obj : lFields)
             {
-                if (!valideField(ctx, (PDField) obj))
+                if (obj instanceof PDFieldTreeNode)
                 {
+                    if (!validateField(ctx, (PDFieldTreeNode) obj))
+                    {
                     return false;
+                }
+            }
+                else if (obj instanceof PDAnnotationWidget)
+                {
+                    // "A field?s children in the hierarchy may also include widget annotations"
+                    ContextHelper.validateElement(ctx, ((PDAnnotationWidget) obj).getDictionary(), ANNOTATIONS_PROCESS);
+        }
+                else
+                {
+                    addValidationError(ctx, new ValidationError(ERROR_SYNTAX_BODY,
+                    "Field can only have fields or widget annotations as KIDS"));                    
                 }
             }
         }
@@ -114,7 +131,7 @@ public class AcroFormValidationProcess extends AbstractProcess
     }
 
     /**
-     * A and AA field are forbidden, this method checks if they are present and checks all child of this field. If the
+     * A and AA field are forbidden, this method checks if they are present and checks all children of this field. If the
      * an Additional Action is present the error code ERROR_ACTION_FORBIDDEN_ADDITIONAL_ACTIONS_FIELD (6.2.3) is added
      * to the error list If the an Action is present (in the Widget Annotation) the error
      * ERROR_ACTION_FORBIDDEN_WIDGET_ACTION_FIELD (6.2.4) is added to the error list. (Remark : The widget validation
@@ -125,7 +142,7 @@ public class AcroFormValidationProcess extends AbstractProcess
      * @return the result of the check for A or AA entries.
      * @throws IOException
      */
-    protected boolean valideField(PreflightContext ctx, PDField aField) throws IOException
+    protected boolean validateField(PreflightContext ctx, PDFieldTreeNode aField) throws IOException
     {
         boolean res = true;
         PDFormFieldAdditionalActions aa = aField.getActions();
