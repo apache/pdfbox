@@ -61,8 +61,8 @@ public class SynchronizedMetaDataValidation
         String title = dico.getTitle();
         if (title != null)
         {
-            // automatically trim the provided string value
-            title = title.trim();
+            // automatically strip trailing Nul values
+            title = removeTrailingNul(title);
             if (dc != null)
             {
                 // Check the x-default value, if not found, check with the first value
@@ -132,8 +132,8 @@ public class SynchronizedMetaDataValidation
         String author = dico.getAuthor();
         if (author != null)
         {
-            // automatically trim the provided string value
-            author = author.trim();
+            // automatically strip trailing Nul values
+            author = removeTrailingNul(author);
             if (dc != null)
             {
                 if (dc.getCreatorsProperty() != null)
@@ -185,8 +185,8 @@ public class SynchronizedMetaDataValidation
         String subject = dico.getSubject();
         if (subject != null)
         {
-            // automatically trim the provided string value
-            subject = subject.trim();
+            // automatically strip trailing Nul values
+            subject = removeTrailingNul(subject);
             if (dc != null)
             {
                 // PDF/A Conformance Erratum (2007) specifies XMP Subject
@@ -234,8 +234,8 @@ public class SynchronizedMetaDataValidation
         String keyword = dico.getKeywords();
         if (keyword != null)
         {
-            // automatically trim the provided string value
-            keyword = keyword.trim();
+            // automatically strip trailing Nul values
+            keyword = removeTrailingNul(keyword);
             if (pdf != null)
             {
                 if (pdf.getKeywordsProperty() == null)
@@ -272,8 +272,8 @@ public class SynchronizedMetaDataValidation
         String producer = dico.getProducer();
         if (producer != null)
         {
-            // automatically trim the provided string value
-            producer = producer.trim();
+            // automatically strip trailing Nul values
+            producer = removeTrailingNul(producer);
             if (pdf != null)
             {
                 if (pdf.getProducerProperty() == null)
@@ -312,8 +312,8 @@ public class SynchronizedMetaDataValidation
         String creatorTool = dico.getCreator();
         if (creatorTool != null)
         {
-            // automatically trim the provided string value
-            creatorTool = creatorTool.trim();
+            // automatically strip trailing Nul values
+            creatorTool = removeTrailingNul(creatorTool);
             if (xmp != null)
             {
                 if (xmp.getCreatorToolProperty() == null)
@@ -578,5 +578,23 @@ public class SynchronizedMetaDataValidation
         sb.append(target).append(" present in the document catalog dictionary can't be found in XMP information (")
                 .append(details).append(")");
         return new ValidationError(PreflightConstants.ERROR_METADATA_MISMATCH, sb.toString());
+    }
+    
+    /**
+     * A given string from the DocumentInformation dictionary may have some trailing Nul values 
+     * which have to be stripped.
+     *  
+     * @param string to be stripped
+     * @return the stripped string
+     */
+    private String removeTrailingNul(String string)
+    {
+        // remove trailing NUL values
+        int length = string.length();
+        while(length > 0 && (int)string.charAt(length-1) == 0)
+        {
+            length--;
+        }
+        return string.substring(0, length);
     }
 }
