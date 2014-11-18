@@ -64,23 +64,6 @@ public abstract class PDField extends PDFieldTreeNode
     }
 
     /**
-     * Get the additional actions for this field. This will return null if there are no additional actions for this
-     * field.
-     * 
-     * @return The actions of the field.
-     */
-    public PDFormFieldAdditionalActions getActions()
-    {
-        COSDictionary aa = (COSDictionary) getDictionary().getDictionaryObject(COSName.AA);
-        PDFormFieldAdditionalActions retval = null;
-        if (aa != null)
-        {
-            retval = new PDFormFieldAdditionalActions(aa);
-        }
-        return retval;
-    }
-
-    /**
      * Set the actions of the field.
      * 
      * @param actions The field actions.
