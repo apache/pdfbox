@@ -38,6 +38,8 @@ import org.apache.pdfbox.pdmodel.interactive.action.PDFormFieldAdditionalActions
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
+import static org.apache.pdfbox.preflight.PreflightConfiguration.ANNOTATIONS_PROCESS;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_BODY;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
@@ -90,7 +92,7 @@ public class AcroFormValidationProcess extends AbstractProcess
     }
 
     /**
-     * This function explores all fields and their children to check if the A or AA entry is present.
+     * This function explores all fields and their children to validate them.
      * 
      * @param ctx
      * @param acroForm
@@ -100,12 +102,26 @@ public class AcroFormValidationProcess extends AbstractProcess
     protected boolean exploreFields(PreflightContext ctx, List<?> lFields) throws IOException
     {
         if (lFields != null)
-        { // the list can be null is the Field doesn't have child
+        {
+            // the list can be null if the Field doesn't have children
             for (Object obj : lFields)
             {
-                if (!valideField(ctx, (PDField) obj))
+                if (obj instanceof PDField)
                 {
-                    return false;
+                    if (!valideField(ctx, (PDField) obj))
+                    {
+                        return false;
+                    }
+                }
+                else if (obj instanceof PDAnnotationWidget)
+                {
+                    // "A field's children in the hierarchy may also include widget annotations"
+                    ContextHelper.validateElement(ctx, ((PDAnnotationWidget) obj).getDictionary(), ANNOTATIONS_PROCESS);
+                }
+                else
+                {
+                    addValidationError(ctx, new ValidationError(ERROR_SYNTAX_BODY,
+                            "Field can only have fields or widget annotations as KIDS"));
                 }
             }
         }
