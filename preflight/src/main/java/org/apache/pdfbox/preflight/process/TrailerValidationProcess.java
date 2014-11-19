@@ -80,7 +80,6 @@ public class TrailerValidationProcess extends AbstractProcess
             {
                 checkTrailersForLinearizedPDF15(ctx);
             }
-
         }
         else
         {
@@ -90,7 +89,7 @@ public class TrailerValidationProcess extends AbstractProcess
     }
 
     /**
-     * Extracts and compares first and last trailers for PDF version between 1.1 and 1.4
+     * Extracts and compares first and last trailers for PDF version between 1.1 and 1.4.
      * 
      * @param ctx the preflight context.
      */
@@ -132,11 +131,9 @@ public class TrailerValidationProcess extends AbstractProcess
             {
                 // no XRef CosObject, may by this pdf file used the PDF 1.4 syntaxe
                 checkTrailersForLinearizedPDF14(ctx);
-
             }
             else
             {
-
                 long min = Long.MAX_VALUE;
                 long max = Long.MIN_VALUE;
                 COSDictionary firstTrailer = null;
@@ -187,43 +184,51 @@ public class TrailerValidationProcess extends AbstractProcess
     {
         COSBase idFirst = first.getItem(COSName.getPDFName(TRAILER_DICTIONARY_KEY_ID));
         COSBase idLast = last.getItem(COSName.getPDFName(TRAILER_DICTIONARY_KEY_ID));
-
-        if (idFirst == null || idLast == null)
+        // According to the revised PDF/A specification the IDs have to be identical
+        // if both are present, otherwise everything is fine
+        if (idFirst != null && idLast != null)
         {
-            return false;
-        }
-
-        // ---- cast two COSBase to COSArray.
-        COSArray af = COSUtils.getAsArray(idFirst, cosDocument);
-        COSArray al = COSUtils.getAsArray(idLast, cosDocument);
-
-        // ---- if one COSArray is null, the PDF/A isn't valid
-        if ((af == null) || (al == null))
-        {
-            return false;
-        }
-
-        // ---- compare both arrays
-        boolean isEqual = true;
-        for (Object of : af.toList())
-        {
-            boolean oneIsEquals = false;
-            for (Object ol : al.toList())
+    
+            // ---- cast two COSBase to COSArray.
+            COSArray af = COSUtils.getAsArray(idFirst, cosDocument);
+            COSArray al = COSUtils.getAsArray(idLast, cosDocument);
+    
+            // ---- if one COSArray is null, the PDF/A isn't valid
+            if ((af == null) || (al == null))
             {
-                // ---- according to PDF Reference 1-4, ID is an array containing two
-                // strings
-                if (!oneIsEquals)
-                    oneIsEquals = ((COSString) ol).getString().equals(((COSString) of).getString());
-                else
+                return false;
+            }
+    
+            // ---- compare both arrays
+            boolean isEqual = true;
+            for (Object of : af.toList())
+            {
+                boolean oneIsEquals = false;
+                for (Object ol : al.toList())
+                {
+                    // ---- according to PDF Reference 1-4, ID is an array containing two
+                    // strings
+                    if (!oneIsEquals)
+                    {
+                        oneIsEquals = ((COSString) ol).getString().equals(((COSString) of).getString());
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                isEqual = isEqual && oneIsEquals;
+                if (!isEqual)
+                {
                     break;
+                }
             }
-            isEqual = isEqual && oneIsEquals;
-            if (!isEqual)
-            {
-                break;
-            }
+            return isEqual;
         }
-        return isEqual;
+        else
+        {
+            return true;
+        }
     }
 
     /**
