@@ -59,7 +59,7 @@ public class AddImageToPDF
         PDDocument doc = null;
         try
         {
-            doc = PDDocument.loadNonSeq( new File(inputFile) );
+            doc = PDDocument.load( new File(inputFile) );
 
             //we will add the image to the first page.
             PDPage page = doc.getPage(0);

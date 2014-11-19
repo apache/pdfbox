@@ -69,7 +69,7 @@ public class ExportXFDF
             }
             else
             {
-                pdf = PDDocument.loadNonSeq( new File(args[0]) );
+                pdf = PDDocument.load( new File(args[0]) );
                 PDAcroForm form = pdf.getDocumentCatalog().getAcroForm();
                 if( form == null )
                 {

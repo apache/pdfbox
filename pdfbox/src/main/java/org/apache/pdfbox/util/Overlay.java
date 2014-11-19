@@ -181,7 +181,7 @@ public class Overlay
 
     private PDDocument loadPDF(String pdfName) throws IOException
     {
-        return PDDocument.loadNonSeq(new File(pdfName));
+        return PDDocument.load(new File(pdfName));
     }
 
     /**

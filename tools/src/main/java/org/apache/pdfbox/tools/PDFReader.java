@@ -372,7 +372,7 @@ public class PDFReader extends JFrame
 
     private void parseDocument(File file, String password) throws IOException
     {
-        document = PDDocument.loadNonSeq(file, password);
+        document = PDDocument.load(file, password);
         renderer = new PDFRenderer(document);
     }
 

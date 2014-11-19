@@ -142,7 +142,7 @@ public class PrintFields
             }
             else
             {
-                pdf = PDDocument.loadNonSeq(new File(args[0]));
+                pdf = PDDocument.load(new File(args[0]));
                 PrintFields exporter = new PrintFields();
                 if (pdf.isEncrypted())
                 {

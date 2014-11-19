@@ -60,7 +60,7 @@ public class WriteDecodedDoc
         PDDocument doc = null;
         try
         {
-            doc = PDDocument.loadNonSeq(new File(in), password);
+            doc = PDDocument.load(new File(in), password);
             doc.setAllSecurityToBeRemoved(true);
             for (Iterator<COSObject> i = doc.getDocument().getObjects().iterator(); i.hasNext();)
             {

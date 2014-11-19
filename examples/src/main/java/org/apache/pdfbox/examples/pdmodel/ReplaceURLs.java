@@ -65,7 +65,7 @@ public class ReplaceURLs
             }
             else
             {
-                doc = PDDocument.loadNonSeq( new File(args[0]) );
+                doc = PDDocument.load( new File(args[0]) );
                 int pageNum = 0;
                 for( PDPage page : doc.getPages() )
                 {

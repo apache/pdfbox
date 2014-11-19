@@ -81,7 +81,7 @@ public class PrintImageLocations extends PDFStreamEngine
             PDDocument document = null;
             try
             {
-                document = PDDocument.loadNonSeq( new File(args[0]) );
+                document = PDDocument.load( new File(args[0]) );
                 PrintImageLocations printer = new PrintImageLocations();
                 int pageNum = 0;
                 for( PDPage page : document.getPages() )

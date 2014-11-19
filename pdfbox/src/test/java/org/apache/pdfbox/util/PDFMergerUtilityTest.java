@@ -68,7 +68,7 @@ public class PDFMergerUtilityTest extends TestCase
     private void checkMergeIdentical(String filename1, String filename2, String mergeFilename)
             throws IOException
     {
-        PDDocument srcDoc1 = PDDocument.loadNonSeq(new File(SRCDIR, filename1), null);
+        PDDocument srcDoc1 = PDDocument.load(new File(SRCDIR, filename1), null);
         int src1PageCount = srcDoc1.getNumberOfPages();
         PDFRenderer src1PdfRenderer = new PDFRenderer(srcDoc1);
         BufferedImage[] src1ImageTab = new BufferedImage[src1PageCount];
@@ -78,7 +78,7 @@ public class PDFMergerUtilityTest extends TestCase
         }
         srcDoc1.close();
 
-        PDDocument srcDoc2 = PDDocument.loadNonSeq(new File(SRCDIR, filename2), null);
+        PDDocument srcDoc2 = PDDocument.load(new File(SRCDIR, filename2), null);
         int src2PageCount = srcDoc2.getNumberOfPages();
         PDFRenderer src2PdfRenderer = new PDFRenderer(srcDoc2);
         BufferedImage[] src2ImageTab = new BufferedImage[src2PageCount];
@@ -95,7 +95,7 @@ public class PDFMergerUtilityTest extends TestCase
         pdfMergerUtility.mergeDocumentsNonSeq(null);
 
         PDDocument mergedDoc
-                = PDDocument.loadNonSeq(new File(TARGETTESTDIR, mergeFilename), null);
+                = PDDocument.load(new File(TARGETTESTDIR, mergeFilename), null);
         PDFRenderer mergePdfRenderer = new PDFRenderer(mergedDoc);
         int mergePageCount = mergedDoc.getNumberOfPages();
         assertEquals(src1PageCount + src2PageCount, mergePageCount);

@@ -84,7 +84,7 @@ public class SetField
             else
             {
                 SetField example = new SetField();
-                pdf = PDDocument.loadNonSeq(new File(args[0]));
+                pdf = PDDocument.load(new File(args[0]));
                 example.setField(pdf, args[1], args[2]);
                 pdf.save(args[0]);
             }

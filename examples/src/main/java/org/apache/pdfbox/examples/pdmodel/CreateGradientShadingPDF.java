@@ -132,7 +132,7 @@ public class CreateGradientShadingPDF
             document.close();
             
             // render the PDF and save it into a PNG file
-            document = PDDocument.loadNonSeq(new File(file));
+            document = PDDocument.load(new File(file));
             BufferedImage bim = new PDFRenderer(document).renderImageWithDPI(0, 300);
             ImageIO.write(bim, "png", new File(file + ".png"));
             document.close();

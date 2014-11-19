@@ -64,7 +64,7 @@ public class AddMetadataFromDocInfo
 
             try
             {
-                document = PDDocument.loadNonSeq( new File(args[0]) );
+                document = PDDocument.load( new File(args[0]) );
                 if( document.isEncrypted() )
                 {
                     System.err.println( "Error: Cannot add metadata to encrypted document." );

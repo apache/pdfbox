@@ -198,7 +198,7 @@ public class TestPDFToImage extends TestCase
         try
         {
             new FileOutputStream(new File(outDir + file.getName() + ".parseerror")).close();
-            document = PDDocument.loadNonSeq(file, null);
+            document = PDDocument.load(file, null);
             String outputPrefix = outDir + file.getName() + "-";
             int numPages = document.getNumberOfPages();
             if (numPages < 1)
@@ -243,7 +243,7 @@ public class TestPDFToImage extends TestCase
             // test to see whether file is destroyed in pdfbox
             File tmpFile = File.createTempFile("pdfbox", ".pdf");
             document.save(tmpFile);
-            PDDocument.loadNonSeq(tmpFile, null).close();
+            PDDocument.load(tmpFile, null).close();
             tmpFile.delete();
         }
         catch (Exception e)

@@ -62,7 +62,7 @@ public class DecompressObjectstreams
 
         PDDocument doc = null;
         try {
-            doc = PDDocument.loadNonSeq(new File(inputFilename));
+            doc = PDDocument.load(new File(inputFilename));
             for(COSObject objStream : doc.getDocument().getObjectsByType(COSName.OBJ_STM)) {
                 COSStream stream = (COSStream)objStream.getObject();
                 PDFObjectStreamParser sp = new PDFObjectStreamParser(stream, doc.getDocument());

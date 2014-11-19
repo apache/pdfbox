@@ -386,7 +386,7 @@ public class PDFDebugger extends javax.swing.JFrame
      */
     private void parseDocument( File file, String password )throws IOException
     {
-        document = PDDocument.loadNonSeq(file, password);
+        document = PDDocument.load(file, password);
     }
 
     /**

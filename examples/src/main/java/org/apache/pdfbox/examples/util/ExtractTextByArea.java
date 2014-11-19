@@ -56,7 +56,7 @@ public class ExtractTextByArea
             PDDocument document = null;
             try
             {
-                document = PDDocument.loadNonSeq( new File(args[0]) );
+                document = PDDocument.load( new File(args[0]) );
                 PDFTextStripperByArea stripper = new PDFTextStripperByArea();
                 stripper.setSortByPosition( true );
                 Rectangle rect = new Rectangle( 10, 280, 275, 60 );

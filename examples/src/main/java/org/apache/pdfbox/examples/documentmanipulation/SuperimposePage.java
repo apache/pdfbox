@@ -57,7 +57,7 @@ public class SuperimposePage {
             // This will handle the actual import and resources
             LayerUtility layerUtility = new LayerUtility(aDoc);
 
-            PDDocument toBeImported = PDDocument.loadNonSeq(new File(args[0]));
+            PDDocument toBeImported = PDDocument.load(new File(args[0]));
             
             // Get the page as a PDXObjectForm to place it
             PDFormXObject mountable = layerUtility.importPageAsForm(

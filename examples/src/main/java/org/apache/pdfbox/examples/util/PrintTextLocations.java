@@ -65,7 +65,7 @@ public class PrintTextLocations extends PDFTextStripper
             PDDocument document = null;
             try
             {
-                document = PDDocument.loadNonSeq( new File(args[0]) );
+                document = PDDocument.load( new File(args[0]) );
                 if( document.isEncrypted() )
                 {
                     try

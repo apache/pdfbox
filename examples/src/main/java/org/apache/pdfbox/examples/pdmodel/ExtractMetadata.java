@@ -66,7 +66,7 @@ public class ExtractMetadata
             PDDocument document = null;
             try
             {
-                document = PDDocument.loadNonSeq(new File(args[0]));
+                document = PDDocument.load(new File(args[0]));
                 PDDocumentCatalog catalog = document.getDocumentCatalog();
                 PDMetadata meta = catalog.getMetadata();
                 if (meta != null)
