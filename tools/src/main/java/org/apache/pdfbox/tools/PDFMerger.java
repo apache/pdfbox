@@ -22,8 +22,7 @@ import org.apache.pdfbox.util.PDFMergerUtility;
  * This is the main program that will take a list of pdf documents and merge them,
  * saving the result in a new document.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.2 $
+ * @author Ben Litchfield
  */
 public class PDFMerger
 {
@@ -52,13 +51,7 @@ public class PDFMerger
         String destinationFileName = "";
         String sourceFileName;
 
-        boolean nonSeq = false;
         int firstFileArgPos = 0;
-        if (args.length > 0 && args[0].equals("-nonSeq"))
-        {
-            nonSeq = true;
-            firstFileArgPos = 1;
-        }
 
         if ( args.length - firstFileArgPos < 3 )
         {
@@ -73,17 +66,8 @@ public class PDFMerger
         }
 
         destinationFileName = args[args.length-1];
-
         merger.setDestinationFileName(destinationFileName);
-
-        if (nonSeq)
-        {
-            merger.mergeDocumentsNonSeq(null);
-        }
-        else
-        {
-            merger.mergeDocuments();
-        }
+        merger.mergeDocuments();
     }
 
     /**
@@ -92,7 +76,6 @@ public class PDFMerger
     private static void usage()
     {
         System.err.println( "Usage: java -jar pdfbox-app-x.y.z.jar PDFMerger [-nonSeq] <Source PDF File 2..n> <Destination PDF File>\n" +
-            "  -nonSeq                      use the non-sequential parser\n" +
             "  <Source PDF File 2..n>       2 or more source PDF documents to merge\n" +
             "  <Destination PDF File>       The PDF document to save the merged documents to\n"
             );

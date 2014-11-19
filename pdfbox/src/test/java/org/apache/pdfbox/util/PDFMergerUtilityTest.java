@@ -92,7 +92,7 @@ public class PDFMergerUtilityTest extends TestCase
         pdfMergerUtility.addSource(new File(SRCDIR, filename1));
         pdfMergerUtility.addSource(new File(SRCDIR, filename2));
         pdfMergerUtility.setDestinationFileName(TARGETTESTDIR + mergeFilename);
-        pdfMergerUtility.mergeDocumentsNonSeq(null);
+        pdfMergerUtility.mergeDocuments();
 
         PDDocument mergedDoc
                 = PDDocument.load(new File(TARGETTESTDIR, mergeFilename), null);
