@@ -64,7 +64,7 @@ public class TestPDDocument extends TestCase
         assertEquals("%%EOF\n", new String(Arrays.copyOfRange(pdf, pdf.length - 6, pdf.length), "UTF-8"));
 
         // Load
-        PDDocument loadDoc = PDDocument.loadLegacy(new ByteArrayInputStream(pdf));
+        PDDocument loadDoc = PDDocument.load(new ByteArrayInputStream(pdf));
         assertEquals(1, loadDoc.getNumberOfPages());
         loadDoc.close();
     }
@@ -93,7 +93,7 @@ public class TestPDDocument extends TestCase
         assertEquals("%%EOF\n", new String(Arrays.copyOfRange(pdf, pdf.length - 6, pdf.length), "UTF-8"));
 
         // Load
-        PDDocument loadDoc = PDDocument.loadLegacy(targetFile);
+        PDDocument loadDoc = PDDocument.load(targetFile);
         assertEquals(1, loadDoc.getNumberOfPages());
         loadDoc.close();
     }
