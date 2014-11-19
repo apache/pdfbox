@@ -21,15 +21,12 @@ import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.tools.imageio.ImageIOUtil;
@@ -53,7 +50,6 @@ public class PDFToImage
     private static final String RESOLUTION = "-resolution";
     private static final String DPI = "-dpi";
     private static final String CROPBOX = "-cropbox";
-    private static final String NON_SEQ = "-nonSeq";
 
     /**
      * private constructor.
@@ -75,7 +71,6 @@ public class PDFToImage
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
-        boolean useNonSeqParser = false; 
         String password = "";
         String pdfFile = null;
         String outputPrefix = null;
@@ -166,10 +161,6 @@ public class PDFToImage
                 i++;
                 cropBoxUpperRightY = Float.valueOf(args[i]);
             }
-            else if( args[i].equals(NON_SEQ) )
-            {
-                useNonSeqParser = true;
-            }
             else
             {
                 if( pdfFile == null )
@@ -192,36 +183,7 @@ public class PDFToImage
             PDDocument document = null;
             try
             {
-                if (useNonSeqParser)
-                {
-                    document = PDDocument.loadNonSeq(new File(pdfFile), password);
-                }
-                else
-                {
-                    document = PDDocument.load( pdfFile );
-                    if( document.isEncrypted() )
-                    {
-                        try
-                        {
-                            StandardDecryptionMaterial sdm = new StandardDecryptionMaterial(password);
-                            document.openProtection(sdm);
-                        }
-                        catch( InvalidPasswordException e )
-                        {
-                            if( args.length == 4 )//they supplied the wrong password
-                            {
-                                System.err.println( "Error: The supplied password is incorrect." );
-                                System.exit( 2 );
-                            }
-                            else
-                            {
-                                //they didn't supply a password and the default of "" was wrong.
-                                System.err.println( "Error: The document is encrypted." );
-                                usage();
-                            }
-                        }
-                    }
-                }
+                document = PDDocument.loadNonSeq(new File(pdfFile), password);
 
                 ImageType imageType = ImageType.RGB;
                 if ("bilevel".equalsIgnoreCase(color))
@@ -299,7 +261,6 @@ public class PDFToImage
             "  -color <string>                The color depth (valid: bilevel, indexed, gray, rgb, rgba)\n" +
             "  -dpi <number>                  The DPI of the output image\n" +
             "  -cropbox <number> <number> <number> <number> The page area to export\n" +
-            "  -nonSeq                        Enables the new non-sequential parser\n" +
             "  <PDF file>                     The PDF document to use\n"
             );
         System.exit( 1 );

@@ -22,18 +22,15 @@ import java.io.FileOutputStream;
 
 import java.util.List;
 
-import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdfwriter.COSWriter;
-import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.util.Splitter;
 
 /**
  * This is the main program that will take a pdf document and split it into
  * a number of other documents.
  *
- * @author <a href="ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.6 $
+ * @author Ben Litchfield
  */
 public class PDFSplit
 {
@@ -41,7 +38,6 @@ public class PDFSplit
     private static final String SPLIT = "-split";
     private static final String START_PAGE = "-startPage";
     private static final String END_PAGE = "-endPage";
-    private static final String NONSEQ = "-nonSeq";
 
     private PDFSplit()
     {
@@ -68,7 +64,6 @@ public class PDFSplit
         String split = null;
         String startPage = null;
         String endPage = null;
-        boolean useNonSeqParser = false;
         Splitter splitter = new Splitter();
         String pdfFile = null;
         for( int i=0; i<args.length; i++ )
@@ -109,10 +104,6 @@ public class PDFSplit
                 }
                 endPage = args[i];
             }
-            else if( args[i].equals( NONSEQ ) )
-            {
-                useNonSeqParser = true;
-            }
             else
             {
                 if( pdfFile == null )
@@ -132,36 +123,7 @@ public class PDFSplit
             List<PDDocument> documents = null;
             try
             {
-                if (useNonSeqParser) 
-                {
-                    document = PDDocument.loadNonSeq(new File(pdfFile), password);
-                }
-                else
-                {
-                    document = PDDocument.load(pdfFile);
-                    if( document.isEncrypted() )
-                    {
-                        try
-                        {
-                            StandardDecryptionMaterial sdm = new StandardDecryptionMaterial(password);
-                            document.openProtection(sdm);
-                        }
-                        catch( InvalidPasswordException e )
-                        {
-                            if( args.length == 4 )//they supplied the wrong password
-                            {
-                                System.err.println( "Error: The supplied password is incorrect." );
-                                System.exit( 2 );
-                            }
-                            else
-                            {
-                                //they didn't supply a password and the default of "" was wrong.
-                                System.err.println( "Error: The document is encrypted." );
-                                usage();
-                            }
-                        }
-                    }
-                }
+                document = PDDocument.loadNonSeq(new File(pdfFile), password);
 
                 int numberOfPages = document.getNumberOfPages();
                 boolean startEndPageSet = false;
