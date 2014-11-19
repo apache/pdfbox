@@ -45,7 +45,7 @@ public abstract class FontValidator<T extends FontContainer>
 
     public static boolean isSubSet(String fontName)
     {
-        return fontName.matches(SUB_SET_PATTERN);
+        return fontName != null && fontName.matches(SUB_SET_PATTERN);
     }
 
     public static String getSubSetPatternDelimiter()
