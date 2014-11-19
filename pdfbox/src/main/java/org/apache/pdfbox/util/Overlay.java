@@ -83,10 +83,9 @@ public class Overlay
      * This will add overlays to a documents.
      * 
      * @param specificPageOverlayFile map of overlay files for specific pages
-     * @param useNonSeqParser indicates whether the nonsequential parser is used
      * @throws IOException if something went wrong
      */
-    public void overlay(Map<Integer, String> specificPageOverlayFile, boolean useNonSeqParser)
+    public void overlay(Map<Integer, String> specificPageOverlayFile)
             throws IOException
     {
         PDDocument sourcePDFDocument = null;
@@ -98,42 +97,42 @@ public class Overlay
         PDDocument evenPageOverlay = null;
         try
         {
-            sourcePDFDocument = loadPDF(inputFileName,useNonSeqParser);
+            sourcePDFDocument = loadPDF(inputFileName);
             if (defaultOverlayFilename != null)
             {
-                defaultOverlay = loadPDF(defaultOverlayFilename, useNonSeqParser);
+                defaultOverlay = loadPDF(defaultOverlayFilename);
                 defaultOverlayPage = getLayoutPage(defaultOverlay);
             }
             if (firstPageOverlayFilename != null)
             {
-                firstPageOverlay = loadPDF(firstPageOverlayFilename, useNonSeqParser);
+                firstPageOverlay = loadPDF(firstPageOverlayFilename);
                 firstPageOverlayPage = getLayoutPage(firstPageOverlay);
             }
             if (lastPageOverlayFilename != null)
             {
-                lastPageOverlay = loadPDF(lastPageOverlayFilename, useNonSeqParser);
+                lastPageOverlay = loadPDF(lastPageOverlayFilename);
                 lastPageOverlayPage = getLayoutPage(lastPageOverlay);
             }
             if (oddPageOverlayFilename != null)
             {
-                oddPageOverlay = loadPDF(oddPageOverlayFilename, useNonSeqParser);
+                oddPageOverlay = loadPDF(oddPageOverlayFilename);
                 oddPageOverlayPage = getLayoutPage(oddPageOverlay);
             }
             if (evenPageOverlayFilename != null)
             {
-                evenPageOverlay = loadPDF(evenPageOverlayFilename, useNonSeqParser);
+                evenPageOverlay = loadPDF(evenPageOverlayFilename);
                 evenPageOverlayPage = getLayoutPage(evenPageOverlay);
             }
             if (allPagesOverlayFilename != null)
             {
-                allPagesOverlay = loadPDF(allPagesOverlayFilename, useNonSeqParser);
+                allPagesOverlay = loadPDF(allPagesOverlayFilename);
                 specificPageOverlayPage = getLayoutPages(allPagesOverlay);
                 useAllOverlayPages = true;
                 numberOfOverlayPages = specificPageOverlayPage.size();
             }
             for (Map.Entry<Integer, String> e : specificPageOverlayFile.entrySet())
             {
-                PDDocument doc = loadPDF(e.getValue(), useNonSeqParser);
+                PDDocument doc = loadPDF(e.getValue());
                 specificPageOverlay.put(e.getKey(), doc);
                 specificPageOverlayPage.put(e.getKey(), getLayoutPage(doc));
             }
@@ -180,18 +179,9 @@ public class Overlay
         }
     }
 
-    private PDDocument loadPDF(String pdfName, boolean useNonSeqParser) throws IOException
+    private PDDocument loadPDF(String pdfName) throws IOException
     {
-        PDDocument pdf = null;
-        if (useNonSeqParser)
-        {
-            pdf = PDDocument.loadNonSeq(new File(pdfName), null);
-        }
-        else
-        {
-            pdf = PDDocument.load(pdfName);
-        }
-        return pdf;
+        return PDDocument.loadNonSeq(new File(pdfName));
     }
 
     /**
