@@ -32,15 +32,13 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDComplexFileSpecification;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
-import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.util.PDFTextStripper;
 
 /**
  * This is the main program that simply parses the pdf document and transforms it
  * into text.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.14 $
+ * @author Ben Litchfield
  */
 public class ExtractText
 {
@@ -56,7 +54,6 @@ public class ExtractText
     private static final String HTML = "-html";  
     // enables pdfbox to skip corrupt objects
     private static final String FORCE = "-force"; 
-    private static final String NONSEQ = "-nonSeq";
 
     /*
      * debug flag
@@ -100,7 +97,6 @@ public class ExtractText
         boolean force = false;
         boolean sort = false;
         boolean separateBeads = true;
-        boolean useNonSeqParser = false; 
         String password = "";
         String encoding = "UTF-8";
         String pdfFile = null;
@@ -172,10 +168,6 @@ public class ExtractText
             {
                 force = true;
             }
-            else if( args[i].equals( NONSEQ ) )
-            {
-                useNonSeqParser = true;
-            }
             else
             {
                 if( pdfFile == null )
@@ -205,19 +197,7 @@ public class ExtractText
                 {
                     outputFile = new File( pdfFile.substring( 0, pdfFile.length() -4 ) + ext ).getAbsolutePath();
                 }
-                if (useNonSeqParser) 
-                {
-                    document = PDDocument.loadNonSeq(new File( pdfFile ), password);
-                }
-                else
-                {
-                    document = PDDocument.load(pdfFile, force);
-                    if( document.isEncrypted() )
-                    {
-                        StandardDecryptionMaterial sdm = new StandardDecryptionMaterial( password );
-                        document.openProtection( sdm );
-                    }
-                }
+                document = PDDocument.loadNonSeq(new File( pdfFile ), password);
                 
                 AccessPermission ap = document.getCurrentAccessPermission();
                 if( ! ap.canExtractContent() )
@@ -288,7 +268,7 @@ public class ExtractText
                                     PDDocument subDoc = null;
                                     try 
                                     {
-                                        subDoc = PDDocument.load(fis);
+                                        subDoc = PDDocument.loadNonSeq(fis);
                                     } 
                                     finally 
                                     {
@@ -358,7 +338,6 @@ public class ExtractText
             "  -debug                       Enables debug output about the time consumption of every stage\n" +
             "  -startPage <number>          The first page to start extraction(1 based)\n" +
             "  -endPage <number>            The last page to extract(inclusive)\n" +
-            "  -nonSeq                      Enables the new non-sequential parser\n" +
             "  <PDF file>                   The PDF document to use\n" +
             "  [Text File]                  The file to write the text to\n"
             );

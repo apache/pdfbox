@@ -21,7 +21,6 @@ import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -33,14 +32,11 @@ import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 
 import org.apache.pdfbox.pdmodel.PDPageTree;
-import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.printing.PDFPrinter;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.tools.gui.PageWrapper;
 import org.apache.pdfbox.tools.gui.ReaderBottomPanel;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.tools.imageio.ImageIOUtil;
 
 /**
@@ -71,8 +67,6 @@ public class PDFReader extends JFrame
     private String currentFilename = null;
 
     private static final String PASSWORD = "-password";
-    private static final String NONSEQ = "-nonSeq";
-    private static boolean useNonSeqParser = false;
 
     private static final String VERSION = Version.getVersion();
     private static final String BASETITLE = "PDFBox " + VERSION; 
@@ -321,10 +315,6 @@ public class PDFReader extends JFrame
                 }
                 password = args[i];
             }
-            if (args[i].equals(NONSEQ))
-            {
-                useNonSeqParser = true;
-            }
             else
             {
                 filename = args[i];
@@ -382,27 +372,7 @@ public class PDFReader extends JFrame
 
     private void parseDocument(File file, String password) throws IOException
     {
-        document = null;
-        if (useNonSeqParser)
-        {
-            document = PDDocument.loadNonSeq(file, password);
-        }
-        else
-        {
-            document = PDDocument.load(file);
-            if (document.isEncrypted())
-            {
-                try
-                {
-                    StandardDecryptionMaterial sdm = new StandardDecryptionMaterial(password);
-                    document.openProtection(sdm);
-                }
-                catch (InvalidPasswordException e)
-                {
-                    System.err.println("Error: The document is encrypted.");
-                }
-            }
-        }
+        document = PDDocument.loadNonSeq(file, password);
         renderer = new PDFRenderer(document);
     }
 
@@ -419,7 +389,6 @@ public class PDFReader extends JFrame
     {
         System.err.println("usage: java -jar pdfbox-app-" + VERSION + ".jar PDFReader [OPTIONS] <input-file>\n"
                 + "  -password <password>      Password to decrypt the document\n"
-                + "  -nonSeq                   Enables the new non-sequential parser\n"
                 + "  <input-file>              The PDF document to be loaded\n");
     }
 }

@@ -33,7 +33,6 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
-import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImage;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
@@ -53,7 +52,6 @@ public class ExtractImages
 {
     private static final String PASSWORD = "-password";
     private static final String PREFIX = "-prefix";
-    private static final String NONSEQ = "-nonSeq";
     private static final String DIRECTJPEG = "-directJPEG";
 
     private static final List<String> JPEG = Arrays.asList(
@@ -95,7 +93,6 @@ public class ExtractImages
         {
             String pdfFile = null;
             String password = "";
-            boolean useNonSeqParser = false;
             for(int i = 0; i < args.length; i++)
             {
                 if (args[i].equals(PASSWORD))
@@ -115,10 +112,6 @@ public class ExtractImages
                         usage();
                     }
                     prefix = args[i];
-                }
-                else if (args[i].equals(NONSEQ))
-                {
-                    useNonSeqParser = true;
                 }
                 else if (args[i].equals(DIRECTJPEG))
                 {
@@ -143,7 +136,7 @@ public class ExtractImages
                     prefix = pdfFile.substring(0, pdfFile.length() -4);
                 }
 
-                extract(pdfFile, password, useNonSeqParser);
+                extract(pdfFile, password);
             }
         }
     }
@@ -156,31 +149,17 @@ public class ExtractImages
         System.err.println("Usage: java org.apache.pdfbox.tools.ExtractImages [OPTIONS] <PDF file>\n" +
                 "  -password  <password>        Password to decrypt document\n" +
                 "  -prefix  <image-prefix>      Image prefix(default to pdf name)\n" +
-                "  -nonSeq                      Enables the new non-sequential parser\n" +
                 "  -directJPEG                  Forces the direct extraction of JPEG images regardless of colorspace\n" +
                 "  <PDF file>                   The PDF document to use\n");
         System.exit(1);
     }
 
-    private void extract(String pdfFile, String password, boolean useNonSeq) throws IOException
+    private void extract(String pdfFile, String password) throws IOException
     {
         PDDocument document = null;
         try
         {
-            if (useNonSeq)
-            {
-                document = PDDocument.loadNonSeq(new File(pdfFile), password);
-            }
-            else
-            {
-                document = PDDocument.load(pdfFile);
-
-                if (document.isEncrypted())
-                {
-                    StandardDecryptionMaterial spm = new StandardDecryptionMaterial(password);
-                    document.openProtection(spm);
-                }
-            }
+            document = PDDocument.loadNonSeq(new File(pdfFile), password);
             AccessPermission ap = document.getCurrentAccessPermission();
             if (! ap.canExtractContent())
             {

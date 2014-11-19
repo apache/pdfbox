@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.tools;
 
-import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.tools.gui.PDFTreeModel;
 import org.apache.pdfbox.tools.gui.PDFTreeCellRenderer;
 import org.apache.pdfbox.tools.gui.ArrayEntry;
@@ -43,23 +42,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
-import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 
 /**
  *
- * @author  wurtz
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.4 $
+ * @author wurtz
+ * @author Ben Litchfield
  */
 public class PDFDebugger extends javax.swing.JFrame
 {
     private File currentDir=new File(".");
     private PDDocument document = null;
 
-    private static final String NONSEQ = "-nonSeq";
     private static final String PASSWORD = "-password";
-
-    private static boolean useNonSeqParser = false; 
 
     /**
      * Constructor.
@@ -358,10 +352,6 @@ public class PDFDebugger extends javax.swing.JFrame
                 }
                 password = args[i];
             }
-            if( args[i].equals( NONSEQ ) )
-            {
-                useNonSeqParser = true;
-            }
             else
             {
                 filename = args[i];
@@ -396,26 +386,7 @@ public class PDFDebugger extends javax.swing.JFrame
      */
     private void parseDocument( File file, String password )throws IOException
     {
-        if (useNonSeqParser)
-        {
-            document = PDDocument.loadNonSeq(file, password);
-        }
-        else
-        {
-            document = PDDocument.load( file );
-            if( document.isEncrypted() )
-            {
-                try
-                {
-                    StandardDecryptionMaterial sdm = new StandardDecryptionMaterial(password);
-                    document.openProtection(sdm);
-                }
-                catch( InvalidPasswordException e )
-                {
-                    System.err.println( "Error: The document is encrypted." );
-                }
-            }
-        }
+        document = PDDocument.loadNonSeq(file, password);
     }
 
     /**
@@ -426,7 +397,6 @@ public class PDFDebugger extends javax.swing.JFrame
         System.err.println(
                 "usage: java -jar pdfbox-app-x.y.z.jar PDFDebugger [OPTIONS] <input-file>\n" +
                 "  -password <password>      Password to decrypt the document\n" +
-                "  -nonSeq                   Enables the new non-sequential parser\n" +
                 "  <input-file>              The PDF document to be loaded\n"
                 );
     }

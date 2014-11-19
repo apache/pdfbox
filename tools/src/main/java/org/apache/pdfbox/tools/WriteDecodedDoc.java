@@ -27,20 +27,15 @@ import org.apache.pdfbox.cos.COSStream;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 
-import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
-import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
-
 /**
  * load document and write with all streams decoded.
  *
  * @author Michael Traut
- * @version $Revision: 1.8 $
  */
 public class WriteDecodedDoc
 {
 
     private static final String PASSWORD = "-password";
-    private static final String NONSEQ = "-nonSeq";
 
     /**
      * Constructor.
@@ -55,62 +50,18 @@ public class WriteDecodedDoc
      *
      * @param in The filename used for input.
      * @param out The filename used for output.
-     *
-     * @throws IOException if the output could not be written
-     * 
-     * @deprecated use {@link WriteDecodedDoc#doIt(String, String, String, boolean)} instead.
-     */
-    public void doIt(String in, String out) throws IOException
-    {
-        doIt(in, out, "", false);
-    }
-    
-    /**
-     * This will perform the document reading, decoding and writing.
-     *
-     * @param in The filename used for input.
-     * @param out The filename used for output.
      * @param password The password to open the document.
-     * @param useNonSeqParser use the non sequential parser
      *
      * @throws IOException if the output could not be written
      */
-    public void doIt(String in, String out, String password, boolean useNonSeqParser)
+    public void doIt(String in, String out, String password)
             throws IOException
     {
         PDDocument doc = null;
         try
         {
-            if (useNonSeqParser) 
-            {
-                doc = PDDocument.loadNonSeq(new File(in), password);
-                doc.setAllSecurityToBeRemoved(true);
-            }
-            else
-            {
-                doc = PDDocument.load( in );
-                if( doc.isEncrypted() )
-                {
-                    try
-                    {
-                        StandardDecryptionMaterial sdm = new StandardDecryptionMaterial(password);
-                        doc.openProtection(sdm);
-                        doc.setAllSecurityToBeRemoved(true);
-                    }
-                    catch( InvalidPasswordException e )
-                    {
-                        if (password.trim().length() == 0)
-                        {
-                            System.err.println( "Password needed!!" );
-                        }
-                        else
-                        {
-                            System.err.println( "Wrong password!!" );
-                        }
-                        return;
-                    }
-                }
-            }
+            doc = PDDocument.loadNonSeq(new File(in), password);
+            doc.setAllSecurityToBeRemoved(true);
             for (Iterator<COSObject> i = doc.getDocument().getObjects().iterator(); i.hasNext();)
             {
                 COSBase base = ((COSObject) i.next()).getObject();
@@ -148,7 +99,6 @@ public class WriteDecodedDoc
 
         WriteDecodedDoc app = new WriteDecodedDoc();
         String password = "";
-        boolean useNonSeqParser = false;
         String pdfFile = null;
         String outputFile = null;
         for( int i=0; i<args.length; i++ )
@@ -163,11 +113,6 @@ public class WriteDecodedDoc
                 password = args[i];
             }
             else
-                if( args[i].equals( NONSEQ ) )
-                {
-                    useNonSeqParser = true;
-                }
-                else
             {
                 if( pdfFile == null )
                 {
@@ -189,7 +134,7 @@ public class WriteDecodedDoc
             {
                 outputFile = calculateOutputFilename(pdfFile);
             }
-            app.doIt(pdfFile, outputFile, password, useNonSeqParser);
+            app.doIt(pdfFile, outputFile, password);
         }
     }
 
@@ -216,7 +161,6 @@ public class WriteDecodedDoc
         System.err.println(
                 "usage: java -jar pdfbox-app-x.y.z.jar WriteDecodedDoc [OPTIONS] <input-file> [output-file]\n" +
                 "  -password <password>      Password to decrypt the document\n" +
-                "  -nonSeq                   Enables the new non-sequential parser\n" +
                 "  <input-file>              The PDF document to be decompressed\n" +
                 "  [output-file]             The filename for the decompressed pdf\n"
                 );
