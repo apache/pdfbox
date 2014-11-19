@@ -97,7 +97,7 @@ public class PrintPDF
         PDDocument document = null;
         try
         {
-            document = PDDocument.loadNonSeq(new File(pdfFile), password);
+            document = PDDocument.load(new File(pdfFile), password);
 
             PrinterJob printJob = PrinterJob.getPrinterJob();
             printJob.setJobName(new File(pdfFile).getName());

@@ -52,7 +52,7 @@ public class AddJavascript
             PDDocument document = null;
             try
             {
-                document = PDDocument.loadNonSeq( new File(args[0]) );
+                document = PDDocument.load( new File(args[0]) );
                 PDActionJavaScript javascript = new PDActionJavaScript(
                     "app.alert( {cMsg: 'PDFBox rocks!', nIcon: 3, nType: 0, cTitle: 'PDFBox Javascript example' } );");
                 document.getDocumentCatalog().setOpenAction( javascript );

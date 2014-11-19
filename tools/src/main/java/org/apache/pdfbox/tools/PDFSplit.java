@@ -123,7 +123,7 @@ public class PDFSplit
             List<PDDocument> documents = null;
             try
             {
-                document = PDDocument.loadNonSeq(new File(pdfFile), password);
+                document = PDDocument.load(new File(pdfFile), password);
 
                 int numberOfPages = document.getNumberOfPages();
                 boolean startEndPageSet = false;

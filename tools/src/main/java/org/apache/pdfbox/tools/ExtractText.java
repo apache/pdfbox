@@ -197,7 +197,7 @@ public class ExtractText
                 {
                     outputFile = new File( pdfFile.substring( 0, pdfFile.length() -4 ) + ext ).getAbsolutePath();
                 }
-                document = PDDocument.loadNonSeq(new File( pdfFile ), password);
+                document = PDDocument.load(new File( pdfFile ), password);
                 
                 AccessPermission ap = document.getCurrentAccessPermission();
                 if( ! ap.canExtractContent() )
@@ -268,7 +268,7 @@ public class ExtractText
                                     PDDocument subDoc = null;
                                     try 
                                     {
-                                        subDoc = PDDocument.loadNonSeq(fis);
+                                        subDoc = PDDocument.load(fis);
                                     } 
                                     finally 
                                     {

@@ -67,7 +67,7 @@ public class ExtractEmbeddedFiles
             {
                 File pdfFile = new File(args[0]);
                 String filePath = pdfFile.getParent() + System.getProperty("file.separator");
-                document = PDDocument.loadNonSeq(pdfFile );
+                document = PDDocument.load(pdfFile );
                 PDDocumentNameDictionary namesDictionary = 
                         new PDDocumentNameDictionary( document.getDocumentCatalog() );
                 PDEmbeddedFilesNameTreeNode efTree = namesDictionary.getEmbeddedFiles();

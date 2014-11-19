@@ -57,7 +57,7 @@ public class AddMessageToEachPage
         PDDocument doc = null;
         try
         {
-            doc = PDDocument.loadNonSeq( new File(file) );
+            doc = PDDocument.load( new File(file) );
 
             PDFont font = PDType1Font.HELVETICA_BOLD;
             float fontSize = 36.0f;

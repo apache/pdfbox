@@ -159,7 +159,7 @@ public class ExtractImages
         PDDocument document = null;
         try
         {
-            document = PDDocument.loadNonSeq(new File(pdfFile), password);
+            document = PDDocument.load(new File(pdfFile), password);
             AccessPermission ap = document.getCurrentAccessPermission();
             if (! ap.canExtractContent())
             {

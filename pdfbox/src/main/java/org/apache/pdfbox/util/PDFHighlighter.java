@@ -156,7 +156,7 @@ public class PDFHighlighter extends PDFTextStripper
             }
             String[] highlightStrings = new String[ args.length - 1];
             System.arraycopy( args, 1, highlightStrings, 0, highlightStrings.length );
-            doc = PDDocument.loadNonSeq( new File(args[0]) );
+            doc = PDDocument.load( new File(args[0]) );
 
             xmlExtractor.generateXMLHighlight(
                 doc,

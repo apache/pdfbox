@@ -202,7 +202,7 @@ public class TestSymmetricKeyEncryption extends TestCase
         PDDocument doc;
         if (nonSeq)
         {
-            doc = PDDocument.loadNonSeq(
+            doc = PDDocument.load(
                     new ByteArrayInputStream(inputFileAsByteArray),
                     password);
         }
@@ -367,7 +367,7 @@ public class TestSymmetricKeyEncryption extends TestCase
         // test with owner password => full permissions
         if (nonSeq)
         {
-            encryptedDoc = PDDocument.loadNonSeq(pdfFile, ownerpassword);
+            encryptedDoc = PDDocument.load(pdfFile, ownerpassword);
         }
         else
         {
@@ -382,7 +382,7 @@ public class TestSymmetricKeyEncryption extends TestCase
         // test with owner password => restricted permissions
         if (nonSeq)
         {
-            encryptedDoc = PDDocument.loadNonSeq(pdfFile, userpassword);
+            encryptedDoc = PDDocument.load(pdfFile, userpassword);
         }
         else
         {

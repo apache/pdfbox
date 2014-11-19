@@ -89,7 +89,7 @@ public class ImportFDF
             {
                 ImportFDF importer = new ImportFDF();
 
-                pdf = PDDocument.loadNonSeq( new File(args[0]) );
+                pdf = PDDocument.load( new File(args[0]) );
                 fdf = FDFDocument.load( args[1] );
                 importer.importFDF( pdf, fdf );
 

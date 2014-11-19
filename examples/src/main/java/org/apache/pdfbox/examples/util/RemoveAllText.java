@@ -62,7 +62,7 @@ public class RemoveAllText
             PDDocument document = null;
             try
             {
-                document = PDDocument.loadNonSeq( new File(args[0]) );
+                document = PDDocument.load( new File(args[0]) );
                 if( document.isEncrypted() )
                 {
                     System.err.println( "Error: Encrypted documents are not supported for this example." );

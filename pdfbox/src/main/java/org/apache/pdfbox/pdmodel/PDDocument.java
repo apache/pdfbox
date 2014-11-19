@@ -899,9 +899,9 @@ public class PDDocument implements Closeable
      * 
      * @throws IOException in case of a file reading or parsing error
      */
-    public static PDDocument loadNonSeq(File file) throws IOException
+    public static PDDocument load(File file) throws IOException
     {
-        return loadNonSeq(file, "", false);
+        return load(file, "", false);
     }
 
     /**
@@ -914,9 +914,9 @@ public class PDDocument implements Closeable
      * 
      * @throws IOException in case of a file reading or parsing error
      */
-    public static PDDocument loadNonSeq(File file, boolean useScratchFiles) throws IOException
+    public static PDDocument load(File file, boolean useScratchFiles) throws IOException
     {
-        return loadNonSeq(file, "", useScratchFiles);
+        return load(file, "", useScratchFiles);
     }
 
     /**
@@ -929,9 +929,9 @@ public class PDDocument implements Closeable
      * 
      * @throws IOException in case of a file reading or parsing error
      */
-    public static PDDocument loadNonSeq(File file, String password) throws IOException
+    public static PDDocument load(File file, String password) throws IOException
     {
-        return loadNonSeq(file, password, false);
+        return load(file, password, false);
     }
 
     /**
@@ -945,7 +945,7 @@ public class PDDocument implements Closeable
      * 
      * @throws IOException in case of a file reading or parsing error
      */
-    public static PDDocument loadNonSeq(File file, String password, boolean useScratchFiles) throws IOException
+    public static PDDocument load(File file, String password, boolean useScratchFiles) throws IOException
     {
         NonSequentialPDFParser parser = new NonSequentialPDFParser(file, password, useScratchFiles);
         parser.parse();
@@ -961,9 +961,9 @@ public class PDDocument implements Closeable
      * 
      * @throws IOException in case of a file reading or parsing error
      */
-    public static PDDocument loadNonSeq(InputStream input) throws IOException
+    public static PDDocument load(InputStream input) throws IOException
     {
-        return loadNonSeq(input, "", false);
+        return load(input, "", false);
     }
 
     /**
@@ -976,9 +976,9 @@ public class PDDocument implements Closeable
      * 
      * @throws IOException in case of a file reading or parsing error
      */
-    public static PDDocument loadNonSeq(InputStream input, boolean useScratchFiles) throws IOException
+    public static PDDocument load(InputStream input, boolean useScratchFiles) throws IOException
     {
-        return loadNonSeq(input, "", useScratchFiles);
+        return load(input, "", useScratchFiles);
     }
 
     /**
@@ -991,10 +991,10 @@ public class PDDocument implements Closeable
      * 
      * @throws IOException in case of a file reading or parsing error
      */
-    public static PDDocument loadNonSeq(InputStream input, String password)
+    public static PDDocument load(InputStream input, String password)
             throws IOException
     {
-        return loadNonSeq(input, password, false);
+        return load(input, password, false);
     }
 
     /**
@@ -1008,7 +1008,7 @@ public class PDDocument implements Closeable
      * 
      * @throws IOException in case of a file reading or parsing error
      */
-    public static PDDocument loadNonSeq(InputStream input, String password, boolean useScratchFiles)
+    public static PDDocument load(InputStream input, String password, boolean useScratchFiles)
             throws IOException
     {
         NonSequentialPDFParser parser = new NonSequentialPDFParser(input, password, useScratchFiles);
