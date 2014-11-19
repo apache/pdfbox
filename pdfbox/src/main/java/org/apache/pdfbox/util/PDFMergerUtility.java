@@ -58,7 +58,7 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDFieldTreeNode;
  * This class will take a list of pdf documents and merge them, saving the
  * result in a new document.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
+ * @author Ben Litchfield
  *
  */
 public class PDFMergerUtility
@@ -210,7 +210,7 @@ public class PDFMergerUtility
                     }
                     else
                     {
-                        source = PDDocument.load(sourceFile);
+                        source = PDDocument.loadLegacy(sourceFile);
                     }
 
                     tobeclosed.add(source);

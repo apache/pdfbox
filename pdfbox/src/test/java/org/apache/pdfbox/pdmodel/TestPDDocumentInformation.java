@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class TestPDDocumentInformation extends TestCase {
         try
         {
            // This document has been selected for this test as it contains custom metadata.
-           doc = PDDocument.load( "src/test/resources/input/hello3.pdf");
+           doc = PDDocument.loadLegacy( new File("src/test/resources/input/hello3.pdf"));
            PDDocumentInformation info = doc.getDocumentInformation();
            
            assertEquals("Wrong author",            "Brian Carrier", info.getAuthor());

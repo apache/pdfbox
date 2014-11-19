@@ -208,7 +208,7 @@ public class TestSymmetricKeyEncryption extends TestCase
         }
         else
         {
-            doc = PDDocument.load(new ByteArrayInputStream(inputFileAsByteArray));
+            doc = PDDocument.loadLegacy(new ByteArrayInputStream(inputFileAsByteArray));
             Assert.assertTrue(doc.isEncrypted());
             DecryptionMaterial decryptionMaterial = new StandardDecryptionMaterial(password);
             doc.openProtection(decryptionMaterial);
@@ -296,7 +296,7 @@ public class TestSymmetricKeyEncryption extends TestCase
             String userpassword, String ownerpassword,
             AccessPermission permission, boolean nonSeq) throws IOException
     {
-        PDDocument document = PDDocument.load(new ByteArrayInputStream(inputFileAsByteArray));
+        PDDocument document = PDDocument.loadLegacy(new ByteArrayInputStream(inputFileAsByteArray));
         String prefix = "Simple-";
         int numSrcPages = document.getNumberOfPages();
         PDFRenderer pdfRenderer = new PDFRenderer(document);
@@ -371,7 +371,7 @@ public class TestSymmetricKeyEncryption extends TestCase
         }
         else
         {
-            encryptedDoc = PDDocument.load(pdfFile);
+            encryptedDoc = PDDocument.loadLegacy(pdfFile);
             Assert.assertTrue(encryptedDoc.isEncrypted());
             DecryptionMaterial decryptionMaterial = new StandardDecryptionMaterial(ownerpassword);
             encryptedDoc.openProtection(decryptionMaterial);
@@ -386,7 +386,7 @@ public class TestSymmetricKeyEncryption extends TestCase
         }
         else
         {
-            encryptedDoc = PDDocument.load(pdfFile);
+            encryptedDoc = PDDocument.loadLegacy(pdfFile);
             Assert.assertTrue(encryptedDoc.isEncrypted());
             DecryptionMaterial decryptionMaterial = new StandardDecryptionMaterial(userpassword);
             encryptedDoc.openProtection(decryptionMaterial);
@@ -402,7 +402,7 @@ public class TestSymmetricKeyEncryption extends TestCase
     private File extractEmbeddedFile(InputStream pdfInputStream, String name) throws IOException
     {
         PDDocument docWithEmbeddedFile;
-        docWithEmbeddedFile = PDDocument.load(pdfInputStream);
+        docWithEmbeddedFile = PDDocument.loadLegacy(pdfInputStream);
         PDDocumentCatalog catalog = docWithEmbeddedFile.getDocumentCatalog();
         PDDocumentNameDictionary names = catalog.getNames();
         PDEmbeddedFilesNameTreeNode embeddedFiles = names.getEmbeddedFiles();
@@ -431,7 +431,7 @@ public class TestSymmetricKeyEncryption extends TestCase
             File embeddedFilePriorToEncryption, boolean nonSeq,
             String userpassword, String ownerpassword) throws IOException
     {
-        PDDocument document = PDDocument.load(new ByteArrayInputStream(inputFileWithEmbeddedFileAsByteArray));
+        PDDocument document = PDDocument.loadLegacy(new ByteArrayInputStream(inputFileWithEmbeddedFileAsByteArray));
         PDDocument encryptedDoc = encrypt(keyLength, sizePriorToEncr, document, "ContainsEmbedded-", permission, nonSeq, userpassword, ownerpassword);
 
         File decryptedFile = new File(testResultsDir, "DecryptedContainsEmbedded-" + keyLength + "-bit.pdf");

@@ -98,7 +98,7 @@ public class TestFDF extends TestCase
             PDDocument fdeb = null;
             try
             {
-                fdeb = PDDocument.load( filePDF );
+                fdeb = PDDocument.loadLegacy( filePDF );
                 PDAcroForm form = fdeb.getDocumentCatalog().getAcroForm();
                 PDTextField field = (PDTextField)form.getField( "f67_1" );
                 field.setValue( "2" );
@@ -139,7 +139,7 @@ public class TestFDF extends TestCase
             PDDocument fdeb = null;
             try
             {
-                fdeb = PDDocument.load( filePDF );
+                fdeb = PDDocument.loadLegacy( filePDF );
                 PDAcroForm form = fdeb.getDocumentCatalog().getAcroForm();
                 PDTextField feld2 = (PDTextField)form.getField( "Feld.2" );
                 feld2.setValue( "Benjamin" );
@@ -210,7 +210,7 @@ public class TestFDF extends TestCase
             FDFDocument fdf = null;
             try
             {
-                freedom = PDDocument.load( filePDF );
+                freedom = PDDocument.loadLegacy( filePDF );
                 fdf = FDFDocument.load( fileFDF );
                 PDAcroForm form = freedom.getDocumentCatalog().getAcroForm();
                 form.importFDF( fdf );

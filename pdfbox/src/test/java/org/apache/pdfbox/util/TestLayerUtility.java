@@ -64,8 +64,8 @@ public class TestLayerUtility extends TestCase
         File overlay1 = createOverlay1();
         File targetFile = new File(testResultsDir, "text-with-form-overlay.pdf");
 
-        PDDocument targetDoc = PDDocument.load(mainPDF);
-        PDDocument overlay1Doc = PDDocument.load(overlay1);
+        PDDocument targetDoc = PDDocument.loadNonSeq(mainPDF);
+        PDDocument overlay1Doc = PDDocument.loadNonSeq(overlay1);
         try
         {
             LayerUtility layerUtil = new LayerUtility(targetDoc);
@@ -87,7 +87,7 @@ public class TestLayerUtility extends TestCase
             overlay1Doc.close();
         }
 
-        PDDocument doc = PDDocument.load(targetFile);
+        PDDocument doc = PDDocument.loadLegacy(targetFile);
         try
         {
             PDDocumentCatalog catalog = doc.getDocumentCatalog();

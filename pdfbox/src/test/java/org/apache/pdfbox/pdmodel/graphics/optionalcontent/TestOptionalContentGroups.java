@@ -166,7 +166,7 @@ public class TestOptionalContentGroups extends TestCase
             testOCGGeneration();
         }
 
-        PDDocument doc = PDDocument.load(pdfFile);
+        PDDocument doc = PDDocument.loadLegacy(pdfFile);
         try
         {
             assertEquals("%PDF-1.5", doc.getDocument().getHeaderString());

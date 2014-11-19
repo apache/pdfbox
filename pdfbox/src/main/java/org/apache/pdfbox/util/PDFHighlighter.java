@@ -17,6 +17,7 @@
 package org.apache.pdfbox.util;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -31,8 +32,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
  * Highlighting of words in a PDF document with an XML file.
  *
  * @author slagraulet (slagraulet@cardiweb.com)
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.7 $
+ * @author Ben Litchfield
  *
  * @see <a href="http://partners.adobe.com/public/developer/en/pdf/HighlightFileFormat.pdf">
  *      Adobe Highlight File Format</a>
@@ -156,7 +156,7 @@ public class PDFHighlighter extends PDFTextStripper
             }
             String[] highlightStrings = new String[ args.length - 1];
             System.arraycopy( args, 1, highlightStrings, 0, highlightStrings.length );
-            doc = PDDocument.load( args[0] );
+            doc = PDDocument.loadNonSeq( new File(args[0]) );
 
             xmlExtractor.generateXMLHighlight(
                 doc,

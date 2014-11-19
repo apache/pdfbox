@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.tools;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.KeyStore;
@@ -32,8 +33,7 @@ import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
  *
  * usage: java org.apache.pdfbox.tools.Decrypt &lt;password&gt; &lt;inputfile&gt; &lt;outputfile&gt;
  *
- * @author  <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.5 $
+ * @author  Ben Litchfield
  */
 public class Decrypt
 {
@@ -133,7 +133,7 @@ public class Decrypt
 
             try
             {
-                document = PDDocument.load( infile );
+                document = PDDocument.loadLegacy( new File(infile) );
 
                 if( document.isEncrypted() )
                 {
