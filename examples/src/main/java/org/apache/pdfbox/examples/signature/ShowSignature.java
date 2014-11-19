@@ -17,18 +17,16 @@
 package org.apache.pdfbox.examples.signature;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
-
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
-
 import java.util.Collection;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 
@@ -70,7 +68,7 @@ public class ShowSignature
             PDDocument document = null;
             try
             {
-                document = PDDocument.load( infile );
+                document = PDDocument.loadLegacy( new File(infile) );
 
                 if( document.isEncrypted() )
                 {

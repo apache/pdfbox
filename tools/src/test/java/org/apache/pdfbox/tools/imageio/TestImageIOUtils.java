@@ -108,7 +108,7 @@ public class TestImageIOUtils extends TestCase
         try
         {
             float dpi = 36; // low DPI so that rendering is FAST
-            document = PDDocument.load(file);
+            document = PDDocument.loadLegacy(file);
 
             // Save image resources of first page
             checkSaveResources(document.getPage(0).getResources());

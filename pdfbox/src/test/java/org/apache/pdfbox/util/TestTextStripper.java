@@ -229,7 +229,7 @@ public class TestTextStripper extends TestCase
         }
 
         //System.out.println("  " + inFile + (bSort ? " (sorted)" : ""));
-        PDDocument document = PDDocument.load(inFile);
+        PDDocument document = PDDocument.loadLegacy(inFile);
         try
         {
             

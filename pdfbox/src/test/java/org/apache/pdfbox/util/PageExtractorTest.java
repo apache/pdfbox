@@ -16,10 +16,13 @@
  */
 package org.apache.pdfbox.util;
 
+import java.io.File;
 import java.io.IOException;
+
 import junit.framework.TestCase;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.fail;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
@@ -62,10 +65,10 @@ public class PageExtractorTest extends TestCase {
         try {
             try {
                 // this should work for most users
-                sourcePdf = PDDocument.load("src/test/resources/input/cweb.pdf");
+                sourcePdf = PDDocument.loadLegacy(new File("src/test/resources/input/cweb.pdf"));
             } catch(IOException e) {
                 // in case your directory structure is different, just change this to be the correct path
-                sourcePdf = PDDocument.load("pdfbox/pdfbox/src/test/resources/input/cweb.pdf");
+                sourcePdf = PDDocument.loadLegacy(new File("pdfbox/pdfbox/src/test/resources/input/cweb.pdf"));
             }
             PageExtractor instance = new PageExtractor(sourcePdf);
             result = instance.extract();

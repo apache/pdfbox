@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.tools;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.cert.CertificateFactory;
@@ -31,8 +32,7 @@ import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
  * This will read a document from the filesystem, encrypt it and and then write
  * the results to the filesystem. <br/><br/>
  *
- * @author  <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.9 $
+ * @author  Ben Litchfield
  */
 public class Encrypt
 {
@@ -158,7 +158,7 @@ public class Encrypt
                 {
                     outfile = infile;
                 }
-                document = PDDocument.load( infile );
+                document = PDDocument.loadLegacy( new File(infile) );
 
                 if( !document.isEncrypted() )
                 {

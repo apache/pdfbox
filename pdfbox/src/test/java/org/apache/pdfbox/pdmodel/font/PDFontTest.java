@@ -67,7 +67,7 @@ public class PDFontTest
         PDDocument doc = null;
         try
         {
-            doc = PDDocument.load(PDFontTest.class.getResourceAsStream("F001u_3_7j.pdf"));
+            doc = PDDocument.loadLegacy(PDFontTest.class.getResourceAsStream("F001u_3_7j.pdf"));
             PDFRenderer renderer = new PDFRenderer(doc);
             renderer.renderImage(0);
             // the allegation is that renderImage() will crash the JVM or hang
@@ -90,7 +90,7 @@ public class PDFontTest
         PDDocument doc = null;
         try
         {
-            doc = PDDocument.load(PDFontTest.class.getResourceAsStream("256.pdf"));
+            doc = PDDocument.loadLegacy(PDFontTest.class.getResourceAsStream("256.pdf"));
             PDFRenderer renderer = new PDFRenderer(doc);
             renderer.renderImage(0);
             // the allegation is that renderImage() will crash the JVM or hang

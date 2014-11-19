@@ -100,7 +100,7 @@ public class TestPublicKeyEncryption extends TestCase
             TestPublicKeyEncryption.class.getResourceAsStream("test.pdf");
         try 
         {
-            document = PDDocument.load(input);
+            document = PDDocument.loadLegacy(input);
         } 
         finally 
         {
@@ -257,7 +257,7 @@ public class TestPublicKeyEncryption extends TestCase
     {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         doc.save(buffer);
-        return PDDocument.load(new ByteArrayInputStream(buffer.toByteArray()));
+        return PDDocument.loadLegacy(new ByteArrayInputStream(buffer.toByteArray()));
     }
 
     /**

@@ -73,7 +73,7 @@ public class TestRendering
     public void render() throws IOException
     {
         File file = new File(INPUT_DIR, fileName);
-        PDDocument document = PDDocument.load(file);
+        PDDocument document = PDDocument.loadLegacy(file);
         PDFRenderer renderer = new PDFRenderer(document);
         BufferedImage image = renderer.renderImage(0);
 
