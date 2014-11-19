@@ -17,6 +17,8 @@
 
 package org.apache.pdfbox.tools;
 
+import java.io.File;
+
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
@@ -31,9 +33,10 @@ import org.apache.pdfbox.persistence.util.COSObjectKey;
  * it possible to easily look through a PDF using a text editor.  It also exposes
  * problems which stem from objects inside object streams overwriting other
  * objects.
- * @author <a href="adam@apache.org">Adam Nichols</a>
+ * @author Adam Nichols
  */
-public class DecompressObjectstreams {
+public class DecompressObjectstreams 
+{
 
     /**
      * This is a very simple program, so everything is in the main method.
@@ -59,7 +62,7 @@ public class DecompressObjectstreams {
 
         PDDocument doc = null;
         try {
-            doc = PDDocument.load(inputFilename);
+            doc = PDDocument.loadNonSeq(new File(inputFilename));
             for(COSObject objStream : doc.getDocument().getObjectsByType(COSName.OBJ_STM)) {
                 COSStream stream = (COSStream)objStream.getObject();
                 PDFObjectStreamParser sp = new PDFObjectStreamParser(stream, doc.getDocument());

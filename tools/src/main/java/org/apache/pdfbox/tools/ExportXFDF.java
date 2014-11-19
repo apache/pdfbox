@@ -16,20 +16,18 @@
  */
 package org.apache.pdfbox.tools;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
-
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 
 /**
  * This example will take a PDF document and fill the fields with data from the
  * FDF fields.
  *
- * @author <a href="ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.3 $
+ * @author Ben Litchfield
  */
 public class ExportXFDF
 {
@@ -71,7 +69,7 @@ public class ExportXFDF
             }
             else
             {
-                pdf = PDDocument.load( args[0] );
+                pdf = PDDocument.loadNonSeq( new File(args[0]) );
                 PDAcroForm form = pdf.getDocumentCatalog().getAcroForm();
                 if( form == null )
                 {
