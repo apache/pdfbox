@@ -49,7 +49,7 @@ public abstract class AbstractTestAction
     protected PreflightContext createContext() throws Exception
     {
         DataSource ds = new FileDataSource("src/test/resources/pdfa-with-annotations-square.pdf");
-        PDDocument doc = PDDocument.load(ds.getInputStream());
+        PDDocument doc = PDDocument.loadNonSeq(ds.getInputStream());
         PreflightDocument preflightDocument = new PreflightDocument(doc.getDocument(), Format.PDF_A1B);
         PreflightContext ctx = new PreflightContext(ds);
         ctx.setDocument(preflightDocument);
