@@ -22,7 +22,6 @@ import java.io.File;
 import javax.print.PrintService;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.printing.PDFPrinter;
 
 /**
@@ -98,13 +97,7 @@ public class PrintPDF
         PDDocument document = null;
         try
         {
-            document = PDDocument.load(pdfFile);
-
-            if (document.isEncrypted())
-            {
-                StandardDecryptionMaterial sdm = new StandardDecryptionMaterial(password);
-                document.openProtection(sdm);
-            }
+            document = PDDocument.loadNonSeq(new File(pdfFile), password);
 
             PrinterJob printJob = PrinterJob.getPrinterJob();
             printJob.setJobName(new File(pdfFile).getName());
