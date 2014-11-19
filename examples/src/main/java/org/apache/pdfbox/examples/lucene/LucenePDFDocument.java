@@ -37,7 +37,6 @@ import org.apache.lucene.document.TextField;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
-import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.util.PDFTextStripper;
 
 /**
@@ -102,7 +101,7 @@ import org.apache.pdfbox.util.PDFTextStripper;
  * </tr>
  * </table>
  * 
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
+ * @author Ben Litchfield
  * 
  */
 public class LucenePDFDocument
@@ -114,8 +113,6 @@ public class LucenePDFDocument
     private static final DateTools.Resolution DATE_TIME_RES = DateTools.Resolution.SECOND;
 
     private PDFTextStripper stripper = null;
-
-    private boolean useNonSeqParser;
 
     /** not Indexed, tokenized, stored. */
     public static final FieldType TYPE_STORED_NOT_INDEXED = new FieldType();
@@ -133,18 +130,6 @@ public class LucenePDFDocument
      */
     public LucenePDFDocument()
     {
-        this(false);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param nonSequentialParser indicates if the non-sequential parser should be used
-     * 
-     */
-    public LucenePDFDocument(boolean nonSequentialParser)
-    {
-        useNonSeqParser = nonSequentialParser;
     }
 
     /**
@@ -338,22 +323,7 @@ public class LucenePDFDocument
      */
     public static Document getDocument(InputStream is) throws IOException
     {
-        return getDocument(is, false);
-    }
-
-    /**
-     * This will get a lucene document from a PDF file.
-     * 
-     * @param is The stream to read the PDF from.
-     * @param nonSeqParser indicates if the non-sequential parser should be used
-     * 
-     * @return The lucene document.
-     * 
-     * @throws IOException If there is an error parsing or indexing the document.
-     */
-    public static Document getDocument(InputStream is, boolean nonSeqParser) throws IOException
-    {
-        LucenePDFDocument converter = new LucenePDFDocument(nonSeqParser);
+        LucenePDFDocument converter = new LucenePDFDocument();
         return converter.convertDocument(is);
     }
 
@@ -368,22 +338,7 @@ public class LucenePDFDocument
      */
     public static Document getDocument(File file) throws IOException
     {
-        return getDocument(file, false);
-    }
-
-    /**
-     * This will get a lucene document from a PDF file.
-     * 
-     * @param file The file to get the document for.
-     * @param nonSeqParser indicates if the non-sequential parser should be used
-     * 
-     * @return The lucene document.
-     * 
-     * @throws IOException If there is an error parsing or indexing the document.
-     */
-    public static Document getDocument(File file, boolean nonSeqParser) throws IOException
-    {
-        LucenePDFDocument converter = new LucenePDFDocument(nonSeqParser);
+        LucenePDFDocument converter = new LucenePDFDocument();
         return converter.convertDocument(file);
     }
 
@@ -398,22 +353,7 @@ public class LucenePDFDocument
      */
     public static Document getDocument(URL url) throws IOException
     {
-        return getDocument(url, false);
-    }
-
-    /**
-     * This will get a lucene document from a PDF file.
-     * 
-     * @param url The file to get the document for.
-     * @param nonSeqParser indicates if the non-sequential parser should be used
-     * 
-     * @return The lucene document.
-     * 
-     * @throws IOException If there is an error parsing or indexing the document.
-     */
-    public static Document getDocument(URL url, boolean nonSeqParser) throws IOException
-    {
-        LucenePDFDocument converter = new LucenePDFDocument(nonSeqParser);
+        LucenePDFDocument converter = new LucenePDFDocument();
         return converter.convertDocument(url);
     }
 
@@ -431,21 +371,7 @@ public class LucenePDFDocument
         PDDocument pdfDocument = null;
         try
         {
-            if (useNonSeqParser)
-            {
-                pdfDocument = PDDocument.loadNonSeq(is, "");
-            }
-            else
-            {
-                pdfDocument = PDDocument.load(is);
-
-                if (pdfDocument.isEncrypted())
-                {
-                    // Just try using the default password and move on
-                    StandardDecryptionMaterial sdm = new StandardDecryptionMaterial("");
-                    pdfDocument.openProtection(sdm);
-                }
-            }
+            pdfDocument = PDDocument.loadNonSeq(is, "");
 
             // create a writer where to append the text content.
             StringWriter writer = new StringWriter();

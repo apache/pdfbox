@@ -17,6 +17,7 @@
 package org.apache.pdfbox.examples.documentmanipulation;
 
 import java.awt.geom.AffineTransform;
+import java.io.File;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -56,7 +57,7 @@ public class SuperimposePage {
             // This will handle the actual import and resources
             LayerUtility layerUtility = new LayerUtility(aDoc);
 
-            PDDocument toBeImported = PDDocument.load(args[0]);
+            PDDocument toBeImported = PDDocument.loadNonSeq(new File(args[0]));
             
             // Get the page as a PDXObjectForm to place it
             PDFormXObject mountable = layerUtility.importPageAsForm(

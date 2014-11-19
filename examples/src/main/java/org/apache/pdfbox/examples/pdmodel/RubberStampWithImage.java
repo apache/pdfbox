@@ -24,7 +24,9 @@ import java.io.OutputStream;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
+
 import javax.imageio.ImageIO;
+
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.RandomAccessFile;
@@ -38,6 +40,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.CCITTFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.JPEGFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationRubberStamp;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
@@ -73,7 +76,7 @@ public class RubberStampWithImage
             PDDocument document = null;
             try
             {
-                document = PDDocument.load( args[0] );
+                document = PDDocument.loadNonSeq( new File(args[0]) );
                 if( document.isEncrypted() )
                 {
                     throw new IOException( "Encrypted documents are not supported for this example" );
@@ -82,7 +85,7 @@ public class RubberStampWithImage
                 for (int i = 0; i < document.getNumberOfPages(); i++)
                 {
                     PDPage page = document.getPage(i);
-                    List annotations = page.getAnnotations();
+                    List<PDAnnotation> annotations = page.getAnnotations();
                     PDAnnotationRubberStamp rubberStamp = new PDAnnotationRubberStamp();
                     rubberStamp.setName(PDAnnotationRubberStamp.NAME_TOP_SECRET);
                     rubberStamp.setRectangle(new PDRectangle(200,100));

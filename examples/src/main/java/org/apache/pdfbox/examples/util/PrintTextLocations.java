@@ -23,6 +23,7 @@ import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.util.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
@@ -32,8 +33,7 @@ import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
  *
  * Usage: java org.apache.pdfbox.examples.util.PrintTextLocations &lt;input-pdf&gt;
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.7 $
+ * @author Ben Litchfield
  */
 public class PrintTextLocations extends PDFTextStripper
 {
@@ -65,7 +65,7 @@ public class PrintTextLocations extends PDFTextStripper
             PDDocument document = null;
             try
             {
-                document = PDDocument.load( args[0] );
+                document = PDDocument.loadNonSeq( new File(args[0]) );
                 if( document.isEncrypted() )
                 {
                     try

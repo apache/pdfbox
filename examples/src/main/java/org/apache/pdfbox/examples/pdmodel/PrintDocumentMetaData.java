@@ -20,14 +20,11 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
-import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 
+import java.io.File;
 import java.io.IOException;
-
 import java.text.SimpleDateFormat;
-
 import java.util.Calendar;
-import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 
 /**
  * This is an example on how to get a documents metadata information.
@@ -57,20 +54,7 @@ public class PrintDocumentMetaData
             PDDocument document = null;
             try
             {
-                document = PDDocument.load( args[0]);
-                if( document.isEncrypted() )
-                {
-                    try
-                    {
-                        StandardDecryptionMaterial sdm = new StandardDecryptionMaterial("");
-                        document.openProtection(sdm);
-                    }
-                    catch( InvalidPasswordException e )
-                    {
-                        System.err.println( "Error: Document is encrypted with a password." );
-                        System.exit( 1 );
-                    }
-                }
+                document = PDDocument.loadNonSeq( new File(args[0]));
                 PrintDocumentMetaData meta = new PrintDocumentMetaData();
                 meta.printMetadata( document );
             }

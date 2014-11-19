@@ -119,12 +119,10 @@ public class ExtractTTFFonts
                 {
                     prefix = pdfFile.substring(0, pdfFile.length() - 4);
                 }
-
                 PDDocument document = null;
-
                 try
                 {
-                    document = PDDocument.load(pdfFile);
+                    document = PDDocument.loadNonSeq(new File(pdfFile));
 
                     if (document.isEncrypted())
                     {

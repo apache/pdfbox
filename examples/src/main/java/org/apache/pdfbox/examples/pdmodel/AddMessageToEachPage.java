@@ -16,14 +16,13 @@
  */
 package org.apache.pdfbox.examples.pdmodel;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
-
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
@@ -31,8 +30,7 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
  * This is an example of how to add a message to every page
  * in a pdf document.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.3 $
+ * @author Ben Litchfield
  */
 public class AddMessageToEachPage
 {
@@ -59,7 +57,7 @@ public class AddMessageToEachPage
         PDDocument doc = null;
         try
         {
-            doc = PDDocument.load( file );
+            doc = PDDocument.loadNonSeq( new File(file) );
 
             PDFont font = PDType1Font.HELVETICA_BOLD;
             float fontSize = 36.0f;

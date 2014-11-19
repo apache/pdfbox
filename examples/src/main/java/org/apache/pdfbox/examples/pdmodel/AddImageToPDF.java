@@ -39,8 +39,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
  *
  * The example is taken from the pdf file format specification.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.1 $
+ * @author Ben Litchfield
  */
 public class AddImageToPDF
 {
@@ -60,7 +59,7 @@ public class AddImageToPDF
         PDDocument doc = null;
         try
         {
-            doc = PDDocument.load( inputFile );
+            doc = PDDocument.loadNonSeq( new File(inputFile) );
 
             //we will add the image to the first page.
             PDPage page = doc.getPage(0);

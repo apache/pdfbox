@@ -27,6 +27,7 @@ import org.apache.xmpbox.schema.XMPBasicSchema;
 import org.apache.xmpbox.xml.XmpSerializer;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.GregorianCalendar;
 
 /**
@@ -63,7 +64,7 @@ public class AddMetadataFromDocInfo
 
             try
             {
-                document = PDDocument.load( args[0] );
+                document = PDDocument.loadNonSeq( new File(args[0]) );
                 if( document.isEncrypted() )
                 {
                     System.err.println( "Error: Cannot add metadata to encrypted document." );

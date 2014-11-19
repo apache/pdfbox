@@ -22,6 +22,7 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDe
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -29,8 +30,7 @@ import java.io.IOException;
  *
  * Usage: java org.apache.pdfbox.examples.pdmodel.GoToSecondPageOnOpen &lt;input-pdf&gt; &lt;output-pdf&gt;
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.3 $
+ * @author Ben Litchfield
  */
 public class GoToSecondBookmarkOnOpen
 {
@@ -57,7 +57,7 @@ public class GoToSecondBookmarkOnOpen
             PDDocument document = null;
             try
             {
-                document = PDDocument.load( args[0] );
+                document = PDDocument.loadNonSeq( new File(args[0]) );
                 if( document.isEncrypted() )
                 {
                     System.err.println( "Error: Cannot add bookmark destination to encrypted documents." );
