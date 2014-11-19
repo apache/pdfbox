@@ -63,13 +63,8 @@ public class PageExtractorTest extends TestCase {
         PDDocument sourcePdf = null;
         PDDocument result = null;
         try {
-            try {
-                // this should work for most users
-                sourcePdf = PDDocument.loadLegacy(new File("src/test/resources/input/cweb.pdf"));
-            } catch(IOException e) {
-                // in case your directory structure is different, just change this to be the correct path
-                sourcePdf = PDDocument.loadLegacy(new File("pdfbox/pdfbox/src/test/resources/input/cweb.pdf"));
-            }
+            // this should work for most users
+            sourcePdf = PDDocument.load(new File("src/test/resources/input/cweb.pdf"));
             PageExtractor instance = new PageExtractor(sourcePdf);
             result = instance.extract();
             assertEquals(sourcePdf.getNumberOfPages(), result.getNumberOfPages());

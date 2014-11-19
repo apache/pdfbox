@@ -87,7 +87,7 @@ public class TestLayerUtility extends TestCase
             overlay1Doc.close();
         }
 
-        PDDocument doc = PDDocument.loadLegacy(targetFile);
+        PDDocument doc = PDDocument.load(targetFile);
         try
         {
             PDDocumentCatalog catalog = doc.getDocumentCatalog();

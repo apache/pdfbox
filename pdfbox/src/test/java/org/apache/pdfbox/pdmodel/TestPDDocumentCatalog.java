@@ -28,7 +28,7 @@ public class TestPDDocumentCatalog extends TestCase {
     public void testPageLabels() throws Exception {
         PDDocument doc = null;
         try {
-            doc = PDDocument.loadLegacy(TestPDDocumentCatalog.class.getResourceAsStream("test_pagelabels.pdf"));
+            doc = PDDocument.load(TestPDDocumentCatalog.class.getResourceAsStream("test_pagelabels.pdf"));
             PDDocumentCatalog cat = doc.getDocumentCatalog();
             String[] labels = cat.getPageLabels().getLabelsByPageIndices();
             assertEquals(12, labels.length);
@@ -58,7 +58,7 @@ public class TestPDDocumentCatalog extends TestCase {
     public void testLabelsOnMalformedPdf() throws Exception {
         PDDocument doc = null;
         try {
-            doc = PDDocument.loadLegacy(TestPDDocumentCatalog.class.getResourceAsStream("page_label.pdf"));
+            doc = PDDocument.load(TestPDDocumentCatalog.class.getResourceAsStream("page_label.pdf"));
             PDDocumentCatalog cat = doc.getDocumentCatalog();
             // getLabelsByPageIndices() should not throw an exception
             cat.getPageLabels().getLabelsByPageIndices();
@@ -79,7 +79,7 @@ public class TestPDDocumentCatalog extends TestCase {
     public void testGetNumberOfPages() throws Exception {
         PDDocument doc = null;
         try {
-            doc = PDDocument.loadLegacy(TestPDDocumentCatalog.class.getResourceAsStream("test.unc.pdf"));
+            doc = PDDocument.load(TestPDDocumentCatalog.class.getResourceAsStream("test.unc.pdf"));
             assertEquals(4, doc.getNumberOfPages());
         } finally {
             if(doc != null)

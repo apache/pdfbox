@@ -88,9 +88,9 @@ public class PDFCloneUtilityTest extends TestCase
 
         // save and reload PDF, so that one can see that the files are legit
         dstDoc.save(TESTDIR + CLONEDST);
-        PDDocument.loadLegacy(new File(TESTDIR + CLONESRC)).close();
+        PDDocument.load(new File(TESTDIR + CLONESRC)).close();
         PDDocument.load(new File(TESTDIR + CLONESRC), null).close();
-        PDDocument.loadLegacy(new File(TESTDIR + CLONEDST)).close();
+        PDDocument.load(new File(TESTDIR + CLONEDST)).close();
         PDDocument.load(new File(TESTDIR + CLONEDST), null).close();
     }
 }

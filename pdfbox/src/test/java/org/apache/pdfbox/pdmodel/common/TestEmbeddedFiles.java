@@ -40,7 +40,7 @@ public class TestEmbeddedFiles extends TestCase
         boolean ok = false;
         try
         {
-            PDDocument doc = PDDocument.loadLegacy(TestEmbeddedFiles.class.getResourceAsStream(
+            PDDocument doc = PDDocument.load(TestEmbeddedFiles.class.getResourceAsStream(
                 "null_PDComplexFileSpecification.pdf"));
 
             PDDocumentCatalog catalog = doc.getDocumentCatalog();
@@ -79,7 +79,7 @@ public class TestEmbeddedFiles extends TestCase
         PDEmbeddedFile dosFile = null;
         PDEmbeddedFile unixFile = null;
 
-        PDDocument doc = PDDocument.loadLegacy(TestEmbeddedFiles.class
+        PDDocument doc = PDDocument.load(TestEmbeddedFiles.class
                 .getResourceAsStream("testPDF_multiFormatEmbFiles.pdf"));
 
         PDDocumentCatalog catalog = doc.getDocumentCatalog();
