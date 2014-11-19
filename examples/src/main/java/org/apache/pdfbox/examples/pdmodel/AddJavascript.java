@@ -19,13 +19,13 @@ package org.apache.pdfbox.examples.pdmodel;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionJavaScript;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
  * This is an example of how to set some javascript in the document.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.3 $
+ * @author Ben Litchfield
  */
 public class AddJavascript
 {
@@ -52,7 +52,7 @@ public class AddJavascript
             PDDocument document = null;
             try
             {
-                document = PDDocument.load( args[0] );
+                document = PDDocument.loadNonSeq( new File(args[0]) );
                 PDActionJavaScript javascript = new PDActionJavaScript(
                     "app.alert( {cMsg: 'PDFBox rocks!', nIcon: 3, nType: 0, cTitle: 'PDFBox Javascript example' } );");
                 document.getDocumentCatalog().setOpenAction( javascript );

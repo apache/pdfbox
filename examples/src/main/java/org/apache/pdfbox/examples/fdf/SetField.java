@@ -16,19 +16,18 @@
  */
 package org.apache.pdfbox.examples.fdf;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
-import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
-import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDFieldTreeNode;
 
 /**
  * This example will take a PDF document and set a FDF field in it.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
+ * @author Ben Litchfield
  *
  */
 public class SetField
@@ -85,21 +84,7 @@ public class SetField
             else
             {
                 SetField example = new SetField();
-
-                pdf = PDDocument.load(args[0]);
-                if (pdf.isEncrypted())
-                {
-                    try
-                    {
-                        StandardDecryptionMaterial sdm = new StandardDecryptionMaterial("");
-                        pdf.openProtection(sdm);
-                    }
-                    catch (InvalidPasswordException e)
-                    {
-                        System.err.println("Error: The document is encrypted.");
-                        usage();
-                    }
-                }
+                pdf = PDDocument.loadNonSeq(new File(args[0]));
                 example.setField(pdf, args[1], args[2]);
                 pdf.save(args[0]);
             }

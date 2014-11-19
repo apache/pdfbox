@@ -17,14 +17,12 @@
 package org.apache.pdfbox.examples.pdmodel;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineNode;
 
+import java.io.File;
 import java.io.IOException;
-
-import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 
 /**
  * This is an example on how to access the bookmarks that are part of a pdf document.
@@ -54,20 +52,7 @@ public class PrintBookmarks
             PDDocument document = null;
             try
             {
-                document = PDDocument.load( args[0] );
-                if( document.isEncrypted() )
-                {
-                    try
-                    {
-                        StandardDecryptionMaterial sdm = new StandardDecryptionMaterial("");
-                        document.openProtection(sdm);
-                    }
-                    catch( InvalidPasswordException e )
-                    {
-                        System.err.println( "Error: Document is encrypted with a password." );
-                        System.exit( 1 );
-                    }
-                }
+                document = PDDocument.loadNonSeq( new File(args[0]) );
                 PrintBookmarks meta = new PrintBookmarks();
                 PDDocumentOutline outline =  document.getDocumentCatalog().getDocumentOutline();
                 if( outline != null )

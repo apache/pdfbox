@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.examples.pdmodel;
 
+import java.io.File;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageFitWidthDestination;
@@ -28,8 +30,7 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlin
  *
  * Usage: java org.apache.pdfbox.examples.pdmodel.CreateBookmarks &lt;input-pdf&gt; &lt;output-pdf&gt;
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.2 $
+ * @author Ben Litchfield
  */
 public class CreateBookmarks
 {
@@ -56,7 +57,7 @@ public class CreateBookmarks
             PDDocument document = null;
             try
             {
-                document = PDDocument.load( args[0] );
+                document = PDDocument.loadNonSeq( new File(args[0]) );
                 if( document.isEncrypted() )
                 {
                     System.err.println( "Error: Cannot add bookmarks to encrypted document." );

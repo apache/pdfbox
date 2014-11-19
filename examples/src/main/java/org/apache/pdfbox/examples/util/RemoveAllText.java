@@ -18,12 +18,12 @@ package org.apache.pdfbox.examples.util;
 
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdfwriter.ContentStreamWriter;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.contentstream.operator.Operator;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,8 +32,7 @@ import java.util.List;
  *
  * Usage: java org.apache.pdfbox.examples.util.RemoveAllText &lt;input-pdf&gt; &lt;output-pdf&gt;
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.2 $
+ * @author Ben Litchfield
  */
 public class RemoveAllText
 {
@@ -63,7 +62,7 @@ public class RemoveAllText
             PDDocument document = null;
             try
             {
-                document = PDDocument.load( args[0] );
+                document = PDDocument.loadNonSeq( new File(args[0]) );
                 if( document.isEncrypted() )
                 {
                     System.err.println( "Error: Encrypted documents are not supported for this example." );
@@ -73,8 +72,8 @@ public class RemoveAllText
                 {
                     PDFStreamParser parser = new PDFStreamParser(page.getStream());
                     parser.parse();
-                    List tokens = parser.getTokens();
-                    List newTokens = new ArrayList();
+                    List<Object> tokens = parser.getTokens();
+                    List<Object> newTokens = new ArrayList<Object>();
                     for( int j=0; j<tokens.size(); j++)
                     {
                         Object token = tokens.get( j );

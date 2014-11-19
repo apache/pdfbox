@@ -17,11 +17,11 @@
 package org.apache.pdfbox.examples.pdmodel;
 
 import java.awt.geom.Rectangle2D;
+import java.io.File;
 import java.util.List;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionURI;
@@ -33,8 +33,7 @@ import org.apache.pdfbox.util.PDFTextStripperByArea;
 /**
  * This is an example of how to access a URL in a PDF document.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.3 $
+ * @author Ben Litchfield
  */
 public class PrintURLs
 {
@@ -66,13 +65,13 @@ public class PrintURLs
             }
             else
             {
-                doc = PDDocument.load( args[0] );
+                doc = PDDocument.loadNonSeq( new File(args[0]) );
                 int pageNum = 0;
                 for( PDPage page : doc.getPages() )
                 {
                     pageNum++;
                     PDFTextStripperByArea stripper = new PDFTextStripperByArea();
-                    List annotations = page.getAnnotations();
+                    List<PDAnnotation> annotations = page.getAnnotations();
                     //first setup text extraction regions
                     for( int j=0; j<annotations.size(); j++ )
                     {

@@ -31,8 +31,6 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDComplexFileSpecification;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
-import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
-import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationFileAttachment;
 
@@ -41,7 +39,6 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationFileAttachme
  * <p>
  * Usage: java org.apache.pdfbox.examples.pdmodel.ExtractEmbeddedFiles &lt;input-pdf&gt;
  *
- * @version $Revision$
  */
 public class ExtractEmbeddedFiles
 {
@@ -70,19 +67,7 @@ public class ExtractEmbeddedFiles
             {
                 File pdfFile = new File(args[0]);
                 String filePath = pdfFile.getParent() + System.getProperty("file.separator");
-                document = PDDocument.load( pdfFile );
-                if (document.isEncrypted()) 
-                {
-                    try
-                    {
-                        StandardDecryptionMaterial sdm = new StandardDecryptionMaterial("");
-                        document.openProtection(sdm);
-                    }
-                    catch( InvalidPasswordException e )
-                    {
-                        System.err.println( "Error: The document is encrypted." );
-                    }
-                }
+                document = PDDocument.loadNonSeq(pdfFile );
                 PDDocumentNameDictionary namesDictionary = 
                         new PDDocumentNameDictionary( document.getDocumentCatalog() );
                 PDEmbeddedFilesNameTreeNode efTree = namesDictionary.getEmbeddedFiles();

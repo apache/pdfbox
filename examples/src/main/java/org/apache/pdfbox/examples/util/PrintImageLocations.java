@@ -16,11 +16,10 @@
  */
 package org.apache.pdfbox.examples.util;
 
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
@@ -30,10 +29,10 @@ import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.PDFStreamEngine;
 
 import java.awt.geom.AffineTransform;
+import java.io.File;
 import java.io.IOException;
-
 import java.util.List;
-import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
+
 import org.apache.pdfbox.contentstream.operator.state.Concatenate;
 import org.apache.pdfbox.contentstream.operator.state.Restore;
 import org.apache.pdfbox.contentstream.operator.state.Save;
@@ -45,8 +44,7 @@ import org.apache.pdfbox.contentstream.operator.state.SetMatrix;
  *
  * Usage: java org.apache.pdfbox.examples.util.PrintImageLocations &lt;input-pdf&gt;
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.5 $
+ * @author Ben Litchfield
  */
 public class PrintImageLocations extends PDFStreamEngine
 {
@@ -83,20 +81,7 @@ public class PrintImageLocations extends PDFStreamEngine
             PDDocument document = null;
             try
             {
-                document = PDDocument.load( args[0] );
-                if( document.isEncrypted() )
-                {
-                    try
-                    {
-                        StandardDecryptionMaterial sdm = new StandardDecryptionMaterial("");
-                        document.openProtection(sdm);
-                    }
-                    catch( InvalidPasswordException e )
-                    {
-                        System.err.println( "Error: Document is encrypted with a password." );
-                        System.exit( 1 );
-                    }
-                }
+                document = PDDocument.loadNonSeq( new File(args[0]) );
                 PrintImageLocations printer = new PrintImageLocations();
                 int pageNum = 0;
                 for( PDPage page : document.getPages() )
@@ -124,7 +109,7 @@ public class PrintImageLocations extends PDFStreamEngine
      *
      * @throws IOException If there is an error processing the operation.
      */
-    protected void processOperator( Operator operator, List arguments ) throws IOException
+    protected void processOperator( Operator operator, List<COSBase> arguments ) throws IOException
     {
         String operation = operator.getName();
         if( "Do".equals(operation) )

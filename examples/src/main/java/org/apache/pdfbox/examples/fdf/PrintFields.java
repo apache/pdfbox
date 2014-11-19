@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.examples.fdf;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
@@ -141,7 +142,7 @@ public class PrintFields
             }
             else
             {
-                pdf = PDDocument.load(args[0]);
+                pdf = PDDocument.loadNonSeq(new File(args[0]));
                 PrintFields exporter = new PrintFields();
                 if (pdf.isEncrypted())
                 {

@@ -18,20 +18,17 @@ package org.apache.pdfbox.examples.util;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.util.PDFTextStripperByArea;
 
 import java.awt.Rectangle;
-
-import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
+import java.io.File;
 
 /**
  * This is an example on how to extract text from a specific area on the PDF document.
  *
  * Usage: java org.apache.pdfbox.examples.util.ExtractTextByArea &lt;input-pdf&gt;
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.2 $
+ * @author Ben Litchfield
  */
 public class ExtractTextByArea
 {
@@ -59,20 +56,7 @@ public class ExtractTextByArea
             PDDocument document = null;
             try
             {
-                document = PDDocument.load( args[0] );
-                if( document.isEncrypted() )
-                {
-                    try
-                    {
-                        StandardDecryptionMaterial sdm = new StandardDecryptionMaterial("");
-                        document.openProtection(sdm);
-                    }
-                    catch( InvalidPasswordException e )
-                    {
-                        System.err.println( "Error: Document is encrypted with a password." );
-                        System.exit( 1 );
-                    }
-                }
+                document = PDDocument.loadNonSeq( new File(args[0]) );
                 PDFTextStripperByArea stripper = new PDFTextStripperByArea();
                 stripper.setSortByPosition( true );
                 Rectangle rect = new Rectangle( 10, 280, 275, 60 );
@@ -81,7 +65,6 @@ public class ExtractTextByArea
                 stripper.extractRegions( firstPage );
                 System.out.println( "Text in the area:" + rect );
                 System.out.println( stripper.getTextForRegion( "class1" ) );
-
             }
             finally
             {

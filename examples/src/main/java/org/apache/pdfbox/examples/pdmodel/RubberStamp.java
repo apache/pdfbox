@@ -19,8 +19,10 @@ package org.apache.pdfbox.examples.pdmodel;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationRubberStamp;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -28,7 +30,6 @@ import java.util.List;
  * This is an example on how to add annotations to pages of a PDF document.
  *
  * @author Paul King
- * @version $Revision: 1.1 $
  */
 public class RubberStamp
 {
@@ -55,14 +56,14 @@ public class RubberStamp
             PDDocument document = null;
             try
             {
-                document = PDDocument.load( args[0] );
+                document = PDDocument.loadNonSeq( new File(args[0]) );
                 if( document.isEncrypted() )
                 {
                     throw new IOException( "Encrypted documents are not supported for this example" );
                 }
                 for (PDPage page : document.getPages())
                 {
-                    List annotations = page.getAnnotations();
+                    List<PDAnnotation> annotations = page.getAnnotations();
 
                     PDAnnotationRubberStamp rs = new PDAnnotationRubberStamp();
                     rs.setName(PDAnnotationRubberStamp.NAME_TOP_SECRET);
