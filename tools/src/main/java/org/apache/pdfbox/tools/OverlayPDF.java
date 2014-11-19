@@ -43,7 +43,6 @@ public class OverlayPDF
     private static final String LAST = "-last";
     private static final String PAGE = "-page";
     private static final String USEALLPAGES = "-useAllPages";
-    private static final String NONSEQ = "-nonSeq";
 
     /**
      * This will overlay a document and write out the results.
@@ -58,7 +57,6 @@ public class OverlayPDF
 
         Overlay overlayer = new Overlay();
         Map<Integer, String> specificPageOverlayFile = new HashMap<Integer, String>();
-        boolean useNonSeqParser = false;
         // input arguments
         for (int i = 0; i < args.length; i++) 
         {
@@ -117,10 +115,6 @@ public class OverlayPDF
                 specificPageOverlayFile.put(Integer.parseInt(args[i + 1].trim()), args[i + 2].trim());
                 i += 2;
             } 
-            else if( args[i].equals( NONSEQ ) )
-            {
-                useNonSeqParser = true;
-            }
             else if (overlayer.getDefaultOverlayFile() == null) 
             {
                 overlayer.setDefaultOverlayFile(arg);
@@ -138,7 +132,7 @@ public class OverlayPDF
         
         try 
         {
-            overlayer.overlay(specificPageOverlayFile,useNonSeqParser);
+            overlayer.overlay(specificPageOverlayFile);
         } 
         catch (Exception e) 
         {
@@ -163,7 +157,6 @@ public class OverlayPDF
                 "the given page number, may occur more than once\n");
         message.append("  -position foreground|background                    where to put the overlay " +
                 "file: foreground or background\n");
-        message.append("  -nonSeq                                            enables the new non-sequential parser\n");
         message.append("  <output.pdf>                                       output file\n");
         System.err.println(message.toString());
         System.exit( 1 );
