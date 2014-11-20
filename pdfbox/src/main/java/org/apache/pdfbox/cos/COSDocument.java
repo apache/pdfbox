@@ -598,29 +598,25 @@ public class COSDocument extends COSBase implements Closeable
                 trailer = null;
             }
             // Clear object pool
-            List<COSObject> list = getObjects();
-            if (list != null && !list.isEmpty()) 
+            for (COSObject object : objectPool.values()) 
             {
-                for (COSObject object : list) 
+                COSBase cosObject = object.getObject();
+                // clear the resources of the pooled objects
+                if (cosObject instanceof COSStream)
                 {
-                    COSBase cosObject = object.getObject();
-                    // clear the resources of the pooled objects
-                    if (cosObject instanceof COSStream)
-                    {
-                        ((COSStream)cosObject).close();
-                    }
-                    else if (cosObject instanceof COSDictionary)
-                    {
-                        ((COSDictionary)cosObject).clear();
-                    }
-                    else if (cosObject instanceof COSArray)
-                    {
-                        ((COSArray)cosObject).clear();
-                    }
-                    // TODO are there other kind of COSObjects to be cleared?
+                    ((COSStream)cosObject).close();
                 }
-                list.clear();
+                else if (cosObject instanceof COSDictionary)
+                {
+                    ((COSDictionary)cosObject).clear();
+                }
+                else if (cosObject instanceof COSArray)
+                {
+                    ((COSArray)cosObject).clear();
+                }
+                // TODO are there other kind of COSObjects to be cleared?
             }
+            objectPool.clear();
             closed = true;
         }
     }
