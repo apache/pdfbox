@@ -21,7 +21,9 @@
 
 package org.apache.pdfbox.preflight.utils;
 
+import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.preflight.PreflightConfiguration;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_PDF_PROCESSING;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_PDF_PROCESSING_MISSING;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.PreflightPath;
@@ -67,6 +69,12 @@ public class ContextHelper
     throws ValidationException
     {
         PreflightPath validationPath = context.getValidationPath();
+
+        if (hasRecursion(context, element, validationPath))
+        {
+            return;
+        }
+        
         boolean needPop = validationPath.pushObject(element);
         PreflightConfiguration config = context.getConfig();
         ValidationProcess process = config.getInstanceOfProcess(processName);
@@ -87,4 +95,27 @@ public class ContextHelper
     {
         callValidation(context, null, processName);
     }
+
+    // detect recursion that would lead to stack overflow
+    private static boolean hasRecursion(PreflightContext context, Object element, PreflightPath validationPath)
+    {
+        if (element instanceof PDResources)
+        {
+            for (int i = 0; i < validationPath.size(); ++i)
+            {
+                Object obj = validationPath.getPathElement(i, Object.class);
+                if (obj instanceof PDResources)
+                {
+                    PDResources pdRes = (PDResources) obj;
+                    if (pdRes.getCOSObject() == ((PDResources) element).getCOSObject())
+                    {
+                        context.addValidationError(new ValidationError(ERROR_PDF_PROCESSING, "Resources recursion"));
+                        return true;
+                    }
+                }               
+            }
+        }
+        return false;
+    }
+
 }
