@@ -40,6 +40,7 @@ import java.util.List;
 
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.exceptions.SignatureException;
+import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
@@ -52,7 +53,7 @@ import org.bouncycastle.cms.CMSSignedGenerator;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 /**
- * <p>This is an example for singing a pdf with bouncy castle.</p>
+ * <p>This is an example for signing a pdf with bouncy castle.</p>
  * <p>A keystore can be created with the java keytool 
  * (e.g. keytool -genkeypair -storepass 123456 -storetype pkcs12 -alias test -validity 365 -v -keyalg RSA -keystore keystore.p12 ) 
  * </p>
@@ -154,34 +155,50 @@ public class CreateSignature implements SignatureInterface
     fis.close();
     fis = new FileInputStream(outputDocument);
 
-    // load document
-    PDDocument doc = PDDocument.load(document);
+    File scratchFile = File.createTempFile("pdfbox_scratch", ".bin");
+    RandomAccessFile randomAccessFile = new RandomAccessFile(scratchFile, "rw");
 
-    // create signature dictionary
-    PDSignature signature = new PDSignature();
-    signature.setFilter(PDSignature.FILTER_ADOBE_PPKLITE); // default filter
-    // subfilter for basic and PAdES Part 2 signatures
-    signature.setSubFilter(PDSignature.SUBFILTER_ADBE_PKCS7_DETACHED);
-    signature.setName("signer name");
-    signature.setLocation("signer location");
-    signature.setReason("reason for signature");
-
-    // the signing date, needed for valid signature
-    signature.setSignDate(Calendar.getInstance());
-
-    // register signature dictionary and sign interface
-    if (options==null)
+    try
     {
-      doc.addSignature(signature, this);
+      // load document
+      PDDocument doc = PDDocument.load(document, randomAccessFile);
+  
+      // create signature dictionary
+      PDSignature signature = new PDSignature();
+      signature.setFilter(PDSignature.FILTER_ADOBE_PPKLITE); // default filter
+      // subfilter for basic and PAdES Part 2 signatures
+      signature.setSubFilter(PDSignature.SUBFILTER_ADBE_PKCS7_DETACHED);
+      signature.setName("signer name");
+      signature.setLocation("signer location");
+      signature.setReason("reason for signature");
+  
+      // the signing date, needed for valid signature
+      signature.setSignDate(Calendar.getInstance());
+  
+      // register signature dictionary and sign interface
+      if (options==null)
+      {
+        doc.addSignature(signature, this);
+      } 
+      else 
+      {
+        doc.addSignature(signature, this, options);
+      }
+      
+      // write incremental (only for signing purpose)
+      doc.saveIncremental(fis, fos);
     } 
-    else 
+    finally
     {
-      doc.addSignature(signature, this, options);
+      if (randomAccessFile!= null) 
+      {
+        randomAccessFile.close();
+      }
+      if (scratchFile != null && scratchFile.exists() && !scratchFile.delete())
+      {
+        scratchFile.deleteOnExit();
+      }
     }
-    
-    // write incremental (only for signing purpose)
-    doc.saveIncremental(fis, fos);
-
     return outputDocument;
   }
 

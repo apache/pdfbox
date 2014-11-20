@@ -16,8 +16,7 @@
  */
 package org.apache.pdfbox.pdfwriter;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.BufferedInputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
@@ -759,41 +758,30 @@ public class COSWriter implements ICOSVisitor, Closeable
             }
         
             getStandardOutput().setPos(0);
-            // Begin - extracting document
-            InputStream filterInputStream = new COSFilterInputStream(in, 
-                    new int[] {0,signaturePosition[0],signaturePosition[1],left});
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            
+            InputStream filterInputStream = null;
             try 
             {
-                byte[] buffer = new byte[1024];
-                int c;
-                while((c = filterInputStream.read(buffer)) != -1)
+                filterInputStream = new COSFilterInputStream(new BufferedInputStream(in), new int[] {0,signaturePosition[0],signaturePosition[1],left});
+                SignatureInterface signatureInterface = doc.getSignatureInterface();
+                byte[] sign = signatureInterface.sign(filterInputStream);
+                String signature = new COSString(sign).getHexString();
+                int startPos = signaturePosition[0] + 1; // move past "<"
+                int endPos = signaturePosition[1] - 1; // move in front of ">"
+                if (startPos + signature.length() > endPos)            
                 {
-                    bytes.write(buffer, 0, c);
+                    throw new IOException("Can't write signature, not enough space");
                 }
+                getStandardOutput().setPos(startPos);
+                getStandardOutput().write(signature.getBytes());
             } 
             finally 
             {
-                if(filterInputStream !=null)
-                {
-                    filterInputStream.close();
-                }
+              if(filterInputStream !=null)
+              {
+                filterInputStream.close();
+              }
             }
-
-            byte[] pdfContent = bytes.toByteArray();
-            // End - extracting document
-        
-            SignatureInterface signatureInterface = doc.getSignatureInterface();
-            byte[] sign = signatureInterface.sign(new ByteArrayInputStream(pdfContent));
-            String signature = new COSString(sign).getHexString();
-            int startPos = signaturePosition[0] + 1; // move past "<"
-            int endPos = signaturePosition[1] - 1; // move in front of ">"
-            if (startPos + signature.length() > endPos)            
-            {
-                throw new IOException("Can't write signature, not enough space");
-            }
-            getStandardOutput().setPos(startPos);
-            getStandardOutput().write(signature.getBytes());
         }
     }
     
