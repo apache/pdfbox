@@ -85,7 +85,7 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
         boolean isStandard14 = false;
         if (this.font instanceof PDFont)
         {
-            isStandard14 = ((PDFont)font).isStandard14();
+            isStandard14 = ((PDFont) font).isStandard14();
         }
 
         // Only a PDFontDescriptorDictionary provides a way to embedded the font program.
@@ -109,13 +109,13 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
                     if (fontFileNotEmbedded(fontDescriptor))
                     {
                         this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID,
-                                "FontFile entry is missing from FontDescriptor for " + fontDescriptor.getFontName()));
+                            fontDescriptor.getFontName() + ": FontFile entry is missing from FontDescriptor"));
                         this.fContainer.notEmbedded();
                     }
                     else
                     {
                         this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID,
-                                "They are more than one FontFile for " + fontDescriptor.getFontName()));
+                            fontDescriptor.getFontName() + ": They is more than one FontFile"));
                     }
                 }
             }
@@ -123,7 +123,7 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
         else
         {
             this.fContainer.push(new ValidationError(ERROR_FONTS_DESCRIPTOR_INVALID,
-                    "FontDescriptor is null or is a AFM Descriptor"));
+                    "FontDescriptor is null or is an AFM Descriptor"));
             this.fContainer.notEmbedded();
         }
     }
@@ -233,10 +233,9 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
      */
     protected void checkFontFileMetaData(PDFontDescriptor fontDescriptor, PDStream fontFile)
     {
-        PDMetadata metadata = null;
         try
         {
-            metadata = fontFile.getMetadata();
+            PDMetadata metadata = fontFile.getMetadata();
 
             if (metadata != null)
             {
