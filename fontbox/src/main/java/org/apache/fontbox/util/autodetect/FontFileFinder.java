@@ -95,20 +95,6 @@ public class FontFileFinder
         }
         return results;
     }
-
-    /**
-     * Provides a list of platform specific ttf name mappings.
-     * 
-     * @return a font name mapping
-     */
-    public Map<String, String> getCommonTTFMapping()
-    {
-        if (fontDirFinder == null)
-        {
-            fontDirFinder = determineDirFinder();
-        }
-        return fontDirFinder.getCommonTTFMapping();
-    }
     
     /**
      * walk down the driectory tree and search for font files.

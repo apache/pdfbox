@@ -35,11 +35,4 @@ public interface FontDirFinder
      * @return list of font files.
      */
     List<File> find();
-
-    /**
-     * Provides a list of platform specific ttf name mappings.
-     * 
-     * @return a fontname mapping
-     */
-    Map<String, String> getCommonTTFMapping();
 }
