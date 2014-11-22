@@ -34,7 +34,6 @@ import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VAL
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
 import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.PreflightContext;
@@ -53,13 +52,15 @@ import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 public class FontValidationProcess extends AbstractProcess
 {
 
+    @Override
     public void validate(PreflightContext context) throws ValidationException
     {
         PreflightPath vPath = context.getValidationPath();
-        if (vPath.isEmpty()) {
+        if (vPath.isEmpty()) 
+        {
             return;
         }
-        else if (!vPath.isExpectedType(PDFont.class)) 
+        if (!vPath.isExpectedType(PDFont.class)) 
         {
             context.addValidationError(new ValidationError(PreflightConstants.ERROR_FONTS_INVALID_DATA, "Font validation process needs at least one PDFont object"));
         } 
