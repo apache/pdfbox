@@ -252,14 +252,14 @@ public abstract class AnnotationValidator
      */
     public boolean validate() throws ValidationException
     {
-        boolean isValide = checkMandatoryFields();
-        isValide = isValide && checkFlags();
-        isValide = isValide && checkColors();
-        isValide = isValide && checkAP();
-        isValide = isValide && checkCA();
-        isValide = isValide && checkActions();
-        isValide = isValide && checkPopup();
-        return isValide;
+        boolean isValid = checkMandatoryFields();
+        isValid = checkFlags() && isValid;
+        isValid = checkColors() && isValid;
+        isValid = checkAP() && isValid;
+        isValid = checkCA() && isValid;
+        isValid = checkActions() && isValid;
+        isValid = checkPopup() && isValid;
+        return isValid;
     }
 
     /**
