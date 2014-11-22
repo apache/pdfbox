@@ -93,30 +93,31 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
         {
             fontDescriptor = fd;
 
-            if (isStandard14 || checkMandatoryFields(fontDescriptor.getCOSObject()))
+            if (!isStandard14)
             {
-                if (hasOnlyOneFontFile(fontDescriptor))
+                checkMandatoryFields(fontDescriptor.getCOSObject());
+            }
+            if (hasOnlyOneFontFile(fontDescriptor))
+            {
+                PDStream fontFile = extractFontFile(fontDescriptor);
+                if (fontFile != null)
                 {
-                    PDStream fontFile = extractFontFile(fontDescriptor);
-                    if (fontFile != null)
-                    {
-                        processFontFile(fontDescriptor, fontFile);
-                        checkFontFileMetaData(fontDescriptor, fontFile);
-                    }
+                    processFontFile(fontDescriptor, fontFile);
+                    checkFontFileMetaData(fontDescriptor, fontFile);
+                }
+            }
+            else
+            {
+                if (fontFileNotEmbedded(fontDescriptor))
+                {
+                    this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID,
+                        fontDescriptor.getFontName() + ": FontFile entry is missing from FontDescriptor"));
+                    this.fContainer.notEmbedded();
                 }
                 else
                 {
-                    if (fontFileNotEmbedded(fontDescriptor))
-                    {
-                        this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID,
-                            fontDescriptor.getFontName() + ": FontFile entry is missing from FontDescriptor"));
-                        this.fContainer.notEmbedded();
-                    }
-                    else
-                    {
-                        this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID,
-                            fontDescriptor.getFontName() + ": They is more than one FontFile"));
-                    }
+                    this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID,
+                        fontDescriptor.getFontName() + ": They is more than one FontFile"));
                 }
             }
         }
