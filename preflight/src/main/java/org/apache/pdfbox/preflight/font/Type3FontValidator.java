@@ -373,7 +373,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
     }
 
     /**
-     * If the Resources entry is present, this method check its content. Only fonts and Images are checked because this
+     * If the Resources entry is present, this method checks its content. Only fonts and Images are checked because this
      * resource describes glyphs.
      */
     private void checkResources() throws ValidationException
