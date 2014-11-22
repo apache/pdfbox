@@ -180,9 +180,7 @@ public final class ExternalFonts
      */
     private static List<String> copySubstitutes(String postScriptName)
     {
-        List<String> copy = new ArrayList<String>(substitutes.get(postScriptName));
-        copy.add(0, postScriptName);
-        return copy;
+        return new ArrayList<String>(substitutes.get(postScriptName));
     }
 
     /**
