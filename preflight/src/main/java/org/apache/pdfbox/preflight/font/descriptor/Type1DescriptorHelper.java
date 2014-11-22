@@ -50,7 +50,7 @@ public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container>
     {
         boolean result = super.checkMandatoryFields(fDescriptor);
         /*
-         * if the this font is a Subset, the CharSet entry must be present in the FontDescriptor
+         * if this font is a subset, the CharSet entry must be present in the FontDescriptor
          */
         if (isSubSet(fontDescriptor.getFontName()))
         {
