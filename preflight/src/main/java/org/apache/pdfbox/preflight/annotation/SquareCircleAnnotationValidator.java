@@ -54,9 +54,9 @@ public class SquareCircleAnnotationValidator extends AnnotationValidator
     @Override
     public boolean validate() throws ValidationException
     {
-        boolean isValide = super.validate();
-        isValide = isValide && checkIColors();
-        return isValide;
+        boolean isValid = super.validate();
+        isValid = checkIColors() && isValid;
+        return isValid;
     }
 
     /**

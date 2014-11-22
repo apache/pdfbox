@@ -54,9 +54,8 @@ public class WidgetAnnotationValidator extends AnnotationValidator
     @Override
     public boolean validate() throws ValidationException
     {
-        boolean isValide = super.validate();
-        isValide = isValide && checkAAField();
-        return isValide;
+        boolean isValid = super.validate();
+        return checkAAField() && isValid;
     }
 
     /**

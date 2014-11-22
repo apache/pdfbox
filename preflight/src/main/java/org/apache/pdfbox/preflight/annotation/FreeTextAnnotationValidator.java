@@ -43,6 +43,7 @@ public class FreeTextAnnotationValidator extends AnnotationValidator
         this.pdAnnot = this.pdFreeText;
     }
 
+    @Override
     protected boolean checkSpecificMandatoryFields()
     {
         return this.annotDictionary.containsKey(COSName.DA);

@@ -58,9 +58,9 @@ public class LinkAnnotationValidator extends AnnotationValidator
     @Override
     public boolean validate() throws ValidationException
     {
-        boolean isValide = super.validate();
-        isValide = isValide && checkDest();
-        return isValide;
+        boolean isValid = super.validate();
+        isValid = checkDest() && isValid;
+        return isValid;
     }
 
     /**

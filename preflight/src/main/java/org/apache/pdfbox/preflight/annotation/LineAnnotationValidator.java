@@ -55,9 +55,9 @@ public class LineAnnotationValidator extends AnnotationValidator
     @Override
     public boolean validate() throws ValidationException
     {
-        boolean isValide = super.validate();
-        isValide = isValide && checkIColors();
-        return isValide;
+        boolean isValid = super.validate();
+        isValid = checkIColors() && isValid;
+        return isValid;
     }
 
     /**
@@ -85,6 +85,7 @@ public class LineAnnotationValidator extends AnnotationValidator
      * 
      * @see AnnotationValidator#checkMandatoryFields()
      */
+    @Override
     protected boolean checkSpecificMandatoryFields()
     {
         return this.annotDictionary.containsKey(COSName.L);

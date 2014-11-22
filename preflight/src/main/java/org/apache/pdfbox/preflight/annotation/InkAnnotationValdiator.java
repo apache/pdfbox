@@ -45,6 +45,7 @@ public class InkAnnotationValdiator extends AnnotationValidator
         this.pdAnnot = this.pdUnk;
     }
 
+    @Override
     protected boolean checkSpecificMandatoryFields()
     {
         return this.annotDictionary.containsKey(COSName.getPDFName(ANNOT_DICTIONARY_KEY_INKLIST));
