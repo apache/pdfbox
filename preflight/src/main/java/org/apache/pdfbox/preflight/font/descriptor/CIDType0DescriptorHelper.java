@@ -100,7 +100,7 @@ public class CIDType0DescriptorHelper extends FontDescriptorHelper<CIDType0Conta
             if (cidset == null || !COSUtils.isStream(cidset, cosDocument))
             {
                 this.fContainer.push(new ValidationResult.ValidationError(ERROR_FONTS_CIDSET_MISSING_FOR_SUBSET,
-                        "The CIDSet entry is missing for the Composite Subset"));
+                        pfDescriptor.getFontName() + ": The CIDSet entry is missing for the Composite Subset"));
             }
         }
     }
