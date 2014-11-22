@@ -17,10 +17,6 @@
 
 package org.apache.fontbox.util.autodetect;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Mac font directory finder. This class is based on a class provided by Apache FOP. see
  * org.apache.fop.fonts.autodetect.MacFontDirFinder
@@ -41,32 +37,4 @@ public class MacFontDirFinder extends NativeFontDirFinder
                 "/Network/Library/Fonts/" // network
         };
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Map<String, String> getCommonTTFMapping()
-    {
-        HashMap<String,String> map = new HashMap<String,String>();
-        map.put("Arial", "Arial");
-        map.put("Arial,Bold", "ArialBold");
-        map.put("Arial,Italic", "ArialItalic");
-        map.put("Arial,BoldItalic", "ArialBoldItalic");
-
-        map.put("TimesNewRoman", "timesnewromanpsmt");
-        map.put("TimesNewRoman,Bold", "timesnewromanpsmtbold");
-        map.put("TimesNewRoman,BoldItalic", "timesnewromanpsmtbolditalic");
-        map.put("TimesNewRoman,Italic", "timesnewromanpsmtitalic");
-        
-        map.put("Courier", "couriernewpsmt");
-        map.put("Courier,Bold", "couriernewpsmtbold");
-        map.put("Courier,Italic", "couriernewpsmtitalic");
-        map.put("Courier,BoldItalic", "couriernewpsmtbolditalic");
-
-        map.put("Symbol", "Symbol");
-        map.put("ZapfDingbats", "ZapfDingbats");
-
-        return Collections.unmodifiableMap(map);
-    }
-
 }
