@@ -133,7 +133,7 @@ public abstract class DescendantFontValidator<T extends FontContainer> extends S
             if (!FONT_DICTIONARY_VALUE_CMAP_IDENTITY.equals(ctogStr))
             {
                 this.fontContainer.push(new ValidationError(ERROR_FONTS_CIDKEYED_CIDTOGID,
-                        "The CIDToGID entry is invalid"));
+                        font.getName() + ": The CIDToGID entry is invalid"));
             }
         }
         else if (COSUtils.isStream(ctog, cosDocument))
@@ -150,12 +150,14 @@ public abstract class DescendantFontValidator<T extends FontContainer> extends S
             catch (IOException e)
             {
                 // map can be invalid, return a Validation Error
-                this.fontContainer.push(new ValidationError(ERROR_FONTS_CIDKEYED_CIDTOGID));
+                this.fontContainer.push(new ValidationError(ERROR_FONTS_CIDKEYED_CIDTOGID, 
+                        font.getName() + ": error getting CIDToGIDMap", e));
             }
         }
         else if (mandatory)
         {
-            this.fontContainer.push(new ValidationError(ERROR_FONTS_CIDKEYED_CIDTOGID));
+            this.fontContainer.push(new ValidationError(ERROR_FONTS_CIDKEYED_CIDTOGID, 
+                    font.getName() + ": mandatory CIDToGIDMap missing"));
         }
     }
 }
