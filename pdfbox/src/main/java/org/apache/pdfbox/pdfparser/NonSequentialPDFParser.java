@@ -145,8 +145,8 @@ public class NonSequentialPDFParser extends PDFParser
     protected SecurityHandler securityHandler = null;
 
     private AccessPermission accessPermission;
-    private final String keyStoreFilename = null;
-    private final String alias = null;
+    private InputStream keyStoreInputStream = null;
+    private String keyAlias = null;
     private String password = "";
     private int readTrailBytes = DEFAULT_TRAIL_BYTECOUNT; // how many trailing
                                                           // bytes to read for
@@ -254,13 +254,49 @@ public class NonSequentialPDFParser extends PDFParser
     public NonSequentialPDFParser(File file, String decryptionPassword, boolean useScratchFiles)
             throws IOException
     {
+        this(file, decryptionPassword, null, null, useScratchFiles);
+    }
+
+    /**
+     * Constructs parser for given file using given buffer for temporary storage.
+     * 
+     * @param file the pdf to be parsed.
+     * @param decryptionPassword password to be used for decryption.
+     * @param keyStore key store to be used for decryption when using public key security 
+     * @param alias alias to be used for decryption when using public key security
+     * 
+     * @throws IOException If something went wrong.
+     */
+    public NonSequentialPDFParser(File file, String decryptionPassword, InputStream keyStore, String alias)
+            throws IOException
+    {
+        this(file, decryptionPassword, keyStore, alias, false);
+    }
+
+    /**
+     * Constructs parser for given file using given buffer for temporary storage.
+     * 
+     * @param file the pdf to be parsed.
+     * @param decryptionPassword password to be used for decryption.
+     * @param keyStore key store to be used for decryption when using public key security 
+     * @param alias alias to be used for decryption when using public key security
+     * @param useScratchFiles use a buffer for temporary storage.
+     * 
+     * @throws IOException If something went wrong.
+     */
+    public NonSequentialPDFParser(File file, String decryptionPassword, InputStream keyStore, 
+            String alias, boolean useScratchFiles) throws IOException
+    {
         super(EMPTY_INPUT_STREAM, false);
         pdfFile = file;
         raStream = new RandomAccessBufferedFileInputStream(pdfFile);
-        init(file, decryptionPassword, useScratchFiles);
+        password = decryptionPassword;
+        keyStoreInputStream = keyStore;
+        keyAlias = alias;
+        init(file, useScratchFiles);
     }
 
-    private void init(File file, String decryptionPassword, boolean useScratchFiles) throws IOException
+    private void init(File file, boolean useScratchFiles) throws IOException
     {
         String eofLookupRangeStr = System.getProperty(SYSPROP_EOFLOOKUPRANGE);
         if (eofLookupRangeStr != null)
@@ -277,7 +313,6 @@ public class NonSequentialPDFParser extends PDFParser
         }
         setDocument(new COSDocument(false, useScratchFiles));
         pdfSource = new PushBackInputStream(raStream, 4096);
-        password = decryptionPassword;
     }
 
     /**
@@ -329,10 +364,46 @@ public class NonSequentialPDFParser extends PDFParser
     public NonSequentialPDFParser(InputStream input, String decryptionPassword, boolean useScratchFiles)
             throws IOException
     {
+        this(input, decryptionPassword, null, null, useScratchFiles);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param input input stream representing the pdf.
+     * @param decryptionPassword password to be used for decryption.
+     * @param keyStore key store to be used for decryption when using public key security 
+     * @param alias alias to be used for decryption when using public key security
+     *
+     * @throws IOException If something went wrong.
+     */
+    public NonSequentialPDFParser(InputStream input, String decryptionPassword, InputStream keyStore, String alias)
+            throws IOException
+    {
+        this(input, decryptionPassword, keyStore, alias, false);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param input input stream representing the pdf.
+     * @param decryptionPassword password to be used for decryption.
+     * @param keyStore key store to be used for decryption when using public key security 
+     * @param alias alias to be used for decryption when using public key security
+     * @param useScratchFiles use a buffer for temporary storage.
+     *
+     * @throws IOException If something went wrong.
+     */
+    public NonSequentialPDFParser(InputStream input, String decryptionPassword, InputStream keyStore,
+            String alias, boolean useScratchFiles) throws IOException
+    {
         super(EMPTY_INPUT_STREAM, false);
         pdfFile = createTmpFile(input);
         raStream = new RandomAccessBufferedFileInputStream(pdfFile);
-        init(pdfFile, decryptionPassword, useScratchFiles);
+        password = decryptionPassword;
+        keyStoreInputStream = keyStore;
+        keyAlias = alias;
+        init(pdfFile, useScratchFiles);
     }
 
     /**
@@ -526,12 +597,12 @@ public class NonSequentialPDFParser extends PDFParser
                 PDEncryption encryption = new PDEncryption(document.getEncryptionDictionary());
 
                 DecryptionMaterial decryptionMaterial;
-                if (keyStoreFilename != null)
+                if (keyStoreInputStream != null)
                 {
                     KeyStore ks = KeyStore.getInstance("PKCS12");
-                    ks.load(new FileInputStream(keyStoreFilename), password.toCharArray());
+                    ks.load(keyStoreInputStream, password.toCharArray());
 
-                    decryptionMaterial = new PublicKeyDecryptionMaterial(ks, alias, password);
+                    decryptionMaterial = new PublicKeyDecryptionMaterial(ks, keyAlias, password);
                 }
                 else
                 {
@@ -964,6 +1035,10 @@ public class NonSequentialPDFParser extends PDFParser
             try
             {
                 closeFileStream();
+                if (keyStoreInputStream != null)
+                {
+                    keyStoreInputStream.close();
+                }
             }
             catch (IOException ioe)
             {
