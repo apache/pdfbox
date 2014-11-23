@@ -106,7 +106,7 @@ public class TestPublicKeyEncryption extends TestCase
             TestPublicKeyEncryption.class.getResourceAsStream("test.pdf");
         try 
         {
-            document = PDDocument.loadLegacy(input);
+            document = PDDocument.load(input);
         } 
         finally 
         {
