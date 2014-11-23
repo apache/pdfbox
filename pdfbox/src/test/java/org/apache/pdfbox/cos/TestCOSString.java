@@ -29,8 +29,7 @@ import org.apache.pdfbox.pdfwriter.COSWriter;
 /**
  * This will test all of the filters in the PDFBox system.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision$
+ * Ben Litchfield
  */
 public class TestCOSString extends TestCOSBase
 {
@@ -170,7 +169,7 @@ public class TestCOSString extends TestCOSBase
         }
         try
         {
-            COSString test4 = COSString.createFromHexString(hexForm + "xx", false);
+            COSString.createFromHexString(hexForm + "xx", false);
             fail("Should have thrown an IOException here");
         }
         catch (IOException e)
@@ -336,6 +335,55 @@ public class TestCOSString extends TestCOSBase
         String theString = "\u4e16";
         COSString string = new COSString(theString);
         assertTrue(string.getString().equals(theString));
+        
+        String textAscii = "This is some regular text. It should all be expressable in ASCII";
+        /** En français où les choses sont accentués. En español, así */
+        String text8Bit = "En fran\u00e7ais o\u00f9 les choses sont accentu\u00e9s. En espa\u00f1ol, as\u00ed";
+         /** をクリックしてく */
+        String textHighBits =  "\u3092\u30af\u30ea\u30c3\u30af\u3057\u3066\u304f";
+
+        // Testing the getString method
+        COSString stringAscii = new COSString( textAscii );
+        assertEquals( stringAscii.getString(), textAscii );
+        
+        COSString string8Bit = new COSString( text8Bit );
+        assertEquals( string8Bit.getString(), text8Bit );
+
+        COSString stringHighBits = new COSString( textHighBits );
+        assertEquals( stringHighBits.getString(), textHighBits );
+        
+
+        // Testing the getBytes method
+        // The first two strings should be stored as ISO-8859-1 because they only contain chars in the range 0..255
+        assertEquals(textAscii, new String(stringAscii.getBytes(), "ISO-8859-1"));
+        // likewise for the 8bit characters.
+        assertEquals(text8Bit, new String(string8Bit.getBytes(), "ISO-8859-1"));
+        
+        // The japanese text contains high bits so must be stored as big endian UTF-16
+        assertEquals(textHighBits, new String(stringHighBits.getBytes(), "UnicodeBig"));
+        
+        
+        // Test the writePDF method to ensure that the Strings are correct when written into PDF.
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        stringAscii.writePDF(out);
+        assertEquals("("+textAscii+")", new String(out.toByteArray(), "ASCII"));
+        
+        out.reset();
+        string8Bit.writePDF(out);
+        StringBuffer hex = new StringBuffer();
+        for(char c : text8Bit.toCharArray()) {
+           hex.append( Integer.toHexString(c).toUpperCase() );
+        }
+        assertEquals("<"+hex.toString()+">", new String(out.toByteArray(), "ASCII"));
+        
+        out.reset();
+        stringHighBits.writePDF(out);
+        hex = new StringBuffer();
+        hex.append("FEFF"); // Byte Order Mark
+        for(char c : textHighBits.toCharArray()) {
+           hex.append( Integer.toHexString(c).toUpperCase() );
+        }
+        assertEquals("<"+hex.toString()+">", new String(out.toByteArray(), "ASCII")); 
     }
 
     @Override
