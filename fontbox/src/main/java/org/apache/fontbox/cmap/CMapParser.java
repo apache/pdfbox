@@ -32,7 +32,7 @@ import org.apache.fontbox.util.ResourceLoader;
 /**
  * This will parse a CMap stream.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
+ * @author Ben Litchfield
  * 
  */
 public class CMapParser
@@ -526,10 +526,14 @@ public class CMapParser
             StringBuffer buffer = new StringBuffer();
             int stringByte = is.read();
 
-            while (!isWhitespaceOrEOF(stringByte))
+            while (!isWhitespaceOrEOF(stringByte) && !isDelimiter(stringByte))
             {
                 buffer.append((char) stringByte);
                 stringByte = is.read();
+            }
+            if (isDelimiter( stringByte)) 
+            {
+                is.unread(stringByte);
             }
             retval = new LiteralName(buffer.toString());
             break;
@@ -579,12 +583,12 @@ public class CMapParser
 
             // newline separator may be missing in malformed CMap files
             // see PDFBOX-2035
-            while (!isWhitespaceOrEOF(nextByte) && nextByte != '<')
+            while (!isWhitespaceOrEOF(nextByte) && !isDelimiter(nextByte) && !Character.isDigit(nextByte))
             {
                 buffer.append((char) nextByte);
                 nextByte = is.read();
             }
-            if (nextByte == '<')
+            if (isDelimiter(nextByte) || Character.isDigit(nextByte))
             {
                 is.unread(nextByte);
             }
@@ -609,6 +613,27 @@ public class CMapParser
     private boolean isWhitespaceOrEOF(int aByte)
     {
         return aByte == -1 || aByte == 0x20 || aByte == 0x0D || aByte == 0x0A;
+    }
+
+    /** Is this a standard PDF delimiter character? */
+    private boolean isDelimiter(int aByte) 
+    {
+        switch (aByte) 
+        {
+            case '(':
+            case ')':
+            case '<':
+            case '>':
+            case '[':
+            case ']':
+            case '{':
+            case '}':
+            case '/':
+            case '%':
+                return true;
+            default:
+                return false;
+        }
     }
 
     private void increment(byte[] data)
