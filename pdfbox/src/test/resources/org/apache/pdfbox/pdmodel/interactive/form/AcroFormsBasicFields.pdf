@@ -1,0 +1,1429 @@
+%PDF-1.6
+%öäüß
+1 0 obj
+<<
+/AcroForm 2 0 R
+/Metadata 3 0 R
+/Names 4 0 R
+/Outlines 5 0 R
+/Pages 6 0 R
+/Type /Catalog
+>>
+endobj
+7 0 obj
+<<
+/CreationDate (D:20141121184001+01'00')
+/Creator (Adobe Acrobat 10.268)
+/ModDate (D:20141121195612+01'00')
+/Producer (Adobe Acrobat 10.268)
+>>
+endobj
+2 0 obj
+<<
+/DA (/Helv 0 Tf 0 g )
+/DR <<
+/Encoding <<
+/PDFDocEncoding 8 0 R
+>>
+/Font <<
+/HeBo 9 0 R
+/Helv 10 0 R
+/ZaDb 11 0 R
+>>
+/XObject <<
+/DSz 12 0 R
+>>
+>>
+/Fields [13 0 R 14 0 R 15 0 R 16 0 R 17 0 R 18 0 R 19 0 R 20 0 R 21 0 R 22 0 R
+23 0 R 24 0 R]
+/SigFlags 1
+>>
+endobj
+3 0 obj
+<<
+/Length 3577
+/Subtype /XML
+/Type /Metadata
+>>
+stream
+<?xpacket begin="ï»¿" id="W5M0MpCehiHzreSzNTczkc9d"?>
+<x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="Adobe XMP Core 5.2-c001 63.139439, 2010/09/27-13:37:26        ">
+   <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+      <rdf:Description rdf:about=""
+            xmlns:xmp="http://ns.adobe.com/xap/1.0/">
+         <xmp:ModifyDate>2014-11-21T19:56:12+01:00</xmp:ModifyDate>
+         <xmp:CreateDate>2014-11-21T18:40:01+01:00</xmp:CreateDate>
+         <xmp:MetadataDate>2014-11-21T19:56:12+01:00</xmp:MetadataDate>
+         <xmp:CreatorTool>Adobe Acrobat 10.268</xmp:CreatorTool>
+      </rdf:Description>
+      <rdf:Description rdf:about=""
+            xmlns:dc="http://purl.org/dc/elements/1.1/">
+         <dc:format>application/pdf</dc:format>
+      </rdf:Description>
+      <rdf:Description rdf:about=""
+            xmlns:xmpMM="http://ns.adobe.com/xap/1.0/mm/">
+         <xmpMM:DocumentID>uuid:0f004297-25ef-4f41-a677-cd10d28a577d</xmpMM:DocumentID>
+         <xmpMM:InstanceID>uuid:8120d523-c503-49f7-8b0e-d5811c5fb0e3</xmpMM:InstanceID>
+      </rdf:Description>
+      <rdf:Description rdf:about=""
+            xmlns:pdf="http://ns.adobe.com/pdf/1.3/">
+         <pdf:Producer>Adobe Acrobat 10.268</pdf:Producer>
+      </rdf:Description>
+      <rdf:Description rdf:about=""
+            xmlns:adhocwf="http://ns.adobe.com/AcrobatAdhocWorkflow/1.0/">
+         <adhocwf:state>1</adhocwf:state>
+         <adhocwf:version>1.1</adhocwf:version>
+      </rdf:Description>
+   </rdf:RDF>
+</x:xmpmeta>
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                           
+<?xpacket end="w"?>
+endstream
+endobj
+4 0 obj
+<<
+/JavaScript 25 0 R
+>>
+endobj
+5 0 obj
+<<
+/Count 1
+/First 26 0 R
+/Last 26 0 R
+/Type /Outlines
+>>
+endobj
+6 0 obj
+<<
+/Count 1
+/Kids [27 0 R]
+/Type /Pages
+>>
+endobj
+8 0 obj
+<<
+/Differences [24 /breve /caron /circumflex /dotaccent /hungarumlaut /ogonek /ring /tilde 39
+/quotesingle 96 /grave 128 /bullet /dagger /daggerdbl /ellipsis /emdash /endash
+/florin /fraction /guilsinglleft /guilsinglright /minus /perthousand /quotedblbase /quotedblleft /quotedblright /quoteleft
+/quoteright /quotesinglbase /trademark /fi /fl /Lslash /OE /Scaron /Ydieresis /Zcaron
+/dotlessi /lslash /oe /scaron /zcaron 160 /Euro 164 /currency 166
+/brokenbar 168 /dieresis /copyright /ordfeminine 172 /logicalnot /.notdef /registered /macron
+/degree /plusminus /twosuperior /threesuperior /acute /mu 183 /periodcentered /cedilla /onesuperior
+/ordmasculine 188 /onequarter /onehalf /threequarters 192 /Agrave /Aacute /Acircumflex /Atilde
+/Adieresis /Aring /AE /Ccedilla /Egrave /Eacute /Ecircumflex /Edieresis /Igrave /Iacute
+/Icircumflex /Idieresis /Eth /Ntilde /Ograve /Oacute /Ocircumflex /Otilde /Odieresis /multiply
+/Oslash /Ugrave /Uacute /Ucircumflex /Udieresis /Yacute /Thorn /germandbls /agrave /aacute
+/acircumflex /atilde /adieresis /aring /ae /ccedilla /egrave /eacute /ecircumflex /edieresis
+/igrave /iacute /icircumflex /idieresis /eth /ntilde /ograve /oacute /ocircumflex /otilde
+/odieresis /divide /oslash /ugrave /uacute /ucircumflex /udieresis /yacute /thorn /ydieresis]
+/Type /Encoding
+>>
+endobj
+9 0 obj
+<<
+/BaseFont /Helvetica-Bold
+/Encoding 8 0 R
+/Name /HeBo
+/Subtype /Type1
+/Type /Font
+>>
+endobj
+10 0 obj
+<<
+/BaseFont /Helvetica
+/Encoding 8 0 R
+/Name /Helv
+/Subtype /Type1
+/Type /Font
+>>
+endobj
+11 0 obj
+<<
+/BaseFont /ZapfDingbats
+/Name /ZaDb
+/Subtype /Type1
+/Type /Font
+>>
+endobj
+12 0 obj
+<<
+/BBox [0.0 0.0 100.0 100.0]
+/Length 10
+/Resources <<
+>>
+/Subtype /Form
+/Type /XObject
+>>
+stream
+% DSBlank
+
+endstream
+endobj
+13 0 obj
+<<
+/DA (/ZaDb 0 Tf 0 g)
+/FT /Btn
+/Ff 49152
+/Kids [28 0 R 29 0 R]
+/T (RadioButtonGroup)
+>>
+endobj
+14 0 obj
+<<
+/AP <<
+/N 12 0 R
+>>
+/DA (/Helv 0 Tf 0 g)
+/F 4
+/FT /Sig
+/MK <<
+>>
+/P 27 0 R
+/Rect [56.692 476.54 141.73 508.54]
+/Subtype /Widget
+/T (Signature)
+/Type /Annot
+>>
+endobj
+15 0 obj
+<<
+/AP <<
+/N 30 0 R
+>>
+/DA (/HeBo 12 Tf 0 g)
+/F 4
+/FT /Btn
+/Ff 65536
+/MK <<
+/BG [0.75293]
+>>
+/P 27 0 R
+/Rect [56.692 516.886 141.73 536.886]
+/Subtype /Widget
+/T (PushButton)
+/Type /Annot
+>>
+endobj
+16 0 obj
+<<
+/DA (/Helv 12 Tf 0 g)
+/F 4
+/FT /Tx
+/MK <<
+>>
+/P 27 0 R
+/Rect [56.692 713.308 141.73 735.308]
+/Subtype /Widget
+/T (TextField)
+/Type /Annot
+>>
+endobj
+17 0 obj
+<<
+/AP <<
+/D <<
+/Off 31 0 R
+/Yes 32 0 R
+>>
+/N <<
+/Off 33 0 R
+/Yes 34 0 R
+>>
+>>
+/AS /Off
+/DA (/ZaDb 0 Tf 0 g)
+/F 4
+/FT /Btn
+/MK <<
+/BC [0.0]
+/BG [1.0]
+>>
+/P 27 0 R
+/Rect [56.692 688.962 74.692 706.962]
+/Subtype /Widget
+/T (Checkbox)
+/Type /Annot
+>>
+endobj
+18 0 obj
+<<
+/AP <<
+/N 35 0 R
+>>
+/DA (/Helv 12 Tf 0 g)
+/F 4
+/FT /Ch
+/MK <<
+/BG [1.0]
+>>
+/P 27 0 R
+/Rect [56.692 578.27 141.73 650.27]
+/Subtype /Widget
+/T (ListBox)
+/Type /Annot
+>>
+endobj
+19 0 obj
+<<
+/AP <<
+/N 36 0 R
+>>
+/DA (/Helv 12 Tf 0 g)
+/F 4
+/FT /Ch
+/Ff 131072
+/MK <<
+/BG [1.0]
+>>
+/P 27 0 R
+/Rect [56.692 545.232 141.73 565.232]
+/Subtype /Widget
+/T (ComboBox)
+/Type /Annot
+>>
+endobj
+20 0 obj
+<<
+/AP <<
+/N 37 0 R
+>>
+/DA (/Helv 12 Tf 0 g)
+/DV (DefaultValue)
+/F 4
+/FT /Tx
+/MK <<
+>>
+/P 27 0 R
+/Rect [168.941 713.308 255.114 735.308]
+/Subtype /Widget
+/T (TextField-DefaultValue)
+/Type /Annot
+/V (DefaultValue)
+>>
+endobj
+21 0 obj
+<<
+/AP <<
+/D <<
+/Off 38 0 R
+/Yes 39 0 R
+>>
+/N <<
+/Off 40 0 R
+/Yes 41 0 R
+>>
+>>
+/AS /Yes
+/DA (/ZaDb 0 Tf 0 g)
+/DV /Yes
+/F 4
+/FT /Btn
+/MK <<
+/BC [0.0]
+/BG [1.0]
+/CA (4)
+>>
+/P 27 0 R
+/Rect [168.941 685.702 186.941 703.702]
+/Subtype /Widget
+/T (Checkbox-DefaultValue)
+/Type /Annot
+/V /Yes
+>>
+endobj
+22 0 obj
+<<
+/DA (/ZaDb 0 Tf 0 g)
+/DV /RadioButton01
+/FT /Btn
+/Ff 49152
+/Kids [42 0 R 43 0 R]
+/T (RadioButtonGroup-DefaultValue)
+/V /RadioButton01
+>>
+endobj
+23 0 obj
+<<
+/AP <<
+/N 44 0 R
+>>
+/DA (/Helv 12 Tf 0 g)
+/DV (Opt01)
+/F 4
+/FT /Ch
+/I [0]
+/MK <<
+/BG [1.0]
+>>
+/Opt [(Opt01) (Opt02) (Opt03)]
+/P 27 0 R
+/Rect [168.941 578.27 255.114 650.27]
+/Subtype /Widget
+/T (ListBox-DefaultValue)
+/Type /Annot
+/V (Opt01)
+>>
+endobj
+24 0 obj
+<<
+/AP <<
+/N 45 0 R
+>>
+/DA (/Helv 12 Tf 0 g)
+/DV (Opt01)
+/F 4
+/FT /Ch
+/Ff 131072
+/I [0]
+/MK <<
+/BG [1.0]
+>>
+/Opt [(Opt01) (Opt02) (Opt03)]
+/P 27 0 R
+/Rect [168.941 545.232 255.114 565.232]
+/Subtype /Widget
+/T (ComboBox-DefaultValue)
+/Type /Annot
+/V (Opt01)
+>>
+endobj
+25 0 obj
+<<
+/Names [(!ADBE::0050_FieldInit_Barcode8) 46 0 R (!ADBE::0100_VersChkStrings) 47 0 R (!ADBE::0100_VersChkVars) 48 0 R (!ADBE::0200_VersChkCode_PMD1) 49 0 R]
+>>
+endobj
+26 0 obj
+<<
+/A 50 0 R
+/Parent 5 0 R
+/Title (Leere Seite)
+>>
+endobj
+27 0 obj
+<<
+/Annots [16 0 R 20 0 R 17 0 R 21 0 R 28 0 R 29 0 R 42 0 R 43 0 R 18 0 R 23 0 R
+19 0 R 24 0 R 15 0 R 14 0 R]
+/CropBox [0.0 0.0 612.0 792.0]
+/MediaBox [0.0 0.0 612.0 792.0]
+/Parent 6 0 R
+/Resources <<
+/Font 51 0 R
+>>
+/Rotate 0
+/Type /Page
+/Contents 52 0 R
+>>
+endobj
+28 0 obj
+<<
+/AP <<
+/D <<
+/Off 53 0 R
+/RadioButton01 54 0 R
+>>
+/N <<
+/Off 55 0 R
+/RadioButton01 56 0 R
+>>
+>>
+/AS /Off
+/BS <<
+/S /I
+/W 1
+>>
+/F 4
+/MK <<
+/BC [0.0]
+/BG [1.0]
+>>
+/P 27 0 R
+/Parent 13 0 R
+/Rect [56.692 660.616 74.692 678.616]
+/Subtype /Widget
+/Type /Annot
+>>
+endobj
+29 0 obj
+<<
+/AP <<
+/D <<
+/Off 57 0 R
+/RadioButton02 58 0 R
+>>
+/N <<
+/Off 59 0 R
+/RadioButton02 60 0 R
+>>
+>>
+/AS /Off
+/BS <<
+/S /I
+/W 1
+>>
+/DA (/ZaDb 0 Tf 0 g)
+/F 4
+/MK <<
+/BC [0.0]
+/BG [1.0]
+>>
+/P 27 0 R
+/Parent 13 0 R
+/Rect [77.9515 660.616 95.9515 678.616]
+/Subtype /Widget
+/Type /Annot
+>>
+endobj
+30 0 obj
+<<
+/BBox [0.0 0.0 85.038 20.0]
+/FormType 1
+/Length 29
+/Matrix [1.0 0.0 0.0 1.0 0.0 0.0]
+/Resources <<
+/ProcSet [/PDF]
+>>
+/Subtype /Form
+/Type /XObject
+>>
+stream
+0.75293 g
+0 0 85.038 20 re
+f
+
+endstream
+endobj
+31 0 obj
+<<
+/BBox [0.0 0.0 18.0 18.0]
+/FormType 1
+/Length 44
+/Matrix [1.0 0.0 0.0 1.0 0.0 0.0]
+/Resources <<
+/ProcSet [/PDF]
+>>
+/Subtype /Form
+/Type /XObject
+>>
+stream
+0.75293 g
+0 0 18 18 re
+f
+0.5 0.5 17 17 re
+s
+
+endstream
+endobj
+32 0 obj
+<<
+/BBox [0.0 0.0 18.0 18.0]
+/Filter /FlateDecode
+/FormType 1
+/Length 112
+/Matrix [1.0 0.0 0.0 1.0 0.0 0.0]
+/Resources <<
+/Font <<
+/ZaDb 11 0 R
+>>
+/ProcSet [/PDF /Text]
+>>
+/Subtype /Form
+/Type /XObject
+>>
+stream
+H‰‹±
+1DûùŠ)µYw³‰—´¢° Ø)zÂéÿƒ	ó¦yğT¦’šsRiuğ}a†Já¸Mƒ®~XaìÛº¸âÓ£‡Àîv?>hYŠ'ÆŒ$µ8³h5ÆæÒZvÆ›¼e¼q
+\ğ` ,u
+endstream
+endobj
+33 0 obj
+<<
+/BBox [0.0 0.0 18.0 18.0]
+/FormType 1
+/Length 38
+/Matrix [1.0 0.0 0.0 1.0 0.0 0.0]
+/Resources <<
+/ProcSet [/PDF]
+>>
+/Subtype /Form
+/Type /XObject
+>>
+stream
+1 g
+0 0 18 18 re
+f
+0.5 0.5 17 17 re
+s
+
+endstream
+endobj
+34 0 obj
+<<
+/BBox [0.0 0.0 18.0 18.0]
+/Filter /FlateDecode
+/FormType 1
+/Length 109
+/Matrix [1.0 0.0 0.0 1.0 0.0 0.0]
+/Resources <<
+/Font <<
+/ZaDb 11 0 R
+>>
+/ProcSet [/PDF /Text]
+>>
+/Subtype /Form
+/Type /XObject
+>>
+stream
+H‰‹±
+ƒ@DûùŠ)µYo½»älE;a!.’(XÔÿï˜7Íƒ§Üàè¨©pş°ÂId¹>Y]8 Ì{²xáŸ£½¡y†…$ú–¶¢•=ƒ¸¤´/ÔK×O›P…š¶c4Ì¸ ˜>
+endstream
+endobj
+35 0 obj
+<<
+/BBox [0.0 0.0 85.038 72.0]
+/FormType 1
+/Length 23
+/Matrix [1.0 0.0 0.0 1.0 0.0 0.0]
+/Resources <<
+/ProcSet [/PDF]
+>>
+/Subtype /Form
+/Type /XObject
+>>
+stream
+1 g
+0 0 85.038 72 re
+f
+
+endstream
+endobj
+36 0 obj
+<<
+/BBox [0.0 0.0 85.038 20.0]
+/FormType 1
+/Length 23
+/Matrix [1.0 0.0 0.0 1.0 0.0 0.0]
+/Resources <<
+/ProcSet [/PDF]
+>>
+/Subtype /Form
+/Type /XObject
+>>
+stream
+1 g
+0 0 85.038 20 re
+f
+
+endstream
+endobj
+37 0 obj
+<<
+/BBox [0.0 0.0 86.173 22.0]
+/FormType 1
+/Length 89
+/Matrix [1.0 0.0 0.0 1.0 0.0 0.0]
+/Resources <<
+/Font <<
+/Helv 10 0 R
+>>
+/ProcSet [/PDF /Text]
+>>
+/Subtype /Form
+/Type /XObject
+>>
+stream
+/Tx BMC 
+q
+1 1 84.173 20 re
+W
+n
+BT
+/Helv 12 Tf
+0 g
+2 6.548 Td
+(DefaultValue) Tj
+ET
+Q
+EMC
+
+endstream
+endobj
+38 0 obj
+<<
+/BBox [0.0 0.0 18.0 18.0]
+/FormType 1
+/Length 44
+/Matrix [1.0 0.0 0.0 1.0 0.0 0.0]
+/Resources <<
+/ProcSet [/PDF]
+>>
+/Subtype /Form
+/Type /XObject
+>>
+stream
+0.75293 g
+0 0 18 18 re
+f
+0.5 0.5 17 17 re
+s
+
+endstream
+endobj
+39 0 obj
+<<
+/BBox [0.0 0.0 18.0 18.0]
+/Filter /FlateDecode
+/FormType 1
+/Length 112
+/Matrix [1.0 0.0 0.0 1.0 0.0 0.0]
+/Resources <<
+/Font <<
+/ZaDb 11 0 R
+>>
+/ProcSet [/PDF /Text]
+>>
+/Subtype /Form
+/Type /XObject
+>>
+stream
+H‰‹±
+1DûùŠ)µYw³‰—´¢° Ø)zÂéÿƒ	ó¦yğT¦’šsRiuğ}a†Já¸Mƒ®~XaìÛº¸âÓ£‡Àîv?>hYŠ'ÆŒ$µ8³h5ÆæÒZvÆ›¼e¼q
+\ğ` ,u
+endstream
+endobj
+40 0 obj
+<<
+/BBox [0.0 0.0 18.0 18.0]
+/FormType 1
+/Length 38
+/Matrix [1.0 0.0 0.0 1.0 0.0 0.0]
+/Resources <<
+/ProcSet [/PDF]
+>>
+/Subtype /Form
+/Type /XObject
+>>
+stream
+1 g
+0 0 18 18 re
+f
+0.5 0.5 17 17 re
+s
+
+endstream
+endobj
+41 0 obj
+<<
+/BBox [0.0 0.0 18.0 18.0]
+/Filter /FlateDecode
+/FormType 1
+/Length 109
+/Matrix [1.0 0.0 0.0 1.0 0.0 0.0]
+/Resources <<
+/Font <<
+/ZaDb 11 0 R
+>>
+/ProcSet [/PDF /Text]
+>>
+/Subtype /Form
+/Type /XObject
+>>
+stream
+H‰‹±
+ƒ@DûùŠ)µYo½»älE;a!.’(XÔÿï˜7Íƒ§Üàè¨©pş°ÂId¹>Y]8 Ì{²xáŸ£½¡y†…$ú–¶¢•=ƒ¸¤´/ÔK×O›P…š¶c4Ì¸ ˜>
+endstream
+endobj
+42 0 obj
+<<
+/AP <<
+/D <<
+/Off 61 0 R
+/RadioButton01 62 0 R
+>>
+/N <<
+/Off 63 0 R
+/RadioButton01 64 0 R
+>>
+>>
+/AS /RadioButton01
+/BS <<
+/S /I
+/W 1
+>>
+/F 4
+/MK <<
+/BC [0.0]
+/BG [1.0]
+/CA (l)
+>>
+/P 27 0 R
+/Parent 22 0 R
+/Rect [168.941 660.616 186.941 678.616]
+/Subtype /Widget
+/Type /Annot
+>>
+endobj
+43 0 obj
+<<
+/AP <<
+/D <<
+/Off 65 0 R
+/RadioButton02 66 0 R
+>>
+/N <<
+/Off 67 0 R
+/RadioButton02 68 0 R
+>>
+>>
+/AS /Off
+/BS <<
+/S /I
+/W 1
+>>
+/F 4
+/MK <<
+/BC [0.0]
+/BG [1.0]
+/CA (l)
+>>
+/P 27 0 R
+/Parent 22 0 R
+/Rect [190.201 660.616 208.201 678.616]
+/Subtype /Widget
+/Type /Annot
+>>
+endobj
+44 0 obj
+<<
+/BBox [0.0 0.0 86.173 72.0]
+/Filter /FlateDecode
+/FormType 1
+/Length 159
+/Matrix [1.0 0.0 0.0 1.0 0.0 0.0]
+/Resources <<
+/Font <<
+/Helv 10 0 R
+>>
+/ProcSet [/PDF /Text]
+>>
+/Subtype /Form
+/Type /XObject
+>>
+stream
+H‰TÍM
+Â@à}Nñ–º™&ó—™mKÁMaÀX"¢EÄãÛRJ1«//Ä`¤hDÔbìéJUù¢îĞ‹‚äåYÏô 6‘§Š`£!¦87)øÌã0E‚±š× 8“ÔÊr›§—u¡êĞß?‹²Œ,B6Q$£\hw|¾Yö(7jË¼máƒQ—7µêÄ¤¨›ºUOÔvı å¯1s
+endstream
+endobj
+45 0 obj
+<<
+/BBox [0.0 0.0 86.173 20.0]
+/Filter /FlateDecode
+/FormType 1
+/Length 108
+/Matrix [1.0 0.0 0.0 1.0 0.0 0.0]
+/Resources <<
+/Font <<
+/Helv 10 0 R
+>>
+/ProcSet [/PDF /Text]
+>>
+/Subtype /Form
+/Type /XObject
+>>
+stream
+H‰Ë=
+ƒ@Eáş®â–¦ç=£Ní Øˆdş€ˆ˜ ÁåklÏÇNğô…“2£z~ŒHí`ÕFâ¥0è­şúÆz-*CÚË¢´ñNÊÜåÏ@ë‘tÛîåA›Q^¨ÛˆS€ ğ
+endstream
+endobj
+46 0 obj
+<<
+/JS (if \(\(app.viewerVersion < 5\) && \(app.viewerVersion > 0\) && \(this.getField\("Barcode8"\) != null\)\)\r\n    this.getField\("Barcode8"\).value = "";\r\n)
+/S /JavaScript
+>>
+endobj
+47 0 obj
+<<
+/JS 69 0 R
+/S /JavaScript
+>>
+endobj
+48 0 obj
+<<
+/JS 70 0 R
+/S /JavaScript
+>>
+endobj
+49 0 obj
+<<
+/JS 71 0 R
+/S /JavaScript
+>>
+endobj
+50 0 obj
+<<
+/D [27 0 R /XYZ 0 792 null]
+/S /GoTo
+>>
+endobj
+51 0 obj
+<<
+/F1 72 0 R
+>>
+endobj
+52 0 obj
+<<
+/Filter [/FlateDecode]
+/Length 73 0 R
+>>
+stream
+xœu±
+1Dû|EJ-ÔÍn2›€^j‹ü€è	''ÆÂÏ7Š­å›aÓ³ÉÎF[®ÆùµS!"‘ VU×‘•e[.fq<än~Ù2Ôçuœ†jWv~Ìy~Ükwªã9Ãt©Ÿ~iËÍôÅtıhÀ)¥búØ·^•4)#AÕ3í“°8i<"“wJpí×—BÛêUÑŒßÍĞÃ·Ä7[F¿ûzı8Ò
+endstream
+endobj
+53 0 obj
+<<
+/BBox [0.0 0.0 18.0 18.0]
+/Filter [/FlateDecode]
+/FormType 1
+/Length 191
+/Matrix [1.0 0.0 0.0 1.0 0.0 0.0]
+/Resources <<
+/ProcSet [/PDF]
+>>
+/Subtype /Form
+/Type /XObject
+>>
+stream
+H‰ŒPKB!Üs
+.0¤<y¯¸6ÁDW.Ôû'–O¡/n	¥3Cg€§LËÉƒÂ²Rf6§÷Ã½\ô$+ú,ëötYš²§™v-ÚaôR(Á±Ê½	LU»vw—ß{XkŒRSØrÚ´4¦ì5ÌÀ`¤h"TFÑ#‹6Ã‚V­#>5&–Œ­àØöÌÜ3s“üy/aÍ<0)¸^Å0úóŸ¦P×zĞá8÷§NĞª­óW€ ËÇi'
+endstream
+endobj
+54 0 obj
+<<
+/BBox [0.0 0.0 18.0 18.0]
+/Filter [/FlateDecode]
+/FormType 1
+/Length 227
+/Matrix [1.0 0.0 0.0 1.0 0.0 0.0]
+/Resources <<
+/ProcSet [/PDF]
+>>
+/Subtype /Form
+/Type /XObject
+>>
+stream
+H‰ŒRA!¼ó
+>0¤ZygãLôäAıb¡t·=f†vØ…×F»Ai·§ÆìV¯{x†IFMÆõšlú\Sc:tVä€eÅ‚.Š$œ1^A?·«KİÂù;Ä1íGŒ5Z=¨Òçfáà¬P“†bìV…Öğ¤w[‰÷ˆG‰‰%£¶Û™™gfAr•o>A¶ÌgÏ†i˜ãéÏ¦°®caÅ±-
+W]Iïö)şxeöè˜S+%¨Rôfƒ³¢ØßŠ±[ZÃ“Şm%úcù0 q¤‡/
+endstream
+endobj
+55 0 obj
+<<
+/BBox [0.0 0.0 18.0 18.0]
+/Filter [/FlateDecode]
+/FormType 1
+/Length 186
+/Matrix [1.0 0.0 0.0 1.0 0.0 0.0]
+/Resources <<
+/ProcSet [/PDF]
+>>
+/Subtype /Form
+/Type /XObject
+>>
+stream
+H‰ŒOIÃ »ó
+>`	dÂz®ú„Jí©‡ªÿ—:,ƒz©pÆ6c'Ø§y›`=Ÿ`3ŸûËdÊ]&
+–eƒ1cXPD–˜F+(ï&1]íÙÃ\Kœ.Õ£;r<šRîZfpPV4ª"ìª¢íĞ¤vËŠ×ó.ùÓn/ÜÔ;òÄu`{}êõ©v
+qÛšBRpPVPÏ¾ÕlJ[ş?’]?$ëjPÿ÷Ij·Îÿ
+0 {šfº
+endstream
+endobj
+56 0 obj
+<<
+/BBox [0.0 0.0 18.0 18.0]
+/Filter [/FlateDecode]
+/FormType 1
+/Length 222
+/Matrix [1.0 0.0 0.0 1.0 0.0 0.0]
+/Resources <<
+/ProcSet [/PDF]
+>>
+/Subtype /Form
+/Type /XObject
+>>
+stream
+H‰ŒRA!¼ó
+>PÛåO0Ñ“ãÿ[JÙ=f;3´C–äîå’´’o´nO×¨à½„†qW`–d³†iI"N« Ÿ;ˆÃ%ÇîîòbµÇ`,akeS…÷fr`¬ &2tEÙUéaIëÖoŠC©ÕìÏ”4ŒHq`-G|ñ±gJå”DA?90VÀ1ûÚgc=µÿGƒÎî:ÖÖ€ãîiİËü_o$Œ)´œ“‚(Yîg80VÈú{º¢ìª‚ô°¤uk~= •ò„Â
+endstream
+endobj
+57 0 obj
+<<
+/BBox [0.0 0.0 18.0 18.0]
+/Filter [/FlateDecode]
+/FormType 1
+/Length 191
+/Matrix [1.0 0.0 0.0 1.0 0.0 0.0]
+/Resources <<
+/ProcSet [/PDF]
+>>
+/Subtype /Form
+/Type /XObject
+>>
+stream
+H‰ŒPKB!Üs
+.0¤<y¯¸6ÁDW.Ôû'–O¡/n	¥3Cg€§LËÉƒÂ²Rf6§÷Ã½\ô$+ú,ëötYš²§™v-ÚaôR(Á±Ê½	LU»vw—ß{XkŒRSØrÚ´4¦ì5ÌÀ`¤h"TFÑ#‹6Ã‚V­#>5&–Œ­àØöÌÜ3s“üy/aÍ<0)¸^Å0úóŸ¦P×zĞá8÷§NĞª­óW€ ËÇi'
+endstream
+endobj
+58 0 obj
+<<
+/BBox [0.0 0.0 18.0 18.0]
+/Filter [/FlateDecode]
+/FormType 1
+/Length 227
+/Matrix [1.0 0.0 0.0 1.0 0.0 0.0]
+/Resources <<
+/ProcSet [/PDF]
+>>
+/Subtype /Form
+/Type /XObject
+>>
+stream
+H‰ŒRA!¼ó
+>0¤ZygãLôäAıb¡t·=f†vØ…×F»Ai·§ÆìV¯{x†IFMÆõšlú\Sc:tVä€eÅ‚.Š$œ1^A?·«KİÂù;Ä1íGŒ5Z=¨Òçfáà¬P“†bìV…Öğ¤w[‰÷ˆG‰‰%£¶Û™™gfAr•o>A¶ÌgÏ†i˜ãéÏ¦°®caÅ±-
+W]Iïö)şxeöè˜S+%¨Rôfƒ³¢ØßŠ±[ZÃ“Şm%úcù0 q¤‡/
+endstream
+endobj
+59 0 obj
+<<
+/BBox [0.0 0.0 18.0 18.0]
+/Filter [/FlateDecode]
+/FormType 1
+/Length 186
+/Matrix [1.0 0.0 0.0 1.0 0.0 0.0]
+/Resources <<
+/ProcSet [/PDF]
+>>
+/Subtype /Form
+/Type /XObject
+>>
+stream
+H‰ŒOIÃ »ó
+>`	dÂz®ú„Jí©‡ªÿ—:,ƒz©pÆ6c'Ø§y›`=Ÿ`3ŸûËdÊ]&
+–eƒ1cXPD–˜F+(ï&1]íÙÃ\Kœ.Õ£;r<šRîZfpPV4ª"ìª¢íĞ¤vËŠ×ó.ùÓn/ÜÔ;òÄu`{}êõ©v
+qÛšBRpPVPÏ¾ÕlJ[ş?’]?$ëjPÿ÷Ij·Îÿ
+0 {šfº
+endstream
+endobj
+60 0 obj
+<<
+/BBox [0.0 0.0 18.0 18.0]
+/Filter [/FlateDecode]
+/FormType 1
+/Length 222
+/Matrix [1.0 0.0 0.0 1.0 0.0 0.0]
+/Resources <<
+/ProcSet [/PDF]
+>>
+/Subtype /Form
+/Type /XObject
+>>
+stream
+H‰ŒRA!¼ó
+>PÛåO0Ñ“ãÿ[JÙ=f;3´C–äîå’´’o´nO×¨à½„†qW`–d³†iI"N« Ÿ;ˆÃ%ÇîîòbµÇ`,akeS…÷fr`¬ &2tEÙUéaIëÖoŠC©ÕìÏ”4ŒHq`-G|ñ±gJå”DA?90VÀ1ûÚgc=µÿGƒÎî:ÖÖ€ãîiİËü_o$Œ)´œ“‚(Yîg80VÈú{º¢ìª‚ô°¤uk~= •ò„Â
+endstream
+endobj
+61 0 obj
+<<
+/BBox [0.0 0.0 18.0 18.0]
+/Filter [/FlateDecode]
+/FormType 1
+/Length 191
+/Matrix [1.0 0.0 0.0 1.0 0.0 0.0]
+/Resources <<
+/ProcSet [/PDF]
+>>
+/Subtype /Form
+/Type /XObject
+>>
+stream
+H‰ŒPKB!Üs
+.0¤<y¯¸6ÁDW.Ôû'–O¡/n	¥3Cg€§LËÉƒÂ²Rf6§÷Ã½\ô$+ú,ëötYš²§™v-ÚaôR(Á±Ê½	LU»vw—ß{XkŒRSØrÚ´4¦ì5ÌÀ`¤h"TFÑ#‹6Ã‚V­#>5&–Œ­àØöÌÜ3s“üy/aÍ<0)¸^Å0úóŸ¦P×zĞá8÷§NĞª­óW€ ËÇi'
+endstream
+endobj
+62 0 obj
+<<
+/BBox [0.0 0.0 18.0 18.0]
+/Filter [/FlateDecode]
+/FormType 1
+/Length 227
+/Matrix [1.0 0.0 0.0 1.0 0.0 0.0]
+/Resources <<
+/ProcSet [/PDF]
+>>
+/Subtype /Form
+/Type /XObject
+>>
+stream
+H‰ŒRA!¼ó
+>0¤ZygãLôäAıb¡t·=f†vØ…×F»Ai·§ÆìV¯{x†IFMÆõšlú\Sc:tVä€eÅ‚.Š$œ1^A?·«KİÂù;Ä1íGŒ5Z=¨Òçfáà¬P“†bìV…Öğ¤w[‰÷ˆG‰‰%£¶Û™™gfAr•o>A¶ÌgÏ†i˜ãéÏ¦°®caÅ±-
+W]Iïö)şxeöè˜S+%¨Rôfƒ³¢ØßŠ±[ZÃ“Şm%úcù0 q¤‡/
+endstream
+endobj
+63 0 obj
+<<
+/BBox [0.0 0.0 18.0 18.0]
+/Filter [/FlateDecode]
+/FormType 1
+/Length 186
+/Matrix [1.0 0.0 0.0 1.0 0.0 0.0]
+/Resources <<
+/ProcSet [/PDF]
+>>
+/Subtype /Form
+/Type /XObject
+>>
+stream
+H‰ŒOIÃ »ó
+>`	dÂz®ú„Jí©‡ªÿ—:,ƒz©pÆ6c'Ø§y›`=Ÿ`3ŸûËdÊ]&
+–eƒ1cXPD–˜F+(ï&1]íÙÃ\Kœ.Õ£;r<šRîZfpPV4ª"ìª¢íĞ¤vËŠ×ó.ùÓn/ÜÔ;òÄu`{}êõ©v
+qÛšBRpPVPÏ¾ÕlJ[ş?’]?$ëjPÿ÷Ij·Îÿ
+0 {šfº
+endstream
+endobj
+64 0 obj
+<<
+/BBox [0.0 0.0 18.0 18.0]
+/Filter [/FlateDecode]
+/FormType 1
+/Length 222
+/Matrix [1.0 0.0 0.0 1.0 0.0 0.0]
+/Resources <<
+/ProcSet [/PDF]
+>>
+/Subtype /Form
+/Type /XObject
+>>
+stream
+H‰ŒRA!¼ó
+>PÛåO0Ñ“ãÿ[JÙ=f;3´C–äîå’´’o´nO×¨à½„†qW`–d³†iI"N« Ÿ;ˆÃ%ÇîîòbµÇ`,akeS…÷fr`¬ &2tEÙUéaIëÖoŠC©ÕìÏ”4ŒHq`-G|ñ±gJå”DA?90VÀ1ûÚgc=µÿGƒÎî:ÖÖ€ãîiİËü_o$Œ)´œ“‚(Yîg80VÈú{º¢ìª‚ô°¤uk~= •ò„Â
+endstream
+endobj
+65 0 obj
+<<
+/BBox [0.0 0.0 18.0 18.0]
+/Filter [/FlateDecode]
+/FormType 1
+/Length 191
+/Matrix [1.0 0.0 0.0 1.0 0.0 0.0]
+/Resources <<
+/ProcSet [/PDF]
+>>
+/Subtype /Form
+/Type /XObject
+>>
+stream
+H‰ŒPKB!Üs
+.0¤<y¯¸6ÁDW.Ôû'–O¡/n	¥3Cg€§LËÉƒÂ²Rf6§÷Ã½\ô$+ú,ëötYš²§™v-ÚaôR(Á±Ê½	LU»vw—ß{XkŒRSØrÚ´4¦ì5ÌÀ`¤h"TFÑ#‹6Ã‚V­#>5&–Œ­àØöÌÜ3s“üy/aÍ<0)¸^Å0úóŸ¦P×zĞá8÷§NĞª­óW€ ËÇi'
+endstream
+endobj
+66 0 obj
+<<
+/BBox [0.0 0.0 18.0 18.0]
+/Filter [/FlateDecode]
+/FormType 1
+/Length 227
+/Matrix [1.0 0.0 0.0 1.0 0.0 0.0]
+/Resources <<
+/ProcSet [/PDF]
+>>
+/Subtype /Form
+/Type /XObject
+>>
+stream
+H‰ŒRA!¼ó
+>0¤ZygãLôäAıb¡t·=f†vØ…×F»Ai·§ÆìV¯{x†IFMÆõšlú\Sc:tVä€eÅ‚.Š$œ1^A?·«KİÂù;Ä1íGŒ5Z=¨Òçfáà¬P“†bìV…Öğ¤w[‰÷ˆG‰‰%£¶Û™™gfAr•o>A¶ÌgÏ†i˜ãéÏ¦°®caÅ±-
+W]Iïö)şxeöè˜S+%¨Rôfƒ³¢ØßŠ±[ZÃ“Şm%úcù0 q¤‡/
+endstream
+endobj
+67 0 obj
+<<
+/BBox [0.0 0.0 18.0 18.0]
+/Filter [/FlateDecode]
+/FormType 1
+/Length 186
+/Matrix [1.0 0.0 0.0 1.0 0.0 0.0]
+/Resources <<
+/ProcSet [/PDF]
+>>
+/Subtype /Form
+/Type /XObject
+>>
+stream
+H‰ŒOIÃ »ó
+>`	dÂz®ú„Jí©‡ªÿ—:,ƒz©pÆ6c'Ø§y›`=Ÿ`3ŸûËdÊ]&
+–eƒ1cXPD–˜F+(ï&1]íÙÃ\Kœ.Õ£;r<šRîZfpPV4ª"ìª¢íĞ¤vËŠ×ó.ùÓn/ÜÔ;òÄu`{}êõ©v
+qÛšBRpPVPÏ¾ÕlJ[ş?’]?$ëjPÿ÷Ij·Îÿ
+0 {šfº
+endstream
+endobj
+68 0 obj
+<<
+/BBox [0.0 0.0 18.0 18.0]
+/Filter [/FlateDecode]
+/FormType 1
+/Length 222
+/Matrix [1.0 0.0 0.0 1.0 0.0 0.0]
+/Resources <<
+/ProcSet [/PDF]
+>>
+/Subtype /Form
+/Type /XObject
+>>
+stream
+H‰ŒRA!¼ó
+>PÛåO0Ñ“ãÿ[JÙ=f;3´C–äîå’´’o´nO×¨à½„†qW`–d³†iI"N« Ÿ;ˆÃ%ÇîîòbµÇ`,akeS…÷fr`¬ &2tEÙUéaIëÖoŠC©ÕìÏ”4ŒHq`-G|ñ±gJå”DA?90VÀ1ûÚgc=µÿGƒÎî:ÖÖ€ãîiİËü_o$Œ)´œ“‚(Yîg80VÈú{º¢ìª‚ô°¤uk~= •ò„Â
+endstream
+endobj
+69 0 obj
+<<
+/Filter [/FlateDecode]
+/Length 458
+>>
+stream
+H‰ŒSÍnÛ0¾Ø;9%@àrğ–¶(Ö&E×tGC¶hG«,zÁo?ÊvÛ¡[Š^| >’ßmjXòĞ!ÕK>šåÛ¯+Øl`Ñ;µq¨+xy‚8Œ°/aÅËÕ—ÏŸR5»ÉwW‡ü*=/.v‡ÅsıÑ`D_öÆ5Åƒa‹	’k*òÊS©8gø=*ı
+ß!jùÄâ}0äŠÛĞ¤î!wÛK¨É·àñwo<P‰z8Mh ¦=ÓÔ~>RÏokQ‡Ó¬V Mè¬ÖP
+41DòOĞyêĞÛ!ƒÔÎh±EÇZÓyÄÊÆ“	¦©J–Y›ÁuÊqŒŞ!CEÎ‰}‰¤(Q'e¬ø*kª'‘ûïµ Ô{(=Å ¤™„Ä:Õ Ä#zL ¨d•¬ŒåXÅøYbv&»Ûm±·zŒäœ{jJ¶ÕÙkÁ%yh)U]òAñhdEİ JµŒ#‘Ãı8b)&ù‰û,äJ/kªúäî2oéÿ•ÑÿòüX”ßRD)ÓH–oMHõ³9üs“gL8tZúŠ-†êõw¹Nç£älN˜ìoL°4ã  Ù*Mj
+endstream
+endobj
+70 0 obj
+<<
+/Filter [/FlateDecode]
+/Length 318
+>>
+stream
+H‰ÜRËJÃ@İò—Y„–B".¤XƒDªPĞ(­º
+ÓÌM¦ÉG‹Xÿ½éôAÚÌ@ÖÎrÎcî=gœñÃ£ùö2ö]Dæ{˜q–‚7æÕõH×âz”s“'´³|	¶dîN>8Rñû
+È†áÁ´üá˜…=A›"e˜ûM*ôâY_¼S¥Ã8EF~mbíÒ¤@‰«ãº“k›ØpUNÛÜëÒ6Pqëx¤ÙôuíW× >J¥-WÚ²ı..®>}®õä«,ù­eQlR–-Ğ²¥UpbšX4È³-­Š3Z"iúÎ>g÷éugqÏm8û Æêt½§ŞaÉ	KhU4Bq\HŞë˜@D=ØŸ²ïN½H¸{‘);ôröÇşE/’ ö½l \[
+endstream
+endobj
+71 0 obj
+<<
+/Filter [/FlateDecode]
+/Length 373
+>>
+stream
+H‰Ä“]KÃ0†ïûÇ^ŒÇP/&ÔM˜Öàº¹/ôª„ö´f]iR‡Œıw“µ®-kqà…‡Pšœ¯÷<$ÔDQç“âãùW„Ğïƒ6Eâa¬ÍÆ®Ù i´·Ä˜ÓM=XO4Ú±=çÇÕjÁEÑ¹$,AgÀ?Ğ3Ò’YåbuÂ0z1‹˜†AZÚÆíOygÄƒ6\Ëe(½ò+V”w‹é‹~Ú·˜*#à2>{Ÿ=ÛÃq|Â8w¹"e5ò¡"N0Ş7r¡L?ÕòpXÃ*sÅª\ın<fW¤oÖ)Ã;Y%šåte*İ§¡÷¸YG›C¡ï\u[LmÂ’€†Z\›¬åşm8P¹kBE¯Eäòï‹Ä÷ù¯¢Y;gWáªEÙû7kB„»ÊAt¯n'¥Q¢DÄÈ¥ ²ÿk‚\ÈáÍê‰œ1ó|’0a^´ß‡;§‚aUõƒã¨»æ
+W½—o GOu
+endstream
+endobj
+72 0 obj
+<<
+/Subtype /Type1
+/BaseFont /Helvetica
+/Encoding /WinAnsiEncoding
+>>
+endobj
+73 0 obj
+174
+endobj
+xref
+0 74
+0000000000 65535 f
+0000000015 00000 n
+0000000286 00000 n
+0000000560 00000 n
+0000004221 00000 n
+0000004261 00000 n
+0000004334 00000 n
+0000000125 00000 n
+0000004392 00000 n
+0000005716 00000 n
+0000005819 00000 n
+0000005918 00000 n
+0000006004 00000 n
+0000006142 00000 n
+0000006248 00000 n
+0000006426 00000 n
+0000006632 00000 n
+0000006792 00000 n
+0000007056 00000 n
+0000007242 00000 n
+0000007442 00000 n
+0000007674 00000 n
+0000007978 00000 n
+0000008134 00000 n
+0000008396 00000 n
+0000008672 00000 n
+0000008850 00000 n
+0000008917 00000 n
+0000009193 00000 n
+0000009469 00000 n
+0000009768 00000 n
+0000009987 00000 n
+0000010219 00000 n
+0000010572 00000 n
+0000010798 00000 n
+0000011148 00000 n
+0000011361 00000 n
+0000011574 00000 n
+0000011884 00000 n
+0000012116 00000 n
+0000012469 00000 n
+0000012695 00000 n
+0000013045 00000 n
+0000013341 00000 n
+0000013627 00000 n
+0000014029 00000 n
+0000014380 00000 n
+0000014579 00000 n
+0000014627 00000 n
+0000014675 00000 n
+0000014723 00000 n
+0000014782 00000 n
+0000014815 00000 n
+0000015069 00000 n
+0000015472 00000 n
+0000015911 00000 n
+0000016309 00000 n
+0000016743 00000 n
+0000017146 00000 n
+0000017585 00000 n
+0000017983 00000 n
+0000018417 00000 n
+0000018820 00000 n
+0000019259 00000 n
+0000019657 00000 n
+0000020091 00000 n
+0000020494 00000 n
+0000020933 00000 n
+0000021331 00000 n
+0000021765 00000 n
+0000022300 00000 n
+0000022695 00000 n
+0000023145 00000 n
+0000023231 00000 n
+trailer
+<<
+/DecodeParms <<
+/Columns 4
+/Predictor 12
+>>
+/Filter /FlateDecode
+/ID [<6B1BCEE6E4448A409BB27EB6BA127004> <C97B49E7C5780543AC598FE36574F84E>]
+/Info 7 0 R
+/Length 75
+/Root 1 0 R
+/Size 74
+/Type /XRef
+/W [1 2 1]
+/Index [1 6 15 2 34 3 38 2 47 1
+57 5 63 1 96 3]
+>>
+startxref
+23251
+%%EOF
+3 0 obj<</Length 5143/Subtype/XML/Type/Metadata>>stream
+<?xpacket begin="ï»¿" id="W5M0MpCehiHzreSzNTczkc9d"?>
+<x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="Adobe XMP Core 5.2-c001 63.139439, 2010/09/27-13:37:26        ">
+   <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+      <rdf:Description rdf:about=""
+            xmlns:xmp="http://ns.adobe.com/xap/1.0/">
+         <xmp:ModifyDate>2014-11-23T18:42:33+01:00</xmp:ModifyDate>
+         <xmp:CreateDate>2014-11-21T18:40:01+01:00</xmp:CreateDate>
+         <xmp:MetadataDate>2014-11-23T18:42:33+01:00</xmp:MetadataDate>
+         <xmp:CreatorTool>Adobe Acrobat 10.268</xmp:CreatorTool>
+      </rdf:Description>
+      <rdf:Description rdf:about=""
+            xmlns:dc="http://purl.org/dc/elements/1.1/">
+         <dc:format>application/pdf</dc:format>
+         <dc:title>
+            <rdf:Alt>
+               <rdf:li xml:lang="x-default">AcroFormsBasicFieldsTest</rdf:li>
+            </rdf:Alt>
+         </dc:title>
+         <dc:description>
+            <rdf:Alt>
+               <rdf:li xml:lang="x-default">PDFBox Testfiles</rdf:li>
+            </rdf:Alt>
+         </dc:description>
+         <dc:rights>
+            <rdf:Alt>
+               <rdf:li xml:lang="x-default">Licensed to the Apache Software Foundation (ASF) under one or more&#xA;contributor license agreements.  See the NOTICE file distributed with&#xA;this work for additional information regarding copyright ownership.&#xA;The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at&#xA;&#xA;http://www.apache.org/licenses/LICENSE-2.0&#xA;&#xA;Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.&#xA;See the License for the specific language governing permissions and limitations under the License.</rdf:li>
+            </rdf:Alt>
+         </dc:rights>
+      </rdf:Description>
+      <rdf:Description rdf:about=""
+            xmlns:xmpMM="http://ns.adobe.com/xap/1.0/mm/">
+         <xmpMM:DocumentID>uuid:0f004297-25ef-4f41-a677-cd10d28a577d</xmpMM:DocumentID>
+         <xmpMM:InstanceID>uuid:7bcb1bb7-6d2b-4291-bc96-ca8918efe95f</xmpMM:InstanceID>
+      </rdf:Description>
+      <rdf:Description rdf:about=""
+            xmlns:pdf="http://ns.adobe.com/pdf/1.3/">
+         <pdf:Producer>Adobe Acrobat 10.268</pdf:Producer>
+         <pdf:Keywords/>
+      </rdf:Description>
+      <rdf:Description rdf:about=""
+            xmlns:adhocwf="http://ns.adobe.com/AcrobatAdhocWorkflow/1.0/">
+         <adhocwf:state>1</adhocwf:state>
+         <adhocwf:version>1.1</adhocwf:version>
+      </rdf:Description>
+      <rdf:Description rdf:about=""
+            xmlns:xmpRights="http://ns.adobe.com/xap/1.0/rights/">
+         <xmpRights:Marked>True</xmpRights:Marked>
+         <xmpRights:WebStatement>http://www.apache.org/licenses/LICENSE-2.0.html</xmpRights:WebStatement>
+      </rdf:Description>
+   </rdf:RDF>
+</x:xmpmeta>
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                           
+<?xpacket end="w"?>
+endstreamendobj74 0 obj<</CreationDate(D:20141121184001+01'00')/Creator(Adobe Acrobat 10.268)/Keywords()/ModDate(D:20141123184233+01'00')/Producer(Adobe Acrobat 10.268)/Subject(PDFBox Testfiles)/Title(AcroFormsBasicFieldsTest)>>endobjxref
+0 1
+0000000000 65535 f
+3 1
+0000025033 00000 n
+74 1
+0000030253 00000 n
+trailer
+<</Size 75/Root 1 0 R/Info 74 0 R/ID[<6B1BCEE6E4448A409BB27EB6BA127004><186A67FDB887B040945667C95C0166DE>]/Prev 23251>>
+startxref
+30475
+%%EOF
