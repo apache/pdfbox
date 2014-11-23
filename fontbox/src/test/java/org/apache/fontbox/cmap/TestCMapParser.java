@@ -80,4 +80,20 @@ public class TestCMapParser extends TestCase
         assertEquals("CID 520 from cidchar <0208> 520", strCID3, cMap.lookupCID(cid3));
     }
 
+    /**
+     * Tets the parser against a valid, but poorly formated CMap file.
+     * @throws IOException If something went wrong
+     */
+    public void testParserWithPoorWhitespace() throws IOException 
+    {
+        final String resourceDir= "src/test/resources/cmap";
+        File inDir = new File(resourceDir);
+
+        CMapParser parser = new CMapParser();
+        CMap cMap = parser.parse( resourceDir, new FileInputStream(new File(inDir,"CMapNoWhitespace")));
+
+        assertNotNull("Failed to parse nasty CMap file", cMap);
+    }
+
+
 }
