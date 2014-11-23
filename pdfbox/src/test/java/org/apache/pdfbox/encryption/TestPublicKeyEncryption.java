@@ -20,25 +20,25 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+
 import javax.crypto.Cipher;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
-import org.apache.pdfbox.pdmodel.encryption.PublicKeyDecryptionMaterial;
 import org.apache.pdfbox.pdmodel.encryption.PublicKeyProtectionPolicy;
 import org.apache.pdfbox.pdmodel.encryption.PublicKeyRecipient;
+
 import junit.framework.TestCase;
-import org.apache.pdfbox.pdmodel.encryption.PublicKeySecurityHandler;
+
 import org.junit.Assert;
 
 /**
  * Tests for public key encryption.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.3 $
+ * @author Ben Litchfield
  */
 public class TestPublicKeyEncryption extends TestCase
 {
@@ -49,8 +49,11 @@ public class TestPublicKeyEncryption extends TestCase
     private PublicKeyRecipient recipient1;
     private PublicKeyRecipient recipient2;
 
-    private PublicKeyDecryptionMaterial decryption1;
-    private PublicKeyDecryptionMaterial decryption2;
+    private String keyStore1;
+    private String keyStore2;
+    
+    private String password1;
+    private String password2;
 
     /**
      * Simple test document that gets encrypted by the test cases.
@@ -93,9 +96,12 @@ public class TestPublicKeyEncryption extends TestCase
         recipient1 = getRecipient("test1.der", permission1);
         recipient2 = getRecipient("test2.der", permission2);
 
-        decryption1 = getDecryptionMaterial("test1.pfx", "test1");
-        decryption2 = getDecryptionMaterial("test2.pfx", "test2");
-
+        password1 = "test1";
+        password2 = "test2";
+        
+        keyStore1 = "test1.pfx";
+        keyStore2 = "test2.pfx";
+        
         InputStream input =
             TestPublicKeyEncryption.class.getResourceAsStream("test.pdf");
         try 
@@ -129,14 +135,11 @@ public class TestPublicKeyEncryption extends TestCase
         policy.addRecipient(recipient1);
         document.protect(policy);
 
-        PDDocument encryptedDoc = reload(document);
+        PDDocument encryptedDoc = null;
         try 
         {
+            encryptedDoc = reload(document, password2, getKeyStore(keyStore2));
             Assert.assertTrue(encryptedDoc.isEncrypted());
-            PublicKeySecurityHandler securityHandler
-                    = (PublicKeySecurityHandler) encryptedDoc.getEncryption().getSecurityHandler();
-            securityHandler.setVerbose(true);
-            encryptedDoc.openProtection(decryption2);
             fail("No exception when using an incorrect decryption key");
         }
         catch (IOException ex)
@@ -147,7 +150,10 @@ public class TestPublicKeyEncryption extends TestCase
         }
         finally 
         {
-            encryptedDoc.close();
+            if (encryptedDoc != null)
+            {
+                encryptedDoc.close();
+            }
         }
     }
 
@@ -164,11 +170,10 @@ public class TestPublicKeyEncryption extends TestCase
         policy.addRecipient(recipient1);
         document.protect(policy);
 
-        PDDocument encryptedDoc = reload(document);
+        PDDocument encryptedDoc = reload(document, password1, getKeyStore(keyStore1));
         try 
         {
             Assert.assertTrue(encryptedDoc.isEncrypted());
-            encryptedDoc.openProtection(decryption1);
 
             AccessPermission permission =
                 encryptedDoc.getCurrentAccessPermission();
@@ -201,11 +206,9 @@ public class TestPublicKeyEncryption extends TestCase
         document.protect(policy);
 
         // open first time
-        PDDocument encryptedDoc1 = reload(document);
+        PDDocument encryptedDoc1 = reload(document, password1, getKeyStore(keyStore1));
         try 
         {
-            encryptedDoc1.openProtection(decryption1);
-
             AccessPermission permission =
                 encryptedDoc1.getCurrentAccessPermission();
             Assert.assertFalse(permission.canAssembleDocument());
@@ -223,11 +226,9 @@ public class TestPublicKeyEncryption extends TestCase
         }
 
         // open second time
-        PDDocument encryptedDoc2 = reload(document);
+        PDDocument encryptedDoc2 = reload(document, password2, getKeyStore(keyStore2));
         try 
         {
-            encryptedDoc2.openProtection(decryption2);
-
             AccessPermission permission =
                 encryptedDoc2.getCurrentAccessPermission();
             Assert.assertFalse(permission.canAssembleDocument());
@@ -250,14 +251,18 @@ public class TestPublicKeyEncryption extends TestCase
      * and loading a fresh document from that byte array.
      *
      * @param doc input document
+     * @param decryptionPassword password to be used to decrypt the doc
+     * @param keyStore password to be used to decrypt the doc
      * @return reloaded document
      * @throws Exception if 
      */
-    private PDDocument reload(PDDocument doc) throws IOException, NoSuchAlgorithmException
+    private PDDocument reload(PDDocument doc, String decryptionPassword, InputStream keyStore)
+            throws IOException, NoSuchAlgorithmException
     {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         doc.save(buffer);
-        return PDDocument.loadLegacy(new ByteArrayInputStream(buffer.toByteArray()));
+        return PDDocument.load(new ByteArrayInputStream(buffer.toByteArray()), decryptionPassword,
+                keyStore, null, false);
     }
 
     /**
@@ -287,19 +292,8 @@ public class TestPublicKeyEncryption extends TestCase
         }
     }
 
-    private PublicKeyDecryptionMaterial getDecryptionMaterial(String name, String password) throws Exception 
+    private InputStream getKeyStore(String name) 
     {
-        InputStream input = TestPublicKeyEncryption.class.getResourceAsStream(name);
-        try 
-        {
-            KeyStore keystore = KeyStore.getInstance("PKCS12");
-            keystore.load(input, password.toCharArray());
-            return new PublicKeyDecryptionMaterial(keystore, null, password);
-        } 
-        finally 
-        {
-            input.close();
-        }
+        return TestPublicKeyEncryption.class.getResourceAsStream(name);
     }
-
 }
