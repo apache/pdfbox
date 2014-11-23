@@ -19,6 +19,7 @@ package org.apache.pdfbox.examples.signature;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.Collection;
@@ -28,7 +29,6 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 
 /**
  * This will read a document from the filesystem, decrypt it and do something with the signature.
@@ -68,14 +68,8 @@ public class ShowSignature
             PDDocument document = null;
             try
             {
-                document = PDDocument.loadLegacy( new File(infile) );
-
-                if( document.isEncrypted() )
-                {
-                    StandardDecryptionMaterial sdm = new StandardDecryptionMaterial(password);
-                    document.openProtection(sdm);
-                }
-                else
+                document = PDDocument.load( new File(infile), password );
+                if( !document.isEncrypted() )
                 {
                     System.err.println( "Warning: Document is not encrypted." );
                 }
@@ -87,16 +81,16 @@ public class ShowSignature
                 for( int i=0; i<fields.size(); i++ )
                 {
                     COSDictionary field = (COSDictionary)fields.getObject( i );
-                    String type = field.getNameAsString( "FT" );
-                    if( "Sig".equals( type ) )
+                    COSName type = field.getCOSName( COSName.FT );
+                    if( COSName.SIG.equals( type ) )
                     {
                         COSDictionary cert = (COSDictionary)field.getDictionaryObject( COSName.V );
                         if( cert != null )
                         {
                             System.out.println( "Certificate found" );
                             System.out.println( "Name=" + cert.getDictionaryObject( COSName.NAME ) );
-                            System.out.println( "Modified=" + cert.getDictionaryObject( COSName.getPDFName( "M" ) ) );
-                            COSName subFilter = (COSName)cert.getDictionaryObject( COSName.getPDFName( "SubFilter" ) );
+                            System.out.println( "Modified=" + cert.getDictionaryObject( COSName.M ) );
+                            COSName subFilter = (COSName)cert.getDictionaryObject( COSName.SUBFILTER );
                             if( subFilter != null )
                             {
                                 if( subFilter.getName().equals( "adbe.x509.rsa_sha1" ) )
@@ -106,7 +100,7 @@ public class ShowSignature
                                     byte[] certData = certString.getBytes();
                                     CertificateFactory factory = CertificateFactory.getInstance( "X.509" );
                                     ByteArrayInputStream certStream = new ByteArrayInputStream( certData );
-                                    Collection certs = factory.generateCertificates( certStream );
+                                    Collection<? extends Certificate> certs = factory.generateCertificates( certStream );
                                     System.out.println( "certs=" + certs );
                                 }
                                 else if( subFilter.getName().equals( "adbe.pkcs7.sha1" ) )
@@ -116,7 +110,7 @@ public class ShowSignature
                                     byte[] certData = certString.getBytes();
                                     CertificateFactory factory = CertificateFactory.getInstance( "X.509" );
                                     ByteArrayInputStream certStream = new ByteArrayInputStream( certData );
-                                    Collection certs = factory.generateCertificates( certStream );
+                                    Collection<? extends Certificate> certs = factory.generateCertificates( certStream );
                                     System.out.println( "certs=" + certs );
                                 }
                                 else
