@@ -158,7 +158,7 @@ public class Encrypt
                 {
                     outfile = infile;
                 }
-                document = PDDocument.loadLegacy( new File(infile) );
+                document = PDDocument.load( new File(infile) );
 
                 if( !document.isEncrypted() )
                 {
