@@ -19,19 +19,14 @@ package org.apache.pdfbox.tools;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.security.KeyStore;
+import java.io.InputStream;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
-import org.apache.pdfbox.pdmodel.encryption.DecryptionMaterial;
-import org.apache.pdfbox.pdmodel.encryption.PublicKeyDecryptionMaterial;
-import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 
 /**
  * This will read a document from the filesystem, decrypt it and and then write
- * the results to the filesystem. <br/><br/>
- *
- * usage: java org.apache.pdfbox.tools.Decrypt &lt;password&gt; &lt;inputfile&gt; &lt;outputfile&gt;
+ * the result to the filesystem.
  *
  * @author  Ben Litchfield
  */
@@ -130,26 +125,17 @@ public class Decrypt
 
 
             PDDocument document = null;
-
             try
             {
-                document = PDDocument.loadLegacy( new File(infile) );
-
-                if( document.isEncrypted() )
+                InputStream keyStoreStream = null;
+                if( keyStore != null )
                 {
-                    DecryptionMaterial decryptionMaterial = null;
-                    if( keyStore != null )
-                    {
-                        KeyStore ks = KeyStore.getInstance("PKCS12");
-                        ks.load(new FileInputStream(keyStore), password.toCharArray());
-
-                        decryptionMaterial = new PublicKeyDecryptionMaterial(ks, alias, password);
-                    }
-                    else
-                    {
-                        decryptionMaterial = new StandardDecryptionMaterial(password);
-                    }
-                    document.openProtection(decryptionMaterial);
+                    keyStoreStream = new FileInputStream(keyStore);
+                }
+                document = PDDocument.load(new File(infile), password, keyStoreStream, alias);
+                
+                if (document.isEncrypted())
+                {
                     AccessPermission ap = document.getCurrentAccessPermission();
                     if(ap.isOwnerPermission())
                     {
@@ -159,7 +145,7 @@ public class Decrypt
                     else
                     {
                         throw new IOException(
-                        "Error: You are only allowed to decrypt a document with the owner password." );
+                                "Error: You are only allowed to decrypt a document with the owner password." );
                     }
                 }
                 else
