@@ -134,6 +134,12 @@ public final class PDCheckbox extends PDButton
     }
 
     @Override
+    public COSName getDefaultValue()
+    {
+        return getDictionary().getCOSName(COSName.DV);
+    }
+    
+    @Override
     public COSName getValue()
     {
         return getDictionary().getCOSName( COSName.V );
