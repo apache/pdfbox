@@ -334,15 +334,9 @@ public abstract class SecurityHandler
                     byte[] buffer = new byte[256];
                     for (int n = 0; -1 != (n = data.read(buffer));)
                     {
-                        if (data.available() > 0)
-                        {
-                            output.write(decryptCipher.update(buffer,0, n ));
-                        }
-                        else
-                        {
-                            output.write(decryptCipher.doFinal(buffer,0, n ));
-                        }
+                        output.write(decryptCipher.update(buffer,0, n ));
                     }
+                    output.write(decryptCipher.doFinal());
                 }
                 catch (InvalidKeyException e)
                 {
