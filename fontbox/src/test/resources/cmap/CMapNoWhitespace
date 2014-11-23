@@ -1,0 +1,32 @@
+%% Licensed to the Apache Software Foundation (ASF) under one or more
+%% contributor license agreements.  See the NOTICE file distributed with
+%% this work for additional information regarding copyright ownership.
+%% The ASF licenses this file to You under the Apache License, Version 2.0
+%% (the "License"); you may not use this file except in compliance with
+%% the License.  You may obtain a copy of the License at
+%%
+%%       http://www.apache.org/licenses/LICENSE-2.0
+%%
+%% Unless required by applicable law or agreed to in writing, software
+%% distributed under the License is distributed on an "AS IS" BASIS,
+%% WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+%% See the License for the specific language governing permissions and
+%% limitations under the License.
+%%
+%% This file isn't a valid CMap file, but it contains everything what
+%% is needed to test the CMapParser
+%%
+%%EndComments
+
+/CIDInit /ProcSet findresource begin 12 dict begin begincmap /CIDSystemInfo <</Registry (DDACTR+F1+0) /Ordering (0) /Supplement 0 >> def/CMapName /DDACTR+F1+0 def
+/CMapType 2 def1 begincodespacerange <0000> <FFFF> endcodespacerange7 beginbfchar<0003> <0020>
+<0011> <002e>
+<001a> <0037>
+<001b> <0038>
+<0026> <0043>
+<0083> <00b0>
+<00ed> <2212>
+endbfcharendcmap CMapName currentdict /CMap defineresource pop end end
+
+%%EndResource
+%%EOF

@@ -81,4 +81,18 @@ public class TestCMapParser extends TestCase
         }
         return code;
     }
+
+    /**
+     * Tets the parser against a valid, but poorly formated CMap file.
+     * @throws IOException If something went wrong
+     */
+    public void testParserWithPoorWhitespace() throws IOException 
+    {
+        File inDir = new File("src/test/resources/cmap");
+
+        CMapParser parser = new CMapParser();
+        CMap cMap = parser.parse( new FileInputStream(new File(inDir,"CMapNoWhitespace")));
+
+        assertNotNull("Failed to parse nasty CMap file", cMap);
+    }
 }
