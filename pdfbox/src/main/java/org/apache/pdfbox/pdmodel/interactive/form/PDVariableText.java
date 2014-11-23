@@ -302,8 +302,7 @@ public abstract class PDVariableText extends PDField
     @Override
     public Object getDefaultValue()
     {
-        // Text fields don't support the "DV" entry.
-        return null;
+        return getDictionary().getDictionaryObject(COSName.DV);
     }
 
     @Override
