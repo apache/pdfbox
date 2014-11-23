@@ -76,7 +76,7 @@ public class PDVisibleSignDesigner
         signatureImageStream(jpegStream);
 
         // create PD document
-        PDDocument document = PDDocument.loadLegacy(documentStream);
+        PDDocument document = PDDocument.load(documentStream);
 
         // calculate height an width of document
         calculatePageSize(document, page);
