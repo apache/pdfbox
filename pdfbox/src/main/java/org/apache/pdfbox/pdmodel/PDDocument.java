@@ -801,40 +801,22 @@ public class PDDocument implements Closeable
      */
     public static PDDocument loadLegacy(File file) throws IOException
     {
-        return loadLegacy(file, BaseParser.FORCE_PARSING, false);
+        return loadLegacy(file, false);
     }
 
     /**
      * This will load a document from a file. Allows for skipping corrupt pdf objects
      *
      * @param file The name of the file to load.
-     * @param force When true, the parser will skip corrupt pdf objects and will continue parsing at the next object in
-     *            the file
-     *
-     * @return The document that was loaded.
-     *
-     * @throws IOException If there is an error reading from the stream.
-     */
-    public static PDDocument loadLegacy(File file, boolean force) throws IOException
-    {
-        return loadLegacy(file, force , false);
-    }
-
-    /**
-     * This will load a document from a file. Allows for skipping corrupt pdf objects
-     *
-     * @param file The name of the file to load.
-     * @param force When true, the parser will skip corrupt pdf objects and will continue parsing at the next object in
-     *            the file
      * @param useScratchFiles enables the usage of a scratch file if set to true
      *
      * @return The document that was loaded.
      *
      * @throws IOException If there is an error reading from the stream.
      */
-    public static PDDocument loadLegacy(File file, boolean force, boolean useScratchFiles) throws IOException
+    public static PDDocument loadLegacy(File file, boolean useScratchFiles) throws IOException
     {
-        PDFParser parser = new PDFParser(new FileInputStream(file), force, useScratchFiles);
+        PDFParser parser = new PDFParser(new FileInputStream(file), useScratchFiles);
         parser.parse();
         PDDocument doc = parser.getPDDocument();
         doc.incrementalFile = file;
@@ -852,40 +834,22 @@ public class PDDocument implements Closeable
      */
     public static PDDocument loadLegacy(InputStream input) throws IOException
     {
-        return loadLegacy(input, BaseParser.FORCE_PARSING, false);
+        return loadLegacy(input, false);
     }
 
     /**
      * This will load a document from an input stream. Allows for skipping corrupt pdf objects
      * 
      * @param input The stream that contains the document.
-     * @param force When true, the parser will skip corrupt pdf objects and will continue parsing at the next object in
-     *            the file
-     * 
-     * @return The document that was loaded.
-     * 
-     * @throws IOException If there is an error reading from the stream.
-     */
-    public static PDDocument loadLegacy(InputStream input, boolean force) throws IOException
-    {
-        return loadLegacy(input, force, false);
-    }
-
-    /**
-     * This will load a document from an input stream. Allows for skipping corrupt pdf objects
-     * 
-     * @param input The stream that contains the document.
-     * @param force When true, the parser will skip corrupt pdf objects and will continue parsing at the next object in
-     *            the file
      * @param useScratchFiles enables the usage of a scratch file if set to true
      * 
      * @return The document that was loaded.
      * 
      * @throws IOException If there is an error reading from the stream.
      */
-    public static PDDocument loadLegacy(InputStream input, boolean force, boolean useScratchFiles) throws IOException
+    public static PDDocument loadLegacy(InputStream input, boolean useScratchFiles) throws IOException
     {
-        PDFParser parser = new PDFParser(input, force, useScratchFiles);
+        PDFParser parser = new PDFParser(input, useScratchFiles);
         parser.parse();
         return parser.getPDDocument();
     }
@@ -1064,8 +1028,8 @@ public class PDDocument implements Closeable
      * 
      * @throws IOException in case of a file reading or parsing error
      */
-    public static PDDocument load(InputStream input, String password, InputStream keyStore, String alias, boolean useScratchFiles)
-            throws IOException
+    public static PDDocument load(InputStream input, String password, InputStream keyStore, 
+            String alias, boolean useScratchFiles) throws IOException
     {
         NonSequentialPDFParser parser = new NonSequentialPDFParser(input, password, keyStore, alias, useScratchFiles);
         parser.parse();
