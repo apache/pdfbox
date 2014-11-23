@@ -16,12 +16,14 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import java.io.File;
 import java.io.IOException;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
@@ -34,6 +36,9 @@ public class TestFields extends TestCase
 {
     //private static Logger log = Logger.getLogger(TestFDF.class);
 
+    private static final String PATH_OF_PDF = "src/test/resources/org/apache/pdfbox/pdmodel/interactive/form/AcroFormsBasicFields.pdf";
+
+    
     /**
      * Constructor.
      *
@@ -110,11 +115,6 @@ public class TestFields extends TestCase
             assertTrue( textBox.isComb() );
             textBox.setComb( true );
             assertTrue( textBox.isComb() );
-
-
-
-
-
         }
         finally
         {
@@ -124,5 +124,44 @@ public class TestFields extends TestCase
             }
         }
     }
+    
+    /**
+     * This will test some form fields functionality based with 
+     * a sample form.
+     *
+     * @throws IOException If there is an error creating the field.
+     */
+    public void testAcroFormsBasicFields() throws IOException
+    {
+        PDDocument doc = null;
+        
+        try
+        {
+            doc = PDDocument.load(new File(PATH_OF_PDF));
+            
+            // get and assert that there is a form
+            PDAcroForm form = doc.getDocumentCatalog().getAcroForm();
+            assertNotNull(form);
+            
+            // get the RadioButton with a DV entry
+            PDFieldTreeNode field = form.getField("RadioButtonGroup-DefaultValue");
+            assertNotNull(field);
+            assertEquals(field.getDefaultValue(),COSName.getPDFName("RadioButton01"));
+            assertEquals(field.getDefaultValue(),field.getDictionary().getDictionaryObject(COSName.DV));
 
+            // get the Checkbox with a DV entry
+            field = form.getField("Checkbox-DefaultValue");
+            assertNotNull(field);
+            assertEquals(field.getDefaultValue(),COSName.getPDFName("Yes"));
+            assertEquals(field.getDefaultValue(),field.getDictionary().getDictionaryObject(COSName.DV));
+            
+        }
+        finally
+        {
+            if( doc != null )
+            {
+                doc.close();
+            }
+        }
+    }
 }
