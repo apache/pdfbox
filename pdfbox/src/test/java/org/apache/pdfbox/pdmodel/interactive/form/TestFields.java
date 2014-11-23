@@ -24,6 +24,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
@@ -153,6 +154,12 @@ public class TestFields extends TestCase
             field = form.getField("Checkbox-DefaultValue");
             assertNotNull(field);
             assertEquals(field.getDefaultValue(),COSName.getPDFName("Yes"));
+            assertEquals(field.getDefaultValue(),field.getDictionary().getDictionaryObject(COSName.DV));
+            
+            // get the TextField with a DV entry
+            field = form.getField("TextField-DefaultValue");
+            assertNotNull(field);
+            assertEquals(((COSString) field.getDefaultValue()).getString(),"DefaultValue");
             assertEquals(field.getDefaultValue(),field.getDictionary().getDictionaryObject(COSName.DV));
             
         }
