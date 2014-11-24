@@ -1792,12 +1792,19 @@ public class NonSequentialPDFParser extends PDFParser
             COSNumber streamLengthObj = getLength(dic.getItem(COSName.LENGTH));
             if (streamLengthObj == null)
             {
-                throw new IOException("Missing length for stream.");
+                if (isLenient)
+                {
+                   LOG.warn("The stream doesn't provide any stream length, using fallback readUntilEnd"); 
+                }
+                else
+                {
+                    throw new IOException("Missing length for stream.");
+                }
             }
 
             boolean useReadUntilEnd = false;
             // ---- get output stream to copy data to
-            if (validateStreamLength(streamLengthObj.longValue()))
+            if (streamLengthObj != null && validateStreamLength(streamLengthObj.longValue()))
             {
                 out = stream.createFilteredStream(streamLengthObj);
                 long remainBytes = streamLengthObj.longValue();
