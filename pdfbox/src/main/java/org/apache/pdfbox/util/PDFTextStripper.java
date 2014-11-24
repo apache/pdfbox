@@ -36,8 +36,6 @@ import java.util.regex.Pattern;
 
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.exceptions.CryptographyException;
-import org.apache.pdfbox.exceptions.WrappedIOException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
@@ -343,24 +341,6 @@ public class PDFTextStripper extends PDFStreamEngine
             articleEnd = lineSeparator;
         }
         startDocument(document);
-
-        if( document.isEncrypted() )
-        {
-            // We are expecting non-encrypted documents here, but it is common
-            // for users to pass in a document that is encrypted with an empty
-            // password (such a document appears to not be encrypted by
-            // someone viewing the document, thus the confusion).  We will
-            // attempt to decrypt with the empty password to handle this case.
-            //
-            try
-            {
-                document.decrypt("");
-            }
-            catch (CryptographyException e)
-            {
-                throw new WrappedIOException("Error decrypting document, details: ", e);
-            }
-        }
         processPages( document.getDocumentCatalog().getAllPages() );
         endDocument(document);
     }
