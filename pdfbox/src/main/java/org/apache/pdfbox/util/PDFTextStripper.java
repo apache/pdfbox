@@ -40,8 +40,6 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
-import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDThreadBead;
 import org.apache.pdfbox.text.TextPosition;
@@ -251,24 +249,6 @@ public class PDFTextStripper extends PDFTextStreamEngine
             articleEnd = lineSeparator;
         }
         startDocument(document);
-
-        if (document.isEncrypted())
-        {
-            // We are expecting non-encrypted documents here, but it is common
-            // for users to pass in a document that is encrypted with an empty
-            // password (such a document appears to not be encrypted by
-            // someone viewing the document, thus the confusion).  We will
-            // attempt to decrypt with the empty password to handle this case.
-            try
-            {
-                StandardDecryptionMaterial sdm = new StandardDecryptionMaterial("");
-                document.openProtection(sdm);
-            }
-            catch (InvalidPasswordException e)
-            {
-                throw new IOException("Invalid password for encrypted document", e);
-            }
-        }
         processPages(document.getPages());
         endDocument(document);
     }
