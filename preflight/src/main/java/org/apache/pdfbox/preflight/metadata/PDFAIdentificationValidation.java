@@ -58,7 +58,10 @@ public class PDFAIdentificationValidation
         PDFAIdentificationSchema id = metadata.getPDFIdentificationSchema();
         if (id == null)
         {
-            ve.add(new ValidationError(ERROR_METADATA_PDFA_ID_MISSING));
+            ve.add(new ValidationError(ERROR_METADATA_PDFA_ID_MISSING,
+                    "PDF/A identification schema "
+                    + PDFAIdentificationSchema.class.getAnnotation(StructuredType.class).namespace()
+                    + " is missing"));
             return ve;
         }
 
