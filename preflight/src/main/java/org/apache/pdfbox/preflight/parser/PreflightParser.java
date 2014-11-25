@@ -272,7 +272,7 @@ public class PreflightParser extends NonSequentialPDFParser
         {
             reader = new BufferedReader(new InputStreamReader(new FileInputStream(getPdfFile()), encoding));
             String firstLine = reader.readLine();
-            if (firstLine == null || (firstLine != null && !firstLine.matches("%PDF-1\\.[1-9]")))
+            if (firstLine == null || !firstLine.matches("%PDF-1\\.[1-9]"))
             {
                 addValidationError(new ValidationError(PreflightConstants.ERROR_SYNTAX_HEADER,
                         "First line must match %PDF-1.\\d"));
@@ -352,8 +352,8 @@ public class PreflightParser extends NonSequentialPDFParser
         while (true)
         {
             // just after the xref<EOL> there are an integer
-            long currObjID = 0; // first obj id
-            long count = 0; // the number of objects in the xref table
+            long currObjID; // first obj id
+            long count; // the number of objects in the xref table
 
             long offset = pdfSource.getOffset();
             String line = readLine();
@@ -685,8 +685,8 @@ public class PreflightParser extends NonSequentialPDFParser
                 // ---- go to object start
                 setPdfSource(offsetOrObjstmObNr);
                 // ---- we must have an indirect object
-                long readObjNr = 0;
-                int readObjGen = 0;
+                long readObjNr;
+                int readObjGen;
 
                 long offset = pdfSource.getOffset();
                 String line = readLine();
