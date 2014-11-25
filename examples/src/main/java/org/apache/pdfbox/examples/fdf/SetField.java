@@ -19,10 +19,17 @@ package org.apache.pdfbox.examples.fdf;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
+import org.apache.pdfbox.pdmodel.interactive.form.PDCheckbox;
+import org.apache.pdfbox.pdmodel.interactive.form.PDChoice;
+import org.apache.pdfbox.pdmodel.interactive.form.PDComboBox;
 import org.apache.pdfbox.pdmodel.interactive.form.PDFieldTreeNode;
+import org.apache.pdfbox.pdmodel.interactive.form.PDListBox;
+import org.apache.pdfbox.pdmodel.interactive.form.PDRadioButton;
+import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
 
 /**
  * This example will take a PDF document and set a FDF field in it.
@@ -48,7 +55,30 @@ public class SetField
         PDFieldTreeNode field = acroForm.getField(name);
         if (field != null)
         {
-            field.setValue(value);
+            if (field instanceof PDCheckbox)
+            {
+                ((PDCheckbox) field).setValue(COSName.getPDFName(value));
+            }
+            else if (field instanceof PDChoice)
+            {
+                ((PDChoice) field).setValue(value);
+            }
+            else if (field instanceof PDComboBox)
+            {
+                ((PDComboBox) field).setValue(value);
+            }
+            else if (field instanceof PDListBox)
+            {
+                ((PDListBox) field).setValue(value);
+            }
+            else if (field instanceof PDRadioButton)
+            {
+                ((PDRadioButton) field).setValue(COSName.getPDFName(value));
+            }
+            else if (field instanceof PDTextField)
+            {
+                ((PDTextField) field).setValue(value);
+            } 
         }
         else
         {
