@@ -28,11 +28,6 @@ import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_KEY
 import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VALUE_TYPE0C;
 import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VALUE_TYPE1C;
 
-import java.io.IOException;
-import java.util.List;
-
-import org.apache.fontbox.cff.CFFFont;
-import org.apache.fontbox.cff.CFFParser;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
@@ -64,8 +59,8 @@ public class CIDType0DescriptorHelper extends FontDescriptorHelper<CIDType0Conta
             COSStream stream = ff3.getStream();
             if (stream == null)
             {
-                this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID, "The FontFile is missing for "
-                        + fontDescriptor.getFontName()));
+                this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID, 
+                        fontDescriptor.getFontName() + ": The FontFile is missing"));
                 this.fContainer.notEmbedded();
             }
             else
@@ -76,7 +71,8 @@ public class CIDType0DescriptorHelper extends FontDescriptorHelper<CIDType0Conta
                 if (!(FONT_DICTIONARY_VALUE_TYPE0C.equals(st) || FONT_DICTIONARY_VALUE_TYPE1C.equals(st)))
                 {
                     this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID,
-                            "The FontFile3 stream doesn't have the right Subtype for " + fontDescriptor.getFontName()));
+                            fontDescriptor.getFontName()
+                            + ": The FontFile3 stream doesn't have the right Subtype"));
                 }
 
                 checkCIDSet(fontDescriptor);
@@ -110,7 +106,9 @@ public class CIDType0DescriptorHelper extends FontDescriptorHelper<CIDType0Conta
     {
         if (font.isDamaged())
         {
-            this.fContainer.push(new ValidationError(ERROR_FONTS_CID_DAMAGED, "The FontFile can't be read"));
+            this.fContainer.push(new ValidationError(ERROR_FONTS_CID_DAMAGED, 
+                    font.getName() + ": The FontFile can't be read"));
+            
         }
     }
 }

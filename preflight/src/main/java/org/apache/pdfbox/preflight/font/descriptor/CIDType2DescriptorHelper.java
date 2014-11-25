@@ -78,8 +78,8 @@ public class CIDType2DescriptorHelper extends FontDescriptorHelper<CIDType2Conta
             COSStream stream = ff2.getStream();
             if (stream == null)
             {
-                this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID, "The FontFile is missing for "
-                        + fontDescriptor.getFontName()));
+                this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID, 
+                        fontDescriptor.getFontName() + ": The FontFile is missing"));
                 this.fContainer.notEmbedded();
             }
         }
@@ -92,7 +92,8 @@ public class CIDType2DescriptorHelper extends FontDescriptorHelper<CIDType2Conta
     {
         if (font.isDamaged())
         {
-            this.fContainer.push(new ValidationError(ERROR_FONTS_CID_DAMAGED, "The FontFile can't be read"));
+            this.fContainer.push(new ValidationError(ERROR_FONTS_CID_DAMAGED, 
+                    font.getName() + ": The FontFile can't be read"));
         }
     }
 }
