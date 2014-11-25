@@ -25,16 +25,12 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_ENCODIN
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_FONT_FILEX_INVALID;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_TRUETYPE_DAMAGED;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
 import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
 import org.apache.pdfbox.preflight.PreflightContext;
@@ -58,8 +54,8 @@ public class TrueTypeDescriptorHelper extends FontDescriptorHelper<TrueTypeConta
         COSStream stream = (fontFile == null ? null : fontFile.getStream());
         if (stream == null)
         {
-            this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID, "The FontFile2 is missing for "
-                    + fontDescriptor.getFontName()));
+            this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID, 
+                    fontDescriptor.getFontName() + ": The FontFile2 is missing"));
             this.fContainer.notEmbedded();
             return null;
         }
@@ -67,7 +63,7 @@ public class TrueTypeDescriptorHelper extends FontDescriptorHelper<TrueTypeConta
         if (stream.getInt(COSName.LENGTH1) <= 0)
         {
             this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID,
-                    "The FontFile entry /Length1 is invalid for " + fontDescriptor.getFontName()));
+                    fontDescriptor.getFontName() + ": The FontFile entry /Length1 is invalid"));
             return null;
         }
 
@@ -80,7 +76,7 @@ public class TrueTypeDescriptorHelper extends FontDescriptorHelper<TrueTypeConta
         if (font.isDamaged())
         {
             this.fContainer.push(new ValidationError(ERROR_FONTS_TRUETYPE_DAMAGED,
-                    "The FontFile can't be read for " + this.font.getName()));
+                    this.font.getName() + ": The FontFile can't be read"));
         }
         else
         {
@@ -91,14 +87,13 @@ public class TrueTypeDescriptorHelper extends FontDescriptorHelper<TrueTypeConta
                 if (pdTrueTypeFont.isSymbolic() && ttf.getCmap().getCmaps().length != 1)
                 {
                     this.fContainer.push(new ValidationError(ERROR_FONTS_ENCODING,
-                            "Symbolic TrueType font has more than one 'cmap' entry for " +
-                            this.font.getName()));
+                            this.font.getName() + ": Symbolic TrueType font has more than one 'cmap' entry"));
                 }
             }
             catch (IOException e)
             {
                 this.fContainer.push(new ValidationError(ERROR_FONTS_TRUETYPE_DAMAGED,
-                        "The TTF 'cmap' could not be read for " + this.font.getName()));
+                         this.font.getName() + ": The TTF 'cmap' could not be read"));
             }
         }
     }

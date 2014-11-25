@@ -124,7 +124,7 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
         else
         {
             this.fContainer.push(new ValidationError(ERROR_FONTS_DESCRIPTOR_INVALID,
-                    "FontDescriptor is null or is an AFM Descriptor"));
+                    this.font.getName() + ": FontDescriptor is null or is an AFM Descriptor"));
             this.fContainer.notEmbedded();
         }
     }
@@ -244,7 +244,7 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
                 if (metadata.getFilters() != null && !metadata.getFilters().isEmpty())
                 {
                     this.fContainer.push(new ValidationError(ERROR_SYNTAX_STREAM_INVALID_FILTER,
-                            "Filter specified in font file metadata dictionnary"));
+                            this.font.getName() + ": Filter specified in font file metadata dictionnary"));
                     return;
                 }
 
@@ -267,16 +267,16 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
                 {
                     if (e.getErrorType() == ErrorType.NoValueType)
                     {
-                        this.fContainer.push(new ValidationError(ERROR_METADATA_UNKNOWN_VALUETYPE, e.getMessage()));
+                        this.fContainer.push(new ValidationError(ERROR_METADATA_UNKNOWN_VALUETYPE, e.getMessage(), e));
                     }
                     else if (e.getErrorType() == ErrorType.XpacketBadEnd)
                     {
                         this.fContainer.push(new ValidationError(ERROR_METADATA_FORMAT_XPACKET,
-                                "Unable to parse font metadata due to : " + e.getMessage()));
+                                this.font.getName() + ": Unable to parse font metadata due to : " + e.getMessage(), e));
                     }
                     else
                     {
-                        this.fContainer.push(new ValidationError(ERROR_METADATA_FORMAT, e.getMessage()));
+                        this.fContainer.push(new ValidationError(ERROR_METADATA_FORMAT, e.getMessage(), e));
                     }
                 }
             }
@@ -284,7 +284,7 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
         catch (IllegalStateException e)
         {
             this.fContainer.push(new ValidationError(ERROR_METADATA_FORMAT_UNKOWN,
-                    "The Metadata entry doesn't reference a stream object"));
+                    this.font.getName() + ": The Metadata entry doesn't reference a stream object", e));
         }
     }
 
@@ -303,7 +303,7 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
         catch (IOException e)
         {
             this.fContainer.push(new ValidationError(ERROR_METADATA_FORMAT_STREAM,
-                    "Unable to read font metadata due to : " + e.getMessage()));
+                    this.font.getName() + ": Unable to read font metadata due to : " + e.getMessage(), e));
         }
         finally
         {

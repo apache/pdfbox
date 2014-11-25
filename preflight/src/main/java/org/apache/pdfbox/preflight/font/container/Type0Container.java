@@ -41,6 +41,7 @@ public class Type0Container extends FontContainer
         this.delegateFontContainer = delegateFontContainer;
     }
 
+    @Override
     public List<ValidationError> getAllErrors()
     {
         if (this.delegateFontContainer != null)
@@ -50,6 +51,7 @@ public class Type0Container extends FontContainer
         return this.errorBuffer;
     }
 
+    @Override
     public boolean isValid()
     {
         boolean result = (this.errorBuffer.isEmpty() && isEmbeddedFont());
@@ -60,6 +62,7 @@ public class Type0Container extends FontContainer
         return result;
     }
 
+    @Override
     public boolean isEmbeddedFont()
     {
         boolean result = embeddedFont;

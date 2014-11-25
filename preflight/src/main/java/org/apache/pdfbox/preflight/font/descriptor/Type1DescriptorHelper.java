@@ -58,7 +58,8 @@ public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container>
             if (charsetStr == null || "".equals(charsetStr))
             {
                 this.fContainer.push(new ValidationError(ERROR_FONTS_CHARSET_MISSING_FOR_SUBSET,
-                        "The Charset entry is missing for the Type1 Subset"));
+                        fontDescriptor.getFontName()
+                        + ": The Charset entry is missing for the Type1 Subset"));
                 result = false;
             }
         }
@@ -76,8 +77,8 @@ public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container>
             COSStream stream = ff1.getStream();
             if (stream == null)
             {
-                this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID, "The FontFile is missing for "
-                        + fontDescriptor.getFontName()));
+                this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID, 
+                        fontDescriptor.getFontName() + ": The FontFile is missing"));
                 this.fContainer.notEmbedded();
                 return null;
             }
@@ -87,8 +88,8 @@ public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container>
             boolean hasLength3 = stream.getInt(COSName.getPDFName(FONT_DICTIONARY_KEY_LENGTH3)) >= 0;
             if (!(hasLength1 && hasLength2 && hasLength3))
             {
-                this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID, "The FontFile is invalid for "
-                        + fontDescriptor.getFontName()));
+                this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID, 
+                        fontDescriptor.getFontName() + ": The FontFile is invalid"));
                 return null;
             }
 
@@ -106,7 +107,7 @@ public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container>
         if (font.isDamaged())
         {
             this.fContainer.push(new ValidationError(ERROR_FONTS_TYPE1_DAMAGED,
-                    "The FontFile can't be read for " + this.font.getName()));
+                    this.font.getName() + ": The FontFile can't be read"));
         }
     }
 }
