@@ -145,23 +145,17 @@ public final class PDCheckbox extends PDButton
         return getDictionary().getCOSName( COSName.V );
     }
 
-    @Override
-    public void setValue(Object value)
+    public void setValue(COSName value)
     {
         if (value == null)
         {
             getDictionary().removeItem(COSName.V);
             getDictionary().setItem( COSName.AS, COSName.OFF );
         }
-        else if (value instanceof COSName)
-        {
-            getDictionary().setItem(COSName.V, (COSName)value);
-            getDictionary().setItem( COSName.AS, (COSName)value);
-        }
         else
         {
-            throw new RuntimeException( "The value of a checkbox has to be a name object." );
+            getDictionary().setItem(COSName.V, value);
+            getDictionary().setItem( COSName.AS, value);
         }
     }
-    
 }
