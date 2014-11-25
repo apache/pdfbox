@@ -23,6 +23,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDFieldTreeNode;
+import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
 
 /**
  * Example to show filling form fields.
@@ -47,12 +48,12 @@ public class FillFormField
         if (acroForm != null)
         {
             // Retrieve an individual field and set it's value.
-            PDFieldTreeNode field = acroForm.getField( "sampleField" );
+            PDTextField field = (PDTextField) acroForm.getField( "sampleField" );
             field.setValue("Text Entry");
-
+            
             // If a field is nested within the form tree a fully qualified name 
             // might be provided to access the field.
-            field = acroForm.getField( "fieldsContainer.nestedSampleField" );
+            field = (PDTextField) acroForm.getField( "fieldsContainer.nestedSampleField" );
             field.setValue("Text Entry");
         }
 
