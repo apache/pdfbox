@@ -69,8 +69,7 @@ public final class PDComboBox extends PDChoice
      * @param value the value
      * 
      */
-    @Override
-    public void setValue(Object value)
+    public void setValue(String value)
     {
         if ((getFieldFlags() & FLAG_EDIT) != 0)
         {
@@ -79,4 +78,18 @@ public final class PDComboBox extends PDChoice
         super.setValue(value);
     }
 
+    /**
+     * setValue sets the entry "V" to the given value.
+     * 
+     * @param value the value
+     * 
+     */
+    public void setValue(String[] value)
+    {
+        if ((getFieldFlags() & FLAG_EDIT) != 0)
+        {
+            throw new IllegalArgumentException("The combo box isn't editable.");
+        }
+        super.setValue(value);
+    }    
 }

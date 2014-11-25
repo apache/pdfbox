@@ -111,14 +111,6 @@ public abstract class PDFieldTreeNode implements COSObjectable
     public abstract Object getValue();
 
     /**
-     * setValue sets the entry "V" to the given value.
-     * 
-     * @param value the value
-     * 
-     */
-    public abstract void setValue(Object value);
-
-    /**
      * getDefaultValue gets the value of the "DV" entry.
      * 
      * @return The value of this field.
@@ -241,11 +233,11 @@ public abstract class PDFieldTreeNode implements COSObjectable
         {
             if (fieldValue instanceof String)
             {
-                setValue((String) fieldValue);
+                fdfField.setValue((String) fieldValue);
             }
             else if (fieldValue instanceof PDTextStream)
             {
-                setValue(((PDTextStream) fieldValue).getAsString());
+                fdfField.setValue(((PDTextStream) fieldValue).getAsString());
             }
             else
             {

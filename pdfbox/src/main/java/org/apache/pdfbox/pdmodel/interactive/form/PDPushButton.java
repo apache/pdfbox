@@ -45,12 +45,4 @@ public class PDPushButton extends PDButton
         // PushButton fields don't support the "V" entry.
         return null;
     }
-
-    @Override
-    public void setValue(Object value)
-    {
-        // PushButton fields don't support the "V" entry.
-        throw new RuntimeException( "PushButton fields don't support the \"V\" entry." );
-    }
-
 }

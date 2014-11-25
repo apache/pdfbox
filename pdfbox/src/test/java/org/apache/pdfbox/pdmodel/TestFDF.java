@@ -182,7 +182,7 @@ public class TestFDF extends TestCase
                 testContentStreams( fdeb, feld2, expected );
     
                 PDRadioButton feld3 = (PDRadioButton)form.getField( "Feld.3" );
-                feld3.setValue("RB1");
+                feld3.setValue(COSName.getPDFName("RB1"));
                 assertEquals( "RB1", feld3.getValue().getName() );
             }
             finally
