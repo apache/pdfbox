@@ -460,7 +460,13 @@ public abstract class SecurityHandler
      */
     public void decryptStream(COSStream stream, long objNum, long genNum) throws CryptographyException, IOException
     {
-        if (!decryptMetadata && COSName.METADATA.equals(stream.getDictionaryObject(COSName.TYPE)))
+        COSBase type = stream.getDictionaryObject(COSName.TYPE);
+        if (!decryptMetadata && COSName.METADATA.equals(type))
+        {
+            return;
+        }
+        // "The cross-reference stream shall not be encrypted"
+        if (COSName.XREF.equals(type))
         {
             return;
         }
