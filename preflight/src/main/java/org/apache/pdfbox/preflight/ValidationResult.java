@@ -253,11 +253,11 @@ public class ValidationResult
             }
             else if (errorCode.startsWith(PreflightConstants.ERROR_GRAPHIC_INVALID))
             {
-                this.details = "Invalid Graphis object";
+                this.details = "Invalid graphics object";
             }
             else if (errorCode.startsWith(PreflightConstants.ERROR_GRAPHIC_TRANSPARENCY))
             {
-                this.details = "Invalid Graphis transparency";
+                this.details = "Invalid graphics transparency";
             }
             else if (errorCode.startsWith(PreflightConstants.ERROR_GRAPHIC_UNEXPECTED_KEY))
             {
