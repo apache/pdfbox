@@ -46,7 +46,7 @@ public class RDFAboutAttributeConcordanceValidation
     {
 
         List<XMPSchema> schemas = metadata.getAllSchemas();
-        if (schemas.size() == 0)
+        if (schemas.isEmpty())
         {
             throw new ValidationException("Schemas not found in the given metadata representation");
         }
