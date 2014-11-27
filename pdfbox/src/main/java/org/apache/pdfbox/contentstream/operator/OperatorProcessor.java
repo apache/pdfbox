@@ -73,7 +73,6 @@ public abstract class OperatorProcessor
 
     /**
      * Returns the name of this operator, e.g. "BI".
-     * @return operator name.
      */
     public abstract String getName();
 
