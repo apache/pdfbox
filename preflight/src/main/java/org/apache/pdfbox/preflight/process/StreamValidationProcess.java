@@ -324,7 +324,7 @@ public class StreamValidationProcess extends AbstractProcess
         }
         catch (IOException e)
         {
-            throw new ValidationException("Unable to read a stream to validate it due to : " + e.getMessage(), e);
+            throw new ValidationException("Unable to read a stream to validate: " + e.getMessage(), e);
         }
         finally
         {

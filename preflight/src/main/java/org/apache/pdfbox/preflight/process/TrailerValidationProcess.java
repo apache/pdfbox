@@ -168,7 +168,7 @@ public class TrailerValidationProcess extends AbstractProcess
         catch (IOException e)
         {
             addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_SYNTAX_TRAILER,
-                    "Unable to check PDF Trailers due to : " + e.getMessage()));
+                    "Unable to check PDF Trailers: " + e.getMessage(), e));
         }
     }
 
@@ -439,8 +439,6 @@ public class TrailerValidationProcess extends AbstractProcess
             addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_SYNTAX_DICT_INVALID,
                     "Invalid key in The Linearized dictionary"));
         }
-
-        return;
     }
 
 }
