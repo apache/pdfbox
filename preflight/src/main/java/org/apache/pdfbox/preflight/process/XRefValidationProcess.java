@@ -32,6 +32,7 @@ import org.apache.pdfbox.preflight.exception.ValidationException;
 public class XRefValidationProcess extends AbstractProcess
 {
 
+    @Override
     public void validate(PreflightContext ctx) throws ValidationException
     {
         COSDocument document = ctx.getDocument().getDocument();

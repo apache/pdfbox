@@ -105,7 +105,7 @@ public class AcroFormValidationProcess extends AbstractProcess
     {
         if (lFields != null)
         {
-            // the list can be null if the Field doesn't have children
+            // the list can be null if the field doesn't have children
             for (Object obj : lFields)
             {
                 if (obj instanceof PDFieldTreeNode)
@@ -117,7 +117,7 @@ public class AcroFormValidationProcess extends AbstractProcess
                 }
                 else if (obj instanceof PDAnnotationWidget)
                 {
-                    // "A field?s children in the hierarchy may also include widget annotations"
+                    // "A field's children in the hierarchy may also include widget annotations"
                     ContextHelper.validateElement(ctx, ((PDAnnotationWidget) obj).getDictionary(), ANNOTATIONS_PROCESS);
                 }
                 else

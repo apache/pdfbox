@@ -32,6 +32,7 @@ import org.apache.pdfbox.preflight.exception.ValidationException;
 public class EmptyValidationProcess implements ValidationProcess
 {
 
+    @Override
     public void validate(PreflightContext context) throws ValidationException
     {
         // this class does nothing

@@ -45,6 +45,7 @@ import org.apache.pdfbox.preflight.exception.ValidationException;
 public class FileSpecificationValidationProcess extends AbstractProcess
 {
 
+    @Override
     public void validate(PreflightContext ctx) throws ValidationException
     {
         PDDocument pdfDoc = ctx.getDocument();

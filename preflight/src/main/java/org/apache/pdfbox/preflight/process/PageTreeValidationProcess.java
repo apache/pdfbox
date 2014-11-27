@@ -34,6 +34,7 @@ import org.apache.pdfbox.preflight.utils.ContextHelper;
 public class PageTreeValidationProcess extends AbstractProcess
 {
 
+    @Override
     public void validate(PreflightContext context) throws ValidationException
     {
         PDDocumentCatalog catalog = context.getDocument().getDocumentCatalog();
