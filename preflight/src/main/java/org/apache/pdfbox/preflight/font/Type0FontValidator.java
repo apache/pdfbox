@@ -97,7 +97,7 @@ public class Type0FontValidator extends FontValidator<Type0Container>
         if (!areFieldsPResent)
         {
             this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID,
-                    "Some keys are missing from composite font dictionary"));
+                    font.getName() + ": Some keys are missing from composite font dictionary"));
         }
     }
 
@@ -117,7 +117,7 @@ public class Type0FontValidator extends FontValidator<Type0Container>
              * returns an error if the array has more than one element.
              */
             this.fontContainer.push(new ValidationError(ERROR_FONTS_CIDKEYED_INVALID,
-                    "CIDFont is missing from the DescendantFonts array or the size of array is greater than 1"));
+                    font.getName() + ": CIDFont is missing from the DescendantFonts array or the size of array is greater than 1"));
             return;
         }
 
@@ -125,7 +125,7 @@ public class Type0FontValidator extends FontValidator<Type0Container>
         if (cidFont == null)
         {
             this.fontContainer.push(new ValidationError(ERROR_FONTS_CIDKEYED_INVALID,
-                    "The DescendantFonts array should have one element with is a dictionary."));
+                    font.getName() + ": The DescendantFonts array should have one element with is a dictionary."));
             return;
         }
 
@@ -152,7 +152,7 @@ public class Type0FontValidator extends FontValidator<Type0Container>
         else
         {
             this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID,
-                    "Type and/or Subtype keys are missing"));
+                    font.getName() + ": Type and/or Subtype keys are missing"));
         }
         return cidFontValidator;
     }
@@ -168,7 +168,8 @@ public class Type0FontValidator extends FontValidator<Type0Container>
         }
         catch (IOException e)
         {
-            this.fontContainer.push(new ValidationError(ERROR_FONTS_CID_DAMAGED, "The CIDType0 font is damaged"));
+            this.fontContainer.push(new ValidationError(ERROR_FONTS_CID_DAMAGED, 
+                    font.getName() + ": The CIDType0 font is damaged", e));
             return null;
         }
     }
@@ -184,7 +185,8 @@ public class Type0FontValidator extends FontValidator<Type0Container>
         }
         catch (IOException e)
         {
-            this.fontContainer.push(new ValidationError(ERROR_FONTS_CID_DAMAGED, "The CIDType2 font is damaged"));
+            this.fontContainer.push(new ValidationError(ERROR_FONTS_CID_DAMAGED, 
+                    font.getName() + ": The CIDType2 font is damaged", e));
             return null;
         }
     }
@@ -211,7 +213,7 @@ public class Type0FontValidator extends FontValidator<Type0Container>
                     .equals(str)))
             {
                 this.fontContainer.push(new ValidationError(ERROR_FONTS_CIDKEYED_INVALID,
-                        "The CMap is a string but it isn't an Identity-H/V"));
+                        font.getName() + ": The CMap is a string but it isn't an Identity-H/V"));
                 return;
             }
         }
@@ -227,7 +229,7 @@ public class Type0FontValidator extends FontValidator<Type0Container>
         {
             // CMap type is invalid
             this.fontContainer.push(new ValidationError(ERROR_FONTS_CIDKEYED_CMAP_INVALID_OR_MISSING,
-                    "The CMap type is invalid"));
+                    font.getName() + ": The CMap type is invalid"));
         }
     }
 
@@ -264,22 +266,22 @@ public class Type0FontValidator extends FontValidator<Type0Container>
             if (cmapName == null || "".equals(cmapName) || wmode > 1)
             {
                 this.fontContainer.push(new ValidationError(ERROR_FONTS_CIDKEYED_CMAP_INVALID_OR_MISSING,
-                        "Some elements in the CMap dictionary are missing or invalid"));
+                        font.getName() + ": Some elements in the CMap dictionary are missing or invalid"));
             }
             else if (!(wmValue == wmode && cmapName.equals(cmnValue)))
             {
                 this.fontContainer.push(new ValidationError(ERROR_FONTS_CIDKEYED_CMAP_INVALID_OR_MISSING,
-                        "CMapName or WMode is inconsistent"));
+                        font.getName() + ": CMapName or WMode is inconsistent"));
             }
             else if (!FONT_DICTIONARY_VALUE_TYPE_CMAP.equals(type))
             {
                 this.fontContainer.push(new ValidationError(ERROR_FONTS_CIDKEYED_CMAP_INVALID_OR_MISSING,
-                        "The CMap type is invalid"));
+                        font.getName() + ": The CMap type is invalid"));
             }
         }
         catch (IOException e)
         {
-            this.fontContainer.push(new ValidationError(ERROR_FONTS_CID_CMAP_DAMAGED, "The CMap type is damaged"));
+            this.fontContainer.push(new ValidationError(ERROR_FONTS_CID_CMAP_DAMAGED, font.getName() + ": The CMap type is damaged", e));
         }
 
         COSDictionary cmapUsed = (COSDictionary) aCMap.getDictionaryObject(COSName
@@ -354,7 +356,7 @@ public class Type0FontValidator extends FontValidator<Type0Container>
             if (!regCF.equals(regCM) || !ordCF.equals(ordCM))
             {
                 this.fontContainer.push(new ValidationError(ERROR_FONTS_CIDKEYED_SYSINFO,
-                        "The CIDSystemInfo is inconsistent"));
+                        font.getName() + ": The CIDSystemInfo is inconsistent"));
             }
         }
     }
