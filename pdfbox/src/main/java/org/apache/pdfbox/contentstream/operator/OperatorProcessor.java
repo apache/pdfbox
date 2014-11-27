@@ -20,6 +20,8 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import java.util.List;
 import java.io.IOException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Processes a PDF operator.
@@ -28,6 +30,11 @@ import java.io.IOException;
  */
 public abstract class OperatorProcessor
 {
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(OperatorProcessor.class);
+
     /** The processing context. */
     protected PDFStreamEngine context;
 
@@ -66,6 +73,25 @@ public abstract class OperatorProcessor
 
     /**
      * Returns the name of this operator, e.g. "BI".
+     * @return operator name.
      */
     public abstract String getName();
+
+    /**
+     * Check the size of the arguments and puts out a warning if the size doesn't match.
+     *
+     * @param arguments Arguments for this operator.
+     * @param expectedSize Expected arguments size.
+     * @return true if size is correct, false if not.
+     */
+    protected boolean checkArgumentSize(List<COSBase> arguments, int expectedSize)
+    {
+        if (arguments.size() != expectedSize)
+        {
+            LOG.warn("'" + getName() + "' operator must have " + expectedSize
+                    + " parameters, but has " + arguments.size());
+            return false;
+}
+        return true;
+    }
 }

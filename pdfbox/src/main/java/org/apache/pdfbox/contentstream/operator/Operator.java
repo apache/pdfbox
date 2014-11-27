@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class Operator
 {
-    private String theOperator;
+    private final String theOperator;
     private byte[] imageData;
     private COSDictionary imageParameters;
 
@@ -57,7 +57,7 @@ public class Operator
      */
     public static Operator getOperator( String operator )
     {
-        Operator operation = null;
+        Operator operation;
         if( operator.equals( "ID" ) || operator.equals( "BI" ) )
         {
             //we can't cache the ID operators.
@@ -96,6 +96,7 @@ public class Operator
      *
      * @return A string rep of this class.
      */
+    @Override
     public String toString()
     {
         return "PDFOperator{" + theOperator + "}";
