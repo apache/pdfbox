@@ -25,6 +25,7 @@ import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 
 import java.io.IOException;
 import java.util.List;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceColorSpace;
 
 /**
  * sc,scn,SC,SCN: Sets the color to use for stroking or non-stroking operations.
@@ -36,9 +37,15 @@ public abstract class SetColor extends OperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
+        PDColorSpace colorSpace = getColorSpace();
+        if (colorSpace instanceof PDDeviceColorSpace
+                && !checkArgumentSize(arguments, colorSpace.getNumberOfComponents()))
+        {
+            return;
+        }
         COSArray array = new COSArray();
         array.addAll(arguments);
-        setColor(new PDColor(array, getColorSpace()));
+        setColor(new PDColor(array, colorSpace));
     }
 
     /**

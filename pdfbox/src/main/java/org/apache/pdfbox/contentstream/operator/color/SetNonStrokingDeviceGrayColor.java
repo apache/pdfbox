@@ -19,7 +19,6 @@ package org.apache.pdfbox.contentstream.operator.color;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.contentstream.operator.Operator;
 
 import java.io.IOException;
