@@ -98,7 +98,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
         if (!areFieldsPResent)
         {
             this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID,
-                    "Some required fields are missing from the Font dictionary."));
+                    font.getName() + ": Some required fields are missing from the Font dictionary."));
         }
     }
 
@@ -113,7 +113,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
         if (!COSUtils.isArray(fontBBox, cosDocument))
         {
             this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID,
-                    "The FontBBox element isn't an array"));
+                    font.getName() + ": The FontBBox element isn't an array"));
             return;
         }
 
@@ -124,7 +124,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
         if (bbox.size() != 4)
         {
             this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID,
-                    "The FontBBox element is invalid"));
+                    font.getName() + ": The FontBBox element is invalid"));
             return;
         }
         
@@ -134,7 +134,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
             if (!(COSUtils.isFloat(elt, cosDocument) || COSUtils.isInteger(elt, cosDocument)))
             {
                 this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID,
-                        "An element of FontBBox isn't a number"));
+                        font.getName() + ": An element of FontBBox isn't a number"));
                 return;
             }
         }
@@ -150,7 +150,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
         if (!COSUtils.isArray(fontMatrix, cosDocument))
         {
             this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID,
-                    "The FontMatrix element isn't an array"));
+                    font.getName() + ": The FontMatrix element isn't an array"));
             return;
         }
 
@@ -161,7 +161,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
         if (matrix.size() != 6)
         {
             this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID,
-                    "The FontMatrix element is invalid"));
+                    font.getName() + ": The FontMatrix element is invalid"));
             return;
         }
 
@@ -171,7 +171,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
             if (!(COSUtils.isFloat(elt, cosDocument) || COSUtils.isInteger(elt, cosDocument)))
             {
                 this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID,
-                        "An element of FontMatrix isn't a number"));
+                        font.getName() + ": An element of FontMatrix isn't a number"));
                 return;
             }
         }
@@ -211,7 +211,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
         {
             // the encoding entry is invalid
             this.fontContainer.push(new ValidationError(ERROR_FONTS_TYPE3_DAMAGED,
-                    "The Encoding entry doesn't have the right type"));
+                    font.getName() + ": The Encoding entry doesn't have the right type"));
         }
     }
 
@@ -259,7 +259,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
         if (widths == null || widths.isEmpty())
         {
             this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID,
-                    "The Witdhs array is unreachable"));
+                    font.getName() + ": The Witdhs array is unreachable"));
             return;
         }
 
@@ -267,7 +267,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
         if (charProcs == null)
         {
             this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID,
-                    "The CharProcs element isn't a dictionary"));
+                    font.getName() + ": The CharProcs element isn't a dictionary"));
             return;
         }
 
@@ -283,7 +283,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
         if (widths.size() != expectedLength)
         {
             this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID,
-                    "The length of Witdhs array is invalid. Expected : \"" + expectedLength + "\" Current : \""
+                    font.getName() + ": The length of Witdhs array is invalid. Expected : \"" + expectedLength + "\" Current : \""
                             + widths.size() + "\""));
             return;
         }
@@ -308,7 +308,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
                     else
                     {
                         GlyphException glyphEx = new GlyphException(ERROR_FONTS_METRICS, code,
-                                "The character with CID\"" + code + "\" should have a width equals to " + width);
+                                font.getName() + ": The character with CID\"" + code + "\" should have a width equals to " + width);
                         this.fontContainer.markAsInvalid(code, glyphEx);
                     }
                 }
@@ -323,7 +323,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
                 catch (IOException e)
                 {
                     this.fontContainer.push(new ValidationError(ERROR_FONTS_TYPE3_DAMAGED,
-                            "The CharProcs references an element which can't be read"));
+                            font.getName() + ": The CharProcs references an element which can't be read", e));
                     return;
                 }
             }
@@ -353,7 +353,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
             // There are no character description, we declare the Glyph as Invalid. If the character
             // is used in a Stream, the GlyphDetail will throw an exception.
             GlyphException glyphEx = new GlyphException(ERROR_FONTS_METRICS, code,
-                    "The CharProcs \"" + font.getEncoding().getName(code)  + "\" doesn't exist");
+                    font.getName() + ": The CharProcs \"" + font.getEncoding().getName(code)  + "\" doesn't exist");
             this.fontContainer.markAsInvalid(code, glyphEx);
         }
         return charProc;
@@ -386,7 +386,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
             if (dictionary == null)
             {
                 this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID,
-                        "The Resources element isn't a dictionary"));
+                        font.getName() + ": The Resources element isn't a dictionary"));
                 return;
             }
 
@@ -415,13 +415,13 @@ public class Type3FontValidator extends FontValidator<Type3Container>
                         if (!aContainer.isValid())
                         {
                             this.fontContainer.push(new ValidationError(ERROR_FONTS_TYPE3_DAMAGED,
-                                    "The Resources dictionary of type 3 font contains invalid font"));
+                                    font.getName() + ": The Resources dictionary of type 3 font contains invalid font"));
                         }
                     }
                     catch (IOException e)
                     {
                         context.addValidationError(new ValidationError(PreflightConstants.ERROR_FONTS_DAMAGED,
-                                "Unable to valid the Type3 : " + e.getMessage()));
+                                font.getName() + ": Unable to valid the Type3 : " + e.getMessage(), e));
                     }
                 }
             }

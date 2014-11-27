@@ -63,7 +63,8 @@ public abstract class DescendantFontValidator<T extends FontContainer> extends S
 
         if (!arePresent)
         {
-            this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID, "Required keys are missing"));
+            this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID, 
+                    font.getName() + ": Required keys are missing"));
         }
 
         checkCIDSystemInfo(fontDictionary.getItem(COSName.CIDSYSTEMINFO));
