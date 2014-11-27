@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
+import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.cff.CFFFont;
@@ -41,7 +42,7 @@ import java.util.Map;
  *
  * @author John Hewson
  */
-final class FileSystemFontProvider implements FontProvider
+final class FileSystemFontProvider extends FontProvider
 {
     private static final Log LOG = LogFactory.getLog(FileSystemFontProvider.class);
 
@@ -135,12 +136,12 @@ final class FileSystemFontProvider implements FontProvider
                     if (ttf.getTableMap().get("CFF ") != null)
                     {
                         format = "OTF";
-                        cffFontFiles.put(psName, otfFile);
+                        cffFontFiles.putAll(toMap(getNames(ttf), otfFile));
                     }
                     else
                     {
                         format = "TTF";
-                        ttfFontFiles.put(psName, otfFile);
+                        ttfFontFiles.putAll(toMap(getNames(ttf), otfFile));
                     }
 
                     if (LOG.isTraceEnabled())
@@ -175,7 +176,7 @@ final class FileSystemFontProvider implements FontProvider
             Type1Font type1 = Type1Font.createWithPFB(input);
 
             String psName = type1.getFontName();
-            type1FontFiles.put(psName, pfbFile);
+            type1FontFiles.putAll(toMap(getNames(type1), pfbFile));
 
             if (LOG.isTraceEnabled())
             {
@@ -206,7 +207,10 @@ final class FileSystemFontProvider implements FontProvider
             {
                 ttf = ttfParser.parse(file);
 
-                ttfFonts.put(postScriptName, ttf);
+                for (String name : getNames(ttf))
+                {
+                    ttfFonts.put(name, ttf);
+                }
                 if (LOG.isDebugEnabled())
                 {
                     LOG.debug("Loaded " + postScriptName + " from " + file);
@@ -244,7 +248,10 @@ final class FileSystemFontProvider implements FontProvider
                 byte[] bytes = IOUtils.toByteArray(input);
                 CFFParser cffParser = new CFFParser();
                 cff = cffParser.parse(bytes).get(0);
-                cffFonts.put(postScriptName, cff);
+                for (String name : getNames(cff))
+                {
+                    cffFonts.put(name, cff);
+                }
                 if (LOG.isDebugEnabled())
                 {
                     LOG.debug("Loaded " + postScriptName + " from " + file);
@@ -280,7 +287,10 @@ final class FileSystemFontProvider implements FontProvider
             {
                 input = new FileInputStream(file);
                 type1 = Type1Font.createWithPFB(input);
-                type1Fonts.put(postScriptName, type1);
+                for (String name : getNames(type1))
+                {
+                    type1Fonts.put(name, type1);
+                }
                 if (LOG.isDebugEnabled())
                 {
                     LOG.debug("Loaded " + postScriptName + " from " + file);
@@ -297,6 +307,19 @@ final class FileSystemFontProvider implements FontProvider
             }
         }
         return null;
+    }
+
+    /**
+     * Returns a map containing the given file for each string key.
+     */
+    private Map<String, File> toMap(Set<String> names, File file)
+    {
+        Map<String, File> map = new HashMap<String, File>();
+        for (String name : names)
+        {
+            map.put(name, file);
+        }
+        return map;
     }
 
     @Override
