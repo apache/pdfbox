@@ -48,16 +48,14 @@ public class XmlResultParser
             Document rdocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
             return validate(rdocument,source);
         } catch (ParserConfigurationException e) {
-            IOException ioe = new IOException("Failed to init document builder");
-            ioe.initCause(e);
-            throw ioe;
+            throw new IOException("Failed to init document builder", e);
         }
     }
 
 
     public Element validate (Document rdocument, DataSource source) throws IOException {
         String pdfType = null;
-        ValidationResult result = null;
+        ValidationResult result;
         long before = System.currentTimeMillis();
         try {
             PreflightParser parser = new PreflightParser(source);
@@ -112,7 +110,7 @@ public class XmlResultParser
         for (Map.Entry<ValidationError,Integer> entry : cleaned.entrySet())
         {
             Element error = rdocument.createElement("error");
-            int count = entry.getValue().intValue();
+            int count = entry.getValue();
             error.setAttribute("count", String.format("%d",count));
             totalCount += count;
             Element code = rdocument.createElement("code");

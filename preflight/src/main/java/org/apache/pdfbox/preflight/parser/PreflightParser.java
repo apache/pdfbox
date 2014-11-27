@@ -311,7 +311,7 @@ public class PreflightParser extends NonSequentialPDFParser
         catch (IOException e)
         {
             addValidationError(new ValidationError(PreflightConstants.ERROR_SYNTAX_HEADER,
-                    "Unable to read the PDF file : " + e.getMessage()));
+                    "Unable to read the PDF file : " + e.getMessage(), e));
         }
         finally
         {
@@ -411,7 +411,7 @@ public class PreflightParser extends NonSequentialPDFParser
                     catch (NumberFormatException e)
                     {
                         addValidationError(new ValidationError(PreflightConstants.ERROR_SYNTAX_CROSS_REF,
-                                "offset or genid can't be read as number " + e.getMessage()));
+                                "offset or genid can't be read as number " + e.getMessage(), e));
                     }
                 }
                 else if (!splitString[2].equals("f"))
@@ -579,7 +579,7 @@ public class PreflightParser extends NonSequentialPDFParser
                     else
                     {
                         addValidationError(new ValidationError(ERROR_SYNTAX_HEXA_STRING_INVALID,
-                                "Hexa String must have only Hexadecimal Characters (found '" + nextChar + "') at offset "+pdfSource.getOffset()));
+                                "Hexa String must have only Hexadecimal Characters (found '" + nextChar + "') at offset " + pdfSource.getOffset()));
                         break;
                     }
                 }
@@ -589,7 +589,7 @@ public class PreflightParser extends NonSequentialPDFParser
         if (count % 2 != 0)
         {
             addValidationError(new ValidationError(ERROR_SYNTAX_HEXA_STRING_EVEN_NUMBER,
-                    "Hexa string shall contain even number of non white space char at offset "+pdfSource.getOffset()));
+                    "Hexa string shall contain even number of non white space char at offset " + pdfSource.getOffset()));
         }
 
         // reset the offset to parse the COSString
