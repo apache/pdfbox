@@ -30,6 +30,7 @@ public class SetStrokingColor extends SetColor
      * Returns the stroking color.
      * @return The stroking color.
      */
+    @Override
     protected PDColor getColor()
     {
         return context.getGraphicsState().getStrokingColor();
@@ -39,6 +40,7 @@ public class SetStrokingColor extends SetColor
      * Sets the stroking color.
      * @param color The new stroking color.
      */
+    @Override
     protected void setColor(PDColor color)
     {
         context.getGraphicsState().setStrokingColor(color);
@@ -48,6 +50,7 @@ public class SetStrokingColor extends SetColor
      * Returns the stroking color space.
      * @return The stroking color space.
      */
+    @Override
     protected PDColorSpace getColorSpace()
     {
         return context.getGraphicsState().getStrokingColorSpace();

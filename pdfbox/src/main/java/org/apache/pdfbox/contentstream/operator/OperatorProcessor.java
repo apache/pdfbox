@@ -86,7 +86,7 @@ public abstract class OperatorProcessor
      */
     protected boolean checkArgumentSize(List<COSBase> arguments, int expectedSize)
     {
-        if (arguments.size() != expectedSize)
+        if (arguments.size() < expectedSize)
         {
             LOG.warn("'" + getName() + "' operator must have " + expectedSize
                     + " parameters, but has " + arguments.size());
