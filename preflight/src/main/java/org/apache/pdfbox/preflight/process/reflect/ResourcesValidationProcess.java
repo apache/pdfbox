@@ -58,11 +58,12 @@ import org.apache.pdfbox.preflight.utils.ContextHelper;
 public class ResourcesValidationProcess extends AbstractProcess
 {
 
+    @Override
     public void validate(PreflightContext ctx) throws ValidationException
     {
         PreflightPath vPath = ctx.getValidationPath();
-        if (vPath.isEmpty()) {
-            return;
+        if (vPath.isEmpty())
+        {
         }
         else if (!vPath.isExpectedType(PDResources.class))
         {
@@ -70,9 +71,8 @@ public class ResourcesValidationProcess extends AbstractProcess
         } 
         else
         {
-
             PDResources resources = (PDResources) vPath.peek();
-
+            
             validateFonts(ctx, resources);
             validateExtGStates(ctx, resources);
             validateShadingPattern(ctx, resources);
@@ -237,7 +237,7 @@ public class ResourcesValidationProcess extends AbstractProcess
         }
         catch (IOException e)
         {
-            context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_PATTERN_DEFINITION, e.getMessage()));
+            context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_PATTERN_DEFINITION, e.getMessage(), e));
         }
     }
 
@@ -263,7 +263,7 @@ public class ResourcesValidationProcess extends AbstractProcess
         }
         catch (IOException e)
         {
-            context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_PATTERN_DEFINITION, e.getMessage()));
+            context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_PATTERN_DEFINITION, e.getMessage(), e));
         }
     }
 
@@ -294,7 +294,7 @@ public class ResourcesValidationProcess extends AbstractProcess
                     }
                     catch (IOException e)
                     {
-                        throw new ValidationException(e.getMessage(), e);
+                        throw new ValidationException(e.getMessage(), e, context.getCurrentPageNumber());
                     }
                 }
             }
