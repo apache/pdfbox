@@ -1948,7 +1948,7 @@ public class NonSequentialPDFParser extends PDFParser
                 Long objectOffset = xrefOffset.get(objectKey);
                 // a negative offset number represents a object number itself
                 // see type 2 entry in xref stream
-                if (objectOffset != null && objectOffset > 0)
+                if (objectOffset != null && objectOffset >= 0)
                 {
                     long objectNr = objectKey.getNumber();
                     long objectGen = objectKey.getGeneration();
