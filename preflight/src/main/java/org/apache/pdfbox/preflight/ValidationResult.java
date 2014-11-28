@@ -210,6 +210,11 @@ public class ValidationResult
          * The underlying cause if the ValidationError was caused by a Throwable.
          */
         private Throwable cause = null;
+        
+        /**
+         * The page number on which the error happened, if known.
+         */
+        private Integer pageNumber = null;
 
         /**
          * Get the underlying cause if the ValidationError was caused by a
@@ -222,6 +227,24 @@ public class ValidationResult
         {
             return cause;
         }
+
+        /**
+         * Returns the page number, or null if not known.
+         */
+        public Integer getPageNumber()
+        {
+            return pageNumber;
+        }
+
+        /**
+         * Sets or resets the page number.
+         *
+         * @param pageNumber zero based page number or null if none is known.
+         */
+        public void setPageNumber(Integer pageNumber)
+        {
+            this.pageNumber = pageNumber;
+        }        
 
         /**
          * Create a validation error with the given error code
