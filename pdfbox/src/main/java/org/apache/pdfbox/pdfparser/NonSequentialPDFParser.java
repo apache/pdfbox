@@ -1910,30 +1910,36 @@ public class NonSequentialPDFParser extends PDFParser
         {
             return startXRefOffset;
         }
-        setPdfSource(startXRefOffset);
+        setPdfSource(startXRefOffset-1);
+        // save th previous character
+        int previous = pdfSource.read();
         if (pdfSource.peek() == X && checkBytesAtOffset(XREF_TABLE))
         {
             return startXRefOffset;
         }
-        int nextValue = pdfSource.peek();
-        // maybe there isn't a xref table but a xref stream
-        // is the next character a digit?
-        if (nextValue > 47 && nextValue < 57)
+        // the previous character has to be a whitespace
+        if (isWhitespace(previous))
         {
-            try
+            int nextValue = pdfSource.peek();
+            // maybe there isn't a xref table but a xref stream
+            // is the next character a digit?
+            if (nextValue > 47 && nextValue < 57)
             {
-                // Maybe it's a XRef stream
-                readObjectNumber();
-                readGenerationNumber();
-                readPattern(OBJ_MARKER);
-                setPdfSource(startXRefOffset);
-                return startXRefOffset;
-            }
-            catch (IOException exception)
-            {
-                // there wasn't an object of a xref stream
-                // try to repair the offset
-                pdfSource.seek(startXRefOffset);
+                try
+                {
+                    // Maybe it's a XRef stream
+                    readObjectNumber();
+                    readGenerationNumber();
+                    readPattern(OBJ_MARKER);
+                    setPdfSource(startXRefOffset);
+                    return startXRefOffset;
+                }
+                catch (IOException exception)
+                {
+                    // there wasn't an object of a xref stream
+                    // try to repair the offset
+                    pdfSource.seek(startXRefOffset);
+                }
             }
         }
         // try to find a fixed offset
