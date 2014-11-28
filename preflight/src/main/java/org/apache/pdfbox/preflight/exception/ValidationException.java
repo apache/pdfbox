@@ -30,6 +30,15 @@ public class ValidationException extends IOException
      * serial version number
      */
     private static final long serialVersionUID = -1616141241190424669L;
+    
+    protected Integer pageNumber = null;
+
+    public ValidationException(String message, Throwable cause, Integer pageNumber)
+    {
+        super(message);
+        initCause(cause);
+        this.pageNumber = pageNumber;
+    }
 
     public ValidationException(String message, Throwable cause)
     {
@@ -48,4 +57,11 @@ public class ValidationException extends IOException
         initCause(cause);
     }
 
+    /**
+     * Returns the page number related to the exception, or null if not known.
+     */
+    public Integer getPageNumber()
+    {
+        return pageNumber;
+    }
 }
