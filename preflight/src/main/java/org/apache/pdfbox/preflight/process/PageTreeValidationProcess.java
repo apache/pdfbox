@@ -43,7 +43,9 @@ public class PageTreeValidationProcess extends AbstractProcess
             int numPages = context.getDocument().getNumberOfPages();
             for (int i = 0; i < numPages; i++)
             {
+                context.setCurrentPageNumber(i);
                 validatePage(context, context.getDocument().getPage(i));
+                context.setCurrentPageNumber(null);
             }
         }
         else
