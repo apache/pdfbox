@@ -290,4 +290,12 @@ public class PreflightContext implements Closeable
         this.currentPageNumber = currentPageNumber;
     }
 
+    /**
+     * Returns the current page number or null if none is known.
+     */
+    public Integer getCurrentPageNumber()
+    {
+        return currentPageNumber;
+    }
+
 }
