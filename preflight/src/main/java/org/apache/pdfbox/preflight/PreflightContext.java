@@ -83,6 +83,8 @@ public class PreflightContext implements Closeable
 
     protected PreflightPath validationPath = new PreflightPath();
 
+    protected Integer currentPageNumber = null;
+    
     /**
      * Create the DocumentHandler using the DataSource which represent the PDF file to check.
      * 
@@ -226,6 +228,7 @@ public class PreflightContext implements Closeable
     /**
      * Close all opened resources
      */
+    @Override
     public void close()
     {
         COSUtils.closeDocumentQuietly(document);
@@ -239,6 +242,7 @@ public class PreflightContext implements Closeable
     public void addValidationError(ValidationError error)
     {
         PreflightDocument document = (PreflightDocument) this.document;
+        error.setPageNumber(currentPageNumber);
         document.addValidationError(error);
     }
 
@@ -274,6 +278,16 @@ public class PreflightContext implements Closeable
     public void setIccProfileAlreadySearched(boolean iccProfileAlreadySearched)
     {
         this.iccProfileAlreadySearched = iccProfileAlreadySearched;
+    }
+
+    /**
+     * Sets or resets the current page number.
+     *
+     * @param currentPageNumber zero based page number or null if none is known.
+     */
+    public void setCurrentPageNumber(Integer currentPageNumber)
+    {
+        this.currentPageNumber = currentPageNumber;
     }
 
 }
