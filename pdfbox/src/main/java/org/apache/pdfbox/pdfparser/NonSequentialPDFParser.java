@@ -1851,7 +1851,7 @@ public class NonSequentialPDFParser extends PDFParser
             int nextValue = pdfSource.peek();
             // maybe there isn't a xref table but a xref stream
             // is the next character a digit?
-            if (nextValue > 47 && nextValue < 57)
+            if (nextValue > 47 && nextValue < 58)
             {
                 try
                 {
