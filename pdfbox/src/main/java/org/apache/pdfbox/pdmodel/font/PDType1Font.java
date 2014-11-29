@@ -463,13 +463,11 @@ public class PDType1Font extends PDSimpleFont
     {
         if (type1CFont != null && getFontEncoding() == null)
         {
-            // check for ASCII values >= 32
-            if (length == 1 && c[offset] >= 32)
+            String character = type1CFont.encode(c, offset, length);
+            if (character != null)
             {
-                return getStringFromArray( c, offset, length );
+                return character;
             }
-            // handle values < 32 and negative byte values (int > 127)
-            return type1CFont.encode(c, offset, length);
         }
         return super.encode(c, offset, length);
     }
