@@ -92,8 +92,6 @@ public class PDType1CFont extends PDSimpleFont
 
     private static final byte[] SPACE_BYTES = {(byte)32};
 
-    private final int charOffset;
-    
     /**
      * Constructor.
      * @param fontDictionary the corresponding dictionary
@@ -101,7 +99,6 @@ public class PDType1CFont extends PDSimpleFont
     public PDType1CFont( COSDictionary fontDictionary ) throws IOException
     {
         super( fontDictionary );
-        charOffset = getFirstChar() > -1 ? getFirstChar() - 1 : 0; 
         load();
     }
 
@@ -122,19 +119,26 @@ public class PDType1CFont extends PDSimpleFont
 
     private String getCharacter(byte[] bytes, int offset, int length)
     {
-        int code = getCodeFromArray(bytes, offset, length);
         String character = null;
-        if (charOffset > 0)
+        // the pdf doesn't provide any encoding or toUnicode mapping
+        // we can use the font internal mapping, if a charset is defined
+        // otherwise the internal mapping may produce trash only 
+        if (getFontDescriptor().getCharSet() != null)
         {
-            code -= charOffset;
+            int code = getCodeFromArray(bytes, offset, length);
+            if (codeToSID.containsKey(code))
+            {
+                code = codeToSID.get(code);
+            }
+            if (sidToCharacter.containsKey(code))
+            {
+                character = sidToCharacter.get(code);
+            }
         }
-        else if (codeToSID.containsKey(code))
+        else
         {
-            code = codeToSID.get(code);
-        }
-        if (sidToCharacter.containsKey(code))
-        {
-            character = sidToCharacter.get(code);
+            // map the byte code to a character
+            character = getStringFromArray(bytes, offset, length);
         }
         return character;
     }

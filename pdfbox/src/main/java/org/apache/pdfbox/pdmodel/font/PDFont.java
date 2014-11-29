@@ -593,8 +593,15 @@ public abstract class PDFont implements COSObjectable
             }
         }
     }
-
-    private static String getStringFromArray( byte[] c, int offset, int length ) throws IOException
+    /**
+     * Map the given byte(s) to a string.
+     *  
+     * @param c the byte array 
+     * @param offset the offset of the byte(s)
+     * @param length the number of bytes, usually 1 or 2
+     * @return the mapped string
+     */
+    protected static String getStringFromArray( byte[] c, int offset, int length )
     {
         String retval = null;
         if( length == 1 )
@@ -604,10 +611,6 @@ public abstract class PDFont implements COSObjectable
         else if( length == 2 )
         {
             retval = DOUBLE_CHAR_STRING[(c[offset]+256)%256][(c[offset+1]+256)%256];
-        }
-        else
-        {
-            throw new IOException( "Error:Unknown character length:" + length );
         }
         return retval;
     }
