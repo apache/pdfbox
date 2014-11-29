@@ -570,18 +570,14 @@ public abstract class PDFont implements COSObjectable
     {
         for( int i=0; i<256; i++ )
         {
-            // ISO-8859-1 doesn't support the whole range
-            if (i >= 32 && (i < 127 || i > 159))
+            try
             {
-                try
-                {
-                    SINGLE_CHAR_STRING[i] = new String( new byte[] {(byte)i}, "ISO-8859-1" );
-                }
-                catch (UnsupportedEncodingException e)
-                {
-                    // Nothing should happen here
-                    LOG.error(e,e);
-                }
+                SINGLE_CHAR_STRING[i] = new String( new byte[] {(byte)i}, "ISO-8859-1" );
+            }
+            catch (UnsupportedEncodingException e)
+            {
+                // Nothing should happen here
+                LOG.error(e,e);
             }
             for( int j=0; j<256; j++ )
             {
@@ -598,7 +594,7 @@ public abstract class PDFont implements COSObjectable
         }
     }
 
-    protected String getStringFromArray( byte[] c, int offset, int length ) throws IOException
+    private static String getStringFromArray( byte[] c, int offset, int length ) throws IOException
     {
         String retval = null;
         if( length == 1 )
