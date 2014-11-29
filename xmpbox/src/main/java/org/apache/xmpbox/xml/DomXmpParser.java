@@ -262,10 +262,10 @@ public class DomXmpParser
                                     attr.getLocalName(), attr.getValue(), type.type());
                             container.addProperty(sp);
                         }
-                        catch( IllegalArgumentException exception)
+                        catch (IllegalArgumentException e)
                         {
-                            //Swallow, and continue adding additional properties
-                            LOG.warn("Unable to add property: "+ attr.getLocalName() + " value: "+attr.getValue(),exception);
+                            throw new XmpParsingException(ErrorType.Format, 
+                                    e.getMessage() + " in " + schema.getPrefix() + ":" + attr.getLocalName(), e);
                         }
                     }
                 }
@@ -381,6 +381,10 @@ public class DomXmpParser
                     container.addProperty(ast);
                 }
             }
+        }
+        catch (IllegalArgumentException e)
+        {
+            throw new XmpParsingException(ErrorType.Format, e.getMessage() + " in " + prefix + ":" + name, e);
         }
         finally
         {
