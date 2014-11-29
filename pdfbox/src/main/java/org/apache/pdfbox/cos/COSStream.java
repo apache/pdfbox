@@ -292,7 +292,29 @@ public class COSStream extends COSDictionary implements Closeable
 
         if (unFilteredStream == null || decodeResult == null)
         {
-            throw new IOException("Stream was not read");
+            String filterInfo = "";
+            COSBase filters = getFilters();
+            if (filters != null)
+            {
+                filterInfo = " - filter: ";
+                if (filters instanceof COSName)
+                {
+                    filterInfo += ((COSName) filters).getName();
+                }
+                else if (filters instanceof COSArray)
+                {
+                    COSArray filterArray = (COSArray) filters;
+                    for (int i = 0; i < filterArray.size(); i++)
+                    {
+                        if (filterArray.size() > 1)
+                        {
+                            filterInfo += ", ";
+                        }
+                        filterInfo += ((COSName) filterArray.get(i)).getName();
+                    }
+                }
+            }
+            throw new IOException("Stream was not read" + filterInfo);
         }
         else
         {
