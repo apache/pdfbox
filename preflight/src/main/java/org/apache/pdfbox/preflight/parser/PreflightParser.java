@@ -797,19 +797,11 @@ public class PreflightParser extends NonSequentialPDFParser
                     // decrypt
                     if (pb instanceof COSString)
                     {
-                        decrypt((COSString) pb, objNr, objGenNr);
+                        decryptString((COSString) pb, objNr, objGenNr);
                     }
                     else if (pb instanceof COSDictionary)
                     {
-                        for (Entry<COSName, COSBase> entry : ((COSDictionary) pb).entrySet())
-                        {
-                            // TODO: specially handle 'Contents' entry of signature dictionary like in
-                            // SecurityHandler#decryptDictionary
-                            if (entry.getValue() instanceof COSString)
-                            {
-                                decrypt((COSString) entry.getValue(), objNr, objGenNr);
-                            }
-                        }
+                        decryptDictionary((COSDictionary) pb, objNr, objGenNr);
                     }
                     else if (pb instanceof COSArray)
                     {
@@ -818,7 +810,7 @@ public class PreflightParser extends NonSequentialPDFParser
                         {
                             if (array.get(aIdx) instanceof COSString)
                             {
-                                decrypt((COSString) array.get(aIdx), objNr, objGenNr);
+                                decryptString((COSString) array.get(aIdx), objNr, objGenNr);
                             }
                         }
                     }
