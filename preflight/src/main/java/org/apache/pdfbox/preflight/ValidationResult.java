@@ -290,6 +290,10 @@ public class ValidationResult
             {
                 this.details = "Invalid Color space";
             }
+            else if (errorCode.startsWith(PreflightConstants.ERROR_GRAPHIC_MAIN))
+            {
+                this.details = "Unknown graphics error";
+            }
             else if (errorCode.startsWith(PreflightConstants.ERROR_FONTS_INVALID_DATA))
             {
                 this.details = "Invalid Font definition";
