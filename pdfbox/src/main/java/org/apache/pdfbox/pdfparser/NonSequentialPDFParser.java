@@ -1462,35 +1462,11 @@ public class NonSequentialPDFParser extends PDFParser
                     // decrypt
                     if (pb instanceof COSString)
                     {
-                        decrypt((COSString) pb, objNr, objGenNr);
+                        decryptString((COSString) pb, objNr, objGenNr);
                     }
                     else if (pb instanceof COSDictionary)
                     {
-                        COSDictionary dict = (COSDictionary) pb;
-                        // skip dictionary containing the signature
-                        if (!COSName.SIG.equals(dict.getItem(COSName.TYPE)))
-                        {
-                            for (Entry<COSName, COSBase> entry : dict.entrySet())
-                            {
-                                if (entry.getValue() instanceof COSString)
-                                {
-                                    decrypt((COSString) entry.getValue(), objNr, objGenNr);
-                                }
-                                else if (entry.getValue() instanceof COSArray)
-                                {
-                                    try
-                                    {
-                                        securityHandler.decryptArray((COSArray) entry.getValue(), objNr, objGenNr);
-                                    }
-                                    catch (CryptographyException ce)
-                                    {
-                                        throw new IOException("Error decrypting stream object " + objNr + ": "
-                                                + ce.getMessage()
-                                        /* , ce // TODO: remove remark with Java 1.6 */);
-                                    }
-                                }                             
-                            }
-                        }
+                        decryptDictionary((COSDictionary) pb, objNr, objGenNr);
                     }
                     else if (pb instanceof COSArray)
                     {
@@ -1499,7 +1475,7 @@ public class NonSequentialPDFParser extends PDFParser
                         {
                             if (array.get(aIdx) instanceof COSString)
                             {
-                                decrypt((COSString) array.get(aIdx), objNr, objGenNr);
+                                decryptString((COSString) array.get(aIdx), objNr, objGenNr);
                             }
                         }
                     }
@@ -1562,6 +1538,46 @@ public class NonSequentialPDFParser extends PDFParser
 
     // ------------------------------------------------------------------------
     /**
+     * 
+     * @param dict the dictionary to be decrypted
+     * @param the object number
+     * @param objGenNr the object generation number
+     * @throws IOException ff something went wrong
+     */
+    protected final void decryptDictionary(COSDictionary dict, long objNr, long objGenNr) throws IOException
+    {
+        // skip dictionary containing the signature
+        if (!COSName.SIG.equals(dict.getItem(COSName.TYPE)))
+        {
+            for (Entry<COSName, COSBase> entry : dict.entrySet())
+            {
+                if (entry.getValue() instanceof COSString)
+                {
+                    decryptString((COSString) entry.getValue(), objNr, objGenNr);
+                }
+                else if (entry.getValue() instanceof COSArray)
+                {
+                    try
+                    {
+                        securityHandler.decryptArray((COSArray) entry.getValue(), objNr, objGenNr);
+                    }
+                    catch (CryptographyException ce)
+                    {
+                        throw new IOException("Error decrypting stream object " + objNr + ": "
+                                + ce.getMessage()
+                        /* , ce // TODO: remove remark with Java 1.6 */);
+                    }
+                }
+                else if (entry.getValue() instanceof COSDictionary)
+                {
+                    decryptDictionary((COSDictionary) entry.getValue(), objNr, objGenNr);
+                }
+            }
+        }
+    }
+
+    
+    /**
      * Decrypts given COSString.
      * 
      * @param str the string to be decrypted
@@ -1569,7 +1585,7 @@ public class NonSequentialPDFParser extends PDFParser
      * @param objGenNr the object generation number
      * @throws IOException ff something went wrong
      */
-    protected final void decrypt(COSString str, long objNr, long objGenNr) throws IOException
+    protected final void decryptString(COSString str, long objNr, long objGenNr) throws IOException
     {
         try
         {
