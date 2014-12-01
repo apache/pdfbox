@@ -26,8 +26,6 @@ import static org.apache.pdfbox.preflight.PreflightConfiguration.FONT_PROCESS;
 import static org.apache.pdfbox.preflight.PreflightConfiguration.GRAPHIC_PROCESS;
 import static org.apache.pdfbox.preflight.PreflightConfiguration.SHADDING_PATTERN_PROCESS;
 import static org.apache.pdfbox.preflight.PreflightConfiguration.TILING_PATTERN_PROCESS;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_PATTERN_DEFINITION;
-import static org.apache.pdfbox.preflight.PreflightConstants.TRANPARENCY_DICTIONARY_KEY_EXTGSTATE;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -47,6 +45,9 @@ import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.preflight.PreflightConstants;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_PATTERN_DEFINITION;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_MAIN;
+import static org.apache.pdfbox.preflight.PreflightConstants.TRANPARENCY_DICTIONARY_KEY_EXTGSTATE;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.PreflightPath;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
@@ -279,9 +280,11 @@ public class ResourcesValidationProcess extends AbstractProcess
                 COSBase xobj = entry.getValue();
                 if (xobj != null && COSUtils.isStream(xobj, cosDocument))
                 {
+                    String subtype = "unknown";                    
                     try
                     {
                         COSStream stream = COSUtils.getAsStream(xobj, cosDocument);
+                        subtype = stream.getNameAsString(COSName.SUBTYPE);
                         PDXObject pdXObject = PDXObject.createXObject(stream, entry.getKey().getName(), resources);
                         if (pdXObject != null)
                         {
@@ -294,7 +297,9 @@ public class ResourcesValidationProcess extends AbstractProcess
                     }
                     catch (IOException e)
                     {
-                        throw new ValidationException(e.getMessage(), e, context.getCurrentPageNumber());
+                        context.addValidationError(new ValidationError(ERROR_GRAPHIC_MAIN,
+                                e.getMessage() + " for " + subtype + " entry '"
+                                + entry.getKey().getName() + "'", e));
                     }
                 }
             }
