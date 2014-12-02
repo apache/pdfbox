@@ -142,12 +142,12 @@ public class Validator_A1b
     private static void usage () throws IOException {
         String version = Version.getVersion();
 
-        System.out.println("Usage : java org.apache.pdfbox.preflight.Validator_A1b [xml] [mode] <file path>");
+        System.out.println("Usage : java org.apache.pdfbox.preflight.Validator_A1b [xml] [<mode>] <file path>");
         System.out.println();
-        System.out.println(" * xml : if set, generate xml output");
-        System.out.println(" * mode : if set, <file path> must be a file containing PDF to parse, can have 2 values");
-        System.out.println("       batch : for each file of the list and xml file is generated");
-        System.out.println("       group : generate an xml result for all the file of the list.");
+        System.out.println(" * xml : if set, generate xml output instead of text");
+        System.out.println(" * <mode> : if set, <file path> must be a file containing the PDF files to parse. <mode> can have 2 values:");
+        System.out.println("       batch : generate xml result files for each PDF file in the list");
+        System.out.println("       group : generate one xml result file for all the PDF files in the list.");
         System.out.println("Version : " + version);
     }
 
