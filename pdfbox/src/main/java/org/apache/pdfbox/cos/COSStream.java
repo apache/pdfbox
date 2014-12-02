@@ -314,7 +314,8 @@ public class COSStream extends COSDictionary implements Closeable
                     }
                 }
             }
-            throw new IOException("Stream was not read" + filterInfo);
+            String subtype = getNameAsString(COSName.SUBTYPE);
+            throw new IOException(subtype + " stream was not read" + filterInfo);
         }
         else
         {
