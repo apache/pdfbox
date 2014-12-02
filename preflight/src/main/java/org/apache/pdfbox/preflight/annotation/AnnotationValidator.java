@@ -23,7 +23,6 @@ package org.apache.pdfbox.preflight.annotation;
 
 import static org.apache.pdfbox.preflight.PreflightConfiguration.ACTIONS_PROCESS;
 import static org.apache.pdfbox.preflight.PreflightConfiguration.GRAPHIC_PROCESS;
-import static org.apache.pdfbox.preflight.PreflightConfiguration.RESOURCES_PROCESS;
 import static org.apache.pdfbox.preflight.PreflightConstants.ANNOT_DICTIONARY_VALUE_SUBTYPE_POPUP;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ANNOT_FORBIDDEN_COLOR;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ANNOT_FORBIDDEN_FLAG;
@@ -37,7 +36,6 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
@@ -203,17 +201,6 @@ public abstract class AnnotationValidator
                 ContextHelper.validateElement(ctx, new PDFormXObject(
                         new PDStream(COSUtils.getAsStream(apn, cosDocument)), "N"),
                         GRAPHIC_PROCESS);
-//                // resources
-//                if (COSUtils.isDictionary(apn, cosDocument))
-//                {
-//                    COSDictionary apnDict = COSUtils.getAsDictionary(apn, cosDocument);
-//                    COSDictionary resources = (COSDictionary) apnDict.getDictionaryObject(COSName.RESOURCES);
-//                    //TODO type
-//                    if (resources != null)
-//                    {
-//                        ContextHelper.validateElement(ctx, new PDResources(resources), RESOURCES_PROCESS);
-//                    }
-//                }
             }
         } // else ok, nothing to check,this field is optional
         return true;
