@@ -40,7 +40,7 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ANNOT_DICTIONARY_VA
 
 import org.apache.pdfbox.preflight.annotation.AnnotationValidatorFactory;
 import org.apache.pdfbox.preflight.annotation.FreeTextAnnotationValidator;
-import org.apache.pdfbox.preflight.annotation.InkAnnotationValdiator;
+import org.apache.pdfbox.preflight.annotation.InkAnnotationValidator;
 import org.apache.pdfbox.preflight.annotation.LineAnnotationValidator;
 import org.apache.pdfbox.preflight.annotation.LinkAnnotationValidator;
 import org.apache.pdfbox.preflight.annotation.MarkupAnnotationValidator;
@@ -58,6 +58,7 @@ import org.apache.pdfbox.preflight.annotation.WidgetAnnotationValidator;
 public class PDFAbAnnotationFactory extends AnnotationValidatorFactory
 {
 
+    @Override
     protected void initializeClasses()
     {
         this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_TEXT, TextAnnotationValidator.class);
@@ -74,7 +75,7 @@ public class PDFAbAnnotationFactory extends AnnotationValidatorFactory
         this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_SQUILGGLY, MarkupAnnotationValidator.class);
 
         this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_STAMP, RubberStampAnnotationValidator.class);
-        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_INK, InkAnnotationValdiator.class);
+        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_INK, InkAnnotationValidator.class);
         this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_POPUP, PopupAnnotationValidator.class);
         this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_WIDGET, WidgetAnnotationValidator.class);
         this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_PRINTERMARK, PrintMarkAnnotationValidator.class);

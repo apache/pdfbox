@@ -31,14 +31,14 @@ import org.apache.pdfbox.preflight.PreflightContext;
 /**
  * Validation class for the InkAnnotation
  */
-public class InkAnnotationValdiator extends AnnotationValidator
+public class InkAnnotationValidator extends AnnotationValidator
 {
     /**
      * PDFBox which wraps the annotation dictionary
      */
     protected PDAnnotationUnknown pdUnk = null;
 
-    public InkAnnotationValdiator(PreflightContext ctx, COSDictionary annotDictionary)
+    public InkAnnotationValidator(PreflightContext ctx, COSDictionary annotDictionary)
     {
         super(ctx, annotDictionary);
         this.pdUnk = new PDAnnotationUnknown(annotDictionary);
