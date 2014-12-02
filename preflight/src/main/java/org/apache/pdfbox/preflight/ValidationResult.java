@@ -427,6 +427,13 @@ public class ValidationResult
                     return false;
                 }  else if (!details.equals(ve.details)) {
                     return false;
+                }  else if (pageNumber != null && ve.pageNumber == null) {
+                    return false;
+                }  else if (pageNumber == null && ve.pageNumber != null) {
+                    return false;
+                }  else if (pageNumber != null && ve.pageNumber != null 
+                        && pageNumber.compareTo(pageNumber) == 0) {
+                    return false;
                 }
                 // check warning
                 return isWarning==ve.isWarning;
