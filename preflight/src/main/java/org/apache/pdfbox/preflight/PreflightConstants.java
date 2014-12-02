@@ -284,8 +284,9 @@ public interface PreflightConstants
     String ICC_Characterization_Data_Registry_ERIMM = "ERIMM RGB";
     String ICC_Characterization_Data_Registry_eciRGB = "eciRGB";
     String ICC_Characterization_Data_Registry_opRGB = "opRGB";
+    
     /**
-     * Error code uses by the Valdiator when there are an error without error code.
+     * Error code uses by the Validator when there is an error without error code.
      */
     String ERROR_UNKOWN_ERROR = "-1";
 
