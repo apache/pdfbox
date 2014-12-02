@@ -1602,10 +1602,7 @@ public class NonSequentialPDFParser extends PDFParser
             final COSArray array = (COSArray) pb;
             for (int aIdx = 0, len = array.size(); aIdx < len; aIdx++)
             {
-                if (array.get(aIdx) instanceof COSString)
-                {
-                    decryptString((COSString) array.get(aIdx), objNr, objGenNr);
-                }
+                decrypt(array.get(aIdx), objNr, objGenNr);
             }
         }
     }
