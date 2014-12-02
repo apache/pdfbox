@@ -1598,6 +1598,37 @@ public class NonSequentialPDFParser extends PDFParser
         }
     }
 
+    /**
+     * Decrypts given object.
+     * 
+     * @param pb the object to be decrypted
+     * @param objNr the object number
+     * @param objGenNr the object generation number
+     * @throws IOException ff something went wrong
+     */
+    protected final void decrypt(COSBase pb, int objNr, int objGenNr) throws IOException
+    {
+        if (pb instanceof COSString)
+        {
+            decryptString((COSString) pb, objNr, objGenNr);
+        }
+        else if (pb instanceof COSDictionary)
+        {
+            decryptDictionary((COSDictionary) pb, objNr, objGenNr);
+        }
+        else if (pb instanceof COSArray)
+        {
+            final COSArray array = (COSArray) pb;
+            for (int aIdx = 0, len = array.size(); aIdx < len; aIdx++)
+            {
+                if (array.get(aIdx) instanceof COSString)
+                {
+                    decryptString((COSString) array.get(aIdx), objNr, objGenNr);
+                }
+            }
+        }
+    }
+
     // ------------------------------------------------------------------------
     private boolean inGetLength = false;
 
