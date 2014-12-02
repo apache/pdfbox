@@ -794,26 +794,7 @@ public class PreflightParser extends NonSequentialPDFParser
                 }
                 else if (securityHandler != null)
                 {
-                    // decrypt
-                    if (pb instanceof COSString)
-                    {
-                        decryptString((COSString) pb, objNr, objGenNr);
-                    }
-                    else if (pb instanceof COSDictionary)
-                    {
-                        decryptDictionary((COSDictionary) pb, objNr, objGenNr);
-                    }
-                    else if (pb instanceof COSArray)
-                    {
-                        final COSArray array = (COSArray) pb;
-                        for (int aIdx = 0, len = array.size(); aIdx < len; aIdx++)
-                        {
-                            if (array.get(aIdx) instanceof COSString)
-                            {
-                                decryptString((COSString) array.get(aIdx), objNr, objGenNr);
-                            }
-                        }
-                    }
+                    decrypt(pb, objNr, objGenNr);
                 }
 
                 pdfObject.setObject(pb);
