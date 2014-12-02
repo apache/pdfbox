@@ -107,18 +107,25 @@ public class XmlResultParser
         Map<ValidationError, Integer> cleaned = cleanErrorList(result.getErrorsList());
         preflight.appendChild(errors);
         int totalCount = 0;
-        for (Map.Entry<ValidationError,Integer> entry : cleaned.entrySet())
+        for (Map.Entry<ValidationError, Integer> entry : cleaned.entrySet())
         {
             Element error = rdocument.createElement("error");
             int count = entry.getValue();
-            error.setAttribute("count", String.format("%d",count));
+            error.setAttribute("count", String.format("%d", count));
             totalCount += count;
             Element code = rdocument.createElement("code");
-            code.setTextContent(entry.getKey().getErrorCode());
+            ValidationError ve = entry.getKey();
+            code.setTextContent(ve.getErrorCode());
             error.appendChild(code);
             Element detail = rdocument.createElement("details");
-            detail.setTextContent(entry.getKey().getDetails());
+            detail.setTextContent(ve.getDetails());
             error.appendChild(detail);
+            if (ve.getPageNumber() != null)
+            {
+                Element page = rdocument.createElement("page");
+                page.setTextContent(ve.getPageNumber().toString());
+                error.appendChild(page);
+            }
             errors.appendChild(error);
         }
         errors.setAttribute("count", String.format("%d", totalCount));
