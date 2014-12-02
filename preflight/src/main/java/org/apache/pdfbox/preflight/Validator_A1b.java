@@ -181,7 +181,7 @@ public class Validator_A1b
                 System.out.print(error.getErrorCode() + " : " + error.getDetails());
                 if (error.getPageNumber() != null)
                 {
-                    System.out.println("on page " + (error.getPageNumber() + 1));
+                    System.out.println(" on page " + (error.getPageNumber() + 1));
                 }
                 else
                 {
