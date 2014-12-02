@@ -417,28 +417,43 @@ public class ValidationResult
         }
 
         @Override
-        public boolean equals (Object o) {
-            if (o instanceof ValidationError) {
-                ValidationError ve = (ValidationError)o;
+        public boolean equals(Object o)
+        {
+            if (o instanceof ValidationError)
+            {
+                ValidationError ve = (ValidationError) o;
                 // check errorCode
-                if (errorCode==null && ve.errorCode!=null) {
+                if (errorCode == null && ve.errorCode != null)
+                {
                     return false;
-                } else if (!errorCode.equals(ve.errorCode)) {
+                }
+                else if (!errorCode.equals(ve.errorCode))
+                {
                     return false;
-                }  else if (!details.equals(ve.details)) {
+                }
+                else if (!details.equals(ve.details))
+                {
                     return false;
-                }  else if (pageNumber != null && ve.pageNumber == null) {
+                }
+                else if (pageNumber != null && ve.pageNumber == null)
+                {
                     return false;
-                }  else if (pageNumber == null && ve.pageNumber != null) {
+                }
+                else if (pageNumber == null && ve.pageNumber != null)
+                {
                     return false;
-                }  else if (pageNumber != null && ve.pageNumber != null 
-                        && pageNumber.compareTo(pageNumber) == 0) {
+                }
+                else if (pageNumber != null && ve.pageNumber != null
+                        && pageNumber.compareTo(pageNumber) == 0)
+                {
                     return false;
                 }
                 // check warning
-                return isWarning==ve.isWarning;
-                
-            } else {
+                return isWarning == ve.isWarning;
+
+            }
+            else
+            {
                 return false;
             }
         }
