@@ -178,7 +178,15 @@ public class Validator_A1b
             System.out.println("The file " + fd.getName() + " is not valid, error(s) :");
             for (ValidationError error : result.getErrorsList())
             {
-                System.out.println(error.getErrorCode() + " : " + error.getDetails());
+                System.out.print(error.getErrorCode() + " : " + error.getDetails());
+                if (error.getPageNumber() != null)
+                {
+                    System.out.println("on page " + (error.getPageNumber() + 1));
+                }
+                else
+                {
+                    System.out.println();
+                }
             }
             System.out.println();
             return -1;
