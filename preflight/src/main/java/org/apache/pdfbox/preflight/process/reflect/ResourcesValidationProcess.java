@@ -298,7 +298,7 @@ public class ResourcesValidationProcess extends AbstractProcess
                     catch (IOException e)
                     {
                         context.addValidationError(new ValidationError(ERROR_GRAPHIC_MAIN,
-                                e.getMessage() + " for " + subtype + " entry '"
+                                e.getMessage() + " for entry '"
                                 + entry.getKey().getName() + "'", e));
                     }
                 }
