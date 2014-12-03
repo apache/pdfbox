@@ -16,8 +16,9 @@
  */
 package org.apache.pdfbox.contentstream;
 
-import java.awt.geom.Area;
+import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,7 +44,8 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontFactory;
 import org.apache.pdfbox.pdmodel.font.PDType3CharProc;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
-import org.apache.pdfbox.pdmodel.graphics.blend.BlendMode;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
 import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
@@ -69,13 +71,13 @@ public class PDFStreamEngine
 
     private Matrix textMatrix;
     private Matrix textLineMatrix;
-    protected Matrix subStreamMatrix = new Matrix();
 
     private final Stack<PDGraphicsState> graphicsStack = new Stack<PDGraphicsState>();
 
     private PDResources resources;
     private PDPage currentPage;
     private boolean isProcessingPage;
+    private Matrix initialMatrix;
 
     // skip malformed or otherwise unparseable input where possible
     private boolean forceParsing;
@@ -147,6 +149,7 @@ public class PDFStreamEngine
         textMatrix = null;
         textLineMatrix = null;
         resources = null;
+        initialMatrix = page.getMatrix();
     }
 
     /**
@@ -292,19 +295,19 @@ public class PDFStreamEngine
         // zero-sized rectangles are not valid
         if (rect.getWidth() > 0 && rect.getHeight() > 0)
         {
-            // transformed appearance box
-            PDRectangle transformedBox = bbox.transform(matrix);
+            // transformed appearance box  fixme: may be an arbitrary shape
+            Rectangle2D transformedBox = bbox.transform(matrix).getBounds2D();
 
             // compute a matrix which scales and translates the transformed appearance box to align
             // with the edges of the annotation's rectangle
             Matrix a = Matrix.getTranslatingInstance(rect.getLowerLeftX(), rect.getLowerLeftY());
-            a.concatenate(Matrix.getScaleInstance(rect.getWidth() / transformedBox.getWidth(),
-                    rect.getHeight() / transformedBox.getHeight()));
-            a.concatenate(Matrix.getTranslatingInstance(-transformedBox.getLowerLeftX(),
-                    -transformedBox.getLowerLeftY()));
+            a.concatenate(Matrix.getScaleInstance((float)(rect.getWidth() / transformedBox.getWidth()),
+                    (float)(rect.getHeight() / transformedBox.getHeight())));
+            a.concatenate(Matrix.getTranslatingInstance((float) -transformedBox.getX(),
+                    (float) -transformedBox.getY()));
 
             // Matrix shall be concatenated with A to form a matrix AA that maps from the appearance€™s
-            // coordinate system to the annotationâ€™s rectangle in default user space
+            // coordinate system to the annotation's rectangle in default user space
             Matrix aa = Matrix.concatenate(matrix, a);
 
             // make matrix AA the CTM
@@ -321,23 +324,61 @@ public class PDFStreamEngine
     }
 
     /**
-     * Processes the given tiling pattern.
+     * Process the given tiling pattern.
      *
-     * @param tilingPattern tiling patten
+     * @param tilingPattern the tiling pattern
+     * @param color color to use, if this is an uncoloured pattern, otherwise null.
+     * @param colorSpace color space to use, if this is an uncoloured pattern, otherwise null.
      */
-    protected final void processTilingPattern(PDTilingPattern tilingPattern) throws IOException
+    protected final void processTilingPattern(PDTilingPattern tilingPattern, PDColor color,
+                                              PDColorSpace colorSpace) throws IOException
+    {
+        processTilingPattern(tilingPattern, color, colorSpace, tilingPattern.getMatrix());
+    }
+
+    /**
+     * Process the given tiling pattern. Allows the pattern matrix to be overridden for custom
+     * rendering.
+     *
+     * @param tilingPattern the tiling pattern
+     * @param color color to use, if this is an uncoloured pattern, otherwise null.
+     * @param colorSpace color space to use, if this is an uncoloured pattern, otherwise null.
+     * @param patternMatrix the pattern matrix, may be overridden for custom rendering.
+     */
+    protected final void processTilingPattern(PDTilingPattern tilingPattern, PDColor color,
+                                              PDColorSpace colorSpace, Matrix patternMatrix)
+            throws IOException
     {
         PDResources parent = pushResources(tilingPattern);
-        saveGraphicsState();
 
-        // note: we don't transform the CTM using the stream's matrix, as TilingPaint handles this
+        Matrix parentMatrix = initialMatrix;
+        initialMatrix = Matrix.concatenate(initialMatrix, patternMatrix);
+
+        // set up a clean state (new clipping path, line path, etc.)
+        Rectangle2D bbox = tilingPattern.getBBox().transform(patternMatrix).getBounds2D();
+        PDRectangle rect = new PDRectangle((float)bbox.getX(), (float)bbox.getY(),
+                (float)bbox.getWidth(), (float)bbox.getHeight());
+        graphicsStack.push(new PDGraphicsState(rect));
+
+        // non-colored patterns have to be given a color
+        if (colorSpace != null)
+        {
+            color = new PDColor(color.getComponents(), colorSpace);
+            getGraphicsState().setNonStrokingColorSpace(colorSpace);
+            getGraphicsState().setNonStrokingColor(color);
+            getGraphicsState().setStrokingColorSpace(colorSpace);
+            getGraphicsState().setStrokingColor(color);
+        }
+
+        // transform the CTM using the stream's matrix
+        getGraphicsState().getCurrentTransformationMatrix().concatenate(patternMatrix);
 
         // clip to bounding box
-        PDRectangle bbox = tilingPattern.getBBox();
-        clipToRect(bbox);
+        clipToRect(tilingPattern.getBBox());
 
         processStreamOperators(tilingPattern);
 
+        initialMatrix = parentMatrix;
         restoreGraphicsState();
         popResources(parent);
     }
@@ -395,35 +436,22 @@ public class PDFStreamEngine
      */
     private void processStream(PDContentStream contentStream) throws IOException
     {
-        processStream(contentStream, null);
-    }
-
-    /**
-     * Process a content stream.
-     *
-     * @param contentStream the content stream
-     * @param patternBBox fixme: temporary workaround for tiling patterns
-     * @throws IOException if there is an exception while processing the stream
-     */
-    private void processStream(PDContentStream contentStream, PDRectangle patternBBox)
-            throws IOException
-    {
         PDResources parent = pushResources(contentStream);
         saveGraphicsState();
+
+        Matrix parentMatrix = initialMatrix;
+        initialMatrix = Matrix.concatenate(initialMatrix, contentStream.getMatrix());
 
         // transform the CTM using the stream's matrix
         getGraphicsState().getCurrentTransformationMatrix().concatenate(contentStream.getMatrix());
 
         // clip to bounding box
         PDRectangle bbox = contentStream.getBBox();
-        if (patternBBox != null)
-        {
-            bbox = patternBBox;
-        }
         clipToRect(bbox);
 
         processStreamOperators(contentStream);
 
+        initialMatrix = parentMatrix;
         restoreGraphicsState();
         popResources(parent);
     }
@@ -433,10 +461,6 @@ public class PDFStreamEngine
      */
     private void processStreamOperators(PDContentStream contentStream) throws IOException
     {
-        // fixme: stream matrix
-        Matrix oldSubStreamMatrix = subStreamMatrix;
-        subStreamMatrix = getGraphicsState().getCurrentTransformationMatrix();
-
         List<COSBase> arguments = new ArrayList<COSBase>();
         PDFStreamParser parser = new PDFStreamParser(contentStream.getContentStream(), forceParsing);
         try
@@ -464,9 +488,6 @@ public class PDFStreamEngine
         {
             parser.close();
         }
-
-        // fixme: stream matrix
-        subStreamMatrix = oldSubStreamMatrix;
     }
 
     /**
@@ -510,8 +531,8 @@ public class PDFStreamEngine
     {
         if (rectangle != null)
         {
-            PDRectangle clip = rectangle.transform(getGraphicsState().getCurrentTransformationMatrix());
-            getGraphicsState().intersectClippingPath(new Area(clip.toGeneralPath()));
+            GeneralPath clip = rectangle.transform(getGraphicsState().getCurrentTransformationMatrix());
+            getGraphicsState().intersectClippingPath(clip);
         }
     }
 
@@ -867,14 +888,6 @@ public class PDFStreamEngine
     {
         textMatrix = value;
     }
-
-    /**
-     * Returns the subStreamMatrix.
-     */
-    protected Matrix getSubStreamMatrix()
-    {
-        return subStreamMatrix;
-    }
     
     /**
      * Returns the stream' resources.
@@ -890,6 +903,11 @@ public class PDFStreamEngine
     public PDPage getCurrentPage()
     {
         return currentPage;
+    }
+
+    public Matrix getInitialMatrix()
+    {
+        return initialMatrix;
     }
 
     /**

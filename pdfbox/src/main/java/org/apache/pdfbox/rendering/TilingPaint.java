@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.pdmodel.graphics.pattern;
+package org.apache.pdfbox.rendering;
 
 import java.awt.Graphics2D;
 import java.awt.Paint;
@@ -38,7 +38,8 @@ import java.math.RoundingMode;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
-import org.apache.pdfbox.rendering.PageDrawer;
+import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
+import org.apache.pdfbox.util.Matrix;
 
 /**
  * AWT Paint for a tiling pattern, which consists of a small repeating graphical figure.
@@ -46,7 +47,7 @@ import org.apache.pdfbox.rendering.PageDrawer;
  * @author Andreas Lehmkühler
  * @author John Hewson
  */
-public class TilingPaint implements Paint
+class TilingPaint implements Paint
 {
     private final PDTilingPattern pattern;
     private final TexturePaint paint;
@@ -64,7 +65,7 @@ public class TilingPaint implements Paint
             throws IOException
     {
         this.paint = new TexturePaint(getImage(drawer, pattern, null, null, xform),
-                                      getAnchorRect(pattern));
+                getAnchorRect(pattern));
         this.pattern = pattern;
     }
 
@@ -82,22 +83,30 @@ public class TilingPaint implements Paint
                        PDColor color, AffineTransform xform) throws IOException
     {
         this.paint = new TexturePaint(getImage(drawer, pattern, colorSpace, color, xform),
-                                      getAnchorRect(pattern));
+                getAnchorRect(pattern));
         this.pattern = pattern;
     }
 
-    // note: this is not called in TexturePaint subclasses, which is why we wrap TexturePaint
+    /**
+     * Not called in TexturePaint subclasses, which is why we wrap TexturePaint.
+     */
     @Override
     public PaintContext createContext(ColorModel cm, Rectangle deviceBounds, Rectangle2D userBounds,
                                       AffineTransform xform, RenderingHints hints)
     {
-        // todo: use userBounds or deviceBounds to avoid scaling issue with Tracemonkey?
         AffineTransform xformPattern = (AffineTransform)xform.clone();
-        xformPattern.concatenate(pattern.getMatrix().createAffineTransform());
+
+        // applies the pattern matrix with scaling removed
+        AffineTransform patternNoScale = pattern.getMatrix().createAffineTransform();
+        patternNoScale.scale(1 / patternNoScale.getScaleX(), 1 / patternNoScale.getScaleY());
+        xformPattern.concatenate(patternNoScale);
+
         return paint.createContext(cm, deviceBounds, userBounds, xformPattern, hints);
     }
 
-    // gets image in parent stream coordinates
+    /**
+     * Returns the pattern image in parent stream coordinates.
+     */
     private static BufferedImage getImage(PageDrawer drawer, PDTilingPattern pattern,
                                           PDColorSpace colorSpace, PDColor color,
                                           AffineTransform xform) throws IOException
@@ -122,15 +131,44 @@ public class TilingPaint implements Paint
         BufferedImage image = new BufferedImage(cm, raster, false, null);
 
         Graphics2D graphics = image.createGraphics();
-        graphics.transform(xform); // device transform (i.e. DPI)
-        drawer.drawTilingPattern(graphics, pattern, colorSpace, color);
+
+        // flip a -ve YStep around its own axis (see gs-bugzilla694385.pdf)
+        if (pattern.getYStep() < 0)
+        {
+            graphics.translate(0, rasterHeight);
+            graphics.scale(1, -1);
+        }
+
+        // flip a -ve XStep around its own axis
+        if (pattern.getXStep() < 0)
+        {
+            graphics.translate(rasterWidth, 0);
+            graphics.scale(-1, 1);
+        }
+
+        // device transform (i.e. DPI)
+        graphics.transform(xform);
+
+        // apply only the scaling from the pattern transform, doing scaling here improves the
+        // image quality and prevents large scale-down factors from creating huge tiling cells.
+        Matrix patternMatrix = Matrix.getScaleInstance(
+                Math.abs(pattern.getMatrix().getScaleX()),
+                Math.abs(pattern.getMatrix().getScaleY()));
+
+        // move origin to (0,0)
+        patternMatrix.concatenate(
+                Matrix.getTranslatingInstance(-pattern.getBBox().getLowerLeftX(),
+                        -pattern.getBBox().getLowerLeftY()));
+
+        // render using PageDrawer
+        drawer.drawTilingPattern(graphics, pattern, colorSpace, color, patternMatrix);
         graphics.dispose();
 
         return image;
     }
 
     /**
-     * Returns the closest integer which is larger than the given number.
+     * Returns the closest integer which is //larger than the given number.
      * Uses BigDecimal to avoid floating point error which would cause gaps in the tiling.
      */
     private static int ceiling(double num)
@@ -146,8 +184,10 @@ public class TilingPaint implements Paint
         return Transparency.TRANSLUCENT;
     }
 
-    // includes XStep/YStep
-    public static Rectangle2D getAnchorRect(PDTilingPattern pattern)
+    /**
+     * Returns the anchor rectangle, which includes the XStep/YStep and scaling.
+     */
+    private static Rectangle2D getAnchorRect(PDTilingPattern pattern)
     {
         float xStep = pattern.getXStep();
         if (xStep == 0)
@@ -161,7 +201,13 @@ public class TilingPaint implements Paint
             yStep = pattern.getBBox().getHeight();
         }
 
+        float xScale = pattern.getMatrix().getScaleX();
+        float yScale = pattern.getMatrix().getScaleY();
+
+        // returns the anchor rect with scaling applied
         PDRectangle anchor = pattern.getBBox();
-        return new Rectangle2D.Float(anchor.getLowerLeftX(), anchor.getLowerLeftY(), xStep, yStep);
+        return new Rectangle2D.Float(anchor.getLowerLeftX() * xScale,
+                anchor.getLowerLeftY() * yScale,
+                xStep * xScale, yStep * yScale);
     }
 }

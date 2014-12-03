@@ -280,19 +280,28 @@ public class PDRectangle implements COSObjectable
     }
 
     /**
-     * Returns a copy of this rectangle which has been transformed using the given matrix.
+     * Returns a path which represents this rectangle having been transformed by the given matrix.
+     * Note that the resulting path need not be rectangular.
      */
-    public PDRectangle transform(Matrix matrix)
+    public GeneralPath transform(Matrix matrix)
     {
-        Point2D.Float lowerLeft = matrix.transformPoint(getLowerLeftX(), getLowerLeftY());
-        Point2D.Float upperRight = matrix.transformPoint(getUpperRightX(), getUpperRightY());
+        float x1 = getLowerLeftX();
+        float y1 = getLowerLeftY();
+        float x2 = getUpperRightX();
+        float y2 = getUpperRightY();
 
-        PDRectangle rect = new PDRectangle();
-        rect.setLowerLeftX(lowerLeft.x);
-        rect.setLowerLeftY(lowerLeft.y);
-        rect.setUpperRightX(upperRight.x);
-        rect.setUpperRightY(upperRight.y);
-        return rect;
+        Point2D p0 = matrix.transformPoint(x1, y1);
+        Point2D p1 = matrix.transformPoint(x2, y1);
+        Point2D p2 = matrix.transformPoint(x2, y2);
+        Point2D p3 = matrix.transformPoint(x1, y2);
+
+        GeneralPath path = new GeneralPath();
+        path.moveTo((float) p0.getX(), (float) p0.getY());
+        path.lineTo((float) p1.getX(), (float) p1.getY());
+        path.lineTo((float) p2.getX(), (float) p2.getY());
+        path.lineTo((float) p3.getX(), (float) p3.getY());
+        path.closePath();
+        return path;
     }
 
     /**
