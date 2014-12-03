@@ -132,7 +132,7 @@ public class PrintImageLocations extends PDFStreamEngine
                 
                 double imageXScale = imageTransform.getScaleX();
                 double imageYScale = imageTransform.getScaleY();
-                System.out.println("position = " + ctmNew.getXPosition() + ", " + ctmNew.getYPosition());
+                System.out.println("position = " + ctmNew.getTranslateX() + ", " + ctmNew.getTranslateY());
                 // size in pixel
                 System.out.println("size = " + imageWidth + "px, " + imageHeight + "px");
                 // size in page units

@@ -349,11 +349,11 @@ public final class TextPosition
     {
         if (rotation == 90 || rotation == 270)
         {
-            return Math.abs(endY - textMatrix.getYPosition());
+            return Math.abs(endY - textMatrix.getTranslateY());
         }
         else
         {
-            return Math.abs(endX - textMatrix.getXPosition());
+            return Math.abs(endX - textMatrix.getTranslateX());
         }
     }
 

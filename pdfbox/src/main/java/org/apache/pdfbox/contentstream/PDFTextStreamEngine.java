@@ -150,12 +150,12 @@ public class PDFTextStreamEngine extends PDFStreamEngine
 
         // (modified) text rendering matrix
         Matrix nextTextRenderingMatrix = td.multiply(textMatrix).multiply(ctm); // text space -> device space
-        float nextX = nextTextRenderingMatrix.getXPosition();
-        float nextY = nextTextRenderingMatrix.getYPosition();
+        float nextX = nextTextRenderingMatrix.getTranslateX();
+        float nextY = nextTextRenderingMatrix.getTranslateY();
 
         // (modified) width and height calculations
-        float dxDisplay = nextX - textRenderingMatrix.getXPosition();
-        float dyDisplay = height * textRenderingMatrix.getYScale();
+        float dxDisplay = nextX - textRenderingMatrix.getTranslateX();
+        float dyDisplay = height * textRenderingMatrix.getScaleY();
 
         //
         // start of the original method

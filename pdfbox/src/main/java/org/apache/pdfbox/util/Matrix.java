@@ -26,10 +26,9 @@ import java.awt.geom.Point2D;
 /**
  * This class will be used for matrix manipulation.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.14 $
+ * @author Ben Litchfield
  */
-public class Matrix implements Cloneable
+public final class Matrix implements Cloneable
 {
     static final float[] DEFAULT_SINGLE =
     {
@@ -106,7 +105,9 @@ public class Matrix implements Cloneable
      * Set the values of the matrix from the AffineTransform.
      *
      * @param af The transform to get the values from.
+     * @deprecated This method is due to be removed, please contact us if you make use of it.
      */
+    @Deprecated
     public void setFromAffineTransform( AffineTransform af )
     {
         single[0] = (float)af.getScaleX();
@@ -166,7 +167,9 @@ public class Matrix implements Cloneable
      * Return a single dimension array of all values in the matrix.
      *
      * @return The values ot this matrix.
+     * @deprecated Use {@link float[][] #getValues} instead.
      */
+    @Deprecated
     public double[][] getValuesAsDouble()
     {
         double[][] retval = new double[3][3];
@@ -204,7 +207,19 @@ public class Matrix implements Cloneable
     }
 
     /**
-     * This will take the current matrix and multipy it with a matrix that is passed in.
+     * Scales this matrix by the given factors.
+     *
+     * @param sx x-scale
+     * @param sy y-scale
+     */
+    public void scale(float sx, float sy)
+    {
+        Matrix m = Matrix.getScaleInstance(sx, sy);
+        concatenate(m);
+    }
+
+    /**
+     * This will take the current matrix and multiply it with a matrix that is passed in.
      *
      * @param b The matrix to multiply by.
      *
@@ -350,7 +365,9 @@ public class Matrix implements Cloneable
      * Create a new matrix with just the scaling operators.
      *
      * @return A new matrix with just the scaling operators.
+     * @deprecated This method is due to be removed, please contact us if you make use of it.
      */
+    @Deprecated
     public Matrix extractScaling()
     {
         Matrix retval = new Matrix();
@@ -382,7 +399,9 @@ public class Matrix implements Cloneable
      * Create a new matrix with just the translating operators.
      *
      * @return A new matrix with just the translating operators.
+     * @deprecated This method is due to be removed, please contact us if you make use of it.
      */
+    @Deprecated
     public Matrix extractTranslating()
     {
         Matrix retval = new Matrix();
@@ -436,9 +455,13 @@ public class Matrix implements Cloneable
     }
 
     /**
-     * Get the xscaling factor of this matrix.
+     * Get the x-scaling factor of this matrix. This is a deprecated method which actually
+     * returns the x-scaling factor multiplied by the x-shear.
+     *
      * @return The x-scale.
+     * @deprecated Use {@link #getScaleX} instead
      */
+    @Deprecated
     public float getXScale()
     {
         float xScale = single[0];
@@ -469,9 +492,13 @@ public class Matrix implements Cloneable
     }
 
     /**
-     * Get the y scaling factor of this matrix.
+     * Get the y-scaling factor of this matrix. This is a deprecated method which actually
+     * returns the y-scaling factor multiplied by the y-shear.
+     *
      * @return The y-scale factor.
+     * @deprecated Use {@link #getScaleY} instead
      */
+    @Deprecated
     public float getYScale()
     {
         float yScale = single[4];
@@ -484,25 +511,79 @@ public class Matrix implements Cloneable
     }
 
     /**
-     * Get the x position in the matrix.
-     * @return The x-position.
+     * Returns the x-scaling factor of this matrix.
      */
+    public float getScaleX()
+    {
+        return single[0];
+    }
+
+    /**
+     * Returns the y-shear factor of this matrix.
+     */
+    public float getShearY()
+    {
+        return single[1];
+    }
+
+    /**
+     * Returns the x-shear factor of this matrix.
+     */
+    public float getShearX()
+    {
+        return single[3];
+    }
+
+    /**
+     * Returns the y-scaling factor of this matrix.
+     */
+    public float getScaleY()
+    {
+        return single[4];
+    }
+
+    /**
+     * Returns the x-translation of this matrix.
+     */
+    public float getTranslateX()
+    {
+        return single[6];
+    }
+
+    /**
+     * Returns the y-translation of this matrix.
+     */
+    public float getTranslateY()
+    {
+        return single[7];
+    }
+
+    /**
+     * Get the x position in the matrix. This method is deprecated as it is incorrectly named.
+     *
+     * @return The x-position.
+     * @deprecated Use {@link #getTranslateX} instead
+     */
+    @Deprecated
     public float getXPosition()
     {
         return single[6];
     }
 
     /**
-     * Get the y position.
+     * Get the y position. This method is deprecated as it is incorrectly named.
+     *
      * @return The y position.
+     * @deprecated Use {@link #getTranslateY} instead
      */
+    @Deprecated
     public float getYPosition()
     {
         return single[7];
     }
 
     /**
-     * Returns a COS array which represnets this matrix.
+     * Returns a COS array which represents this matrix.
      */
     public COSArray toCOSArray()
     {

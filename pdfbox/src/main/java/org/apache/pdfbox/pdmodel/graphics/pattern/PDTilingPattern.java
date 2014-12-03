@@ -31,6 +31,7 @@ import org.apache.pdfbox.util.Matrix;
 
 /**
  * A tiling pattern dictionary.
+ *
  * @author Andreas Lehmkühler
  */
 public class PDTilingPattern extends PDAbstractPattern implements PDContentStream
@@ -259,6 +260,28 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
             matrix.setValue(1, 1, ((COSNumber) array.get(3)).floatValue());
             matrix.setValue(2, 0, ((COSNumber) array.get(4)).floatValue());
             matrix.setValue(2, 1, ((COSNumber) array.get(5)).floatValue());
+
+            // repair mechanism for invalid matrices, this is based on pure guesswork based on the
+            // PoolCompPDFA.pdf from PDFBOX-1265 which renders fine in Acrobat despite having a
+            // scaling factor of zero.
+            if (matrix.getScaleX() == 0)
+            {
+                matrix.setValue(0, 0, ((COSNumber) array.get(1)).floatValue()); // scale x -> skew x
+                matrix.setValue(1, 0, 0); // skew x -> 0
+            }
+            if (matrix.getScaleY() == 0)
+            {
+                matrix.setValue(1, 1, ((COSNumber) array.get(2)).floatValue()); // scale y -> skew y
+                matrix.setValue(0, 1, 0); // skew y -> 0
+            }
+            if (matrix.getScaleX() == 0)
+            {
+                matrix.setValue(0, 0, 1);
+            }
+            if (matrix.getScaleY() == 0)
+            {
+                matrix.setValue(1, 1, 1);
+            }
         }
         else
         {

@@ -45,7 +45,6 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDPattern;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImage;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDAbstractPattern;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDShadingPattern;
-import org.apache.pdfbox.pdmodel.graphics.pattern.TilingPaint;
 import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
 import org.apache.pdfbox.rendering.font.CIDType0Glyph2D;
 import org.apache.pdfbox.rendering.font.Glyph2D;
@@ -77,7 +76,7 @@ import org.apache.pdfbox.util.Vector;
  * 
  * @author Ben Litchfield
  */
-public class PageDrawer extends PDFGraphicsStreamEngine
+public final class PageDrawer extends PDFGraphicsStreamEngine
 {
     private static final Log LOG = LogFactory.getLog(PageDrawer.class);
 
@@ -181,7 +180,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
      * @throws IOException If there is an IO error while drawing the page.
      */
     public void drawTilingPattern(Graphics2D g, PDTilingPattern pattern, PDColorSpace colorSpace,
-                                  PDColor color) throws IOException
+                                  PDColor color, Matrix patternMatrix) throws IOException
     {
         Graphics2D oldGraphics = graphics;
         graphics = g;
@@ -193,21 +192,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         lastClip = null;
 
         setRenderingHints();
-        saveGraphicsState();
+        processTilingPattern(pattern, color, colorSpace, patternMatrix);
 
-        // non-colored patterns have to be given a color
-        if (colorSpace != null)
-        {
-            color = new PDColor(color.getComponents(), colorSpace);
-            getGraphicsState().setNonStrokingColorSpace(colorSpace);
-            getGraphicsState().setNonStrokingColor(color);
-            getGraphicsState().setStrokingColorSpace(colorSpace);
-            getGraphicsState().setStrokingColor(color);
-        }
-
-        processTilingPattern(pattern);
-
-        restoreGraphicsState();
         graphics = oldGraphics;
         linePath = oldLinePath;
         lastClip = oldLastClip;
@@ -253,14 +239,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                     LOG.error("shadingPattern is null, will be filled with transparency");
                     return new Color(0,0,0,0);
                 }
+                return shading.toPaint(getInitialMatrix());
 
-                // fixme: shading needs to use the correct matrix
-                Matrix patternMatrix = shadingPattern.getMatrix();
-                if (patternMatrix == null)
-                {
-                    patternMatrix = new Matrix();
-                }
-                return shading.toPaint(patternMatrix);
             }
         }
     }
@@ -860,11 +840,11 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             Matrix transform = Matrix.concatenate(ctm, form.getMatrix());
 
             // transform the bbox
-            PDRectangle bbox = form.getBBox().transform(transform);
+            GeneralPath transformedBox = form.getBBox().transform(transform);
 
             // clip the bbox to prevent giant bboxes from consuming all memory
             Area clip = (Area)getGraphicsState().getCurrentClippingPath().clone();
-            clip.intersect(new Area(bbox.toGeneralPath()));
+            clip.intersect(new Area(transformedBox));
             Rectangle2D clipRect = clip.getBounds2D();
             this.bbox = new PDRectangle((float)clipRect.getX(), (float)clipRect.getY(),
                                         (float)clipRect.getWidth(), (float)clipRect.getHeight());
