@@ -67,13 +67,13 @@ final class Type1Parser
     }
 
     /**
-     * Parses the ASCII porition of a Type 1 font.
+     * Parses the ASCII portion of a Type 1 font.
      */
     private void parseASCII(byte[] bytes) throws IOException
     {
         // %!FontType1-1.0
         // %!PS-AdobeFont-1.0
-        if (bytes[0] != '%' && bytes[1] != '!')
+        if (bytes.length < 2 || (bytes[0] != '%' && bytes[1] != '!'))
         {
             throw new IOException("Invalid start of ASCII segment");
         }
