@@ -80,7 +80,7 @@ public class TilingPatternValidationProcess extends AbstractProcess
             throws ValidationException
     {
         PreflightContentStream csWrapper = new PreflightContentStream(context, page);
-        csWrapper.validPatternContentStream(pattern);
+        csWrapper.validatePatternContentStream(pattern);
     }
 
     /**

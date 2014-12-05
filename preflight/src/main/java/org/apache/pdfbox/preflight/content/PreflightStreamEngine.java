@@ -221,7 +221,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
      * @throws ContentStreamException
      *             ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY if the operand is invalid
      */
-    protected void validRenderingIntent(Operator operator, List arguments) throws ContentStreamException
+    protected void validateRenderingIntent(Operator operator, List arguments) throws ContentStreamException
     {
         if ("ri".equals(operator.getName()))
         {
@@ -249,7 +249,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
      * @param operator
      * @throws ContentStreamException
      */
-    protected void validNumberOfGraphicStates(Operator operator) throws ContentStreamException
+    protected void validateNumberOfGraphicStates(Operator operator) throws ContentStreamException
     {
         if ("q".equals(operator.getName()))
         {
@@ -267,7 +267,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
      * @param operator the InlinedImage object (BI to EI)
      * @throws ContentStreamException
      */
-    protected void validImageFilter(Operator operator) throws ContentStreamException
+    protected void validateImageFilter(Operator operator) throws ContentStreamException
     {
         COSDictionary dict = operator.getImageParameters();
         /*
@@ -285,7 +285,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
      * @param operator the InlinedImage object (BI to EI)
      * @throws ContentStreamException
      */
-    protected void validImageColorSpace(Operator operator) throws IOException
+    protected void validateImageColorSpace(Operator operator) throws IOException
     {
         COSDictionary dict = operator.getImageParameters();
 
