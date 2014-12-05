@@ -444,7 +444,7 @@ public class ValidationResult
                     return false;
                 }
                 else if (pageNumber != null && ve.pageNumber != null
-                        && pageNumber.compareTo(pageNumber) == 0)
+                        && pageNumber.compareTo(ve.pageNumber) != 0)
                 {
                     return false;
                 }
