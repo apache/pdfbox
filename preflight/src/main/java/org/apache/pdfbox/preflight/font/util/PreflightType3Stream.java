@@ -97,8 +97,8 @@ public class PreflightType3Stream extends PreflightStreamEngine
                                       operator.getImageData(),
                                       getResources());
 
-            validImageFilter(operator);
-            validImageColorSpace(operator);
+            validateImageFilter(operator);
+            validateImageColorSpace(operator);
         }
 
         if (operation.equals("d0"))
@@ -134,9 +134,9 @@ public class PreflightType3Stream extends PreflightStreamEngine
         }
 
         checkColorOperators(operation);
-        validRenderingIntent(operator, arguments);
+        validateRenderingIntent(operator, arguments);
         checkSetColorSpaceOperators(operator, arguments);
-        validNumberOfGraphicStates(operator);
+        validateNumberOfGraphicStates(operator);
         firstOperator = false;
     }
 
