@@ -502,6 +502,11 @@ public class PDFStreamEngine
         {
             resources = streamResources;
         }
+        else if (resources != null)
+        {
+            // inherit directly from parent stream, this is not in the PDF spec, but the file from
+            // PDFBOX-1359 does this and works in Acrobat
+        }
         else
         {
             resources = currentPage.getResources();
