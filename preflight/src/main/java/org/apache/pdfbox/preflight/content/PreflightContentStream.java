@@ -62,7 +62,7 @@ public class PreflightContentStream extends PreflightStreamEngine
      *
      * @throws ValidationException
      */
-    public void validPageContentStream() throws ValidationException
+    public void validatePageContentStream() throws ValidationException
     {
         try
         {
@@ -78,7 +78,7 @@ public class PreflightContentStream extends PreflightStreamEngine
         }
         catch (IOException e)
         {
-            throw new ValidationException("Unable to check the ContentStream : " + e.getMessage(), e);
+            throw new ValidationException("Unable to check the Page ContentStream : " + e.getMessage(), e);
         }
     }
 
@@ -88,7 +88,7 @@ public class PreflightContentStream extends PreflightStreamEngine
      * @param form the PDFormXObject to be validated.
      * @throws ValidationException
      */
-    public void validXObjContentStream(PDFormXObject form) throws ValidationException
+    public void validateXObjContentStream(PDFormXObject form) throws ValidationException
     {
         try
         {
@@ -108,7 +108,7 @@ public class PreflightContentStream extends PreflightStreamEngine
         }
         catch (IOException e)
         {
-            throw new ValidationException("Unable to check the ContentStream : " + e.getMessage(), e);
+            throw new ValidationException("Unable to check the XObject ContentStream : " + e.getMessage(), e);
         }
     }
 
@@ -118,7 +118,7 @@ public class PreflightContentStream extends PreflightStreamEngine
      * @param pattern the PDTilingPattern to be validated.
      * @throws ValidationException
      */
-    public void validPatternContentStream(PDTilingPattern pattern) throws ValidationException
+    public void validatePatternContentStream(PDTilingPattern pattern) throws ValidationException
     {
         try
         {
@@ -130,7 +130,7 @@ public class PreflightContentStream extends PreflightStreamEngine
         }
         catch (IOException e)
         {
-            throw new ValidationException("Unable to check the ContentStream : " + e.getMessage(), e);
+            throw new ValidationException("Unable to check the Pattern ContentStream : " + e.getMessage(), e);
         }
     }
 
@@ -146,15 +146,15 @@ public class PreflightContentStream extends PreflightStreamEngine
          */
         if ("BI".equals(operator.getName()))
         {
-            validImageFilter(operator);
-            validImageColorSpace(operator);
+            validateImageFilter(operator);
+            validateImageColorSpace(operator);
         }
 
         checkShowTextOperators(operator, arguments);
         checkColorOperators(operator.getName());
-        validRenderingIntent(operator, arguments);
+        validateRenderingIntent(operator, arguments);
         checkSetColorSpaceOperators(operator, arguments);
-        validNumberOfGraphicStates(operator);
+        validateNumberOfGraphicStates(operator);
     }
 
     @Override
@@ -180,12 +180,12 @@ public class PreflightContentStream extends PreflightStreamEngine
         String op = operator.getName();
         if ("Tj".equals(op) || "'".equals(op) || "\"".equals(op))
         {
-            validStringDefinition(operator, arguments);
+            validateStringDefinition(operator, arguments);
         }
 
         if ("TJ".equals(op))
         {
-            validStringArray(operator, arguments);
+            validateStringArray(operator, arguments);
         }
     }
 
@@ -200,7 +200,7 @@ public class PreflightContentStream extends PreflightStreamEngine
      * @throws ContentStreamException
      * @throws IOException
      */
-    private void validStringDefinition(Operator operator, List<?> arguments) throws ContentStreamException,
+    private void validateStringDefinition(Operator operator, List<?> arguments) throws ContentStreamException,
             IOException
     {
         /*
@@ -227,7 +227,7 @@ public class PreflightContentStream extends PreflightStreamEngine
 
             if (arg2 instanceof COSString)
             {
-                validText(((COSString) arg2).getBytes());
+                validateText(((COSString) arg2).getBytes());
             }
             else
             {
@@ -240,7 +240,7 @@ public class PreflightContentStream extends PreflightStreamEngine
             Object objStr = arguments.get(0);
             if (objStr instanceof COSString)
             {
-                validText(((COSString) objStr).getBytes());
+                validateText(((COSString) objStr).getBytes());
             }
             else if (!(objStr instanceof COSInteger))
             {
@@ -261,17 +261,17 @@ public class PreflightContentStream extends PreflightStreamEngine
      * @throws ContentStreamException
      * @throws IOException
      */
-    private void validStringArray(Operator operator, List<?> arguments) throws ContentStreamException, IOException
+    private void validateStringArray(Operator operator, List<?> arguments) throws ContentStreamException, IOException
     {
         for (Object object : arguments)
         {
             if (object instanceof COSArray)
             {
-                validStringArray(operator, ((COSArray) object).toList());
+                validateStringArray(operator, ((COSArray) object).toList());
             }
             else if (object instanceof COSString)
             {
-                validText(((COSString) object).getBytes());
+                validateText(((COSString) object).getBytes());
             }
             else if (!(object instanceof COSInteger || object instanceof COSFloat))
             {
@@ -293,7 +293,7 @@ public class PreflightContentStream extends PreflightStreamEngine
      * @param string
      * @throws IOException
      */
-    public void validText(byte[] string) throws IOException
+    public void validateText(byte[] string) throws IOException
     {
         // TextSize accessible through the TextState
         PDTextState textState = getGraphicsState().getTextState();
