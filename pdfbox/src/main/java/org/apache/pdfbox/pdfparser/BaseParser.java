@@ -245,17 +245,27 @@ public abstract class BaseParser
     private COSBase parseCOSDictionaryValue() throws IOException
     {
         COSBase retval = null;
+        long numOffset = pdfSource.getOffset();
         COSBase number = parseDirObject();
         skipSpaces();
         char next = (char)pdfSource.peek();
         if( next >= '0' && next <= '9' )
         {
+            long genOffset = pdfSource.getOffset();
             COSBase generationNumber = parseDirObject();
             skipSpaces();
             char r = (char)pdfSource.read();
             if( r != 'R' )
             {
-                throw new IOException( "expected='R' actual='" + r + "' at offset " + pdfSource.getOffset());
+                throw new IOException("expected='R' actual='" + r + "' at offset " + pdfSource.getOffset());
+            }
+            if (!(number instanceof COSInteger))
+            {
+                throw new IOException("expected number, actual=" + number + " at offset " + numOffset);
+            }
+            if (!(generationNumber instanceof COSInteger))
+            {
+                throw new IOException("expected number, actual=" + number + " at offset " + genOffset);
             }
             COSObjectKey key = new COSObjectKey(((COSInteger) number).intValue(),
                     ((COSInteger) generationNumber).intValue());
