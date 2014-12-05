@@ -622,9 +622,9 @@ public final class TIFFFaxDecoder {
 
                     updatePointer(4 - bits);
                 } else if (bits == 0) {     // ERROR
-                    throw new IOException("Invalid code encountered.");
+                    throw new IOException("TIFFFaxDecoder: Invalid code encountered.");
                 } else if (bits == 15) {    // EOL
-                    throw new IOException("EOL encountered in white run.");
+                    throw new IOException("TIFFFaxDecoder: EOL encountered in white run.");
                 } else {
                     // 11 bits - 0000 0111 1111 1111 = 0x07ff
                     code = (entry >>> 5) & 0x07ff;
@@ -680,7 +680,7 @@ public final class TIFFFaxDecoder {
                         updatePointer(4 - bits);
                     } else if (bits == 15) {
                         // EOL code
-                        throw new IOException("EOL encountered in black run.");
+                        throw new IOException("TIFFFaxDecoder: EOL encountered in black run.");
                     } else {
                         setToBlack(buffer, lineOffset, bitOffset, code);
                         bitOffset += code;
@@ -761,7 +761,7 @@ public final class TIFFFaxDecoder {
 
         // The data must start with an EOL code
         if (readEOL() != 1) {
-            throw new IOException("First scanline must be 1D encoded.");
+            throw new IOException("TIFFFaxDecoder: First scanline must be 1D encoded.");
         }
 
         int lineOffset = 0;
@@ -863,7 +863,7 @@ public final class TIFFFaxDecoder {
 
                         updatePointer(7 - bits);
                     } else {
-                        throw new IOException("Invalid code encountered while decoding 2D group 3 compressed data.");
+                        throw new IOException("TIFFFaxDecoder: Invalid code encountered while decoding 2D group 3 compressed data.");
                     }
                 }
 
@@ -1016,7 +1016,7 @@ public final class TIFFFaxDecoder {
                     updatePointer(7 - bits);
                 } else if (code == 11) {
                     if (nextLesserThan8Bits(3) != 7) {
-                        throw new IOException("Invalid code encountered while decoding 2D group 4 compressed data.");
+                        throw new IOException("TIFFFaxDecoder: Invalid code encountered while decoding 2D group 4 compressed data.");
                     }
 
                     int zeros = 0;
@@ -1082,7 +1082,7 @@ public final class TIFFFaxDecoder {
 
                     }
                 } else {
-                    throw new IOException("Invalid code encountered while decoding 2D group 4 compressed data.");
+                    throw new IOException("TIFFFaxDecoder: Invalid code encountered while decoding 2D group 4 compressed data.");
                 }
             }
 
@@ -1165,9 +1165,9 @@ public final class TIFFFaxDecoder {
                 runLength += code;
                 updatePointer(4 - bits);
             } else if (bits == 0) {     // ERROR
-                throw new IOException("Invalid code encountered.");
+                throw new IOException("TIFFFaxDecoder: Invalid code encountered.");
             } else if (bits == 15) {    // EOL
-                throw new IOException("EOL encountered in white run.");
+                throw new IOException("TIFFFaxDecoder: EOL encountered in white run.");
             } else {
                 // 11 bits - 0000 0111 1111 1111 = 0x07ff
                 code = (entry >>> 5) & 0x07ff;
@@ -1218,7 +1218,7 @@ public final class TIFFFaxDecoder {
                     updatePointer(4 - bits);
                 } else if (bits == 15) {
                     // EOL code
-                    throw new IOException("EOL encountered in black run.");
+                    throw new IOException("TIFFFaxDecoder: EOL encountered in black run.");
                 } else {
                     runLength += code;
                     updatePointer(9 - bits);
@@ -1249,7 +1249,7 @@ public final class TIFFFaxDecoder {
     private int readEOL() throws IOException {
         if (fillBits == 0) {
             if (nextNBits(12) != 1) {
-                throw new IOException("Scanline must begin with EOL.");
+                throw new IOException("TIFFFaxDecoder: Scanline must begin with EOL.");
             }
         } else if (fillBits == 1) {
 
@@ -1260,7 +1260,7 @@ public final class TIFFFaxDecoder {
             int bitsLeft = 8 - bitPointer;
 
             if (nextNBits(bitsLeft) != 0) {
-                throw new IOException("All fill bits preceding EOL code must be 0.");
+                throw new IOException("TIFFFaxDecoder: All fill bits preceding EOL code must be 0.");
             }
 
             // If the number of bitsLeft is less than 8, then to have a 12
@@ -1269,7 +1269,7 @@ public final class TIFFFaxDecoder {
             // that.
             if (bitsLeft < 4) {
                 if (nextNBits(8) != 0) {
-                    throw new IOException("All fill bits preceding EOL code must be 0.");
+                    throw new IOException("TIFFFaxDecoder: All fill bits preceding EOL code must be 0.");
                 }
             }
 
@@ -1281,7 +1281,7 @@ public final class TIFFFaxDecoder {
 
                 // If not all zeros
                 if (n != 0) {
-                    throw new IOException("All fill bits preceding EOL code must be 0.");
+                    throw new IOException("TIFFFaxDecoder: All fill bits preceding EOL code must be 0.");
                 }
             }
         }
@@ -1358,7 +1358,7 @@ public final class TIFFFaxDecoder {
                 next2next = flipTable[data[bp + 2] & 0xff];
             }
         } else {
-            throw new IOException("TIFF_FILL_ORDER tag must be either 1 or 2.");
+            throw new IOException("TIFFFaxDecoder: TIFF_FILL_ORDER tag must be either 1 or 2.");
         }
 
         int bitsLeft = 8 - bitPointer;
@@ -1415,7 +1415,7 @@ public final class TIFFFaxDecoder {
                 next = flipTable[data[bp + 1] & 0xff];
             }
         } else {
-            throw new IOException("TIFF_FILL_ORDER tag must be either 1 or 2.");
+            throw new IOException("TIFFFaxDecoder: TIFF_FILL_ORDER tag must be either 1 or 2.");
         }
 
         int bitsLeft = 8 - bitPointer;
