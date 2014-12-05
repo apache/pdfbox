@@ -447,7 +447,7 @@ public final class PageDrawer extends PDFGraphicsStreamEngine
      */
     private Raster createSoftMaskRaster(PDSoftMask softMask) throws IOException
     {
-        TransparencyGroup transparencyGroup = new TransparencyGroup(softMask.getGroup());
+        TransparencyGroup transparencyGroup = new TransparencyGroup(softMask.getGroup(), true);
         COSName subtype = softMask.getSubType();
         if (COSName.ALPHA.equals(subtype))
         {
@@ -782,7 +782,7 @@ public final class PageDrawer extends PDFGraphicsStreamEngine
     @Override
     public void showTransparencyGroup(PDFormXObject form) throws IOException
     {
-        TransparencyGroup group = new TransparencyGroup(form);
+        TransparencyGroup group = new TransparencyGroup(form, false);
 
         graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
         setClip();
@@ -831,7 +831,7 @@ public final class PageDrawer extends PDFGraphicsStreamEngine
         /**
          * Creates a buffered image for a transparency group result.
          */
-        private TransparencyGroup(PDFormXObject form) throws IOException
+        private TransparencyGroup(PDFormXObject form, boolean isSoftMask) throws IOException
         {
             Graphics2D g2dOriginal = graphics;
             Area lastClipOriginal = lastClip;
@@ -878,7 +878,14 @@ public final class PageDrawer extends PDFGraphicsStreamEngine
             graphics = g;
             try
             {
-                processTransparencyGroup(form);
+                if (isSoftMask)
+                {
+                    processSoftMask(form);
+                }
+                else
+                {
+                    processTransparencyGroup(form);
+                }
             }
             finally 
             {

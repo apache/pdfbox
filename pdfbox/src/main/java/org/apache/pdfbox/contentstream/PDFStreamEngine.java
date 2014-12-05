@@ -208,10 +208,21 @@ public class PDFStreamEngine
     }
 
     /**
+     * Processes a soft mask transparency group stream.
+     */
+    protected void processSoftMask(PDFormXObject group) throws IOException
+    {
+        // clear the current soft mask (this mask) to avoid recursion
+        saveGraphicsState();
+        getGraphicsState().setSoftMask(null);
+        processTransparencyGroup(group);
+        restoreGraphicsState();
+    }
+
+    /**
      * Processes a transparency group stream.
      */
-    protected void processTransparencyGroup(PDFormXObject group)
-            throws IOException
+    protected void processTransparencyGroup(PDFormXObject group) throws IOException
     {
         if (currentPage == null)
         {
