@@ -63,13 +63,15 @@ import org.apache.pdfbox.preflight.utils.ContextHelper;
 public class SinglePageValidationProcess extends AbstractProcess
 {
 
+    @Override
     public void validate(PreflightContext context) throws ValidationException
     {
         PreflightPath vPath = context.getValidationPath();
-        if (vPath.isEmpty()){
+        if (vPath.isEmpty())
+        {
             return;
         }
-        else if (!vPath.isExpectedType(PDPage.class)) 
+        if (!vPath.isExpectedType(PDPage.class)) 
         {
             addValidationError(context, new ValidationError(PreflightConstants.ERROR_PDF_PROCESSING_MISSING, "Page validation required at least a PDPage"));
         } 
@@ -179,11 +181,11 @@ public class SinglePageValidationProcess extends AbstractProcess
         try
         {
             PreflightContentStream csWrapper = new PreflightContentStream(context, page);
-            csWrapper.validPageContentStream();
+            csWrapper.validatePageContentStream();
         }
         catch (IOException e)
         {
-            context.addValidationError(new ValidationError(ERROR_UNKOWN_ERROR, e.getMessage()));
+            context.addValidationError(new ValidationError(ERROR_UNKOWN_ERROR, e.getMessage(), e));
         }
     }
 
@@ -236,7 +238,6 @@ public class SinglePageValidationProcess extends AbstractProcess
             {
                 context.addValidationError(new ValidationError(ERROR_GRAPHIC_TRANSPARENCY_GROUP,
                         "Group has a transparency S entry or the S entry is null."));
-                return;
             }
         }
     }
