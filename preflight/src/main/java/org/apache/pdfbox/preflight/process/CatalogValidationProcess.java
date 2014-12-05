@@ -25,6 +25,7 @@ import static org.apache.pdfbox.preflight.PreflightConfiguration.ACTIONS_PROCESS
 import static org.apache.pdfbox.preflight.PreflightConstants.DICTIONARY_KEY_ADDITIONAL_ACTION;
 import static org.apache.pdfbox.preflight.PreflightConstants.DOCUMENT_DICTIONARY_KEY_OUTPUT_INTENTS;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ACTION_FORBIDDEN_ADDITIONAL_ACTION;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ACTION_FORBIDDEN_ACTIONS_NAMED;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_INVALID;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_MULTIPLE;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_TOO_RECENT;
@@ -195,6 +196,7 @@ public class CatalogValidationProcess extends AbstractProcess
         return false;
     }
 
+    @Override
     public void validate(PreflightContext ctx) throws ValidationException
     {
         PDDocument pdfbox = ctx.getDocument();
@@ -266,6 +268,11 @@ public class CatalogValidationProcess extends AbstractProcess
             {
                 addValidationError(ctx, new ValidationError(ERROR_SYNTAX_TRAILER_CATALOG_EMBEDDEDFILES,
                         "EmbeddedFile entry is present in the Names dictionary"));
+            }
+            if (names.getJavaScript() != null)
+            {
+                addValidationError(ctx, new ValidationError(ERROR_ACTION_FORBIDDEN_ACTIONS_NAMED,
+                        "Javascript entry is present in the Names dictionary"));
             }
         }
     }
