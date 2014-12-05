@@ -280,11 +280,9 @@ public class ResourcesValidationProcess extends AbstractProcess
                 COSBase xobj = entry.getValue();
                 if (xobj != null && COSUtils.isStream(xobj, cosDocument))
                 {
-                    String subtype = "unknown";                    
                     try
                     {
                         COSStream stream = COSUtils.getAsStream(xobj, cosDocument);
-                        subtype = stream.getNameAsString(COSName.SUBTYPE);
                         PDXObject pdXObject = PDXObject.createXObject(stream, entry.getKey().getName(), resources);
                         if (pdXObject != null)
                         {
