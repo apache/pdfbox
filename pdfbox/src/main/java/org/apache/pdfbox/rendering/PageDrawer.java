@@ -239,7 +239,8 @@ public final class PageDrawer extends PDFGraphicsStreamEngine
                     LOG.error("shadingPattern is null, will be filled with transparency");
                     return new Color(0,0,0,0);
                 }
-                return shading.toPaint(getInitialMatrix());
+                return shading.toPaint(Matrix.concatenate(getInitialMatrix(),
+                                                          shadingPattern.getMatrix()));
 
             }
         }

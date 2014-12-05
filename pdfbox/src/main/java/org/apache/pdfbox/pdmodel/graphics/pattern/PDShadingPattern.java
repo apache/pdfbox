@@ -30,13 +30,13 @@ import org.apache.pdfbox.util.Matrix;
 
 /**
  * A shading pattern dictionary.
+ *
  * @author Andreas Lehmkühler
  */
 public class PDShadingPattern extends PDAbstractPattern
 {
-    private PDExternalGraphicsState extendedGraphicsState;
+    private PDExternalGraphicsState externalGraphicsState;
     private PDShading shading;
-    private COSArray matrix = null;
 
     /**
      * Creates a new shading pattern.
@@ -63,28 +63,28 @@ public class PDShadingPattern extends PDAbstractPattern
     }
 
     /**
-     * This will get the optional Matrix of a Pattern.
-     * It maps the form space into the user space.
-     * @return the form matrix
+     * Returns the pattern matrix.
      */
     public Matrix getMatrix()
     {
-        Matrix returnMatrix = null;
-        if (matrix == null)
+        Matrix matrix = null;
+        COSArray array = (COSArray)getCOSDictionary().getDictionaryObject(COSName.MATRIX);
+        if (array != null)
         {
-            matrix = (COSArray)getCOSDictionary().getDictionaryObject( COSName.MATRIX );
+            matrix = new Matrix();
+            matrix.setValue(0, 0, ((COSNumber) array.get(0)).floatValue());
+            matrix.setValue(0, 1, ((COSNumber) array.get(1)).floatValue());
+            matrix.setValue(1, 0, ((COSNumber) array.get(2)).floatValue());
+            matrix.setValue(1, 1, ((COSNumber) array.get(3)).floatValue());
+            matrix.setValue(2, 0, ((COSNumber) array.get(4)).floatValue());
+            matrix.setValue(2, 1, ((COSNumber) array.get(5)).floatValue());
         }
-        if( matrix != null )
+        else
         {
-            returnMatrix = new Matrix();
-            returnMatrix.setValue(0, 0, ((COSNumber) matrix.get(0)).floatValue());
-            returnMatrix.setValue(0, 1, ((COSNumber) matrix.get(1)).floatValue());
-            returnMatrix.setValue(1, 0, ((COSNumber) matrix.get(2)).floatValue());
-            returnMatrix.setValue(1, 1, ((COSNumber) matrix.get(3)).floatValue());
-            returnMatrix.setValue(2, 0, ((COSNumber) matrix.get(4)).floatValue());
-            returnMatrix.setValue(2, 1, ((COSNumber) matrix.get(5)).floatValue());
+            // default value is the identity matrix
+            matrix = new Matrix();
         }
-        return returnMatrix;
+        return matrix;
     }
 
     /**
@@ -93,7 +93,7 @@ public class PDShadingPattern extends PDAbstractPattern
      */
     public void setMatrix(AffineTransform transform)
     {
-        matrix = new COSArray();
+        COSArray matrix = new COSArray();
         double[] values = new double[6];
         transform.getMatrix(values);
         for (double v : values)
@@ -104,32 +104,34 @@ public class PDShadingPattern extends PDAbstractPattern
     }
 
     /**
-     * This will get the extended graphics state for this pattern.
+     * This will get the external graphics state for this pattern.
      * @return The extended graphics state for this pattern.
      */
-    public PDExternalGraphicsState getExtendedGraphicsState()
+    public PDExternalGraphicsState getExternalGraphicsState()
     {
-        if (extendedGraphicsState == null) 
+        if (externalGraphicsState == null)
         {
-            COSDictionary dictionary = (COSDictionary)getCOSDictionary().getDictionaryObject( COSName.EXT_G_STATE );
+            COSDictionary dictionary = (COSDictionary)getCOSDictionary()
+                    .getDictionaryObject(COSName.EXT_G_STATE);
+
             if( dictionary != null )
             {
-                extendedGraphicsState = new PDExternalGraphicsState( dictionary );
+                externalGraphicsState = new PDExternalGraphicsState( dictionary );
             }
         }
-        return extendedGraphicsState;
+        return externalGraphicsState;
     }
 
     /**
-     * This will set the extended graphics state for this pattern.
-     * @param extendedGraphicsState The new extended graphics state for this pattern.
+     * This will set the external graphics state for this pattern.
+     * @param externalGraphicsState The new extended graphics state for this pattern.
      */
-    public void setExtendedGraphicsState( PDExternalGraphicsState extendedGraphicsState )
+    public void setExternalGraphicsState( PDExternalGraphicsState externalGraphicsState )
     {
-        this.extendedGraphicsState = extendedGraphicsState;
-        if (extendedGraphicsState != null)
+        this.externalGraphicsState = externalGraphicsState;
+        if (externalGraphicsState != null)
         {
-            getCOSDictionary().setItem( COSName.EXT_G_STATE, extendedGraphicsState );
+            getCOSDictionary().setItem( COSName.EXT_G_STATE, externalGraphicsState );
         }
         else
         {
@@ -146,7 +148,9 @@ public class PDShadingPattern extends PDAbstractPattern
     {
         if (shading == null) 
         {
-            COSDictionary dictionary = (COSDictionary)getCOSDictionary().getDictionaryObject( COSName.SHADING );
+            COSDictionary dictionary = (COSDictionary)getCOSDictionary()
+                    .getDictionaryObject(COSName.SHADING);
+
             if( dictionary != null )
             {
                 shading = PDShading.create(dictionary);
