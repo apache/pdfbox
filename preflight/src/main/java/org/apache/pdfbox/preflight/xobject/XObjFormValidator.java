@@ -110,7 +110,7 @@ public class XObjFormValidator extends AbstractXObjValidator
     {
         PreflightPath vPath = context.getValidationPath();
         PreflightContentStream csWrapper = new PreflightContentStream(context, vPath.getClosestPathElement(PDPage.class));
-        csWrapper.validXObjContentStream(pdXObj);
+        csWrapper.validateXObjContentStream(pdXObj);
     }
 
     /**
