@@ -451,6 +451,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName TIME_STAMP = new COSName("TimeStamp");
     public static final COSName TITLE = new COSName("Title");
     public static final COSName TK = new COSName("TK");
+    public static final COSName TM = new COSName("TM");
     public static final COSName TO_UNICODE = new COSName("ToUnicode");
     public static final COSName TR = new COSName("TR");
     public static final COSName TRAPPED = new COSName("Trapped");
