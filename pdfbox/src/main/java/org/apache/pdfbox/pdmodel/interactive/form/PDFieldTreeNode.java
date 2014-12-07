@@ -92,7 +92,79 @@ public abstract class PDFieldTreeNode implements COSObjectable
         dictionary = field;
         parent = parentNode;
     }
+    
+    /**
+     * Returns the given attribute, inheriting from parent nodes if necessary.
+     *
+     * @param fieldDictionary field object
+     * @param key the key to look up
+     * @return COS value for the given key
+     */
+    public COSBase getInheritableAttribute(COSDictionary fieldDictionary, COSName key)
+    {
+        COSBase value = fieldDictionary.getCOSName(key);
+        if (value != null)
+        {
+            return value;
+        }
 
+        COSDictionary parentDictionary = (COSDictionary) fieldDictionary.getDictionaryObject(COSName.PARENT);
+        if (parentDictionary != null)
+        {
+            return getInheritableAttribute(parentDictionary, key);
+        }
+
+        return null;
+    }
+    
+    
+    /**
+     * Sets the given attribute, inheriting from parent nodes if necessary.
+     *
+     * @param fieldDictionary field object
+     * @param key the key to look up
+     * @param value the new attributes value
+     */
+    public void setInheritableAttribute(COSDictionary fieldDictionary, COSName key, COSBase value)
+    {
+        if (fieldDictionary.getItem(key) != null)
+        {
+            fieldDictionary.setItem(key, value);
+        }
+        else
+        {
+            COSDictionary parentDictionary = (COSDictionary) fieldDictionary.getDictionaryObject(COSName.PARENT);
+            if (parentDictionary != null)
+            {
+                setInheritableAttribute(parentDictionary, key, value);
+            }
+        }
+    }
+    
+    /**
+     * Removes the given attribute, inheriting from parent nodes if necessary.
+     *
+     * @param fieldDictionary field object
+     * @param key the key to look up
+     */
+    public void removeInheritableAttribute(COSDictionary fieldDictionary, COSName key)
+    {
+        if (fieldDictionary.getItem(key) != null)
+        {
+            fieldDictionary.removeItem(key);
+        }
+        else
+        {
+            COSDictionary parentDictionary = (COSDictionary) fieldDictionary.getDictionaryObject(COSName.PARENT);
+            if (parentDictionary != null)
+            {
+                removeInheritableAttribute(parentDictionary, key);
+            }
+        }
+    }
+    
+    
+    
     /**
      * Get the FT entry of the field. This is a read only field and is set depending on the actual type. The field type
      * is an inheritable attribute.
@@ -101,30 +173,47 @@ public abstract class PDFieldTreeNode implements COSObjectable
      * 
      */
     public abstract String getFieldType();
-
+    
     /**
-     * getValue gets the value of the "V" entry.
+     * Get the value of the "DV" entry. The "DV" entry is an inheritable attribute.
      * 
-     * @return The value of this entry.
+     * This will return null if the "DV" entry doesn't exist or if it has no value assigned.
      * 
-     */
-    public abstract Object getValue();
-
-    /**
-     * getDefaultValue gets the value of the "DV" entry.
+     * The different field types do require specific object types for their value
+     * e.g. for RadioButtons the DV entry needs to be a name object.
+     * If the value doesn't match the expected type an IOException is thrown. Such a wrong entry might
+     * have been set with a different library or by using PDFBox low level COS model.
+     * 
+     * To get the value in such cases the lower level COS model can be used.
      * 
      * @return The value of this field.
+     * @throws IOException If there is an error reading the data for this field
+     *      or the type is not in line with the fields required type.
      * 
      */
-    public abstract Object getDefaultValue();
+    public abstract Object getDefaultValue() throws IOException;
 
     /**
-     * setDefaultValue sets the entry "DV" to the given value.
+     * Get the value of the "V" entry. The "V" entry is an inheritable attribute.
      * 
-     * @param value the value
+     * This will return null if the "V" entry doesn't exist or if it has no value assigned.
+     * 
+     * The different field types do require specific object types for their value
+     * e.g. for RadioButtons the V entry needs to be a name object.
+     * If the value doesn't match the expected type an IOException is thrown. Such a wrong entry might
+     * have been set with a different library or by using PDFBox low level COS model.
+     * 
+     * To get the value in such cases the lower level COS model can be used.
+     * 
+     * As a result it might be necessary to check the type of the value before
+     * reusing it.
+     * 
+     * @return The value of this entry.
+     * @throws IOException If there is an error reading the data for this field
+     *      or the type is not in line with the fields required type.
      * 
      */
-    public abstract void setDefaultValue(Object value);
+    public abstract Object getValue() throws IOException;
 
     /**
      * sets the field to be read-only.
@@ -165,7 +254,7 @@ public abstract class PDFieldTreeNode implements COSObjectable
     }
 
     /**
-     * sets the field to be not exported..
+     * sets the field to be not exported.
      * 
      * @param noExport The new flag for noExport.
      */

@@ -71,6 +71,30 @@ public final class PDTextField extends PDVariableText
     }
 
     /**
+     * setValue sets the default value for the field.
+     * 
+     * @param value the default value
+     * 
+     */
+    public void setDefaultValue(String value)
+    {
+        if (value != null)
+        {
+            if (value instanceof String)
+            {
+                String stringValue = (String)value;
+                COSString fieldValue = new COSString(stringValue);
+                setInheritableAttribute(getDictionary(), COSName.DV, fieldValue);
+            }
+            // TODO stream instead of string
+        }  
+        else
+        {
+            removeInheritableAttribute(getDictionary(),COSName.DV);
+        }
+    }
+    
+    /**
      * setValue sets the entry "V" to the given value.
      * 
      * @param value the value
@@ -84,13 +108,13 @@ public final class PDTextField extends PDVariableText
             {
                 String stringValue = (String)value;
                 COSString fieldValue = new COSString(stringValue);
-                getDictionary().setItem( COSName.V, fieldValue );
+                setInheritableAttribute(getDictionary(), COSName.V, fieldValue);
             }
             // TODO stream instead of string
         }  
         else
         {
-            getDictionary().removeItem(COSName.V);
+            removeInheritableAttribute(getDictionary(),COSName.DV);
         }
         
         updateFieldAppearances();
@@ -105,8 +129,6 @@ public final class PDTextField extends PDVariableText
     @Override
     public Object getValue()
     {
-        return getDictionary().getItem(COSName.V );
+        return getInheritableAttribute(getDictionary(), COSName.V);
     }
-
-
 }

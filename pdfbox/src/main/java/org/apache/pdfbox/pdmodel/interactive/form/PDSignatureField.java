@@ -199,7 +199,6 @@ public class PDSignatureField extends PDField
         return null;
     }
 
-    @Override
     public void setDefaultValue(Object value)
     {
         // Signature fields don't support the "DV" entry.

@@ -95,7 +95,6 @@ public class PDNonTerminalField extends PDFieldTreeNode
         return null;
     }
     
-    @Override
     public void setDefaultValue(Object value)
     {
         // Nonterminal fields don't support the "DV" entry.

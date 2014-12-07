@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import java.io.IOException;
+
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -134,10 +136,45 @@ public final class PDCheckbox extends PDButton
     }
 
     @Override
-    public COSName getDefaultValue()
+    public COSName getDefaultValue() throws IOException
     {
-        return getDictionary().getCOSName(COSName.DV);
+        COSBase attribute = getInheritableAttribute(getDictionary(), COSName.V);
+
+        if (attribute instanceof COSName)
+        {
+            return (COSName) attribute;
+        }
+        else
+        {
+            throw new IOException("Expected a COSName entry but got " + attribute.getClass().getName());
+        }
     }
+    
+    /**
+     * Set the fields default value.
+     * 
+     * The field value holds a name object which is corresponding to the 
+     * appearance state representing the corresponding appearance 
+     * from the appearance directory.
+     *
+     * The default value is used to represent the initial state of the
+     * checkbox or to revert when resetting the form.
+     * 
+     * @param defaultValue the COSName object to set the field value.
+     */
+    public void setDefaultValue(COSName defaultValue)
+    {
+        if (defaultValue == null)
+        {
+            getDictionary().removeItem(COSName.DV);
+        }
+        else
+        {
+            getDictionary().setItem(COSName.DV, defaultValue);
+        }
+    }
+    
+    
     
     @Override
     public COSName getValue()
@@ -145,6 +182,17 @@ public final class PDCheckbox extends PDButton
         return getDictionary().getCOSName( COSName.V );
     }
 
+    /**
+     * Set the field value.
+     * 
+     * The field value holds a name object which is corresponding to the 
+     * appearance state representing the corresponding appearance 
+     * from the appearance directory.
+     *
+     * The default value is Off.
+     * 
+     * @param value the COSName object to set the field value.
+     */
     public void setValue(COSName value)
     {
         if (value == null)
