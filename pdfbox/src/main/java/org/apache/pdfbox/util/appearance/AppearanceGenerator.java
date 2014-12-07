@@ -48,22 +48,25 @@ public class AppearanceGenerator
      */
     public static void generateFieldAppearances(PDField field)
     {
-        // TODO: handle appearance generation for other field types
         if (field instanceof PDVariableText)
         {
 
             PDAppearanceString pdAppearance = new PDAppearanceString(field.getAcroForm(),
                     (PDVariableText) field);
 
-            Object fieldValue = field.getValue();
-
-            // in case there is no value being set generate the visual
-            // appearance with an empty String
-            if (fieldValue == null)
+            Object fieldValue = null;
+            try
             {
-                fieldValue = "";
+                fieldValue = field.getValue();
             }
+            catch (IOException e)
+            {
+                // TODO: Implement the removal of the appearance as this 
+                //       exception occurred either because the value couldn't be read or
+                //       the type is not valid for the field.
 
+            }
+            
             // TODO: implement the handling for additional values.
             if (fieldValue instanceof COSString)
             {
@@ -81,6 +84,11 @@ public class AppearanceGenerator
                 LOG.debug("Can't generate the appearance for values typed "
                         + fieldValue.getClass().getName() + ".");
             }
+        }
+        // TODO: implement the handling for additional field types
+        else
+        {
+            LOG.debug("Unable to generate the field appearance.");
         }
     }
 }
