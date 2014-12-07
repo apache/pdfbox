@@ -691,6 +691,31 @@ public abstract class PDFieldTreeNode implements COSObjectable
     {
         this.getDictionary().setString(COSName.TU, alternateFieldName);
     }
+    
+    /**
+     * Gets the mapping name of the field.
+     * 
+     * The mapping name shall be used when exporting interactive form field
+     * data from the document.
+     * 
+     * @return the mapping name of the field
+     */
+    public String getMappingName()
+    {
+        return this.getDictionary().getString(COSName.TM);
+    }
+
+    /**
+     * This will set the mapping name of the field.
+     * 
+     * @param mappingName the mapping name of the field
+     */
+    public void setMappingName(String mappingName)
+    {
+        this.getDictionary().setString(COSName.TM, mappingName);
+    }    
+    
+    
 
     /**
      * Creates a COSField subclass from the given field.
