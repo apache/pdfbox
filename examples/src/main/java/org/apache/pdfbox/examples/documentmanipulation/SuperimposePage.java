@@ -20,6 +20,7 @@ import java.awt.geom.AffineTransform;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
@@ -30,9 +31,10 @@ import org.apache.pdfbox.util.LayerUtility;
  * Example to show superimposing a PDF page onto another PDF.
  *
  */
-public class SuperimposePage {
+public class SuperimposePage
+{
 
-    public static void main(String[] args)
+    public static void main(final String[] args)
     {
         try
         {
@@ -40,6 +42,11 @@ public class SuperimposePage {
             // Create a new document with some basic content
             PDDocument aDoc = new PDDocument();
             PDPage aPage = new PDPage();
+
+            // get the page crop box. Will be used later to place the
+            // imported page.
+            PDRectangle cropBox = aPage.findCropBox();
+
             aDoc.addPage(aPage);
 
             PDPageContentStream aContent = new PDPageContentStream(aDoc, aPage);
@@ -60,22 +67,20 @@ public class SuperimposePage {
             PDDocument toBeImported = PDDocument.load(args[0]);
 
             // Get the page as a PDXObjectForm to place it
-            PDXObjectForm mountable = layerUtility.importPageAsForm(
-                    toBeImported, 0);
+            PDXObjectForm mountable = layerUtility.importPageAsForm(toBeImported, 0);
             // add compression to the stream (import deactivates compression)
             mountable.getPDStream().addCompression();
 
             // add to the existing content stream
-            PDPageContentStream contentStream = new PDPageContentStream(aDoc,
-                    aPage, true, true);
+            PDPageContentStream contentStream = new PDPageContentStream(aDoc, aPage, true, true);
 
             // Store the graphics state
             contentStream.appendRawCommands("q\n".getBytes("ISO-8859-1"));
 
-            // use a transformation to be able to scale and move easily
-            AffineTransform transform = new AffineTransform();
-
-            // draw the PDXObjectForm
+            // use some sample transformations 
+            AffineTransform transform = new AffineTransform(0, 0.5, -0.5, 0, cropBox.getWidth(), 0);
+            contentStream.drawXObject(mountable, transform);
+            transform = new AffineTransform(0.5, 0.5, -0.5, 0.5, 0.5 * cropBox.getWidth(), 0.2 * cropBox.getHeight());
             contentStream.drawXObject(mountable, transform);
 
             // restore former graphics state
