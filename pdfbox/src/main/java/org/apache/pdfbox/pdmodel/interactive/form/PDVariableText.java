@@ -213,39 +213,27 @@ public abstract class PDVariableText extends PDField
     /**
      * Get the default appearance.
      * 
+     * This is an inheritable attribute.
+     * 
+     * The default appearance contains a set of default graphics and text operators
+     * to define the field’s text size and color.
+     * 
      * @return the DA element of the dictionary object
      */
     public COSString getDefaultAppearance()
     {
-        if (defaultAppearance == null)
-        {
-            COSBase daValue =  getDictionary().getItem(COSName.DA);
-            if (daValue != null)
-            {
-                defaultAppearance = (COSString)daValue;
-            }
-        }
-        // the default appearance is inheritable
-        // maybe the parent provides a default appearance
-        if (defaultAppearance == null)
-        {
-            PDFieldTreeNode parent = getParent();
-            if (parent instanceof PDVariableText)
-            {
-                defaultAppearance = ((PDVariableText)parent).getDefaultAppearance();
-            }
-        }
-        // the default appearance is inheritable
-        // the acroform should provide a default appearance
-        if (defaultAppearance == null)
-        {
-            defaultAppearance = getAcroForm().getDefaultAppearance(); 
-        }
+        COSBase daValue = getInheritableAttribute(getDictionary(),COSName.DA);
+        defaultAppearance = (COSString) daValue;
         return defaultAppearance;
     }
 
     /**
      * Set the default appearance.
+     * 
+     * This will set the local default appearance for the variable text field only not 
+     * affecting a default appearance in the parent hierarchy.
+     * 
+     * Providing null as the value will remove the local default appearance.
      * 
      * @param daValue a string describing the default appearance
      */
