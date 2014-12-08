@@ -137,7 +137,15 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
         {
             if (isPageTreeNode(node))
             {
-                queue.addAll(getKids(node));
+                List<COSDictionary> kids = getKids(node);
+                for (COSDictionary kid : kids)
+                {
+                    enqueueKids(kid);
+                }
+            }
+            else
+            {
+                queue.add(node);
             }
         }
 
@@ -151,7 +159,13 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
         public PDPage next()
         {
             COSDictionary next = queue.poll();
-            enqueueKids(next);
+
+            // sanity check
+            if (next.getCOSName(COSName.TYPE) != COSName.PAGE)
+            {
+                throw new IllegalStateException("Expected Page but got " + next);
+            }
+
             return new PDPage(next);
         }
 
