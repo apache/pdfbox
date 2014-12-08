@@ -61,10 +61,6 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
         {
             throw new IllegalArgumentException("root cannot be null");
         }
-        if (root.getCOSName(COSName.TYPE) != COSName.PAGES)
-        {
-            throw new IllegalArgumentException("root must be of type Pages");
-        }
         this.root = root;
     }
 
