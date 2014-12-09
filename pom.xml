@@ -134,7 +134,7 @@ Subject: [VOTE] Release Apache PDFBox ${project.version}
 
 A candidate for the PDFBox ${project.version} release is available at:
 
-    http://people.apache.org/~${username}/pdfbox/${project.version}/
+    https://dist.apache.org/repos/dist/dev/pdfbox/${project.version}/
 
 The release candidate is a zip archive of the sources in:
 
@@ -154,10 +154,6 @@ least three +1 PDFBox PMC votes are cast.
 The release candidate has been prepared in:
 
     ${basedir}/target/${project.version}
-
-Please deploy it to people.apache.org like this:
-
-    scp -r ${basedir}/target/${project.version} people.apache.org:public_html/pdfbox/
 
 A release vote template has been generated for you:
 
