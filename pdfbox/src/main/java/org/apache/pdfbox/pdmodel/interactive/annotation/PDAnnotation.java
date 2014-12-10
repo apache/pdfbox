@@ -615,10 +615,10 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public PDGamma getColour()
     {
-        COSArray c = (COSArray) getDictionary().getItem(COSName.C);
-        if (c != null)
+        COSBase obj = getDictionary().getDictionaryObject(COSName.C);
+        if (obj instanceof COSArray)
         {
-            return new PDGamma(c);
+            return new PDGamma((COSArray) obj);
         }
         else
         {
