@@ -73,8 +73,22 @@ public class Predictor
                 switch (linepredictor)
                 {
                     case 2:// PRED TIFF SUB
-                        // TODO decode tiff with bitsPerComponent != 8;
+                        // TODO decode tiff with bitsPerComponent < 8;
                         // e.g. for 4 bpc each nibble must be subtracted separately
+                        if (bitsPerComponent == 16)
+                        {
+                            for (int p = 0; p < rowlength; p += 2)
+                            {
+                                int sub = ((actline[p] & 0xff) << 8) + (actline[p + 1] & 0xff);
+                                int left = p - bytesPerPixel >= 0
+                                        ? (((actline[p - bytesPerPixel] & 0xff) << 8)
+                                        + (actline[p - bytesPerPixel + 1] & 0xff))
+                                        : 0;
+                                actline[p] = (byte) (((sub + left) >> 8) & 0xff);
+                                actline[p + 1] = (byte) ((sub + left) & 0xff);
+                            }
+                            break;
+                        }
                         if (bitsPerComponent != 8)
                         {
                             throw new IOException("TIFF-Predictor with " + bitsPerComponent
