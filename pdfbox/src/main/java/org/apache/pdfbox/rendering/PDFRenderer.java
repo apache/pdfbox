@@ -117,11 +117,11 @@ public class PDFRenderer
         int rotationAngle = page.getRotation();
 
         // normalize the rotation angle
-        if (rotationAngle < 0)
+        while (rotationAngle < 0)
         {
             rotationAngle += 360;
         }
-        else if (rotationAngle >= 360)
+        while (rotationAngle >= 360)
         {
             rotationAngle -= 360;
         }
@@ -188,6 +188,17 @@ public class PDFRenderer
 
         PDRectangle cropBox = page.getCropBox();
         int rotationAngle = page.getRotation();
+        
+        // normalize the rotation angle
+        while (rotationAngle < 0)
+        {
+            rotationAngle += 360;
+        }
+        while (rotationAngle >= 360)
+        {
+            rotationAngle -= 360;
+        }
+        
         if (rotationAngle != 0)
         {
             float translateX = 0;
