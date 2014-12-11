@@ -235,16 +235,16 @@ public class TextPosition
         this.endX = endXValue;
         this.endY = endYValue;
 
+        // normalize the rotation angle
+        while (pageRotation < 0)
+        {
+            pageRotation += 360;
+        }
+        while (pageRotation >= 360)
+        {
+            pageRotation -= 360;
+        }
         this.rot = pageRotation;
-        // make sure it is 0 to 270 and no negative numbers
-        if(this.rot < 0)
-        {
-            rot += 360;
-        }
-        else if (rot >= 360)
-        {
-            rot -= 360;
-        }
 
         this.maxTextHeight = maxFontH;
         this.pageHeight = pageHeightValue;
