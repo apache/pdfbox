@@ -292,24 +292,17 @@ public class LayerUtility
     private static int getNormalizedRotation(PDPage page)
     {
         //Handle the /Rotation entry on the page dict
-        int rotation = page.getRotation();
-        while (rotation >= 360)
+        int rotationAngle = page.getRotation();
+        // normalize the rotation angle
+        while (rotationAngle < 0)
         {
-            rotation -= 360;
+            rotationAngle += 360;
         }
-        if (rotation < 0)
+        while (rotationAngle >= 360)
         {
-            rotation = 0;
+            rotationAngle -= 360;
         }
-        switch (rotation)
-        {
-        case 90:
-        case 180:
-        case 270:
-            return rotation;
-        default:
-            return 0;
-        }
+        return rotationAngle;
     }
 
 
