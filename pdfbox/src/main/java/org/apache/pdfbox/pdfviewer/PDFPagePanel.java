@@ -64,23 +64,13 @@ public class PDFPagePanel extends JPanel
         page = pdfPage;
         PDRectangle cropBox = page.findCropBox();
         drawDimension = cropBox.createDimension();
-        int rotationAngle = page.findRotation();
-        // normalize the rotation angle
-        while (rotationAngle < 0)
+        if (page.findRotation() % 180 == 0)
         {
-            rotationAngle += 360;
-        }
-        while (rotationAngle >= 360)
-        {
-            rotationAngle -= 360;
-        }
-        if (rotationAngle == 90 || rotationAngle == 270)
-        {
-            pageDimension = new Dimension(drawDimension.height, drawDimension.width);
+            pageDimension = drawDimension;
         }
         else
         {
-            pageDimension = drawDimension;
+            pageDimension = new Dimension(drawDimension.height, drawDimension.width);
         }
         setSize( pageDimension );
         setBackground( java.awt.Color.white );
@@ -107,19 +97,27 @@ public class PDFPagePanel extends JPanel
             {
                 rotationAngle -= 360;
             }
-            if (rotationAngle == 90 || rotationAngle == 270)
+            if (rotationAngle != 0)
             {
                 Graphics2D g2D = (Graphics2D)g;
-                g2D.translate(pageDimension.getWidth(), 0.0f);
+                double translateX = 0;
+                double translateY = 0;
+                switch (rotationAngle)
+                {
+                    case 90:
+                        translateX = pageDimension.getWidth();
+                        break;
+                    case 270:
+                        translateY = pageDimension.getHeight();
+                        break;
+                    case 180:
+                        translateX = pageDimension.getWidth();
+                        translateY = pageDimension.getHeight();
+                        break;
+                }
+                g2D.translate(translateX, translateY);
                 g2D.rotate(Math.toRadians(rotationAngle));
             }
-            else if (rotationAngle == 180)
-            {
-                Graphics2D g2D = (Graphics2D) g;
-                g2D.translate(pageDimension.getWidth(), pageDimension.getHeight());
-                g2D.rotate(Math.toRadians(rotationAngle));
-            }
-
             drawer.drawPage( g, page, drawDimension );
         }
         catch( IOException e )
