@@ -126,17 +126,17 @@ public final class TextPosition
         this.endX = endX;
         this.endY = endY;
 
-        int rotation = pageRotation;
-        // make sure it is 0 to 270 and no negative numbers
-        if (rotation < 0)
+        int rotationAngle = pageRotation;
+        // normalize the rotation angle
+        while (rotationAngle < 0)
         {
-            rotation += 360;
+            rotationAngle += 360;
         }
-        else if (rotation >= 360)
+        while (rotationAngle >= 360)
         {
-            rotation -= 360;
+            rotationAngle -= 360;
         }
-        this.rotation = rotation;
+        this.rotation = rotationAngle;
 
         this.maxHeight = maxHeight;
         this.pageHeight = pageHeight;
@@ -150,14 +150,14 @@ public final class TextPosition
         this.fontSize = fontSize;
         this.fontSizePt = fontSizeInPt;
 
-        x = getXRot(rotation);
-        if (rotation == 0 || rotation == 180)
+        x = getXRot(rotationAngle);
+        if (rotationAngle == 0 || rotationAngle == 180)
         {
-            y = this.pageHeight - getYLowerLeftRot(rotation);
+            y = this.pageHeight - getYLowerLeftRot(rotationAngle);
         }
         else
         {
-            y = this.pageWidth - getYLowerLeftRot(rotation);
+            y = this.pageWidth - getYLowerLeftRot(rotationAngle);
         }
     }
 
