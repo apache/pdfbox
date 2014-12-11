@@ -78,7 +78,16 @@ public class BeginInlineImage extends OperatorProcessor
         double pageHeight = drawer.getPageSize().getHeight();
         
         Matrix ctm = drawer.getGraphicsState().getCurrentTransformationMatrix();
-        int pageRotation = page.findRotation();
+        int rotationAngle = page.findRotation();
+        // normalize the rotation angle
+        while (rotationAngle < 0)
+        {
+            rotationAngle += 360;
+        }
+        while (rotationAngle >= 360)
+        {
+            rotationAngle -= 360;
+        }        
 
         AffineTransform ctmAT = ctm.createAffineTransform();
         ctmAT.scale(1f/imageWidth, 1f/imageHeight);
@@ -90,11 +99,11 @@ public class BeginInlineImage extends OperatorProcessor
         // tan = sin/cos
         double angle = Math.atan(ctmAT.getShearX()/ctmAT.getScaleX());
         Matrix translationMatrix = null;
-        if (pageRotation == 0 || pageRotation == 180) 
+        if (rotationAngle == 0 || rotationAngle == 180) 
         {
             translationMatrix = Matrix.getTranslatingInstance((float)(Math.sin(angle)*ctm.getXScale()), (float)(pageHeight-2*ctm.getYPosition()-Math.cos(angle)*ctm.getYScale())); 
         }
-        else if (pageRotation == 90 || pageRotation == 270) 
+        else if (rotationAngle == 90 || rotationAngle == 270) 
         {
             translationMatrix = Matrix.getTranslatingInstance((float)(Math.sin(angle)*ctm.getYScale()), (float)(pageHeight-2*ctm.getYPosition())); 
         }
