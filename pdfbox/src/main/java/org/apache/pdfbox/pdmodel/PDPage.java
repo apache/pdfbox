@@ -392,16 +392,23 @@ public class PDPage implements COSObjectable, PDContentStream
     }
 
     /**
-     * A value representing the rotation. This will be null if not set at this level The number of
-     * degrees by which the page should be rotated clockwise when displayed or printed. The value
-     * must be a multiple of 90.
+     * Returns the rotation angle in degrees by which the page should be rotated
+     * clockwise when displayed or printed. Valid values in a PDF must be a
+     * multiple of 90.
+     *
+     * @return The rotation angle in degrees in normalized form (0, 90, 180 or
+     * 270) or 0 if invalid or not set at this level.
      */
     public int getRotation()
     {
-        COSNumber value = (COSNumber) PDPageTree.getInheritableAttribute(page, COSName.ROTATE);
-        if (value != null)
+        COSBase obj = PDPageTree.getInheritableAttribute(page, COSName.ROTATE);
+        if (obj instanceof COSNumber)
         {
-           return value.intValue();
+            int rotationAngle = ((COSNumber) obj).intValue();
+            if (rotationAngle % 90 == 0)
+            {
+                return (rotationAngle % 360 + 360) % 360;
+            }
         }
         return 0;
     }
