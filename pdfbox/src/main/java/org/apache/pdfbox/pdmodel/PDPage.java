@@ -753,11 +753,11 @@ public class PDPage implements COSObjectable, Printable
         Dimension pageDimension = new Dimension( (int)widthPt, (int)heightPt );
         int rotationAngle = findRotation();
         // normalize the rotation angle
-        if (rotationAngle < 0)
+        while (rotationAngle < 0)
         {
             rotationAngle += 360;
         }
-        else if (rotationAngle >= 360)
+        while (rotationAngle >= 360)
         {
             rotationAngle -= 360;
         }
