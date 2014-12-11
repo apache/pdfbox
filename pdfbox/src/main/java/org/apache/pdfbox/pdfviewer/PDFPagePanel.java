@@ -97,18 +97,27 @@ public class PDFPagePanel extends JPanel
             g.setColor( getBackground() );
             g.fillRect( 0, 0, getWidth(), getHeight() );
 
-            int rotation = page.findRotation();
-            if (rotation == 90 || rotation == 270)
+            int rotationAngle = page.findRotation();
+            // normalize the rotation angle
+            while (rotationAngle < 0)
+            {
+                rotationAngle += 360;
+            }
+            while (rotationAngle >= 360)
+            {
+                rotationAngle -= 360;
+            }
+            if (rotationAngle == 90 || rotationAngle == 270)
             {
                 Graphics2D g2D = (Graphics2D)g;
                 g2D.translate(pageDimension.getWidth(), 0.0f);
-                g2D.rotate(Math.toRadians(rotation));
+                g2D.rotate(Math.toRadians(rotationAngle));
             }
-            else if (rotation == 180)
+            else if (rotationAngle == 180)
             {
                 Graphics2D g2D = (Graphics2D) g;
                 g2D.translate(pageDimension.getWidth(), pageDimension.getHeight());
-                g2D.rotate(Math.toRadians(rotation));
+                g2D.rotate(Math.toRadians(rotationAngle));
             }
 
             drawer.drawPage( g, page, drawDimension );
