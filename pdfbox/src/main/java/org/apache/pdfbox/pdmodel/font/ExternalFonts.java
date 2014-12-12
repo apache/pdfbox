@@ -302,7 +302,10 @@ public final class ExternalFonts
             String name = fontDescriptor.getFontName();
             if (name != null)
             {
-                isBold = fontDescriptor.getFontName().toLowerCase().contains("bold");
+                String lower = fontDescriptor.getFontName().toLowerCase();
+                isBold = lower.contains("bold") ||
+                         lower.contains("black") ||
+                         lower.contains("heavy");
             }
 
             // font descriptor flags should describe the style
