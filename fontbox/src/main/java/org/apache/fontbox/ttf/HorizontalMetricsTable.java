@@ -33,6 +33,7 @@ public class HorizontalMetricsTable extends TTFTable
     private int[] advanceWidth;
     private short[] leftSideBearing;
     private short[] nonHorizontalLeftSideBearing;
+    private int numHMetrics;
     
     /**
      * This will read the required data from the stream.
@@ -44,7 +45,7 @@ public class HorizontalMetricsTable extends TTFTable
     public void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
     {
         HorizontalHeaderTable hHeader = ttf.getHorizontalHeader();
-        int numHMetrics = hHeader.getNumberOfHMetrics();
+        numHMetrics = hHeader.getNumberOfHMetrics();
         int numGlyphs = ttf.getNumberOfGlyphs();
 
         int bytesRead = 0;
@@ -80,18 +81,23 @@ public class HorizontalMetricsTable extends TTFTable
 
         initialized = true;
     }
+
     /**
-     * @return Returns the advanceWidth.
+     * Returns the advance width for the given GID.
+     *
+     * @param gid GID
      */
-    public int[] getAdvanceWidth()
+    public int getAdvanceWidth(int gid)
     {
-        return advanceWidth;
-    }
-    /**
-     * @param advanceWidthValue The advanceWidth to set.
-     */
-    public void setAdvanceWidth(int[] advanceWidthValue)
-    {
-        advanceWidth = advanceWidthValue;
+        if (gid < numHMetrics)
+        {
+            return advanceWidth[gid];
+        }
+        else
+        {
+            // monospaced fonts may not have a width for every glyph
+            // the last one is for subsequent glyphs
+            return advanceWidth[advanceWidth.length -1];
+        }
     }
 }

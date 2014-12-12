@@ -141,12 +141,12 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         cidFont.setItem(COSName.FONT_DESC, fontDescriptor.getCOSObject());
 
         // W - widths
-        int[] subwidths = ttf.getHorizontalMetrics().getAdvanceWidth();
-        int[] gidwidths = new int[subwidths.length*2];
-        for (int i = 0; i < subwidths.length; i++)
+        int numGlyphs = ttf.getNumberOfGlyphs();
+        int[] gidwidths = new int[numGlyphs * 2];
+        for (int i = 0; i < numGlyphs; i++)
         {
             gidwidths[i * 2] = i;
-            gidwidths[i * 2 + 1] = subwidths[i];
+            gidwidths[i * 2 + 1] = ttf.getHorizontalMetrics().getAdvanceWidth(i);
         }
         cidFont.setItem(COSName.W, getWidths(gidwidths));
 

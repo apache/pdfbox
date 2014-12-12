@@ -75,54 +75,33 @@ final class PDTrueTypeFontEmbedder extends TrueTypeEmbedder
     private void setWidths(COSDictionary font, GlyphList glyphList) throws IOException
     {
         float scaling = 1000f / ttf.getHeader().getUnitsPerEm();
+        HorizontalMetricsTable hmtx = ttf.getHorizontalMetrics();
 
-        Map<Integer, String> codeToName = this.getFontEncoding().getCodeToNameMap();
+        Map<Integer, String> codeToName = getFontEncoding().getCodeToNameMap();
 
         int firstChar = Collections.min(codeToName.keySet());
         int lastChar = Collections.max(codeToName.keySet());
 
-        HorizontalMetricsTable hMet = ttf.getHorizontalMetrics();
-        int[] widthValues = hMet.getAdvanceWidth();
-
-        // some monospaced fonts provide only one value for the width
-        // instead of an array containing the same value for every glyph id
-        boolean isMonospaced = ttf.getHorizontalHeader().getNumberOfHMetrics() == 1;
-
-        int numWidths = lastChar - firstChar + 1;
-        List<Integer> widths = new ArrayList<Integer>(numWidths);
-
-        // use the first width as default
-        // proportional fonts -> width of the .notdef character
-        // monospaced-fonts -> the first width
-        int defaultWidth = Math.round(widthValues[0] * scaling);
-        for (int i = 0; i < numWidths; i++)
+        List<Integer> widths = new ArrayList<Integer>(lastChar - firstChar + 1);
+        for (int i = 0; i < lastChar - firstChar + 1; i++)
         {
-            widths.add(defaultWidth);
+            widths.add(0);
         }
 
         // a character code is mapped to a glyph name via the provided font encoding
         // afterwards, the glyph name is translated to a glyph ID.
-        for (Map.Entry<Integer, String> e : codeToName.entrySet())
+        for (Map.Entry<Integer, String> entry : codeToName.entrySet())
         {
-            String name = e.getValue();
-            // pdf code to unicode by glyph list.
-            if (!name.equals(".notdef"))
+            int code = entry.getKey();
+            String name = entry.getValue();
+
+            if (code >= firstChar && code <= lastChar)
             {
-                String c = glyphList.toUnicode(name);
-                int charCode = c.codePointAt(0);
+                String uni = glyphList.toUnicode(name);
+                int charCode = uni.codePointAt(0);
                 int gid = cmap.getGlyphId(charCode);
-                if (gid != 0)
-                {
-                    if (isMonospaced)
-                    {
-                        widths.set(e.getKey() - firstChar, defaultWidth);
-                    }
-                    else
-                    {
-                        widths.set(e.getKey() - firstChar,
-                                Math.round(widthValues[gid] * scaling));
-                    }
-                }
+                widths.set(entry.getKey() - firstChar,
+                           Math.round(hmtx.getAdvanceWidth(gid) * scaling));
             }
         }
 
