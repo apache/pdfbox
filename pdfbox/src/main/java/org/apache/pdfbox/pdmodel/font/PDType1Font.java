@@ -34,6 +34,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
+import org.apache.pdfbox.pdmodel.font.encoding.MacOSRomanEncoding;
 import org.apache.pdfbox.pdmodel.font.encoding.StandardEncoding;
 import org.apache.pdfbox.pdmodel.font.encoding.Type1Encoding;
 import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
@@ -86,6 +87,8 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
     private final boolean isEmbedded;
     private final boolean isDamaged;
     private Matrix fontMatrix;
+
+    private Map<String, Integer> invertedEncoding; // for writing
 
     /**
      * Creates a Type 1 standard 14 font for embedding.
@@ -271,6 +274,49 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
         {
             return (float)type1Equivalent.getPath(name).getBounds().getHeight();
         }
+    }
+
+    @Override
+    protected byte[] encode(int unicode) throws IOException
+    {
+        if (unicode > 0xff)
+        {
+            throw new IllegalArgumentException("This font type only supports 8-bit code points");
+        }
+
+        String name = getGlyphList().codePointToName(unicode);
+        Map<String, Integer> inverted = getInvertedEncoding();
+
+        if (name.equals(".notdef"))
+        {
+            throw new IllegalArgumentException(
+                    String.format("No glyph for U+%04X in font %s", unicode, getName()));
+        }
+
+        int code = inverted.get(name);
+        return new byte[] { (byte)code };
+    }
+
+    /**
+     * Inverts the font's Encoding. Any duplicate (Name -> Code) mappings will be lost.
+     */
+    private Map<String, Integer> getInvertedEncoding()
+    {
+        if (invertedEncoding != null)
+        {
+            return invertedEncoding;
+        }
+
+        invertedEncoding = new HashMap<String, Integer>();
+        Map<Integer, String> codeToName = MacOSRomanEncoding.INSTANCE.getCodeToNameMap();
+        for (Map.Entry<Integer, String> entry : codeToName.entrySet())
+        {
+            if (!invertedEncoding.containsKey(entry.getValue()))
+            {
+                invertedEncoding.put(entry.getValue(), entry.getKey());
+            }
+        }
+        return invertedEncoding;
     }
 
     @Override

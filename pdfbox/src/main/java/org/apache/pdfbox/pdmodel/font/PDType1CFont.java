@@ -244,6 +244,12 @@ public class PDType1CFont extends PDSimpleFont implements PDType1Equivalent
     }
 
     @Override
+    protected byte[] encode(int unicode) throws IOException
+    {
+        throw new UnsupportedOperationException("Not implemented: Type1C");
+    }
+
+    @Override
     public float getStringWidth(String string) throws IOException
     {
         float width = 0;

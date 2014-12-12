@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
@@ -249,6 +250,41 @@ public abstract class PDFont implements COSObjectable, PDFontLike
 
     @Override
     public abstract float getHeight(int code) throws IOException;
+
+    /**
+     * Encodes the given string for use in a PDF content stream.
+     *
+     * @param text Any Unicode text.
+     * @return Array of PDF content stream bytes.
+     * @throws IOException If the text could not be encoded.
+     */
+    public final byte[] encode(String text) throws IOException
+    {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        for (int offset = 0; offset < text.length(); )
+        {
+            int codePoint = text.codePointAt(offset);
+
+            // multi-byte encoding with 1 to 4 bytes
+            byte[] bytes = encode(codePoint);
+            out.write(bytes);
+
+            offset += Character.charCount(codePoint);
+        }
+        return out.toByteArray();
+    }
+
+    /**
+     * Encodes the given Unicode code point for use in a PDF content stream.
+     * Content streams use a multi-byte encoding with 1 to 4 bytes.
+     *
+     * <p>This method is called when embedding text in PDFs and when filling in fields.
+     *
+     * @param unicode Unicode code point.
+     * @return Array of 1 to 4 PDF content stream bytes.
+     * @throws IOException If the text could not be encoded.
+     */
+    protected abstract byte[] encode(int unicode) throws IOException;
 
     /**
      * Returns the width of the given Unicode string.

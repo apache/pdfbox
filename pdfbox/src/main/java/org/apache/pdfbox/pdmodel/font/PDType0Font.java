@@ -201,6 +201,12 @@ public class PDType0Font extends PDFont
     }
 
     @Override
+    protected byte[] encode(int unicode) throws IOException
+    {
+        return descendantFont.encode(unicode);
+    }
+
+    @Override
     public float getAverageFontWidth()
     {
         return descendantFont.getAverageFontWidth();

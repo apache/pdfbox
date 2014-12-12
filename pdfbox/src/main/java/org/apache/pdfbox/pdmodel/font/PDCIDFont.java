@@ -34,7 +34,7 @@ import org.apache.pdfbox.util.Vector;
  * A CIDFont. A CIDFont is a PDF object that contains information about a CIDFont program. Although
  * its Type value is Font, a CIDFont is not actually a font.
  *
- * <p>It is not usually necessary to use this class directly, prefer
+ * <p>It is not usually necessary to use this class directly, prefer {@link PDType0Font}.
  *
  * @author Ben Litchfield
  */
@@ -389,4 +389,16 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike
      * @return GID
      */
     public abstract int codeToGID(int code) throws IOException;
+
+    /**
+     * Encodes the given Unicode code point for use in a PDF content stream.
+     * Content streams use a multi-byte encoding with 1 to 4 bytes.
+     *
+     * <p>This method is called when embedding text in PDFs and when filling in fields.
+     *
+     * @param unicode Unicode code point.
+     * @return Array of 1 to 4 PDF content stream bytes.
+     * @throws IOException If the text could not be encoded.
+     */
+    protected abstract byte[] encode(int unicode) throws IOException;
 }
