@@ -57,7 +57,8 @@ final class PDTrueTypeFontEmbedder extends TrueTypeEmbedder
         dict.setItem(COSName.SUBTYPE, COSName.TRUE_TYPE);
 
         // only support WinAnsiEncoding encoding right now
-        Encoding encoding = new WinAnsiEncoding(); // fixme: read encoding from TTF
+        Encoding encoding = new WinAnsiEncoding();
+        GlyphList glyphList = GlyphList.getAdobeGlyphList();
         this.fontEncoding = encoding;
         dict.setItem(COSName.ENCODING, encoding.getCOSObject());
 
@@ -65,13 +66,13 @@ final class PDTrueTypeFontEmbedder extends TrueTypeEmbedder
         dict.setItem(COSName.FONT_DESC, fontDescriptor);
 
         // set the glyph widths
-        setWidths(dict);
+        setWidths(dict, glyphList);
     }
 
     /**
      * Sets the glyph widths in the font dictionary.
      */
-    private void setWidths(COSDictionary font) throws IOException
+    private void setWidths(COSDictionary font, GlyphList glyphList) throws IOException
     {
         float scaling = 1000f / ttf.getHeader().getUnitsPerEm();
 
@@ -107,8 +108,7 @@ final class PDTrueTypeFontEmbedder extends TrueTypeEmbedder
             // pdf code to unicode by glyph list.
             if (!name.equals(".notdef"))
             {
-                // todo: we're supposed to use the 'provided font encoding'
-                String c = GlyphList.getAdobeGlyphList().toUnicode(name);
+                String c = glyphList.toUnicode(name);
                 int charCode = c.codePointAt(0);
                 int gid = cmap.getGlyphId(charCode);
                 if (gid != 0)
