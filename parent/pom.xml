@@ -46,7 +46,8 @@
     </issueManagement>
 
     <properties>
-        <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
     <dependencyManagement>
@@ -149,6 +150,7 @@
                     <showDeprecation>true</showDeprecation>
                     <target>1.6</target>
                     <source>1.6</source>
+                    <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
             <plugin>
