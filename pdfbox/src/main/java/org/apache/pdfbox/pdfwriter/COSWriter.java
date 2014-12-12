@@ -60,48 +60,40 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.SecurityHandler;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
 import org.apache.pdfbox.persistence.util.COSObjectKey;
-import org.apache.pdfbox.util.StringUtil;
+import org.apache.pdfbox.util.Charsets;
+import org.apache.pdfbox.util.Hex;
 
 /**
- * this class acts on a in-memory representation of a pdf document.
- *
- * todo no support for incremental updates
- * todo single xref section only
- * todo no linearization
+ * This class acts on a in-memory representation of a PDF document.
  *
  * @author Michael Traut
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * 
+ * @author Ben Litchfield
  */
 public class COSWriter implements ICOSVisitor, Closeable
 {
-
-    /**
-     * Log instance.
-     */
     private static final Log LOG = LogFactory.getLog(COSWriter.class);
 
     /**
      * The dictionary open token.
      */
-    public static final byte[] DICT_OPEN = StringUtil.getBytes("<<");
+    public static final byte[] DICT_OPEN = "<<".getBytes(Charsets.US_ASCII);
     /**
      * The dictionary close token.
      */
-    public static final byte[] DICT_CLOSE = StringUtil.getBytes(">>");
+    public static final byte[] DICT_CLOSE = ">>".getBytes(Charsets.US_ASCII);
     /**
      * space character.
      */
-    public static final byte[] SPACE = StringUtil.getBytes(" ");
+    public static final byte[] SPACE = { ' ' };
     /**
      * The start to a PDF comment.
      */
-    public static final byte[] COMMENT = StringUtil.getBytes("%");
+    public static final byte[] COMMENT = { '%' };
 
     /**
      * The output version of the PDF.
      */
-    public static final byte[] VERSION = StringUtil.getBytes("PDF-1.4");
+    public static final byte[] VERSION = "PDF-1.4".getBytes(Charsets.US_ASCII);
     /**
      * Garbage bytes used to create the PDF header.
      */
@@ -109,57 +101,57 @@ public class COSWriter implements ICOSVisitor, Closeable
     /**
      * The EOF constant.
      */
-    public static final byte[] EOF = StringUtil.getBytes("%%EOF");
+    public static final byte[] EOF = "%%EOF".getBytes(Charsets.US_ASCII);
     // pdf tokens
 
     /**
      * The reference token.
      */
-    public static final byte[] REFERENCE = StringUtil.getBytes("R");
+    public static final byte[] REFERENCE = "R".getBytes(Charsets.US_ASCII);
     /**
      * The XREF token.
      */
-    public static final byte[] XREF = StringUtil.getBytes("xref");
+    public static final byte[] XREF = "xref".getBytes(Charsets.US_ASCII);
     /**
      * The xref free token.
      */
-    public static final byte[] XREF_FREE = StringUtil.getBytes("f");
+    public static final byte[] XREF_FREE = "f".getBytes(Charsets.US_ASCII);
     /**
      * The xref used token.
      */
-    public static final byte[] XREF_USED = StringUtil.getBytes("n");
+    public static final byte[] XREF_USED = "n".getBytes(Charsets.US_ASCII);
     /**
      * The trailer token.
      */
-    public static final byte[] TRAILER = StringUtil.getBytes("trailer");
+    public static final byte[] TRAILER = "trailer".getBytes(Charsets.US_ASCII);
     /**
      * The start xref token.
      */
-    public static final byte[] STARTXREF = StringUtil.getBytes("startxref");
+    public static final byte[] STARTXREF = "startxref".getBytes(Charsets.US_ASCII);
     /**
      * The starting object token.
      */
-    public static final byte[] OBJ = StringUtil.getBytes("obj");
+    public static final byte[] OBJ = "obj".getBytes(Charsets.US_ASCII);
     /**
      * The end object token.
      */
-    public static final byte[] ENDOBJ = StringUtil.getBytes("endobj");
+    public static final byte[] ENDOBJ = "endobj".getBytes(Charsets.US_ASCII);
     /**
      * The array open token.
      */
-    public static final byte[] ARRAY_OPEN = StringUtil.getBytes("[");
+    public static final byte[] ARRAY_OPEN = "[".getBytes(Charsets.US_ASCII);
     /**
      * The array close token.
      */
-    public static final byte[] ARRAY_CLOSE = StringUtil.getBytes("]");
+    public static final byte[] ARRAY_CLOSE = "]".getBytes(Charsets.US_ASCII);
     /**
      * The open stream token.
      */
-    public static final byte[] STREAM = StringUtil.getBytes("stream");
+    public static final byte[] STREAM = "stream".getBytes(Charsets.US_ASCII);
     /**
      * The close stream token.
      */
-    public static final byte[] ENDSTREAM = StringUtil.getBytes("endstream");
+    public static final byte[] ENDSTREAM = "endstream".getBytes(Charsets.US_ASCII);
 
     private NumberFormat formatXrefOffset = new DecimalFormat("0000000000");
 
@@ -594,11 +586,8 @@ public class COSWriter implements ICOSVisitor, Closeable
     }
 
     /**
-     * write the x ref section for the pdf file
-     *
-     * currently, the pdf is reconstructed from the scratch, so we write a single section
-     *
-     * todo support for incremental writing?
+     * Write the x ref section for the pdf file.
+     * Currently, the pdf is reconstructed from the scratch, so we write a single section.
      *
      * @param doc The document to write the xref from.
      *
@@ -798,7 +787,7 @@ public class COSWriter implements ICOSVisitor, Closeable
         // sign the bytes
         SignatureInterface signatureInterface = doc.getSignatureInterface();
         byte[] sign = signatureInterface.sign(signStream);
-        String signature = new COSString(sign).getHexString();
+        String signature = new COSString(sign).toHexString();
         // substract 2 bytes because of the enclosing "<>"
         if (signature.length() > signatureLength - 2)
         {
@@ -960,12 +949,6 @@ public class COSWriter implements ICOSVisitor, Closeable
             else if( current == null )
             {
                 COSNull.NULL.accept( this );
-            }
-            else if( current instanceof COSString )
-            {
-                COSString copy = new COSString();
-                copy.append(((COSString)current).getBytes());
-                copy.accept(this);
             }
             else
             {
@@ -1260,7 +1243,7 @@ public class COSWriter implements ICOSVisitor, Closeable
     @Override
     public Object visitFromString(COSString obj) throws IOException
     {
-        if(willEncrypt)
+        if (willEncrypt)
         {
             document.getEncryption().getSecurityHandler().encryptString(
                     obj,
@@ -1268,7 +1251,7 @@ public class COSWriter implements ICOSVisitor, Closeable
                     currentObjectKey.getGeneration());
         }
 
-        obj.writePDF( getStandardOutput() );
+        COSWriter.writeString(obj, getStandardOutput());
         return null;
     }
 
@@ -1377,5 +1360,100 @@ public class COSWriter implements ICOSVisitor, Closeable
             trailer.setItem( COSName.ID, idArray );
         }
         cosDoc.accept(this);
+    }
+
+    /**
+     * This will output the given byte getString as a PDF object.
+     *
+     * @param output The stream to write to.
+     * @throws IOException If there is an error writing to the stream.
+     */
+    public static void writeString(COSString string, OutputStream output) throws IOException
+    {
+        writeString(string.getBytes(), string.getForceHexForm(), output);
+    }
+
+    /**
+     * This will output the given text/byte getString as a PDF object.
+     *
+     * @param output The stream to write to.
+     * @throws IOException If there is an error writing to the stream.
+     */
+    public static void writeString(byte[] bytes, OutputStream output) throws IOException
+    {
+        writeString(bytes, false, output);
+    }
+
+    /**
+     * This will output the given text/byte string as a PDF object.
+     *
+     * @param output The stream to write to.
+     * @throws IOException If there is an error writing to the stream.
+     */
+    private static void writeString(byte[] bytes, boolean forceHex, OutputStream output)
+            throws IOException
+    {
+        // check for non-ASCII characters
+        boolean isASCII = true;
+        for (byte b : bytes)
+        {
+            // if the byte is negative then it is an eight bit byte and is outside the ASCII range
+            if (b < 0)
+            {
+                isASCII = false;
+                break;
+            }
+        }
+
+        if (isASCII && !forceHex)
+        {
+            // write ASCII string
+            output.write('(');
+            for (byte b : bytes)
+            {
+                switch (b)
+                {
+                    case '(':
+                    case ')':
+                    case '\\':
+                        output.write('\\');
+                        output.write(b);
+                        break;
+                    case '\r':
+                        output.write('\\');
+                        output.write('\r');
+                        break;
+                    case '\n':
+                        output.write('\\');
+                        output.write('\n');
+                        break;
+                    case '\t':
+                        output.write('\\');
+                        output.write('\t');
+                        break;
+                    case '\b':
+                        output.write('\\');
+                        output.write('\b');
+                        break;
+                    case '\f':
+                        output.write('\\');
+                        output.write('\f');
+                        break;
+                    default:
+                        output.write(b);
+                }
+            }
+            output.write(')');
+        }
+        else
+        {
+            // write hex string
+            output.write('<');
+            for (byte b : bytes)
+            {
+                output.write(Hex.getBytes(b));
+            }
+            output.write('>');
+        }
     }
 }

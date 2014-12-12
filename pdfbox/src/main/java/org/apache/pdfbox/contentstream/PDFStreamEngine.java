@@ -79,34 +79,11 @@ public class PDFStreamEngine
     private boolean isProcessingPage;
     private Matrix initialMatrix;
 
-    // skip malformed or otherwise unparseable input where possible
-    private boolean forceParsing;
-
     /**
      * Creates a new PDFStreamEngine.
      */
     public PDFStreamEngine()
     {
-    }
-
-    /**
-     * Indicates if force parsing is activated.
-     * 
-     * @return true if force parsing is active
-     */
-    public boolean isForceParsing()
-    {
-        return forceParsing;
-    }
-
-    /**
-     * Enable/Disable force parsing.
-     * 
-     * @param forceParsingValue true activates force parsing
-     */
-    public void setForceParsing(boolean forceParsingValue)
-    {
-        forceParsing = forceParsingValue;
     }
 
     /**
@@ -473,7 +450,7 @@ public class PDFStreamEngine
     private void processStreamOperators(PDContentStream contentStream) throws IOException
     {
         List<COSBase> arguments = new ArrayList<COSBase>();
-        PDFStreamParser parser = new PDFStreamParser(contentStream.getContentStream(), forceParsing);
+        PDFStreamParser parser = new PDFStreamParser(contentStream.getContentStream());
         try
         {
             Iterator<Object> iter = parser.getTokenIterator();

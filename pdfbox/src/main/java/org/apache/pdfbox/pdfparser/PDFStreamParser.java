@@ -57,29 +57,12 @@ public class PDFStreamParser extends BaseParser
     /**
      * Constructor that takes a stream to parse.
      *
-     * @since Apache PDFBox 1.3.0
      * @param stream The stream to read data from.
-     * @param forceParsing flag to skip malformed or otherwise unparseable
-     *                     input where possible
      * @throws IOException If there is an error reading from the stream.
      */
-    public PDFStreamParser(InputStream stream, boolean forceParsing)
-            throws IOException 
+    public PDFStreamParser(InputStream stream) throws IOException
     {
-        super(stream, forceParsing);
-    }
-
-    /**
-     * Constructor that takes a stream to parse.
-     *
-     * @param stream The stream to read data from.
-     *
-     * @throws IOException If there is an error reading from the stream.
-     */
-    public PDFStreamParser(InputStream stream)
-            throws IOException 
-    {
-        this(stream, FORCE_PARSING);
+        super(stream);
     }
 
     /**
@@ -92,21 +75,6 @@ public class PDFStreamParser extends BaseParser
     public PDFStreamParser( PDStream stream ) throws IOException
     {
        this( stream.createInputStream() );
-    }
-
-    /**
-     * Constructor.
-     *
-     * @since Apache PDFBox 1.3.0
-     * @param stream The stream to parse.
-     * @param forceParsing flag to skip malformed or otherwise unparseable
-     *                     input where possible
-     * @throws IOException If there is an error initializing the stream.
-     */
-    public PDFStreamParser(COSStream stream, boolean forceParsing)
-            throws IOException 
-    {
-       this(stream.getUnfilteredStream(), forceParsing);
     }
 
     /**

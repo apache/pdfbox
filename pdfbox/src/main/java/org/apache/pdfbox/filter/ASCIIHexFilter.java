@@ -23,11 +23,11 @@ import java.io.OutputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSDictionary;
-
-import org.apache.pdfbox.persistence.util.COSHEXTable;
+import org.apache.pdfbox.util.Hex;
 
 /**
  * Decodes data encoded in an ASCII hexadecimal form, reproducing the original binary data.
+ *
  * @author Ben Litchfield
  */
 final class ASCIIHexFilter extends Filter
@@ -106,7 +106,7 @@ final class ASCIIHexFilter extends Filter
 
     private boolean isEOD(int c)
     {
-        return (c == 62); // '>' - EOD
+        return c == '>';
     }
 
     @Override
@@ -116,8 +116,7 @@ final class ASCIIHexFilter extends Filter
         int byteRead;
         while ((byteRead = input.read()) != -1)
         {
-            int value = (byteRead + 256) % 256;
-            encoded.write(COSHEXTable.TABLE[value]);
+            encoded.write(Hex.getBytes((byte)byteRead));
         }
         encoded.flush();
     }

@@ -124,12 +124,6 @@ public abstract class BaseParser
     private static final String NULL = "null";
 
     /**
-     * Default value of the {@link #forceParsing} flag.
-     */
-    public static final boolean FORCE_PARSING =
-        Boolean.getBoolean("org.apache.pdfbox.forceParsing");
-
-    /**
      * This is the stream that will be read from.
      */
     protected PushBackInputStream pdfSource;
@@ -140,29 +134,19 @@ public abstract class BaseParser
     protected COSDocument document;
 
     /**
-     * Flag to skip malformed or otherwise unparseable input where possible.
-     */
-    protected final boolean forceParsing;
-
-    /**
      * Default constructor.
      */
     public BaseParser()
     {
-        this.forceParsing = FORCE_PARSING;
     }
 
     /**
      * Constructor.
      *
-     * @since Apache PDFBox 1.3.0
      * @param input The input stream to read the data from.
-     * @param forceParsingValue flag to skip malformed or otherwise unparseable
-     *                     input where possible
      * @throws IOException If there is an error reading the input stream.
      */
-    public BaseParser(InputStream input, boolean forceParsingValue)
-            throws IOException
+    public BaseParser(InputStream input) throws IOException
     {
         int pushbacksize = 65536;
         try
@@ -177,18 +161,6 @@ public abstract class BaseParser
         }
         this.pdfSource = new PushBackInputStream(
                 new BufferedInputStream(input, 16384), pushbacksize);
-        this.forceParsing = forceParsingValue;
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param input The input stream to read the data from.
-     * @throws IOException If there is an error reading the input stream.
-     */
-    public BaseParser(InputStream input) throws IOException 
-    {
-        this(input, FORCE_PARSING);
     }
 
     /**
@@ -471,19 +443,19 @@ public abstract class BaseParser
             {
                 length = ( (COSNumber) streamLength).intValue();
             }
-// commented out next chunk since for the sequentially working PDFParser
-// we do not know if length object is redefined later on and the currently
-// read indirect object might be obsolete (e.g. not referenced in xref table);
-// this would result in reading wrong number of bytes;
-// Thus the only reliable information is a direct length. 
-// This exclusion shouldn't harm much since in case of indirect objects they will
-// typically be defined after the stream object, thus keeping the directly
-// provided length will fix most cases
-//            else if ( ( streamLength instanceof COSObject ) &&
-//                      ( ( (COSObject) streamLength ).getObject() instanceof COSNumber ) )
-//            {
-//                length = ( (COSNumber) ( (COSObject) streamLength ).getObject() ).intValue();
-//            } 
+            // commented out next chunk since for the sequentially working PDFParser
+            // we do not know if length object is redefined later on and the currently
+            // read indirect object might be obsolete (e.g. not referenced in xref table);
+            // this would result in reading wrong number of bytes;
+            // Thus the only reliable information is a direct length.
+            // This exclusion shouldn't harm much since in case of indirect objects they will
+            // typically be defined after the stream object, thus keeping the directly
+            // provided length will fix most cases
+            // else if ( ( streamLength instanceof COSObject ) &&
+            //           ( ( (COSObject) streamLength ).getObject() instanceof COSNumber ) )
+            // {
+            //     length = ( (COSNumber) ( (COSObject) streamLength ).getObject() ).intValue();
+            // }
             
             if ( length == -1 )
             {
@@ -820,7 +792,7 @@ public abstract class BaseParser
     protected COSString parseCOSString() throws IOException
     {
         char nextChar = (char)pdfSource.read();
-        COSString retval = new COSString();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
         char openBrace;
         char closeBrace;
         if( nextChar == '(' )
@@ -854,13 +826,13 @@ public abstract class BaseParser
                 braces = checkForMissingCloseParen(braces);
                 if( braces != 0 )
                 {
-                    retval.append( ch );
+                    out.write(ch);
                 }
             }
             else if( ch == openBrace )
             {
                 braces++;
-                retval.append( ch );
+                out.write(ch);
             }
             else if( ch == '\\' )
             {
@@ -869,35 +841,35 @@ public abstract class BaseParser
                 switch(next)
                 {
                     case 'n':
-                        retval.append( '\n' );
+                        out.write('\n');
                         break;
                     case 'r':
-                        retval.append( '\r' );
+                        out.write('\r');
                         break;
                     case 't':
-                        retval.append( '\t' );
+                        out.write('\t');
                         break;
                     case 'b':
-                        retval.append( '\b' );
+                        out.write('\b');
                         break;
                     case 'f':
-                        retval.append( '\f' );
+                        out.write('\f');
                         break;
                     case ')':
                         // PDFBox 276 /Title (c:\)
                         braces = checkForMissingCloseParen(braces);
                         if( braces != 0 )
                         {
-                            retval.append( next );
+                            out.write(next);
                         }
                         else
                         {
-                            retval.append('\\');
+                            out.write('\\');
                         }
                         break;
                     case '(':
                     case '\\':
-                        retval.append( next );
+                        out.write(next);
                         break;
                     case 10:
                     case 13:
@@ -950,20 +922,20 @@ public abstract class BaseParser
                         {
                             throw new IOException( "Error: Expected octal character, actual='" + octal + "'" );
                         }
-                        retval.append( character );
+                        out.write(character);
                         break;
                     }
                     default:
                     {
                         // dropping the backslash
                         // see 7.3.4.2 Literal Strings for further information
-                        retval.append( next );
+                        out.write(next);
                     }
                 }
             }
             else
             {
-                retval.append( ch );
+                out.write(ch);
             }
             if (nextc != -2)
             {
@@ -978,7 +950,7 @@ public abstract class BaseParser
         {
             pdfSource.unread(c);
         }
-        return retval;
+        return new COSString(out.toByteArray());
     }
 
     /**
@@ -1044,7 +1016,7 @@ public abstract class BaseParser
                 break;
             }
         }
-        return COSString.createFromHexString( sBuf.toString(), forceParsing );
+        return COSString.parseHex(sBuf.toString());
     }
     
     /**

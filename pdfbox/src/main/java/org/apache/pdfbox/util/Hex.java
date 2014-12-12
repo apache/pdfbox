@@ -14,26 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.pdfbox.util;
 
-import java.io.UnsupportedEncodingException;
-
-public class StringUtil
+/**
+ * Utility functions for hex encoding.
+ *
+ * @author John Hewson
+ */
+public class Hex
 {
+    private Hex() {}
+
     /**
-     * Converts a string to it ISO-8859-1 byte sequence
-     *
-     * It is an workaround for variable initialisations outside of functions.
-     */ 
-    public static byte[] getBytes(String s)
+     * Returns a hex string of the given byte.
+     */
+    public static String getString(byte b)
     {
-        try
-            {
-                return s.getBytes("ISO-8859-1");
-            }
-        catch(UnsupportedEncodingException e)
-            {
-                throw new RuntimeException("Unsupported Encoding", e);
-            }
+        return Integer.toHexString(0x100 | b & 0xff).substring(1).toUpperCase();
+    }
+
+    /**
+     * Returns the bytes corresponding to the ASCII hex encoding of the given byte.
+     */
+    public static byte[] getBytes(byte b)
+    {
+        return getString(b).getBytes(Charsets.US_ASCII);
     }
 }

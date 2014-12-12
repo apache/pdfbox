@@ -311,7 +311,7 @@ public class NonSequentialPDFParser extends PDFParser
                         + " does not contain an integer value, but: '" + eofLookupRangeStr + "'");
             }
         }
-        setDocument(new COSDocument(false, useScratchFiles));
+        setDocument(new COSDocument(useScratchFiles));
         pdfSource = new PushBackInputStream(raStream, 4096);
     }
 
@@ -1582,7 +1582,7 @@ public class NonSequentialPDFParser extends PDFParser
                 {
                     // parse object stream
                     PDFObjectStreamParser parser = new PDFObjectStreamParser(
-                            (COSStream) objstmBaseObj, document, forceParsing);
+                            (COSStream) objstmBaseObj, document);
                     parser.parse();
 
                     // get set of object numbers referenced for this object
@@ -1611,7 +1611,7 @@ public class NonSequentialPDFParser extends PDFParser
     /**
      * 
      * @param dict the dictionary to be decrypted
-     * @param the object number
+     * @param objNr the object number
      * @param objGenNr the object generation number
      * @throws IOException ff something went wrong
      */

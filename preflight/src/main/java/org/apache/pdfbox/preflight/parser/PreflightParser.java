@@ -809,8 +809,7 @@ public class PreflightParser extends NonSequentialPDFParser
                 if (objstmBaseObj instanceof COSStream)
                 {
                     // parse object stream
-                    PDFObjectStreamParser parser = new PDFObjectStreamParser((COSStream) objstmBaseObj, document,
-                            forceParsing);
+                    PDFObjectStreamParser parser = new PDFObjectStreamParser((COSStream) objstmBaseObj, document);
                     parser.parse();
 
                     // get set of object numbers referenced for this object stream

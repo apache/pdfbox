@@ -21,11 +21,12 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.pdfbox.util.Charsets;
 
-import org.apache.pdfbox.persistence.util.COSHEXTable;
 
 /**
- * A PDF named object.
+ * A PDF Name object.
+ *
  * @author Ben Litchfield
  */
 public final class COSName extends COSBase implements Comparable<COSName>
@@ -36,12 +37,6 @@ public final class COSName extends COSBase implements Comparable<COSName>
     // all common COSName values are stored in this HashMap
     // hey are already defined as static constants and don't need to be synchronized
     private static Map<String, COSName> commonNameMap = new HashMap<String, COSName>();
-
-    /** The prefix to a PDF name. */
-    public static final byte[] NAME_PREFIX = new byte[] { 47 }; // The / character
-
-    /** The escape character for a name. */
-    public static final byte[] NAME_ESCAPE = new byte[] { 35 }; // The # character
 
     //
     // IMPORTANT: this list is *alphabetized* and does not need any JavaDoc
@@ -578,15 +573,9 @@ public final class COSName extends COSBase implements Comparable<COSName>
     }
 
     @Override
-    public boolean equals(Object o)
+    public boolean equals(Object object)
     {
-        boolean retval = this == o;
-        if (!retval && o instanceof COSName)
-        {
-            COSName other = (COSName) o;
-            retval = name == other.name || name.equals(other.name);
-        }
-        return retval;
+        return object instanceof COSName && name.equals(((COSName) object).name);
     }
 
     @Override
@@ -624,39 +613,37 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     public void writePDF(OutputStream output) throws IOException
     {
-        output.write(NAME_PREFIX);
-        byte[] bytes = getName().getBytes("ISO-8859-1");
-        for (int i = 0; i < bytes.length; i++)
+        output.write('/');
+        byte[] bytes = getName().getBytes(Charsets.US_ASCII);
+        for (byte b : bytes)
         {
-            int current = (bytes[i] + 256) % 256;
+            int current = (b + 256) % 256;
 
-            // Be more restrictive than the PDF spec, "Name Objects"
-            // see PDFBOX-2073
-            if ((current >= 'A' && current <= 'Z')
-                    || (current >= 'a' && current <= 'z')
-                    || (current >= '0' && current <= '9')
-                    || current == '+'
-                    || current == '-'
-                    || current == '_'
-                    || current == '@'
-                    || current == '*'
-                    || current == '$'
-                    || current == ';'
-                    || current == '.')
+            // be more restrictive than the PDF spec, "Name Objects", see PDFBOX-2073
+            if (current >= 'A' && current <= 'Z' ||
+                    current >= 'a' && current <= 'z' ||
+                    current >= '0' && current <= '9' ||
+                    current == '+' ||
+                    current == '-' ||
+                    current == '_' ||
+                    current == '@' ||
+                    current == '*' ||
+                    current == '$' ||
+                    current == ';' ||
+                    current == '.')
             {
                 output.write(current);
             }
             else
             {
-                output.write(NAME_ESCAPE);
-                output.write(COSHEXTable.TABLE[current]);
+                output.write('#');
+                output.write(String.format("%02X", current).getBytes(Charsets.US_ASCII));
             }
         }
     }
 
     /**
-     * Not usually needed except if resources need to be reclaimed in a long running process. Patch provided by
-     * flester@GMail.com incorporated 5/23/08, Danielwilson@users.SourceForge.net
+     * Not usually needed except if resources need to be reclaimed in a long running process.
      */
     public static synchronized void clearResources()
     {

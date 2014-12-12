@@ -358,7 +358,7 @@ public class PDSignature implements COSObjectable
         }
         fis.close();
 
-        return COSString.createFromHexString(byteOS.toString()).getBytes();
+        return COSString.parseHex(byteOS.toString()).getBytes();
     }
 
     /**
