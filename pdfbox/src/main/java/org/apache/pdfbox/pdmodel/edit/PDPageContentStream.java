@@ -23,12 +23,12 @@ import java.awt.geom.PathIterator;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import java.util.Stack;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
@@ -60,7 +60,6 @@ import org.apache.pdfbox.util.Charsets;
  * are finished with this object.
  *
  * @author Ben Litchfield
- * 
  */
 public class PDPageContentStream implements Closeable
 {
@@ -77,6 +76,8 @@ public class PDPageContentStream implements Closeable
     private static final byte[] MOVE_TEXT_POSITION = toAscii("Td\n");
     private static final byte[] SET_TEXT_MATRIX = toAscii("Tm\n");
     private static final byte[] SHOW_TEXT = toAscii("Tj\n");
+    private static final byte[] SET_LEADING = toAscii("TL\n");
+    private static final byte[] NEW_LINE = toAscii("T*\n");
 
     private static final byte[] SAVE_GRAPHICS_STATE = toAscii("q\n");
     private static final byte[] RESTORE_GRAPHICS_STATE = toAscii("Q\n");
@@ -129,6 +130,7 @@ public class PDPageContentStream implements Closeable
     private OutputStream output;
     private PDResources resources;
     private boolean inTextMode = false;
+    private final Stack<PDFont> fontStack = new Stack<PDFont>();
 
     private PDColorSpace currentStrokingColorSpace = PDDeviceGray.INSTANCE;
     private PDColorSpace currentNonStrokingColorSpace = PDDeviceGray.INSTANCE;
@@ -310,6 +312,15 @@ public class PDPageContentStream implements Closeable
      */
     public void setFont(PDFont font, float fontSize) throws IOException
     {
+        if (fontStack.isEmpty())
+        {
+            fontStack.add(font);
+        }
+        else
+        {
+            fontStack.setElementAt(font, fontStack.size() - 1);
+        }
+
         appendCOSName(resources.add(font));
         appendRawCommands(SPACE);
         appendRawCommands(fontSize);
@@ -619,11 +630,45 @@ public class PDPageContentStream implements Closeable
     {
         if (!inTextMode)
         {
-            throw new IOException("Error: must call beginText() before drawString");
+            throw new IllegalStateException("Must call beginText() before drawString()");
         }
-        COSWriter.writeString(text.getBytes(Charset.forName("ISO-8859-1")), output); // todo: use font's encoding
+
+        if (fontStack.isEmpty())
+        {
+            throw new IllegalStateException("Must call setFont() before drawString()");
+        }
+
+        PDFont font = fontStack.peek();
+        COSWriter.writeString(font.encode(text), output);
         appendRawCommands(SPACE);
         appendRawCommands(SHOW_TEXT);
+    }
+
+    /**
+     * Sets the text leading.
+     *
+     * @param leading The leading in unscaled text units.
+     * @throws IOException If there is an error writing to the stream.
+     */
+    public void setLeading(double leading) throws IOException
+    {
+        appendRawCommands(leading);
+        appendRawCommands(SPACE);
+        appendRawCommands(SET_LEADING);
+    }
+
+    /**
+     * Move to the start of the next line of text. Requires the leading to have been set.
+     *
+     * @throws IOException If there is an error writing to the stream.
+     */
+    public void newLine() throws IOException
+    {
+        if (!inTextMode)
+        {
+            throw new IllegalStateException("Must call beginText() before newLine()");
+        }
+        appendRawCommands(NEW_LINE);
     }
 
     /**
@@ -1467,6 +1512,7 @@ public class PDPageContentStream implements Closeable
      */
     public void saveGraphicsState() throws IOException
     {
+        fontStack.push(fontStack.peek());
         appendRawCommands(SAVE_GRAPHICS_STATE);
     }
 
@@ -1476,6 +1522,7 @@ public class PDPageContentStream implements Closeable
      */
     public void restoreGraphicsState() throws IOException
     {
+        fontStack.pop();
         appendRawCommands(RESTORE_GRAPHICS_STATE);
     }
 
@@ -1487,7 +1534,7 @@ public class PDPageContentStream implements Closeable
      */
     public void appendRawCommands(String commands) throws IOException
     {
-        appendRawCommands(commands.getBytes("ISO-8859-1"));
+        appendRawCommands(commands.getBytes(Charsets.US_ASCII));
     }
 
     /**

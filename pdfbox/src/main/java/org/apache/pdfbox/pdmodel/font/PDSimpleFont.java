@@ -59,6 +59,18 @@ public abstract class PDSimpleFont extends PDFont
     PDSimpleFont(String baseFont)
     {
         super(baseFont);
+
+        this.encoding = WinAnsiEncoding.INSTANCE;
+
+        // assign the glyph list based on the font
+        if ("ZapfDingbats".equals(baseFont))
+        {
+            glyphList = GlyphList.getZapfDingbats();
+        }
+        else
+        {
+            glyphList = GlyphList.getAdobeGlyphList();
+        }
     }
 
     /**

@@ -258,6 +258,14 @@ public class PDCIDFontType0 extends PDCIDFont
     }
 
     @Override
+    public byte[] encode(int unicode)
+    {
+        // todo: we can use a known character collection CMap for a CIDFont
+        //       and an Encoding for Type 1-equivalent
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public float getWidthFromFont(int code) throws IOException
     {
         int cid = codeToCID(code);

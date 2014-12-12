@@ -155,6 +155,12 @@ public class PDType3Font extends PDSimpleFont
     }
 
     @Override
+    protected byte[] encode(int unicode) throws IOException
+    {
+        throw new UnsupportedOperationException("Not implemented: Type3");
+    }
+
+    @Override
     public int readCode(InputStream in) throws IOException
     {
         return in.read();

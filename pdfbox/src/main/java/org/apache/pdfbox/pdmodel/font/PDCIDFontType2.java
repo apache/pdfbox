@@ -19,6 +19,8 @@ package org.apache.pdfbox.pdmodel.font;
 import java.io.IOException;
 import java.io.InputStream;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.cmap.CMap;
@@ -50,9 +52,11 @@ public class PDCIDFontType2 extends PDCIDFont
 
     private final TrueTypeFont ttf;
     private final int[] cid2gid;
+    private final Map<Integer, Integer> gid2cid;
     private final boolean hasIdentityCid2Gid;
     private final boolean isEmbedded;
     private final boolean isDamaged;
+    private final CmapSubtable cmap;
     private Matrix fontMatrix;
 
     /**
@@ -141,8 +145,10 @@ public class PDCIDFontType2 extends PDCIDFont
             }
         }
         ttf = ttfFont;
+        cmap = getUnicodeCmap(ttf.getCmap());
 
         cid2gid = readCIDToGIDMap();
+        gid2cid = invert(cid2gid);
         COSBase map = dict.getDictionaryObject(COSName.CID_TO_GID_MAP);
         hasIdentityCid2Gid = map instanceof COSName && ((COSName) map).getName().equals("Identity");
     }
@@ -164,34 +170,42 @@ public class PDCIDFontType2 extends PDCIDFont
         return ttf.getFontBBox();
     }
 
-    private int[] readCIDToGIDMap()
+    private int[] readCIDToGIDMap() throws IOException
     {
         int[] cid2gid = null;
         COSBase map = dict.getDictionaryObject(COSName.CID_TO_GID_MAP);
         if (map instanceof COSStream)
         {
             COSStream stream = (COSStream) map;
-            try
+
+            InputStream is = stream.getUnfilteredStream();
+            byte[] mapAsBytes = IOUtils.toByteArray(is);
+            IOUtils.closeQuietly(is);
+            int numberOfInts = mapAsBytes.length / 2;
+            cid2gid = new int[numberOfInts];
+            int offset = 0;
+            for (int index = 0; index < numberOfInts; index++)
             {
-                InputStream is = stream.getUnfilteredStream();
-                byte[] mapAsBytes = IOUtils.toByteArray(is);
-                IOUtils.closeQuietly(is);
-                int numberOfInts = mapAsBytes.length / 2;
-                cid2gid = new int[numberOfInts];
-                int offset = 0;
-                for (int index = 0; index < numberOfInts; index++)
-                {
-                    int gid = (mapAsBytes[offset] & 0xff) << 8 | mapAsBytes[offset + 1] & 0xff;
-                    cid2gid[index] = gid;
-                    offset += 2;
-                }
-            }
-            catch (IOException exception)
-            {
-                LOG.error("Can't read the CIDToGIDMap", exception);
+                int gid = (mapAsBytes[offset] & 0xff) << 8 | mapAsBytes[offset + 1] & 0xff;
+                cid2gid[index] = gid;
+                offset += 2;
             }
         }
         return cid2gid;
+    }
+
+    private Map<Integer, Integer> invert(int[] cid2gid)
+    {
+        if (cid2gid == null)
+        {
+            return null;
+        }
+        Map<Integer, Integer> inverse = new HashMap<Integer, Integer>();
+        for (int i = 0; i < cid2gid.length; i++)
+        {
+            inverse.put(cid2gid[i], i);
+        }
+        return inverse;
     }
 
     @Override
@@ -223,7 +237,6 @@ public class PDCIDFontType2 extends PDCIDFont
             // font's 'cmap' table. The means by which this is accomplished are implementation-
             // dependent.
 
-            CmapSubtable cmap = getUnicodeCmap(ttf.getCmap());
             String unicode;
 
             if (cid2gid != null || hasIdentityCid2Gid)
@@ -368,6 +381,32 @@ public class PDCIDFontType2 extends PDCIDFont
             width *= 1000f / unitsPerEM;
         }
         return width;
+    }
+
+    @Override
+    public byte[] encode(int unicode)
+    {
+        int gid = cmap.getGlyphId(unicode);
+
+        if (gid == 0)
+        {
+            throw new IllegalArgumentException(
+                    String.format("No glyph for U+%04X in font %s", unicode, getName()));
+        }
+
+        // inverted CIDToGIDMap
+        int cid;
+        if (cid2gid != null)
+        {
+            cid = gid2cid.get(gid);
+        }
+        else
+        {
+            cid = gid;
+        }
+
+        // CID is always 2-bytes (16-bit) for TrueType
+        return new byte[] { (byte)(cid >> 8 & 0xff), (byte)(cid & 0xff) };
     }
 
     @Override

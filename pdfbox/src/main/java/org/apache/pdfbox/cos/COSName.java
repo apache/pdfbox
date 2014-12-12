@@ -118,6 +118,8 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName CIDSYSTEMINFO = new COSName("CIDSystemInfo");
     public static final COSName CLR_F = new COSName("ClrF");
     public static final COSName CLR_FF = new COSName("ClrFf");
+    public static final COSName CMAP = new COSName("CMap");
+    public static final COSName CMAPNAME = new COSName("CMapName");
     public static final COSName CMYK = new COSName("CMYK");
     public static final COSName COLOR_BURN = new COSName("ColorBurn");
     public static final COSName COLOR_DODGE = new COSName("ColorDodge");
