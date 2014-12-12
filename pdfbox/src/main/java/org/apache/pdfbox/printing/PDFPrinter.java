@@ -356,15 +356,6 @@ public class PDFPrinter
     {
         PDRectangle cropBox = page.getCropBox();
         int rotationAngle = page.getRotation();
-        // normalize the rotation angle
-        while (rotationAngle < 0)
-        {
-            rotationAngle += 360;
-        }
-        while (rotationAngle >= 360)
-        {
-            rotationAngle -= 360;
-        }
         if (rotationAngle == 90 || rotationAngle == 270)
         {
             return new PDRectangle(cropBox.getLowerLeftY(), cropBox.getLowerLeftX(),

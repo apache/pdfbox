@@ -30,7 +30,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
  * This class may be overridden in order to perform custom rendering.
  *
  * @author John Hewson
- * @author Andreas Lehmkühler
+ * @author Andreas LehmkÃ¼hler
  */
 public class PDFRenderer
 {
@@ -116,16 +116,6 @@ public class PDFRenderer
         int heightPx = Math.round(heightPt * scale);
         int rotationAngle = page.getRotation();
 
-        // normalize the rotation angle
-        while (rotationAngle < 0)
-        {
-            rotationAngle += 360;
-        }
-        while (rotationAngle >= 360)
-        {
-            rotationAngle -= 360;
-        }
-
         // swap width and height
         BufferedImage image;
         if (rotationAngle == 90 || rotationAngle == 270)
@@ -188,16 +178,6 @@ public class PDFRenderer
 
         PDRectangle cropBox = page.getCropBox();
         int rotationAngle = page.getRotation();
-        
-        // normalize the rotation angle
-        while (rotationAngle < 0)
-        {
-            rotationAngle += 360;
-        }
-        while (rotationAngle >= 360)
-        {
-            rotationAngle -= 360;
-        }
         
         if (rotationAngle != 0)
         {
