@@ -74,7 +74,20 @@ public class TextToPDF
      */
     public PDDocument createPDFFromText( Reader text ) throws IOException
     {
-        PDDocument doc = null;
+        PDDocument doc = new PDDocument();
+        createPDFFromText(doc, text);
+        return doc;
+    }
+
+    /**
+     * Create a PDF document with some text.
+     *
+     * @param text The stream of text data.
+     *
+     * @throws IOException If there is an error writing the data.
+     */
+    public void createPDFFromText( PDDocument doc, Reader text ) throws IOException
+    {
         try
         {
 
@@ -83,7 +96,6 @@ public class TextToPDF
 
             //calculate font height and increase by 5 percent.
             height = height*fontSize*1.05f;
-            doc = new PDDocument();
             BufferedReader data = new BufferedReader( text );
             String nextLine = null;
             PDPage page = new PDPage();
@@ -177,7 +189,6 @@ public class TextToPDF
             }
             throw io;
         }
-        return doc;
     }
 
     /**
@@ -195,7 +206,7 @@ public class TextToPDF
         System.setProperty("apple.awt.UIElement", "true");
 
         TextToPDF app = new TextToPDF();
-        PDDocument doc = null;
+        PDDocument doc = new PDDocument();
         try
         {
             if( args.length < 2 )
@@ -227,16 +238,13 @@ public class TextToPDF
                         throw new IOException( "Unknown argument:" + args[i] );
                     }
                 }
-                doc = app.createPDFFromText( new FileReader( args[args.length-1] ) );
+                app.createPDFFromText( doc, new FileReader( args[args.length-1] ) );
                 doc.save( args[args.length-2] );
             }
         }
         finally
         {
-            if( doc != null )
-            {
-                doc.close();
-            }
+            doc.close();
         }
     }
 
