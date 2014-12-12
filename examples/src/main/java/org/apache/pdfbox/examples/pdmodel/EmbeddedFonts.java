@@ -52,10 +52,10 @@ public class EmbeddedFonts
         stream.drawString("PDFBox Unicode with Embedded TrueType Font");
         stream.newLine();
 
-        stream.drawString("Supports full Unicode text ?");
+        stream.drawString("Supports full Unicode text ☺");
         stream.newLine();
 
-        stream.drawString("English ??????? ???? Ti?ng Vi?t");
+        stream.drawString("English русский язык Tiếng Việt");
 
         stream.endText();
         stream.close();
