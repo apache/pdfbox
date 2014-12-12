@@ -147,9 +147,9 @@ public final class PDIndexed extends PDSpecialColorSpace
         {
             throw new IllegalArgumentException("Indexed color spaces must have one color value");
         }
-
+        
         // scale and clamp input value
-        int index = Math.round(255f * value[0]);
+        int index = Math.round(value[0]);
         index = Math.max(index, 0);
         index = Math.min(index, actualMaxIndex);
 
@@ -197,7 +197,7 @@ public final class PDIndexed extends PDSpecialColorSpace
     }
 
     // returns "hival" array element
-    private int gettHival()
+    private int getHival()
     {
         return ((COSNumber) array.getObject(2)).intValue();
     }
@@ -234,7 +234,7 @@ public final class PDIndexed extends PDSpecialColorSpace
     private void readColorTable() throws IOException
     {
         byte[] lookupData = getLookupData();
-        int maxIndex = Math.min(gettHival(), 255);
+        int maxIndex = Math.min(getHival(), 255);
         int numComponents = baseColorSpace.getNumberOfComponents();
 
         // some tables are too short
@@ -274,10 +274,11 @@ public final class PDIndexed extends PDSpecialColorSpace
         array.set(2, high);
     }
 
+    @Override
     public String toString()
     {
         return "Indexed{base:" + baseColorSpace + " " +
-                "hival:" + gettHival() + " " +
+                "hival:" + getHival() + " " +
                 "lookup:(" + colorTable.length + " entries)}";
     }
 }
