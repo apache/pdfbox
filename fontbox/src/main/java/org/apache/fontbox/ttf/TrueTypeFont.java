@@ -37,7 +37,6 @@ public class TrueTypeFont implements Type1Equivalent
     private float version;
     private int numberOfGlyphs = -1;
     private int unitsPerEm = -1;
-    private int[] advanceWidths = null;
     protected Map<String,TTFTable> tables = new HashMap<String,TTFTable>();
     private TTFDataStream data;
     private Map<String, Integer> postScriptNames;
@@ -342,28 +341,15 @@ public class TrueTypeFont implements Type1Equivalent
      */
     public int getAdvanceWidth(int gid) throws IOException
     {
-        if (advanceWidths == null)
+        HorizontalMetricsTable hmtx = getHorizontalMetrics();
+        if (hmtx != null)
         {
-            HorizontalMetricsTable hmtx = getHorizontalMetrics();
-            if (hmtx != null)
-            {
-                advanceWidths = hmtx.getAdvanceWidth();
-            }
-            else
-            {
-                // this should never happen
-                advanceWidths = new int[]{250};
-            }
-        }
-        if (advanceWidths.length > gid)
-        {
-            return advanceWidths[gid];
+            return hmtx.getAdvanceWidth(gid);
         }
         else
         {
-            // monospaced fonts may not have a width for every glyph
-            // the last one is for subsequent glyphs
-            return advanceWidths[advanceWidths.length-1];
+            // this should never happen
+            return 250;
         }
     }
 
