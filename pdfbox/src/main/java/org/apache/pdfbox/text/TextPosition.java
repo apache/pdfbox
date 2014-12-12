@@ -127,15 +127,6 @@ public final class TextPosition
         this.endY = endY;
 
         int rotationAngle = pageRotation;
-        // normalize the rotation angle
-        while (rotationAngle < 0)
-        {
-            rotationAngle += 360;
-        }
-        while (rotationAngle >= 360)
-        {
-            rotationAngle -= 360;
-        }
         this.rotation = rotationAngle;
 
         this.maxHeight = maxHeight;
