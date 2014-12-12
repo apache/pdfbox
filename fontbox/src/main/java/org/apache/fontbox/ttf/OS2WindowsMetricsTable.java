@@ -483,19 +483,19 @@ public class OS2WindowsMetricsTable extends TTFTable
     }
 
     /**
-     * @return Returns the typeLineGap.
+     * @return Returns the typoLineGap.
      */
-    public int getTypeLineGap()
+    public int getTypoLineGap()
     {
-        return typeLineGap;
+        return typoLineGap;
     }
 
     /**
-     * @param typeLineGapValue The typeLineGap to set.
+     * @param typeLineGapValue The typoLineGap to set.
      */
-    public void setTypeLineGap(int typeLineGapValue)
+    public void setTypoLineGap(int typeLineGapValue)
     {
-        this.typeLineGap = typeLineGapValue;
+        this.typoLineGap = typeLineGapValue;
     }
 
     /**
@@ -674,6 +674,46 @@ public class OS2WindowsMetricsTable extends TTFTable
         this.winDescent = winDescentValue;
     }
 
+    /**
+     * Returns the sxHeight.
+     */
+    public int getHeight()
+    {
+        return sxHeight;
+    }
+
+    /**
+     * Returns the sCapHeight.
+     */
+    public int getCapHeight()
+    {
+        return sCapHeight;
+    }
+
+    /**
+     * Returns the usDefaultChar.
+     */
+    public int getDefaultChar()
+    {
+        return usDefaultChar;
+    }
+
+    /**
+     * Returns the usBreakChar.
+     */
+    public int getBreakChar()
+    {
+        return usBreakChar;
+    }
+
+    /**
+     * Returns the usMaxContext.
+     */
+    public int getMaxContext()
+    {
+        return usMaxContext;
+    }
+
     private int version;
     private short averageCharWidth;
     private int weightClass;
@@ -702,11 +742,16 @@ public class OS2WindowsMetricsTable extends TTFTable
     private int lastCharIndex;
     private int typoAscender;
     private int typoDescender;
-    private int typeLineGap;
+    private int typoLineGap;
     private int winAscent;
     private int winDescent;
     private long codePageRange1 = -1;
     private long codePageRange2 = -1;
+    private int sxHeight;
+    private int sCapHeight;
+    private int usDefaultChar;
+    private int usBreakChar;
+    private int usMaxContext;
 
     /**
      * A tag that identifies this table type.
@@ -750,13 +795,21 @@ public class OS2WindowsMetricsTable extends TTFTable
         lastCharIndex = data.readUnsignedShort();
         typoAscender = data.readSignedShort();
         typoDescender = data.readSignedShort();
-        typeLineGap = data.readSignedShort();
+        typoLineGap = data.readSignedShort();
         winAscent = data.readUnsignedShort();
         winDescent = data.readUnsignedShort();
         if (version >= 1)
         {
             codePageRange1 = data.readUnsignedInt();
             codePageRange2 = data.readUnsignedInt();
+        }
+        if (version >= 1.2)
+        {
+            sxHeight = data.readSignedShort();
+            sCapHeight = data.readSignedShort();
+            usDefaultChar = data.readUnsignedShort();
+            usBreakChar = data.readUnsignedShort();
+            usMaxContext = data.readUnsignedShort();
         }
         initialized = true;
     }

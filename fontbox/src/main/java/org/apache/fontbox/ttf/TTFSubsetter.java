@@ -536,7 +536,7 @@ public class TTFSubsetter
          */
         writeUint16(dos,os2.getTypoAscender());
         writeUint16(dos,os2.getTypoDescender());
-        writeUint16(dos,os2.getTypeLineGap());
+        writeUint16(dos,os2.getTypoLineGap());
         writeUint16(dos,os2.getWinAscent());
         writeUint16(dos,os2.getWinDescent());
         
