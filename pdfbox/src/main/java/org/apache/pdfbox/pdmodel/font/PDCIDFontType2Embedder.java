@@ -17,6 +17,8 @@
 
 package org.apache.pdfbox.pdmodel.font;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.IOException;
 
@@ -25,6 +27,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.common.PDStream;
 
 /**
  * Embedded PDCIDFontType2 builder. Helper class to populate a PDCIDFontType2 and its parent
@@ -63,6 +66,51 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         COSArray descendantFonts = new COSArray();
         descendantFonts.add(cidFont);
         dict.setItem(COSName.DESCENDANT_FONTS, descendantFonts);
+
+        // ToUnicode CMap
+        dict.setItem(COSName.TO_UNICODE, createToUnicodeCMap(document));
+    }
+
+    private PDStream createToUnicodeCMap(PDDocument document) throws IOException
+    {
+        ToUnicodeWriter toUniWriter = new ToUnicodeWriter("Adobe", "Identity", 0);
+        boolean hasSurrogates = false;
+        for (int gid = 1, max = ttf.getMaximumProfile().getNumGlyphs(); gid <= max; gid++)
+        {
+            Integer codePoint = cmap.getCharacterCode(gid);
+            // skip composite glyph components that have no code point
+            if (codePoint != null)
+            {
+                if (codePoint > 0xFFFF)
+                {
+                    hasSurrogates = true;
+                }
+                toUniWriter.add(gid, new String(new int[]{ codePoint }, 0, 1));
+            }
+        }
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        toUniWriter.writeTo(out);
+        InputStream cMapStream = new ByteArrayInputStream(out.toByteArray());
+
+        // ToUnicode stream dictionary
+        PDStream stream = new PDStream(document, cMapStream, false);
+        stream.getStream().setItem(COSName.TYPE, COSName.CMAP);
+        stream.getStream().setName(COSName.CMAPNAME, toUniWriter.getName());
+        stream.getStream().setItem(COSName.CIDSYSTEMINFO, toCIDSystemInfo("Adobe", "Identity", 0));
+        stream.addCompression();
+
+        // surrogate code points, requires PDF 1.5
+        if (hasSurrogates)
+        {
+            float version = document.getDocument().getVersion();
+            if (version < 1.5)
+            {
+                document.getDocument().setVersion(1.5f);
+            }
+        }
+
+        return stream;
     }
 
     private COSDictionary toCIDSystemInfo(String registry, String ordering, int supplement)
