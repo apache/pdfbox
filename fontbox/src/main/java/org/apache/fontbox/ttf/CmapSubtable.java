@@ -541,16 +541,16 @@ public class CmapSubtable
     }
 
     /**
-     * Returns the character code for the given GID.
+     * Returns the character code for the given GID, or null if there is none.
      *
      * @param gid glyph id
      * @return character code
      */
-    public int getCharacterCode(int gid)
+    public Integer getCharacterCode(int gid)
     {
         if (gid < 0 || gid >= glyphIdToCharacterCode.length)
         {
-            return 0;
+            return null;
         }
         return glyphIdToCharacterCode[gid];
     }
