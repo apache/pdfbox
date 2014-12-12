@@ -474,8 +474,7 @@ public final class StandardSecurityHandler extends SecurityHandler
                 md.update( document.getDocument().toString().getBytes() );
 
                 byte[] id = md.digest( this.toString().getBytes("ISO-8859-1") );
-                COSString idString = new COSString();
-                idString.append( id );
+                COSString idString = new COSString(id);
 
                 idArray = new COSArray();
                 idArray.add( idString );

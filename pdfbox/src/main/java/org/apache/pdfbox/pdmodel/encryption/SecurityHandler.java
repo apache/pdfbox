@@ -501,8 +501,7 @@ public abstract class SecurityHandler
         ByteArrayInputStream data = new ByteArrayInputStream(string.getBytes());
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         encryptData(objNum, genNum, data, buffer, true /* decrypt */);
-        string.reset();
-        string.append(buffer.toByteArray());
+        string.setValue(buffer.toByteArray());
     }
 
     /**
@@ -519,8 +518,7 @@ public abstract class SecurityHandler
         ByteArrayInputStream data = new ByteArrayInputStream(string.getBytes());
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         encryptData(objNum, genNum, data, buffer, false /* decrypt */);
-        string.reset();
-        string.append(buffer.toByteArray());
+        string.setValue(buffer.toByteArray());
     }
 
     /**

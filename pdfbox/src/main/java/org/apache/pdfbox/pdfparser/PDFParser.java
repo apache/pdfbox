@@ -63,7 +63,14 @@ public class PDFParser extends BaseParser
     
     private static final String PDF_DEFAULT_VERSION = "1.4";
     private static final String FDF_DEFAULT_VERSION = "1.0";
-    
+
+    // deprecated functionality from BaseParser:
+    /**
+     * Default value of the {@link #forceParsing} flag.
+     */
+    public static final boolean FORCE_PARSING =
+            Boolean.getBoolean("org.apache.pdfbox.forceParsing");
+
     /**
      * A list of duplicate objects found when Parsing the PDF
      * File.
@@ -84,8 +91,12 @@ public class PDFParser extends BaseParser
      * Temp file directory.
      */
     private File tempDirectory = null;
-
     private final boolean useScratchFile;
+
+    /**
+     * Flag to skip malformed or otherwise unparseable input where possible.
+     */
+    protected final boolean forceParsing;
 
     /**
      * Constructor.
@@ -94,7 +105,7 @@ public class PDFParser extends BaseParser
      *
      * @throws IOException If there is an error initializing the stream.
      */
-    public PDFParser( InputStream input ) throws IOException 
+    public PDFParser( InputStream input ) throws IOException
     {
         this(input, FORCE_PARSING);
     }
@@ -108,7 +119,7 @@ public class PDFParser extends BaseParser
      *
      * @throws IOException If there is an error initializing the stream.
      */
-    public PDFParser(InputStream input, boolean force) throws IOException 
+    public PDFParser(InputStream input, boolean force) throws IOException
     {
         this(input, force, false);
     }
@@ -123,9 +134,10 @@ public class PDFParser extends BaseParser
      *
      * @throws IOException If there is an error initializing the stream.
      */
-    public PDFParser(InputStream input, boolean force, boolean useScratchFiles) throws IOException 
+    public PDFParser(InputStream input, boolean force, boolean useScratchFiles) throws IOException
     {
-        super(input, force);
+        super(input);
+        forceParsing = force;
         useScratchFile = useScratchFiles;
     }
 
@@ -168,11 +180,11 @@ public class PDFParser extends BaseParser
         {
             if( tempDirectory != null )
             {
-                document = new COSDocument( tempDirectory, forceParsing, true );
+                document = new COSDocument( tempDirectory, true );
             }
             else if(useScratchFile)
             {
-                document = new COSDocument( null, forceParsing, true );
+                document = new COSDocument( null, true );
             }
             else
             {
@@ -369,7 +381,7 @@ public class PDFParser extends BaseParser
             throw new IOException( "Error: Header doesn't contain versioninfo" );
         }
 
-        //sometimes there are some garbage bytes in the header before the header
+        //sometimes there are some garbage getBytes in the header before the header
         //actually starts, so lets try to find the header first.
         int headerStart = header.indexOf( PDF_HEADER );
         if (headerStart == -1)
@@ -965,7 +977,7 @@ public class PDFParser extends BaseParser
             xrefTrailerResolver.setTrailer( stream );
         }        
         PDFXrefStreamParser parser =
-                new PDFXrefStreamParser( stream, document, forceParsing, xrefTrailerResolver );
+                new PDFXrefStreamParser( stream, document, xrefTrailerResolver );
         parser.parse();
     }
 

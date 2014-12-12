@@ -258,9 +258,7 @@ public class PDEncryption
      */
     public void setOwnerKey(byte[] o) throws IOException
     {
-        COSString owner = new COSString();
-        owner.append( o );
-        dictionary.setItem(COSName.O, owner);
+        dictionary.setItem(COSName.O, new COSString(o));
     }
 
     /**
@@ -290,9 +288,7 @@ public class PDEncryption
      */
     public void setUserKey(byte[] u) throws IOException
     {
-        COSString user = new COSString();
-        user.append( u );
-        dictionary.setItem(COSName.U, user);
+        dictionary.setItem(COSName.U, new COSString(u));
     }
 
     /**
@@ -322,9 +318,7 @@ public class PDEncryption
      */
     public void setOwnerEncryptionKey(byte[] oe) throws IOException
     {
-        COSString ownerEncryptionKey = new COSString();
-        ownerEncryptionKey.append(oe);
-        dictionary.setItem( COSName.OE, ownerEncryptionKey );
+        dictionary.setItem( COSName.OE, new COSString(oe) );
     }
 
     /**
@@ -354,9 +348,7 @@ public class PDEncryption
      */
     public void setUserEncryptionKey(byte[] ue) throws IOException
     {
-        COSString userEncryptionKey = new COSString();
-        userEncryptionKey.append(ue);
-        dictionary.setItem( COSName.UE, userEncryptionKey );
+        dictionary.setItem( COSName.UE, new COSString(ue) );
     }
 
     /**
@@ -427,9 +419,7 @@ public class PDEncryption
         COSArray array = new COSArray();
         for (byte[] recipient : recipients)
         {
-            COSString recip = new COSString();
-            recip.append(recipient);
-            recip.setForceLiteralForm(true);
+            COSString recip = new COSString(recipient);
             array.add(recip);
         }
         dictionary.setItem(COSName.RECIPIENTS, array);
@@ -579,9 +569,7 @@ public class PDEncryption
      */
     public void setPerms(byte[] perms) throws IOException
     {
-        COSString user = new COSString();
-        user.append( perms );
-        dictionary.setItem( COSName.PERMS, user );
+        dictionary.setItem( COSName.PERMS, new COSString(perms) );
     }
 
     /**

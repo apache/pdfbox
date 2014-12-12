@@ -20,11 +20,10 @@ import java.awt.Color;
 import java.awt.color.ColorSpace;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
-import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +36,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -54,100 +53,91 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDInlineImage;
+import org.apache.pdfbox.util.Charsets;
 
 /**
- * This class is a convenience for creating page content streams.  You MUST
- * call close() when you are finished with this object.
+ * This class is a convenience for creating page content streams. You MUST call close() when you
+ * are finished with this object.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
+ * @author Ben Litchfield
  * 
  */
 public class PDPageContentStream implements Closeable
 {
-    /**
-     * Log instance.
-     */
     private static final Log LOG = LogFactory.getLog(PDPageContentStream.class);
 
+    private static byte[] toAscii(final String text)
+    {
+        return text.getBytes(Charsets.US_ASCII);
+    }
+
+    private static final byte[] BEGIN_TEXT = toAscii("BT\n");
+    private static final byte[] END_TEXT = toAscii("ET\n");
+    private static final byte[] SET_FONT = toAscii("Tf\n");
+    private static final byte[] MOVE_TEXT_POSITION = toAscii("Td\n");
+    private static final byte[] SET_TEXT_MATRIX = toAscii("Tm\n");
+    private static final byte[] SHOW_TEXT = toAscii("Tj\n");
+
+    private static final byte[] SAVE_GRAPHICS_STATE = toAscii("q\n");
+    private static final byte[] RESTORE_GRAPHICS_STATE = toAscii("Q\n");
+    private static final byte[] CONCATENATE_MATRIX = toAscii("cm\n");
+    private static final byte[] XOBJECT_DO = toAscii("Do\n");
+    private static final byte[] RG_STROKING = toAscii("RG\n");
+    private static final byte[] RG_NON_STROKING = toAscii("rg\n");
+    private static final byte[] K_STROKING = toAscii("K\n");
+    private static final byte[] K_NON_STROKING = toAscii("k\n");
+    private static final byte[] G_STROKING = toAscii("G\n");
+    private static final byte[] G_NON_STROKING = toAscii("g\n");
+    private static final byte[] RECTANGLE = toAscii("re\n");
+    private static final byte[] FILL_NON_ZERO = toAscii("f\n");
+    private static final byte[] FILL_EVEN_ODD = toAscii("f*\n");
+    private static final byte[] LINE_TO = toAscii("l\n");
+    private static final byte[] MOVE_TO = toAscii("m\n");
+    private static final byte[] CLOSE_STROKE = toAscii("s\n");
+    private static final byte[] STROKE = toAscii("S\n");
+    private static final byte[] LINE_WIDTH = toAscii("w\n");
+    private static final byte[] LINE_JOIN_STYLE = toAscii("j\n");
+    private static final byte[] LINE_CAP_STYLE = toAscii("J\n");
+    private static final byte[] LINE_DASH_PATTERN = toAscii("d\n");
+    private static final byte[] CLOSE_SUBPATH = toAscii("h\n");
+    private static final byte[] CLIP_PATH_NON_ZERO = toAscii("W\n");
+    private static final byte[] CLIP_PATH_EVEN_ODD = toAscii("W*\n");
+    private static final byte[] NOP = toAscii("n\n");
+    private static final byte[] BEZIER_312 = toAscii("c\n");
+    private static final byte[] BEZIER_32 = toAscii("v\n");
+    private static final byte[] BEZIER_313 = toAscii("y\n");
+
+    private static final byte[] BMC = toAscii("BMC\n");
+    private static final byte[] BDC = toAscii("BDC\n");
+    private static final byte[] EMC = toAscii("EMC\n");
+
+    private static final byte[] SET_STROKING_COLORSPACE = toAscii("CS\n");
+    private static final byte[] SET_NON_STROKING_COLORSPACE = toAscii("cs\n");
+
+    private static final byte[] SET_STROKING_COLOR_SIMPLE = toAscii("SC\n");
+    private static final byte[] SET_STROKING_COLOR_COMPLEX = toAscii("SCN\n");
+    private static final byte[] SET_NON_STROKING_COLOR_SIMPLE = toAscii("sc\n");
+    private static final byte[] SET_NON_STROKING_COLOR_COMPLEX = toAscii("scn\n");
+
+    private static final byte[] OPENING_BRACKET = toAscii("[");
+    private static final byte[] CLOSING_BRACKET = toAscii("]");
+    private static final byte[] NEWLINE = toAscii("\n");
+
+    private static final int SPACE = 32;
+
+    // instance variables
     private OutputStream output;
-    private boolean inTextMode = false;
     private PDResources resources;
+    private boolean inTextMode = false;
 
     private PDColorSpace currentStrokingColorSpace = PDDeviceGray.INSTANCE;
     private PDColorSpace currentNonStrokingColorSpace = PDDeviceGray.INSTANCE;
 
     // cached storage component for getting color values
-    private float[] colorComponents = new float[4];
+    private final float[] colorComponents = new float[4];
 
-    private NumberFormat formatDecimal = NumberFormat.getNumberInstance(Locale.US);
-
-    private static final String ISO8859 = "ISO-8859-1";
-
-    private static byte[] getISOBytes(final String s)
-    {
-        try
-        {
-            return s.getBytes(ISO8859);
-        }
-        catch (final UnsupportedEncodingException ex)
-        {
-            throw new IllegalStateException(ex);
-        }
-    }
-
-    private static final byte[] BEGIN_TEXT = getISOBytes("BT\n");
-    private static final byte[] END_TEXT = getISOBytes("ET\n");
-    private static final byte[] SET_FONT = getISOBytes("Tf\n");
-    private static final byte[] MOVE_TEXT_POSITION = getISOBytes("Td\n");
-    private static final byte[] SET_TEXT_MATRIX = getISOBytes("Tm\n");
-    private static final byte[] SHOW_TEXT = getISOBytes("Tj\n");
-
-    private static final byte[] SAVE_GRAPHICS_STATE = getISOBytes("q\n");
-    private static final byte[] RESTORE_GRAPHICS_STATE = getISOBytes("Q\n");
-    private static final byte[] CONCATENATE_MATRIX = getISOBytes("cm\n");
-    private static final byte[] XOBJECT_DO = getISOBytes("Do\n");
-    private static final byte[] RG_STROKING = getISOBytes("RG\n");
-    private static final byte[] RG_NON_STROKING = getISOBytes("rg\n");
-    private static final byte[] K_STROKING = getISOBytes("K\n");
-    private static final byte[] K_NON_STROKING = getISOBytes("k\n");
-    private static final byte[] G_STROKING = getISOBytes("G\n");
-    private static final byte[] G_NON_STROKING = getISOBytes("g\n");
-    private static final byte[] RECTANGLE = getISOBytes("re\n");
-    private static final byte[] FILL_NON_ZERO = getISOBytes("f\n");
-    private static final byte[] FILL_EVEN_ODD = getISOBytes("f*\n");
-    private static final byte[] LINE_TO = getISOBytes("l\n");
-    private static final byte[] MOVE_TO = getISOBytes("m\n");
-    private static final byte[] CLOSE_STROKE = getISOBytes("s\n");
-    private static final byte[] STROKE = getISOBytes("S\n");
-    private static final byte[] LINE_WIDTH = getISOBytes("w\n");
-    private static final byte[] LINE_JOIN_STYLE = getISOBytes("j\n");
-    private static final byte[] LINE_CAP_STYLE = getISOBytes("J\n");
-    private static final byte[] LINE_DASH_PATTERN = getISOBytes("d\n");
-    private static final byte[] CLOSE_SUBPATH = getISOBytes("h\n");
-    private static final byte[] CLIP_PATH_NON_ZERO = getISOBytes("W\n");
-    private static final byte[] CLIP_PATH_EVEN_ODD = getISOBytes("W*\n");
-    private static final byte[] NOP = getISOBytes("n\n");
-    private static final byte[] BEZIER_312 = getISOBytes("c\n");
-    private static final byte[] BEZIER_32 = getISOBytes("v\n");
-    private static final byte[] BEZIER_313 = getISOBytes("y\n");
-
-    private static final byte[] BMC = getISOBytes("BMC\n");
-    private static final byte[] BDC = getISOBytes("BDC\n");
-    private static final byte[] EMC = getISOBytes("EMC\n");
-
-    private static final byte[] SET_STROKING_COLORSPACE = getISOBytes("CS\n");
-    private static final byte[] SET_NON_STROKING_COLORSPACE = getISOBytes("cs\n");
-
-    private static final byte[] SET_STROKING_COLOR_SIMPLE = getISOBytes("SC\n");
-    private static final byte[] SET_STROKING_COLOR_COMPLEX = getISOBytes("SCN\n");
-    private static final byte[] SET_NON_STROKING_COLOR_SIMPLE = getISOBytes("sc\n");
-    private static final byte[] SET_NON_STROKING_COLOR_COMPLEX = getISOBytes("scn\n");
-
-    private static final byte[] OPENING_BRACKET = getISOBytes("[");
-    private static final byte[] CLOSING_BRACKET = getISOBytes("]");
-    private static final byte[] NEWLINE = getISOBytes("\n");
-
-    private static final int SPACE = 32;
+    // number format
+    private final NumberFormat formatDecimal = NumberFormat.getNumberInstance(Locale.US);
 
     /**
      * Create a new PDPage content stream.
@@ -631,10 +621,7 @@ public class PDPageContentStream implements Closeable
         {
             throw new IOException("Error: must call beginText() before drawString");
         }
-        COSString string = new COSString(text);
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        string.writePDF(buffer);
-        appendRawCommands(buffer.toByteArray());
+        COSWriter.writeString(text.getBytes(Charset.forName("ISO-8859-1")), output); // todo: use font's encoding
         appendRawCommands(SPACE);
         appendRawCommands(SHOW_TEXT);
     }

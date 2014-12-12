@@ -20,8 +20,6 @@ import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.apache.pdfbox.util.StringUtil;
-
 /**
  * simple output stream with some minor features for generating "pretty" PDF files.
  *
@@ -32,17 +30,17 @@ public class COSStandardOutputStream extends FilterOutputStream
     /**
      * To be used when 2 byte sequence is enforced.
      */
-    public static final byte[] CRLF = StringUtil.getBytes("\r\n");
+    public static final byte[] CRLF = { '\r', '\n' };
 
     /**
      * Line feed character.
      */
-    public static final byte[] LF = StringUtil.getBytes("\n");
+    public static final byte[] LF = { '\n' };
 
     /**
      * standard line separator.
      */
-    public static final byte[] EOL = StringUtil.getBytes("\n");
+    public static final byte[] EOL = { '\n' };
 
     // current byte position in the output stream
     private long position = 0;

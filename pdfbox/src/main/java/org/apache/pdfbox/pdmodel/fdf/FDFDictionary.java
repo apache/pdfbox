@@ -91,8 +91,8 @@ public class FDFDictionary implements COSObjectable
                     COSArray ids = new COSArray();
                     String original = child.getAttribute( "original" );
                     String modified = child.getAttribute( "modified" );
-                    ids.add( COSString.createFromHexString( original ) );
-                    ids.add( COSString.createFromHexString( modified ) );
+                    ids.add( COSString.parseHex( original ) );
+                    ids.add( COSString.parseHex( modified ) );
                     setID( ids );
                 }
                 else if( child.getTagName().equals( "fields" ) )
@@ -157,8 +157,8 @@ public class FDFDictionary implements COSObjectable
         {
             COSString original = (COSString)ids.getObject( 0 );
             COSString modified = (COSString)ids.getObject( 1 );
-            output.write( "<ids original=\"" + original.getHexString() + "\" " );
-            output.write( "modified=\"" + modified.getHexString() + "\" />\n");
+            output.write( "<ids original=\"" + original.toHexString() + "\" " );
+            output.write( "modified=\"" + modified.toHexString() + "\" />\n");
         }
         List<FDFField> fields = getFields();
         if( fields != null && fields.size() > 0 )

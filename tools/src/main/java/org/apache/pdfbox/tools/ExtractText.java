@@ -51,9 +51,7 @@ public class ExtractText
     private static final String IGNORE_BEADS = "-ignoreBeads";
     private static final String DEBUG = "-debug";
     // jjb - added simple HTML output
-    private static final String HTML = "-html";  
-    // enables pdfbox to skip corrupt objects
-    private static final String FORCE = "-force"; 
+    private static final String HTML = "-html";
 
     /*
      * debug flag
@@ -164,10 +162,6 @@ public class ExtractText
             {
                 toConsole = true;
             }
-            else if( args[i].equals( FORCE ) )
-            {
-                force = true;
-            }
             else
             {
                 if( pdfFile == null )
@@ -225,7 +219,6 @@ public class ExtractText
                 {
                     stripper = new PDFTextStripper();
                 }
-                stripper.setForceParsing( force );
                 stripper.setSortByPosition( sort );
                 stripper.setShouldSeparateByBeads( separateBeads );
                 stripper.setStartPage( startPage );
@@ -334,7 +327,6 @@ public class ExtractText
             "  -html                        Output in HTML format instead of raw text\n" +
             "  -sort                        Sort the text before writing\n" +
             "  -ignoreBeads                 Disables the separation by beads\n" +
-            "  -force                       Enables pdfbox to ignore corrupt objects\n" +
             "  -debug                       Enables debug output about the time consumption of every stage\n" +
             "  -startPage <number>          The first page to start extraction(1 based)\n" +
             "  -endPage <number>            The last page to extract(inclusive)\n" +

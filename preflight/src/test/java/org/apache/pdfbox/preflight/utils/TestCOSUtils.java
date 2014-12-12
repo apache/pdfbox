@@ -221,7 +221,7 @@ public class TestCOSUtils
 
         IOCOSDocument(File scratchDir) throws IOException
         {
-            super(scratchDir, false, true);
+            super(scratchDir, true);
         }
 
         @Override
