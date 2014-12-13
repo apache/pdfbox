@@ -182,7 +182,7 @@ public class PDFSplit
         }
     }
 
-    private static final void writeDocument( PDDocument doc, String fileName ) throws IOException
+    private static void writeDocument( PDDocument doc, String fileName ) throws IOException
     {
         FileOutputStream output = null;
         COSWriter writer = null;
@@ -215,7 +215,6 @@ public class PDFSplit
             "  -split     <integer>   split after this many pages (default 1, if startPage and endPage are unset)\n"+
             "  -startPage <integer>   start page\n" +
             "  -endPage   <integer>   end page\n" +
-            "  -nonSeq                Enables the new non-sequential parser\n" +
             "  <PDF file>             The PDF document to use\n"
             );
         System.exit( 1 );
