@@ -109,6 +109,8 @@ public class PDType0Font extends PDFont
         PDCIDFontType2Embedder embedder =
                 new PDCIDFontType2Embedder(document, dict, ttfStream, this);
         descendantFont = embedder.getCIDFont();
+        readEncoding();
+        fetchCMapUCS2();
     }
 
     /**
@@ -213,6 +215,14 @@ public class PDType0Font extends PDFont
     public CMap getCMap()
     {
         return cMap;
+    }
+
+    /**
+     * Returns the font's UCS2 CMap, only present this font uses a predefined CMap.
+     */
+    public CMap getCMapUCS2()
+    {
+        return cMapUCS2;
     }
 
     @Override
