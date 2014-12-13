@@ -56,7 +56,7 @@ public class PDCIDFontType2 extends PDCIDFont
     private final boolean hasIdentityCid2Gid;
     private final boolean isEmbedded;
     private final boolean isDamaged;
-    private final CmapSubtable cmap;
+    private final CmapSubtable cmap; // may be null
     private Matrix fontMatrix;
 
     /**
@@ -291,6 +291,8 @@ public class PDCIDFontType2 extends PDCIDFont
             {
                 LOG.warn("trying to map a multi-byte character using 'cmap', result will be poor");
             }
+
+            // a non-embedded font always has a cmap (otherwise ExternalFonts won't load it)
             return cmap.getGlyphId(unicode.codePointAt(0));
         }
         else
@@ -334,6 +336,11 @@ public class PDCIDFontType2 extends PDCIDFont
      */
     private CmapSubtable getUnicodeCmap(CmapTable cmapTable)
     {
+        if (cmapTable == null)
+        {
+            return null;
+        }
+
         CmapSubtable cmap = cmapTable.getSubtable(CmapTable.PLATFORM_UNICODE,
                                                   CmapTable.ENCODING_UNICODE_2_0_FULL);
         if (cmap == null)
@@ -386,23 +393,43 @@ public class PDCIDFontType2 extends PDCIDFont
     @Override
     public byte[] encode(int unicode)
     {
-        int gid = cmap.getGlyphId(unicode);
-
-        if (gid == 0)
+        int cid = -1;
+        if (isEmbedded)
         {
-            throw new IllegalArgumentException(
-                    String.format("No glyph for U+%04X in font %s", unicode, getName()));
-        }
+            // embedded fonts always use CIDToGIDMap, with Identity as the default
+            if (parent.getCMap().getName().startsWith("Identity-"))
+            {
+                if (cmap != null)
+                {
+                    cid = cmap.getGlyphId(unicode);
+                }
+            }
+            else
+            {
+                // if the CMap is predefined then there will be a UCS-2 CMap
+                if (parent.getCMapUCS2() != null)
+                {
+                    cid = parent.getCMapUCS2().toCID(unicode);
+                }
+            }
 
-        // inverted CIDToGIDMap
-        int cid;
-        if (cid2gid != null)
-        {
-            cid = gid2cid.get(gid);
+            // otherwise we require an explicit ToUnicode CMap
+            if (cid == -1)
+            {
+                // todo: invert the ToUnicode CMap?
+                cid = 0;
+            }
         }
         else
         {
-            cid = gid;
+            // a non-embedded font always has a cmap (otherwise it we wouldn't load it)
+            cid = cmap.getGlyphId(unicode);
+        }
+
+        if (cid == 0)
+        {
+            throw new IllegalArgumentException(
+                    String.format("No glyph for U+%04X in font %s", unicode, getName()));
         }
 
         // CID is always 2-bytes (16-bit) for TrueType
