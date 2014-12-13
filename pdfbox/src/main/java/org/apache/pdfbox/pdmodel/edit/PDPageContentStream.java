@@ -1512,7 +1512,10 @@ public class PDPageContentStream implements Closeable
      */
     public void saveGraphicsState() throws IOException
     {
-        fontStack.push(fontStack.peek());
+        if (!fontStack.isEmpty())
+        {
+            fontStack.push(fontStack.peek());
+        }
         appendRawCommands(SAVE_GRAPHICS_STATE);
     }
 
@@ -1522,7 +1525,10 @@ public class PDPageContentStream implements Closeable
      */
     public void restoreGraphicsState() throws IOException
     {
-        fontStack.pop();
+        if (!fontStack.isEmpty())
+        {
+            fontStack.pop();
+        }
         appendRawCommands(RESTORE_GRAPHICS_STATE);
     }
 
