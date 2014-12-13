@@ -48,9 +48,6 @@ public class PDFMerger
 
     private void merge( String[] args ) throws Exception
     {
-        String destinationFileName = "";
-        String sourceFileName;
-
         int firstFileArgPos = 0;
 
         if ( args.length - firstFileArgPos < 3 )
@@ -61,11 +58,11 @@ public class PDFMerger
         PDFMergerUtility merger = new PDFMergerUtility();
         for( int i=firstFileArgPos; i<args.length-1; i++ )
         {
-            sourceFileName = args[i];
+            String sourceFileName = args[i];
             merger.addSource(sourceFileName);
         }
 
-        destinationFileName = args[args.length-1];
+        String destinationFileName = args[args.length-1];
         merger.setDestinationFileName(destinationFileName);
         merger.mergeDocuments();
     }
@@ -75,7 +72,7 @@ public class PDFMerger
      */
     private static void usage()
     {
-        System.err.println( "Usage: java -jar pdfbox-app-x.y.z.jar PDFMerger [-nonSeq] <Source PDF File 2..n> <Destination PDF File>\n" +
+        System.err.println( "Usage: java -jar pdfbox-app-x.y.z.jar PDFMerger <Source PDF File 2..n> <Destination PDF File>\n" +
             "  <Source PDF File 2..n>       2 or more source PDF documents to merge\n" +
             "  <Destination PDF File>       The PDF document to save the merged documents to\n"
             );
