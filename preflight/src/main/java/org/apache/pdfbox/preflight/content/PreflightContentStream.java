@@ -135,9 +135,9 @@ public class PreflightContentStream extends PreflightStreamEngine
     }
 
     @Override
-    protected void processOperator(Operator operator, List<COSBase> arguments) throws IOException
+    protected void processOperator(Operator operator, List<COSBase> operands) throws IOException
     {
-        super.processOperator(operator, arguments);
+        super.processOperator(operator, operands);
 
         // todo: why are the checks below done here and not in OperatorProcessor classes?
 
@@ -150,10 +150,10 @@ public class PreflightContentStream extends PreflightStreamEngine
             validateImageColorSpace(operator);
         }
 
-        checkShowTextOperators(operator, arguments);
+        checkShowTextOperators(operator, operands);
         checkColorOperators(operator.getName());
-        validateRenderingIntent(operator, arguments);
-        checkSetColorSpaceOperators(operator, arguments);
+        validateRenderingIntent(operator, operands);
+        checkSetColorSpaceOperators(operator, operands);
         validateNumberOfGraphicStates(operator);
     }
 

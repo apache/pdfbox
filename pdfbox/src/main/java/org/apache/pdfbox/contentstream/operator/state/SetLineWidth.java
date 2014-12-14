@@ -18,6 +18,7 @@ package org.apache.pdfbox.contentstream.operator.state;
 
 import java.util.List;
 
+import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.contentstream.operator.Operator;
@@ -35,9 +36,9 @@ public class SetLineWidth extends OperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
-        if (!checkArgumentSize(arguments, 1))
+        if (arguments.size() < 1)
         {
-            return;
+            throw new MissingOperandException(operator, arguments);
         }
         COSNumber width = (COSNumber) arguments.get(0);
         context.getGraphicsState().setLineWidth(width.floatValue());

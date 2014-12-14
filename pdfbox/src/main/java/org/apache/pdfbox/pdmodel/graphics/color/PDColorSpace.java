@@ -20,6 +20,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
+import org.apache.pdfbox.pdmodel.MissingResourceException;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
@@ -56,7 +57,7 @@ public abstract class PDColorSpace implements COSObjectable
      * @param colorSpace the color space COS object
      * @param resources the current resources.
      * @return a new color space
-     * @throws MissingException if the color space is missing from the resources dictionary
+     * @throws MissingResourceException if the color space is missing in the resources dictionary
      * @throws IOException if the color space is unknown or cannot be created
      */
     public static PDColorSpace create(COSBase colorSpace,
@@ -120,13 +121,13 @@ public abstract class PDColorSpace implements COSObjectable
             {
                 if (!resources.hasColorSpace(name))
                 {
-                    throw new MissingException("Missing color space: " + name.getName());
+                    throw new MissingResourceException("Missing color space: " + name.getName());
                 }
                 return resources.getColorSpace(name);
             }
             else
             {
-                throw new MissingException("Unknown color space: " + name.getName());
+                throw new MissingResourceException("Unknown color space: " + name.getName());
             }
         }
         else if (colorSpace instanceof COSArray)
@@ -265,13 +266,5 @@ public abstract class PDColorSpace implements COSObjectable
     public COSBase getCOSObject()
     {
         return array;
-    }
-
-    public static class MissingException extends IOException
-    {
-        private MissingException(String message)
-        {
-            super(message);
-        }
     }
 }

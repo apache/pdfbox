@@ -14,43 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.pdfbox.contentstream.operator.state;
 
 import java.io.IOException;
-import java.util.List;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.contentstream.operator.Operator;
-import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 
 /**
- * Q: Restore the graphics state.
- * 
- * @author Laurent Huault
+ * Throw when restore is executed when the graphics stack is empty.
  */
-public class Restore extends OperatorProcessor
+public final class EmptyGraphicsStackException extends IOException
 {
-    private static final Log LOG = LogFactory.getLog(Restore.class);
-
-    @Override
-    public void process(Operator operator, List<COSBase> arguments) throws IOException
+    EmptyGraphicsStackException()
     {
-        if (context.getGraphicsStackSize() > 1)
-        {
-            context.restoreGraphicsState();
-        }
-        else
-        {
-            // this shouldn't happen but it does, see PDFBOX-161
-            throw new EmptyGraphicsStackException();
-        }
-    }
-
-    @Override
-    public String getName()
-    {
-        return "Q";
+        super("Cannot execute restore, the graphics stack is empty");
     }
 }

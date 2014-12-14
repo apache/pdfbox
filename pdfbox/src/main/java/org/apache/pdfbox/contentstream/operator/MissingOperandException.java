@@ -14,43 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.contentstream.operator.state;
+
+package org.apache.pdfbox.contentstream.operator;
 
 import java.io.IOException;
 import java.util.List;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.contentstream.operator.Operator;
-import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 
 /**
- * Q: Restore the graphics state.
- * 
- * @author Laurent Huault
+ * Throw when a PDF operator is missing required operands.
  */
-public class Restore extends OperatorProcessor
+public final class MissingOperandException extends IOException
 {
-    private static final Log LOG = LogFactory.getLog(Restore.class);
-
-    @Override
-    public void process(Operator operator, List<COSBase> arguments) throws IOException
+    public MissingOperandException(Operator operator, List<COSBase> operands)
     {
-        if (context.getGraphicsStackSize() > 1)
-        {
-            context.restoreGraphicsState();
-        }
-        else
-        {
-            // this shouldn't happen but it does, see PDFBOX-161
-            throw new EmptyGraphicsStackException();
-        }
-    }
-
-    @Override
-    public String getName()
-    {
-        return "Q";
+        super("Operator " + operator.getName() + " has too few operands: " + operands);
     }
 }
