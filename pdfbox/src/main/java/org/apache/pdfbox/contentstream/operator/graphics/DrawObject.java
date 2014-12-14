@@ -19,11 +19,9 @@ package org.apache.pdfbox.contentstream.operator.graphics;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.filter.MissingImageReaderException;
+import org.apache.pdfbox.pdmodel.MissingResourceException;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
@@ -37,8 +35,6 @@ import org.apache.pdfbox.contentstream.operator.Operator;
  */
 public final class DrawObject extends GraphicsOperatorProcessor
 {
-    private static final Log LOG = LogFactory.getLog(DrawObject.class);
-
     @Override
     public void process(Operator operator, List<COSBase> operands) throws IOException
     {
@@ -47,30 +43,18 @@ public final class DrawObject extends GraphicsOperatorProcessor
 
         if (xobject == null)
         {
-            LOG.warn("Can't find the XObject named '" + objectName.getName() + "'");
+            throw new MissingResourceException("Missing XObject: " + objectName.getName());
         }
         else if (xobject instanceof PDImageXObject)
         {
             PDImageXObject image = (PDImageXObject)xobject;
-            try
-            {
-                context.drawImage(image);
-            }
-            catch (MissingImageReaderException e)
-            {
-                // missing ImageIO plug-in  TODO how far should we escalate this? (after all the user can fix the problem)
-                LOG.error(e.getMessage());
-            }
-            catch (Exception e)
-            {
-                // TODO we probably shouldn't catch Exception, what errors are expected here?
-                LOG.error(e, e);
-            }
+            context.drawImage(image);
         }
         else if (xobject instanceof PDFormXObject)
         {
             PDFormXObject form = (PDFormXObject) xobject;
-            if (form.getGroup() != null && COSName.TRANSPARENCY.equals(form.getGroup().getSubType())) {
+            if (form.getGroup() != null &&
+                COSName.TRANSPARENCY.equals(form.getGroup().getSubType())) {
                 getContext().showTransparencyGroup(form);
             }
             else

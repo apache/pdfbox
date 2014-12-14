@@ -105,16 +105,16 @@ public class PrintImageLocations extends PDFStreamEngine
      * This is used to handle an operation.
      *
      * @param operator The operation to perform.
-     * @param arguments The list of arguments.
+     * @param operands The list of arguments.
      *
      * @throws IOException If there is an error processing the operation.
      */
-    protected void processOperator( Operator operator, List<COSBase> arguments ) throws IOException
+    protected void processOperator( Operator operator, List<COSBase> operands) throws IOException
     {
         String operation = operator.getName();
         if( "Do".equals(operation) )
         {
-            COSName objectName = (COSName)arguments.get( 0 );
+            COSName objectName = (COSName) operands.get( 0 );
             PDXObject xobject = getResources().getXObject( objectName );
             if( xobject instanceof PDImageXObject)
             {
@@ -169,7 +169,7 @@ public class PrintImageLocations extends PDFStreamEngine
         }
         else
         {
-            super.processOperator( operator, arguments );
+            super.processOperator( operator, operands);
         }
     }
 

@@ -14,34 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.contentstream.operator.state;
 
-import java.util.List;
+package org.apache.pdfbox.pdmodel;
 
-import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSNumber;
-import org.apache.pdfbox.contentstream.operator.Operator;
-import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
+import java.io.IOException;
 
 /**
- * d: Set the line dash pattern.
- *
- * @author Ben Litchfield
+ * Thrown when a named resource is missing.
  */
-public class SetLineDashPattern extends OperatorProcessor
+public final class MissingResourceException extends IOException
 {
-    @Override
-    public void process(Operator operator, List<COSBase> arguments)
+    public MissingResourceException(String message)
     {
-        COSArray dashArray = (COSArray) arguments.get(0);
-        int dashPhase = ((COSNumber) arguments.get(1)).intValue();
-        context.setLineDashPattern(dashArray, dashPhase);
-    }
-
-    @Override
-    public String getName()
-    {
-        return "d";
+        super(message);
     }
 }

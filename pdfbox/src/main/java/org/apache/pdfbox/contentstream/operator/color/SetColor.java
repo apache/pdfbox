@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.contentstream.operator.color;
 
+import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
@@ -38,10 +39,10 @@ public abstract class SetColor extends OperatorProcessor
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
         PDColorSpace colorSpace = getColorSpace();
-        if (colorSpace instanceof PDDeviceColorSpace
-                && !checkArgumentSize(arguments, colorSpace.getNumberOfComponents()))
+        if (colorSpace instanceof PDDeviceColorSpace &&
+            arguments.size() < colorSpace.getNumberOfComponents())
         {
-            return;
+            throw new MissingOperandException(operator, arguments);
         }
         COSArray array = new COSArray();
         array.addAll(arguments);

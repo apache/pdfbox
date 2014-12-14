@@ -80,15 +80,15 @@ public class PreflightType3Stream extends PreflightStreamEngine
      * 
      * @param operator
      *            The operation to perform.
-     * @param arguments
+     * @param operands
      *            The list of arguments.
      * 
      * @throws IOException
      *             If there is an error processing the operation.
      */
-    protected void processOperator(Operator operator, List arguments) throws IOException
+    protected void processOperator(Operator operator, List operands) throws IOException
     {
-        super.processOperator(operator, arguments);
+        super.processOperator(operator, operands);
         String operation = operator.getName();
 
         if (operation.equals("BI"))
@@ -109,7 +109,7 @@ public class PreflightType3Stream extends PreflightStreamEngine
             // width = horizontalWidth.intValue();
             // height = verticalWidth.intValue();
 
-            checkType3FirstOperator(arguments);
+            checkType3FirstOperator(operands);
 
         }
         else if (operation.equals("d1"))
@@ -117,10 +117,10 @@ public class PreflightType3Stream extends PreflightStreamEngine
             // set glyph with and bounding box for type 3 font
             // COSNumber horizontalWidth = (COSNumber)arguments.get( 0 );
             // COSNumber verticalWidth = (COSNumber)arguments.get( 1 );
-            COSNumber llx = (COSNumber) arguments.get(2);
-            COSNumber lly = (COSNumber) arguments.get(3);
-            COSNumber urx = (COSNumber) arguments.get(4);
-            COSNumber ury = (COSNumber) arguments.get(5);
+            COSNumber llx = (COSNumber) operands.get(2);
+            COSNumber lly = (COSNumber) operands.get(3);
+            COSNumber urx = (COSNumber) operands.get(4);
+            COSNumber ury = (COSNumber) operands.get(5);
 
             // width = horizontalWidth.intValue();
             // height = verticalWidth.intValue();
@@ -130,12 +130,12 @@ public class PreflightType3Stream extends PreflightStreamEngine
             box.setUpperRightX(urx.floatValue());
             box.setUpperRightY(ury.floatValue());
 
-            checkType3FirstOperator(arguments);
+            checkType3FirstOperator(operands);
         }
 
         checkColorOperators(operation);
-        validateRenderingIntent(operator, arguments);
-        checkSetColorSpaceOperators(operator, arguments);
+        validateRenderingIntent(operator, operands);
+        checkSetColorSpaceOperators(operator, operands);
         validateNumberOfGraphicStates(operator);
         firstOperator = false;
     }

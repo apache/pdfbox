@@ -31,12 +31,16 @@ import java.util.Stack;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.contentstream.operator.MissingOperandException;
+import org.apache.pdfbox.contentstream.operator.state.EmptyGraphicsStackException;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.filter.MissingImageReaderException;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
+import org.apache.pdfbox.pdmodel.MissingResourceException;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -44,6 +48,7 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontFactory;
 import org.apache.pdfbox.pdmodel.font.PDType3CharProc;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
+import org.apache.pdfbox.pdmodel.graphics.PDLineDashPattern;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
@@ -789,21 +794,28 @@ public class PDFStreamEngine
      * This is used to handle an operation.
      * 
      * @param operator The operation to perform.
-     * @param arguments The list of arguments.
+     * @param operands The list of arguments.
      * @throws IOException If there is an error processing the operation.
      */
-    protected void processOperator(Operator operator, List<COSBase> arguments) throws IOException
+    protected void processOperator(Operator operator, List<COSBase> operands) throws IOException
     {
         String name = operator.getName();
         OperatorProcessor processor = operators.get(name);
         if (processor != null)
         {
             processor.setContext(this);
-            processor.process(operator, arguments);
+            try
+            {
+                processor.process(operator, operands);
+            }
+            catch (IOException e)
+            {
+                operatorException(operator, operands, e);
+            }
         }
         else
         {
-            unsupportedOperator(operator, arguments);
+            unsupportedOperator(operator, operands);
         }
     }
 
@@ -811,11 +823,42 @@ public class PDFStreamEngine
      * Called when an unsupported operator is encountered.
      *
      * @param operator The unknown operator.
-     * @param arguments The list of arguments.
+     * @param operands The list of operands.
      */
-    protected void unsupportedOperator(Operator operator, List<COSBase> arguments) throws IOException
+    protected void unsupportedOperator(Operator operator, List<COSBase> operands) throws IOException
     {
         // overridden in subclasses
+    }
+
+    /**
+     * Called when an exception is thrown by an operator.
+     *
+     * @param operator The unknown operator.
+     * @param operands The list of operands.
+     */
+    protected void operatorException(Operator operator, List<COSBase> operands, IOException e)
+            throws IOException
+    {
+        if (e instanceof MissingOperandException ||
+            e instanceof MissingResourceException ||
+            e instanceof MissingImageReaderException)
+        {
+            LOG.error(e.getMessage());
+        }
+        else if (e instanceof EmptyGraphicsStackException)
+        {
+            LOG.warn(e.getMessage());
+        }
+        else if (operator.getName().equals("Do"))
+        {
+            // todo: this too forgiving, but PDFBox has always worked this way for DrawObject
+            //       some careful refactoring is needed
+            LOG.warn(e.getMessage());
+        }
+        else
+        {
+            throw e;
+        }
     }
 
     /**
@@ -881,7 +924,22 @@ public class PDFStreamEngine
     {
         textMatrix = value;
     }
-    
+
+    /**
+     * @param array dash array
+     * @param phase dash phase
+     */
+    public void setLineDashPattern(COSArray array, int phase)
+    {
+        if (phase < 0)
+        {
+            LOG.warn("Dash phase has negative value " + phase + ", set to 0");
+            phase = 0;
+        }
+        PDLineDashPattern lineDash = new PDLineDashPattern(array, phase);
+        getGraphicsState().setLineDashPattern(lineDash);
+    }
+
     /**
      * Returns the stream' resources.
      */
