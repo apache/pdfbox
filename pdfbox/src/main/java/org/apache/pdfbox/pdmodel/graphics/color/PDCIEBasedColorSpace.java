@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.graphics.color;
 
 
+import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
@@ -24,12 +25,37 @@ import java.io.IOException;
 /**
  * CIE-based colour spaces specify colours in a way that is independent of the characteristics
  * of any particular output device. They are based on an international standard for colour
- * specification created by the Commission Internationale de l?Éclairage (CIE).
+ * specification created by the Commission Internationale de l?ï¿½clairage (CIE).
  *
  * @author John Hewson
  */
 public abstract class PDCIEBasedColorSpace extends PDColorSpace
 {
+    private static final ColorSpace CIEXYZ = ColorSpace.getInstance(ColorSpace.CS_CIEXYZ);
+    
+    protected float[] convXYZtoRGB(float x, float y, float z)
+    {
+        // toRGB() malfunctions with negative values
+        // XYZ must be non-negative anyway:
+        // http://ninedegreesbelow.com/photography/icc-profile-negative-tristimulus.html
+        if (x < 0)
+        {
+            x = 0;
+        }
+        if (y < 0)
+        {
+            y = 0;
+        }
+        if (z < 0)
+        {
+            z = 0;
+        }
+        return CIEXYZ.toRGB(new float[]
+        {
+            x, y, z
+        });
+    }
+
     //
     // WARNING: this method is performance sensitive, modify with care!
     //

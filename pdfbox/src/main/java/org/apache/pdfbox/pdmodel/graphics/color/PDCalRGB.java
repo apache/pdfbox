@@ -84,8 +84,30 @@ public class PDCalRGB extends PDCIEBasedColorSpace
     @Override
     public float[] toRGB(float[] value)
     {
-        // this is a hack, we simply skip CIE calibration of the RGB value
-        return new float[] { value[0], value[1], value[2] };
+        PDTristimulus whitepoint = getWhitepoint();
+        if (whitepoint.getX() == 1 && whitepoint.getX() == 1 && whitepoint.getX() == 1)
+        {
+            float a = value[0];
+            float b = value[1];
+            float c = value[2];
+
+            Matrix matrix = getGammaMatrix();
+            PDGamma gamma = getGamma();
+            double powAR = Math.pow(a, gamma.getR());
+            double powBG = Math.pow(b, gamma.getG());
+            double powCB = Math.pow(c, gamma.getB());
+            float x = (float) (matrix.getValue(0, 0) * powAR + matrix.getValue(0, 1) * powBG + matrix.getValue(0, 2) * powCB);
+            float y = (float) (matrix.getValue(1, 0) * powAR + matrix.getValue(1, 1) * powBG + matrix.getValue(1, 2) * powCB);
+            float z = (float) (matrix.getValue(2, 0) * powAR + matrix.getValue(2, 1) * powBG + matrix.getValue(2, 2) * powCB);
+            return convXYZtoRGB(x, y, z);
+        }
+        else
+        {
+            // this is a hack, we simply skip CIE calibration of the RGB value
+            // this works only with whitepoint D65 (0.9505 1.0 1.089)
+            // see PDFBOX-2553
+            return new float[] { value[0], value[1], value[2] };
+        }
     }
 
     /**
@@ -127,22 +149,22 @@ public class PDCalRGB extends PDCIEBasedColorSpace
     }
 
     /**
-     * Returns the the gamma value.
+     * Returns the gamma value.
      * If none is present then the default of 1,1,1 will be returned.
      * @return the gamma value
      */
     public final PDGamma getGamma()
     {
-        COSArray gamma = (COSArray)dictionary.getDictionaryObject(COSName.GAMMA);
-        if(gamma == null)
+        COSArray gammaArray = (COSArray) dictionary.getDictionaryObject(COSName.GAMMA);
+        if (gammaArray == null)
         {
-            gamma = new COSArray();
-            gamma.add(new COSFloat(1.0f));
-            gamma.add(new COSFloat(1.0f));
-            gamma.add(new COSFloat(1.0f));
-            dictionary.setItem(COSName.GAMMA, gamma);
+            gammaArray = new COSArray();
+            gammaArray.add(new COSFloat(1.0f));
+            gammaArray.add(new COSFloat(1.0f));
+            gammaArray.add(new COSFloat(1.0f));
+            dictionary.setItem(COSName.GAMMA, gammaArray);
         }
-        return new PDGamma(gamma);
+        return new PDGamma(gammaArray);
     }
 
     /**
@@ -196,12 +218,12 @@ public class PDCalRGB extends PDCIEBasedColorSpace
      */
     public final void setGamma(PDGamma gamma)
     {
-        COSArray array = null;
+        COSArray gammaArray = null;
         if(gamma != null)
         {
-            array = gamma.getCOSArray();
+            gammaArray = gamma.getCOSArray();
         }
-        dictionary.setItem(COSName.GAMMA, array);
+        dictionary.setItem(COSName.GAMMA, gammaArray);
     }
 
     /**
