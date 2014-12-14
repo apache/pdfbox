@@ -35,8 +35,6 @@ import java.io.IOException;
  */
 public final class PDLab extends PDCIEBasedColorSpace
 {
-    private static final ColorSpace CIEXYZ = ColorSpace.getInstance(ColorSpace.CS_CIEXYZ);
-
     private final COSDictionary dictionary;
     private PDColor initialColor;
     
@@ -144,24 +142,7 @@ public final class PDLab extends PDCIEBasedColorSpace
         float y = wpY * inverse(lstar);
         float z = wpZ * inverse(lstar - value[2] * (1f / 200f));
         
-        // toRGB() malfunctions with negative values
-        // XYZ must be non-negative anyway:
-        // http://ninedegreesbelow.com/photography/icc-profile-negative-tristimulus.html
-        if (x < 0)
-        {
-            x = 0;
-        }
-        if (y < 0)
-        {
-            y = 0;
-        }
-        if (z < 0)
-        {
-            z = 0;
-        }
-
-        // XYZ to RGB
-        return CIEXYZ.toRGB(new float[] { x, y, z });
+        return convXYZtoRGB(x, y, z);
     }
 
     // reverse transformation (f^-1)
