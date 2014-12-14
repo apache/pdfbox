@@ -73,7 +73,7 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
 
     private PDStream createToUnicodeCMap(PDDocument document) throws IOException
     {
-        ToUnicodeWriter toUniWriter = new ToUnicodeWriter("Adobe", "Identity", 0);
+        ToUnicodeWriter toUniWriter = new ToUnicodeWriter();
         boolean hasSurrogates = false;
         for (int gid = 1, max = ttf.getMaximumProfile().getNumGlyphs(); gid <= max; gid++)
         {
@@ -93,11 +93,7 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         toUniWriter.writeTo(out);
         InputStream cMapStream = new ByteArrayInputStream(out.toByteArray());
 
-        // ToUnicode stream dictionary
         PDStream stream = new PDStream(document, cMapStream, false);
-        stream.getStream().setItem(COSName.TYPE, COSName.CMAP);
-        stream.getStream().setName(COSName.CMAPNAME, toUniWriter.getName());
-        stream.getStream().setItem(COSName.CIDSYSTEMINFO, toCIDSystemInfo("Adobe", "Identity", 0));
         stream.addCompression();
 
         // surrogate code points, requires PDF 1.5

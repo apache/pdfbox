@@ -34,23 +34,14 @@ import org.apache.pdfbox.util.Charsets;
  */
 final class ToUnicodeWriter
 {
-    private final String registry, ordering;
-    private final int supplement;
     private final Map<Integer, String> cidToUnicode = new TreeMap<Integer, String>();
     private int wMode;
 
     /**
      * Creates a new ToUnicode CMap writer.
-     *
-     * @param registry character collection registry
-     * @param ordering character ordering
-     * @param supplement character supplement
      */
-    public ToUnicodeWriter(String registry, String ordering, int supplement)
+    public ToUnicodeWriter()
     {
-        this.registry = registry;
-        this.ordering = ordering;
-        this.supplement = supplement;
         this.wMode = 0;
     }
 
@@ -86,14 +77,6 @@ final class ToUnicodeWriter
     }
 
     /**
-     * Returns the name of the CMap.
-     */
-    public String getName()
-    {
-        return registry + "-" + ordering + "-UCS";
-    }
-
-    /**
      * Writes the CMap as ASCII to the given output stream.
      *
      * @param out ASCII output stream
@@ -108,12 +91,12 @@ final class ToUnicodeWriter
 
         writeLine(writer, "begincmap");
         writeLine(writer, "/CIDSystemInfo");
-        writeLine(writer, "<< /Registry (" + registry + ")");
-        writeLine(writer, "   /Ordering (" + ordering + ")");
-        writeLine(writer, "   /Supplement " + supplement);
+        writeLine(writer, "<< /Registry (Adobe)");
+        writeLine(writer, "/Ordering (UCS)");
+        writeLine(writer, "/Supplement 0");
         writeLine(writer, ">> def\n");
 
-        writeLine(writer, "/CMapName /" + getName() + " def");
+        writeLine(writer, "/CMapName /Adobe-Identity-UCS" + " def");
         writeLine(writer, "/CMapType 2 def\n"); // 2 = ToUnicode
 
         if (wMode != 0)
@@ -183,7 +166,7 @@ final class ToUnicodeWriter
 
         // footer
         writeLine(writer, "endcmap");
-        writeLine(writer, "CMapName currentdict /CMap");
+        writeLine(writer, "CMapName currentdict /CMap defineresource pop");
         writeLine(writer, "end");
         writeLine(writer, "end");
 
