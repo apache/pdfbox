@@ -67,6 +67,10 @@ abstract class TrueTypeEmbedder
         {
             stream2 = stream.createInputStream();
             ttf = new TTFParser().parse(stream2);
+            if (!isEmbeddingPermitted(ttf))
+            {
+                throw new IOException("This font does not permit embedding");
+            }
             fd = createFontDescriptor(ttf);
         }
         finally
@@ -81,6 +85,32 @@ abstract class TrueTypeEmbedder
 
         // choose a Unicode "cmap"
         cmap = getUnicodeCmap(ttf.getCmap());
+    }
+
+    /**
+     * Returns true if the fsType in the OS/2 table permits embedding.
+     */
+    private boolean isEmbeddingPermitted(TrueTypeFont ttf) throws IOException
+    {
+        if (ttf.getOS2Windows() != null)
+        {
+            int fsType = ttf.getOS2Windows().getFsType();
+            int exclusive = fsType & 0x8; // bits 0-3 are a set of exclusive bits
+
+            if ((exclusive & OS2WindowsMetricsTable.FSTYPE_RESTRICTED) ==
+                             OS2WindowsMetricsTable.FSTYPE_RESTRICTED)
+            {
+                // restricted License embedding
+                return false;
+            }
+            else if ((exclusive & OS2WindowsMetricsTable.FSTYPE_BITMAP_ONLY) ==
+                                 OS2WindowsMetricsTable.FSTYPE_BITMAP_ONLY)
+            {
+                // bitmap embedding only
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

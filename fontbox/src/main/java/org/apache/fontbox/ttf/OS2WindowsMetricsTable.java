@@ -147,6 +147,37 @@ public class OS2WindowsMetricsTable extends TTFTable
     public static final int FAMILY_CLASS_SYMBOLIC = 12;
 
     /**
+     * Restricted License embedding: must not be modified, embedded or exchanged in any manner.
+     *
+     * <p>For Restricted License embedding to take effect, it must be the only level of embedding
+     * selected.
+     */
+    public static final short FSTYPE_RESTRICTED = 0x0001;
+
+    /**
+     * Preview & Print embedding: the font may be embedded, and temporarily loaded on the
+     * remote system. No edits can be applied to the document.
+     */
+    public static final short FSTYPE_PREVIEW_AND_PRINT = 0x0004;
+
+    /**
+     * Editable embedding: the font may be embedded but must only be installed temporarily on other
+     * systems. Documents may be editied and changes saved.
+     */
+    public static final short FSTYPE_EDITIBLE = 0x0004;
+
+    /**
+     * No subsetting: the font must not be subsetted prior to embedding.
+     */
+    public static final short FSTYPE_NO_SUBSETTING = 0x0100;
+
+    /**
+     * Bitmap embedding only: only bitmaps contained in the font may be embedded. No outline data
+     * may be embedded. Other embedding restrictions specified in bits 0-3 and 8 also apply.
+     */
+    public static final short FSTYPE_BITMAP_ONLY = 0x0200;
+
+    /**
      * @return Returns the achVendId.
      */
     public String getAchVendId()
