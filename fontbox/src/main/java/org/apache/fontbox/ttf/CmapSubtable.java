@@ -315,7 +315,9 @@ public class CmapSubtable
      */
     protected void processSubtype14(TTFDataStream data, int numGlyphs) throws IOException
     {
-        throw new IOException("CMap subtype 14 not yet implemented");
+        // Unicode Variation Sequences (UVS)
+        // see http://blogs.adobe.com/CCJKType/2013/05/opentype-cmap-table-ramblings.html
+        LOG.warn("Format 14 cmap table is not supported and will be ignored");
     }
 
     /**
