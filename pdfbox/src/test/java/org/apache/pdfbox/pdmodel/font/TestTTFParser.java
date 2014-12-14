@@ -41,15 +41,14 @@ public class TestTTFParser
     @Test
     public void testPostTable() throws IOException
     {
-        InputStream arialIs = TestTTFParser.class.getClassLoader().getResourceAsStream(
-                "org/apache/pdfbox/ttf/ArialMT.ttf");
-        Assert.assertNotNull(arialIs);
+        InputStream input = TestTTFParser.class.getClassLoader().getResourceAsStream(
+                "org/apache/pdfbox/ttf/LiberationSans-Regular.ttf");
+        Assert.assertNotNull(input);
 
         TTFParser parser = new TTFParser();
+        TrueTypeFont font = parser.parse(input);
 
-        TrueTypeFont arial = parser.parse(arialIs);
-
-        CmapTable cmapTable = arial.getCmap();
+        CmapTable cmapTable = font.getCmap();
         Assert.assertNotNull(cmapTable);
 
         CmapSubtable[] cmaps = cmapTable.getCmaps();
@@ -69,10 +68,10 @@ public class TestTTFParser
 
         Assert.assertNotNull(cmap);
 
-        PostScriptTable post = arial.getPostScript();
+        PostScriptTable post = font.getPostScript();
         Assert.assertNotNull(post);
 
-        String[] glyphNames = arial.getPostScript().getGlyphNames();
+        String[] glyphNames = font.getPostScript().getGlyphNames();
         Assert.assertNotNull(glyphNames);
 
         // test a WGL4 (Macintosh standard) name
