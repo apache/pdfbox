@@ -136,7 +136,7 @@ public class CmapSubtable
             throw new IOException("CMap ( Subtype8 ) is invalid");
         }
 
-        glyphIdToCharacterCode = new int[numGlyphs];
+        glyphIdToCharacterCode = newGlyphIdToCharacterCode(numGlyphs);
         // -- Read all sub header
         for (long i = 0; i < nbGroups; ++i)
         {
@@ -224,7 +224,7 @@ public class CmapSubtable
     protected void processSubtype12(TTFDataStream data, int numGlyphs) throws IOException
     {
         long nbGroups = data.readUnsignedInt();
-        glyphIdToCharacterCode = new int[numGlyphs];
+        glyphIdToCharacterCode = newGlyphIdToCharacterCode(numGlyphs);
         for (long i = 0; i < nbGroups; ++i)
         {
             long firstCode = data.readUnsignedInt();
@@ -331,7 +331,7 @@ public class CmapSubtable
     {
         int firstCode = data.readUnsignedShort();
         int entryCount = data.readUnsignedShort();
-        glyphIdToCharacterCode = new int[numGlyphs];
+        glyphIdToCharacterCode = newGlyphIdToCharacterCode(numGlyphs);
         int[] glyphIdArray = data.readUnsignedShortArray(entryCount);
         for (int i = 0; i < entryCount; i++)
         {
@@ -404,15 +404,14 @@ public class CmapSubtable
 
         /*
          * this is the final result key=glyphId, value is character codes Create an array that contains MAX(GlyphIds)
-         * element and fill this array with the .notdef character
+         * element, or -1
          */
         if (tmpGlyphToChar.isEmpty())
         {
             LOG.warn("cmap format 4 subtable is empty");
             return;
         }
-        glyphIdToCharacterCode = new int[Collections.max(tmpGlyphToChar.keySet()) + 1];
-        Arrays.fill(glyphIdToCharacterCode, 0);
+        glyphIdToCharacterCode = newGlyphIdToCharacterCode(Collections.max(tmpGlyphToChar.keySet()) + 1);
         for (Entry<Integer, Integer> entry : tmpGlyphToChar.entrySet())
         {
             // link the glyphId with the right character code
@@ -449,7 +448,7 @@ public class CmapSubtable
             subHeaders[i] = new SubHeader(firstCode, entryCount, idDelta, idRangeOffset);
         }
         long startGlyphIndexOffset = data.getCurrentPosition();
-        glyphIdToCharacterCode = new int[numGlyphs];
+        glyphIdToCharacterCode = newGlyphIdToCharacterCode(numGlyphs);
         for (int i = 0; i <= maxSubHeaderIndex; ++i)
         {
             SubHeader sh = subHeaders[i];
@@ -489,13 +488,24 @@ public class CmapSubtable
     protected void processSubtype0(TTFDataStream data) throws IOException
     {
         byte[] glyphMapping = data.read(256);
-        glyphIdToCharacterCode = new int[256];
+        glyphIdToCharacterCode = newGlyphIdToCharacterCode(256);
         for (int i = 0; i < glyphMapping.length; i++)
         {
             int glyphIndex = (glyphMapping[i] + 256) % 256;
             glyphIdToCharacterCode[glyphIndex] = i;
             characterCodeToGlyphId.put(i, glyphIndex);
         }
+    }
+
+    /**
+     * Workaround for the fact that glyphIdToCharacterCode doesn't distinguish between
+     * missing character codes and code 0.
+     */
+    private int[] newGlyphIdToCharacterCode(int size)
+    {
+        int[] gidToCode = new int[size];
+        Arrays.fill(gidToCode, -1);
+        return gidToCode;
     }
 
     /**
@@ -554,7 +564,15 @@ public class CmapSubtable
         {
             return null;
         }
-        return glyphIdToCharacterCode[gid];
+
+        // workaround for the fact that glyphIdToCharacterCode doesn't distinguish between
+        // missing character codes and code 0.
+        int code = glyphIdToCharacterCode[gid];
+        if (code == -1)
+        {
+            return null;
+        }
+        return code;
     }
 
     @Override
