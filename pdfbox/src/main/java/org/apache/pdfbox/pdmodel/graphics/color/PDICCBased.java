@@ -41,7 +41,6 @@ import java.awt.image.WritableRaster;
 import java.io.InputStream;
 import java.io.IOException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

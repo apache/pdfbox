@@ -17,8 +17,6 @@
 package org.apache.pdfbox.pdmodel.graphics.color;
 
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.PDRange;
@@ -32,27 +30,16 @@ import java.io.IOException;
  * @author Ben Litchfield
  * @author John Hewson
  */
-public final class PDLab extends PDCIEBasedColorSpace
+public final class PDLab extends PDCIEDictionaryBasedColorSpace
 {
-    private final COSDictionary dictionary;
     private PDColor initialColor;
     
-    // we need to cache whitepoint values, because using getWhitePoint()
-    // would create a new default object for each pixel conversion if the original
-    // PDF didn't have a whitepoint array
-    private float wpX = 1;
-    private float wpY = 1;
-    private float wpZ = 1;
-
     /**
      * Creates a new Lab color space.
      */
     public PDLab()
     {
-        array = new COSArray();
-        dictionary = new COSDictionary();
-        array.add(COSName.LAB);
-        array.add(dictionary);
+        super(COSName.LAB);
     }
 
     /**
@@ -61,16 +48,9 @@ public final class PDLab extends PDCIEBasedColorSpace
      */
     public PDLab(COSArray lab)
     {
-        array = lab;
-        dictionary = (COSDictionary)array.getObject(1);
-        
-        // init whitepoint cache
-        PDTristimulus whitepoint = getWhitepoint();
-        wpX = whitepoint.getX();
-        wpY = whitepoint.getY();
-        wpZ = whitepoint.getZ();
+        super(lab);
     }
-
+    
     @Override
     public String getName()
     {
@@ -186,44 +166,6 @@ public final class PDLab extends PDCIEBasedColorSpace
     }
 
     /**
-     * This will return the whitepoint tristimulus.
-     * As this is a required field this will never return null.
-     * A default of 1,1,1 will be returned if the pdf does not have any values yet.
-     * @return the whitepoint tristimulus
-     */
-    public PDTristimulus getWhitepoint()
-    {
-        COSArray wp = (COSArray)dictionary.getDictionaryObject(COSName.WHITE_POINT);
-        if(wp == null)
-        {
-            wp = new COSArray();
-            wp.add(new COSFloat(1.0f));
-            wp.add(new COSFloat(1.0f));
-            wp.add(new COSFloat(1.0f));
-        }
-        return new PDTristimulus(wp);
-    }
-
-    /**
-     * This will return the BlackPoint tristimulus.
-     * This is an optional field but has defaults so this will never return null.
-     * A default of 0,0,0 will be returned if the pdf does not have any values yet.
-     * @return the blackpoint tristimulus
-     */
-    public PDTristimulus getBlackPoint()
-    {
-        COSArray bp = (COSArray)dictionary.getDictionaryObject(COSName.BLACK_POINT);
-        if(bp == null)
-        {
-            bp = new COSArray();
-            bp.add(new COSFloat(0.0f));
-            bp.add(new COSFloat(0.0f));
-            bp.add(new COSFloat(0.0f));
-        }
-        return new PDTristimulus(bp);
-    }
-
-    /**
      * creates a range array with default values (-100..100 -100..100).
      * @return the new range array.
      */
@@ -265,40 +207,6 @@ public final class PDLab extends PDCIEBasedColorSpace
             rangeArray = getDefaultRangeArray();
         }
         return new PDRange(rangeArray, 1);
-    }
-
-    /**
-     * This will set the whitepoint tristimulus.
-     * As this is a required field this null should not be passed into this function.
-     * @param whitepoint the whitepoint tristimulus
-     */
-    public void setWhitePoint(PDTristimulus whitepoint)
-    {
-        COSBase wpArray = whitepoint.getCOSObject();
-        if(wpArray != null)
-        {
-            dictionary.setItem(COSName.WHITE_POINT, wpArray);
-        }
-        
-        // update cached values
-        wpX = whitepoint.getX();
-        wpY = whitepoint.getY();
-        wpZ = whitepoint.getZ();
-    }
-
-    /**
-     * This will set the BlackPoint tristimulus.
-     * As this is a required field this null should not be passed into this function.
-     * @param blackpoint the BlackPoint tristimulus
-     */
-    public void setBlackPoint(PDTristimulus blackpoint)
-    {
-        COSBase bpArray = null;
-        if(blackpoint != null)
-        {
-            bpArray = blackpoint.getCOSObject();
-        }
-        dictionary.setItem(COSName.BLACK_POINT, bpArray);
     }
 
     /**
