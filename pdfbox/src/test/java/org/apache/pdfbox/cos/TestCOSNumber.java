@@ -60,6 +60,7 @@ public abstract class TestCOSNumber extends TestCOSBase
             assertEquals(COSInteger.get(100), COSNumber.get("100"));
             assertEquals(COSInteger.get(256), COSNumber.get("256"));
             assertEquals(COSInteger.get(-1000), COSNumber.get("-1000"));
+            assertEquals(COSInteger.get(2000), COSNumber.get("+2000"));
             // Some arbitrary floats
             assertEquals(new COSFloat(1.1f), COSNumber.get("1.1"));
             assertEquals(new COSFloat(100f), COSNumber.get("100.0"));
