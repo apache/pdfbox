@@ -72,7 +72,10 @@ public class PDTrueTypeFont extends PDSimpleFont
      * @param file a ttf file.
      * @return a PDTrueTypeFont instance.
      * @throws IOException If there is an error loading the data.
+     *
+     * @deprecated Use {@link PDType0Font#load(PDDocument, File)} instead.
      */
+    @Deprecated
     public static PDTrueTypeFont loadTTF(PDDocument doc, File file) throws IOException
     {
         return new PDTrueTypeFont(doc, new FileInputStream(file));
@@ -85,7 +88,10 @@ public class PDTrueTypeFont extends PDSimpleFont
      * @param input a ttf file stream
      * @return a PDTrueTypeFont instance.
      * @throws IOException If there is an error loading the data.
+     *
+     * @deprecated Use {@link PDType0Font#load(PDDocument, InputStream)} instead.
      */
+    @Deprecated
     public static PDTrueTypeFont loadTTF(PDDocument doc, InputStream input) throws IOException
     {
         return new PDTrueTypeFont(doc, input);
@@ -382,7 +388,7 @@ public class PDTrueTypeFont extends PDSimpleFont
             {
                 if (CmapTable.PLATFORM_WINDOWS == cmap.getPlatformId())
                 {
-                    if (CmapTable.ENCODING_WIN_UNICODE == cmap.getPlatformEncodingId())
+                    if (CmapTable.ENCODING_WIN_UNICODE_BMP == cmap.getPlatformEncodingId())
                     {
                         cmapWinUnicode = cmap;
                     }

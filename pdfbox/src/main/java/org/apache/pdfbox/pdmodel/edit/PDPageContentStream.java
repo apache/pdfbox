@@ -25,9 +25,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
+import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,7 +46,9 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.COSStreamArray;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.font.PDCIDFontType2;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
@@ -129,8 +135,11 @@ public class PDPageContentStream implements Closeable
     // instance variables
     private OutputStream output;
     private PDResources resources;
+
     private boolean inTextMode = false;
     private final Stack<PDFont> fontStack = new Stack<PDFont>();
+    private final List<PDFont> fontsToSubset = new ArrayList<PDFont>();
+    private final Map<PDFont, Set<Integer>> subsetCodePoints = new HashMap<PDFont, Set<Integer>>();
 
     private PDColorSpace currentStrokingColorSpace = PDDeviceGray.INSTANCE;
     private PDColorSpace currentNonStrokingColorSpace = PDDeviceGray.INSTANCE;
@@ -312,6 +321,19 @@ public class PDPageContentStream implements Closeable
      */
     public void setFont(PDFont font, float fontSize) throws IOException
     {
+        setFont(font, fontSize, true);
+    }
+
+    /**
+     * Set the font to draw text with.
+     *
+     * @param font The font to use.
+     * @param fontSize The font size to draw the text.
+     * @param embedSubset True to subset this font when embedding it. Affects all uses of this font.
+     * @throws IOException If there is an error writing the font information.
+     */
+    public void setFont(PDFont font, float fontSize, boolean embedSubset) throws IOException
+    {
         if (fontStack.isEmpty())
         {
             fontStack.add(font);
@@ -319,6 +341,16 @@ public class PDPageContentStream implements Closeable
         else
         {
             fontStack.setElementAt(font, fontStack.size() - 1);
+        }
+
+        if (embedSubset)
+        {
+            fontsToSubset.add(font);
+            subsetCodePoints.put(font, new HashSet<Integer>());
+        }
+        else
+        {
+            fontsToSubset.remove(font);
         }
 
         appendCOSName(resources.add(font));
@@ -639,6 +671,20 @@ public class PDPageContentStream implements Closeable
         }
 
         PDFont font = fontStack.peek();
+
+        // Unicode code points to keep when subsetting
+        Set<Integer> codePoints = subsetCodePoints.get(font);
+        if (codePoints != null)
+        {
+            for (int offset = 0; offset < text.length(); )
+            {
+                int codePoint = text.codePointAt(offset);
+                codePoints.add(codePoint);
+                offset += Character.charCount(codePoint);
+            }
+
+        }
+
         COSWriter.writeString(font.encode(text), output);
         appendRawCommands(SPACE);
         appendRawCommands(SHOW_TEXT);
@@ -1618,6 +1664,17 @@ public class PDPageContentStream implements Closeable
      */
     public void close() throws IOException
     {
+        for (PDFont font : fontsToSubset)
+        {
+            // currently we only support subsetting Type0/CIDFontType2 fonts
+            if (font instanceof PDType0Font)
+            {
+                if (((PDType0Font)font).getDescendantFont() instanceof PDCIDFontType2)
+                {
+                    font.subset(subsetCodePoints.get(font));
+                }
+            }
+        }
         output.close();
         currentNonStrokingColorSpace = null;
         currentStrokingColorSpace = null;

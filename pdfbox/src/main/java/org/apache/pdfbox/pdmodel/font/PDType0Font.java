@@ -21,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.cmap.CMap;
@@ -47,6 +48,7 @@ public class PDType0Font extends PDFont
     private final PDCIDFont descendantFont;
     private CMap cMap, cMapUCS2;
     private boolean isCMapPredefined;
+    private PDCIDFontType2Embedder embedder;
 
     /**
     * Loads a TTF to be embedded into a document.
@@ -106,11 +108,16 @@ public class PDType0Font extends PDFont
     */
     private PDType0Font(PDDocument document, InputStream ttfStream) throws IOException
     {
-        PDCIDFontType2Embedder embedder =
-                new PDCIDFontType2Embedder(document, dict, ttfStream, this);
+        embedder = new PDCIDFontType2Embedder(document, dict, ttfStream, this);
         descendantFont = embedder.getCIDFont();
         readEncoding();
         fetchCMapUCS2();
+    }
+
+    @Override
+    public void subset(Set<Integer> codePoints) throws IOException
+    {
+        embedder.subset(codePoints);
     }
 
     /**

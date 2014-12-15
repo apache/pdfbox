@@ -117,4 +117,12 @@ final class PDTrueTypeFontEmbedder extends TrueTypeEmbedder
     {
         return fontEncoding;
     }
+
+    @Override
+    protected void buildSubset(InputStream ttfSubset, String tag,
+                            Map<Integer, Integer> gidToCid) throws IOException
+    {
+        // use PDType0Font instead
+        throw new UnsupportedOperationException();
+    }
 }

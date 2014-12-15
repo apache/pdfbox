@@ -349,4 +349,11 @@ public abstract class PDSimpleFont extends PDFont
         }
         return super.isStandard14();
     }
+
+    @Override
+    public void subset(Set<Integer> codePoints) throws IOException
+    {
+        // only TTF subsetting via PDType0Font is currently supported
+        throw new UnsupportedOperationException();
+    }
 }

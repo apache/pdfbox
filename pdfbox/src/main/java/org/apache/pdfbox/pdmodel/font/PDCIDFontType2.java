@@ -351,7 +351,7 @@ public class PDCIDFontType2 extends PDCIDFont
         if (cmap == null)
         {
             cmap = cmapTable.getSubtable(CmapTable.PLATFORM_WINDOWS,
-                                         CmapTable.ENCODING_WIN_UNICODE);
+                                         CmapTable.ENCODING_WIN_UNICODE_BMP);
         }
         if (cmap == null)
         {

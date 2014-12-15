@@ -25,6 +25,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 
 /**
  * This is an example that creates a simple document
@@ -56,7 +57,7 @@ public class HelloWorldTTF
 
             PDPage page = new PDPage();
             doc.addPage(page);
-            PDFont font = PDTrueTypeFont.loadTTF(doc, new File(fontfile));
+            PDFont font = PDType0Font.load(doc, new File(fontfile));
 
             PDPageContentStream contentStream = new PDPageContentStream(doc,
                     page);

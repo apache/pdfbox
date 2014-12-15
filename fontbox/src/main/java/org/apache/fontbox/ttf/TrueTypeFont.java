@@ -107,6 +107,23 @@ public class TrueTypeFont implements Type1Equivalent
     {
         return tables;
     }
+
+    /**
+     * Returns the war bytes of the given table.
+     */
+    public synchronized byte[] getTableBytes(TTFTable table) throws IOException
+    {
+        // save current position
+        long currentPosition = data.getCurrentPosition();
+        data.seek(table.getOffset());
+
+        // read all data
+        byte[] bytes = data.read((int)table.getLength());
+
+        // restore current position
+        data.seek(currentPosition);
+        return bytes;
+    }
     
     /**
      * This will get the naming table for the true type font.
