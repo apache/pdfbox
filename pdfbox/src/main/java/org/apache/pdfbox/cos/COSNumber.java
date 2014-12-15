@@ -97,7 +97,14 @@ public abstract class COSNumber extends COSBase
         {
             try
             {
-                return COSInteger.get( Long.parseLong( number ) );
+                if (number.charAt(0) == '+')
+                {
+                    return COSInteger.get( Long.parseLong( number.substring(1) ) );
+                }
+                else
+                {
+                    return COSInteger.get( Long.parseLong( number ) );
+                }
             }
             catch( NumberFormatException e )
             {
