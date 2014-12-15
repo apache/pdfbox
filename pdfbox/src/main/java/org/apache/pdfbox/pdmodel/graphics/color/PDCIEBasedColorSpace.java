@@ -16,8 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.color;
 
-
-import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
@@ -31,31 +29,6 @@ import java.io.IOException;
  */
 public abstract class PDCIEBasedColorSpace extends PDColorSpace
 {
-    private static final ColorSpace CIEXYZ = ColorSpace.getInstance(ColorSpace.CS_CIEXYZ);
-    
-    protected float[] convXYZtoRGB(float x, float y, float z)
-    {
-        // toRGB() malfunctions with negative values
-        // XYZ must be non-negative anyway:
-        // http://ninedegreesbelow.com/photography/icc-profile-negative-tristimulus.html
-        if (x < 0)
-        {
-            x = 0;
-        }
-        if (y < 0)
-        {
-            y = 0;
-        }
-        if (z < 0)
-        {
-            z = 0;
-        }
-        return CIEXYZ.toRGB(new float[]
-        {
-            x, y, z
-        });
-    }
-
     //
     // WARNING: this method is performance sensitive, modify with care!
     //

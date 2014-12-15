@@ -17,8 +17,6 @@
 package org.apache.pdfbox.pdmodel.graphics.color;
 
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 
@@ -31,9 +29,8 @@ import org.apache.pdfbox.util.Matrix;
  * @author Ben Litchfield
  * @author John Hewson
  */
-public class PDCalRGB extends PDCIEBasedColorSpace
+public class PDCalRGB extends PDCIEDictionaryBasedColorSpace
 {
-    protected COSDictionary dictionary;
     private final PDColor initialColor = new PDColor(new float[] { 0, 0, 0 }, this);
 
     /**
@@ -41,10 +38,7 @@ public class PDCalRGB extends PDCIEBasedColorSpace
      */
     public PDCalRGB()
     {
-        array = new COSArray();
-        dictionary = new COSDictionary();
-        array.add(COSName.CALRGB);
-        array.add(dictionary);
+        super(COSName.CALRGB);
     }
 
     /**
@@ -53,8 +47,7 @@ public class PDCalRGB extends PDCIEBasedColorSpace
      */
     public PDCalRGB(COSArray rgb)
     {
-        array = rgb;
-        dictionary = (COSDictionary)array.getObject(1);
+        super(rgb);
     }
 
     @Override
@@ -84,8 +77,7 @@ public class PDCalRGB extends PDCIEBasedColorSpace
     @Override
     public float[] toRGB(float[] value)
     {
-        PDTristimulus whitepoint = getWhitepoint();
-        if (whitepoint.getX() == 1 && whitepoint.getX() == 1 && whitepoint.getX() == 1)
+        if (wpX == 1 && wpY == 1 && wpZ == 1)
         {
             float a = value[0];
             float b = value[1];
@@ -108,44 +100,6 @@ public class PDCalRGB extends PDCIEBasedColorSpace
             // see PDFBOX-2553
             return new float[] { value[0], value[1], value[2] };
         }
-    }
-
-    /**
-     * Returns the whitepoint tristimulus.
-     * A default of 1,1,1 will be returned if the PDF does not have any values yet.
-     * @return the whitepoint tristimulus.
-     */
-    public final PDTristimulus getWhitepoint()
-    {
-        COSArray wp = (COSArray)dictionary.getDictionaryObject(COSName.WHITE_POINT);
-        if(wp == null)
-        {
-            wp = new COSArray();
-            wp.add(new COSFloat(1.0f));
-            wp.add(new COSFloat(1.0f));
-            wp.add(new COSFloat(1.0f));
-            dictionary.setItem(COSName.WHITE_POINT, wp);
-        }
-        return new PDTristimulus(wp);
-    }
-
-    /**
-     * Returns the blackpoint tristimulus.
-     * A default of 0,0,0 will be returned if the PDF does not have any values yet.
-     * @return the blackpoint tristimulus
-     */
-    public final PDTristimulus getBlackPoint()
-    {
-        COSArray bp = (COSArray)dictionary.getDictionaryObject(COSName.BLACK_POINT);
-        if(bp == null)
-        {
-            bp = new COSArray();
-            bp.add(new COSFloat(0.0f));
-            bp.add(new COSFloat(0.0f));
-            bp.add(new COSFloat(0.0f));
-            dictionary.setItem(COSName.BLACK_POINT, bp);
-        }
-        return new PDTristimulus(bp);
     }
 
     /**
@@ -183,33 +137,6 @@ public class PDCalRGB extends PDCIEBasedColorSpace
         {
            return new Matrix(matrix);
         }
-    }
-
-    /**
-     * Sets the whitepoint tristimulus
-     * @param whitepoint the whitepoint tristimulus, which may not be null
-     */
-    public final void setWhitepoint(PDTristimulus whitepoint)
-    {
-        COSBase wpArray = whitepoint.getCOSObject();
-        if(wpArray != null)
-        {
-            dictionary.setItem(COSName.WHITE_POINT, wpArray);
-        }
-    }
-
-    /**
-     * Sets the blackpoint tristimulus
-     * @param blackpoint the blackpoint tristimulus, which may not be null
-     */
-    public final void setBlackPoint(PDTristimulus blackpoint)
-    {
-        COSBase bpArray = null;
-        if(blackpoint != null)
-        {
-            bpArray = blackpoint.getCOSObject();
-        }
-        dictionary.setItem(COSName.BLACK_POINT, bpArray);
     }
 
     /**

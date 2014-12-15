@@ -17,16 +17,18 @@
 package org.apache.pdfbox.pdmodel.graphics.color;
 
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSNumber;
 
 /**
- * A CalGray colour space is a special case of a single-component CIE-based colour space.
+ * A CalGray colour space is a special case of a single-component CIE-based
+ * colour space.
  *
  * @author John Hewson
  * @author Ben Litchfield
  */
-public final class PDCalGray extends PDCalRGB
+public final class PDCalGray extends PDCIEDictionaryBasedColorSpace
 {
     private final PDColor initialColor = new PDColor(new float[] { 0 }, this);
 
@@ -35,20 +37,17 @@ public final class PDCalGray extends PDCalRGB
      */
     public PDCalGray()
     {
-        array = new COSArray();
-        dictionary = new COSDictionary();
-        array.add(COSName.CALGRAY);
-        array.add(dictionary);
+        super(COSName.CALGRAY);
     }
 
     /**
      * Creates a new CalGray color space using the given COS array.
+     *
      * @param array the COS array which represents this color space
      */
     public PDCalGray(COSArray array)
     {
-        this.array = array;
-        dictionary = (COSDictionary)array.getObject(1);
+        super(array);
     }
 
     @Override
@@ -76,8 +75,41 @@ public final class PDCalGray extends PDCalRGB
     }
 
     @Override
-    public final float[] toRGB(float[] value)
+    public float[] toRGB(float[] value)
     {
-        return super.toRGB(new float[] { value[0], value[0], value[0] });
+        float a = value[0];
+        float gamma = getGamma();
+        double powAG = Math.pow(a, gamma);
+        float x = (float) (wpX * powAG);
+        float y = (float) (wpY * powAG);
+        float z = (float) (wpZ * powAG);
+        return convXYZtoRGB(x, y, z);
+    }
+
+    /**
+     * This will get the gamma value. If none is present then the default of 1
+     * will be returned.
+     *
+     * @return The gamma value.
+     */
+    public float getGamma()
+    {
+        float retval = 1.0f;
+        COSNumber gamma = (COSNumber) dictionary.getDictionaryObject(COSName.GAMMA);
+        if (gamma != null)
+        {
+            retval = gamma.floatValue();
+        }
+        return retval;
+    }
+
+    /**
+     * Set the gamma value.
+     *
+     * @param value The new gamma value.
+     */
+    public void setGamma(float value)
+    {
+        dictionary.setItem(COSName.GAMMA, new COSFloat(value));
     }
 }
