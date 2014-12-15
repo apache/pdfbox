@@ -17,6 +17,12 @@
 
 package org.apache.pdfbox.pdmodel.font;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.apache.fontbox.ttf.CmapSubtable;
 import org.apache.fontbox.ttf.CmapTable;
 import org.apache.fontbox.ttf.HeaderTable;
@@ -24,6 +30,7 @@ import org.apache.fontbox.ttf.HorizontalHeaderTable;
 import org.apache.fontbox.ttf.OS2WindowsMetricsTable;
 import org.apache.fontbox.ttf.PostScriptTable;
 import org.apache.fontbox.ttf.TTFParser;
+import org.apache.fontbox.ttf.TTFSubsetter;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -41,13 +48,15 @@ import java.io.InputStream;
  * @author Ben Litchfield
  * @author John Hewson
  */
-abstract class TrueTypeEmbedder
+abstract class TrueTypeEmbedder implements Subsetter
 {
     private static final int ITALIC = 1;
     private static final int OBLIQUE = 256;
+    private static final String BASE25 = "BCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-    protected final TrueTypeFont ttf;
-    protected final PDFontDescriptor fontDescriptor;
+    private final PDDocument document;
+    protected TrueTypeFont ttf;
+    protected PDFontDescriptor fontDescriptor;
     protected final CmapSubtable cmap;
 
     /**
@@ -56,35 +65,42 @@ abstract class TrueTypeEmbedder
     TrueTypeEmbedder(PDDocument document, COSDictionary dict, InputStream ttfStream)
                            throws IOException
     {
+        this.document = document;
+
+        buildFontFile2(ttfStream);
+        dict.setName(COSName.BASE_FONT, ttf.getName());
+
+        // choose a Unicode "cmap"
+        cmap = getUnicodeCmap(ttf.getCmap());
+    }
+
+    public void buildFontFile2(InputStream ttfStream) throws IOException
+    {
         PDStream stream = new PDStream(document, ttfStream, false);
         stream.getStream().setInt(COSName.LENGTH1, stream.getByteArray().length);
         stream.addCompression();
 
-        // as the stream was close within the PDStream constructor, we have to recreate it
-        InputStream stream2 = null;
-        PDFontDescriptor fd;
+        // as the stream was closed within the PDStream constructor, we have to recreate it
+        InputStream input = null;
         try
         {
-            stream2 = stream.createInputStream();
-            ttf = new TTFParser().parse(stream2);
+            input = stream.createInputStream();
+            ttf = new TTFParser().parseEmbedded(input);
             if (!isEmbeddingPermitted(ttf))
             {
                 throw new IOException("This font does not permit embedding");
             }
-            fd = createFontDescriptor(ttf);
+            if (fontDescriptor == null)
+            {
+                fontDescriptor = createFontDescriptor(ttf);
+            }
         }
         finally
         {
-            IOUtils.closeQuietly(stream2);
+            IOUtils.closeQuietly(input);
         }
 
-        fd.setFontFile2(stream);
-        dict.setName(COSName.BASE_FONT, ttf.getName());
-
-        fontDescriptor = fd;
-
-        // choose a Unicode "cmap"
-        cmap = getUnicodeCmap(ttf.getCmap());
+        fontDescriptor.setFontFile2(stream);
     }
 
     /**
@@ -107,6 +123,23 @@ abstract class TrueTypeEmbedder
                                  OS2WindowsMetricsTable.FSTYPE_BITMAP_ONLY)
             {
                 // bitmap embedding only
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Returns true if the fsType in the OS/2 table permits subsetting.
+     */
+    private boolean isSubsettingPermitted(TrueTypeFont ttf) throws IOException
+    {
+        if (ttf.getOS2Windows() != null)
+        {
+            int fsType = ttf.getOS2Windows().getFsType();
+            if ((fsType & OS2WindowsMetricsTable.FSTYPE_NO_SUBSETTING) ==
+                          OS2WindowsMetricsTable.FSTYPE_NO_SUBSETTING)
+            {
                 return false;
             }
         }
@@ -180,7 +213,7 @@ abstract class TrueTypeEmbedder
             // estimate by summing the typographical +ve ascender and -ve descender
             fd.setCapHeight((os2.getTypoAscender() + os2.getTypoDescender()) / scaling);
 
-            // estimate by halfing the typographical ascender
+            // estimate by halving the typographical ascender
             fd.setXHeight((os2.getTypoAscender() / 2) / scaling);
         }
 
@@ -205,7 +238,7 @@ abstract class TrueTypeEmbedder
         if (cmap == null)
         {
             cmap = cmapTable.getSubtable(CmapTable.PLATFORM_WINDOWS,
-                                         CmapTable.ENCODING_WIN_UNICODE);
+                                         CmapTable.ENCODING_WIN_UNICODE_BMP);
         }
         if (cmap == null)
         {
@@ -221,7 +254,6 @@ abstract class TrueTypeEmbedder
         return cmap;
     }
 
-
     /**
      * Returns the FontBox font.
      */
@@ -236,5 +268,78 @@ abstract class TrueTypeEmbedder
     public PDFontDescriptor getFontDescriptor()
     {
         return fontDescriptor;
+    }
+
+    @Override
+    public void subset(Set<Integer> codePoints) throws IOException
+    {
+        if (!isSubsettingPermitted(ttf))
+        {
+            throw new IOException("This font does not permit subsetting");
+        }
+
+        // PDF spec required tables (if present), all others will be removed
+        List<String> tables = new ArrayList<String>();
+        tables.add("head");
+        tables.add("hhea");
+        tables.add("loca");
+        tables.add("maxp");
+        tables.add("cvt");
+        tables.add("prep");
+        tables.add("glyf");
+        tables.add("hmtx");
+        tables.add("fpgm");
+        // Windows ClearType
+        tables.add("gasp");
+
+        // set the GIDs to subset
+        TTFSubsetter subsetter = new TTFSubsetter(getTrueTypeFont(), tables);
+        subsetter.addAll(codePoints);
+
+        // calculate deterministic tag based on the chosen subset
+        Map<Integer, Integer> gidToCid = subsetter.getGIDMap();
+        String tag = getTag(gidToCid);
+        subsetter.setPrefix(tag);
+
+        // save the subset font
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        subsetter.writeToStream(out);
+
+        // re-build the embedded font
+        buildSubset(new ByteArrayInputStream(out.toByteArray()), tag, gidToCid);
+    }
+
+    /**
+     * Rebuild a font subset.
+     */
+    protected abstract void buildSubset(InputStream ttfSubset, String tag,
+                                     Map<Integer, Integer> gidToCid) throws IOException;
+
+    /**
+     * Returns an uppercase 6-character unique tag for the given subset.
+     */
+    public String getTag(Map<Integer, Integer> gidToCid)
+    {
+        // deterministic
+        long num = gidToCid.hashCode();
+
+        // base25 encode
+        StringBuilder sb = new StringBuilder();
+        do
+        {
+            long div = num / 25;
+            int mod = (int)(num % 25);
+            sb.append(BASE25.charAt(mod));
+            num = div;
+        } while (num != 0 && sb.length() < 6);
+
+        // pad
+        while (sb.length() < 6)
+        {
+            sb.insert(0, 'A');
+        }
+
+        sb.append('+');
+        return sb.toString();
     }
 }

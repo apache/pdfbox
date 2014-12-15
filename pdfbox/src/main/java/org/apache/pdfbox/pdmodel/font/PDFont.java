@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 
+import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.afm.FontMetrics;
@@ -564,6 +565,14 @@ public abstract class PDFont implements COSObjectable, PDFontLike
         // if the name matches, this is a Standard 14 font
         return Standard14Fonts.containsName(getName());
     }
+
+    /**
+     * Replaces this font with a subset containing only the given Unicode characters.
+     *
+     * @param codePoints Unicode code points to keep
+     * @throws IOException if the subset could not be written
+     */
+    public abstract void subset(Set<Integer> codePoints) throws IOException;
 
     @Override
     public abstract boolean isDamaged();

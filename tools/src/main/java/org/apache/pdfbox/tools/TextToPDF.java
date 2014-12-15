@@ -29,9 +29,8 @@ import org.apache.pdfbox.pdmodel.PDPage;
 
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
-
 
 /**
  * This will take a text file and ouput a pdf with that text.
@@ -225,7 +224,7 @@ public class TextToPDF
                     else if( args[i].equals( "-ttf" ))
                     {
                         i++;
-                        PDTrueTypeFont font = PDTrueTypeFont.loadTTF( doc, new File( args[i]));
+                        PDFont font = PDType0Font.load( doc, new File( args[i]) );
                         app.setFont( font );
                     }
                     else if( args[i].equals( "-fontSize" ))

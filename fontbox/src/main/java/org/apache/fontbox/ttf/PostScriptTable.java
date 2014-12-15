@@ -225,7 +225,7 @@ public class PostScriptTable extends TTFTable
     /**
      * @return Returns the mimMemType1.
      */
-    public long getMimMemType1()
+    public long getMinMemType1()
     {
         return mimMemType1;
     }
@@ -307,7 +307,7 @@ public class PostScriptTable extends TTFTable
      */
     public String getName(int gid)
     {
-        if (gid < 0 || gid > glyphNames.length)
+        if (gid < 0 || glyphNames == null || gid > glyphNames.length)
         {
             return null;
         }
