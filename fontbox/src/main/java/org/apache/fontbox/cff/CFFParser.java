@@ -717,6 +717,7 @@ public class CFFParser
             supplement.sid = dataInput.readSID();
             supplement.name = readString(supplement.sid);
             encoding.supplement[i] = supplement;
+            encoding.add(supplement.code, supplement.sid, readString(supplement.sid));
         }
     }
 
