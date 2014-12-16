@@ -41,6 +41,19 @@ public class TestFontEmbedding extends TestCase
      */
     public void testCIDFontType2() throws Exception
     {
+        validateCIDFontType2(false);
+    }
+
+    /**
+     * Embed a TTF as CIDFontType2 with subsetting.
+     */
+    public void testCIDFontType2Subset() throws Exception
+    {
+        validateCIDFontType2(true);
+    }
+
+    private void validateCIDFontType2(boolean subset) throws Exception
+    {
         PDDocument document = new PDDocument();
         PDPage page = new PDPage(PDRectangle.A4);
         document.addPage(page);
@@ -52,7 +65,7 @@ public class TestFontEmbedding extends TestCase
         PDPageContentStream stream = new PDPageContentStream(document, page);
 
         stream.beginText();
-        stream.setFont(font, 12);
+        stream.setFont(font, 12, subset);
 
         String text = "Unicode русский язык Tiếng Việt";
         stream.moveTextPositionByAmount(50, 600);
