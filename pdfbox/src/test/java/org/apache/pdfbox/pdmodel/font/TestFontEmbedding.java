@@ -67,7 +67,7 @@ public class TestFontEmbedding extends TestCase
 
         // check that the extracted text matches what we wrote
         String extracted = getUnicodeText(file);
-        assertEquals(text + '\n', extracted);
+        assertEquals(text, extracted.trim());
     }
 
     private String getUnicodeText(File file) throws IOException
