@@ -550,12 +550,6 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     {
         // this logic is based on Acrobat's behaviour, see see PDFBOX-2372
 
-        // symbolic fonts are never standard: they don't use the Adobe Standard Roman character set
-        if (isSymbolic())
-        {
-            return false;
-        }
-
         // embedded fonts never get special treatment
         if (isEmbedded())
         {
