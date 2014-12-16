@@ -31,8 +31,6 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.font.encoding.GlyphList;
-import org.apache.pdfbox.pdmodel.font.encoding.StandardEncoding;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
 
@@ -95,12 +93,6 @@ public class PDType0Font extends PDFont
         readEncoding();
         fetchCMapUCS2();
         descendantFont = PDFontFactory.createDescendantFont(descendantFontDictionary, this);
-
-        // warn if there may be text extraction issues
-        if (!isSymbolic())
-        {
-            LOG.warn("Nonsymbolic Type 0 font: " + getName());
-        }
     }
 
     /**
@@ -316,14 +308,7 @@ public class PDType0Font extends PDFont
             return unicode;
         }
 
-        if (!isSymbolic())
-        {
-            // this nonsymbolic behaviour isn't well documented, test with PDFBOX-1422,
-            // also see PDCIDFontType2#cidToGID()
-            String name = StandardEncoding.INSTANCE.getName(code);
-            return GlyphList.getAdobeGlyphList().toUnicode(name);
-        }
-        else if (isCMapPredefined && cMapUCS2 != null)
+        if (isCMapPredefined && cMapUCS2 != null)
         {
             // if the font is composite and uses a predefined cmap (excluding Identity-H/V) then
             // or if its decendant font uses Adobe-GB1/CNS1/Japan1/Korea1
