@@ -1427,3 +1427,407 @@ trailer
 startxref
 30475
 %%EOF
+2 0 obj<</DA(/Helv 0 Tf 0 g )/DR<</Encoding<</PDFDocEncoding 8 0 R>>/Font<</HeBo 9 0 R/Helv 10 0 R/ZaDb 11 0 R>>/XObject<</DSz 12 0 R>>>>/Fields[13 0 R 14 0 R 15 0 R 17 0 R 18 0 R 19 0 R 21 0 R 22 0 R 23 0 R 24 0 R 16 0 R 20 0 R 77 0 R 78 0 R]/SigFlags 1>>endobj3 0 obj<</Length 4833/Subtype/XML/Type/Metadata>>stream
+<?xpacket begin="﻿" id="W5M0MpCehiHzreSzNTczkc9d"?>
+<x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="Adobe XMP Core 5.4-c005 78.147326, 2012/08/23-13:03:03        ">
+   <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+      <rdf:Description rdf:about=""
+            xmlns:xmp="http://ns.adobe.com/xap/1.0/"
+            xmlns:dc="http://purl.org/dc/elements/1.1/"
+            xmlns:xmpMM="http://ns.adobe.com/xap/1.0/mm/"
+            xmlns:pdf="http://ns.adobe.com/pdf/1.3/"
+            xmlns:adhocwf="http://ns.adobe.com/AcrobatAdhocWorkflow/1.0/"
+            xmlns:xmpRights="http://ns.adobe.com/xap/1.0/rights/">
+         <xmp:ModifyDate>2014-12-16T19:47:15+01:00</xmp:ModifyDate>
+         <xmp:CreateDate>2014-11-21T18:40:01+01:00</xmp:CreateDate>
+         <xmp:MetadataDate>2014-12-16T19:47:15+01:00</xmp:MetadataDate>
+         <xmp:CreatorTool>Adobe Acrobat 10.268</xmp:CreatorTool>
+         <dc:format>application/pdf</dc:format>
+         <dc:title>
+            <rdf:Alt>
+               <rdf:li xml:lang="x-default">AcroFormsBasicFieldsTest</rdf:li>
+            </rdf:Alt>
+         </dc:title>
+         <dc:description>
+            <rdf:Alt>
+               <rdf:li xml:lang="x-default">PDFBox Testfiles</rdf:li>
+            </rdf:Alt>
+         </dc:description>
+         <dc:rights>
+            <rdf:Alt>
+               <rdf:li xml:lang="x-default">Licensed to the Apache Software Foundation (ASF) under one or more&#xA;contributor license agreements.  See the NOTICE file distributed with&#xA;this work for additional information regarding copyright ownership.&#xA;The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at&#xA;&#xA;http://www.apache.org/licenses/LICENSE-2.0&#xA;&#xA;Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.&#xA;See the License for the specific language governing permissions and limitations under the License.</rdf:li>
+            </rdf:Alt>
+         </dc:rights>
+         <xmpMM:DocumentID>uuid:0f004297-25ef-4f41-a677-cd10d28a577d</xmpMM:DocumentID>
+         <xmpMM:InstanceID>uuid:326e4b28-4293-da4a-aee8-d386de966c6e</xmpMM:InstanceID>
+         <pdf:Producer>Adobe Acrobat 10.268</pdf:Producer>
+         <pdf:Keywords/>
+         <adhocwf:state>1</adhocwf:state>
+         <adhocwf:version>1.1</adhocwf:version>
+         <xmpRights:Marked>True</xmpRights:Marked>
+         <xmpRights:WebStatement>http://www.apache.org/licenses/LICENSE-2.0.html</xmpRights:WebStatement>
+      </rdf:Description>
+   </rdf:RDF>
+</x:xmpmeta>
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                           
+<?xpacket end="w"?>endstreamendobj16 0 obj<</DA(/Helv 12 Tf 0 g)/F 4/FT/Tx/MK<<>>/P 27 0 R/Rect[56.692 713.308 141.73 735.308]/Subtype/Widget/T(TextField)/Type/Annot>>endobj20 0 obj<</AP<</N 37 0 R>>/DA(/Helv 12 Tf 0 g)/DV 80 0 R/F 4/FT/Tx/MK<<>>/P 27 0 R/Rect[168.941 713.308 255.114 735.308]/Subtype/Widget/T(TextField-DefaultValue)/Type/Annot/V(DefaultValue)>>endobj27 0 obj<</Annots 79 0 R/Contents 52 0 R/CropBox[0.0 0.0 612.0 792.0]/MediaBox[0.0 0.0 612.0 792.0]/Parent 6 0 R/Resources<</Font 51 0 R>>/Rotate 0/Type/Page>>endobj74 0 obj<</CreationDate(D:20141121184001+01'00')/Creator(Adobe Acrobat 10.268)/Keywords()/ModDate(D:20141216194715+01'00')/Producer(Adobe Acrobat 10.268)/Subject(PDFBox Testfiles)/Title(AcroFormsBasicFieldsTest)>>endobj77 0 obj<</DA(/Helv 12 Tf 0 g)/DS(font: Helvetica,sans-serif 12.0pt; text-align:left; color:#000000 )/F 4/FT/Tx/Ff 33554432/MK<<>>/P 27 0 R/Rect[280.883 712.767 365.921 734.767]/Subtype/Widget/T(RichTextField)/Type/Annot>>endobj78 0 obj<</AP<</N 81 0 R>>/DA(/Helv 12 Tf 0 g)/DS(font: Helvetica,sans-serif 12.0pt; text-align:left; color:#000000 )/DV 80 0 R/F 4/FT/Tx/Ff 33554432/MK<<>>/P 27 0 R/RV(<?xml version="1.0"?><body xmlns="http://www.w3.org/1999/xhtml" xmlns:xfa="http://www.xfa.org/schema/xfa-data/1.0/" xfa:APIVersion="Acrobat:11.0.10" xfa:spec="2.0.2"  style="font-size:12.0pt;text-align:left;color:#000000;font-weight:normal;font-style:norm\al;font-family:Helvetica,sans-serif;font-stretch:normal"><p>DefaultValue</p></body>)/Rect[393.132 712.767 479.305 734.767]/Subtype/Widget/T(RichTextField-DefaultValue)/Type/Annot/V(DefaultValue)>>endobj79 0 obj[16 0 R 20 0 R 77 0 R 78 0 R 17 0 R 21 0 R 28 0 R 29 0 R 42 0 R 43 0 R 18 0 R 23 0 R 19 0 R 24 0 R 15 0 R 14 0 R]endobj80 0 obj(DefaultValue)endobj81 0 obj<</BBox[0.0 0.0 86.173 22.0]/FormType 1/Length 89/Matrix[1.0 0.0 0.0 1.0 0.0 0.0]/Resources<</Font<</Helv 10 0 R>>/ProcSet[/PDF/Text]>>/Subtype/Form/Type/XObject>>stream
+/Tx BMC 
+q
+1 1 84.173 20 re
+W
+n
+BT
+/Helv 12 Tf
+0 g
+2 7.187 Td
+(DefaultValue) Tj
+ET
+Q
+EMC
+endstreamendobjxref0 10000000000 65535 f
+2 20000030712 00000 n
+0000030977 00000 n
+16 10000035886 00000 n
+20 10000036028 00000 n
+27 10000036227 00000 n
+74 80000036395 00000 n
+0000000000 00000 f
+0000000000 00000 f
+0000036617 00000 n
+0000036848 00000 n
+0000037479 00000 n
+0000037609 00000 n
+0000037640 00000 n
+trailer<</Size 82/Root 1 0 R/Info 74 0 R/ID[<6B1BCEE6E4448A409BB27EB6BA127004><BF80DE2E2DF94243B7157661C96F2161>]/Prev 30475>>startxref37927%%EOF2 0 obj<</DA(/Helv 0 Tf 0 g )/DR<</Encoding<</PDFDocEncoding 8 0 R>>/Font<</HeBo 9 0 R/Helv 10 0 R/ZaDb 11 0 R>>/XObject<</DSz 12 0 R>>>>/Fields[13 0 R 14 0 R 15 0 R 17 0 R 18 0 R 19 0 R 21 0 R 22 0 R 23 0 R 24 0 R 16 0 R 20 0 R 77 0 R 78 0 R 83 0 R]/SigFlags 1>>endobj3 0 obj<</Length 4833/Subtype/XML/Type/Metadata>>stream
+<?xpacket begin="﻿" id="W5M0MpCehiHzreSzNTczkc9d"?>
+<x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="Adobe XMP Core 5.4-c005 78.147326, 2012/08/23-13:03:03        ">
+   <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+      <rdf:Description rdf:about=""
+            xmlns:xmp="http://ns.adobe.com/xap/1.0/"
+            xmlns:dc="http://purl.org/dc/elements/1.1/"
+            xmlns:xmpMM="http://ns.adobe.com/xap/1.0/mm/"
+            xmlns:pdf="http://ns.adobe.com/pdf/1.3/"
+            xmlns:adhocwf="http://ns.adobe.com/AcrobatAdhocWorkflow/1.0/"
+            xmlns:xmpRights="http://ns.adobe.com/xap/1.0/rights/">
+         <xmp:ModifyDate>2014-12-16T19:59:12+01:00</xmp:ModifyDate>
+         <xmp:CreateDate>2014-11-21T18:40:01+01:00</xmp:CreateDate>
+         <xmp:MetadataDate>2014-12-16T19:59:12+01:00</xmp:MetadataDate>
+         <xmp:CreatorTool>Adobe Acrobat 10.268</xmp:CreatorTool>
+         <dc:format>application/pdf</dc:format>
+         <dc:title>
+            <rdf:Alt>
+               <rdf:li xml:lang="x-default">AcroFormsBasicFieldsTest</rdf:li>
+            </rdf:Alt>
+         </dc:title>
+         <dc:description>
+            <rdf:Alt>
+               <rdf:li xml:lang="x-default">PDFBox Testfiles</rdf:li>
+            </rdf:Alt>
+         </dc:description>
+         <dc:rights>
+            <rdf:Alt>
+               <rdf:li xml:lang="x-default">Licensed to the Apache Software Foundation (ASF) under one or more&#xA;contributor license agreements.  See the NOTICE file distributed with&#xA;this work for additional information regarding copyright ownership.&#xA;The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at&#xA;&#xA;http://www.apache.org/licenses/LICENSE-2.0&#xA;&#xA;Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.&#xA;See the License for the specific language governing permissions and limitations under the License.</rdf:li>
+            </rdf:Alt>
+         </dc:rights>
+         <xmpMM:DocumentID>uuid:0f004297-25ef-4f41-a677-cd10d28a577d</xmpMM:DocumentID>
+         <xmpMM:InstanceID>uuid:3206fc8c-c3af-9a48-a7f5-390fabac3209</xmpMM:InstanceID>
+         <pdf:Producer>Adobe Acrobat 10.268</pdf:Producer>
+         <pdf:Keywords/>
+         <adhocwf:state>1</adhocwf:state>
+         <adhocwf:version>1.1</adhocwf:version>
+         <xmpRights:Marked>True</xmpRights:Marked>
+         <xmpRights:WebStatement>http://www.apache.org/licenses/LICENSE-2.0.html</xmpRights:WebStatement>
+      </rdf:Description>
+   </rdf:RDF>
+</x:xmpmeta>
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                           
+<?xpacket end="w"?>endstreamendobj14 0 obj<</AP<</N 12 0 R>>/DA(/Helv 0 Tf 0 g)/F 4/FT/Sig/MK<<>>/P 27 0 R/Rect[48.0 496.0 133.038 528.0]/Subtype/Widget/T(Signature)/Type/Annot>>endobj15 0 obj<</AP<</N 30 0 R>>/DA(/HeBo 12 Tf 0 g)/F 4/FT/Btn/Ff 65536/MK<</BG[0.75293]>>/P 27 0 R/Rect[48.0 532.0 133.038 552.0]/Subtype/Widget/T(PushButton)/Type/Annot>>endobj16 0 obj<</DA(/Helv 12 Tf 0 g)/F 4/FT/Tx/MK<<>>/P 27 0 R/Rect[48.0 722.0 133.038 744.0]/Subtype/Widget/T(TextField)/Type/Annot>>endobj17 0 obj<</AP<</D<</Off 31 0 R/Yes 32 0 R>>/N<</Off 33 0 R/Yes 34 0 R>>>>/AS/Off/DA(/ZaDb 0 Tf 0 g)/F 4/FT/Btn/MK<</BC[0.0]/BG[1.0]>>/P 27 0 R/Rect[48.0 702.0 66.0 720.0]/Subtype/Widget/T(Checkbox)/Type/Annot>>endobj18 0 obj<</AP<</N 35 0 R>>/DA(/Helv 12 Tf 0 g)/F 4/FT/Ch/MK<</BG[1.0]>>/P 27 0 R/Rect[48.0 600.0 133.038 672.0]/Subtype/Widget/T(ListBox)/Type/Annot>>endobj19 0 obj<</AP<</N 36 0 R>>/DA(/Helv 12 Tf 0 g)/F 4/FT/Ch/Ff 131072/MK<</BG[1.0]>>/P 27 0 R/Rect[48.0 556.0 133.038 576.0]/Subtype/Widget/T(ComboBox)/Type/Annot>>endobj20 0 obj<</AP<</N 37 0 R>>/DA(/Helv 12 Tf 0 g)/DV 80 0 R/F 4/FT/Tx/MK<<>>/P 27 0 R/Rect[168.0 722.0 254.173 744.0]/Subtype/Widget/T(TextField-DefaultValue)/Type/Annot/V(DefaultValue)>>endobj21 0 obj<</AP<</D<</Off 38 0 R/Yes 39 0 R>>/N<</Off 40 0 R/Yes 41 0 R>>>>/AS/Yes/DA(/ZaDb 0 Tf 0 g)/DV/Yes/F 4/FT/Btn/MK<</BC[0.0]/BG[1.0]/CA(4)>>/P 27 0 R/Rect[168.0 702.0 186.0 720.0]/Subtype/Widget/T(Checkbox-DefaultValue)/Type/Annot/V/Yes>>endobj23 0 obj<</AP<</N 44 0 R>>/DA(/Helv 12 Tf 0 g)/DV(Opt01)/F 4/FT/Ch/I[0]/MK<</BG[1.0]>>/Opt[(Opt01)(Opt02)(Opt03)]/P 27 0 R/Rect[168.941 600.0 255.114 672.0]/Subtype/Widget/T(ListBox-DefaultValue)/Type/Annot/V(Opt01)>>endobj24 0 obj<</AP<</N 45 0 R>>/DA(/Helv 12 Tf 0 g)/DV(Opt01)/F 4/FT/Ch/Ff 131072/I[0]/MK<</BG[1.0]>>/Opt[(Opt01)(Opt02)(Opt03)]/P 27 0 R/Rect[168.941 556.0 255.114 576.0]/Subtype/Widget/T(ComboBox-DefaultValue)/Type/Annot/V(Opt01)>>endobj27 0 obj<</Annots 84 0 R/Contents 52 0 R/CropBox[0.0 0.0 612.0 792.0]/MediaBox[0.0 0.0 612.0 792.0]/Parent 6 0 R/Resources<</Font 51 0 R>>/Rotate 0/Type/Page>>endobj28 0 obj<</AP<</D<</Off 53 0 R/RadioButton01 54 0 R>>/N<</Off 55 0 R/RadioButton01 56 0 R>>>>/AS/Off/BS<</S/I/W 1>>/F 4/MK<</BC[0.0]/BG[1.0]>>/P 27 0 R/Parent 13 0 R/Rect[48.0 678.0 66.0 696.0]/Subtype/Widget/Type/Annot>>endobj29 0 obj<</AP<</D<</Off 57 0 R/RadioButton02 58 0 R>>/N<</Off 59 0 R/RadioButton02 60 0 R>>>>/AS/Off/BS<</S/I/W 1>>/DA(/ZaDb 0 Tf 0 g)/F 4/MK<</BC[0.0]/BG[1.0]>>/P 27 0 R/Parent 13 0 R/Rect[72.0 678.0 90.0 696.0]/Subtype/Widget/Type/Annot>>endobj42 0 obj<</AP<</D<</Off 61 0 R/RadioButton01 62 0 R>>/N<</Off 63 0 R/RadioButton01 64 0 R>>>>/AS/RadioButton01/BS<</S/I/W 1>>/F 4/MK<</BC[0.0]/BG[1.0]/CA(l)>>/P 27 0 R/Parent 22 0 R/Rect[168.941 678.0 186.941 696.0]/Subtype/Widget/Type/Annot>>endobj43 0 obj<</AP<</D<</Off 65 0 R/RadioButton02 66 0 R>>/N<</Off 67 0 R/RadioButton02 68 0 R>>>>/AS/Off/BS<</S/I/W 1>>/F 4/MK<</BC[0.0]/BG[1.0]/CA(l)>>/P 27 0 R/Parent 22 0 R/Rect[192.0 678.0 210.0 696.0]/Subtype/Widget/Type/Annot>>endobj74 0 obj<</CreationDate(D:20141121184001+01'00')/Creator(Adobe Acrobat 10.268)/Keywords()/ModDate(D:20141216195912+01'00')/Producer(Adobe Acrobat 10.268)/Subject(PDFBox Testfiles)/Title(AcroFormsBasicFieldsTest)>>endobj77 0 obj<</DA(/Helv 12 Tf 0 g)/DS(font: Helvetica,sans-serif 12.0pt; text-align:left; color:#000000 )/F 4/FT/Tx/Ff 33554432/MK<<>>/P 27 0 R/Rect[288.0 722.0 373.038 744.0]/Subtype/Widget/T(RichTextField)/Type/Annot>>endobj78 0 obj<</AP<</N 87 0 R>>/DA(/Helv 12 Tf 0 g)/DS(font: Helvetica,sans-serif 12.0pt; text-align:left; color:#000000 )/DV 80 0 R/F 4/FT/Tx/Ff 33554432/MK<<>>/P 27 0 R/RV(<?xml version="1.0"?><body xmlns="http://www.w3.org/1999/xhtml" xmlns:xfa="http://www.xfa.org/schema/xfa-data/1.0/" xfa:APIVersion="Acrobat:11.0.10" xfa:spec="2.0.2"  style="font-size:12.0pt;text-align:left;color:#000000;font-weight:normal;font-style:norm\al;font-family:Helvetica,sans-serif;font-stretch:normal"><p>DefaultValue</p></body>)/Rect[288.0 698.0 374.173 720.0]/Subtype/Widget/T(RichTextField-DefaultValue)/Type/Annot/V(DefaultValue)>>endobj83 0 obj<</AP<</N 86 0 R>>/DA(/Helv 12 Tf 0 g)/DS 85 0 R/DV 80 0 R/F 4/FT/Tx/Ff 33554432/MK<<>>/P 27 0 R/RV(<?xml version="1.0"?><body xfa:APIVersion="Acroform:2.7.0.0" xfa:spec="2.1" xmlns="http://www.w3.org/1999/xhtml" xmlns:xfa="http://www.xfa.org/schema/xfa-data/1.0/"><p dir="ltr" style="margin-top:0pt;margin-bottom:0pt;text-valign:middle;font-family:Helvet\ica;font-size:12pt;font-weight:bold">Fomatted<span style="font-weight:normal"> Text</span></p></body>)/Rect[288.0 674.0 374.173 696.0]/Subtype/Widget/T(RichTextField-Filled)/Type/Annot/V(Fomatted Text)>>endobj84 0 obj[16 0 R 20 0 R 77 0 R 17 0 R 21 0 R 28 0 R 29 0 R 42 0 R 43 0 R 78 0 R 83 0 R 18 0 R 23 0 R 19 0 R 24 0 R 15 0 R 14 0 R]endobj85 0 obj(font: Helvetica,sans-serif 12.0pt; text-align:left; color:#000000 )endobj86 0 obj<</BBox[0.0 0.0 86.1731 22.0]/FormType 1/Length 121/Matrix[1.0 0.0 0.0 1.0 0.0 0.0]/Resources<</Font<</HeBo 9 0 R/Helv 10 0 R>>/ProcSet[/PDF/Text]>>/Subtype/Form/Type/XObject>>stream
+/Tx BMC 
+q
+1 1 84.1731 20 re
+W
+n
+BT
+/HeBo 12 Tf
+0 g
+2 7.187 Td
+(Fomatted) Tj
+/Helv 12 Tf
+53.964 0 Td
+( Text) Tj
+ET
+Q
+EMC
+endstreamendobj87 0 obj<</BBox[0.0 0.0 86.173 22.0]/FormType 1/Length 89/Matrix[1.0 0.0 0.0 1.0 0.0 0.0]/Resources<</Font<</Helv 10 0 R>>/ProcSet[/PDF/Text]>>/Subtype/Form/Type/XObject>>stream
+/Tx BMC 
+q
+1 1 84.173 20 re
+W
+n
+BT
+/Helv 12 Tf
+0 g
+2 7.187 Td
+(DefaultValue) Tj
+ET
+Q
+EMC
+endstreamendobjxref0 10000000000 65535 f
+2 20000038390 00000 n
+0000038662 00000 n
+14 80000043571 00000 n
+0000043724 00000 n
+0000043900 00000 n
+0000044037 00000 n
+0000044256 00000 n
+0000044415 00000 n
+0000044585 00000 n
+0000044778 00000 n
+23 20000045031 00000 n
+0000045257 00000 n
+27 30000045494 00000 n
+0000045662 00000 n
+0000045892 00000 n
+42 20000046141 00000 n
+0000046393 00000 n
+74 10000046631 00000 n
+77 20000046853 00000 n
+0000047078 00000 n
+82 60000000000 00000 f
+0000047703 00000 n
+0000048280 00000 n
+0000048417 00000 n
+0000048502 00000 n
+0000048834 00000 n
+trailer<</Size 88/Root 1 0 R/Info 74 0 R/ID[<6B1BCEE6E4448A409BB27EB6BA127004><72C7C25F72C940869F03D5683708CC40>]/Prev 37927>>startxref49121%%EOF3 0 obj<</Length 4833/Subtype/XML/Type/Metadata>>stream
+<?xpacket begin="﻿" id="W5M0MpCehiHzreSzNTczkc9d"?>
+<x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="Adobe XMP Core 5.4-c005 78.147326, 2012/08/23-13:03:03        ">
+   <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+      <rdf:Description rdf:about=""
+            xmlns:xmp="http://ns.adobe.com/xap/1.0/"
+            xmlns:dc="http://purl.org/dc/elements/1.1/"
+            xmlns:xmpMM="http://ns.adobe.com/xap/1.0/mm/"
+            xmlns:pdf="http://ns.adobe.com/pdf/1.3/"
+            xmlns:adhocwf="http://ns.adobe.com/AcrobatAdhocWorkflow/1.0/"
+            xmlns:xmpRights="http://ns.adobe.com/xap/1.0/rights/">
+         <xmp:ModifyDate>2014-12-16T20:00:08+01:00</xmp:ModifyDate>
+         <xmp:CreateDate>2014-11-21T18:40:01+01:00</xmp:CreateDate>
+         <xmp:MetadataDate>2014-12-16T20:00:08+01:00</xmp:MetadataDate>
+         <xmp:CreatorTool>Adobe Acrobat 10.268</xmp:CreatorTool>
+         <dc:format>application/pdf</dc:format>
+         <dc:title>
+            <rdf:Alt>
+               <rdf:li xml:lang="x-default">AcroFormsBasicFieldsTest</rdf:li>
+            </rdf:Alt>
+         </dc:title>
+         <dc:description>
+            <rdf:Alt>
+               <rdf:li xml:lang="x-default">PDFBox Testfiles</rdf:li>
+            </rdf:Alt>
+         </dc:description>
+         <dc:rights>
+            <rdf:Alt>
+               <rdf:li xml:lang="x-default">Licensed to the Apache Software Foundation (ASF) under one or more&#xA;contributor license agreements.  See the NOTICE file distributed with&#xA;this work for additional information regarding copyright ownership.&#xA;The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at&#xA;&#xA;http://www.apache.org/licenses/LICENSE-2.0&#xA;&#xA;Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.&#xA;See the License for the specific language governing permissions and limitations under the License.</rdf:li>
+            </rdf:Alt>
+         </dc:rights>
+         <xmpMM:DocumentID>uuid:0f004297-25ef-4f41-a677-cd10d28a577d</xmpMM:DocumentID>
+         <xmpMM:InstanceID>uuid:d1b31a58-0978-9b48-937b-f76164edf3fc</xmpMM:InstanceID>
+         <pdf:Producer>Adobe Acrobat 10.268</pdf:Producer>
+         <pdf:Keywords/>
+         <adhocwf:state>1</adhocwf:state>
+         <adhocwf:version>1.1</adhocwf:version>
+         <xmpRights:Marked>True</xmpRights:Marked>
+         <xmpRights:WebStatement>http://www.apache.org/licenses/LICENSE-2.0.html</xmpRights:WebStatement>
+      </rdf:Description>
+   </rdf:RDF>
+</x:xmpmeta>
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                           
+<?xpacket end="w"?>endstreamendobj14 0 obj<</AP<</N 12 0 R>>/DA(/Helv 0 Tf 0 g)/F 4/FT/Sig/MK<<>>/P 27 0 R/Rect[48.0 496.0 144.0 528.0]/Subtype/Widget/T(Signature)/Type/Annot>>endobj15 0 obj<</AP<</N 89 0 R>>/DA(/HeBo 12 Tf 0 g)/F 4/FT/Btn/Ff 65536/MK<</BG[0.75293]>>/P 27 0 R/Rect[48.0 532.0 144.0 552.0]/Subtype/Widget/T(PushButton)/Type/Annot>>endobj16 0 obj<</DA(/Helv 12 Tf 0 g)/F 4/FT/Tx/MK<<>>/P 27 0 R/Rect[48.0 722.0 144.0 744.0]/Subtype/Widget/T(TextField)/Type/Annot>>endobj18 0 obj<</AP<</N 93 0 R>>/DA(/Helv 12 Tf 0 g)/F 4/FT/Ch/MK<</BG[1.0]>>/P 27 0 R/Rect[48.0 600.0 144.0 672.0]/Subtype/Widget/T(ListBox)/Type/Annot>>endobj19 0 obj<</AP<</N 91 0 R>>/DA(/Helv 12 Tf 0 g)/F 4/FT/Ch/Ff 131072/MK<</BG[1.0]>>/P 27 0 R/Rect[48.0 556.0 144.0 576.0]/Subtype/Widget/T(ComboBox)/Type/Annot>>endobj20 0 obj<</AP<</N 96 0 R>>/DA(/Helv 12 Tf 0 g)/DV 80 0 R/F 4/FT/Tx/MK<<>>/P 27 0 R/Rect[168.0 722.0 264.0 744.0]/Subtype/Widget/T(TextField-DefaultValue)/Type/Annot/V(DefaultValue)>>endobj23 0 obj<</AP<</N 92 0 R>>/DA(/Helv 12 Tf 0 g)/DV(Opt01)/F 4/FT/Ch/I[0]/MK<</BG[1.0]>>/Opt[(Opt01)(Opt02)(Opt03)]/P 27 0 R/Rect[168.941 600.0 264.0 672.0]/Subtype/Widget/T(ListBox-DefaultValue)/Type/Annot/V(Opt01)>>endobj24 0 obj<</AP<</N 90 0 R>>/DA(/Helv 12 Tf 0 g)/DV(Opt01)/F 4/FT/Ch/Ff 131072/I[0]/MK<</BG[1.0]>>/Opt[(Opt01)(Opt02)(Opt03)]/P 27 0 R/Rect[168.941 556.0 264.0 576.0]/Subtype/Widget/T(ComboBox-DefaultValue)/Type/Annot/V(Opt01)>>endobj27 0 obj<</Annots 88 0 R/Contents 52 0 R/CropBox[0.0 0.0 612.0 792.0]/MediaBox[0.0 0.0 612.0 792.0]/Parent 6 0 R/Resources<</Font 51 0 R>>/Rotate 0/Type/Page>>endobj74 0 obj<</CreationDate(D:20141121184001+01'00')/Creator(Adobe Acrobat 10.268)/Keywords()/ModDate(D:20141216200008+01'00')/Producer(Adobe Acrobat 10.268)/Subject(PDFBox Testfiles)/Title(AcroFormsBasicFieldsTest)>>endobj77 0 obj<</DA(/Helv 12 Tf 0 g)/DS(font: Helvetica,sans-serif 12.0pt; text-align:left; color:#000000 )/F 4/FT/Tx/Ff 33554432/MK<<>>/P 27 0 R/Rect[288.0 722.0 384.0 744.0]/Subtype/Widget/T(RichTextField)/Type/Annot>>endobj78 0 obj<</AP<</N 95 0 R>>/DA(/Helv 12 Tf 0 g)/DS(font: Helvetica,sans-serif 12.0pt; text-align:left; color:#000000 )/DV 80 0 R/F 4/FT/Tx/Ff 33554432/MK<<>>/P 27 0 R/RV(<?xml version="1.0"?><body xmlns="http://www.w3.org/1999/xhtml" xmlns:xfa="http://www.xfa.org/schema/xfa-data/1.0/" xfa:APIVersion="Acrobat:11.0.10" xfa:spec="2.0.2"  style="font-size:12.0pt;text-align:left;color:#000000;font-weight:normal;font-style:norm\al;font-family:Helvetica,sans-serif;font-stretch:normal"><p>DefaultValue</p></body>)/Rect[288.0 698.0 384.0 720.0]/Subtype/Widget/T(RichTextField-DefaultValue)/Type/Annot/V(DefaultValue)>>endobj83 0 obj<</AP<</N 94 0 R>>/DA(/Helv 12 Tf 0 g)/DS 85 0 R/DV 80 0 R/F 4/FT/Tx/Ff 33554432/MK<<>>/P 27 0 R/RV(<?xml version="1.0"?><body xfa:APIVersion="Acroform:2.7.0.0" xfa:spec="2.1" xmlns="http://www.w3.org/1999/xhtml" xmlns:xfa="http://www.xfa.org/schema/xfa-data/1.0/"><p dir="ltr" style="margin-top:0pt;margin-bottom:0pt;text-valign:middle;font-family:Helvet\ica;font-size:12pt;font-weight:bold">Fomatted<span style="font-weight:normal"> Text</span></p></body>)/Rect[288.0 674.0 384.0 696.0]/Subtype/Widget/T(RichTextField-Filled)/Type/Annot/V(Fomatted Text)>>endobj88 0 obj[16 0 R 20 0 R 77 0 R 17 0 R 21 0 R 78 0 R 28 0 R 29 0 R 42 0 R 43 0 R 83 0 R 18 0 R 23 0 R 19 0 R 24 0 R 15 0 R 14 0 R]endobj89 0 obj<</BBox[0.0 0.0 96.0 20.0]/FormType 1/Length 25/Matrix[1.0 0.0 0.0 1.0 0.0 0.0]/Resources<</ProcSet[/PDF]>>/Subtype/Form/Type/XObject>>stream
+0.75293 g
+0 0 96 20 re
+f
+endstreamendobj90 0 obj<</BBox[0.0 0.0 95.059 20.0]/FormType 1/Length 109/Matrix[1.0 0.0 0.0 1.0 0.0 0.0]/Resources<</Font<</Helv 10 0 R>>/ProcSet[/PDF/Text]>>/Subtype/Form/Type/XObject>>stream
+1 g
+0 0 95.059 20 re
+f
+/Tx BMC 
+q
+2 1 91.059 18 re
+W
+n
+0 g
+BT
+/Helv 12 Tf
+0 g
+2 5.548 Td
+(Opt01) Tj
+ET
+Q
+EMC
+endstreamendobj91 0 obj<</BBox[0.0 0.0 96.0 20.0]/FormType 1/Length 19/Matrix[1.0 0.0 0.0 1.0 0.0 0.0]/Resources<</ProcSet[/PDF]>>/Subtype/Form/Type/XObject>>stream
+1 g
+0 0 96 20 re
+f
+endstreamendobj92 0 obj<</BBox[0.0 0.0 95.059 72.0]/FormType 1/Length 229/Matrix[1.0 0.0 0.0 1.0 0.0 0.0]/Resources<</Font<</Helv 10 0 R>>/ProcSet[/PDF/Text]>>/Subtype/Form/Type/XObject>>stream
+1 g
+0 0 95.059 72 re
+f
+/Tx BMC 
+q
+1 1 93.059 70 re
+W
+n
+0.600006 0.756866 0.854904 rg
+1 57.1279 93.059 13.8721 re
+f
+0 g
+BT
+/Helv 12 Tf
+0 g
+2 59.612 Td
+(Opt01) Tj
+ET
+BT
+2 45.7399 Td
+(Opt02) Tj
+ET
+BT
+2 31.868 Td
+(Opt03) Tj
+ET
+Q
+EMC
+endstreamendobj93 0 obj<</BBox[0.0 0.0 96.0 72.0]/FormType 1/Length 19/Matrix[1.0 0.0 0.0 1.0 0.0 0.0]/Resources<</ProcSet[/PDF]>>/Subtype/Form/Type/XObject>>stream
+1 g
+0 0 96 72 re
+f
+endstreamendobj94 0 obj<</BBox[0.0 0.0 96.0 22.0]/FormType 1/Length 116/Matrix[1.0 0.0 0.0 1.0 0.0 0.0]/Resources<</Font<</HeBo 9 0 R/Helv 10 0 R>>/ProcSet[/PDF/Text]>>/Subtype/Form/Type/XObject>>stream
+/Tx BMC 
+q
+1 1 94 20 re
+W
+n
+BT
+/HeBo 12 Tf
+0 g
+2 7.187 Td
+(Fomatted) Tj
+/Helv 12 Tf
+53.964 0 Td
+( Text) Tj
+ET
+Q
+EMC
+endstreamendobj95 0 obj<</BBox[0.0 0.0 96.0 22.0]/FormType 1/Length 85/Matrix[1.0 0.0 0.0 1.0 0.0 0.0]/Resources<</Font<</Helv 10 0 R>>/ProcSet[/PDF/Text]>>/Subtype/Form/Type/XObject>>stream
+/Tx BMC 
+q
+1 1 94 20 re
+W
+n
+BT
+/Helv 12 Tf
+0 g
+2 7.187 Td
+(DefaultValue) Tj
+ET
+Q
+EMC
+endstreamendobj96 0 obj<</BBox[0.0 0.0 96.0 22.0]/FormType 1/Length 85/Matrix[1.0 0.0 0.0 1.0 0.0 0.0]/Resources<</Font<</Helv 10 0 R>>/ProcSet[/PDF/Text]>>/Subtype/Form/Type/XObject>>stream
+/Tx BMC 
+q
+1 1 94 20 re
+W
+n
+BT
+/Helv 12 Tf
+0 g
+2 6.548 Td
+(DefaultValue) Tj
+ET
+Q
+EMC
+endstreamendobjxref0 10000000000 65535 f
+3 10000049859 00000 n
+14 30000054768 00000 n
+0000054919 00000 n
+0000055093 00000 n
+18 30000055228 00000 n
+0000055385 00000 n
+0000055553 00000 n
+23 20000055744 00000 n
+0000055968 00000 n
+27 10000056203 00000 n
+74 10000056371 00000 n
+77 20000056593 00000 n
+0000056816 00000 n
+83 10000057439 00000 n
+88 90000058014 00000 n
+0000058151 00000 n
+0000058346 00000 n
+0000058654 00000 n
+0000058843 00000 n
+0000059271 00000 n
+0000059460 00000 n
+0000059784 00000 n
+0000060065 00000 n
+trailer<</Size 97/Root 1 0 R/Info 74 0 R/ID[<6B1BCEE6E4448A409BB27EB6BA127004><AA15DA0E2154432D87EEDDE29D36B19B>]/Prev 49121>>startxref60346%%EOF
