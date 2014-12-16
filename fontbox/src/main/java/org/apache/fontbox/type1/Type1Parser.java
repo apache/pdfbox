@@ -71,6 +71,11 @@ final class Type1Parser
      */
     private void parseASCII(byte[] bytes) throws IOException
     {
+        if (bytes.length == 0)
+        {
+            throw new IllegalArgumentException("byte[] is empty");
+        }
+
         // %!FontType1-1.0
         // %!PS-AdobeFont-1.0
         if (bytes.length < 2 || (bytes[0] != '%' && bytes[1] != '!'))

@@ -168,7 +168,11 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
                     byte[] segment1 = Arrays.copyOfRange(bytes, 0, length1);
                     byte[] segment2 = Arrays.copyOfRange(bytes, length1, length1 + length2);
 
-                    t1 =  Type1Font.createWithSegments(segment1, segment2);
+                    // empty streams are simply ignored
+                    if (length1 > 0 && length2 > 0)
+                    {
+                        t1 =  Type1Font.createWithSegments(segment1, segment2);
+                    }
                 }
                 catch (DamagedFontException e)
                 {
