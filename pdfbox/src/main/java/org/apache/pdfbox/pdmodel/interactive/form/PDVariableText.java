@@ -222,7 +222,7 @@ public abstract class PDVariableText extends PDField
      */
     public COSString getDefaultAppearance()
     {
-        COSBase daValue = getInheritableAttribute(getDictionary(),COSName.DA);
+        COSBase daValue = getInheritableAttribute(COSName.DA);
         defaultAppearance = (COSString) daValue;
         return defaultAppearance;
     }
@@ -250,9 +250,45 @@ public abstract class PDVariableText extends PDField
             getDictionary().removeItem(COSName.DA);
         }
     }
+    
+    /**
+     * Get the default style string.
+     * 
+     * The default style string defines the default style for
+     * rich text fields.
+     * 
+     * @return the DD element of the dictionary object
+     */
+    public COSString getDefaultStyleString()
+    {
+        COSBase defaultStyleString = getDictionary().getDictionaryObject(COSName.DS);
+        return (COSString) defaultStyleString;
+    }
+
+    /**
+     * Set the default style string.
+     * 
+     * Providing null as the value will remove the default style string.
+     * 
+     * @param defaultStyleString a string describing the default style.
+     */
+    public void setDefaultStyleString(String defaultStyleString)
+    {
+        if (defaultStyleString != null)
+        {
+            getDictionary().setItem(COSName.DS, new COSString(defaultStyleString));
+        }
+        else
+        {
+            getDictionary().removeItem(COSName.DS);
+        }
+    }    
 
     /**
      * This will get the 'quadding' or justification of the text to be displayed.
+     * 
+     * This is an inheritable attribute.
+     * 
      * 0 - Left(default)<br/>
      * 1 - Centered<br />
      * 2 - Right<br />
@@ -263,16 +299,12 @@ public abstract class PDVariableText extends PDField
     public int getQ()
     {
         int retval = 0;
-        COSNumber number = (COSNumber)getDictionary().getDictionaryObject( COSName.Q );
+
+        COSNumber number = (COSNumber)getInheritableAttribute(COSName.Q );
+        
         if( number != null )
         {
             retval = number.intValue();
-        }
-        else
-        {
-            // the Q value is inheritable
-            // the acroform should provide a Q default value
-            retval = getAcroForm().getQ();
         }
         return retval;
     }
@@ -290,13 +322,60 @@ public abstract class PDVariableText extends PDField
     @Override
     public Object getDefaultValue()
     {
-        return getDictionary().getDictionaryObject(COSName.DV);
+        return getInheritableAttribute(COSName.DV);
     }
 
+    /**
+     * Set the fields default value.
+     *
+     * @param value the fields value
+     */
     public void setDefaultValue(Object value)
     {
         // Text fields don't support the "DV" entry.
         throw new RuntimeException( "Text fields don't support the \"DV\" entry." );
     }
-
+    
+    /**
+     * Get the fields rich text value.
+     * 
+     * @return the rich text value string
+     */
+    public String getRichTextValue()
+    {
+        COSBase richTextValue = getDictionary().getDictionaryObject(COSName.RV);
+        
+        if (richTextValue instanceof COSString)
+        {
+            return ((COSString) richTextValue).getString();
+        }
+        // TODO stream instead of string
+        return "";
+    }
+    
+    /**
+     * Set the fields rich text value.
+     * 
+     * Setting the rich text value will not generate the appearance
+     * for the field.
+     * 
+     * You can set {@link PDAcroForm#setNeedAppearances(Boolean)} to
+     * signal a conforming reader to generate the appearance stream.
+     * 
+     * Providing null as the value will remove the default style string.
+     * 
+     * @param richTextValue a rich text string
+     */
+    public void setRichTextValue(String richTextValue)
+    {
+        // TODO stream instead of string
+        if (richTextValue != null)
+        {
+            getDictionary().setItem(COSName.RV, new COSString(richTextValue));
+        }
+        else
+        {
+            getDictionary().removeItem(COSName.RV);
+        }        
+    }
 }
