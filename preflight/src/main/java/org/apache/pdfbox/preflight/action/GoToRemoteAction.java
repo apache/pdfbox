@@ -39,7 +39,7 @@ public class GoToRemoteAction extends GoToAction
      * 
      * @param amFact Instance of ActionManagerFactory used to create ActionManager to check Next actions.
      * @param adict the COSDictionary of the action wrapped by this class.
-     * @param ctx the preflight context´.
+     * @param ctx the preflight context.
      * @param aaKey the name of the key which identify the action in a additional action dictionary.
      */
     public GoToRemoteAction(ActionManagerFactory amFact, COSDictionary adict, PreflightContext ctx, String aaKey)
