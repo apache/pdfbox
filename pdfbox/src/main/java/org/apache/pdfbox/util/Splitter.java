@@ -153,12 +153,10 @@ public class Splitter
      * By default a split occurs at every page.  If you wanted to split
      * based on some complex logic then you could override this method.  For example.
      * <code>
-     * protected void createNewDocumentIfNecessary()
+     * protected void splitAtPage()
      * {
-     *     if(isPrime(pageNumber))
-     *     {
-     *         super.createNewDocumentIfNecessary();
-     *     }
+     *     // will split at pages with prime numbers only
+     *     return isPrime(pageNumber);
      * }
      * </code>
      *
