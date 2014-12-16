@@ -81,6 +81,11 @@ public class PDType1CFont extends PDSimpleFont implements PDType1Equivalent
             if (ff3Stream != null)
             {
                 bytes = IOUtils.toByteArray(ff3Stream.createInputStream());
+                if (bytes.length == 0)
+                {
+                    LOG.error("Invalid data for embedded Type1C font " + getName());
+                    bytes = null;
+                }
             }
         }
 
@@ -88,9 +93,12 @@ public class PDType1CFont extends PDSimpleFont implements PDType1Equivalent
         CFFType1Font cffEmbedded = null;
         try
         {
-            // note: this could be an OpenType file, fortunately CFFParser can handle that
-            CFFParser cffParser = new CFFParser();
-            cffEmbedded = (CFFType1Font)cffParser.parse(bytes).get(0);
+            if (bytes != null)
+            {
+                // note: this could be an OpenType file, fortunately CFFParser can handle that
+                CFFParser cffParser = new CFFParser();
+                cffEmbedded = (CFFType1Font)cffParser.parse(bytes).get(0);
+            }
         }
         catch (IOException e)
         {
@@ -187,17 +195,18 @@ public class PDType1CFont extends PDSimpleFont implements PDType1Equivalent
     {
         if (fontMatrix == null)
         {
-            List<Number> numbers = cffFont.getFontMatrix();
-            if (numbers != null && numbers.size() == 6)
+            if (cffFont != null)
             {
-                fontMatrix = new Matrix(numbers.get(0).floatValue(), numbers.get(1).floatValue(),
-                                        numbers.get(2).floatValue(), numbers.get(3).floatValue(),
-                                        numbers.get(4).floatValue(), numbers.get(5).floatValue());
+                List<Number> numbers = cffFont.getFontMatrix();
+                if (numbers != null && numbers.size() == 6)
+                {
+                    fontMatrix = new Matrix(numbers.get(0).floatValue(), numbers.get(1).floatValue(),
+                            numbers.get(2).floatValue(), numbers.get(3).floatValue(),
+                            numbers.get(4).floatValue(), numbers.get(5).floatValue());
+                    return fontMatrix;
+                }
             }
-            else
-            {
-                return super.getFontMatrix();
-            }
+            fontMatrix = super.getFontMatrix();
         }
         return fontMatrix;
     }
