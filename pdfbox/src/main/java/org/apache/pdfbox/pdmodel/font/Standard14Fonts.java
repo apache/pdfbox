@@ -82,6 +82,10 @@ class Standard14Fonts
             addAFM("Symbol,Italic", "Symbol");
             addAFM("Symbol,Bold", "Symbol");
             addAFM("Symbol,BoldItalic", "Symbol");
+            addAFM("Times", "Times-Roman");
+            addAFM("Times,Italic", "Times-Italic");
+            addAFM("Times,Bold", "Times-Bold");
+            addAFM("Times,BoldItalic", "Times-BoldItalic");
         }
         catch (IOException e)
         {
