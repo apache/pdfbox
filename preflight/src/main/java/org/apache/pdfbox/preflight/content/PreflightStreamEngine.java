@@ -123,7 +123,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
         addOperator(new SetLineJoinStyle());
         addOperator(new SetLineCapStyle());
         addOperator(new SetStrokingDeviceCMYKColor());
-        addOperator( new SetNonStrokingDeviceCMYKColor());
+        addOperator(new SetNonStrokingDeviceCMYKColor());
 
         addOperator(new SetNonStrokingDeviceRGBColor());
         addOperator(new SetStrokingDeviceRGBColor());
@@ -131,7 +131,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
         addOperator(new SetStrokingColor());
         addOperator(new SetStrokingColorN());
         addOperator(new SetNonStrokingColor());
-        addOperator( new SetNonStrokingColorN());
+        addOperator(new SetNonStrokingColorN());
 
         // Graphics state
         addOperator(new Restore());
@@ -201,7 +201,6 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
         addOperator(new StubOperator("MP"));
 
         addOperator(new StubOperator("gs"));
-        addOperator(new StubOperator("h"));
         addOperator(new StubOperator("i"));
 
         addOperator(new StubOperator("ri"));
