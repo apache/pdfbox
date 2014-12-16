@@ -135,18 +135,7 @@ public class Splitter
     }
 
     /**
-     * Interface method, you can control where a document gets split by implementing
-     * this method.  By default a split occurs at every page.  If you wanted to split
-     * based on some complex logic then you could override this method.  For example.
-     * <code>
-     * protected void createNewDocumentIfNecessary()
-     * {
-     *     if(isPrime(pageNumber))
-     *     {
-     *         super.createNewDocumentIfNecessary();
-     *     }
-     * }
-     * </code>
+     * Helper method for creating new documents at the appropriate pages.
      *
      * @throws IOException If there is an error creating the new document.
      */
@@ -161,6 +150,17 @@ public class Splitter
 
     /**
      * Check if it is necessary to create a new document.
+     * By default a split occurs at every page.  If you wanted to split
+     * based on some complex logic then you could override this method.  For example.
+     * <code>
+     * protected void createNewDocumentIfNecessary()
+     * {
+     *     if(isPrime(pageNumber))
+     *     {
+     *         super.createNewDocumentIfNecessary();
+     *     }
+     * }
+     * </code>
      *
      * @return true If a new document should be created.
      */
