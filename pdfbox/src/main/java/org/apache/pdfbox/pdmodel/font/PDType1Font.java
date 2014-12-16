@@ -450,8 +450,9 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
     @Override
     public GeneralPath getPath(String name) throws IOException
     {
-        // Acrobat only draws .notdef for embedded or "Standard 14" fonts, see PDFBOX-2372
-        if (name.equals(".notdef") && !isEmbedded() && !isStandard14())
+        // Acrobat does not draw .notdef for Type 1 fonts, see PDFBOX-2421
+        // I suspect that it does do this for embedded fonts though, but this is untested
+        if (name.equals(".notdef") && !isEmbedded)
         {
             return new GeneralPath();
         }
