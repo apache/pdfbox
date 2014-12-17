@@ -83,7 +83,7 @@ public class PDCalRGB extends PDCIEDictionaryBasedColorSpace
             float b = value[1];
             float c = value[2];
 
-            Matrix matrix = getGammaMatrix();
+            Matrix matrix = getMatrix();
             PDGamma gamma = getGamma();
             double powAR = Math.pow(a, gamma.getR());
             double powBG = Math.pow(b, gamma.getG());
@@ -126,7 +126,7 @@ public class PDCalRGB extends PDCIEDictionaryBasedColorSpace
      * If the underlying dictionary contains null then the identity matrix will be returned.
      * @return the linear interpretation matrix
      */
-    public final Matrix getGammaMatrix()
+    public final Matrix getMatrix()
     {
         COSArray matrix = (COSArray)dictionary.getDictionaryObject(COSName.MATRIX);
         if(matrix == null)
@@ -158,7 +158,7 @@ public class PDCalRGB extends PDCIEDictionaryBasedColorSpace
      * Passing in null will clear the matrix.
      * @param matrix the new linear interpretation matrix, or null
      */
-    public final void setGammaMatrix(Matrix matrix)
+    public final void setMatrix(Matrix matrix)
     {
         COSArray matrixArray = null;
         if(matrix != null)
