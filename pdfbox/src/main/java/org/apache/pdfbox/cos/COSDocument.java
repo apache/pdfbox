@@ -388,14 +388,14 @@ public class COSDocument extends COSBase implements Closeable
                 {
                     // Some fields may contain twice references to a single field. 
                     // This will prevent such double entries.
-                    HashMap<COSObjectKey, COSDictionary> signatures = new HashMap<COSObjectKey, COSDictionary>();
+                    Map<COSObjectKey, COSDictionary> signatures = new HashMap<COSObjectKey, COSDictionary>();
                     for ( Object object : fields )
                     {
                         COSObject dict = (COSObject)object;
                         if (COSName.SIG.equals(dict.getItem(COSName.FT)))
                         {
                             COSBase dictionaryObject = dict.getDictionaryObject(COSName.V);
-                            if (dictionaryObject == null || (dictionaryObject != null && !onlyEmptyFields))
+                            if (dictionaryObject == null || !onlyEmptyFields)
                             {
                                 signatures.put(new COSObjectKey(dict), (COSDictionary)dict.getObject());
                             }
@@ -505,6 +505,7 @@ public class COSDocument extends COSBase implements Closeable
      *
      *  @throws IOException If there is an error close resources.
      */
+    @Override
     public void close() throws IOException
     {
         if (!closed) 
