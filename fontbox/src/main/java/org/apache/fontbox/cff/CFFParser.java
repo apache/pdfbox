@@ -403,8 +403,16 @@ public class CFFParser
         }
         else
         {
-            // a CID font with no charset does not default to any predefined charset
-            charset = new EmptyCharset();
+            if (isCIDFont)
+            {
+                // a CID font with no charset does not default to any predefined charset
+                charset = new EmptyCharset();
+            }
+            else
+            {
+                //FIXME PDFBOX-2571
+                charset = CFFISOAdobeCharset.getInstance();
+            }
         }
         font.setCharset(charset);
 
