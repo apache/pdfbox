@@ -2085,10 +2085,9 @@ public class NonSequentialPDFParser extends PDFParser
      */
     private boolean checkObjectId(String objectString, long offset) throws IOException
     {
-        boolean objectFound = false;
         long originOffset = pdfSource.getOffset();
         pdfSource.seek(offset);
-        objectFound = checkBytesAtOffset(objectString.getBytes("ISO-8859-1"));
+        boolean objectFound = checkBytesAtOffset(objectString.getBytes("ISO-8859-1"));
         pdfSource.seek(originOffset);
         return objectFound;
     }
@@ -2191,7 +2190,8 @@ public class NonSequentialPDFParser extends PDFParser
                     }
                 }
                 currentOffset++;
-            } while (!pdfSource.isEOF());
+            }
+            while (!pdfSource.isEOF());
             // reestablish origin position
             pdfSource.seek(originOffset);
         }
@@ -2273,11 +2273,10 @@ public class NonSequentialPDFParser extends PDFParser
                     // search backwards for the beginning of the stream
                     long newOffset = -1;
                     long xrefOffset = pdfSource.getOffset();
-                    long currentOffset = xrefOffset;
                     boolean objFound = false;
                     for (int i = 1; i < 30 && !objFound; i++)
                     {
-                        currentOffset = xrefOffset - (i * 10);
+                        long currentOffset = xrefOffset - (i * 10);
                         if (currentOffset > 0)
                         {
                             pdfSource.seek(currentOffset);
