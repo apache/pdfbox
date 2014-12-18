@@ -45,7 +45,7 @@ public class PDFObjectStreamParser extends BaseParser
 
     private List<COSObject> streamObjects = null;
     private List<Long> objectNumbers = null;
-    private COSStream stream;
+    private final COSStream stream;
 
     /**
      * Constructor.
@@ -81,8 +81,8 @@ public class PDFObjectStreamParser extends BaseParser
                 long offset = readLong();
                 objectNumbers.add( objectNumber);
             }
-            COSObject object = null;
-            COSBase cosObject = null;
+            COSObject object;
+            COSBase cosObject;
             int objectCounter = 0;
             while( (cosObject = parseDirObject()) != null )
             {
