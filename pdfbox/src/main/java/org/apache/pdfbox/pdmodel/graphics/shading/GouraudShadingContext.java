@@ -27,6 +27,8 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.imageio.stream.ImageInputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,7 +39,7 @@ import org.apache.pdfbox.util.Matrix;
 /**
  * Shades Gouraud triangles for Type4ShadingContext and Type5ShadingContext.
  *
- * @author Andreas Lehmkühler
+ * @author Andreas LehmkÃ¼hler
  * @author Tilman Hausherr
  * @author Shaola Ren
  */
@@ -48,7 +50,7 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext impleme
     /**
      * triangle list.
      */
-    protected ArrayList<ShadedTriangle> triangleList;
+    protected List<ShadedTriangle> triangleList;
 
     /**
      * background values.
@@ -56,7 +58,7 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext impleme
     protected float[] background;
     protected int rgbBackground;
 
-    protected HashMap<Point, Integer> pixelTable;
+    protected Map<Point, Integer> pixelTable;
 
     /**
      * Constructor creates an instance to be used for fill operations.
@@ -117,9 +119,9 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext impleme
         return new Vertex(tmp, colorComponentTab);
     }
 
-    protected HashMap<Point, Integer> calcPixelTable()
+    protected Map<Point, Integer> calcPixelTable()
     {
-        HashMap<Point, Integer> map = new HashMap<Point, Integer>();
+        Map<Point, Integer> map = new HashMap<Point, Integer>();
         super.calcPixelTable(triangleList, map);
         return map;
     }

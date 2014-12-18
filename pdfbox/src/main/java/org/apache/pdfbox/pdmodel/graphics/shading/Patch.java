@@ -17,6 +17,7 @@ package org.apache.pdfbox.pdmodel.graphics.shading;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Patch is extended by CoonsPatch and TensorPatch. This was done as part of
@@ -35,7 +36,7 @@ abstract class Patch
      be divided into 2^levelV parts
      */
     protected int[] level;
-    protected ArrayList<ShadedTriangle> listOfTriangles;
+    protected List<ShadedTriangle> listOfTriangles;
 
     /**
      * Constructor of Patch.
@@ -171,9 +172,9 @@ abstract class Patch
      * @param patchCC all the crossing point coordinates and color of a grid
      * @return a ShadedTriangle list which can compose the grid patch
      */
-    protected ArrayList<ShadedTriangle> getShadedTriangles(CoordinateColorPair[][] patchCC)
+    protected List<ShadedTriangle> getShadedTriangles(CoordinateColorPair[][] patchCC)
     {
-        ArrayList<ShadedTriangle> list = new ArrayList<ShadedTriangle>();
+        List<ShadedTriangle> list = new ArrayList<ShadedTriangle>();
         int szV = patchCC.length;
         int szU = patchCC[0].length;
         for (int i = 1; i < szV; i++)

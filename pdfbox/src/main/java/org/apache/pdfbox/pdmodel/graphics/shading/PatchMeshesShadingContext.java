@@ -27,6 +27,8 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
 import org.apache.commons.logging.Log;
@@ -52,9 +54,9 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext imp
     protected final PDShading patchMeshesShadingType;
 
     // the following fields are not intialized in this abstract class
-    protected ArrayList<Patch> patchList; // patch list
+    protected List<Patch> patchList; // patch list
     protected int bitsPerFlag; // bits per flag
-    protected HashMap<Point, Integer> pixelTable;
+    protected Map<Point, Integer> pixelTable;
 
     /**
      * Constructor creates an instance to be used for fill operations.
@@ -266,9 +268,9 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext imp
      * @return a Hash table which contains all the points' positions and colors
      * of one image
      */
-    protected HashMap<Point, Integer> calcPixelTable()
+    protected Map<Point, Integer> calcPixelTable()
     {
-        HashMap<Point, Integer> map = new HashMap<Point, Integer>();
+        Map<Point, Integer> map = new HashMap<Point, Integer>();
         for (Patch it : patchList)
         {
             super.calcPixelTable(it.listOfTriangles, map);
