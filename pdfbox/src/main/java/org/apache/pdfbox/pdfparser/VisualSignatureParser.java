@@ -167,7 +167,7 @@ public class VisualSignatureParser extends BaseParser
                 skipToNextObj();
                 //verify that EOF exists
                 String eof = readExpectedString("%%EOF");
-                if(eof.indexOf("%%EOF") == -1 && !pdfSource.isEOF()) 
+                if (!eof.contains("%%EOF") && !pdfSource.isEOF())
                 {
                     throw new IOException("expected='%%EOF' actual='" + eof + "' next=" + readString()
                             + " next=" + readString());
@@ -179,8 +179,7 @@ public class VisualSignatureParser extends BaseParser
         {
             //we are going to parse an normal object
             long number = -1;
-            int genNum = -1;
-            String objectKey = null;
+            int genNum;
             boolean missingObjectNumber = false;
             try 
             {
@@ -207,9 +206,7 @@ public class VisualSignatureParser extends BaseParser
                 skipSpaces();
                 genNum = readGenerationNumber();
 
-                objectKey = readString(3);
-                //System.out.println( "parseObject() num=" + number +
-                //" genNumber=" + genNum + " key='" + objectKey + "'" );
+                String objectKey = readString(3);
                 if(!objectKey.equals("obj")) 
                 {
                     throw new IOException("expected='obj' actual='" + objectKey + "' " + pdfSource);
