@@ -79,7 +79,7 @@ import org.apache.pdfbox.persistence.util.COSObjectKey;
 public class NonSequentialPDFParser extends PDFParser
 {
     private static final byte[] XREF_TABLE = new byte[] { 'x', 'r', 'e', 'f' };
-    private static final byte[] XREF_STREAM = new byte[] { '/','X', 'R', 'e', 'f' };
+    private static final byte[] XREF_STREAM = new byte[] { '/', 'X', 'R', 'e', 'f' };
     private static final long MINIMUM_SEARCH_OFFSET = 6;
     
     private static final int X = 'x';
@@ -135,9 +135,9 @@ public class NonSequentialPDFParser extends PDFParser
     /**
      * Contains all found objects of a brute force search.
      */
-    private HashMap<String, Long> bfSearchObjectOffsets = null;
-    private HashMap<COSObjectKey, Long> bfSearchCOSObjectKeyOffsets = null;
-    private Vector<Long> bfSearchXRefOffsets = null;
+    private Map<String, Long> bfSearchObjectOffsets = null;
+    private Map<COSObjectKey, Long> bfSearchCOSObjectKeyOffsets = null;
+    private List<Long> bfSearchXRefOffsets = null;
 
     /**
      * The security handler.
