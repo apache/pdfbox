@@ -47,11 +47,11 @@ public class PDFXRefStream implements PDFXRef
 
     private static final int ENTRY_FREE = 0;
 
-    private Map<Integer, Object> streamData;
+    private final Map<Integer, Object> streamData;
 
-    private Set<Integer> objectNumbers;
+    private final Set<Integer> objectNumbers;
 
-    private COSStream stream;
+    private final COSStream stream;
 
     private long size = -1;
 
