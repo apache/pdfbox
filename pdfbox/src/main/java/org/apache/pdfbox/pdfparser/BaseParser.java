@@ -231,11 +231,7 @@ public abstract class BaseParser
             long genOffset = pdfSource.getOffset();
             COSBase generationNumber = parseDirObject();
             skipSpaces();
-            char r = (char)pdfSource.read();
-            if( r != 'R' )
-            {
-                throw new IOException("expected='R' actual='" + r + "' at offset " + pdfSource.getOffset());
-            }
+            readExpectedChar('R');
             if (!(number instanceof COSInteger))
             {
                 throw new IOException("expected number, actual=" + number + " at offset " + numOffset);
@@ -264,23 +260,15 @@ public abstract class BaseParser
      */
     protected COSDictionary parseCOSDictionary() throws IOException
     {
-        char c = (char)pdfSource.read();
-        if( c != '<')
-        {
-            throw new IOException( "expected='<' actual='" + c + "' at offset " + pdfSource.getOffset());
-        }
-        c = (char)pdfSource.read();
-        if( c != '<')
-        {
-            throw new IOException( "expected='<' actual='" + c + "' at offset " + pdfSource.getOffset());
-        }
+        readExpectedChar('<');
+        readExpectedChar('<');
         skipSpaces();
         COSDictionary obj = new COSDictionary();
         boolean done = false;
         while( !done )
         {
             skipSpaces();
-            c = (char)pdfSource.peek();
+            char c = (char)pdfSource.peek();
             if( c == '>')
             {
                 done = true;
@@ -358,16 +346,8 @@ public abstract class BaseParser
                 }
             }
         }
-        char ch = (char)pdfSource.read();
-        if( ch != '>' )
-        {
-            throw new IOException( "expected='>' actual='" + ch + "' at offset " + pdfSource.getOffset());
-        }
-        ch = (char)pdfSource.read();
-        if( ch != '>' )
-        {
-            throw new IOException( "expected='>' actual='" + ch + "' at offset " + pdfSource.getOffset());
-        }
+        readExpectedChar('>');
+        readExpectedChar('>');
         return obj;
     }
 
@@ -1002,7 +982,8 @@ public abstract class BaseParser
                 do 
                 {
                     c = pdfSource.read();
-                } while ( c != '>' && c >= 0 );
+                } 
+                while ( c != '>' && c >= 0 );
                 
                 // might have reached EOF while looking for the closing bracket
                 // this can happen for malformed PDFs only. Make sure that there is
@@ -1018,7 +999,7 @@ public abstract class BaseParser
         }
         return COSString.parseHex(sBuf.toString());
     }
-    
+   
     /**
      * This will parse a PDF array object.
      *
@@ -1028,11 +1009,7 @@ public abstract class BaseParser
      */
     protected COSArray parseCOSArray() throws IOException
     {
-        char ch = (char)pdfSource.read();
-        if( ch != '[')
-        {
-            throw new IOException( "expected='[' actual='" + ch + "' at offset " + pdfSource.getOffset());
-        }
+        readExpectedChar('[');
         COSArray po = new COSArray();
         COSBase pbo;
         skipSpaces();
@@ -1111,14 +1088,10 @@ public abstract class BaseParser
      */
     protected COSName parseCOSName() throws IOException
     {
-        int c = pdfSource.read();
-        if( (char)c != '/')
-        {
-            throw new IOException("expected='/' actual='" + (char)c + "'-" + c + " at offset " + pdfSource.getOffset());
-        }
+        readExpectedChar('/');
         // costruisce il nome
         StringBuilder buffer = new StringBuilder();
-        c = pdfSource.read();
+        int c = pdfSource.read();
         while( c != -1 )
         {
             char ch = (char)c;
@@ -1420,6 +1393,22 @@ public abstract class BaseParser
         return buffer.toString();
     }
 
+    /**
+     * Read one char and throw an exception if it is not the expected value.
+     *
+     * @param ec the char value that is expected.
+     * @throws IOException if the read char is not the expected value or if an
+     * I/O error occurs.
+     */
+    protected void readExpectedChar(char ec) throws IOException
+    {
+        char c = (char) pdfSource.read();
+        if (c != ec)
+        {
+            throw new IOException("expected='" + ec + "' actual='" + c + "' at offset " + pdfSource.getOffset());
+        }
+    }
+    
     /**
      * This will read the next string from the stream up to a certain length.
      *
