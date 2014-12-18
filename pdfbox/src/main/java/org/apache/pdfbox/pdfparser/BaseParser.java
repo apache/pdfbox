@@ -366,13 +366,7 @@ public abstract class BaseParser
         OutputStream out = null;
         try
         {
-            String streamString = readString();
-            //long streamLength;
-
-            if (!streamString.equals(STREAM_STRING))
-            {
-                throw new IOException("expected='stream' actual='" + streamString + "' at offset " + pdfSource.getOffset());
-            }
+            readExpectedString(STREAM_STRING);
 
             //PDF Ref 3.2.7 A stream must be followed by either
             //a CRLF or LF but nothing else.
@@ -557,11 +551,7 @@ public abstract class BaseParser
                      * "endstream"
                      */
                     readUntilEndStream( new EndstreamOutputStream(out) );
-                    endStream = readString();
-                    if( !endStream.equals( ENDSTREAM_STRING ) )
-                    {
-                        throw new IOException("expected='endstream' actual='" + endStream + "' at offset " + pdfSource.getOffset());
-                    }
+                    readExpectedString(ENDSTREAM_STRING);
                 }
             }
         }
@@ -1232,11 +1222,7 @@ public abstract class BaseParser
             break;
         case 'n':   // null
         {
-            String nullString = readString();
-            if( !nullString.equals( NULL) )
-            {
-                throw new IOException("Expected='null' actual='" + nullString + "' at offset " + pdfSource.getOffset());
-            }
+            readExpectedString(NULL);
             retval = COSNull.NULL;
             break;
         }
@@ -1346,6 +1332,22 @@ public abstract class BaseParser
             pdfSource.unread(c);
         }
         return buffer.toString();
+    }
+    
+    /**
+     * Read one String and throw an exception if it is not the expected value.
+     *
+     * @param es the String value that is expected.
+     * @throws IOException if the String char is not the expected value or if an
+     * I/O error occurs.
+     */
+    protected void readExpectedString(String es) throws IOException
+    {
+        String s = readString();
+        if (!s.equals(es))
+        {
+            throw new IOException("expected='" + es + "' actual='" + s + "' at offset " + pdfSource.getOffset());
+        }
     }
 
     /**
