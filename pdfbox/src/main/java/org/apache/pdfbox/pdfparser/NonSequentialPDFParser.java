@@ -537,14 +537,11 @@ public class NonSequentialPDFParser extends PDFParser
         else if(!parseMinimalCatalog)
         {
             COSObject catalogObj = document.getCatalog();
-            if (catalogObj != null)
+            if (catalogObj != null && catalogObj.getObject() instanceof COSDictionary)
             {
-                if (catalogObj.getObject() instanceof COSDictionary)
-                {
-                    parseDictObjects((COSDictionary) catalogObj.getObject(), (COSName[]) null);
-                    allPagesParsed = true;
-                    document.setDecrypted();
-                }
+                parseDictObjects((COSDictionary) catalogObj.getObject(), (COSName[]) null);
+                allPagesParsed = true;
+                document.setDecrypted();
             }
         }
 
@@ -1211,14 +1208,12 @@ public class NonSequentialPDFParser extends PDFParser
 
             COSDictionary dic = (COSDictionary) base;
             int count = dic.getInt(COSName.COUNT);
-            if (count >= 0)
+            
+            // skip this branch if requested page comes later
+            if (count >= 0 && (curPageCount + count) <= num)
             {
-                // skip this branch if requested page comes later
-                if ((curPageCount + count) <= num)
-                {
-                    curPageCount += count;
-                    continue;
-                }
+                curPageCount += count;
+                continue;
             }
 
             COSArray kids = (COSArray) dic.getDictionaryObject(COSName.KIDS);
@@ -1531,16 +1526,13 @@ public class NonSequentialPDFParser extends PDFParser
                     endObjectKey = readLine();
 
                     // we have case with a second 'endstream' before endobj
-                    if (!endObjectKey.startsWith("endobj"))
+                    if (!endObjectKey.startsWith("endobj") && endObjectKey.startsWith("endstream"))
                     {
-                        if (endObjectKey.startsWith("endstream"))
+                        endObjectKey = endObjectKey.substring(9).trim();
+                        if (endObjectKey.length() == 0)
                         {
-                            endObjectKey = endObjectKey.substring(9).trim();
-                            if (endObjectKey.length() == 0)
-                            {
-                                // no other characters in extra endstream line
-                                endObjectKey = readLine(); // read next line
-                            }
+                            // no other characters in extra endstream line
+                            endObjectKey = readLine(); // read next line
                         }
                     }
                 }
