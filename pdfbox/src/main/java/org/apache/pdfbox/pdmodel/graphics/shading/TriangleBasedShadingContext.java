@@ -21,8 +21,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.image.ColorModel;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.util.Matrix;
@@ -72,7 +72,7 @@ abstract class TriangleBasedShadingContext extends ShadingContext
 
     // get the points from the triangles, calculate their color and add 
     // point-color mappings to the map
-    protected void calcPixelTable(ArrayList<ShadedTriangle> triangleList, HashMap<Point, Integer> map)
+    protected void calcPixelTable(List<ShadedTriangle> triangleList, Map<Point, Integer> map)
     {
         for (ShadedTriangle tri : triangleList)
         {

@@ -16,7 +16,7 @@
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class is used to describe a patch for type 7 shading. This was done as
@@ -162,7 +162,7 @@ class TensorPatch extends Patch
     }
 
     // get a list of triangles which compose this tensor patch
-    private ArrayList<ShadedTriangle> getTriangles()
+    private List<ShadedTriangle> getTriangles()
     {
         CoordinateColorPair[][] patchCC = getPatchCoordinatesColor();
         return getShadedTriangles(patchCC);

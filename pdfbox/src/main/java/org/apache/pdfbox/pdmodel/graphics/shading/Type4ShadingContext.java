@@ -23,6 +23,7 @@ import java.awt.image.ColorModel;
 import java.io.EOFException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
 import org.apache.commons.logging.Log;
@@ -63,7 +64,7 @@ class Type4ShadingContext extends GouraudShadingContext
         pixelTable = calcPixelTable();
     }
 
-    private ArrayList<ShadedTriangle> getTriangleList(AffineTransform xform, Matrix ctm) throws IOException
+    private List<ShadedTriangle> getTriangleList(AffineTransform xform, Matrix ctm) throws IOException
     {
         PDShadingType4 freeTriangleShadingType = (PDShadingType4) shading;
         COSDictionary cosDictionary = freeTriangleShadingType.getCOSDictionary();
@@ -74,7 +75,7 @@ class Type4ShadingContext extends GouraudShadingContext
         {
             colRange[i] = freeTriangleShadingType.getDecodeForParameter(2 + i);
         }
-        ArrayList<ShadedTriangle> list = new ArrayList<ShadedTriangle>();
+        List<ShadedTriangle> list = new ArrayList<ShadedTriangle>();
         long maxSrcCoord = (long) Math.pow(2, bitsPerCoordinate) - 1;
         long maxSrcColor = (long) Math.pow(2, bitsPerColorComponent) - 1;
         COSStream cosStream = (COSStream) cosDictionary;
