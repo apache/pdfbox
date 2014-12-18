@@ -925,7 +925,8 @@ public class NonSequentialPDFParser extends PDFParser
             else if (patOff < lastPatternChOff)
             {
                 // no char match but already matched some chars; reset
-                lookupCh = pattern[patOff = lastPatternChOff];
+                patOff = lastPatternChOff;
+                lookupCh = pattern[patOff];
             }
         }
 
@@ -1384,8 +1385,8 @@ public class NonSequentialPDFParser extends PDFParser
                                 List<COSObject> stmObjects = objToBeParsed.get(fileOffset);
                                 if (stmObjects == null)
                                 {
-                                    objToBeParsed.put(fileOffset,
-                                            stmObjects = new ArrayList<COSObject>());
+                                    stmObjects = new ArrayList<COSObject>();
+                                    objToBeParsed.put(fileOffset, stmObjects);
                                 }
                                 stmObjects.add(obj);
                             }
