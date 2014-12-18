@@ -46,7 +46,7 @@ extends InputStream implements RandomAccessRead
     private byte[] lastRemovedCachePage = null;
 
     /** Create a LRU page cache. */
-    private final LinkedHashMap<Long, byte[]> pageCache =
+    private final Map<Long, byte[]> pageCache =
         new LinkedHashMap<Long, byte[]>( maxCachedPages, 0.75f, true )
     {
         private static final long serialVersionUID = -6302488539257741101L;
@@ -95,6 +95,7 @@ extends InputStream implements RandomAccessRead
 
     // ------------------------------------------------------------------------
     /** Returns offset in file at which next byte would be read. */
+    @Override
     public long getPosition()
     {
         return fileOffset;
@@ -105,6 +106,7 @@ extends InputStream implements RandomAccessRead
      * Seeks to new position. If new position is outside of current page the new
      * page is either taken from cache or read from file and added to cache.
      */
+    @Override
     public void seek( final long newOffset ) throws IOException
     {
         final long newPageOffset = newOffset & pageOffsetMask;
@@ -131,7 +133,7 @@ extends InputStream implements RandomAccessRead
      * previously removed page from cache the buffer of this page is reused.
      * Otherwise a new byte buffer is created.
      */
-    private final byte[] readPage() throws IOException
+    private byte[] readPage() throws IOException
     {
         byte[] page;
 
@@ -239,6 +241,7 @@ extends InputStream implements RandomAccessRead
     }
 
     // ------------------------------------------------------------------------
+    @Override
     public long length() throws IOException
     {
         return fileLength;
