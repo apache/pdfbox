@@ -79,8 +79,8 @@ public abstract class BaseParser
     private static final int B = 'b';
     private static final int J = 'j';
 
-    private final int    strmBufLen = 2048;
-    private final byte[] strmBuf    = new byte[ strmBufLen ];
+    private static final int STRMBUFLEN = 2048;
+    private final byte[] strmBuf    = new byte[ STRMBUFLEN ];
 
     /**
      * This is a byte array that will be used for comparisons.
@@ -449,7 +449,7 @@ public abstract class BaseParser
                 int left = length;
                 while ( left > 0 )
                 {
-                    final int chunk = Math.min( left, strmBufLen );
+                    final int chunk = Math.min( left, STRMBUFLEN );
                     final int readCount = pdfSource.read( strmBuf, 0, chunk );
                     if ( readCount == -1 )
                     {
@@ -599,7 +599,7 @@ public abstract class BaseParser
         final int quickTestOffset = 5;  // last character position of shortest keyword ('endobj')
         
         // read next chunk into buffer; already matched chars are added to beginning of buffer
-        while ( ( bufSize = pdfSource.read( strmBuf, charMatchCount, strmBufLen - charMatchCount ) ) > 0 ) 
+        while ( ( bufSize = pdfSource.read( strmBuf, charMatchCount, STRMBUFLEN - charMatchCount ) ) > 0 ) 
         {
             bufSize += charMatchCount;
             
