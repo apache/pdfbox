@@ -129,6 +129,53 @@ public class VisualSignatureParser extends BaseParser
             }
         }
     }
+    
+    /**
+     * This will read bytes until the end of line marker occurs.
+     *
+     * @param theString The next expected string in the stream.
+     *
+     * @return The characters between the current position and the end of the
+     * line.
+     *
+     * @throws IOException If there is an error reading from the stream or
+     * theString does not match what was read.
+     */
+    private String readExpectedStringUntilEOL(String theString) throws IOException
+    {
+        int c = pdfSource.read();
+        while (isWhitespace(c) && c != -1)
+        {
+            c = pdfSource.read();
+        }
+        StringBuilder buffer = new StringBuilder(theString.length());
+        int charsRead = 0;
+        while (!isEOL(c) && c != -1 && charsRead < theString.length())
+        {
+            char next = (char) c;
+            buffer.append(next);
+            if (theString.charAt(charsRead) == next)
+            {
+                charsRead++;
+            }
+            else
+            {
+                pdfSource.unread(buffer.toString().getBytes("ISO-8859-1"));
+                throw new IOException("Error: Expected to read '" + theString
+                        + "' instead started reading '" + buffer.toString() + "'");
+            }
+            c = pdfSource.read();
+        }
+        while (isEOL(c) && c != -1)
+        {
+            c = pdfSource.read();
+        }
+        if (c != -1)
+        {
+            pdfSource.unread(c);
+        }
+        return buffer.toString();
+    }
 
     private boolean parseObject() throws IOException 
     {
@@ -166,7 +213,7 @@ public class VisualSignatureParser extends BaseParser
             {
                 skipToNextObj();
                 //verify that EOF exists
-                String eof = readExpectedString("%%EOF");
+                String eof = readExpectedStringUntilEOL("%%EOF");
                 if (!eof.contains("%%EOF") && !pdfSource.isEOF())
                 {
                     throw new IOException("expected='%%EOF' actual='" + eof + "' next=" + readString()
