@@ -293,10 +293,10 @@ public class NonSequentialPDFParser extends PDFParser
         password = decryptionPassword;
         keyStoreInputStream = keyStore;
         keyAlias = alias;
-        init(file, useScratchFiles);
+        init(useScratchFiles);
     }
 
-    private void init(File file, boolean useScratchFiles) throws IOException
+    private void init(boolean useScratchFiles) throws IOException
     {
         String eofLookupRangeStr = System.getProperty(SYSPROP_EOFLOOKUPRANGE);
         if (eofLookupRangeStr != null)
@@ -403,7 +403,7 @@ public class NonSequentialPDFParser extends PDFParser
         password = decryptionPassword;
         keyStoreInputStream = keyStore;
         keyAlias = alias;
-        init(pdfFile, useScratchFiles);
+        init(useScratchFiles);
     }
 
     /**
@@ -2170,7 +2170,7 @@ public class NonSequentialPDFParser extends PDFParser
                                 byte[] objIDBytes = pdfSource.readFully(length);
                                 String objIdString = new String(objIDBytes, 0,
                                         objIDBytes.length, "ISO-8859-1");
-                                Long objectID = null;
+                                Long objectID;
                                 try
                                 {
                                     objectID = Long.valueOf(objIdString);
