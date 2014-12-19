@@ -63,7 +63,7 @@ import org.bouncycastle.operator.bc.BcRSAContentSignerBuilder;
  */
 public class CreateVisibleSignature implements SignatureInterface
 {
-    private static final BouncyCastleProvider provider = new BouncyCastleProvider();
+    private static final BouncyCastleProvider BCPROVIDER = new BouncyCastleProvider();
 
     private final PrivateKey privKey;
     private final Certificate[] cert;
@@ -238,7 +238,7 @@ public class CreateVisibleSignature implements SignatureInterface
         else
         {
             File ksFile = new File(args[0]);
-            KeyStore keystore = KeyStore.getInstance("PKCS12", provider);
+            KeyStore keystore = KeyStore.getInstance("PKCS12", BCPROVIDER);
             char[] pin = args[1].toCharArray();
             keystore.load(new FileInputStream(ksFile), pin);
 
