@@ -383,15 +383,15 @@ public class CFFParser
         if (charsetEntry != null)
         {
             int charsetId = charsetEntry.getNumber(0).intValue();
-            if (charsetId == 0)
+            if (isCIDFont && charsetId == 0)
             {
                 charset = CFFISOAdobeCharset.getInstance();
             }
-            else if (charsetId == 1)
+            else if (isCIDFont && charsetId == 1)
             {
                 charset = CFFExpertCharset.getInstance();
             }
-            else if (charsetId == 2)
+            else if (isCIDFont && charsetId == 2)
             {
                 charset = CFFExpertSubsetCharset.getInstance();
             }
@@ -406,11 +406,10 @@ public class CFFParser
             if (isCIDFont)
             {
                 // a CID font with no charset does not default to any predefined charset
-                charset = new EmptyCharset();
+                charset = new EmptyCharset(charStringsIndex.getCount());
             }
             else
             {
-                //FIXME PDFBOX-2571
                 charset = CFFISOAdobeCharset.getInstance();
             }
         }
@@ -1289,10 +1288,16 @@ public class CFFParser
      */
     private static class EmptyCharset extends EmbeddedCharset
     {
-        protected EmptyCharset()
+        protected EmptyCharset(int numCharStrings)
         {
             super(true);
             addCID(0 ,0); // .notdef
+            
+            // Adobe Reader treats CID as GID, PDFBOX-2571 p11.
+            for (int i = 1; i <= numCharStrings; i++)
+            {
+                addCID(i, i);
+            }
         }
 
         @Override
