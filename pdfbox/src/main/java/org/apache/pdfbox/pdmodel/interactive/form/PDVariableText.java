@@ -257,12 +257,12 @@ public abstract class PDVariableText extends PDField
      * The default style string defines the default style for
      * rich text fields.
      * 
-     * @return the DD element of the dictionary object
+     * @return the DS element of the dictionary object
      */
-    public COSString getDefaultStyleString()
+    public String getDefaultStyleString()
     {
-        COSBase defaultStyleString = getDictionary().getDictionaryObject(COSName.DS);
-        return (COSString) defaultStyleString;
+        COSString defaultStyleString = (COSString) getDictionary().getDictionaryObject(COSName.DS);
+        return defaultStyleString.getString();
     }
 
     /**
