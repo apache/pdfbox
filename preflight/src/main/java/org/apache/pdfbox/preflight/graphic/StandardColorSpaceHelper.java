@@ -35,7 +35,6 @@ import static org.apache.pdfbox.preflight.PreflightConstants.MAX_DEVICE_N_LIMIT;
 
 import java.awt.color.ICC_Profile;
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.pdfbox.cos.COSArray;
@@ -82,6 +81,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
      * 
      * @see net.awl.edoc.pdfa.validation.graphics.color.ColorSpaceHelper#validate(java .util.List)
      */
+    @Override
     public final void validate() throws ValidationException
     {
         if (pdcs == null)
@@ -232,13 +232,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
         PDICCBased iccBased = (PDICCBased) pdcs;
         try
         {
-            ICC_Profile iccp = ICC_Profile.getInstance(iccBased.getPDStream().getByteArray());
-            if (iccp == null)
-            {
-                context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_ICCBASED,
-                        "Unable to read ICCBase color space "));
-                return;
-            }
+            ICC_Profile.getInstance(iccBased.getPDStream().getByteArray());
             PDColorSpace altpdcs = iccBased.getAlternateColorSpace();
             if (altpdcs != null)
             {
