@@ -194,22 +194,12 @@ public class PDFAIdentificationSchema extends XMPSchema
      */
     public Integer getPart()
     {
-        AbstractField tmp = getPartProperty();
-        if (tmp instanceof IntegerType)
+        IntegerType tmp = getPartProperty();
+        if (tmp == null)
         {
-            return ((IntegerType) tmp).getValue();
-        }
-        else
-        {
-            for (Attribute attribute : getAllAttributes())
-            {
-                if (attribute.getName().equals(PART))
-                {
-                    return Integer.valueOf(attribute.getValue());
-                }
-            }
             return null;
         }
+        return tmp.getValue();
     }
 
     /**
