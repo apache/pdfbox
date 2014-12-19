@@ -63,10 +63,10 @@ import org.bouncycastle.operator.bc.BcRSAContentSignerBuilder;
  */
 public class CreateVisibleSignature implements SignatureInterface
 {
-    private static BouncyCastleProvider provider = new BouncyCastleProvider();
+    private static final BouncyCastleProvider provider = new BouncyCastleProvider();
 
-    private PrivateKey privKey;
-    private Certificate[] cert;
+    private final PrivateKey privKey;
+    private final Certificate[] cert;
     private SignatureOptions options;
 
     /**
@@ -109,7 +109,7 @@ public class CreateVisibleSignature implements SignatureInterface
         byte[] buffer = new byte[8 * 1024];
         if (document == null || !document.exists())
         {
-            new RuntimeException("Document for signing does not exist");
+            throw new RuntimeException("Document for signing does not exist");
         }
 
         // creating output document and prepare the IO streams.
