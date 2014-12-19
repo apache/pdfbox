@@ -118,34 +118,30 @@ public class PDType0Font extends PDFont
     private void readEncoding() throws IOException
     {
         COSBase encoding = dict.getDictionaryObject(COSName.ENCODING);
-        if (encoding != null)
+        if (encoding instanceof COSName)
         {
-            if (encoding instanceof COSName)
+            // predefined CMap
+            COSName encodingName = (COSName) encoding;
+            cMap = CMapManager.getPredefinedCMap(encodingName.getName());
+            if (cMap != null)
             {
-                // predefined CMap
-                COSName encodingName = (COSName)encoding;
-                cMap = CMapManager.getPredefinedCMap(encodingName.getName());
-                if (cMap != null)
-                {
-                    isCMapPredefined = true;
-                    return;
-                }
-                else
-                {
-                    throw new IOException("Missing required CMap");
-                }
+                isCMapPredefined = true;
             }
             else
             {
-                cMap = readCMap(encoding);
-                if (cMap == null)
-                {
-                    throw new IOException("Missing required CMap");
-                }
-                else if (!cMap.hasCIDMappings())
-                {
-                    LOG.warn("Invalid Encoding CMap in font " + getName());
-                }
+                throw new IOException("Missing required CMap");
+            }
+        }
+        else if (encoding != null)
+        {
+            cMap = readCMap(encoding);
+            if (cMap == null)
+            {
+                throw new IOException("Missing required CMap");
+            }
+            else if (!cMap.hasCIDMappings())
+            {
+                LOG.warn("Invalid Encoding CMap in font " + getName());
             }
         }
     }
@@ -169,7 +165,7 @@ public class PDType0Font extends PDFont
 
             // get the encoding CMap
             COSBase encoding = dict.getDictionaryObject(COSName.ENCODING);
-            if (encoding != null && encoding instanceof COSName)
+            if (encoding instanceof COSName)
             {
                 cMapName = ((COSName)encoding).getName();
             }

@@ -312,6 +312,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      * @return The width is in 1000 unit of text space, ie 333 or 777
      */
     // todo: this method is highly suspicious, the average glyph width is not usually a good metric
+    @Override
     public float getAverageFontWidth()
     {
         float average;
