@@ -1324,6 +1324,7 @@ public class COSDictionary extends COSBase
      *
      * @throws IOException If there is an error visiting this object.
      */
+    @Override
     public Object accept(ICOSVisitor visitor) throws IOException
     {
         return visitor.visitFromDictionary(this);

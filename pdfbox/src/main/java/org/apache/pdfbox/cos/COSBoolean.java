@@ -109,6 +109,7 @@ public class COSBoolean extends COSBase
      * @return any object, depending on the visitor implementation, or null
      * @throws IOException If an error occurs while visiting this object.
      */
+    @Override
     public Object accept(ICOSVisitor  visitor) throws IOException
     {
         return visitor.visitFromBoolean(this);
@@ -119,6 +120,7 @@ public class COSBoolean extends COSBase
      *
      * @return The string value of this object.
      */
+    @Override
     public String toString()
     {
         return String.valueOf( value );

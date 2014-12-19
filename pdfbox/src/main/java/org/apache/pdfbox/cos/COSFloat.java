@@ -57,7 +57,7 @@ public class COSFloat extends COSNumber
         }
         catch( NumberFormatException e )
         {
-            throw new IOException( "Error expected floating point number actual='" +aFloat + "'" );
+            throw new IOException( "Error expected floating point number actual='" +aFloat + "'", e );
         }
     }
 
@@ -92,6 +92,7 @@ public class COSFloat extends COSNumber
      *
      * @return The value of this object.
      */
+    @Override
     public float floatValue()
     {
         return value.floatValue();
@@ -102,6 +103,7 @@ public class COSFloat extends COSNumber
      *
      * @return The double of this object.
      */
+    @Override
     public double doubleValue()
     {
         return value.doubleValue();
@@ -112,6 +114,7 @@ public class COSFloat extends COSNumber
      *
      * @return The long value of this object,
      */
+    @Override
     public long longValue()
     {
         return value.longValue();
@@ -122,6 +125,7 @@ public class COSFloat extends COSNumber
      *
      * @return The int value of this object,
      */
+    @Override
     public int intValue()
     {
         return value.intValue();
@@ -130,6 +134,7 @@ public class COSFloat extends COSNumber
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean equals( Object o )
     {
         return o instanceof COSFloat && Float.floatToIntBits(((COSFloat)o).value.floatValue()) == Float.floatToIntBits(value.floatValue());
@@ -138,6 +143,7 @@ public class COSFloat extends COSNumber
     /**
      * {@inheritDoc}
      */
+    @Override
     public int hashCode()
     {
         return value.hashCode();
@@ -146,6 +152,7 @@ public class COSFloat extends COSNumber
     /**
      * {@inheritDoc}
      */
+    @Override
     public String toString()
     {
         return "COSFloat{" + valueAsString + "}";
@@ -158,6 +165,7 @@ public class COSFloat extends COSNumber
      * @return any object, depending on the visitor implementation, or null
      * @throws IOException If an error occurs while visiting this object.
      */
+    @Override
     public Object accept(ICOSVisitor visitor) throws IOException
     {
         return visitor.visitFromFloat(this);

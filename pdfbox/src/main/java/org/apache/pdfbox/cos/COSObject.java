@@ -152,6 +152,7 @@ public class COSObject extends COSBase
     /**
      * {@inheritDoc}
      */
+    @Override
     public String toString()
     {
         return "COSObject{" +
@@ -199,6 +200,7 @@ public class COSObject extends COSBase
      * @return any object, depending on the visitor implementation, or null
      * @throws IOException If an error occurs while visiting this object.
      */
+    @Override
     public Object accept( ICOSVisitor visitor ) throws IOException
     {
         return getObject() != null ? getObject().accept( visitor ) : COSNull.NULL.accept( visitor );
