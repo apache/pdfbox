@@ -99,7 +99,7 @@ public abstract class PDFieldTreeNode implements COSObjectable
      * @param key the key to look up
      * @return COS value for the given key
      */
-    public COSBase getInheritableAttribute(COSName key)
+    protected COSBase getInheritableAttribute(COSName key)
     {
         return getInheritableAttribute(getDictionary(), key);
     }    
@@ -112,7 +112,7 @@ public abstract class PDFieldTreeNode implements COSObjectable
      * @param key the key to look up
      * @return COS value for the given key
      */
-    public COSBase getInheritableAttribute(COSDictionary fieldDictionary, COSName key)
+    protected COSBase getInheritableAttribute(COSDictionary fieldDictionary, COSName key)
     {
         COSBase value = fieldDictionary.getDictionaryObject(key);
         
@@ -136,7 +136,7 @@ public abstract class PDFieldTreeNode implements COSObjectable
      * @param key the key to look up
      * @param value the new attributes value
      */
-    public void setInheritableAttribute(COSName key, COSBase value)
+    protected void setInheritableAttribute(COSName key, COSBase value)
     {
         setInheritableAttribute(getDictionary(), key, value);
     }  
@@ -148,7 +148,7 @@ public abstract class PDFieldTreeNode implements COSObjectable
      * @param key the key to look up
      * @param value the new attributes value
      */
-    public void setInheritableAttribute(COSDictionary fieldDictionary, COSName key, COSBase value)
+    protected void setInheritableAttribute(COSDictionary fieldDictionary, COSName key, COSBase value)
     {
         if (fieldDictionary.getItem(key) != null)
         {
@@ -169,7 +169,7 @@ public abstract class PDFieldTreeNode implements COSObjectable
      *
      * @param key the key to look up
      */
-    public void removeInheritableAttribute(COSName key)
+    protected void removeInheritableAttribute(COSName key)
     {
         removeInheritableAttribute(getDictionary(), key);
     }      
@@ -180,7 +180,7 @@ public abstract class PDFieldTreeNode implements COSObjectable
      * @param fieldDictionary field object
      * @param key the key to look up
      */
-    public void removeInheritableAttribute(COSDictionary fieldDictionary, COSName key)
+    protected void removeInheritableAttribute(COSDictionary fieldDictionary, COSName key)
     {
         if (fieldDictionary.getItem(key) != null)
         {
@@ -196,6 +196,35 @@ public abstract class PDFieldTreeNode implements COSObjectable
         }
     }
     
+    /**
+     * Get a text as text stream.
+     * 
+     * Some dictionary entries allow either a text or a text stream.
+     * 
+     * @param cosBaseEntry the potential text or text stream
+     * @return the text stream
+     * @throws IOException if the field dictionary entry is not a text type
+     */
+    protected PDTextStream getAsTextStream(COSBase cosBaseEntry) throws IOException
+    {
+        if (cosBaseEntry == null)
+        {
+            return null;
+        }
+        else
+        {
+            PDTextStream textStream = PDTextStream.createTextStream(cosBaseEntry);
+            // This will happen if the entry was not a COSString or COSStream
+            if (textStream == null)
+            {
+                throw new IOException("Invalid field value. Unexpected type " + cosBaseEntry.getClass().getName());
+            }
+            else
+            {
+                return textStream;
+            }
+        }
+    }
     
     
     /**

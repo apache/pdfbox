@@ -16,10 +16,14 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import java.io.IOException;
+
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.pdmodel.common.PDTextStream;
 
 /**
  * A text field is a box or space for text fill-in data typically entered from a keyboard.
@@ -138,17 +142,18 @@ public final class PDTextField extends PDVariableText
      * getValue gets the value of the "V" entry.
      * 
      * @return The value of this entry.
+     * @throws IOException 
      * 
      */
     @Override
-    public String getValue()
+    public String getValue() throws IOException
     {
-        COSBase fieldValue = getInheritableAttribute(getDictionary(), COSName.V);
-        if (fieldValue instanceof COSString)
+        PDTextStream textStream = getAsTextStream(getInheritableAttribute(getDictionary(), COSName.V));
+
+        if (textStream != null) 
         {
-            return ((COSString) fieldValue).getString();
+            return textStream.getAsString();
         }
-        // TODO handle PDTextStream, IOException in case of wrong type
         return null;
     }
 }
