@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
@@ -81,14 +82,34 @@ public final class PDTextField extends PDVariableText
         if (value != null)
         {
             COSString fieldValue = new COSString(value);
-            setInheritableAttribute(getDictionary(), COSName.DV, fieldValue);
+            setInheritableAttribute(COSName.DV, fieldValue);
             // TODO stream instead of string
         }  
         else
         {
-            removeInheritableAttribute(getDictionary(),COSName.DV);
+            removeInheritableAttribute(COSName.DV);
         }
     }
+    
+    /**
+     * getValue gets the value of the "V" entry.
+     * 
+     * @return The value of this entry.
+     * 
+     */
+    @Override
+    public String getDefaultValue()
+    {
+        COSBase fieldValue = getInheritableAttribute(getDictionary(), COSName.DV);
+        if (fieldValue instanceof COSString)
+        {
+            return ((COSString) fieldValue).getString();
+        }
+        // TODO handle PDTextStream, IOException in case of wrong type
+        return null;
+    }    
+    
+    
     
     /**
      * setValue sets the entry "V" to the given value.
@@ -96,23 +117,20 @@ public final class PDTextField extends PDVariableText
      * @param value the value
      * 
      */
-    public void setValue(Object value)
+    public void setValue(String value)
     {
         if (value != null)
         {
-            if (value instanceof String)
-            {
-                String stringValue = (String)value;
-                COSString fieldValue = new COSString(stringValue);
-                setInheritableAttribute(getDictionary(), COSName.V, fieldValue);
-            }
+            COSString fieldValue = new COSString(value);
+            setInheritableAttribute(COSName.V, fieldValue);
             // TODO stream instead of string
         }  
         else
         {
-            removeInheritableAttribute(getDictionary(),COSName.DV);
+            removeInheritableAttribute(COSName.DV);
         }
         
+        // TODO move appearance generation out of fields PD model
         updateFieldAppearances();
     }
 
@@ -123,8 +141,14 @@ public final class PDTextField extends PDVariableText
      * 
      */
     @Override
-    public Object getValue()
+    public String getValue()
     {
-        return getInheritableAttribute(getDictionary(), COSName.V);
+        COSBase fieldValue = getInheritableAttribute(getDictionary(), COSName.V);
+        if (fieldValue instanceof COSString)
+        {
+            return ((COSString) fieldValue).getString();
+        }
+        // TODO handle PDTextStream, IOException in case of wrong type
+        return null;
     }
 }
