@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import javax.imageio.stream.MemoryCacheImageInputStream;
 import javax.imageio.stream.MemoryCacheImageOutputStream;
 import org.apache.commons.logging.Log;
@@ -99,7 +100,7 @@ public class LZWFilter extends Filter
 
     private void doLZWDecode(InputStream encoded, OutputStream decoded, int earlyChange) throws IOException
     {
-        ArrayList<byte[]> codeTable = null;
+        List<byte[]> codeTable = null;
         int chunk = 9;
         MemoryCacheImageInputStream in = new MemoryCacheImageInputStream(encoded);
         long nextCommand = 0;
@@ -158,7 +159,7 @@ public class LZWFilter extends Filter
     protected final void encode(InputStream rawData, OutputStream encoded, COSDictionary parameters)
             throws IOException
     {
-        ArrayList<byte[]> codeTable = createCodeTable();
+        List<byte[]> codeTable = createCodeTable();
         int chunk = 9;
 
         byte[] inputPattern = null;
@@ -236,7 +237,7 @@ public class LZWFilter extends Filter
      * @return The index of the longest matching pattern or -1 if nothing is
      * found.
      */
-    private int findPatternCode(ArrayList<byte[]> codeTable, byte[] pattern)
+    private int findPatternCode(List<byte[]> codeTable, byte[] pattern)
     {
         int foundCode = -1;
         int foundLen = 0;
@@ -271,9 +272,9 @@ public class LZWFilter extends Filter
      * Init the code table with 1 byte entries and the EOD and CLEAR_TABLE
      * markers.
      */
-    private ArrayList<byte[]> createCodeTable()
+    private List<byte[]> createCodeTable()
     {
-        ArrayList<byte[]> codeTable = new ArrayList<byte[]>(4096);
+        List<byte[]> codeTable = new ArrayList<byte[]>(4096);
         for (int i = 0; i < 256; ++i)
         {
             codeTable.add(new byte[]
