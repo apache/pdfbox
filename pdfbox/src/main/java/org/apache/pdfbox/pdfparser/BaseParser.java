@@ -762,7 +762,6 @@ public abstract class BaseParser
     protected COSString parseCOSString() throws IOException
     {
         char nextChar = (char)pdfSource.read();
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
         char openBrace;
         char closeBrace;
         if( nextChar == '(' )
@@ -779,6 +778,8 @@ public abstract class BaseParser
             throw new IOException( "parseCOSString string should start with '(' or '<' and not '" +
                     nextChar + "' " + pdfSource );
         }
+        
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         //This is the number of braces read
         //
