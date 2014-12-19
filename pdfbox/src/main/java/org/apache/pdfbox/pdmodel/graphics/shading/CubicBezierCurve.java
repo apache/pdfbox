@@ -25,8 +25,7 @@ import java.awt.geom.Point2D;
  */
 class CubicBezierCurve
 {
-    protected final Point2D[] controlPoints;
-
+    private final Point2D[] controlPoints;
     private final int level;
     private final Point2D[] curve;
 
