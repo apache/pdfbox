@@ -384,14 +384,7 @@ public final class PageDrawer extends PDFGraphicsStreamEngine
         else if (font instanceof PDType1CFont)
         {
             PDType1CFont type1CFont = (PDType1CFont)font;
-            if (type1CFont.getCFFType1Font() != null)
-            {
-                glyph2D = new Type1Glyph2D(type1CFont);
-            }
-            else
-            {
-                glyph2D = new Type1Glyph2D(type1CFont); // fallback to T1-equivalent
-            }
+            glyph2D = new Type1Glyph2D(type1CFont);
         }
         else if (font instanceof PDType0Font)
         {
