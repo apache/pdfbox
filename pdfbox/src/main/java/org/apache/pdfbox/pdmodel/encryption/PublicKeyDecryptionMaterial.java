@@ -143,11 +143,11 @@ public class PublicKeyDecryptionMaterial extends DecryptionMaterial
         }
         catch(UnrecoverableKeyException ex)
         {
-            throw new KeyStoreException("the private key is not recoverable");
+            throw new KeyStoreException("the private key is not recoverable", ex);
         }
         catch(NoSuchAlgorithmException ex)
         {
-            throw new KeyStoreException("the algorithm necessary to recover the key is not available");
+            throw new KeyStoreException("the algorithm necessary to recover the key is not available", ex);
         }
     }
 }
