@@ -17,6 +17,7 @@ package org.apache.pdfbox.pdmodel.graphics.shading;
 
 import java.awt.Point;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * This class describes a rasterized line. This was done as part of GSoC2014,
@@ -31,7 +32,7 @@ class Line
     private final float[] color0;
     private final float[] color1;
 
-    protected final HashSet<Point> linePoints; // all the points in this rasterized line
+    protected final Set<Point> linePoints; // all the points in this rasterized line
 
     /**
      * Constructor of class Line.
@@ -62,9 +63,9 @@ class Line
      * @param y1 coordinate
      * @return all the points on the rasterized line from (x0, y0) to (x1, y1)
      */
-    private HashSet<Point> calcLine(int x0, int y0, int x1, int y1)
+    private Set<Point> calcLine(int x0, int y0, int x1, int y1)
     {
-        HashSet<Point> points = new HashSet<Point>(3);
+        Set<Point> points = new HashSet<Point>(3);
         int dx = (int) Math.round(Math.abs(x1 - x0));
         int dy = (int) Math.round(Math.abs(y1 - y0));
         int sx = x0 < x1 ? 1 : -1;

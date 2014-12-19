@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.graphics.shading;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * This is an assistant class for accomplishing type 4, 5, 6 and 7 shading. It
@@ -99,7 +100,7 @@ class ShadedTriangle
      */
     private int calcDeg(Point2D[] p)
     {
-        HashSet<Point> set = new HashSet<Point>();
+        Set<Point> set = new HashSet<Point>();
         for (Point2D itp : p)
         {
             Point np = new Point((int) Math.round(itp.getX() * 1000), (int) Math.round(itp.getY() * 1000));
