@@ -19,6 +19,7 @@ package org.apache.pdfbox.io;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An implementation of the RandomAccess interface to store a pdf in memory.
@@ -30,7 +31,7 @@ public class RandomAccessBuffer implements RandomAccess, Closeable, Cloneable
     // chunk size is 16kb
     private static final int BUFFER_SIZE = 16384;
     // list containing all chunks
-    private ArrayList<byte[]> bufferList = null;
+    private List<byte[]> bufferList = null;
     // current chunk
     private byte[] currentBuffer;
     // current pointer to the whole buffer
