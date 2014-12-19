@@ -145,8 +145,7 @@ public abstract class DescendantFontValidator<T extends FontContainer> extends S
 
                 // todo: check the map's content? (won't pdfbox do this?)
                 InputStream is = stream.getUnfilteredStream();
-                ByteArrayOutputStream os = new ByteArrayOutputStream();
-                byte[] map = os.toByteArray();
+                is.close();
             }
             catch (IOException e)
             {
