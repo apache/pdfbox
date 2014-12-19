@@ -168,7 +168,7 @@ public class COSDocument extends COSBase implements Closeable
                 {
                     COSDictionary dic = (COSDictionary)realObject;
                     COSBase typeItem = dic.getItem(COSName.TYPE);
-                    if (typeItem != null && typeItem instanceof COSName)
+                    if (typeItem instanceof COSName)
                     {
                         COSName objectType = (COSName) typeItem;
                         if (objectType.equals(type))
@@ -223,7 +223,7 @@ public class COSDocument extends COSBase implements Closeable
                 {
                     COSDictionary dic = (COSDictionary)realObject;
                     COSBase typeItem = dic.getItem(COSName.TYPE);
-                    if (typeItem != null && typeItem instanceof COSName)
+                    if (typeItem instanceof COSName)
                     {
                         COSName objectType = (COSName) typeItem;
                         if (objectType.equals(type))
