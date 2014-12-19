@@ -890,7 +890,7 @@ public abstract class BaseParser
                         }
                         catch( NumberFormatException e )
                         {
-                            throw new IOException( "Error: Expected octal character, actual='" + octal + "'" );
+                            throw new IOException( "Error: Expected octal character, actual='" + octal + "'", e );
                         }
                         out.write(character);
                         break;
@@ -1106,7 +1106,7 @@ public abstract class BaseParser
                     }
                     catch (NumberFormatException e)
                     {
-                        throw new IOException("Error: expected hex number, actual='" + hex + "'");
+                        throw new IOException("Error: expected hex number, actual='" + hex + "'", e);
                     }
                     c = pdfSource.read();
                 }
@@ -1615,7 +1615,7 @@ public abstract class BaseParser
         {
             pdfSource.unread(longBuffer.toString().getBytes("ISO-8859-1"));
             throw new IOException( "Error: Expected a long type at offset "
-                    + pdfSource.getOffset() + ", instead got '" + longBuffer + "'");
+                    + pdfSource.getOffset() + ", instead got '" + longBuffer + "'", e);
         }
         return retval;
     }
