@@ -171,11 +171,9 @@ public class PreflightContentStream extends PreflightStreamEngine
      * 
      * @param operator
      * @param arguments
-     * @throws ContentStreamException
      * @throws IOException
      */
-    protected void checkShowTextOperators(Operator operator, List<?> arguments) throws ContentStreamException,
-            IOException
+    protected void checkShowTextOperators(Operator operator, List<?> arguments) throws IOException
     {
         String op = operator.getName();
         if ("Tj".equals(op) || "'".equals(op) || "\"".equals(op))
@@ -197,11 +195,9 @@ public class PreflightContentStream extends PreflightStreamEngine
      * 
      * @param operator
      * @param arguments
-     * @throws ContentStreamException
      * @throws IOException
      */
-    private void validateStringDefinition(Operator operator, List<?> arguments) throws ContentStreamException,
-            IOException
+    private void validateStringDefinition(Operator operator, List<?> arguments) throws IOException
     {
         /*
          * For a Text operator, the arguments list should contain only one COSString object
@@ -258,10 +254,9 @@ public class PreflightContentStream extends PreflightStreamEngine
      * 
      * @param operator
      * @param arguments
-     * @throws ContentStreamException
      * @throws IOException
      */
-    private void validateStringArray(Operator operator, List<?> arguments) throws ContentStreamException, IOException
+    private void validateStringArray(Operator operator, List<?> arguments) throws IOException
     {
         for (Object object : arguments)
         {
