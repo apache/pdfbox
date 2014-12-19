@@ -1300,15 +1300,8 @@ public class COSWriter implements ICOSVisitor, Closeable
             if (document.getEncryption() != null)
             {
                 SecurityHandler securityHandler = document.getEncryption().getSecurityHandler();
-                if(securityHandler != null)
-                {
-                    securityHandler.prepareDocumentForEncryption(document);
-                    willEncrypt = true;
-                }
-                else
-                {
-                    willEncrypt = false;
-                }
+                securityHandler.prepareDocumentForEncryption(document);
+                willEncrypt = true;
             }
             else
             {
