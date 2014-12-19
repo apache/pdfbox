@@ -181,7 +181,7 @@ public class COSWriter implements ICOSVisitor, Closeable
 
     // the list of x ref entries to be made so far
     private List<COSWriterXRefEntry> xRefEntries = new ArrayList<COSWriterXRefEntry>();
-    private HashSet<COSBase> objectsToWriteSet = new HashSet<COSBase>();
+    private Set<COSBase> objectsToWriteSet = new HashSet<COSBase>();
 
     //A list of objects to write.
     private LinkedList<COSBase> objectsToWrite = new LinkedList<COSBase>();

@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
@@ -80,7 +81,7 @@ public class PDFParser extends BaseParser
     /**
      * COSStream objects to check for length correctness.
      */
-    private final HashSet<COSStream> streamLengthCheckSet = new HashSet<COSStream>();
+    private final Set<COSStream> streamLengthCheckSet = new HashSet<COSStream>();
 
     /** Collects all Xref/trailer objects and resolves them into single
      *  object using startxref reference. 
