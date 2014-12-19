@@ -20,7 +20,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.image.ColorModel;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.common.PDRange;
 import org.apache.pdfbox.util.Matrix;
@@ -53,7 +53,7 @@ class Type6ShadingContext extends PatchMeshesShadingContext
     }
 
     // get the patch list which forms the type 6 shading image from data stream
-    private ArrayList<Patch> getCoonsPatchList(AffineTransform xform, Matrix ctm) throws IOException
+    private List<Patch> getCoonsPatchList(AffineTransform xform, Matrix ctm) throws IOException
     {
         PDShadingType6 coonsShadingType = (PDShadingType6) patchMeshesShadingType;
         COSDictionary cosDictionary = coonsShadingType.getCOSDictionary();

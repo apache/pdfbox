@@ -99,10 +99,10 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext imp
      * @return the obtained patch list
      * @throws IOException when something went wrong
      */
-    protected ArrayList<Patch> getPatchList(AffineTransform xform, Matrix ctm, COSDictionary cosDictionary,
+    protected List<Patch> getPatchList(AffineTransform xform, Matrix ctm, COSDictionary cosDictionary,
             PDRange rangeX, PDRange rangeY, PDRange[] colRange, int numP) throws IOException
     {
-        ArrayList<Patch> list = new ArrayList<Patch>();
+        List<Patch> list = new ArrayList<Patch>();
         long maxSrcCoord = (long) Math.pow(2, bitsPerCoordinate) - 1;
         long maxSrcColor = (long) Math.pow(2, bitsPerColorComponent) - 1;
         COSStream cosStream = (COSStream) cosDictionary;
