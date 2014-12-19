@@ -309,6 +309,7 @@ public class PDRectangle implements COSObjectable
      *
      * @return The cos object that matches this Java object.
      */
+    @Override
     public COSBase getCOSObject()
     {
         return rectArray;
@@ -338,6 +339,7 @@ public class PDRectangle implements COSObjectable
      *
      * @return This object as a string.
      */
+    @Override
     public String toString()
     {
         return "[" + getLowerLeftX() + "," + getLowerLeftY() + "," +

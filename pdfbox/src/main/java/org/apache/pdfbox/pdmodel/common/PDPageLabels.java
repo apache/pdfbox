@@ -170,6 +170,7 @@ public class PDPageLabels implements COSObjectable
     /**
      * {@inheritDoc} 
      */
+    @Override
     public COSBase getCOSObject()
     {
         COSDictionary dict = new COSDictionary();
@@ -203,6 +204,7 @@ public class PDPageLabels implements COSObjectable
             new HashMap<String, Integer>(doc.getNumberOfPages());
         computeLabels(new LabelHandler()
         {
+            @Override
             public void newLabel(int pageIndex, String label)
             {
                 labelMap.put(label, pageIndex);
@@ -223,6 +225,7 @@ public class PDPageLabels implements COSObjectable
         final String[] map = new String[doc.getNumberOfPages()];
         computeLabels(new LabelHandler()
         {
+            @Override
             public void newLabel(int pageIndex, String label)
             {
                 if(pageIndex < doc.getNumberOfPages())
@@ -295,11 +298,13 @@ public class PDPageLabels implements COSObjectable
             this.currentPage = 0;
         }
 
+        @Override
         public boolean hasNext()
         {
             return currentPage < numPages;
         }
 
+        @Override
         public String next()
         {
             if (!hasNext())
@@ -405,6 +410,7 @@ public class PDPageLabels implements COSObjectable
             return buf.toString();
         }
 
+        @Override
         public void remove()
         {
             // This is a generator, no removing allowed.
