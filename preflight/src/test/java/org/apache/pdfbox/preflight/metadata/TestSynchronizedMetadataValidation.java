@@ -428,7 +428,7 @@ public class TestSynchronizedMetadataValidation
 
     }
     /**
-     * Check if SchemaAccessException Generator is ok
+     * Check if schemaAccessException Generator is ok
      * 
      * @throws Exception
      */
@@ -436,7 +436,7 @@ public class TestSynchronizedMetadataValidation
     public void checkSchemaAccessException() throws Exception
     {
         Throwable cause = new Throwable();
-        Assert.assertSame(cause, sync.SchemaAccessException("test", cause).getCause());
+        Assert.assertSame(cause, sync.schemaAccessException("test", cause).getCause());
     }
 
     /**

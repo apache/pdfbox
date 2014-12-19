@@ -525,7 +525,7 @@ public class SynchronizedMetaDataValidation
      *            the raised IOException
      * @return the generated exception
      */
-    protected ValidationException SchemaAccessException(String target, Throwable cause)
+    protected ValidationException schemaAccessException(String target, Throwable cause)
     {
         StringBuilder sb = new StringBuilder(80);
         sb.append("Cannot access to the ").append(target).append(" schema");
