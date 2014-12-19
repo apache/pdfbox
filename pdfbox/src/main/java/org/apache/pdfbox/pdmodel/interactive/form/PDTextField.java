@@ -80,12 +80,8 @@ public final class PDTextField extends PDVariableText
     {
         if (value != null)
         {
-            if (value instanceof String)
-            {
-                String stringValue = (String)value;
-                COSString fieldValue = new COSString(stringValue);
-                setInheritableAttribute(getDictionary(), COSName.DV, fieldValue);
-            }
+            COSString fieldValue = new COSString(value);
+            setInheritableAttribute(getDictionary(), COSName.DV, fieldValue);
             // TODO stream instead of string
         }  
         else
