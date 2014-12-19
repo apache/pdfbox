@@ -376,7 +376,7 @@ public class PDFParser extends BaseParser
         }
 
         // nothing found
-        if ((header.indexOf( PDF_HEADER ) == -1) && (header.indexOf( FDF_HEADER ) == -1))
+        if (!header.contains(PDF_HEADER) && !header.contains(FDF_HEADER))
         {
             throw new IOException( "Error: Header doesn't contain versioninfo" );
         }
@@ -457,7 +457,7 @@ public class PDFParser extends BaseParser
         }
         catch ( NumberFormatException e )
         {
-            throw new IOException( "Error getting pdf version:" + e );
+            throw new IOException( "Error getting pdf version: " + e.getMessage(), e );
         }
     }
 
@@ -851,7 +851,7 @@ public class PDFParser extends BaseParser
                     }
                     catch(NumberFormatException e)
                     {
-                        throw new IOException(e.getMessage());
+                        throw new IOException(e);
                     }
                 }
                 else if(!splitString[2].equals("f"))
