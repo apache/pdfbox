@@ -263,49 +263,42 @@ public final class PDAppearanceString
                 }
                 else
                 {
-                    if (tokens != null)
+                    if (daTokens != null)
                     {
-                        if (daTokens != null)
-                        {
-                            int bmcIndex = tokens.indexOf(Operator.getOperator("BMC"));
-                            int emcIndex = tokens.indexOf(Operator.getOperator("EMC"));
-                            if (bmcIndex != -1 && emcIndex != -1 && emcIndex == bmcIndex + 1)
-                            {
-                                // if the EMC immediately follows the BMC index then should
-                                // insert the daTokens inbetween the two markers.
-                                tokens.addAll(emcIndex, daTokens);
-                            }
-                        }
-                        ByteArrayOutputStream output = new ByteArrayOutputStream();
-                        ContentStreamWriter writer = new ContentStreamWriter(output);
-                        float fontSize = calculateFontSize(pdFont,
-                                appearanceStream.getBBox(), tokens, daTokens);
-                        int setFontIndex = tokens.indexOf(Operator.getOperator("Tf"));
-                        tokens.set(setFontIndex - 1, new COSFloat(fontSize));
-
                         int bmcIndex = tokens.indexOf(Operator.getOperator("BMC"));
                         int emcIndex = tokens.indexOf(Operator.getOperator("EMC"));
+                        if (bmcIndex != -1 && emcIndex != -1 && emcIndex == bmcIndex + 1)
+                        {
+                            // if the EMC immediately follows the BMC index then should
+                            // insert the daTokens inbetween the two markers.
+                            tokens.addAll(emcIndex, daTokens);
+                        }
+                    }
+                    ByteArrayOutputStream output = new ByteArrayOutputStream();
+                    ContentStreamWriter writer = new ContentStreamWriter(output);
+                    float fontSize = calculateFontSize(pdFont,
+                            appearanceStream.getBBox(), tokens, daTokens);
+                    int setFontIndex = tokens.indexOf(Operator.getOperator("Tf"));
+                    tokens.set(setFontIndex - 1, new COSFloat(fontSize));
 
-                        if (bmcIndex != -1)
-                        {
-                            writer.writeTokens(tokens, 0, bmcIndex + 1);
-                        }
-                        else
-                        {
-                            writer.writeTokens(tokens);
-                        }
-                        output.write("\n".getBytes("ISO-8859-1"));
-                        insertGeneratedAppearance(widget, output, pdFont, tokens, appearanceStream);
-                        if (emcIndex != -1)
-                        {
-                            writer.writeTokens(tokens, emcIndex, tokens.size());
-                        }
-                        writeToStream(output.toByteArray(), appearanceStream);
+                    int bmcIndex = tokens.indexOf(Operator.getOperator("BMC"));
+                    int emcIndex = tokens.indexOf(Operator.getOperator("EMC"));
+
+                    if (bmcIndex != -1)
+                    {
+                        writer.writeTokens(tokens, 0, bmcIndex + 1);
                     }
                     else
                     {
-                        // hmm?
+                        writer.writeTokens(tokens);
                     }
+                    output.write("\n".getBytes("ISO-8859-1"));
+                    insertGeneratedAppearance(widget, output, pdFont, tokens, appearanceStream);
+                    if (emcIndex != -1)
+                    {
+                        writer.writeTokens(tokens, emcIndex, tokens.size());
+                    }
+                    writeToStream(output.toByteArray(), appearanceStream);
                 }
             }
         }
@@ -572,7 +565,7 @@ public final class PDAppearanceString
             List<Object> tokens) throws IOException
     {
         float lineWidth = getLineWidth(tokens);
-        float verticalOffset = 0.0f;
+        float verticalOffset;
         if (parent.isMultiline())
         {
             int rows = (int) (getAvailableHeight(boundingBox, lineWidth) / ((int) fontSize));
