@@ -44,7 +44,7 @@ public class PDNumberTreeNode implements COSObjectable
 {
     private static final Log LOG = LogFactory.getLog( PDNumberTreeNode.class );
 
-    private COSDictionary node;
+    private final COSDictionary node;
     private Class<? extends COSObjectable> valueType = null;
 
     /**
@@ -75,6 +75,7 @@ public class PDNumberTreeNode implements COSObjectable
      *
      * @return The cos object that matches this Java object.
      */
+    @Override
     public COSBase getCOSObject()
     {
         return node;
@@ -223,8 +224,7 @@ public class PDNumberTreeNode implements COSObjectable
         }
         catch( Throwable t )
         {
-            throw new IOException( "Error while trying to create value in number tree:" + t.getMessage());
-
+            throw new IOException( "Error while trying to create value in number tree:" + t.getMessage(), t);
         }
         return retval;
     }
