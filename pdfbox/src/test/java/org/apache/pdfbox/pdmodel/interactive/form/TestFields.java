@@ -158,7 +158,6 @@ public class TestFields extends TestCase
             
             // get the TextField with a DV entry
             field = form.getField("TextField-DefaultValue");
-            System.out.println(field.getClass().getName());
             assertNotNull(field);
             assertEquals(field.getDefaultValue(),"DefaultValue");
             assertEquals(field.getDefaultValue(),
@@ -167,14 +166,13 @@ public class TestFields extends TestCase
 
             // get a rich text field with a  DV entry
             field = form.getField("RichTextField-DefaultValue");
-            System.out.println(field.getClass().getName());
             assertNotNull(field);
             assertEquals(field.getDefaultValue(),"DefaultValue");
             assertEquals(field.getDefaultValue(),
                     ((COSString)field.getDictionary().getDictionaryObject(COSName.DV)).getString());
             assertEquals(field.getValue(), "DefaultValue");
             assertEquals(((PDVariableText)field).getDefaultAppearance().getString(), "/Helv 12 Tf 0 g");
-            assertEquals(((PDVariableText)field).getDefaultStyleString().getString(),
+            assertEquals(((PDVariableText)field).getDefaultStyleString(),
                     "font: Helvetica,sans-serif 12.0pt; text-align:left; color:#000000 ");
             // do not test for the full content as this is a rather long xml string
             assertEquals(((PDVariableText)field).getRichTextValue().length(),338);
