@@ -21,7 +21,6 @@ import java.io.IOException;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.common.PDTextStream;
 
@@ -76,10 +75,11 @@ public final class PDTextField extends PDVariableText
     }
 
     /**
-     * setValue sets the default value for the field.
+     * Sets the default value for the field.
      * 
+     * The value is stored in the field dictionaries "DV" entry.
+     *
      * @param value the default value
-     * 
      */
     public void setDefaultValue(String value)
     {
@@ -96,10 +96,11 @@ public final class PDTextField extends PDVariableText
     }
     
     /**
-     * getValue gets the value of the "V" entry.
+     * Get the fields default value.
+     * 
+     * The value is stored in the field dictionaries "DV" entry.
      * 
      * @return The value of this entry.
-     * 
      */
     @Override
     public String getDefaultValue()
@@ -116,10 +117,11 @@ public final class PDTextField extends PDVariableText
     
     
     /**
-     * setValue sets the entry "V" to the given value.
+     * Set the fields value.
+     * 
+     * The value is stored in the field dictionaries "V" entry.
      * 
      * @param value the value
-     * 
      */
     public void setValue(String value)
     {
@@ -131,7 +133,7 @@ public final class PDTextField extends PDVariableText
         }  
         else
         {
-            removeInheritableAttribute(COSName.DV);
+            removeInheritableAttribute(COSName.V);
         }
         
         // TODO move appearance generation out of fields PD model
@@ -139,11 +141,12 @@ public final class PDTextField extends PDVariableText
     }
 
     /**
-     * getValue gets the value of the "V" entry.
+     * Get the fields value.
+     * 
+     * The value is stored in the field dictionaries "V" entry.
      * 
      * @return The value of this entry.
-     * @throws IOException 
-     * 
+     * @throws IOException if the field dictionary entry is not a text type
      */
     @Override
     public String getValue() throws IOException
