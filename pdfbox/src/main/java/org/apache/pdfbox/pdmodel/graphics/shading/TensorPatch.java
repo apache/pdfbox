@@ -79,15 +79,15 @@ class TensorPatch extends Patch
             ctlC2[j] = controlPoints[j][3];
         }
         // if two opposite edges are both lines, there is a possibility to reduce the dividing level
-        if (isEdgeALine(ctlC1) & isEdgeALine(ctlC2))
+        if (isEdgeALine(ctlC1) && isEdgeALine(ctlC2))
         {
             /*
              if any of the 4 inner control points is out of the patch formed by the 4 edges, 
              keep the high dividing level, 
              otherwise, determine the dividing level by the lengths of edges
              */
-            if (isOnSameSideCC(controlPoints[1][1]) | isOnSameSideCC(controlPoints[1][2])
-                    | isOnSameSideCC(controlPoints[2][1]) | isOnSameSideCC(controlPoints[2][2]))
+            if (isOnSameSideCC(controlPoints[1][1]) || isOnSameSideCC(controlPoints[1][2])
+                    || isOnSameSideCC(controlPoints[2][1]) || isOnSameSideCC(controlPoints[2][2]))
             {
                 // keep the high dividing level
             }
@@ -97,6 +97,7 @@ class TensorPatch extends Patch
                 double lc1 = getLen(ctlC1[0], ctlC1[3]), lc2 = getLen(ctlC2[0], ctlC2[3]);
                 if (lc1 > 800 || lc2 > 800)
                 {
+                    // keeps init value 4
                 }
                 else if (lc1 > 400 || lc2 > 400)
                 {
@@ -114,10 +115,10 @@ class TensorPatch extends Patch
         }
 
         // the other two opposite edges
-        if (isEdgeALine(controlPoints[0]) & isEdgeALine(controlPoints[3]))
+        if (isEdgeALine(controlPoints[0]) && isEdgeALine(controlPoints[3]))
         {
-            if (isOnSameSideDD(controlPoints[1][1]) | isOnSameSideDD(controlPoints[1][2])
-                    | isOnSameSideDD(controlPoints[2][1]) | isOnSameSideDD(controlPoints[2][2]))
+            if (isOnSameSideDD(controlPoints[1][1]) || isOnSameSideDD(controlPoints[1][2])
+                    || isOnSameSideDD(controlPoints[2][1]) || isOnSameSideDD(controlPoints[2][2]))
             {
                 // keep the high dividing level
             }
@@ -127,6 +128,7 @@ class TensorPatch extends Patch
                 double ld2 = getLen(controlPoints[3][0], controlPoints[3][3]);
                 if (ld1 > 800 || ld2 > 800)
                 {
+                    // keeps init value 4
                 }
                 else if (ld1 > 400 || ld2 > 400)
                 {
