@@ -88,18 +88,21 @@ public class Parser
     {
 
         /** {@inheritDoc} */
+        @Override
         public void comment(CharSequence text)
         {
             //nop
         }
 
         /** {@inheritDoc} */
+        @Override
         public void newLine(CharSequence text)
         {
             //nop
         }
 
         /** {@inheritDoc} */
+        @Override
         public void whitespace(CharSequence text)
         {
             //nop
@@ -121,11 +124,11 @@ public class Parser
         private static final char LF = '\n'; //LINE FEED
         private static final char SPACE = '\u0020'; //SPACE
 
-        private CharSequence input;
+        private final CharSequence input;
         private int index;
-        private SyntaxHandler handler;
+        private final SyntaxHandler handler;
         private State state = State.WHITESPACE;
-        private StringBuilder buffer = new StringBuilder();
+        private final StringBuilder buffer = new StringBuilder();
 
         private Tokenizer(CharSequence text, SyntaxHandler syntaxHandler)
         {
@@ -220,13 +223,10 @@ public class Parser
             assert state == State.NEWLINE;
             char ch = currentChar();
             buffer.append(ch);
-            if (ch == CR)
+            if (ch == CR && peek() == LF)
             {
-                if (peek() == LF)
-                {
-                    //CRLF is treated as one newline
-                    buffer.append(nextChar());
-                }
+                //CRLF is treated as one newline
+                buffer.append(nextChar());
             }
             handler.newLine(buffer);
             nextChar();
