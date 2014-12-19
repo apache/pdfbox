@@ -128,27 +128,6 @@ class Type4ShadingContext extends GouraudShadingContext
                         flag = (byte) (mciis.readBits(bitsPerFlag) & 3);
                         break;
                     case 1:
-                        lastIndex = list.size() - 1;
-                        if (lastIndex < 0)
-                        {
-                            LOG.error("broken data stream: " + list.size());
-                        }
-                        else
-                        {
-                            ShadedTriangle preTri = list.get(lastIndex);
-                            p2 = readVertex(mciis, maxSrcCoord, maxSrcColor, rangeX, rangeY, colRange, ctm, xform);
-                            ps = new Point2D[]
-                            {
-                                preTri.corner[1], preTri.corner[2], p2.point
-                            };
-                            cs = new float[][]
-                            {
-                                preTri.color[1], preTri.color[2], p2.color
-                            };
-                            list.add(new ShadedTriangle(ps, cs));
-                            flag = (byte) (mciis.readBits(bitsPerFlag) & 3);
-                        }
-                        break;
                     case 2:
                         lastIndex = list.size() - 1;
                         if (lastIndex < 0)
@@ -161,11 +140,15 @@ class Type4ShadingContext extends GouraudShadingContext
                             p2 = readVertex(mciis, maxSrcCoord, maxSrcColor, rangeX, rangeY, colRange, ctm, xform);
                             ps = new Point2D[]
                             {
-                                preTri.corner[0], preTri.corner[2], p2.point
+                                flag == 1 ? preTri.corner[1] : preTri.corner[0],
+                                preTri.corner[2],
+                                p2.point
                             };
                             cs = new float[][]
                             {
-                                preTri.color[0], preTri.color[2], p2.color
+                                flag == 1 ? preTri.color[1] : preTri.color[0],
+                                preTri.color[2],
+                                p2.color
                             };
                             list.add(new ShadedTriangle(ps, cs));
                             flag = (byte) (mciis.readBits(bitsPerFlag) & 3);
