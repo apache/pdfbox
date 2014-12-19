@@ -334,7 +334,7 @@ public class VisualSignatureParser extends BaseParser
                             if(!thirdPossibleEndObj.equals("endobj")) 
                             {
                                 throw new IOException("expected='endobj' firstReadAttempt='" + endObjectKey + "' "
-                                        + "secondReadAttempt='" + secondEndObjectKey + "' " + pdfSource);
+                                        + "secondReadAttempt='" + secondEndObjectKey + "' " + pdfSource, e);
                             }
                         }
                     }
