@@ -142,15 +142,12 @@ public class XMPSchema extends AbstractStructuredType
      */
     public void setAbout(Attribute about) throws BadFieldValueException
     {
-        if (XmpConstants.RDF_NAMESPACE.equals(about.getNamespace()))
+        if (XmpConstants.RDF_NAMESPACE.equals(about.getNamespace())
+                && XmpConstants.ABOUT_NAME.equals(about.getName()))
         {
-            if (XmpConstants.ABOUT_NAME.equals(about.getName()))
-            {
-                setAttribute(about);
-                return;
-            }
+            setAttribute(about);
+            return;
         }
-        // else
         throw new BadFieldValueException("Attribute 'about' must be named 'rdf:about' or 'about'");
     }
 
@@ -451,7 +448,7 @@ public class XMPSchema extends AbstractStructuredType
      * 
      * @param simpleName
      *            the local name of property wanted
-     * @return The value of the property as a boolean.
+     * @return The value of the property as a boolean or null if the property does not exist.
      */
     public Boolean getBooleanPropertyValueAsSimple(String simpleName)
     {
@@ -464,7 +461,7 @@ public class XMPSchema extends AbstractStructuredType
      * @param qualifiedName
      *            The fully qualified property name for the boolean.
      * 
-     * @return The value of the property as a boolean. Return null if property not exist
+     * @return The value of the property as a boolean or null if the property does not exist.
      */
     public Boolean getBooleanPropertyValue(String qualifiedName)
     {
@@ -897,13 +894,9 @@ public class XMPSchema extends AbstractStructuredType
             while (it.hasNext())
             {
                 tmp = it.next();
-                if (tmp instanceof DateType)
+                if (tmp instanceof DateType && ((DateType) tmp).getValue().equals(date))
                 {
-                    if (((DateType) tmp).getValue().equals(date))
-                    {
-                        toDelete.add(tmp);
-
-                    }
+                    toDelete.add(tmp);
                 }
             }
             Iterator<AbstractField> eraseProperties = toDelete.iterator();
@@ -986,12 +979,9 @@ public class XMPSchema extends AbstractStructuredType
         AbstractField xdefault = null;
         boolean xdefaultFound = false;
         // If alternatives contains x-default in first value
-        if (it.hasNext())
+        if (it.hasNext() && it.next().getAttribute(XmpConstants.LANG_NAME).getValue().equals(XmpConstants.X_DEFAULT))
         {
-            if (it.next().getAttribute(XmpConstants.LANG_NAME).getValue().equals(XmpConstants.X_DEFAULT))
-            {
-                return;
-            }
+            return;
         }
         // Find the xdefault definition
         while (it.hasNext() && !xdefaultFound)
@@ -1126,12 +1116,9 @@ public class XMPSchema extends AbstractStructuredType
                 {
                     tmp = langsDef.next();
                     text = tmp.getAttribute(XmpConstants.LANG_NAME);
-                    if (text != null)
+                    if (text != null && text.getValue().equals(language))
                     {
-                        if (text.getValue().equals(language))
-                        {
-                            return ((TextType) tmp).getStringValue();
-                        }
+                        return ((TextType) tmp).getStringValue();
                     }
                 }
                 return null;
@@ -1239,31 +1226,28 @@ public class XMPSchema extends AbstractStructuredType
                     while (itActualEmbeddedProperties.hasNext())
                     {
                         tmpEmbeddedProperty = itActualEmbeddedProperties.next();
-                        if (tmpEmbeddedProperty instanceof ArrayProperty)
+                        if (tmpEmbeddedProperty instanceof ArrayProperty && 
+                                tmpEmbeddedProperty.getPropertyName().equals(analyzedPropQualifiedName))
                         {
-                            if (tmpEmbeddedProperty.getPropertyName().equals(analyzedPropQualifiedName))
+                            itNewValues = ((ArrayProperty) prop).getContainer().getAllProperties().iterator();
+                            // Merge a complex property
+                            while (itNewValues.hasNext())
                             {
-                                itNewValues = ((ArrayProperty) prop).getContainer().getAllProperties().iterator();
-                                // Merge a complex property
-                                while (itNewValues.hasNext())
+                                tmpNewValue = (TextType) itNewValues.next();
+                                itOldValues = ((ArrayProperty) tmpEmbeddedProperty).getContainer()
+                                        .getAllProperties().iterator();
+                                while (itOldValues.hasNext() && !alreadyPresent)
                                 {
-                                    tmpNewValue = (TextType) itNewValues.next();
-                                    itOldValues = ((ArrayProperty) tmpEmbeddedProperty).getContainer()
-                                            .getAllProperties().iterator();
-                                    while (itOldValues.hasNext() && !alreadyPresent)
+                                    tmpOldValue = (TextType) itOldValues.next();
+                                    if (tmpOldValue.getStringValue().equals(tmpNewValue.getStringValue()))
                                     {
-                                        tmpOldValue = (TextType) itOldValues.next();
-                                        if (tmpOldValue.getStringValue().equals(tmpNewValue.getStringValue()))
-                                        {
-                                            return;
-                                        }
-                                    }
-                                    if (!alreadyPresent)
-                                    {
-                                        ((ArrayProperty) tmpEmbeddedProperty).getContainer().addProperty(tmpNewValue);
+                                        return;
                                     }
                                 }
-
+                                if (!alreadyPresent)
+                                {
+                                    ((ArrayProperty) tmpEmbeddedProperty).getContainer().addProperty(tmpNewValue);
+                                }
                             }
                         }
                     }
