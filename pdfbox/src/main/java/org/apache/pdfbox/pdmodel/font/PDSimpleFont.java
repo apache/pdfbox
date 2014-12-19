@@ -109,14 +109,16 @@ public abstract class PDSimpleFont extends PDFont
             {
                 COSDictionary encodingDict = (COSDictionary)encoding;
                 Encoding builtIn = null;
-                if (!encodingDict.containsKey(COSName.BASE_ENCODING) && isSymbolic())
+                Boolean symbolic = getSymbolicFlag();
+                boolean isFlaggedAsSymbolic = symbolic != null && symbolic;
+                if (!encodingDict.containsKey(COSName.BASE_ENCODING) && isFlaggedAsSymbolic)
                 {
                     builtIn = readEncodingFromFont();
                 }
-                Boolean symbolic = getSymbolicFlag();
+
                 if (symbolic == null)
                 {
-                    symbolic = builtIn != null;
+                    symbolic = false;
                 }
 
                 if (builtIn == null && !encodingDict.containsKey(COSName.BASE_ENCODING) && symbolic)
