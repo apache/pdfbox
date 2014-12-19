@@ -54,7 +54,7 @@ public class PrintFields
         List<PDFieldTreeNode> fields = acroForm.getFields();
         Iterator<PDFieldTreeNode> fieldsIter = fields.iterator();
 
-        System.out.println(new Integer(fields.size()).toString() + " top-level fields were found on the form");
+        System.out.println(fields.size() + " top-level fields were found on the form");
 
         while (fieldsIter.hasNext())
         {
@@ -70,7 +70,7 @@ public class PrintFields
         if (kids != null)
         {
             Iterator<COSObjectable> kidsIter = kids.iterator();
-            if (field != null && !sParent.equals(field.getPartialName()))
+            if (!sParent.equals(field.getPartialName()))
             {
                 if (partialName != null)
                 {
@@ -90,7 +90,7 @@ public class PrintFields
         }
         else
         {
-            String fieldValue = null;
+            String fieldValue;
             if (field instanceof PDSignatureField)
             {
                 // PDSignatureField doesn't have a value
@@ -115,10 +115,10 @@ public class PrintFields
             StringBuilder outputString = new StringBuilder(sLevel + sParent);
             if (partialName != null)
             {
-                outputString.append( "." + partialName);
+                outputString.append(".").append(partialName);
             }
-            outputString.append(" = " + fieldValue);
-            outputString.append(",  type=" + field.getClass().getName());
+            outputString.append(" = ").append(fieldValue);
+            outputString.append(",  type=").append(field.getClass().getName());
             System.out.println(outputString);
         }
     }
