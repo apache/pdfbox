@@ -49,7 +49,7 @@ public class ConformingPDFParser extends BaseParser {
     List<XrefEntry> xrefEntries;
     private long currentOffset;
     private ConformingPDDocument doc = null;
-    private boolean throwNonConformingException = true;
+    private final boolean throwNonConformingException = true;
     private boolean recursivlyRead = true;
 
     /**
@@ -134,7 +134,6 @@ public class ConformingPDFParser extends BaseParser {
     }
 
     protected long parseTrailerInformation() throws IOException, NumberFormatException {
-        long xrefLocation = -1;
         consumeWhitespaceBackwards();
         String currentLine = readLineBackwards();
         if(throwNonConformingException) {
@@ -142,7 +141,7 @@ public class ConformingPDFParser extends BaseParser {
                 throw new AssertionError("Invalid EOF marker.\nExpected: %%EOF\nFound: "+currentLine);
         }
 
-        xrefLocation = readLongBackwards();
+        long xrefLocation = readLongBackwards();
         currentLine = readLineBackwards();
         if(throwNonConformingException) {
             if(!"startxref".equals(currentLine))
@@ -337,7 +336,7 @@ public class ConformingPDFParser extends BaseParser {
                 Long.parseLong(lastSection);
                 obj = COSNumber.get(lastSection);
             } catch(NumberFormatException e) {
-                throw new RuntimeException("Not yet implemented");
+                throw new RuntimeException("Not yet implemented", e);
             }
         }
 
