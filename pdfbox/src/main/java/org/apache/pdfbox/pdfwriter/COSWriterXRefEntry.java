@@ -39,16 +39,14 @@ public class COSWriterXRefEntry implements Comparable<COSWriterXRefEntry>
     /**
      * {@inheritDoc}
      */
+    @Override
     public int compareTo(COSWriterXRefEntry obj)
     {
-        if (obj instanceof COSWriterXRefEntry)
+        if (obj != null)
         {
             return (int)(getKey().getNumber() - obj.getKey().getNumber());
         }
-        else
-        {
-            return -1;
-        }
+        return -1;
     }
     
     /**
