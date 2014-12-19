@@ -77,7 +77,7 @@ public class CreateVisibleSignature implements SignatureInterface
      * @param pin is the pin for the keystore / private key
      */
     public CreateVisibleSignature(KeyStore keystore, char[] pin)
-            throws KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException
+            throws KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, IOException
     {
         // grabs the first alias from the keystore and get the private key. An
         // alternative method or constructor could be used for setting a specific
@@ -90,7 +90,7 @@ public class CreateVisibleSignature implements SignatureInterface
         }
         else
         {
-            throw new RuntimeException("Could not find alias");
+            throw new IOException("Could not find alias");
         }
         privKey = (PrivateKey) keystore.getKey(alias, pin);
         cert = keystore.getCertificateChain(alias);
@@ -109,7 +109,7 @@ public class CreateVisibleSignature implements SignatureInterface
         byte[] buffer = new byte[8 * 1024];
         if (document == null || !document.exists())
         {
-            throw new RuntimeException("Document for signing does not exist");
+            throw new IOException("Document for signing does not exist");
         }
 
         // creating output document and prepare the IO streams.
