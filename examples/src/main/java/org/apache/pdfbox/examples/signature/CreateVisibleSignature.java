@@ -114,7 +114,7 @@ public class CreateVisibleSignature implements SignatureInterface
 
         // creating output document and prepare the IO streams.
         String name = document.getName();
-        String substring = name.substring(0, name.lastIndexOf("."));
+        String substring = name.substring(0, name.lastIndexOf('.'));
 
         File outputDocument = new File(document.getParent(), substring + "_signed.pdf");
         FileInputStream fis = new FileInputStream(document);
