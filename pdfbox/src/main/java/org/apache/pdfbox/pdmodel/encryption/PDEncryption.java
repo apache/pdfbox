@@ -93,7 +93,7 @@ public class PDEncryption
     public PDEncryption(COSDictionary dictionary)
     {
         this.dictionary = dictionary;
-        securityHandler = SecurityHandlerFactory.INSTANCE.newSecurityHandler(getFilter());
+        securityHandler = SecurityHandlerFactory.INSTANCE.newSecurityHandlerForFilter(getFilter());
     }
 
     /**
