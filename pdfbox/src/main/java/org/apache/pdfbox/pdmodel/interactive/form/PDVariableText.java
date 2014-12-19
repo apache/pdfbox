@@ -333,7 +333,7 @@ public abstract class PDVariableText extends PDField
     public void setDefaultValue(Object value)
     {
         // Text fields don't support the "DV" entry.
-        throw new RuntimeException( "Text fields don't support the \"DV\" entry." );
+        throw new IllegalArgumentException( "Text fields don't support the \"DV\" entry." );
     }
     
     /**

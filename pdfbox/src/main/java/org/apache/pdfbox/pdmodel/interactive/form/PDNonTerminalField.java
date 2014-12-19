@@ -85,7 +85,7 @@ public class PDNonTerminalField extends PDFieldTreeNode
     public void setValue(Object value)
     {
         // Nonterminal fields don't support the "V" entry.
-        throw new RuntimeException( "Nonterminal fields don't support the \"V\" entry." );
+        throw new IllegalArgumentException( "Nonterminal fields don't support the \"V\" entry." );
     }
     
     @Override
@@ -98,7 +98,7 @@ public class PDNonTerminalField extends PDFieldTreeNode
     public void setDefaultValue(Object value)
     {
         // Nonterminal fields don't support the "DV" entry.
-        throw new RuntimeException( "Nonterminal fields don't support the \"DV\" entry." );
+        throw new IllegalArgumentException( "Nonterminal fields don't support the \"DV\" entry." );
     }
     
 }

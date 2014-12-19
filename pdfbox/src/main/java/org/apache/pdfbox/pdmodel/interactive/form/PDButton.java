@@ -135,7 +135,7 @@ public abstract class PDButton extends PDField
     public void setDefaultValue(COSName defaultValue)
     {
         // Button fields don't support the "DV" entry.
-        throw new RuntimeException( "Button fields don't support the \"DV\" entry." );
+        throw new IllegalArgumentException( "Button fields don't support the \"DV\" entry." );
     }
 
 }
