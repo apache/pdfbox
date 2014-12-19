@@ -22,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -1647,6 +1648,46 @@ public abstract class BaseParser
             pdfSource.unread( lastByte );
         }
         return buffer;
+    }
+    
+    /**
+     * Skip to the start of the next object. This is used to recover from a
+     * corrupt object. This should handle all cases that parseObject supports.
+     * This assumes that the next object will start on its own line.
+     *
+     * @throws IOException
+     */
+    protected void skipToNextObj() throws IOException
+    {
+        byte[] b = new byte[16];
+        Pattern p = Pattern.compile("\\d+\\s+\\d+\\s+obj.*", Pattern.DOTALL);
+        /* Read a buffer of data each time to see if it starts with a
+         * known keyword. This is not the most efficient design, but we should
+         * rarely be needing this function. We could update this to use the
+         * circular buffer, like in readUntilEndStream().
+         */
+        while (!pdfSource.isEOF())
+        {
+            int l = pdfSource.read(b);
+            if (l < 1)
+            {
+                break;
+            }
+            String s = new String(b, "US-ASCII");
+            if (s.startsWith("trailer")
+                    || s.startsWith("xref")
+                    || s.startsWith("startxref")
+                    || s.startsWith("stream")
+                    || p.matcher(s).matches())
+            {
+                pdfSource.unread(b);
+                break;
+            }
+            else
+            {
+                pdfSource.unread(b, 1, l - 1);
+            }
+        }
     }
 
     /**
