@@ -38,7 +38,7 @@ public class GlyfSimpleDescript extends GlyfDescript
     private byte[] flags;
     private short[] xCoordinates;
     private short[] yCoordinates;
-    private int pointCount;
+    private final int pointCount;
 
     /**
      * Constructor.
@@ -63,7 +63,6 @@ public class GlyfSimpleDescript extends GlyfDescript
         }
 
         // Simple glyph description
-        endPtsOfContours = new int[numberOfContours];
         endPtsOfContours = bais.readUnsignedShortArray(numberOfContours);
 
         // The last end point index reveals the total number of points
@@ -82,6 +81,7 @@ public class GlyfSimpleDescript extends GlyfDescript
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getEndPtOfContours(int i)
     {
         return endPtsOfContours[i];
@@ -90,6 +90,7 @@ public class GlyfSimpleDescript extends GlyfDescript
     /**
      * {@inheritDoc}
      */
+    @Override
     public byte getFlags(int i)
     {
         return flags[i];
@@ -98,6 +99,7 @@ public class GlyfSimpleDescript extends GlyfDescript
     /**
      * {@inheritDoc}
      */
+    @Override
     public short getXCoordinate(int i)
     {
         return xCoordinates[i];
@@ -106,6 +108,7 @@ public class GlyfSimpleDescript extends GlyfDescript
     /**
      * {@inheritDoc}
      */
+    @Override
     public short getYCoordinate(int i)
     {
         return yCoordinates[i];
@@ -114,6 +117,7 @@ public class GlyfSimpleDescript extends GlyfDescript
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean isComposite()
     {
         return false;
@@ -122,6 +126,7 @@ public class GlyfSimpleDescript extends GlyfDescript
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getPointCount()
     {
         return pointCount;
