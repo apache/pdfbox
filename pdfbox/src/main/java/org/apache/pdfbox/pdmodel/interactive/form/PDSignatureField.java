@@ -202,7 +202,7 @@ public class PDSignatureField extends PDField
     public void setDefaultValue(Object value)
     {
         // Signature fields don't support the "DV" entry.
-        throw new RuntimeException( "Signature fields don't support the \"DV\" entry." );
+        throw new IllegalArgumentException( "Signature fields don't support the \"DV\" entry." );
     }
 
 }
