@@ -43,6 +43,7 @@ public class NoPatternColorSpaceHelper extends StandardColorSpaceHelper
      * This method updates the given list with a ValidationError (ERROR_GRAPHIC_INVALID_PATTERN_COLOR_SPACE_FORBIDDEN)
      * and returns false.
      */
+    @Override
     protected void processPatternColorSpace(PDColorSpace pdcs)
     {
         context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_PATTERN_COLOR_SPACE_FORBIDDEN,
