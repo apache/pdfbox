@@ -158,17 +158,21 @@ public class TestFields extends TestCase
             
             // get the TextField with a DV entry
             field = form.getField("TextField-DefaultValue");
+            System.out.println(field.getClass().getName());
             assertNotNull(field);
-            assertEquals(((COSString) field.getDefaultValue()).getString(),"DefaultValue");
-            assertEquals(field.getDefaultValue(),field.getDictionary().getDictionaryObject(COSName.DV));
+            assertEquals(field.getDefaultValue(),"DefaultValue");
+            assertEquals(field.getDefaultValue(),
+                    ((COSString)field.getDictionary().getDictionaryObject(COSName.DV)).getString());
             assertEquals(((PDVariableText)field).getDefaultAppearance().getString(),"/Helv 12 Tf 0 g");
 
             // get a rich text field with a  DV entry
             field = form.getField("RichTextField-DefaultValue");
+            System.out.println(field.getClass().getName());
             assertNotNull(field);
-            assertEquals(((COSString) field.getDefaultValue()).getString(),"DefaultValue");
-            assertEquals(field.getDefaultValue(),field.getDictionary().getDictionaryObject(COSName.DV));
-            assertEquals(((COSString)field.getValue()).getString(), "DefaultValue");
+            assertEquals(field.getDefaultValue(),"DefaultValue");
+            assertEquals(field.getDefaultValue(),
+                    ((COSString)field.getDictionary().getDictionaryObject(COSName.DV)).getString());
+            assertEquals(field.getValue(), "DefaultValue");
             assertEquals(((PDVariableText)field).getDefaultAppearance().getString(), "/Helv 12 Tf 0 g");
             assertEquals(((PDVariableText)field).getDefaultStyleString().getString(),
                     "font: Helvetica,sans-serif 12.0pt; text-align:left; color:#000000 ");
