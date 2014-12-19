@@ -177,6 +177,13 @@ public class TestFields extends TestCase
             // do not test for the full content as this is a rather long xml string
             assertEquals(((PDVariableText)field).getRichTextValue().length(),338);
             
+            // get a rich text field with a text stream for the value
+            field = form.getField("LongRichTextField");
+            assertNotNull(field);
+            assertEquals(field.getDictionary().getDictionaryObject(
+                    COSName.V).getClass().getName(),
+                    "org.apache.pdfbox.cos.COSStream");
+            assertEquals(((PDTextField)field).getValue().length(),145396);
             
         }
         finally
