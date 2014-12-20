@@ -1537,15 +1537,17 @@ public abstract class BaseParser
     }
 
     /**
-     * This will read a long from the Stream and throw an {@link IllegalArgumentException} if the long value
-     * has more than 10 digits (i.e. : bigger than {@link #OBJECT_NUMBER_THRESHOLD})
+     * This will read a long from the Stream and throw an {@link IOException} if
+     * the long value is negative or has more than 10 digits (i.e. : bigger than
+     * {@link #OBJECT_NUMBER_THRESHOLD})
+     *
      * @return the object number being read.
      * @throws IOException if an I/O error occurs
      */
     protected long readObjectNumber() throws IOException
     {
         long retval = readLong();
-        if(retval < 0 || retval >= OBJECT_NUMBER_THRESHOLD)
+        if (retval < 0 || retval >= OBJECT_NUMBER_THRESHOLD)
         {
             throw new IOException("Object Number '" + retval + "' has more than 10 digits or is negative");
         }
