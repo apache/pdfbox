@@ -26,10 +26,7 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_CIDKEYE
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_DICTIONARY_INVALID;
 import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VALUE_CMAP_IDENTITY;
 
-
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
 import java.io.InputStream;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
