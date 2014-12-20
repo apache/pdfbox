@@ -626,36 +626,10 @@ public class COSWriter implements ICOSVisitor, Closeable
         }
         else
         {
-
             COSDictionary trailer = doc.getTrailer();
             trailer.setLong(COSName.PREV, doc.getStartXref());
-            addXRefEntry(COSWriterXRefEntry.getNullEntry());
-
-            // sort xref, needed only if object keys not regenerated
-            Collections.sort(getXRefEntries());
-
-            // remember the position where x ref was written
-            setStartxref(getStandardOutput().getPos());
-
-            getStandardOutput().write(XREF);
-            getStandardOutput().writeEOL();
-            // write start object number and object count for this x ref section
-            // we assume starting from scratch
-
-            Integer[] xRefRanges = getXRefRanges(getXRefEntries());
-            int xRefLength = xRefRanges.length;
-            int x = 0;
-            int j = 0;
-            while (x < xRefLength && (xRefLength % 2) == 0)
-            {
-                writeXrefRange(xRefRanges[x], xRefRanges[x + 1]);
-
-                for ( int i = 0; i < xRefRanges[x + 1]; ++i )
-                {
-                    writeXrefEntry(xRefEntries.get(j++));
-                }
-                x += 2;
-            }
+            
+            doWritexrefTable();
         }
     }
 
@@ -704,33 +678,40 @@ public class COSWriter implements ICOSVisitor, Closeable
                 trailer.removeItem(xrefStm);
                 trailer.setLong(xrefStm, getStartxref());
             }
-            addXRefEntry(COSWriterXRefEntry.getNullEntry());
-    
-            // sort xref, needed only if object keys not regenerated
-            Collections.sort(getXRefEntries());
-          
-            // remember the position where x ref was written
-            setStartxref(getStandardOutput().getPos());
-    
-            getStandardOutput().write(XREF);
-            getStandardOutput().writeEOL();
-            // write start object number and object count for this x ref section
-            // we assume starting from scratch
-    
-            Integer[] xRefRanges = getXRefRanges(getXRefEntries());
-            int xRefLength = xRefRanges.length;
-            int x = 0;
-            int j = 0;
-            while(x < xRefLength && (xRefLength % 2) == 0)
+            
+            doWritexrefTable();
+        }
+    }
+
+    // writes the "xref" table
+    private void doWritexrefTable() throws IOException
+    {
+        addXRefEntry(COSWriterXRefEntry.getNullEntry());
+
+        // sort xref, needed only if object keys not regenerated
+        Collections.sort(getXRefEntries());
+
+        // remember the position where x ref was written
+        setStartxref(getStandardOutput().getPos());
+
+        getStandardOutput().write(XREF);
+        getStandardOutput().writeEOL();
+        // write start object number and object count for this x ref section
+        // we assume starting from scratch
+
+        Integer[] xRefRanges = getXRefRanges(getXRefEntries());
+        int xRefLength = xRefRanges.length;
+        int x = 0;
+        int j = 0;
+        while (x < xRefLength && (xRefLength % 2) == 0)
+        {
+            writeXrefRange(xRefRanges[x], xRefRanges[x + 1]);
+
+            for (int i = 0; i < xRefRanges[x + 1]; ++i)
             {
-                writeXrefRange(xRefRanges[x], xRefRanges[x + 1]);
-    
-                for(int i = 0; i < xRefRanges[x + 1]; ++i)
-                {
-                    writeXrefEntry(xRefEntries.get(j++));
-                }
-                x += 2;
+                writeXrefEntry(xRefEntries.get(j++));
             }
+            x += 2;
         }
     }
 
