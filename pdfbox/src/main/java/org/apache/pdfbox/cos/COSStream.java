@@ -372,16 +372,16 @@ public class COSStream extends COSDictionary implements Closeable
      *
      * @throws IOException If there is an error parsing the stream.
      */
-    private void doDecode( COSName filterName, int filterIndex ) throws IOException
+    private void doDecode(COSName filterName, int filterIndex) throws IOException
     {
-        Filter filter = FilterFactory.INSTANCE.getFilter( filterName );
+        Filter filter = FilterFactory.INSTANCE.getFilter(filterName);
 
         boolean done = false;
         IOException exception = null;
         long position = unFilteredStream.getPosition();
         long length = unFilteredStream.getLength();
         // in case we need it later
-        long writtenLength = unFilteredStream.getLengthWritten();  
+        long writtenLength = unFilteredStream.getLengthWritten();
 
         if (length == 0 && writtenLength == 0)
         {
@@ -389,7 +389,7 @@ public class COSStream extends COSDictionary implements Closeable
             //some filters don't work when attempting to decode
             //with a zero length stream.  See zlib_error_01.pdf
             IOUtils.closeQuietly(unFilteredStream);
-            unFilteredStream = new RandomAccessFileOutputStream( buffer );
+            unFilteredStream = new RandomAccessFileOutputStream(buffer);
             done = true;
         }
         else
@@ -399,59 +399,59 @@ public class COSStream extends COSDictionary implements Closeable
             //try again with one less byte.
             for (int tryCount = 0; length > 0 && !done && tryCount < 5; tryCount++)
             {
-                InputStream input = null;
                 try
                 {
-                    input = new BufferedInputStream(
-                        new RandomAccessFileInputStream( buffer, position, length ), BUFFER_SIZE );
-                    IOUtils.closeQuietly(unFilteredStream);
-                    unFilteredStream = new RandomAccessFileOutputStream( buffer );
-                    decodeResult = filter.decode( input, unFilteredStream, this, filterIndex );
+                    attemptDecode(position, length, filter, filterIndex);
                     done = true;
                 }
-                catch( IOException io )
+                catch (IOException io)
                 {
                     length--;
                     exception = io;
                 }
-                finally
-                {
-                    IOUtils.closeQuietly(input);
-                }
             }
-            if( !done )
+            if (!done)
             {
                 //if no good stream was found then lets try again but with the
                 //length of data that was actually read and not length
                 //defined in the dictionary
                 length = writtenLength;
-                for( int tryCount=0; !done && tryCount<5; tryCount++ )
+                for (int tryCount = 0; !done && tryCount < 5; tryCount++)
                 {
-                    InputStream input = null;
                     try
                     {
-                        input = new BufferedInputStream(
-                            new RandomAccessFileInputStream( buffer, position, length ), BUFFER_SIZE );
-                        IOUtils.closeQuietly(unFilteredStream);
-                        unFilteredStream = new RandomAccessFileOutputStream( buffer );
-                        decodeResult = filter.decode( input, unFilteredStream, this, filterIndex);
+                        attemptDecode(position, length, filter, filterIndex);
                         done = true;
                     }
-                    catch( IOException io )
+                    catch (IOException io)
                     {
                         length--;
                         exception = io;
                     }
-                    finally
-                    {
-                        IOUtils.closeQuietly(input);
-                    }
                 }
             }
         }
-        if( !done )
+        if (!done)
         {
             throw exception;
+        }
+    }
+
+    // attempts to decode the stream at the given position and length
+    private void attemptDecode(long position, long length, Filter filter, int filterIndex) throws IOException
+    {
+        InputStream input = null;
+        try
+        {
+            input = new BufferedInputStream(
+                    new RandomAccessFileInputStream(buffer, position, length), BUFFER_SIZE);
+            IOUtils.closeQuietly(unFilteredStream);
+            unFilteredStream = new RandomAccessFileOutputStream(buffer);
+            decodeResult = filter.decode(input, unFilteredStream, this, filterIndex);
+        }
+        finally
+        {
+            IOUtils.closeQuietly(input);
         }
     }
 
