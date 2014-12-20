@@ -73,7 +73,7 @@ public class SetField
             }
             else if (field instanceof PDRadioButton)
             {
-                ((PDRadioButton) field).setValue(COSName.getPDFName(value));
+                ((PDRadioButton) field).setValue(value);
             }
             else if (field instanceof PDTextField)
             {
