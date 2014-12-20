@@ -153,12 +153,12 @@ public class COSWriter implements ICOSVisitor, Closeable
      */
     public static final byte[] ENDSTREAM = "endstream".getBytes(Charsets.US_ASCII);
 
-    private NumberFormat formatXrefOffset = new DecimalFormat("0000000000");
+    private final NumberFormat formatXrefOffset = new DecimalFormat("0000000000");
 
     // the decimal format for the xref object generation number data
-    private NumberFormat formatXrefGeneration = new DecimalFormat("00000");
+    private final NumberFormat formatXrefGeneration = new DecimalFormat("00000");
 
-    private NumberFormat formatDecimal = NumberFormat.getNumberInstance( Locale.US );
+    private final NumberFormat formatDecimal = NumberFormat.getNumberInstance( Locale.US );
 
     // the stream where we create the pdf output
     private OutputStream output;
@@ -176,18 +176,18 @@ public class COSWriter implements ICOSVisitor, Closeable
     // these are used for indirect references in other objects
     //A hashtable is used on purpose over a hashmap
     //so that null entries will not get added.
-    private Map<COSBase,COSObjectKey> objectKeys = new Hashtable<COSBase,COSObjectKey>();
-    private Map<COSObjectKey,COSBase> keyObject = new Hashtable<COSObjectKey,COSBase>();
+    private final Map<COSBase,COSObjectKey> objectKeys = new Hashtable<COSBase,COSObjectKey>();
+    private final Map<COSObjectKey,COSBase> keyObject = new Hashtable<COSObjectKey,COSBase>();
 
     // the list of x ref entries to be made so far
-    private List<COSWriterXRefEntry> xRefEntries = new ArrayList<COSWriterXRefEntry>();
-    private Set<COSBase> objectsToWriteSet = new HashSet<COSBase>();
+    private final List<COSWriterXRefEntry> xRefEntries = new ArrayList<COSWriterXRefEntry>();
+    private final Set<COSBase> objectsToWriteSet = new HashSet<COSBase>();
 
     //A list of objects to write.
-    private LinkedList<COSBase> objectsToWrite = new LinkedList<COSBase>();
+    private final LinkedList<COSBase> objectsToWrite = new LinkedList<COSBase>();
 
     //a list of objects already written
-    private Set<COSBase> writtenObjects = new HashSet<COSBase>();
+    private final Set<COSBase> writtenObjects = new HashSet<COSBase>();
 
     //An 'actual' is any COSBase that is not a COSObject.
     //need to keep a list of the actuals that are added
@@ -195,7 +195,7 @@ public class COSWriter implements ICOSVisitor, Closeable
     //when adding a COSObject and then later adding
     //the actual for that object, so we will track
     //actuals separately.
-    private Set<COSBase> actualsAdded = new HashSet<COSBase>();
+    private final Set<COSBase> actualsAdded = new HashSet<COSBase>();
 
     private COSObjectKey currentObjectKey = null;
     private PDDocument document = null;
@@ -261,8 +261,8 @@ public class COSWriter implements ICOSVisitor, Closeable
             COSBase object = cosDoc.getObjectFromPool(cosObjectKey).getObject();
             if (object != null && cosObjectKey!= null && !(object instanceof COSNumber))
             {
-            objectKeys.put(object, cosObjectKey);
-            keyObject.put(cosObjectKey,object);
+                objectKeys.put(object, cosObjectKey);
+                keyObject.put(cosObjectKey,object);
             }
             
             long num = cosObjectKey.getNumber();
@@ -297,6 +297,7 @@ public class COSWriter implements ICOSVisitor, Closeable
      *
      * @throws IOException If the underlying stream throws an exception.
      */
+    @Override
     public void close() throws IOException
     {
         if (getStandardOutput() != null)
@@ -843,14 +844,13 @@ public class COSWriter implements ICOSVisitor, Closeable
      */
     protected Integer[] getXRefRanges(List<COSWriterXRefEntry> xRefEntriesList)
     {
-        int nr = 0;
         int last = -2;
         int count = 1;
 
         ArrayList<Integer> list = new ArrayList<Integer>();
         for( Object object : xRefEntriesList )
         {
-            nr = (int)((COSWriterXRefEntry)object).getKey().getNumber();
+            int nr = (int) ((COSWriterXRefEntry) object).getKey().getNumber();
             if (nr == last + 1)
             {
                 ++count;
@@ -1214,7 +1214,7 @@ public class COSWriter implements ICOSVisitor, Closeable
             getStandardOutput().write(STREAM);
             getStandardOutput().writeCRLF();
             byte[] buffer = new byte[1024];
-            int amountRead = 0;
+            int amountRead;
             int totalAmountWritten = 0;
             while ((amountRead = input.read(buffer, 0, 1024)) != -1)
             {
@@ -1409,28 +1409,13 @@ public class COSWriter implements ICOSVisitor, Closeable
                     case '(':
                     case ')':
                     case '\\':
-                        output.write('\\');
-                        output.write(b);
-                        break;
                     case '\r':
-                        output.write('\\');
-                        output.write('\r');
-                        break;
                     case '\n':
-                        output.write('\\');
-                        output.write('\n');
-                        break;
                     case '\t':
-                        output.write('\\');
-                        output.write('\t');
-                        break;
                     case '\b':
-                        output.write('\\');
-                        output.write('\b');
-                        break;
                     case '\f':
                         output.write('\\');
-                        output.write('\f');
+                        output.write(b);
                         break;
                     default:
                         output.write(b);
