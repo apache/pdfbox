@@ -61,7 +61,7 @@ class Type4ShadingContext extends GouraudShadingContext
         bitsPerFlag = shading.getBitsPerFlag();
         LOG.debug("bitsPerFlag: " + bitsPerFlag); //TODO handle cases where bitperflag isn't 8
         triangleList = getTriangleList(xform, ctm);
-        pixelTable = calcPixelTable();
+        createPixelTable();
     }
 
     private List<ShadedTriangle> getTriangleList(AffineTransform xform, Matrix ctm) throws IOException

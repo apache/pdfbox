@@ -29,7 +29,6 @@ import java.util.Map;
 import javax.imageio.stream.ImageInputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.pdmodel.common.PDRange;
 import org.apache.pdfbox.util.Matrix;
 
@@ -63,13 +62,6 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext
     {
         super(shading, colorModel, xform, ctm, dBounds);
         triangleList = new ArrayList<ShadedTriangle>();
-        LOG.debug("Background: " + shading.getBackground());
-        COSArray bg = shading.getBackground();
-        if (bg != null)
-        {
-            background = bg.toFloatArray();
-            rgbBackground = convertToRGB(background);
-        }
     }
 
     /**
@@ -108,6 +100,9 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext
         return new Vertex(tmp, colorComponentTab);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected Map<Point, Integer> calcPixelTable()
     {
         Map<Point, Integer> map = new HashMap<Point, Integer>();
@@ -115,6 +110,9 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext
         return map;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void dispose()
     {

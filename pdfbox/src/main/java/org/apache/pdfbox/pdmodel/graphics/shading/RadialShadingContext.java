@@ -37,7 +37,7 @@ import org.apache.pdfbox.util.Matrix;
  * Performance improvement done as part of GSoC2014, Tilman Hausherr is the
  * mentor.
  *
- * @author Andreas Lehmkühler
+ * @author Andreas LehmkÃ¼hler
  * @author Shaola Ren
  */
 public class RadialShadingContext extends ShadingContext implements PaintContext
@@ -48,8 +48,6 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
 
     private final float[] coords;
     private final float[] domain;
-    private float[] background;
-    private int rgbBackground;
     private final boolean[] extend;
     private final double x1x0;
     private final double y1y0;
@@ -97,7 +95,7 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
         // a radius is always positive
         coords[2] = Math.abs(coords[2]);
         coords[5] = Math.abs(coords[5]);
-        
+
         // domain values
         if (this.radialShadingType.getDomain() != null)
         {
@@ -137,14 +135,6 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
         r0pow2 = Math.pow(coords[2], 2);
         denom = x1x0pow2 + y1y0pow2 - Math.pow(r1r0, 2);
         d1d0 = domain[1] - domain[0];
-
-        // get background values if available
-        COSArray bg = shading.getBackground();
-        if (bg != null)
-        {
-            background = bg.toFloatArray();
-            rgbBackground = convertToRGB(background);
-        }
         longestDistance = getLongestDis();
         colorTable = calcColorTable();
     }
@@ -240,35 +230,26 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
         for (int j = 0; j < h; j++)
         {
             double currentY = y + j;
-            if (bboxRect != null)
+            if (bboxRect != null && (currentY < minBBoxY || currentY > maxBBoxY))
             {
-                if (currentY < minBBoxY || currentY > maxBBoxY)
-                {
-                    continue;
-                }
+                continue;
             }
             for (int i = 0; i < w; i++)
             {
                 double currentX = x + i;
-                if (bboxRect != null)
+                if (bboxRect != null && (currentX < minBBoxX || currentX > maxBBoxX))
                 {
-                    if (currentX < minBBoxX || currentX > maxBBoxX)
-                    {
-                        continue;
-                    }
+                    continue;
                 }
                 useBackground = false;
                 float[] inputValues = calculateInputValues(x + i, y + j);
                 if (Float.isNaN(inputValues[0]) && Float.isNaN(inputValues[1]))
                 {
-                    if (background != null)
-                    {
-                        useBackground = true;
-                    }
-                    else
+                    if (background == null)
                     {
                         continue;
                     }
+                    useBackground = true;
                 }
                 else
                 {
@@ -329,14 +310,11 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
                         }
                         else
                         {
-                            if (background != null)
-                            {
-                                useBackground = true;
-                            }
-                            else
+                            if (background == null)
                             {
                                 continue;
                             }
+                            useBackground = true;
                         }
                     }
                     // input value is out of range
@@ -349,14 +327,11 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
                         }
                         else
                         {
-                            if (background != null)
-                            {
-                                useBackground = true;
-                            }
-                            else
+                            if (background == null)
                             {
                                 continue;
                             }
+                            useBackground = true;
                         }
                     }
                 }

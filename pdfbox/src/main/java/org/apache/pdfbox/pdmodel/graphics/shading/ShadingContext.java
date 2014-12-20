@@ -25,12 +25,13 @@ import java.awt.image.DataBuffer;
 import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.util.Matrix;
 
 /**
- * A base class to handle stuff that is common to all shading types.
+ * A base class to handle what is common to all shading types.
  *
  * @author Shaola Ren
  * @author Tilman Hausherr
@@ -45,6 +46,8 @@ public abstract class ShadingContext
     protected PDRectangle bboxRect;
     protected float minBBoxX, minBBoxY, maxBBoxX, maxBBoxY;
     protected ColorModel outputColorModel;
+    protected float[] background;
+    protected int rgbBackground;
 
     public ShadingContext(PDShading shading, ColorModel cm, AffineTransform xform,
             Matrix ctm, Rectangle dBounds) throws IOException
@@ -62,6 +65,14 @@ public abstract class ShadingContext
         if (bboxRect != null)
         {
             transformBBox(ctm, xform);
+        }
+        
+        // get background values if available
+        COSArray bg = shading.getBackground();
+        if (bg != null)
+        {
+            background = bg.toFloatArray();
+            rgbBackground = convertToRGB(background);
         }
     }
 
@@ -89,8 +100,14 @@ public abstract class ShadingContext
         }
     }
 
-    // convert color to RGB color values encoded into an integer.
-    protected int convertToRGB(float[] values)
+    /**
+     * Convert color values from shading colorspace to RGB color values encoded
+     * into an integer.
+     *
+     * @param values color values in shading colorspace.
+     * @return RGB values encoded in an integer.
+     */
+    protected final int convertToRGB(float[] values)
     {
         float[] rgbValues;
         int normRGBValues = 0;

@@ -49,7 +49,7 @@ class Type6ShadingContext extends PatchMeshesShadingContext
     {
         super(shading, colorModel, xform, ctm, dBounds);
         patchList = getCoonsPatchList(xform, ctm);
-        pixelTable = calcPixelTable();
+        createPixelTable();
     }
 
     // get the patch list which forms the type 6 shading image from data stream

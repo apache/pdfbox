@@ -30,7 +30,6 @@ import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.common.PDRange;
@@ -69,13 +68,6 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
         patchMeshesShadingType = shading;
         bitsPerFlag = ((PDShadingType6) shading).getBitsPerFlag();
         patchList = new ArrayList<Patch>();
-
-        COSArray bg = shading.getBackground();
-        if (bg != null)
-        {
-            background = bg.toFloatArray();
-            rgbBackground = convertToRGB(background);
-        }
     }
 
     /**
@@ -257,10 +249,7 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
     }
 
     /**
-     * Calculate every point and its color and store them in a Hash table.
-     *
-     * @return a Hash table which contains all the points' positions and colors
-     * of one image
+     * {@inheritDoc}
      */
     protected Map<Point, Integer> calcPixelTable()
     {
@@ -272,6 +261,9 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
         return map;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void dispose()
     {
