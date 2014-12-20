@@ -15,11 +15,14 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
+import java.awt.PaintContext;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.image.ColorModel;
+import java.awt.image.Raster;
+import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +37,7 @@ import org.apache.pdfbox.util.Matrix;
  * @author Shaola Ren
  * @author Tilman Hausherr
  */
-abstract class TriangleBasedShadingContext extends ShadingContext
+abstract class TriangleBasedShadingContext extends ShadingContext implements PaintContext
 {
     private static final Log LOG = LogFactory.getLog(TriangleBasedShadingContext.class);
 
@@ -53,7 +56,15 @@ abstract class TriangleBasedShadingContext extends ShadingContext
      */
     protected int numberOfColorComponents;
 
+    /**
+     * background values.
+     */
+    protected float[] background;
+    protected int rgbBackground;
+
     final protected boolean hasFunction;
+
+    protected Map<Point, Integer> pixelTable;
 
     public TriangleBasedShadingContext(PDShading shading, ColorModel cm,
             AffineTransform xform, Matrix ctm, Rectangle dBounds)
@@ -135,6 +146,80 @@ abstract class TriangleBasedShadingContext extends ShadingContext
             }
         }
         return super.convertToRGB(values);
+    }
+
+    // true if the relevant list is empty
+    abstract boolean emptyList();
+    
+    @Override
+    public final ColorModel getColorModel()
+    {
+        return outputColorModel;
+    }
+
+    @Override
+    public void dispose()
+    {
+        outputColorModel = null;
+        shadingColorSpace = null;
+    }
+
+    @Override
+    public final Raster getRaster(int x, int y, int w, int h)
+    {
+        WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);
+        int[] data = new int[w * h * 4];
+        if (!emptyList() || background != null)
+        {
+            for (int row = 0; row < h; row++)
+            {
+                int currentY = y + row;
+                if (bboxRect != null)
+                {
+                    if (currentY < minBBoxY || currentY > maxBBoxY)
+                    {
+                        continue;
+                    }
+                }
+                for (int col = 0; col < w; col++)
+                {
+                    int currentX = x + col;
+                    if (bboxRect != null)
+                    {
+                        if (currentX < minBBoxX || currentX > maxBBoxX)
+                        {
+                            continue;
+                        }
+                    }
+                    Point p = new Point(currentX, currentY);
+                    int value;
+                    if (pixelTable.containsKey(p))
+                    {
+                        value = pixelTable.get(p);
+                    }
+                    else
+                    {
+                        if (background != null)
+                        {
+                            value = rgbBackground;
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+                    int index = (row * w + col) * 4;
+                    data[index] = value & 255;
+                    value >>= 8;
+                    data[index + 1] = value & 255;
+                    value >>= 8;
+                    data[index + 2] = value & 255;
+                    data[index + 3] = 255;
+                }
+            }
+        }
+        raster.setPixels(0, 0, w, h, data);
+        return raster;
     }
 
 }
