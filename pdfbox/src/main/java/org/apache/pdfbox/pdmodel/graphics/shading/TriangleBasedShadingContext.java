@@ -56,15 +56,12 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
      */
     protected int numberOfColorComponents;
 
-    /**
-     * background values.
-     */
-    protected float[] background;
-    protected int rgbBackground;
-
     final protected boolean hasFunction;
 
-    protected Map<Point, Integer> pixelTable;
+    /**
+     * Map of pixels within triangles to their RGB color.
+     */
+    private Map<Point, Integer> pixelTable;
 
     public TriangleBasedShadingContext(PDShading shading, ColorModel cm,
             AffineTransform xform, Matrix ctm, Rectangle dBounds)
@@ -80,6 +77,19 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
         numberOfColorComponents = hasFunction ? 1 : shadingColorSpace.getNumberOfComponents();
         LOG.debug("numberOfColorComponents: " + numberOfColorComponents);
     }
+    
+    /**
+     * Calculate every point and its color and store them in a Hash table.
+     *
+     * @return a Hash table which contains all the points' positions and colors
+     * of one image
+     */
+    abstract Map<Point, Integer> calcPixelTable();
+    
+    protected void createPixelTable()
+    {
+        pixelTable = calcPixelTable();
+    }
 
     // get the points from the triangles, calculate their color and add 
     // point-color mappings to the map
@@ -93,7 +103,7 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
                 Line line = tri.getLine();
                 for (Point p : line.linePoints)
                 {
-                    map.put(p, convertToRGB(line.calcColor(p)));
+                    map.put(p, evalFunctionAndConvertToRGB(line.calcColor(p)));
                 }
             }
             else
@@ -110,7 +120,7 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
                         Point p = new Point(x, y);
                         if (tri.contains(p))
                         {
-                            map.put(p, convertToRGB(tri.calcColor(p)));
+                            map.put(p, evalFunctionAndConvertToRGB(tri.calcColor(p)));
                         }
                     }
                 }
@@ -131,8 +141,7 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
     // convert color to RGB color value, using function if required,
     // then convert from the shading colorspace to an RGB value,
     // which is encoded into an integer.
-    @Override
-    protected int convertToRGB(float[] values)
+    private int evalFunctionAndConvertToRGB(float[] values)
     {
         if (hasFunction)
         {
@@ -145,18 +154,24 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
                 LOG.error("error while processing a function", exception);
             }
         }
-        return super.convertToRGB(values);
+        return convertToRGB(values);
     }
 
     // true if the relevant list is empty
     abstract boolean emptyList();
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final ColorModel getColorModel()
     {
         return outputColorModel;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void dispose()
     {
@@ -164,6 +179,9 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
         shadingColorSpace = null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public final Raster getRaster(int x, int y, int w, int h)
     {
@@ -174,22 +192,16 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
             for (int row = 0; row < h; row++)
             {
                 int currentY = y + row;
-                if (bboxRect != null)
+                if (bboxRect != null && (currentY < minBBoxY || currentY > maxBBoxY))
                 {
-                    if (currentY < minBBoxY || currentY > maxBBoxY)
-                    {
-                        continue;
-                    }
+                    continue;
                 }
                 for (int col = 0; col < w; col++)
                 {
                     int currentX = x + col;
-                    if (bboxRect != null)
+                    if (bboxRect != null && (currentX < minBBoxX || currentX > maxBBoxX))
                     {
-                        if (currentX < minBBoxX || currentX > maxBBoxX)
-                        {
-                            continue;
-                        }
+                        continue;
                     }
                     Point p = new Point(currentX, currentY);
                     int value;
@@ -199,14 +211,11 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
                     }
                     else
                     {
-                        if (background != null)
-                        {
-                            value = rgbBackground;
-                        }
-                        else
+                        if (background == null)
                         {
                             continue;
                         }
+                        value = rgbBackground;
                     }
                     int index = (row * w + col) * 4;
                     data[index] = value & 255;

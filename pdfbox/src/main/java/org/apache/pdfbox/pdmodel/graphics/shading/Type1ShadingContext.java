@@ -25,13 +25,12 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.util.Matrix;
 
 /**
  * AWT PaintContext for function-based (Type 1) shading.
  *
- * @author Andreas Lehmkühler
+ * @author Andreas LehmkÃ¼hler
  * @author Tilman Hausherr
  */
 class Type1ShadingContext extends ShadingContext implements PaintContext
@@ -42,7 +41,6 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
     private AffineTransform rat;
     private final float[] domain;
     private Matrix matrix;
-    private float[] background;
 
     /**
      * Constructor creates an instance to be used for fill operations.
@@ -94,13 +92,6 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
         {
             LOG.error(ex, ex);
         }
-
-        // get background values if available
-        COSArray bg = shading.getBackground();
-        if (bg != null)
-        {
-            background = bg.toFloatArray();
-        }
     }
 
     @Override
@@ -125,22 +116,16 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
         for (int j = 0; j < h; j++)
         {
             int currentY = y + j;
-            if (bboxRect != null)
+            if (bboxRect != null && (currentY < minBBoxY || currentY > maxBBoxY))
             {
-                if (currentY < minBBoxY || currentY > maxBBoxY)
-                {
-                    continue;
-                }
+                continue;
             }
             for (int i = 0; i < w; i++)
             {
                 int currentX = x + i;
-                if (bboxRect != null)
+                if (bboxRect != null && (currentX < minBBoxX || currentX > maxBBoxX))
                 {
-                    if (currentX < minBBoxX || currentX > maxBBoxX)
-                    {
-                        continue;
-                    }
+                    continue;
                 }
                 int index = (j * w + i) * 4;
                 boolean useBackground = false;
@@ -151,14 +136,11 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
                 rat.transform(values, 0, values, 0, 1);
                 if (values[0] < domain[0] || values[0] > domain[1] || values[1] < domain[2] || values[1] > domain[3])
                 {
-                    if (background != null)
-                    {
-                        useBackground = true;
-                    }
-                    else
+                    if (background == null)
                     {
                         continue;
                     }
+                    useBackground = true;
                 }
                 // evaluate function
                 if (useBackground)

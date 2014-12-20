@@ -60,7 +60,7 @@ class Type5ShadingContext extends GouraudShadingContext
         LOG.debug("Type5ShadingContext");
 
         triangleList = getTriangleList(xform, ctm);
-        pixelTable = calcPixelTable();
+        createPixelTable();
     }
 
     private List<ShadedTriangle> getTriangleList(AffineTransform xform, Matrix ctm) throws IOException

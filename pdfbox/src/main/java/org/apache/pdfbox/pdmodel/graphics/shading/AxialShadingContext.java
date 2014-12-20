@@ -37,7 +37,7 @@ import org.apache.pdfbox.util.Matrix;
  * Performance improvement done as part of GSoC2014, Tilman Hausherr is the
  * mentor.
  *
- * @author Andreas Lehmkühler
+ * @author Andreas LehmkÃ¼hler
  * @author Shaola Ren
  *
  */
@@ -49,8 +49,6 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
 
     private final float[] coords;
     private final float[] domain;
-    private float[] background;
-    private int rgbBackground;
     private final boolean[] extend;
     private final double x1x0;
     private final double y1y0;
@@ -118,14 +116,6 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
         d1d0 = domain[1] - domain[0];
         denom = Math.pow(x1x0, 2) + Math.pow(y1y0, 2);
         axialLength = Math.sqrt(denom);
-
-        // get background values if available
-        COSArray bg = shading.getBackground();
-        if (bg != null)
-        {
-            background = bg.toFloatArray();
-            rgbBackground = convertToRGB(background);
-        }
         colorTable = calcColorTable();
     }
 
@@ -193,38 +183,28 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
         for (int j = 0; j < h; j++)
         {
             double currentY = y + j;
-            if (bboxRect != null)
+            if (bboxRect != null && (currentY < minBBoxY || currentY > maxBBoxY))
             {
-                if (currentY < minBBoxY || currentY > maxBBoxY)
-                {
-                    continue;
-                }
+                continue;
             }
             for (int i = 0; i < w; i++)
             {
                 double currentX = x + i;
-                if (bboxRect != null)
+                if (bboxRect != null && (currentX < minBBoxX || currentX > maxBBoxX))
                 {
-                    if (currentX < minBBoxX || currentX > maxBBoxX)
-                    {
-                        continue;
-                    }
+                    continue;
                 }
-
                 useBackground = false;
                 double inputValue = x1x0 * (currentX - coords[0]);
                 inputValue += y1y0 * (currentY - coords[1]);
                 // TODO this happens if start == end, see PDFBOX-1442
                 if (denom == 0)
                 {
-                    if (background != null)
-                    {
-                        useBackground = true;
-                    }
-                    else
+                    if (background == null)
                     {
                         continue;
                     }
+                    useBackground = true;
                 }
                 else
                 {
@@ -240,14 +220,11 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
                     }
                     else
                     {
-                        if (background != null)
-                        {
-                            useBackground = true;
-                        }
-                        else
+                        if (background == null)
                         {
                             continue;
                         }
+                        useBackground = true;
                     }
                 }
                 // input value is out of range
@@ -260,14 +237,11 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
                     }
                     else
                     {
-                        if (background != null)
-                        {
-                            useBackground = true;
-                        }
-                        else
+                        if (background == null)
                         {
                             continue;
                         }
+                        useBackground = true;
                     }
                 }
                 int value;
