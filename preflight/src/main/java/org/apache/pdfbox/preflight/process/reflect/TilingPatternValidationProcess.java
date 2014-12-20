@@ -26,7 +26,6 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVAL
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
@@ -42,10 +41,12 @@ import org.apache.pdfbox.preflight.utils.ContextHelper;
 public class TilingPatternValidationProcess extends AbstractProcess
 {
 
+    @Override
     public void validate(PreflightContext context) throws ValidationException
     {
         PreflightPath vPath = context.getValidationPath();
-        if (vPath.isEmpty()) {
+        if (vPath.isEmpty()) 
+        {
             return;
         }
         else if (!vPath.isExpectedType(PDTilingPattern.class))

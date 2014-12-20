@@ -31,7 +31,6 @@ import static org.apache.pdfbox.preflight.PreflightConstants.MAX_GRAPHIC_STATES;
 import java.awt.color.ICC_ColorSpace;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
