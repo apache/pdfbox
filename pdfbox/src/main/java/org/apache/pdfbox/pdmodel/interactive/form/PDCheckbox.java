@@ -138,7 +138,7 @@ public final class PDCheckbox extends PDButton
     @Override
     public COSName getDefaultValue() throws IOException
     {
-        COSBase attribute = getInheritableAttribute(getDictionary(), COSName.V);
+        COSBase attribute = getInheritableAttribute(COSName.V);
 
         if (attribute instanceof COSName)
         {

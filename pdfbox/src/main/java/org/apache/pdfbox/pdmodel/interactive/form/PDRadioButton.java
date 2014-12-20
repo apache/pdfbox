@@ -70,7 +70,7 @@ public final class PDRadioButton extends PDButton
     @Override
     public COSName getDefaultValue() throws IOException
     {
-        COSBase attribute = getInheritableAttribute(getDictionary(), COSName.DV);
+        COSBase attribute = getInheritableAttribute(COSName.DV);
 
         if (attribute instanceof COSName)
         {
@@ -98,22 +98,22 @@ public final class PDRadioButton extends PDButton
     {
         if (defaultValue == null)
         {
-            removeInheritableAttribute(getDictionary(),COSName.DV);
+            removeInheritableAttribute(COSName.DV);
         }
         else
         {
-            setInheritableAttribute(getDictionary(), COSName.DV, defaultValue);
+            setInheritableAttribute(COSName.DV, defaultValue);
         }
     }
     
     @Override
-    public COSName getValue() throws IOException
+    public String getValue() throws IOException
     {
-        COSBase attribute = getInheritableAttribute(getDictionary(), COSName.V);
+        COSBase attribute = getInheritableAttribute(COSName.V);
 
         if (attribute instanceof COSName)
         {
-            return (COSName) attribute;
+            return ((COSName) attribute).getName();
         }
         else
         {
@@ -131,15 +131,15 @@ public final class PDRadioButton extends PDButton
      * 
      * @param value the COSName object to set the field value.
      */
-    public void setValue(COSName value)
+    public void setValue(String value)
     {
         if (value == null)
         {
-            removeInheritableAttribute(getDictionary(),COSName.V);
+            removeInheritableAttribute(COSName.V);
         }
         else
         {
-            setInheritableAttribute(getDictionary(),COSName.V, value);
+            setInheritableAttribute(COSName.V, COSName.getPDFName(value));
             List<COSObjectable> kids = getKids();
             for (COSObjectable kid : kids)
             {
