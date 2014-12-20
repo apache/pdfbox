@@ -16,14 +16,11 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
-import java.awt.PaintContext;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.image.ColorModel;
-import java.awt.image.Raster;
-import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,7 +40,7 @@ import org.apache.pdfbox.util.Matrix;
  * @author Tilman Hausherr
  * @author Shaola Ren
  */
-abstract class GouraudShadingContext extends TriangleBasedShadingContext implements PaintContext
+abstract class GouraudShadingContext extends TriangleBasedShadingContext
 {
     private static final Log LOG = LogFactory.getLog(GouraudShadingContext.class);
 
@@ -51,14 +48,6 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext impleme
      * triangle list.
      */
     protected List<ShadedTriangle> triangleList;
-
-    /**
-     * background values.
-     */
-    protected float[] background;
-    protected int rgbBackground;
-
-    protected Map<Point, Integer> pixelTable;
 
     /**
      * Constructor creates an instance to be used for fill operations.
@@ -130,14 +119,7 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext impleme
     public void dispose()
     {
         triangleList = null;
-        outputColorModel = null;
-        shadingColorSpace = null;
-    }
-
-    @Override
-    public final ColorModel getColorModel()
-    {
-        return outputColorModel;
+        super.dispose();
     }
 
     /**
@@ -154,61 +136,8 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext impleme
         return dstMin + (src * (dstMax - dstMin) / srcMax);
     }
 
-    @Override
-    public final Raster getRaster(int x, int y, int w, int h)
+    protected boolean emptyList()
     {
-        WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);
-        int[] data = new int[w * h * 4];
-        if (!triangleList.isEmpty() || background != null)
-        {
-            for (int row = 0; row < h; row++)
-            {
-                int currentY = y + row;
-                if (bboxRect != null)
-                {
-                    if (currentY < minBBoxY || currentY > maxBBoxY)
-                    {
-                        continue;
-                    }
-                }
-                for (int col = 0; col < w; col++)
-                {
-                    int currentX = x + col;
-                    if (bboxRect != null)
-                    {
-                        if (currentX < minBBoxX || currentX > maxBBoxX)
-                        {
-                            continue;
-                        }
-                    }
-                    Point p = new Point(currentX, currentY);
-                    int value;
-                    if (pixelTable.containsKey(p))
-                    {
-                        value = pixelTable.get(p);
-                    }
-                    else
-                    {
-                        if (background != null)
-                        {
-                            value = rgbBackground;
-                        }
-                        else
-                        {
-                            continue;
-                        }
-                    }
-                    int index = (row * w + col) * 4;
-                    data[index] = value & 255;
-                    value >>= 8;
-                    data[index + 1] = value & 255;
-                    value >>= 8;
-                    data[index + 2] = value & 255;
-                    data[index + 3] = 255;
-                }
-            }
-        }
-        raster.setPixels(0, 0, w, h, data);
-        return raster;
+        return triangleList.isEmpty();
     }
 }
