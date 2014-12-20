@@ -190,19 +190,19 @@ public class VisualSignatureParser extends BaseParser
             long number = -1;
             int genNum;
             boolean missingObjectNumber = false;
-            try 
+            try
             {
                 char peeked = (char) pdfSource.peek();
-                if(peeked == '<') 
+                if (peeked == '<')
                 {
                     missingObjectNumber = true;
-                } 
-                else 
+                }
+                else
                 {
                     number = readObjectNumber();
                 }
-            } 
-            catch(IOException e) 
+            }
+            catch (IOException e)
             {
                 //ok for some reason "GNU Ghostscript 5.10" puts two endobj
                 //statements after an object, of course this is nonsense
@@ -210,18 +210,18 @@ public class VisualSignatureParser extends BaseParser
                 //we will simply try again
                 number = readObjectNumber();
             }
-            if(!missingObjectNumber)
+            if (!missingObjectNumber)
             {
                 skipSpaces();
                 genNum = readGenerationNumber();
 
                 String objectKey = readString(3);
-                if(!objectKey.equals("obj")) 
+                if (!objectKey.equals("obj"))
                 {
                     throw new IOException("expected='obj' actual='" + objectKey + "' " + pdfSource);
                 }
-            } 
-            else 
+            }
+            else
             {
                 number = -1;
                 genNum = -1;
@@ -231,16 +231,16 @@ public class VisualSignatureParser extends BaseParser
             COSBase pb = parseDirObject();
             String endObjectKey = readString();
 
-            if(endObjectKey.equals("stream")) 
+            if (endObjectKey.equals("stream"))
             {
                 pdfSource.unread(endObjectKey.getBytes());
                 pdfSource.unread(' ');
-                if(pb instanceof COSDictionary) 
+                if (pb instanceof COSDictionary)
                 {
                     pb = parseCOSStream((COSDictionary) pb);
 
-                } 
-                else 
+                }
+                else
                 {
                     // this is not legal
                     // the combination of a dict and the stream/endstream forms a complete stream object
@@ -254,9 +254,9 @@ public class VisualSignatureParser extends BaseParser
             pb.setNeedToBeUpdate(true);
             pdfObject.setObject(pb);
 
-            if(!endObjectKey.equals("endobj")) 
+            if (!endObjectKey.equals("endobj"))
             {
-                if(endObjectKey.startsWith("endobj")) 
+                if (endObjectKey.startsWith("endobj"))
                 {
                     /*
                      * Some PDF files don't contain a new line after endobj so we
@@ -265,25 +265,25 @@ public class VisualSignatureParser extends BaseParser
                      * instead of "endobj"
                      */
                     pdfSource.unread(endObjectKey.substring(6).getBytes());
-                } 
-                else if(!pdfSource.isEOF()) 
+                }
+                else if (!pdfSource.isEOF())
                 {
-                    try 
+                    try
                     {
                         //It is possible that the endobj  is missing, there
                         //are several PDFs out there that do that so skip it and move on.
                         Float.parseFloat(endObjectKey);
                         pdfSource.unread(COSWriter.SPACE);
                         pdfSource.unread(endObjectKey.getBytes());
-                    } 
-                    catch(NumberFormatException e) 
+                    }
+                    catch (NumberFormatException e)
                     {
                         //we will try again incase there was some garbage which
                         //some writers will leave behind.
                         String secondEndObjectKey = readString();
-                        if(!secondEndObjectKey.equals("endobj")) 
+                        if (!secondEndObjectKey.equals("endobj"))
                         {
-                            if(isClosing()) 
+                            if (isClosing())
                             {
                                 //found a case with 17506.pdf object 41 that was like this
                                 //41 0 obj [/Pattern /DeviceGray] ] endobj
@@ -293,7 +293,7 @@ public class VisualSignatureParser extends BaseParser
                             }
                             skipSpaces();
                             String thirdPossibleEndObj = readString();
-                            if(!thirdPossibleEndObj.equals("endobj")) 
+                            if (!thirdPossibleEndObj.equals("endobj"))
                             {
                                 throw new IOException("expected='endobj' firstReadAttempt='" + endObjectKey + "' "
                                         + "secondReadAttempt='" + secondEndObjectKey + "' " + pdfSource, e);

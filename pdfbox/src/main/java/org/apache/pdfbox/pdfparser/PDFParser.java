@@ -553,12 +553,11 @@ public class PDFParser extends BaseParser
             //we are going to parse a normal object
             long number = -1;
             int genNum;
-            String objectKey;
             boolean missingObjectNumber = false;
             try
             {
-                char peeked = (char)pdfSource.peek();
-                if( peeked == '<' )
+                char peeked = (char) pdfSource.peek();
+                if (peeked == '<')
                 {
                     missingObjectNumber = true;
                 }
@@ -567,7 +566,7 @@ public class PDFParser extends BaseParser
                     number = readObjectNumber();
                 }
             }
-            catch( IOException e )
+            catch (IOException e)
             {
                 //ok for some reason "GNU Ghostscript 5.10" puts two endobj
                 //statements after an object, of course this is nonsense
@@ -575,17 +574,15 @@ public class PDFParser extends BaseParser
                 //we will simply try again
                 number = readObjectNumber();
             }
-            if( !missingObjectNumber )
+            if (!missingObjectNumber)
             {
                 skipSpaces();
                 genNum = readGenerationNumber();
 
-                objectKey = readString( 3 );
-                //System.out.println( "parseObject() num=" + number +
-                //" genNumber=" + genNum + " key='" + objectKey + "'" );
-                if( !objectKey.equals( "obj" ) )
+                String objectKey = readString(3);
+                if (!objectKey.equals("obj"))
                 {
-                    if (!isContinueOnError(null) || !objectKey.equals("o")) 
+                    if (!isContinueOnError(null) || !objectKey.equals("o"))
                     {
                         throw new IOException("expected='obj' actual='" + objectKey + "' " + pdfSource);
                     }
@@ -603,17 +600,17 @@ public class PDFParser extends BaseParser
             COSBase pb = parseDirObject();
             String endObjectKey = readString();
 
-            if( endObjectKey.equals( "stream" ) )
+            if (endObjectKey.equals("stream"))
             {
-                pdfSource.unread( endObjectKey.getBytes("ISO-8859-1") );
-                pdfSource.unread( ' ' );
-                if( pb instanceof COSDictionary )
+                pdfSource.unread(endObjectKey.getBytes("ISO-8859-1"));
+                pdfSource.unread(' ');
+                if (pb instanceof COSDictionary)
                 {
-                    pb = parseCOSStream( (COSDictionary)pb );
+                    pb = parseCOSStream((COSDictionary) pb);
 
                     // test for XRef type
                     final COSStream strmObj = (COSStream) pb;
-                    
+
                     // remember streams without length to check them later
                     COSBase streamLength = strmObj.getItem(COSName.LENGTH);
                     int length = -1;
@@ -625,12 +622,12 @@ public class PDFParser extends BaseParser
                     {
                         streamLengthCheckSet.add(strmObj);
                     }
-                    
-                    final COSName objectType = (COSName)strmObj.getItem( COSName.TYPE );
-                    if( objectType != null && objectType.equals( COSName.XREF ) )
+
+                    final COSName objectType = (COSName) strmObj.getItem(COSName.TYPE);
+                    if (objectType != null && objectType.equals(COSName.XREF))
                     {
                         // XRef stream
-                        parseXrefStream( strmObj, currentObjByteOffset );
+                        parseXrefStream(strmObj, currentObjByteOffset);
                     }
                 }
                 else
