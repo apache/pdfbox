@@ -304,7 +304,7 @@ public class PDDocument implements Closeable
                 }
 
                 COSBase base = cosObject.getObject();
-                if (base != null && base instanceof COSDictionary)
+                if (base instanceof COSDictionary)
                 {
                     COSBase ft = ((COSDictionary) base).getItem(COSName.FT);
                     COSBase type = ((COSDictionary) base).getItem(COSName.TYPE);
