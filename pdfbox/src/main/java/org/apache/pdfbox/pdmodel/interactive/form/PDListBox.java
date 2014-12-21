@@ -76,7 +76,7 @@ public final class PDListBox extends PDChoice
     public Object getDefaultValue()
     {
         // TODO add handling specific to list box
-        return getInheritableAttribute(getDictionary(), COSName.DV);
+        return getInheritableAttribute(COSName.DV);
     }
     
     /**

@@ -94,6 +94,30 @@ public abstract class PDFieldTreeNode implements COSObjectable
     }
 
     /**
+     * Returns the node in the field tree from which a specific attribute might be inherited.
+     *
+     * @param field the field from which to look for the attribute
+     * @param key the key to look for
+     * @return PDFieldTreeNode the node from which the attribute will be inherited or null
+     */    
+    public PDFieldTreeNode getInheritableAttributesNode(PDFieldTreeNode field, COSName key)
+    {
+        if (field.getDictionary().containsKey(key))
+        {
+            return field;
+        }
+        else
+        {
+            PDFieldTreeNode parentField = field.getParent();
+            if (parentField != null)
+            {
+                getInheritableAttributesNode(parentField, key);
+            }
+        }
+        return null;
+    }    
+    
+    /**
      * Returns the given attribute, inheriting from parent nodes if necessary.
      *
      * @param key the key to look up
@@ -101,34 +125,13 @@ public abstract class PDFieldTreeNode implements COSObjectable
      */
     protected COSBase getInheritableAttribute(COSName key)
     {
-        return getInheritableAttribute(getDictionary(), key);
-    }    
-    
-    
-    /**
-     * Returns the given attribute, inheriting from parent nodes if necessary.
-     *
-     * @param fieldDictionary field object
-     * @param key the key to look up
-     * @return COS value for the given key
-     */
-    protected COSBase getInheritableAttribute(COSDictionary fieldDictionary, COSName key)
-    {
-        COSBase value = fieldDictionary.getDictionaryObject(key);
-        
-        if (value != null)
+        PDFieldTreeNode attributesNode = getInheritableAttributesNode(this,key);
+        if (attributesNode != null)
         {
-            return value;
+            return attributesNode.getDictionary().getDictionaryObject(key);
         }
-
-        COSDictionary parentDictionary = (COSDictionary) fieldDictionary.getDictionaryObject(COSName.PARENT);
-        if (parentDictionary != null)
-        {
-            return getInheritableAttribute(parentDictionary, key);
-        }
-
         return null;
-    }
+    }    
     
     /**
      * Sets the given attribute, inheriting from parent nodes if necessary.
@@ -138,32 +141,13 @@ public abstract class PDFieldTreeNode implements COSObjectable
      */
     protected void setInheritableAttribute(COSName key, COSBase value)
     {
-        setInheritableAttribute(getDictionary(), key, value);
+        PDFieldTreeNode attributesNode = getInheritableAttributesNode(this,key);
+        if (attributesNode != null)
+        {
+            attributesNode.getDictionary().setItem(key, value);
+        }
     }  
     
-    /**
-     * Sets the given attribute, inheriting from parent nodes if necessary.
-     *
-     * @param fieldDictionary field object
-     * @param key the key to look up
-     * @param value the new attributes value
-     */
-    protected void setInheritableAttribute(COSDictionary fieldDictionary, COSName key, COSBase value)
-    {
-        if (fieldDictionary.getItem(key) != null)
-        {
-            fieldDictionary.setItem(key, value);
-        }
-        else
-        {
-            COSDictionary parentDictionary = (COSDictionary) fieldDictionary.getDictionaryObject(COSName.PARENT);
-            if (parentDictionary != null)
-            {
-                setInheritableAttribute(parentDictionary, key, value);
-            }
-        }
-    }
-
     /**
      * Removes the given attribute, inheriting from parent nodes if necessary.
      *
@@ -171,30 +155,12 @@ public abstract class PDFieldTreeNode implements COSObjectable
      */
     protected void removeInheritableAttribute(COSName key)
     {
-        removeInheritableAttribute(getDictionary(), key);
+        PDFieldTreeNode attributesNode = getInheritableAttributesNode(this,key);
+        if (attributesNode != null)
+        {
+            attributesNode.getDictionary().removeItem(key);
+        }
     }      
-    
-    /**
-     * Removes the given attribute, inheriting from parent nodes if necessary.
-     *
-     * @param fieldDictionary field object
-     * @param key the key to look up
-     */
-    protected void removeInheritableAttribute(COSDictionary fieldDictionary, COSName key)
-    {
-        if (fieldDictionary.getItem(key) != null)
-        {
-            fieldDictionary.removeItem(key);
-        }
-        else
-        {
-            COSDictionary parentDictionary = (COSDictionary) fieldDictionary.getDictionaryObject(COSName.PARENT);
-            if (parentDictionary != null)
-            {
-                removeInheritableAttribute(parentDictionary, key);
-            }
-        }
-    }
     
     /**
      * Get a text as text stream.
@@ -887,5 +853,4 @@ public abstract class PDFieldTreeNode implements COSObjectable
         }
         return retval;
     }
-
 }

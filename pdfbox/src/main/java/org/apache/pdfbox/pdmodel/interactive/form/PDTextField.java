@@ -247,7 +247,7 @@ public final class PDTextField extends PDVariableText
     @Override
     public String getDefaultValue()
     {
-        COSBase fieldValue = getInheritableAttribute(getDictionary(), COSName.DV);
+        COSBase fieldValue = getInheritableAttribute(COSName.DV);
         if (fieldValue instanceof COSString)
         {
             return ((COSString) fieldValue).getString();
@@ -293,7 +293,7 @@ public final class PDTextField extends PDVariableText
     @Override
     public String getValue() throws IOException
     {
-        PDTextStream textStream = getAsTextStream(getInheritableAttribute(getDictionary(), COSName.V));
+        PDTextStream textStream = getAsTextStream(getInheritableAttribute(COSName.V));
 
         if (textStream != null) 
         {
