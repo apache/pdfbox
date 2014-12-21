@@ -1675,13 +1675,18 @@ public class PDFTextStripper extends PDFStreamEngine
         {
             float yGap = Math.abs(position.getTextPosition().getYDirAdj()-
                     lastPosition.getTextPosition().getYDirAdj());
-            float xGap = (position.getTextPosition().getXDirAdj()-
-                    lastLineStartPosition.getTextPosition().getXDirAdj());//do we need to flip this for rtl?
-            if(yGap > (getDropThreshold()*maxHeightForLine))
+            float newYVal = multiplyFloat(getDropThreshold(), maxHeightForLine);
+            // do we need to flip this for rtl?
+            float xGap = position.getTextPosition().getXDirAdj() -
+                    lastLineStartPosition.getTextPosition().getXDirAdj();
+            float newXVal = multiplyFloat(getIndentThreshold(), position.getTextPosition().getWidthOfSpace());
+            float positionWidth = multiplyFloat(0.25f, position.getTextPosition().getWidth());
+
+            if (yGap > newYVal)
             {
-                        result = true;
+                result = true;
             }
-            else if(xGap > (getIndentThreshold()*position.getTextPosition().getWidthOfSpace()))
+            else if (xGap > newXVal)
             {
                 //text is indented, but try to screen for hanging indent
                 if(!lastLineStartPosition.isParagraphStart())
@@ -1701,7 +1706,7 @@ public class PDFTextStripper extends PDFStreamEngine
                             result = true;
                 }
             }
-            else if(Math.abs(xGap) < (0.25 * position.getTextPosition().getWidth()))
+            else if (Math.abs(xGap) < positionWidth)
             {
                 //current horizontal position is within 1/4 a char of the last
                 //linestart.  We'll treat them as lined up.
@@ -1731,6 +1736,12 @@ public class PDFTextStripper extends PDFStreamEngine
         }
     }
 
+    private float multiplyFloat(float value1, float value2)
+    {
+        // multiply 2 floats and truncate the resulting value to 3 decimal places
+        // to avoid wrong results when comparing with another float
+        return Math.round(value1 * value2 * 1000) / 1000f;
+    }
     /**
      * writes the paragraph separator string to the output.
      * @throws IOException if something went wrong
