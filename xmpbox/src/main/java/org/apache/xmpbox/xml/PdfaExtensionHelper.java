@@ -83,12 +83,11 @@ public final class PdfaExtensionHelper
         if (cprefix.equals(prefix) && !cnamespace.equals(namespace))
         {
             throw new XmpParsingException(ErrorType.InvalidPdfaSchema, "Invalid PDF/A namespace definition");
-        } // else good match
+        } 
         if (cnamespace.equals(namespace) && !cprefix.equals(prefix))
         {
             throw new XmpParsingException(ErrorType.InvalidPdfaSchema, "Invalid PDF/A namespace definition");
-        } // else good match
-
+        }
     }
 
     public static void populateSchemaMapping(XMPMetadata meta) throws XmpParsingException
@@ -100,8 +99,7 @@ public final class PdfaExtensionHelper
         {
             if (xmpSchema.getNamespace().equals(stPdfaExt.namespace()))
             {
-                // ensure the prefix is the preferred one (cannot use other
-                // definition)
+                // ensure the prefix is the preferred one (cannot use other definition)
                 if (!xmpSchema.getPrefix().equals(stPdfaExt.preferedPrefix()))
                 {
                     throw new XmpParsingException(ErrorType.InvalidPrefix,
@@ -115,131 +113,141 @@ public final class PdfaExtensionHelper
                 {
                     if (af instanceof PDFASchemaType)
                     {
-                        PDFASchemaType st = (PDFASchemaType) af;
-                        String namespaceUri = st.getNamespaceURI().trim();
-                        String prefix = st.getPrefixValue();
-                        ArrayProperty properties = st.getProperty();
-                        ArrayProperty valueTypes = st.getValueType();
-                        XMPSchemaFactory xsf = tm.getSchemaFactory(namespaceUri);
-                        // retrieve namespaces
-                        if (xsf == null)
-                        {
-                            // create namespace with no field
-                            tm.addNewNameSpace(namespaceUri, prefix);
-                            xsf = tm.getSchemaFactory(namespaceUri);
-                        }
-                        // populate value type
-                        if (valueTypes != null)
-                        {
-                            for (AbstractField af2 : valueTypes.getAllProperties())
-                            {
-                                if (af2 instanceof PDFATypeType)
-                                {
-                                    PDFATypeType type = (PDFATypeType) af2;
-                                    String ttype = type.getType();
-                                    String tns = type.getNamespaceURI();
-                                    String tprefix = type.getPrefixValue();
-                                    String tdescription = type.getDescription();
-                                    ArrayProperty fields = type.getFields();
-                                    if (ttype == null || tns == null || tprefix == null || tdescription == null)
-                                    {
-                                        // all fields are mandatory
-                                        throw new XmpParsingException(ErrorType.RequiredProperty,
-                                                "Missing field in type definition");
-                                    }
-                                    // create the structured type
-                                    DefinedStructuredType structuredType = new DefinedStructuredType(meta, tns,
-                                            tprefix, null); // TODO
-                                                            // maybe
-                                                            // a name
-                                                            // exists
-                                    if (fields != null)
-                                    {
-                                        List<AbstractField> definedFields = fields.getAllProperties();
-                                        for (AbstractField af3 : definedFields)
-                                        {
-                                            if (af3 instanceof PDFAFieldType)
-                                            {
-                                                PDFAFieldType field = (PDFAFieldType) af3;
-                                                String fName = field.getName();
-                                                String fDescription = field.getDescription();
-                                                String fValueType = field.getValueType();
-                                                if (fName == null || fDescription == null || fValueType == null)
-                                                {
-                                                    throw new XmpParsingException(ErrorType.RequiredProperty,
-                                                            "Missing field in field definition");
-                                                }
-                                                try
-                                                {
-                                                    Types fValue = Types.valueOf(fValueType);
-                                                    structuredType.addProperty(fName,
-                                                            TypeMapping.createPropertyType(fValue, Cardinality.Simple));
-                                                }
-                                                catch (IllegalArgumentException e)
-                                                {
-                                                    throw new XmpParsingException(ErrorType.NoValueType,
-                                                            "Type not defined : " + fValueType, e);
-                                                    // TODO could fValueType be
-                                                    // a structured type ?
-                                                }
-                                            } // else TODO
-                                        }
-                                    }
-                                    // add the structured type to list
-                                    PropertiesDescription pm = new PropertiesDescription();
-                                    for (Map.Entry<String, PropertyType> entry : structuredType.getDefinedProperties()
-                                            .entrySet())
-                                    {
-                                        pm.addNewProperty(entry.getKey(), entry.getValue());
-                                    }
-                                    tm.addToDefinedStructuredTypes(ttype, tns, pm);
-                                }
-                            }
-                        }
-                        // populate properties
-                        if (properties == null)
-                        {
-                            throw new XmpParsingException(ErrorType.RequiredProperty,
-                                    "Missing pdfaSchema:property in type definition");
-                        }
-                        for (AbstractField af2 : properties.getAllProperties())
-                        {
-                            if (af2 instanceof PDFAPropertyType)
-                            {
-                                PDFAPropertyType property = (PDFAPropertyType) af2;
-                                String pname = property.getName();
-                                String ptype = property.getValueType();
-                                String pdescription = property.getDescription();
-                                String pCategory = property.getCategory();
-                                // check all mandatory fields are OK
-                                if (pname == null || ptype == null || pdescription == null || pCategory == null)
-                                {
-                                    // all fields are mandatory
-                                    throw new XmpParsingException(ErrorType.RequiredProperty,
-                                            "Missing field in property definition");
-                                }
-                                // check ptype existance
-                                PropertyType pt = transformValueType(tm, ptype);
-                                if (pt.type() == null)
-                                {
-                                    throw new XmpParsingException(ErrorType.NoValueType, "Type not defined : " + ptype);
-                                }
-                                else if (pt.type().isSimple() || pt.type().isStructured()
-                                        || pt.type() == Types.DefinedType)
-                                {
-                                    xsf.getPropertyDefinition().addNewProperty(pname, pt);
-                                }
-                                else
-                                {
-                                    throw new XmpParsingException(ErrorType.NoValueType, "Type not defined : " + ptype);
-                                }
-
-                            } // TODO unmanaged ?
-                        }
+                        populatePDFASchemaType(meta, (PDFASchemaType) af, tm);
                     } // TODO unmanaged ?
                 }
             }
         }
+    }
+
+    private static void populatePDFASchemaType(XMPMetadata meta, PDFASchemaType st, TypeMapping tm)
+            throws XmpParsingException
+    {
+        String namespaceUri = st.getNamespaceURI().trim();
+        String prefix = st.getPrefixValue();
+        ArrayProperty properties = st.getProperty();
+        ArrayProperty valueTypes = st.getValueType();
+        XMPSchemaFactory xsf = tm.getSchemaFactory(namespaceUri);
+        // retrieve namespaces
+        if (xsf == null)
+        {
+            // create namespace with no field
+            tm.addNewNameSpace(namespaceUri, prefix);
+            xsf = tm.getSchemaFactory(namespaceUri);
+        }
+        // populate value type
+        if (valueTypes != null)
+        {
+            for (AbstractField af2 : valueTypes.getAllProperties())
+            {
+                if (af2 instanceof PDFATypeType)
+                {
+                    populatePDFAType(meta, (PDFATypeType) af2, tm);
+                }
+            }
+        }
+        // populate properties
+        if (properties == null)
+        {
+            throw new XmpParsingException(ErrorType.RequiredProperty,
+                    "Missing pdfaSchema:property in type definition");
+        }
+        for (AbstractField af2 : properties.getAllProperties())
+        {
+            if (af2 instanceof PDFAPropertyType)
+            {
+                populatePDFAPropertyType((PDFAPropertyType) af2, tm, xsf);
+            } // TODO unmanaged ?
+        }
+    }
+
+    private static void populatePDFAPropertyType(PDFAPropertyType property, TypeMapping tm, XMPSchemaFactory xsf)
+            throws XmpParsingException
+    {
+        String pname = property.getName();
+        String ptype = property.getValueType();
+        String pdescription = property.getDescription();
+        String pCategory = property.getCategory();
+        // check all mandatory fields are OK
+        if (pname == null || ptype == null || pdescription == null || pCategory == null)
+        {
+            // all fields are mandatory
+            throw new XmpParsingException(ErrorType.RequiredProperty,
+                    "Missing field in property definition");
+        }
+        // check ptype existance
+        PropertyType pt = transformValueType(tm, ptype);
+        if (pt.type() == null)
+        {
+            throw new XmpParsingException(ErrorType.NoValueType, "Type not defined : " + ptype);
+        }
+        else if (pt.type().isSimple() || pt.type().isStructured()
+                || pt.type() == Types.DefinedType)
+        {
+            xsf.getPropertyDefinition().addNewProperty(pname, pt);
+        }
+        else
+        {
+            throw new XmpParsingException(ErrorType.NoValueType, "Type not defined : " + ptype);
+        }
+    }
+
+    private static void populatePDFAType(XMPMetadata meta, PDFATypeType type, TypeMapping tm)
+            throws XmpParsingException
+    {
+        String ttype = type.getType();
+        String tns = type.getNamespaceURI();
+        String tprefix = type.getPrefixValue();
+        String tdescription = type.getDescription();
+        ArrayProperty fields = type.getFields();
+        if (ttype == null || tns == null || tprefix == null || tdescription == null)
+        {
+            // all fields are mandatory
+            throw new XmpParsingException(ErrorType.RequiredProperty,
+                    "Missing field in type definition");
+        }
+        // create the structured type
+        DefinedStructuredType structuredType = new DefinedStructuredType(meta, tns, tprefix, null); // TODO
+        // maybe a name exists
+        if (fields != null)
+        {
+            List<AbstractField> definedFields = fields.getAllProperties();
+            for (AbstractField af3 : definedFields)
+            {
+                if (af3 instanceof PDFAFieldType)
+                {
+                    PDFAFieldType field = (PDFAFieldType) af3;
+                    String fName = field.getName();
+                    String fDescription = field.getDescription();
+                    String fValueType = field.getValueType();
+                    if (fName == null || fDescription == null || fValueType == null)
+                    {
+                        throw new XmpParsingException(ErrorType.RequiredProperty,
+                                "Missing field in field definition");
+                    }
+                    try
+                    {
+                        Types fValue = Types.valueOf(fValueType);
+                        structuredType.addProperty(fName,
+                                TypeMapping.createPropertyType(fValue, Cardinality.Simple));
+                    }
+                    catch (IllegalArgumentException e)
+                    {
+                        throw new XmpParsingException(ErrorType.NoValueType,
+                                "Type not defined : " + fValueType, e);
+                        // TODO could fValueType be a structured type ?
+                    }
+                }
+                // else TODO
+            }
+        }
+        // add the structured type to list
+        PropertiesDescription pm = new PropertiesDescription();
+        for (Map.Entry<String, PropertyType> entry : structuredType.getDefinedProperties().entrySet())
+        {
+            pm.addNewProperty(entry.getKey(), entry.getValue());
+        }
+        tm.addToDefinedStructuredTypes(ttype, tns, pm);
     }
 
     private static PropertyType transformValueType(TypeMapping tm, String valueType) throws XmpParsingException
