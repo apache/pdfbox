@@ -131,17 +131,24 @@ public class PDSignatureField extends PDField
      * 
      * @param value is the PDSignatureField
      */
-    public void setValue(Object value)
+    public void setValue(PDSignature value)
     {
         if (value == null)
         {
             getDictionary().removeItem(COSName.V);
         }
-        else if (value instanceof PDSignature)
+        else
         {
             getDictionary().setItem(COSName.V, (PDSignature)value);
         }
     }
+    
+    @Override
+    public void setValue(String fieldValue)
+    {
+        // Signature fields don't support the strings for value
+        throw new IllegalArgumentException( "Signature fields don't support a string for the value entry." );     
+    }    
     
     /**
      * Get the signature dictionary.
@@ -199,10 +206,10 @@ public class PDSignatureField extends PDField
         return null;
     }
 
-    public void setDefaultValue(Object value)
+    @Override
+    public void setDefaultValue(String defaultValue)
     {
         // Signature fields don't support the "DV" entry.
-        throw new IllegalArgumentException( "Signature fields don't support the \"DV\" entry." );
+        throw new IllegalArgumentException( "Signature fields don't support the \"DV\" entry." );     
     }
-
 }

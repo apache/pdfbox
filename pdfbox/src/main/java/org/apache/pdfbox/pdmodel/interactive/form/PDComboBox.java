@@ -77,6 +77,21 @@ public final class PDComboBox extends PDChoice
         // TODO add handling specific to combo box
         return getInheritableAttribute(getDictionary(), COSName.DV);
     }     
+
+    @Override
+    public void setDefaultValue(String defaultValue)
+    {
+        if (defaultValue == null)
+        {
+            getDictionary().removeItem(COSName.DV);
+        }
+        else
+        {
+            getDictionary().setString(COSName.DV, defaultValue);
+        }
+    }    
+    
+    
     
     
     /**

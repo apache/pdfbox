@@ -254,6 +254,26 @@ public abstract class PDFieldTreeNode implements COSObjectable
      * 
      */
     public abstract Object getDefaultValue() throws IOException;
+    
+
+    /**
+     * Set the value of the "DV" entry. The "DV" entry is an inheritable attribute.
+     * 
+     * The different field types do require specific object types for their value
+     * e.g. for RadioButtons the DV entry needs to be a name object. This needs to be handled by the
+     * individual classes.
+     * 
+     * Trying to set the default value for a {@link PDPushButton} field will lead to an 
+     * {@link IllegalArgumentException} as PDPushButton fields do not support setting the 
+     * entry although, common to all field types, the DV entry shall not be set.
+     * 
+     * As a result it might be necessary to check the type of the value before
+     * reusing it.
+     * 
+     * @param defaultValue The new default field value.
+     */    
+    public abstract void setDefaultValue(String defaultValue);
+    
 
     /**
      * Get the value of the "V" entry. The "V" entry is an inheritable attribute.
@@ -276,6 +296,25 @@ public abstract class PDFieldTreeNode implements COSObjectable
      * 
      */
     public abstract Object getValue() throws IOException;
+    
+    /**
+     * Set the value of the "V" entry. The "V" entry is an inheritable attribute.
+     * 
+     * The different field types do require specific object types for their value
+     * e.g. for RadioButtons the V entry needs to be a name object. This needs to be handled by the
+     * individual classes.
+     * 
+     * Trying to set the value for a {@link PDPushButton} field will lead to an
+     * {@link IllegalArgumentException} as PDPushButton fields do not support setting the
+     * entry although, common to all field types, the DV entry shall not be set.
+     * 
+     * As a result it might be necessary to check the type of the value before
+     * reusing it.
+     * 
+     * @param fieldValue The new field value.
+     */    
+    public abstract void setValue(String fieldValue);
+    
 
     /**
      * sets the field to be read-only.

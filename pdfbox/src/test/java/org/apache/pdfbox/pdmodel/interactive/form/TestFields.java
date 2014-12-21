@@ -153,8 +153,9 @@ public class TestFields extends TestCase
             // get the Checkbox with a DV entry
             field = form.getField("Checkbox-DefaultValue");
             assertNotNull(field);
-            assertEquals(field.getDefaultValue(),COSName.getPDFName("Yes"));
-            assertEquals(field.getDefaultValue(),field.getDictionary().getDictionaryObject(COSName.DV));
+            assertEquals(field.getDefaultValue(),"Yes");
+            assertEquals(field.getDefaultValue(),
+                    ((COSName) field.getDictionary().getDictionaryObject(COSName.DV)).getName());
             
             // get the TextField with a DV entry
             field = form.getField("TextField-DefaultValue");
