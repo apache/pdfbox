@@ -485,6 +485,7 @@ public class PDDocument implements Closeable
             if (src != null)
             {
                 PDStream dest = new PDStream(document.createCOSStream());
+                dest.addCompression();
                 importedPage.setContents(dest);
                 os = dest.createOutputStream();
 
@@ -510,7 +511,6 @@ public class PDDocument implements Closeable
             }
         }
         return importedPage;
-
     }
 
     /**
