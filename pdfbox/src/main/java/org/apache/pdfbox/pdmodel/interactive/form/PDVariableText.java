@@ -32,11 +32,6 @@ public abstract class PDVariableText extends PDField
 {
 
     /**
-     * DA    Default appearance.
-     */
-    private COSString defaultAppearance;
-
-    /**
      * A Q value.
      */
     public static final int QUADDING_LEFT = 0;
@@ -85,9 +80,7 @@ public abstract class PDVariableText extends PDField
      */
     public COSString getDefaultAppearance()
     {
-        COSBase daValue = getInheritableAttribute(COSName.DA);
-        defaultAppearance = (COSString) daValue;
-        return defaultAppearance;
+        return (COSString) getInheritableAttribute(COSName.DA);
     }
 
     /**
@@ -104,13 +97,11 @@ public abstract class PDVariableText extends PDField
     {
         if (daValue != null)
         {
-            defaultAppearance = new COSString(daValue);
-            getDictionary().setItem(COSName.DA, defaultAppearance);
+            setInheritableAttribute(COSName.DA, new COSString(daValue));
         }
         else
         {
-            defaultAppearance = null;
-            getDictionary().removeItem(COSName.DA);
+            removeInheritableAttribute(COSName.DA);
         }
     }
     
