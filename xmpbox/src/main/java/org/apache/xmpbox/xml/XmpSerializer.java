@@ -177,10 +177,6 @@ public class XmpSerializer
             {
                 target.setAttribute(XmpConstants.DEFAULT_RDF_PREFIX + ":" + attribute.getName(), attribute.getValue());
             }
-            else if (target.getNamespaceURI().equals(attribute.getNamespace()))
-            {
-                target.setAttribute(attribute.getName(), attribute.getValue());
-            }
             else
             {
                 target.setAttribute(attribute.getName(), attribute.getValue());
