@@ -78,4 +78,20 @@ public final class PDListBox extends PDChoice
         // TODO add handling specific to list box
         return getInheritableAttribute(getDictionary(), COSName.DV);
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setDefaultValue(String defaultValue)
+    {
+        if (defaultValue == null)
+        {
+            getDictionary().removeItem(COSName.DV);
+        }
+        else
+        {
+            getDictionary().setString(COSName.DV, defaultValue);
+        }
+    }
 }

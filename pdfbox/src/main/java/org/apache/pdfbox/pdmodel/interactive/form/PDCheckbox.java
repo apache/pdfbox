@@ -130,13 +130,13 @@ public final class PDCheckbox extends PDButton
     }
 
     @Override
-    public COSName getDefaultValue() throws IOException
+    public String getDefaultValue() throws IOException
     {
         COSBase attribute = getInheritableAttribute(COSName.V);
 
         if (attribute instanceof COSName)
         {
-            return (COSName) attribute;
+            return ((COSName) attribute).getName();
         }
         else
         {
@@ -156,7 +156,8 @@ public final class PDCheckbox extends PDButton
      * 
      * @param defaultValue the COSName object to set the field value.
      */
-    public void setDefaultValue(COSName defaultValue)
+    @Override
+    public void setDefaultValue(String defaultValue)
     {
         if (defaultValue == null)
         {
@@ -164,7 +165,7 @@ public final class PDCheckbox extends PDButton
         }
         else
         {
-            getDictionary().setItem(COSName.DV, defaultValue);
+            getDictionary().setItem(COSName.DV, COSName.getPDFName(defaultValue));
         }
     }
     

@@ -22,6 +22,7 @@ import java.util.List;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 /**
@@ -92,9 +93,9 @@ public final class PDRadioButton extends PDButton
      * The default value is used to represent the initial state of the
      * checkbox or to revert when resetting the form.
      * 
-     * @param defaultValue the COSName object to set the field value.
+     * @param defaultValue the string to set the field value.
      */
-    public void setDefaultValue(COSName defaultValue)
+    public void setDefaultValue(String defaultValue)
     {
         if (defaultValue == null)
         {
@@ -102,7 +103,7 @@ public final class PDRadioButton extends PDButton
         }
         else
         {
-            setInheritableAttribute(COSName.DV, defaultValue);
+            setInheritableAttribute(COSName.DV, new COSString(defaultValue));
         }
     }
     
@@ -129,24 +130,25 @@ public final class PDRadioButton extends PDButton
      * 
      * The default value is Off.
      * 
-     * @param value the COSName object to set the field value.
+     * @param fieldValue the COSName object to set the field value.
      */
-    public void setValue(String value)
+    @Override
+    public void setValue(String fieldValue)
     {
-        if (value == null)
+        if (fieldValue == null)
         {
             removeInheritableAttribute(COSName.V);
         }
         else
         {
-            setInheritableAttribute(COSName.V, COSName.getPDFName(value));
+            setInheritableAttribute(COSName.V, COSName.getPDFName(fieldValue));
             List<COSObjectable> kids = getKids();
             for (COSObjectable kid : kids)
             {
                 if (kid instanceof PDCheckbox)
                 {
                     PDCheckbox btn = (PDCheckbox) kid;
-                    if (btn.getOnValue().equals(value))
+                    if (btn.getOnValue().equals(fieldValue))
                     {
                         btn.check();
                     }

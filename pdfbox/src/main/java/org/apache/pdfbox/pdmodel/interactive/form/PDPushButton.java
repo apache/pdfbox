@@ -38,11 +38,30 @@ public class PDPushButton extends PDButton
     {
         super(theAcroForm, field, parentNode);
     }
-
+    
+    @Override
+    public Object getDefaultValue()
+    {
+        // PushButton fields don't support the "V" entry.
+        return null;
+    }    
+    
+    @Override
+    public void setDefaultValue(String defaultValue)
+    {
+        throw new IllegalArgumentException("A PDPushButton shall not use the DV entry in the field dictionary");
+        
+    }
     @Override
     public Object getValue()
     {
         // PushButton fields don't support the "V" entry.
         return null;
+    }
+    
+    @Override
+    public void setValue(String fieldValue)
+    {
+        throw new IllegalArgumentException("A PDPushButton shall not use the V entry in the field dictionary");
     }
 }
