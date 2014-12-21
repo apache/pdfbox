@@ -187,46 +187,7 @@ public class VisualSignatureParser extends BaseParser
         else 
         {
             //we are going to parse a normal object
-            long number = -1;
-            int genNum;
-            boolean missingObjectNumber = false;
-            try
-            {
-                char peeked = (char) pdfSource.peek();
-                if (peeked == '<')
-                {
-                    missingObjectNumber = true;
-                }
-                else
-                {
-                    number = readObjectNumber();
-                }
-            }
-            catch (IOException e)
-            {
-                //ok for some reason "GNU Ghostscript 5.10" puts two endobj
-                //statements after an object, of course this is nonsense
-                //but because we want to support as many PDFs as possible
-                //we will simply try again
-                number = readObjectNumber();
-            }
-            if (!missingObjectNumber)
-            {
-                skipSpaces();
-                genNum = readGenerationNumber();
-
-                String objectKey = readString(3);
-                if (!objectKey.equals("obj"))
-                {
-                    throw new IOException("expected='obj' actual='" + objectKey + "' " + pdfSource);
-                }
-            }
-            else
-            {
-                number = -1;
-                genNum = -1;
-            }
-
+            COSObjectKey key = parseObjectKey(false);
             skipSpaces();
             COSBase pb = parseDirObject();
             String endObjectKey = readString();
@@ -238,7 +199,6 @@ public class VisualSignatureParser extends BaseParser
                 if (pb instanceof COSDictionary)
                 {
                     pb = parseCOSStream((COSDictionary) pb);
-
                 }
                 else
                 {
@@ -248,8 +208,6 @@ public class VisualSignatureParser extends BaseParser
                 }
                 endObjectKey = readString();
             }
-
-            COSObjectKey key = new COSObjectKey(number, genNum);
             COSObject pdfObject = document.getObjectFromPool(key);
             pb.setNeedToBeUpdate(true);
             pdfObject.setObject(pb);
