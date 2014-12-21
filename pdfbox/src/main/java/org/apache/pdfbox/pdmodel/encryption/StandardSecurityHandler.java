@@ -77,7 +77,6 @@ public final class StandardSecurityHandler extends SecurityHandler
 
     private int revision = DEFAULT_REVISION;
     private StandardProtectionPolicy policy;
-    private RC4Cipher rc4 = new RC4Cipher();
 
     /**
      * Constructor.
