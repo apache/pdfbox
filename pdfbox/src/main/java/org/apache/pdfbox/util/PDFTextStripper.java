@@ -647,7 +647,6 @@ public class PDFTextStripper extends PDFTextStreamEngine
                         lastLineStartPosition =
                                 handleLineSeparation(current, lastPosition, lastLineStartPosition,
                                         maxHeightForLine);
-                        endOfLastTextX = END_OF_LAST_TEXT_X_RESET_VALUE;
                         expectedStartOfNextWordX = EXPECTED_START_OF_NEXT_WORD_X_RESET_VALUE;
                         maxYForLine = MAX_Y_FOR_LINE_RESET_VALUE;
                         maxHeightForLine = MAX_HEIGHT_FOR_LINE_RESET_VALUE;
