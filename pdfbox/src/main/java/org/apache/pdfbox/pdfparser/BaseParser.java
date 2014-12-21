@@ -1704,4 +1704,60 @@ public abstract class BaseParser
             pdfSource = null;
         }
     }
+
+    /**
+     * Parse object key (number and generation).
+     *
+     * @param continueOnError true to continue on error, false if not.
+     * @return a new object key.
+     * @throws IOException if something goes wrong.
+     */
+    protected COSObjectKey parseObjectKey(boolean continueOnError) throws IOException
+    {
+        //we are going to parse a normal object
+        long number = -1;
+        int genNum;
+        boolean missingObjectNumber = false;
+        try
+        {
+            char peeked = (char) pdfSource.peek();
+            if (peeked == '<')
+            {
+                missingObjectNumber = true;
+            }
+            else
+            {
+                number = readObjectNumber();
+            }
+        }
+        catch (IOException e)
+        {
+            //ok for some reason "GNU Ghostscript 5.10" puts two endobj
+            //statements after an object, of course this is nonsense
+            //but because we want to support as many PDFs as possible
+            //we will simply try again
+            number = readObjectNumber();
+        }
+        if (!missingObjectNumber)
+        {
+            skipSpaces();
+            genNum = readGenerationNumber();
+            String objectKey = readString(3);
+            if (!objectKey.equals("obj"))
+            {
+                if (!continueOnError || !objectKey.equals("o"))
+                {
+                    throw new IOException("expected='obj' actual='" + objectKey + "' " + pdfSource);
+                }
+                //assume that "o" was meant to be "obj" (this is a workaround for
+                // PDFBOX-773 attached PDF Andersens_Fairy_Tales.pdf).
+            }
+        }
+        else
+        {
+            number = -1;
+            genNum = -1;
+        }
+        return new COSObjectKey(number, genNum);
+    }
 }
