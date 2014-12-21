@@ -431,12 +431,15 @@ public final class StandardSecurityHandler extends SecurityHandler
                 
                 // Algorithm 10: compute "Perms" value
                 byte[] perms = new byte[16];
-                perms[0] = (byte)permissionInt;
-                perms[1] = (byte)(permissionInt >>> 8);
-                perms[2] = (byte)(permissionInt >>> 16);
-                perms[3] = (byte)(permissionInt >>> 24);
-                perms[4] = perms[5] = perms[6] = perms[7] = (byte)0xFF;
-                perms[8] = 'T';    // we always use EncryptMetadata == true
+                perms[0] = (byte) permissionInt;
+                perms[1] = (byte) (permissionInt >>> 8);
+                perms[2] = (byte) (permissionInt >>> 16);
+                perms[3] = (byte) (permissionInt >>> 24);
+                perms[4] = (byte) 0xFF;
+                perms[5] = (byte) 0xFF;
+                perms[6] = (byte) 0xFF;
+                perms[7] = (byte) 0xFF;
+                perms[8] = 'T';    // we always encrypt Metadata
                 perms[9] = 'a';
                 perms[10] = 'd';
                 perms[11] = 'b';
