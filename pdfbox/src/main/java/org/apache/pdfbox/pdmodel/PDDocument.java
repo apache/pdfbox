@@ -248,14 +248,12 @@ public class PDDocument implements Closeable
         boolean checkFields = false;
         for (PDFieldTreeNode field : acroFormFields)
         {
-            if (field instanceof PDSignatureField)
+            if (field instanceof PDSignatureField
+                    && ((PDSignatureField) field).getCOSObject().equals(signatureField.getCOSObject()))
             {
-                if (((PDSignatureField) field).getCOSObject().equals(signatureField.getCOSObject()))
-                {
-                    checkFields = true;
-                    signatureField.getCOSObject().setNeedToBeUpdate(true);
-                    break;
-                }
+                checkFields = true;
+                signatureField.getCOSObject().setNeedToBeUpdate(true);
+                break;
             }
         }
         if (!checkFields)
@@ -414,14 +412,12 @@ public class PDDocument implements Closeable
             boolean checkFields = false;
             for (PDFieldTreeNode fieldNode : field)
             {
-                if (fieldNode instanceof PDSignatureField)
+                if (fieldNode instanceof PDSignatureField 
+                        && fieldNode.getCOSObject().equals(sigField.getCOSObject()))
                 {
-                    if (fieldNode.getCOSObject().equals(sigField.getCOSObject()))
-                    {
-                        checkFields = true;
-                        sigField.getCOSObject().setNeedToBeUpdate(true);
-                        break;
-                    }
+                    checkFields = true;
+                    sigField.getCOSObject().setNeedToBeUpdate(true);
+                    break;
                 }
             }
 
