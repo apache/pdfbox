@@ -662,6 +662,7 @@ public class PDDocument implements Pageable, Closeable
             if(src != null)
             {
                 PDStream dest = new PDStream( document.createCOSStream());
+                dest.addCompression();
                 importedPage.setContents( dest );
                 os = dest.createOutputStream();
 
