@@ -16,12 +16,9 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.pattern;
 
-import java.awt.geom.AffineTransform;
-
 import org.apache.pdfbox.contentstream.PDContentStream;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
@@ -32,7 +29,7 @@ import org.apache.pdfbox.util.Matrix;
 /**
  * A tiling pattern dictionary.
  *
- * @author Andreas Lehmkühler
+ * @author Andreas LehmkÃ¼hler
  */
 public class PDTilingPattern extends PDAbstractPattern implements PDContentStream
 {
@@ -179,6 +176,7 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
      * This will return null if no resources are available at this level.
      * @return The resources for this pattern.
      */
+    @Override
     public PDResources getResources()
     {
         PDResources retval = null;
@@ -249,7 +247,8 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
     @Override
     public Matrix getMatrix()
     {
-        Matrix matrix = null;
+        //TODO this method can be deleted if the "repair mechanism for invalid matrices" is deleted
+        Matrix matrix;
         COSArray array = (COSArray)getCOSDictionary().getDictionaryObject(COSName.MATRIX);
         if (array != null)
         {
@@ -291,19 +290,4 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
         return matrix;
     }
 
-    /**
-     * Sets the optional Matrix entry for the Pattern.
-     * @param transform the transformation matrix
-     */
-    public void setMatrix(AffineTransform transform)
-    {
-        COSArray matrix = new COSArray();
-        double[] values = new double[6];
-        transform.getMatrix(values);
-        for (double v : values)
-        {
-            matrix.add(new COSFloat((float)v));
-        }
-        getCOSDictionary().setItem(COSName.MATRIX, matrix);
-    }
 }
