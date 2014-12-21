@@ -94,7 +94,6 @@ public class COSDictionary extends COSBase
                 return entry.getKey();
             }
         }
-
         return null;
     }
 
@@ -548,12 +547,9 @@ public class COSDictionary extends COSBase
     public COSName getCOSName(COSName key)
     {
         COSBase name = getDictionaryObject(key);
-        if (name != null)
+        if (name instanceof COSName)
         {
-            if (name instanceof COSName)
-            {
-                return (COSName) name;
-            }
+            return (COSName) name;
         }
         return null;
     }
@@ -569,12 +565,9 @@ public class COSDictionary extends COSBase
     public COSName getCOSName(COSName key, COSName defaultValue)
     {
         COSBase name = getDictionaryObject(key);
-        if (name != null)
+        if (name instanceof COSName)
         {
-            if (name instanceof COSName)
-            {
-                return (COSName) name;
-            }
+            return (COSName) name;
         }
         return defaultValue;
     }
@@ -602,16 +595,13 @@ public class COSDictionary extends COSBase
     {
         String retval = null;
         COSBase name = getDictionaryObject(key);
-        if (name != null)
+        if (name instanceof COSName)
         {
-            if (name instanceof COSName)
-            {
-                retval = ((COSName) name).getName();
-            }
-            else if (name instanceof COSString)
-            {
-                retval = ((COSString) name).getString();
-            }
+            retval = ((COSName) name).getName();
+        }
+        else if (name instanceof COSString)
+        {
+            retval = ((COSString) name).getString();
         }
         return retval;
     }
@@ -670,7 +660,7 @@ public class COSDictionary extends COSBase
     {
         String retval = null;
         COSBase value = getDictionaryObject(key);
-        if (value != null && value instanceof COSString)
+        if (value instanceof COSString)
         {
             retval = ((COSString) value).getString();
         }
@@ -933,7 +923,7 @@ public class COSDictionary extends COSBase
     {
         boolean retval = defaultValue;
         COSBase bool = getDictionaryObject(firstKey, secondKey);
-        if (bool != null && bool instanceof COSBoolean)
+        if (bool instanceof COSBoolean)
         {
             retval = ((COSBoolean) bool).getValue();
         }
@@ -1036,7 +1026,7 @@ public class COSDictionary extends COSBase
     {
         int retval = defaultValue;
         COSBase obj = getDictionaryObject(keyList);
-        if (obj != null && obj instanceof COSNumber)
+        if (obj instanceof COSNumber)
         {
             retval = ((COSNumber) obj).intValue();
         }
@@ -1095,7 +1085,7 @@ public class COSDictionary extends COSBase
     {
         int retval = defaultValue;
         COSBase obj = getDictionaryObject(firstKey, secondKey);
-        if (obj != null && obj instanceof COSNumber)
+        if (obj instanceof COSNumber)
         {
             retval = ((COSNumber) obj).intValue();
         }
@@ -1139,7 +1129,7 @@ public class COSDictionary extends COSBase
     {
         long retval = defaultValue;
         COSBase obj = getDictionaryObject(keyList);
-        if (obj != null && obj instanceof COSNumber)
+        if (obj instanceof COSNumber)
         {
             retval = ((COSNumber) obj).longValue();
         }
@@ -1171,7 +1161,7 @@ public class COSDictionary extends COSBase
     {
         long retval = defaultValue;
         COSBase obj = getDictionaryObject(key);
-        if (obj != null && obj instanceof COSNumber)
+        if (obj instanceof COSNumber)
         {
             retval = ((COSNumber) obj).longValue();
         }
@@ -1227,7 +1217,7 @@ public class COSDictionary extends COSBase
     {
         float retval = defaultValue;
         COSBase obj = getDictionaryObject(key);
-        if (obj != null && obj instanceof COSNumber)
+        if (obj instanceof COSNumber)
         {
             retval = ((COSNumber) obj).floatValue();
         }
@@ -1441,9 +1431,13 @@ public class COSDictionary extends COSBase
             retVal.append(key);
             retVal.append(":");
             if (getDictionaryObject(key) != null)
+            {
                 retVal.append(getDictionaryObject(key).toString());
+            }
             else
+            {
                 retVal.append("<null>");
+            }
             retVal.append(") ");
         }
         retVal.append("}");
