@@ -37,11 +37,11 @@ import org.apache.xmpbox.XMPMetadata;
 public abstract class AbstractField
 {
 
-    private XMPMetadata metadata;
+    private final XMPMetadata metadata;
 
     private String propertyName;
 
-    private Map<String, Attribute> attributes;
+    private final Map<String, Attribute> attributes;
 
     /**
      * Constructor of a XMP Field
@@ -86,14 +86,7 @@ public abstract class AbstractField
             // if same name in element, attribute will be replaced
             attributes.remove(value.getName());
         }
-        if (value.getNamespace() == null)
-        {
-            attributes.put(value.getName(), value);
-        }
-        else
-        {
-            attributes.put(value.getName(), value);
-        }
+        attributes.put(value.getName(), value);
     }
 
     /**
