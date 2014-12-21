@@ -162,7 +162,7 @@ public class LayerUtility
         transferDict(page.getCOSObject(), form.getCOSStream(), PAGE_TO_FORM_FILTER, true);
 
         Matrix matrix = form.getMatrix();
-        AffineTransform at = matrix != null ? matrix.createAffineTransform() : new AffineTransform();
+        AffineTransform at = matrix.createAffineTransform();
         PDRectangle mediaBox = page.getMediaBox();
         PDRectangle cropBox = page.getCropBox();
         PDRectangle viewBox = (cropBox != null ? cropBox : mediaBox);
