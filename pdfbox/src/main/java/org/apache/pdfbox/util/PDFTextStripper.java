@@ -1424,7 +1424,7 @@ public class PDFTextStripper extends PDFTextStreamEngine
      * @return start position of the last line
      * @throws IOException if something went wrong
      */
-    protected PositionWrapper handleLineSeparation(PositionWrapper current,
+    private PositionWrapper handleLineSeparation(PositionWrapper current,
             PositionWrapper lastPosition, PositionWrapper lastLineStartPosition,
             float maxHeightForLine) throws IOException
     {
@@ -1474,7 +1474,7 @@ public class PDFTextStripper extends PDFTextStreamEngine
      * @param lastLineStartPosition the last text position that followed a line separator, or null.
      * @param maxHeightForLine max height for text positions since lasLineStartPosition.
      */
-    protected void isParagraphSeparation(PositionWrapper position,  
+    private void isParagraphSeparation(PositionWrapper position,  
             PositionWrapper lastPosition, PositionWrapper lastLineStartPosition,
             float maxHeightForLine)
     {
@@ -1613,7 +1613,7 @@ public class PDFTextStripper extends PDFTextStreamEngine
      * @param pw position
      * @return the matching pattern
      */
-    protected Pattern matchListItemPattern(PositionWrapper pw) 
+    private Pattern matchListItemPattern(PositionWrapper pw) 
     {
         TextPosition tp = pw.getTextPosition();
         String txt = tp.getUnicode();
