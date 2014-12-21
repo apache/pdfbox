@@ -766,7 +766,6 @@ public class NonSequentialPDFParser extends PDFParser
      */
     protected final void setPdfSource(long fileOffset) throws IOException
     {
-
         pdfSource.seek(fileOffset);
 
         // alternative using 'old fashioned' input stream
@@ -788,14 +787,6 @@ public class NonSequentialPDFParser extends PDFParser
     {
         // if ( pdfSource != null )
         // pdfSource.close();
-    }
-
-    private void closeFileStream() throws IOException
-    {
-        if (pdfSource != null)
-        {
-            pdfSource.close();
-        }
     }
 
     // ------------------------------------------------------------------------
@@ -842,16 +833,7 @@ public class NonSequentialPDFParser extends PDFParser
         }
         finally
         {
-            if (fIn != null)
-            {
-                try
-                {
-                    fIn.close();
-                }
-                catch (IOException ioe)
-                {
-                }
-            }
+            IOUtils.closeQuietly(fIn);
         }
 
         // ---- find last '%%EOF'
@@ -991,6 +973,7 @@ public class NonSequentialPDFParser extends PDFParser
 
     // ------------------------------------------------------------------------
     /** Parses all objects needed by pages and closes input stream. */
+    
     /**
      * {@inheritDoc}
      */
@@ -1030,21 +1013,12 @@ public class NonSequentialPDFParser extends PDFParser
         }
         finally
         {
-            try
-            {
-                closeFileStream();
-                if (keyStoreInputStream != null)
-                {
-                    keyStoreInputStream.close();
-                }
-            }
-            catch (IOException ioe)
-            {
-            }
+            IOUtils.closeQuietly(pdfSource);
+            IOUtils.closeQuietly(keyStoreInputStream);
 
             deleteTempFile();
 
-            if (exceptionOccurred && (document != null))
+            if (exceptionOccurred && document != null)
             {
                 try
                 {
