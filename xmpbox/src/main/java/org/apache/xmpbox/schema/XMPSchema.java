@@ -1213,41 +1213,16 @@ public class XMPSchema extends AbstractStructuredType
                 {
                     analyzedPropQualifiedName = prop.getPropertyName();
                     Iterator<AbstractField> itActualEmbeddedProperties = getAllProperties().iterator();
-                    AbstractField tmpEmbeddedProperty;
-
-                    Iterator<AbstractField> itNewValues;
-                    TextType tmpNewValue;
-
-                    Iterator<AbstractField> itOldValues;
-                    TextType tmpOldValue;
-
-                    boolean alreadyPresent = false;
-
                     while (itActualEmbeddedProperties.hasNext())
                     {
-                        tmpEmbeddedProperty = itActualEmbeddedProperties.next();
+                        AbstractField tmpEmbeddedProperty = itActualEmbeddedProperties.next();
                         if (tmpEmbeddedProperty instanceof ArrayProperty && 
                                 tmpEmbeddedProperty.getPropertyName().equals(analyzedPropQualifiedName))
                         {
-                            itNewValues = ((ArrayProperty) prop).getContainer().getAllProperties().iterator();
-                            // Merge a complex property
-                            while (itNewValues.hasNext())
+                            Iterator<AbstractField> itNewValues = ((ArrayProperty) prop).getContainer().getAllProperties().iterator();
+                            if (mergeComplexProperty(itNewValues, (ArrayProperty) tmpEmbeddedProperty)) 
                             {
-                                tmpNewValue = (TextType) itNewValues.next();
-                                itOldValues = ((ArrayProperty) tmpEmbeddedProperty).getContainer()
-                                        .getAllProperties().iterator();
-                                while (itOldValues.hasNext() && !alreadyPresent)
-                                {
-                                    tmpOldValue = (TextType) itOldValues.next();
-                                    if (tmpOldValue.getStringValue().equals(tmpNewValue.getStringValue()))
-                                    {
-                                        return;
-                                    }
-                                }
-                                if (!alreadyPresent)
-                                {
-                                    ((ArrayProperty) tmpEmbeddedProperty).getContainer().addProperty(tmpNewValue);
-                                }
+                                return;
                             }
                         }
                     }
@@ -1258,6 +1233,25 @@ public class XMPSchema extends AbstractStructuredType
                 }
             }
         }
+    }
+
+    private boolean mergeComplexProperty(Iterator<AbstractField> itNewValues, ArrayProperty arrayProperty)
+    {
+        while (itNewValues.hasNext())
+        {
+            TextType tmpNewValue = (TextType) itNewValues.next();
+            Iterator<AbstractField> itOldValues = arrayProperty.getContainer().getAllProperties().iterator();
+            while (itOldValues.hasNext())
+            {
+                TextType tmpOldValue = (TextType) itOldValues.next();
+                if (tmpOldValue.getStringValue().equals(tmpNewValue.getStringValue()))
+                {
+                    return true;
+                }
+            }
+            arrayProperty.getContainer().addProperty(tmpNewValue);
+        }
+        return false;
     }
 
     /**
