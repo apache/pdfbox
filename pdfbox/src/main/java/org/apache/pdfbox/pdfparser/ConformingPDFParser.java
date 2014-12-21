@@ -119,9 +119,9 @@ public class ConformingPDFParser extends BaseParser {
     
     private boolean parseXrefTable() throws IOException {
         String currentLine = readLine();
-        if(throwNonConformingException) {
-            if(!"xref".equals(currentLine))
-                throw new AssertionError("xref table not found.\nExpected: xref\nFound: "+currentLine);
+        if (throwNonConformingException && !"xref".equals(currentLine))
+        {
+            throw new AssertionError("xref table not found.\nExpected: xref\nFound: " + currentLine);
         }
 
         int objectNumber = readInt();
@@ -136,24 +136,24 @@ public class ConformingPDFParser extends BaseParser {
     protected long parseTrailerInformation() throws IOException, NumberFormatException {
         consumeWhitespaceBackwards();
         String currentLine = readLineBackwards();
-        if(throwNonConformingException) {
-            if(!"%%EOF".equals(currentLine))
-                throw new AssertionError("Invalid EOF marker.\nExpected: %%EOF\nFound: "+currentLine);
+        if (throwNonConformingException && !"%%EOF".equals(currentLine))
+        {
+            throw new AssertionError("Invalid EOF marker.\nExpected: %%EOF\nFound: " + currentLine);
         }
 
         long xrefLocation = readLongBackwards();
         currentLine = readLineBackwards();
-        if(throwNonConformingException) {
-            if(!"startxref".equals(currentLine))
-                throw new AssertionError("Invalid trailer.\nExpected: startxref\nFound: "+currentLine);
+        if (throwNonConformingException && !"startxref".equals(currentLine))
+        {
+            throw new AssertionError("Invalid trailer.\nExpected: startxref\nFound: " + currentLine);
         }
 
         document.setTrailer(readDictionaryBackwards());
         consumeWhitespaceBackwards();
         currentLine = readLineBackwards();
-        if(throwNonConformingException) {
-            if(!"trailer".equals(currentLine))
-                throw new AssertionError("Invalid trailer.\nExpected: trailer\nFound: "+currentLine);
+        if (throwNonConformingException && !"trailer".equals(currentLine))
+        {
+            throw new AssertionError("Invalid trailer.\nExpected: trailer\nFound: " + currentLine);
         }
 
         return xrefLocation;
@@ -547,16 +547,17 @@ public class ConformingPDFParser extends BaseParser {
         // consume the last two '>' chars which signify the end of the dictionary
         consumeWhitespaceBackwards();
         byte singleByte = readByteBackwards();
-        if(throwNonConformingException) {
-            if(singleByte != '>')
-                throw new AssertionError("");
-        }
-        singleByte = readByteBackwards();
-        if(throwNonConformingException) {
-            if(singleByte != '>')
-                throw new AssertionError("");
+        if (throwNonConformingException && singleByte != '>')
+        {
+            throw new AssertionError("");
         }
         
+        singleByte = readByteBackwards();
+        if (throwNonConformingException && singleByte != '>')
+        {
+            throw new AssertionError("");
+        }
+
         // check to see if we're at the end of the dictionary
         boolean atEndOfDictionary = false;
         singleByte = consumeWhitespaceBackwards();
@@ -656,7 +657,7 @@ public class ConformingPDFParser extends BaseParser {
 
     protected String readWord() throws IOException {
         StringBuilder sb = new StringBuilder();
-        boolean stop = true;
+        boolean stop;
         do {
             byte singleByte = readByte();
             stop = this.isWhitespace(singleByte);
