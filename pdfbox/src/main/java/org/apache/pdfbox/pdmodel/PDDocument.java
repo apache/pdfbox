@@ -351,12 +351,6 @@ public class PDDocument implements Closeable
         }
 
         // Get the annotations of the page and append the signature-annotation to it
-        if (annotations == null)
-        {
-            annotations = new COSArrayList();
-            page.setAnnotations(annotations);
-        }
-
         // take care that page and acroforms do not share the same array (if so, we don't need to add it twice)
         if (!(annotations instanceof COSArrayList &&
               acroFormFields instanceof COSArrayList &&
