@@ -191,7 +191,7 @@ public class PDFormXObject extends PDXObject implements PDContentStream
 
     /**
      * This will get the optional Matrix of an XObjectForm. It maps the form space to user space.
-     * @return the form matrix
+     * @return the form matrix if available, or the identity matrix.
      */
     @Override
     public Matrix getMatrix()
