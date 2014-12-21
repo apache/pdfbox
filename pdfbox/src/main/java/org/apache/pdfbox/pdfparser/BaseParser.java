@@ -1743,15 +1743,12 @@ public abstract class BaseParser
             skipSpaces();
             genNum = readGenerationNumber();
             String objectKey = readString(3);
-            if (!objectKey.equals("obj"))
+            if (!objectKey.equals("obj") && continueOnError && objectKey.equals("o"))
             {
-                if (!continueOnError || !objectKey.equals("o"))
-                {
-                    throw new IOException("expected='obj' actual='" + objectKey + "' " + pdfSource);
-                }
-                //assume that "o" was meant to be "obj" (this is a workaround for
-                // PDFBOX-773 attached PDF Andersens_Fairy_Tales.pdf).
+                throw new IOException("expected='obj' actual='" + objectKey + "' " + pdfSource);
             }
+            //assume that "o" was meant to be "obj" (this is a workaround for
+            // PDFBOX-773 attached PDF Andersens_Fairy_Tales.pdf).
         }
         else
         {
