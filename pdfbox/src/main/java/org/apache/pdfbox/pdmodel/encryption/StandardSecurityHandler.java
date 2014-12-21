@@ -583,7 +583,6 @@ public final class StandardSecurityHandler extends SecurityHandler
             byte[] iterationKey = new byte[ rc4Key.length ];
             byte[] otemp = new byte[ owner.length ]; //sm
             System.arraycopy( owner, 0, otemp, 0, owner.length ); //sm
-            rc4.write( owner, result);//sm
             
             for( int i=19; i>=0; i-- )
             {
