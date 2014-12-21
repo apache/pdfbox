@@ -32,6 +32,20 @@ import org.apache.pdfbox.pdmodel.common.PDTextStream;
  */
 public final class PDTextField extends PDVariableText
 {
+    
+    /**
+     * Ff flags.
+     */
+    private static final int FLAG_MULTILINE = 1 << 12;
+    private static final int FLAG_PASSWORD = 1 << 13;
+    private static final int FLAG_FILE_SELECT = 1 << 20;
+    private static final int FLAG_DO_NOT_SPELL_CHECK = 1 << 22;
+    private static final int FLAG_DO_NOT_SCROLL = 1 << 23;
+    private static final int FLAG_COMB = 1 << 24;
+    private static final int FLAG_RICH_TEXT = 1 << 25;
+    
+    
+    
     /**
      * @see PDFieldTreeNode#PDFieldTreeNode(PDAcroForm)
      *
@@ -53,6 +67,134 @@ public final class PDTextField extends PDVariableText
     {
         super( theAcroForm, field, parentNode);
     }
+
+    /**
+     * @return true if the field is multiline
+     */
+    public boolean isMultiline()
+    {
+        return getDictionary().getFlag( COSName.FF, FLAG_MULTILINE );
+    }
+
+    /**
+     * Set the multiline bit.
+     *
+     * @param multiline The value for the multiline.
+     */
+    public void setMultiline( boolean multiline )
+    {
+        getDictionary().setFlag( COSName.FF, FLAG_MULTILINE, multiline );
+    }
+
+    /**
+     * @return true if the field is a password field.
+     */
+    public boolean isPassword()
+    {
+        return getDictionary().getFlag( COSName.FF, FLAG_PASSWORD );
+    }
+
+    /**
+     * Set the password bit.
+     *
+     * @param password The value for the password.
+     */
+    public void setPassword( boolean password )
+    {
+        getDictionary().setFlag( COSName.FF, FLAG_PASSWORD, password );
+    }
+
+    /**
+     * @return true if the field is a file select field.
+     */
+    public boolean isFileSelect()
+    {
+        return getDictionary().getFlag( COSName.FF, FLAG_FILE_SELECT );
+    }
+
+    /**
+     * Set the file select bit.
+     *
+     * @param fileSelect The value for the fileSelect.
+     */
+    public void setFileSelect( boolean fileSelect )
+    {
+        getDictionary().setFlag( COSName.FF, FLAG_FILE_SELECT, fileSelect );
+    }
+
+    /**
+     * @return true if the field is not suppose to spell check.
+     */
+    public boolean doNotSpellCheck()
+    {
+        return getDictionary().getFlag( COSName.FF, FLAG_DO_NOT_SPELL_CHECK );
+    }
+
+    /**
+     * Set the doNotSpellCheck bit.
+     *
+     * @param doNotSpellCheck The value for the doNotSpellCheck.
+     */
+    public void setDoNotSpellCheck( boolean doNotSpellCheck )
+    {
+        getDictionary().setFlag( COSName.FF, FLAG_DO_NOT_SPELL_CHECK, doNotSpellCheck );
+    }
+
+    /**
+     * @return true if the field is not suppose to scroll.
+     */
+    public boolean doNotScroll()
+    {
+        return getDictionary().getFlag( COSName.FF, FLAG_DO_NOT_SCROLL );
+    }
+
+    /**
+     * Set the doNotScroll bit.
+     *
+     * @param doNotScroll The value for the doNotScroll.
+     */
+    public void setDoNotScroll( boolean doNotScroll )
+    {
+        getDictionary().setFlag( COSName.FF, FLAG_DO_NOT_SCROLL, doNotScroll );
+    }
+
+    /**
+     * @return true if the field is not suppose to comb the text display.
+     */
+    public boolean isComb()
+    {
+        return getDictionary().getFlag( COSName.FF, FLAG_COMB );
+    }
+
+    /**
+     * Set the comb bit.
+     *
+     * @param comb The value for the comb.
+     */
+    public void setComb( boolean comb )
+    {
+        getDictionary().setFlag( COSName.FF, FLAG_COMB, comb );
+    }
+
+    /**
+     * @return true if the field is a rich text field.
+     */
+    public boolean isRichText()
+    {
+        return getDictionary().getFlag( COSName.FF, FLAG_RICH_TEXT );
+    }
+
+    /**
+     * Set the richText bit.
+     *
+     * @param richText The value for the richText.
+     */
+    public void setRichText( boolean richText )
+    {
+        getDictionary().setFlag( COSName.FF, FLAG_RICH_TEXT, richText );
+    }    
+    
+    
     
     /**
      * Returns the maximum number of characters of the text field.

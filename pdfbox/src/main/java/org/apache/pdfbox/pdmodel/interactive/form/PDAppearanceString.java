@@ -390,7 +390,8 @@ public final class PDAppearanceString
         {
             printWriter.print("<");
             printWriter.flush();
-            COSWriter.writeString(value.getBytes(Charset.forName("ISO-8859-1")), output); // todo: use font's encoding
+            // TODO use font's encoding
+            COSWriter.writeString(value.getBytes(Charset.forName("ISO-8859-1")), output); 
             printWriter.println("> Tj");
         }
         else
@@ -401,7 +402,8 @@ public final class PDAppearanceString
                 boolean lastLine = i == paragraphs.length - 1;
                 printWriter.print("<");
                 printWriter.flush();
-                COSWriter.writeString(value.getBytes(Charset.forName("ISO-8859-1")), output); // todo: use font's encoding
+                // TODO use font's encoding
+                COSWriter.writeString(value.getBytes(Charset.forName("ISO-8859-1")), output);
                 printWriter.println(lastLine ? "> Tj\n" : "> Tj 0 -13 Td");
             }
         }
@@ -447,7 +449,7 @@ public final class PDAppearanceString
 
     private boolean isMultiLineValue(String multiLineValue)
     {
-        return (parent.isMultiline() && multiLineValue.contains("\n"));
+        return (parent instanceof PDTextField && ((PDTextField) parent).isMultiline() && multiLineValue.contains("\n"));
     }
 
     /**
@@ -536,7 +538,7 @@ public final class PDAppearanceString
 
         float widthBasedFontSize = Float.MAX_VALUE;
 
-        if (parent.doNotScroll())
+        if (parent instanceof PDTextField && ((PDTextField) parent).doNotScroll())
         {
             // if we don't scroll then we will shrink the font to fit into the text area.
             float widthAtFontSize1 = pdFont.getStringWidth(value) / 1000.f;
@@ -566,7 +568,7 @@ public final class PDAppearanceString
     {
         float lineWidth = getLineWidth(tokens);
         float verticalOffset;
-        if (parent.isMultiline())
+        if (parent instanceof PDTextField && ((PDTextField) parent).isMultiline())
         {
             int rows = (int) (getAvailableHeight(boundingBox, lineWidth) / ((int) fontSize));
             verticalOffset = ((rows) * fontSize) - fontSize;

@@ -64,5 +64,18 @@ public final class PDListBox extends PDChoice
             getDictionary().removeItem(COSName.TI);
         }
     }
-
+    
+    /**
+     * Get the fields default value.
+     * 
+     * The value is stored in the field dictionaries "DV" entry.
+     * 
+     * @return The value of this entry.
+     */
+    @Override
+    public Object getDefaultValue()
+    {
+        // TODO add handling specific to list box
+        return getInheritableAttribute(getDictionary(), COSName.DV);
+    }
 }
