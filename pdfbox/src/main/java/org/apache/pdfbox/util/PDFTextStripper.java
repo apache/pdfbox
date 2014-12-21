@@ -463,7 +463,7 @@ public class PDFTextStripper extends PDFTextStreamEngine
                 if(useCustomQuicksort) 
                 {
                     QuickSort.sort( textList, comparator );
-                } 
+                }
                 else 
                 {
                     Collections.sort( textList, comparator );
@@ -499,7 +499,8 @@ public class PDFTextStripper extends PDFTextStreamEngine
                             dir == Character.DIRECTIONALITY_LEFT_TO_RIGHT_OVERRIDE)
                     {
                         ltrCount++;
-                    } else if (dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT ||
+                    }
+                    else if (dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT ||
                             dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC ||
                             dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_EMBEDDING ||
                             dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_OVERRIDE)
@@ -560,7 +561,8 @@ public class PDFTextStripper extends PDFTextStreamEngine
                     positionY = position.getYDirAdj();
                     positionWidth = position.getWidthDirAdj();
                     positionHeight = position.getHeightDir();
-                } else
+                }
+                else
                 {
                     positionX = position.getX();
                     positionY = position.getY();
@@ -578,12 +580,14 @@ public class PDFTextStripper extends PDFTextStreamEngine
                 if (wordSpacing == 0 || wordSpacing == Float.NaN)
                 {
                     deltaSpace = Float.MAX_VALUE;
-                } else
+                }
+                else
                 {
                     if (lastWordSpacing < 0)
                     {
                         deltaSpace = wordSpacing * getSpacingTolerance();
-                    } else
+                    }
+                    else
                     {
                         deltaSpace = (wordSpacing + lastWordSpacing) / 2f * getSpacingTolerance();
                     }
@@ -597,7 +601,8 @@ public class PDFTextStripper extends PDFTextStreamEngine
                 if (previousAveCharWidth < 0)
                 {
                     averageCharWidth = positionWidth / wordCharCount;
-                } else
+                }
+                else
                 {
                     averageCharWidth = (previousAveCharWidth + positionWidth / wordCharCount) / 2f;
                 }
@@ -611,7 +616,8 @@ public class PDFTextStripper extends PDFTextStreamEngine
                     if (deltaCharWidth > deltaSpace)
                     {
                         expectedStartOfNextWordX = endOfLastTextX + deltaSpace;
-                    } else
+                    }
+                    else
                     {
                         expectedStartOfNextWordX = endOfLastTextX + deltaCharWidth;
                     }
@@ -1431,13 +1437,13 @@ public class PDFTextStripper extends PDFTextStreamEngine
             if (lastPosition.isArticleStart()) 
             {
                 writeParagraphStart();
-            } 
+            }
             else 
             {
                 writeLineSeparator();
                 writeParagraphSeparator();
             }
-        } 
+        }
         else 
         {
             writeLineSeparator();
