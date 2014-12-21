@@ -57,7 +57,7 @@ public class SetField
         {
             if (field instanceof PDCheckbox)
             {
-                ((PDCheckbox) field).setValue(COSName.getPDFName(value));
+                ((PDCheckbox) field).setValue(value);
             }
             else if (field instanceof PDChoice)
             {
