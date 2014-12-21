@@ -314,7 +314,7 @@ public class ConformingPDFParser extends BaseParser {
         } else if(">>".equals(lastSection)) {
             // dictionary
             throw new RuntimeException("Not yet implemented");
-        } else if(lastSection != null && lastSection.endsWith("]")) {
+        } else if(lastSection.endsWith("]")) {
             // array
             COSArray array = new COSArray();
             lastSection = lastSection.replaceAll("]$", "");
@@ -327,7 +327,7 @@ public class ConformingPDFParser extends BaseParser {
             if(lastSection.matches("^\\s*<.*>\\s*$")) // it's a hex string
                 array.add(COSString.parseHex(lastSection.replaceAll("^\\s*<", "").replaceAll(">\\s*$", "")));
             obj = array;
-        } else if(lastSection != null && lastSection.endsWith(">")) {
+        } else if(lastSection.endsWith(">")) {
             // string of hex codes
             obj = processCosObject(lastSection);
         } else {
