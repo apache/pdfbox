@@ -19,7 +19,6 @@ package org.apache.pdfbox.examples.fdf;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
