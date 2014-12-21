@@ -1282,19 +1282,7 @@ public class NonSequentialPDFParser extends PDFParser
         final Set<Long> parsedObjects = new HashSet<Long>();
         final Set<Long> addedObjects = new HashSet<Long>();
 
-        // ---- add objects not to be parsed to list of already parsed objects
-        if (excludeObjects != null)
-        {
-            for (COSName objName : excludeObjects)
-            {
-                COSBase baseObj = dict.getItem(objName);
-                if (baseObj instanceof COSObject)
-                {
-                    parsedObjects.add(getObjectId((COSObject) baseObj));
-                }
-            }
-        }
-
+        addExcludedToList(excludeObjects, dict, parsedObjects);
         addNewToList(toBeParsedList, dict.getValues(), addedObjects);
 
         // ---- go through objects to be parsed
@@ -1390,6 +1378,22 @@ public class NonSequentialPDFParser extends PDFParser
                 addNewToList(toBeParsedList, parsedObj, addedObjects);
 
                 parsedObjects.add(getObjectId(obj));
+            }
+        }
+    }
+
+    // add objects not to be parsed to list of already parsed objects
+    private void addExcludedToList(COSName[] excludeObjects, COSDictionary dict, final Set<Long> parsedObjects)
+    {
+        if (excludeObjects != null)
+        {
+            for (COSName objName : excludeObjects)
+            {
+                COSBase baseObj = dict.getItem(objName);
+                if (baseObj instanceof COSObject)
+                {
+                    parsedObjects.add(getObjectId((COSObject) baseObj));
+                }
             }
         }
     }
@@ -1535,7 +1539,6 @@ public class NonSequentialPDFParser extends PDFParser
                 }
 
                 releasePdfSourceInputStream();
-
             }
             else
             {
