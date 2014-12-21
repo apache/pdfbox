@@ -50,7 +50,6 @@ public final class PDAcroForm implements COSObjectable
     
     private COSDictionary acroForm;
     private PDDocument document;
-    private COSString defaultAppearance;
 
     private Map<String,PDFieldTreeNode> fieldCache;
 
@@ -319,15 +318,7 @@ public final class PDAcroForm implements COSObjectable
      */
     public COSString getDefaultAppearance()
     {
-        if (defaultAppearance == null)
-        {
-            COSBase daValue =  getDictionary().getItem(COSName.DA);
-            if (daValue != null)
-            {
-                defaultAppearance = (COSString)daValue;
-            }
-        }
-        return defaultAppearance;
+        return (COSString) getDictionary().getItem(COSName.DA);
     }
 
     /**
@@ -339,12 +330,10 @@ public final class PDAcroForm implements COSObjectable
     {
         if (daValue != null)
         {
-            defaultAppearance = new COSString(daValue);
-            getDictionary().setItem(COSName.DA, defaultAppearance);
+            getDictionary().setString(COSName.DA, daValue);
         }
         else
         {
-            defaultAppearance = null;
             getDictionary().removeItem(COSName.DA);
         }
     }
