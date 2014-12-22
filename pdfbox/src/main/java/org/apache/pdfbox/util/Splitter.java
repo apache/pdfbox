@@ -18,9 +18,12 @@ package org.apache.pdfbox.util;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 
 import java.io.IOException;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -246,6 +249,32 @@ public class Splitter
         // only the resources of the page will be copied
         imported.setResources( page.getResources() );
         imported.setRotation( page.findRotation() );
+        // remove page links to avoid copying not needed resources 
+        processAnnotations(imported);
         pageNumber++;
     }
+    
+    private void processAnnotations(PDPage imported) throws IOException
+    {
+        List<PDAnnotation> annotations = imported.getAnnotations();
+        for (PDAnnotation annotation : annotations)
+        {
+            if (annotation instanceof PDAnnotationLink)
+            {
+                PDAnnotationLink link = (PDAnnotationLink)annotation;   
+                PDDestination destination = link.getDestination();
+                if (destination instanceof PDPageDestination)
+                {
+                    // TODO preserve links to pages within the splitted result  
+                    link.setDestination(null);
+                }
+            }
+            else
+            {
+                // TODO preserve links to pages within the splitted result  
+                annotation.setPage(null);
+            }
+        }
+    }
+
 }
