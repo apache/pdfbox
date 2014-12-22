@@ -683,7 +683,7 @@ public class PreflightParser extends NonSequentialPDFParser
             {
                 // offset of indirect object in file
                 // ---- go to object start
-                setPdfSource(offsetOrObjstmObNr);
+                pdfSource.seek(offsetOrObjstmObNr);
                 // ---- we must have an indirect object
                 long readObjNr;
                 int readObjGen;
@@ -797,8 +797,6 @@ public class PreflightParser extends NonSequentialPDFParser
                     addValidationError(new ValidationError(PreflightConstants.ERROR_SYNTAX_OBJ_DELIMITER,
                             "EOL expected after the 'endobj' keyword at offset "+pdfSource.getOffset()));
                 }
-
-                releasePdfSourceInputStream();
             }
             else
             {
