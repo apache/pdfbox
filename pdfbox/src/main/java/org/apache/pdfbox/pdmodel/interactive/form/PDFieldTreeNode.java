@@ -602,10 +602,10 @@ public abstract class PDFieldTreeNode implements COSObjectable
                 {
                     continue;
                 }
-                COSDictionary parent = (COSDictionary) kidDictionary.getDictionaryObject(
+                COSDictionary parentDictionary = (COSDictionary) kidDictionary.getDictionaryObject(
                         COSName.PARENT, COSName.P);
                 if (kidDictionary.getDictionaryObject(COSName.FT) != null
-                        || (parent != null && parent.getDictionaryObject(COSName.FT) != null))
+                        || (parentDictionary != null && parentDictionary.getDictionaryObject(COSName.FT) != null))
                 {
                     PDFieldTreeNode field = PDFieldTreeNode.createField(acroForm, kidDictionary, this);
                     if (field != null)
