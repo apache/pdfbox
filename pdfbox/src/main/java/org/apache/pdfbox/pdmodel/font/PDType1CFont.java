@@ -28,7 +28,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.fontbox.cff.CFFFont;
 import org.apache.fontbox.cff.CFFParser;
 import org.apache.fontbox.cff.CFFType1Font;
 import org.apache.fontbox.ttf.Type1Equivalent;
@@ -54,7 +53,6 @@ public class PDType1CFont extends PDSimpleFont implements PDType1Equivalent
 
     private final Map<String, Float> glyphHeights = new HashMap<String, Float>();
     private Float avgWidth = null;
-    private final PDRectangle fontBBox = null;
     private Matrix fontMatrix;
     private final AffineTransform fontMatrixTransform;
 
