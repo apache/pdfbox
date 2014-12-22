@@ -216,13 +216,11 @@ public final class PDAppearanceString
             {
                 actions = field.getActions();
             }
-            if (actions != null && actions.getF() != null
-                    && widget.getDictionary().getDictionaryObject(COSName.AP) == null)
-            {
-                // do nothing because the field will be formatted by acrobat
-                // when it is opened. See FreedomExpressions.pdf for an example of this.
-            }
-            else
+
+            // in case all tests fail the field will be formatted by acrobat
+            // when it is opened. See FreedomExpressions.pdf for an example of this.  
+            if (actions == null || actions.getF() == null || 
+                    widget.getDictionary().getDictionaryObject(COSName.AP) != null)
             {
                 PDAppearanceDictionary appearance = widget.getAppearance();
                 if (appearance == null)
@@ -246,7 +244,7 @@ public final class PDAppearanceString
 
                 List<Object> tokens = getStreamTokens(appearanceStream);
                 List<Object> daTokens = getStreamTokens(getDefaultAppearance());
-                PDFont pdFont = getFontAndUpdateResources(tokens, appearanceStream);
+                PDFont pdFont = getFontAndUpdateResources(daTokens, appearanceStream);
 
                 if (!containsMarkedContent(tokens))
                 {
@@ -318,11 +316,7 @@ public final class PDAppearanceString
         printWriter.println("BT");
         if (defaultAppearance != null)
         {
-            String daString = defaultAppearance.getString();
-            PDFStreamParser daParser = new PDFStreamParser(new ByteArrayInputStream(
-                    daString.getBytes("ISO-8859-1")));
-            daParser.parse();
-            List<Object> daTokens = daParser.getTokens();
+            List<Object> daTokens = getStreamTokens(getDefaultAppearance());
             fontSize = calculateFontSize(font, boundingBox, tokens, daTokens);
             int fontIndex = daTokens.indexOf(Operator.getOperator("Tf"));
             if (fontIndex != -1)
@@ -411,7 +405,7 @@ public final class PDAppearanceString
         printWriter.flush();
     }
 
-    private PDFont getFontAndUpdateResources(List<Object> tokens,
+    private PDFont getFontAndUpdateResources(List<Object> daTokens,
             PDAppearanceStream appearanceStream) throws IOException
     {
         PDFont retval = null;
@@ -425,18 +419,8 @@ public final class PDAppearanceString
                 appearanceStream.setResources(streamResources);
             }
 
-            COSString da = getDefaultAppearance();
-            if (da != null)
-            {
-                String data = da.getString();
-                PDFStreamParser streamParser = new PDFStreamParser(new ByteArrayInputStream(
-                        data.getBytes("ISO-8859-1")));
-                streamParser.parse();
-                tokens = streamParser.getTokens();
-            }
-
-            int setFontIndex = tokens.indexOf(Operator.getOperator("Tf"));
-            COSName cosFontName = (COSName) tokens.get(setFontIndex - 2);
+            int setFontIndex = daTokens.indexOf(Operator.getOperator("Tf"));
+            COSName cosFontName = (COSName) daTokens.get(setFontIndex - 2);
             retval = streamResources.getFont(cosFontName);
             if (retval == null)
             {
@@ -538,6 +522,7 @@ public final class PDAppearanceString
 
         float widthBasedFontSize = Float.MAX_VALUE;
 
+        // TODO review the calculation as this seems to not reflect how Acrobat calculates the font size
         if (parent instanceof PDTextField && ((PDTextField) parent).doNotScroll())
         {
             // if we don't scroll then we will shrink the font to fit into the text area.
@@ -545,7 +530,7 @@ public final class PDAppearanceString
             float availableWidth = getAvailableWidth(boundingBox, getLineWidth(tokens));
             widthBasedFontSize = availableWidth / widthAtFontSize1;
         }
-        else if (fontSize == 0)
+        if (fontSize == 0)
         {
             float lineWidth = getLineWidth(tokens);
             float height = pdFont.getFontDescriptor().getFontBoundingBox().getHeight() / 1000f;
