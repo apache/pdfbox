@@ -31,9 +31,8 @@ import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDMarkedConte
 /**
  * A structure element.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>,
- *  <a href="mailto:Johannes%20Koch%20%3Ckoch@apache.org%3E">Johannes Koch</a>
- * @version $Revision: 1.3 $
+ * @author Ben Litchfield
+ * @author Johannes Koch
  */
 public class PDStructureElement extends PDStructureNode
 {
@@ -222,7 +221,7 @@ public class PDStructureElement extends PDStructureNode
             int revisionNumber = attributes.getRevisionNumber(i);
             if (revisionNumber < 0)
             {
-                // TODO throw Exception because revision number must be > -1?
+                throw new IllegalArgumentException("The revision number shall be > -1");
             }
             array.add(attributeObject);
             array.add(COSInteger.get(revisionNumber));
@@ -388,7 +387,7 @@ public class PDStructureElement extends PDStructureNode
             int revisionNumber = classNames.getRevisionNumber(i);
             if (revisionNumber < 0)
             {
-                // TODO throw Exception because revision number must be > -1?
+                throw new IllegalArgumentException("The revision number shall be > -1");
             }
             array.add(COSName.getPDFName(className));
             array.add(COSInteger.get(revisionNumber));
@@ -484,7 +483,7 @@ public class PDStructureElement extends PDStructureNode
     {
         if (revisionNumber < 0)
         {
-            // TODO throw Exception because revision number must be > -1?
+            throw new IllegalArgumentException("The revision number shall be > -1");
         }
         this.getCOSDictionary().setInt(COSName.R, revisionNumber);
     }
