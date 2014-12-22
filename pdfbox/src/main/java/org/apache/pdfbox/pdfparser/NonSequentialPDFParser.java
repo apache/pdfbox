@@ -632,7 +632,7 @@ public class NonSequentialPDFParser extends PDFParser
      */
     private COSDictionary parseXref(long startXRefOffset) throws IOException
     {
-        setPdfSource(startXRefOffset);
+        pdfSource.seek(startXRefOffset);
         parseStartXref();
 
         long startXrefOffset = document.getStartXref();
@@ -649,7 +649,7 @@ public class NonSequentialPDFParser extends PDFParser
         while (prev > -1)
         {
             // seek to xref table
-            setPdfSource(prev);
+            pdfSource.seek(prev);
 
             // skip white spaces
             skipSpaces();
@@ -689,7 +689,7 @@ public class NonSequentialPDFParser extends PDFParser
                         streamOffset = (int)fixedOffset;
                         trailer.setInt(COSName.XREF_STM, streamOffset);
                     }
-                    setPdfSource(streamOffset);
+                    pdfSource.seek(streamOffset);
                     skipSpaces();
                     parseXrefObjStream(prev, false); 
                 }
@@ -749,44 +749,6 @@ public class NonSequentialPDFParser extends PDFParser
         parseXrefStream(xrefStream, (int) objByteOffset, isStandalone);
 
         return dict.getLong(COSName.PREV);
-    }
-
-    // ------------------------------------------------------------------------
-    /** Get current offset in file at which next byte would be read. */
-    private long getPdfSourceOffset()
-    {
-        return pdfSource.getOffset();
-    }
-
-    /**
-     * Sets {@link #pdfSource} to start next parsing at given file offset.
-     * 
-     * @param fileOffset file offset
-     * @throws IOException If something went wrong.
-     */
-    protected final void setPdfSource(long fileOffset) throws IOException
-    {
-        pdfSource.seek(fileOffset);
-
-        // alternative using 'old fashioned' input stream
-        // if ( pdfSource != null )
-        // pdfSource.close();
-        //
-        // pdfSource = new PushBackInputStream(
-        // new BufferedInputStream(
-        // new FileInputStream( file ), 16384), 4096);
-        // pdfSource.skip( _fileOffset );
-    }
-
-    /**
-     * Enable handling of alternative pdfSource implementation.
-     * 
-     * @throws IOException If something went wrong.
-     */
-    protected final void releasePdfSourceInputStream() throws IOException
-    {
-        // if ( pdfSource != null )
-        // pdfSource.close();
     }
 
     // ------------------------------------------------------------------------
@@ -1460,7 +1422,7 @@ public class NonSequentialPDFParser extends PDFParser
             {
                 // offset of indirect object in file
                 // ---- go to object start
-                setPdfSource(offsetOrObjstmObNr);
+                pdfSource.seek(offsetOrObjstmObNr);
 
                 // ---- we must have an indirect object
                 final long readObjNr = readObjectNumber();
@@ -1537,8 +1499,6 @@ public class NonSequentialPDFParser extends PDFParser
                                 + " does not end with 'endobj' but with '" + endObjectKey + "'");
                     }
                 }
-
-                releasePdfSourceInputStream();
             }
             else
             {
@@ -1687,13 +1647,12 @@ public class NonSequentialPDFParser extends PDFParser
                     // not read so far
 
                     // keep current stream position
-                    final long curFileOffset = getPdfSourceOffset();
-                    releasePdfSourceInputStream();
+                    final long curFileOffset = pdfSource.getOffset();
 
                     parseObjectDynamically(lengthObj, true);
 
                     // reset current stream position
-                    setPdfSource(curFileOffset);
+                    pdfSource.seek(curFileOffset);
 
                     if (lengthObj.getObject() == null)
                     {
@@ -1905,7 +1864,7 @@ public class NonSequentialPDFParser extends PDFParser
         {
             return startXRefOffset;
         }
-        setPdfSource(startXRefOffset-1);
+        pdfSource.seek(startXRefOffset-1);
         // save th previous character
         int previous = pdfSource.read();
         if (pdfSource.peek() == X && checkBytesAtOffset(XREF_TABLE))
@@ -1926,7 +1885,7 @@ public class NonSequentialPDFParser extends PDFParser
                     readObjectNumber();
                     readGenerationNumber();
                     readPattern(OBJ_MARKER);
-                    setPdfSource(startXRefOffset);
+                    pdfSource.seek(startXRefOffset);
                     return startXRefOffset;
                 }
                 catch (IOException exception)
