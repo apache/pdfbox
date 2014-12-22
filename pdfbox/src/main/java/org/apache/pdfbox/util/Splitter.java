@@ -18,6 +18,8 @@ package org.apache.pdfbox.util;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
@@ -216,10 +218,18 @@ public class Splitter
             {
                 PDAnnotationLink link = (PDAnnotationLink)annotation;   
                 PDDestination destination = link.getDestination();
+                if (destination == null && link.getAction() != null)
+                {
+                    PDAction action = link.getAction();
+                    if (action instanceof PDActionGoTo)
+                    {
+                        destination = ((PDActionGoTo)action).getDestination();
+                    }
+                }
                 if (destination instanceof PDPageDestination)
                 {
                     // TODO preserve links to pages within the splitted result  
-                    link.setDestination(null);
+                    ((PDPageDestination) destination).setPage(null);
                 }
             }
             else
