@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -49,6 +48,7 @@ public class TestRendering
     public static Collection<Object[]> data() {
         File[] testFiles = new File(INPUT_DIR).listFiles(new FilenameFilter()
         {
+            @Override
             public boolean accept(File dir, String name)
             {
                 return (name.endsWith(".pdf") || name.endsWith(".ai"));
