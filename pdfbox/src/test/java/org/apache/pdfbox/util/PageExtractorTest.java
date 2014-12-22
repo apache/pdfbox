@@ -17,11 +17,9 @@
 package org.apache.pdfbox.util;
 
 import java.io.File;
-import java.io.IOException;
 
 import junit.framework.TestCase;
 import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.fail;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 
@@ -40,9 +38,11 @@ public class PageExtractorTest extends TestCase {
         super(testName);
     }
 
+    @Override
     protected void setUp() throws Exception {
     }
 
+    @Override
     protected void tearDown() throws Exception {
     }
 
