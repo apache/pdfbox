@@ -1179,7 +1179,8 @@ public class NonSequentialPDFParser extends PDFParser
     }
 
     /**
-     * Creates a unique object id using object number and object generation number. (requires object number &lt; 2^31))
+     * Creates a unique object id using object number and object generation
+     * number. (requires object number &lt; 2^31))
      */
     private long getObjectId(final COSObject obj)
     {
@@ -1187,29 +1188,21 @@ public class NonSequentialPDFParser extends PDFParser
     }
 
     /**
-     * Adds all from newObjects to toBeParsedList if it is not an COSObject or we didn't add this COSObject already
-     * (checked via addedObjects).
+     * Adds all from newObjects to toBeParsedList if it is not an COSObject or
+     * we didn't add this COSObject already (checked via addedObjects).
      */
     private void addNewToList(final Queue<COSBase> toBeParsedList,
             final Collection<COSBase> newObjects, final Set<Long> addedObjects)
     {
         for (COSBase newObject : newObjects)
         {
-            if (newObject instanceof COSObject)
-            {
-                final long objId = getObjectId((COSObject) newObject);
-                if (!addedObjects.add(objId))
-                {
-                    continue;
-                }
-            }
-            toBeParsedList.add(newObject);
+            addNewToList(toBeParsedList, newObject, addedObjects);
         }
     }
 
     /**
-     * Adds newObject to toBeParsedList if it is not an COSObject or we didn't add this COSObject already (checked via
-     * addedObjects).
+     * Adds newObject to toBeParsedList if it is not an COSObject or we didn't
+     * add this COSObject already (checked via addedObjects).
      */
     private void addNewToList(final Queue<COSBase> toBeParsedList, final COSBase newObject,
             final Set<Long> addedObjects)
