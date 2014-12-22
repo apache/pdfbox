@@ -1714,6 +1714,7 @@ public abstract class BaseParser
                 lastByte != 13 &&
                 lastByte != 60 && //see sourceforge bug 1714707
                 lastByte != '[' && // PDFBOX-1845
+                lastByte != '(' && // PDFBOX-2579
                 lastByte != 0 && //See sourceforge bug 853328
                 lastByte != -1 )
         {
