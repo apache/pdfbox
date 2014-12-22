@@ -17,13 +17,11 @@
 package org.apache.pdfbox.pdmodel.interactive.form;
 
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
