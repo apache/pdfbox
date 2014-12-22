@@ -47,7 +47,6 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
 
     protected final PDShading patchMeshesShadingType;
 
-    // the following fields are not intialized in this abstract class
     protected List<Patch> patchList; // patch list
     protected int bitsPerFlag; // bits per flag
 
@@ -251,6 +250,7 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
     /**
      * {@inheritDoc}
      */
+    @Override
     protected Map<Point, Integer> calcPixelTable()
     {
         Map<Point, Integer> map = new HashMap<Point, Integer>();
@@ -271,6 +271,7 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
         super.dispose();
     }
 
+    @Override
     protected boolean emptyList()
     {
         return patchList.isEmpty();
