@@ -20,7 +20,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.interactive.action.PDFormFieldAdditionalActions;
-import org.apache.pdfbox.util.appearance.AppearanceGenerator;
+import org.apache.pdfbox.service.interactive.form.AppearanceGenerator;
 
 /**
  * A field in an interactive form.

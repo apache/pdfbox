@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.util.appearance;
+package org.apache.pdfbox.service.interactive.form;
 
 import java.io.IOException;
 
