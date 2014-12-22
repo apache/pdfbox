@@ -1248,14 +1248,9 @@ public class NonSequentialPDFParser extends PDFParser
             COSBase baseObj;
             while ((baseObj = toBeParsedList.poll()) != null)
             {
-                if (baseObj instanceof COSStream)
+                if (baseObj instanceof COSDictionary)
                 {
-                    addNewToList(toBeParsedList, ((COSStream) baseObj).getValues(), addedObjects);
-                }
-                else if (baseObj instanceof COSDictionary)
-                {
-                    addNewToList(toBeParsedList, ((COSDictionary) baseObj).getValues(),
-                            addedObjects);
+                    addNewToList(toBeParsedList, ((COSDictionary) baseObj).getValues(), addedObjects);
                 }
                 else if (baseObj instanceof COSArray)
                 {
