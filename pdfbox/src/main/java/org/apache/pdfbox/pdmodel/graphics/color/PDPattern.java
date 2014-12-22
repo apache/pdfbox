@@ -16,16 +16,13 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.color;
 
+import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
+import java.io.IOException;
+
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDAbstractPattern;
-
-import java.awt.image.BufferedImage;
-
-import java.awt.image.WritableRaster;
-import java.io.IOException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * A Pattern color space is either a Tiling pattern or a Shading pattern.
