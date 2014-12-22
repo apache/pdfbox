@@ -37,8 +37,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.XmpConstants;
 import org.apache.xmpbox.schema.XMPSchema;
