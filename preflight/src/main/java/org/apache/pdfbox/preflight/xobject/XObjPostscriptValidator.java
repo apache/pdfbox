@@ -23,7 +23,6 @@ package org.apache.pdfbox.preflight.xobject;
 
 import org.apache.pdfbox.pdmodel.graphics.PDPostScriptXObject;
 import org.apache.pdfbox.preflight.PreflightContext;
-import org.apache.pdfbox.preflight.exception.ValidationException;
 
 public class XObjPostscriptValidator extends AbstractXObjValidator
 {
@@ -36,18 +35,7 @@ public class XObjPostscriptValidator extends AbstractXObjValidator
     /*
      * (non-Javadoc)
      * 
-     * @see net.awl.edoc.pdfa.validation.graphics.AbstractXObjValidator#validate()
-     */
-    @Override
-    public void validate() throws ValidationException
-    {
-        super.validate();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @seenet.awl.edoc.pdfa.validation.graphics.AbstractXObjValidator# checkMandatoryFields(java.util.List)
+     * @see AbstractXObjValidator#validate()
      */
     @Override
     protected void checkMandatoryFields()
