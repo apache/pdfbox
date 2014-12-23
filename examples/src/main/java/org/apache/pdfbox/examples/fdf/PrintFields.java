@@ -112,7 +112,8 @@ public class PrintFields
                     fieldValue = "no value available";
                 }
             }
-            StringBuilder outputString = new StringBuilder(sLevel + sParent);
+            StringBuilder outputString = new StringBuilder(sLevel);
+            outputString.append(sParent);
             if (partialName != null)
             {
                 outputString.append(".").append(partialName);
