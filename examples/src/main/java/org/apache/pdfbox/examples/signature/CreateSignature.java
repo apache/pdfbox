@@ -352,7 +352,7 @@ public class CreateSignature implements SignatureInterface
 
         File inFile = new File(args[2]);
         String name = inFile.getName();
-        String substring = name.substring(0, name.lastIndexOf("."));
+        String substring = name.substring(0, name.lastIndexOf('.'));
 
         File outFile = new File(inFile.getParent(), substring + "_signed.pdf");
         signing.signDetached(inFile, outFile, tsaClient);
