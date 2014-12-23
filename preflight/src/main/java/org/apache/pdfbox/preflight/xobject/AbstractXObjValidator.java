@@ -101,34 +101,34 @@ public abstract class AbstractXObjValidator implements XObjectValidator
      */
     protected void checkReferenceXObject()
     {
-        // 6.2.6 No reference xobject
+        // 6.2.6 No reference XObject
         if (this.xobject.getItem("Ref") != null)
         {
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_UNEXPECTED_KEY,
-                    "No reference Xobject allowed in PDF/A"));
+                    "No reference XObject allowed in PDF/A"));
         }
     }
 
     /**
-     * According the ISO 190005:1-2005 specification, PostSCript XObject are forbidden. If the XObject is a PostScript
+     * According the ISO 190005:1-2005 specification, PostScript XObjects are forbidden. If the XObject is a PostScript
      * XObject, the error list is updated with the error code ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY (2.3.2).
      * 
-     * To know the if the object a Postscript XObject, "Subtype" and "Subtype2" entries are checked.
+     * To know whether the object is a Postscript XObject, "Subtype" and "Subtype2" entries are checked.
      */
     protected void checkPostscriptXObject()
     {
         // 6.2.7 No PostScript XObjects
         String subtype = this.xobject.getNameAsString(COSName.SUBTYPE);
-        if (subtype != null && XOBJECT_DICTIONARY_VALUE_SUBTYPE_POSTSCRIPT.equals(subtype))
+        if (XOBJECT_DICTIONARY_VALUE_SUBTYPE_POSTSCRIPT.equals(subtype))
         {
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY,
-                    "No Postscript Xobject allowed in PDF/A"));
+                    "No Postscript XObject allowed in PDF/A"));
             return;
         }
         if (this.xobject.getItem(COSName.getPDFName("Subtype2")) != null)
         {
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY,
-                    "No Postscript Xobject allowed in PDF/A (Subtype2)"));
+                    "No Postscript XObject allowed in PDF/A (Subtype2)"));
             return;
         }
     }
@@ -144,6 +144,7 @@ public abstract class AbstractXObjValidator implements XObjectValidator
      * 
      * @see net.awl.edoc.pdfa.validation.graphics.XObjectValidator#validate()
      */
+    @Override
     public void validate() throws ValidationException
     {
         checkMandatoryFields();
