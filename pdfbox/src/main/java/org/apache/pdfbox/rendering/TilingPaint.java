@@ -44,7 +44,7 @@ import org.apache.pdfbox.util.Matrix;
 /**
  * AWT Paint for a tiling pattern, which consists of a small repeating graphical figure.
  *
- * @author Andreas Lehmkühler
+ * @author Andreas LehmkÃ¼hler
  * @author John Hewson
  */
 class TilingPaint implements Paint
@@ -174,7 +174,7 @@ class TilingPaint implements Paint
     private static int ceiling(double num)
     {
         BigDecimal decimal = new BigDecimal(num);
-        decimal.setScale(5, RoundingMode.CEILING); // 5 decimal places of accuracy
+        decimal = decimal.setScale(5, RoundingMode.CEILING); // 5 decimal places of accuracy
         return decimal.intValue();
     }
 
