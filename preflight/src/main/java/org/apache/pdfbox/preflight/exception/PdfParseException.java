@@ -82,7 +82,7 @@ public class PdfParseException extends ParseException
         if (lineIndex > -1)
         {
             String truncMsg = message.replace("Lexical error at line ", "");
-            String nbLine = truncMsg.substring(0, truncMsg.indexOf(","));
+            String nbLine = truncMsg.substring(0, truncMsg.indexOf(','));
             line = Integer.parseInt(nbLine);
         }
         this.errorCode = code;
