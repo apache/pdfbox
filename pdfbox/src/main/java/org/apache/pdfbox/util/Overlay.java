@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -453,11 +454,34 @@ public class Overlay
     {
         // create a new content stream that executes the XObject content
         PDRectangle pageMediaBox = page.getMediaBox();
-        float scale = 1;
         float hShift = (pageMediaBox.getWidth() - layoutPage.overlayMediaBox.getWidth()) / 2.0f;
         float vShift = (pageMediaBox.getHeight() - layoutPage.overlayMediaBox.getHeight()) / 2.0f;
-        return createStream("q\nq " + scale + " 0 0 " + scale + " " + hShift + " " + vShift + " cm /" + xObjectId
-                + " Do Q\nQ\n");
+        StringBuilder overlayStream = new StringBuilder();
+        overlayStream.append("q\nq 1 0 0 1 ");
+        overlayStream.append(float2String(hShift));
+        overlayStream.append(" ");
+        overlayStream.append(float2String(vShift) );
+        overlayStream.append(" cm /");
+        overlayStream.append(xObjectId);
+        overlayStream.append(" Do Q\nQ\n");
+        return createStream(overlayStream.toString());
+    }
+
+    private String float2String(float floatValue)
+    {
+        // use a BigDecimal as intermediate state to avoid 
+        // a floating point string representation of the float value
+        BigDecimal value = new BigDecimal(String.valueOf(floatValue));
+        String stringValue = value.toPlainString();
+        // remove fraction digit "0" only
+        if (stringValue.indexOf('.') > -1 && !stringValue.endsWith(".0"))
+        {
+            while (stringValue.endsWith("0") && !stringValue.endsWith(".0"))
+            {
+                stringValue = stringValue.substring(0,stringValue.length()-1);
+            }
+        }
+        return stringValue;
     }
 
     private COSStream createStream(String content) throws IOException
