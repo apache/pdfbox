@@ -92,7 +92,7 @@ public abstract class AnnotationValidatorFactory
             }
             catch (Exception e)
             {
-                throw new ValidationException(e.getMessage());
+                throw new ValidationException(e.getMessage(), e);
             }
         }
         return result;
