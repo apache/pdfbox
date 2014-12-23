@@ -31,7 +31,7 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDVariableText;
  * 
  */
 
-public class AppearanceGenerator
+public final class AppearanceGenerator
 {
 
     private static final Log LOG = LogFactory.getLog(AppearanceGenerator.class);
@@ -78,7 +78,7 @@ public class AppearanceGenerator
                     LOG.debug("Unable to generate the field appearance.", e);
                 }
             }
-            else
+            else if (fieldValue != null)
             {
                 LOG.debug("Can't generate the appearance for values typed "
                         + fieldValue.getClass().getName() + ".");
