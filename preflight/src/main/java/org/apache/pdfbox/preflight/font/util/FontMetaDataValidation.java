@@ -100,10 +100,10 @@ public class FontMetaDataValidation
                 {
                     empty = false;
                     AbstractField tmp = it.next();
-                    if (tmp != null && tmp instanceof TextType)
+                    if (tmp instanceof TextType)
                     {
-                        if (((TextType) tmp).getStringValue().equals(fontName)
-                                || (noSubSetName != null && ((TextType) tmp).getStringValue().equals(noSubSetName)))
+                        String val = ((TextType) tmp).getStringValue();
+                        if (val.equals(fontName) || val.equals(noSubSetName))
                         {
                             // value found, return
                             return true;
