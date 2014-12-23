@@ -226,19 +226,21 @@ public class COSWriter implements ICOSVisitor, Closeable
     /**
      * COSWriter constructor for incremental updates. 
      *
-     * @param output output stream where the new PDF data will be written
-     * @param input input stream containing source PDF data
+     * @param outputStream output stream where the new PDF data will be written
+     * @param inputStream input stream containing source PDF data
+     * 
+     * @throws IOException if something went wrong
      */
-    public COSWriter(OutputStream output, InputStream input) throws IOException
+    public COSWriter(OutputStream outputStream, InputStream inputStream) throws IOException
     {
         super();
 
         // write to buffer instead of output
         setOutput(new ByteArrayOutputStream());
-        setStandardOutput(new COSStandardOutputStream(this.output, input.available()));
+        setStandardOutput(new COSStandardOutputStream(output, inputStream.available()));
 
-        incrementalInput = input;
-        incrementalOutput = output;
+        incrementalInput = inputStream;
+        incrementalOutput = outputStream;
         incrementalUpdate = true;
 
         formatDecimal.setMaximumFractionDigits( 10 );
@@ -272,13 +274,11 @@ public class COSWriter implements ICOSVisitor, Closeable
             }
           }
           setNumber(highestNumber);
-          // xrefTable.clear();
-
         }
       }
       catch (IOException e)
       {
-        LOG.error(e,e);
+          LOG.error(e,e);
       }
     }
     
@@ -426,14 +426,14 @@ public class COSWriter implements ICOSVisitor, Closeable
         COSDictionary root = (COSDictionary)trailer.getDictionaryObject( COSName.ROOT );
         COSDictionary info = (COSDictionary)trailer.getDictionaryObject( COSName.INFO );
         COSDictionary encrypt = (COSDictionary)trailer.getDictionaryObject( COSName.ENCRYPT );
-          if( root != null )
-          {
-              addObjectToWrite( root );
-          }
-          if( info != null )
-          {
-              addObjectToWrite( info );
-          }
+        if( root != null )
+        {
+            addObjectToWrite( root );
+        }
+        if( info != null )
+        {
+            addObjectToWrite( info );
+        }
 
         while( objectsToWrite.size() > 0 )
         {
@@ -441,10 +441,7 @@ public class COSWriter implements ICOSVisitor, Closeable
             objectsToWriteSet.remove(nextObject);
             doWriteObject( nextObject );
         }
-
-
         willEncrypt = false;
-
         if( encrypt != null )
         {
             addObjectToWrite( encrypt );
@@ -586,53 +583,6 @@ public class COSWriter implements ICOSVisitor, Closeable
         trailer.accept(this);
     }
 
-    /**
-     * Write the x ref section for the pdf file.
-     * Currently, the pdf is reconstructed from the scratch, so we write a single section.
-     *
-     * @param doc The document to write the xref from.
-     *
-     * @throws IOException If there is an error writing the data to the stream.
-     */
-    protected void doWriteXRef(COSDocument doc) throws IOException
-    {
-        if (doc.isXRefStream())
-        {
-            // sort xref, needed only if object keys not regenerated
-            Collections.sort(getXRefEntries());
-            COSWriterXRefEntry lastEntry = getXRefEntries().get( getXRefEntries().size()-1 );
-    
-            // remember the position where x ref is written
-            setStartxref(getStandardOutput().getPos());
-            //
-            getStandardOutput().write(XREF);
-            getStandardOutput().writeEOL();
-            // write start object number and object count for this x ref section
-            // we assume starting from scratch
-            writeXrefRange(0, lastEntry.getKey().getNumber() + 1);
-            // write initial start object with ref to first deleted object and magic generation number
-            writeXrefEntry(COSWriterXRefEntry.getNullEntry());
-            // write entry for every object
-            long lastObjectNumber = 0;
-            for (COSWriterXRefEntry entry : getXRefEntries())
-            {
-                while( lastObjectNumber<entry.getKey().getNumber()-1 )
-                {
-                    writeXrefEntry(COSWriterXRefEntry.getNullEntry());
-                }
-                lastObjectNumber = entry.getKey().getNumber();
-                writeXrefEntry(entry);
-            }
-        }
-        else
-        {
-            COSDictionary trailer = doc.getTrailer();
-            trailer.setLong(COSName.PREV, doc.getStartXref());
-            
-            doWritexrefTable();
-        }
-    }
-
     private void doWriteXRefInc(COSDocument doc, long hybridPrev) throws IOException
     {
         if (doc.isXRefStream() || hybridPrev != -1)
@@ -640,9 +590,6 @@ public class COSWriter implements ICOSVisitor, Closeable
             // the file uses XrefStreams, so we need to update
             // it with an xref stream. We create a new one and fill it
             // with data available here
-            // first set an entry for the null entry in the xref table
-            // this is probably not necessary
-            // addXRefEntry(COSWriterXRefEntry.getNullEntry());
 
             // create a new XRefStrema object
             PDFXRefStream pdfxRefStream = new PDFXRefStream();
@@ -655,7 +602,6 @@ public class COSWriter implements ICOSVisitor, Closeable
             }
 
             COSDictionary trailer = doc.getTrailer();
-            //            trailer.setLong(COSName.PREV, hybridPrev == -1 ? prev : hybridPrev);
             trailer.setLong(COSName.PREV, doc.getStartXref());
 
             pdfxRefStream.addTrailerInfo(trailer);
@@ -678,13 +624,12 @@ public class COSWriter implements ICOSVisitor, Closeable
                 trailer.removeItem(xrefStm);
                 trailer.setLong(xrefStm, getStartxref());
             }
-            
-            doWritexrefTable();
+            doWriteXRefTable();
         }
     }
 
     // writes the "xref" table
-    private void doWritexrefTable() throws IOException
+    private void doWriteXRefTable() throws IOException
     {
         addXRefEntry(COSWriterXRefEntry.getNullEntry());
 
@@ -1078,18 +1023,14 @@ public class COSWriter implements ICOSVisitor, Closeable
             hybridPrev = trailer.getLong(COSName.XREF_STM);
         }
 
-        if(incrementalUpdate)
+        if(incrementalUpdate || doc.isXRefStream())
         {
             doWriteXRefInc(doc, hybridPrev);
         }
         else
         {
-            doWriteXRef(doc);
-        }
-
-        // the trailer section should only be used for xref tables not for xref streams
-        if (!incrementalUpdate || !doc.isXRefStream() || hybridPrev != -1)
-        {
+            trailer.setLong(COSName.PREV, doc.getStartXref());
+            doWriteXRefTable();
             doWriteTrailer(doc);
         }
 
@@ -1339,6 +1280,7 @@ public class COSWriter implements ICOSVisitor, Closeable
     /**
      * This will output the given byte getString as a PDF object.
      *
+     * @param string COSString to be written
      * @param output The stream to write to.
      * @throws IOException If there is an error writing to the stream.
      */
@@ -1350,6 +1292,7 @@ public class COSWriter implements ICOSVisitor, Closeable
     /**
      * This will output the given text/byte getString as a PDF object.
      *
+     * @param bytes byte array representation of a string to be written
      * @param output The stream to write to.
      * @throws IOException If there is an error writing to the stream.
      */
