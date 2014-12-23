@@ -1591,7 +1591,7 @@ public abstract class BaseParser
         catch( NumberFormatException e )
         {
             pdfSource.unread(intBuffer.toString().getBytes("ISO-8859-1"));
-            throw new IOException( "Error: Expected an integer type at offset "+pdfSource.getOffset());
+            throw new IOException( "Error: Expected an integer type at offset "+pdfSource.getOffset(), e);
         }
         return retval;
     }
