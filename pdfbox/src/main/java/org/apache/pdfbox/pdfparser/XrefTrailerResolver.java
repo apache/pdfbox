@@ -72,6 +72,7 @@ public class XrefTrailerResolver
          */
         private XrefTrailerObj()
         {
+            xrefType = XRefType.TABLE;
         }
         
         /**
@@ -249,6 +250,8 @@ public class XrefTrailerResolver
         }
         else
         {
+            // copy xref type
+            resolvedXrefTrailer.xrefType = curObj.xrefType;
             // found starting Xref object
             // add this and follow chain defined by 'Prev' keys
             xrefSeqBytePos.add( startxrefBytePosValue );
