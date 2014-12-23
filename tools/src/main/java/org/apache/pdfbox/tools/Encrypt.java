@@ -134,7 +134,7 @@ public class Encrypt
                         catch( NumberFormatException e )
                         {
                             throw new NumberFormatException(
-                                "Error: -keyLength is not an integer '" + args[i] + "'", e );
+                                "Error: -keyLength is not an integer '" + args[i] + "'" );
                         }
                     }
                     else if( infile == null )
