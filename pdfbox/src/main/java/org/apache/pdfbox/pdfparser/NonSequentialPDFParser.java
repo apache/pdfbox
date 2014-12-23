@@ -618,7 +618,7 @@ public class NonSequentialPDFParser extends PDFParser
                     throw (IOException) e;
                 }
                 throw new IOException("Error (" + e.getClass().getSimpleName()
-                        + ") while creating security handler for decryption",e);
+                        + ") while creating security handler for decryption", e);
             }
         }
     }
@@ -2092,7 +2092,7 @@ public class NonSequentialPDFParser extends PDFParser
                                 {
                                     objectID = Long.valueOf(objIdString);
                                 }
-                                catch (NumberFormatException excpetion)
+                                catch (NumberFormatException exception)
                                 {
                                     objectID = null;
                                 }
