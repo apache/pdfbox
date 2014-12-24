@@ -79,7 +79,7 @@ public class PDFontFactory
         COSName type = (COSName)dic.getDictionaryObject( COSName.TYPE );
         if( type != null && !COSName.FONT.equals( type ) )
         {
-            throw new IOException( "Cannot create font if /Type is not /Font.  Actual=" +type );
+            LOG.error( "Cannot create font if /Type is not /Font.  Actual=" +type );
         }
 
         COSName subType = (COSName)dic.getDictionaryObject( COSName.SUBTYPE );
