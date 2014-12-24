@@ -1144,7 +1144,7 @@ public class PDFTextStripper extends PDFStreamEngine
      *
      * @param separator The desired page separator string.
      * 
-     * @deprecated use {@link #setPageStart(String) and {@link #setPageEnd(String)} instead
+     * @deprecated use {@link #setPageStart(String)} and {@link #setPageEnd(String)} instead
      */
     public void setPageSeparator(String separator)
     {

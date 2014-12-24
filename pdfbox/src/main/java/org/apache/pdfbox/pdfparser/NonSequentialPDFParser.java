@@ -1521,7 +1521,7 @@ public class NonSequentialPDFParser extends PDFParser
     /**
      * 
      * @param dict the dictionary to be decrypted
-     * @param the object number
+     * @param objNr the object number
      * @param objGenNr the object generation number
      * @throws IOException ff something went wrong
      */
