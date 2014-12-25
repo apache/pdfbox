@@ -121,7 +121,7 @@ public class DomXmpParser
         {
             throw new XmpParsingException(ErrorType.Undefined, "Failed to parse", e);
         }
-        // document.normalizeDocument();
+
         XMPMetadata xmp = null;
 
         // Start reading

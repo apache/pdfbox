@@ -239,16 +239,6 @@ public final class TypeMapping
         return definedStructuredNamespaces.containsKey(namespace);
     }
 
-    // public String getTypeInArray (String type) {
-    // int pos = type.indexOf(' ');
-    // if (pos<0) {
-    // // not array
-    // return null;
-    // } else {
-    // return type.substring(pos+1);
-    // }
-    // }
-
     public boolean isDefinedType(String name)
     {
         return this.definedStructuredMappings.containsKey(name);

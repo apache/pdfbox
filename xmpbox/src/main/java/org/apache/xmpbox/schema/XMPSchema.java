@@ -1048,7 +1048,7 @@ public class XMPSchema extends AbstractStructuredType
                 while (itCplx.hasNext())
                 {
                     tmp = itCplx.next();
-                    // System.err.println(tmp.getAttribute("xml:lang").getStringValue());
+
                     if (tmp.getAttribute(XmpConstants.LANG_NAME).getValue().equals(language))
                     {
                         // the same language has been found
