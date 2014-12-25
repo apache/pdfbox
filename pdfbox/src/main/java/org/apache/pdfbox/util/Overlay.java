@@ -34,7 +34,6 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -63,7 +62,7 @@ public class Overlay
     private LayoutPage oddPageOverlayPage;
     private LayoutPage evenPageOverlayPage;
 
-    private Map<Integer, PDDocument> specificPageOverlay = new HashMap<Integer, PDDocument>();
+    private final Map<Integer, PDDocument> specificPageOverlay = new HashMap<Integer, PDDocument>();
     private Map<Integer, LayoutPage> specificPageOverlayPage = new HashMap<Integer, LayoutPage>();
 
     private Position position = Position.BACKGROUND;
@@ -335,19 +334,7 @@ public class Overlay
             case FOREGROUND:
                 // save state
                 contentArray.add(createStream("q\n"));
-                // original content
-                if (contents instanceof COSStream)
-                {
-                    contentArray.add(contents);
-                }
-                else if (contents instanceof COSArray)
-                {
-                    contentArray.addAll((COSArray) contents);
-                }
-                else
-                {
-                    throw new IOException("Unknown content type:" + contents.getClass().getName());
-                }
+                addOriginalContent(contents, contentArray);
                 // restore state
                 contentArray.add(createStream("Q\n"));
                 // overlay content
@@ -356,25 +343,29 @@ public class Overlay
             case BACKGROUND:
                 // overlay content
                 overlayPage(contentArray, page, pageCount + 1, document.getNumberOfPages());
-                // original content
-                if (contents instanceof COSStream)
-                {
-                    contentArray.add(contents);
-                }
-                else if (contents instanceof COSArray)
-                {
-                    contentArray.addAll((COSArray) contents);
-                }
-                else
-                {
-                    throw new IOException("Unknown content type:" + contents.getClass().getName());
-                }
+                addOriginalContent(contents, contentArray);
                 break;
             default:
                 throw new IOException("Unknown type of position:" + position);
             }
             pageDictionary.setItem(COSName.CONTENTS, contentArray);
             pageCount++;
+        }
+    }
+
+    private void addOriginalContent(COSBase contents, COSArray contentArray) throws IOException
+    {
+        if (contents instanceof COSStream)
+        {
+            contentArray.add(contents);
+        }
+        else if (contents instanceof COSArray)
+        {
+            contentArray.addAll((COSArray) contents);
+        }
+        else
+        {
+            throw new IOException("Unknown content type:" + contents.getClass().getName());
         }
     }
 
