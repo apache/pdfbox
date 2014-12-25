@@ -509,18 +509,6 @@ public class XMPMediaManagementSchema extends XMPSchema
     @PropertyType(type = Types.ResourceRef, card = Cardinality.Simple)
     public static final String MANAGED_FROM = "ManagedFrom";
 
-    // /**
-    // * set ManageFrom Value
-    // *
-    // * @param url
-    // * ManageFrom Value to set
-    // */
-    // public void setManagedFrom(ResourceRefType resourceRef) {
-    //
-    // setManagedFromProperty(new TextType(metadata, localPrefix, MANAGED_FROM,
-    // url));
-    // }
-
     /**
      * set ManageFrom Property
      * 
@@ -541,16 +529,6 @@ public class XMPMediaManagementSchema extends XMPSchema
     {
         return (ResourceRefType) getProperty(MANAGED_FROM);
     }
-
-    // /**
-    // * Get ManageFrom value
-    // *
-    // * @return ManageFrom value
-    // */
-    // public String getManagedFrom() {
-    // TextType tt = getManagedFromProperty();
-    // return tt != null ? tt.getStringValue() : null;
-    // }
 
     // --------------------------------------- OriginalDocumentID
     // ----------------------------

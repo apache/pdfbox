@@ -32,12 +32,10 @@ import java.util.List;
  * @author a183132
  * 
  */
-public class ComplexPropertyContainer /* extends AbstractField */
+public class ComplexPropertyContainer
 {
 
     private List<AbstractField> properties;
-
-    // private Map<String, Attribute> attributes;
 
     /**
      * Complex Property type constructor (namespaceURI is given)
@@ -46,70 +44,7 @@ public class ComplexPropertyContainer /* extends AbstractField */
     public ComplexPropertyContainer()
     {
         properties = new ArrayList<AbstractField>();
-        // attributes = new HashMap<String, Attribute>();
     }
-
-    // /**
-    // * Get an attribute with its name in this entity
-    // *
-    // * @param qualifiedName
-    // * the full qualified name of the attribute wanted
-    // * @return The attribute property
-    // */
-    // public Attribute getAttribute(String qualifiedName) {
-    // return attributes.get(qualifiedName);
-    // }
-
-    // /**
-    // * Get attributes list defined for this entity
-    // *
-    // * @return Attributes list
-    // */
-    // public List<Attribute> getAllAttributes() {
-    // return new ArrayList<Attribute>(attributes.values());
-    // }
-
-    // /**
-    // * Set a new attribute for this entity
-    // *
-    // * @param value
-    // * The Attribute property to add
-    // */
-    // public void setAttribute(Attribute value) {
-    // if (attributes.containsKey(value.getQualifiedName())) {
-    // // if same name in element, attribute will be replaced
-    // attributes.remove(value.getQualifiedName());
-    // }
-    // if (value.getNamespace() == null) {
-    // attributes.put(value.getQualifiedName(), value);
-    // } else {
-    // attributes.put(value.getQualifiedName(), value);
-    // }
-    // }
-
-    // /**
-    // * Remove an attribute of this entity
-    // *
-    // * @param qualifiedName
-    // * the full qualified name of the attribute wanted
-    // */
-    // public void removeAttribute(String qualifiedName) {
-    // if (containsAttribute(qualifiedName)) {
-    // attributes.remove(qualifiedName);
-    // }
-    //
-    // }
-
-    // /**
-    // * Check if an attribute is declared for this entity
-    // *
-    // * @param qualifiedName
-    // * the full qualified name of the attribute concerned
-    // * @return true if attribute is present
-    // */
-    // public boolean containsAttribute(String qualifiedName) {
-    // return attributes.containsKey(qualifiedName);
-    // }
 
     /**
      * Give the first property found in this container with type and localname expected
@@ -260,5 +195,4 @@ public class ComplexPropertyContainer /* extends AbstractField */
             properties.remove(property);
         }
     }
-
 }

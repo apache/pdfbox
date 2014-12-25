@@ -43,7 +43,6 @@ public @interface PropertyType
      * 
      * 
      */
-    // String propertyType();
 
     Types type();
 
