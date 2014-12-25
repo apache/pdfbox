@@ -52,12 +52,6 @@ public class PreflightContext implements Closeable
      * The datasource to load the document from
      */
     protected DataSource source = null;
-    //
-    // /**
-    // * JavaCC Token Manager used to get some content of the PDF file as string (ex
-    // * : Trailers)
-    // */
-    // protected ExtractorTokenManager pdfExtractor = null;
 
     /**
      * Contains all Xref/trailer objects and resolves them into single object using startxref reference.
@@ -116,22 +110,6 @@ public class PreflightContext implements Closeable
     {
         this.metadata = metadata;
     }
-
-    // /**
-    // * @return the value of the pdfExtractor attribute.
-    // */
-    // public ExtractorTokenManager getPdfExtractor() {
-    // return pdfExtractor;
-    // }
-    //
-    // /**
-    // * Initialize the pdfExtractor attribute.
-    // *
-    // * @param pdfExtractor
-    // */
-    // public void setPdfExtractor(ExtractorTokenManager pdfExtractor) {
-    // this.pdfExtractor = pdfExtractor;
-    // }
 
     /**
      * @return the PDFBox object representation of the document

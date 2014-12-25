@@ -103,27 +103,17 @@ public class PreflightType3Stream extends PreflightStreamEngine
 
         if (operation.equals("d0"))
         {
-            // set glyph with for a type3 font
-            // COSNumber horizontalWidth = (COSNumber)arguments.get( 0 );
-            // COSNumber verticalWidth = (COSNumber)arguments.get( 1 );
-            // width = horizontalWidth.intValue();
-            // height = verticalWidth.intValue();
-
+ 
             checkType3FirstOperator(operands);
 
         }
         else if (operation.equals("d1"))
         {
-            // set glyph with and bounding box for type 3 font
-            // COSNumber horizontalWidth = (COSNumber)arguments.get( 0 );
-            // COSNumber verticalWidth = (COSNumber)arguments.get( 1 );
             COSNumber llx = (COSNumber) operands.get(2);
             COSNumber lly = (COSNumber) operands.get(3);
             COSNumber urx = (COSNumber) operands.get(4);
             COSNumber ury = (COSNumber) operands.get(5);
 
-            // width = horizontalWidth.intValue();
-            // height = verticalWidth.intValue();
             box = new BoundingBox();
             box.setLowerLeftX(llx.floatValue());
             box.setLowerLeftY(lly.floatValue());

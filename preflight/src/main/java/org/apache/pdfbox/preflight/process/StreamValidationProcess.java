@@ -123,7 +123,6 @@ public class StreamValidationProcess extends AbstractProcess
     private boolean readUntilStream(InputStream ra) throws IOException
     {
         boolean search = true;
-        // String stream = "";
         boolean maybe = false;
         int lastChar = -1;
         do
@@ -132,15 +131,12 @@ public class StreamValidationProcess extends AbstractProcess
             switch (c)
             {
             case 's':
-                // stream = "s";
                 maybe = true;
                 lastChar = c;
                 break;
             case 't':
-                // if (maybe && stream.endsWith("s")) {
                 if (maybe && lastChar == 's')
                 {
-                    // stream = stream + "t";
                     lastChar = c;
                 }
                 else
@@ -150,10 +146,8 @@ public class StreamValidationProcess extends AbstractProcess
                 }
                 break;
             case 'r':
-                // if (maybe && stream.endsWith("t")) {
                 if (maybe && lastChar == 't')
                 {
-                    // stream = stream + "r";
                     lastChar = c;
                 }
                 else
@@ -163,11 +157,9 @@ public class StreamValidationProcess extends AbstractProcess
                 }
                 break;
             case 'e':
-                // if (maybe && stream.endsWith("r")) {
                 if (maybe && lastChar == 'r')
                 {
                     lastChar = c;
-                    // stream = stream + "e";
                 }
                 else
                 {
@@ -175,11 +167,9 @@ public class StreamValidationProcess extends AbstractProcess
                 }
                 break;
             case 'a':
-                // if (maybe && stream.endsWith("e")) {
                 if (maybe && lastChar == 'e')
                 {
                     lastChar = c;
-                    // stream = stream + "a";
                 }
                 else
                 {
@@ -187,7 +177,6 @@ public class StreamValidationProcess extends AbstractProcess
                 }
                 break;
             case 'm':
-                // if (maybe && stream.endsWith("a")) {
                 if (maybe && lastChar == 'a')
                 {
                     return true;

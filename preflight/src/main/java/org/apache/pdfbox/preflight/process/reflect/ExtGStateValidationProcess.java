@@ -243,27 +243,4 @@ public class ExtGStateValidationProcess extends AbstractProcess
             }
         }
     }
-    //
-    // /**
-    // * Check the RI entry of the Graphic State. If the rendering intent entry is
-    // * present, the value must be one of the four values defined in the PDF
-    // * reference. (@see net.awl.edoc.pdfa.validation.utils.RenderingIntents)
-    // *
-    // * @param egs
-    // * the graphic state to check
-    // * @param error
-    // * the list of error to update if the validation fails.
-    // * @return true if RI entry is valid, false otherwise.
-    // */
-    // protected boolean checkRIKey(COSDictionary egs, List<ValidationError> error) {
-    // String rendenringIntent = egs.getNameAsString(COSName.getPDFName("RI"));
-    // if (rendenringIntent != null && !"".equals(rendenringIntent)
-    // && !RenderingIntents.contains(rendenringIntent)) {
-    // error.add(new ValidationError(
-    // PreflightConstants.ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY,
-    // "Invalid rendering intent value in Extended graphics state"));
-    // return false;
-    // }
-    // return true;
-    // }
 }

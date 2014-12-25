@@ -70,11 +70,6 @@ public class CrossRefParseException extends PdfParseException
     @Override
     public String getErrorCode()
     {
-        // if (!isTokenMgrError) {
-        // // use token information to know the cause
-        // }
-        // else Token Management Error or Unknown Error during the CrossRefTable
-        // Validation
         return PreflightConstants.ERROR_SYNTAX_CROSS_REF;
     }
 }

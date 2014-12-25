@@ -100,10 +100,6 @@ public class PreflightDocument extends PDDocument
     {
         switch (format)
         {
-        // case PDF_A1A:
-        //
-        // break;
-
         default: // default is PDF/A1-b
             this.config = PreflightConfiguration.createPdfA1BConfiguration();
             break;
