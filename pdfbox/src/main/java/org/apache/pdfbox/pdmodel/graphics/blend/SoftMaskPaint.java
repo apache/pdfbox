@@ -37,7 +37,7 @@ import java.io.IOException;
  * AWT Paint that adds a soft mask to the alpha channel of the existing parent paint. If the parent
  * paint does not have an alpha channel, a new raster is created.
  * 
- * @author Kühn & Weyh Software, GmbH
+ * @author KÃ¼hn & Weyh Software, GmbH
  */
 public final class SoftMaskPaint implements Paint
 {
@@ -53,11 +53,13 @@ public final class SoftMaskPaint implements Paint
         this.softMaskRaster = softMaskRaster;
     }
 
+    @Override
     public int getTransparency()
     {
         return Transparency.TRANSLUCENT;
     }
 
+    @Override
     public PaintContext createContext(ColorModel cm, Rectangle deviceBounds,
             Rectangle2D userBounds, AffineTransform at, RenderingHints hints)
     {
@@ -75,7 +77,7 @@ public final class SoftMaskPaint implements Paint
 
     private class Context implements PaintContext
     {
-        private PaintContext parentContext;
+        private final PaintContext parentContext;
         private final ColorModel colorModel;
         private final int numColorComponents;
         private final ColorModel parentColorModel;
@@ -96,11 +98,13 @@ public final class SoftMaskPaint implements Paint
             numColorComponents = colorModel.getNumColorComponents();
         }
 
+        @Override
         public ColorModel getColorModel()
         {
             return colorModel;
         }
 
+        @Override
         public Raster getRaster(int x, int y, int w, int h)
         {
             Raster parentRaster = parentContext.getRaster(x, y, w, h);
@@ -153,7 +157,7 @@ public final class SoftMaskPaint implements Paint
                     if ((rx >= softMaskMinX) && (rx < softMaskMaxX) && (ry >= softMaskMinY)
                             && (ry < softMaskMaxY))
                     {
-                        alpha = softMaskRaster.getSample(Math.round(rx), Math.round(ry), 0);
+                        alpha = softMaskRaster.getSample(rx, ry, 0);
                     }
                     else
                     {
@@ -167,6 +171,7 @@ public final class SoftMaskPaint implements Paint
             return result;
         }
 
+        @Override
         public void dispose()
         {
             // do nothing
