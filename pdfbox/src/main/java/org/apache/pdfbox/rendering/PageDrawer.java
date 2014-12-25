@@ -702,8 +702,8 @@ public final class PageDrawer extends PDFGraphicsStreamEngine
         {
             if (!pdImage.getInterpolate())
             {
-                boolean isScaledUp = Math.round(pdImage.getWidth()) < Math.round(at.getScaleX()) ||
-                                     Math.round(pdImage.getHeight()) < Math.round(at.getScaleY());
+                boolean isScaledUp = pdImage.getWidth() < Math.round(at.getScaleX()) ||
+                                     pdImage.getHeight() < Math.round(at.getScaleY());
 
                 // if the image is scaled down, we use smooth interpolation, eg PDFBOX-2364
                 // only when scaled up do we use nearest neighbour, eg PDFBOX-2302 / mori-cvpr01.pdf
