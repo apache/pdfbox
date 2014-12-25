@@ -110,7 +110,8 @@ public class DomXmpParser
         Document document = null;
         try
         {
-            dBuilder.setErrorHandler(null); // prevents validation messages polluting the console
+            // prevents validation messages polluting the console
+            dBuilder.setErrorHandler(null);
             document = dBuilder.parse(input);
         }
         catch (SAXException e)
