@@ -44,6 +44,7 @@ public abstract class CFFEncoding extends Encoding
      * @param code character code
      * @return PostScript glyph name
      */
+    @Override
     public String getName(int code)
     {
         String name = codeToName.get(code);

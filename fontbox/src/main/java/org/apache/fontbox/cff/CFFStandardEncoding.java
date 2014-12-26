@@ -22,7 +22,7 @@ package org.apache.fontbox.cff;
  * @author Villu Ruusmann
  * @version $Revision$
  */
-public class CFFStandardEncoding extends CFFEncoding
+public final class CFFStandardEncoding extends CFFEncoding
 {
 
     private CFFStandardEncoding()
