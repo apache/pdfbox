@@ -1323,7 +1323,7 @@ public abstract class BaseParser
         skipSpaces();
         StringBuilder buffer = new StringBuilder();
         int c = pdfSource.read();
-        while( !isEndOfName((char)c) && !isClosing(c) && c != -1 )
+        while( !isEndOfName((char)c) && c != -1 )
         {
             buffer.append( (char)c );
             c = pdfSource.read();
