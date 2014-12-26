@@ -241,9 +241,13 @@ public class TestPDFToImage extends TestCase
             }
 
             // test to see whether file is destroyed in pdfbox
+            new FileOutputStream(new File(outDir + file.getName() + ".saveerror")).close();
             File tmpFile = File.createTempFile("pdfbox", ".pdf");
             document.save(tmpFile);
+            new File(outDir + file.getName() + ".saveerror").delete();
+            new FileOutputStream(new File(outDir + file.getName() + ".reloaderror")).close();
             PDDocument.load(tmpFile, null).close();
+            new File(outDir + file.getName() + ".reloaderror").delete();
             tmpFile.delete();
         }
         catch (Exception e)
@@ -273,9 +277,9 @@ public class TestPDFToImage extends TestCase
                 @Override
                 public boolean accept(File dir, String name)
                 {
-                    return (name.endsWith(".png") && 
-                            name.startsWith(mcurFile.getName(), 0)) && 
-                            !name.endsWith(".png-diff.png");
+                    return (name.endsWith(".png")
+                            && name.startsWith(mcurFile.getName(), 0))
+                            && !name.endsWith(".png-diff.png");
                 }
             });
             for (File outFile : outFiles)
