@@ -23,7 +23,7 @@ package org.apache.fontbox.cff;
  * @author Villu Ruusmann
  * @version $Revision$
  */
-public class CFFExpertSubsetCharset extends CFFCharset
+public final class CFFExpertSubsetCharset extends CFFCharset
 {
 
     private CFFExpertSubsetCharset()

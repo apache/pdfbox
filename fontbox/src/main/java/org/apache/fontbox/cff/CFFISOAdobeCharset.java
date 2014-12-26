@@ -23,7 +23,7 @@ package org.apache.fontbox.cff;
  * @author Villu Ruusmann
  * @version $Revision$
  */
-public class CFFISOAdobeCharset extends CFFCharset
+public final class CFFISOAdobeCharset extends CFFCharset
 {
 
     private CFFISOAdobeCharset()
