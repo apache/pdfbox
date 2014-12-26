@@ -21,7 +21,7 @@ package org.apache.fontbox.cff;
  * @author Villu Ruusmann
  * @version $Revision: 1.0 $
  */
-public class CFFStandardString 
+public final class CFFStandardString 
 {
 
     private CFFStandardString()

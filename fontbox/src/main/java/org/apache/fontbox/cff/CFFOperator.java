@@ -68,6 +68,7 @@ public class CFFOperator
     /**
      * {@inheritDoc}
      */
+    @Override
     public String toString()
     {
         return getName();
@@ -76,6 +77,7 @@ public class CFFOperator
     /**
      * {@inheritDoc}
      */
+    @Override
     public int hashCode()
     {
         return getKey().hashCode();
@@ -84,6 +86,7 @@ public class CFFOperator
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean equals(Object object)
     {
         if (object instanceof CFFOperator)
@@ -170,6 +173,7 @@ public class CFFOperator
         /**
          * {@inheritDoc}
          */
+        @Override
         public String toString()
         {
             return Arrays.toString(getValue());
@@ -178,6 +182,7 @@ public class CFFOperator
         /**
          * {@inheritDoc}
          */
+        @Override
         public int hashCode()
         {
             return Arrays.hashCode(getValue());
@@ -186,6 +191,7 @@ public class CFFOperator
         /**
          * {@inheritDoc}
          */
+        @Override
         public boolean equals(Object object)
         {
             if (object instanceof Key)

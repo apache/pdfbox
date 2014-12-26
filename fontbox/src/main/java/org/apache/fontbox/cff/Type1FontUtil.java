@@ -22,7 +22,7 @@ package org.apache.fontbox.cff;
  * @author Villu Ruusmann
  * @version $Revision$
  */
-public class Type1FontUtil
+public final class Type1FontUtil
 {
 
     private Type1FontUtil()
