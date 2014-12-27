@@ -216,24 +216,7 @@ public final class PDLab extends PDCIEDictionaryBasedColorSpace
      */
     public void setARange(PDRange range)
     {
-        COSArray rangeArray = (COSArray) dictionary.getDictionaryObject(COSName.RANGE);
-        if (rangeArray == null)
-        {
-            rangeArray = getDefaultRangeArray();
-        }
-        //if null then reset to defaults
-        if(range == null)
-        {
-            rangeArray.set(0, new COSFloat(-100));
-            rangeArray.set(1, new COSFloat(100));
-        }
-        else
-        {
-            rangeArray.set(0, new COSFloat(range.getMin()));
-            rangeArray.set(1, new COSFloat(range.getMax()));
-        }
-        dictionary.setItem(COSName.RANGE, rangeArray);
-        initialColor = null;
+        setComponentRangeArray(range, 0);
     }
 
     /**
@@ -243,23 +226,29 @@ public final class PDLab extends PDCIEDictionaryBasedColorSpace
      */
     public void setBRange(PDRange range)
     {
+        setComponentRangeArray(range, 2);
+    }
+
+    private void setComponentRangeArray(PDRange range, int index)
+    {
         COSArray rangeArray = (COSArray) dictionary.getDictionaryObject(COSName.RANGE);
         if (rangeArray == null)
         {
             rangeArray = getDefaultRangeArray();
         }
-        //if null then reset to defaults
-        if(range == null)
+        if (range == null)
         {
-            rangeArray.set(2, new COSFloat(-100));
-            rangeArray.set(3, new COSFloat(100));
+            // reset to defaults
+            rangeArray.set(index, new COSFloat(-100));
+            rangeArray.set(index + 1, new COSFloat(100));
         }
         else
         {
-            rangeArray.set(2, new COSFloat(range.getMin()));
-            rangeArray.set(3, new COSFloat(range.getMax()));
+            rangeArray.set(index, new COSFloat(range.getMin()));
+            rangeArray.set(index + 1, new COSFloat(range.getMax()));
         }
         dictionary.setItem(COSName.RANGE, rangeArray);
         initialColor = null;
     }
+
 }
