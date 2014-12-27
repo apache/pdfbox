@@ -56,12 +56,6 @@ public class CFFType1Font extends CFFFont implements Type1Equivalent
     }
 
     @Override
-    public String getName()
-    {
-        return fontName;
-    }
-
-    @Override
     public GeneralPath getPath(String name) throws IOException
     {
         return getType1CharString(name).getPath();
