@@ -45,7 +45,7 @@ public class Type1CharStringParser
     final static int CALLOTHERSUBR = 16;
     final static int POP = 17;
 
-    private String fontName, glyphName;
+    private final String fontName, glyphName;
 
     /**
      * Constructs a new Type1CharStringParser object.
