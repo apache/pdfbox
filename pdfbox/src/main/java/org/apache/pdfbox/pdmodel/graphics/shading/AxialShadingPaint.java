@@ -32,14 +32,14 @@ import org.apache.pdfbox.util.Matrix;
 /**
  * AWT Paint for axial shading.
  *
- * @author Andreas Lehmkühler
+ * @author Andreas LehmkÃ¼hler
  */
 public class AxialShadingPaint implements Paint
 {
     private static final Log LOG = LogFactory.getLog(AxialShadingPaint.class);
 
-    private PDShadingType2 shading;
-    private Matrix ctm;
+    private final PDShadingType2 shading;
+    private final Matrix ctm;
 
     /**
      * Constructor.
