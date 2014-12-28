@@ -19,6 +19,7 @@ package org.apache.pdfbox.pdmodel.graphics.shading;
 import java.awt.PaintContext;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.ColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
@@ -55,8 +56,10 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
     private final float d1d0;
     private double denom;
 
-    private final double axialLength;
+    private int factor;
     private final int[] colorTable;
+
+    private AffineTransform rat;
 
     /**
      * Constructor creates an instance to be used for fill operations.
@@ -73,13 +76,6 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
         super(shading, colorModel, xform, ctm, dBounds);
         this.axialShadingType = shading;
         coords = shading.getCoords().toFloatArray();
-
-        if (ctm != null)
-        {
-            // transform the coords using the given matrix
-            ctm.createAffineTransform().transform(coords, 0, coords, 0, 2);
-        }
-        xform.transform(coords, 0, coords, 0, 2);
 
         // domain values
         if (shading.getDomain() != null)
@@ -115,7 +111,24 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
         y1y0 = coords[3] - coords[1];
         d1d0 = domain[1] - domain[0];
         denom = Math.pow(x1x0, 2) + Math.pow(y1y0, 2);
-        axialLength = Math.sqrt(denom);
+        double axialLength = Math.sqrt(denom);
+        
+        try
+        {
+            // get inverse transform to be independent of current user / device space 
+            // when handling actual pixels in getRaster()
+            rat = ctm.createAffineTransform().createInverse();
+            rat.concatenate(xform.createInverse());
+        }
+        catch (NoninvertibleTransformException ex)
+        {
+            LOG.error(ex, ex);
+        }
+
+        // transform the distance to actual pixel space
+        double maxX = Math.max(10, Math.abs(ctm.getXScale() * xform.getScaleX() * axialLength));
+        double maxY = Math.max(10, Math.abs(ctm.getYScale() * xform.getScaleY() * axialLength));
+        factor = (int) Math.max(maxX, maxY);
         colorTable = calcColorTable();
     }
 
@@ -127,8 +140,8 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
      */
     private int[] calcColorTable()
     {
-        int[] map = new int[(int) axialLength + 1];
-        if (axialLength == 0 || d1d0 == 0)
+        int[] map = new int[factor + 1];
+        if (factor == 0 || d1d0 == 0)
         {
             try
             {
@@ -142,9 +155,9 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
         }
         else
         {
-            for (int i = 0; i <= axialLength; i++)
+            for (int i = 0; i <= factor; i++)
             {
-                float t = domain[0] + d1d0 * i / (float) axialLength;
+                float t = domain[0] + d1d0 * i / (float) factor;
                 try
                 {
                     float[] values = axialShadingType.evalFunction(t);
@@ -195,6 +208,13 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
                     continue;
                 }
                 useBackground = false;
+                float[] values = new float[]
+                {
+                    x + i, y + j
+                };
+                rat.transform(values, 0, values, 0, 1);
+                currentX = values[0];
+                currentY = values[1];
                 double inputValue = x1x0 * (currentX - coords[0]);
                 inputValue += y1y0 * (currentY - coords[1]);
                 // TODO this happens if start == end, see PDFBOX-1442
@@ -252,7 +272,7 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
                 }
                 else
                 {
-                    int key = (int) (inputValue * axialLength);
+                    int key = (int) (inputValue * factor);
                     value = colorTable[key];
                 }
                 int index = (j * w + i) * 4;
