@@ -56,7 +56,7 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
     private final float d1d0;
     private double denom;
 
-    private int factor;
+    private final int factor;
     private final int[] colorTable;
 
     private AffineTransform rat;
@@ -111,8 +111,8 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
         y1y0 = coords[3] - coords[1];
         d1d0 = domain[1] - domain[0];
         denom = Math.pow(x1x0, 2) + Math.pow(y1y0, 2);
-        double axialLength = Math.sqrt(denom);
-        
+        double longestDistance = Math.sqrt(denom);
+
         try
         {
             // get inverse transform to be independent of current user / device space 
@@ -126,8 +126,8 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
         }
 
         // transform the distance to actual pixel space
-        double maxX = Math.max(10, Math.abs(ctm.getXScale() * xform.getScaleX() * axialLength));
-        double maxY = Math.max(10, Math.abs(ctm.getYScale() * xform.getScaleY() * axialLength));
+        double maxX = Math.abs(ctm.getXScale() * xform.getScaleX() * longestDistance);
+        double maxY = Math.abs(ctm.getYScale() * xform.getScaleY() * longestDistance);
         factor = (int) Math.max(maxX, maxY);
         colorTable = calcColorTable();
     }
