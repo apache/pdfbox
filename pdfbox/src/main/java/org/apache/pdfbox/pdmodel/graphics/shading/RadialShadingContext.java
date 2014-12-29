@@ -59,7 +59,7 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
     private final float d1d0;
     private final double denom;
 
-    private int factor;
+    private final int factor;
     private final int[] colorTable;
 
     private AffineTransform rat;
@@ -137,10 +137,6 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
         double maxX = Math.abs(ctm.getXScale() * xform.getScaleX() * longestDistance);
         double maxY = Math.abs(ctm.getYScale() * xform.getScaleY() * longestDistance);
         factor = (int) Math.max(maxX, maxY);
-        if (factor > 0 && factor < 10)
-        {
-            factor = 10;
-        }
         colorTable = calcColorTable();
     }
 
@@ -170,8 +166,8 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
     }
 
     /**
-     * Calculate the color on the line connects two circles' centers and store
-     * the result in an array.
+     * Calculate the color on the line that connects two circles' centers and
+     * store the result in an array.
      *
      * @return an array, index denotes the relative position, the corresponding
      * value the color
