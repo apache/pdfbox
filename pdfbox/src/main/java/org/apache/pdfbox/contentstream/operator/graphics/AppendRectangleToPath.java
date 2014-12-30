@@ -39,12 +39,12 @@ public final class AppendRectangleToPath extends GraphicsOperatorProcessor
         COSNumber w = (COSNumber) operands.get(2);
         COSNumber h = (COSNumber) operands.get(3);
 
-        double x1 = x.doubleValue();
-        double y1 = y.doubleValue();
+        float x1 = x.floatValue();
+        float y1 = y.floatValue();
 
         // create a pair of coordinates for the transformation
-        double x2 = w.doubleValue() + x1;
-        double y2 = h.doubleValue() + y1;
+        float x2 = w.floatValue() + x1;
+        float y2 = h.floatValue() + y1;
 
         Point2D p0 = context.transformedPoint(x1, y1);
         Point2D p1 = context.transformedPoint(x2, y1);

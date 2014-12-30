@@ -149,23 +149,9 @@ public class PrintImageLocations extends PDFStreamEngine
             }
             else if(xobject instanceof PDFormXObject)
             {
-                // save the graphics state
-                saveGraphicsState();
-                
                 PDFormXObject form = (PDFormXObject)xobject;
-                // if there is an optional form matrix, we have to map the form space to the user space
-                Matrix matrix = form.getMatrix();
-                if (matrix != null) 
-                {
-                    Matrix xobjectCTM = matrix.multiply( getGraphicsState().getCurrentTransformationMatrix());
-                    getGraphicsState().setCurrentTransformationMatrix(xobjectCTM);
-                }
-                processChildStream(form);
-                
-                // restore the graphics state
-                restoreGraphicsState();
+                showForm(form);
             }
-            
         }
         else
         {

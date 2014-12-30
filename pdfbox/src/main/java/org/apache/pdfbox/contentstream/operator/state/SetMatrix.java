@@ -34,7 +34,6 @@ public class SetMatrix extends OperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> arguments)
     {
-        //Set text matrix and text line matrix
         COSNumber a = (COSNumber)arguments.get( 0 );
         COSNumber b = (COSNumber)arguments.get( 1 );
         COSNumber c = (COSNumber)arguments.get( 2 );
@@ -42,15 +41,11 @@ public class SetMatrix extends OperatorProcessor
         COSNumber e = (COSNumber)arguments.get( 4 );
         COSNumber f = (COSNumber)arguments.get( 5 );
 
-        Matrix textMatrix = new Matrix();
-        textMatrix.setValue( 0, 0, a.floatValue() );
-        textMatrix.setValue( 0, 1, b.floatValue() );
-        textMatrix.setValue( 1, 0, c.floatValue() );
-        textMatrix.setValue( 1, 1, d.floatValue() );
-        textMatrix.setValue( 2, 0, e.floatValue() );
-        textMatrix.setValue( 2, 1, f.floatValue() );
-        context.setTextMatrix( textMatrix );
-        context.setTextLineMatrix( textMatrix.clone() );
+        Matrix matrix = new Matrix(a.floatValue(), b.floatValue(), c.floatValue(),
+                                   d.floatValue(), e.floatValue(), f.floatValue());
+
+        context.setTextMatrix(matrix);
+        context.setTextLineMatrix(matrix.clone());
     }
 
     @Override

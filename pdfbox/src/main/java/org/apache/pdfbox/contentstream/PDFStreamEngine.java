@@ -299,7 +299,7 @@ public class PDFStreamEngine
             a.concatenate(Matrix.getTranslatingInstance((float) -transformedBox.getX(),
                     (float) -transformedBox.getY()));
 
-            // Matrix shall be concatenated with A to form a matrix AA that maps from the appearance€™s
+            // Matrix shall be concatenated with A to form a matrix AA that maps from the appearanceï¿½ï¿½s
             // coordinate system to the annotation's rectangle in default user space
             Matrix aa = Matrix.concatenate(matrix, a);
 
@@ -956,32 +956,33 @@ public class PDFStreamEngine
         return currentPage;
     }
 
+    /**
+     * Gets the stream's initial matrix.
+     */
     public Matrix getInitialMatrix()
     {
         return initialMatrix;
     }
 
     /**
-     * use the current transformation matrix to transformPoint a single point.
-     *
-     * @param x x-coordinate of the point to be transformPoint
-     * @param y y-coordinate of the point to be transformPoint
-     * @return the transformed coordinates as Point2D.Double
+     * Transforms a point using the CTM.
      */
-    public Point2D.Double transformedPoint(double x, double y)
+    public Point2D.Float transformedPoint(float x, float y)
     {
-        double[] position = { x, y };
+        float[] position = { x, y };
         getGraphicsState().getCurrentTransformationMatrix().createAffineTransform()
                 .transform(position, 0, position, 0, 1);
-        return new Point2D.Double(position[0], position[1]);
+        return new Point2D.Float(position[0], position[1]);
     }
-    
-    // transforms a width using the CTM
+
+    /**
+     * Transforms a width using the CTM.
+     */
     protected float transformWidth(float width)
     {
         Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
-        float x = ctm.getValue(0, 0) + ctm.getValue(1, 0);
-        float y = ctm.getValue(0, 1) + ctm.getValue(1, 1);
+        float x = ctm.getScaleX() + ctm.getShearX();
+        float y = ctm.getScaleY() + ctm.getShearY();
         return width * (float)Math.sqrt((x * x + y * y) * 0.5);
     }
 }
