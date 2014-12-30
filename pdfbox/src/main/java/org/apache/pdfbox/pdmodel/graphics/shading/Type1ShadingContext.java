@@ -67,10 +67,7 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
         }
         else
         {
-            domain = new float[]
-            {
-                0, 1, 0, 1
-            };
+            domain = new float[] { 0, 1, 0, 1 };
         }
 
         matrix = shading.getMatrix();
@@ -129,10 +126,7 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
                 }
                 int index = (j * w + i) * 4;
                 boolean useBackground = false;
-                float[] values = new float[]
-                {
-                    x + i, y + j
-                };
+                float[] values = new float[] { x + i, y + j };
                 rat.transform(values, 0, values, 0, 1);
                 if (values[0] < domain[0] || values[0] > domain[1] || values[1] < domain[2] || values[1] > domain[3])
                 {

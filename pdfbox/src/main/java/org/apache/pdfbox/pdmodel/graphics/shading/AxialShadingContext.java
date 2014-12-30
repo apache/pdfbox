@@ -85,10 +85,7 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
         else
         {
             // set default values
-            domain = new float[]
-            {
-                0, 1
-            };
+            domain = new float[] { 0, 1 };
         }
         // extend values
         COSArray extendValues = shading.getExtend();
@@ -101,10 +98,7 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
         else
         {
             // set default values
-            extend = new boolean[]
-            {
-                false, false
-            };
+            extend = new boolean[] { false, false };
         }
         // calculate some constants to be used in getRaster
         x1x0 = coords[2] - coords[0];
@@ -208,10 +202,7 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
                     continue;
                 }
                 useBackground = false;
-                float[] values = new float[]
-                {
-                    x + i, y + j
-                };
+                float[] values = new float[] { x + i, y + j };
                 rat.transform(values, 0, values, 0, 1);
                 currentX = values[0];
                 currentY = values[1];

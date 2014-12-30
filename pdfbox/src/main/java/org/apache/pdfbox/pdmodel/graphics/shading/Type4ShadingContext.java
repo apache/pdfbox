@@ -116,14 +116,8 @@ class Type4ShadingContext extends GouraudShadingContext
                             LOG.error("bad triangle: " + flag);
                         }
                         p2 = readVertex(mciis, maxSrcCoord, maxSrcColor, rangeX, rangeY, colRange, ctm, xform);
-                        ps = new Point2D[]
-                        {
-                            p0.point, p1.point, p2.point
-                        };
-                        cs = new float[][]
-                        {
-                            p0.color, p1.color, p2.color
-                        };
+                        ps = new Point2D[] { p0.point, p1.point, p2.point };
+                        cs = new float[][] { p0.color, p1.color, p2.color };
                         list.add(new ShadedTriangle(ps, cs));
                         flag = (byte) (mciis.readBits(bitsPerFlag) & 3);
                         break;
@@ -138,18 +132,12 @@ class Type4ShadingContext extends GouraudShadingContext
                         {
                             ShadedTriangle preTri = list.get(lastIndex);
                             p2 = readVertex(mciis, maxSrcCoord, maxSrcColor, rangeX, rangeY, colRange, ctm, xform);
-                            ps = new Point2D[]
-                            {
-                                flag == 1 ? preTri.corner[1] : preTri.corner[0],
-                                preTri.corner[2],
-                                p2.point
-                            };
-                            cs = new float[][]
-                            {
-                                flag == 1 ? preTri.color[1] : preTri.color[0],
-                                preTri.color[2],
-                                p2.color
-                            };
+                            ps = new Point2D[] { flag == 1 ? preTri.corner[1] : preTri.corner[0],
+                                                 preTri.corner[2],
+                                                 p2.point };
+                            cs = new float[][] { flag == 1 ? preTri.color[1] : preTri.color[0],
+                                                 preTri.color[2],
+                                                 p2.color };
                             list.add(new ShadedTriangle(ps, cs));
                             flag = (byte) (mciis.readBits(bitsPerFlag) & 3);
                         }
