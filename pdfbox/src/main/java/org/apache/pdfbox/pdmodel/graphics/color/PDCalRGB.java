@@ -142,7 +142,7 @@ public class PDCalRGB extends PDCIEDictionaryBasedColorSpace
         COSArray matrix = (COSArray)dictionary.getDictionaryObject(COSName.MATRIX);
         if (matrix == null)
         {
-            return new float[] {  0, 0, 0, 1, 0, 0, 0, 1 };
+            return new float[] {  1, 0, 0, 0, 1, 0, 0, 0, 1 };
         }
         else
         {
