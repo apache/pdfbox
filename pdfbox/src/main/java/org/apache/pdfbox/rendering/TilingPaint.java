@@ -97,8 +97,10 @@ class TilingPaint implements Paint
         AffineTransform xformPattern = (AffineTransform)xform.clone();
 
         // applies the pattern matrix with scaling removed
-        AffineTransform patternNoScale = pattern.getMatrix().createAffineTransform();
-        patternNoScale.scale(1 / patternNoScale.getScaleX(), 1 / patternNoScale.getScaleY());
+        Matrix patternMatrix = pattern.getMatrix();
+        AffineTransform patternNoScale = patternMatrix.createAffineTransform();
+        patternNoScale.scale(1 / patternMatrix.getScalingFactorX(),
+                1 / patternMatrix.getScalingFactorY());
         xformPattern.concatenate(patternNoScale);
 
         return paint.createContext(cm, deviceBounds, userBounds, xformPattern, hints);
@@ -152,8 +154,8 @@ class TilingPaint implements Paint
         // apply only the scaling from the pattern transform, doing scaling here improves the
         // image quality and prevents large scale-down factors from creating huge tiling cells.
         Matrix patternMatrix = Matrix.getScaleInstance(
-                Math.abs(pattern.getMatrix().getScaleX()),
-                Math.abs(pattern.getMatrix().getScaleY()));
+                Math.abs(pattern.getMatrix().getScalingFactorX()),
+                Math.abs(pattern.getMatrix().getScalingFactorY()));
 
         // move origin to (0,0)
         patternMatrix.concatenate(
@@ -201,13 +203,13 @@ class TilingPaint implements Paint
             yStep = pattern.getBBox().getHeight();
         }
 
-        float xScale = pattern.getMatrix().getScaleX();
-        float yScale = pattern.getMatrix().getScaleY();
+        float xScale = pattern.getMatrix().getScalingFactorX();
+        float yScale = pattern.getMatrix().getScalingFactorY();
 
         // returns the anchor rect with scaling applied
         PDRectangle anchor = pattern.getBBox();
         return new Rectangle2D.Float(anchor.getLowerLeftX() * xScale,
-                anchor.getLowerLeftY() * yScale,
-                xStep * xScale, yStep * yScale);
+                                     anchor.getLowerLeftY() * yScale,
+                                     xStep * xScale, yStep * yScale);
     }
 }
