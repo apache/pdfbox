@@ -142,7 +142,9 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
      */
     public float getXStep()
     {
-        return getCOSDictionary().getFloat( COSName.X_STEP, 0 );
+        // ignores invalid values, see PDFBOX-1094-065514-XStep32767.pdf
+        float xStep = getCOSDictionary().getFloat( COSName.X_STEP, 0 );
+        return xStep == Short.MAX_VALUE ? 0 : xStep;
     }
 
     /**
@@ -160,7 +162,9 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
      */
     public float getYStep()
     {
-        return getCOSDictionary().getFloat( COSName.Y_STEP, 0 );
+        // ignores invalid values, see PDFBOX-1094-065514-XStep32767.pdf
+        float yStep = getCOSDictionary().getFloat( COSName.Y_STEP, 0 );
+        return yStep == Short.MAX_VALUE ? 0 : yStep;
     }
 
     @Override
