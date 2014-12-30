@@ -52,6 +52,7 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
 
     /**
      * Constructor creates an instance to be used for fill operations.
+     * Constructor creates an instance to be used for fill operations.
      *
      * @param shading the shading type to be used
      * @param colorModel the color model to be used

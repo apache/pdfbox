@@ -35,8 +35,7 @@ import org.apache.pdfbox.util.Matrix;
 /**
  * AWT PaintContext for radial shading.
  *
- * Performance improvement done as part of GSoC2014, Tilman Hausherr is the
- * mentor.
+ * Performance improvement done as part of GSoC2014, Tilman Hausherr is the mentor.
  *
  * @author Andreas Lehmkühler
  * @author Shaola Ren
@@ -71,12 +70,13 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
      * @param colorModel the color model to be used
      * @param xform transformation for user to device space
      * @param ctm the transformation matrix
-     * @param dBounds device bounds
+     * @param deviceBounds device bounds
      */
-    public RadialShadingContext(PDShadingType3 shading, ColorModel colorModel, AffineTransform xform,
-            Matrix ctm, Rectangle dBounds) throws IOException
+    public RadialShadingContext(PDShadingType3 shading, ColorModel colorModel,
+                                AffineTransform xform, Matrix ctm, Rectangle deviceBounds)
+                                throws IOException
     {
-        super(shading, colorModel, xform, ctm, dBounds);
+        super(shading, colorModel, xform, ctm, deviceBounds);
         this.radialShadingType = shading;
         coords = shading.getCoords().toFloatArray();
 
@@ -88,10 +88,7 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
         else
         {
             // set default values
-            domain = new float[]
-            {
-                0, 1
-            };
+            domain = new float[] { 0, 1 };
         }
 
         // extend values
@@ -105,10 +102,7 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
         else
         {
             // set default values
-            extend = new boolean[]
-            {
-                false, false
-            };
+            extend = new boolean[] { false, false };
         }
         // calculate some constants to be used in getRaster
         x1x0 = coords[3] - coords[0];
@@ -243,10 +237,7 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
                     continue;
                 }
 
-                float[] values = new float[]
-                {
-                    x + i, y + j
-                };
+                float[] values = new float[] { x + i, y + j };
                 rat.transform(values, 0, values, 0, 1);
                 currentX = values[0];
                 currentY = values[1];
@@ -394,17 +385,11 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
         float root2 = (float) ((-p - root) / denom);
         if (denom < 0)
         {
-            return new float[]
-            {
-                root1, root2
-            };
+            return new float[] { root1, root2 };
         }
         else
         {
-            return new float[]
-            {
-                root2, root1
-            };
+            return new float[] { root2, root1 };
         }
     }
 
