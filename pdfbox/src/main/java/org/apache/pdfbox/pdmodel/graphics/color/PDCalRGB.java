@@ -83,14 +83,25 @@ public class PDCalRGB extends PDCIEDictionaryBasedColorSpace
             float b = value[1];
             float c = value[2];
 
-            Matrix matrix = getMatrix();
             PDGamma gamma = getGamma();
-            double powAR = Math.pow(a, gamma.getR());
-            double powBG = Math.pow(b, gamma.getG());
-            double powCB = Math.pow(c, gamma.getB());
-            float x = (float) (matrix.getValue(0, 0) * powAR + matrix.getValue(0, 1) * powBG + matrix.getValue(0, 2) * powCB);
-            float y = (float) (matrix.getValue(1, 0) * powAR + matrix.getValue(1, 1) * powBG + matrix.getValue(1, 2) * powCB);
-            float z = (float) (matrix.getValue(2, 0) * powAR + matrix.getValue(2, 1) * powBG + matrix.getValue(2, 2) * powCB);
+            float powAR = (float)Math.pow(a, gamma.getR());
+            float powBG = (float)Math.pow(b, gamma.getG());
+            float powCB = (float)Math.pow(c, gamma.getB());
+
+            float[] matrix = getMatrix();
+            float mXA = matrix[0];
+            float mYA = matrix[1];
+            float mZA = matrix[2];
+            float mXB = matrix[3];
+            float mYB = matrix[4];
+            float mZB = matrix[5];
+            float mXC = matrix[6];
+            float mYC = matrix[7];
+            float mZC = matrix[8];
+
+            float x = mXA * powAR + mXB * powBG + mXC * powCB;
+            float y = mYA * powAR + mYB * powBG + mYC * powCB;
+            float z = mZA * powAR + mZB * powBG + mZC * powCB;
             return convXYZtoRGB(x, y, z);
         }
         else
@@ -122,20 +133,20 @@ public class PDCalRGB extends PDCIEDictionaryBasedColorSpace
     }
 
     /**
-     * Returns the linear interpretation matrix.
+     * Returns the linear interpretation matrix, which is an array of nine numbers.
      * If the underlying dictionary contains null then the identity matrix will be returned.
      * @return the linear interpretation matrix
      */
-    public final Matrix getMatrix()
+    public final float[] getMatrix()
     {
         COSArray matrix = (COSArray)dictionary.getDictionaryObject(COSName.MATRIX);
-        if(matrix == null)
+        if (matrix == null)
         {
-            return new Matrix();
+            return new float[] {  0, 0, 0, 1, 0, 0, 0, 1 };
         }
         else
         {
-           return new Matrix(matrix);
+           return matrix.toFloatArray();
         }
     }
 

@@ -32,9 +32,9 @@ public final class Matrix implements Cloneable
 {
     static final float[] DEFAULT_SINGLE =
     {
-        1,0,0,  //  a  b  0
-        0,1,0,  //  c  d  0
-        0,0,1   //  tx ty 1
+        1,0,0,  //  a  b  0     sx hy 0    note: hx and hy are reversed vs. the PDF spec as we use
+        0,1,0,  //  c  d  0  =  hx sy 0          AffineTransform's definition x and y shear
+        0,0,1   //  tx ty 1     tx ty 1
     };
 
     private float[] single;
@@ -94,11 +94,10 @@ public final class Matrix implements Cloneable
      */
     public AffineTransform createAffineTransform()
     {
-        AffineTransform retval = new AffineTransform(
-            single[0], single[1],
-            single[3], single[4],
-            single[6], single[7] );
-        return retval;
+        return new AffineTransform(
+            single[0], single[1],   // m00 m10 = scaleX shearY
+            single[3], single[4],   // m01 m11 = shearX scaleY
+            single[6], single[7] ); // m02 m12 = tx ty
     }
 
     /**
@@ -455,14 +454,11 @@ public final class Matrix implements Cloneable
     }
 
     /**
-     * Get the x-scaling factor of this matrix. This is a deprecated method which actually
-     * returns the x-scaling factor multiplied by the x-shear.
+     * Returns the x-scaling factor of this matrix. This is calculated from the scale and shear.
      *
-     * @return The x-scale.
-     * @deprecated Use {@link #getScaleX} instead
+     * @return The x-scaling factor.
      */
-    @Deprecated
-    public float getXScale()
+    public float getScalingFactorX()
     {
         float xScale = single[0];
 
@@ -492,14 +488,11 @@ public final class Matrix implements Cloneable
     }
 
     /**
-     * Get the y-scaling factor of this matrix. This is a deprecated method which actually
-     * returns the y-scaling factor multiplied by the y-shear.
+     * Returns the y-scaling factor of this matrix. This is calculated from the scale and shear.
      *
-     * @return The y-scale factor.
-     * @deprecated Use {@link #getScaleY} instead
+     * @return The y-scaling factor.
      */
-    @Deprecated
-    public float getYScale()
+    public float getScalingFactorY()
     {
         float yScale = single[4];
         if( !(single[1]==0.0f && single[3]==0.0f) )
@@ -511,7 +504,7 @@ public final class Matrix implements Cloneable
     }
 
     /**
-     * Returns the x-scaling factor of this matrix.
+     * Returns the x-scaling element of this matrix.
      */
     public float getScaleX()
     {
@@ -519,7 +512,7 @@ public final class Matrix implements Cloneable
     }
 
     /**
-     * Returns the y-shear factor of this matrix.
+     * Returns the y-shear element of this matrix.
      */
     public float getShearY()
     {
@@ -527,7 +520,7 @@ public final class Matrix implements Cloneable
     }
 
     /**
-     * Returns the x-shear factor of this matrix.
+     * Returns the x-shear element of this matrix.
      */
     public float getShearX()
     {
@@ -535,7 +528,7 @@ public final class Matrix implements Cloneable
     }
 
     /**
-     * Returns the y-scaling factor of this matrix.
+     * Returns the y-scaling element of this matrix.
      */
     public float getScaleY()
     {
@@ -543,7 +536,7 @@ public final class Matrix implements Cloneable
     }
 
     /**
-     * Returns the x-translation of this matrix.
+     * Returns the x-translation element of this matrix.
      */
     public float getTranslateX()
     {
@@ -551,7 +544,7 @@ public final class Matrix implements Cloneable
     }
 
     /**
-     * Returns the y-translation of this matrix.
+     * Returns the y-translation element of this matrix.
      */
     public float getTranslateY()
     {

@@ -39,14 +39,14 @@ public class CurveToReplicateInitialPoint extends GraphicsOperatorProcessor
         COSNumber x3 = (COSNumber)operands.get(2);
         COSNumber y3 = (COSNumber)operands.get(3);
 
-        Point2D currentPoint = context.getCurrentPoint();
+        Point2D.Float currentPoint = context.getCurrentPoint();
 
-        Point2D point2 = context.transformedPoint(x2.doubleValue(), y2.doubleValue());
-        Point2D point3 = context.transformedPoint(x3.doubleValue(), y3.doubleValue());
+        Point2D.Float point2 = context.transformedPoint(x2.floatValue(), y2.floatValue());
+        Point2D.Float point3 = context.transformedPoint(x3.floatValue(), y3.floatValue());
 
-        context.curveTo((float) currentPoint.getX(), (float) currentPoint.getY(),
-                        (float) point2.getX(), (float) point2.getY(),
-                        (float) point3.getX(), (float) point3.getY());
+        context.curveTo(currentPoint.x, currentPoint.y,
+                        point2.x, point2.y,
+                        point3.x, point3.y);
     }
 
     @Override

@@ -189,10 +189,10 @@ public final class TextPosition
      */
     public float getDir()
     {
-        float a = textMatrix.getValue(0,0);
-        float b = textMatrix.getValue(0,1);
-        float c = textMatrix.getValue(1,0);
-        float d = textMatrix.getValue(1,1);
+        float a = textMatrix.getScaleY();
+        float b = textMatrix.getShearY();
+        float c = textMatrix.getShearX();
+        float d = textMatrix.getScaleX();
 
         // 12 0   left to right
         // 0 12
@@ -232,19 +232,19 @@ public final class TextPosition
     {
         if (rotation == 0)
         {
-            return textMatrix.getValue(2,0);
+            return textMatrix.getTranslateX();
         }
         else if (rotation == 90)
         {
-            return textMatrix.getValue(2,1);
+            return textMatrix.getTranslateY();
         }
         else if (rotation == 180)
         {
-            return pageWidth - textMatrix.getValue(2,0);
+            return pageWidth - textMatrix.getTranslateX();
         }
         else if (rotation == 270)
         {
-            return pageHeight - textMatrix.getValue(2,1);
+            return pageHeight - textMatrix.getTranslateY();
         }
         return 0;
     }
@@ -283,19 +283,19 @@ public final class TextPosition
     {
         if (rotation == 0)
         {
-            return textMatrix.getValue(2,1);
+            return textMatrix.getTranslateY();
         }
         else if (rotation == 90)
         {
-            return pageWidth - textMatrix.getValue(2,0);
+            return pageWidth - textMatrix.getTranslateX();
         }
         else if (rotation == 180)
         {
-            return pageHeight - textMatrix.getValue(2,1);
+            return pageHeight - textMatrix.getTranslateY();
         }
         else if (rotation == 270)
         {
-            return textMatrix.getValue(2,0);
+            return textMatrix.getTranslateX();
         }
         return 0;
     }
@@ -437,7 +437,7 @@ public final class TextPosition
      */
     public float getXScale()
     {
-        return textMatrix.getXScale();
+        return textMatrix.getScalingFactorX();
     }
 
     /**
@@ -445,7 +445,7 @@ public final class TextPosition
      */
     public float getYScale()
     {
-        return textMatrix.getYScale();
+        return textMatrix.getScalingFactorY();
     }
 
     /**

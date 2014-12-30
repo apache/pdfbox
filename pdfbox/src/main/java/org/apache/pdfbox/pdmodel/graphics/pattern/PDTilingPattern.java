@@ -20,11 +20,9 @@ import org.apache.pdfbox.contentstream.PDContentStream;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.util.Matrix;
 
 /**
  * A tiling pattern dictionary.
@@ -239,55 +237,4 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
             getCOSDictionary().setItem( COSName.BBOX, bbox.getCOSArray() );
         }
     }
-
-    /**
-     * This will get the optional Matrix of a Pattern. It maps the form space to user space.
-     * @return the form matrix
-     */
-    @Override
-    public Matrix getMatrix()
-    {
-        //TODO this method can be deleted if the "repair mechanism for invalid matrices" is deleted
-        Matrix matrix;
-        COSArray array = (COSArray)getCOSDictionary().getDictionaryObject(COSName.MATRIX);
-        if (array != null)
-        {
-            matrix = new Matrix();
-            matrix.setValue(0, 0, ((COSNumber) array.get(0)).floatValue());
-            matrix.setValue(0, 1, ((COSNumber) array.get(1)).floatValue());
-            matrix.setValue(1, 0, ((COSNumber) array.get(2)).floatValue());
-            matrix.setValue(1, 1, ((COSNumber) array.get(3)).floatValue());
-            matrix.setValue(2, 0, ((COSNumber) array.get(4)).floatValue());
-            matrix.setValue(2, 1, ((COSNumber) array.get(5)).floatValue());
-
-            // repair mechanism for invalid matrices, this is based on pure guesswork based on the
-            // PoolCompPDFA.pdf from PDFBOX-1265 which renders fine in Acrobat despite having a
-            // scaling factor of zero.
-            if (matrix.getScaleX() == 0)
-            {
-                matrix.setValue(0, 0, ((COSNumber) array.get(1)).floatValue()); // scale x -> skew x
-                matrix.setValue(1, 0, 0); // skew x -> 0
-            }
-            if (matrix.getScaleY() == 0)
-            {
-                matrix.setValue(1, 1, ((COSNumber) array.get(2)).floatValue()); // scale y -> skew y
-                matrix.setValue(0, 1, 0); // skew y -> 0
-            }
-            if (matrix.getScaleX() == 0)
-            {
-                matrix.setValue(0, 0, 1);
-            }
-            if (matrix.getScaleY() == 0)
-            {
-                matrix.setValue(1, 1, 1);
-            }
-        }
-        else
-        {
-            // default value is the identity matrix
-            matrix = new Matrix();
-        }
-        return matrix;
-    }
-
 }

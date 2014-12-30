@@ -38,8 +38,8 @@ public class LineTo extends GraphicsOperatorProcessor
         COSNumber x = (COSNumber)operands.get(0);
         COSNumber y = (COSNumber)operands.get(1);
 
-        Point2D pos = context.transformedPoint(x.doubleValue(), y.doubleValue());
-        context.lineTo((float) pos.getX(), (float) pos.getY());
+        Point2D.Float pos = context.transformedPoint(x.floatValue(), y.floatValue());
+        context.lineTo(pos.x, pos.y);
     }
 
     @Override

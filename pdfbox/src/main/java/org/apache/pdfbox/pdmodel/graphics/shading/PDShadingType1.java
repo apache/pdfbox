@@ -23,7 +23,6 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -60,14 +59,9 @@ public class PDShadingType1 extends PDShading
         COSArray array = (COSArray) getCOSDictionary().getDictionaryObject(COSName.MATRIX);
         if (array != null)
         {
-            matrix = new Matrix();
-            matrix.setValue(0, 0, ((COSNumber) array.get(0)).floatValue());
-            matrix.setValue(0, 1, ((COSNumber) array.get(1)).floatValue());
-            matrix.setValue(1, 0, ((COSNumber) array.get(2)).floatValue());
-            matrix.setValue(1, 1, ((COSNumber) array.get(3)).floatValue());
-            matrix.setValue(2, 0, ((COSNumber) array.get(4)).floatValue());
-            matrix.setValue(2, 1, ((COSNumber) array.get(5)).floatValue());
+            matrix = new Matrix(array);
         }
+        // todo: else return identity matrix?
         return matrix;
     }
 

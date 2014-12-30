@@ -126,8 +126,8 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
         }
 
         // transform the distance to actual pixel space
-        double maxX = Math.abs(ctm.getXScale() * xform.getScaleX() * longestDistance);
-        double maxY = Math.abs(ctm.getYScale() * xform.getScaleY() * longestDistance);
+        double maxX = Math.abs(ctm.getScalingFactorX() * xform.getScaleX() * longestDistance);
+        double maxY = Math.abs(ctm.getScalingFactorY() * xform.getScaleY() * longestDistance);
         factor = (int) Math.max(maxX, maxY);
         colorTable = calcColorTable();
     }

@@ -177,24 +177,16 @@ public abstract class PDAbstractPattern implements COSObjectable
      */
     public Matrix getMatrix()
     {
-        Matrix matrix;
         COSArray array = (COSArray)getCOSDictionary().getDictionaryObject(COSName.MATRIX);
         if (array != null)
         {
-            matrix = new Matrix();
-            matrix.setValue(0, 0, ((COSNumber) array.get(0)).floatValue());
-            matrix.setValue(0, 1, ((COSNumber) array.get(1)).floatValue());
-            matrix.setValue(1, 0, ((COSNumber) array.get(2)).floatValue());
-            matrix.setValue(1, 1, ((COSNumber) array.get(3)).floatValue());
-            matrix.setValue(2, 0, ((COSNumber) array.get(4)).floatValue());
-            matrix.setValue(2, 1, ((COSNumber) array.get(5)).floatValue());
+            return new Matrix(array);
         }
         else
         {
             // default value is the identity matrix
-            matrix = new Matrix();
+            return new Matrix();
         }
-        return matrix;
     }
 
     /**

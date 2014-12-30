@@ -43,17 +43,10 @@ public class Concatenate extends OperatorProcessor
         COSNumber e = (COSNumber) arguments.get(4);
         COSNumber f = (COSNumber) arguments.get(5);
 
-        Matrix newMatrix = new Matrix();
-        newMatrix.setValue(0, 0, a.floatValue());
-        newMatrix.setValue(0, 1, b.floatValue());
-        newMatrix.setValue(1, 0, c.floatValue());
-        newMatrix.setValue(1, 1, d.floatValue());
-        newMatrix.setValue(2, 0, e.floatValue());
-        newMatrix.setValue(2, 1, f.floatValue());
+        Matrix matrix = new Matrix(a.floatValue(), b.floatValue(), c.floatValue(),
+                                   d.floatValue(), e.floatValue(), f.floatValue());
 
-        // this line has changed
-        context.getGraphicsState().setCurrentTransformationMatrix(
-                newMatrix.multiply(context.getGraphicsState().getCurrentTransformationMatrix()));
+        context.getGraphicsState().getCurrentTransformationMatrix().concatenate(matrix);
     }
 
     @Override
