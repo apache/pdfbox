@@ -170,7 +170,7 @@ class TilingPaint implements Paint
     }
 
     /**
-     * Returns the closest integer which is //larger than the given number.
+     * Returns the closest integer which is larger than the given number.
      * Uses BigDecimal to avoid floating point error which would cause gaps in the tiling.
      */
     private static int ceiling(double num)
