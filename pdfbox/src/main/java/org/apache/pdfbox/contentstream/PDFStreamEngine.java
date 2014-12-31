@@ -170,23 +170,12 @@ public class PDFStreamEngine
      */
     public void showForm(PDFormXObject form) throws IOException
     {
-        processChildStream(form);
-    }
-
-    /**
-     * Process a child stream of the current page. For use with #processPage(PDPage).
-     *
-     * @param contentStream the child content stream
-     * @throws IOException if there is an exception while processing the stream
-     */
-    public void processChildStream(PDContentStream contentStream) throws IOException
-    {
         if (currentPage == null)
         {
             throw new IllegalStateException("No current page, call " +
                     "#processChildStream(PDContentStream, PDPage) instead");
         }
-        processStream(contentStream);
+        processStream(form);
     }
 
     /**
@@ -431,12 +420,13 @@ public class PDFStreamEngine
     {
         PDResources parent = pushResources(contentStream);
         saveGraphicsState();
-
         Matrix parentMatrix = initialMatrix;
-        initialMatrix = Matrix.concatenate(initialMatrix, contentStream.getMatrix());
 
         // transform the CTM using the stream's matrix
         getGraphicsState().getCurrentTransformationMatrix().concatenate(contentStream.getMatrix());
+
+        // the stream's initial matrix includes the parent CTM, e.g. this allows a scaled form
+        initialMatrix = getGraphicsState().getCurrentTransformationMatrix().clone();
 
         // clip to bounding box
         PDRectangle bbox = contentStream.getBBox();
