@@ -49,21 +49,22 @@ class Type5ShadingContext extends GouraudShadingContext
      * @param shading the shading type to be used
      * @param cm the color model to be used
      * @param xform transformation for user to device space
-     * @param ctm current transformation matrix
+     * @param matrix the pattern matrix concatenated with that of the parent content stream
      * @throws IOException if something went wrong
      */
     public Type5ShadingContext(PDShadingType5 shading, ColorModel cm, AffineTransform xform,
-            Matrix ctm, Rectangle dBounds) throws IOException
+                               Matrix matrix, Rectangle deviceBounds) throws IOException
     {
-        super(shading, cm, xform, ctm, dBounds);
+        super(shading, cm, xform, matrix, deviceBounds);
 
         LOG.debug("Type5ShadingContext");
 
-        triangleList = getTriangleList(xform, ctm);
+        triangleList = getTriangleList(xform, matrix);
         createPixelTable();
     }
 
-    private List<ShadedTriangle> getTriangleList(AffineTransform xform, Matrix ctm) throws IOException
+    private List<ShadedTriangle> getTriangleList(AffineTransform xform, Matrix matrix)
+            throws IOException
     {
         List<ShadedTriangle> list = new ArrayList<ShadedTriangle>();
         PDShadingType5 latticeTriangleShadingType = (PDShadingType5) shading;
@@ -87,7 +88,7 @@ class Type5ShadingContext extends GouraudShadingContext
             Vertex p;
             try
             {
-                p = readVertex(mciis, maxSrcCoord, maxSrcColor, rangeX, rangeY, colRange, ctm, xform);
+                p = readVertex(mciis, maxSrcCoord, maxSrcColor, rangeX, rangeY, colRange, matrix, xform);
                 vlist.add(p);
             }
             catch (EOFException ex)

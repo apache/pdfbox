@@ -49,11 +49,20 @@ public abstract class ShadingContext
     protected float[] background;
     protected int rgbBackground;
 
+    /**
+     * Constructor.
+     *
+     * @param shading the shading type to be used
+     * @param cm the color model to be used
+     * @param xform transformation for user to device space
+     * @param matrix the pattern matrix concatenated with that of the parent content stream
+     * @param deviceBounds device bounds
+     */
     public ShadingContext(PDShading shading, ColorModel cm, AffineTransform xform,
-            Matrix ctm, Rectangle dBounds) throws IOException
+                          Matrix matrix, Rectangle deviceBounds) throws IOException
     {
         this.shading = shading;
-        deviceBounds = dBounds;
+        this.deviceBounds = deviceBounds;
         shadingColorSpace = shading.getColorSpace();
 
         // create the output color model using RGB+alpha as color space
@@ -64,7 +73,7 @@ public abstract class ShadingContext
         bboxRect = shading.getBBox();
         if (bboxRect != null)
         {
-            transformBBox(ctm, xform);
+            transformBBox(matrix, xform);
         }
         
         // get background values if available
@@ -76,18 +85,17 @@ public abstract class ShadingContext
         }
     }
 
-    private void transformBBox(Matrix ctm, AffineTransform xform)
+    private void transformBBox(Matrix matrix, AffineTransform xform)
     {
         float[] bboxTab = new float[4];
         bboxTab[0] = bboxRect.getLowerLeftX();
         bboxTab[1] = bboxRect.getLowerLeftY();
         bboxTab[2] = bboxRect.getUpperRightX();
         bboxTab[3] = bboxRect.getUpperRightY();
-        if (ctm != null)
-        {
-            // transform the coords using the given matrix
-            ctm.createAffineTransform().transform(bboxTab, 0, bboxTab, 0, 2);
-        }
+
+        // transform the coords using the given matrix
+        matrix.createAffineTransform().transform(bboxTab, 0, bboxTab, 0, 2);
+
         xform.transform(bboxTab, 0, bboxTab, 0, 2);
         minBBoxX = Math.min(bboxTab[0], bboxTab[2]);
         minBBoxY = Math.min(bboxTab[1], bboxTab[3]);
@@ -115,8 +123,8 @@ public abstract class ShadingContext
         {
             rgbValues = shadingColorSpace.toRGB(values);
             normRGBValues = (int) (rgbValues[0] * 255);
-            normRGBValues |= (((int) (rgbValues[1] * 255)) << 8);
-            normRGBValues |= (((int) (rgbValues[2] * 255)) << 16);
+            normRGBValues |= (int) (rgbValues[1] * 255) << 8;
+            normRGBValues |= (int) (rgbValues[2] * 255) << 16;
         }
         catch (IOException exception)
         {
@@ -124,5 +132,4 @@ public abstract class ShadingContext
         }
         return normRGBValues;
     }
-
 }

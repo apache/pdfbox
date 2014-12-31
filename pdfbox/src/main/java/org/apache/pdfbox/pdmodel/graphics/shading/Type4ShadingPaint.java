@@ -37,18 +37,18 @@ class Type4ShadingPaint implements Paint
     private static final Log LOG = LogFactory.getLog(Type4ShadingPaint.class);
 
     private PDShadingType4 shading;
-    private Matrix ctm;
+    private Matrix matrix;
 
     /**
      * Constructor.
      *
      * @param shading the shading resources
-     * @param ctm current transformation matrix
+     * @param matrix the pattern matrix concatenated with that of the parent content stream
      */
-    Type4ShadingPaint(PDShadingType4 shading, Matrix ctm)
+    Type4ShadingPaint(PDShadingType4 shading, Matrix matrix)
     {
         this.shading = shading;
-        this.ctm = ctm;
+        this.matrix = matrix;
     }
 
     @Override
@@ -59,11 +59,11 @@ class Type4ShadingPaint implements Paint
 
     @Override
     public PaintContext createContext(ColorModel cm, Rectangle deviceBounds, Rectangle2D userBounds,
-            AffineTransform xform, RenderingHints hints)
+                                      AffineTransform xform, RenderingHints hints)
     {
         try
         {
-            return new Type4ShadingContext(shading, cm, xform, ctm, deviceBounds);
+            return new Type4ShadingContext(shading, cm, xform, matrix, deviceBounds);
         }
         catch (IOException ex)
         {

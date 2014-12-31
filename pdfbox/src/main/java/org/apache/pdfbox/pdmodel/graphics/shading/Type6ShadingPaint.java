@@ -38,18 +38,18 @@ class Type6ShadingPaint implements Paint
     private static final Log LOG = LogFactory.getLog(Type6ShadingPaint.class);
 
     private final PDShadingType6 shading;
-    private final Matrix ctm;
+    private final Matrix matrix;
 
     /**
      * Constructor.
      *
      * @param shading the shading resources
-     * @param ctm current transformation matrix
+     * @param matrix the pattern matrix concatenated with that of the parent content stream
      */
-    public Type6ShadingPaint(PDShadingType6 shading, Matrix ctm)
+    public Type6ShadingPaint(PDShadingType6 shading, Matrix matrix)
     {
         this.shading = shading;
-        this.ctm = ctm;
+        this.matrix = matrix;
     }
 
     @Override
@@ -64,7 +64,7 @@ class Type6ShadingPaint implements Paint
     {
         try
         {
-            return new Type6ShadingContext(shading, cm, xform, ctm, deviceBounds);
+            return new Type6ShadingContext(shading, cm, xform, matrix, deviceBounds);
         }
         catch (IOException ex)
         {

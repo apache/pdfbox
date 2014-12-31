@@ -26,7 +26,6 @@ import java.awt.Paint;
  */
 public class PDShadingType7 extends PDShadingType6
 {
-
     /**
      * Constructor using the given shading dictionary.
      *

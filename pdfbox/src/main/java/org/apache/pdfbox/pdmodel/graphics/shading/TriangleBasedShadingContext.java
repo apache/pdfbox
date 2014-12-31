@@ -31,8 +31,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.util.Matrix;
 
 /**
- * Intermediate class extended by the shading types 4,5,6 and 7 that contains
- * the common methods used by these classes.
+ * Intermediate class extended by the shading types 4,5,6 and 7 that contains the common methods
+ * used by these classes.
  *
  * @author Shaola Ren
  * @author Tilman Hausherr
@@ -41,33 +41,27 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
 {
     private static final Log LOG = LogFactory.getLog(TriangleBasedShadingContext.class);
 
-    /**
-     * bits per coordinate.
-     */
     protected int bitsPerCoordinate;
-
-    /**
-     * bits per color component
-     */
     protected int bitsPerColorComponent;
-
-    /**
-     * number of color components.
-     */
     protected int numberOfColorComponents;
+    protected final boolean hasFunction;
 
-    final protected boolean hasFunction;
-
-    /**
-     * Map of pixels within triangles to their RGB color.
-     */
+    // map of pixels within triangles to their RGB color
     private Map<Point, Integer> pixelTable;
 
-    public TriangleBasedShadingContext(PDShading shading, ColorModel cm,
-            AffineTransform xform, Matrix ctm, Rectangle dBounds)
-            throws IOException
+    /**
+     * Constructor.
+     *
+     * @param shading the shading type to be used
+     * @param cm the color model to be used
+     * @param xform transformation for user to device space
+     * @param matrix the pattern matrix concatenated with that of the parent content stream
+     * @throws IOException if something went wrong
+     */
+    public TriangleBasedShadingContext(PDShading shading, ColorModel cm, AffineTransform xform,
+                                       Matrix matrix, Rectangle deviceBounds) throws IOException
     {
-        super(shading, cm, xform, ctm, dBounds);
+        super(shading, cm, xform, matrix, deviceBounds);
         PDTriangleBasedShadingType triangleBasedShadingType = (PDTriangleBasedShadingType) shading;
         hasFunction = shading.getFunction() != null;
         bitsPerCoordinate = triangleBasedShadingType.getBitsPerCoordinate();
@@ -128,13 +122,15 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
         }
     }
 
-    // transform a point from source space to device space
-    protected void transformPoint(Point2D p, Matrix ctm, AffineTransform xform)
+    /**
+     * Transform a point from pattern space to device space.
+     * @param p point
+     * @param matrix the pattern matrix concatenated with that of the parent content stream
+     * @param xform transformation for user to device space
+     */
+    protected void transformPoint(Point2D p, Matrix matrix, AffineTransform xform)
     {
-        if (ctm != null)
-        {
-            ctm.createAffineTransform().transform(p, p);
-        }
+        matrix.createAffineTransform().transform(p, p);
         xform.transform(p, p);
     }
 
@@ -157,21 +153,17 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
         return convertToRGB(values);
     }
 
-    // true if the relevant list is empty
-    abstract boolean emptyList();
-    
     /**
-     * {@inheritDoc}
+     * True if the relevant list is empty.
      */
+    abstract boolean emptyList();
+
     @Override
     public final ColorModel getColorModel()
     {
         return outputColorModel;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void dispose()
     {
@@ -179,9 +171,6 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
         shadingColorSpace = null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final Raster getRaster(int x, int y, int w, int h)
     {
@@ -230,5 +219,4 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
         raster.setPixels(0, 0, w, h, data);
         return raster;
     }
-
 }

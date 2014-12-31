@@ -55,14 +55,16 @@ public class PDShadingType1 extends PDShading
      */
     public Matrix getMatrix()
     {
-        Matrix matrix = null;
         COSArray array = (COSArray) getCOSDictionary().getDictionaryObject(COSName.MATRIX);
         if (array != null)
         {
-            matrix = new Matrix(array);
+            return new Matrix(array);
         }
-        // todo: else return identity matrix?
-        return matrix;
+        else
+        {
+            // identity matrix is the default
+            return new Matrix();
+        }
     }
 
     /**

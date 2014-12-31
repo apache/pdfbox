@@ -33,30 +33,29 @@ import org.apache.pdfbox.util.Matrix;
  */
 class Type7ShadingContext extends PatchMeshesShadingContext
 {
-
     /**
      * Constructor creates an instance to be used for fill operations.
      *
      * @param shading the shading type to be used
      * @param colorModel the color model to be used
      * @param xform transformation for user to device space
-     * @param ctm current transformation matrix
-     * @param dBounds device bounds
+     * @param matrix the pattern matrix concatenated with that of the parent content stream
+     * @param deviceBounds device bounds
      * @throws IOException if something went wrong
      */
     public Type7ShadingContext(PDShadingType7 shading, ColorModel colorModel, AffineTransform xform,
-            Matrix ctm, Rectangle dBounds) throws IOException
+                               Matrix matrix, Rectangle deviceBounds) throws IOException
     {
-        super(shading, colorModel, xform, ctm, dBounds);
-        patchList = getTensorPatchList(xform, ctm);
+        super(shading, colorModel, xform, matrix, deviceBounds);
+        patchList = getTensorPatchList(xform, matrix);
         createPixelTable();
     }
 
     // get the patch list which forms the type 7 shading image from data stream
-    private List<Patch> getTensorPatchList(AffineTransform xform, Matrix ctm) throws IOException
+    private List<Patch> getTensorPatchList(AffineTransform xform, Matrix matrix) throws IOException
     {
         PDShadingType7 tensorShadingType = (PDShadingType7) patchMeshesShadingType;
-        COSDictionary cosDictionary = tensorShadingType.getCOSDictionary();
+        COSDictionary dict = tensorShadingType.getCOSDictionary();
         PDRange rangeX = tensorShadingType.getDecodeForParameter(0);
         PDRange rangeY = tensorShadingType.getDecodeForParameter(1);
         PDRange[] colRange = new PDRange[numberOfColorComponents];
@@ -64,7 +63,7 @@ class Type7ShadingContext extends PatchMeshesShadingContext
         {
             colRange[i] = tensorShadingType.getDecodeForParameter(2 + i);
         }
-        return getPatchList(xform, ctm, cosDictionary, rangeX, rangeY, colRange, 16);
+        return getPatchList(xform, matrix, dict, rangeX, rangeY, colRange, 16);
     }
 
     @Override
@@ -72,5 +71,4 @@ class Type7ShadingContext extends PatchMeshesShadingContext
     {
         return new TensorPatch(points, color);
     }
-
 }

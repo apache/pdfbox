@@ -39,18 +39,18 @@ public class AxialShadingPaint implements Paint
     private static final Log LOG = LogFactory.getLog(AxialShadingPaint.class);
 
     private final PDShadingType2 shading;
-    private final Matrix ctm;
+    private final Matrix matrix;
 
     /**
      * Constructor.
      *
      * @param shadingType2 the shading resources
-     * @param ctm current transformation matrix
+     * @param matrix the pattern matrix concatenated with that of the parent content stream
      */
-    AxialShadingPaint(PDShadingType2 shadingType2, Matrix ctm)
+    AxialShadingPaint(PDShadingType2 shadingType2, Matrix matrix)
     {
         shading = shadingType2;
-        this.ctm = ctm;
+        this.matrix = matrix;
     }
 
     @Override
@@ -60,13 +60,12 @@ public class AxialShadingPaint implements Paint
     }
 
     @Override
-    public PaintContext createContext(ColorModel cm, Rectangle deviceBounds,
-            Rectangle2D userBounds, AffineTransform xform,
-            RenderingHints hints)
+    public PaintContext createContext(ColorModel cm, Rectangle deviceBounds, Rectangle2D userBounds,
+                                      AffineTransform xform, RenderingHints hints)
     {
         try
         {
-            return new AxialShadingContext(shading, cm, xform, ctm, deviceBounds);
+            return new AxialShadingContext(shading, cm, xform, matrix, deviceBounds);
         }
         catch (IOException ex)
         {

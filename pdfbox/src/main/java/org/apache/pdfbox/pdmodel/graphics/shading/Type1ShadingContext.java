@@ -40,7 +40,7 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
     private PDShadingType1 type1ShadingType;
     private AffineTransform rat;
     private final float[] domain;
-    private Matrix matrix;
+    private Matrix patternMatrix;
 
     /**
      * Constructor creates an instance to be used for fill operations.
@@ -48,16 +48,15 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
      * @param shading the shading type to be used
      * @param colorModel the color model to be used
      * @param xform transformation for user to device space
-     * @param ctm current transformation matrix
-     * @param dBounds device bounds
+     * @param matrix the pattern matrix concatenated with that of the parent content stream
+     * @param deviceBounds device bounds
      */
     public Type1ShadingContext(PDShadingType1 shading, ColorModel colorModel, AffineTransform xform,
-            Matrix ctm, Rectangle dBounds) throws IOException
+                               Matrix matrix, Rectangle deviceBounds) throws IOException
     {
-        super(shading, colorModel, xform, ctm, dBounds);
+        super(shading, colorModel, xform, matrix, deviceBounds);
         this.type1ShadingType = shading;
 
-        // spec p.308
         // (Optional) An array of four numbers [ xmin xmax ymin ymax ] 
         // specifying the rectangular domain of coordinates over which the 
         // color function(s) are defined. Default value: [ 0.0 1.0 0.0 1.0 ].
@@ -70,19 +69,15 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
             domain = new float[] { 0, 1, 0, 1 };
         }
 
-        matrix = shading.getMatrix();
-        if (matrix == null)
-        {
-            matrix = new Matrix();
-        }
+        patternMatrix = shading.getMatrix();
 
         try
         {
             // get inverse transform to be independent of 
             // shading matrix and current user / device space 
             // when handling actual pixels in getRaster()
-            rat = matrix.createAffineTransform().createInverse();
-            rat.concatenate(ctm.createAffineTransform().createInverse());
+            rat = patternMatrix.createAffineTransform().createInverse();
+            rat.concatenate(matrix.createAffineTransform().createInverse());
             rat.concatenate(xform.createInverse());
         }
         catch (NoninvertibleTransformException ex)
@@ -128,7 +123,8 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
                 boolean useBackground = false;
                 float[] values = new float[] { x + i, y + j };
                 rat.transform(values, 0, values, 0, 1);
-                if (values[0] < domain[0] || values[0] > domain[1] || values[1] < domain[2] || values[1] > domain[3])
+                if (values[0] < domain[0] || values[0] > domain[1] ||
+                    values[1] < domain[2] || values[1] > domain[3])
                 {
                     if (background == null)
                     {

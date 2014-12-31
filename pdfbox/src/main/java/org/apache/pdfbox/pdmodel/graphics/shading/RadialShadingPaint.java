@@ -39,18 +39,18 @@ public class RadialShadingPaint implements Paint
     private static final Log LOG = LogFactory.getLog(RadialShadingPaint.class);
 
     private final PDShadingType3 shading;
-    private final Matrix ctm;
+    private final Matrix matrix;
 
     /**
      * Constructor.
      *
      * @param shading the shading resources
-     * @param ctm current transformation matrix
+     * @param matrix the pattern matrix concatenated with that of the parent content stream
      */
-    RadialShadingPaint(PDShadingType3 shading, Matrix ctm)
+    RadialShadingPaint(PDShadingType3 shading, Matrix matrix)
     {
         this.shading = shading;
-        this.ctm = ctm;
+        this.matrix = matrix;
     }
 
     @Override
@@ -61,11 +61,11 @@ public class RadialShadingPaint implements Paint
 
     @Override
     public PaintContext createContext(ColorModel cm, Rectangle deviceBounds, Rectangle2D userBounds,
-            AffineTransform xform, RenderingHints hints)
+                                      AffineTransform xform, RenderingHints hints)
     {
         try
         {
-            return new RadialShadingContext(shading, cm, xform, ctm, deviceBounds);
+            return new RadialShadingContext(shading, cm, xform, matrix, deviceBounds);
         }
         catch (IOException ex)
         {

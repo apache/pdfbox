@@ -32,7 +32,7 @@ import org.apache.pdfbox.util.Matrix;
 /**
  * A Shading Resource.
  *
- * @author Andreas Lehmkühler
+ * @author Andreas Lehmkï¿½hler
  */
 public abstract class PDShading implements COSObjectable
 {
@@ -447,7 +447,8 @@ public abstract class PDShading implements COSObjectable
     /**
      * Returns an AWT paint which corresponds to this shading
      *
-     * @param matrix the pattern matrix
+     * @param matrix the pattern matrix concatenated with that of the parent content stream,
+     *               this matrix which maps the pattern's internal coordinate system to user space
      * @return an AWT Paint instance
      */
     public abstract Paint toPaint(Matrix matrix);
