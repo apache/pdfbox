@@ -130,35 +130,21 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
      * @return an array, index denotes the relative position, the corresponding
      * value is the color on the axial line
      */
-    private int[] calcColorTable()
+    private int[] calcColorTable() throws IOException
     {
         int[] map = new int[factor + 1];
         if (factor == 0 || d1d0 == 0)
         {
-            try
-            {
-                float[] values = axialShadingType.evalFunction(domain[0]);
-                map[0] = convertToRGB(values);
-            }
-            catch (IOException exception)
-            {
-                LOG.error("error while processing a function", exception);
-            }
+            float[] values = axialShadingType.evalFunction(domain[0]);
+            map[0] = convertToRGB(values);
         }
         else
         {
             for (int i = 0; i <= factor; i++)
             {
                 float t = domain[0] + d1d0 * i / (float) factor;
-                try
-                {
-                    float[] values = axialShadingType.evalFunction(t);
-                    map[i] = convertToRGB(values);
-                }
-                catch (IOException exception)
-                {
-                    LOG.error("error while processing a function", exception);
-                }
+                float[] values = axialShadingType.evalFunction(t);
+                map[i] = convertToRGB(values);
             }
         }
         return map;

@@ -115,21 +115,16 @@ public abstract class ShadingContext
      * @param values color values in shading colorspace.
      * @return RGB values encoded in an integer.
      */
-    protected final int convertToRGB(float[] values)
+    protected final int convertToRGB(float[] values) throws IOException
     {
         float[] rgbValues;
         int normRGBValues = 0;
-        try
-        {
-            rgbValues = shadingColorSpace.toRGB(values);
-            normRGBValues = (int) (rgbValues[0] * 255);
-            normRGBValues |= (int) (rgbValues[1] * 255) << 8;
-            normRGBValues |= (int) (rgbValues[2] * 255) << 16;
-        }
-        catch (IOException exception)
-        {
-            LOG.error("error processing color space", exception);
-        }
+
+        rgbValues = shadingColorSpace.toRGB(values);
+        normRGBValues = (int) (rgbValues[0] * 255);
+        normRGBValues |= (int) (rgbValues[1] * 255) << 8;
+        normRGBValues |= (int) (rgbValues[2] * 255) << 16;
+
         return normRGBValues;
     }
 }

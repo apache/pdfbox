@@ -247,7 +247,7 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
     }
 
     @Override
-    protected Map<Point, Integer> calcPixelTable()
+    protected Map<Point, Integer> calcPixelTable()  throws IOException
     {
         Map<Point, Integer> map = new HashMap<Point, Integer>();
         for (Patch it : patchList)

@@ -112,6 +112,7 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
             {
                 continue;
             }
+
             for (int i = 0; i < w; i++)
             {
                 int currentX = x + i;
@@ -119,6 +120,7 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
                 {
                     continue;
                 }
+
                 int index = (j * w + i) * 4;
                 boolean useBackground = false;
                 float[] values = new float[] { x + i, y + j };
@@ -132,6 +134,7 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
                     }
                     useBackground = true;
                 }
+
                 // evaluate function
                 if (useBackground)
                 {
@@ -143,11 +146,12 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
                     {
                         values = type1ShadingType.evalFunction(values);
                     }
-                    catch (IOException exception)
+                    catch (IOException e)
                     {
-                        LOG.error("error while processing a function", exception);
+                        LOG.error("error while processing a function", e);
                     }
                 }
+
                 // convert color values from shading color space to RGB
                 if (shadingColorSpace != null)
                 {
@@ -155,9 +159,9 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
                     {
                         values = shadingColorSpace.toRGB(values);
                     }
-                    catch (IOException exception)
+                    catch (IOException e)
                     {
-                        LOG.error("error processing color space", exception);
+                        LOG.error("error processing color space", e);
                     }
                 }
                 data[index] = (int) (values[0] * 255);
