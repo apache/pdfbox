@@ -51,6 +51,7 @@ class TilingPaint implements Paint
 {
     private final PDTilingPattern pattern;
     private final TexturePaint paint;
+    private final PageDrawer drawer;
 
     /**
      * Creates a new colored tiling Paint.
@@ -64,8 +65,9 @@ class TilingPaint implements Paint
     public TilingPaint(PageDrawer drawer, PDTilingPattern pattern, AffineTransform xform)
             throws IOException
     {
+        this.drawer = drawer;
         this.paint = new TexturePaint(getImage(drawer, pattern, null, null, xform),
-                getAnchorRect(pattern));
+                                      getAnchorRect(pattern, drawer));
         this.pattern = pattern;
     }
 
@@ -82,8 +84,9 @@ class TilingPaint implements Paint
     public TilingPaint(PageDrawer drawer, PDTilingPattern pattern, PDColorSpace colorSpace,
                        PDColor color, AffineTransform xform) throws IOException
     {
+        this.drawer = drawer;
         this.paint = new TexturePaint(getImage(drawer, pattern, colorSpace, color, xform),
-                getAnchorRect(pattern));
+                                      getAnchorRect(pattern, drawer));
         this.pattern = pattern;
     }
 
@@ -96,11 +99,13 @@ class TilingPaint implements Paint
     {
         AffineTransform xformPattern = (AffineTransform)xform.clone();
 
+        // pattern space -> user space
+        Matrix patternMatrix = Matrix.concatenate(drawer.getInitialMatrix(), pattern.getMatrix());
+
         // applies the pattern matrix with scaling removed
-        Matrix patternMatrix = pattern.getMatrix();
         AffineTransform patternNoScale = patternMatrix.createAffineTransform();
         patternNoScale.scale(1 / patternMatrix.getScalingFactorX(),
-                1 / patternMatrix.getScalingFactorY());
+                             1 / patternMatrix.getScalingFactorY());
         xformPattern.concatenate(patternNoScale);
 
         return paint.createContext(cm, deviceBounds, userBounds, xformPattern, hints);
@@ -117,7 +122,7 @@ class TilingPaint implements Paint
         ColorModel cm = new ComponentColorModel(outputCS, true, false,
                 Transparency.TRANSLUCENT, DataBuffer.TYPE_BYTE);
 
-        Rectangle2D anchor = getAnchorRect(pattern);
+        Rectangle2D anchor = getAnchorRect(pattern, drawer);
         float width = (float)Math.abs(anchor.getWidth());
         float height = (float)Math.abs(anchor.getHeight());
 
@@ -152,16 +157,19 @@ class TilingPaint implements Paint
         // device scale transform (i.e. DPI)
         graphics.scale(xformMatrix.getScalingFactorX(), xformMatrix.getScalingFactorY());
 
+        // pattern space -> user space
+        Matrix patternMatrix = Matrix.concatenate(drawer.getInitialMatrix(), pattern.getMatrix());
+
         // apply only the scaling from the pattern transform, doing scaling here improves the
         // image quality and prevents large scale-down factors from creating huge tiling cells.
-        Matrix patternMatrix = Matrix.getScaleInstance(
-                Math.abs(pattern.getMatrix().getScalingFactorX()),
-                Math.abs(pattern.getMatrix().getScalingFactorY()));
+        patternMatrix = Matrix.getScaleInstance(
+                Math.abs(patternMatrix.getScalingFactorX()),
+                Math.abs(patternMatrix.getScalingFactorY()));
 
         // move origin to (0,0)
         patternMatrix.concatenate(
                 Matrix.getTranslatingInstance(-pattern.getBBox().getLowerLeftX(),
-                        -pattern.getBBox().getLowerLeftY()));
+                                              -pattern.getBBox().getLowerLeftY()));
 
         // render using PageDrawer
         drawer.drawTilingPattern(graphics, pattern, colorSpace, color, patternMatrix);
@@ -190,7 +198,7 @@ class TilingPaint implements Paint
     /**
      * Returns the anchor rectangle, which includes the XStep/YStep and scaling.
      */
-    private static Rectangle2D getAnchorRect(PDTilingPattern pattern)
+    private static Rectangle2D getAnchorRect(PDTilingPattern pattern, PageDrawer drawer)
     {
         float xStep = pattern.getXStep();
         if (xStep == 0)
@@ -204,8 +212,11 @@ class TilingPaint implements Paint
             yStep = pattern.getBBox().getHeight();
         }
 
-        float xScale = pattern.getMatrix().getScalingFactorX();
-        float yScale = pattern.getMatrix().getScalingFactorY();
+        // pattern space -> user space
+        Matrix patternMatrix = Matrix.concatenate(drawer.getInitialMatrix(), pattern.getMatrix());
+
+        float xScale = patternMatrix.getScalingFactorX();
+        float yScale = patternMatrix.getScalingFactorY();
 
         // returns the anchor rect with scaling applied
         PDRectangle anchor = pattern.getBBox();
