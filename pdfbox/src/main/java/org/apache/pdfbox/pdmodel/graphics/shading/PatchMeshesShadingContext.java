@@ -46,52 +46,51 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
     private static final Log LOG = LogFactory.getLog(PatchMeshesShadingContext.class);
 
     protected final PDShading patchMeshesShadingType;
-
     protected List<Patch> patchList; // patch list
     protected int bitsPerFlag; // bits per flag
 
     /**
      * Constructor creates an instance to be used for fill operations.
-     * Constructor creates an instance to be used for fill operations.
      *
      * @param shading the shading type to be used
      * @param colorModel the color model to be used
      * @param xform transformation for user to device space
-     * @param ctm current transformation matrix
-     * @param dBounds device bounds
+     * @param matrix the pattern matrix concatenated with that of the parent content stream
+     * @param deviceBounds device bounds
      * @throws IOException if something went wrong
      */
-    protected PatchMeshesShadingContext(PDShading shading, ColorModel colorModel, AffineTransform xform,
-            Matrix ctm, Rectangle dBounds) throws IOException
+    protected PatchMeshesShadingContext(PDShading shading, ColorModel colorModel,
+                                        AffineTransform xform, Matrix matrix, Rectangle deviceBounds)
+                                        throws IOException
     {
-        super(shading, colorModel, xform, ctm, dBounds);
+        super(shading, colorModel, xform, matrix, deviceBounds);
         patchMeshesShadingType = shading;
         bitsPerFlag = ((PDShadingType6) shading).getBitsPerFlag();
         patchList = new ArrayList<Patch>();
     }
 
     /**
-     * Create a patch list from a data stream, the returned list contains all
-     * the patches contained in the data stream.
+     * Create a patch list from a data stream, the returned list contains all the patches contained
+     * in the data stream.
      *
      * @param xform transformation for user to device space
-     * @param ctm current transformation matrix
-     * @param cosDictionary dictionary object to give the image information
+     * @param matrix the pattern matrix concatenated with that of the parent content stream
+     * @param dict dictionary object to give the image information
      * @param rangeX range for coordinate x
      * @param rangeY range for coordinate y
      * @param colRange range for color
-     * @param numP number of control points, 12 for type 6 shading and 16 for
-     * type 7 shading
+     * @param numP number of control points, 12 for type 6 shading and 16 for type 7 shading
      * @return the obtained patch list
      * @throws IOException when something went wrong
      */
-    protected List<Patch> getPatchList(AffineTransform xform, Matrix ctm, COSDictionary cosDictionary,
-            PDRange rangeX, PDRange rangeY, PDRange[] colRange, int numP) throws IOException
+    protected List<Patch> getPatchList(AffineTransform xform, Matrix matrix, COSDictionary dict,
+                                       PDRange rangeX, PDRange rangeY, PDRange[] colRange, int numP)
+                                       throws IOException
     {
         List<Patch> list = new ArrayList<Patch>();
         long maxSrcCoord = (long) Math.pow(2, bitsPerCoordinate) - 1;
         long maxSrcColor = (long) Math.pow(2, bitsPerColorComponent) - 1;
-        COSStream cosStream = (COSStream) cosDictionary;
+        COSStream cosStream = (COSStream) dict;
 
         ImageInputStream mciis = new MemoryCacheImageInputStream(cosStream.getUnfilteredStream());
 
@@ -115,12 +114,12 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
             {
                 boolean isFree = (flag == 0);
                 Patch current = readPatch(mciis, isFree, implicitEdge, implicitCornerColor,
-                        maxSrcCoord, maxSrcColor, rangeX, rangeY, colRange, ctm, xform, numP);
+                        maxSrcCoord, maxSrcColor, rangeX, rangeY, colRange, matrix, xform, numP);
                 if (current == null)
                 {
                     break;
                 }
-                list.add((Patch) current);
+                list.add(current);
                 flag = (byte) (mciis.readBits(bitsPerFlag) & 3);
                 switch (flag)
                 {
@@ -153,32 +152,28 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
     }
 
     /**
-     * Read a single patch from a data stream, a patch contains information of
-     * its coordinates and color parameters.
+     * Read a single patch from a data stream, a patch contains information of its coordinates and
+     * color parameters.
      *
      * @param input the image source data stream
      * @param isFree whether this is a free patch
-     * @param implicitEdge implicit edge when a patch is not free, otherwise
-     * it's not used
-     * @param implicitCornerColor implicit colors when a patch is not free,
-     * otherwise it's not used
-     * @param maxSrcCoord the maximum coordinate value calculated from source
-     * data
+     * @param implicitEdge implicit edge when a patch is not free, otherwise it's not used
+     * @param implicitCornerColor implicit colors when a patch is not free, otherwise it's not used
+     * @param maxSrcCoord the maximum coordinate value calculated from source data
      * @param maxSrcColor the maximum color value calculated from source data
      * @param rangeX range for coordinate x
      * @param rangeY range for coordinate y
      * @param colRange range for color
-     * @param ctm current transformation matrix
+     * @param matrix the pattern matrix concatenated with that of the parent content stream
      * @param xform transformation for user to device space
-     * @param numP number of control points, 12 for type 6 shading and 16 for
-     * type 7 shading
+     * @param numP number of control points, 12 for type 6 shading and 16 for type 7 shading
      * @return a single patch
      * @throws IOException when something went wrong
      */
     protected Patch readPatch(ImageInputStream input, boolean isFree, Point2D[] implicitEdge,
-            float[][] implicitCornerColor, long maxSrcCoord, long maxSrcColor,
-            PDRange rangeX, PDRange rangeY, PDRange[] colRange,
-            Matrix ctm, AffineTransform xform, int numP) throws IOException
+                              float[][] implicitCornerColor, long maxSrcCoord, long maxSrcColor,
+                              PDRange rangeX, PDRange rangeY, PDRange[] colRange, Matrix matrix,
+                              AffineTransform xform, int numP) throws IOException
     {
         float[][] color = new float[4][numberOfColorComponents];
         Point2D[] points = new Point2D[numP];
@@ -211,7 +206,7 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
                 double px = interpolate(x, maxSrcCoord, rangeX.getMin(), rangeX.getMax());
                 double py = interpolate(y, maxSrcCoord, rangeY.getMin(), rangeY.getMax());
                 Point2D tmp = new Point2D.Double(px, py);
-                transformPoint(tmp, ctm, xform);
+                transformPoint(tmp, matrix, xform);
                 points[i] = tmp;
             }
             for (int i = cStart; i < 4; i++)
@@ -219,7 +214,8 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
                 for (int j = 0; j < numberOfColorComponents; j++)
                 {
                     long c = input.readBits(bitsPerColorComponent);
-                    color[i][j] = (float) interpolate(c, maxSrcColor, colRange[j].getMin(), colRange[j].getMax());
+                    color[i][j] = (float) interpolate(c, maxSrcColor, colRange[j].getMin(),
+                                                      colRange[j].getMax());
                 }
             }
         }
@@ -242,15 +238,14 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
      */
     abstract Patch generatePatch(Point2D[] points, float[][] color);
 
-    // get a point coordinate on a line by linear interpolation
+    /**
+     * Get a point coordinate on a line by linear interpolation.
+     */
     private double interpolate(double x, long maxValue, float rangeMin, float rangeMax)
     {
         return rangeMin + (x / maxValue) * (rangeMax - rangeMin);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Map<Point, Integer> calcPixelTable()
     {
@@ -262,9 +257,6 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
         return map;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void dispose()
     {

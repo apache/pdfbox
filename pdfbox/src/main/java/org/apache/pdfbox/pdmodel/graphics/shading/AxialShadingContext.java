@@ -35,12 +35,10 @@ import org.apache.pdfbox.util.Matrix;
 /**
  * AWT PaintContext for axial shading.
  *
- * Performance improvement done as part of GSoC2014, Tilman Hausherr is the
- * mentor.
+ * Performance improvement done as part of GSoC2014, Tilman Hausherr is the mentor.
  *
  * @author Andreas Lehmkühler
  * @author Shaola Ren
- *
  */
 public class AxialShadingContext extends ShadingContext implements PaintContext
 {
@@ -67,13 +65,13 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
      * @param shading the shading type to be used
      * @param colorModel the color model to be used
      * @param xform transformation for user to device space
-     * @param ctm the transformation matrix
-     * @param dBounds device bounds
+     * @param matrix the pattern matrix concatenated with that of the parent content stream
+     * @param deviceBounds device bounds
      */
     public AxialShadingContext(PDShadingType2 shading, ColorModel colorModel, AffineTransform xform,
-            Matrix ctm, Rectangle dBounds) throws IOException
+                               Matrix matrix, Rectangle deviceBounds) throws IOException
     {
-        super(shading, colorModel, xform, ctm, dBounds);
+        super(shading, colorModel, xform, matrix, deviceBounds);
         this.axialShadingType = shading;
         coords = shading.getCoords().toFloatArray();
 
@@ -111,7 +109,7 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
         {
             // get inverse transform to be independent of current user / device space 
             // when handling actual pixels in getRaster()
-            rat = ctm.createAffineTransform().createInverse();
+            rat = matrix.createAffineTransform().createInverse();
             rat.concatenate(xform.createInverse());
         }
         catch (NoninvertibleTransformException ex)
@@ -120,8 +118,8 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
         }
 
         // transform the distance to actual pixel space
-        double maxX = Math.abs(ctm.getScalingFactorX() * xform.getScaleX() * longestDistance);
-        double maxY = Math.abs(ctm.getScalingFactorY() * xform.getScaleY() * longestDistance);
+        double maxX = Math.abs(matrix.getScalingFactorX() * xform.getScaleX() * longestDistance);
+        double maxY = Math.abs(matrix.getScalingFactorY() * xform.getScaleY() * longestDistance);
         factor = (int) Math.max(maxX, maxY);
         colorTable = calcColorTable();
     }
@@ -281,8 +279,6 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
 
     /**
      * Returns the coords values.
-     *
-     * @return the coords values as array
      */
     public float[] getCoords()
     {
@@ -291,8 +287,6 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
 
     /**
      * Returns the domain values.
-     *
-     * @return the domain values as array
      */
     public float[] getDomain()
     {
@@ -301,8 +295,6 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
 
     /**
      * Returns the extend values.
-     *
-     * @return the extend values as array
      */
     public boolean[] getExtend()
     {
@@ -311,9 +303,6 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
 
     /**
      * Returns the function.
-     *
-     * @return the function
-     * @throws IOException if something goes wrong
      */
     public PDFunction getFunction() throws IOException
     {

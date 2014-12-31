@@ -33,30 +33,29 @@ import org.apache.pdfbox.util.Matrix;
  */
 class Type6ShadingContext extends PatchMeshesShadingContext
 {
-
     /**
      * Constructor creates an instance to be used for fill operations.
      *
      * @param shading the shading type to be used
      * @param colorModel the color model to be used
      * @param xform transformation for user to device space
-     * @param ctm current transformation matrix
+     * @param matrix the pattern matrix concatenated with that of the parent content stream
      * @param dBounds device bounds
      * @throws IOException if something went wrong
      */
     public Type6ShadingContext(PDShadingType6 shading, ColorModel colorModel, AffineTransform xform,
-            Matrix ctm, Rectangle dBounds) throws IOException
+                               Matrix matrix, Rectangle dBounds) throws IOException
     {
-        super(shading, colorModel, xform, ctm, dBounds);
-        patchList = getCoonsPatchList(xform, ctm);
+        super(shading, colorModel, xform, matrix, dBounds);
+        patchList = getCoonsPatchList(xform, matrix);
         createPixelTable();
     }
 
     // get the patch list which forms the type 6 shading image from data stream
-    private List<Patch> getCoonsPatchList(AffineTransform xform, Matrix ctm) throws IOException
+    private List<Patch> getCoonsPatchList(AffineTransform xform, Matrix matrix) throws IOException
     {
         PDShadingType6 coonsShadingType = (PDShadingType6) patchMeshesShadingType;
-        COSDictionary cosDictionary = coonsShadingType.getCOSDictionary();
+        COSDictionary dict = coonsShadingType.getCOSDictionary();
         PDRange rangeX = coonsShadingType.getDecodeForParameter(0);
         PDRange rangeY = coonsShadingType.getDecodeForParameter(1);
         PDRange[] colRange = new PDRange[numberOfColorComponents];
@@ -64,7 +63,7 @@ class Type6ShadingContext extends PatchMeshesShadingContext
         {
             colRange[i] = coonsShadingType.getDecodeForParameter(2 + i);
         }
-        return getPatchList(xform, ctm, cosDictionary, rangeX, rangeY, colRange, 12);
+        return getPatchList(xform, matrix, dict, rangeX, rangeY, colRange, 12);
     }
 
     @Override
@@ -72,5 +71,4 @@ class Type6ShadingContext extends PatchMeshesShadingContext
     {
         return new CoonsPatch(points, color);
     }
-
 }

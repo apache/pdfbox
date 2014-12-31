@@ -54,13 +54,13 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext
      * @param shading the shading type to be used
      * @param colorModel the color model to be used
      * @param xform transformation for user to device space
-     * @param ctm current transformation matrix
+     * @param matrix the pattern matrix concatenated with that of the parent content stream
      * @throws IOException if something went wrong
      */
     protected GouraudShadingContext(PDShading shading, ColorModel colorModel, AffineTransform xform,
-            Matrix ctm, Rectangle dBounds) throws IOException
+                                    Matrix matrix, Rectangle deviceBounds) throws IOException
     {
-        super(shading, colorModel, xform, ctm, dBounds);
+        super(shading, colorModel, xform, matrix, deviceBounds);
         triangleList = new ArrayList<ShadedTriangle>();
     }
 
@@ -68,18 +68,18 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext
      * Read a vertex from the bit input stream performs interpolations.
      *
      * @param input bit input stream
-     * @param flag the flag or any value if not relevant
      * @param maxSrcCoord max value for source coordinate (2^bits-1)
      * @param maxSrcColor max value for source color (2^bits-1)
      * @param rangeX dest range for X
      * @param rangeY dest range for Y
      * @param colRangeTab dest range array for colors
+     * @param matrix the pattern matrix concatenated with that of the parent content stream
      * @return a new vertex with the flag and the interpolated values
      * @throws IOException if something went wrong
      */
     protected Vertex readVertex(ImageInputStream input, long maxSrcCoord, long maxSrcColor,
-            PDRange rangeX, PDRange rangeY, PDRange[] colRangeTab, Matrix ctm,
-            AffineTransform xform) throws IOException
+                                PDRange rangeX, PDRange rangeY, PDRange[] colRangeTab,
+                                Matrix matrix, AffineTransform xform) throws IOException
     {
         float[] colorComponentTab = new float[numberOfColorComponents];
         long x = input.readBits(bitsPerCoordinate);
@@ -88,21 +88,20 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext
         double dstY = interpolate(y, maxSrcCoord, rangeY.getMin(), rangeY.getMax());
         LOG.debug("coord: " + String.format("[%06X,%06X] -> [%f,%f]", x, y, dstX, dstY));
         Point2D tmp = new Point2D.Double(dstX, dstY);
-        transformPoint(tmp, ctm, xform);
+        transformPoint(tmp, matrix, xform);
 
         for (int n = 0; n < numberOfColorComponents; ++n)
         {
             int color = (int) input.readBits(bitsPerColorComponent);
-            colorComponentTab[n] = (float) interpolate(color, maxSrcColor, colRangeTab[n].getMin(), colRangeTab[n].getMax());
+            colorComponentTab[n] = interpolate(color, maxSrcColor, colRangeTab[n].getMin(),
+                    colRangeTab[n].getMax());
             LOG.debug("color[" + n + "]: " + color + "/" + String.format("%02x", color)
                     + "-> color[" + n + "]: " + colorComponentTab[n]);
         }
         return new Vertex(tmp, colorComponentTab);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     protected Map<Point, Integer> calcPixelTable()
     {
         Map<Point, Integer> map = new HashMap<Point, Integer>();
@@ -110,9 +109,6 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext
         return map;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void dispose()
     {
