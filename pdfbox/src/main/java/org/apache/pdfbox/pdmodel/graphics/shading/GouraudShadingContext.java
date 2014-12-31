@@ -130,7 +130,8 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext
         return dstMin + (src * (dstMax - dstMin) / srcMax);
     }
 
-    protected boolean emptyList()
+    @Override
+    protected boolean isDataEmpty()
     {
         return triangleList.isEmpty();
     }

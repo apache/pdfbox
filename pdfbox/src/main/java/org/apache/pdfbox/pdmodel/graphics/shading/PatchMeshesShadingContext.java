@@ -265,7 +265,7 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
     }
 
     @Override
-    protected boolean emptyList()
+    protected boolean isDataEmpty()
     {
         return patchList.isEmpty();
     }    
