@@ -19,7 +19,6 @@ import java.awt.PaintContext;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
 import java.awt.image.ColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
@@ -75,18 +74,21 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
     /**
      * Calculate every point and its color and store them in a Hash table.
      *
-     * @return a Hash table which contains all the points' positions and colors
-     * of one image
+     * @return a Hash table which contains all the points' positions and colors of one image
      */
     abstract Map<Point, Integer> calcPixelTable();
-    
+
+    /**
+     * Creates the pixel table.
+     */
     protected void createPixelTable()
     {
         pixelTable = calcPixelTable();
     }
 
-    // get the points from the triangles, calculate their color and add 
-    // point-color mappings to the map
+    /**
+     * Get the points from the triangles, calculate their color and add  point-color mappings.
+     */
     protected void calcPixelTable(List<ShadedTriangle> triangleList, Map<Point, Integer> map)
     {
         for (ShadedTriangle tri : triangleList)
@@ -122,9 +124,10 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
         }
     }
 
-    // convert color to RGB color value, using function if required,
-    // then convert from the shading colorspace to an RGB value,
-    // which is encoded into an integer.
+    /**
+     * Convert color to RGB color value, using function if required, then convert from the shading
+     * color space to an RGB value, which is encoded into an integer.
+     */
     private int evalFunctionAndConvertToRGB(float[] values)
     {
         if (hasFunction)
@@ -142,9 +145,9 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
     }
 
     /**
-     * True if the relevant list is empty.
+     * Returns true if the shading has an empty data stream.
      */
-    abstract boolean emptyList();
+    abstract boolean isDataEmpty();
 
     @Override
     public final ColorModel getColorModel()
@@ -164,7 +167,7 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
     {
         WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);
         int[] data = new int[w * h * 4];
-        if (!emptyList() || background != null)
+        if (!isDataEmpty() || background != null)
         {
             for (int row = 0; row < h; row++)
             {
