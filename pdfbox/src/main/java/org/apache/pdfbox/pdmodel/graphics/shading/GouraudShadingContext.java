@@ -84,11 +84,11 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext
         float[] colorComponentTab = new float[numberOfColorComponents];
         long x = input.readBits(bitsPerCoordinate);
         long y = input.readBits(bitsPerCoordinate);
-        double dstX = interpolate(x, maxSrcCoord, rangeX.getMin(), rangeX.getMax());
-        double dstY = interpolate(y, maxSrcCoord, rangeY.getMin(), rangeY.getMax());
+        float dstX = interpolate(x, maxSrcCoord, rangeX.getMin(), rangeX.getMax());
+        float dstY = interpolate(y, maxSrcCoord, rangeY.getMin(), rangeY.getMax());
         LOG.debug("coord: " + String.format("[%06X,%06X] -> [%f,%f]", x, y, dstX, dstY));
-        Point2D tmp = new Point2D.Double(dstX, dstY);
-        transformPoint(tmp, matrix, xform);
+        Point2D p = matrix.transformPoint(dstX, dstY);
+        xform.transform(p, p);
 
         for (int n = 0; n < numberOfColorComponents; ++n)
         {
@@ -98,7 +98,7 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext
             LOG.debug("color[" + n + "]: " + color + "/" + String.format("%02x", color)
                     + "-> color[" + n + "]: " + colorComponentTab[n]);
         }
-        return new Vertex(tmp, colorComponentTab);
+        return new Vertex(p, colorComponentTab);
     }
 
     @Override

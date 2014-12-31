@@ -203,11 +203,11 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
             {
                 long x = input.readBits(bitsPerCoordinate);
                 long y = input.readBits(bitsPerCoordinate);
-                double px = interpolate(x, maxSrcCoord, rangeX.getMin(), rangeX.getMax());
-                double py = interpolate(y, maxSrcCoord, rangeY.getMin(), rangeY.getMax());
-                Point2D tmp = new Point2D.Double(px, py);
-                transformPoint(tmp, matrix, xform);
-                points[i] = tmp;
+                float px = interpolate(x, maxSrcCoord, rangeX.getMin(), rangeX.getMax());
+                float py = interpolate(y, maxSrcCoord, rangeY.getMin(), rangeY.getMax());
+                Point2D p = matrix.transformPoint(px, py);
+                xform.transform(p, p);
+                points[i] = p;
             }
             for (int i = cStart; i < 4; i++)
             {
@@ -241,7 +241,7 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
     /**
      * Get a point coordinate on a line by linear interpolation.
      */
-    private double interpolate(double x, long maxValue, float rangeMin, float rangeMax)
+    private float interpolate(float x, long maxValue, float rangeMin, float rangeMax)
     {
         return rangeMin + (x / maxValue) * (rangeMax - rangeMin);
     }
