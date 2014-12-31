@@ -88,10 +88,6 @@ public class TestMatrix extends TestCase
         assertMatrixValuesEqualTo(new float[] {5,  8,  11,
                                                8,  14, 20,
                                                11, 20, 29}, product);
-        product.reset();
-        assertMatrixIsPristine(product);
-
-
 
         // Multiply two matrices together with the result being written to a third matrix
         // (Any existing values there will be overwritten).

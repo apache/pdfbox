@@ -45,11 +45,11 @@ public final class Matrix implements Cloneable
     public Matrix()
     {
         single = new float[DEFAULT_SINGLE.length];
-        reset();
+        System.arraycopy(DEFAULT_SINGLE, 0, single, 0, DEFAULT_SINGLE.length);
     }
 
     /**
-     * Constructor.
+     * Creates a matrix from a 6-element COS array.
      */
     public Matrix(COSArray array)
     {
@@ -64,7 +64,7 @@ public final class Matrix implements Cloneable
     }
 
     /**
-     * Constructor.
+     * Creates a matrix with the given 6 elements.
      */
     public Matrix(float a, float b, float c, float d, float e, float f)
     {
@@ -79,9 +79,27 @@ public final class Matrix implements Cloneable
     }
 
     /**
+     * Creates a matrix with the same elements as the given AffineTransform.
+     */
+    public Matrix(AffineTransform at)
+    {
+        single = new float[DEFAULT_SINGLE.length];
+        System.arraycopy(DEFAULT_SINGLE, 0, single, 0, DEFAULT_SINGLE.length);
+        single[0] = (float)at.getScaleX();
+        single[1] = (float)at.getShearY();
+        single[3] = (float)at.getShearX();
+        single[4] = (float)at.getScaleY();
+        single[6] = (float)at.getTranslateX();
+        single[7] = (float)at.getTranslateY();
+    }
+
+    /**
      * This method resets the numbers in this Matrix to the original values, which are
      * the values that a newly constructed Matrix would have.
+     *
+     * @deprecated This method will be removed.
      */
+    @Deprecated
     public void reset()
     {
         System.arraycopy(DEFAULT_SINGLE, 0, single, 0, DEFAULT_SINGLE.length);
@@ -104,7 +122,7 @@ public final class Matrix implements Cloneable
      * Set the values of the matrix from the AffineTransform.
      *
      * @param af The transform to get the values from.
-     * @deprecated This method is due to be removed, please contact us if you make use of it.
+     * @deprecated Use the {@link #Matrix(AffineTransform)} constructor instead.
      */
     @Deprecated
     public void setFromAffineTransform( AffineTransform af )
