@@ -121,9 +121,10 @@ class TilingPaint implements Paint
         float width = (float)Math.abs(anchor.getWidth());
         float height = (float)Math.abs(anchor.getHeight());
 
-        // device transform (i.e. DPI)
-        width *= (float)xform.getScaleX();
-        height *= (float)xform.getScaleY();
+        // device scale transform (i.e. DPI) (see PDFBOX-1466.pdf)
+        Matrix xformMatrix = new Matrix(xform);
+        width *= xformMatrix.getScalingFactorX();
+        height *= xformMatrix.getScalingFactorY();
 
         int rasterWidth = Math.max(1, ceiling(width));
         int rasterHeight = Math.max(1, ceiling(height));
@@ -148,8 +149,8 @@ class TilingPaint implements Paint
             graphics.scale(-1, 1);
         }
 
-        // device transform (i.e. DPI)
-        graphics.transform(xform);
+        // device scale transform (i.e. DPI)
+        graphics.scale(xformMatrix.getScalingFactorX(), xformMatrix.getScalingFactorY());
 
         // apply only the scaling from the pattern transform, doing scaling here improves the
         // image quality and prevents large scale-down factors from creating huge tiling cells.
