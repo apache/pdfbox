@@ -70,26 +70,27 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
         numberOfColorComponents = hasFunction ? 1 : shadingColorSpace.getNumberOfComponents();
         LOG.debug("numberOfColorComponents: " + numberOfColorComponents);
     }
-    
-    /**
-     * Calculate every point and its color and store them in a Hash table.
-     *
-     * @return a Hash table which contains all the points' positions and colors of one image
-     */
-    abstract Map<Point, Integer> calcPixelTable();
 
     /**
      * Creates the pixel table.
      */
-    protected void createPixelTable()
+    protected final void createPixelTable() throws IOException
     {
         pixelTable = calcPixelTable();
     }
 
     /**
+     * Calculate every point and its color and store them in a Hash table.
+     *
+     * @return a Hash table which contains all the points' positions and colors of one image
+     */
+    abstract Map<Point, Integer> calcPixelTable() throws IOException;
+
+    /**
      * Get the points from the triangles, calculate their color and add  point-color mappings.
      */
     protected void calcPixelTable(List<ShadedTriangle> triangleList, Map<Point, Integer> map)
+            throws IOException
     {
         for (ShadedTriangle tri : triangleList)
         {
@@ -128,18 +129,11 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
      * Convert color to RGB color value, using function if required, then convert from the shading
      * color space to an RGB value, which is encoded into an integer.
      */
-    private int evalFunctionAndConvertToRGB(float[] values)
+    private int evalFunctionAndConvertToRGB(float[] values) throws IOException
     {
         if (hasFunction)
         {
-            try
-            {
-                values = shading.evalFunction(values);
-            }
-            catch (IOException exception)
-            {
-                LOG.error("error while processing a function", exception);
-            }
+            values = shading.evalFunction(values);
         }
         return convertToRGB(values);
     }

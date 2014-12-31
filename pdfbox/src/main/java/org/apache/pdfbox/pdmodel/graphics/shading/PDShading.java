@@ -396,10 +396,7 @@ public abstract class PDShading implements COSObjectable
      */
     public float[] evalFunction(float inputValue) throws IOException
     {
-        return evalFunction(new float[]
-        {
-            inputValue
-        });
+        return evalFunction(new float[] { inputValue });
     }
 
     /**

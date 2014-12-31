@@ -102,7 +102,7 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext
     }
 
     @Override
-    protected Map<Point, Integer> calcPixelTable()
+    protected Map<Point, Integer> calcPixelTable() throws IOException
     {
         Map<Point, Integer> map = new HashMap<Point, Integer>();
         super.calcPixelTable(triangleList, map);

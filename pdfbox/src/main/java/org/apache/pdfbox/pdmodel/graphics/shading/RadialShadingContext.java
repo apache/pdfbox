@@ -165,35 +165,21 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
      *
      * @return an array, index denotes the relative position, the corresponding value the color
      */
-    private int[] calcColorTable()
+    private int[] calcColorTable() throws IOException
     {
         int[] map = new int[factor + 1];
         if (factor == 0 || d1d0 == 0)
         {
-            try
-            {
-                float[] values = radialShadingType.evalFunction(domain[0]);
-                map[0] = convertToRGB(values);
-            }
-            catch (IOException exception)
-            {
-                LOG.error("error while processing a function", exception);
-            }
+            float[] values = radialShadingType.evalFunction(domain[0]);
+            map[0] = convertToRGB(values);
         }
         else
         {
             for (int i = 0; i <= factor; i++)
             {
                 float t = domain[0] + d1d0 * i / (float) factor;
-                try
-                {
-                    float[] values = radialShadingType.evalFunction(t);
-                    map[i] = convertToRGB(values);
-                }
-                catch (IOException exception)
-                {
-                    LOG.error("error while processing a function", exception);
-                }
+                float[] values = radialShadingType.evalFunction(t);
+                map[i] = convertToRGB(values);
             }
         }
         return map;
