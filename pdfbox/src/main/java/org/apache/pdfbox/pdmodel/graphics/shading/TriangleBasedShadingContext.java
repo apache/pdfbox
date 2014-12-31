@@ -122,18 +122,6 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
         }
     }
 
-    /**
-     * Transform a point from pattern space to device space.
-     * @param p point
-     * @param matrix the pattern matrix concatenated with that of the parent content stream
-     * @param xform transformation for user to device space
-     */
-    protected void transformPoint(Point2D p, Matrix matrix, AffineTransform xform)
-    {
-        matrix.createAffineTransform().transform(p, p);
-        xform.transform(p, p);
-    }
-
     // convert color to RGB color value, using function if required,
     // then convert from the shading colorspace to an RGB value,
     // which is encoded into an integer.
