@@ -43,7 +43,6 @@ public class PDAppearanceEntry implements COSObjectable
     /**
      * Constructor for reading.
      * @param entry
-     * @param parent
      */
     public PDAppearanceEntry(COSBase entry)
     {
