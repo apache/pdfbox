@@ -163,7 +163,7 @@ public final class Matrix implements Cloneable
     /**
      * Return a single dimension array of all values in the matrix.
      *
-     * @return The values ot this matrix.
+     * @return The values of this matrix.
      */
     public float[][] getValues()
     {
@@ -184,7 +184,7 @@ public final class Matrix implements Cloneable
      * Return a single dimension array of all values in the matrix.
      *
      * @return The values ot this matrix.
-     * @deprecated Use {@link float[][] #getValues} instead.
+     * @deprecated Use {@link #getValues()} instead.
      */
     @Deprecated
     public double[][] getValuesAsDouble()
