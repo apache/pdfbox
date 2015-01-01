@@ -94,7 +94,7 @@ public class AcroFormValidationProcess extends AbstractProcess
     /**
      * This function explores all fields and their children to validate them.
      * 
-     * @see #validateField(PreflightContext, PDField) 
+     * @see #validateField(PreflightContext, PDFieldTreeNode) 
      * 
      * @param ctx the preflight context.
      * @param lFields the list of fields, can be null.
