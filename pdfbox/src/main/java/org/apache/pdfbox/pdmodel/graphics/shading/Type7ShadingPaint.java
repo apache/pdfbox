@@ -15,6 +15,7 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
+import java.awt.Color;
 import java.awt.Paint;
 import java.awt.PaintContext;
 import java.awt.Rectangle;
@@ -66,10 +67,10 @@ class Type7ShadingPaint implements Paint
         {
             return new Type7ShadingContext(shading, cm, xform, matrix, deviceBounds);
         }
-        catch (IOException ex)
+        catch (IOException e)
         {
-            LOG.error(ex);
-            return null;
+            LOG.error("An error occurred while painting", e);
+            return new Color(0, 0, 0, 0).createContext(cm, deviceBounds, userBounds, xform, hints);
         }
     }
 }
