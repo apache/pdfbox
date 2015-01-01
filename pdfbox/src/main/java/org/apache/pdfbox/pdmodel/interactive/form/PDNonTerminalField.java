@@ -30,7 +30,7 @@ import org.apache.pdfbox.cos.COSName;
  * belong to the non terminal field but are inheritable attributes
  * for descendant terminal fields. 
  * 
- * @author Andreas Lehmkühler
+ * @author Andreas LehmkÃ¼hler
  */
 public class PDNonTerminalField extends PDFieldTreeNode
 {
