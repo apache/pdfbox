@@ -160,6 +160,7 @@
                     <links>
                         <link>http://download.oracle.com/javase/1.6.0/docs/api/</link>
                     </links>
+                    <encoding>ISO-8859-1</encoding>
                 </configuration>
             </plugin>
             <plugin>
