@@ -690,6 +690,21 @@ public final class PageDrawer extends PDFGraphicsStreamEngine
         Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
         AffineTransform at = ctm.createAffineTransform();
 
+        if (!pdImage.getInterpolate())
+        {
+            boolean isScaledUp = pdImage.getWidth() < Math.round(at.getScaleX()) ||
+                                 pdImage.getHeight() < Math.round(at.getScaleY());
+
+            // if the image is scaled down, we use smooth interpolation, eg PDFBOX-2364
+            // only when scaled up do we use nearest neighbour, eg PDFBOX-2302 / mori-cvpr01.pdf
+            // stencils are excluded from this rule (see survey.pdf)
+            if (isScaledUp || pdImage.isStencil())
+            {
+                graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                        RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+            }
+        }
+
         if (pdImage.isStencil())
         {
             // fill the image with paint
@@ -701,29 +716,15 @@ public final class PageDrawer extends PDFGraphicsStreamEngine
         }
         else
         {
-            if (!pdImage.getInterpolate())
-            {
-                boolean isScaledUp = pdImage.getWidth() < Math.round(at.getScaleX()) ||
-                                     pdImage.getHeight() < Math.round(at.getScaleY());
-
-                // if the image is scaled down, we use smooth interpolation, eg PDFBOX-2364
-                // only when scaled up do we use nearest neighbour, eg PDFBOX-2302 / mori-cvpr01.pdf
-                if (isScaledUp)
-                {
-                    graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                                              RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
-                }
-            }
-
             // draw the image
             drawBufferedImage(pdImage.getImage(), at);
+        }
 
-            if (!pdImage.getInterpolate())
-            {
-                // JDK 1.7 has a bug where rendering hints are reset by the above call to
-                // the setRenderingHint method, so we re-set all hints, see PDFBOX-2302
-                setRenderingHints();
-            }
+        if (!pdImage.getInterpolate())
+        {
+            // JDK 1.7 has a bug where rendering hints are reset by the above call to
+            // the setRenderingHint method, so we re-set all hints, see PDFBOX-2302
+            setRenderingHints();
         }
     }
 
