@@ -26,7 +26,7 @@ import java.util.Map;
 /**
  * Blend mode.
  *
- * @author Kühn & Weyh Software, GmbH
+ * @author KÃ¼hn & Weyh Software, GmbH
  */
 public abstract class BlendMode
 {

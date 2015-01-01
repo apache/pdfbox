@@ -32,7 +32,7 @@ import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 /**
  * Soft mask.
  *
- * @author Kühn & Weyh Software, GmbH
+ * @author KÃ¼hn & Weyh Software, GmbH
  */
 public final class PDSoftMask implements COSObjectable
 {

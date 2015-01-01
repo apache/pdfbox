@@ -30,7 +30,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * AWT composite for blend modes.
  * 
- * @author Kühn & Weyh Software, GmbH
+ * @author KÃ¼hn & Weyh Software, GmbH
  */
 public final class BlendComposite implements Composite
 {
@@ -44,7 +44,7 @@ public final class BlendComposite implements Composite
      *
      * @param blendMode Desired blend mode
      * @param constantAlpha Constant alpha, must be in the inclusive range
-     * [0.0, 1.0] or it will be clipped.
+     * [0.0,ï¿½1.0] or it will be clipped.
      */
     public static Composite getInstance(BlendMode blendMode, float constantAlpha)
     {
