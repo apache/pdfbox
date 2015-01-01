@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import java.util.List;
+
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 
@@ -109,15 +111,15 @@ public final class PDComboBox extends PDChoice
     /**
      * setValue sets the entry "V" to the given value.
      * 
-     * @param value the value
+     * @param values the value
      * 
      */
-    public void setValue(String[] value)
+    public void setValue(List<String> values)
     {
         if ((getFieldFlags() & FLAG_EDIT) != 0)
         {
             throw new IllegalArgumentException("The combo box isn't editable.");
         }
-        super.setValue(value);
+        super.setValue(values);
     }    
 }

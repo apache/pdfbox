@@ -16,12 +16,16 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.pdmodel.common.COSArrayList;
 
 /**
  * A choice field contains several text items, one or more of which shall be selected as the field value.
@@ -57,9 +61,20 @@ public abstract class PDChoice extends PDVariableText
      *
      * @return COSArray containing all options.
      */
-    public COSArray getOptions()
+    public List<String> getOptions()
     {
-        return (COSArray) getDictionary().getDictionaryObject(COSName.OPT);
+        COSBase value = getDictionary().getDictionaryObject(COSName.V);
+        if (value instanceof COSString)
+        {
+            List<String> array = new ArrayList<String>();
+            array.add(((COSString) value).getString());
+            return array;
+        }
+        else if (value instanceof COSArray)
+        {
+            return COSArrayList.convertCOSStringCOSArrayToList((COSArray)value);
+        }
+        return new ArrayList<String>();
     }
 
     /**
@@ -67,11 +82,11 @@ public abstract class PDChoice extends PDVariableText
      *
      * @param values COSArray containing all possible options.
      */
-    public void setOptions(COSArray values)
+    public void setOptions(List<String> values)
     {
         if (values != null)
         {
-            getDictionary().setItem(COSName.OPT, values);
+            getDictionary().setItem(COSName.OPT, COSArrayList.convertStringListToCOSStringCOSArray(values));
         }
         else
         {
@@ -234,24 +249,18 @@ public abstract class PDChoice extends PDVariableText
     /**
      * setValue sets the entry "V" to the given value.
      * 
-     * @param value the value
+     * @param values the list of values
      * 
      */    
-    public void setValue(String[] value)
+    public void setValue(List<String> values)
     {
-        if (value != null)
+        if (values != null)
         {
             if (!isMultiSelect())
             {
                 throw new IllegalArgumentException("The list box does not allow multiple selection.");
             }
-            String[] stringValues = (String[])value;
-            COSArray stringArray = new COSArray();
-            for (int i =0; i<stringValues.length;i++)
-            {
-                stringArray.add(new COSString(stringValues[i]));
-            }
-            getDictionary().setItem(COSName.V, stringArray);
+            getDictionary().setItem(COSName.V, COSArrayList.convertStringListToCOSStringCOSArray(values));
         }
         else
         {
@@ -268,50 +277,34 @@ public abstract class PDChoice extends PDVariableText
      * 
      */
     @Override
-    public COSArray getValue()
+    public List<String> getValue()
     {
         COSBase value = getDictionary().getDictionaryObject( COSName.V);
         if (value instanceof COSString)
         {
-            COSArray array = new COSArray();
-            array.add(value);
+            List<String> array = new ArrayList<String>();
+            array.add(((COSString) value).getString());
             return array;
         }
         else if (value instanceof COSArray)
         {
-            return (COSArray)value;
+            return COSArrayList.convertCOSStringCOSArrayToList((COSArray)value);
         }
-        return null;
+        return new ArrayList<String>();
     }
 
     // returns the "Opt" index for the given string
     private int getSelectedIndex(String optionValue)
     {
         int indexSelected = -1;
-        COSArray options = getOptions();
-        // YXJ: Changed the order of the loops. Acrobat produces PDF's
-        // where sometimes there is 1 string and the rest arrays.
-        // This code works either way.
+        List<String> options = getOptions();
+
         for (int i = 0; i < options.size() && indexSelected == -1; i++)
         {
-            COSBase option = options.getObject(i);
-            if (option instanceof COSArray)
+            String option = options.get(i);
+            if (option.compareTo(optionValue) == 0)
             {
-                COSArray keyValuePair = (COSArray) option;
-                COSString key = (COSString) keyValuePair.getObject(0);
-                COSString value = (COSString) keyValuePair.getObject(1);
-                if (optionValue.equals(key.getString()) || optionValue.equals(value.getString()))
-                {
-                    indexSelected = i;
-                }
-            }
-            else
-            {
-                COSString value = (COSString) option;
-                if (optionValue.equals(value.getString()))
-                {
-                    indexSelected = i;
-                }
+                return i;
             }
         }
         return indexSelected;
