@@ -16,6 +16,11 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.color;
 
+import java.awt.color.ColorSpace;
+import java.io.ByteArrayInputStream;
+import java.io.DataInput;
+import java.io.DataInputStream;
+import java.util.Arrays;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
@@ -42,6 +47,7 @@ import java.io.InputStream;
 import java.io.IOException;
 
 import java.util.List;
+import org.apache.pdfbox.util.Charsets;
 
 /**
  * ICCBased colour spaces are based on a cross-platform colour profile as defined by the
@@ -98,15 +104,29 @@ public final class PDICCBased extends PDCIEBasedColorSpace
         return stream;
     }
 
-    // load the ICC profile, or init alternateColorSpace color space
+    /**
+     * Load the ICC profile, or init alternateColorSpace color space.
+     */
     private void loadICCProfile() throws IOException
     {
-        InputStream profile = null;
+        InputStream input = null;
         try
         {
-            profile = stream.createInputStream();
-            iccProfile = ICC_Profile.getInstance(profile);
-            awtColorSpace = new ICC_ColorSpace(iccProfile);
+            input = this.stream.createInputStream();
+
+            // if the embedded profile is sRGB then we can use Java's built-in profile, which
+            // results in a large performance gain as it's our native color space, see PDFBOX-2587
+            ICC_Profile profile = ICC_Profile.getInstance(input);
+            if (is_sRGB(profile))
+            {
+                awtColorSpace = (ICC_ColorSpace)ColorSpace.getInstance(ColorSpace.CS_sRGB);
+                iccProfile = awtColorSpace.getProfile();
+            }
+            else
+            {
+                awtColorSpace = new ICC_ColorSpace(profile);
+                iccProfile = profile;
+            }
 
             // set initial colour
             float[] initial = new float[getNumberOfComponents()];
@@ -139,8 +159,19 @@ public final class PDICCBased extends PDCIEBasedColorSpace
         }
         finally
         {
-            IOUtils.closeQuietly(profile);
+            IOUtils.closeQuietly(input);
         }
+    }
+
+    /**
+     * Returns true if the given profile is represents sRGB.
+     */
+    private boolean is_sRGB(ICC_Profile profile)
+    {
+        byte[] bytes = Arrays.copyOfRange(profile.getData(ICC_Profile.icSigHead),
+                ICC_Profile.icHdrModel, ICC_Profile.icHdrModel + 7);
+        String deviceModel = new String(bytes, Charsets.US_ASCII).trim();
+        return deviceModel.equals("sRGB");
     }
 
     @Override
