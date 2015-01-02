@@ -336,7 +336,10 @@ public class PDFStreamEngine
         Matrix parentMatrix = initialMatrix;
         initialMatrix = Matrix.concatenate(initialMatrix, patternMatrix);
 
-        // set up a clean state (new clipping path, line path, etc.)
+        // save the original graphics state
+        saveGraphicsState();
+
+        // save a clean state (new clipping path, line path, etc.)
         Rectangle2D bbox = tilingPattern.getBBox().transform(patternMatrix).getBounds2D();
         PDRectangle rect = new PDRectangle((float)bbox.getX(), (float)bbox.getY(),
                 (float)bbox.getWidth(), (float)bbox.getHeight());
@@ -361,7 +364,8 @@ public class PDFStreamEngine
         processStreamOperators(tilingPattern);
 
         initialMatrix = parentMatrix;
-        restoreGraphicsState();
+        restoreGraphicsState(); // restores clean state
+        restoreGraphicsState(); // restores original state
         popResources(parent);
     }
 
