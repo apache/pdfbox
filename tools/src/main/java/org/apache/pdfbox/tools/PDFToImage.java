@@ -50,6 +50,7 @@ public class PDFToImage
     private static final String RESOLUTION = "-resolution";
     private static final String DPI = "-dpi";
     private static final String CROPBOX = "-cropbox";
+    private static final String TIME = "-time";
 
     /**
      * private constructor.
@@ -83,6 +84,7 @@ public class PDFToImage
         float cropBoxLowerLeftY = 0;
         float cropBoxUpperRightX = 0;
         float cropBoxUpperRightY = 0;
+        boolean showTime = false;
         try
         {
             dpi = Toolkit.getDefaultToolkit().getScreenResolution();
@@ -161,6 +163,10 @@ public class PDFToImage
                 i++;
                 cropBoxUpperRightY = Float.valueOf(args[i]);
             }
+            else if( args[i].equals( TIME ) )
+            {
+                showTime = true;
+            }
             else
             {
                 if( pdfFile == null )
@@ -218,15 +224,27 @@ public class PDFToImage
                             cropBoxUpperRightX, cropBoxUpperRightY);
                 }
 
+                long startTime = System.nanoTime();
+
                 // render the pages
                 boolean success = true;
-                int numPages = document.getNumberOfPages();
+                endPage = Math.min(endPage, document.getNumberOfPages());
                 PDFRenderer renderer = new PDFRenderer(document);
-                for (int i = startPage - 1; i < endPage && i < numPages; i++)
+                for (int i = startPage - 1; i < endPage; i++)
                 {
                     BufferedImage image = renderer.renderImageWithDPI(i, dpi, imageType);
-                    String fileName = outputPrefix + (i + 1) + "." + imageFormat;                    
+                    String fileName = outputPrefix + (i + 1) + "." + imageFormat;
                     success &= ImageIOUtil.writeImage(image, fileName, dpi);
+                }
+
+                // performance stats
+                long endTime = System.nanoTime();
+                long duration = endTime - startTime;
+                int count = 1 + endPage - startPage;
+                if (showTime)
+                {
+                    System.err.printf("Rendered %d page%s in %dms\n", count, count == 1 ? "" : "s",
+                                      duration / 1000000);
                 }
 
                 if (!success)
@@ -261,6 +279,7 @@ public class PDFToImage
             "  -color <string>                The color depth (valid: bilevel, indexed, gray, rgb, rgba)\n" +
             "  -dpi <number>                  The DPI of the output image\n" +
             "  -cropbox <number> <number> <number> <number> The page area to export\n" +
+            "  -time                          Prints timing information to stdout\n" +
             "  <PDF file>                     The PDF document to use\n"
             );
         System.exit( 1 );
