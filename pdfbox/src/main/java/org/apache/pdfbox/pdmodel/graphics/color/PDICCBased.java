@@ -17,9 +17,6 @@
 package org.apache.pdfbox.pdmodel.graphics.color;
 
 import java.awt.color.ColorSpace;
-import java.io.ByteArrayInputStream;
-import java.io.DataInput;
-import java.io.DataInputStream;
 import java.util.Arrays;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
