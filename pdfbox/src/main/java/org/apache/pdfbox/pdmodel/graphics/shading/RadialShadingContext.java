@@ -129,6 +129,7 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
         }
 
         // transform the distance to actual pixel space
+        // use transform, because xform.getScaleX() does not return correct scaling on 90° rotated matrix
         Point2D point = new Point2D.Double(longestDistance, longestDistance);
         matrix.transform(point);
         xform.transform(point, point);
