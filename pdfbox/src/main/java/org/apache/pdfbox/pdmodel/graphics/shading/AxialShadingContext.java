@@ -20,6 +20,7 @@ import java.awt.PaintContext;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
 import java.awt.image.ColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
@@ -118,9 +119,11 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
         }
 
         // transform the distance to actual pixel space
-        double maxX = Math.abs(matrix.getScalingFactorX() * xform.getScaleX() * longestDistance);
-        double maxY = Math.abs(matrix.getScalingFactorY() * xform.getScaleY() * longestDistance);
-        factor = (int) Math.max(maxX, maxY);
+        // use transform, because xform.getScaleX() does not return correct scaling on 90° rotated matrix
+        Point2D point = new Point2D.Double(longestDistance, longestDistance);
+        matrix.transform(point);
+        xform.transform(point, point);
+        factor = (int) Math.max(Math.abs(point.getX()), Math.abs(point.getY()));
         colorTable = calcColorTable();
     }
 
