@@ -24,6 +24,7 @@ import java.io.IOException;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.io.IOUtils;
 
 /**
  * A PDTextStream class is used when the PDF specification supports either
@@ -100,16 +101,7 @@ public class PDTextStream implements COSObjectable
     @Override
     public COSBase getCOSObject()
     {
-        COSBase retval = null;
-        if( string == null )
-        {
-            retval = stream;
-        }
-        else
-        {
-            retval = string;
-        }
-        return retval;
+        return string == null ? stream : string;
     }
 
     /**
@@ -123,24 +115,15 @@ public class PDTextStream implements COSObjectable
      */
     public String getAsString() throws IOException
     {
-        String retval = null;
-        if( string != null )
+        if (string != null) 
         {
-            retval = string.getString();
+            return string.getString();
         }
-        else
-        {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            byte[] buffer = new byte[ 1024 ];
-            int amountRead = -1;
-            InputStream is = stream.getUnfilteredStream();
-            while( (amountRead = is.read( buffer ) ) != -1 )
-            {
-                out.write( buffer, 0, amountRead );
-            }
-            retval = new String( out.toByteArray(), "ISO-8859-1" );
-        }
-        return retval;
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        InputStream is = stream.getUnfilteredStream();
+        IOUtils.copy(is, out);
+        IOUtils.closeQuietly(is);
+        return new String(out.toByteArray(), "ISO-8859-1");
     }
 
     /**
@@ -153,7 +136,7 @@ public class PDTextStream implements COSObjectable
      */
     public InputStream getAsStream() throws IOException
     {
-        InputStream retval = null;
+        InputStream retval;
         if( string != null )
         {
             retval = new ByteArrayInputStream( string.getBytes() );
