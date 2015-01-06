@@ -233,7 +233,7 @@ public final class PDPageContentStream implements Closeable
         {
             throw new IOException("Error: Nested beginText() calls are not allowed.");
         }
-        writeLine("BT");
+        writeOperator("BT");
         inTextMode = true;
     }
 
@@ -249,7 +249,7 @@ public final class PDPageContentStream implements Closeable
         {
             throw new IOException("Error: You must call beginText() before calling endText.");
         }
-        writeLine("ET");
+        writeOperator("ET");
         inTextMode = false;
     }
 
@@ -294,11 +294,9 @@ public final class PDPageContentStream implements Closeable
             fontsToSubset.remove(font);
         }
 
-        write(resources.add(font));
-        write(SPACE);
-        write(fontSize);
-        write(SPACE);
-        writeLine("Tf");
+        writeOperand(resources.add(font));
+        writeOperand(fontSize);
+        writeOperator("Tf");
     }
 
     /**
@@ -348,8 +346,9 @@ public final class PDPageContentStream implements Closeable
         }
 
         COSWriter.writeString(font.encode(text), output);
-        write(SPACE);
-        writeLine("Tj");
+        write(" ");
+
+        writeOperator("Tj");
     }
 
     /**
@@ -360,9 +359,8 @@ public final class PDPageContentStream implements Closeable
      */
     public void setLeading(double leading) throws IOException
     {
-        write((float)leading);
-        write(SPACE);
-        writeLine("TL");
+        writeOperand((float) leading);
+        writeOperator("TL");
     }
 
     /**
@@ -376,7 +374,7 @@ public final class PDPageContentStream implements Closeable
         {
             throw new IllegalStateException("Must call beginText() before newLine()");
         }
-        writeLine("T*");
+        writeOperator("T*");
     }
 
     /**
@@ -407,11 +405,9 @@ public final class PDPageContentStream implements Closeable
         {
             throw new IOException("Error: must call beginText() before newLineAtOffset()");
         }
-        write(tx);
-        write(SPACE);
-        write(ty);
-        write(SPACE);
-        writeLine("Td");
+        writeOperand(tx);
+        writeOperand(ty);
+        writeOperator("Td");
     }
 
     /**
@@ -459,7 +455,7 @@ public final class PDPageContentStream implements Closeable
             throw new IOException("Error: must call beginText() before setTextMatrix");
         }
         writeAffineTransform(matrix.createAffineTransform());
-        writeLine("Tm");
+        writeOperator("Tm");
     }
 
     /**
@@ -540,15 +536,12 @@ public final class PDPageContentStream implements Closeable
         }
 
         saveGraphicsState();
-        write(SPACE);
 
         AffineTransform transform = new AffineTransform(width, 0, 0, height, x, y);
         transform(new Matrix(transform));
-        write(SPACE);
 
-        write(resources.add(image));
-        write(SPACE);
-        writeLine("Do");
+        writeOperand(resources.add(image));
+        writeOperator("Do");
 
         restoreGraphicsState();
     }
@@ -622,47 +615,49 @@ public final class PDPageContentStream implements Closeable
         saveGraphicsState();
         transform(new Matrix(width, 0, 0, height, x, y));
 
-        write("BI\n");
-        write("/W");
-        write(SPACE);
-        write(Integer.toString(inlineImage.getWidth()));
-        write(SPACE);
-        write("/H");
-        write(SPACE);
-        write(Integer.toString(inlineImage.getHeight()));
-        write(SPACE);
-        write("/CS");
-        write(SPACE);
-        write("/");
-        write(inlineImage.getColorSpace().getName());
-        writeLine();
+        // create the image dictionary
+        StringBuilder sb = new StringBuilder();
+        sb.append("BI");
+
+        sb.append("\n /W ");
+        sb.append(inlineImage.getWidth());
+
+        sb.append("\n /H ");
+        sb.append(inlineImage.getHeight());
+
+        sb.append("\n /CS ");
+        sb.append("/");
+        sb.append(inlineImage.getColorSpace().getName());
+
         if (inlineImage.getDecode() != null && inlineImage.getDecode().size() > 0)
         {
-            write("/D");
-            write(SPACE);
-            write("[");
-            write(SPACE);
-            for (COSBase cosBase : inlineImage.getDecode())
+            sb.append("\n /D ");
+            sb.append("[");
+            for (COSBase base : inlineImage.getDecode())
             {
-                COSInteger cosInt = (COSInteger) cosBase;
-                write(Integer.toString(cosInt.intValue()));
-                write(SPACE);
+                sb.append(((COSInteger)base).intValue());
+                sb.append(" ");
             }
-            write("]");
-            write("\n");
+            sb.append("]");
         }
+
         if (inlineImage.isStencil())
         {
-            write("/IM true\n");
+            sb.append("\n /IM true");
         }
-        write("/BPC");
-        write(SPACE);
-        write(Integer.toString(inlineImage.getBitsPerComponent()));
+
+        sb.append("\n /BPC ");
+        sb.append(inlineImage.getBitsPerComponent());
+
+        // image dictionary
+        write(sb.toString());
         writeLine();
-        write("ID\n");
+
+        // binary data
+        writeOperator("ID");
         writeBytes(inlineImage.getStream().getByteArray());
         writeLine();
-        write("EI\n");
+        writeOperator("EI");
 
         restoreGraphicsState();
     }
@@ -713,13 +708,13 @@ public final class PDPageContentStream implements Closeable
             xObjectPrefix = "Form";
         }
         COSName objMapping = resources.add(xobject, xObjectPrefix);
+
         saveGraphicsState();
-        write(SPACE);
         transform(new Matrix(transform));
-        write(SPACE);
-        write(objMapping);
-        write(SPACE);
-        writeLine("Do");
+
+        writeOperand(objMapping);
+        writeOperator("Do");
+
         restoreGraphicsState();
     }
 
@@ -736,9 +731,8 @@ public final class PDPageContentStream implements Closeable
             throw new IOException("Error: drawForm is not allowed within a text block.");
         }
 
-        write(resources.add(form));
-        write(SPACE);
-        writeLine("Do");
+        writeOperand(resources.add(form));
+        writeOperator("Do");
     }
 
     /**
@@ -780,7 +774,7 @@ public final class PDPageContentStream implements Closeable
     public void transform(Matrix matrix) throws IOException
     {
         writeAffineTransform(matrix.createAffineTransform());
-        writeLine("cm");
+        writeOperator("cm");
     }
 
     /**
@@ -793,7 +787,7 @@ public final class PDPageContentStream implements Closeable
         {
             fontStack.push(fontStack.peek());
         }
-        writeLine("q");
+        writeOperator("q");
     }
 
     /**
@@ -806,7 +800,7 @@ public final class PDPageContentStream implements Closeable
         {
             fontStack.pop();
         }
-        writeLine("Q");
+        writeOperator("Q");
     }
 
     /**
@@ -819,8 +813,8 @@ public final class PDPageContentStream implements Closeable
     public void setStrokingColorSpace(PDColorSpace colorSpace) throws IOException
     {
         currentStrokingColorSpace = colorSpace;
-        writeColorSpace(colorSpace);
-        writeLine("CS");
+        writeOperand(getColorSpaceName(colorSpace));
+        writeOperator("CS");
     }
 
     /**
@@ -833,13 +827,13 @@ public final class PDPageContentStream implements Closeable
     public void setNonStrokingColorSpace(PDColorSpace colorSpace) throws IOException
     {
         currentNonStrokingColorSpace = colorSpace;
-        writeColorSpace(colorSpace);
-        writeLine("cs");
+        writeOperand(getColorSpaceName(colorSpace));
+        writeOperator("cs");
     }
 
-    private void writeColorSpace(PDColorSpace colorSpace) throws IOException
+    private COSName getColorSpaceName(PDColorSpace colorSpace) throws IOException
     {
-        COSName key = null;
+        COSName key;
         if (colorSpace instanceof PDDeviceGray || colorSpace instanceof PDDeviceRGB
                 || colorSpace instanceof PDDeviceCMYK)
         {
@@ -847,7 +841,7 @@ public final class PDPageContentStream implements Closeable
         }
         else
         {
-            COSDictionary colorSpaces = (COSDictionary) resources.getCOSObject().getDictionaryObject(
+            COSDictionary colorSpaces = (COSDictionary)resources.getCOSObject().getDictionaryObject(
                     COSName.COLORSPACE);
             if (colorSpaces == null)
             {
@@ -868,8 +862,7 @@ public final class PDPageContentStream implements Closeable
                 colorSpaces.setItem(key, colorSpace);
             }
         }
-        key.writePDF(output);
-        write(SPACE);
+        return key;
     }
 
     /**
@@ -882,18 +875,18 @@ public final class PDPageContentStream implements Closeable
     {
         for (int i = 0; i < components.length; i++)
         {
-            write(components[i]);
-            write(SPACE);
+            writeOperand(components[i]);
         }
+
         if (currentStrokingColorSpace instanceof PDSeparation ||
             currentStrokingColorSpace instanceof PDPattern ||
             currentStrokingColorSpace instanceof PDICCBased)
         {
-            writeLine("SCN");
+            writeOperator("SCN");
         }
         else
         {
-            writeLine("SC");
+            writeOperator("SC");
         }
     }
 
@@ -955,13 +948,10 @@ public final class PDPageContentStream implements Closeable
      */
     public void setStrokingColor(int r, int g, int b) throws IOException
     {
-        write(r / 255f);
-        write(SPACE);
-        write(g / 255f);
-        write(SPACE);
-        write(b / 255f);
-        write(SPACE);
-        writeLine("RG");
+        writeOperand(r / 255f);
+        writeOperand(g / 255f);
+        writeOperand(b / 255f);
+        writeOperator("RG");
     }
 
     /**
@@ -989,15 +979,11 @@ public final class PDPageContentStream implements Closeable
      */
     public void setStrokingColor(double c, double m, double y, double k) throws IOException
     {
-        write((float) c);
-        write(SPACE);
-        write((float) m);
-        write(SPACE);
-        write((float) y);
-        write(SPACE);
-        write((float) k);
-        write(SPACE);
-        writeLine("K");
+        writeOperand((float) c);
+        writeOperand((float) m);
+        writeOperand((float) y);
+        writeOperand((float) k);
+        writeOperator("K");
     }
 
     /**
@@ -1019,9 +1005,8 @@ public final class PDPageContentStream implements Closeable
      */
     public void setStrokingColor(double g) throws IOException
     {
-        write((float) g);
-        write(SPACE);
-        writeLine("G");
+        writeOperand((float) g);
+        writeOperator("G");
     }
 
     /**
@@ -1034,19 +1019,18 @@ public final class PDPageContentStream implements Closeable
     {
         for (int i = 0; i < components.length; i++)
         {
-            write(components[i]);
-            write(SPACE);
+            writeOperand(components[i]);
         }
 
         if (currentNonStrokingColorSpace instanceof PDSeparation ||
             currentNonStrokingColorSpace instanceof PDPattern ||
             currentNonStrokingColorSpace instanceof PDICCBased)
         {
-            writeLine("scn");
+            writeOperator("scn");
         }
         else
         {
-            writeLine("sc");
+            writeOperator("sc");
         }
     }
 
@@ -1060,13 +1044,10 @@ public final class PDPageContentStream implements Closeable
      */
     public void setNonStrokingColor(int r, int g, int b) throws IOException
     {
-        write(r / 255f);
-        write(SPACE);
-        write(g / 255f);
-        write(SPACE);
-        write(b / 255f);
-        write(SPACE);
-        writeLine("rg");
+        writeOperand(r / 255f);
+        writeOperand(g / 255f);
+        writeOperand(b / 255f);
+        writeOperator("rg");
     }
 
     /**
@@ -1094,15 +1075,11 @@ public final class PDPageContentStream implements Closeable
      */
     public void setNonStrokingColor(double c, double m, double y, double k) throws IOException
     {
-        write((float)c);
-        write(SPACE);
-        write((float)m);
-        write(SPACE);
-        write((float)y);
-        write(SPACE);
-        write((float)k);
-        write(SPACE);
-        writeLine("k");
+        writeOperand((float) c);
+        writeOperand((float) m);
+        writeOperand((float) y);
+        writeOperand((float) k);
+        writeOperator("k");
     }
 
     /**
@@ -1124,9 +1101,8 @@ public final class PDPageContentStream implements Closeable
      */
     public void setNonStrokingColor(double g) throws IOException
     {
-        write((float)g);
-        write(SPACE);
-        writeLine("g");
+        writeOperand((float) g);
+        writeOperator("g");
     }
 
     /**
@@ -1144,15 +1120,11 @@ public final class PDPageContentStream implements Closeable
         {
             throw new IOException("Error: addRect is not allowed within a text block.");
         }
-        write(x);
-        write(SPACE);
-        write(y);
-        write(SPACE);
-        write(width);
-        write(SPACE);
-        write(height);
-        write(SPACE);
-        writeLine("re");
+        writeOperand(x);
+        writeOperand(y);
+        writeOperand(width);
+        writeOperand(height);
+        writeOperator("re");
     }
 
     /**
@@ -1191,19 +1163,13 @@ public final class PDPageContentStream implements Closeable
         {
             throw new IOException("Error: addBezier312 is not allowed within a text block.");
         }
-        write(x1);
-        write(SPACE);
-        write(y1);
-        write(SPACE);
-        write(x2);
-        write(SPACE);
-        write(y2);
-        write(SPACE);
-        write(x3);
-        write(SPACE);
-        write(y3);
-        write(SPACE);
-        writeLine("c");
+        writeOperand(x1);
+        writeOperand(y1);
+        writeOperand(x2);
+        writeOperand(y2);
+        writeOperand(x3);
+        writeOperand(y3);
+        writeOperator("c");
     }
 
     /**
@@ -1221,15 +1187,11 @@ public final class PDPageContentStream implements Closeable
         {
             throw new IOException("Error: addBezier32 is not allowed within a text block.");
         }
-        write(x2);
-        write(SPACE);
-        write(y2);
-        write(SPACE);
-        write(x3);
-        write(SPACE);
-        write(y3);
-        write(SPACE);
-        writeLine("v");
+        writeOperand(x2);
+        writeOperand(y2);
+        writeOperand(x3);
+        writeOperand(y3);
+        writeOperator("v");
     }
 
     /**
@@ -1247,15 +1209,11 @@ public final class PDPageContentStream implements Closeable
         {
             throw new IOException("Error: addBezier31 is not allowed within a text block.");
         }
-        write(x1);
-        write(SPACE);
-        write(y1);
-        write(SPACE);
-        write(x3);
-        write(SPACE);
-        write(y3);
-        write(SPACE);
-        writeLine("y");
+        writeOperand(x1);
+        writeOperand(y1);
+        writeOperand(x3);
+        writeOperand(y3);
+        writeOperator("y");
     }
 
     /**
@@ -1271,11 +1229,9 @@ public final class PDPageContentStream implements Closeable
         {
             throw new IOException("Error: moveTo is not allowed within a text block.");
         }
-        write(x);
-        write(SPACE);
-        write(y);
-        write(SPACE);
-        writeLine("m");
+        writeOperand(x);
+        writeOperand(y);
+        writeOperator("m");
     }
 
     /**
@@ -1291,11 +1247,9 @@ public final class PDPageContentStream implements Closeable
         {
             throw new IOException("Error: lineTo is not allowed within a text block.");
         }
-        write(x);
-        write(SPACE);
-        write(y);
-        write(SPACE);
-        writeLine("l");
+        writeOperand(x);
+        writeOperand(y);
+        writeOperator("l");
     }
 
     /**
@@ -1412,7 +1366,7 @@ public final class PDPageContentStream implements Closeable
         {
             throw new IOException("Error: stroke is not allowed within a text block.");
         }
-        writeLine("S");
+        writeOperator("S");
     }
 
     /**
@@ -1426,7 +1380,7 @@ public final class PDPageContentStream implements Closeable
         {
             throw new IOException("Error: closeAndStroke is not allowed within a text block.");
         }
-        writeLine("s");
+        writeOperator("s");
     }
 
     /**
@@ -1444,11 +1398,11 @@ public final class PDPageContentStream implements Closeable
         }
         if (windingRule == PathIterator.WIND_NON_ZERO)
         {
-            writeLine("f");
+            writeOperator("f");
         }
         else if (windingRule == PathIterator.WIND_EVEN_ODD)
         {
-            writeLine("f*");
+            writeOperator("f*");
         }
         else
         {
@@ -1465,9 +1419,8 @@ public final class PDPageContentStream implements Closeable
      */
     public void shadingFill(PDShading shading) throws IOException
     {
-        write(resources.add(shading));
-        write(SPACE);
-        writeLine("sh");
+        writeOperand(resources.add(shading));
+        writeOperator("sh");
     }
 
     /**
@@ -1481,7 +1434,7 @@ public final class PDPageContentStream implements Closeable
         {
             throw new IOException("Error: closeSubPath is not allowed within a text block.");
         }
-        writeLine("h");
+        writeOperator("h");
     }
 
     /**
@@ -1499,17 +1452,17 @@ public final class PDPageContentStream implements Closeable
         }
         if (windingRule == PathIterator.WIND_NON_ZERO)
         {
-            writeLine("W");
+            writeOperator("W");
         }
         else if (windingRule == PathIterator.WIND_EVEN_ODD)
         {
-            writeLine("W*");
+            writeOperator("W*");
         }
         else
         {
             throw new IOException("Error: unknown value for winding rule");
         }
-        writeLine("n");
+        writeOperator("n");
     }
 
     /**
@@ -1524,9 +1477,8 @@ public final class PDPageContentStream implements Closeable
         {
             throw new IOException("Error: setLineWidth is not allowed within a text block.");
         }
-        write(lineWidth);
-        write(SPACE);
-        writeLine("w");
+        writeOperand(lineWidth);
+        writeOperator("w");
     }
 
     /**
@@ -1542,9 +1494,8 @@ public final class PDPageContentStream implements Closeable
         }
         if (lineJoinStyle >= 0 && lineJoinStyle <= 2)
         {
-            write(lineJoinStyle);
-            write(SPACE);
-            writeLine("j");
+            writeOperand(lineJoinStyle);
+            writeOperator("j");
         }
         else
         {
@@ -1565,9 +1516,8 @@ public final class PDPageContentStream implements Closeable
         }
         if (lineCapStyle >= 0 && lineCapStyle <= 2)
         {
-            write(lineCapStyle);
-            write(SPACE);
-            writeLine("J");
+            writeOperand(lineCapStyle);
+            writeOperator("J");
         }
         else
         {
@@ -1590,14 +1540,11 @@ public final class PDPageContentStream implements Closeable
         write("[");
         for (float value : pattern)
         {
-            write(value);
-            write(SPACE);
+            writeOperand(value);
         }
-        write("]");
-        write(SPACE);
-        write(phase);
-        write(SPACE);
-        writeLine("d");
+        write("] ");
+        writeOperand(phase);
+        writeOperator("d");
     }
 
     /**
@@ -1607,9 +1554,8 @@ public final class PDPageContentStream implements Closeable
      */
     public void beginMarkedContentSequence(COSName tag) throws IOException
     {
-        write(tag);
-        write(SPACE);
-        writeLine("BMC");
+        writeOperand(tag);
+        writeOperator("BMC");
     }
 
     /**
@@ -1621,11 +1567,9 @@ public final class PDPageContentStream implements Closeable
      */
     public void beginMarkedContentSequence(COSName tag, COSName propsName) throws IOException
     {
-        write(tag);
-        write(SPACE);
-        write(propsName);
-        write(SPACE);
-        writeLine("BDC");
+        writeOperand(tag);
+        writeOperand(propsName);
+        writeOperator("BDC");
     }
 
     /**
@@ -1634,7 +1578,7 @@ public final class PDPageContentStream implements Closeable
      */
     public void endMarkedContentSequence() throws IOException
     {
-        writeLine("EMC");
+        writeOperator("EMC");
     }
 
     /**
@@ -1718,17 +1662,37 @@ public final class PDPageContentStream implements Closeable
     /**
      * Writes a real real to the content stream.
      */
-    private void write(float real) throws IOException
+    private void writeOperand(float real) throws IOException
     {
         write(formatDecimal.format(real));
+        output.write(' ');
     }
 
     /**
      * Writes a real number to the content stream.
      */
-    private void write(int integer) throws IOException
+    private void writeOperand(int integer) throws IOException
     {
         write(formatDecimal.format(integer));
+        output.write(' ');
+    }
+
+    /**
+     * Writes a COSName to the content stream.
+     */
+    private void writeOperand(COSName name) throws IOException
+    {
+        name.writePDF(output);
+        output.write(' ');
+    }
+
+    /**
+     * Writes a string to the content stream as ASCII.
+     */
+    private void writeOperator(String text) throws IOException
+    {
+        output.write(text.getBytes(Charsets.US_ASCII));
+        output.write('\n');
     }
 
     /**
@@ -1741,15 +1705,6 @@ public final class PDPageContentStream implements Closeable
 
     /**
      * Writes a string to the content stream as ASCII.
-     */
-    private void writeLine(String text) throws IOException
-    {
-        output.write(text.getBytes(Charsets.US_ASCII));
-        output.write('\n');
-    }
-
-    /**
-     * Writes an empty line to the content stream as ASCII.
      */
     private void writeLine() throws IOException
     {
@@ -1765,14 +1720,6 @@ public final class PDPageContentStream implements Closeable
     }
 
     /**
-     * Writes a COSName to the content stream.
-     */
-    private void write(COSName name) throws IOException
-    {
-        name.writePDF(output);
-    }
-
-    /**
      * Writes an AffineTransform to the content stream as an array.
      */
     private void writeAffineTransform(AffineTransform transform) throws IOException
@@ -1781,8 +1728,7 @@ public final class PDPageContentStream implements Closeable
         transform.getMatrix(values);
         for (double v : values)
         {
-            write((float)v);
-            write(SPACE);
+            writeOperand((float) v);
         }
     }
 
