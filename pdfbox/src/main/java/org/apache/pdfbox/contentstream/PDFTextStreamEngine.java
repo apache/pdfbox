@@ -146,7 +146,7 @@ public class PDFTextStreamEngine extends PDFStreamEngine
         float ty = 0; // todo: support vertical writing mode
 
         // (modified) combined displacement matrix
-        Matrix td = Matrix.getTranslatingInstance(tx, ty);
+        Matrix td = Matrix.getTranslateInstance(tx, ty);
 
         // (modified) text rendering matrix
         Matrix nextTextRenderingMatrix = td.multiply(textMatrix).multiply(ctm); // text space -> device space

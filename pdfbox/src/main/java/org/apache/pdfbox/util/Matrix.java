@@ -219,7 +219,7 @@ public final class Matrix implements Cloneable
      */
     public void translate(Vector vector)
     {
-        Matrix m = Matrix.getTranslatingInstance(vector.getX(), vector.getY());
+        Matrix m = Matrix.getTranslateInstance(vector.getX(), vector.getY());
         concatenate(m);
     }
 
@@ -429,8 +429,22 @@ public final class Matrix implements Cloneable
      * @param tx The x translating operator.
      * @param ty The y translating operator.
      * @return A new matrix with just the x/y translating.
+     * @deprecated Use {@link #getTranslateInstance} instead.
      */
+    @Deprecated
     public static Matrix getTranslatingInstance(float tx, float ty)
+    {
+        return getTranslateInstance(tx, ty);
+    }
+
+    /**
+     * Convenience method to create a translating instance.
+     *
+     * @param tx The x translating operator.
+     * @param ty The y translating operator.
+     * @return A new matrix with just the x/y translating.
+     */
+    public static Matrix getTranslateInstance(float tx, float ty)
     {
         Matrix matrix = new Matrix();
         matrix.single[6] = tx;

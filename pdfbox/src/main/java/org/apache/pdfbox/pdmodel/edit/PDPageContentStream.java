@@ -663,7 +663,7 @@ public class PDPageContentStream implements Closeable
     @Deprecated
     public void setTextTranslation(double tx, double ty) throws IOException
     {
-        setTextMatrix(Matrix.getTranslatingInstance((float)tx, (float)ty));
+        setTextMatrix(Matrix.getTranslateInstance((float) tx, (float) ty));
     }
 
     /**

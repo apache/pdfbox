@@ -88,7 +88,7 @@ public class AddMessageToEachPage
                 }
                 else
                 {
-                    contentStream.setTextMatrix(Matrix.getTranslatingInstance(centerX, centerY));
+                    contentStream.setTextMatrix(Matrix.getTranslateInstance(centerX, centerY));
                 }
                 contentStream.drawString( message );
                 contentStream.endText();
