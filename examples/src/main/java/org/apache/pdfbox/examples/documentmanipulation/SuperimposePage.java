@@ -76,15 +76,13 @@ public class SuperimposePage {
             PDPageContentStream contentStream = new PDPageContentStream(aDoc,
                     aPage, true, true);
 
-            // Store the graphics state
-            contentStream.appendRawCommands("q\n".getBytes("ISO-8859-1"));
-
-            // use some sample transformations
+            // draw a transformed form
             contentStream.saveGraphicsState();
             contentStream.transform(new Matrix(0, 0.5f, -0.5f, 0, cropBox.getWidth(), 0));
             contentStream.drawForm(mountable);
             contentStream.restoreGraphicsState();
 
+            // draw another transformed form
             Matrix matrix = new Matrix(0.5f, 0.5f, -0.5f, 0.5f, 0.5f * cropBox.getWidth(),
                     0.2f * cropBox.getHeight());
             contentStream.saveGraphicsState();
@@ -92,9 +90,6 @@ public class SuperimposePage {
             contentStream.drawForm(mountable);
             contentStream.restoreGraphicsState();
 
-
-            // restore former graphics state
-            contentStream.appendRawCommands("Q\n".getBytes("ISO-8859-1"));
             contentStream.close();
 
             // close the imported document
