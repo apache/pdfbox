@@ -73,14 +73,15 @@ public class UsingTextMatrix
             // counterclockwise rotation
             for (int i=0;i<8;i++) 
             {
-                contentStream.setTextRotation(i*Math.PI*0.25, centeredXPosition, 
-                        pageSize.getHeight()-centeredYPosition);
+                contentStream.setTextMatrix(Matrix.getRotateInstance(i * Math.PI * 0.25,
+                        centeredXPosition, pageSize.getHeight() - centeredYPosition));
                 contentStream.drawString( message + " " + i);
             }
             // clockwise rotation
             for (int i=0;i<8;i++) 
             {
-                contentStream.setTextRotation(-i*Math.PI*0.25, centeredXPosition, centeredYPosition);
+                contentStream.setTextMatrix(Matrix.getRotateInstance(-i*Math.PI*0.25,
+                        centeredXPosition, centeredYPosition));
                 contentStream.drawString( message + " " + i);
             }
 
