@@ -60,6 +60,7 @@ import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDInlineImage;
+import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
 import org.apache.pdfbox.util.Charsets;
 import org.apache.pdfbox.util.Matrix;
 
@@ -104,6 +105,7 @@ public class PDPageContentStream implements Closeable
     private static final byte[] MOVE_TO = toAscii("m\n");
     private static final byte[] CLOSE_STROKE = toAscii("s\n");
     private static final byte[] STROKE = toAscii("S\n");
+    private static final byte[] SHADING_FILL = toAscii("sh\n");
     private static final byte[] LINE_WIDTH = toAscii("w\n");
     private static final byte[] LINE_JOIN_STYLE = toAscii("j\n");
     private static final byte[] LINE_CAP_STYLE = toAscii("J\n");
@@ -575,6 +577,21 @@ public class PDPageContentStream implements Closeable
     }
 
     /**
+     * The Tm operator. Sets the text matrix to the given rotation and translation values.
+     * A current text matrix will be replaced with the new one.
+     * @param angle The angle used for the counterclockwise rotation in radians.
+     * @param tx The translation value in x-direction.
+     * @param ty The translation value in y-direction.
+     * @throws IOException If there is an error writing to the stream.
+     * @deprecated Use {@link #setTextMatrix(Matrix)} instead.
+     */
+    @Deprecated
+    public void setTextRotation(double angle, double tx, double ty) throws IOException
+    {
+        setTextMatrix(Matrix.getRotateInstance(angle, (float)tx, (float)ty));
+    }
+
+    /**
      * Draw an image at the x,y coordinates, with the default size of the image.
      *
      * @param image The image to draw.
@@ -803,21 +820,6 @@ public class PDPageContentStream implements Closeable
         appendCOSName(resources.add(form));
         appendRawCommands(SPACE);
         appendRawCommands(XOBJECT_DO);
-    }
-
-    /**
-     * The Tm operator. Sets the text matrix to the given rotation and translation values.
-     * A current text matrix will be replaced with the new one.
-     * @param angle The angle used for the counterclockwise rotation in radians.
-     * @param tx The translation value in x-direction.
-     * @param ty The translation value in y-direction.
-     * @throws IOException If there is an error writing to the stream.
-     * @deprecated Use {@link #setTextMatrix(Matrix)} instead.
-     */
-    @Deprecated
-    public void setTextRotation(double angle, double tx, double ty) throws IOException
-    {
-        setTextMatrix(Matrix.getRotateInstance(angle, (float)tx, (float)ty));
     }
 
     /**
@@ -1540,6 +1542,19 @@ public class PDPageContentStream implements Closeable
             throw new IOException("Error: unknown value for winding rule");
         }
 
+    }
+
+    /**
+     * Fills the clipping area with the given shading.
+     *
+     * @param shading Shading resource
+     * @throws IOException If the content stream could not be written
+     */
+    public void shadingFill(PDShading shading) throws IOException
+    {
+        appendCOSName(resources.add(shading));
+        appendRawCommands(SPACE);
+        appendRawCommands(SHADING_FILL);
     }
 
     /**

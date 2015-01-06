@@ -107,25 +107,11 @@ public class CreateGradientShadingPDF
             radialShading.setCoords(coords2);
             radialShading.setFunction(func);
 
-            // create resources
-            PDResources resources = new PDResources();
-            page.setResources(resources);
-            
-            // add shading to resources
-
-            // use put() if you want a specific name
-            resources.put(COSName.getPDFName("shax"), axialShading);
-            
-            // use add() if you want PDFBox to decide the name for you
-            COSName radialShadingName = resources.add(radialShading);
-
             // invoke shading from content stream
-            // the raw command is "/name sh"
-            // replace "name" with the name of the shading
             // compress parameter is set to false so that you can see the stream in a text editor
             PDPageContentStream contentStream = new PDPageContentStream(document, page, true, false);
-            contentStream.appendRawCommands("/shax sh\n");
-            contentStream.appendRawCommands("/" + radialShadingName.getName() + " sh\n");
+            contentStream.shadingFill(axialShading);
+            contentStream.shadingFill(radialShading);
             contentStream.close();
             
             document.save(file);
