@@ -419,14 +419,12 @@ public class PDPageContentStream implements Closeable
      */
     public void drawInlineImage(PDInlineImage inlineImage, float x, float y, float width, float height) throws IOException
     {
-        AffineTransform transform = new AffineTransform(width, 0, 0, height, x, y);
-        
         if (inTextMode)
         {
             throw new IOException("Error: drawInlineImage is not allowed within a text block.");
         }
         saveGraphicsState();
-        concatenate2CTM(transform);
+        transform(new Matrix(width, 0, 0, height, x, y));
         appendRawCommands("BI\n");
         appendRawCommands("/W");
         appendRawCommands(SPACE);
@@ -497,7 +495,7 @@ public class PDPageContentStream implements Closeable
         COSName objMapping = resources.add(xobject, xObjectPrefix);
         saveGraphicsState();
         appendRawCommands(SPACE);
-        concatenate2CTM(transform);
+        transform(new Matrix(transform));
         appendRawCommands(SPACE);
         appendCOSName(objMapping);
         appendRawCommands(SPACE);
@@ -682,7 +680,7 @@ public class PDPageContentStream implements Closeable
     }
 
     /**
-     * The Cm operator. Concatenates the current transformation matrix with the given values.
+     * The cm operator. Concatenates the current transformation matrix with the given values.
      * @param a The a value of the matrix.
      * @param b The b value of the matrix.
      * @param c The c value of the matrix.
@@ -690,7 +688,9 @@ public class PDPageContentStream implements Closeable
      * @param e The e value of the matrix.
      * @param f The f value of the matrix.
      * @throws IOException If there is an error writing to the stream.
+     * @deprecated Use {@link #transform} instead.
      */
+    @Deprecated
     public void concatenate2CTM(double a, double b, double c, double d, double e, double f) throws IOException
     {
         appendRawCommands(a);
@@ -709,14 +709,28 @@ public class PDPageContentStream implements Closeable
     }
 
     /**
-     * The Cm operator. Concatenates the current transformation matrix with the given
+     * The cm operator. Concatenates the current transformation matrix with the given
      * {@link AffineTransform}.
      * @param at the transformation matrix
      * @throws IOException If there is an error writing to the stream.
+     * @deprecated Use {@link #transform} instead.
      */
+    @Deprecated
     public void concatenate2CTM(AffineTransform at) throws IOException
     {
         appendMatrix(at);
+        appendRawCommands(CONCATENATE_MATRIX);
+    }
+
+    /**
+     * The cm operator. Concatenates the given matrix with the CTM.
+     *
+     * @param matrix the transformation matrix
+     * @throws IOException If there is an error writing to the stream.
+     */
+    public void transform(Matrix matrix) throws IOException
+    {
+        appendMatrix(matrix.createAffineTransform());
         appendRawCommands(CONCATENATE_MATRIX);
     }
 
