@@ -168,8 +168,8 @@ class TilingPaint implements Paint
 
         // move origin to (0,0)
         patternMatrix.concatenate(
-                Matrix.getTranslatingInstance(-pattern.getBBox().getLowerLeftX(),
-                                              -pattern.getBBox().getLowerLeftY()));
+                Matrix.getTranslateInstance(-pattern.getBBox().getLowerLeftX(),
+                        -pattern.getBBox().getLowerLeftY()));
 
         // render using PageDrawer
         drawer.drawTilingPattern(graphics, pattern, colorSpace, color, patternMatrix);
