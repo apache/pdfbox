@@ -263,7 +263,10 @@ public class LayerUtility
         PDPageContentStream contentStream = new PDPageContentStream(
                 targetDoc, targetPage, true, !DEBUG);
         contentStream.beginMarkedContentSequence(COSName.OC, resourceName);
-        contentStream.drawXObject(form, transform);
+        contentStream.saveGraphicsState();
+        contentStream.transform(new Matrix(transform));
+        contentStream.drawForm(form);
+        contentStream.restoreGraphicsState();
         contentStream.endMarkedContentSequence();
         contentStream.close();
 

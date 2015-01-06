@@ -27,6 +27,7 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.util.LayerUtility;
+import org.apache.pdfbox.util.Matrix;
 
 /**
  * Example to show superimposing a PDF page onto another PDF.
@@ -78,11 +79,19 @@ public class SuperimposePage {
             // Store the graphics state
             contentStream.appendRawCommands("q\n".getBytes("ISO-8859-1"));
 
-            // use some sample transformations 
-            AffineTransform transform = new AffineTransform(0, 0.5, -0.5, 0, cropBox.getWidth(), 0);
-            contentStream.drawXObject(mountable, transform);
-            transform = new AffineTransform(0.5, 0.5, -0.5, 0.5, 0.5 * cropBox.getWidth(), 0.2 * cropBox.getHeight());
-            contentStream.drawXObject(mountable, transform);
+            // use some sample transformations
+            contentStream.saveGraphicsState();
+            contentStream.transform(new Matrix(0, 0.5f, -0.5f, 0, cropBox.getWidth(), 0));
+            contentStream.drawForm(mountable);
+            contentStream.restoreGraphicsState();
+
+            Matrix matrix = new Matrix(0.5f, 0.5f, -0.5f, 0.5f, 0.5f * cropBox.getWidth(),
+                    0.2f * cropBox.getHeight());
+            contentStream.saveGraphicsState();
+            contentStream.transform(matrix);
+            contentStream.drawForm(mountable);
+            contentStream.restoreGraphicsState();
+
 
             // restore former graphics state
             contentStream.appendRawCommands("Q\n".getBytes("ISO-8859-1"));

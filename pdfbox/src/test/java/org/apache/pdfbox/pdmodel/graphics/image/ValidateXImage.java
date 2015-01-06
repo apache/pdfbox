@@ -92,14 +92,12 @@ public class ValidateXImage
         // This part isn't really needed because this test doesn't break
         // if the mask has the wrong colorspace (PDFBOX-2057), but it is still useful
         // if something goes wrong in the future and we want to have a PDF to open.
-        int width = ximage.getWidth();
-        int height = ximage.getHeight();
 
         PDPage page = new PDPage();
         document.addPage(page);
         PDPageContentStream contentStream = new PDPageContentStream(document, page, true, false);
-        contentStream.drawXObject(ximage, 150, 300, width, height);
-        contentStream.drawXObject(ximage, 200, 350, width, height);
+        contentStream.drawImage(ximage, 150, 300);
+        contentStream.drawImage(ximage, 200, 350);
         contentStream.close();
         
         // check that the resource map is up-to-date
