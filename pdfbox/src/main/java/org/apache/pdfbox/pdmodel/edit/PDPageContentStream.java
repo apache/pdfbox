@@ -876,6 +876,32 @@ public class PDPageContentStream implements Closeable
     }
 
     /**
+     * q operator. Saves the current graphics state.
+     * @throws IOException If an error occurs while writing to the stream.
+     */
+    public void saveGraphicsState() throws IOException
+    {
+        if (!fontStack.isEmpty())
+        {
+            fontStack.push(fontStack.peek());
+        }
+        write(SAVE_GRAPHICS_STATE);
+    }
+
+    /**
+     * Q operator. Restores the current graphics state.
+     * @throws IOException If an error occurs while writing to the stream.
+     */
+    public void restoreGraphicsState() throws IOException
+    {
+        if (!fontStack.isEmpty())
+        {
+            fontStack.pop();
+        }
+        write(RESTORE_GRAPHICS_STATE);
+    }
+
+    /**
      * Set the stroking color space.  This will add the colorspace to the PDResources
      * if necessary.
      *
@@ -1721,32 +1747,6 @@ public class PDPageContentStream implements Closeable
     public void endMarkedContentSequence() throws IOException
     {
         write(EMC);
-    }
-
-    /**
-     * q operator. Saves the current graphics state.
-     * @throws IOException If an error occurs while writing to the stream.
-     */
-    public void saveGraphicsState() throws IOException
-    {
-        if (!fontStack.isEmpty())
-        {
-            fontStack.push(fontStack.peek());
-        }
-        write(SAVE_GRAPHICS_STATE);
-    }
-
-    /**
-     * Q operator. Restores the current graphics state.
-     * @throws IOException If an error occurs while writing to the stream.
-     */
-    public void restoreGraphicsState() throws IOException
-    {
-        if (!fontStack.isEmpty())
-        {
-            fontStack.pop();
-        }
-        write(RESTORE_GRAPHICS_STATE);
     }
 
     /**
