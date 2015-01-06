@@ -56,6 +56,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.pdmodel.graphics.color.PDPattern;
 import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDInlineImage;
@@ -584,7 +585,38 @@ public class PDPageContentStream implements Closeable
      */
     public void drawImage(PDImageXObject image, float x, float y) throws IOException
     {
-        drawXObject(image, x, y, image.getWidth(), image.getHeight());
+        drawImage(image, x, y, image.getWidth(), image.getHeight());
+    }
+
+    /**
+     * Draw an image at the x,y coordinates, with the given size.
+     *
+     * @param image The image to draw.
+     * @param x The x-coordinate to draw the image.
+     * @param y The y-coordinate to draw the image.
+     * @param width The width to draw the image.
+     * @param height The height to draw the image.
+     *
+     * @throws IOException If there is an error writing to the stream.
+     */
+    public void drawImage(PDImageXObject image, float x, float y, float width, float height) throws IOException
+    {
+        if (inTextMode)
+        {
+            throw new IOException("Error: drawImage is not allowed within a text block.");
+        }
+
+        saveGraphicsState();
+        appendRawCommands(SPACE);
+
+        AffineTransform transform = new AffineTransform(width, 0, 0, height, x, y);
+        transform(new Matrix(transform));
+        appendRawCommands(SPACE);
+
+        appendCOSName(resources.add(image));
+        appendRawCommands(SPACE);
+        appendRawCommands(XOBJECT_DO);
+        restoreGraphicsState();
     }
 
     /**
@@ -652,6 +684,7 @@ public class PDPageContentStream implements Closeable
         {
             throw new IOException("Error: drawImage is not allowed within a text block.");
         }
+
         saveGraphicsState();
         transform(new Matrix(width, 0, 0, height, x, y));
         appendRawCommands("BI\n");
@@ -708,7 +741,9 @@ public class PDPageContentStream implements Closeable
      * @param height The height of the image to draw.
      *
      * @throws IOException If there is an error writing to the stream.
+     * @deprecated Use {@link #drawImage} instead.
      */
+    @Deprecated
     public void drawXObject(PDXObject xobject, float x, float y, float width, float height) throws IOException
     {
         AffineTransform transform = new AffineTransform(width, 0, 0, height, x, y);
@@ -722,13 +757,16 @@ public class PDPageContentStream implements Closeable
      * @param xobject The xobject to draw.
      * @param transform the transformation matrix
      * @throws IOException If there is an error writing to the stream.
+     * @deprecated Use {@link #drawImage} or {@link #drawForm} instead.
      */
+    @Deprecated
     public void drawXObject(PDXObject xobject, AffineTransform transform) throws IOException
     {
         if (inTextMode)
         {
             throw new IOException("Error: drawXObject is not allowed within a text block.");
         }
+
         String xObjectPrefix = null;
         if (xobject instanceof PDImageXObject)
         {
@@ -747,6 +785,24 @@ public class PDPageContentStream implements Closeable
         appendRawCommands(SPACE);
         appendRawCommands(XOBJECT_DO);
         restoreGraphicsState();
+    }
+
+    /**
+     * Draws the given Form XObject at the current location.
+     *
+     * @param form Form XObject
+     * @throws IOException if the content stream could not be written
+     */
+    public void drawForm(PDFormXObject form) throws IOException
+    {
+        if (inTextMode)
+        {
+            throw new IOException("Error: drawForm is not allowed within a text block.");
+        }
+
+        appendCOSName(resources.add(form));
+        appendRawCommands(SPACE);
+        appendRawCommands(XOBJECT_DO);
     }
 
     /**

@@ -96,9 +96,9 @@ public class LosslessFactoryTest extends TestCase
         PDPage page = new PDPage();
         document.addPage(page);
         PDPageContentStream contentStream = new PDPageContentStream(document, page, true, false);
-        contentStream.drawXObject(ximage1, 200, 300, ximage1.getWidth() / 2, ximage1.getHeight() / 2);
-        contentStream.drawXObject(ximage2, 200, 450, ximage2.getWidth() / 2, ximage2.getHeight() / 2);
-        contentStream.drawXObject(ximage3, 200, 600, ximage3.getWidth() / 2, ximage3.getHeight() / 2);
+        contentStream.drawImage(ximage1, 200, 300, ximage1.getWidth() / 2, ximage1.getHeight() / 2);
+        contentStream.drawImage(ximage2, 200, 450, ximage2.getWidth() / 2, ximage2.getHeight() / 2);
+        contentStream.drawImage(ximage3, 200, 600, ximage3.getWidth() / 2, ximage3.getHeight() / 2);
         contentStream.close();
         
         File pdfFile = new File(testResultsDir, "misc.pdf");
@@ -336,8 +336,8 @@ public class LosslessFactoryTest extends TestCase
         PDPage page = new PDPage();
         document.addPage(page);
         PDPageContentStream contentStream = new PDPageContentStream(document, page, true, false);
-        contentStream.drawXObject(ximage2, 150, 300, ximage2.getWidth(), ximage2.getHeight());
-        contentStream.drawXObject(ximage, 150, 300, ximage.getWidth(), ximage.getHeight());
+        contentStream.drawImage(ximage2, 150, 300, ximage2.getWidth(), ximage2.getHeight());
+        contentStream.drawImage(ximage, 150, 300, ximage.getWidth(), ximage.getHeight());
         contentStream.close();
         File pdfFile = new File(testResultsDir, pdfFilename);
         document.save(pdfFile);

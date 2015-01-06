@@ -89,7 +89,7 @@ public class ImageToPDF
             //contentStream.drawImage(pdImage, 20, 20 );
             // better method inspired by http://stackoverflow.com/a/22318681/535646
             float scale = 1f; // reduce this value if the image is too large
-            contentStream.drawXObject(pdImage, 20, 20, pdImage.getWidth()*scale, pdImage.getHeight()*scale);
+            contentStream.drawImage(pdImage, 20, 20, pdImage.getWidth()*scale, pdImage.getHeight()*scale);
 
             contentStream.close();
             doc.save( file );

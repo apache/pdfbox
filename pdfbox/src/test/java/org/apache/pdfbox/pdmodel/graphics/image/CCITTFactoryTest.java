@@ -67,7 +67,7 @@ public class CCITTFactoryTest extends TestCase
         PDPage page = new PDPage(PDRectangle.A4);
         document.addPage(page);
         PDPageContentStream contentStream = new PDPageContentStream(document, page, true, false);
-        contentStream.drawXObject(ximage3, 0, 0, ximage3.getWidth(), ximage3.getHeight());
+        contentStream.drawImage(ximage3, 0, 0, ximage3.getWidth(), ximage3.getHeight());
         contentStream.close();
 
         reader = new RandomAccessFile(new File(tiffG4Path), "r");
@@ -78,7 +78,7 @@ public class CCITTFactoryTest extends TestCase
         page = new PDPage(PDRectangle.A4);
         document.addPage(page);
         contentStream = new PDPageContentStream(document, page, true, false);
-        contentStream.drawXObject(ximage4, 0, 0, ximage4.getWidth(), ximage4.getHeight());
+        contentStream.drawImage(ximage4, 0, 0);
         contentStream.close();
        
         document.save(testResultsDir + "/singletiff.pdf");
@@ -124,7 +124,7 @@ public class CCITTFactoryTest extends TestCase
             float factor = Math.max(fX, fY);
             document.addPage(page);
             PDPageContentStream contentStream = new PDPageContentStream(document, page, true, false);
-            contentStream.drawXObject(ximage, 0, 0, ximage.getWidth() / factor, ximage.getHeight() / factor);
+            contentStream.drawImage(ximage, 0, 0, ximage.getWidth() / factor, ximage.getHeight() / factor);
             contentStream.close();
             ++pdfPageNum;
         }
