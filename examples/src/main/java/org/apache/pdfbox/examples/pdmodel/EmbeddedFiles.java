@@ -73,7 +73,7 @@ public class EmbeddedFiles
             PDPageContentStream contentStream = new PDPageContentStream(doc, page);
             contentStream.beginText();
             contentStream.setFont( font, 12 );
-            contentStream.moveTextPositionByAmount( 100, 700 );
+            contentStream.newLineAtOffset(100, 700);
             contentStream.drawString( "Go to Document->File Attachments to View Embedded Files" );
             contentStream.endText();
             contentStream.close();

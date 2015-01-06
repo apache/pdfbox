@@ -39,7 +39,7 @@ public class TestPDFText2HTML extends TestCase {
         PDPageContentStream contentStream = new PDPageContentStream(doc, page);
         contentStream.beginText();
         contentStream.setFont(font, 12);
-        contentStream.moveTextPositionByAmount(100, 700);
+        contentStream.newLineAtOffset(100, 700);
         contentStream.drawString(text);
         contentStream.endText();
         contentStream.close();

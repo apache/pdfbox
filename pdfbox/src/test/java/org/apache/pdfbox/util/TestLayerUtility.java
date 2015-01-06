@@ -142,7 +142,7 @@ public class TestLayerUtility extends TestCase
             PDPageContentStream contentStream = new PDPageContentStream(doc, page, false, false);
             PDFont font = PDType1Font.HELVETICA_BOLD;
             contentStream.beginText();
-            contentStream.moveTextPositionByAmount(50, 720);
+            contentStream.newLineAtOffset(50, 720);
             contentStream.setFont(font, 14);
             contentStream.drawString("Simple test document with text.");
             contentStream.endText();
@@ -150,10 +150,10 @@ public class TestLayerUtility extends TestCase
             contentStream.beginText();
             int fontSize = 12;
             contentStream.setFont(font, fontSize);
-            contentStream.moveTextPositionByAmount(50, 700);
+            contentStream.newLineAtOffset(50, 700);
             for (String line : text)
             {
-                contentStream.moveTextPositionByAmount(0, -fontSize * 1.2f);
+                contentStream.newLineAtOffset(0, -fontSize * 1.2f);
                 contentStream.drawString(line);
             }
             contentStream.endText();

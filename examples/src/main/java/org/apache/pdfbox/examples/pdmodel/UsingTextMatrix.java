@@ -24,6 +24,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.util.Matrix;
 
 /**
  * This is an example of how to use a text matrix.
@@ -95,10 +96,10 @@ public class UsingTextMatrix
             contentStream.setFont( font, fontSize );
             contentStream.beginText();
 
-            // text scaling
+            // text scaling and translation
             for (int i=0;i<10;i++)
             {
-                contentStream.setTextScaling(12+(i*6), 12+(i*6), 100, 100+i*50);
+                contentStream.setTextMatrix(new Matrix(12 + (i * 6), 0, 0, 12+(i*6), 100, 100+i*50));
                 contentStream.drawString( message + " " +i);
             }
             contentStream.endText();
@@ -115,16 +116,16 @@ public class UsingTextMatrix
 
             int i = 0;
             // text scaling combined with rotation 
-            contentStream.setTextMatrix(12, 0, 0, 12, centeredXPosition, centeredYPosition*1.5);
+            contentStream.setTextMatrix(new Matrix(12, 0, 0, 12, centeredXPosition, centeredYPosition*1.5f));
             contentStream.drawString( message + " " +i++);
 
-            contentStream.setTextMatrix(0, 18, -18, 0, centeredXPosition, centeredYPosition*1.5);
+            contentStream.setTextMatrix(new Matrix(0, 18, -18, 0, centeredXPosition, centeredYPosition*1.5f));
             contentStream.drawString( message + " " +i++);
 
-            contentStream.setTextMatrix(-24, 0, 0, -24, centeredXPosition, centeredYPosition*1.5);
+            contentStream.setTextMatrix(new Matrix(-24, 0, 0, -24, centeredXPosition, centeredYPosition*1.5f));
             contentStream.drawString( message + " " +i++);
 
-            contentStream.setTextMatrix(0, -30, 30, 0, centeredXPosition, centeredYPosition*1.5);
+            contentStream.setTextMatrix(new Matrix(0, -30, 30, 0, centeredXPosition, centeredYPosition*1.5f));
             contentStream.drawString( message + " " +i++);
 
             contentStream.endText();

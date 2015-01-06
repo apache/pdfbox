@@ -148,8 +148,8 @@ public class TextToPDF
                         contentStream.setFont( font, fontSize );
                         contentStream.beginText();
                         y = page.getMediaBox().getHeight() - margin + height;
-                        contentStream.moveTextPositionByAmount(
-                            margin, y );
+                        contentStream.newLineAtOffset(
+                                margin, y);
 
                     }
                     //System.out.println( "Drawing string at " + x + "," + y );
@@ -158,7 +158,7 @@ public class TextToPDF
                     {
                         throw new IOException( "Error:Expected non-null content stream." );
                     }
-                    contentStream.moveTextPositionByAmount( 0, -height);
+                    contentStream.newLineAtOffset(0, -height);
                     y -= height;
                     contentStream.drawString( nextLineToDraw.toString() );
                 }
