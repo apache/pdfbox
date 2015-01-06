@@ -423,7 +423,7 @@ public class PDGraphicsState implements Cloneable
     /**
      * This will get the rendering intent.
      *
-     * @see PDExternalGraphicsState
+     * @see PDExtendedGraphicsState
      *
      * @return The rendering intent
      */

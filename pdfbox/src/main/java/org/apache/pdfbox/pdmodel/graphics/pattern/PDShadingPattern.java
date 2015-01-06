@@ -20,7 +20,7 @@ import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.graphics.state.PDExternalGraphicsState;
+import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
 
 /**
@@ -30,7 +30,7 @@ import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
  */
 public class PDShadingPattern extends PDAbstractPattern
 {
-    private PDExternalGraphicsState externalGraphicsState;
+    private PDExtendedGraphicsState extendedGraphicsState;
     private PDShading shading;
 
     /**
@@ -61,31 +61,31 @@ public class PDShadingPattern extends PDAbstractPattern
      * This will get the external graphics state for this pattern.
      * @return The extended graphics state for this pattern.
      */
-    public PDExternalGraphicsState getExternalGraphicsState()
+    public PDExtendedGraphicsState getExtendedGraphicsState()
     {
-        if (externalGraphicsState == null)
+        if (extendedGraphicsState == null)
         {
             COSDictionary dictionary = (COSDictionary)getCOSDictionary()
                     .getDictionaryObject(COSName.EXT_G_STATE);
 
             if( dictionary != null )
             {
-                externalGraphicsState = new PDExternalGraphicsState( dictionary );
+                extendedGraphicsState = new PDExtendedGraphicsState( dictionary );
             }
         }
-        return externalGraphicsState;
+        return extendedGraphicsState;
     }
 
     /**
      * This will set the external graphics state for this pattern.
-     * @param externalGraphicsState The new extended graphics state for this pattern.
+     * @param extendedGraphicsState The new extended graphics state for this pattern.
      */
-    public void setExternalGraphicsState( PDExternalGraphicsState externalGraphicsState )
+    public void setExtendedGraphicsState(PDExtendedGraphicsState extendedGraphicsState)
     {
-        this.externalGraphicsState = externalGraphicsState;
-        if (externalGraphicsState != null)
+        this.extendedGraphicsState = extendedGraphicsState;
+        if (extendedGraphicsState != null)
         {
-            getCOSDictionary().setItem( COSName.EXT_G_STATE, externalGraphicsState );
+            getCOSDictionary().setItem( COSName.EXT_G_STATE, extendedGraphicsState);
         }
         else
         {

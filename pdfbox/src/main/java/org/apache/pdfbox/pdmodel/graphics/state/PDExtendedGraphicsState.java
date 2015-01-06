@@ -30,18 +30,18 @@ import org.apache.pdfbox.pdmodel.graphics.PDLineDashPattern;
 import org.apache.pdfbox.pdmodel.graphics.blend.BlendMode;
 
 /**
- * An external graphics state dictionary.
+ * An extended graphics state dictionary.
  *
  * @author Ben Litchfield
  */
-public class PDExternalGraphicsState implements COSObjectable
+public class PDExtendedGraphicsState implements COSObjectable
 {
     private final COSDictionary dict;
 
     /**
      * Default constructor, creates blank graphics state.
      */
-    public PDExternalGraphicsState()
+    public PDExtendedGraphicsState()
     {
         dict = new COSDictionary();
         dict.setItem(COSName.TYPE, COSName.EXT_G_STATE);
@@ -52,7 +52,7 @@ public class PDExternalGraphicsState implements COSObjectable
      *
      * @param dictionary The existing graphics state.
      */
-    public PDExternalGraphicsState(COSDictionary dictionary)
+    public PDExtendedGraphicsState(COSDictionary dictionary)
     {
         dict = dictionary;
     }
