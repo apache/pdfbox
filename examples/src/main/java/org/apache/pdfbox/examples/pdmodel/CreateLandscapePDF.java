@@ -24,6 +24,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.util.Matrix;
 
 /**
  * This is an example of how to create a page with a landscape orientation.
@@ -68,7 +69,7 @@ public class CreateLandscapePDF
             PDPageContentStream contentStream = new PDPageContentStream(doc, page, false, false);
             // add the rotation using the current transformation matrix
             // including a translation of pageWidth to use the lower left corner as 0,0 reference
-            contentStream.concatenate2CTM(0, 1, -1, 0, pageWidth, 0);
+            contentStream.transform(new Matrix(0, 1, -1, 0, pageWidth, 0));
             contentStream.setFont( font, fontSize );
             contentStream.beginText();
             contentStream.newLineAtOffset(startX, startY);
