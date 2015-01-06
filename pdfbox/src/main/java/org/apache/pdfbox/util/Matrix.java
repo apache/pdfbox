@@ -224,6 +224,18 @@ public final class Matrix implements Cloneable
     }
 
     /**
+     * Translates this matrix by the given ammount.
+     *
+     * @param tx x-translation
+     * @param ty y-translation
+     */
+    public void translate(float tx, float ty)
+    {
+        Matrix m = Matrix.getTranslateInstance(tx, ty);
+        concatenate(m);
+    }
+
+    /**
      * Scales this matrix by the given factors.
      *
      * @param sx x-scale
@@ -232,6 +244,17 @@ public final class Matrix implements Cloneable
     public void scale(float sx, float sy)
     {
         Matrix m = Matrix.getScaleInstance(sx, sy);
+        concatenate(m);
+    }
+
+    /**
+     * Rotares this matrix by the given factors.
+     *
+     * @param theta The angle of rotation measured in radians
+     */
+    public void rotate(double theta)
+    {
+        Matrix m = Matrix.getRotateInstance(theta, 0, 0);
         concatenate(m);
     }
 

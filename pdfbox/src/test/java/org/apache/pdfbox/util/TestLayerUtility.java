@@ -197,7 +197,7 @@ public class TestLayerUtility extends TestCase
             PDRectangle crop = page.getCropBox();
             float cx = crop.getWidth() / 2f;
             float cy = crop.getHeight() / 2f;
-            AffineTransform transform = new AffineTransform();
+            Matrix transform = new Matrix();
             transform.translate(cx, cy);
             transform.rotate(Math.toRadians(45));
             transform.translate(-190 /* sw/2 */, 0);
