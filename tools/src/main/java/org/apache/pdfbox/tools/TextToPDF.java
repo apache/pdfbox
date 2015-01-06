@@ -160,7 +160,7 @@ public class TextToPDF
                     }
                     contentStream.newLineAtOffset(0, -height);
                     y -= height;
-                    contentStream.drawString( nextLineToDraw.toString() );
+                    contentStream.showText(nextLineToDraw.toString());
                 }
 
 

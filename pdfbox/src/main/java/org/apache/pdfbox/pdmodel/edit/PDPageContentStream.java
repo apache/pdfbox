@@ -362,145 +362,54 @@ public class PDPageContentStream implements Closeable
     }
 
     /**
-     * Draw an image at the x,y coordinates, with the default size of the image.
+     * This will draw a string at the current location on the screen.
      *
-     * @param image The image to draw.
-     * @param x The x-coordinate to draw the image.
-     * @param y The y-coordinate to draw the image.
-     *
-     * @throws IOException If there is an error writing to the stream.
+     * @param text The text to draw.
+     * @throws IOException If an io exception occurs.
+     * @deprecated Use {@link #showText} instead.
      */
-    public void drawImage(PDImageXObject image, float x, float y) throws IOException
+    @Deprecated
+    public void drawString(String text) throws IOException
     {
-        drawXObject(image, x, y, image.getWidth(), image.getHeight());
+        showText(text);
     }
 
     /**
-     * Draw an xobject(form or image) at the x,y coordinates and a certain width and height.
+     * Shows the given text at the location specified by the current text matrix.
      *
-     * @param xobject The xobject to draw.
-     * @param x The x-coordinate to draw the image.
-     * @param y The y-coordinate to draw the image.
-     * @param width The width of the image to draw.
-     * @param height The height of the image to draw.
-     *
-     * @throws IOException If there is an error writing to the stream.
+     * @param text The Unicode text to show.
+     * @throws IOException If an io exception occurs.
      */
-    public void drawXObject(PDXObject xobject, float x, float y, float width, float height) throws IOException
+    public void showText(String text) throws IOException
     {
-        AffineTransform transform = new AffineTransform(width, 0, 0, height, x, y);
-        drawXObject(xobject, transform);
-    }
-
-    /**
-     * Draw an inline image at the x,y coordinates, with the default size of the image.
-     *
-     * @param inlineImage The inline image to draw.
-     * @param x The x-coordinate to draw the inline image.
-     * @param y The y-coordinate to draw the inline image.
-     *
-     * @throws IOException If there is an error writing to the stream.
-     */
-    public void drawInlineImage(PDInlineImage inlineImage, float x, float y) throws IOException
-    {
-        drawInlineImage(inlineImage, x, y, inlineImage.getWidth(), inlineImage.getHeight());
-    }
-    
-    /**
-     * Draw an inline image at the x,y coordinates and a certain width and height.
-     *
-     * @param inlineImage The inline image to draw.
-     * @param x The x-coordinate to draw the inline image.
-     * @param y The y-coordinate to draw the inline image.
-     * @param width The width of the inline image to draw.
-     * @param height The height of the inline image to draw.
-     *
-     * @throws IOException If there is an error writing to the stream.
-     */
-    public void drawInlineImage(PDInlineImage inlineImage, float x, float y, float width, float height) throws IOException
-    {
-        if (inTextMode)
+        if (!inTextMode)
         {
-            throw new IOException("Error: drawInlineImage is not allowed within a text block.");
+            throw new IllegalStateException("Must call beginText() before showText()");
         }
-        saveGraphicsState();
-        transform(new Matrix(width, 0, 0, height, x, y));
-        appendRawCommands("BI\n");
-        appendRawCommands("/W");
-        appendRawCommands(SPACE);
-        appendRawCommands(Integer.toString(inlineImage.getWidth()));
-        appendRawCommands(SPACE);
-        appendRawCommands("/H");
-        appendRawCommands(SPACE);
-        appendRawCommands(Integer.toString(inlineImage.getHeight()));
-        appendRawCommands(SPACE);
-        appendRawCommands("/CS");
-        appendRawCommands(SPACE);
-        appendRawCommands("/");
-        appendRawCommands(inlineImage.getColorSpace().getName());
-        appendRawCommands(NEWLINE);
-        if (inlineImage.getDecode() != null && inlineImage.getDecode().size() > 0)
+
+        if (fontStack.isEmpty())
         {
-            appendRawCommands("/D");
-            appendRawCommands(SPACE);
-            appendRawCommands(OPENING_BRACKET);
-            appendRawCommands(SPACE);
-            for (COSBase cosBase : inlineImage.getDecode())
+            throw new IllegalStateException("Must call setFont() before showText()");
+        }
+
+        PDFont font = fontStack.peek();
+
+        // Unicode code points to keep when subsetting
+        Set<Integer> codePoints = subsetCodePoints.get(font);
+        if (codePoints != null)
+        {
+            for (int offset = 0; offset < text.length(); )
             {
-                COSInteger cosInt = (COSInteger) cosBase;
-                appendRawCommands(Integer.toString(cosInt.intValue()));
-                appendRawCommands(SPACE);
+                int codePoint = text.codePointAt(offset);
+                codePoints.add(codePoint);
+                offset += Character.charCount(codePoint);
             }
-            appendRawCommands(CLOSING_BRACKET);
-            appendRawCommands("\n");
-        }
-        if (inlineImage.isStencil())
-        {
-            appendRawCommands("/IM true\n");
-        }
-        appendRawCommands("/BPC");
-        appendRawCommands(SPACE);
-        appendRawCommands(Integer.toString(inlineImage.getBitsPerComponent()));
-        appendRawCommands(NEWLINE);
-        appendRawCommands("ID\n");
-        appendRawCommands(inlineImage.getStream().getByteArray());
-        appendRawCommands(NEWLINE);
-        appendRawCommands("EI\n");
-        restoreGraphicsState();
-    }
 
-    /**
-     * Draw an xobject(form or image) using the given {@link AffineTransform} to position
-     * the xobject.
-     *
-     * @param xobject The xobject to draw.
-     * @param transform the transformation matrix
-     * @throws IOException If there is an error writing to the stream.
-     */
-    public void drawXObject(PDXObject xobject, AffineTransform transform) throws IOException
-    {
-        if (inTextMode)
-        {
-            throw new IOException("Error: drawXObject is not allowed within a text block.");
         }
-        String xObjectPrefix = null;
-        if (xobject instanceof PDImageXObject)
-        {
-            xObjectPrefix = "Im";
-        }
-        else
-        {
-            xObjectPrefix = "Form";
-        }
-        COSName objMapping = resources.add(xobject, xObjectPrefix);
-        saveGraphicsState();
+
+        COSWriter.writeString(font.encode(text), output);
         appendRawCommands(SPACE);
-        transform(new Matrix(transform));
-        appendRawCommands(SPACE);
-        appendCOSName(objMapping);
-        appendRawCommands(SPACE);
-        appendRawCommands(XOBJECT_DO);
-        restoreGraphicsState();
+        appendRawCommands(SHOW_TEXT);
     }
 
     /**
@@ -665,6 +574,148 @@ public class PDPageContentStream implements Closeable
     }
 
     /**
+     * Draw an image at the x,y coordinates, with the default size of the image.
+     *
+     * @param image The image to draw.
+     * @param x The x-coordinate to draw the image.
+     * @param y The y-coordinate to draw the image.
+     *
+     * @throws IOException If there is an error writing to the stream.
+     */
+    public void drawImage(PDImageXObject image, float x, float y) throws IOException
+    {
+        drawXObject(image, x, y, image.getWidth(), image.getHeight());
+    }
+
+    /**
+     * Draw an xobject(form or image) at the x,y coordinates and a certain width and height.
+     *
+     * @param xobject The xobject to draw.
+     * @param x The x-coordinate to draw the image.
+     * @param y The y-coordinate to draw the image.
+     * @param width The width of the image to draw.
+     * @param height The height of the image to draw.
+     *
+     * @throws IOException If there is an error writing to the stream.
+     */
+    public void drawXObject(PDXObject xobject, float x, float y, float width, float height) throws IOException
+    {
+        AffineTransform transform = new AffineTransform(width, 0, 0, height, x, y);
+        drawXObject(xobject, transform);
+    }
+
+    /**
+     * Draw an inline image at the x,y coordinates, with the default size of the image.
+     *
+     * @param inlineImage The inline image to draw.
+     * @param x The x-coordinate to draw the inline image.
+     * @param y The y-coordinate to draw the inline image.
+     *
+     * @throws IOException If there is an error writing to the stream.
+     */
+    public void drawInlineImage(PDInlineImage inlineImage, float x, float y) throws IOException
+    {
+        drawInlineImage(inlineImage, x, y, inlineImage.getWidth(), inlineImage.getHeight());
+    }
+    
+    /**
+     * Draw an inline image at the x,y coordinates and a certain width and height.
+     *
+     * @param inlineImage The inline image to draw.
+     * @param x The x-coordinate to draw the inline image.
+     * @param y The y-coordinate to draw the inline image.
+     * @param width The width of the inline image to draw.
+     * @param height The height of the inline image to draw.
+     *
+     * @throws IOException If there is an error writing to the stream.
+     */
+    public void drawInlineImage(PDInlineImage inlineImage, float x, float y, float width, float height) throws IOException
+    {
+        if (inTextMode)
+        {
+            throw new IOException("Error: drawInlineImage is not allowed within a text block.");
+        }
+        saveGraphicsState();
+        transform(new Matrix(width, 0, 0, height, x, y));
+        appendRawCommands("BI\n");
+        appendRawCommands("/W");
+        appendRawCommands(SPACE);
+        appendRawCommands(Integer.toString(inlineImage.getWidth()));
+        appendRawCommands(SPACE);
+        appendRawCommands("/H");
+        appendRawCommands(SPACE);
+        appendRawCommands(Integer.toString(inlineImage.getHeight()));
+        appendRawCommands(SPACE);
+        appendRawCommands("/CS");
+        appendRawCommands(SPACE);
+        appendRawCommands("/");
+        appendRawCommands(inlineImage.getColorSpace().getName());
+        appendRawCommands(NEWLINE);
+        if (inlineImage.getDecode() != null && inlineImage.getDecode().size() > 0)
+        {
+            appendRawCommands("/D");
+            appendRawCommands(SPACE);
+            appendRawCommands(OPENING_BRACKET);
+            appendRawCommands(SPACE);
+            for (COSBase cosBase : inlineImage.getDecode())
+            {
+                COSInteger cosInt = (COSInteger) cosBase;
+                appendRawCommands(Integer.toString(cosInt.intValue()));
+                appendRawCommands(SPACE);
+            }
+            appendRawCommands(CLOSING_BRACKET);
+            appendRawCommands("\n");
+        }
+        if (inlineImage.isStencil())
+        {
+            appendRawCommands("/IM true\n");
+        }
+        appendRawCommands("/BPC");
+        appendRawCommands(SPACE);
+        appendRawCommands(Integer.toString(inlineImage.getBitsPerComponent()));
+        appendRawCommands(NEWLINE);
+        appendRawCommands("ID\n");
+        appendRawCommands(inlineImage.getStream().getByteArray());
+        appendRawCommands(NEWLINE);
+        appendRawCommands("EI\n");
+        restoreGraphicsState();
+    }
+
+    /**
+     * Draw an xobject(form or image) using the given {@link AffineTransform} to position
+     * the xobject.
+     *
+     * @param xobject The xobject to draw.
+     * @param transform the transformation matrix
+     * @throws IOException If there is an error writing to the stream.
+     */
+    public void drawXObject(PDXObject xobject, AffineTransform transform) throws IOException
+    {
+        if (inTextMode)
+        {
+            throw new IOException("Error: drawXObject is not allowed within a text block.");
+        }
+        String xObjectPrefix = null;
+        if (xobject instanceof PDImageXObject)
+        {
+            xObjectPrefix = "Im";
+        }
+        else
+        {
+            xObjectPrefix = "Form";
+        }
+        COSName objMapping = resources.add(xobject, xObjectPrefix);
+        saveGraphicsState();
+        appendRawCommands(SPACE);
+        transform(new Matrix(transform));
+        appendRawCommands(SPACE);
+        appendCOSName(objMapping);
+        appendRawCommands(SPACE);
+        appendRawCommands(XOBJECT_DO);
+        restoreGraphicsState();
+    }
+
+    /**
      * The Tm operator. Sets the text matrix to the given rotation and translation values.
      * A current text matrix will be replaced with the new one.
      * @param angle The angle used for the counterclockwise rotation in radians.
@@ -732,44 +783,6 @@ public class PDPageContentStream implements Closeable
     {
         appendMatrix(matrix.createAffineTransform());
         appendRawCommands(CONCATENATE_MATRIX);
-    }
-
-    /**
-     * This will draw a string at the current location on the screen.
-     *
-     * @param text The text to draw.
-     * @throws IOException If an io exception occurs.
-     */
-    public void drawString(String text) throws IOException
-    {
-        if (!inTextMode)
-        {
-            throw new IllegalStateException("Must call beginText() before drawString()");
-        }
-
-        if (fontStack.isEmpty())
-        {
-            throw new IllegalStateException("Must call setFont() before drawString()");
-        }
-
-        PDFont font = fontStack.peek();
-
-        // Unicode code points to keep when subsetting
-        Set<Integer> codePoints = subsetCodePoints.get(font);
-        if (codePoints != null)
-        {
-            for (int offset = 0; offset < text.length(); )
-            {
-                int codePoint = text.codePointAt(offset);
-                codePoints.add(codePoint);
-                offset += Character.charCount(codePoint);
-            }
-
-        }
-
-        COSWriter.writeString(font.encode(text), output);
-        appendRawCommands(SPACE);
-        appendRawCommands(SHOW_TEXT);
     }
 
     /**

@@ -90,7 +90,7 @@ public class AddMessageToEachPage
                 {
                     contentStream.setTextMatrix(Matrix.getTranslateInstance(centerX, centerY));
                 }
-                contentStream.drawString( message );
+                contentStream.showText(message);
                 contentStream.endText();
                 contentStream.close();
             }

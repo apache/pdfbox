@@ -73,11 +73,11 @@ public class CreateLandscapePDF
             contentStream.setFont( font, fontSize );
             contentStream.beginText();
             contentStream.newLineAtOffset(startX, startY);
-            contentStream.drawString( message);
+            contentStream.showText(message);
             contentStream.newLineAtOffset(0, 100);
-            contentStream.drawString( message);
+            contentStream.showText(message);
             contentStream.newLineAtOffset(100, 100);
-            contentStream.drawString( message);
+            contentStream.showText(message);
             contentStream.endText();
             
             contentStream.drawLine(startX-2, startY-2, startX-2, startY+200+fontSize);

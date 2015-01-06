@@ -74,7 +74,7 @@ public class EmbeddedFiles
             contentStream.beginText();
             contentStream.setFont( font, 12 );
             contentStream.newLineAtOffset(100, 700);
-            contentStream.drawString( "Go to Document->File Attachments to View Embedded Files" );
+            contentStream.showText("Go to Document->File Attachments to View Embedded Files");
             contentStream.endText();
             contentStream.close();
 

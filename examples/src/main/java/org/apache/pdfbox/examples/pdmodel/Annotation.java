@@ -101,9 +101,9 @@ public class Annotation
                 contentStream.beginText();
                 contentStream.setFont( font, 18 );
                 contentStream.newLineAtOffset(inch, ph - inch - 18);
-                contentStream.drawString( "PDFBox" );
+                contentStream.showText("PDFBox");
                 contentStream.newLineAtOffset(0, -(inch / 2));
-                contentStream.drawString( "Click Here" );
+                contentStream.showText("Click Here");
                 contentStream.endText();
 
                 contentStream.close();

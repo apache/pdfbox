@@ -75,14 +75,14 @@ public class UsingTextMatrix
             {
                 contentStream.setTextMatrix(Matrix.getRotateInstance(i * Math.PI * 0.25,
                         centeredXPosition, pageSize.getHeight() - centeredYPosition));
-                contentStream.drawString( message + " " + i);
+                contentStream.showText(message + " " + i);
             }
             // clockwise rotation
             for (int i=0;i<8;i++) 
             {
                 contentStream.setTextMatrix(Matrix.getRotateInstance(-i*Math.PI*0.25,
                         centeredXPosition, centeredYPosition));
-                contentStream.drawString( message + " " + i);
+                contentStream.showText(message + " " + i);
             }
 
             contentStream.endText();
@@ -101,7 +101,7 @@ public class UsingTextMatrix
             for (int i=0;i<10;i++)
             {
                 contentStream.setTextMatrix(new Matrix(12 + (i * 6), 0, 0, 12+(i*6), 100, 100+i*50));
-                contentStream.drawString( message + " " +i);
+                contentStream.showText(message + " " + i);
             }
             contentStream.endText();
             contentStream.close();
@@ -118,16 +118,16 @@ public class UsingTextMatrix
             int i = 0;
             // text scaling combined with rotation 
             contentStream.setTextMatrix(new Matrix(12, 0, 0, 12, centeredXPosition, centeredYPosition*1.5f));
-            contentStream.drawString( message + " " +i++);
+            contentStream.showText(message + " " + i++);
 
             contentStream.setTextMatrix(new Matrix(0, 18, -18, 0, centeredXPosition, centeredYPosition*1.5f));
-            contentStream.drawString( message + " " +i++);
+            contentStream.showText(message + " " + i++);
 
             contentStream.setTextMatrix(new Matrix(-24, 0, 0, -24, centeredXPosition, centeredYPosition*1.5f));
-            contentStream.drawString( message + " " +i++);
+            contentStream.showText(message + " " + i++);
 
             contentStream.setTextMatrix(new Matrix(0, -30, 30, 0, centeredXPosition, centeredYPosition*1.5f));
-            contentStream.drawString( message + " " +i++);
+            contentStream.showText(message + " " + i++);
 
             contentStream.endText();
             contentStream.close();
