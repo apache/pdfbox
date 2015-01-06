@@ -243,8 +243,9 @@ public class CFFCIDFont extends CFFFont
     @Override
     public List<Number> getFontMatrix()
     {
-        // some malformed CIDFonts have their FontMatrix in a Font DICT
-        if (fontDictionaries.size() > 0 && fontDictionaries.get(0).containsKey("FontMatrix"))
+        // some malformed CIDFonts have their FontMatrix in a Font DICT, see PDFBOX-2495
+        if (!topDict.containsKey("FontMatrix") &&
+            fontDictionaries.size() > 0 && fontDictionaries.get(0).containsKey("FontMatrix"))
         {
             return (List<Number>)fontDictionaries.get(0).get("FontMatrix");
         }
