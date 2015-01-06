@@ -40,7 +40,7 @@ public class TestPDFText2HTML extends TestCase {
         contentStream.beginText();
         contentStream.setFont(font, 12);
         contentStream.newLineAtOffset(100, 700);
-        contentStream.drawString(text);
+        contentStream.showText(text);
         contentStream.endText();
         contentStream.close();
         return doc;

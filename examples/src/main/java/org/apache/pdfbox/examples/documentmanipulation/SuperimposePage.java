@@ -54,7 +54,7 @@ public class SuperimposePage {
             aContent.beginText();
             aContent.setFont(font, 12);
             aContent.newLineAtOffset(2, 5);
-            aContent.drawString("Import a pdf file:");
+            aContent.showText("Import a pdf file:");
             aContent.endText();
             aContent.close();
             

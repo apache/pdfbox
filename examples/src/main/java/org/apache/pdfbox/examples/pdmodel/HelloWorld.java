@@ -68,7 +68,7 @@ public class HelloWorld
             contentStream.beginText();
             contentStream.setFont( font, 12 );
             contentStream.newLineAtOffset(100, 700);
-            contentStream.drawString( message );
+            contentStream.showText(message);
             contentStream.endText();
             contentStream.close();
             doc.save( file );

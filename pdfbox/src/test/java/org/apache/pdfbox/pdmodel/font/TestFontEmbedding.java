@@ -69,7 +69,7 @@ public class TestFontEmbedding extends TestCase
 
         String text = "Unicode русский язык Tiếng Việt";
         stream.newLineAtOffset(50, 600);
-        stream.drawString(text);
+        stream.showText(text);
 
         stream.endText();
         stream.close();

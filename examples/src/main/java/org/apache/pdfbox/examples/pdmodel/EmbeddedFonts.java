@@ -49,13 +49,13 @@ public class EmbeddedFonts
         stream.setLeading(12 * 1.2);
 
         stream.newLineAtOffset(50, 600);
-        stream.drawString("PDFBox Unicode with Embedded TrueType Font");
+        stream.showText("PDFBox Unicode with Embedded TrueType Font");
         stream.newLine();
 
-        stream.drawString("Supports full Unicode text ☺");
+        stream.showText("Supports full Unicode text ☺");
         stream.newLine();
 
-        stream.drawString("English русский язык Tiếng Việt");
+        stream.showText("English русский язык Tiếng Việt");
 
         stream.endText();
         stream.close();

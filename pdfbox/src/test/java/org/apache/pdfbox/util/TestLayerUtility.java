@@ -144,7 +144,7 @@ public class TestLayerUtility extends TestCase
             contentStream.beginText();
             contentStream.newLineAtOffset(50, 720);
             contentStream.setFont(font, 14);
-            contentStream.drawString("Simple test document with text.");
+            contentStream.showText("Simple test document with text.");
             contentStream.endText();
             font = PDType1Font.HELVETICA;
             contentStream.beginText();
@@ -154,7 +154,7 @@ public class TestLayerUtility extends TestCase
             for (String line : text)
             {
                 contentStream.newLineAtOffset(0, -fontSize * 1.2f);
-                contentStream.drawString(line);
+                contentStream.showText(line);
             }
             contentStream.endText();
             contentStream.close();
@@ -202,7 +202,7 @@ public class TestLayerUtility extends TestCase
             transform.rotate(Math.toRadians(45));
             transform.translate(-190 /* sw/2 */, 0);
             contentStream.setTextMatrix(transform);
-            contentStream.drawString(text);
+            contentStream.showText(text);
             contentStream.endText();
             contentStream.close();
 
