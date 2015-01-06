@@ -588,20 +588,19 @@ public class PDPageContentStream implements Closeable
     }
 
     /**
-     * Draw an xobject(form or image) at the x,y coordinates and a certain width and height.
+     * Draw an inline image at the x,y coordinates, with the default size of the image.
      *
-     * @param xobject The xobject to draw.
-     * @param x The x-coordinate to draw the image.
-     * @param y The y-coordinate to draw the image.
-     * @param width The width of the image to draw.
-     * @param height The height of the image to draw.
+     * @param inlineImage The inline image to draw.
+     * @param x The x-coordinate to draw the inline image.
+     * @param y The y-coordinate to draw the inline image.
      *
      * @throws IOException If there is an error writing to the stream.
+     * @deprecated Use {@link #drawImage(PDInlineImage, float, float)} instead.
      */
-    public void drawXObject(PDXObject xobject, float x, float y, float width, float height) throws IOException
+    @Deprecated
+    public void drawInlineImage(PDInlineImage inlineImage, float x, float y) throws IOException
     {
-        AffineTransform transform = new AffineTransform(width, 0, 0, height, x, y);
-        drawXObject(xobject, transform);
+        drawImage(inlineImage, x, y, inlineImage.getWidth(), inlineImage.getHeight());
     }
 
     /**
@@ -613,9 +612,27 @@ public class PDPageContentStream implements Closeable
      *
      * @throws IOException If there is an error writing to the stream.
      */
-    public void drawInlineImage(PDInlineImage inlineImage, float x, float y) throws IOException
+    public void drawImage(PDInlineImage inlineImage, float x, float y) throws IOException
     {
-        drawInlineImage(inlineImage, x, y, inlineImage.getWidth(), inlineImage.getHeight());
+        drawImage(inlineImage, x, y, inlineImage.getWidth(), inlineImage.getHeight());
+    }
+
+    /**
+     * Draw an inline image at the x,y coordinates and a certain width and height.
+     *
+     * @param inlineImage The inline image to draw.
+     * @param x The x-coordinate to draw the inline image.
+     * @param y The y-coordinate to draw the inline image.
+     * @param width The width of the inline image to draw.
+     * @param height The height of the inline image to draw.
+     *
+     * @throws IOException If there is an error writing to the stream.
+     * @deprecated Use {@link #drawImage(PDInlineImage, float, float, float, float)} instead.
+     */
+    @Deprecated
+    public void drawInlineImage(PDInlineImage inlineImage, float x, float y, float width, float height) throws IOException
+    {
+        drawImage(inlineImage, x, y, width, height);
     }
     
     /**
@@ -629,11 +646,11 @@ public class PDPageContentStream implements Closeable
      *
      * @throws IOException If there is an error writing to the stream.
      */
-    public void drawInlineImage(PDInlineImage inlineImage, float x, float y, float width, float height) throws IOException
+    public void drawImage(PDInlineImage inlineImage, float x, float y, float width, float height) throws IOException
     {
         if (inTextMode)
         {
-            throw new IOException("Error: drawInlineImage is not allowed within a text block.");
+            throw new IOException("Error: drawImage is not allowed within a text block.");
         }
         saveGraphicsState();
         transform(new Matrix(width, 0, 0, height, x, y));
@@ -679,6 +696,23 @@ public class PDPageContentStream implements Closeable
         appendRawCommands(NEWLINE);
         appendRawCommands("EI\n");
         restoreGraphicsState();
+    }
+
+    /**
+     * Draw an xobject(form or image) at the x,y coordinates and a certain width and height.
+     *
+     * @param xobject The xobject to draw.
+     * @param x The x-coordinate to draw the image.
+     * @param y The y-coordinate to draw the image.
+     * @param width The width of the image to draw.
+     * @param height The height of the image to draw.
+     *
+     * @throws IOException If there is an error writing to the stream.
+     */
+    public void drawXObject(PDXObject xobject, float x, float y, float width, float height) throws IOException
+    {
+        AffineTransform transform = new AffineTransform(width, 0, 0, height, x, y);
+        drawXObject(xobject, transform);
     }
 
     /**
