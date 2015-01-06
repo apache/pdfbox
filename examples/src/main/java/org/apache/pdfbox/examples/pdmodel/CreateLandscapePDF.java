@@ -71,11 +71,11 @@ public class CreateLandscapePDF
             contentStream.concatenate2CTM(0, 1, -1, 0, pageWidth, 0);
             contentStream.setFont( font, fontSize );
             contentStream.beginText();
-            contentStream.moveTextPositionByAmount(startX, startY);
+            contentStream.newLineAtOffset(startX, startY);
             contentStream.drawString( message);
-            contentStream.moveTextPositionByAmount(0, 100);
+            contentStream.newLineAtOffset(0, 100);
             contentStream.drawString( message);
-            contentStream.moveTextPositionByAmount(100, 100);
+            contentStream.newLineAtOffset(100, 100);
             contentStream.drawString( message);
             contentStream.endText();
             

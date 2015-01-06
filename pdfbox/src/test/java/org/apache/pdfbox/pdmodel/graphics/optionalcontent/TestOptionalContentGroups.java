@@ -110,13 +110,13 @@ public class TestOptionalContentGroups extends TestCase
             contentStream.beginMarkedContentSequence(COSName.OC, mc0);
             contentStream.beginText();
             contentStream.setFont(font, 14);
-            contentStream.moveTextPositionByAmount(80, 700);
+            contentStream.newLineAtOffset(80, 700);
             contentStream.drawString("PDF 1.5: Optional Content Groups");
             contentStream.endText();
             font = PDType1Font.HELVETICA;
             contentStream.beginText();
             contentStream.setFont(font, 12);
-            contentStream.moveTextPositionByAmount(80, 680);
+            contentStream.newLineAtOffset(80, 680);
             contentStream.drawString("You should see a green textline, but no red text line.");
             contentStream.endText();
             contentStream.endMarkedContentSequence();
@@ -126,7 +126,7 @@ public class TestOptionalContentGroups extends TestCase
             contentStream.setNonStrokingColor(Color.GREEN);
             contentStream.beginText();
             contentStream.setFont(font, 12);
-            contentStream.moveTextPositionByAmount(80, 600);
+            contentStream.newLineAtOffset(80, 600);
             contentStream.drawString(
                     "This is from an enabled layer. If you see this, that's good.");
             contentStream.endText();
@@ -137,7 +137,7 @@ public class TestOptionalContentGroups extends TestCase
             contentStream.setNonStrokingColor(Color.RED);
             contentStream.beginText();
             contentStream.setFont(font, 12);
-            contentStream.moveTextPositionByAmount(80, 500);
+            contentStream.newLineAtOffset(80, 500);
             contentStream.drawString(
                     "This is from a disabled layer. If you see this, that's NOT good!");
             contentStream.endText();

@@ -53,7 +53,7 @@ public class SuperimposePage {
             PDFont font = PDType1Font.HELVETICA_BOLD;
             aContent.beginText();
             aContent.setFont(font, 12);
-            aContent.moveTextPositionByAmount(2, 5);
+            aContent.newLineAtOffset(2, 5);
             aContent.drawString("Import a pdf file:");
             aContent.endText();
             aContent.close();

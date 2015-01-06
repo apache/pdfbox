@@ -48,7 +48,7 @@ public class EmbeddedFonts
         stream.setFont(font, 12);
         stream.setLeading(12 * 1.2);
 
-        stream.moveTextPositionByAmount(50, 600);
+        stream.newLineAtOffset(50, 600);
         stream.drawString("PDFBox Unicode with Embedded TrueType Font");
         stream.newLine();
 

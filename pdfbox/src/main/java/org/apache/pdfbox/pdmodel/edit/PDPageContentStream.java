@@ -60,6 +60,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDInlineImage;
 import org.apache.pdfbox.util.Charsets;
+import org.apache.pdfbox.util.Matrix;
 
 /**
  * This class is a convenience for creating page content streams. You MUST call close() when you
@@ -325,7 +326,7 @@ public class PDPageContentStream implements Closeable
     }
 
     /**
-     * Set the font to draw text with.
+     * Set the font and font size to draw text with.
      *
      * @param font The font to use.
      * @param fontSize The font size to draw the text.
@@ -505,21 +506,63 @@ public class PDPageContentStream implements Closeable
     }
 
     /**
-     * The Td operator.
-     * A current text matrix will be replaced with a new one (1 0 0 1 x y).
-     * @param x The x coordinate.
-     * @param y The y coordinate.
+     * Sets the text leading.
+     *
+     * @param leading The leading in unscaled text units.
      * @throws IOException If there is an error writing to the stream.
      */
-    public void moveTextPositionByAmount(float x, float y) throws IOException
+    public void setLeading(double leading) throws IOException
+    {
+        appendRawCommands(leading);
+        appendRawCommands(SPACE);
+        appendRawCommands(SET_LEADING);
+    }
+
+    /**
+     * Move to the start of the next line of text. Requires the leading to have been set.
+     *
+     * @throws IOException If there is an error writing to the stream.
+     */
+    public void newLine() throws IOException
     {
         if (!inTextMode)
         {
-            throw new IOException("Error: must call beginText() before moveTextPositionByAmount");
+            throw new IllegalStateException("Must call beginText() before newLine()");
         }
-        appendRawCommands(x);
+        appendRawCommands(NEW_LINE);
+    }
+
+    /**
+     * The Td operator.
+     * A current text matrix will be replaced with a new one (1 0 0 1 x y).
+     * @param tx The x translation.
+     * @param ty The y translation.
+     * @throws IOException If there is an error writing to the stream.
+     * @deprecated Use {@link #newLineAtOffset} instead.
+     */
+    @Deprecated
+    public void moveTextPositionByAmount(float tx, float ty) throws IOException
+    {
+        newLineAtOffset(tx, ty);
+    }
+
+    /**
+     * The Td operator.
+     * Move to the start of the next line, offset from the start of the current line by (tx, ty).
+     *
+     * @param tx The x translation.
+     * @param ty The y translation.
+     * @throws IOException If there is an error writing to the stream.
+     */
+    public void newLineAtOffset(float tx, float ty) throws IOException
+    {
+        if (!inTextMode)
+        {
+            throw new IOException("Error: must call beginText() before newLineAtOffset()");
+        }
+        appendRawCommands(tx);
         appendRawCommands(SPACE);
-        appendRawCommands(y);
+        appendRawCommands(ty);
         appendRawCommands(SPACE);
         appendRawCommands(MOVE_TEXT_POSITION);
     }
@@ -534,7 +577,9 @@ public class PDPageContentStream implements Closeable
      * @param e The e value of the matrix.
      * @param f The f value of the matrix.
      * @throws IOException If there is an error writing to the stream.
+     * @deprecated Use {@link #setTextMatrix(Matrix)} instead.
      */
+    @Deprecated
     public void setTextMatrix(double a, double b, double c, double d, double e, double f) throws IOException
     {
         if (!inTextMode)
@@ -557,11 +602,13 @@ public class PDPageContentStream implements Closeable
     }
 
     /**
-    * The Tm operator. Sets the text matrix to the given values.
-    * A current text matrix will be replaced with the new one.
-    * @param matrix the transformation matrix
-    * @throws IOException If there is an error writing to the stream.
-    */
+     * The Tm operator. Sets the text matrix to the given values.
+     * A current text matrix will be replaced with the new one.
+     * @param matrix the transformation matrix
+     * @throws IOException If there is an error writing to the stream.
+     * @deprecated Use {@link #setTextMatrix(Matrix)} instead.
+     */
+    @Deprecated
     public void setTextMatrix(AffineTransform matrix) throws IOException
     {
         if (!inTextMode)
@@ -573,6 +620,23 @@ public class PDPageContentStream implements Closeable
     }
 
     /**
+     * The Tm operator. Sets the text matrix to the given values.
+     * A current text matrix will be replaced with the new one.
+     *
+     * @param matrix the transformation matrix
+     * @throws IOException If there is an error writing to the stream.
+     */
+    public void setTextMatrix(Matrix matrix) throws IOException
+    {
+        if (!inTextMode)
+        {
+            throw new IOException("Error: must call beginText() before setTextMatrix");
+        }
+        appendMatrix(matrix.createAffineTransform());
+        appendRawCommands(SET_TEXT_MATRIX);
+    }
+
+    /**
      * The Tm operator. Sets the text matrix to the given scaling and translation values.
      * A current text matrix will be replaced with the new one.
      * @param sx The scaling factor in x-direction.
@@ -580,10 +644,12 @@ public class PDPageContentStream implements Closeable
      * @param tx The translation value in x-direction.
      * @param ty The translation value in y-direction.
      * @throws IOException If there is an error writing to the stream.
+     * @deprecated Use {@link #setTextMatrix(Matrix)} instead.
      */
+    @Deprecated
     public void setTextScaling(double sx, double sy, double tx, double ty) throws IOException
     {
-        setTextMatrix(sx, 0, 0, sy, tx, ty);
+        setTextMatrix(new Matrix((float)sx, 0f, 0f, (float)sy, (float)tx, (float)ty));
     }
 
     /**
@@ -592,10 +658,12 @@ public class PDPageContentStream implements Closeable
      * @param tx The translation value in x-direction.
      * @param ty The translation value in y-direction.
      * @throws IOException If there is an error writing to the stream.
+     * @deprecated Use {@link #setTextMatrix(Matrix)} instead.
      */
+    @Deprecated
     public void setTextTranslation(double tx, double ty) throws IOException
     {
-        setTextMatrix(1, 0, 0, 1, tx, ty);
+        setTextMatrix(Matrix.getTranslatingInstance((float)tx, (float)ty));
     }
 
     /**
@@ -605,12 +673,12 @@ public class PDPageContentStream implements Closeable
      * @param tx The translation value in x-direction.
      * @param ty The translation value in y-direction.
      * @throws IOException If there is an error writing to the stream.
+     * @deprecated Use {@link #setTextMatrix(Matrix)} instead.
      */
+    @Deprecated
     public void setTextRotation(double angle, double tx, double ty) throws IOException
     {
-        double angleCos = Math.cos(angle);
-        double angleSin = Math.sin(angle);
-        setTextMatrix(angleCos, angleSin, -angleSin, angleCos, tx, ty);
+        setTextMatrix(Matrix.getRotateInstance(angle, (float)tx, (float)ty));
     }
 
     /**
@@ -688,33 +756,6 @@ public class PDPageContentStream implements Closeable
         COSWriter.writeString(font.encode(text), output);
         appendRawCommands(SPACE);
         appendRawCommands(SHOW_TEXT);
-    }
-
-    /**
-     * Sets the text leading.
-     *
-     * @param leading The leading in unscaled text units.
-     * @throws IOException If there is an error writing to the stream.
-     */
-    public void setLeading(double leading) throws IOException
-    {
-        appendRawCommands(leading);
-        appendRawCommands(SPACE);
-        appendRawCommands(SET_LEADING);
-    }
-
-    /**
-     * Move to the start of the next line of text. Requires the leading to have been set.
-     *
-     * @throws IOException If there is an error writing to the stream.
-     */
-    public void newLine() throws IOException
-    {
-        if (!inTextMode)
-        {
-            throw new IllegalStateException("Must call beginText() before newLine()");
-        }
-        appendRawCommands(NEW_LINE);
     }
 
     /**

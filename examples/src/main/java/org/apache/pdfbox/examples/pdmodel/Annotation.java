@@ -100,9 +100,9 @@ public class Annotation
                 PDPageContentStream contentStream = new PDPageContentStream(document, page);
                 contentStream.beginText();
                 contentStream.setFont( font, 18 );
-                contentStream.moveTextPositionByAmount( inch, ph-inch-18);
+                contentStream.newLineAtOffset(inch, ph - inch - 18);
                 contentStream.drawString( "PDFBox" );
-                contentStream.moveTextPositionByAmount( 0,-(inch/2));
+                contentStream.newLineAtOffset(0, -(inch / 2));
                 contentStream.drawString( "Click Here" );
                 contentStream.endText();
 

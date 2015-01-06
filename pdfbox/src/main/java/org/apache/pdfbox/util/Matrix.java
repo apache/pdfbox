@@ -387,29 +387,25 @@ public final class Matrix implements Cloneable
     @Deprecated
     public Matrix extractScaling()
     {
-        Matrix retval = new Matrix();
-
-        retval.single[0] = this.single[0];
-        retval.single[4] = this.single[4];
-
-        return retval;
+        Matrix matrix = new Matrix();
+        matrix.single[0] = this.single[0];
+        matrix.single[4] = this.single[4];
+        return matrix;
     }
 
     /**
      * Convenience method to create a scaled instance.
      *
-     * @param x The xscale operator.
-     * @param y The yscale operator.
+     * @param sx The xscale operator.
+     * @param sy The yscale operator.
      * @return A new matrix with just the x/y scaling
      */
-    public static Matrix getScaleInstance( float x, float y)
+    public static Matrix getScaleInstance(float sx, float sy)
     {
-        Matrix retval = new Matrix();
-
-        retval.single[0] = x;
-        retval.single[4] = y;
-
-        return retval;
+        Matrix matrix = new Matrix();
+        matrix.single[0] = sx;
+        matrix.single[4] = sy;
+        return matrix;
     }
 
     /**
@@ -421,29 +417,48 @@ public final class Matrix implements Cloneable
     @Deprecated
     public Matrix extractTranslating()
     {
-        Matrix retval = new Matrix();
-
-        retval.single[6] = this.single[6];
-        retval.single[7] = this.single[7];
-
-        return retval;
+        Matrix matrix = new Matrix();
+        matrix.single[6] = this.single[6];
+        matrix.single[7] = this.single[7];
+        return matrix;
     }
 
     /**
      * Convenience method to create a translating instance.
      *
-     * @param x The x translating operator.
-     * @param y The y translating operator.
+     * @param tx The x translating operator.
+     * @param ty The y translating operator.
      * @return A new matrix with just the x/y translating.
      */
-    public static Matrix getTranslatingInstance( float x, float y)
+    public static Matrix getTranslatingInstance(float tx, float ty)
     {
-        Matrix retval = new Matrix();
+        Matrix matrix = new Matrix();
+        matrix.single[6] = tx;
+        matrix.single[7] = ty;
+        return matrix;
+    }
 
-        retval.single[6] = x;
-        retval.single[7] = y;
+    /**
+     * Convenience method to create a rotated instance.
+     *
+     * @param theta The angle of rotation measured in radians
+     * @param tx The x translation.
+     * @param ty The y translation.
+     * @return A new matrix with just the x/y translating.
+     */
+    public static Matrix getRotateInstance(double theta, float tx, float ty)
+    {
+        float cosTheta = (float)Math.cos(theta);
+        float sinTheta = (float)Math.sin(theta);
 
-        return retval;
+        Matrix matrix = new Matrix();
+        matrix.single[0] = cosTheta;
+        matrix.single[1] = sinTheta;
+        matrix.single[3] = -sinTheta;
+        matrix.single[4] = cosTheta;
+        matrix.single[6] = tx;
+        matrix.single[7] = ty;
+        return matrix;
     }
 
     /**

@@ -24,7 +24,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 
 /**
@@ -63,7 +62,7 @@ public class HelloWorldTTF
                     page);
             contentStream.beginText();
             contentStream.setFont(font, 12);
-            contentStream.moveTextPositionByAmount(100, 700);
+            contentStream.newLineAtOffset(100, 700);
             contentStream.drawString(message);
             contentStream.endText();
             contentStream.close();
