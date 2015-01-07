@@ -145,6 +145,10 @@ public abstract class PDFieldTreeNode implements COSObjectable
         if (attributesNode != null)
         {
             attributesNode.getDictionary().setItem(key, value);
+        } 
+        else
+        {
+            getDictionary().setItem(key, value);
         }
     }  
     

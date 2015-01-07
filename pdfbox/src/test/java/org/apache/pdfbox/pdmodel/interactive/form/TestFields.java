@@ -116,6 +116,19 @@ public class TestFields extends TestCase
             assertTrue( textBox.isComb() );
             textBox.setComb( true );
             assertTrue( textBox.isComb() );
+            
+            // assert that there is no value, set the field value and
+            // ensure it has been set
+            assertNull(textBox.getDictionary().getItem(COSName.V));
+            textBox.setValue("field value");
+            assertNotNull(textBox.getDictionary().getItem(COSName.V));
+            assertEquals(textBox.getValue(),"field value");
+            
+            // assert when setting to null the key has also been removed
+            assertNotNull(textBox.getDictionary().getItem(COSName.V));
+            textBox.setValue(null);
+            assertNull(textBox.getDictionary().getItem(COSName.V));
+            
         }
         finally
         {
