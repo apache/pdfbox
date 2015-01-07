@@ -17,7 +17,6 @@
 package org.apache.pdfbox.pdmodel.edit;
 
 import java.awt.Color;
-import java.awt.color.ColorSpace;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
 import java.io.Closeable;
@@ -37,7 +36,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdfwriter.COSWriter;
@@ -49,9 +47,11 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.font.PDCIDFontType2;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceN;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.pdmodel.graphics.color.PDPattern;
@@ -82,8 +82,8 @@ public final class PDPageContentStream implements Closeable
     private final List<PDFont> fontsToSubset = new ArrayList<PDFont>();
     private final Map<PDFont, Set<Integer>> subsetCodePoints = new HashMap<PDFont, Set<Integer>>();
 
-    private PDColorSpace currentStrokingColorSpace = PDDeviceGray.INSTANCE;
-    private PDColorSpace currentNonStrokingColorSpace = PDDeviceGray.INSTANCE;
+    private Stack<PDColorSpace> nonStrokingColorSpaceStack = new Stack<PDColorSpace>();
+    private Stack<PDColorSpace> strokingColorSpaceStack = new Stack<PDColorSpace>();
 
     // cached storage component for getting color values
     private final float[] colorComponents = new float[4];
@@ -749,7 +749,7 @@ public final class PDPageContentStream implements Closeable
     @Deprecated
     public void concatenate2CTM(double a, double b, double c, double d, double e, double f) throws IOException
     {
-        transform(new Matrix((float)a, (float)b, (float)c, (float)d, (float)e, (float)f));
+        transform(new Matrix((float) a, (float) b, (float) c, (float) d, (float) e, (float) f));
     }
 
     /**
@@ -787,6 +787,14 @@ public final class PDPageContentStream implements Closeable
         {
             fontStack.push(fontStack.peek());
         }
+        if (!strokingColorSpaceStack.isEmpty())
+        {
+            strokingColorSpaceStack.push(strokingColorSpaceStack.peek());
+        }
+        if (!nonStrokingColorSpaceStack.isEmpty())
+        {
+            nonStrokingColorSpaceStack.push(strokingColorSpaceStack.peek());
+        }
         writeOperator("q");
     }
 
@@ -800,6 +808,14 @@ public final class PDPageContentStream implements Closeable
         {
             fontStack.pop();
         }
+        if (!strokingColorSpaceStack.isEmpty())
+        {
+            strokingColorSpaceStack.pop();
+        }
+        if (!nonStrokingColorSpaceStack.isEmpty())
+        {
+            nonStrokingColorSpaceStack.pop();
+        }
         writeOperator("Q");
     }
 
@@ -809,11 +825,21 @@ public final class PDPageContentStream implements Closeable
      *
      * @param colorSpace The colorspace to write.
      * @throws IOException If there is an error writing the colorspace.
+     * @deprecated Use {@link #setStrokingColor} instead.
      */
+    @Deprecated
     public void setStrokingColorSpace(PDColorSpace colorSpace) throws IOException
     {
-        currentStrokingColorSpace = colorSpace;
-        writeOperand(getColorSpaceName(colorSpace));
+        if (strokingColorSpaceStack.isEmpty())
+        {
+            strokingColorSpaceStack.add(colorSpace);
+        }
+        else
+        {
+            strokingColorSpaceStack.setElementAt(colorSpace, nonStrokingColorSpaceStack.size() - 1);
+        }
+
+        writeOperand(getName(colorSpace));
         writeOperator("CS");
     }
 
@@ -823,60 +849,121 @@ public final class PDPageContentStream implements Closeable
      *
      * @param colorSpace The colorspace to write.
      * @throws IOException If there is an error writing the colorspace.
+     * @deprecated Use {@link #setNonStrokingColor} instead.
      */
+    @Deprecated
     public void setNonStrokingColorSpace(PDColorSpace colorSpace) throws IOException
     {
-        currentNonStrokingColorSpace = colorSpace;
-        writeOperand(getColorSpaceName(colorSpace));
-        writeOperator("cs");
-    }
-
-    private COSName getColorSpaceName(PDColorSpace colorSpace) throws IOException
-    {
-        COSName key;
-        if (colorSpace instanceof PDDeviceGray || colorSpace instanceof PDDeviceRGB
-                || colorSpace instanceof PDDeviceCMYK)
+        if (nonStrokingColorSpaceStack.isEmpty())
         {
-            key = COSName.getPDFName(colorSpace.getName());
+            nonStrokingColorSpaceStack.add(colorSpace);
         }
         else
         {
-            COSDictionary colorSpaces = (COSDictionary)resources.getCOSObject().getDictionaryObject(
-                    COSName.COLORSPACE);
-            if (colorSpaces == null)
-            {
-                colorSpaces = new COSDictionary();
-                resources.getCOSObject().setItem(COSName.COLORSPACE, colorSpaces);
-            }
-            key = colorSpaces.getKeyForValue(colorSpace.getCOSObject());
-
-            if (key == null)
-            {
-                int counter = 0;
-                String csName = "CS";
-                while (colorSpaces.containsValue(csName + counter))
-                {
-                    counter++;
-                }
-                key = COSName.getPDFName(csName + counter);
-                colorSpaces.setItem(key, colorSpace);
-            }
+            nonStrokingColorSpaceStack.setElementAt(colorSpace, nonStrokingColorSpaceStack.size() - 1);
         }
-        return key;
+
+        writeOperand(getName(colorSpace));
+        writeOperator("cs");
+    }
+
+    private COSName getName(PDColorSpace colorSpace) throws IOException
+    {
+        if (colorSpace instanceof PDDeviceGray ||
+            colorSpace instanceof PDDeviceRGB ||
+            colorSpace instanceof PDDeviceCMYK)
+        {
+            return COSName.getPDFName(colorSpace.getName());
+        }
+        else
+        {
+            return resources.add(colorSpace);
+        }
     }
 
     /**
-     * Set the color components of current stroking colorspace.
+     * Sets the stroking color and, if necessary, the stroking color space.
+     *
+     * @param color Color in a specific color space.
+     * @throws IOException If an IO error occurs while writing to the stream.
+     */
+    public void setStrokingColor(PDColor color) throws IOException
+    {
+        if (strokingColorSpaceStack.isEmpty() ||
+            strokingColorSpaceStack.peek() != color.getColorSpace())
+        {
+            writeOperand(getName(color.getColorSpace()));
+            writeOperator("CS");
+
+            if (strokingColorSpaceStack.isEmpty())
+            {
+                strokingColorSpaceStack.add(color.getColorSpace());
+            }
+            else
+            {
+                strokingColorSpaceStack.setElementAt(color.getColorSpace(),
+                        nonStrokingColorSpaceStack.size() - 1);
+            }
+        }
+
+        for (float value : color.getComponents())
+        {
+            writeOperand(value);
+        }
+
+        if (color.getColorSpace() instanceof PDPattern)
+        {
+            writeOperand(color.getPatternName());
+        }
+
+        if (color.getColorSpace() instanceof PDPattern ||
+            color.getColorSpace() instanceof PDSeparation ||
+            color.getColorSpace() instanceof PDDeviceN ||
+            color.getColorSpace() instanceof PDICCBased)
+        {
+            writeOperator("SCN");
+        }
+        else
+        {
+            writeOperator("SC");
+        }
+    }
+
+    /**
+     * Set the stroking color using an AWT color. Conversion uses the default sRGB color space.
+     *
+     * @param color The color to set.
+     * @throws IOException If an IO error occurs while writing to the stream.
+     */
+    public void setStrokingColor(Color color) throws IOException
+    {
+        float[] components = new float[] {
+                color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f };
+        PDColor pdColor = new PDColor(components, PDDeviceRGB.INSTANCE);
+        setStrokingColor(pdColor);
+    }
+
+    /**
+     * Set the color components of current stroking color space.
      *
      * @param components The components to set for the current color.
      * @throws IOException If there is an error while writing to the stream.
+     * @deprecated Use {@link #setStrokingColor(PDColor)} instead.
      */
+    @Deprecated
     public void setStrokingColor(float[] components) throws IOException
     {
+        if (strokingColorSpaceStack.isEmpty())
+        {
+            throw new IllegalStateException("The color space must be set before setting a color");
+        }
+
         for (int i = 0; i < components.length; i++)
         {
             writeOperand(components[i]);
         }
+
+        PDColorSpace currentStrokingColorSpace = strokingColorSpaceStack.peek();
 
         if (currentStrokingColorSpace instanceof PDSeparation ||
             currentStrokingColorSpace instanceof PDPattern ||
@@ -891,57 +978,9 @@ public final class PDPageContentStream implements Closeable
     }
 
     /**
-     * Set the stroking color, specified as RGB or Gray.
+     * Set the stroking color in the DeviceRGB color space. Range is 0..255.
      *
-     * @param color The color to set.
-     * @throws IOException If an IO error occurs while writing to the stream.
-     */
-    public void setStrokingColor(Color color) throws IOException
-    {
-        ColorSpace colorSpace = color.getColorSpace();
-        if (colorSpace.getType() == ColorSpace.TYPE_RGB)
-        {
-            setStrokingColor(color.getRed(), color.getGreen(), color.getBlue());
-        }
-        else if (colorSpace.getType() == ColorSpace.TYPE_GRAY)
-        {
-            color.getColorComponents(colorComponents);
-            setStrokingColor(colorComponents[0]);
-        }
-        else
-        {
-            throw new IOException("Error: unknown color space:" + colorSpace);
-        }
-    }
-
-    /**
-     * Set the non stroking color, specified as RGB or Gray.
-     *
-     * @param color The color to set.
-     * @throws IOException If an IO error occurs while writing to the stream.
-     */
-    public void setNonStrokingColor(Color color) throws IOException
-    {
-        ColorSpace colorSpace = color.getColorSpace();
-        if (colorSpace.getType() == ColorSpace.TYPE_RGB)
-        {
-            setNonStrokingColor(color.getRed(), color.getGreen(), color.getBlue());
-        }
-        else if (colorSpace.getType() == ColorSpace.TYPE_GRAY)
-        {
-            color.getColorComponents(colorComponents);
-            setNonStrokingColor(colorComponents[0]);
-        }
-        else
-        {
-            throw new IOException("Error: unknown color space:" + colorSpace);
-        }
-    }
-
-    /**
-     * Set the stroking color, specified as RGB, 0-255.
-     *
-     * @param r The red value.
+     * @param r The red value
      * @param g The green value.
      * @param b The blue value.
      * @throws IOException If an IO error occurs while writing to the stream.
@@ -955,21 +994,23 @@ public final class PDPageContentStream implements Closeable
     }
 
     /**
-     * Set the stroking color, specified as CMYK, 0-255.
+     * Set the stroking color in the DeviceCMYK color space. Range is 0..255.
      *
      * @param c The cyan value.
      * @param m The magenta value.
      * @param y The yellow value.
      * @param k The black value.
      * @throws IOException If an IO error occurs while writing to the stream.
+     * @deprecated Use {@link #setStrokingColor(float, float, float, float)} instead.
      */
+    @Deprecated
     public void setStrokingColor(int c, int m, int y, int k) throws IOException
     {
         setStrokingColor(c / 255f, m / 255f, y / 255f, k / 255f);
     }
 
     /**
-     * Set the stroking color, specified as CMYK, 0.0-1.0.
+     * Set the stroking color in the DeviceCMYK color space. Range is 0..1
      *
      * @param c The cyan value.
      * @param m The magenta value.
@@ -977,28 +1018,30 @@ public final class PDPageContentStream implements Closeable
      * @param k The black value.
      * @throws IOException If an IO error occurs while writing to the stream.
      */
-    public void setStrokingColor(double c, double m, double y, double k) throws IOException
+    public void setStrokingColor(float c, float m, float y, float k) throws IOException
     {
-        writeOperand((float) c);
-        writeOperand((float) m);
-        writeOperand((float) y);
-        writeOperand((float) k);
+        writeOperand(c);
+        writeOperand(m);
+        writeOperand(y);
+        writeOperand(k);
         writeOperator("K");
     }
 
     /**
-     * Set the stroking color, specified as grayscale, 0-255.
+     * Set the stroking color in the DeviceGray color space. Range is 0..255.
      *
      * @param g The gray value.
      * @throws IOException If an IO error occurs while writing to the stream.
+     * @deprecated Use {@link #setStrokingColor(double)} instead.
      */
+    @Deprecated
     public void setStrokingColor(int g) throws IOException
     {
         setStrokingColor(g / 255f);
     }
 
     /**
-     * Set the stroking color, specified as Grayscale 0.0-1.0.
+     * Set the stroking color in the DeviceGray color space. Range is 0..1.
      *
      * @param g The gray value.
      * @throws IOException If an IO error occurs while writing to the stream.
@@ -1010,17 +1053,88 @@ public final class PDPageContentStream implements Closeable
     }
 
     /**
-     * Set the color components of current non stroking colorspace.
+     * Sets the non-stroking color and, if necessary, the non-stroking color space.
+     *
+     * @param color Color in a specific color space.
+     * @throws IOException If an IO error occurs while writing to the stream.
+     */
+    public void setNonStrokingColor(PDColor color) throws IOException
+    {
+        if (nonStrokingColorSpaceStack.isEmpty() ||
+            nonStrokingColorSpaceStack.peek() != color.getColorSpace())
+        {
+            writeOperand(getName(color.getColorSpace()));
+            writeOperator("cs");
+
+            if (nonStrokingColorSpaceStack.isEmpty())
+            {
+                nonStrokingColorSpaceStack.add(color.getColorSpace());
+            }
+            else
+            {
+                nonStrokingColorSpaceStack.setElementAt(color.getColorSpace(),
+                        nonStrokingColorSpaceStack.size() - 1);
+            }
+        }
+
+        for (float value : color.getComponents())
+        {
+            writeOperand(value);
+        }
+
+        if (color.getColorSpace() instanceof PDPattern)
+        {
+            writeOperand(color.getPatternName());
+        }
+
+        if (color.getColorSpace() instanceof PDPattern ||
+            color.getColorSpace() instanceof PDSeparation ||
+            color.getColorSpace() instanceof PDDeviceN ||
+            color.getColorSpace() instanceof PDICCBased)
+        {
+            writeOperator("scn");
+        }
+        else
+        {
+            writeOperator("sc");
+        }
+    }
+
+    /**
+     * Set the non-stroking color using an AWT color. Conversion uses the default sRGB color space.
+     *
+     * @param color The color to set.
+     * @throws IOException If an IO error occurs while writing to the stream.
+     */
+    public void setNonStrokingColor(Color color) throws IOException
+    {
+        float[] components = new float[] {
+                color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f };
+        PDColor pdColor = new PDColor(components, PDDeviceRGB.INSTANCE);
+        setNonStrokingColor(pdColor);
+    }
+
+    /**
+     * Set the color components of current non-stroking color space.
      *
      * @param components The components to set for the current color.
      * @throws IOException If there is an error while writing to the stream.
+     * @deprecated Use {@link #setNonStrokingColor(PDColor)} instead.
      */
+    @Deprecated
     public void setNonStrokingColor(float[] components) throws IOException
     {
+        if (nonStrokingColorSpaceStack.isEmpty())
+        {
+            throw new IllegalStateException("The color space must be set before setting a color");
+        }
+
         for (int i = 0; i < components.length; i++)
         {
             writeOperand(components[i]);
         }
+
+        PDColorSpace currentNonStrokingColorSpace = nonStrokingColorSpaceStack.peek();
 
         if (currentNonStrokingColorSpace instanceof PDSeparation ||
             currentNonStrokingColorSpace instanceof PDPattern ||
@@ -1035,7 +1149,7 @@ public final class PDPageContentStream implements Closeable
     }
 
     /**
-     * Set the non stroking color, specified as RGB, 0-255.
+     * Set the non-stroking color in the DeviceRGB color space. Range is 0..255.
      *
      * @param r The red value.
      * @param g The green value.
@@ -1051,7 +1165,7 @@ public final class PDPageContentStream implements Closeable
     }
 
     /**
-     * Set the non stroking color, specified as CMYK, 0-255.
+     * Set the non-stroking color in the DeviceCMYK color space. Range is 0..255.
      *
      * @param c The cyan value.
      * @param m The magenta value.
@@ -1065,7 +1179,7 @@ public final class PDPageContentStream implements Closeable
     }
 
     /**
-     * Set the non stroking color, specified as CMYK, 0.0-1.0.
+     * Set the non-stroking color in the DeviceRGB color space. Range is 0..1.
      *
      * @param c The cyan value.
      * @param m The magenta value.
@@ -1083,7 +1197,7 @@ public final class PDPageContentStream implements Closeable
     }
 
     /**
-     * Set the non stroking color, specified as grayscale, 0-255.
+     * Set the non-stroking color in the DeviceGray color space. Range is 0..255.
      *
      * @param g The gray value.
      * @throws IOException If an IO error occurs while writing to the stream.
@@ -1094,7 +1208,7 @@ public final class PDPageContentStream implements Closeable
     }
 
     /**
-     * Set the non stroking color, specified as Grayscale 0.0-1.0.
+     * Set the non-stroking color in the DeviceGray color space. Range is 0..255.
      *
      * @param g The gray value.
      * @throws IOException If an IO error occurs while writing to the stream.
@@ -1419,6 +1533,11 @@ public final class PDPageContentStream implements Closeable
      */
     public void shadingFill(PDShading shading) throws IOException
     {
+        if (inTextMode)
+        {
+            throw new IOException("Error: shadingFill is not allowed within a text block.");
+        }
+
         writeOperand(resources.add(shading));
         writeOperator("sh");
     }
@@ -1751,8 +1870,5 @@ public final class PDPageContentStream implements Closeable
             }
         }
         output.close();
-        currentNonStrokingColorSpace = null;
-        currentStrokingColorSpace = null;
-        resources = null;
     }
 }
