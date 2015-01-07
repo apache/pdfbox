@@ -240,34 +240,14 @@ public class LayerUtility
         PDOptionalContentGroup layer = new PDOptionalContentGroup(layerName);
         ocprops.addGroup(layer);
 
-        PDResources resources = targetPage.getResources();
-        /*PDPropertyList props = resources.getProperties();
-        if (props == null)
-        {
-            props = new PDPropertyList();
-            resources.setProperties(props);
-        }*/
-
-        //Find first free resource name with the pattern "MC<index>"
-        int index = 0;
-        PDOptionalContentGroup ocg;
-        COSName resourceName;
-        do
-        {
-            resourceName = COSName.getPDFName("MC" + index);
-            index++;
-        } while (resources.getProperties(resourceName) != null);
-        //Put mapping for our new layer/OCG
-        resources.put(resourceName, layer);
-
         PDPageContentStream contentStream = new PDPageContentStream(
                 targetDoc, targetPage, true, !DEBUG);
-        contentStream.beginMarkedContentSequence(COSName.OC, resourceName);
+        contentStream.beginMarkedContent(COSName.OC, layer);
         contentStream.saveGraphicsState();
         contentStream.transform(new Matrix(transform));
         contentStream.drawForm(form);
         contentStream.restoreGraphicsState();
-        contentStream.endMarkedContentSequence();
+        contentStream.endMarkedContent();
         contentStream.close();
 
         return layer;

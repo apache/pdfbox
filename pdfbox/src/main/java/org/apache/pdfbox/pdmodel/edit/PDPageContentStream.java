@@ -44,6 +44,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.COSStreamArray;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDPropertyList;
 import org.apache.pdfbox.pdmodel.font.PDCIDFontType2;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
@@ -1226,7 +1227,7 @@ public final class PDPageContentStream implements Closeable
      * @param y The lower left y coordinate.
      * @param width The width of the rectangle.
      * @param height The height of the rectangle.
-     * @throws IOException If there is an error while drawing on the screen.
+     * @throws IOException If the content stream could not be written.
      */
     public void addRect(float x, float y, float width, float height) throws IOException
     {
@@ -1249,7 +1250,9 @@ public final class PDPageContentStream implements Closeable
      * @param width The width of the rectangle.
      * @param height The height of the rectangle.
      * @throws IOException If there is an error while drawing on the screen.
+     * @deprecated Use {@link #addRect} followed by {@link #fill()} instead.
      */
+    @Deprecated
     public void fillRect(float x, float y, float width, float height) throws IOException
     {
         if (inTextMode)
@@ -1257,7 +1260,7 @@ public final class PDPageContentStream implements Closeable
             throw new IOException("Error: fillRect is not allowed within a text block.");
         }
         addRect(x, y, width, height);
-        fill(PathIterator.WIND_NON_ZERO);
+        fill();
     }
 
     /**
@@ -1270,12 +1273,31 @@ public final class PDPageContentStream implements Closeable
      * @param x3 x coordinate of the point 3
      * @param y3 y coordinate of the point 3
      * @throws IOException If there is an error while adding the .
+     * @deprecated Use {@link #curveTo} instead.
      */
+    @Deprecated
     public void addBezier312(float x1, float y1, float x2, float y2, float x3, float y3) throws IOException
+    {
+        curveTo(x1, y1, x2, y2, x3, y3);
+    }
+
+    /**
+     * Append a cubic Bézier curve to the current path. The curve extends from the current point to
+     * the point (x3, y3), using (x1, y1) and (x2, y2) as the Bézier control points.
+     *
+     * @param x1 x coordinate of the point 1
+     * @param y1 y coordinate of the point 1
+     * @param x2 x coordinate of the point 2
+     * @param y2 y coordinate of the point 2
+     * @param x3 x coordinate of the point 3
+     * @param y3 y coordinate of the point 3
+     * @throws IOException If the content stream could not be written.
+     */
+    public void curveTo(float x1, float y1, float x2, float y2, float x3, float y3) throws IOException
     {
         if (inTextMode)
         {
-            throw new IOException("Error: addBezier312 is not allowed within a text block.");
+            throw new IOException("Error: curveTo is not allowed within a text block.");
         }
         writeOperand(x1);
         writeOperand(y1);
@@ -1288,18 +1310,36 @@ public final class PDPageContentStream implements Closeable
 
     /**
      * Append a cubic Bézier curve to the current path. The curve extends from the current
-     * point to the point (x3 , y3 ), using the current point and (x2 , y2 ) as the Bézier control points
+     * point to the point (x3 , y3 ), using the current point and (x2 , y2 ) as the Bézier control points/
+     *
      * @param x2 x coordinate of the point 2
      * @param y2 y coordinate of the point 2
      * @param x3 x coordinate of the point 3
      * @param y3 y coordinate of the point 3
      * @throws IOException If there is an error while adding the .
+     * @deprecated Use {@link #curveTo2} instead.
      */
+    @Deprecated
     public void addBezier32(float x2, float y2, float x3, float y3) throws IOException
+    {
+        curveTo2(x2, y2, x3, y3);
+    }
+
+    /**
+     * Append a cubic Bézier curve to the current path. The curve extends from the current point to
+     * the point (x3, y3), using the current point and (x2, y2) as the Bézier control points.
+     *
+     * @param x2 x coordinate of the point 2
+     * @param y2 y coordinate of the point 2
+     * @param x3 x coordinate of the point 3
+     * @param y3 y coordinate of the point 3
+     * @throws IOException If the content stream could not be written.
+     */
+    public void curveTo2(float x2, float y2, float x3, float y3) throws IOException
     {
         if (inTextMode)
         {
-            throw new IOException("Error: addBezier32 is not allowed within a text block.");
+            throw new IOException("Error: curveTo2 is not allowed within a text block.");
         }
         writeOperand(x2);
         writeOperand(y2);
@@ -1310,18 +1350,36 @@ public final class PDPageContentStream implements Closeable
 
     /**
      * Append a cubic Bézier curve to the current path. The curve extends from the current
-     * point to the point (x3 , y3 ), using (x1 , y1 ) and (x3 , y3 ) as the Bézier control points
+     * point to the point (x3 , y3 ), using (x1 , y1 ) and (x3 , y3 ) as the Bézier control points/
+     *
      * @param x1 x coordinate of the point 1
      * @param y1 y coordinate of the point 1
      * @param x3 x coordinate of the point 3
      * @param y3 y coordinate of the point 3
      * @throws IOException If there is an error while adding the .
+     * @deprecated Use {@link #curveTo1} instead.
      */
+    @Deprecated
     public void addBezier31(float x1, float y1, float x3, float y3) throws IOException
+    {
+        curveTo1(x1, y1, x3, y3);
+    }
+
+    /**
+     * Append a cubic Bézier curve to the current path. The curve extends from the current point to
+     * the point (x3, y3), using (x1, y1) and (x3, y3) as the Bézier control points.
+     *
+     * @param x1 x coordinate of the point 1
+     * @param y1 y coordinate of the point 1
+     * @param x3 x coordinate of the point 3
+     * @param y3 y coordinate of the point 3
+     * @throws IOException If the content stream could not be written.
+     */
+    public void curveTo1(float x1, float y1, float x3, float y3) throws IOException
     {
         if (inTextMode)
         {
-            throw new IOException("Error: addBezier31 is not allowed within a text block.");
+            throw new IOException("Error: curveTo1 is not allowed within a text block.");
         }
         writeOperand(x1);
         writeOperand(y1);
@@ -1331,11 +1389,11 @@ public final class PDPageContentStream implements Closeable
     }
 
     /**
-     * Add a line to the given coordinate.
+     * Move the current position to the given coordinates.
      *
      * @param x The x coordinate.
      * @param y The y coordinate.
-     * @throws IOException If there is an error while adding the line.
+     * @throws IOException If the content stream could not be written.
      */
     public void moveTo(float x, float y) throws IOException
     {
@@ -1349,11 +1407,11 @@ public final class PDPageContentStream implements Closeable
     }
 
     /**
-     * Add a move to the given coordinate.
+     * Draw a line from the current position to the the given coordinates.
      *
      * @param x The x coordinate.
      * @param y The y coordinate.
-     * @throws IOException If there is an error while adding the line.
+     * @throws IOException If the content stream could not be written.
      */
     public void lineTo(float x, float y) throws IOException
     {
@@ -1374,16 +1432,16 @@ public final class PDPageContentStream implements Closeable
      * @param xEnd The end x coordinate.
      * @param yEnd The end y coordinate.
      * @throws IOException If there is an error while adding the line.
+     * @deprecated Use {@link #moveTo} followed by {@link #lineTo}.
      */
+    @Deprecated
     public void addLine(float xStart, float yStart, float xEnd, float yEnd) throws IOException
     {
         if (inTextMode)
         {
             throw new IOException("Error: addLine is not allowed within a text block.");
         }
-        // moveTo
         moveTo(xStart, yStart);
-        // lineTo
         lineTo(xEnd, yEnd);
     }
 
@@ -1395,15 +1453,17 @@ public final class PDPageContentStream implements Closeable
      * @param xEnd The end x coordinate.
      * @param yEnd The end y coordinate.
      * @throws IOException If there is an error while drawing on the screen.
+     * @deprecated Use {@link #moveTo} followed by {@link #lineTo} followed by {@link #stroke}.
      */
+    @Deprecated
     public void drawLine(float xStart, float yStart, float xEnd, float yEnd) throws IOException
     {
         if (inTextMode)
         {
             throw new IOException("Error: drawLine is not allowed within a text block.");
         }
-        addLine(xStart, yStart, xEnd, yEnd);
-        // stroke
+        moveTo(xStart, yStart);
+        lineTo(xEnd, yEnd);
         stroke();
     }
 
@@ -1412,7 +1472,9 @@ public final class PDPageContentStream implements Closeable
      * @param x x coordinate of each points
      * @param y y coordinate of each points
      * @throws IOException If there is an error while drawing on the screen.
+     * @deprecated Use {@link #moveTo} and {@link #lineTo} methods instead.
      */
+    @Deprecated
     public void addPolygon(float[] x, float[] y) throws IOException
     {
         if (inTextMode)
@@ -1442,7 +1504,9 @@ public final class PDPageContentStream implements Closeable
      * @param x x coordinate of each points
      * @param y y coordinate of each points
      * @throws IOException If there is an error while drawing on the screen.
+     * @deprecated Use {@link #moveTo} and {@link #lineTo} methods instead.
      */
+    @Deprecated
     public void drawPolygon(float[] x, float[] y) throws IOException
     {
         if (inTextMode)
@@ -1458,7 +1522,9 @@ public final class PDPageContentStream implements Closeable
      * @param x x coordinate of each points
      * @param y y coordinate of each points
      * @throws IOException If there is an error while drawing on the screen.
+     * @deprecated Use {@link #moveTo} and {@link #lineTo} methods instead.
      */
+    @Deprecated
     public void fillPolygon(float[] x, float[] y) throws IOException
     {
         if (inTextMode)
@@ -1466,13 +1532,13 @@ public final class PDPageContentStream implements Closeable
             throw new IOException("Error: fillPolygon is not allowed within a text block.");
         }
         addPolygon(x, y);
-        fill(PathIterator.WIND_NON_ZERO);
+        fill();
     }
 
     /**
      * Stroke the path.
      * 
-     * @throws IOException If there is an error while stroking the path.
+     * @throws IOException If the content stream could not be written
      */
     public void stroke() throws IOException
     {
@@ -1486,7 +1552,7 @@ public final class PDPageContentStream implements Closeable
     /**
      * Close and stroke the path.
      * 
-     * @throws IOException If there is an error while closing and stroking the path.
+     * @throws IOException If the content stream could not be written
      */
     public void closeAndStroke() throws IOException
     {
@@ -1500,29 +1566,53 @@ public final class PDPageContentStream implements Closeable
     /**
      * Fill the path.
      * 
-     * @param windingRule the winding rule to be used for filling 
-     * 
-     * @throws IOException If there is an error while filling the path.
+     * @param windingRule the winding rule to be used for filling
+     * @throws IOException If the content stream could not be written
+     * @deprecated Use {@link #fill()} or {@link #fillEvenOdd} instead.
      */
+    @Deprecated
     public void fill(int windingRule) throws IOException
     {
-        if (inTextMode)
-        {
-            throw new IOException("Error: fill is not allowed within a text block.");
-        }
         if (windingRule == PathIterator.WIND_NON_ZERO)
         {
-            writeOperator("f");
+            fill();
         }
         else if (windingRule == PathIterator.WIND_EVEN_ODD)
         {
-            writeOperator("f*");
+            fillEvenOdd();
         }
         else
         {
             throw new IOException("Error: unknown value for winding rule");
         }
+    }
 
+    /**
+     * Fills the path using the nonzero winding rule.
+     *
+     * @throws IOException If the content stream could not be written
+     */
+    public void fill() throws IOException
+    {
+        if (inTextMode)
+        {
+            throw new IOException("Error: fill is not allowed within a text block.");
+        }
+        writeOperator("f");
+    }
+
+    /**
+     * Fills the path using the even-odd winding rule.
+     *
+     * @throws IOException If the content stream could not be written
+     */
+    public void fillEvenOdd() throws IOException
+    {
+        if (inTextMode)
+        {
+            throw new IOException("Error: fill is not allowed within a text block.");
+        }
+        writeOperator("f*");
     }
 
     /**
@@ -1543,15 +1633,27 @@ public final class PDPageContentStream implements Closeable
     }
 
     /**
-     * Close subpath.
+     * Closes the current subpath.
      * 
-     * @throws IOException If there is an error while closing the subpath.
+     * @throws IOException If the content stream could not be written
+     * @deprecated Use {@link #closePath()} instead.
      */
+    @Deprecated
     public void closeSubPath() throws IOException
+    {
+        closePath();
+    }
+
+    /**
+     * Closes the current subpath.
+     *
+     * @throws IOException If the content stream could not be written
+     */
+    public void closePath() throws IOException
     {
         if (inTextMode)
         {
-            throw new IOException("Error: closeSubPath is not allowed within a text block.");
+            throw new IOException("Error: closePath is not allowed within a text block.");
         }
         writeOperator("h");
     }
@@ -1560,9 +1662,10 @@ public final class PDPageContentStream implements Closeable
      * Clip path.
      * 
      * @param windingRule the winding rule to be used for clipping
-     *  
      * @throws IOException If there is an error while clipping the path.
+     * @deprecated Use {@link #clip()} or {@link #clipEvenOdd} instead.
      */
+    @Deprecated
     public void clipPath(int windingRule) throws IOException
     {
         if (inTextMode)
@@ -1585,10 +1688,40 @@ public final class PDPageContentStream implements Closeable
     }
 
     /**
-     * Set linewidth to the given value.
+     * Intersects the current clipping path with the current path, using the nonzero rule.
+     *
+     * @throws IOException If the content stream could not be written
+     */
+    public void clip() throws IOException
+    {
+        if (inTextMode)
+        {
+            throw new IOException("Error: clip is not allowed within a text block.");
+        }
+        writeOperator("W");
+        writeOperator("n"); // end path without filling or stroking
+    }
+
+    /**
+     * Intersects the current clipping path with the current path, using the even-odd rule.
+     *
+     * @throws IOException If the content stream could not be written
+     */
+    public void clipEvenOdd() throws IOException
+    {
+        if (inTextMode)
+        {
+            throw new IOException("Error: clipEvenOdd is not allowed within a text block.");
+        }
+        writeOperator("W*");
+        writeOperator("n"); // end path without filling or stroking
+    }
+
+    /**
+     * Set line width to the given value.
      *
      * @param lineWidth The width which is used for drwaing.
-     * @throws IOException If there is an error while drawing on the screen.
+     * @throws IOException If the content stream could not be written
      */
     public void setLineWidth(float lineWidth) throws IOException
     {
@@ -1602,8 +1735,9 @@ public final class PDPageContentStream implements Closeable
 
     /**
      * Set the line join style.
+     *
      * @param lineJoinStyle 0 for miter join, 1 for round join, and 2 for bevel join.
-     * @throws IOException If there is an error while writing to the stream.
+     * @throws IOException If the content stream could not be written.
      */
     public void setLineJoinStyle(int lineJoinStyle) throws IOException
     {
@@ -1624,8 +1758,9 @@ public final class PDPageContentStream implements Closeable
 
     /**
      * Set the line cap style.
+     *
      * @param lineCapStyle 0 for butt cap, 1 for round cap, and 2 for projecting square cap.
-     * @throws IOException If there is an error while writing to the stream.
+     * @throws IOException If the content stream could not be written.
      */
     public void setLineCapStyle(int lineCapStyle) throws IOException
     {
@@ -1646,9 +1781,10 @@ public final class PDPageContentStream implements Closeable
 
     /**
      * Set the line dash pattern.
+     *
      * @param pattern The pattern array
      * @param phase The phase of the pattern
-     * @throws IOException If there is an error while writing to the stream.
+     * @throws IOException If the content stream could not be written.
      */
     public void setLineDashPattern(float[] pattern, float phase) throws IOException
     {
@@ -1668,10 +1804,24 @@ public final class PDPageContentStream implements Closeable
 
     /**
      * Begin a marked content sequence.
+     *
      * @param tag the tag
      * @throws IOException if an I/O error occurs
+     * @deprecated Use {@link #beginMarkedContent} instead.
      */
+    @Deprecated
     public void beginMarkedContentSequence(COSName tag) throws IOException
+    {
+        beginMarkedContent(tag);
+    }
+
+    /**
+     * Begin a marked content sequence.
+     *
+     * @param tag the tag
+     * @throws IOException If the content stream could not be written
+     */
+    public void beginMarkedContent(COSName tag) throws IOException
     {
         writeOperand(tag);
         writeOperator("BMC");
@@ -1680,10 +1830,13 @@ public final class PDPageContentStream implements Closeable
     /**
      * Begin a marked content sequence with a reference to an entry in the page resources'
      * Properties dictionary.
+     *
      * @param tag the tag
      * @param propsName the properties reference
      * @throws IOException if an I/O error occurs
+     * @deprecated Use {@link #beginMarkedContent(COSName, PDPropertyList)} instead.
      */
+    @Deprecated
     public void beginMarkedContentSequence(COSName tag, COSName propsName) throws IOException
     {
         writeOperand(tag);
@@ -1692,10 +1845,38 @@ public final class PDPageContentStream implements Closeable
     }
 
     /**
-     * End a marked content sequence.
-     * @throws IOException if an I/O error occurs
+     * Begin a marked content sequence with a reference to an entry in the page resources'
+     * Properties dictionary.
+     *
+     * @param tag the tag
+     * @param propertyList property list
+     * @throws IOException If the content stream could not be written
      */
+    public void beginMarkedContent(COSName tag, PDPropertyList propertyList) throws IOException
+    {
+        writeOperand(tag);
+        writeOperand(resources.add(propertyList));
+        writeOperator("BDC");
+    }
+
+    /**
+     * End a marked content sequence.
+     *
+     * @throws IOException If the content stream could not be written
+     * @deprecated Use {@link #endMarkedContent} instead.
+     */
+    @Deprecated
     public void endMarkedContentSequence() throws IOException
+    {
+        endMarkedContent();
+    }
+
+    /**
+     * End a marked content sequence.
+     *
+     * @throws IOException If the content stream could not be written
+     */
+    public void endMarkedContent() throws IOException
     {
         writeOperator("EMC");
     }
