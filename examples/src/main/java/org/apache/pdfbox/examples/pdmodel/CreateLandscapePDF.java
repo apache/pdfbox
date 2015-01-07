@@ -18,6 +18,7 @@ package org.apache.pdfbox.examples.pdmodel;
 
 import java.io.IOException;
 
+import org.apache.pdfbox.contentstream.PDContentStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -79,11 +80,23 @@ public class CreateLandscapePDF
             contentStream.newLineAtOffset(100, 100);
             contentStream.showText(message);
             contentStream.endText();
-            
-            contentStream.drawLine(startX-2, startY-2, startX-2, startY+200+fontSize);
-            contentStream.drawLine(startX-2, startY+200+fontSize, startX+100+stringWidth+2, startY+200+fontSize);
-            contentStream.drawLine(startX+100+stringWidth+2, startY+200+fontSize, startX+100+stringWidth+2, startY-2);
-            contentStream.drawLine(startX+100+stringWidth+2, startY-2, startX-2, startY-2);
+
+            contentStream.moveTo(startX-2, startY-2);
+            contentStream.lineTo(startX-2, startY+200+fontSize);
+            contentStream.stroke();
+
+            contentStream.moveTo(startX-2, startY+200+fontSize);
+            contentStream.lineTo(startX+100+stringWidth+2, startY+200+fontSize);
+            contentStream.stroke();
+
+            contentStream.moveTo(startX+100+stringWidth+2, startY+200+fontSize);
+            contentStream.lineTo(startX+100+stringWidth+2, startY-2);
+            contentStream.stroke();
+
+            contentStream.moveTo(startX+100+stringWidth+2, startY-2);
+            contentStream.lineTo(startX-2, startY-2);
+            contentStream.stroke();
+
             contentStream.close();
 
             doc.save( outfile );
