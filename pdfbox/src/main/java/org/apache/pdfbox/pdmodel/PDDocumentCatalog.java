@@ -544,5 +544,14 @@ public class PDDocumentCatalog implements COSObjectable
     public void setOCProperties(PDOptionalContentProperties ocProperties)
     {
         root.setItem(COSName.OCPROPERTIES, ocProperties);
+
+        // optional content groups require PDF 1.5
+        if (ocProperties != null)
+        {
+            if (document.getDocument().getVersion() < 1.5)
+            {
+                document.getDocument().setVersion(1.5);
+            }
+        }
     }
 }

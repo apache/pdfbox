@@ -73,11 +73,7 @@ public class TestLayerUtility extends TestCase
             PDPage targetPage = targetDoc.getPage(0);
             layerUtil.wrapInSaveRestore(targetPage);
             AffineTransform at = new AffineTransform();
-            PDOptionalContentGroup ocg = layerUtil.appendFormAsLayer(
-                    targetPage, form, at, "overlay");
-
-            //This is how the layer could be disabled after adding it
-            //catalog.getOCProperties().setGroupEnabled(ocg.getName(), false);
+            layerUtil.appendFormAsLayer(targetPage, form, at, "overlay");
 
             targetDoc.save(targetFile.getAbsolutePath());
         }
@@ -93,13 +89,11 @@ public class TestLayerUtility extends TestCase
             PDDocumentCatalog catalog = doc.getDocumentCatalog();
 
             //OCGs require PDF 1.5 or later
-            //TODO need some comfortable way to enable/check the PDF version
-            //assertEquals("%PDF-1.5", doc.getDocument().getHeaderString());
-            //assertEquals("1.5", catalog.getVersion());
+            assertEquals("%PDF-1.5", doc.getDocument().getHeaderString());
 
             PDPage page = doc.getPage(0);
             PDOptionalContentGroup ocg = (PDOptionalContentGroup)page.getResources()
-                    .getProperties(COSName.getPDFName("MC0"));
+                    .getProperties(COSName.getPDFName("oc1"));
             assertNotNull(ocg);
             assertEquals("overlay", ocg.getName());
 

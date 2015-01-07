@@ -261,14 +261,14 @@ public class COSDocument extends COSBase implements Closeable
      *
      * @param versionValue The version of the PDF document.
      */
-    public void setVersion( float versionValue )
+    public void setVersion( double versionValue )
     {
         // update header string
         if (versionValue != version) 
         {
             headerString = headerString.replaceFirst(String.valueOf(version), String.valueOf(versionValue));
         }
-        version = versionValue;
+        version = (float)versionValue;
     }
 
     /**

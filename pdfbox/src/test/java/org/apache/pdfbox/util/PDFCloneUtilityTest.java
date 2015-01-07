@@ -67,15 +67,18 @@ public class PDFCloneUtilityTest extends TestCase
         srcDoc.addPage(pdPage);
         PDPageContentStream pdPageContentStream1 = new PDPageContentStream(srcDoc, pdPage, true, false);
         pdPageContentStream1.setNonStrokingColor(Color.black);
-        pdPageContentStream1.fillRect(100, 600, 300, 100);
+        pdPageContentStream1.addRect(100, 600, 300, 100);
+        pdPageContentStream1.fill();
         pdPageContentStream1.close();
         PDPageContentStream pdPageContentStream2 = new PDPageContentStream(srcDoc, pdPage, true, false);
         pdPageContentStream2.setNonStrokingColor(Color.red);
-        pdPageContentStream2.fillRect(100, 500, 300, 100);
+        pdPageContentStream2.addRect(100, 500, 300, 100);
+        pdPageContentStream2.fill();
         pdPageContentStream2.close();
         PDPageContentStream pdPageContentStream3 = new PDPageContentStream(srcDoc, pdPage, true, false);
         pdPageContentStream3.setNonStrokingColor(Color.yellow);
-        pdPageContentStream3.fillRect(100, 400, 300, 100);
+        pdPageContentStream3.addRect(100, 400, 300, 100);
+        pdPageContentStream3.fill();
         pdPageContentStream3.close();
 
         srcDoc.save(TESTDIR + CLONESRC);

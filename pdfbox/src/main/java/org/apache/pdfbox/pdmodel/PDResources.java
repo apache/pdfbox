@@ -28,6 +28,7 @@ import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDPropertyLis
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontFactory;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
+import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentGroup;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDAbstractPattern;
@@ -344,7 +345,14 @@ public final class PDResources implements COSObjectable
      */
     public COSName add(PDPropertyList properties)
     {
-        return add(COSName.PROPERTIES, "Prop", properties);
+        if (properties instanceof PDOptionalContentGroup)
+        {
+            return add(COSName.PROPERTIES, "oc", properties);
+        }
+        else
+        {
+            return add(COSName.PROPERTIES, "Prop", properties);
+        }
     }
 
     /**
