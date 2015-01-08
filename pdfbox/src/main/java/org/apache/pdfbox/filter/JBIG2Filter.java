@@ -84,7 +84,7 @@ public class JBIG2Filter implements Filter
         }
         ImageInputStream iis = ImageIO.createImageInputStream(compressedData);
         reader.setInput(iis);
-        BufferedImage bi = reader.read(0);
+        BufferedImage bi = reader.read(0, reader.getDefaultReadParam());
         iis.close();
         reader.dispose();
         if ( bi != null )
