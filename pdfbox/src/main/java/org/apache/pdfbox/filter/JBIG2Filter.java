@@ -85,7 +85,7 @@ final class JBIG2Filter extends Filter
             BufferedImage image;
             try
             {
-                image = reader.read(0);
+                image = reader.read(0, reader.getDefaultReadParam());
             }
             catch (Exception e)
             {
