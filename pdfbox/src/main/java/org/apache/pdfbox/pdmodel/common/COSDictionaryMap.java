@@ -212,9 +212,10 @@ public class COSDictionaryMap<K,V> implements Map<K,V>
     public static COSDictionary convert(Map<String, ?> someMap)
     {
         COSDictionary dic = new COSDictionary();
-        for (String name : someMap.keySet())
+        for (Entry<String, ?> entry : someMap.entrySet())
         {
-            COSObjectable object = (COSObjectable)someMap.get( name );
+            String name = entry.getKey();
+            COSObjectable object = (COSObjectable) entry.getValue();
             dic.setItem( COSName.getPDFName( name ), object.getCOSObject() );
         }
         return dic;
