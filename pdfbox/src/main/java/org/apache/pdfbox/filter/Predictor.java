@@ -127,7 +127,7 @@ public class Predictor
                             int avg = actline[p] & 0xff;
                             int left = p - bytesPerPixel >= 0 ? actline[p - bytesPerPixel] & 0xff : 0;
                             int up = lastline[p] & 0xff;
-                            actline[p] = (byte) ((avg + (int) Math.floor((left + up) / 2)) & 0xff);
+                            actline[p] = (byte) ((avg + (left + up) / 2) & 0xff);
                         }
                         break;
                     case 14:// PRED PAETH
