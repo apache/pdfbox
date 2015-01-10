@@ -238,9 +238,9 @@ public final class PDIndexed extends PDSpecialColorSpace
         int numComponents = baseColorSpace.getNumberOfComponents();
 
         // some tables are too short
-        if (lookupData.length / numComponents < maxIndex + 1f)
+        if (lookupData.length / numComponents < maxIndex + 1)
         {
-            maxIndex = (int)Math.floor(lookupData.length / numComponents) - 1;
+            maxIndex = lookupData.length / numComponents - 1;
         }
         actualMaxIndex = maxIndex;  // TODO "actual" is ugly, tidy this up
 
