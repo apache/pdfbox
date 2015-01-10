@@ -1962,9 +1962,10 @@ public class NonSequentialPDFParser extends PDFParser
         Map<COSObjectKey, Long> xrefOffset = xrefTrailerResolver.getXrefTable();
         if (xrefOffset != null)
         {
-            for (COSObjectKey objectKey : xrefOffset.keySet())
+            for (Entry<COSObjectKey, Long> objectEntry : xrefOffset.entrySet())
             {
-                Long objectOffset = xrefOffset.get(objectKey);
+                COSObjectKey objectKey = objectEntry.getKey();
+                Long objectOffset = objectEntry.getValue();
                 // a negative offset number represents a object number itself
                 // see type 2 entry in xref stream
                 if (objectOffset != null && objectOffset >= 0)
