@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
@@ -118,9 +119,10 @@ public class ExtractEmbeddedFiles
     private static void extractFiles(Map<String,COSObjectable> names, String filePath) 
             throws IOException
     {
-        for (String filename : names.keySet())
+        for (Entry<String,COSObjectable> entry : names.entrySet())
         {
-            PDComplexFileSpecification fileSpec = (PDComplexFileSpecification)names.get(filename);
+            String filename = entry.getKey();
+            PDComplexFileSpecification fileSpec = (PDComplexFileSpecification) entry.getValue();
             PDEmbeddedFile embeddedFile = getEmbeddedFile(fileSpec);
             extractFile(filePath, filename, embeddedFile);
         }
