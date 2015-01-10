@@ -38,9 +38,9 @@ public class Type1Encoding extends Encoding
         Map<Integer,String> codeToName = encoding.getCodeToNameMap();
         Type1Encoding enc = new Type1Encoding();
 
-        for (Integer code : codeToName.keySet())
+        for (Map.Entry<Integer, String> entry : codeToName.entrySet())
         {
-            enc.add(code, codeToName.get(code));
+            enc.add(entry.getKey(), entry.getValue());
         }
 
         return enc;
