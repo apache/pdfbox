@@ -94,7 +94,7 @@ public class COSObject extends COSBase
      *
      * @throws IOException If there is an error setting the updated object.
      */
-    public void setObject( COSBase object ) throws IOException
+    public final void setObject( COSBase object ) throws IOException
     {
         baseObject = object;
     }
