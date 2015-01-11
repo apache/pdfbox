@@ -141,14 +141,21 @@ public abstract class PDFieldTreeNode implements COSObjectable
      */
     protected void setInheritableAttribute(COSName key, COSBase value)
     {
-        PDFieldTreeNode attributesNode = getInheritableAttributesNode(this,key);
-        if (attributesNode != null)
+        if (value == null)
         {
-            attributesNode.getDictionary().setItem(key, value);
+            removeInheritableAttribute(key);
         } 
-        else
+        else 
         {
-            getDictionary().setItem(key, value);
+            PDFieldTreeNode attributesNode = getInheritableAttributesNode(this,key);
+            if (attributesNode != null)
+            {
+                attributesNode.getDictionary().setItem(key, value);
+            } 
+            else
+            {
+                getDictionary().setItem(key, value);
+            }
         }
     }  
     
