@@ -116,19 +116,6 @@ public class TestFields extends TestCase
             assertTrue( textBox.isComb() );
             textBox.setComb( true );
             assertTrue( textBox.isComb() );
-            
-            // assert that there is no value, set the field value and
-            // ensure it has been set
-            assertNull(textBox.getDictionary().getItem(COSName.V));
-            textBox.setValue("field value");
-            assertNotNull(textBox.getDictionary().getItem(COSName.V));
-            assertEquals(textBox.getValue(),"field value");
-            
-            // assert when setting to null the key has also been removed
-            assertNotNull(textBox.getDictionary().getItem(COSName.V));
-            textBox.setValue(null);
-            assertNull(textBox.getDictionary().getItem(COSName.V));
-            
         }
         finally
         {
@@ -157,8 +144,21 @@ public class TestFields extends TestCase
             PDAcroForm form = doc.getDocumentCatalog().getAcroForm();
             assertNotNull(form);
             
+            // assert that there is no value, set the field value and
+            // ensure it has been set 
+            PDFieldTreeNode field = form.getField("TextField");
+            assertNull(field.getDictionary().getItem(COSName.V));
+            field.setValue("field value");
+            assertNotNull(field.getDictionary().getItem(COSName.V));
+            assertEquals(field.getValue(),"field value");
+            
+            // assert when setting to null the key has also been removed
+            assertNotNull(field.getDictionary().getItem(COSName.V));
+            field.setValue(null);
+            assertNull(field.getDictionary().getItem(COSName.V));
+            
             // get the RadioButton with a DV entry
-            PDFieldTreeNode field = form.getField("RadioButtonGroup-DefaultValue");
+            field = form.getField("RadioButtonGroup-DefaultValue");
             assertNotNull(field);
             assertEquals(field.getDefaultValue(),COSName.getPDFName("RadioButton01"));
             assertEquals(field.getDefaultValue(),field.getDictionary().getDictionaryObject(COSName.DV));
