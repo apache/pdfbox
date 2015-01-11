@@ -201,6 +201,7 @@ public final class PDAppearanceString
     {
         value = apValue;
         Iterator<COSObjectable> widgetIter = widgets.iterator();
+        
         while (widgetIter.hasNext())
         {
             COSObjectable next = widgetIter.next();
@@ -258,9 +259,9 @@ public final class PDAppearanceString
                     // rectangles and such
                     ContentStreamWriter writer = new ContentStreamWriter(output);
                     writer.writeTokens(tokens);
-                    output.write(" /Tx BMC\n".getBytes("ISO-8859-1"));
+                    output.write("/Tx BMC\n".getBytes("ISO-8859-1"));
                     insertGeneratedAppearance(widget, output, pdFont, tokens, appearanceStream);
-                    output.write(" EMC".getBytes("ISO-8859-1"));
+                    output.write("EMC".getBytes("ISO-8859-1"));
                     writeToStream(output.toByteArray(), appearanceStream);
                 }
                 else
@@ -386,11 +387,10 @@ public final class PDAppearanceString
         if (!isMultiLineValue(value) || stringWidth > borderEdge.getWidth() - paddingLeft -
                 paddingRight)
         {
-            printWriter.print("<");
             printWriter.flush();
             // TODO use font's encoding
             COSWriter.writeString(value.getBytes(Charset.forName("ISO-8859-1")), output); 
-            printWriter.println("> Tj");
+            printWriter.println(" Tj");
         }
         else
         {
@@ -398,11 +398,10 @@ public final class PDAppearanceString
             for (int i = 0; i < paragraphs.length; i++)
             {
                 boolean lastLine = i == paragraphs.length - 1;
-                printWriter.print("<");
                 printWriter.flush();
                 // TODO use font's encoding
                 COSWriter.writeString(value.getBytes(Charset.forName("ISO-8859-1")), output);
-                printWriter.println(lastLine ? "> Tj\n" : "> Tj 0 -13 Td");
+                printWriter.println(lastLine ? " Tj\n" : "> Tj 0 -13 Td");
             }
         }
         printWriter.println("ET");
