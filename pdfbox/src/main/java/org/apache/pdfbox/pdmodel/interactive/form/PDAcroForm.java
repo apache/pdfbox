@@ -179,11 +179,16 @@ public class PDAcroForm implements COSObjectable
     }
 
     /**
-     * This will return all of the fields in the document.  The type
-     * will be a org.apache.pdfbox.pdmodel.field.PDField.
-     *
-     * @return A list of all the fields.
-     * @throws IOException If there is an error while getting the list of fields.
+     * This will return all of the documents root fields.
+     * 
+     * A field might have children that are fields (non-terminal field) or does not
+     * have children which are fields (terminal fields).
+     * 
+     * The fields within an AcroForm are organized in a tree structure. The documents root fields 
+     * might either be terminal fields, non-terminal fields or a mixture of both. Non-terminal fields
+     * mark branches which contents can be retrieved using {@link PDFieldTreeNode#getKids()}.
+     * 
+     * @return A list of the documents root fields.
      */
     public List getFields() throws IOException
     {
@@ -213,9 +218,9 @@ public class PDAcroForm implements COSObjectable
     }
 
     /**
-     * Set the fields that are part of this AcroForm.
+     * Set the documents root fields.
      *
-     * @param fields The fields that are part of this form.
+     * @param fields The fields that are part of the documents root fields.
      */
     public void setFields( List fields )
     {
