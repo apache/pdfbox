@@ -21,10 +21,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * FontFinder for native Windows platforms. This class is based on a class provided by Apache FOP. see
@@ -39,7 +36,7 @@ public class WindowsFontDirFinder implements FontDirFinder
      */
     private String getWinDir(String osName) throws IOException
     {
-        Process process = null;
+        Process process;
         Runtime runtime = Runtime.getRuntime();
         if (osName.startsWith("Windows 9"))
         {
@@ -59,6 +56,7 @@ public class WindowsFontDirFinder implements FontDirFinder
      * 
      * @return a list of detected font files
      */
+    @Override
     public List<File> find()
     {
         List<File> fontDirList = new java.util.ArrayList<File>();
@@ -83,8 +81,8 @@ public class WindowsFontDirFinder implements FontDirFinder
                 // should continue if this fails
             }
         }
-        File osFontsDir = null;
-        File psFontsDir = null;
+        File osFontsDir;
+        File psFontsDir;
         if (windir != null)
         {
             // remove any trailing '/'
