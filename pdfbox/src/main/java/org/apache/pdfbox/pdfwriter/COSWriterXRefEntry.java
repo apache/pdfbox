@@ -119,7 +119,7 @@ public class COSWriterXRefEntry implements Comparable<COSWriterXRefEntry>
      *
      * @param newOffset The new value for the offset.
      */
-    public void setOffset(long newOffset)
+    public final void setOffset(long newOffset)
     {
         offset = newOffset;
     }
