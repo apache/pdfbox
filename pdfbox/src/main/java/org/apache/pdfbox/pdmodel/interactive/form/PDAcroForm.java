@@ -46,7 +46,7 @@ import java.util.Map;
 public final class PDAcroForm implements COSObjectable
 {
     private static final int FLAG_SIGNATURES_EXIST = 1;
-    private static final int FLAG_APPEND_ONLY = 1;
+    private static final int FLAG_APPEND_ONLY = 1 << 1;
     
     private COSDictionary acroForm;
     private PDDocument document;
