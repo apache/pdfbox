@@ -32,6 +32,7 @@ public abstract class NativeFontDirFinder implements FontDirFinder
      * 
      * @return list of natively existing font directories {@inheritDoc}
      */
+    @Override
     public List<File> find()
     {
         List<File> fontDirList = new java.util.ArrayList<File>();
