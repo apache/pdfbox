@@ -21,6 +21,7 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.pdmodel.common.PDTextStream;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDVariableText;
 
@@ -49,11 +50,11 @@ public final class AppearanceGenerator
     {
         if (field instanceof PDVariableText)
         {
-
             PDAppearanceString pdAppearance = new PDAppearanceString(field.getAcroForm(),
                     (PDVariableText) field);
 
             Object fieldValue = null;
+            
             try
             {
                 fieldValue = field.getValue();
@@ -67,16 +68,27 @@ public final class AppearanceGenerator
             }
             
             // TODO: implement the handling for additional values.
-            if (fieldValue instanceof COSString)
+            if (fieldValue instanceof String)
             {
                 try
                 {
-                    pdAppearance.setAppearanceValue(((COSString) fieldValue).getString());
+                    pdAppearance.setAppearanceValue((String) fieldValue);
                 }
                 catch (IOException e)
                 {
                     LOG.debug("Unable to generate the field appearance.", e);
                 }
+            } 
+            else if (fieldValue instanceof PDTextStream)
+            {
+                try
+                {
+                    pdAppearance.setAppearanceValue(((PDTextStream) fieldValue).getAsString());
+                }
+                catch (IOException e)
+                {
+                    LOG.debug("Unable to generate the field appearance.", e);
+                }                
             }
             else if (fieldValue != null)
             {
