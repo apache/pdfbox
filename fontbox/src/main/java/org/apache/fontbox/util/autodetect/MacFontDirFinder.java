@@ -29,6 +29,7 @@ public class MacFontDirFinder extends NativeFontDirFinder
      * 
      * @return a array of possible font directory locations
      */
+    @Override
     protected String[] getSearchableDirectories()
     {
         return new String[] { System.getProperty("user.home") + "/Library/Fonts/", // user

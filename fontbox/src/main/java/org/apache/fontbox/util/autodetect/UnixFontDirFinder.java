@@ -29,6 +29,7 @@ public class UnixFontDirFinder extends NativeFontDirFinder
      * 
      * @return a list of possible font locations
      */
+    @Override
     protected String[] getSearchableDirectories()
     {
         return new String[] { System.getProperty("user.home") + "/.fonts", // user

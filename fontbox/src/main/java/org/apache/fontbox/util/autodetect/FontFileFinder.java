@@ -18,10 +18,8 @@
 package org.apache.fontbox.util.autodetect;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Helps to autodetect/locate available operating system fonts. This class is based on a class provided by Apache FOP.

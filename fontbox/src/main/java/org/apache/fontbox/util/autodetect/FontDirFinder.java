@@ -19,7 +19,6 @@ package org.apache.fontbox.util.autodetect;
 
 import java.io.File;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Implementers provide find method for searching native operating system for available fonts.
