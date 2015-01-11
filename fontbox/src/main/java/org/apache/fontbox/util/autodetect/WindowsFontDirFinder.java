@@ -48,7 +48,9 @@ public class WindowsFontDirFinder implements FontDirFinder
         }
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(
                 process.getInputStream()));
-        return bufferedReader.readLine();
+        String winDir = bufferedReader.readLine();
+        bufferedReader.close();
+        return winDir;
     }
 
     /**
