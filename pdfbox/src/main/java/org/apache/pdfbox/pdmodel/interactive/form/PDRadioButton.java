@@ -119,7 +119,54 @@ public final class PDRadioButton extends PDButton
             setInheritableAttribute(COSName.DV, COSName.getPDFName(defaultValue));
         }
     }
-
+    
+    /**
+     * This will get the export value.
+     * <p>
+     * A RadioButton might have an export value to allow field values
+     * which can not be encoded as PDFDocEncoding or for the same export value 
+     * being assigned to multiple RadioButtons in a group.<br/>
+     * To define an export value the RadioButton must define options {@link #setOptions(List)}
+     * which correspond to the individual items within the RadioButton.</p>
+     * <p>
+     * The method will either return the value from the options entry or in case there
+     * is no such entry the fields value</p>
+     * 
+     * @return the export value of the field.
+     * @throws IOException in case the fields value can not be retrieved
+     */
+    public String getExportValue() throws IOException
+    {
+        List<String> options = getOptions();
+        if (options.size() == 0)
+        {
+            return getValue();
+        }
+        else
+        {
+            String fieldValue = getValue();
+            List<COSObjectable> kids = getKids();
+            int idx = 0;
+            for (COSObjectable kid : kids)
+            {
+                if (kid instanceof PDCheckbox)
+                {
+                    PDCheckbox btn = (PDCheckbox) kid;
+                    if (btn.getOnValue().equals(fieldValue))
+                    {
+                        break;
+                    }
+                    idx++;
+                }
+            }
+            if (idx <= options.size())
+            {
+                return options.get(idx);
+            }
+        }
+        return null;
+    }
+    
     /**
      * This will get the option values - the "Opt" entry.
      * 
