@@ -160,8 +160,9 @@ public class TestFields extends TestCase
             // get the RadioButton with a DV entry
             field = form.getField("RadioButtonGroup-DefaultValue");
             assertNotNull(field);
-            assertEquals(field.getDefaultValue(),COSName.getPDFName("RadioButton01"));
-            assertEquals(field.getDefaultValue(),field.getDictionary().getDictionaryObject(COSName.DV));
+            assertEquals(field.getDefaultValue(),"RadioButton01");
+            assertEquals(COSName.getPDFName((String)field.getDefaultValue()),
+                    field.getDictionary().getDictionaryObject(COSName.DV));
 
             // get the Checkbox with a DV entry
             field = form.getField("Checkbox-DefaultValue");

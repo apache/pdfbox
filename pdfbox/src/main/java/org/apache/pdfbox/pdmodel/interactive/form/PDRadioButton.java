@@ -22,7 +22,6 @@ import java.util.List;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 /**
@@ -33,6 +32,16 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 public final class PDRadioButton extends PDButton
 {
 
+    /**
+     * @see PDFieldTreeNode#PDFieldTreeNode(PDAcroForm)
+     *
+     * @param theAcroForm The acroform.
+     */
+    public PDRadioButton(PDAcroForm theAcroForm)
+    {
+        super( theAcroForm );
+    }
+    
     /**
      * Constructor.
      * 
@@ -69,13 +78,13 @@ public final class PDRadioButton extends PDButton
 
     
     @Override
-    public COSName getDefaultValue() throws IOException
+    public String getDefaultValue() throws IOException
     {
         COSBase attribute = getInheritableAttribute(COSName.DV);
 
         if (attribute instanceof COSName)
         {
-            return (COSName) attribute;
+            return ((COSName) attribute).getName();
         }
         else
         {
@@ -103,7 +112,7 @@ public final class PDRadioButton extends PDButton
         }
         else
         {
-            setInheritableAttribute(COSName.DV, new COSString(defaultValue));
+            setInheritableAttribute(COSName.DV, COSName.getPDFName(defaultValue));
         }
     }
     

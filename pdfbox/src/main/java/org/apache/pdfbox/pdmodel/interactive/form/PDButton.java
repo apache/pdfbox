@@ -50,6 +50,17 @@ public abstract class PDButton extends PDField
      */
     public static final int FLAG_RADIOS_IN_UNISON = 1 << 25;
 
+    
+    /**
+     * @see PDField#PDField(PDAcroForm,COSDictionary)
+     *
+     * @param theAcroForm The acroform.
+     */
+    PDButton(PDAcroForm theAcroForm)
+    {
+        super( theAcroForm );
+    }
+    
     /**
      * Constructor.
      * 
