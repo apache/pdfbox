@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.examples.documentmanipulation;
 
-import java.awt.geom.AffineTransform;
 import java.io.File;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -37,7 +36,8 @@ public class SuperimposePage {
 
     public static void main(String[] args)
     {
-        try {
+        try
+        {
 
             // Create a new document with some basic content
             PDDocument aDoc = new PDDocument();
