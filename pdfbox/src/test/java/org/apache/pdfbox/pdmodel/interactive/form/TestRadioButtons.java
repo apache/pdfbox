@@ -81,6 +81,13 @@ public class TestRadioButtons extends TestCase
             PDAcroForm form = new PDAcroForm( doc );
             PDRadioButton radioButton = new PDRadioButton(form);
             
+            // test that there are no nulls returned for an empty field
+            // only specific methods are tested here
+            assertNotNull(radioButton.getDefaultValue());
+            assertNotNull(radioButton.getExportValue());
+            assertNotNull(radioButton.getOptions());
+            assertNotNull(radioButton.getValue());
+            
             // Test setting/getting option values - the dictionaries Opt entry
             List<String> options = new ArrayList<String>();
             options.add("Value01");

@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.interactive.form;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSArray;
@@ -80,13 +81,16 @@ public final class PDRadioButton extends PDButton
         return getDictionary().getFlag(COSName.FF, FLAG_RADIOS_IN_UNISON);
     }
 
-    
     @Override
     public String getDefaultValue() throws IOException
     {
         COSBase attribute = getInheritableAttribute(COSName.DV);
 
-        if (attribute instanceof COSName)
+        if (attribute == null)
+        {
+            return "";
+        }
+        else if (attribute instanceof COSName)
         {
             return ((COSName) attribute).getName();
         }
@@ -164,7 +168,7 @@ public final class PDRadioButton extends PDButton
                 return options.get(idx);
             }
         }
-        return null;
+        return "";
     }
     
     /**
@@ -196,7 +200,7 @@ public final class PDRadioButton extends PDButton
         {
             return COSArrayList.convertCOSStringCOSArrayToList((COSArray)value);
         }
-        return new ArrayList<String>();
+        return Collections.<String>emptyList();
     } 
     
     /**
@@ -221,8 +225,12 @@ public final class PDRadioButton extends PDButton
     public String getValue() throws IOException
     {
         COSBase attribute = getInheritableAttribute(COSName.V);
-
-        if (attribute instanceof COSName)
+        
+        if (attribute == null)
+        {
+            return "";
+        }
+        else if (attribute instanceof COSName)
         {
             return ((COSName) attribute).getName();
         }
