@@ -81,6 +81,12 @@ public class TestCheckBox extends TestCase
             PDAcroForm form = new PDAcroForm( doc );
             PDCheckbox checkBox = new PDCheckbox(form);
             
+            // test that there are no nulls returned for an empty field
+            // only specific methods are tested here
+            assertNotNull(checkBox.getDefaultValue());
+            assertNotNull(checkBox.getOptions());
+            assertNotNull(checkBox.getValue());
+            
             // Test setting/getting option values - the dictionaries Opt entry
             List<String> options = new ArrayList<String>();
             options.add("Value01");
