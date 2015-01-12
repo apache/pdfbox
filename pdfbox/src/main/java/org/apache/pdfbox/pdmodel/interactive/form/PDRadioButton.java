@@ -17,11 +17,15 @@
 package org.apache.pdfbox.pdmodel.interactive.form;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 /**
@@ -113,6 +117,56 @@ public final class PDRadioButton extends PDButton
         else
         {
             setInheritableAttribute(COSName.DV, COSName.getPDFName(defaultValue));
+        }
+    }
+
+    /**
+     * This will get the option values - the "Opt" entry.
+     * 
+     * <p>The option values are used to define the export values
+     * for the field to 
+     * <ul>
+     *  <li>hold values in non-Latin writing systems as name objects, which represent the field value, are limited
+     *      to PDFDocEncoding
+     *  </li>
+     *  <li>allow radio buttons having the same export value to be handled independently
+     *  </li>
+     * </ul>
+     * </p>
+     * 
+     * @return List containing all possible options. If there is no Opt entry an empty list will be returned.
+     */
+    public List<String> getOptions()
+    {
+        COSBase value = getInheritableAttribute(COSName.OPT);
+        if (value instanceof COSString)
+        {
+            List<String> array = new ArrayList<String>();
+            array.add(((COSString) value).getString());
+            return array;
+        }
+        else if (value instanceof COSArray)
+        {
+            return COSArrayList.convertCOSStringCOSArrayToList((COSArray)value);
+        }
+        return new ArrayList<String>();
+    } 
+    
+    /**
+     * This will set the options.
+     * 
+     * @see #getOptions()
+     * @param values List containing all possible options. Supplying null will remove the Opt entry.
+     */
+    public void setOptions(List<String> values)
+    {
+        if (values != null)
+        {
+            setInheritableAttribute(COSName.OPT, COSArrayList.convertStringListToCOSStringCOSArray(values));
+        }
+        else
+        {
+            removeInheritableAttribute(COSName.OPT);
         }
     }
     
