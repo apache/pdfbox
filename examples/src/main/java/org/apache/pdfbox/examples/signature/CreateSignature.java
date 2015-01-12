@@ -151,7 +151,7 @@ public class CreateSignature implements SignatureInterface
         FileOutputStream fos = new FileOutputStream(outFile);
 
         // sign
-        PDDocument doc = PDDocument.loadLegacy(inFile);
+        PDDocument doc = PDDocument.load(inFile);
         signDetached(doc, fos, tsaClient);
         doc.close();
     }
