@@ -37,6 +37,7 @@ import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
 import org.apache.pdfbox.pdfparser.BaseParser;
 import org.apache.pdfbox.pdfparser.NonSequentialPDFParser;
 import org.apache.pdfbox.pdfparser.PDFParser;
@@ -939,7 +940,9 @@ public class PDDocument implements Closeable
     {
         NonSequentialPDFParser parser = new NonSequentialPDFParser(file, password, keyStore, alias, useScratchFiles);
         parser.parse();
-        return parser.getPDDocument();
+        PDDocument doc = parser.getPDDocument();
+        doc.incrementalFile = file;
+        return doc;
     }
 
     /**
@@ -1079,32 +1082,15 @@ public class PDDocument implements Closeable
         }
     }
 
-    /**
-     * Save the pdf as incremental.
+   /**
+     * Save the PDF as an incremental update.
      *
-     * @deprecated Use {@link #saveIncremental(OutputStream output)} instead.
-     *
-     * @param fileName the filename to be used
-     * @throws IOException if the output could not be written
-     */
-    @Deprecated
-    public void saveIncremental(String fileName) throws IOException
-    {
-        saveIncremental(new BufferedInputStream(new FileInputStream(fileName)),
-                new BufferedOutputStream(new FileOutputStream(fileName, true)));
-    }
-
-    /**
-     * Save the PDF as an incremental update, explicitly providing the original input stream again.
-     *
-     * Use of this method is discouraged, use {@link #saveIncremental(OutputStream)} instead.
-     *
-     * @param input stream to read, must contain the same data used in the call to load().
      * @param output stream to write
      * @throws IOException if the output could not be written
      */
-    public void saveIncremental(InputStream input, OutputStream output) throws IOException
+    public void saveIncremental(OutputStream output) throws IOException
     {
+        InputStream input = new RandomAccessBufferedFileInputStream(incrementalFile);
         COSWriter writer = null;
         try
         {
@@ -1119,23 +1105,6 @@ public class PDDocument implements Closeable
                 writer.close();
             }
         }
-    }
-
-    /**
-     * Save the PDF as an incremental update, if it was loaded from a File.
-     * This method can only be used when the PDDocument was created by passing a File or filename
-     * to one of the load() constructors.
-     *
-     * @param output stream to write
-     * @throws IOException if the output could not be written
-     */
-    public void saveIncremental(OutputStream output) throws IOException
-    {
-        if (incrementalFile == null)
-        {
-            throw new IOException("PDDocument.load must be called with a File or String");
-        }
-        saveIncremental(new FileInputStream(incrementalFile), output);
     }
 
     /**
