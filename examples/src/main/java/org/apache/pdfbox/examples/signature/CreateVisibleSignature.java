@@ -126,7 +126,6 @@ public class CreateVisibleSignature implements SignatureInterface
             fos.write(buffer, 0, c);
         }
         fis.close();
-        fis = new FileInputStream(outputDocument);
 
         // load document
         PDDocument doc = PDDocument.loadLegacy(document);
@@ -169,7 +168,7 @@ public class CreateVisibleSignature implements SignatureInterface
         }
 
         // write incremental (only for signing purpose)
-        doc.saveIncremental(fis, fos);
+        doc.saveIncremental(fos);
 
         return outputDocument;
     }
