@@ -128,7 +128,7 @@ public class CreateVisibleSignature implements SignatureInterface
         fis.close();
 
         // load document
-        PDDocument doc = PDDocument.loadLegacy(document);
+        PDDocument doc = PDDocument.load(document);
 
         // create signature dictionary
         PDSignature signature = new PDSignature();
