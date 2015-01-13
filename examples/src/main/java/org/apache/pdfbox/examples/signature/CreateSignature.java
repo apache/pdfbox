@@ -125,7 +125,8 @@ public class CreateSignature implements SignatureInterface
 
     /**
      * Signs the given PDF file.
-     * @param inFile is the PDF file
+     * @param inFile input PDF file
+     * @param outFile output PDF file
      * @throws IOException if the input file could not be read
      */
     public void signDetached(File inFile, File outFile) throws IOException
@@ -135,8 +136,9 @@ public class CreateSignature implements SignatureInterface
 
     /**
      * Signs the given PDF file.
-     * @param inFile is the PDF file
-     * @param tsaClient TSA client
+     * @param inFile input PDF file
+     * @param outFile output PDF file
+     * @param tsaClient optional TSA client
      * @throws IOException if the input file could not be read
      */
     public void signDetached(File inFile, File outFile, TSAClient tsaClient) throws IOException
