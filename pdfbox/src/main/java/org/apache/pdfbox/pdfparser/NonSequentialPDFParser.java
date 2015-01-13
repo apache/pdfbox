@@ -1455,7 +1455,7 @@ public class NonSequentialPDFParser extends PDFParser
                     endObjectKey = readLine();
 
                     // we have case with a second 'endstream' before endobj
-                    if (!endObjectKey.startsWith("endobj") && endObjectKey.startsWith(ENDSTREAM_STRING))
+                    if (!endObjectKey.startsWith(ENDOBJ_STRING) && endObjectKey.startsWith(ENDSTREAM_STRING))
                     {
                         endObjectKey = endObjectKey.substring(9).trim();
                         if (endObjectKey.length() == 0)
@@ -1472,7 +1472,7 @@ public class NonSequentialPDFParser extends PDFParser
 
                 pdfObject.setObject(pb);
 
-                if (!endObjectKey.startsWith("endobj"))
+                if (!endObjectKey.startsWith(ENDOBJ_STRING))
                 {
                     if (isLenient)
                     {
