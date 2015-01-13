@@ -220,7 +220,7 @@ public class CreateSignature implements SignatureInterface
 
         byte[] token = tsaClient.getTimeStampToken(signer.getSignature());
         ASN1ObjectIdentifier oid = PKCSObjectIdentifiers.id_aa_signatureTimeStampToken;
-        ASN1Encodable signatureTimeStamp = new Attribute(oid, new DERSet(byteToASN1Object(token)));
+        ASN1Encodable signatureTimeStamp = new Attribute(oid, new DERSet(ASN1Primitive.fromByteArray(token)));
 
         vector.add(signatureTimeStamp);
         Attributes signedAttributes = new Attributes(vector);
@@ -235,25 +235,6 @@ public class CreateSignature implements SignatureInterface
         }
 
         return newSigner;
-    }
-
-    /**
-     * Bytes to ASN.1
-     * @param data time stamp token byte
-     * @return ASN1Object which is created by the ASN1InputStream of the time stamp token
-     * @throws IOException if we can't cast ASN1Primitive to ASN1Object
-     */
-    private ASN1Object byteToASN1Object(byte[] data) throws IOException
-    {
-        ASN1InputStream in = new ASN1InputStream(data);
-        try
-        {
-            return in.readObject();
-        }
-        finally
-        {
-            in.close();
-        }
     }
 
     /**
