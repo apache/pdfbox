@@ -98,8 +98,6 @@ public abstract class PDColorSpace implements COSObjectable
                 }
             }
 
-            // ---------------
-
             // built-in color spaces
             if (name == COSName.DEVICECMYK || name == COSName.CMYK)
             {

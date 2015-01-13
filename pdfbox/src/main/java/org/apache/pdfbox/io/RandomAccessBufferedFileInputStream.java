@@ -71,8 +71,7 @@ extends InputStream implements RandomAccessRead
     private final long fileLength;
     private long fileOffset = 0;
     private boolean isClosed;
-
-    // ------------------------------------------------------------------------
+    
     /** Create input stream instance for given file. */
     public RandomAccessBufferedFileInputStream( File _file )
     throws FileNotFoundException, IOException
@@ -82,8 +81,7 @@ extends InputStream implements RandomAccessRead
 
         seek(0);
     }
-
-    // ------------------------------------------------------------------------
+    
     /**
      *  Returns offset in file at which next byte would be read.
      *  
@@ -93,16 +91,14 @@ extends InputStream implements RandomAccessRead
     {
         return fileOffset;
     }
-
-    // ------------------------------------------------------------------------
+    
     /** Returns offset in file at which next byte would be read. */
     @Override
     public long getPosition()
     {
         return fileOffset;
     }
-
-    // ------------------------------------------------------------------------
+    
     /**
      * Seeks to new position. If new position is outside of current page the new
      * page is either taken from cache or read from file and added to cache.
@@ -127,8 +123,7 @@ extends InputStream implements RandomAccessRead
         offsetWithinPage = (int) ( newOffset - curPageOffset );
         fileOffset = newOffset;
     }
-
-    // ------------------------------------------------------------------------
+    
     /**
      * Reads a page with data from current file position. If we have a
      * previously removed page from cache the buffer of this page is reused.
@@ -162,8 +157,7 @@ extends InputStream implements RandomAccessRead
 
         return page;
     }
-
-    // ------------------------------------------------------------------------
+    
     @Override
     public int read() throws IOException
     {
@@ -180,8 +174,7 @@ extends InputStream implements RandomAccessRead
         fileOffset++;
         return curPage[offsetWithinPage++] & 0xff;
     }
-
-    // ------------------------------------------------------------------------
+    
     @Override
     public int read( byte[] b, int off, int len ) throws IOException
     {
@@ -206,15 +199,13 @@ extends InputStream implements RandomAccessRead
 
         return commonLen;
     }
-
-    // ------------------------------------------------------------------------
+    
     @Override
     public int available() throws IOException
     {
         return (int) Math.min( fileLength - fileOffset, Integer.MAX_VALUE );
     }
-
-    // ------------------------------------------------------------------------
+    
     @Override
     public long skip( long n ) throws IOException
     {
@@ -240,15 +231,13 @@ extends InputStream implements RandomAccessRead
 
         return toSkip;
     }
-
-    // ------------------------------------------------------------------------
+    
     @Override
     public long length() throws IOException
     {
         return fileLength;
     }
-
-    // ------------------------------------------------------------------------
+    
     @Override
     public void close() throws IOException
     {
