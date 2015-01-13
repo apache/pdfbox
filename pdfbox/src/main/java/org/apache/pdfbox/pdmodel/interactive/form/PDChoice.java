@@ -26,6 +26,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
+import org.apache.pdfbox.pdmodel.interactive.form.FieldUtils.KeyValue;
 
 /**
  * A choice field contains several text items, one or more of which shall be selected as the field value.
@@ -181,16 +182,19 @@ public abstract class PDChoice extends PDVariableText
             }
             else
             {
+                List<KeyValue> keyValuePairs = FieldUtils.toKeyValueList(exportValues, displayValues);
+
                 if (isSort())
                 {
-                    // TODO implement sorting for two-element arrays
-                }
+                    FieldUtils.sortByValue(keyValuePairs);
+                } 
+
                 COSArray options = new COSArray();
                 for (int i = 0; i<exportValues.size(); i++)
                 {
                     COSArray entry = new COSArray();
-                    entry.add(new COSString(exportValues.get(i)));
-                    entry.add(new COSString(displayValues.get(i)));
+                    entry.add(new COSString(keyValuePairs.get(i).getKey()));
+                    entry.add(new COSString(keyValuePairs.get(i).getValue()));
                     options.add(entry);
                 }
                 getDictionary().setItem(COSName.OPT, options);

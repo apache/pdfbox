@@ -94,8 +94,8 @@ public class TestListBox extends TestCase
             exportValues.add("export02");
 
             List<String> displayValues = new ArrayList<String>();
-            displayValues.add("display01");
             displayValues.add("display02");
+            displayValues.add("display01");
             
             // test with exportValue being set
 
@@ -128,6 +128,12 @@ public class TestListBox extends TestCase
             choice.setOptions(exportValues, displayValues);
             assertEquals(displayValues,choice.getOptionsDisplayValues());
             assertEquals(exportValues,choice.getOptionsExportValues());
+            
+            // testing the sort option
+            assertEquals(choice.getOptionsDisplayValues().get(0),"display02");
+            choice.setSort(true);
+            choice.setOptions(exportValues, displayValues);
+            assertEquals(choice.getOptionsDisplayValues().get(0),"display01");
             
             // assert that the Opt entry is removed
             choice.setOptions(null, displayValues);
