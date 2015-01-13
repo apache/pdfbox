@@ -272,7 +272,7 @@ public class PDFText2HTML extends PDFTextStripper
      * A helper class to maintain the current font state. It's public methods will emit opening and
      * closing tags as needed, and in the correct order.
      *
-     * @author Axel D�rfler
+     * @author Axel Dörfler
      */
     private static class FontState
     {
