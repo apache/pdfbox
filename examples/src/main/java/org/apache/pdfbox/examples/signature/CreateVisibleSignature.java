@@ -259,7 +259,7 @@ public class CreateVisibleSignature implements SignatureInterface
    */
   private static void usage()
   {
-    System.err.println("Usage: java " + CreateSignature.class.getName()
+    System.err.println("Usage: java " + CreateVisibleSignature.class.getName()
         + " <pkcs12-keystore-file> <pin> <input-pdf> <sign-image>");
   }
 }
