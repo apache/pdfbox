@@ -32,7 +32,7 @@ import java.io.IOException;
  *
  * @author Ben Litchfield
  */
-public class GoToSecondBookmarkOnOpen
+public final class GoToSecondBookmarkOnOpen
 {
     private GoToSecondBookmarkOnOpen()
     {
