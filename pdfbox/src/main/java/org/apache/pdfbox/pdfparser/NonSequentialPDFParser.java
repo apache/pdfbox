@@ -444,7 +444,7 @@ public class NonSequentialPDFParser extends PDFParser
      * Sets how many trailing bytes of PDF file are searched for EOF marker and 'startxref' marker. If not set we use
      * default value {@link #DEFAULT_TRAIL_BYTECOUNT}.
      * 
-     * <p<We check that new value is at least 16. However for practical use cases this value should not be lower than
+     * <p>We check that new value is at least 16. However for practical use cases this value should not be lower than
      * 1000; even 2000 was found to not be enough in some cases where some trailing garbage like HTML snippets followed
      * the EOF marker.</p>
      * 
