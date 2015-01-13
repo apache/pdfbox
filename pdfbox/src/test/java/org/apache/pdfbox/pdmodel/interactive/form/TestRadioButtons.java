@@ -30,8 +30,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
  * This will test the functionality of Radio Buttons in PDFBox.
- *
- * @author Maruan Sahyoun
  */
 public class TestRadioButtons extends TestCase
 {

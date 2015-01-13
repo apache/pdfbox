@@ -23,8 +23,6 @@ import java.util.List;
 
 /**
  * A set of utility methods to help with common AcroForm form and field related functions.
- * 
- * @author Maruan Sahyoun
  */
 public final class FieldUtils
 {

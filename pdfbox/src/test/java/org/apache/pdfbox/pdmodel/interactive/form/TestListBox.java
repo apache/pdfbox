@@ -31,8 +31,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
  * This will test the functionality of choice fields in PDFBox.
- *
- * @author Maruan Sahyoun
  */
 public class TestListBox extends TestCase
 {
