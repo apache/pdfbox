@@ -108,7 +108,7 @@ public abstract class BaseParser
     /**
      * This is a string constant that will be used for comparisons.
      */
-    private static final String ENDSTREAM_STRING = "endstream";
+    protected static final String ENDSTREAM_STRING = "endstream";
     /**
      * This is a string constant that will be used for comparisons.
      */
