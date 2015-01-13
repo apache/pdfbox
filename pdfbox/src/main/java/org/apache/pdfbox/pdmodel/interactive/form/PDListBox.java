@@ -26,6 +26,17 @@ import org.apache.pdfbox.cos.COSName;
  */
 public final class PDListBox extends PDChoice
 {
+    
+    /**
+     * @see PDFieldTreeNode#PDFieldTreeNode(PDAcroForm)
+     *
+     * @param theAcroForm The acroform.
+     */
+    protected PDListBox(PDAcroForm theAcroForm)
+    {
+        super( theAcroForm );
+    }
+    
     /**
      * Constructor.
      * 
