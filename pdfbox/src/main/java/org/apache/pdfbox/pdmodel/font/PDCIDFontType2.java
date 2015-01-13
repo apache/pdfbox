@@ -234,39 +234,39 @@ public class PDCIDFontType2 extends PDCIDFont
             // encoding specified by the predefined CMap to one of the encodings in the TrueType
             // font's 'cmap' table. The means by which this is accomplished are implementation-
             // dependent.
+            
+            boolean hasUnicodeMap = parent.getCMapUCS2() != null;
 
-            String unicode;
-
-            if (cid2gid != null || hasIdentityCid2Gid)
+            if (cid2gid != null)
             {
+                // Acrobat allows non-embedded GIDs - todo: can we find a test PDF for this?
                 int cid = codeToCID(code);
-                // strange but true, Acrobat allows non-embedded GIDs, test with PDFBOX-2060
-                if (hasIdentityCid2Gid)
-                {
-                    return cid;
-                }
-                else
-                {
-                    return cid2gid[cid];
-                }
+                return cid2gid[cid];
+            }
+            else if (hasIdentityCid2Gid || !hasUnicodeMap)
+            {
+                // same as above, but for the default Identity CID2GIDMap or when there is no
+                // ToUnicode CMap to fallback to, see PDFBOX-2599 and PDFBOX-2560
+                // todo: can we find a test PDF for the Identity case?
+                return codeToCID(code);
             }
             else
             {
-                // test with PDFBOX-1422 and PDFBOX-2560
-                unicode = parent.toUnicode(code);
+                // fallback to the ToUnicode CMap, test with PDFBOX-1422 and PDFBOX-2560
+                String unicode = parent.toUnicode(code);
+                if (unicode == null)
+                {
+                    LOG.warn("Failed to find a character mapping for " + code + " in " + getName());
+                    return 0;
+                }
+                else if (unicode.length() > 1)
+                {
+                    LOG.warn("Trying to map multi-byte character using 'cmap', result will be poor");
+                }
+                
+                // a non-embedded font always has a cmap (otherwise ExternalFonts won't load it)
+                return cmap.getGlyphId(unicode.codePointAt(0));
             }
-
-            if (unicode == null)
-            {
-                return 0;
-            }
-            else if (unicode.length() > 1)
-            {
-                LOG.warn("trying to map a multi-byte character using 'cmap', result will be poor");
-            }
-
-            // a non-embedded font always has a cmap (otherwise ExternalFonts won't load it)
-            return cmap.getGlyphId(unicode.codePointAt(0));
         }
         else
         {
