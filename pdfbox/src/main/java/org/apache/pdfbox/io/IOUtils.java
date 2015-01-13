@@ -30,7 +30,7 @@ import java.io.Writer;
  * This class contains various I/O-related methods.
  * @version $Revision$
  */
-public class IOUtils
+public final class IOUtils
 {
 
     //TODO PDFBox should really use Apache Commons IO.
