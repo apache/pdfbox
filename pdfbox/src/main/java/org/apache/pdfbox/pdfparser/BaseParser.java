@@ -112,7 +112,7 @@ public abstract class BaseParser
     /**
      * This is a string constant that will be used for comparisons.
      */
-    private static final String STREAM_STRING = "stream";
+    protected static final String STREAM_STRING = "stream";
     /**
      * This is a string constant that will be used for comparisons.
      */
@@ -1681,7 +1681,7 @@ public abstract class BaseParser
             if (s.startsWith("trailer")
                     || s.startsWith("xref")
                     || s.startsWith("startxref")
-                    || s.startsWith("stream")
+                    || s.startsWith(STREAM_STRING)
                     || p.matcher(s).matches())
             {
                 pdfSource.unread(b);

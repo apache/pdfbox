@@ -556,7 +556,7 @@ public class PDFParser extends BaseParser
             COSBase pb = parseDirObject();
             String endObjectKey = readString();
 
-            if (endObjectKey.equals("stream"))
+            if (endObjectKey.equals(STREAM_STRING))
             {
                 pdfSource.unread(endObjectKey.getBytes(ISO_8859_1));
                 pdfSource.unread(' ');
