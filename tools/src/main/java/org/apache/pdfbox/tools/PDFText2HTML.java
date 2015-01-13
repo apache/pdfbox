@@ -40,7 +40,7 @@ public class PDFText2HTML extends PDFTextStripper
     private static final int INITIAL_PDF_TO_HTML_BYTES = 8192;
 
     private boolean onFirstPage = true;
-    private FontState fontState = new FontState();
+    private final FontState fontState = new FontState();
 
     /**
      * Constructor.
@@ -81,6 +81,7 @@ public class PDFText2HTML extends PDFTextStripper
     /**
      * {@inheritDoc}
      */
+    @Override
     protected void writePage() throws IOException
     {
         if (onFirstPage)
@@ -94,6 +95,7 @@ public class PDFText2HTML extends PDFTextStripper
     /**
      * {@inheritDoc}
      */
+    @Override
     public void endDocument(PDDocument document) throws IOException
     {
         super.writeString("</body></html>");
@@ -155,6 +157,7 @@ public class PDFText2HTML extends PDFTextStripper
      * @throws IOException
      *             If there is an error writing to the stream.
      */
+    @Override
     protected void startArticle(boolean isLTR) throws IOException
     {
         if (isLTR)
@@ -173,6 +176,7 @@ public class PDFText2HTML extends PDFTextStripper
      * @throws IOException
      *             If there is an error writing to the stream.
      */
+    @Override
     protected void endArticle() throws IOException
     {
         super.endArticle();
@@ -187,6 +191,7 @@ public class PDFText2HTML extends PDFTextStripper
      * @param textPositions the corresponding text positions
      * @throws IOException If there is an error writing to the stream.
      */
+    @Override
     protected void writeString(String text, List<TextPosition> textPositions) throws IOException
     {
         super.writeString(fontState.push(text, textPositions));
@@ -199,6 +204,7 @@ public class PDFText2HTML extends PDFTextStripper
      * @throws IOException
      *             If there is an error writing to the stream.
      */
+    @Override
     protected void writeString(String chars) throws IOException
     {
         super.writeString(escape(chars));
@@ -266,7 +272,7 @@ public class PDFText2HTML extends PDFTextStripper
      * A helper class to maintain the current font state. It's public methods will emit opening and
      * closing tags as needed, and in the correct order.
      *
-     * @author Axel Dörfler
+     * @author Axel Dï¿½rfler
      */
     private static class FontState
     {
