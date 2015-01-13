@@ -58,6 +58,7 @@ public class PDOutlineNode implements COSObjectable
      *
      * @return The cos object that matches this Java object.
      */
+    @Override
     public COSBase getCOSObject()
     {
         return node;
@@ -106,7 +107,7 @@ public class PDOutlineNode implements COSObjectable
      */
     protected void setParent( PDOutlineNode parent )
     {
-        node.setItem( "Parent", parent );
+        node.setItem(COSName.PARENT, parent );
     }
 
     /**
@@ -174,7 +175,7 @@ public class PDOutlineNode implements COSObjectable
      */
     protected void setFirstChild( PDOutlineNode outlineNode )
     {
-        node.setItem( "First", outlineNode );
+        node.setItem(COSName.FIRST, outlineNode);
     }
 
     /**
