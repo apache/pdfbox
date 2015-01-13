@@ -134,8 +134,12 @@ public abstract class PDChoice extends PDVariableText
      */
     public void setOptions(List<String> displayValues)
     {
-        if (displayValues != null)
+        if (displayValues != null && displayValues.size() > 0)
         {
+            if (isSort())
+            {
+                Collections.sort(displayValues);
+            }
             getDictionary().setItem(COSName.OPT, COSArrayList.convertStringListToCOSStringCOSArray(displayValues));
         }
         else
@@ -177,6 +181,10 @@ public abstract class PDChoice extends PDVariableText
             }
             else
             {
+                if (isSort())
+                {
+                    // TODO implement sorting for two-element arrays
+                }
                 COSArray options = new COSArray();
                 for (int i = 0; i<exportValues.size(); i++)
                 {
@@ -289,6 +297,12 @@ public abstract class PDChoice extends PDVariableText
     /**
      * Determines if Sort is set.
      * 
+     * <p>
+     * If set, the field’s option items shall be sorted alphabetically.
+     * The sorting has to be done when writing the PDF. PDF Readers are supposed to
+     * display the options in the order in which they occur in the Opt array. 
+     * </p>
+     * 
      * @return true if the options are sorted.
      */
     public boolean isSort()
@@ -298,7 +312,8 @@ public abstract class PDChoice extends PDVariableText
 
     /**
      * Set the Sort bit.
-     *
+     * 
+     * @see #isSort()
      * @param sort The value for Sort.
      */
     public void setSort( boolean sort )
