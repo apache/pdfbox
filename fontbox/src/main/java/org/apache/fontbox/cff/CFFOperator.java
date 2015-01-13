@@ -25,7 +25,7 @@ import java.util.Map;
  * @author Villu Ruusmann
  * @version $Revision: 1.0 $
  */
-public class CFFOperator
+public final class CFFOperator
 {
 
     private Key operatorKey = null;
