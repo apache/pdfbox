@@ -22,7 +22,7 @@ package org.apache.pdfbox.pdmodel.common.function.type4;
  *
  * @version $Revision$
  */
-public class Parser
+public final class Parser
 {
 
     /** Used to indicate the parsers current state. */
