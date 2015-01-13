@@ -66,7 +66,7 @@ public class COSFloat extends COSNumber
      *
      * @param floatValue The new float value.
      */
-    public void setValue( float floatValue )
+    public final void setValue( float floatValue )
     {
         // use a BigDecimal as intermediate state to avoid 
         // a floating point string representation of the float value

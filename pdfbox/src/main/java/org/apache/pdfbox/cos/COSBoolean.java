@@ -25,7 +25,7 @@ import java.io.OutputStream;
  * @author <a href="ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.14 $
  */
-public class COSBoolean extends COSBase
+public final class COSBoolean extends COSBase
 {
     /**
      * The true boolean token.
@@ -46,14 +46,14 @@ public class COSBoolean extends COSBase
      */
     public static final COSBoolean FALSE = new COSBoolean( false );
 
-    private boolean value;
+    private final boolean value;
 
     /**
      * Constructor.
      *
      * @param aValue The boolean value.
      */
-    private COSBoolean(boolean aValue )
+    private COSBoolean(boolean aValue)
     {
         value = aValue;
     }
