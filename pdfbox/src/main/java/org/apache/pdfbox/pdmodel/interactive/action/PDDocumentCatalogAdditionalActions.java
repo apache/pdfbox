@@ -31,7 +31,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
  */
 public class PDDocumentCatalogAdditionalActions implements COSObjectable
 {
-    private COSDictionary actions;
+    private final COSDictionary actions;
 
     /**
      * Default constructor.
@@ -56,6 +56,7 @@ public class PDDocumentCatalogAdditionalActions implements COSObjectable
      *
      * @return The cos object that matches this Java object.
      */
+    @Override
     public COSBase getCOSObject()
     {
         return actions;
