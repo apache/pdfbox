@@ -52,4 +52,8 @@ public interface RandomAccessRead extends SequentialRead
      */
     public long length() throws IOException;
 
+    /**
+     * Returns true if this stream has been closed.
+     */
+    public boolean isClosed();
 }

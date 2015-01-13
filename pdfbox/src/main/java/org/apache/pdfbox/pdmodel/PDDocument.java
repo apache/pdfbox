@@ -70,7 +70,7 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
  */
 public class PDDocument implements Closeable
 {
-    private COSDocument document;
+    private final COSDocument document;
 
     // cached values
     private PDDocumentInformation documentInformation;
@@ -88,7 +88,7 @@ public class PDDocument implements Closeable
     private Long documentId;
 
     // the PDF parser
-    private BaseParser parser;
+    private final BaseParser parser;
 
     // the File to read incremental data from
     private File incrementalFile;
@@ -103,6 +103,7 @@ public class PDDocument implements Closeable
     public PDDocument()
     {
         document = new COSDocument();
+        parser = null;
 
         // First we need a trailer
         COSDictionary trailer = new COSDictionary();
@@ -1060,7 +1061,7 @@ public class PDDocument implements Closeable
      */
     public void save(OutputStream output) throws IOException
     {
-        if (document == null)
+        if (document.isClosed())
         {
             throw new IOException("Cannot save a document which has been closed");
         }
@@ -1140,20 +1141,17 @@ public class PDDocument implements Closeable
     @Override
     public void close() throws IOException
     {
-        documentCatalog = null;
-        documentInformation = null;
-        encryption = null;
-        if (document != null)
+        if (!document.isClosed())
         {
+            // close all intermediate I/O streams
             document.close();
-            document = null;
+            
+            // close the source PDF stream, if we read from one
+            if (parser != null)
+            {
+                parser.close();
+            }
         }
-        if (parser != null)
-        {
-            parser.clearResources();
-            parser = null;
-        }
-        accessPermission = null;
     }
 
     /**

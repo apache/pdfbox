@@ -19,6 +19,7 @@ package org.apache.pdfbox.pdfparser;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -49,7 +50,7 @@ import org.apache.pdfbox.persistence.util.COSObjectKey;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision$
  */
-public abstract class BaseParser
+public abstract class BaseParser implements Closeable
 {
 
     private static final long OBJECT_NUMBER_THRESHOLD = 10000000000L;
@@ -1694,16 +1695,12 @@ public abstract class BaseParser
         }
     }
 
-    /**
-     * Release all used resources.
-     */
-    public void clearResources()
+    @Override
+    public void close() throws IOException
     {
-        document = null;
         if (pdfSource != null)
         {
-            IOUtils.closeQuietly(pdfSource);
-            pdfSource = null;
+            pdfSource.close();
         }
     }
 

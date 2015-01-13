@@ -31,6 +31,7 @@ import java.io.IOException;
 public class RandomAccessFile implements RandomAccess, Closeable
 {
     private java.io.RandomAccessFile ras;
+    private boolean isClosed;
 
     /**
      * Constructor.
@@ -51,6 +52,7 @@ public class RandomAccessFile implements RandomAccess, Closeable
     public void close() throws IOException
     {
         ras.close();
+        isClosed = true;
     }
 
     /**
@@ -95,6 +97,12 @@ public class RandomAccessFile implements RandomAccess, Closeable
     public long length() throws IOException
     {
         return ras.length();
+    }
+
+    @Override
+    public boolean isClosed()
+    {
+        return isClosed;
     }
 
     /**

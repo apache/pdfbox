@@ -122,16 +122,6 @@ public class PDFStreamParser extends BaseParser
     }
 
     /**
-     * This will close the underlying pdfSource object.
-     * 
-     * @throws IOException If there is an error releasing resources.
-     */
-    public void close() throws IOException
-    {
-        pdfSource.close();
-    }
-
-    /**
      * This will get an iterator which can be used to parse the stream
      * one token after the other.
      *
@@ -520,19 +510,5 @@ public class PDFStreamParser extends BaseParser
     private boolean hasNextSpaceOrReturn() throws IOException
     {
         return isSpaceOrReturn( pdfSource.peek() );
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void clearResources()
-    {
-        super.clearResources();
-        if (streamObjects != null)
-        {
-            streamObjects.clear();
-            streamObjects = null;
-        }
     }
 }

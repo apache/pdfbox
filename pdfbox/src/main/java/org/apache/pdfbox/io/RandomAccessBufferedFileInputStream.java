@@ -70,6 +70,7 @@ extends InputStream implements RandomAccessRead
     private final RandomAccessFile raFile;
     private final long fileLength;
     private long fileOffset = 0;
+    private boolean isClosed;
 
     // ------------------------------------------------------------------------
     /** Create input stream instance for given file. */
@@ -253,5 +254,12 @@ extends InputStream implements RandomAccessRead
     {
         raFile.close();
         pageCache.clear();
+        isClosed = true;
+    }
+
+    @Override
+    public boolean isClosed()
+    {
+        return isClosed;
     }
 }
