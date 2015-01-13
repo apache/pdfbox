@@ -104,7 +104,7 @@ public abstract class BaseParser
     /**
      * This is a string constant that will be used for comparisons.
      */
-    private static final String ENDOBJ_STRING = "endobj";
+    protected static final String ENDOBJ_STRING = "endobj";
     /**
      * This is a string constant that will be used for comparisons.
      */

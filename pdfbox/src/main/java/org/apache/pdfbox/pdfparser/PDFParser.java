@@ -610,9 +610,9 @@ public class PDFParser extends BaseParser
                 addObjectToConflicts(currentObjByteOffset, key, pb);
             }
 
-            if( !endObjectKey.equals( "endobj" ) )
+            if( !endObjectKey.equals( ENDOBJ_STRING ) )
             {
-                if (endObjectKey.startsWith( "endobj" ) )
+                if (endObjectKey.startsWith( ENDOBJ_STRING ) )
                 {
                     /*
                      * Some PDF files don't contain a new line after endobj so we
@@ -623,7 +623,7 @@ public class PDFParser extends BaseParser
                     pdfSource.unread( SPACE_BYTE ); // add a space first in place of the newline consumed by readline()
                     pdfSource.unread( endObjectKey.substring( 6 ).getBytes(ISO_8859_1) );
                 }
-                else if(endObjectKey.trim().endsWith("endobj"))
+                else if(endObjectKey.trim().endsWith(ENDOBJ_STRING))
                 {
                     /*
                      * Some PDF files contain junk (like ">> ", in the case of a PDF
