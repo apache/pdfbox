@@ -43,6 +43,16 @@ public abstract class PDChoice extends PDVariableText
     private static final int FLAG_MULTI_SELECT = 1 << 21;
     private static final int FLAG_DO_NOT_SPELL_CHECK = 1 << 22;
     private static final int FLAG_COMMIT_ON_SEL_CHANGE = 1 << 26;
+    
+    /**
+     * @see PDFieldTreeNode#PDFieldTreeNode(PDAcroForm)
+     *
+     * @param theAcroForm The acroform.
+     */
+    protected PDChoice(PDAcroForm theAcroForm)
+    {
+        super( theAcroForm );
+    }
 
     /**
      * Constructor.
@@ -58,35 +68,75 @@ public abstract class PDChoice extends PDVariableText
 
     /**
      * This will get the option values "Opt".
-     *
-     * @return COSArray containing all options.
+     * 
+     * <p>
+     * For a choice field the options array can either be an array
+     * of text strings or an array of a two-element arrays.<br/>
+     * The method always only returns either the text strings or,
+     * in case of two-element arrays, an array of the first element of 
+     * the two-element arrays
+     * </p>   
+     * <p>
+     * Use {@link #getOptionsExportValues()} and {@link #getOptionsDisplayValues()}
+     * to get the entries of two-element arrays.
+     * </p>
+     * 
+     * @return List containing the export values.
      */
     public List<String> getOptions()
     {
-        COSBase value = getDictionary().getDictionaryObject(COSName.V);
-        if (value instanceof COSString)
+        COSBase values = getDictionary().getDictionaryObject(COSName.OPT);
+        if (values instanceof COSString)
         {
             List<String> array = new ArrayList<String>();
-            array.add(((COSString) value).getString());
+            array.add(((COSString) values).getString());
             return array;
         }
-        else if (value instanceof COSArray)
+        else if (values instanceof COSArray)
         {
-            return COSArrayList.convertCOSStringCOSArrayToList((COSArray)value);
+            // test if there is a single text or a two-element array 
+            COSBase entry = ((COSArray) values).get(0);
+            if (entry instanceof COSString)
+            {
+                return COSArrayList.convertCOSStringCOSArrayToList((COSArray)values);
+            } 
+            else
+            {
+                List<String> exportValues = new ArrayList<String>();
+                int numItems = ((COSArray) values).size();
+                for (int i=0;i<numItems;i++)
+                {
+                    COSArray pair = (COSArray) ((COSArray) values).get(i);
+                    COSString displayValue = (COSString) pair.get(0);
+                    exportValues.add(displayValue.getString());
+                }
+                return exportValues;
+            }
+            
         }
         return Collections.<String>emptyList();
     }
 
     /**
-     * This will set the options.
+     * This will set the display values - the 'Opt' key.
+     * 
+     * <p>
+     * The Opt array specifies the list of options in the choice field either
+     * as an array of text strings representing the display value 
+     * or as an array of a two-element array where the
+     * first element is the export value and the second the display value.
+     * </p>
+     * <p>
+     * To set both the export and the display value use {@link #setOptions(List, List)}
+     * </p> 
      *
-     * @param values COSArray containing all possible options.
+     * @param displayValues List containing all possible options.
      */
-    public void setOptions(List<String> values)
+    public void setOptions(List<String> displayValues)
     {
-        if (values != null)
+        if (displayValues != null)
         {
-            getDictionary().setItem(COSName.OPT, COSArrayList.convertStringListToCOSStringCOSArray(values));
+            getDictionary().setItem(COSName.OPT, COSArrayList.convertStringListToCOSStringCOSArray(displayValues));
         }
         else
         {
@@ -94,6 +144,116 @@ public abstract class PDChoice extends PDVariableText
         }
     }
 
+    /**
+     * This will set the display and export values - the 'Opt' key.
+     *
+     * <p>
+     * This will set both, the export value and the display value
+     * of the choice field. If either one of the parameters is null or an 
+     * empty list is supplied the options will
+     * be removed.
+     * </p>
+     * <p>
+     * An {@link IllegalArgumentException} will be thrown if the
+     * number of items in the list differ.
+     * </p>
+     *
+     * @see #setOptions(List)
+     * @param exportValues List containing all possible export values.
+     * @param displayValues List containing all possible display values.
+     */
+    public void setOptions(List<String> exportValues, List<String> displayValues)
+    {
+        if (exportValues == null || displayValues == null || exportValues.size() == 0 || displayValues.size() == 0)
+        {
+            getDictionary().removeItem(COSName.OPT);
+        }
+        else if (exportValues != null && displayValues != null && exportValues.size() > 0 && displayValues.size() > 0) 
+        {
+            if (exportValues.size() != displayValues.size())
+            {
+                throw new IllegalArgumentException(
+                        "The number of entries for exportValue and displayValue shall be the same.");
+            }
+            else
+            {
+                COSArray options = new COSArray();
+                for (int i = 0; i<exportValues.size(); i++)
+                {
+                    COSArray entry = new COSArray();
+                    entry.add(new COSString(exportValues.get(i)));
+                    entry.add(new COSString(displayValues.get(i)));
+                    options.add(entry);
+                }
+                getDictionary().setItem(COSName.OPT, options);
+            }
+        }
+    }
+
+    /**
+     * This will get the display values from the options.
+     * 
+     * <p>
+     * For options with an array of text strings the display value and export value
+     * are the same.<br/>
+     * For options with an array of two-element arrays the display value is the 
+     * second entry in the two-element array.
+     * </p>
+     * 
+     * @return List containing all the display values.
+     */
+    public List<String> getOptionsDisplayValues()
+    {
+        COSBase values = getDictionary().getDictionaryObject(COSName.OPT);
+        if (values instanceof COSString)
+        {
+            List<String> array = new ArrayList<String>();
+            array.add(((COSString) values).getString());
+            return array;
+        }
+        else if (values instanceof COSArray)
+        {
+            // test if there is a single text or a two-element array 
+            COSBase entry = ((COSArray) values).get(0);
+            if (entry instanceof COSString)
+            {
+                return COSArrayList.convertCOSStringCOSArrayToList((COSArray)values);
+            } 
+            else
+            {
+                List<String> displayValues = new ArrayList<String>();
+                int numItems = ((COSArray) values).size();
+                for (int i=0;i<numItems;i++)
+                {
+                    COSArray pair = (COSArray) ((COSArray) values).get(i);
+                    COSString displayValue = (COSString) pair.get(1);
+                    displayValues.add(displayValue.getString());
+                }
+                return displayValues;
+            }
+            
+        }
+        return Collections.<String>emptyList();
+    }
+
+    /**
+     * This will get the export values from the options.
+     * 
+     * <p>
+     * For options with an array of text strings the display value and export value
+     * are the same.<br/>
+     * For options with an array of two-element arrays the export value is the 
+     * first entry in the two-element array.
+     * </p>
+     *
+     * @return List containing all export values.
+     */
+    public List<String> getOptionsExportValues()
+    {
+        return getOptions();
+    }
+    
+    
     /**
      * This will get the indices of the selected options "I".
      *
@@ -316,7 +476,7 @@ public abstract class PDChoice extends PDVariableText
         return indexSelected;
     }
 
-    // TODO the implementation below is not inline 
+    // TODO the implementation below is not in line 
     // with the specification nor does it allow multiple selections
     // deactivating for now as it's not part of the public API
     //
