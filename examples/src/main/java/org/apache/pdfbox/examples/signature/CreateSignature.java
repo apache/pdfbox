@@ -83,8 +83,8 @@ import org.bouncycastle.tsp.TSPException;
  */
 public class CreateSignature implements SignatureInterface
 {
-    private PrivateKey privateKey;
-    private Certificate[] certificateChain;
+    private final PrivateKey privateKey;
+    private final Certificate[] certificateChain;
     private TSAClient tsaClient;
 
     /**
