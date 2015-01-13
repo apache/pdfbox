@@ -113,7 +113,7 @@ public final class Parser
     /**
      * Tokenizer for Type 4 functions.
      */
-    private static class Tokenizer
+    private static final class Tokenizer
     {
 
         private static final char NUL = '\u0000'; //NUL
