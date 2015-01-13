@@ -362,6 +362,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName PAGE_MODE = new COSName("PageMode");
     public static final COSName PAGES = new COSName("Pages");
     public static final COSName PAINT_TYPE = new COSName("PaintType");
+    public static final COSName PARAMS = new COSName("Params");
     public static final COSName PARENT = new COSName("Parent");
     public static final COSName PARENT_TREE = new COSName("ParentTree");
     public static final COSName PARENT_TREE_NEXT_KEY = new COSName("ParentTreeNextKey");
