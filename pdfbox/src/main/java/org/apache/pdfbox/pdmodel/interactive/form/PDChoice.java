@@ -17,12 +17,12 @@
 package org.apache.pdfbox.pdmodel.interactive.form;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
@@ -74,7 +74,7 @@ public abstract class PDChoice extends PDVariableText
         {
             return COSArrayList.convertCOSStringCOSArrayToList((COSArray)value);
         }
-        return new ArrayList<String>();
+        return Collections.<String>emptyList();
     }
 
     /**
@@ -99,9 +99,14 @@ public abstract class PDChoice extends PDVariableText
      *
      * @return COSArray containing the indices of all selected options.
      */
-    public COSArray getSelectedOptions()
+    public List<Integer> getSelectedOptions()
     {
-        return (COSArray) getDictionary().getDictionaryObject(COSName.I);
+        COSBase value = getDictionary().getDictionaryObject(COSName.I);
+        if (value != null)
+        {
+            return COSArrayList.convertIntegerCOSArrayToList((COSArray) value);
+        }
+        return Collections.<Integer>emptyList();
     }
 
     /**
@@ -232,12 +237,12 @@ public abstract class PDChoice extends PDVariableText
         if (value != null)
         {
             getDictionary().setString(COSName.V, (String)value);
+            // TODO handle MultiSelect option as this might need to set the 'I' key.
             int index = getSelectedIndex((String) value);
             if (index == -1)
             {
                 throw new IllegalArgumentException("The list box does not contain the given value.");
             }
-            selectMultiple(index);
         }
         else
         {
@@ -260,6 +265,7 @@ public abstract class PDChoice extends PDVariableText
             {
                 throw new IllegalArgumentException("The list box does not allow multiple selection.");
             }
+            // TODO handle MultiSelect option completely as this might need to set the 'I' key.
             getDictionary().setItem(COSName.V, COSArrayList.convertStringListToCOSStringCOSArray(values));
         }
         else
@@ -290,7 +296,7 @@ public abstract class PDChoice extends PDVariableText
         {
             return COSArrayList.convertCOSStringCOSArrayToList((COSArray)value);
         }
-        return new ArrayList<String>();
+        return Collections.<String>emptyList();
     }
 
     // returns the "Opt" index for the given string
@@ -310,7 +316,12 @@ public abstract class PDChoice extends PDVariableText
         return indexSelected;
     }
 
+    // TODO the implementation below is not inline 
+    // with the specification nor does it allow multiple selections
+    // deactivating for now as it's not part of the public API
+    //
     // implements "MultiSelect"
+    /*
     private void selectMultiple(int selectedIndex)
     {
         COSArray indexArray = getSelectedOptions();
@@ -320,4 +331,5 @@ public abstract class PDChoice extends PDVariableText
             indexArray.add(COSInteger.get(selectedIndex));
         }
     }
+    */
 }
