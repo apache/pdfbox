@@ -35,6 +35,10 @@ class TIFFUtil
 {
     private static final Log LOG = LogFactory.getLog(TIFFUtil.class);
 
+    private TIFFUtil()
+    {
+    }    
+
     /**
      * Sets the ImageIO parameter compression type based on the given image.
      * @param image buffered image used to decide compression type
