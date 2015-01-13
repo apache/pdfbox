@@ -30,7 +30,7 @@ import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
  *
  * @author  Ben Litchfield
  */
-public class Decrypt
+public final class Decrypt
 {
     private static final String ALIAS = "-alias";
     private static final String PASSWORD = "-password";
