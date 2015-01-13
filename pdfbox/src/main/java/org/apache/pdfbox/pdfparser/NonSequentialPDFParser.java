@@ -174,8 +174,7 @@ public class NonSequentialPDFParser extends PDFParser
      * The prefix for the temp file being used. 
      */
     public static final String TMP_FILE_PREFIX = "tmpPDF";
-
-    // ------------------------------------------------------------------------
+    
     /**
      * Constructs parser for given file using memory buffer.
      * 
@@ -437,9 +436,7 @@ public class NonSequentialPDFParser extends PDFParser
     {
         return new PDDocument( getDocument(), this, accessPermission );
     }
-
-
-    // ------------------------------------------------------------------------
+    
     /**
      * Sets how many trailing bytes of PDF file are searched for EOF marker and 'startxref' marker. If not set we use
      * default value {@link #DEFAULT_TRAIL_BYTECOUNT}.
@@ -750,8 +747,7 @@ public class NonSequentialPDFParser extends PDFParser
 
         return dict.getLong(COSName.PREV);
     }
-
-    // ------------------------------------------------------------------------
+    
     /**
      * Looks for and parses startxref. We first look for last '%%EOF' marker (within last
      * {@link #DEFAULT_TRAIL_BYTECOUNT} bytes (or range set via {@link #setEOFLookupRange(int)}) and go back to find
@@ -835,8 +831,7 @@ public class NonSequentialPDFParser extends PDFParser
         }
         return skipBytes + bufOff;
     }
-
-    // ------------------------------------------------------------------------
+    
     /**
      * Searches last appearance of pattern within buffer. Lookup before _lastOff and goes back until 0.
      * 
@@ -876,8 +871,7 @@ public class NonSequentialPDFParser extends PDFParser
 
         return -1;
     }
-
-    // ------------------------------------------------------------------------
+    
     /**
      * Reads given pattern from {@link #pdfSource}. Skipping whitespace at start and end.
      * 
@@ -900,8 +894,7 @@ public class NonSequentialPDFParser extends PDFParser
 
         skipSpaces();
     }
-
-    // ------------------------------------------------------------------------
+    
     private COSDictionary pagesDictionary = null;
 
     /**
@@ -932,8 +925,7 @@ public class NonSequentialPDFParser extends PDFParser
 
         return pagesDictionary;
     }
-
-    // ------------------------------------------------------------------------
+    
     /** Parses all objects needed by pages and closes input stream. */
     
     /**
@@ -1052,8 +1044,7 @@ public class NonSequentialPDFParser extends PDFParser
             }
         }
     }
-
-    // ------------------------------------------------------------------------
+    
     /**
      * Returns the number of pages in a document.
      * 
@@ -1071,8 +1062,7 @@ public class NonSequentialPDFParser extends PDFParser
         }
         return pageCount;
     }
-
-    // ------------------------------------------------------------------------
+    
     /**
      * Returns the page requested with all the objects loaded into it.
      * 
@@ -1524,8 +1514,7 @@ public class NonSequentialPDFParser extends PDFParser
         }
         return pdfObject.getObject();
     }
-
-    // ------------------------------------------------------------------------
+    
     /**
      * 
      * @param dict the dictionary to be decrypted
@@ -1597,8 +1586,7 @@ public class NonSequentialPDFParser extends PDFParser
         }
     }
     
-
-    // ------------------------------------------------------------------------
+    
     private boolean inGetLength = false;
 
     /** Returns length value referred to or defined in given object. */
@@ -1669,8 +1657,7 @@ public class NonSequentialPDFParser extends PDFParser
         }
         return retVal;
     }
-
-    // ------------------------------------------------------------------------
+    
     private final int streamCopyBufLen = 8192;
     private final byte[] streamCopyBuf = new byte[streamCopyBufLen];
 
