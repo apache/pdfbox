@@ -70,6 +70,11 @@ public class PDCIDFontType2 extends PDCIDFont
         PDStream ff2Stream = fd.getFontFile2();
         PDStream ff3Stream = fd.getFontFile3();
 
+        // Acrobat looks in FontFile too, even though it is not in the spec, see PDFBOX-2599
+        if (ff2Stream == null && ff3Stream == null) {
+            ff2Stream = fd.getFontFile();
+        }
+        
         TrueTypeFont ttfFont = null;
         boolean fontIsDamaged = false;
         if (ff2Stream != null)
