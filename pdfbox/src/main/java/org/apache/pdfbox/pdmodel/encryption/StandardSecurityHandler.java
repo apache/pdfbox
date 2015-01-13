@@ -58,7 +58,7 @@ public final class StandardSecurityHandler extends SecurityHandler
     public static final Class<?> PROTECTION_POLICY_CLASS = StandardProtectionPolicy.class;
 
     /** Standard padding for encryption. */
-    public static final byte[] ENCRYPT_PADDING =
+    private static final byte[] ENCRYPT_PADDING =
     {
         (byte)0x28, (byte)0xBF, (byte)0x4E, (byte)0x5E, (byte)0x4E,
         (byte)0x75, (byte)0x8A, (byte)0x41, (byte)0x64, (byte)0x00,
@@ -101,7 +101,7 @@ public final class StandardSecurityHandler extends SecurityHandler
      * regarding the encryption key length.
      * See PDF Spec 1.6 p 93
      *
-     * @return The computed cersion number.
+     * @return The computed version number.
      */
     private int computeVersionNumber()
     {
