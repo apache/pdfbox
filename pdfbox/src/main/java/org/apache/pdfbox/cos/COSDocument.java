@@ -510,37 +510,29 @@ public class COSDocument extends COSBase implements Closeable
     {
         if (!closed) 
         {
-            if (trailer != null)
-            {
-                trailer.clear();
-                trailer = null;
-            }
-            // Clear object pool
+            // close all open I/O streams
             List<COSObject> list = getObjects();
-            if (list != null && !list.isEmpty()) 
+            if (list != null) 
             {
                 for (COSObject object : list) 
                 {
                     COSBase cosObject = object.getObject();
-                    // clear the resources of the pooled objects
                     if (cosObject instanceof COSStream)
                     {
                         ((COSStream)cosObject).close();
                     }
-                    else if (cosObject instanceof COSDictionary)
-                    {
-                        ((COSDictionary)cosObject).clear();
-                    }
-                    else if (cosObject instanceof COSArray)
-                    {
-                        ((COSArray)cosObject).clear();
-                    }
-                    // TODO are there other kind of COSObjects to be cleared?
                 }
-                list.clear();
             }
             closed = true;
         }
+    }
+
+    /**
+     * Returns true if this document has been closed.
+     */
+    public boolean isClosed()
+    {
+        return closed;
     }
 
     /**

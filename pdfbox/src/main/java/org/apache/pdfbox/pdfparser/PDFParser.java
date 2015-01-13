@@ -986,22 +986,4 @@ public class PDFParser extends BaseParser
         }
         return false;
     }
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void clearResources() {
-        super.clearResources();
-        if (conflictList != null)
-        {
-            conflictList.clear();
-            conflictList = null;
-        }
-        if (xrefTrailerResolver != null)
-        {
-            xrefTrailerResolver.clearResources();
-            xrefTrailerResolver = null;
-        }
-    }
 }

@@ -329,4 +329,10 @@ public class RandomAccessBuffer implements RandomAccess, Closeable, Cloneable
         }
         
     }
+
+    @Override
+    public boolean isClosed()
+    {
+        return currentBuffer == null;
+    }
 }
