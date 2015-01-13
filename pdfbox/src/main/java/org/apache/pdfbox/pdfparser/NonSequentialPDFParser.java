@@ -1455,7 +1455,7 @@ public class NonSequentialPDFParser extends PDFParser
                     endObjectKey = readLine();
 
                     // we have case with a second 'endstream' before endobj
-                    if (!endObjectKey.startsWith("endobj") && endObjectKey.startsWith("endstream"))
+                    if (!endObjectKey.startsWith("endobj") && endObjectKey.startsWith(ENDSTREAM_STRING))
                     {
                         endObjectKey = endObjectKey.substring(9).trim();
                         if (endObjectKey.length() == 0)
@@ -1786,14 +1786,14 @@ public class NonSequentialPDFParser extends PDFParser
                 // avoid follow-up warning about missing endobj
                 pdfSource.unread("endobj".getBytes(ISO_8859_1));
             }
-            else if (endStream.length() > 9 && isLenient && endStream.substring(0,9).equals("endstream"))
+            else if (endStream.length() > 9 && isLenient && endStream.substring(0,9).equals(ENDSTREAM_STRING))
             {
                 LOG.warn("stream ends with '" + endStream + "' instead of 'endstream' at offset "
                         + pdfSource.getOffset());
                 // unread the "extra" bytes
                 pdfSource.unread(endStream.substring(9).getBytes(ISO_8859_1));
             }
-            else if (!endStream.equals("endstream"))
+            else if (!endStream.equals(ENDSTREAM_STRING))
             {
                 throw new IOException(
                         "Error reading stream, expected='endstream' actual='"
@@ -1826,7 +1826,7 @@ public class NonSequentialPDFParser extends PDFParser
         {
             pdfSource.seek(expectedEndOfStream);
             skipSpaces();
-            if (!checkBytesAtOffset("endstream".getBytes(ISO_8859_1)))
+            if (!checkBytesAtOffset(ENDSTREAM_STRING.getBytes(ISO_8859_1)))
             {
                 streamLengthIsValid = false;
                 LOG.error("The end of the stream doesn't point to the correct offset, using workaround to read the stream");
