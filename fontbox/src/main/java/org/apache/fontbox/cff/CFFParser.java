@@ -383,15 +383,15 @@ public class CFFParser
         if (charsetEntry != null)
         {
             int charsetId = charsetEntry.getNumber(0).intValue();
-            if (isCIDFont && charsetId == 0)
+            if (!isCIDFont && charsetId == 0)
             {
                 charset = CFFISOAdobeCharset.getInstance();
             }
-            else if (isCIDFont && charsetId == 1)
+            else if (!isCIDFont && charsetId == 1)
             {
                 charset = CFFExpertCharset.getInstance();
             }
-            else if (isCIDFont && charsetId == 2)
+            else if (!isCIDFont && charsetId == 2)
             {
                 charset = CFFExpertSubsetCharset.getInstance();
             }
