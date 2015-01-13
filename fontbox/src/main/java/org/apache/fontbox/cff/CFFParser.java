@@ -836,7 +836,7 @@ public class CFFParser
     /**
      *  Format 3 FDSelect data.
      */
-    private static class Format3FDSelect extends FDSelect
+    private static final class Format3FDSelect extends FDSelect
     {
         private int format;
         private int nbRanges;
@@ -894,7 +894,7 @@ public class CFFParser
     /**
      * Structure of a Range3 element.
      */
-    private static class Range3
+    private static final class Range3
     {
         private int first;
         private int fd;
