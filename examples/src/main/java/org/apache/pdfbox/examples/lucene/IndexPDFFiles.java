@@ -42,7 +42,7 @@ import org.apache.lucene.util.Version;
  * <p>
  * It's based on a demo provided by the lucene project.
  */
-public class IndexPDFFiles
+public final class IndexPDFFiles
 {
 
     private IndexPDFFiles()
