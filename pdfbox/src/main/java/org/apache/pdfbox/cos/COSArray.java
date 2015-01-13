@@ -32,7 +32,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
  */
 public class COSArray extends COSBase implements Iterable<COSBase>
 {
-    private List<COSBase> objects = new ArrayList<COSBase>();
+    private final List<COSBase> objects = new ArrayList<COSBase>();
 
     /**
      * Constructor.
