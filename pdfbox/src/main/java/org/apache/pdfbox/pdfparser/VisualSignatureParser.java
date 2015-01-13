@@ -122,7 +122,7 @@ public class VisualSignatureParser extends BaseParser
             }
             else
             {
-                pdfSource.unread(buffer.toString().getBytes("ISO-8859-1"));
+                pdfSource.unread(buffer.toString().getBytes(ISO_8859_1));
                 throw new IOException("Error: Expected to read '" + theString
                         + "' instead started reading '" + buffer.toString() + "'");
             }

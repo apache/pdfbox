@@ -375,7 +375,7 @@ public class PDFParser extends BaseParser
                 {
                     String headerGarbage = header.substring(PDF_HEADER.length() + 3, header.length()) + "\n";
                     header = header.substring(0, PDF_HEADER.length() + 3);
-                    pdfSource.unread(headerGarbage.getBytes("ISO-8859-1"));
+                    pdfSource.unread(headerGarbage.getBytes(ISO_8859_1));
                 }
             }
         }
@@ -394,7 +394,7 @@ public class PDFParser extends BaseParser
                 {
                     String headerGarbage = header.substring(FDF_HEADER.length() + 3, header.length()) + "\n";
                     header = header.substring(0, FDF_HEADER.length() + 3);
-                    pdfSource.unread(headerGarbage.getBytes("ISO-8859-1"));
+                    pdfSource.unread(headerGarbage.getBytes(ISO_8859_1));
                 }
             }
         }
@@ -531,7 +531,7 @@ public class PDFParser extends BaseParser
                     {
                         // content after marker -> unread with first space byte for read newline
                         pdfSource.unread(SPACE_BYTE); // we read a whole line; add space as newline replacement
-                        pdfSource.unread(eof.substring(5).getBytes("ISO-8859-1"));
+                        pdfSource.unread(eof.substring(5).getBytes(ISO_8859_1));
                     } 
                     else 
                     {
@@ -541,7 +541,7 @@ public class PDFParser extends BaseParser
                         if(!pdfSource.isEOF()) 
                         {
                             pdfSource.unread( SPACE_BYTE ); // we read a whole line; add space as newline replacement
-                            pdfSource.unread(eof.getBytes("ISO-8859-1"));
+                            pdfSource.unread(eof.getBytes(ISO_8859_1));
                         }
                     }
                 }
@@ -558,7 +558,7 @@ public class PDFParser extends BaseParser
 
             if (endObjectKey.equals("stream"))
             {
-                pdfSource.unread(endObjectKey.getBytes("ISO-8859-1"));
+                pdfSource.unread(endObjectKey.getBytes(ISO_8859_1));
                 pdfSource.unread(' ');
                 if (pb instanceof COSDictionary)
                 {
@@ -621,7 +621,7 @@ public class PDFParser extends BaseParser
                      * instead of "endobj"
                      */
                     pdfSource.unread( SPACE_BYTE ); // add a space first in place of the newline consumed by readline()
-                    pdfSource.unread( endObjectKey.substring( 6 ).getBytes("ISO-8859-1") );
+                    pdfSource.unread( endObjectKey.substring( 6 ).getBytes(ISO_8859_1) );
                 }
                 else if(endObjectKey.trim().endsWith("endobj"))
                 {
@@ -638,7 +638,7 @@ public class PDFParser extends BaseParser
                     //are several PDFs out there that do that so. Unread
                     //and assume that endobj was missing
                     pdfSource.unread( SPACE_BYTE ); // add a space first in place of the newline consumed by readline()
-                    pdfSource.unread( endObjectKey.getBytes("ISO-8859-1") );
+                    pdfSource.unread( endObjectKey.getBytes(ISO_8859_1) );
                 }
             }
             skipSpaces();
@@ -711,7 +711,7 @@ public class PDFParser extends BaseParser
         
         // check for trailer after xref
         String str = readString();
-        byte[] b = str.getBytes("ISO-8859-1");
+        byte[] b = str.getBytes(ISO_8859_1);
         pdfSource.unread(b, 0, b.length);
         
         // signal start of new XRef
@@ -805,7 +805,7 @@ public class PDFParser extends BaseParser
             // Acrobat reader can also deal with this.
             if (nextLine.startsWith("trailer"))
             {
-                byte[] b = nextLine.getBytes("ISO-8859-1");
+                byte[] b = nextLine.getBytes(ISO_8859_1);
                 int len = "trailer".length();
                 pdfSource.unread('\n');
                 pdfSource.unread(b, len, b.length-len);
