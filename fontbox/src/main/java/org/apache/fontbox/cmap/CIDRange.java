@@ -22,11 +22,11 @@ package org.apache.fontbox.cmap;
  */
 class CIDRange {
 
-    private char from;
+    private final char from;
 
-    private char to;
+    private final char to;
 
-    private int cid;
+    private final int cid;
 
     public CIDRange(char from, char to, int cid) {
         this.from = from;
