@@ -56,6 +56,8 @@ public abstract class BaseParser
 
     private static final long GENERATION_NUMBER_THRESHOLD = 65535;
     
+    public static final String ISO_8859_1 = "ISO-8859-1";
+    
     /**
      * system property allowing to define size of push back buffer.
      */
@@ -328,7 +330,7 @@ public abstract class BaseParser
                     String potentialDEF = readString();
                     if( !potentialDEF.equals( DEF ) )
                     {
-                        pdfSource.unread( potentialDEF.getBytes("ISO-8859-1") );
+                        pdfSource.unread( potentialDEF.getBytes(ISO_8859_1) );
                     }
                     else
                     {
@@ -530,7 +532,7 @@ public abstract class BaseParser
                  */
                 if (endStream.startsWith(ENDOBJ_STRING))
                 {
-                    byte[] endobjarray = endStream.getBytes("ISO-8859-1");
+                    byte[] endobjarray = endStream.getBytes(ISO_8859_1);
                     pdfSource.unread(endobjarray);
                 }
                 /*
@@ -542,7 +544,7 @@ public abstract class BaseParser
                 else if(endStream.startsWith(ENDSTREAM_STRING))
                 {
                     String extra = endStream.substring(9, endStream.length());
-                    byte[] array = extra.getBytes("ISO-8859-1");
+                    byte[] array = extra.getBytes(ISO_8859_1);
                     pdfSource.unread(array);
                 }
                 else
@@ -1044,7 +1046,7 @@ public abstract class BaseParser
                 // This could also be an "endobj" or "endstream" which means we can assume that
                 // the array has ended.
                 String isThisTheEnd = readString();
-                pdfSource.unread(isThisTheEnd.getBytes("ISO-8859-1"));
+                pdfSource.unread(isThisTheEnd.getBytes(ISO_8859_1));
                 if(ENDOBJ_STRING.equals(isThisTheEnd) || ENDSTREAM_STRING.equals(isThisTheEnd))
                 {
                     return po;
@@ -1148,7 +1150,7 @@ public abstract class BaseParser
         char c = (char)pdfSource.peek();
         if( c == 't' )
         {
-            String trueString = new String( pdfSource.readFully( 4 ), "ISO-8859-1" );
+            String trueString = new String( pdfSource.readFully( 4 ), ISO_8859_1 );
             if( !trueString.equals( TRUE ) )
             {
                 throw new IOException( "Error parsing boolean: expected='true' actual='" + trueString + "' at offset " + pdfSource.getOffset());
@@ -1160,7 +1162,7 @@ public abstract class BaseParser
         }
         else if( c == 'f' )
         {
-            String falseString = new String( pdfSource.readFully( 5 ), "ISO-8859-1" );
+            String falseString = new String( pdfSource.readFully( 5 ), ISO_8859_1 );
             if( !falseString.equals( FALSE ) )
             {
                 throw new IOException( "Error parsing boolean: expected='true' actual='" + falseString + "' at offset " + pdfSource.getOffset());
@@ -1229,7 +1231,7 @@ public abstract class BaseParser
         }
         case 't':
         {
-            String trueString = new String( pdfSource.readFully(4), "ISO-8859-1" );
+            String trueString = new String( pdfSource.readFully(4), ISO_8859_1 );
             if( trueString.equals( TRUE ) )
             {
                 retval = COSBoolean.TRUE;
@@ -1242,7 +1244,7 @@ public abstract class BaseParser
         }
         case 'f':
         {
-            String falseString = new String( pdfSource.readFully(5), "ISO-8859-1" );
+            String falseString = new String( pdfSource.readFully(5), ISO_8859_1 );
             if( falseString.equals( FALSE ) )
             {
                 retval = COSBoolean.FALSE;
@@ -1303,7 +1305,7 @@ public abstract class BaseParser
                 // if it's an endstream/endobj, we want to put it back so the caller will see it
                 if(ENDOBJ_STRING.equals(badString) || ENDSTREAM_STRING.equals(badString))
                 {
-                    pdfSource.unread(badString.getBytes("ISO-8859-1"));
+                    pdfSource.unread(badString.getBytes(ISO_8859_1));
                 }
             }
         }
@@ -1589,7 +1591,7 @@ public abstract class BaseParser
         }
         catch( NumberFormatException e )
         {
-            pdfSource.unread(intBuffer.toString().getBytes("ISO-8859-1"));
+            pdfSource.unread(intBuffer.toString().getBytes(ISO_8859_1));
             throw new IOException( "Error: Expected an integer type at offset "+pdfSource.getOffset(), e);
         }
         return retval;
@@ -1616,7 +1618,7 @@ public abstract class BaseParser
         }
         catch( NumberFormatException e )
         {
-            pdfSource.unread(longBuffer.toString().getBytes("ISO-8859-1"));
+            pdfSource.unread(longBuffer.toString().getBytes(ISO_8859_1));
             throw new IOException( "Error: Expected a long type at offset "
                     + pdfSource.getOffset() + ", instead got '" + longBuffer + "'", e);
         }

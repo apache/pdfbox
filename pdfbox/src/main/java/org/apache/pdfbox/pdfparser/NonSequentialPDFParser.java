@@ -1431,7 +1431,7 @@ public class NonSequentialPDFParser extends PDFParser
 
                 if (endObjectKey.equals("stream"))
                 {
-                    pdfSource.unread(endObjectKey.getBytes("ISO-8859-1"));
+                    pdfSource.unread(endObjectKey.getBytes(ISO_8859_1));
                     pdfSource.unread(' ');
                     if (pb instanceof COSDictionary)
                     {
@@ -1784,14 +1784,14 @@ public class NonSequentialPDFParser extends PDFParser
                 LOG.warn("stream ends with 'endobj' instead of 'endstream' at offset "
                         + pdfSource.getOffset());
                 // avoid follow-up warning about missing endobj
-                pdfSource.unread("endobj".getBytes("ISO-8859-1"));
+                pdfSource.unread("endobj".getBytes(ISO_8859_1));
             }
             else if (endStream.length() > 9 && isLenient && endStream.substring(0,9).equals("endstream"))
             {
                 LOG.warn("stream ends with '" + endStream + "' instead of 'endstream' at offset "
                         + pdfSource.getOffset());
                 // unread the "extra" bytes
-                pdfSource.unread(endStream.substring(9).getBytes("ISO-8859-1"));
+                pdfSource.unread(endStream.substring(9).getBytes(ISO_8859_1));
             }
             else if (!endStream.equals("endstream"))
             {
@@ -1826,7 +1826,7 @@ public class NonSequentialPDFParser extends PDFParser
         {
             pdfSource.seek(expectedEndOfStream);
             skipSpaces();
-            if (!checkBytesAtOffset("endstream".getBytes("ISO-8859-1")))
+            if (!checkBytesAtOffset("endstream".getBytes(ISO_8859_1)))
             {
                 streamLengthIsValid = false;
                 LOG.error("The end of the stream doesn't point to the correct offset, using workaround to read the stream");
@@ -2005,7 +2005,7 @@ public class NonSequentialPDFParser extends PDFParser
     {
         long originOffset = pdfSource.getOffset();
         pdfSource.seek(offset);
-        boolean objectFound = checkBytesAtOffset(objectString.getBytes("ISO-8859-1"));
+        boolean objectFound = checkBytesAtOffset(objectString.getBytes(ISO_8859_1));
         pdfSource.seek(originOffset);
         return objectFound;
     }
@@ -2054,7 +2054,7 @@ public class NonSequentialPDFParser extends PDFParser
             long originOffset = pdfSource.getOffset();
             long currentOffset = MINIMUM_SEARCH_OFFSET;
             String objString = " obj";
-            byte[] string = objString.getBytes("ISO-8859-1");
+            byte[] string = objString.getBytes(ISO_8859_1);
             do
             {
                 pdfSource.seek(currentOffset);
@@ -2087,7 +2087,7 @@ public class NonSequentialPDFParser extends PDFParser
                                 pdfSource.read();
                                 byte[] objIDBytes = pdfSource.readFully(length);
                                 String objIdString = new String(objIDBytes, 0,
-                                        objIDBytes.length, "ISO-8859-1");
+                                        objIDBytes.length, ISO_8859_1);
                                 Long objectID;
                                 try
                                 {
@@ -2183,7 +2183,7 @@ public class NonSequentialPDFParser extends PDFParser
             pdfSource.seek(MINIMUM_SEARCH_OFFSET);
             // search for XRef streams
             String objString = " obj";
-            byte[] string = objString.getBytes("ISO-8859-1");
+            byte[] string = objString.getBytes(ISO_8859_1);
             while (!pdfSource.isEOF())
             {
                 if (checkBytesAtOffset(XREF_STREAM))
