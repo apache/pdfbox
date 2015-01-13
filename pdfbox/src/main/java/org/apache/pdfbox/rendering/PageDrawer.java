@@ -177,6 +177,7 @@ public final class PageDrawer extends PDFGraphicsStreamEngine
      * @param pattern The tiling pattern to be used.
      * @param colorSpace color space for this tiling.
      * @param color color for this tiling.
+     * @param patternMatrix the pattern matrix
      * @throws IOException If there is an IO error while drawing the page.
      */
     public void drawTilingPattern(Graphics2D g, PDTilingPattern pattern, PDColorSpace colorSpace,
