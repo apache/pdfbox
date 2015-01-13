@@ -89,6 +89,7 @@ public class PDOutlineItem extends PDOutlineNode
     /**
      * {@inheritDoc}
      */
+    @Override
     public PDOutlineNode getParent()
     {
         return super.getParent();
