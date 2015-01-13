@@ -39,7 +39,7 @@ import org.w3c.dom.NodeList;
 /**
  * Handles some ImageIO operations.
  */
-public class ImageIOUtil
+public final class ImageIOUtil
 {
     /**
      * Log instance
