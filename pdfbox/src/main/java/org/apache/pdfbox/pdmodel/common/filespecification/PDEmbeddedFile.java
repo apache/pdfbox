@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.util.Calendar;
 
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDStream;
@@ -42,7 +43,7 @@ public class PDEmbeddedFile extends PDStream
     public PDEmbeddedFile( PDDocument document )
     {
         super( document );
-        getStream().setName( "Type", "EmbeddedFile" );
+        getStream().setName(COSName.TYPE, "EmbeddedFile" );
 
     }
 
@@ -67,7 +68,7 @@ public class PDEmbeddedFile extends PDStream
     public PDEmbeddedFile( PDDocument doc, InputStream str  ) throws IOException
     {
         super( doc, str );
-        getStream().setName( "Type", "EmbeddedFile" );
+        getStream().setName(COSName.TYPE, "EmbeddedFile");
     }
 
     /**
@@ -82,7 +83,7 @@ public class PDEmbeddedFile extends PDStream
     public PDEmbeddedFile( PDDocument doc, InputStream str, boolean filtered ) throws IOException
     {
         super( doc, str, filtered );
-        getStream().setName( "Type", "EmbeddedFile" );
+        getStream().setName(COSName.TYPE, "EmbeddedFile" );
     }
 
     /**
@@ -92,7 +93,7 @@ public class PDEmbeddedFile extends PDStream
      */
     public void setSubtype( String mimeType )
     {
-        getStream().setName( "Subtype", mimeType );
+        getStream().setName(COSName.SUBTYPE, mimeType );
     }
 
     /**
@@ -102,7 +103,7 @@ public class PDEmbeddedFile extends PDStream
      */
     public String getSubtype()
     {
-        return getStream().getNameAsString( "Subtype" );
+        return getStream().getNameAsString(COSName.SUBTYPE );
     }
 
     /**
