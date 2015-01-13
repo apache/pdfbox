@@ -89,6 +89,9 @@ public final class FieldUtils
         }
     }
 
+    /**
+     * Constructor.
+     */
     private FieldUtils()
     {
     }
@@ -123,9 +126,7 @@ public final class FieldUtils
     /**
      * Sort two related lists simultaneously by the elements in the value parameter.
      * 
-     * @param key the key elements
-     * @param value the value elements
-     * @return a sorted list of KeyValue elements.
+     * @param pairs a list of KeyValue elements
      */
     static final void sortByKey(List<KeyValue> pairs)
     {
