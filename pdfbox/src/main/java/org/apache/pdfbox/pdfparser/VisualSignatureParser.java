@@ -192,7 +192,7 @@ public class VisualSignatureParser extends BaseParser
             COSBase pb = parseDirObject();
             String endObjectKey = readString();
 
-            if (endObjectKey.equals("stream"))
+            if (endObjectKey.equals(STREAM_STRING))
             {
                 pdfSource.unread(endObjectKey.getBytes());
                 pdfSource.unread(' ');
