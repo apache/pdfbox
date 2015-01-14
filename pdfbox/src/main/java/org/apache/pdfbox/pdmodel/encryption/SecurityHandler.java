@@ -220,13 +220,13 @@ public abstract class SecurityHandler
     }
 
     /**
-     * Encrypt a set of data.
+     * Encrypt or decrypt a set of data.
      *
      * @param objectNumber The data object number.
      * @param genNumber The data generation number.
      * @param data The data to encrypt.
      * @param output The output to write the encrypted data to.
-     * @param decrypt true to decrypt the data, false to encrypt it
+     * @param decrypt true to decrypt the data, false to encrypt it.
      *
      * @throws IOException If there is an error reading the data.
      */
@@ -236,44 +236,7 @@ public abstract class SecurityHandler
         // Determine whether we're using Algorithm 1 (for RC4 and AES-128), or 1.A (for AES-256)
         if (useAES && encryptionKey.length == 32)
         {
-            byte[] iv = new byte[16];
-            
-            if (decrypt)
-            {
-                // read IV from stream
-                data.read(iv);
-            }
-            else
-            {
-                // generate random IV and write to stream
-                SecureRandom rnd = new SecureRandom();
-                rnd.nextBytes(iv);
-                output.write(iv);
-            }
-
-            Cipher cipher;
-            try
-            {
-                cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-                SecretKeySpec keySpec = new SecretKeySpec(encryptionKey, "AES");
-                IvParameterSpec ivSpec = new IvParameterSpec(iv);
-                cipher.init(decrypt ? Cipher.DECRYPT_MODE : Cipher.ENCRYPT_MODE, keySpec, ivSpec);
-
-            }
-            catch (GeneralSecurityException e)
-            {
-                throw new IOException(e);
-            }
-
-            CipherInputStream cis = new CipherInputStream(data, cipher);
-            try
-            {
-                IOUtils.copy(cis, output);
-            }
-            finally
-            {
-                cis.close();
-            }
+            encryptDataAES256(data, output, decrypt);
         }
         else
         {
@@ -281,83 +244,12 @@ public abstract class SecurityHandler
             {
                 throw new IllegalArgumentException("AES encryption with key length other than 256 bits is not yet implemented.");
             }
-
-            byte[] newKey = new byte[encryptionKey.length + 5];
-            System.arraycopy(encryptionKey, 0, newKey, 0, encryptionKey.length);
-            // PDF 1.4 reference pg 73
-            // step 1
-            // we have the reference
-
-            // step 2
-            newKey[newKey.length - 5] = (byte) (objectNumber & 0xff);
-            newKey[newKey.length - 4] = (byte) (objectNumber >> 8 & 0xff);
-            newKey[newKey.length - 3] = (byte) (objectNumber >> 16 & 0xff);
-            newKey[newKey.length - 2] = (byte) (genNumber & 0xff);
-            newKey[newKey.length - 1] = (byte) (genNumber >> 8 & 0xff);
-
-            // step 3
-            MessageDigest md = MessageDigests.getMD5();
-            md.update(newKey);
-            if (useAES)
-            {
-                md.update(AES_SALT);
-            }
-            byte[] digestedKey = md.digest();
-
-            // step 4
-            int length = Math.min(newKey.length, 16);
-            byte[] finalKey = new byte[length];
-            System.arraycopy(digestedKey, 0, finalKey, 0, length);
+            
+            byte[] finalKey = calcFinalKey(objectNumber, genNumber);
 
             if (useAES)
             {
-                byte[] iv = new byte[16];
-
-                data.read(iv);
-
-                try
-                {
-                    Cipher decryptCipher;
-                    try
-                    {
-                        decryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-                    }
-                    catch (NoSuchAlgorithmException e)
-                    {
-                        // should never happen
-                        throw new RuntimeException(e);
-                    }
-
-                    SecretKey aesKey = new SecretKeySpec(finalKey, "AES");
-                    IvParameterSpec ips = new IvParameterSpec(iv);
-                    decryptCipher.init(decrypt ? Cipher.DECRYPT_MODE : Cipher.ENCRYPT_MODE, aesKey, ips);
-                    byte[] buffer = new byte[256];
-                    for (int n = 0; -1 != (n = data.read(buffer));)
-                    {
-                        output.write(decryptCipher.update(buffer,0, n ));
-                    }
-                    output.write(decryptCipher.doFinal());
-                }
-                catch (InvalidKeyException e)
-                {
-                    throw new IOException(e);
-                }
-                catch (InvalidAlgorithmParameterException e)
-                {
-                    throw new IOException(e);
-                }
-                catch (NoSuchPaddingException e)
-                {
-                    throw new IOException(e);
-                }
-                catch (IllegalBlockSizeException e)
-                {
-                    throw new IOException(e);
-                }
-                catch (BadPaddingException e)
-                {
-                    throw new IOException(e);
-                }
+                encryptDataAESother(finalKey, data, output, decrypt);
             }
             else
             {
@@ -366,6 +258,153 @@ public abstract class SecurityHandler
             }
         }
         output.flush();
+    }
+
+    /**
+     * Calculate the key to be used for RC4 and AES-128.
+     *
+     * @param objectNumber The data object number.
+     * @param genNumber The data generation number.
+     * @return the calculated key.
+     */
+    private byte[] calcFinalKey(long objectNumber, long genNumber)
+    {
+        byte[] newKey = new byte[encryptionKey.length + 5];
+        System.arraycopy(encryptionKey, 0, newKey, 0, encryptionKey.length);
+        // PDF 1.4 reference pg 73
+        // step 1
+        // we have the reference
+        // step 2
+        newKey[newKey.length - 5] = (byte) (objectNumber & 0xff);
+        newKey[newKey.length - 4] = (byte) (objectNumber >> 8 & 0xff);
+        newKey[newKey.length - 3] = (byte) (objectNumber >> 16 & 0xff);
+        newKey[newKey.length - 2] = (byte) (genNumber & 0xff);
+        newKey[newKey.length - 1] = (byte) (genNumber >> 8 & 0xff);
+        // step 3
+        MessageDigest md = MessageDigests.getMD5();
+        md.update(newKey);
+        if (useAES)
+        {
+            md.update(AES_SALT);
+        }
+        byte[] digestedKey = md.digest();
+        // step 4
+        int length = Math.min(newKey.length, 16);
+        byte[] finalKey = new byte[length];
+        System.arraycopy(digestedKey, 0, finalKey, 0, length);
+        return finalKey;
+    }
+    
+    /**
+     * Encrypt or decrypt data with AES with key length other than 256 bits.
+     *
+     * @param finalKey The final key obtained with via {@link #calcFinalKey()}.
+     * @param data The data to encrypt.
+     * @param output The output to write the encrypted data to.
+     * @param decrypt true to decrypt the data, false to encrypt it.
+     *
+     * @throws IOException If there is an error reading the data.
+     */
+    private void encryptDataAESother(byte[] finalKey, InputStream data, OutputStream output, boolean decrypt) 
+            throws IOException
+    {
+        byte[] iv = new byte[16];
+        
+        data.read(iv);
+        
+        try
+        {
+            Cipher decryptCipher;
+            try
+            {
+                decryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            }
+            catch (NoSuchAlgorithmException e)
+            {
+                // should never happen
+                throw new RuntimeException(e);
+            }
+            
+            SecretKey aesKey = new SecretKeySpec(finalKey, "AES");
+            IvParameterSpec ips = new IvParameterSpec(iv);
+            decryptCipher.init(decrypt ? Cipher.DECRYPT_MODE : Cipher.ENCRYPT_MODE, aesKey, ips);
+            byte[] buffer = new byte[256];
+            for (int n = 0; -1 != (n = data.read(buffer));)
+            {
+                output.write(decryptCipher.update(buffer,0, n ));
+            }
+            output.write(decryptCipher.doFinal());
+        }
+        catch (InvalidKeyException e)
+        {
+            throw new IOException(e);
+        }
+        catch (InvalidAlgorithmParameterException e)
+        {
+            throw new IOException(e);
+        }
+        catch (NoSuchPaddingException e)
+        {
+            throw new IOException(e);
+        }
+        catch (IllegalBlockSizeException e)
+        {
+            throw new IOException(e);
+        }
+        catch (BadPaddingException e)
+        {
+            throw new IOException(e);
+        }
+    }
+
+    /**
+     * Encrypt or decrypt data with AES256.
+     *
+     * @param data The data to encrypt.
+     * @param output The output to write the encrypted data to.
+     * @param decrypt true to decrypt the data, false to encrypt it.
+     *
+     * @throws IOException If there is an error reading the data.
+     */
+    private void encryptDataAES256(InputStream data, OutputStream output, boolean decrypt) throws IOException
+    {
+        byte[] iv = new byte[16];
+        
+        if (decrypt)
+        {
+            // read IV from stream
+            data.read(iv);
+        }
+        else
+        {
+            // generate random IV and write to stream
+            SecureRandom rnd = new SecureRandom();
+            rnd.nextBytes(iv);
+            output.write(iv);
+        }
+        
+        Cipher cipher;
+        try
+        {
+            cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            SecretKeySpec keySpec = new SecretKeySpec(encryptionKey, "AES");
+            IvParameterSpec ivSpec = new IvParameterSpec(iv);
+            cipher.init(decrypt ? Cipher.DECRYPT_MODE : Cipher.ENCRYPT_MODE, keySpec, ivSpec);
+        }
+        catch (GeneralSecurityException e)
+        {
+            throw new IOException(e);
+        }
+        
+        CipherInputStream cis = new CipherInputStream(data, cipher);
+        try
+        {
+            IOUtils.copy(cis, output);
+        }
+        finally
+        {
+            cis.close();
+        }
     }
 
     /**
