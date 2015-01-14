@@ -40,7 +40,7 @@ import org.apache.pdfbox.filter.ccitt.FillOrderChangeInputStream;
  */
 final class CCITTFaxFilter extends Filter
 {
-    private static final Log log = LogFactory.getLog(CCITTFaxFilter.class);
+    private static final Log LOG = LogFactory.getLog(CCITTFaxFilter.class);
 
     @Override
     public final DecodeResult decode(InputStream encoded, OutputStream decoded,
@@ -128,6 +128,6 @@ final class CCITTFaxFilter extends Filter
     protected final void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
             throws IOException
     {
-        log.warn("CCITTFaxDecode.encode is not implemented yet, skipping this stream.");
+        LOG.warn("CCITTFaxDecode.encode is not implemented yet, skipping this stream.");
     }
 }
