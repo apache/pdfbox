@@ -518,7 +518,7 @@ public abstract class PDFieldTreeNode implements COSObjectable
         {
             retval = new PDAnnotationWidget(getDictionary());
         }
-        else if (kids.size() > 0)
+        else if (!kids.isEmpty())
         {
             Object firstKid = kids.get(0);
             if (firstKid instanceof PDAnnotationWidget)
