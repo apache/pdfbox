@@ -740,12 +740,12 @@ public final class StandardSecurityHandler extends SecurityHandler
                                       boolean encryptMetadata) throws IOException
     {
         ByteArrayOutputStream result = new ByteArrayOutputStream();
-        byte[] encryptionKey = computeEncryptedKey( password, owner, null, null, null, permissions,
+        byte[] encKey = computeEncryptedKey( password, owner, null, null, null, permissions,
                 id, encRevision, length, encryptMetadata, true );
         
         if( encRevision == 2 )
         {
-            rc4.setKey( encryptionKey );
+            rc4.setKey( encKey );
             rc4.write( ENCRYPT_PADDING, result );
         }
         else if( encRevision == 3 || encRevision == 4 )
@@ -756,10 +756,10 @@ public final class StandardSecurityHandler extends SecurityHandler
             md.update( id );
             result.write( md.digest() );
 
-            byte[] iterationKey = new byte[ encryptionKey.length ];
+            byte[] iterationKey = new byte[ encKey.length ];
             for( int i=0; i<20; i++ )
             {
-                System.arraycopy( encryptionKey, 0, iterationKey, 0, iterationKey.length );
+                System.arraycopy( encKey, 0, iterationKey, 0, iterationKey.length );
                 for( int j=0; j< iterationKey.length; j++ )
                 {
                     iterationKey[j] = (byte)(iterationKey[j] ^ i);
