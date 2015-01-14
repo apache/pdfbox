@@ -133,7 +133,7 @@ public abstract class FontContainer<T extends PDFontLike>
         {
             throw new GlyphException(PreflightConstants.ERROR_FONTS_GLYPH, code,
                     "Unexpected error during the width validation for the character code " + code +
-                    " : " + e.getMessage());
+                    " : " + e.getMessage(), e);
         }
     }
 
