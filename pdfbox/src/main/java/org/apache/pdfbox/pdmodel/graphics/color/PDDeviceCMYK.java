@@ -37,7 +37,7 @@ import java.io.InputStream;
 public class PDDeviceCMYK extends PDDeviceColorSpace
 {
     /**  The single instance of this class. */
-    public static PDDeviceCMYK INSTANCE;
+    public static final PDDeviceCMYK INSTANCE;
     static
     {
         try
