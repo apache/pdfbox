@@ -34,7 +34,7 @@ public final class FilterFactory
     /**
      * Singleton instance.
      */
-    public static FilterFactory INSTANCE = new FilterFactory();
+    public static final FilterFactory INSTANCE = new FilterFactory();
 
     private Map<COSName, Filter> filters = new HashMap<COSName, Filter>();
 
