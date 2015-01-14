@@ -103,7 +103,7 @@ public class LZWFilter extends Filter
         List<byte[]> codeTable = null;
         int chunk = 9;
         MemoryCacheImageInputStream in = new MemoryCacheImageInputStream(encoded);
-        long nextCommand = 0;
+        long nextCommand;
         long prevCommand = -1;
 
         try
@@ -172,10 +172,7 @@ public class LZWFilter extends Filter
             byte by = (byte) r;
             if (inputPattern == null)
             {
-                inputPattern = new byte[]
-                {
-                    by
-                };
+                inputPattern = new byte[] { by };
                 foundCode = by & 0xff;
             }
             else
@@ -195,14 +192,10 @@ public class LZWFilter extends Filter
                     {
                         // code table is full
                         out.writeBits(CLEAR_TABLE, chunk);
-                        chunk = 9;
                         codeTable = createCodeTable();
                     }
 
-                    inputPattern = new byte[]
-                    {
-                        by
-                    };
+                    inputPattern = new byte[] { by };
                     foundCode = by & 0xff;
                 }
                 else
@@ -225,8 +218,12 @@ public class LZWFilter extends Filter
         chunk = calculateChunk(codeTable.size(), 1);
 
         out.writeBits(EOD, chunk);
-        out.writeBits(0, 7); // pad with 0
-        out.flush(); // must do or file will be empty :-(
+        
+        // pad with 0
+        out.writeBits(0, 7);
+        
+        // must do or file will be empty :-(
+        out.flush(); 
     }
 
     /**
@@ -248,21 +245,20 @@ public class LZWFilter extends Filter
                 // we're in the single byte area
                 if (foundCode != -1)
                 {
-                    return foundCode; // we already found pattern with size > 1
+                    // we already found pattern with size > 1
+                    return foundCode; 
                 }
                 else if (pattern.length > 1)
                 {
-                    return -1; // we won't find anything here anyway
+                    // we won't find anything here anyway
+                    return -1;
                 }
             }
             byte[] tryPattern = codeTable.get(i);
-            if (foundCode != -1 || tryPattern.length > foundLen)
+            if ((foundCode != -1 || tryPattern.length > foundLen) && Arrays.equals(tryPattern, pattern))
             {
-                if (Arrays.equals(tryPattern, pattern))
-                {
-                    foundCode = i;
-                    foundLen = tryPattern.length;
-                }
+                foundCode = i;
+                foundLen = tryPattern.length;
             }
         }
         return foundCode;
@@ -277,10 +273,7 @@ public class LZWFilter extends Filter
         List<byte[]> codeTable = new ArrayList<byte[]>(4096);
         for (int i = 0; i < 256; ++i)
         {
-            codeTable.add(new byte[]
-            {
-                (byte) (i & 0xFF)
-            });
+            codeTable.add(new byte[] { (byte) (i & 0xFF) });
         }
         codeTable.add(null); // 256 EOD
         codeTable.add(null); // 257 CLEAR_TABLE
