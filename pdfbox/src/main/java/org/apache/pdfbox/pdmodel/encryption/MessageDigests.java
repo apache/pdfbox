@@ -25,6 +25,10 @@ import java.security.NoSuchAlgorithmException;
  */
 class MessageDigests
 {
+    private MessageDigests()
+    {
+    }
+    
     /**
      * @return MD5 message digest
      */
