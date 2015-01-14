@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -66,8 +67,11 @@ public final class FieldUtils
     /**
      * Comparator to sort KeyValue by key.
      */
-    static class KeyValueKeyComparator implements Comparator<KeyValue>
+    static class KeyValueKeyComparator implements Serializable, Comparator<KeyValue>
     {
+
+        private static final long serialVersionUID = 6715364290007167694L;
+
         @Override
         public int compare(KeyValue o1, KeyValue o2)
         {
@@ -78,8 +82,11 @@ public final class FieldUtils
     /**
      * Comparator to sort KeyValue by value.
      */
-    static class KeyValueValueComparator implements Comparator<KeyValue>
+    static class KeyValueValueComparator implements Serializable, Comparator<KeyValue>
     {
+
+        private static final long serialVersionUID = -3984095679894798265L;
+
         @Override
         public int compare(KeyValue o1, KeyValue o2)
         {
@@ -101,9 +108,9 @@ public final class FieldUtils
      * @param value the value elements
      * @return a sorted list of KeyValue elements.
      */
-    static final List<KeyValue> toKeyValueList(List<String> key, List<String> value)
+    static List<KeyValue> toKeyValueList(List<String> key, List<String> value)
     {
-        ArrayList<KeyValue> list = new ArrayList<KeyValue>();
+        List<KeyValue> list = new ArrayList<KeyValue>();
         for(int i =0; i<key.size(); i++)
         {
             list.add(new FieldUtils.KeyValue(key.get(i),value.get(i)));
@@ -116,7 +123,7 @@ public final class FieldUtils
      * 
      * @param pairs a list of KeyValue elements
      */
-    static final void sortByValue(List<KeyValue> pairs)
+    static void sortByValue(List<KeyValue> pairs)
     {
         Collections.sort(pairs, new FieldUtils.KeyValueValueComparator());
     }
@@ -126,7 +133,7 @@ public final class FieldUtils
      * 
      * @param pairs a list of KeyValue elements
      */
-    static final void sortByKey(List<KeyValue> pairs)
+    static void sortByKey(List<KeyValue> pairs)
     {
         Collections.sort(pairs, new FieldUtils.KeyValueKeyComparator());
     }

@@ -33,6 +33,7 @@ import org.apache.pdfbox.pdmodel.fdf.FDFField;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -145,7 +146,7 @@ public final class PDAcroForm implements COSObjectable
             addFieldAndChildren( docField, fdfFields );
         }
         fdfDict.setID( document.getDocument().getDocumentID() );
-        if( fdfFields.size() > 0 )
+        if( !fdfFields.isEmpty() )
         {
             fdfDict.setFields( fdfFields );
         }
@@ -166,12 +167,12 @@ public final class PDAcroForm implements COSObjectable
             {
                 addFieldAndChildren((PDFieldTreeNode) kid, childFDFFields);
             }
-            if( childFDFFields.size() > 0 )
+            if( !childFDFFields.isEmpty() )
             {
                 fdfField.setKids( childFDFFields );
             }
         }
-        if( fieldValue != null || childFDFFields.size() > 0 )
+        if( fieldValue != null || !childFDFFields.isEmpty() )
         {
             fdfFields.add( fdfField );
         }
@@ -195,7 +196,7 @@ public final class PDAcroForm implements COSObjectable
         COSArray cosFields = (COSArray) acroForm.getDictionaryObject(COSName.FIELDS);
         if( cosFields == null )
         {
-            return null;
+            return Collections.<PDFieldTreeNode>emptyList();
         }
         List<PDFieldTreeNode> pdFields = new ArrayList<PDFieldTreeNode>();
         for (int i = 0; i < cosFields.size(); i++)

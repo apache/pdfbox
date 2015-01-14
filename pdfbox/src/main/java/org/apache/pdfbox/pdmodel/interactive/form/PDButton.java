@@ -112,7 +112,7 @@ public abstract class PDButton extends PDField
      */
     public void setOptions( List<String> options )
     {
-        if (options == null || options.size() == 0)
+        if (options == null || options.isEmpty())
         {
             getDictionary().removeItem(COSName.OPT);
         }

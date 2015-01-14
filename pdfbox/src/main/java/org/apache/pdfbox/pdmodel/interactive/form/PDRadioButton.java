@@ -142,7 +142,7 @@ public final class PDRadioButton extends PDButton
     public String getExportValue() throws IOException
     {
         List<String> options = getOptions();
-        if (options.size() == 0)
+        if (options.isEmpty())
         {
             return getValue();
         }

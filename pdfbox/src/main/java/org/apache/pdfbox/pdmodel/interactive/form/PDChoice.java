@@ -112,8 +112,7 @@ public abstract class PDChoice extends PDVariableText
                     exportValues.add(displayValue.getString());
                 }
                 return exportValues;
-            }
-            
+            }            
         }
         return Collections.<String>emptyList();
     }
@@ -135,7 +134,7 @@ public abstract class PDChoice extends PDVariableText
      */
     public void setOptions(List<String> displayValues)
     {
-        if (displayValues != null && displayValues.size() > 0)
+        if (displayValues != null && !displayValues.isEmpty())
         {
             if (isSort())
             {
@@ -169,11 +168,7 @@ public abstract class PDChoice extends PDVariableText
      */
     public void setOptions(List<String> exportValues, List<String> displayValues)
     {
-        if (exportValues == null || displayValues == null || exportValues.size() == 0 || displayValues.size() == 0)
-        {
-            getDictionary().removeItem(COSName.OPT);
-        }
-        else if (exportValues != null && displayValues != null && exportValues.size() > 0 && displayValues.size() > 0) 
+        if (exportValues != null && displayValues != null && !exportValues.isEmpty() && !displayValues.isEmpty()) 
         {
             if (exportValues.size() != displayValues.size())
             {
@@ -200,6 +195,10 @@ public abstract class PDChoice extends PDVariableText
                 getDictionary().setItem(COSName.OPT, options);
             }
         }
+        else
+        {
+            getDictionary().removeItem(COSName.OPT);
+        }      
     }
 
     /**

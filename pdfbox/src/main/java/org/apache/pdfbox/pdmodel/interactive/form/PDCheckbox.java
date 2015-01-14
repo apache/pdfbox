@@ -80,7 +80,7 @@ public final class PDCheckbox extends PDButton
             // Ignoring as that will also mean that the field is not checked.
             // Setting the value explicitly as Code Analysis (Sonar) doesn't like
             // empty catch blocks.
-            fieldValue = null;
+            return false;
         }
         COSName radioValue = (COSName)getDictionary().getDictionaryObject( COSName.AS );
         if( radioValue != null && fieldValue != null && radioValue.getName().equals( onValue ) )
