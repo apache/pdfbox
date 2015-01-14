@@ -38,7 +38,7 @@ import org.apache.pdfbox.cos.COSName;
  */
 public abstract class Filter
 {
-    private static final Log log = LogFactory.getLog(Filter.class);
+    private static final Log LOG = LogFactory.getLog(Filter.class);
 
     protected Filter()
     {
@@ -93,7 +93,7 @@ public abstract class Filter
         }
         else if (obj != null)
         {
-            log.error("Expected DecodeParams to be an Array or Dictionary but found " +
+            LOG.error("Expected DecodeParams to be an Array or Dictionary but found " +
                       obj.getClass().getName());
         }
         return new COSDictionary();
