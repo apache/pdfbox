@@ -34,6 +34,7 @@ import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
 import org.apache.pdfbox.pdfparser.BaseParser;
 import org.apache.pdfbox.pdfparser.NonSequentialPDFParser;
@@ -476,14 +477,7 @@ public class PDDocument implements Closeable
                 dest.addCompression();
                 importedPage.setContents(dest);
                 os = dest.createOutputStream();
-
-                byte[] buf = new byte[10240];
-                int amountRead;
-                is = src.createInputStream();
-                while ((amountRead = is.read(buf, 0, 10240)) > -1)
-                {
-                    os.write(buf, 0, amountRead);
-                }
+                IOUtils.copy(is, os);
             }
             addPage(importedPage);
         }
