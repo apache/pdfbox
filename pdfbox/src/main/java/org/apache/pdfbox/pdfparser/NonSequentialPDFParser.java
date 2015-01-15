@@ -1010,13 +1010,12 @@ public class NonSequentialPDFParser extends PDFParser
     /**
      * Change the parser leniency flag.
      *
-     * This method can only be called before the parsing of the file.
+     * This method can only be called before the parsing of the file, or an
+     * IllegalArgumentException will be thrown.
      *
      * @param lenient try to handle malformed PDFs.
-     *
-     * @throws IllegalArgumentException if the method is called after parsing.
      */
-    public void setLenient(boolean lenient) throws IllegalArgumentException
+    public void setLenient(boolean lenient)
     {
         if (initialParseDone)
         {
