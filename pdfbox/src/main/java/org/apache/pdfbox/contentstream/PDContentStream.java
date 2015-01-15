@@ -32,20 +32,20 @@ public interface PDContentStream
     /**
      * Returns the underlying COS stream.
      */
-    public COSStream getContentStream();
+    COSStream getContentStream();
 
     /**
      * Returns this stream's resources, if any.
      */
-    public PDResources getResources();
+    PDResources getResources();
 
     /**
      * Returns the bounding box of the contents.
      */
-    public PDRectangle getBBox();
+    PDRectangle getBBox();
 
     /**
      * Returns the matrix which transforms from the stream's space to user space.
      */
-    public Matrix getMatrix();
+    Matrix getMatrix();
 }
