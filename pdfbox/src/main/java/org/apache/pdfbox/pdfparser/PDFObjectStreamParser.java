@@ -32,8 +32,8 @@ import org.apache.pdfbox.cos.COSStream;
 /**
  * This will parse a PDF 1.5 object stream and extract all of the objects from the stream.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.6 $
+ * @author Ben Litchfield
+ * 
  */
 public class PDFObjectStreamParser extends BaseParser
 {
@@ -57,7 +57,7 @@ public class PDFObjectStreamParser extends BaseParser
     public PDFObjectStreamParser(COSStream strm, COSDocument doc) throws IOException
     {
         super(strm.getUnfilteredStream());
-        setDocument(doc);
+        document = doc;
         stream = strm;
     }
 
