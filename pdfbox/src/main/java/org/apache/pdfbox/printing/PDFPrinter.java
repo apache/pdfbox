@@ -294,7 +294,7 @@ public class PDFPrinter
         }
 
         @Override
-        public PageFormat getPageFormat(int pageIndex) throws IndexOutOfBoundsException
+        public PageFormat getPageFormat(int pageIndex)
         {
             // note: PDFPrintable#print() is responsible for fitting the current page to
             //       the printer's actual paper size, so this method must return the full
@@ -335,11 +335,11 @@ public class PDFPrinter
         }
 
         @Override
-        public Printable getPrintable(int i) throws IndexOutOfBoundsException
+        public Printable getPrintable(int i)
         {
             if (i >= getNumberOfPages())
             {
-                throw new IndexOutOfBoundsException(i + " >= " +  getNumberOfPages());
+                throw new IndexOutOfBoundsException(i + " >= " + getNumberOfPages());
             }
             return new PDFPrintable();
         }
