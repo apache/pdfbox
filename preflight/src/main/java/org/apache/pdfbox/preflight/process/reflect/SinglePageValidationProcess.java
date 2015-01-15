@@ -209,12 +209,12 @@ public class SinglePageValidationProcess extends AbstractProcess
                 }
             }
         }
+        catch (ValidationException e)
+        {
+            throw e;
+        }
         catch (IOException e)
         {
-            if (e instanceof ValidationException)
-            {
-                throw (ValidationException) e;
-            }
             // TODO IOException probably due to Encrypt
             throw new ValidationException("Unable to access Annotation", e);
         }
