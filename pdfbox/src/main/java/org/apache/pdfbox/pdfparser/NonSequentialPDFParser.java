@@ -1659,8 +1659,8 @@ public class NonSequentialPDFParser extends PDFParser
         return retVal;
     }
     
-    private final int streamCopyBufLen = 8192;
-    private final byte[] streamCopyBuf = new byte[streamCopyBufLen];
+    private static final int STREAMCOPYBUFLEN = 8192;
+    private final byte[] streamCopyBuf = new byte[STREAMCOPYBUFLEN];
 
     /**
      * This will read a COSStream from the input stream using length attribute within dictionary. If length attribute is
@@ -1744,7 +1744,7 @@ public class NonSequentialPDFParser extends PDFParser
                     final int readBytes = pdfSource
                             .read(streamCopyBuf,
                                     0,
-                                    (remainBytes > streamCopyBufLen) ? streamCopyBufLen : (int) remainBytes);
+                                    (remainBytes > STREAMCOPYBUFLEN) ? STREAMCOPYBUFLEN : (int) remainBytes);
                     if (readBytes <= 0)
                     {
                         useReadUntilEnd = true;
