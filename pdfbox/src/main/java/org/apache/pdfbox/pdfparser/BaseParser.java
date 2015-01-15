@@ -196,16 +196,6 @@ public abstract class BaseParser implements Closeable
         }
     }
     
-    /**
-     * Set the document for this stream.
-     *
-     * @param doc The current document.
-     */
-    public void setDocument( COSDocument doc )
-    {
-        document = doc;
-    }
-
     private static boolean isHexDigit(char ch)
     {
         return (ch >= '0' && ch <= '9') ||
@@ -739,21 +729,6 @@ public abstract class BaseParser implements Closeable
             pdfSource.unread( nextThreeBytes, 0, amountRead );
         }
         return braces;
-    }
-
-    /**
-     * This will parse a PDF string.
-     *
-     * @param isDictionary indicates if the stream is a dictionary or not
-     * @return The parsed PDF string.
-     *
-     * @throws IOException If there is an error reading from the stream.
-     * @deprecated Not needed anymore. Use {@link #parseCOSString()} instead. PDFBOX-1437
-     */
-    @Deprecated
-    protected COSString parseCOSString(boolean isDictionary) throws IOException
-    {
-        return parseCOSString();
     }
 
     /**
