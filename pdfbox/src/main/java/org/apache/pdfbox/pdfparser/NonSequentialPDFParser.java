@@ -608,12 +608,12 @@ public class NonSequentialPDFParser extends PDFParser
                         decryptionMaterial);
                 accessPermission = securityHandler.getCurrentAccessPermission();
             }
+            catch (IOException e)
+            {
+                throw e;
+            }
             catch (Exception e)
             {
-                if (e instanceof IOException)
-                {
-                    throw (IOException) e;
-                }
                 throw new IOException("Error (" + e.getClass().getSimpleName()
                         + ") while creating security handler for decryption", e);
             }
