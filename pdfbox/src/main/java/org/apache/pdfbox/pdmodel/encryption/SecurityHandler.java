@@ -310,7 +310,13 @@ public abstract class SecurityHandler
     {
         byte[] iv = new byte[16];
         
-        data.read(iv);
+        int ivSize = data.read(iv);
+        if (ivSize != iv.length)
+        {
+            throw new IOException(
+                    "AES initialization vector not fully read: only "
+                    + ivSize + " bytes read instead of " + iv.length);
+        }
         
         try
         {
