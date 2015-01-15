@@ -265,7 +265,7 @@ public class RandomAccessBuffer implements RandomAccess, Closeable, Cloneable
                 newOffset += BUFFER_SIZE;
             }
             // are there still some bytes to be written?
-            remainingBytes2Write -= numberOfNewArrays * BUFFER_SIZE;
+            remainingBytes2Write -= numberOfNewArrays * (long) BUFFER_SIZE;
             if (remainingBytes2Write >= 0)
             {
                 expandBuffer();
