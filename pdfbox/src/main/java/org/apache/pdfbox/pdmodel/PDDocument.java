@@ -18,7 +18,6 @@ package org.apache.pdfbox.pdmodel;
 
 import java.io.Closeable;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,7 +37,6 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
 import org.apache.pdfbox.pdfparser.BaseParser;
 import org.apache.pdfbox.pdfparser.NonSequentialPDFParser;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -780,69 +778,6 @@ public class PDDocument implements Closeable
         return null;
     }
 
-    /**
-     * This will load a document from a file.
-     * 
-     * @param file The name of the file to load.
-     * 
-     * @return The document that was loaded.
-     * 
-     * @throws IOException If there is an error reading from the stream.
-     */
-    public static PDDocument loadLegacy(File file) throws IOException
-    {
-        return loadLegacy(file, false);
-    }
-
-    /**
-     * This will load a document from a file. Allows for skipping corrupt pdf objects
-     *
-     * @param file The name of the file to load.
-     * @param useScratchFiles enables the usage of a scratch file if set to true
-     *
-     * @return The document that was loaded.
-     *
-     * @throws IOException If there is an error reading from the stream.
-     */
-    public static PDDocument loadLegacy(File file, boolean useScratchFiles) throws IOException
-    {
-        PDFParser parser = new PDFParser(new FileInputStream(file), useScratchFiles);
-        parser.parse();
-        PDDocument doc = parser.getPDDocument();
-        doc.incrementalFile = file;
-        return doc;
-    }
-
-    /**
-     * This will load a document from an input stream.
-     * 
-     * @param input The stream that contains the document.
-     * 
-     * @return The document that was loaded.
-     * 
-     * @throws IOException If there is an error reading from the stream.
-     */
-    public static PDDocument loadLegacy(InputStream input) throws IOException
-    {
-        return loadLegacy(input, false);
-    }
-
-    /**
-     * This will load a document from an input stream. Allows for skipping corrupt pdf objects
-     * 
-     * @param input The stream that contains the document.
-     * @param useScratchFiles enables the usage of a scratch file if set to true
-     * 
-     * @return The document that was loaded.
-     * 
-     * @throws IOException If there is an error reading from the stream.
-     */
-    public static PDDocument loadLegacy(InputStream input, boolean useScratchFiles) throws IOException
-    {
-        PDFParser parser = new PDFParser(input, useScratchFiles);
-        parser.parse();
-        return parser.getPDDocument();
-    }
     /**
      * Parses PDF with non sequential parser.
      * 
