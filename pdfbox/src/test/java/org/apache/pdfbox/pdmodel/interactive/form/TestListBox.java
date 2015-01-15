@@ -73,6 +73,24 @@ public class TestListBox extends TestCase
      */
     public void testChoicePDModel() throws IOException
     {
+
+        /*
+         * Set up two data list which will be used for the tests
+         */
+
+        // export values
+        List<String> exportValues = new ArrayList<String>();
+        exportValues.add("export01");
+        exportValues.add("export02");
+        exportValues.add("export03");
+
+        // display values, not sorted on purpose as this
+        // will be used to test the sort option of the list box
+        List<String> displayValues = new ArrayList<String>();
+        displayValues.add("display02");
+        displayValues.add("display01");
+        displayValues.add("display03");
+
         PDDocument doc = null;
         try
         {
@@ -82,31 +100,20 @@ public class TestListBox extends TestCase
             
             // test that there are no nulls returned for an empty field
             // only specific methods are tested here
-            // assertNotNull(choice.getDefaultValue());
             assertNotNull(choice.getOptions());
             assertNotNull(choice.getValue());
             
-            // define display and export values as the choice field can hold a pair
-            List<String> exportValues = new ArrayList<String>();
-            exportValues.add("export01");
-            exportValues.add("export02");
-            exportValues.add("export03");
-
-            List<String> displayValues = new ArrayList<String>();
-            displayValues.add("display02");
-            displayValues.add("display01");
-            displayValues.add("display03");
-            
-            // test with exportValue being set
+            /*
+             * Tests for setting the export values
+             */
 
             // setting/getting option values - the dictionaries Opt entry
             choice.setOptions(exportValues);
             assertEquals(exportValues,choice.getOptionsDisplayValues());
             assertEquals(exportValues,choice.getOptionsExportValues());
 
-            COSArray optItem = (COSArray) choice.getDictionary().getItem(COSName.OPT);
-            
             // assert that the option values have been correctly set
+            COSArray optItem = (COSArray) choice.getDictionary().getItem(COSName.OPT);
             assertNotNull(choice.getDictionary().getItem(COSName.OPT));
             assertEquals(optItem.size(),exportValues.size());
             assertEquals(exportValues.get(0), optItem.getString(0));
@@ -115,14 +122,19 @@ public class TestListBox extends TestCase
             List<String> retrievedOptions = choice.getOptions();
             assertEquals(retrievedOptions.size(),exportValues.size());
             assertEquals(retrievedOptions, exportValues);
-            
+
+            /*
+             * Tests for setting the field values
+             */
+
             // assert that the field value can be set
             choice.setValue("export01");
+            assertEquals(choice.getValue().get(0),"export01");
             
             // ensure that the choice field doesn't allow multiple selections
             choice.setMultiSelect(false);
             
-            // wo multiselect setting multiple items shall fail
+            // without multiselect setting multiple items shall fail
             try
             {
                 choice.setValue(exportValues);
@@ -160,23 +172,31 @@ public class TestListBox extends TestCase
             // if there is no Opt entry an empty List shall be returned
             assertEquals(choice.getOptions(), Collections.<String>emptyList());
             
-            // test with exportValue and displayValue being set
+            /*
+             * Test for setting export and display values
+             */
             
             // setting display and export value
             choice.setOptions(exportValues, displayValues);
             assertEquals(displayValues,choice.getOptionsDisplayValues());
             assertEquals(exportValues,choice.getOptionsExportValues());
             
-            // testing the sort option
+            /*
+             * Testing the sort option
+             */
             assertEquals(choice.getOptionsDisplayValues().get(0),"display02");
             choice.setSort(true);
             choice.setOptions(exportValues, displayValues);
             assertEquals(choice.getOptionsDisplayValues().get(0),"display01");
             
+            /*
+             * Setting options with an empty list
+             */
             // assert that the Opt entry is removed
             choice.setOptions(null, displayValues);
             assertNull(choice.getDictionary().getItem(COSName.OPT));
-            // if there is no Opt entry an empty List shall be returned
+            
+            // if there is no Opt entry an empty list shall be returned
             assertEquals(choice.getOptions(), Collections.<String>emptyList());
             assertEquals(choice.getOptionsDisplayValues(), Collections.<String>emptyList());
             assertEquals(choice.getOptionsExportValues(), Collections.<String>emptyList());
