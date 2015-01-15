@@ -286,7 +286,7 @@ public class NonSequentialPDFParser extends PDFParser
     public NonSequentialPDFParser(File file, String decryptionPassword, InputStream keyStore, 
             String alias, boolean useScratchFiles) throws IOException
     {
-        super(EMPTY_INPUT_STREAM, false);
+        super(EMPTY_INPUT_STREAM);
         pdfFile = file;
         raStream = new RandomAccessBufferedFileInputStream(pdfFile);
         password = decryptionPassword;
@@ -310,7 +310,7 @@ public class NonSequentialPDFParser extends PDFParser
                         + " does not contain an integer value, but: '" + eofLookupRangeStr + "'");
             }
         }
-        setDocument(new COSDocument(useScratchFiles));
+        document = new COSDocument(useScratchFiles);
         pdfSource = new PushBackInputStream(raStream, 4096);
     }
 
@@ -396,7 +396,7 @@ public class NonSequentialPDFParser extends PDFParser
     public NonSequentialPDFParser(InputStream input, String decryptionPassword, InputStream keyStore,
             String alias, boolean useScratchFiles) throws IOException
     {
-        super(EMPTY_INPUT_STREAM, false);
+        super(EMPTY_INPUT_STREAM);
         pdfFile = createTmpFile(input);
         raStream = new RandomAccessBufferedFileInputStream(pdfFile);
         password = decryptionPassword;
@@ -925,14 +925,15 @@ public class NonSequentialPDFParser extends PDFParser
 
         return pagesDictionary;
     }
-    
-    /** Parses all objects needed by pages and closes input stream. */
-    
+
     /**
-     * {@inheritDoc}
+     * This will parse the stream and populate the COSDocument object.  This will close
+     * the stream when it is done parsing.
+     *
+     * @throws IOException If there is an error reading from the stream or corrupt data
+     * is found.
      */
-    @Override
-    public void parse() throws IOException
+     public void parse() throws IOException
     {
         boolean exceptionOccurred = true; // set to false if all is processed
 
