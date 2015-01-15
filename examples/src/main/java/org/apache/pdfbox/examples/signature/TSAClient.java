@@ -29,6 +29,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.io.IOUtils;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
+import org.bouncycastle.asn1.oiw.OIWObjectIdentifiers;
+import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.tsp.TSPException;
 import org.bouncycastle.tsp.TimeStampRequest;
 import org.bouncycastle.tsp.TimeStampRequestGenerator;
@@ -165,34 +168,33 @@ public class TSAClient
     // returns the ASN.1 OID of the given hash algorithm
     private ASN1ObjectIdentifier getHashObjectIdentifier(String algorithm)
     {
-        // TODO can bouncy castle or Java provide this information?
         if (algorithm.equals("MD2"))
         {
-            return new ASN1ObjectIdentifier("1.2.840.113549.2.2");
+            return new ASN1ObjectIdentifier(PKCSObjectIdentifiers.md2.getId());
         }
         else if (algorithm.equals("MD5"))
         {
-            return new ASN1ObjectIdentifier("1.2.840.113549.2.5");
+            return new ASN1ObjectIdentifier(PKCSObjectIdentifiers.md5.getId());
         }
         else if (algorithm.equals("SHA-1"))
         {
-            return new ASN1ObjectIdentifier("1.3.14.3.2.26");
+            return new ASN1ObjectIdentifier(OIWObjectIdentifiers.idSHA1.getId());
         }
         else if (algorithm.equals("SHA-224"))
         {
-            return new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.4");
+            return new ASN1ObjectIdentifier(NISTObjectIdentifiers.id_sha224.getId());
         }
         else if (algorithm.equals("SHA-256"))
         {
-            return new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.1");
+            return new ASN1ObjectIdentifier(NISTObjectIdentifiers.id_sha256.getId());
         }
-        else if (algorithm.equals("SHA-394"))
+        else if (algorithm.equals("SHA-384"))
         {
-            return new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.2");
+            return new ASN1ObjectIdentifier(NISTObjectIdentifiers.id_sha384.getId());
         }
         else if (algorithm.equals("SHA-512"))
         {
-            return new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.3");
+            return new ASN1ObjectIdentifier(NISTObjectIdentifiers.id_sha512.getId());
         }
         else
         {
