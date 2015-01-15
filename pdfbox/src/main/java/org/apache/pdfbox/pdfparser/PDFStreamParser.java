@@ -50,8 +50,9 @@ public class PDFStreamParser extends BaseParser
      */
     private static final Log LOG = LogFactory.getLog(PDFStreamParser.class);
 
-    private List<Object> streamObjects = new ArrayList<Object>( 100 );
-    private final int MAX_BIN_CHAR_TEST_LENGTH = 10;
+    private final List<Object> streamObjects = new ArrayList<Object>( 100 );
+    
+    private static final int MAX_BIN_CHAR_TEST_LENGTH = 10;
     private final byte[] binCharTestArr = new byte[MAX_BIN_CHAR_TEST_LENGTH];
 
     /**
