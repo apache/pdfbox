@@ -23,7 +23,7 @@ import java.security.NoSuchAlgorithmException;
  * Utility class for creating MessageDigest instances.
  * @author John Hewson
  */
-class MessageDigests
+final class MessageDigests
 {
     private MessageDigests()
     {
