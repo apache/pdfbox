@@ -37,7 +37,7 @@ public interface PDImage extends COSObjectable
      * @return content of this image as a buffered image.
      * @throws IOException
      */
-    public BufferedImage getImage() throws IOException;
+    BufferedImage getImage() throws IOException;
 
     /**
      * Returns an ARGB image filled with the given paint and using this image as a mask.
@@ -46,95 +46,95 @@ public interface PDImage extends COSObjectable
      * @throws IOException if the image cannot be read
      * @throws IllegalStateException if the image is not a stencil.
      */
-    public BufferedImage getStencilImage(Paint paint) throws IOException;
+    BufferedImage getStencilImage(Paint paint) throws IOException;
 
     /**
      * Returns a stream containing this image's data.
      * @throws IOException if the
      */
-    public PDStream getStream() throws IOException;
+    PDStream getStream() throws IOException;
 
     /**
      * Returns true if the image is a stencil mask.
      */
-    public boolean isStencil();
+    boolean isStencil();
 
     /**
      * Sets whether or not the image is a stencil.
      * This corresponds to the {@code ImageMask} entry in the image stream's dictionary.
      * @param isStencil True to make the image a stencil.
      */
-    public void setStencil(boolean isStencil);
+    void setStencil(boolean isStencil);
 
     /**
      * Returns bits per component of this image, or -1 if one has not been set.
      */
-    public int getBitsPerComponent();
+    int getBitsPerComponent();
 
     /**
      * Set the number of bits per component.
      * @param bitsPerComponent The number of bits per component.
      */
-    public void setBitsPerComponent(int bitsPerComponent);
+    void setBitsPerComponent(int bitsPerComponent);
 
     /**
      * Returns the image's color space.
      * @throws IOException If there is an error getting the color space.
      */
-    public PDColorSpace getColorSpace() throws IOException;
+    PDColorSpace getColorSpace() throws IOException;
 
     /**
      * Sets the color space for this image.
      * @param colorSpace The color space for this image.
      */
-    public void setColorSpace(PDColorSpace colorSpace);
+    void setColorSpace(PDColorSpace colorSpace);
 
     /**
      * Returns height of this image, or -1 if one has not been set.
      */
-    public int getHeight();
+    int getHeight();
 
     /**
      * Sets the height of the image.
      * @param height The height of the image.
      */
-    public void setHeight(int height);
+    void setHeight(int height);
 
     /**
      * Returns the width of this image, or -1 if one has not been set.
      */
-    public int getWidth();
+    int getWidth();
 
     /**
      * Sets the width of the image.
      * @param width The width of the image.
      */
-    public void setWidth(int width);
+    void setWidth(int width);
 
     /**
      * Sets the decode array.
      * @param decode  the new decode array.
      */
-    public void setDecode(COSArray decode);
+    void setDecode(COSArray decode);
 
     /**
      * Returns the decode array.
      */
-    public COSArray getDecode();
+    COSArray getDecode();
 
     /**
      * Returns true if the image should be interpolated when rendered.
      */
-    public boolean getInterpolate();
+    boolean getInterpolate();
 
 
     /**
      * Sets the Interpolate flag, true for high-quality image scaling.
      */
-    public void setInterpolate(boolean value);
+    void setInterpolate(boolean value);
 
     /**
      * Returns the suffix for this image type, e.g. "jpg"
      */
-    public String getSuffix();
+    String getSuffix();
 }
