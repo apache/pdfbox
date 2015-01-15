@@ -42,32 +42,45 @@ public class DecompressObjectstreams
      * This is a very simple program, so everything is in the main method.
      * @param args arguments to the program
      */
-    public static void main(String[] args) {
+    public static void main(String[] args)
+    {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
         if(args.length < 1)
+        {
             usage();
+        }
 
         String inputFilename = args[0];
         String outputFilename;
-        if(args.length > 1) {
+        if(args.length > 1)
+        {
             outputFilename = args[1];
-        } else {
+        }
+        else
+        {
             if(inputFilename.matches(".*\\.[pP][dD][fF]$"))
+            {
                 outputFilename = inputFilename.replaceAll("\\.[pP][dD][fF]$", ".unc.pdf");
+            }
             else
+            {
                 outputFilename = inputFilename + ".unc.pdf";
+            }
         }
 
         PDDocument doc = null;
-        try {
+        try
+        {
             doc = PDDocument.load(new File(inputFilename));
-            for(COSObject objStream : doc.getDocument().getObjectsByType(COSName.OBJ_STM)) {
+            for(COSObject objStream : doc.getDocument().getObjectsByType(COSName.OBJ_STM))
+            {
                 COSStream stream = (COSStream)objStream.getObject();
                 PDFObjectStreamParser sp = new PDFObjectStreamParser(stream, doc.getDocument());
                 sp.parse();
-                for(COSObject next : sp.getObjects()) {
+                for(COSObject next : sp.getObjects())
+                {
                     COSObjectKey key = new COSObjectKey(next);
                     COSObject obj = doc.getDocument().getObjectFromPool(key);
                     obj.setObject(next.getObject());
@@ -75,18 +88,31 @@ public class DecompressObjectstreams
                 doc.getDocument().removeObject(new COSObjectKey(objStream));
             }
             doc.save(outputFilename);
-        } catch(Exception e) {
+        }
+        catch(Exception e) 
+        {
             System.out.println("Error processing file: " + e.getMessage());
-        } finally {
+        }
+        finally
+        {
             if(doc != null)
-                try { doc.close(); } catch(Exception e) { }
+            {
+                try
+                { 
+                    doc.close();
+                }
+                catch(Exception e)
+                {
+                }
+            }
         }
     }
 
     /**
      * Explains how to use the program.
      */
-    private static void usage() {
+    private static void usage()
+    {
         System.err.println( "Usage: java -cp pdfbox-app-x.y.z.jar "
                 + "org.apache.pdfbox.tools.DecompressObjectstreams <input PDF File> [<Output PDF File>]\n"
                 + "  <input PDF File>       The PDF document to decompress\n"
