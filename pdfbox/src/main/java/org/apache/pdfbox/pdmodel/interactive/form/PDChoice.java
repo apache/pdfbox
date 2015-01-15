@@ -459,15 +459,18 @@ public abstract class PDChoice extends PDVariableText
      */    
     public void setValue(List<String> values)
     {
-        if (values != null)
+        if (values != null && !values.isEmpty())
         {
             if (!isMultiSelect())
             {
-                throw new IllegalArgumentException("The list box does not allow multiple selection.");
+                throw new IllegalArgumentException("The list box does not allow multiple selections.");
             }
-            // TODO set the 'I' key
-            // TODO check if the values are contained in the options
+            if (!getOptions().containsAll(values))
+            {
+                throw new IllegalArgumentException("The values are not contained in the selectable options.");
+            }
             getDictionary().setItem(COSName.V, COSArrayList.convertStringListToCOSStringCOSArray(values));
+            updateSelectedOptionsIndex(values);
         }
         else
         {
@@ -496,5 +499,23 @@ public abstract class PDChoice extends PDVariableText
             return COSArrayList.convertCOSStringCOSArrayToList((COSArray)value);
         }
         return Collections.<String>emptyList();
+    }
+    
+    /**
+     * Update the 'I' key based on values set.
+     */
+    private void updateSelectedOptionsIndex(List<String> values)
+    {
+        List<String> options = getOptions();
+        List<Integer> indices = new ArrayList<Integer>();
+
+        for (String value : values)
+        {
+            indices.add(options.indexOf(value));
+        }
+        
+        // Indices have to be "... array of integers, sorted in ascending order ..."
+        Collections.sort(indices);
+        setSelectedOptionsIndex(indices);
     }
 }
