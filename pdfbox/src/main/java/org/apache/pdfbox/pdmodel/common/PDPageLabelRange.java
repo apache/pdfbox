@@ -148,8 +148,6 @@ public class PDPageLabelRange implements COSObjectable
      * 
      * @param start
      *            a positive integer representing the start value.
-     * @throws IllegalArgumentException
-     *             if {@code start} is not a positive integer
      */
     public void setStart(int start)
     {
