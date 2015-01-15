@@ -545,18 +545,6 @@ public class PreflightParser extends NonSequentialPDFParser
     /**
      * Check that the hexa string contains only an even number of Hexadecimal characters. Once it is done, reset the
      * offset at the beginning of the string and call {@link BaseParser#parseCOSString()}
-     * @deprecated Not needed anymore. Use {@link #parseCOSString()} instead. PDFBOX-1437
-     */
-    @Override
-    @Deprecated
-    protected COSString parseCOSString(boolean isDictionary) throws IOException
-    {
-        return parseCOSString();
-    }
-    
-    /**
-     * Check that the hexa string contains only an even number of Hexadecimal characters. Once it is done, reset the
-     * offset at the beginning of the string and call {@link BaseParser#parseCOSString()}
      */
     @Override
     protected COSString parseCOSString() throws IOException
