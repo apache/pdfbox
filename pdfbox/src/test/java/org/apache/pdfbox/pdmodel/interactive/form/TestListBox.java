@@ -90,10 +90,12 @@ public class TestListBox extends TestCase
             List<String> exportValues = new ArrayList<String>();
             exportValues.add("export01");
             exportValues.add("export02");
+            exportValues.add("export03");
 
             List<String> displayValues = new ArrayList<String>();
             displayValues.add("display02");
             displayValues.add("display01");
+            displayValues.add("display03");
             
             // test with exportValue being set
 
@@ -104,15 +106,53 @@ public class TestListBox extends TestCase
 
             COSArray optItem = (COSArray) choice.getDictionary().getItem(COSName.OPT);
             
-            // assert that the values have been correctly set
+            // assert that the option values have been correctly set
             assertNotNull(choice.getDictionary().getItem(COSName.OPT));
-            assertEquals(optItem.size(),2);
+            assertEquals(optItem.size(),exportValues.size());
             assertEquals(exportValues.get(0), optItem.getString(0));
             
-            // assert that the values can be retrieved correctly
+            // assert that the option values can be retrieved correctly
             List<String> retrievedOptions = choice.getOptions();
-            assertEquals(retrievedOptions.size(),2);
+            assertEquals(retrievedOptions.size(),exportValues.size());
             assertEquals(retrievedOptions, exportValues);
+            
+            // assert that the field value can be set
+            choice.setValue("export01");
+            
+            // ensure that the choice field doesn't allow multiple selections
+            choice.setMultiSelect(false);
+            
+            // wo multiselect setting multiple items shall fail
+            try
+            {
+                choice.setValue(exportValues);
+                fail( "Missing IllegalArgumentException" );
+            }
+            catch( IllegalArgumentException e )
+            {
+                assertEquals("The list box does not allow multiple selections.",e.getMessage() );
+            }            
+            
+            // ensure that the choice field does allow multiple selections
+            choice.setMultiSelect(true);
+            // now this call must suceed
+            choice.setValue(exportValues);
+            
+            // assert that the option values have been correctly set
+            COSArray valueItems = (COSArray) choice.getDictionary().getItem(COSName.V);
+            assertNotNull(valueItems);
+            assertEquals(valueItems.size(),exportValues.size());
+            assertEquals(exportValues.get(0), valueItems.getString(0));
+            
+            // assert that the index values have been correctly set
+            COSArray indexItems = (COSArray) choice.getDictionary().getItem(COSName.I);
+            assertNotNull(indexItems);
+            assertEquals(indexItems.size(),exportValues.size());
+            
+            // setting a single value shall remove the indices
+            choice.setValue("export01");
+            indexItems = (COSArray) choice.getDictionary().getItem(COSName.I);
+            assertNull(indexItems);
 
             // assert that the Opt entry is removed
             choice.setOptions(null);
