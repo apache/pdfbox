@@ -264,13 +264,18 @@ public abstract class PDChoice extends PDVariableText
         return getOptions();
     }
     
-    
     /**
-     * This will get the indices of the selected options "I".
+     * This will get the indices of the selected options - the 'I' key.
+     * <p>
+     * This is only needed if a choice field allows multiple selections and
+     * two different items have the same export value or more than one values
+     * is selected.
+     * </p>
+     * <p>The indices are zero-based</p>
      *
-     * @return COSArray containing the indices of all selected options.
+     * @return List containing the indices of all selected options.
      */
-    public List<Integer> getSelectedOptions()
+    public List<Integer> getSelectedOptionsIndex()
     {
         COSBase value = getDictionary().getDictionaryObject(COSName.I);
         if (value != null)
@@ -281,15 +286,30 @@ public abstract class PDChoice extends PDVariableText
     }
 
     /**
-     * This will set the indices of the selected options "I".
+     * This will set the indices of the selected options - the 'I' key.
+     * <p>
+     * This method is preferred over {@link #setValue(List)} for choice fields which
+     * <ul>
+     *  <li>do support multiple selections</li>
+     *  <li>have export values with the same value</li>
+     * </ul>
+     * </p>
+     * <p>
+     * Setting the index will set the value too.
+     * </p>
      *
-     * @param values COSArray containing the indices of all selected options.
+     * @param values List containing the indices of all selected options.
      */
-    public void setSelectedOptions(COSArray values)
+    public void setSelectedOptionsIndex(List<Integer> values)
     {
-        if (values != null)
+        if (values != null && !values.isEmpty())
         {
-            getDictionary().setItem(COSName.I, values);
+            if (!isMultiSelect())
+            {
+                throw new IllegalArgumentException(
+                        "Setting the indices is not allowed for choice fields not allowing multiple selections.");
+            }
+            getDictionary().setItem(COSName.I, COSArrayList.converterToCOSArray(values));
         }
         else
         {
@@ -414,12 +434,15 @@ public abstract class PDChoice extends PDVariableText
     {
         if (value != null)
         {
-            getDictionary().setString(COSName.V, (String)value);
-            // TODO handle MultiSelect option as this might need to set the 'I' key.
-            int index = getSelectedIndex((String) value);
-            if (index == -1)
+            if (getOptions().indexOf((String) value) == -1)
             {
                 throw new IllegalArgumentException("The list box does not contain the given value.");
+            }
+            else
+            {
+                getDictionary().setString(COSName.V, (String)value);
+                // remove I key for single valued choice field
+                setSelectedOptionsIndex(null);
             }
         }
         else
@@ -433,7 +456,6 @@ public abstract class PDChoice extends PDVariableText
      * setValue sets the entry "V" to the given value.
      * 
      * @param values the list of values
-     * 
      */    
     public void setValue(List<String> values)
     {
@@ -443,7 +465,8 @@ public abstract class PDChoice extends PDVariableText
             {
                 throw new IllegalArgumentException("The list box does not allow multiple selection.");
             }
-            // TODO handle MultiSelect option completely as this might need to set the 'I' key.
+            // TODO set the 'I' key
+            // TODO check if the values are contained in the options
             getDictionary().setItem(COSName.V, COSArrayList.convertStringListToCOSStringCOSArray(values));
         }
         else
@@ -451,14 +474,12 @@ public abstract class PDChoice extends PDVariableText
             getDictionary().removeItem(COSName.V);
         }
         // TODO create/update appearance
-    }
-    
+    }    
 
     /**
      * getValue gets the value of the "V" entry.
      * 
      * @return The value of this entry.
-     * 
      */
     @Override
     public List<String> getValue()
@@ -476,38 +497,4 @@ public abstract class PDChoice extends PDVariableText
         }
         return Collections.<String>emptyList();
     }
-
-    // returns the "Opt" index for the given string
-    private int getSelectedIndex(String optionValue)
-    {
-        int indexSelected = -1;
-        List<String> options = getOptions();
-
-        for (int i = 0; i < options.size() && indexSelected == -1; i++)
-        {
-            String option = options.get(i);
-            if (option.compareTo(optionValue) == 0)
-            {
-                return i;
-            }
-        }
-        return indexSelected;
-    }
-
-    // TODO the implementation below is not in line 
-    // with the specification nor does it allow multiple selections
-    // deactivating for now as it's not part of the public API
-    //
-    // implements "MultiSelect"
-    /*
-    private void selectMultiple(int selectedIndex)
-    {
-        COSArray indexArray = getSelectedOptions();
-        if (indexArray != null)
-        {
-            indexArray.clear();
-            indexArray.add(COSInteger.get(selectedIndex));
-        }
-    }
-    */
 }
