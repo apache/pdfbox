@@ -242,7 +242,8 @@ public class ExtractText
                     if (embeddedFiles != null)
                     {
                         Map<String,COSObjectable> embeddedFileNames = embeddedFiles.getNames();
-                        if (embeddedFileNames != null) {
+                        if (embeddedFileNames != null)
+                        {
                             for (Map.Entry<String,COSObjectable> ent : embeddedFileNames.entrySet()) 
                             {
                                 if (debug)
