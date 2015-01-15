@@ -476,6 +476,7 @@ public class PDDocument implements Closeable
                 PDStream dest = new PDStream(document.createCOSStream());
                 dest.addCompression();
                 importedPage.setContents(dest);
+                is = src.createInputStream();
                 os = dest.createOutputStream();
                 IOUtils.copy(is, os);
             }
