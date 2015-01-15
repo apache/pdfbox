@@ -37,13 +37,13 @@ public class Type1CharStringParser
     private static final Log LOG = LogFactory.getLog(Type1CharStringParser.class);
 
     // 1-byte commands
-    final static int RETURN = 11;
-    final static int CALLSUBR = 10;
+    static final int RETURN = 11;
+    static final int CALLSUBR = 10;
 
     // 2-byte commands
-    final static int TWO_BYTE = 12;
-    final static int CALLOTHERSUBR = 16;
-    final static int POP = 17;
+    static final int TWO_BYTE = 12;
+    static final int CALLOTHERSUBR = 16;
+    static final int POP = 17;
 
     private final String fontName, glyphName;
 
