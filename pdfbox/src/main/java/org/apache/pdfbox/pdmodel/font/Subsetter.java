@@ -25,5 +25,5 @@ import java.util.Set;
  */
 interface Subsetter
 {
-    public void subset(Set<Integer> codePoints) throws IOException;
+    void subset(Set<Integer> codePoints) throws IOException;
 }
