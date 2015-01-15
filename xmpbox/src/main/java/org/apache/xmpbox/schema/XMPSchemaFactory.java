@@ -36,11 +36,11 @@ import org.apache.xmpbox.type.PropertyType;
 public class XMPSchemaFactory
 {
 
-    private String namespace;
+    private final String namespace;
 
-    private Class<? extends XMPSchema> schemaClass;
+    private final Class<? extends XMPSchema> schemaClass;
 
-    private PropertiesDescription propDef;
+    private final PropertiesDescription propDef;
 
     private String nsName;
 
@@ -96,7 +96,7 @@ public class XMPSchemaFactory
      */
     public XMPSchema createXMPSchema(XMPMetadata metadata, String prefix) throws XmpSchemaException
     {
-        XMPSchema schema = null;
+        XMPSchema schema;
         Class<?>[] argsClass;
         Object[] schemaArgs;
 
@@ -129,7 +129,7 @@ public class XMPSchemaFactory
         }
         catch (Exception e)
         {
-            throw new XmpSchemaException("Cannot Instanciate specified Object Schema", e);
+            throw new XmpSchemaException("Cannot instanciate specified object schema", e);
         }
     }
 
