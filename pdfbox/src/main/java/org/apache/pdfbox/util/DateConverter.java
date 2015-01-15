@@ -431,7 +431,7 @@ public final class DateConverter
             // we parsed a time zone in default format
             int hrSign = (sign == '-' ? -1 : 1);
             tz.setRawOffset(restrainTZoffset(hrSign * (tzHours * MILLIS_PER_HOUR + tzMin *
-                                                       MILLIS_PER_MINUTE)));
+                                                       (long) MILLIS_PER_MINUTE)));
             tz.setID("unknown");
         }
         else if ( ! hadGMT)
