@@ -113,7 +113,7 @@ public final class ExternalFonts
     }
 
     /** Map of PostScript name substitutes, in priority order. */
-    private final static Map<String, List<String>> substitutes = new HashMap<String, List<String>>();
+    private static final Map<String, List<String>> substitutes = new HashMap<String, List<String>>();
     static
     {
         // substitutes for standard 14 fonts
