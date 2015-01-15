@@ -33,7 +33,7 @@ public interface ICOSVisitor
      * @return any Object depending on the visitor implementation, or null
      * @throws IOException If there is an error while visiting this object.
      */
-    public Object visitFromArray( COSArray obj ) throws IOException;
+    Object visitFromArray( COSArray obj ) throws IOException;
 
     /**
      * Notification of visit to boolean object.
@@ -42,7 +42,7 @@ public interface ICOSVisitor
      * @return any Object depending on the visitor implementation, or null
      * @throws IOException If there is an error while visiting this object.
      */
-    public Object visitFromBoolean( COSBoolean obj ) throws IOException;
+    Object visitFromBoolean( COSBoolean obj ) throws IOException;
 
     /**
      * Notification of visit to dictionary object.
@@ -51,7 +51,7 @@ public interface ICOSVisitor
      * @return any Object depending on the visitor implementation, or null
      * @throws IOException If there is an error while visiting this object.
      */
-    public Object visitFromDictionary( COSDictionary obj ) throws IOException;
+    Object visitFromDictionary( COSDictionary obj ) throws IOException;
 
     /**
      * Notification of visit to document object.
@@ -60,7 +60,7 @@ public interface ICOSVisitor
      * @return any Object depending on the visitor implementation, or null
      * @throws IOException If there is an error while visiting this object.
      */
-    public Object visitFromDocument( COSDocument obj ) throws IOException;
+    Object visitFromDocument( COSDocument obj ) throws IOException;
 
     /**
      * Notification of visit to float object.
@@ -69,7 +69,7 @@ public interface ICOSVisitor
      * @return any Object depending on the visitor implementation, or null
      * @throws IOException If there is an error while visiting this object.
      */
-    public Object visitFromFloat( COSFloat obj ) throws IOException;
+    Object visitFromFloat( COSFloat obj ) throws IOException;
 
     /**
      * Notification of visit to integer object.
@@ -78,7 +78,7 @@ public interface ICOSVisitor
      * @return any Object depending on the visitor implementation, or null
      * @throws IOException If there is an error while visiting this object.
      */
-    public Object visitFromInt( COSInteger obj ) throws IOException;
+    Object visitFromInt( COSInteger obj ) throws IOException;
 
     /**
      * Notification of visit to name object.
@@ -87,7 +87,7 @@ public interface ICOSVisitor
      * @return any Object depending on the visitor implementation, or null
      * @throws IOException If there is an error while visiting this object.
      */
-    public Object visitFromName( COSName obj ) throws IOException;
+    Object visitFromName( COSName obj ) throws IOException;
 
     /**
      * Notification of visit to null object.
@@ -96,7 +96,7 @@ public interface ICOSVisitor
      * @return any Object depending on the visitor implementation, or null
      * @throws IOException If there is an error while visiting this object.
      */
-    public Object visitFromNull( COSNull obj ) throws IOException;
+    Object visitFromNull( COSNull obj ) throws IOException;
 
     /**
      * Notification of visit to stream object.
@@ -105,7 +105,7 @@ public interface ICOSVisitor
      * @return any Object depending on the visitor implementation, or null
      * @throws IOException If there is an error while visiting this object.
      */
-    public Object visitFromStream( COSStream obj ) throws IOException;
+    Object visitFromStream( COSStream obj ) throws IOException;
 
     /**
      * Notification of visit to string object.
@@ -114,5 +114,5 @@ public interface ICOSVisitor
      * @return any Object depending on the visitor implementation, or null
      * @throws IOException If there is an error while visiting this object.
      */
-    public Object visitFromString( COSString obj ) throws IOException;
+    Object visitFromString( COSString obj ) throws IOException;
 }
