@@ -61,6 +61,7 @@ public class Revisions<T>
      * 
      * @param index the position
      * @return the object
+     * @throws IndexOutOfBoundsException if the index is out of range
      */
     public T getObject(int index)
     {
@@ -72,6 +73,7 @@ public class Revisions<T>
      * 
      * @param index the position
      * @return the revision number
+     * @throws IndexOutOfBoundsException if the index is out of range
      */
     public int getRevisionNumber(int index)
     {
