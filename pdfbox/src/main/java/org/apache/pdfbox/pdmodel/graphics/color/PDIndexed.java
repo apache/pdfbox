@@ -125,10 +125,6 @@ public final class PDIndexed extends PDSpecialColorSpace
 
         // convert the base image to RGB
         BufferedImage rgbImage = baseColorSpace.toRGBImage(baseRaster);
-        
-//File f = new File("C:\\Users\\Tilman Hausherr\\Documents\\Java\\PDFBoxPageImageExtraction", "BaseRaster-" + baseColorSpace.getName() + System.currentTimeMillis() + ".png");
-//System.out.println("BaseRaster file: " + f.getName());
-//ImageIO.write(rgbImage, "png", f);       
         WritableRaster rgbRaster = rgbImage.getRaster();
 
         // build an RGB lookup table from the raster
@@ -138,7 +134,6 @@ public final class PDIndexed extends PDSpecialColorSpace
         for (int i = 0, n = actualMaxIndex; i <= n; i++)
         {
             rgbColorTable[i] = rgbRaster.getPixel(i, 0, nil);
-//System.out.println(String.format("%d: %02x %02x %02x - %02x %02x %02x", i, rgbColorTable[i][0], rgbColorTable[i][1], rgbColorTable[i][2], (int) (colorTable[i][0] * 255f), (int) (colorTable[i][1] * 255f), (int) (colorTable[i][2] * 255f)));
         }
     }
 
@@ -239,12 +234,6 @@ public final class PDIndexed extends PDSpecialColorSpace
     private void readColorTable() throws IOException
     {
         byte[] lookupData = getLookupData();
-//File f = new File("C:\\Users\\Tilman Hausherr\\Documents\\Java\\PDFBoxPageImageExtraction", "Lookup-" + baseColorSpace.getName() + System.currentTimeMillis() + ".dat");
-//FileOutputStream fos = new FileOutputStream(f);
-//fos.write(lookupData);
-//fos.close();
-//System.out.println("Lookup file: " + f.getName());
-
         int maxIndex = Math.min(getHival(), 255);
         int numComponents = baseColorSpace.getNumberOfComponents();
 
