@@ -73,7 +73,7 @@ public class TiffSchema extends XMPSchema{
     public static final String YCB_CR_POSITIONING = "YCbCrPositioning";
 
     @PropertyType(type = Types.Rational, card = Cardinality.Simple)
-    public static final String XResolution = "XResolution";
+    public static final String XRESOLUTION = "XResolution";
 
     @PropertyType(type = Types.Rational, card = Cardinality.Simple)
     public static final String YRESOLUTION = "YResolution";
@@ -240,6 +240,5 @@ public class TiffSchema extends XMPSchema{
     {
         setUnqualifiedLanguagePropertyValue(COPYRIGHT, lang, value);
     }
-
 
 }
