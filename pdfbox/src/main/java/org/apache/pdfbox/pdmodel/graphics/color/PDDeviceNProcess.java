@@ -32,7 +32,7 @@ import java.util.List;
  */
 public class PDDeviceNProcess
 {
-    private COSDictionary dictionary;
+    private final COSDictionary dictionary;
 
     /**
      * Creates a new DeviceN Process Dictionary.
@@ -97,20 +97,23 @@ public class PDDeviceNProcess
     @Override
     public String toString()
     {
-        String str = "Process{";
+        StringBuilder sb = new StringBuilder("Process{");
         try
         {
-            str += getColorSpace();
-            for (String c : getComponents())
+            sb.append(getColorSpace());
+            for (String component : getComponents())
             {
-                str += " \"" + c + "\"";
+                sb.append(" \"");
+                sb.append(component);
+                sb.append('\"');
             }
         }
         catch (IOException e)
         {
-            str += "ERROR";
+            sb.append("ERROR");
         }
-        str += "}";
-        return str;
+        sb.append('}');
+        return sb.toString();
     }
+
 }
