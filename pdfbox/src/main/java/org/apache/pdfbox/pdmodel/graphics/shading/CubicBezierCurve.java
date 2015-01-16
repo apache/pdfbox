@@ -94,15 +94,15 @@ class CubicBezierCurve
     @Override
     public String toString()
     {
-        String pointStr = "";
+        StringBuilder sb = new StringBuilder();
         for (Point2D p : controlPoints)
         {
-            if (!pointStr.isEmpty())
+            if (sb.length() > 0)
             {
-                pointStr += " ";
+                sb.append(' ');
             }
-            pointStr += p;
+            sb.append(p);
         }
-        return "Cubic Bezier curve{control points p0, p1, p2, p3: " + pointStr + "}";
+        return "Cubic Bezier curve{control points p0, p1, p2, p3: " + sb + "}";
     }
 }
