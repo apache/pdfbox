@@ -33,7 +33,7 @@ public class COSWriterXRefEntry implements Comparable<COSWriterXRefEntry>
     private COSBase object;
     private COSObjectKey key;
     private boolean free = false;
-    private static COSWriterXRefEntry nullEntry;
+    private static final COSWriterXRefEntry nullEntry;
     
     static 
     {
