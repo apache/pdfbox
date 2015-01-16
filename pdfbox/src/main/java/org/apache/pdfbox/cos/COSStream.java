@@ -305,14 +305,14 @@ public class COSStream extends COSDictionary implements Closeable
 
         if (unFilteredStream == null || decodeResult == null)
         {
-            String filterInfo = "";
+            StringBuilder filterInfo = new StringBuilder();
             COSBase filters = getFilters();
             if (filters != null)
             {
-                filterInfo = " - filter: ";
+                filterInfo.append(" - filter: ");
                 if (filters instanceof COSName)
                 {
-                    filterInfo += ((COSName) filters).getName();
+                    filterInfo.append(((COSName) filters).getName());
                 }
                 else if (filters instanceof COSArray)
                 {
@@ -321,9 +321,9 @@ public class COSStream extends COSDictionary implements Closeable
                     {
                         if (filterArray.size() > 1)
                         {
-                            filterInfo += ", ";
+                            filterInfo.append(", ");
                         }
-                        filterInfo += ((COSName) filterArray.get(i)).getName();
+                        filterInfo.append(((COSName) filterArray.get(i)).getName());
                     }
                 }
             }
