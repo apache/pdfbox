@@ -701,7 +701,7 @@ public class CMapParser
 
     private String createStringFromBytes(byte[] bytes) throws IOException
     {
-        String retval = null;
+        String retval;
         if (bytes.length == 1)
         {
             retval = new String(bytes, "ISO-8859-1");
@@ -740,7 +740,7 @@ public class CMapParser
     /**
      * Internal class.
      */
-    private class LiteralName
+    private final class LiteralName
     {
         private String name;
 
@@ -753,7 +753,7 @@ public class CMapParser
     /**
      * Internal class.
      */
-    private class Operator
+    private final class Operator
     {
         private String op;
 
