@@ -77,12 +77,14 @@ public final class PDICCBased extends PDCIEBasedColorSpace
 
     /**
      * Creates a new ICC color space using the PDF array.
+     *
      * @param iccArray the ICC stream object
+     * @throws java.io.IOException if there is an error reading the ICC profile.
      */
     public PDICCBased(COSArray iccArray) throws IOException
     {
         array = iccArray;
-        stream = new PDStream((COSStream)iccArray.getObject(1));
+        stream = new PDStream((COSStream) iccArray.getObject(1));
         loadICCProfile();
     }
 

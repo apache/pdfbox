@@ -495,18 +495,23 @@ public class PDDeviceN extends PDSpecialColorSpace
     @Override
     public String toString()
     {
-        String str = getName() + "{";
+        StringBuilder sb = new StringBuilder(getName());
+        sb.append('{');
         for (String col : getColorantNames())
         {
-            str += "\"" + col + "\" ";
+            sb.append('\"');
+            sb.append(col);
+            sb.append("\" ");
         }
-        str += alternateColorSpace.getName() + " ";
-        str += tintTransform + " ";
+        sb.append(alternateColorSpace.getName());
+        sb.append(' ');
+        sb.append(tintTransform);
+        sb.append(' ');
         if (attributes != null)
         {
-            str += attributes;
+            sb.append(attributes);
         }
-        str += "}";
-        return str;
+        sb.append('}');
+        return sb.toString();
     }
 }

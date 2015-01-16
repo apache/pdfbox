@@ -34,7 +34,7 @@ import java.util.Map;
  */
 public final class PDDeviceNAttributes
 {
-    private COSDictionary dictionary;
+    private final COSDictionary dictionary;
 
     /**
      * Creates a new DeviceN colour space attributes dictionary.
@@ -124,29 +124,36 @@ public final class PDDeviceNAttributes
     @Override
     public String toString()
     {
-        String str = dictionary.getNameAsString(COSName.SUBTYPE) + "{";
+        StringBuilder sb = new StringBuilder(dictionary.getNameAsString(COSName.SUBTYPE));
+        sb.append('{');
         PDDeviceNProcess process = getProcess();
         if (process != null)
         {
-            str += getProcess() + " ";
+            sb.append(getProcess());
+            sb.append(' ');
         }
 
         Map<String, PDSeparation> colorants;
         try
         {
             colorants = getColorants();
-            str += "Colorants{";
+            sb.append("Colorants{");
             for (Map.Entry<String, PDSeparation> col : colorants.entrySet())
             {
-                str += "\"" + col.getKey() + "\": " + col.getValue() + " ";
+                sb.append('\"');
+                sb.append(col.getKey());
+                sb.append("\": ");
+                sb.append(col.getValue());
+                sb.append(' ');
             }
-            str += "}";
+            sb.append('}');
         }
         catch (IOException e)
         {
-            str += "ERROR";
+            sb.append("ERROR");
         }
-        str += "}";
-        return str;
+        sb.append('}');
+        return sb.toString();
     }
+
 }
