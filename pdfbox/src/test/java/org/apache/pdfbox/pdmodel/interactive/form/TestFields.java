@@ -22,6 +22,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
@@ -78,6 +79,10 @@ public class TestFields extends TestCase
             doc = new PDDocument();
             PDAcroForm form = new PDAcroForm( doc );
             PDTextbox textBox = new PDTextbox(form);
+            
+            //assert the correct field type
+            assertEquals(textBox.getFieldType(),"Tx");
+            assertEquals(textBox.getDictionary().getNameAsString(COSName.FT),"Tx");
 
             //assert that default is false.
             assertFalse( textBox.shouldComb() );
