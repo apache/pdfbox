@@ -16,6 +16,9 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.pdfbox.cos.COSDictionary;
 
 /**
@@ -52,6 +55,20 @@ public class PDPushButton extends PDButton
         throw new IllegalArgumentException("A PDPushButton shall not use the DV entry in the field dictionary");
         
     }
+    
+    @Override
+    public List<String> getOptions()
+    {
+        return Collections.<String>emptyList();
+    }
+    
+    @Override
+    public void setOptions(List<String> values)
+    {
+        throw new IllegalArgumentException("A PDPushButton shall not use the Opt entry in the field dictionary");
+    }
+    
+    
     @Override
     public Object getValue()
     {

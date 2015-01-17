@@ -17,12 +17,14 @@
 package org.apache.pdfbox.pdmodel.interactive.form;
 
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -72,51 +74,52 @@ public abstract class PDButton extends PDField
     }
 
     /**
-     * This will get the option values "Opt" entry of the pdf button.
-     *
-     * @return A list of java.lang.String values.
+     * This will get the option values - the "Opt" entry.
+     * 
+     * <p>The option values are used to define the export values
+     * for the field to 
+     * <ul>
+     *  <li>hold values in non-Latin writing systems as name objects, which represent the field value, are limited
+     *      to PDFDocEncoding
+     *  </li>
+     *  <li>allow radio buttons having the same export value to be handled independently
+     *  </li>
+     * </ul>
+     * </p>
+     * 
+     * @return List containing all possible options. If there is no Opt entry an empty list will be returned.
      */
     public List<String> getOptions()
     {
-        List<String> retval = null;
-        COSArray array = (COSArray)getDictionary().getDictionaryObject( COSName.OPT );
-        if( array != null )
+        COSBase value = getInheritableAttribute(COSName.OPT);
+        if (value instanceof COSString)
         {
-            List<String> strings = new ArrayList<String>();
-            for( int i=0; i<array.size(); i++ )
-            {
-                strings.add( ((COSString)array.getObject( i )).getString() );
-            }
-            retval = new COSArrayList<String>( strings, array );
+            List<String> array = new ArrayList<String>();
+            array.add(((COSString) value).getString());
+            return array;
         }
-        return retval;
-    }
-
-
-    /**
-     * Set the field options values.
-     * 
-     * The fields options represent the export value of each annotation in the field. 
-     * It may be used to:
-     * <ul>
-     *  <li>represent the export values in non-Latin writing systems.</li>
-     *  <li>allow radio buttons to be checked independently, even 
-     *  if they have the same export value.</li>
-     * </ul>
-     * 
-     * Providing an empty list or null will remove the entry.
-     * 
-     * @param options The list of options for the button.
-     */
-    public void setOptions( List<String> options )
-    {
-        if (options == null || options.isEmpty())
+        else if (value instanceof COSArray)
         {
-            getDictionary().removeItem(COSName.OPT);
+            return COSArrayList.convertCOSStringCOSArrayToList((COSArray)value);
+        }
+        return Collections.<String>emptyList();
+    }
+    
+    /**
+     * This will set the options.
+     * 
+     * @see #getOptions()
+     * @param values List containing all possible options. Supplying null will remove the Opt entry.
+     */
+    public void setOptions(List<String> values)
+    {
+        if (values == null)
+        {
+            removeInheritableAttribute(COSName.OPT);            
         }
         else
         {
-            getDictionary().setItem(COSName.OPT, COSArrayList.converterToCOSArray( options ) );
+            setInheritableAttribute(COSName.OPT, COSArrayList.convertStringListToCOSStringCOSArray(values));
         }
     }
 }
