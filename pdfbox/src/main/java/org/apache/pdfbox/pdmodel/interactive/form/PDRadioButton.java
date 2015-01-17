@@ -38,6 +38,11 @@ public final class PDRadioButton extends PDButton
 {
 
     /**
+     * A Ff flag.
+     */
+    public static final int FLAG_NO_TOGGLE_TO_OFF = 1 << 14;
+    
+    /**
      * @see PDFieldTreeNode#PDFieldTreeNode(PDAcroForm)
      *
      * @param theAcroForm The acroform.
