@@ -132,35 +132,14 @@ public final class StandardSecurityHandler extends SecurityHandler
         }
         if (version == 5)
         {
-            return 6;    // note about revision 5: "Shall not be used. This value was used by a deprecated Adobe extension."
+            // note about revision 5: "Shall not be used. This value was used by a deprecated Adobe extension."
+            return 6;    
         }
         if ( version == 2 || version == 3 || policy.getPermissions().hasAnyRevision3PermissionSet())
         {
             return 3;
         }
         return 4;
-    }
-
-    /**
-     * Decrypt the document.
-     *
-     * @param doc The document to be decrypted.
-     * @param decryptionMaterial Information used to decrypt the document.
-     *
-     * @throws IOException If there is an error accessing data.
-     */
-    @Override
-    public void decryptDocument(PDDocument doc, DecryptionMaterial decryptionMaterial)
-        throws IOException
-    {
-        document = doc;
-
-        PDEncryption dictionary = document.getEncryption();
-        COSArray documentIDArray = document.getDocument().getDocumentID();
-        
-        prepareForDecryption(dictionary, documentIDArray, decryptionMaterial);
-        
-        proceedDecryption();
     }
 
     /**
@@ -464,8 +443,7 @@ public final class StandardSecurityHandler extends SecurityHandler
         {
             COSArray idArray = document.getDocument().getDocumentID();
 
-            //check if the document has an id yet.  If it does not then
-            //generate one
+            //check if the document has an id yet.  If it does not then generate one
             if( idArray == null || idArray.size() < 2 )
             {
                 MessageDigest md = MessageDigests.getMD5();

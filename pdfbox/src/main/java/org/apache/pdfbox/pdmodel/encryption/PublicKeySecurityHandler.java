@@ -104,28 +104,7 @@ public final class PublicKeySecurityHandler extends SecurityHandler
     }
 
     /**
-     * Decrypt the document.
-     *
-     * @param doc The document to decrypt.
-     * @param decryptionMaterial The data used to decrypt the document.
-     *
-     * @throws IOException If there is an error accessing data.
-     */
-    @Override
-    public void decryptDocument(PDDocument doc, DecryptionMaterial decryptionMaterial) throws IOException
-    {
-        this.document = doc;
-        PDEncryption dictionary = doc.getEncryption();
-        prepareForDecryption( dictionary, doc.getDocument().getDocumentID(), decryptionMaterial );
-        proceedDecryption();
-    }
-
-    /**
      * Prepares everything to decrypt the document.
-     *
-     * If {@link #decryptDocument(PDDocument, DecryptionMaterial)} is used, this
-     * method is called from there. Only if decryption of single objects is
-     * needed this should be called instead.
      *
      * @param encryption encryption dictionary, can be retrieved via
      * {@link PDDocument#getEncryption()}
