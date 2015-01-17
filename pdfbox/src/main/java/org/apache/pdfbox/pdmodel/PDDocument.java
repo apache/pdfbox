@@ -43,14 +43,10 @@ import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
-import org.apache.pdfbox.pdmodel.encryption.DecryptionMaterial;
 import org.apache.pdfbox.pdmodel.encryption.PDEncryption;
 import org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy;
 import org.apache.pdfbox.pdmodel.encryption.SecurityHandler;
 import org.apache.pdfbox.pdmodel.encryption.SecurityHandlerFactory;
-import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
-import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
-import org.apache.pdfbox.pdmodel.encryption.StandardSecurityHandler;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
@@ -608,17 +604,6 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * @deprecated Use {@link #getEncryption()} instead.
-     *
-     * @return The encryption dictionary(most likely a PDStandardEncryption object)
-     */
-    @Deprecated
-    public PDEncryption getEncryptionDictionary()
-    {
-        return getEncryption();
-    }
-
-    /**
      * This will get the encryption dictionary for this document. This will still return the parameters if the document
      * was decrypted. As the encryption architecture in PDF documents is plugable this returns an abstract class,
      * but the only supported subclass at this time is a
@@ -703,74 +688,6 @@ public class PDDocument implements Closeable
             signatures.add(new PDSignature(dict));
         }
         return signatures;
-    }
-
-    /**
-     * This will decrypt a document.
-     *
-     * @deprecated This method is provided for compatibility reasons only. User should use the new
-     * security layer instead and the openProtection method especially.
-     * 
-     * @param password Either the user or owner password.
-     *
-     * @throws IOException If there is an error getting the stream data.
-     */
-    @Deprecated
-    public void decrypt(String password) throws IOException
-    {
-        StandardDecryptionMaterial m = new StandardDecryptionMaterial(password);
-        openProtection(m);
-    }
-
-    /**
-     * This will <b>mark</b> a document to be encrypted. The actual encryption will occur when the document is saved.
-     *
-     * @deprecated This method is provided for compatibility reasons only. User should use the new security layer 
-     * instead and the openProtection method especially.
-     * 
-     * @param ownerPassword The owner password to encrypt the document.
-     * @param userPassword The user password to encrypt the document.
-
-     * @throws IOException If there is an error accessing the data.
-     */
-    @Deprecated
-    public void encrypt(String ownerPassword, String userPassword) throws IOException
-    {
-        if (!isEncrypted())
-        {
-            encryption = new PDEncryption();
-        }
-
-        getEncryption().setSecurityHandler(new StandardSecurityHandler(
-                new StandardProtectionPolicy(ownerPassword, userPassword, new AccessPermission())));
-    }
-
-    /**
-     * The owner password that was passed into the encrypt method. You should never use this method. This will not
-     * longer be valid once encryption has occured.
-     * 
-     * @return The owner password passed to the encrypt method.
-     * 
-     * @deprecated Do not rely on this method anymore.
-     */
-    @Deprecated
-    public String getOwnerPasswordForEncryption()
-    {
-        return null;
-    }
-
-    /**
-     * The user password that was passed into the encrypt method. You should never use this method. This will not longer
-     * be valid once encryption has occured.
-     * 
-     * @return The user password passed to the encrypt method.
-     * 
-     * @deprecated Do not rely on this method anymore.
-     */
-    @Deprecated
-    public String getUserPasswordForEncryption()
-    {
-        return null;
     }
 
     /**
@@ -1112,33 +1029,6 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * Tries to decrypt the document in memory using the provided decryption material.
-     * 
-     * @see org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial
-     * @see org.apache.pdfbox.pdmodel.encryption.PublicKeyDecryptionMaterial
-     * 
-     * @param decryptionMaterial The decryption material (password or certificate).
-     *
-     * @throws IOException If there is an error reading cryptographic information.
-     */
-    public void openProtection(DecryptionMaterial decryptionMaterial) throws IOException
-    {
-        if (isEncrypted())
-        {
-            SecurityHandler securityHandler = getEncryption().getSecurityHandler();
-            securityHandler.decryptDocument(this, decryptionMaterial);
-            accessPermission = securityHandler.getCurrentAccessPermission();
-            document.dereferenceObjectStreams();
-            document.setEncryptionDictionary(null);
-            getDocumentCatalog();
-        }
-        else
-        {
-            throw new IOException("Document is not encrypted");
-        }
-    }
-
-    /**
      * Returns the access permissions granted when the document was decrypted. If the document was not decrypted this
      * method returns the access permission for a document owner (ie can do everything). The returned object is in read
      * only mode so that permissions cannot be changed. Methods providing access to content should rely on this object
@@ -1153,53 +1043,6 @@ public class PDDocument implements Closeable
             accessPermission = AccessPermission.getOwnerAccessPermission();
         }
         return accessPermission;
-    }
-
-    /**
-     * Get the security handler that is used for document encryption.
-     *
-     * @deprecated Use {@link #getEncryption()}.
-     * {@link org.apache.pdfbox.pdmodel.encryption.PDEncryption#getSecurityHandler()}
-     *
-     * @return The handler used to encrypt/decrypt the document.
-     */
-    @Deprecated
-    public SecurityHandler getSecurityHandler()
-    {
-        if (isEncrypted() && getEncryption().hasSecurityHandler())
-        {
-            try
-            {
-                return getEncryption().getSecurityHandler();
-            }
-            catch (IOException e)
-            {
-                // will never happen because we checked hasSecurityHandler() first
-                throw new RuntimeException(e);
-            }
-        }
-        else
-        {
-            return null;
-        }
-    }
-
-    /**
-     * @deprecated Use protection policies instead.
-     *
-     * @param securityHandler security handler to be assigned to document
-     * @return true if security handler was set
-     */
-    @Deprecated
-    public boolean setSecurityHandler(SecurityHandler securityHandler)
-    {
-        if (isEncrypted())
-        {
-            return false;
-        }
-        encryption = new PDEncryption();
-        getEncryption().setSecurityHandler(securityHandler);
-        return true;
     }
 
     /**

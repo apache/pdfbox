@@ -29,8 +29,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -46,9 +44,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.io.IOUtils;
@@ -84,7 +80,7 @@ public abstract class SecurityHandler
     /** The RC4 implementation used for cryptographic functions. */
     protected RC4Cipher rc4 = new RC4Cipher();
 
-    /** indicates if the Metadata have to be decrypted of not */ 
+    /** indicates if the Metadata have to be decrypted of not. */ 
     protected boolean decryptMetadata; 
     
     private final Set<COSBase> objects = new HashSet<COSBase>();
@@ -110,9 +106,6 @@ public abstract class SecurityHandler
     /**
      * Prepares everything to decrypt the document.
      * 
-     * If {@link #decryptDocument(PDDocument, DecryptionMaterial)} is used, this method is
-     * called from there. Only if decryption of single objects is needed this should be called instead.
-     *
      * @param encryption  encryption dictionary, can be retrieved via {@link PDDocument#getEncryption()}
      * @param documentIDArray  document id which is returned via {@link COSDocument#getDocumentID()}
      * @param decryptionMaterial Information used to decrypt the document.
@@ -121,83 +114,6 @@ public abstract class SecurityHandler
      */
     public abstract void prepareForDecryption(PDEncryption encryption, COSArray documentIDArray,
             DecryptionMaterial decryptionMaterial) throws IOException;
-
-    /**
-     * Prepare the document for decryption.
-     *
-     * @param doc The document to decrypt.
-     * @param mat Information required to decrypt the document.
-     * @throws IOException If there is an error with the document.
-     */
-    public abstract void decryptDocument(PDDocument doc, DecryptionMaterial mat) throws IOException;
-
-    /**
-     * This method must be called by an implementation of this class to really proceed
-     * to decryption.
-     *
-     * @throws IOException If there is an error in the decryption.
-     */
-    protected void proceedDecryption() throws IOException
-    {
-
-        COSDictionary trailer = document.getDocument().getTrailer();
-        COSArray fields = (COSArray) trailer.getObjectFromPath("Root/AcroForm/Fields");
-
-        // We need to collect all the signature dictionaries, for some
-        // reason the 'Contents' entry of signatures is not really encrypted
-        if (fields != null)
-        {
-            for (int i = 0; i < fields.size(); i++)
-            {
-                COSDictionary field = (COSDictionary) fields.getObject(i);
-                if (field != null)
-                {
-                    addDictionaryAndSubDictionary(potentialSignatures, field);
-                }
-                else
-                {
-                    throw new IOException("Could not decypt document, object not found.");
-                }
-            }
-        }
-
-        List<COSObject> allObjects = document.getDocument().getObjects();
-        Iterator<COSObject> objectIter = allObjects.iterator();
-        COSDictionary encryptionDict = document.getEncryption().getCOSDictionary();
-        while (objectIter.hasNext())
-        {
-            COSObject nextObj = objectIter.next();
-            COSBase nextCOSBase = nextObj.getObject();
-            boolean isSignatureDictionary = false;
-            if (nextCOSBase instanceof COSDictionary)
-            {
-               isSignatureDictionary = COSName.SIG.equals(((COSDictionary) nextCOSBase).getCOSName(COSName.TYPE));
-            }
-            if (!isSignatureDictionary && nextCOSBase!= encryptionDict)
-            {
-                decryptObject(nextObj);
-            }
-        }
-        document.setEncryptionDictionary(null);
-    }
-
-    private void addDictionaryAndSubDictionary(Set<COSDictionary> set, COSDictionary dic)
-    {
-        if (dic != null) // in case dictionary is part of object stream we have null value here
-        {
-            set.add(dic);
-            COSArray kids = (COSArray) dic.getDictionaryObject(COSName.KIDS);
-            for (int i = 0; kids != null && i < kids.size(); i++)
-            {
-                addDictionaryAndSubDictionary(set, (COSDictionary) kids.getObject(i));
-            }
-            COSBase value = dic.getDictionaryObject(COSName.V);
-            if (value instanceof COSDictionary)
-            {
-                addDictionaryAndSubDictionary(set, (COSDictionary) value);
-            }
-        }
-    }
 
     /**
      * Encrypt or decrypt a set of data.
@@ -210,7 +126,7 @@ public abstract class SecurityHandler
      *
      * @throws IOException If there is an error reading the data.
      */
-    public void encryptData(long objectNumber, long genNumber, InputStream data,
+    private void encryptData(long objectNumber, long genNumber, InputStream data,
                             OutputStream output, boolean decrypt) throws IOException
     {
         // Determine whether we're using Algorithm 1 (for RC4 and AES-128), or 1.A (for AES-256)
@@ -391,21 +307,6 @@ public abstract class SecurityHandler
         {
             cis.close();
         }
-    }
-
-    /**
-     * This will decrypt an object in the document.
-     *
-     * @param object The object to decrypt.
-     *
-     * @throws IOException If there is an error getting the stream data.
-     */
-    private void decryptObject(COSObject object) throws IOException
-    {
-        long objNum = object.getObjectNumber().intValue();
-        long genNum = object.getGenerationNumber().intValue();
-        COSBase base = object.getObject();
-        decrypt(base, objNum, genNum);
     }
 
     /**
