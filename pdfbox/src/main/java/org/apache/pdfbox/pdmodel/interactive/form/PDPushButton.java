@@ -42,43 +42,95 @@ public class PDPushButton extends PDButton
         super(theAcroForm, field, parentNode);
     }
     
+    /**
+     * Get the fields default value.
+     * 
+     * A push button field does not have a field value.
+     * 
+     * @return This will always return an empty string.
+     */
     @Override
     public String getDefaultValue()
     {
         // PushButton fields don't support the "DV" entry.
         return "";
     }    
-    
+
+    /**
+     * Set the fields default value.
+     * 
+     * A push button field does not have a field value.
+     * 
+     * @param defaultValue The field doesn't support setting any value
+     * @throws IllegalArgumentException when trying to set a value other than null
+     */
     @Override
     public void setDefaultValue(String defaultValue)
     {
-        throw new IllegalArgumentException("A PDPushButton shall not use the DV entry in the field dictionary");
-        
+        if (defaultValue != null && !defaultValue.isEmpty())
+        {
+            throw new IllegalArgumentException("A PDPushButton shall not use the DV entry in the field dictionary");
+        }
     }
-    
+
+    /**
+     * Get the fields options.
+     * 
+     * A push button field does not have option value.
+     * 
+     * @return This will always return an empty List.
+     */
     @Override
     public List<String> getOptions()
     {
         return Collections.<String>emptyList();
     }
-    
+
+    /**
+     * Set the fields options.
+     * 
+     * A push button field does not have a option values.
+     * 
+     * @param values The field doesn't support setting any option value
+     * @throws IllegalArgumentException when trying to set the a value other than null or an empty list.
+     */
     @Override
     public void setOptions(List<String> values)
     {
-        throw new IllegalArgumentException("A PDPushButton shall not use the Opt entry in the field dictionary");
+        if (values != null && !values.isEmpty())
+        {
+            throw new IllegalArgumentException("A PDPushButton shall not use the Opt entry in the field dictionary");
+        }
     }
     
-    
+    /**
+     * Get the fields value.
+     * 
+     * A push button field does not have field value.
+     * 
+     * @return This will always return an empty String.
+     */    
     @Override
-    public Object getValue()
+    public String getValue()
     {
         // PushButton fields don't support the "V" entry.
-        return null;
+        return "";
     }
-    
+
+    /**
+     * Set the fields value.
+     * 
+     * A push button field does not have a field value.
+     * 
+     * @param fieldValue The field doesn't support setting any field value.
+     * @throws IllegalArgumentException when trying to set the a value other than null or an empty String.
+     */
     @Override
     public void setValue(String fieldValue)
     {
-        throw new IllegalArgumentException("A PDPushButton shall not use the V entry in the field dictionary");
+        if (fieldValue != null && !fieldValue.isEmpty())
+        {
+            throw new IllegalArgumentException("A PDPushButton shall not use the V entry in the field dictionary");
+        }
     }
 }

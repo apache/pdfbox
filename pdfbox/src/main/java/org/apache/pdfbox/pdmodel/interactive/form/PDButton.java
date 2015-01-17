@@ -101,9 +101,9 @@ public abstract class PDButton extends PDField
      * from the appearance directory.
      *
      * The default value is used to represent the initial state of the
-     * checkbox or to revert when resetting the form.
+     * field or to revert when resetting the form.
      * 
-     * @param defaultValue the COSName object to set the field value.
+     * @param defaultValue the new field value.
      */
     @Override
     public void setDefaultValue(String defaultValue)
@@ -154,11 +154,11 @@ public abstract class PDButton extends PDField
      * This will set the options.
      * 
      * @see #getOptions()
-     * @param values List containing all possible options. Supplying null will remove the Opt entry.
+     * @param values List containing all possible options. Supplying null or an empty list will remove the Opt entry.
      */
     public void setOptions(List<String> values)
     {
-        if (values == null)
+        if (values == null || values.isEmpty())
         {
             removeInheritableAttribute(COSName.OPT);            
         }
