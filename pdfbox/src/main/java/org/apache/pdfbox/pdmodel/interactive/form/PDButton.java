@@ -23,6 +23,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -72,7 +73,51 @@ public abstract class PDButton extends PDField
     {
         super(acroForm, field, parentNode);
     }
-
+    
+    @Override
+    public String getDefaultValue() throws IOException
+    {
+        COSBase attribute = getInheritableAttribute(COSName.DV);
+        
+        if (attribute == null)
+        {
+            return "";
+        }
+        else if (attribute instanceof COSName)
+        {
+            return ((COSName) attribute).getName();
+        }
+        else
+        {
+            throw new IOException("Expected a COSName entry but got " + attribute.getClass().getName());
+        }
+    }
+    
+    /**
+     * Set the fields default value.
+     * 
+     * The field value holds a name object which is corresponding to the 
+     * appearance state representing the corresponding appearance 
+     * from the appearance directory.
+     *
+     * The default value is used to represent the initial state of the
+     * checkbox or to revert when resetting the form.
+     * 
+     * @param defaultValue the COSName object to set the field value.
+     */
+    @Override
+    public void setDefaultValue(String defaultValue)
+    {
+        if (defaultValue == null)
+        {
+            getDictionary().removeItem(COSName.DV);
+        }
+        else
+        {
+            getDictionary().setItem(COSName.DV, COSName.getPDFName(defaultValue));
+        }
+    }
+    
     /**
      * This will get the option values - the "Opt" entry.
      * 
