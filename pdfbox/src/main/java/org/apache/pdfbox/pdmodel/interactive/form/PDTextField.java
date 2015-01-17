@@ -223,13 +223,13 @@ public final class PDTextField extends PDVariableText
      *
      * @param value the default value
      */
+    @Override
     public void setDefaultValue(String value)
     {
         if (value != null)
         {
             COSString fieldValue = new COSString(value);
             setInheritableAttribute(COSName.DV, fieldValue);
-            // TODO stream instead of string
         }  
         else
         {
@@ -252,8 +252,7 @@ public final class PDTextField extends PDVariableText
         {
             return ((COSString) fieldValue).getString();
         }
-        // TODO handle PDTextStream, IOException in case of wrong type
-        return null;
+        return "";
     }    
     
     
@@ -262,16 +261,19 @@ public final class PDTextField extends PDVariableText
      * Set the fields value.
      * 
      * The value is stored in the field dictionaries "V" entry.
-     * 
+     * <p>
+     * For long text it's more efficient to provide the text content as a
+     * text stream {@link #setValue(PDTextStream)}
+     * </p>
      * @param value the value
      */
+    @Override
     public void setValue(String value)
     {
-        if (value != null)
+        if (value != null && !value.isEmpty())
         {
             COSString fieldValue = new COSString(value);
             setInheritableAttribute(COSName.V, fieldValue);
-            // TODO stream instead of string
         }  
         else
         {
@@ -281,6 +283,30 @@ public final class PDTextField extends PDVariableText
         // TODO move appearance generation out of fields PD model
         updateFieldAppearances();
     }
+    
+    /**
+     * Set the fields value.
+     * 
+     * The value is stored in the field dictionaries "V" entry.
+     * 
+     * @param textStream the value
+     */
+    public void setValue(PDTextStream textStream)
+    {
+        if (textStream != null)
+        {
+            setInheritableAttribute(COSName.V, textStream.getCOSObject());
+        }  
+        else
+        {
+            removeInheritableAttribute(COSName.V);
+        }
+        
+        // TODO move appearance generation out of fields PD model
+        updateFieldAppearances();
+    }
+    
+    
 
     /**
      * Get the fields value.
@@ -299,6 +325,19 @@ public final class PDTextField extends PDVariableText
         {
             return textStream.getAsString();
         }
-        return null;
+        return "";
+    }
+    
+    /**
+     * Get the fields value.
+     * 
+     * The value is stored in the field dictionaries "V" entry.
+     * 
+     * @return The value of this entry.
+     * @throws IOException if the field dictionary entry is not a text type
+     */
+    public PDTextStream getValueAsStream() throws IOException
+    {
+        return getAsTextStream(getInheritableAttribute(COSName.V));
     }
 }
