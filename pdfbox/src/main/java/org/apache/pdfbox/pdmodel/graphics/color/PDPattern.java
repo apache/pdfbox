@@ -31,6 +31,9 @@ import org.apache.pdfbox.pdmodel.graphics.pattern.PDAbstractPattern;
  */
 public final class PDPattern extends PDSpecialColorSpace
 {
+    /** A pattern which leaves no marks on the page. */
+    private static PDColor EMPTY_PATTERN = new PDColor(new float[] { }, null);
+    
     private final PDResources resources;
     private PDColorSpace underlyingColorSpace;
 
@@ -77,7 +80,7 @@ public final class PDPattern extends PDSpecialColorSpace
     @Override
     public PDColor getInitialColor()
     {
-        return PDColor.EMPTY_PATTERN;
+        return EMPTY_PATTERN;
     }
 
     @Override
