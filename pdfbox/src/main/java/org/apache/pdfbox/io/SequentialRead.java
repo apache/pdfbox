@@ -29,7 +29,7 @@ public interface SequentialRead
      *
      * @throws IOException If there is an error closing this resource.
      */
-    public void close() throws IOException;
+    void close() throws IOException;
 
     /**
      * Read a single byte of data.
@@ -38,7 +38,7 @@ public interface SequentialRead
      *
      * @throws IOException If there is an error while reading the data.
      */
-    public int read() throws IOException;
+    int read() throws IOException;
 
     /**
      * Read a buffer of data.
@@ -49,6 +49,6 @@ public interface SequentialRead
      * @return The number of bytes that were actually read.
      * @throws IOException If there was an error while reading the data.
      */
-    public int read(byte[] b, int offset, int length) throws IOException;
+    int read(byte[] b, int offset, int length) throws IOException;
 
 }

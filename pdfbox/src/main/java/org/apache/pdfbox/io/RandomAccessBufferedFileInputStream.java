@@ -17,7 +17,6 @@
 package org.apache.pdfbox.io;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
@@ -52,12 +51,12 @@ extends InputStream implements RandomAccessRead
         private static final long serialVersionUID = -6302488539257741101L;
 
         @Override
-        protected boolean removeEldestEntry( Map.Entry<Long, byte[]> _eldest )
+        protected boolean removeEldestEntry( Map.Entry<Long, byte[]> eldest )
         {
             final boolean doRemove = size() > maxCachedPages;
             if (doRemove)
             {
-                lastRemovedCachePage = _eldest.getValue();
+                lastRemovedCachePage = eldest.getValue();
             }
             return doRemove;
         }
@@ -73,11 +72,10 @@ extends InputStream implements RandomAccessRead
     private boolean isClosed;
     
     /** Create input stream instance for given file. */
-    public RandomAccessBufferedFileInputStream( File _file )
-    throws FileNotFoundException, IOException
+    public RandomAccessBufferedFileInputStream( File file ) throws IOException 
     {
-        raFile = new RandomAccessFile(_file, "r");
-        fileLength = _file.length();
+        raFile = new RandomAccessFile(file, "r");
+        fileLength = file.length();
 
         seek(0);
     }
@@ -190,7 +188,9 @@ extends InputStream implements RandomAccessRead
 
         int commonLen = Math.min( pageSize - offsetWithinPage, len );
         if ( ( fileLength - fileOffset ) < pageSize )
+        {
             commonLen = Math.min( commonLen, (int) ( fileLength - fileOffset ) );
+        }
 
         System.arraycopy( curPage, offsetWithinPage, b, off, commonLen );
 

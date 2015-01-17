@@ -32,7 +32,7 @@ public interface RandomAccessRead extends SequentialRead
      *         
      * @throws IOException 
      */
-    public long getPosition() throws IOException;
+    long getPosition() throws IOException;
     
     /**
      * Seek to a position in the data.
@@ -40,7 +40,7 @@ public interface RandomAccessRead extends SequentialRead
      * @param position The position to seek to.
      * @throws IOException If there is an error while seeking.
      */
-    public void seek(long position) throws IOException;
+    void seek(long position) throws IOException;
 
     /**
      * The total number of bytes that are available.
@@ -50,10 +50,10 @@ public interface RandomAccessRead extends SequentialRead
      * @throws IOException If there is an IO error while determining the
      * length of the data stream.
      */
-    public long length() throws IOException;
+    long length() throws IOException;
 
     /**
      * Returns true if this stream has been closed.
      */
-    public boolean isClosed();
+    boolean isClosed();
 }

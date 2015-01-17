@@ -30,7 +30,7 @@ import java.io.IOException;
  */
 public class RandomAccessFile implements RandomAccess, Closeable
 {
-    private java.io.RandomAccessFile ras;
+    private final java.io.RandomAccessFile ras;
     private boolean isClosed;
 
     /**
