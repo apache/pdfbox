@@ -65,34 +65,6 @@ public final class PDComboBox extends PDChoice
         getDictionary().setFlag( COSName.FF, FLAG_EDIT, edit );
     }
 
-    
-    /**
-     * Get the fields default value.
-     * 
-     * The value is stored in the field dictionaries "DV" entry.
-     * 
-     * @return The value of this entry.
-     */
-    @Override
-    public Object getDefaultValue()
-    {
-        // TODO add handling specific to combo box
-        return getInheritableAttribute(COSName.DV);
-    }     
-
-    @Override
-    public void setDefaultValue(String defaultValue)
-    {
-        if (defaultValue == null)
-        {
-            getDictionary().removeItem(COSName.DV);
-        }
-        else
-        {
-            getDictionary().setString(COSName.DV, defaultValue);
-        }
-    }    
-    
     /**
      * setValue sets the entry "V" to the given value.
      * 

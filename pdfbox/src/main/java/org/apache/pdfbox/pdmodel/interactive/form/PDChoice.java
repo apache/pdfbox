@@ -68,6 +68,44 @@ public abstract class PDChoice extends PDVariableText
     }
 
     /**
+     * Get the fields default value.
+     * 
+     * The value is stored in the field dictionaries "DV" entry.
+     * 
+     * @return The value of this entry.
+     */
+    public String getDefaultValue()
+    {
+        return ((COSString) getInheritableAttribute(COSName.DV)).getString();
+    }    
+    
+    /**
+     * Set the default value for the field.
+     * 
+     * @param value the value
+     */
+    public void setDefaultValue(String value)
+    {
+        if (value != null)
+        {
+            if (getOptions().indexOf((String) value) == -1)
+            {
+                throw new IllegalArgumentException("The list box does not contain the given value.");
+            }
+            else
+            {
+                getDictionary().setString(COSName.DV, (String)value);
+            }
+        }
+        else
+        {
+            getDictionary().removeItem(COSName.DV);
+        }
+    }
+    
+    
+    
+    /**
      * This will get the option values "Opt".
      * 
      * <p>
