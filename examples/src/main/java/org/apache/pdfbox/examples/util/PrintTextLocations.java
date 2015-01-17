@@ -19,14 +19,11 @@ package org.apache.pdfbox.examples.util;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.util.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;
 
 import java.io.File;
 import java.io.IOException;
-
-import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 
 /**
  * This is an example on how to get some x/y coordinates of text.
@@ -66,19 +63,6 @@ public class PrintTextLocations extends PDFTextStripper
             try
             {
                 document = PDDocument.load( new File(args[0]) );
-                if( document.isEncrypted() )
-                {
-                    try
-                    {
-                        StandardDecryptionMaterial sdm = new StandardDecryptionMaterial("");
-                        document.openProtection(sdm);
-                    }
-                    catch( InvalidPasswordException e )
-                    {
-                        System.err.println( "Error: Document is encrypted with a password." );
-                        System.exit( 1 );
-                    }
-                }
                 PrintTextLocations printer = new PrintTextLocations();
                 int pageNum = 0;
                 for( PDPage page : document.getPages() )

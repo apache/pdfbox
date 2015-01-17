@@ -24,8 +24,6 @@ import java.util.List;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
-import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
-import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDFieldTreeNode;
 import org.apache.pdfbox.pdmodel.interactive.form.PDNonTerminalField;
@@ -145,19 +143,6 @@ public class PrintFields
             {
                 pdf = PDDocument.load(new File(args[0]));
                 PrintFields exporter = new PrintFields();
-                if (pdf.isEncrypted())
-                {
-                    try
-                    {
-                        StandardDecryptionMaterial sdm = new StandardDecryptionMaterial("");
-                        pdf.openProtection(sdm);
-                    }
-                    catch (InvalidPasswordException e)
-                    {
-                        System.err.println("Error: The document is encrypted.");
-                        usage();
-                    }
-                }
                 exporter.printFields(pdf);
             }
         }
