@@ -16,8 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
-import java.util.List;
-
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 
@@ -66,32 +64,33 @@ public final class PDComboBox extends PDChoice
     }
 
     /**
-     * setValue sets the entry "V" to the given value.
+     * Sets the field value - the 'V' key.
      * 
      * @param value the value
-     * 
      */
+    @Override
     public void setValue(String value)
     {
-        if ((getFieldFlags() & FLAG_EDIT) != 0)
+        if (value != null)
         {
-            throw new IllegalArgumentException("The combo box isn't editable.");
+            // check if the options contain the value to be set is
+            // only necessary if the edit flag has not been set.
+            // If the edit flag has been set the field allows a custom value.
+            if (!isEdit() && getOptions().indexOf((String) value) == -1)
+            {
+                throw new IllegalArgumentException("The list box does not contain the given value.");
+            }
+            else
+            {
+                getDictionary().setString(COSName.V, (String)value);
+                // remove I key for single valued choice field
+                setSelectedOptionsIndex(null);
+            }
         }
-        super.setValue(value);
+        else
+        {
+            getDictionary().removeItem(COSName.V);
+        }
+        // TODO create/update appearance
     }
-
-    /**
-     * setValue sets the entry "V" to the given value.
-     * 
-     * @param values the value
-     * 
-     */
-    public void setValue(List<String> values)
-    {
-        if ((getFieldFlags() & FLAG_EDIT) != 0)
-        {
-            throw new IllegalArgumentException("The combo box isn't editable.");
-        }
-        super.setValue(values);
-    }    
 }
