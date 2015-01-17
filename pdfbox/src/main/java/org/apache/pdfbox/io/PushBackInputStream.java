@@ -85,6 +85,7 @@ public class PushBackInputStream extends java.io.PushbackInputStream
     /**
      * {@inheritDoc} 
      */
+    @Override
     public int read() throws IOException
     {
         int retval = super.read();
@@ -98,6 +99,7 @@ public class PushBackInputStream extends java.io.PushbackInputStream
     /**
      * {@inheritDoc} 
      */
+    @Override
     public int read(byte[] b) throws IOException
     {
         return this.read(b, 0, b.length);
@@ -105,6 +107,7 @@ public class PushBackInputStream extends java.io.PushbackInputStream
     /**
      * {@inheritDoc} 
      */
+    @Override
     public int read(byte[] b, int off, int len) throws IOException
     {
         int retval = super.read(b, off, len);
@@ -118,6 +121,7 @@ public class PushBackInputStream extends java.io.PushbackInputStream
     /**
      * {@inheritDoc} 
      */
+    @Override
     public void unread(int b) throws IOException
     {
         offset--;
@@ -127,6 +131,7 @@ public class PushBackInputStream extends java.io.PushbackInputStream
     /**
      * {@inheritDoc} 
      */
+    @Override
     public void unread(byte[] b) throws IOException
     {
         this.unread(b, 0, b.length);
@@ -135,6 +140,7 @@ public class PushBackInputStream extends java.io.PushbackInputStream
     /**
      * {@inheritDoc} 
      */
+    @Override
     public void unread(byte[] b, int off, int len) throws IOException
     {
         if (len > 0)
