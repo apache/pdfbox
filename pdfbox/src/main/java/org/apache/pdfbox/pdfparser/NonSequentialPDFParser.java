@@ -51,7 +51,6 @@ import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.PushBackInputStream;
 import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
@@ -901,7 +900,7 @@ public class NonSequentialPDFParser extends BaseParser
      * @param pattern pattern to be skipped
      * @throws IOException if pattern could not be read
      */
-    protected final void readPattern(final char[] pattern) throws IOException
+    private final void readPattern(final char[] pattern) throws IOException
     {
         skipSpaces();
 
@@ -1051,7 +1050,7 @@ public class NonSequentialPDFParser extends BaseParser
     /**
      * Remove the temporary file. A temporary file is created if this class is instantiated with an InputStream
      */
-    protected void deleteTempFile()
+    private void deleteTempFile()
     {
         if (isTmpPDFFile)
         {
@@ -1381,8 +1380,8 @@ public class NonSequentialPDFParser extends BaseParser
     }
 
     /**
-     * This will parse the next object from the stream and add it to the local state. This is taken from
-     * {@link PDFParser} and reduced to parsing an indirect object.
+     * This will parse the next object from the stream and add it to the local state. 
+     * It's reduced to parsing an indirect object.
      * 
      * @param objNr object number of object to be parsed
      * @param objGenNr object generation number of object to be parsed
@@ -1481,7 +1480,7 @@ public class NonSequentialPDFParser extends BaseParser
                 }
                 else if (securityHandler != null)
                 {
-                    decrypt(pb, objNr, objGenNr);
+                    securityHandler.decrypt(pb, objNr, objGenNr);
                 }
 
                 pdfObject.setObject(pb);
@@ -1538,78 +1537,6 @@ public class NonSequentialPDFParser extends BaseParser
         }
         return pdfObject.getObject();
     }
-    
-    /**
-     * 
-     * @param dict the dictionary to be decrypted
-     * @param objNr the object number
-     * @param objGenNr the object generation number
-     * @throws IOException ff something went wrong
-     */
-    protected final void decryptDictionary(COSDictionary dict, long objNr, long objGenNr) throws IOException
-    {
-        // skip dictionary containing the signature
-        if (!COSName.SIG.equals(dict.getItem(COSName.TYPE)))
-        {
-            for (Entry<COSName, COSBase> entry : dict.entrySet())
-            {
-                if (entry.getValue() instanceof COSString)
-                {
-                    decryptString((COSString) entry.getValue(), objNr, objGenNr);
-                }
-                else if (entry.getValue() instanceof COSArray)
-                {
-                    securityHandler.decryptArray((COSArray) entry.getValue(), objNr, objGenNr);
-                }
-                else if (entry.getValue() instanceof COSDictionary)
-                {
-                    decryptDictionary((COSDictionary) entry.getValue(), objNr, objGenNr);
-                }
-            }
-        }
-    }
-
-    /**
-     * Decrypts given COSString.
-     * 
-     * @param str the string to be decrypted
-     * @param objNr the object number
-     * @param objGenNr the object generation number
-     * @throws IOException ff something went wrong
-     */
-    protected final void decryptString(COSString str, long objNr, long objGenNr) throws IOException
-    {
-        securityHandler.decryptString(str, objNr, objGenNr);
-    }
-    
-    /**
-     * Decrypts given object.
-     * 
-     * @param pb the object to be decrypted
-     * @param objNr the object number
-     * @param objGenNr the object generation number
-     * @throws IOException ff something went wrong
-     */
-    protected final void decrypt(COSBase pb, int objNr, int objGenNr) throws IOException
-    {
-        if (pb instanceof COSString)
-        {
-            decryptString((COSString) pb, objNr, objGenNr);
-        }
-        else if (pb instanceof COSDictionary)
-        {
-            decryptDictionary((COSDictionary) pb, objNr, objGenNr);
-        }
-        else if (pb instanceof COSArray)
-        {
-            final COSArray array = (COSArray) pb;
-            for (int aIdx = 0, len = array.size(); aIdx < len; aIdx++)
-            {
-                decrypt(array.get(aIdx), objNr, objGenNr);
-            }
-        }
-    }
-    
     
     private boolean inGetLength = false;
 
