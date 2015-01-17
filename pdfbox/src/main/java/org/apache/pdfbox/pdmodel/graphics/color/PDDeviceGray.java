@@ -32,7 +32,8 @@ public final class PDDeviceGray extends PDDeviceColorSpace
 {
     /** The single instance of this class. */
     public static final PDDeviceGray INSTANCE = new PDDeviceGray();
-    private static final PDColor INITIAL_COLOR = new PDColor(new float[] { 0 }, INSTANCE);
+    
+    private final PDColor initialColor = new PDColor(new float[] { 0 }, this);
 
     private PDDeviceGray()
     {
@@ -59,7 +60,7 @@ public final class PDDeviceGray extends PDDeviceColorSpace
     @Override
     public PDColor getInitialColor()
     {
-        return INITIAL_COLOR;
+        return initialColor;
     }
 
     @Override

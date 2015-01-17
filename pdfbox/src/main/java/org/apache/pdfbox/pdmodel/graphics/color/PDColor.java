@@ -34,12 +34,6 @@ import java.util.Arrays;
  */
 public final class PDColor
 {
-    /** The color black in the DeviceGray color space. */
-    public static PDColor DEVICE_GRAY_BLACK = new PDColor(new float[] { 0 }, PDDeviceGray.INSTANCE);
-
-    /** A pattern which leaves no marks on the page. */
-    public static PDColor EMPTY_PATTERN = new PDColor(new float[] { }, null);
-
     private final float[] components;
     private final COSName patternName;
     private final PDColorSpace colorSpace;

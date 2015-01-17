@@ -40,8 +40,8 @@ public class PDGraphicsState implements Cloneable
     private boolean isClippingPathDirty;
     private Area clippingPath;
     private Matrix currentTransformationMatrix = new Matrix();
-    private PDColor strokingColor = PDColor.DEVICE_GRAY_BLACK;
-    private PDColor nonStrokingColor = PDColor.DEVICE_GRAY_BLACK;
+    private PDColor strokingColor = PDDeviceGray.INSTANCE.getInitialColor();
+    private PDColor nonStrokingColor = PDDeviceGray.INSTANCE.getInitialColor();
     private PDColorSpace strokingColorSpace = PDDeviceGray.INSTANCE;
     private PDColorSpace nonStrokingColorSpace = PDDeviceGray.INSTANCE;
     private PDTextState textState = new PDTextState();
