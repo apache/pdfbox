@@ -86,7 +86,7 @@ public final class PDCheckbox extends PDButton
     }
 
     /**
-     * Checks the radiobutton.
+     * Checks the check box.
      */
     public void check()
     {
@@ -96,7 +96,7 @@ public final class PDCheckbox extends PDButton
     }
 
     /**
-     * Unchecks the radiobutton.
+     * Unchecks the check box.
      */
     public void unCheck()
     {
@@ -104,9 +104,9 @@ public final class PDCheckbox extends PDButton
     }
 
     /**
-     * This will get the value of the radio button.
+     * This will get the value assigned to the OFF state.
      *
-     * @return The value of the radio button.
+     * @return The value of the check box.
      */
     public String getOffValue()
     {
@@ -114,9 +114,9 @@ public final class PDCheckbox extends PDButton
     }
 
     /**
-     * This will get the value of the radio button.
+     * This will get the value assigned to the ON state.
      *
-     * @return The value of the radio button.
+     * @return The value of the check box.
      */
     public String getOnValue()
     {
