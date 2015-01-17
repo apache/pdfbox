@@ -43,10 +43,10 @@ public class PDPushButton extends PDButton
     }
     
     @Override
-    public Object getDefaultValue()
+    public String getDefaultValue()
     {
-        // PushButton fields don't support the "V" entry.
-        return null;
+        // PushButton fields don't support the "DV" entry.
+        return "";
     }    
     
     @Override
