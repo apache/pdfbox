@@ -200,26 +200,6 @@ public abstract class SecurityHandler
     }
 
     /**
-     * Encrypt a set of data.
-     *
-     * @param objectNumber The data object number.
-     * @param genNumber The data generation number.
-     * @param data The data to encrypt.
-     * @param output The output to write the encrypted data to.
-     * @throws IOException If there is an error reading the data.
-     * @deprecated While this works fine for RC4 encryption, it will never decrypt AES data
-     *             You should use encryptData(objectNumber, genNumber, data, output, decrypt)
-     *             which can do everything.  This function is just here for compatibility
-     *             reasons and will be removed in the future.
-     */
-    public void encryptData(long objectNumber, long genNumber, InputStream data,
-                            OutputStream output) throws IOException
-    {
-        // default to encrypting since the function is named "encryptData"
-        encryptData(objectNumber, genNumber, data, output, false);
-    }
-
-    /**
      * Encrypt or decrypt a set of data.
      *
      * @param objectNumber The data object number.
@@ -437,7 +417,7 @@ public abstract class SecurityHandler
      *
      * @throws IOException If there is an error getting the stream data.
      */
-    private void decrypt(COSBase obj, long objNum, long genNum) throws IOException
+    public void decrypt(COSBase obj, long objNum, long genNum) throws IOException
     {
         if (!objects.contains(obj))
         {
@@ -515,18 +495,22 @@ public abstract class SecurityHandler
      */
     private void decryptDictionary(COSDictionary dictionary, long objNum, long genNum) throws IOException
     {
-        for (Map.Entry<COSName, COSBase> entry : dictionary.entrySet())
+        // skip dictionary containing the signature
+        if (!COSName.SIG.equals(dictionary.getItem(COSName.TYPE)))
         {
-            COSBase value = entry.getValue();
-            // within a dictionary only the following kind of COS objects have to be decrypted
-            if (value instanceof COSString || value instanceof COSStream || value instanceof COSArray || value instanceof COSDictionary)
+            for (Map.Entry<COSName, COSBase> entry : dictionary.entrySet())
             {
-                // if we are a signature dictionary and contain a Contents entry then
-                // we don't decrypt it.
-                if (!(entry.getKey().equals(COSName.CONTENTS) && value instanceof COSString && potentialSignatures
-                        .contains(dictionary)))
+                COSBase value = entry.getValue();
+                // within a dictionary only the following kind of COS objects have to be decrypted
+                if (value instanceof COSString || value instanceof COSStream || value instanceof COSArray || value instanceof COSDictionary)
                 {
-                    decrypt(value, objNum, genNum);
+                    // if we are a signature dictionary and contain a Contents entry then
+                    // we don't decrypt it.
+                    if (!(entry.getKey().equals(COSName.CONTENTS) && value instanceof COSString && potentialSignatures
+                            .contains(dictionary)))
+                    {
+                        decrypt(value, objNum, genNum);
+                    }
                 }
             }
         }
@@ -541,7 +525,7 @@ public abstract class SecurityHandler
      *
      * @throws IOException If an error occurs writing the new string.
      */
-    public void decryptString(COSString string, long objNum, long genNum) throws IOException
+    private void decryptString(COSString string, long objNum, long genNum) throws IOException
     {
         ByteArrayInputStream data = new ByteArrayInputStream(string.getBytes());
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
@@ -575,7 +559,7 @@ public abstract class SecurityHandler
      *
      * @throws IOException If there is an error accessing the data.
      */
-    public void decryptArray(COSArray array, long objNum, long genNum) throws IOException
+    private void decryptArray(COSArray array, long objNum, long genNum) throws IOException
     {
         for (int i = 0; i < array.size(); i++)
         {

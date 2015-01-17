@@ -757,7 +757,7 @@ public class PreflightParser extends NonSequentialPDFParser
                 }
                 else if (securityHandler != null)
                 {
-                    decrypt(pb, objNr, objGenNr);
+                    securityHandler.decrypt(pb, objNr, objGenNr);
                 }
 
                 pdfObject.setObject(pb);
