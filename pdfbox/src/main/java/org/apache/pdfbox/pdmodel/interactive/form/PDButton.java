@@ -33,10 +33,7 @@ import java.util.List;
  */
 public abstract class PDButton extends PDField
 {
-    /**
-     * A Ff flag.
-     */
-    public static final int FLAG_NO_TOGGLE_TO_OFF = 1 << 14;
+
     /**
      * A Ff flag.
      */
