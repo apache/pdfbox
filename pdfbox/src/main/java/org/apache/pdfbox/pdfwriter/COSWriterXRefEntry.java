@@ -33,12 +33,12 @@ public class COSWriterXRefEntry implements Comparable<COSWriterXRefEntry>
     private COSBase object;
     private COSObjectKey key;
     private boolean free = false;
-    private static final COSWriterXRefEntry nullEntry;
+    private static final COSWriterXRefEntry NULLENTRY;
     
     static 
     {
-        nullEntry = new COSWriterXRefEntry(0, null, new COSObjectKey(0, 65535));
-        nullEntry.setFree(true);
+        NULLENTRY = new COSWriterXRefEntry(0, null, new COSObjectKey(0, 65535));
+        NULLENTRY.setFree(true);
     }
 
     /**
@@ -61,7 +61,7 @@ public class COSWriterXRefEntry implements Comparable<COSWriterXRefEntry>
      */
     public static COSWriterXRefEntry getNullEntry()
     {
-      return nullEntry;
+      return NULLENTRY;
     }
     
     /**
