@@ -35,15 +35,16 @@ public abstract class PDButton extends PDField
 {
 
     /**
-     * A Ff flag.
+     * A Ff flag. If set, the field is a set of radio buttons
      */
     public static final int FLAG_RADIO = 1 << 15;
     /**
-     * A Ff flag.
+     * A Ff flag. If set, the field is a pushbutton.
      */
     public static final int FLAG_PUSHBUTTON = 1 << 16;
     /**
-     * A Ff flag.
+     * A Ff flag. If set, radio buttons individual fields, using the same
+     * value for the on state will turn on and off in unison.
      */
     public static final int FLAG_RADIOS_IN_UNISON = 1 << 25;
 
