@@ -72,7 +72,7 @@ public final class TypeMapping
         initialize();
     }
 
-    private static final Class<?>[] simplePropertyConstParams = new Class<?>[] { XMPMetadata.class, String.class,
+    private static final Class<?>[] SIMPLEPROPERTYCONSTPARAMS = new Class<?>[] { XMPMetadata.class, String.class,
             String.class, String.class, Object.class };
 
     private void initialize()
@@ -180,7 +180,7 @@ public final class TypeMapping
         {
             Class<? extends AbstractSimpleProperty> clz = type.getImplementingClass().asSubclass(
                     AbstractSimpleProperty.class);
-            Constructor<? extends AbstractSimpleProperty> cons = clz.getConstructor(simplePropertyConstParams);
+            Constructor<? extends AbstractSimpleProperty> cons = clz.getConstructor(SIMPLEPROPERTYCONSTPARAMS);
             return cons.newInstance(params);
         }
         catch (NoSuchMethodError e)
