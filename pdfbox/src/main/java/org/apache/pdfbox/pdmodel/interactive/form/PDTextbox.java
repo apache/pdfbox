@@ -36,6 +36,7 @@ public class PDTextbox extends PDVariableText
     public PDTextbox( PDAcroForm theAcroForm )
     {
         super( theAcroForm );
+        setFieldType("Tx");
     }
 
     /**

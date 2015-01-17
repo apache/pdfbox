@@ -647,4 +647,25 @@ public abstract class PDField implements COSObjectable
     {
         dictionary.setItem(COSName.AA, actions);
     }
+    
+    /**
+     * Set the field type.
+     * 
+     * @param fieldType the field type string must be one of "Btn", "Ch", "Tx", "Sig"
+     */
+    protected void setFieldType(String fieldType)
+    {
+        if (fieldType.compareTo("Btn") != 0 &&
+            fieldType.compareTo("Ch") != 0 &&
+            fieldType.compareTo("Tx") != 0 &&
+            fieldType.compareTo("Sig") != 0
+                )
+        {
+            throw new IllegalArgumentException("Unknown field type given " + fieldType);
+        }
+        else
+        {
+            getDictionary().setName(COSName.FT, fieldType);
+        }
+    }
 }
