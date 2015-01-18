@@ -23,6 +23,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
@@ -57,6 +58,9 @@ public abstract class BaseParser implements Closeable
 
     private static final long GENERATION_NUMBER_THRESHOLD = 65535;
     
+    /**
+     * String constant for ISO-8859-1 charset.
+     */
     public static final String ISO_8859_1 = "ISO-8859-1";
     
     /**
@@ -126,6 +130,19 @@ public abstract class BaseParser implements Closeable
      * This is a string constant that will be used for comparisons.
      */
     private static final String NULL = "null";
+
+    /**
+     * ASCII code for line feed.
+     */
+    protected static final byte ASCII_LF = 10;
+    /**
+     * ASCII code for carriage return.
+     */
+    protected static final byte ASCII_CR = 13;
+    private static final byte ASCII_ZERO = 48;
+    private static final byte ASCII_NINE = 57;
+    private static final byte ASCII_SPACE = 32;
+
 
     /**
      * This is the stream that will be read from.
@@ -198,12 +215,9 @@ public abstract class BaseParser implements Closeable
     
     private static boolean isHexDigit(char ch)
     {
-        return (ch >= '0' && ch <= '9') ||
+        return (ch >= ASCII_ZERO && ch <= ASCII_NINE) ||
         (ch >= 'a' && ch <= 'f') ||
         (ch >= 'A' && ch <= 'F');
-        // the line below can lead to problems with certain versions of the IBM JIT compiler
-        // (and is slower anyway)
-        //return (HEXDIGITS.indexOf(ch) != -1);
     }
 
     /**
@@ -220,7 +234,7 @@ public abstract class BaseParser implements Closeable
         COSBase number = parseDirObject();
         skipSpaces();
         char next = (char)pdfSource.peek();
-        if( next >= '0' && next <= '9' )
+        if( next >= ASCII_ZERO && next <= ASCII_NINE )
         {
             long genOffset = pdfSource.getOffset();
             COSBase generationNumber = parseDirObject();
@@ -370,22 +384,22 @@ public abstract class BaseParser implements Closeable
             //see brother_scan_cover.pdf, it adds whitespaces
             //after the stream but before the start of the
             //data, so just read those first
-            while (whitespace == 0x20)
+            while (ASCII_SPACE == whitespace)
             {
                 whitespace = pdfSource.read();
             }
 
-            if( whitespace == 0x0D )
+            if( ASCII_CR == whitespace )
             {
                 whitespace = pdfSource.read();
-                if( whitespace != 0x0A )
+                if( ASCII_LF != whitespace )
                 {
                     pdfSource.unread( whitespace );
                     //The spec says this is invalid but it happens in the real
                     //world so we must support it.
                 }
             }
-            else if (whitespace == 0x0A)
+            else if (ASCII_LF == whitespace)
             {
                 //that is fine
             }
@@ -411,20 +425,6 @@ public abstract class BaseParser implements Closeable
             {
                 length = ( (COSNumber) streamLength).intValue();
             }
-            // commented out next chunk since for the sequentially working PDFParser
-            // we do not know if length object is redefined later on and the currently
-            // read indirect object might be obsolete (e.g. not referenced in xref table);
-            // this would result in reading wrong number of bytes;
-            // Thus the only reliable information is a direct length.
-            // This exclusion shouldn't harm much since in case of indirect objects they will
-            // typically be defined after the stream object, thus keeping the directly
-            // provided length will fix most cases
-            // else if ( ( streamLength instanceof COSObject ) &&
-            //           ( ( (COSObject) streamLength ).getObject() instanceof COSNumber ) )
-            // {
-            //     length = ( (COSNumber) ( (COSObject) streamLength ).getObject() ).intValue();
-            // }
-            
             if ( length == -1 )
             {
                 // Couldn't determine length from dict: just
@@ -571,7 +571,7 @@ public abstract class BaseParser implements Closeable
      * 
      * @param out  stream we write out to.
      * 
-     * @throws IOException
+     * @throws IOException if something went wrong
      */
     protected void readUntilEndStream( final OutputStream out ) throws IOException
     {
@@ -665,9 +665,9 @@ public abstract class BaseParser implements Closeable
                 System.arraycopy( keyw, 0, strmBuf, 0, charMatchCount );
             }
             
-        }  // while
-
-        out.flush(); // this writes a lonely CR or drops trailing CR LF and LF
+        }
+        // this writes a lonely CR or drops trailing CR LF and LF
+        out.flush();
     }
     
     /**
@@ -714,11 +714,11 @@ public abstract class BaseParser implements Closeable
         //
         if (amountRead == 3)
         {
-            if (( nextThreeBytes[0] == 0x0d        // Look for a carriage return
-                    && nextThreeBytes[1] == 0x0a   // Look for a new line
+            if (( nextThreeBytes[0] == ASCII_CR        // Look for a carriage return
+                    && nextThreeBytes[1] == ASCII_LF   // Look for a new line
                     && nextThreeBytes[2] == 0x2f ) // Look for a slash /
                                                    // Add a second case without a new line
-                    || (nextThreeBytes[0] == 0x0d  // Look for a carriage return
+                    || (nextThreeBytes[0] == ASCII_CR  // Look for a carriage return
                             && nextThreeBytes[1] == 0x2f ))  // Look for a slash /
             {
                 braces = 0;
@@ -821,8 +821,8 @@ public abstract class BaseParser implements Closeable
                     case '\\':
                         out.write(next);
                         break;
-                    case 10:
-                    case 13:
+                    case ASCII_LF:
+                    case ASCII_CR:
                         //this is a break in the line so ignore it and the newline and continue
                         c = pdfSource.read();
                         while( isEOL(c) && c != -1)
@@ -1030,7 +1030,8 @@ public abstract class BaseParser implements Closeable
             }
             skipSpaces();
         }
-        pdfSource.read(); //read ']'
+        // read ']'
+        pdfSource.read(); 
         skipSpaces();
         return po;
     }
@@ -1043,7 +1044,7 @@ public abstract class BaseParser implements Closeable
      */
     protected boolean isEndOfName(char ch)
     {
-        return (ch == ' ' || ch == 13 || ch == 10 || ch == 9 || ch == '>' || ch == '<'
+        return (ch == ASCII_SPACE || ch == ASCII_CR || ch == ASCII_LF || ch == 9 || ch == '>' || ch == '<'
             || ch == '[' || ch =='/' || ch ==']' || ch ==')' || ch =='('
         );
     }
@@ -1129,7 +1130,8 @@ public abstract class BaseParser implements Closeable
             String trueString = new String( pdfSource.readFully( 4 ), ISO_8859_1 );
             if( !trueString.equals( TRUE ) )
             {
-                throw new IOException( "Error parsing boolean: expected='true' actual='" + trueString + "' at offset " + pdfSource.getOffset());
+                throw new IOException( "Error parsing boolean: expected='true' actual='" + trueString 
+                        + "' at offset " + pdfSource.getOffset());
             }
             else
             {
@@ -1141,7 +1143,8 @@ public abstract class BaseParser implements Closeable
             String falseString = new String( pdfSource.readFully( 5 ), ISO_8859_1 );
             if( !falseString.equals( FALSE ) )
             {
-                throw new IOException( "Error parsing boolean: expected='true' actual='" + falseString + "' at offset " + pdfSource.getOffset());
+                throw new IOException( "Error parsing boolean: expected='true' actual='" + falseString 
+                        + "' at offset " + pdfSource.getOffset());
             }
             else
             {
@@ -1150,7 +1153,8 @@ public abstract class BaseParser implements Closeable
         }
         else
         {
-            throw new IOException( "Error parsing boolean expected='t or f' actual='" + c + "' at offset " + pdfSource.getOffset());
+            throw new IOException( "Error parsing boolean expected='t or f' actual='" + c 
+                    + "' at offset " + pdfSource.getOffset());
         }
         return retval;
     }
@@ -1173,8 +1177,10 @@ public abstract class BaseParser implements Closeable
         {
         case '<':
         {
-            int leftBracket = pdfSource.read();//pull off first left bracket
-            c = (char)pdfSource.peek(); //check for second left bracket
+            // pull off first left bracket
+            int leftBracket = pdfSource.read();
+            // check for second left bracket
+            c = (char)pdfSource.peek(); 
             pdfSource.unread( leftBracket );
             if(c == '<')
             {
@@ -1188,19 +1194,22 @@ public abstract class BaseParser implements Closeable
             }
             break;
         }
-        case '[': // array
+        case '[':
         {
+            // array
             retval = parseCOSArray();
             break;
         }
         case '(':
             retval = parseCOSString();
             break;
-        case '/':   // name
+        case '/':   
+            // name
             retval = parseCOSName();
             break;
-        case 'n':   // null
+        case 'n':   
         {
+            // null
             readExpectedString(NULL);
             retval = COSNull.NULL;
             break;
@@ -1316,17 +1325,35 @@ public abstract class BaseParser implements Closeable
     /**
      * Read one String and throw an exception if it is not the expected value.
      *
-     * @param es the String value that is expected.
+     * @param expectedString the String value that is expected.
      * @throws IOException if the String char is not the expected value or if an
      * I/O error occurs.
      */
-    protected void readExpectedString(String es) throws IOException
+    protected void readExpectedString(String expectedString) throws IOException
     {
-        String s = readString();
-        if (!s.equals(es))
+        readExpectedString(expectedString.toCharArray(), false);
+    }
+
+    /**
+     * Reads given pattern from {@link #pdfSource}. Skipping whitespace at start and end if wanted.
+     * 
+     * @param expectedString pattern to be skipped
+     * @param skipSpaces if set to true spaces before and after the string will be skipped
+     * @throws IOException if pattern could not be read
+     */
+    protected final void readExpectedString(final char[] expectedString, boolean skipSpaces) throws IOException
+    {
+        skipSpaces();
+        for (char c : expectedString)
         {
-            throw new IOException("expected='" + es + "' actual='" + s + "' at offset " + pdfSource.getOffset());
+            if (pdfSource.read() != c)
+            {
+                throw new IOException("Expected string '" + new String(expectedString)
+                        + "' but missed at character '" + c + "' at offset "
+                        + pdfSource.getOffset());
+            }
         }
+        skipSpaces();
     }
 
     /**
@@ -1452,7 +1479,7 @@ public abstract class BaseParser implements Closeable
      */
     protected boolean isEOL(int c)
     {
-        return c == 10 || c == 13;
+        return ASCII_LF == c || ASCII_CR == c;
     }
 
     /**
@@ -1475,10 +1502,109 @@ public abstract class BaseParser implements Closeable
      */
     protected boolean isWhitespace( int c )
     {
-        return c == 0 || c == 9 || c == 12  || c == 10
-        || c == 13 || c == 32;
+        return c == 0 || c == 9 || c == 12  || c == ASCII_LF
+        || c == ASCII_CR || c == ASCII_SPACE;
     }
 
+    /**
+     * This will tell if the next byte is a space or not.
+     *
+     * @return true if the next byte in the stream is a space character.
+     *
+     * @throws IOException If there is an error reading from the stream.
+     */
+    protected boolean isSpace() throws IOException
+    {
+        return isSpace( pdfSource.peek() );
+    }
+    
+    /**
+     * This will tell if the given value is a space or not.
+     * 
+     * @param c The character to check against space
+     * @return true if the next byte in the stream is a space character.
+     */
+    protected boolean isSpace(int c)
+    {
+        return ASCII_SPACE == c;
+    }
+
+    /**
+     * This will tell if the next byte is a digit or not.
+     *
+     * @return true if the next byte in the stream is a digit.
+     *
+     * @throws IOException If there is an error reading from the stream.
+     */
+    protected boolean isDigit() throws IOException
+    {
+        return isDigit( pdfSource.peek() );
+    }
+
+    /**
+     * This will tell if the given value is a digit or not.
+     * 
+     * @param c The character to be checked
+     * @return true if the next byte in the stream is a digit.
+     */
+    protected boolean isDigit(int c)
+    {
+        return c >= ASCII_ZERO && c <= ASCII_NINE;
+    }
+    /**
+     * Checks if the given string can be found at the current offset.
+     * 
+     * @param string the bytes of the string to look for
+     * @return true if the bytes are in place, false if not
+     * @throws IOException if something went wrong
+     */
+    protected boolean isString(byte[] string) throws IOException
+    {
+        boolean bytesMatching = false;
+        if (pdfSource.peek() == string[0])
+        {
+            int length = string.length;
+            byte[] bytesRead = new byte[length];
+            int numberOfBytes = pdfSource.read(bytesRead, 0, length);
+            while (numberOfBytes < length)
+            {
+                int readMore = pdfSource.read(bytesRead, numberOfBytes, length - numberOfBytes);
+                if (readMore < 0)
+                {
+                    break;
+                }
+                numberOfBytes += readMore;
+            }
+            if (Arrays.equals(string, bytesRead))
+            {
+                bytesMatching = true;
+            }
+            pdfSource.unread(bytesRead, 0, numberOfBytes);
+        }
+        return bytesMatching;
+    }
+
+    /**
+     * Checks if the given string can be found at the current offset.
+     * 
+     * @param string the bytes of the string to look for
+     * @return true if the bytes are in place, false if not
+     * @throws IOException if something went wrong
+     */
+    protected boolean isString(char[] string) throws IOException
+    {
+        boolean bytesMatching = true;
+        long originOffset = pdfSource.getOffset();
+        for (char c : string)
+        {
+            if (pdfSource.read() != c)
+            {
+                bytesMatching = false;
+            }
+        }
+        pdfSource.seek(originOffset);
+        return bytesMatching;
+    }
     /**
      * This will skip all spaces and comments that are present.
      *
@@ -1486,11 +1612,9 @@ public abstract class BaseParser implements Closeable
      */
     protected void skipSpaces() throws IOException
     {
-        //log( "skipSpaces() " + pdfSource );
         int c = pdfSource.read();
-        // identical to, but faster as: isWhiteSpace(c) || c == 37
-        while(c == 0 || c == 9 || c == 12  || c == 10
-                || c == 13 || c == 32 || c == 37)//37 is the % character, a comment
+        // 37 is the % character, a comment
+        while( isWhitespace(c) || c == 37)
         {
             if ( c == 37 )
             {
@@ -1510,7 +1634,6 @@ public abstract class BaseParser implements Closeable
         {
             pdfSource.unread(c);
         }
-        //log( "skipSpaces() done peek='" + (char)pdfSource.peek() + "'" );
     }
 
     /**
@@ -1612,9 +1735,9 @@ public abstract class BaseParser implements Closeable
     {
         int lastByte = 0;
         StringBuilder buffer = new StringBuilder();
-        while( (lastByte = pdfSource.read() ) != 32 &&
-                lastByte != 10 &&
-                lastByte != 13 &&
+        while( (lastByte = pdfSource.read() ) != ASCII_SPACE &&
+                lastByte != ASCII_LF &&
+                lastByte != ASCII_CR &&
                 lastByte != 60 && //see sourceforge bug 1714707
                 lastByte != '[' && // PDFBOX-1845
                 lastByte != '(' && // PDFBOX-2579
@@ -1635,7 +1758,7 @@ public abstract class BaseParser implements Closeable
      * corrupt object. This should handle all cases that parseObject supports.
      * This assumes that the next object will start on its own line.
      *
-     * @throws IOException
+     * @throws IOException if something went wrong.
      */
     protected void skipToNextObj() throws IOException
     {

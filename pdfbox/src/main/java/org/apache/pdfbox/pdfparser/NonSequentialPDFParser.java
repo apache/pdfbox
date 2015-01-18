@@ -25,7 +25,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.KeyStore;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -84,12 +83,14 @@ public class NonSequentialPDFParser extends BaseParser
     private static final String PDF_DEFAULT_VERSION = "1.4";
     private static final String FDF_DEFAULT_VERSION = "1.0";
 
-    private static final byte[] XREF_TABLE = new byte[] { 'x', 'r', 'e', 'f' };
-    private static final byte[] XREF_STREAM = new byte[] { '/', 'X', 'R', 'e', 'f' };
+    private static final char[] XREF_TABLE = new char[] { 'x', 'r', 'e', 'f' };
+    private static final char[] XREF_STREAM = new char[] { '/', 'X', 'R', 'e', 'f' };
+    private static final char[] STARTXREF = new char[] { 's','t','a','r','t','x','r','e','f' };
+
     private static final long MINIMUM_SEARCH_OFFSET = 6;
     
     private static final int X = 'x';
-
+    
     /**
      * Only parse the PDF file minimally allowing access to basic information.
      */
@@ -492,7 +493,7 @@ public class NonSequentialPDFParser extends BaseParser
     protected void initialParse() throws IOException
     {
         COSDictionary trailer = null;
-        // ---- parse startxref
+        // parse startxref
         long startXRefOffset = getStartxrefOffset();
         if (startXRefOffset > 0)
         {
@@ -532,7 +533,7 @@ public class NonSequentialPDFParser extends BaseParser
                 parseObjectDynamically(tmpObj, false);
             }
         }
-        // ---- parse catalog or root object
+        // parse catalog or root object
         COSObject root = (COSObject) xrefTrailerResolver.getTrailer().getItem(COSName.ROOT);
 
         if (root == null)
@@ -652,19 +653,16 @@ public class NonSequentialPDFParser extends BaseParser
     private COSDictionary parseXref(long startXRefOffset) throws IOException
     {
         pdfSource.seek(startXRefOffset);
-        parseStartXref();
-
-        long startXrefOffset = document.getStartXref();
+        long startXrefOffset = parseStartXref();
         // check the startxref offset
         long fixedOffset = checkXRefOffset(startXrefOffset);
         if (fixedOffset > -1)
         {
             startXrefOffset = fixedOffset;
-            document.setStartXref(startXrefOffset);
         }
+        document.setStartXref(startXrefOffset);
         long prev = startXrefOffset;
-        // ---- parse whole chain of xref tables/object streams using PREV
-        // reference
+        // ---- parse whole chain of xref tables/object streams using PREV reference
         while (prev > -1)
         {
             // seek to xref table
@@ -761,7 +759,7 @@ public class NonSequentialPDFParser extends BaseParser
         // ---- parse indirect object head
         readObjectNumber();
         readGenerationNumber();
-        readPattern(OBJ_MARKER);
+        readExpectedString(OBJ_MARKER, true);
 
         COSDictionary dict = parseCOSDictionary();
         COSStream xrefStream = parseCOSStream(dict);
@@ -782,24 +780,23 @@ public class NonSequentialPDFParser extends BaseParser
     {
         byte[] buf;
         long skipBytes;
-
-        // ---- read trailing bytes into buffer
+        // read trailing bytes into buffer
         fileLen = pdfFile.length();
 
-        FileInputStream fIn = null;
+        FileInputStream fileInputstream = null;
         try
         {
-            fIn = new FileInputStream(pdfFile);
+            fileInputstream = new FileInputStream(pdfFile);
 
             final int trailByteCount = (fileLen < readTrailBytes) ? (int) fileLen : readTrailBytes;
             buf = new byte[trailByteCount];
-            fIn.skip(skipBytes = fileLen - trailByteCount);
+            fileInputstream.skip(skipBytes = fileLen - trailByteCount);
 
             int off = 0;
             int readBytes;
             while (off < trailByteCount)
             {
-                readBytes = fIn.read(buf, off, trailByteCount - off);
+                readBytes = fileInputstream.read(buf, off, trailByteCount - off);
                 // in order to not get stuck in a loop we check readBytes (this
                 // should never happen)
                 if (readBytes < 1)
@@ -813,10 +810,10 @@ public class NonSequentialPDFParser extends BaseParser
         }
         finally
         {
-            IOUtils.closeQuietly(fIn);
+            IOUtils.closeQuietly(fileInputstream);
         }
 
-        // ---- find last '%%EOF'
+        // find last '%%EOF'
         int bufOff = lastIndexOf(EOF_MARKER, buf, buf.length);
 
         if (bufOff < 0)
@@ -825,14 +822,14 @@ public class NonSequentialPDFParser extends BaseParser
             {
                 // in lenient mode the '%%EOF' isn't needed
                 bufOff = buf.length;
-                LOG.debug("Missing end of file marker '" + (new String(EOF_MARKER)) + "'");
+                LOG.debug("Missing end of file marker '" + new String(EOF_MARKER) + "'");
             } 
             else 
             {
-                throw new IOException("Missing end of file marker '" + (new String(EOF_MARKER)) + "'");
+                throw new IOException("Missing end of file marker '" + new String(EOF_MARKER) + "'");
             }
         }
-        // ---- find last startxref preceding EOF marker
+        // find last startxref preceding EOF marker
         bufOff = lastIndexOf(STARTXREF_MARKER, buf, bufOff);
 
         if (bufOff < 0)
@@ -894,29 +891,6 @@ public class NonSequentialPDFParser extends BaseParser
         return -1;
     }
     
-    /**
-     * Reads given pattern from {@link #pdfSource}. Skipping whitespace at start and end.
-     * 
-     * @param pattern pattern to be skipped
-     * @throws IOException if pattern could not be read
-     */
-    private final void readPattern(final char[] pattern) throws IOException
-    {
-        skipSpaces();
-
-        for (char c : pattern)
-        {
-            if (pdfSource.read() != c)
-            {
-                throw new IOException("Expected pattern '" + new String(pattern)
-                        + "' but missed at character '" + c + "' at offset "
-                        + pdfSource.getOffset());
-            }
-        }
-
-        skipSpaces();
-    }
-    
     private COSDictionary pagesDictionary = null;
 
     /**
@@ -956,15 +930,16 @@ public class NonSequentialPDFParser extends BaseParser
      * is found.
      */
      public void parse() throws IOException
-    {
-        boolean exceptionOccurred = true; // set to false if all is processed
-
-        try
-        {
+     {
+         // set to false if all is processed
+         boolean exceptionOccurred = true; 
+         try
+         {
             // PDFBOX-1922 read the version header and rewind
-            // this part copied from the sequential parser
-            parseHeader();
-            pdfSource.seek(0);
+            if (!parseHeader(PDF_HEADER, PDF_DEFAULT_VERSION) && !parseHeader(FDF_HEADER, FDF_DEFAULT_VERSION))
+            {
+                throw new IOException( "Error: Header doesn't contain versioninfo" );
+            }
 
             if (!initialParseDone)
             {
@@ -974,10 +949,9 @@ public class NonSequentialPDFParser extends BaseParser
             // a FDF doesn't have any pages
             if (!isFDFDocment)
             {
-                final int pageCount = getPageNumber();
-
                 if (!allPagesParsed)
                 {
+                    final int pageCount = getPageNumber();
                     for (int pNr = 0; pNr < pageCount; pNr++)
                     {
                         getPage(pNr);
@@ -1036,7 +1010,6 @@ public class NonSequentialPDFParser extends BaseParser
      *
      * @param lenient try to handle malformed PDFs.
      *
-     * @throws IllegalArgumentException if the method is called after parsing.
      */
     public void setLenient(boolean lenient)
     {
@@ -1097,7 +1070,7 @@ public class NonSequentialPDFParser extends BaseParser
     {
         getPagesObject();
 
-        // ---- get list of top level pages
+        // get list of top level pages
         COSArray kids = (COSArray) pagesDictionary.getDictionaryObject(COSName.KIDS);
 
         if (kids == null)
@@ -1105,8 +1078,7 @@ public class NonSequentialPDFParser extends BaseParser
             throw new IOException("Missing 'Kids' entry in pages dictionary.");
         }
 
-        // ---- get page we are looking for (possibly going recursively into
-        // subpages)
+        // get page we are looking for (possibly going recursively into subpages)
         COSObject pageObj = getPageObject(pageNr, kids, 0);
 
         if (pageObj == null)
@@ -1114,7 +1086,7 @@ public class NonSequentialPDFParser extends BaseParser
             throw new IOException("Page " + pageNr + " not found.");
         }
 
-        // ---- parse all objects necessary to load page.
+        // parse all objects necessary to load page.
         COSDictionary pageDict = (COSDictionary) pageObj.getObject();
 
         if (parseMinimalCatalog && (!allPagesParsed))
@@ -1428,7 +1400,7 @@ public class NonSequentialPDFParser extends BaseParser
                 // ---- we must have an indirect object
                 final long readObjNr = readObjectNumber();
                 final long readObjGen = readGenerationNumber();
-                readPattern(OBJ_MARKER);
+                readExpectedString(OBJ_MARKER, true);
 
                 // ---- consistency check
                 if ((readObjNr != objKey.getNumber()) || (readObjGen != objKey.getGeneration()))
@@ -1722,7 +1694,7 @@ public class NonSequentialPDFParser extends BaseParser
                 LOG.warn("stream ends with 'endobj' instead of 'endstream' at offset "
                         + pdfSource.getOffset());
                 // avoid follow-up warning about missing endobj
-                pdfSource.unread("endobj".getBytes(ISO_8859_1));
+                pdfSource.unread(ENDOBJ);
             }
             else if (endStream.length() > 9 && isLenient && endStream.substring(0,9).equals(ENDSTREAM_STRING))
             {
@@ -1764,7 +1736,7 @@ public class NonSequentialPDFParser extends BaseParser
         {
             pdfSource.seek(expectedEndOfStream);
             skipSpaces();
-            if (!checkBytesAtOffset(ENDSTREAM_STRING.getBytes(ISO_8859_1)))
+            if (!isString(ENDSTREAM))
             {
                 streamLengthIsValid = false;
                 LOG.error("The end of the stream doesn't point to the correct offset, using workaround to read the stream");
@@ -1791,9 +1763,9 @@ public class NonSequentialPDFParser extends BaseParser
             return startXRefOffset;
         }
         pdfSource.seek(startXRefOffset-1);
-        // save th previous character
+        // save the previous character
         int previous = pdfSource.read();
-        if (pdfSource.peek() == X && checkBytesAtOffset(XREF_TABLE))
+        if (pdfSource.peek() == X && isString(XREF_TABLE))
         {
             return startXRefOffset;
         }
@@ -1810,7 +1782,7 @@ public class NonSequentialPDFParser extends BaseParser
                     // Maybe it's a XRef stream
                     readObjectNumber();
                     readGenerationNumber();
-                    readPattern(OBJ_MARKER);
+                    readExpectedString(OBJ_MARKER, true);
                     pdfSource.seek(startXRefOffset);
                     return startXRefOffset;
                 }
@@ -1824,39 +1796,6 @@ public class NonSequentialPDFParser extends BaseParser
         }
         // try to find a fixed offset
         return calculateXRefFixedOffset(startXRefOffset);
-    }
-
-    /**
-     * Check if the given bytes can be found at the current offset.
-     * 
-     * @param string the bytes to look for
-     * @return true if the bytes are in place, false if not
-     * @throws IOException if something went wrong
-     */
-    private boolean checkBytesAtOffset(byte[] string) throws IOException
-    {
-        boolean bytesMatching = false;
-        if (pdfSource.peek() == string[0])
-        {
-            int length = string.length;
-            byte[] bytesRead = new byte[length];
-            int numberOfBytes = pdfSource.read(bytesRead, 0, length);
-            while (numberOfBytes < length)
-            {
-                int readMore = pdfSource.read(bytesRead, numberOfBytes, length - numberOfBytes);
-                if (readMore < 0)
-                {
-                    break;
-                }
-                numberOfBytes += readMore;
-            }
-            if (Arrays.equals(string, bytesRead))
-            {
-                bytesMatching = true;
-            }
-            pdfSource.unread(bytesRead, 0, numberOfBytes);
-        }
-        return bytesMatching;
     }
 
     /**
@@ -1943,7 +1882,7 @@ public class NonSequentialPDFParser extends BaseParser
     {
         long originOffset = pdfSource.getOffset();
         pdfSource.seek(offset);
-        boolean objectFound = checkBytesAtOffset(objectString.getBytes(ISO_8859_1));
+        boolean objectFound = isString(objectString.getBytes(ISO_8859_1));
         pdfSource.seek(originOffset);
         return objectFound;
     }
@@ -1992,11 +1931,11 @@ public class NonSequentialPDFParser extends BaseParser
             long originOffset = pdfSource.getOffset();
             long currentOffset = MINIMUM_SEARCH_OFFSET;
             String objString = " obj";
-            byte[] string = objString.getBytes(ISO_8859_1);
+            char[] string = objString.toCharArray();
             do
             {
                 pdfSource.seek(currentOffset);
-                if (checkBytesAtOffset(string))
+                if (isString(string))
                 {
                     long tempOffset = currentOffset - 1;
                     pdfSource.seek(tempOffset);
@@ -2007,15 +1946,14 @@ public class NonSequentialPDFParser extends BaseParser
                         genID -= 48;
                         tempOffset--;
                         pdfSource.seek(tempOffset);
-                        if (pdfSource.peek() == 32)
+                        if (isSpace())
                         {
-                            while (tempOffset > MINIMUM_SEARCH_OFFSET && pdfSource.peek() == 32)
+                            while (tempOffset > MINIMUM_SEARCH_OFFSET && isSpace())
                             {
                                 pdfSource.seek(--tempOffset);
                             }
                             int length = 0;
-                            while (tempOffset > MINIMUM_SEARCH_OFFSET && pdfSource.peek() > 47
-                                    && pdfSource.peek() < 58)
+                            while (tempOffset > MINIMUM_SEARCH_OFFSET && isDigit())
                             {
                                 pdfSource.seek(--tempOffset);
                                 length++;
@@ -2105,7 +2043,7 @@ public class NonSequentialPDFParser extends BaseParser
             // search for xref tables
             while (!pdfSource.isEOF())
             {
-                if (checkBytesAtOffset(XREF_TABLE))
+                if (isString(XREF_TABLE))
                 {
                     long newOffset = pdfSource.getOffset();
                     pdfSource.seek(newOffset - 1);
@@ -2121,10 +2059,10 @@ public class NonSequentialPDFParser extends BaseParser
             pdfSource.seek(MINIMUM_SEARCH_OFFSET);
             // search for XRef streams
             String objString = " obj";
-            byte[] string = objString.getBytes(ISO_8859_1);
+            char[] string = objString.toCharArray();
             while (!pdfSource.isEOF())
             {
-                if (checkBytesAtOffset(XREF_STREAM))
+                if (isString(XREF_STREAM))
                 {
                     // search backwards for the beginning of the stream
                     long newOffset = -1;
@@ -2138,24 +2076,22 @@ public class NonSequentialPDFParser extends BaseParser
                             pdfSource.seek(currentOffset);
                             for (int j = 0; j < 10; j++)
                             {
-                                if (checkBytesAtOffset(string))
+                                if (isString(string))
                                 {
                                     long tempOffset = currentOffset - 1;
                                     pdfSource.seek(tempOffset);
                                     int genID = pdfSource.peek();
                                     // is the next char a digit?
-                                    if (genID > 47 && genID < 58)
+                                    if (isDigit(genID))
                                     {
                                         genID -= 48;
                                         tempOffset--;
                                         pdfSource.seek(tempOffset);
-                                        if (pdfSource.peek() == 32)
+                                        if (isSpace())
                                         {
                                             int length = 0;
                                             pdfSource.seek(--tempOffset);
-                                            while (tempOffset > MINIMUM_SEARCH_OFFSET
-                                                    && pdfSource.peek() > 47
-                                                    && pdfSource.peek() < 58)
+                                            while (tempOffset > MINIMUM_SEARCH_OFFSET && isDigit())
                                             {
                                                 pdfSource.seek(--tempOffset);
                                                 length++;
@@ -2196,26 +2132,20 @@ public class NonSequentialPDFParser extends BaseParser
      * This will parse the startxref section from the stream.
      * The startxref value is ignored.
      *
-     * @return false on parsing error
+     * @return the startxref value or -1 on parsing error
      * @throws IOException If an IO error occurs.
      */
-    private boolean parseStartXref() throws IOException
+    private long parseStartXref() throws IOException
     {
-        if(pdfSource.peek() != 's')
+        long startXref = -1;
+        if (isString(STARTXREF))
         {
-            return false;
+            readString();
+            skipSpaces();
+            // This integer is the byte offset of the first object referenced by the xref or xref stream
+            startXref = readLong();
         }
-        String startXRef = readString();
-        if( !startXRef.trim().equals( "startxref" ) )
-        {
-            return false;
-        }
-        skipSpaces();
-        /* This integer is the byte offset of the first object referenced by the xref or xref stream
-         * Needed for the incremental update (PREV)
-         */
-        getDocument().setStartXref(readLong());
-        return true;
+        return startXref;
     }
 
     /**
@@ -2266,15 +2196,15 @@ public class NonSequentialPDFParser extends BaseParser
         return true;
     }
 
-    private void parseHeader() throws IOException
+    private boolean parseHeader(String headerMarker, String defaultVersion) throws IOException
     {
         // read first line
         String header = readLine();
         // some pdf-documents are broken and the pdf-version is in one of the following lines
-        if (!header.contains(PDF_HEADER) && !header.contains(FDF_HEADER))
+        if (!header.contains(headerMarker))
         {
             header = readLine();
-            while (!header.contains(PDF_HEADER) && !header.contains(FDF_HEADER))
+            while (!header.contains(headerMarker))
             {
                 // if a line starts with a digit, it has to be the first one with data in it
                 if ((header.length() > 0) && (Character.isDigit(header.charAt(0))))
@@ -2286,89 +2216,61 @@ public class NonSequentialPDFParser extends BaseParser
         }
     
         // nothing found
-        if (!header.contains(PDF_HEADER) && !header.contains(FDF_HEADER))
+        if (!header.contains(headerMarker))
         {
-            throw new IOException( "Error: Header doesn't contain versioninfo" );
+            pdfSource.seek(0);
+            return false;
         }
     
         //sometimes there is some garbage in the header before the header
         //actually starts, so lets try to find the header first.
-        int headerStart = header.indexOf( PDF_HEADER );
-        if (headerStart == -1)
-        {
-            headerStart = header.indexOf(FDF_HEADER);
-        }
+        int headerStart = header.indexOf( headerMarker );
     
-        //greater than zero because if it is zero then
-        //there is no point of trimming
+        // greater than zero because if it is zero then there is no point of trimming
         if ( headerStart > 0 )
         {
             //trim off any leading characters
             header = header.substring( headerStart, header.length() );
         }
     
-        /*
-         * This is used if there is garbage after the header on the same line
-         */
-        if (header.startsWith(PDF_HEADER))
+        // This is used if there is garbage after the header on the same line
+        if (header.startsWith(headerMarker))
         {
-            if (!header.matches(PDF_HEADER + "\\d.\\d"))
+            if (!header.matches(headerMarker + "\\d.\\d"))
             {
     
-                if (header.length() < PDF_HEADER.length() + 3)
+                if (header.length() < headerMarker.length() + 3)
                 {
                     // No version number at all, set to 1.4 as default
-                    header = PDF_HEADER + PDF_DEFAULT_VERSION;
-                    LOG.debug("No pdf version found, set to " + PDF_DEFAULT_VERSION + " as default.");
+                    header = headerMarker + defaultVersion;
+                    LOG.debug("No version found, set to " + defaultVersion + " as default.");
                 }
                 else
                 {
-                    String headerGarbage = header.substring(PDF_HEADER.length() + 3, header.length()) + "\n";
-                    header = header.substring(0, PDF_HEADER.length() + 3);
-                    pdfSource.unread(headerGarbage.getBytes(ISO_8859_1));
-                }
-            }
-        }
-        else
-        {
-            isFDFDocment = true;
-            if (!header.matches(FDF_HEADER + "\\d.\\d"))
-            {
-                if (header.length() < FDF_HEADER.length() + 3)
-                {
-                    // No version number at all, set to 1.0 as default
-                    header = FDF_HEADER + FDF_DEFAULT_VERSION;
-                    LOG.debug("No fdf version found, set to " + FDF_DEFAULT_VERSION + " as default.");
-                }
-                else
-                {
-                    String headerGarbage = header.substring(FDF_HEADER.length() + 3, header.length()) + "\n";
-                    header = header.substring(0, FDF_HEADER.length() + 3);
+                    String headerGarbage = header.substring(headerMarker.length() + 3, header.length()) + "\n";
+                    header = header.substring(0, headerMarker.length() + 3);
                     pdfSource.unread(headerGarbage.getBytes(ISO_8859_1));
                 }
             }
         }
         document.setHeaderString(header);
-    
         try
         {
-            if (header.startsWith( PDF_HEADER ))
+            if (header.startsWith( headerMarker ))
             {
                 float pdfVersion = Float. parseFloat(
-                        header.substring( PDF_HEADER.length(), Math.min( header.length(), PDF_HEADER .length()+3) ) );
-                document.setVersion( pdfVersion );
-            }
-            else
-            {
-                float pdfVersion = Float. parseFloat(
-                        header.substring( FDF_HEADER.length(), Math.min( header.length(), FDF_HEADER.length()+3) ) );
+                        header.substring( headerMarker.length(), Math.min( header.length(), headerMarker.length()+3) ) );
                 document.setVersion( pdfVersion );
             }
         }
         catch ( NumberFormatException e )
         {
-            throw new IOException( "Error getting pdf version: " + e.getMessage(), e );
+            throw new IOException( "Error getting version: " + e.getMessage(), e );
         }
+        // rewind
+        pdfSource.seek(0);
+        isFDFDocment = FDF_HEADER.equals(headerMarker);
+        return true;
     }
 
     /**
@@ -2432,7 +2334,7 @@ public class NonSequentialPDFParser extends BaseParser
             return false;
         }
         
-        /*
+        /**
          * Xref tables can have multiple sections.
          * Each starts with a starting object id and a count.
          */
