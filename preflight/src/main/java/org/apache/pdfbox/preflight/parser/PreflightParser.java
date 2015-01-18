@@ -488,29 +488,20 @@ public class PreflightParser extends NonSequentialPDFParser
         }
     }
 
-    protected boolean nextIsEOL() throws IOException
+    private boolean nextIsEOL() throws IOException
     {
         boolean succeed = false;
         int nextChar = pdfSource.read();
-        if (nextChar == 13 && pdfSource.peek() == 10)
+        if (ASCII_CR == nextChar && ASCII_LF == pdfSource.peek())
         {
             pdfSource.read();
             succeed = true;
         }
-        else if (nextChar == 13 || nextChar == 10)
+        else if (ASCII_CR == nextChar || ASCII_LF == nextChar)
         {
             succeed = true;
         }
         return succeed;
-    }
-
-    /**
-     * @return true if the next character is a space. (The character is consumed)
-     * @throws IOException
-     */
-    protected boolean nextIsSpace() throws IOException
-    {
-        return ' ' == pdfSource.read();
     }
 
     @Override
