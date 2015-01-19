@@ -80,7 +80,7 @@ public final class PDPageContentStream implements Closeable
 
     private boolean inTextMode = false;
     private final Stack<PDFont> fontStack = new Stack<PDFont>();
-    private final List<PDFont> fontsToSubset = new ArrayList<PDFont>();
+    private final Set<PDFont> fontsToSubset = new HashSet<PDFont>();
     private final Map<PDFont, Set<Integer>> subsetCodePoints = new HashMap<PDFont, Set<Integer>>();
 
     private Stack<PDColorSpace> nonStrokingColorSpaceStack = new Stack<PDColorSpace>();
@@ -287,8 +287,11 @@ public final class PDPageContentStream implements Closeable
 
         if (embedSubset)
         {
-            fontsToSubset.add(font);
-            subsetCodePoints.put(font, new HashSet<Integer>());
+            if (!fontsToSubset.contains(font))
+            {
+                fontsToSubset.add(font);
+                subsetCodePoints.put(font, new HashSet<Integer>());
+            }
         }
         else
         {
