@@ -41,11 +41,8 @@ import static org.apache.pdfbox.preflight.PreflightConstants.MAX_NEGATIVE_FLOAT;
 import static org.apache.pdfbox.preflight.PreflightConstants.MAX_POSITIVE_FLOAT;
 import static org.apache.pdfbox.preflight.PreflightConstants.MAX_STRING_LENGTH;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
@@ -69,7 +66,6 @@ import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdfparser.BaseParser;
 import org.apache.pdfbox.pdfparser.NonSequentialPDFParser;
 import org.apache.pdfbox.pdfparser.PDFObjectStreamParser;
@@ -266,18 +262,16 @@ public class PreflightParser extends NonSequentialPDFParser
      */
     protected void checkPdfHeader()
     {
-        BufferedReader reader = null;
         try
         {
-            reader = new BufferedReader(new InputStreamReader(new FileInputStream(getPdfFile()), encoding));
-            String firstLine = reader.readLine();
+            pdfSource.seek(0);
+            String firstLine = readLine();
             if (firstLine == null || !firstLine.matches("%PDF-1\\.[1-9]"))
             {
                 addValidationError(new ValidationError(PreflightConstants.ERROR_SYNTAX_HEADER,
                         "First line must match %PDF-1.\\d"));
             }
-
-            String secondLine = reader.readLine();
+            String secondLine = readLine();
             if (secondLine != null)
             {
                 byte[] secondLineAsBytes = secondLine.getBytes(encoding.name());
@@ -306,15 +300,12 @@ public class PreflightParser extends NonSequentialPDFParser
                             "Second line must contains at least 4 bytes greater than 127"));
                 }
             }
+            pdfSource.seek(0);
         }
         catch (IOException e)
         {
             addValidationError(new ValidationError(PreflightConstants.ERROR_SYNTAX_HEADER,
                     "Unable to read the PDF file : " + e.getMessage(), e));
-        }
-        finally
-        {
-            IOUtils.closeQuietly(reader);
         }
     }
 
