@@ -260,14 +260,9 @@ public final class ExternalFonts
         Type1Equivalent type1Equivalent = getType1EquivalentFont(fontName);
         if (type1Equivalent == null)
         {
-            String message = fontProvider.toDebugString();
-            if (message != null)
-            {
-                // if we couldn't get a PFB font by now then there's no point continuing
-                log.error("No fallback font for '" + fontName + "', dumping debug information:");
-                log.error(message);
-            }
-            throw new IllegalStateException("No fonts available on the system for " + fontName);
+            // only systems with no fonts should reach this point, so we return a basic fallback
+            log.error("No fallback font for '" + fontName + "'");
+            return ttfFallbackFont;
         }
         return type1Equivalent;
     }
