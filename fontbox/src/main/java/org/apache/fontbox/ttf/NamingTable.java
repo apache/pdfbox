@@ -66,6 +66,14 @@ public class NamingTable extends TTFTable
         for (int i=0; i<numberOfNameRecords; i++)
         {
             NameRecord nr = nameRecords.get(i);
+
+            // don't try to read invalid offsets, see PDFBOX-2608
+            if (nr.getStringOffset() > getLength())
+            {
+                nr.setString(null);
+                continue;
+            }
+            
             data.seek(getOffset() + (2*3)+numberOfNameRecords*2*6+nr.getStringOffset());
             int platform = nr.getPlatformId();
             int encoding = nr.getPlatformEncodingId();
@@ -90,6 +98,7 @@ public class NamingTable extends TTFTable
                     charset = "ISO-8859-1";
                 }
             }
+
             String string = data.readString(nr.getStringLength(), charset);
             nr.setString(string);
         }

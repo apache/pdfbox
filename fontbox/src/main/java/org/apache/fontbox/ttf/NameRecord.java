@@ -186,7 +186,8 @@ public class NameRecord
             "platform=" + platformId + 
             " pEncoding=" + platformEncodingId + 
             " language=" + languageId + 
-            " name=" + nameId;
+            " name=" + nameId + 
+            " " + string;
     }
     /**
      * @return Returns the string.
