@@ -211,21 +211,6 @@ public class TestPDFToImage extends TestCase
                 new File(outDir + file.getName() + ".parseerror").delete();
             }
 
-            try
-            {
-                // Check for version difference between load() and loadNonSeq()
-                new FileOutputStream(new File(outDir + file.getName() + ".parseseqerror")).close();
-                PDDocument doc2 = PDDocument.load(file);
-                if (doc2.getDocument().getVersion() != document.getDocument().getVersion())
-                {
-                    new FileOutputStream(new File(outDir + file.getName() + ".versiondiff")).close();
-                }
-                doc2.close();
-                new File(outDir + file.getName() + ".parseseqerror").delete();
-            }
-            catch (IOException ex)
-            {
-            }
             LOG.info("Rendering: " + file.getName());
             PDFRenderer renderer = new PDFRenderer(document);
             for (int i = 0; i < numPages; i++)
