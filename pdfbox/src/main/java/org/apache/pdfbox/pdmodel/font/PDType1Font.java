@@ -65,6 +65,7 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
         ALT_NAMES.put("ij", "i_j");
         ALT_NAMES.put("ellipsis", "elipsis"); // misspelled in ArialMT
     }
+    private static final int PFB_START_MARKER = 0x80;
 
     // todo: replace with enum? or getters?
     public static final PDType1Font TIMES_ROMAN = new PDType1Font("Times-Roman");
@@ -163,15 +164,23 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
                     // repair Length1 if necessary
                     byte[] bytes = fontFile.getByteArray();
                     length1 = repairLength1(bytes, length1);
-
-                    // the PFB embedded as two segments back-to-back
-                    byte[] segment1 = Arrays.copyOfRange(bytes, 0, length1);
-                    byte[] segment2 = Arrays.copyOfRange(bytes, length1, length1 + length2);
-
-                    // empty streams are simply ignored
-                    if (length1 > 0 && length2 > 0)
+                    
+                    if ((bytes[0] & 0xff) == PFB_START_MARKER)
                     {
-                        t1 =  Type1Font.createWithSegments(segment1, segment2);
+                        // some bad files embed the entire PFB, see PDFBOX-2607
+                        t1 = Type1Font.createWithPFB(bytes);
+                    }
+                    else
+                    {
+                        // the PFB embedded as two segments back-to-back
+                        byte[] segment1 = Arrays.copyOfRange(bytes, 0, length1);
+                        byte[] segment2 = Arrays.copyOfRange(bytes, length1, length1 + length2);
+
+                        // empty streams are simply ignored
+                        if (length1 > 0 && length2 > 0)
+                        {
+                            t1 = Type1Font.createWithSegments(segment1, segment2);
+                        }
                     }
                 }
                 catch (DamagedFontException e)
