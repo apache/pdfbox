@@ -57,6 +57,21 @@ public final class Type1Font implements Type1CharStringReader, Type1Equivalent
     }
 
     /**
+     * Constructs a new Type1Font object from a .pfb stream.
+     *
+     * @param pfbBytes .pfb data, including headers
+     * @return a type1 font
+     *
+     * @throws IOException if something went wrong
+     */
+    public static Type1Font createWithPFB(byte[] pfbBytes) throws IOException
+    {
+        PfbParser pfb = new PfbParser(pfbBytes);
+        Type1Parser parser = new Type1Parser();
+        return parser.parse(pfb.getSegment1(), pfb.getSegment2());
+    }
+
+    /**
      * Constructs a new Type1Font object from two header-less .pfb segments.
      *
      * @param segment1 The first segment, without header
