@@ -101,7 +101,7 @@ public class PhotoshopSchema extends XMPSchema
     @PropertyType(type = Types.Text, card = Cardinality.Simple)
     public static final String STATE = "State";
 
-    @PropertyType(type = Types.Text, card = Cardinality.Bag)
+    @PropertyType(type = Types.Text, card = Cardinality.Simple)
     public static final String SUPPLEMENTAL_CATEGORIES = "SupplementalCategories";
 
     @PropertyType(type = Types.Layer, card = Cardinality.Seq)
@@ -461,40 +461,26 @@ public class PhotoshopSchema extends XMPSchema
         addProperty(text);
     }
 
-    public void addSupplementalCategories(String text)
+    public TextType getSupplementalCategoriesProperty()
     {
-        addQualifiedBagValue(SUPPLEMENTAL_CATEGORIES, text);
+        return (TextType) getProperty(SUPPLEMENTAL_CATEGORIES);
     }
 
-    public void removeSupplementalCategories(String text)
+    public String getSupplementalCategories()
     {
-        removeUnqualifiedBagValue(SUPPLEMENTAL_CATEGORIES, text);
+        TextType tt = ((TextType) getProperty(SUPPLEMENTAL_CATEGORIES));
+        return tt == null ? null : tt.getStringValue();
     }
 
-    /**
-     * Add a new supplemental category.
-     * 
-     * @param s
-     *            The supplemental category.
-     */
-    public void addSupplementalCategory(String s)
+    public void setSupplementalCategories(String text)
     {
-        addSupplementalCategories(s);
+        TextType tt = (TextType) instanciateSimple(SUPPLEMENTAL_CATEGORIES, text);
+        setSupplementalCategoriesProperty(tt);
     }
 
-    public void removeSupplementalCategory(String text)
+    public void setSupplementalCategoriesProperty(TextType text)
     {
-        removeSupplementalCategories(text);
-    }
-
-    public ArrayProperty getSupplementalCategoriesProperty()
-    {
-        return (ArrayProperty) getProperty(SUPPLEMENTAL_CATEGORIES);
-    }
-
-    public List<String> getSupplementalCategories()
-    {
-        return getUnqualifiedBagValueList(SUPPLEMENTAL_CATEGORIES);
+        addProperty(text);
     }
 
     public void addTextLayers(String layerName, String layerText)
