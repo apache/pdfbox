@@ -21,11 +21,13 @@
 
 package org.apache.pdfbox.preflight.action;
 
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ACTION_MISING_KEY;
-
+import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSNumber;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ACTION_INVALID_TYPE;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ACTION_MISING_KEY;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 
@@ -50,7 +52,7 @@ public class GoToRemoteAction extends GoToAction
     /*
      * (non-Javadoc)
      * 
-     * @see net.awl.edoc.pdfa.validation.actions.AbstractActionManager#valid(java.util .List)
+     * @see AbstractActionManager#valid(java.util.List)
      */
     @Override
     protected boolean innerValid()
@@ -67,4 +69,19 @@ public class GoToRemoteAction extends GoToAction
         }
         return true;
     }
+    
+    @Override
+    protected boolean validateExplicitDestination(COSArray ar)
+    {
+        if (!(ar.get(0) instanceof COSNumber))
+        {
+            // "its first element shall be a page number"
+            context.addValidationError(new ValidationError(ERROR_ACTION_INVALID_TYPE,
+                    "First element in /D array entry of GoToRemoteAction must be a page number, but is "
+                    + ar.get(0)));
+            return false;
+        }
+        return true;
+    }
+    
 }

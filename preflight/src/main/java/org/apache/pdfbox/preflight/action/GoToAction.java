@@ -23,11 +23,12 @@ package org.apache.pdfbox.preflight.action;
 
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ACTION_INVALID_TYPE;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ACTION_MISING_KEY;
-
+import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.utils.COSUtils;
@@ -74,8 +75,41 @@ public class GoToAction extends AbstractActionManager
             context.addValidationError(new ValidationError(ERROR_ACTION_INVALID_TYPE, "Type of D entry is invalid"));
             return false;
         }
+        
+        if (d instanceof COSArray)
+        {
+            COSArray ar = (COSArray) d;
+            if (ar.size() < 2)
+            {
+                context.addValidationError(new ValidationError(ERROR_ACTION_INVALID_TYPE, 
+                        "/D entry of type array must have at least 2 elements"));
+                return false;
+            }            
+            if (!validateExplicitDestination(ar))
+            {
+                return false;
+            }
+        }
 
         return true;
+    }
+
+    protected boolean validateExplicitDestination(COSArray ar)
+    {
+        // "In each case, page is an indirect reference to a page object."
+        if (ar.get(0) instanceof COSObject)
+        {
+            COSObject ob = (COSObject) ar.get(0);
+            COSBase type = ob.getDictionaryObject(COSName.TYPE);
+            if (COSName.PAGE.equals(type))
+            {
+                return true;
+            }
+        }
+        context.addValidationError(new ValidationError(ERROR_ACTION_INVALID_TYPE,
+                "First element in /D array entry of GoToAction must be an indirect reference to a dictionary of /Type /Page, but is "
+                + ar.getName(0)));
+        return false;
     }
 
 }
