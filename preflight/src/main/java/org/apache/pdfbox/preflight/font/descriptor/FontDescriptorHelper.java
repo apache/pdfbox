@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
@@ -184,6 +185,22 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
         if (!name)
         {
             missingFields += COSName.FONT_NAME + ", ";
+        }
+        boolean isTypePresent = fDescriptor.containsKey(COSName.TYPE);
+        areFieldsPresent &= isTypePresent;
+        if (!isTypePresent)
+        {
+            missingFields += COSName.TYPE.getName() + ", ";
+        }
+        else
+        {
+            COSBase type = fDescriptor.getItem(COSName.TYPE);
+            if (!COSName.FONT_DESC.equals(type))
+            {
+                this.fContainer.push(new ValidationError(ERROR_FONTS_DESCRIPTOR_INVALID,
+                        this.font.getName()
+                        + ": /Type in FontDescriptor must be /FontDescriptor, but is " + type));
+            }
         }
         if (!areFieldsPresent)
         {
