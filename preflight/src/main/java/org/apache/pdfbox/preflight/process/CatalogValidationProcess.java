@@ -104,6 +104,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
@@ -334,7 +335,8 @@ public class CatalogValidationProcess extends AbstractProcess
                 String outputConditionIdentifier = outputIntentDict
                         .getString(OUTPUT_INTENT_DICTIONARY_KEY_OUTPUT_CONDITION_IDENTIFIER);
                 if (outputConditionIdentifier == null)
-                {// empty string is authorized (it may be an application specific value)
+                {
+                    // empty string is authorized (it may be an application specific value)
                     addValidationError(ctx, new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
                             "The OutputIntentCondition is missing"));
                     continue;
@@ -424,39 +426,19 @@ public class CatalogValidationProcess extends AbstractProcess
             }
 
             ICC_Profile iccp = ICC_Profile.getInstance(stream.getByteArray());
-            PreflightConfiguration config = ctx.getConfig();
-            // check the ICC Profile version (6.2.2)
-            if (iccp.getMajorVersion() == 2)
+            
+            if (!validateICCProfileNEntry(stream, ctx, iccp))
             {
-                if (iccp.getMinorVersion() > 0x40)
-                {
-                    // in PDF 1.4, max version is 02h.40h (meaning V 3.5)
-                    // see the ICCProfile specification (ICC.1:1998-09)page 13 - §6.1.3 :
-                    // The current profile version number is "2.4.0" (encoded as 02400000h")
-                    ValidationError error = new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_TOO_RECENT,
-                            "Invalid version of the ICCProfile");
-                    error.setWarning(config.isLazyValidation());
-                    addValidationError(ctx, error);
-                    return;
-                } // else OK
-            }
-            else if (iccp.getMajorVersion() > 2)
-            {
-                // in PDF 1.4, max version is 02h.40h (meaning V 3.5)
-                // see the ICCProfile specification (ICC.1:1998-09)page 13 - §6.1.3 :
-                // The current profile version number is "2.4.0" (encoded as 02400000h"
-                ValidationError error = new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_TOO_RECENT,
-                        "Invalid version of the ICCProfile");
-                error.setWarning(config.isLazyValidation());
-                addValidationError(ctx, error);
                 return;
-            } // else seems less than 2, so correct
-
+            }
+            if (!validateICCProfileVersion(iccp, ctx))
+            {
+                return;
+            }
             if (ctx.getIccProfileWrapper() == null)
             {
                 ctx.setIccProfileWrapper(new ICCProfileWrapper(iccp));
             }
-
         }
         catch (IllegalArgumentException e)
         {
@@ -468,5 +450,72 @@ public class CatalogValidationProcess extends AbstractProcess
         {
             throw new ValidationException("Unable to parse the ICC Profile.", e);
         }
+    }
+
+    private boolean validateICCProfileVersion(ICC_Profile iccp, PreflightContext ctx)
+    {
+        PreflightConfiguration config = ctx.getConfig();
+
+        // check the ICC Profile version (6.2.2)
+        if (iccp.getMajorVersion() == 2)
+        {
+            if (iccp.getMinorVersion() > 0x40)
+            {
+                // in PDF 1.4, max version is 02h.40h (meaning V 3.5)
+                // see the ICCProfile specification (ICC.1:1998-09)page 13 - §6.1.3 :
+                // The current profile version number is "2.4.0" (encoded as 02400000h")
+                ValidationError error = new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_TOO_RECENT,
+                        "Invalid version of the ICCProfile");
+                error.setWarning(config.isLazyValidation());
+                addValidationError(ctx, error);
+                return false;
+            }
+            // else OK
+        }
+        else if (iccp.getMajorVersion() > 2)
+        {
+            // in PDF 1.4, max version is 02h.40h (meaning V 3.5)
+            // see the ICCProfile specification (ICC.1:1998-09)page 13 - §6.1.3 :
+            // The current profile version number is "2.4.0" (encoded as 02400000h"
+            ValidationError error = new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_TOO_RECENT,
+                    "Invalid version of the ICCProfile");
+            error.setWarning(config.isLazyValidation());
+            addValidationError(ctx, error);
+            return false;
+        }
+        // else seems less than 2, so correct
+        return true;
+    }
+
+    private boolean validateICCProfileNEntry(PDStream stream, PreflightContext ctx, ICC_Profile iccp)
+    {
+        COSDictionary streamDict = (COSDictionary) stream.getCOSObject();
+        if (!streamDict.containsKey(COSName.N))
+        {
+            addValidationError(ctx, new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
+                    "/N entry of ICC profile is mandatory"));
+            return false;
+        }
+        COSBase nValue = streamDict.getItem(COSName.N);
+        if (!(nValue instanceof COSNumber))
+        {
+            addValidationError(ctx, new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
+                    "/N entry of ICC profile must be a number, but is " + nValue));
+            return false;
+        }
+        int nNumberValue = ((COSNumber) nValue).intValue();
+        if (nNumberValue != 1 && nNumberValue != 3 && nNumberValue != 4)
+        {
+            addValidationError(ctx, new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
+                    "/N entry of ICC profile must be 1, 3 or 4, but is " + nNumberValue));
+            return false;
+        }
+        if (iccp.getNumComponents() != nNumberValue)
+        {
+            addValidationError(ctx, new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
+                    "/N entry of ICC profile is " + nNumberValue + " but the ICC profile has " + iccp.getNumComponents() + " components"));
+            return false;
+        }
+        return true;
     }
 }
