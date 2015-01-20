@@ -308,7 +308,9 @@ public class Type3FontValidator extends FontValidator<Type3Container>
                     else
                     {
                         GlyphException glyphEx = new GlyphException(ERROR_FONTS_METRICS, code,
-                                font.getName() + ": The character with CID\"" + code + "\" should have a width equals to " + width);
+                                font.getName() + ": The character with CID " + code
+                                + " should have a width equals to " + width + ", but has "
+                                + fontProgramWidth);
                         this.fontContainer.markAsInvalid(code, glyphEx);
                     }
                 }
