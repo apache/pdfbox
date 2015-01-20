@@ -541,6 +541,12 @@ public class PreflightParser extends NonSequentialPDFParser
                 nextChar = (char) pdfSource.read();
                 if (nextChar != '>')
                 {
+                    if (nextChar == '\t' || nextChar == '\f' || nextChar == '\n'
+                            || nextChar == '\r' || nextChar == ' ')
+                    {
+                        // ignore space characters
+                        continue;
+                    }
                     if (Character.digit(nextChar, 16) >= 0)
                     {
                         count++;
@@ -552,7 +558,8 @@ public class PreflightParser extends NonSequentialPDFParser
                         break;
                     }
                 }
-            } while (nextChar != '>');
+            } 
+            while (nextChar != '>');
         }
 
         if (count % 2 != 0)
