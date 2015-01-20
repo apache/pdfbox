@@ -36,12 +36,14 @@ public class PhotoshopSchemaTest extends AbstractSchemaTester
 
     protected PhotoshopSchema schema = null;
 
+    @Override
     public PhotoshopSchema getSchema()
     {
         return schema;
     }
 
     @Before
+    @Override
     public void before() throws Exception
     {
         super.before();
@@ -73,7 +75,7 @@ public class PhotoshopSchemaTest extends AbstractSchemaTester
         result.add(new Object[] { "Instructions", Types.Text, Cardinality.Simple });
         result.add(new Object[] { "Source", Types.Text, Cardinality.Simple });
         result.add(new Object[] { "State", Types.Text, Cardinality.Simple });
-        result.add(new Object[] { "SupplementalCategories", Types.Text, Cardinality.Bag });
+        result.add(new Object[] { "SupplementalCategories", Types.Text, Cardinality.Simple });
         result.add(new Object[] { "TransmissionReference", Types.Text, Cardinality.Simple });
         result.add(new Object[] { "Urgency", Types.Integer, Cardinality.Simple });
 
