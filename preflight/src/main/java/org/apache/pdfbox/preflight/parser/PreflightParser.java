@@ -518,7 +518,7 @@ public class PreflightParser extends NonSequentialPDFParser
         COSName result = super.parseCOSName();
         if (result != null && result.getName().getBytes().length > MAX_NAME_SIZE)
         {
-            addValidationError(new ValidationError(ERROR_SYNTAX_NAME_TOO_LONG, "Name too long"));
+            addValidationError(new ValidationError(ERROR_SYNTAX_NAME_TOO_LONG, "Name too long: " + result.getName()));
         }
         return result;
     }
