@@ -103,7 +103,7 @@ public abstract class PDAction implements PDDestinationOrAction
      *
      * @param type The new Type for the PDF object.
      */
-    public void setType( String type )
+    public final void setType( String type )
     {
        action.setName(COSName.TYPE, type );
     }
