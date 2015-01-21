@@ -61,6 +61,7 @@ public class PDActionRemoteGoTo extends PDAction
      *
      * @return The cos object that matches this Java object.
      */
+    @Override
     public COSBase getCOSObject()
     {
         return action;
@@ -71,6 +72,7 @@ public class PDActionRemoteGoTo extends PDAction
      *
      * @return The cos object that matches this Java object.
      */
+    @Override
     public COSDictionary getCOSDictionary()
     {
         return action;
