@@ -19,24 +19,23 @@ package org.apache.pdfbox.pdmodel.interactive.action;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 
-import org.apache.pdfbox.pdmodel.common.COSObjectable;
-
 /**
- * This represents a dictionary of actions that occur due to events.
- *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.4 $
+ * This represents a named action in a PDF document.
  */
-public class PDAdditionalActions implements COSObjectable
+public class PDActionNamed extends PDAction
 {
-    private COSDictionary actions;
+    /**
+     * This type of action this object represents.
+     */
+    public static final String SUB_TYPE = "Named";
 
     /**
      * Default constructor.
      */
-    public PDAdditionalActions()
+    public PDActionNamed()
     {
-        actions = new COSDictionary();
+        action = new COSDictionary();
+        setSubType(SUB_TYPE);
     }
 
     /**
@@ -44,9 +43,9 @@ public class PDAdditionalActions implements COSObjectable
      *
      * @param a The action dictionary.
      */
-    public PDAdditionalActions( COSDictionary a )
+    public PDActionNamed(COSDictionary a)
     {
-        actions = a;
+        super(a);
     }
 
     /**
@@ -57,7 +56,7 @@ public class PDAdditionalActions implements COSObjectable
     @Override
     public COSBase getCOSObject()
     {
-        return actions;
+        return action;
     }
 
     /**
@@ -65,28 +64,29 @@ public class PDAdditionalActions implements COSObjectable
      *
      * @return The cos object that matches this Java object.
      */
+    @Override
     public COSDictionary getCOSDictionary()
     {
-        return actions;
+        return action;
     }
 
     /**
-     * Get the F action.
+     * This will get the name of the action to be performed.
      *
-     * @return The F action.
+     * @return The name of the action to be performed.
      */
-    public PDAction getF()
+    public String getN()
     {
-        return PDActionFactory.createAction( (COSDictionary)actions.getDictionaryObject("F" ) );
+        return action.getNameAsString("N");
     }
 
     /**
-     * Set the F action.
+     * This will set the name of the action to be performed.
      *
-     * @param action Get the F action.
+     * @param name The name of the action to be performed.
      */
-    public void setF( PDAction action )
+    public void setN(String name)
     {
-        actions.setItem( "F", action );
+        action.setName("N", name);
     }
 }

@@ -22,9 +22,9 @@ import org.apache.pdfbox.cos.COSDictionary;
  * This class will take a dictionary and determine which type of action to create.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.5 $
+ * 
  */
-public class PDActionFactory
+public final class PDActionFactory
 {
     /**
      * Utility Class.
@@ -67,6 +67,10 @@ public class PDActionFactory
             else if( PDActionURI.SUB_TYPE.equals( type ) )
             {
                 retval = new PDActionURI( action );
+            }
+            else if (PDActionNamed.SUB_TYPE.equals(type))
+            {
+                retval = new PDActionNamed(action);
             }
         }
         return retval;
