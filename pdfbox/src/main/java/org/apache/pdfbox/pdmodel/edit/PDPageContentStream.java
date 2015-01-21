@@ -73,7 +73,6 @@ import org.apache.pdfbox.util.Matrix;
 public final class PDPageContentStream implements Closeable
 {
     private static final Log LOG = LogFactory.getLog(PDPageContentStream.class);
-    private static final String SPACE = " ";
 
     private OutputStream output;
     private PDResources resources;
@@ -83,11 +82,8 @@ public final class PDPageContentStream implements Closeable
     private final Set<PDFont> fontsToSubset = new HashSet<PDFont>();
     private final Map<PDFont, Set<Integer>> subsetCodePoints = new HashMap<PDFont, Set<Integer>>();
 
-    private Stack<PDColorSpace> nonStrokingColorSpaceStack = new Stack<PDColorSpace>();
-    private Stack<PDColorSpace> strokingColorSpaceStack = new Stack<PDColorSpace>();
-
-    // cached storage component for getting color values
-    private final float[] colorComponents = new float[4];
+    private final Stack<PDColorSpace> nonStrokingColorSpaceStack = new Stack<PDColorSpace>();
+    private final Stack<PDColorSpace> strokingColorSpaceStack = new Stack<PDColorSpace>();
 
     // number format
     private final NumberFormat formatDecimal = NumberFormat.getNumberInstance(Locale.US);
@@ -144,7 +140,7 @@ public final class PDPageContentStream implements Closeable
             PDStream contentsToAppend = new PDStream(document);
 
             // This will be the resulting COSStreamArray after existing and new streams are merged
-            COSStreamArray compoundStream = null;
+            COSStreamArray compoundStream;
 
             // If contents is already an array, a new stream is simply appended to it
             if (contents.getStream() instanceof COSStreamArray)
@@ -702,7 +698,7 @@ public final class PDPageContentStream implements Closeable
             throw new IOException("Error: drawXObject is not allowed within a text block.");
         }
 
-        String xObjectPrefix = null;
+        String xObjectPrefix;
         if (xobject instanceof PDImageXObject)
         {
             xObjectPrefix = "Im";
