@@ -100,7 +100,7 @@ public class CreatePDFA
                 pdfaid.setAboutAsSimple("PDFBox PDFA sample");
                 XmpSerializer serializer = new XmpSerializer();
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                serializer.serialize(xmp, baos, false);
+                serializer.serialize(xmp, baos, true);
                 metadata.importXMPMetadata( baos.toByteArray() );
             }
             catch(BadFieldValueException badFieldexception)
