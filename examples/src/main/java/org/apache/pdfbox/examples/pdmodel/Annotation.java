@@ -47,7 +47,7 @@ public class Annotation
     }
 
     /**
-     * This will create a doucument showing various annotations.
+     * This will create a document showing various annotations.
      *
      * @param args The command line arguments.
      *
