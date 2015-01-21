@@ -207,9 +207,7 @@ public class DateConverter
                 if (retval == null)
                 {
                     // we didn't find a valid date format so throw an exception
-                    IOException ioe = new IOException("Error converting date:" + date);
-                    ioe.initCause(e);
-                    throw ioe;
+                    throw new IOException("Error converting date:" + date, e);
                 }
             }
         }
