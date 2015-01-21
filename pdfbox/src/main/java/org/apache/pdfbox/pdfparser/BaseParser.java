@@ -1495,10 +1495,10 @@ public abstract class BaseParser implements Closeable
     }
 
     /**
-     * This will tell if the next byte is whitespace or not.  These values are
+     * This will tell if a character is whitespace or not.  These values are
      * specified in table 1 (page 12) of ISO 32000-1:2008.
      * @param c The character to check against whitespace
-     * @return true if the next byte in the stream is a whitespace character.
+     * @return true if the character is a whitespace character.
      */
     protected boolean isWhitespace( int c )
     {

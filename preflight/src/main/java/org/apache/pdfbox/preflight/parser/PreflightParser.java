@@ -283,13 +283,13 @@ public class PreflightParser extends NonSequentialPDFParser
                         if (i == 0 && ((char) b != '%'))
                         {
                             addValidationError(new ValidationError(PreflightConstants.ERROR_SYNTAX_HEADER,
-                                    "Second line must contains at least 4 bytes greater than 127"));
+                                    "Second line must begin with '%' followed by at least 4 bytes greater than 127"));
                             break;
                         }
                         else if (i > 0 && ((b & 0xFF) < 0x80))
                         {
                             addValidationError(new ValidationError(PreflightConstants.ERROR_SYNTAX_HEADER,
-                                    "Second line must contains at least 4 bytes greater than 127"));
+                                    "Second line must begin with '%' followed by at least 4 bytes greater than 127"));
                             break;
                         }
                     }
@@ -297,7 +297,7 @@ public class PreflightParser extends NonSequentialPDFParser
                 else
                 {
                     addValidationError(new ValidationError(PreflightConstants.ERROR_SYNTAX_HEADER,
-                            "Second line must contains at least 4 bytes greater than 127"));
+                            "Second line must begin with '%' followed by at least 4 bytes greater than 127"));
                 }
             }
             pdfSource.seek(0);
@@ -541,8 +541,7 @@ public class PreflightParser extends NonSequentialPDFParser
                 nextChar = (char) pdfSource.read();
                 if (nextChar != '>')
                 {
-                    if (nextChar == '\t' || nextChar == '\f' || nextChar == '\n'
-                            || nextChar == '\r' || nextChar == ' ')
+                    if (isWhitespace(nextChar))
                     {
                         // ignore space characters
                         continue;
