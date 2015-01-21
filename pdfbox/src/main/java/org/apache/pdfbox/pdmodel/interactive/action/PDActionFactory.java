@@ -22,6 +22,7 @@ import org.apache.pdfbox.pdmodel.interactive.action.type.PDAction;
 import org.apache.pdfbox.pdmodel.interactive.action.type.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.action.type.PDActionJavaScript;
 import org.apache.pdfbox.pdmodel.interactive.action.type.PDActionLaunch;
+import org.apache.pdfbox.pdmodel.interactive.action.type.PDActionNamed;
 import org.apache.pdfbox.pdmodel.interactive.action.type.PDActionRemoteGoTo;
 import org.apache.pdfbox.pdmodel.interactive.action.type.PDActionURI;
 
@@ -74,6 +75,10 @@ public class PDActionFactory
             else if( PDActionURI.SUB_TYPE.equals( type ) )
             {
                 retval = new PDActionURI( action );
+            }
+            else if (PDActionNamed.SUB_TYPE.equals(type))
+            {
+                retval = new PDActionNamed(action);
             }
         }
         return retval;
