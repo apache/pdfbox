@@ -2161,6 +2161,7 @@ public class NonSequentialPDFParser extends BaseParser
             return false;
         }
         //read "trailer"
+        long currentOffset = pdfSource.getOffset();
         String nextLine = readLine();
         if( !nextLine.trim().equals( "trailer" ) )
         {
@@ -2170,10 +2171,10 @@ public class NonSequentialPDFParser extends BaseParser
             // Acrobat reader can also deal with this.
             if (nextLine.startsWith("trailer"))
             {
-                byte[] b = nextLine.getBytes(ISO_8859_1);
+                // we can't just unread a portion of the read data as we don't know if the EOL consist of 1 or 2 bytes
                 int len = "trailer".length();
-                pdfSource.unread('\n');
-                pdfSource.unread(b, len, b.length-len);
+                // jump back right after "trailer"
+                pdfSource.seek(currentOffset + len);
             }
             else
             {
