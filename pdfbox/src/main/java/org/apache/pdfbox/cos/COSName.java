@@ -210,6 +210,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
     /**
     * A common COSName value.
     */
+    public static final COSName BS = new COSName("BS");
+    /**
+    * A common COSName value.
+    */
     public static final COSName CATALOG = new COSName( "Catalog" );
     /**
      * A common COSName value.
