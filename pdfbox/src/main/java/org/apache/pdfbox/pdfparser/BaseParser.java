@@ -1431,8 +1431,8 @@ public abstract class BaseParser implements Closeable
 
     /**
      * This will read bytes until the first end of line marker occurs.
-     * Note: if you later unread the results of this function, you'll
-     * need to add a newline character to the end of the string.
+     * NOTE: The EOL marker may consists of 1 (CR or LF) or 2 (CR and CL) bytes
+     * which is an important detail if one wants to unread the line.
      *
      * @return The characters between the current position and the end of the line.
      *
@@ -1450,11 +1450,17 @@ public abstract class BaseParser implements Closeable
         int c;
         while ((c = pdfSource.read()) != -1)
         {
+            // CR and LF are valid EOLs
             if (isEOL(c))
             {
                 break;
             }
             buffer.append( (char)c );
+        }
+        // CR+LF is also a valid EOL 
+        if (isCR(c) && isLF(pdfSource.peek()))
+        {
+            pdfSource.read();
         }
         return buffer.toString();
     }
@@ -1479,9 +1485,19 @@ public abstract class BaseParser implements Closeable
      */
     protected boolean isEOL(int c)
     {
-        return ASCII_LF == c || ASCII_CR == c;
+        return isLF(c) || isCR(c);
     }
 
+    private boolean isLF(int c)
+    {
+        return ASCII_LF == c;
+    }
+
+    private boolean isCR(int c)
+    {
+        return ASCII_CR == c;
+    }
+    
     /**
      * This will tell if the next byte is whitespace or not.
      *
