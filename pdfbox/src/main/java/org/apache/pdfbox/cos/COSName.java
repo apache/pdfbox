@@ -93,6 +93,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName BM = new COSName("BM");
     public static final COSName BOUNDS = new COSName("Bounds");
     public static final COSName BPC = new COSName("BPC");
+    public static final COSName BS = new COSName("BS");
     public static final COSName BYTERANGE = new COSName("ByteRange");
     // C
     public static final COSName C = new COSName("C");
