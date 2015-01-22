@@ -61,7 +61,9 @@ final class PDTrueTypeFontEmbedder extends TrueTypeEmbedder
         GlyphList glyphList = GlyphList.getAdobeGlyphList();
         this.fontEncoding = encoding;
         dict.setItem(COSName.ENCODING, encoding.getCOSObject());
-
+        fontDescriptor.setSymbolic(false);
+        fontDescriptor.setNonSymbolic(true);
+        
         // add the font descriptor
         dict.setItem(COSName.FONT_DESC, fontDescriptor);
 
