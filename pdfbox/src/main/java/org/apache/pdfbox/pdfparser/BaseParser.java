@@ -712,18 +712,16 @@ public abstract class BaseParser implements Closeable
         // means that there is an error in the pdf and assume that
         // was the end of the document.
         //
-        if (amountRead == 3)
-        {
-            if (( nextThreeBytes[0] == ASCII_CR        // Look for a carriage return
-                    && nextThreeBytes[1] == ASCII_LF   // Look for a new line
-                    && nextThreeBytes[2] == 0x2f ) // Look for a slash /
-                                                   // Add a second case without a new line
-                    || (nextThreeBytes[0] == ASCII_CR  // Look for a carriage return
-                            && nextThreeBytes[1] == 0x2f ))  // Look for a slash /
+        if (amountRead == 3 &&
+               (( nextThreeBytes[0] == ASCII_CR  // Look for a carriage return
+               && nextThreeBytes[1] == ASCII_LF  // Look for a new line
+               && nextThreeBytes[2] == 0x2f ) // Look for a slash /
+                                              // Add a second case without a new line
+               || (nextThreeBytes[0] == ASCII_CR  // Look for a carriage return
+                && nextThreeBytes[1] == 0x2f )))  // Look for a slash /
             {
                 braces = 0;
             }
-        }
         if (amountRead > 0)
         {
             pdfSource.unread( nextThreeBytes, 0, amountRead );
