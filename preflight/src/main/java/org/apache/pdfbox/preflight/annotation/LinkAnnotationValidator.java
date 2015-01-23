@@ -72,16 +72,11 @@ public class LinkAnnotationValidator extends AnnotationValidator
     {
         try
         {
-            PDDestination dest = this.pdLink.getDestination();
-            if (dest != null)
+            if (this.pdLink.getDestination() != null && this.pdLink.getAction() != null)
             {
-                // ---- check the if an A entry is present.
-                if (this.pdLink.getAction() != null)
-                {
-                    ctx.addValidationError(new ValidationError(ERROR_ANNOT_FORBIDDEN_DEST,
-                            "Dest can't be used due to A element"));
-                    return false;
-                }
+                ctx.addValidationError(new ValidationError(ERROR_ANNOT_FORBIDDEN_DEST,
+                        "Dest can't be used due to A element"));
+                return false;
             }
         }
         catch (IOException e)
