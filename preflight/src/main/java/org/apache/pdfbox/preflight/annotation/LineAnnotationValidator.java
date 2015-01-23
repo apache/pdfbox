@@ -68,7 +68,7 @@ public class LineAnnotationValidator extends AnnotationValidator
      */
     protected boolean checkIColors() throws ValidationException
     {
-        if (this.pdLine.getInteriorColour() != null)
+        if (this.pdLine.getInteriorColor() != null)
         {
             if (!searchRGBProfile())
             {
