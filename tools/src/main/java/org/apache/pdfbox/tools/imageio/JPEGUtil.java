@@ -18,8 +18,6 @@ package org.apache.pdfbox.tools.imageio;
 import javax.imageio.metadata.IIOInvalidTreeException;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
-import static org.apache.pdfbox.tools.imageio.MetaUtil.JPEG_NATIVE_FORMAT;
-import static org.apache.pdfbox.tools.imageio.MetaUtil.debugLogMetadata;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -27,8 +25,12 @@ import org.w3c.dom.NodeList;
  *
  * @author Tilman Hausherr
  */
-class JPEGUtil
+final class JPEGUtil
 {
+    private JPEGUtil()
+    {
+    }
+    
     /**
      * Set dpi in a JPEG file
      *
@@ -86,6 +88,8 @@ class JPEGUtil
         {
             jfifChild.setAttribute("thumbHeight", "0");
         }
-        metadata.setFromTree(MetaUtil.JPEG_NATIVE_FORMAT, root); // mergeTree doesn't work for ARGB
+        
+        // mergeTree doesn't work for ARGB
+        metadata.setFromTree(MetaUtil.JPEG_NATIVE_FORMAT, root); 
     }
 }
