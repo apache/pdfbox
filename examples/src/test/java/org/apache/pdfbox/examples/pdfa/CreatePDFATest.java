@@ -49,8 +49,7 @@ public class CreatePDFATest extends TestCase
         String message = "The quick brown fox jumps over the lazy dog äöüÄÖÜß @°^²³ {[]}";
         String dir = "../pdfbox/src/main/resources/org/apache/pdfbox/resources/ttf/";
         String fontfile = dir + "LiberationSans-Regular.ttf";
-        CreatePDFA instance = new CreatePDFA();
-        instance.doIt(pdfaFilename, message, fontfile);
+        CreatePDFA.main(new String[] { pdfaFilename, message, fontfile });
         
         PreflightParser preflightParser = new PreflightParser(new File(pdfaFilename));
         preflightParser.parse();
