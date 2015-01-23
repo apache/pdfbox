@@ -28,7 +28,7 @@ import org.apache.commons.logging.LogFactory;
  * Creates the appropriate font subtype based on information in the dictionary.
  * @author Ben Litchfield
  */
-public class PDFontFactory
+public final class PDFontFactory
 {
     private static final Log LOG = LogFactory.getLog(PDFontFactory.class);
 
@@ -88,7 +88,7 @@ public class PDFontFactory
         }
         else if (COSName.CID_FONT_TYPE2.equals(subType))
         {
-            throw new IllegalArgumentException("Type 0 descendant font not allowed");
+            throw new IllegalArgumentException("Type 2 descendant font not allowed");
         }
         else
         {
