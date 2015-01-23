@@ -2036,17 +2036,16 @@ public final class PDPageContentStream implements Closeable
      *
      * @throws IOException If the underlying stream has a problem being written to.
      */
+    @Override
     public void close() throws IOException
     {
         for (PDFont font : fontsToSubset)
         {
             // currently we only support subsetting Type0/CIDFontType2 fonts
-            if (font instanceof PDType0Font)
+            if (font instanceof PDType0Font
+                    && ((PDType0Font) font).getDescendantFont() instanceof PDCIDFontType2)
             {
-                if (((PDType0Font)font).getDescendantFont() instanceof PDCIDFontType2)
-                {
-                    font.subset(subsetCodePoints.get(font));
-                }
+                font.subset(subsetCodePoints.get(font));
             }
         }
         output.close();
