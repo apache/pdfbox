@@ -22,69 +22,31 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 
 /**
- * This will create a blank PDF and write the contents to a file.
- *
- * usage: java org.apache.pdfbox.examples.pdmodel.CreateBlankPDF &lt;outputfile.pdf&gt;
- *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.9 $
+ * Create a blank PDF and write the contents to a file.
  */
 public class CreateBlankPDF
 {
-
-    /**
-     * This will create a blank PDF and write the contents to a file.
-     *
-     * @param file The name of the file to write to.
-     *
-     * @throws IOException If there is an error writing the data.
-     */
-    public void create( String file ) throws IOException
+    public static void main(String[] args) throws IOException
     {
-        PDDocument document = null;
+        if (args.length != 1)
+        {
+            System.err.println("usage: " + CreateBlankPDF.class.getName() + " <outputfile.pdf>");
+            System.exit(1);
+        }
+
+        String filename = args[0];
+        
+        PDDocument doc = new PDDocument();
         try
         {
-            document = new PDDocument();
-            //Every document requires at least one page, so we will add one
-            //blank page.
+            // a valid PDF document requires at least one page
             PDPage blankPage = new PDPage();
-            document.addPage( blankPage );
-            document.save( file );
+            doc.addPage(blankPage);
+            doc.save(filename);
         }
         finally
         {
-            if( document != null )
-            {
-                document.close();
-            }
+            doc.close();
         }
-    }
-
-    /**
-     * This will create a blank document.
-     *
-     * @param args The command line arguments.
-     *
-     * @throws IOException If there is an error writing the document data.
-     */
-    public static void main( String[] args ) throws IOException
-    {
-        if( args.length != 1 )
-        {
-            usage();
-        }
-        else
-        {
-            CreateBlankPDF creator = new CreateBlankPDF();
-            creator.create( args[0] );
-        }
-    }
-
-    /**
-     * This will print the usage of this class.
-     */
-    private static void usage()
-    {
-        System.err.println( "usage: java org.apache.pdfbox.examples.pdmodel.CreateBlankPDF <outputfile.pdf>" );
     }
 }
