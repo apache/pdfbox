@@ -83,14 +83,11 @@ public abstract class FDFAnnotation implements COSObjectable
             setPage( Integer.parseInt( page ) );
         }
 
-        String color = element.getAttribute( "color" );
-        if( color != null )
+        String color = element.getAttribute("color");
+        if (color != null && color.length() == 7 && color.charAt(0) == '#')
         {
-            if( color.length() == 7 && color.charAt( 0 ) == '#' )
-            {
-                int colorValue = Integer.parseInt(color.substring(1,7), 16);
-                setColor( new Color(colorValue) );
-            }
+            int colorValue = Integer.parseInt(color.substring(1, 7), 16);
+            setColor(new Color(colorValue));
         }
 
         setDate( element.getAttribute( "date" ) );
