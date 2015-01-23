@@ -2386,8 +2386,7 @@ public class NonSequentialPDFParser extends BaseParser
                 skipSpaces();
             }
             skipSpaces();
-            char c = (char)pdfSource.peek();
-            if(c < '0' || c > '9')
+            if (!isDigit())
             {
                 break;
             }
