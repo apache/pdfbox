@@ -21,13 +21,14 @@
 
 package org.apache.pdfbox.preflight.annotation;
 
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ANNOT_FORBIDDEN_COLOR;
-
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationSquareCircle;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
+
+
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ANNOT_FORBIDDEN_COLOR;
 
 /**
  * Validation class for the Square/Circle Annotation
@@ -67,7 +68,7 @@ public class SquareCircleAnnotationValidator extends AnnotationValidator
      */
     protected boolean checkIColors() throws ValidationException
     {
-        if (this.pdSquareCircle.getInteriorColour() != null)
+        if (this.pdSquareCircle.getInteriorColor() != null)
         {
             if (!searchRGBProfile())
             {
