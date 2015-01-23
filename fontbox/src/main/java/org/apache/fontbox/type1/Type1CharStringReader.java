@@ -33,5 +33,5 @@ public interface Type1CharStringReader
      * @return Type 1 CharString
      * @throws IOException if something went wrong
      */
-    public Type1CharString getType1CharString(String name) throws IOException;
+    Type1CharString getType1CharString(String name) throws IOException;
 }
