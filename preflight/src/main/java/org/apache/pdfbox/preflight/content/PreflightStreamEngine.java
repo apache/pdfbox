@@ -346,44 +346,27 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
     {
         PDColorSpace cs = getColorSpace(operation);
 
-        if ("rg".equals(operation) || "RG".equals(operation))
+        if (("rg".equals(operation) || "RG".equals(operation)) 
+                && !validColorSpace(cs, ColorSpaceType.RGB))
         {
-            if (!validColorSpace(cs, ColorSpaceType.RGB))
-            {
-                registerError("The operator \"" + operation + "\" can't be used with CMYK Profile",
-                        ERROR_GRAPHIC_INVALID_COLOR_SPACE_RGB);
-                return;
-            }
+            registerError("The operator \"" + operation + "\" can't be used with CMYK Profile",
+                    ERROR_GRAPHIC_INVALID_COLOR_SPACE_RGB);
+            return;
         }
-
-        if ("k".equals(operation) || "K".equals(operation))
+        if (("k".equals(operation) || "K".equals(operation)) 
+                && !validColorSpace(cs, ColorSpaceType.CMYK))
         {
-            if (!validColorSpace(cs, ColorSpaceType.CMYK))
-            {
-                registerError("The operator \"" + operation + "\" can't be used with RGB Profile",
-                        ERROR_GRAPHIC_INVALID_COLOR_SPACE_CMYK);
-                return;
-            }
+            registerError("The operator \"" + operation + "\" can't be used with RGB Profile",
+                    ERROR_GRAPHIC_INVALID_COLOR_SPACE_CMYK);
+            return;
         }
-
-        if ("g".equals(operation) || "G".equals(operation))
+        if (("g".equals(operation) || "G".equals(operation)
+                || "f".equals(operation) || "F".equals(operation) || "f*".equals(operation)
+                || "B".equals(operation) || "B*".equals(operation) || "b".equals(operation) || "b*".equals(operation))
+                && !validColorSpace(cs, ColorSpaceType.ALL))
         {
-            if (!validColorSpace(cs, ColorSpaceType.ALL))
-            {
-                registerError("The operator \"" + operation + "\" can't be used without Color Profile",
-                        ERROR_GRAPHIC_INVALID_COLOR_SPACE_MISSING);
-                return;
-            }
-        }
-
-        if ("f".equals(operation) || "F".equals(operation) || "f*".equals(operation) || "B".equals(operation)
-                || "B*".equals(operation) || "b".equals(operation) || "b*".equals(operation))
-        {
-            if (!validColorSpace(cs, ColorSpaceType.ALL))
-            {
-                registerError("The operator \"" + operation + "\" can't be used without Color Profile",
-                        ERROR_GRAPHIC_INVALID_COLOR_SPACE_MISSING);
-            }
+            registerError("The operator \"" + operation + "\" can't be used without Color Profile",
+                    ERROR_GRAPHIC_INVALID_COLOR_SPACE_MISSING);
         }
     }
 
