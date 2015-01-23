@@ -17,7 +17,6 @@
 package org.apache.pdfbox.pdfparser;
 
 import java.io.IOException;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,8 +39,7 @@ public class PDFObjectStreamParser extends BaseParser
     /**
      * Log instance.
      */
-    private static final Log LOG =
-        LogFactory.getLog(PDFObjectStreamParser.class);
+    private static final Log LOG = LogFactory.getLog(PDFObjectStreamParser.class);
 
     private List<COSObject> streamObjects = null;
     private List<Long> objectNumbers = null;
@@ -78,7 +76,8 @@ public class PDFObjectStreamParser extends BaseParser
             for( int i=0; i<numberOfObjects; i++ )
             {
                 long objectNumber = readObjectNumber();
-                long offset = readLong();
+                // skip offset
+                readLong();
                 objectNumbers.add( objectNumber);
             }
             COSObject object;
@@ -100,6 +99,18 @@ public class PDFObjectStreamParser extends BaseParser
                 if(LOG.isDebugEnabled())
                 {
                     LOG.debug( "parsed=" + object );
+                }
+                // skip endobject marker
+                if (!pdfSource.isEOF())
+                {
+                    if ( pdfSource.peek() == 'e')
+                    {
+                        readLine();
+                    }
+                    else
+                    {
+                        LOG.debug("no endobject marker found for object "+objNum+" in object stream");
+                    }
                 }
                 objectCounter++;
             }
