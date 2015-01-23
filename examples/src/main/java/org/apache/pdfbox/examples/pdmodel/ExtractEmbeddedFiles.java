@@ -129,7 +129,7 @@ public class ExtractEmbeddedFiles
     }
 
     private static void extractFile(String filePath, String filename, PDEmbeddedFile embeddedFile)
-            throws IOException, FileNotFoundException
+            throws IOException
     {
         String embeddedFilename = filePath + filename;
         File file = new File(filePath + filename);
