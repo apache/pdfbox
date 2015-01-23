@@ -18,8 +18,6 @@ package org.apache.fontbox.ttf;
 
 import java.io.IOException;
 
-import org.apache.fontbox.encoding.Encoding;
-
 /**
  * A table in a true type font.
  * 
@@ -50,6 +48,7 @@ public class PostScriptTable extends TTFTable
      * @param data The stream to read the data from.
      * @throws IOException If there is an error reading the data.
      */
+    @Override
     public void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
     {
         formatType = data.read32Fixed();
