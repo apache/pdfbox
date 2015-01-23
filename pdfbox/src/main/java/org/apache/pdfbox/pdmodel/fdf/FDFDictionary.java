@@ -84,7 +84,6 @@ public class FDFDictionary implements COSObjectable
                     PDSimpleFileSpecification fs = new PDSimpleFileSpecification();
                     fs.setFile( child.getAttribute( "href" ) );
                     setFile(fs);
-
                 }
                 else if( child.getTagName().equals( "ids" ) )
                 {
@@ -102,12 +101,9 @@ public class FDFDictionary implements COSObjectable
                     for( int f=0; f<fields.getLength(); f++ )
                     {
                         Node currentNode = fields.item( f );
-                        if (currentNode instanceof Element) 
+                        if (currentNode instanceof Element && ((Element) currentNode).getTagName().equals("field"))
                         {
-                            if (((Element)currentNode).getTagName().equals("field")) 
-                            {
-                                fieldList.add( new FDFField( (Element)fields.item( f ) ) );
-                            }
+                            fieldList.add(new FDFField((Element) fields.item(f)));
                         }
                     }
                     setFields( fieldList );
@@ -177,6 +173,7 @@ public class FDFDictionary implements COSObjectable
      *
      * @return The cos object that matches this Java object.
      */
+    @Override
     public COSBase getCOSObject()
     {
         return fdf;
