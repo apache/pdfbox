@@ -41,7 +41,7 @@ import org.apache.pdfbox.cos.COSString;
 public class PDNameTreeNode implements COSObjectable
 {
     private static final Log LOG = LogFactory.getLog(PDNameTreeNode.class);
-    private COSDictionary node;
+    private final COSDictionary node;
     private Class<? extends COSObjectable> valueType = null;
     private PDNameTreeNode parent = null;
 
@@ -152,7 +152,9 @@ public class PDNameTreeNode implements COSObjectable
         if (kids != null && kids.size() > 0)
         {
             for (PDNameTreeNode kidsNode : kids)
+            {
                 kidsNode.setParent(this);
+            }
             node.setItem( COSName.KIDS, COSArrayList.converterToCOSArray( kids ) );
             // root nodes with kids don't have Names
             if (isRootNode())
