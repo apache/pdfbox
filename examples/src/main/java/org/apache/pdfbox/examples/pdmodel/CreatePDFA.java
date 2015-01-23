@@ -20,9 +20,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-
+import javax.xml.transform.TransformerException;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
@@ -32,135 +31,83 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDOutputIntent;
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.schema.PDFAIdentificationSchema;
 import org.apache.xmpbox.type.BadFieldValueException;
-import org.apache.xmpbox.xml.XmpSerializationException;
 import org.apache.xmpbox.xml.XmpSerializer;
 
-import javax.xml.transform.TransformerException;
-
 /**
- * This is an example that creates a simple PDF/A document.
- *
+ * Creates a simple PDF/A document.
  */
 public class CreatePDFA
 {
-    /**
-     * Constructor.
-     */
-    public CreatePDFA()
+    public static void main(String[] args) throws IOException, TransformerException
     {
-        super();
-    }
+        if (args.length != 3)
+        {
+            System.err.println("usage: " + CreatePDFA.class.getName() +
+                    " <output-file> <Message> <ttf-file>");
+            System.exit(1);
+        }
 
-    /**
-     * Create a simple PDF/A document.
-     * 
-     * This example is based on HelloWorld example.
-     * 
-     * As it is a simple case, to conform the PDF/A norm, are added :
-     * - the font used in the document
-     * - a light xmp block with only PDF identification schema (the only mandatory)
-     * - an output intent
-     *
-     * @param file The file to write the PDF to.
-     * @param message The message to write in the file.
-     *
-     * @throws Exception If something bad occurs
-     */
-    public void doIt( final String file, final String message, final String fontfile)
-            throws IOException, TransformerException
-    {
-        // the document
-        PDDocument doc = null;
+        String file = args[0];
+        String message = args[1];
+        String fontfile = args[2];
+
+        PDDocument doc = new PDDocument();
         try
         {
-            doc = new PDDocument();
-
             PDPage page = new PDPage();
-            doc.addPage( page );
+            doc.addPage(page);
 
-            // load the font as this needs to be embedded as part of PDF/A
+            // load the font as this needs to be embedded
             PDFont font = PDTrueTypeFont.loadTTF(doc, new File(fontfile));
-            
-            // create a page with the message where needed
-            PDPageContentStream contentStream = new PDPageContentStream(doc, page);
-            contentStream.beginText();
-            contentStream.setFont( font, 12 );
-            contentStream.newLineAtOffset(100, 700);
-            contentStream.showText(message);
-            contentStream.endText();
-            contentStream.saveGraphicsState();
-            contentStream.close();
-            
-            PDDocumentCatalog cat = doc.getDocumentCatalog();
-            PDMetadata metadata = new PDMetadata(doc);
-            cat.setMetadata(metadata);
 
+            // create a page with the message
+            PDPageContentStream contents = new PDPageContentStream(doc, page);
+            contents.beginText();
+            contents.setFont(font, 12);
+            contents.newLineAtOffset(100, 700);
+            contents.showText(message);
+            contents.endText();
+            contents.saveGraphicsState();
+            contents.close();
+
+            // add XMP metadata
             XMPMetadata xmp = XMPMetadata.createXMPMetadata();
             try
             {
-                PDFAIdentificationSchema pdfaid = xmp.createAndAddPFAIdentificationSchema();
-                pdfaid.setConformance("B");
-                pdfaid.setPart(1);
-                pdfaid.setAboutAsSimple("PDFBox PDFA sample");
+                PDFAIdentificationSchema id = xmp.createAndAddPFAIdentificationSchema();
+                id.setPart(1);
+                id.setConformance("B");
+                id.setAboutAsSimple("PDFBox PDF/A sample");
+                
                 XmpSerializer serializer = new XmpSerializer();
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 serializer.serialize(xmp, baos, true);
-                metadata.importXMPMetadata( baos.toByteArray() );
+
+                PDMetadata metadata = new PDMetadata(doc);
+                metadata.importXMPMetadata(baos.toByteArray());
+                doc.getDocumentCatalog().setMetadata(metadata);
             }
-            catch(BadFieldValueException badFieldexception)
+            catch(BadFieldValueException e)
             {
-                // can't happen here, as the provided value is valid
+                // won't happen here, as the provided value is valid
+                throw new IllegalArgumentException(e);
             }
-            catch(XmpSerializationException xmpException)
-            {
-                System.err.println(xmpException.getMessage());
-            }
-            InputStream colorProfile = CreatePDFA.class.getResourceAsStream("/org/apache/pdfbox/resources/pdfa/sRGB Color Space Profile.icm");
-            // create output intent
-            PDOutputIntent oi = new PDOutputIntent(doc, colorProfile); 
-            oi.setInfo("sRGB IEC61966-2.1"); 
-            oi.setOutputCondition("sRGB IEC61966-2.1"); 
-            oi.setOutputConditionIdentifier("sRGB IEC61966-2.1"); 
-            oi.setRegistryName("http://www.color.org"); 
-            cat.addOutputIntent(oi);
-            
-            doc.save( file );
-           
+
+            // sRGB output intent
+            InputStream colorProfile = CreatePDFA.class.getResourceAsStream(
+                    "/org/apache/pdfbox/resources/pdfa/sRGB Color Space Profile.icm");
+            PDOutputIntent intent = new PDOutputIntent(doc, colorProfile);
+            intent.setInfo("sRGB IEC61966-2.1");
+            intent.setOutputCondition("sRGB IEC61966-2.1");
+            intent.setOutputConditionIdentifier("sRGB IEC61966-2.1");
+            intent.setRegistryName("http://www.color.org");
+            doc.getDocumentCatalog().addOutputIntent(intent);
+
+            doc.save(file);
         }
         finally
         {
-            if( doc != null )
-            {
-                doc.close();
-            }
+            doc.close();
         }
-    }
-
-    /**
-     * This will create a hello world PDF/A document.
-     * <br />
-     * see usage() for commandline
-     *
-     * @param args Command line arguments.
-     */
-    public static void main(String[] args) throws IOException, TransformerException
-    {
-        CreatePDFA app = new CreatePDFA();
-        if( args.length != 3 )
-        {
-            app.usage();
-        }
-        else
-        {
-            app.doIt( args[0], args[1], args[2] );
-        }
-    }
-
-    /**
-     * This will print out a message telling how to use this example.
-     */
-    private void usage()
-    {
-        System.err.println( "usage: " + this.getClass().getName() + " <output-file> <Message> <ttf-file>" );
     }
 }
