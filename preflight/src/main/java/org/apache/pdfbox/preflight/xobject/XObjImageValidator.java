@@ -84,7 +84,7 @@ public class XObjImageValidator extends AbstractXObjValidator
      */
     protected void checkInterpolate() throws ValidationException
     {
-        if (this.xobject.getBoolean("Interpolate", true))
+        if (this.xobject.getItem("Interpolate") != null && this.xobject.getBoolean("Interpolate", true))
         {
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY,
                     "Unexpected 'true' value for 'Interpolate' Key"));
