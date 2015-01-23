@@ -21,14 +21,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-
-import org.apache.pdfbox.io.RandomAccessFile;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
-
 import org.apache.pdfbox.pdmodel.graphics.image.CCITTFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.JPEGFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
@@ -71,7 +66,7 @@ public class AddImageToPDF
             }
             else if (image.toLowerCase().endsWith(".tif") || image.toLowerCase().endsWith(".tiff"))
             {
-                ximage = CCITTFactory.createFromRandomAccess(doc, new RandomAccessFile(new File(image),"r"));
+                ximage = CCITTFactory.createFromFile(doc, new File(image));
             }
             else if (image.toLowerCase().endsWith(".gif") || 
                     image.toLowerCase().endsWith(".bmp") || 
