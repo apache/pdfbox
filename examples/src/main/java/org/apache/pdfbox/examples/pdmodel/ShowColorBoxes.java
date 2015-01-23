@@ -18,97 +18,49 @@ package org.apache.pdfbox.examples.pdmodel;
 
 import java.awt.Color;
 import java.io.IOException;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 
 /**
- * This is an example that creates a simple document.
- *
- * The example is taken from the pdf file format specification.
- *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.2 $
+ * Creates a simple document. The example is taken from the pdf file format specification.
  */
 public class ShowColorBoxes
 {
-    /**
-     * Constructor.
-     */
-    public ShowColorBoxes()
+    public static void main(String[] args) throws IOException
     {
-        super();
-    }
+        if (args.length != 1)
+        {
+            System.err.println("usage: " +ShowColorBoxes.class.getName() + " <output-file>");
+            System.exit(1);
+        }
+        
+        String filename = args[0];
 
-    /**
-     * create the second sample document from the PDF file format specification.
-     *
-     * @param file The file to write the PDF to.
-     *
-     * @throws IOException If there is an error writing the data.
-     */
-    public void doIt( String file) throws IOException
-    {
-        // the document
-        PDDocument doc = null;
+        PDDocument doc = new PDDocument();
         try
         {
-            doc = new PDDocument();
-
             PDPage page = new PDPage();
-            doc.addPage( page );
+            doc.addPage(page);
 
-            PDPageContentStream contentStream = new PDPageContentStream(doc, page);
+            PDPageContentStream contents = new PDPageContentStream(doc, page);
 
-            // first fill the entire background with cyan
-            contentStream.setNonStrokingColor( Color.CYAN );
-            contentStream.addRect(0, 0, page.getMediaBox().getWidth(), page.getMediaBox().getHeight());
-            contentStream.fill();
+            // fill the entire background with cyan
+            contents.setNonStrokingColor(Color.CYAN);
+            contents.addRect(0, 0, page.getMediaBox().getWidth(), page.getMediaBox().getHeight());
+            contents.fill();
 
-            // then draw a red box in the lower left hand corner
-            contentStream.setNonStrokingColor( Color.RED );
-            contentStream.addRect(10, 10, 100, 100);
-            contentStream.fill();
+            // draw a red box in the lower left hand corner
+            contents.setNonStrokingColor(Color.RED);
+            contents.addRect(10, 10, 100, 100);
+            contents.fill();
 
-            contentStream.close();
-            doc.save( file );
+            contents.close();
+            doc.save(filename);
         }
         finally
         {
-            if( doc != null )
-            {
-                doc.close();
-            }
+            doc.close();
         }
-    }
-
-    /**
-     * This will create a hello world PDF document.
-     * <br />
-     * see usage() for commandline
-     *
-     * @param args Command line arguments.
-     */
-    public static void main(String[] args) throws IOException
-    {
-        ShowColorBoxes app = new ShowColorBoxes();
-        if( args.length != 1 )
-        {
-            app.usage();
-        }
-        else
-        {
-            app.doIt( args[0] );
-        }
-    }
-
-    /**
-     * This will print out a message telling how to use this example.
-     */
-    private void usage()
-    {
-        System.err.println( "usage: " + this.getClass().getName() + " <output-file>" );
     }
 }
