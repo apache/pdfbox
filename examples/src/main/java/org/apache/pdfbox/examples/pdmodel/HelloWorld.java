@@ -27,86 +27,44 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
 /**
- * This is an example that creates a simple document.
+ * Creates a "Hello World" PDF using the built-in Helvetica font.
  *
- * The example is taken from the pdf file format specification.
- *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.6 $
+ * The example is taken from the PDF file format specification.
  */
 public class HelloWorld
 {
-    /**
-     * Constructor.
-     */
-    public HelloWorld()
+    public static void main(String[] args) throws IOException
     {
-        super();
-    }
+        if( args.length != 2 )
+        {
+            System.err.println("usage: " + HelloWorld.class.getName() + " <output-file> <Message>");
+            System.exit(1);
+        }
 
-    /**
-     * create the second sample document from the PDF file format specification.
-     *
-     * @param file The file to write the PDF to.
-     * @param message The message to write in the file.
-     *
-     * @throws IOException If there is an error writing the data.
-     */
-    public void doIt( String file, String message) throws IOException
-    {
-        // the document
-        PDDocument doc = null;
+        String filename = args[0];
+        String message = args[1];
+        
+        PDDocument doc = new PDDocument();
         try
         {
-            doc = new PDDocument();
-
             PDPage page = new PDPage();
-            doc.addPage( page );
+            doc.addPage(page);
+            
             PDFont font = PDType1Font.HELVETICA_BOLD;
 
-            PDPageContentStream contentStream = new PDPageContentStream(doc, page);
-            contentStream.beginText();
-            contentStream.setFont( font, 12 );
-            contentStream.newLineAtOffset(100, 700);
-            contentStream.showText(message);
-            contentStream.endText();
-            contentStream.close();
-            doc.save( file );
+            PDPageContentStream contents = new PDPageContentStream(doc, page);
+            contents.beginText();
+            contents.setFont(font, 12);
+            contents.newLineAtOffset(100, 700);
+            contents.showText(message);
+            contents.endText();
+            contents.close();
+            
+            doc.save(filename);
         }
         finally
         {
-            if( doc != null )
-            {
-                doc.close();
-            }
+            doc.close();
         }
-    }
-
-    /**
-     * This will create a hello world PDF document.
-     * <br />
-     * see usage() for commandline
-     *
-     * @param args Command line arguments.
-     */
-    public static void main(String[] args) throws IOException
-    {
-        HelloWorld app = new HelloWorld();
-        if( args.length != 2 )
-        {
-            app.usage();
-        }
-        else
-        {
-            app.doIt( args[0], args[1] );
-        }
-    }
-
-    /**
-     * This will print out a message telling how to use this example.
-     */
-    private void usage()
-    {
-        System.err.println( "usage: " + this.getClass().getName() + " <output-file> <Message>" );
     }
 }
