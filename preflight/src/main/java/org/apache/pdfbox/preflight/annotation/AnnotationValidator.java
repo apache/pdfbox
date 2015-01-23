@@ -130,14 +130,11 @@ public abstract class AnnotationValidator
      */
     protected boolean checkColors() throws ValidationException
     {
-        if (this.pdAnnot.getColor() != null)
+        if (this.pdAnnot.getColor() != null && !searchRGBProfile())
         {
-            if (!searchRGBProfile())
-            {
-                ctx.addValidationError(new ValidationError(ERROR_ANNOT_FORBIDDEN_COLOR,
-                        "Annotation uses a Color profile which isn't the same than the profile contained by the OutputIntent"));
-                return false;
-            }
+            ctx.addValidationError(new ValidationError(ERROR_ANNOT_FORBIDDEN_COLOR,
+                    "Annotation uses a Color profile which isn't the same than the profile contained by the OutputIntent"));
+            return false;
         }
         return true;
     }
