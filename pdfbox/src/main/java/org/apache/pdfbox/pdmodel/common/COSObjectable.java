@@ -31,5 +31,5 @@ public interface COSObjectable
      *
      * @return The cos object that matches this Java object.
      */
-    public COSBase getCOSObject();
+    COSBase getCOSObject();
 }
