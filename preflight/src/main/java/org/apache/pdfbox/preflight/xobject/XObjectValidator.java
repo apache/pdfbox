@@ -30,5 +30,5 @@ public interface XObjectValidator
      * 
      * @throws ValidationException
      */
-    public abstract void validate() throws ValidationException;
+    void validate() throws ValidationException;
 }
