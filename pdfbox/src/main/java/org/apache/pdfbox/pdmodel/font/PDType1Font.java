@@ -440,15 +440,12 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
             {
                 // try unicode name
                 String unicodes = getGlyphList().toUnicode(name);
-                if (unicodes != null)
+                if (unicodes != null && unicodes.length() == 1)
                 {
-                    if (unicodes.length() == 1)
+                    String uniName = String.format("uni%04X", unicodes.codePointAt(0));
+                    if (type1Equivalent.hasGlyph(uniName))
                     {
-                        String uniName = String.format("uni%04X", unicodes.codePointAt(0));
-                        if (type1Equivalent.hasGlyph(uniName))
-                        {
-                            return uniName;
-                        }
+                        return uniName;
                     }
                 }
             }
