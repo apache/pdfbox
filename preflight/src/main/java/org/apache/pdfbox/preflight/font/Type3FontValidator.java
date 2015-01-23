@@ -35,9 +35,9 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
+import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.font.PDType3CharProc;
-import org.apache.pdfbox.pdmodel.font.encoding.DictionaryEncoding;
 import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -63,7 +63,6 @@ public class Type3FontValidator extends FontValidator<Type3Container>
     protected PDType3Font font;
     protected COSDictionary fontDictionary;
     protected COSDocument cosDocument;
-    protected Encoding encoding;
 
     public Type3FontValidator(PreflightContext context, PDType3Font font)
     {
@@ -179,9 +178,9 @@ public class Type3FontValidator extends FontValidator<Type3Container>
 
     /**
      * For a Type3 font, the mapping between the Character Code and the
-     * Character name is entirely defined in the Encoding Entry. The Encoding
-     * Entry can be a Name (For the 5 predefined Encoding) or a Dictionary. If
-     * it is a dictionary, the "Differences" array contains the correspondence
+     * Character name is entirely defined in the /Encoding entry. The /Encoding
+     * Entry can be a Name (For the 5 predefined encodings) or a dictionary. If
+     * it is a dictionary, the /Differences array contains the correspondence
      * between a character code and a set of character name which are different
      * from the encoding entry of the dictionary.
      *
@@ -201,11 +200,13 @@ public class Type3FontValidator extends FontValidator<Type3Container>
         COSBase fontEncoding = fontDictionary.getItem(COSName.ENCODING);
         if (COSUtils.isString(fontEncoding, cosDocument))
         {
-            checkEncodingAsString(fontEncoding);
+            String enc = COSUtils.getAsString(fontEncoding, cosDocument);
+            checkEncodingAsString(enc);
         }
         else if (COSUtils.isDictionary(fontEncoding, cosDocument))
         {
-            checkEncodingAsDictionary(fontEncoding);
+            COSDictionary encodingDictionary = COSUtils.getAsDictionary(fontEncoding, cosDocument);
+            checkEncodingAsDictionary(encodingDictionary);
         }
         else
         {
@@ -216,32 +217,63 @@ public class Type3FontValidator extends FontValidator<Type3Container>
     }
 
     /**
-     * This method is called by the CheckEncoding method if the Encoding entry is a String. In this case, the String
+     * This method is called by the CheckEncoding method if the /Encoding entry is a String. In this case, the String
      * must be an existing encoding name. (WinAnsi, MacRoman...)
      * 
-     * @param fontEncoding
+     * @param enc The name of the encoding.
      */
-    private void checkEncodingAsString(COSBase fontEncoding)
+    private void checkEncodingAsString(String enc)
     {
-        // Encoding is a Name, check if it is an Existing Encoding
-        String enc = COSUtils.getAsString(fontEncoding, cosDocument);
-        this.encoding = Encoding.getInstance(COSName.getPDFName(enc));
+        // Encoding is a name, check if it is an existing encoding
+        Encoding encodingInstance = Encoding.getInstance(COSName.getPDFName(enc));
+        if (encodingInstance == null)
+        {
+            this.fontContainer.push(new ValidationError(ERROR_FONTS_TYPE3_DAMAGED, 
+                    "The encoding '" + enc + "' doesn't exist"));
+        }
     }
 
     /**
-     * This method is called by the CheckEncoding method if the Encoding entry is an instance of COSDictionary. In this
-     * case, a new instance of {@link DictionaryEncoding} is created. If an IOException is thrown by the
-     * DictionaryEncoding constructor the ERROR_FONTS_ENCODING is pushed in the
-     * FontContainer.
-     * 
-     * Differences entry validation is implicitly done by the DictionaryEncoding constructor.
-     * 
-     * @param fontEncoding
+     * This method is called by the CheckEncoding method if the /Encoding entry
+     * is an instance of COSDictionary. If that dictionary has a /BaseEncoding
+     * entry, the name is checked. In any case, the /Differences array is
+     * validated.
+     *
+     * @param encodingDictionary the encoding dictionary.
      */
-    private void checkEncodingAsDictionary(COSBase fontEncoding)
+    private void checkEncodingAsDictionary(COSDictionary encodingDictionary)
     {
-        COSDictionary encodingDictionary = COSUtils.getAsDictionary(fontEncoding, cosDocument);
-        this.encoding = new DictionaryEncoding(encodingDictionary, false, null);
+        if (encodingDictionary.containsKey(COSName.BASE_ENCODING))
+        {
+            checkEncodingAsString(encodingDictionary.getString(COSName.BASE_ENCODING));
+        }
+
+        COSBase diff = encodingDictionary.getItem(COSName.DIFFERENCES);
+        if (diff != null)
+        {
+            if (!COSUtils.isArray(diff, cosDocument))
+            {
+                this.fontContainer.push(new ValidationError(ERROR_FONTS_TYPE3_DAMAGED,
+                        "The differences element of the encoding dictionary isn't an array"));
+                return;
+            }
+
+            // ---- The DictionaryEncoding object doesn't throw exception if the
+            // Differences isn't well formed.
+            // So check if the array has the right format.
+            COSArray diffArray = COSUtils.getAsArray(diff, cosDocument);
+            for (int i = 0; i < diffArray.size(); ++i)
+            {
+                COSBase item = diffArray.get(i);
+                if (!(item instanceof COSInteger || item instanceof COSName))
+                {
+                    // ---- Error, the Differences array is invalid
+                    this.fontContainer.push(new ValidationError(ERROR_FONTS_TYPE3_DAMAGED,
+                            "Differences Array should contain COSInt or COSName, no other type"));
+                    return;
+                }
+            }
+        }
     }
 
     /**
@@ -255,7 +287,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
      */
     private void checkCharProcsAndMetrics() throws ValidationException
     {
-        List<Integer> widths = getWidths(font);
+        List<Float> widths = getWidths(font);
         if (widths == null || widths.isEmpty())
         {
             this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID,
@@ -300,9 +332,13 @@ public class Type3FontValidator extends FontValidator<Type3Container>
                 try
                 {
                     float fontProgramWidth = getWidthFromCharProc(charProc);
-                    if (width == fontProgramWidth)
+                    if (Math.abs(width - fontProgramWidth) < 0.001f)
                     {
                         // Glyph is OK, we keep the CID.
+                        // PDF/A-1b only states that the width "shall be consistent".
+                        // For PDF/A-2,3 the description has been enhanced and is now requesting
+                        // "consistent is defined to be a difference of no more than 1/1000 unit"
+                        // We interpret this as clarification of the PDF/A-1b requirement.
                         this.fontContainer.markAsValid(code);
                     }
                     else
@@ -317,9 +353,9 @@ public class Type3FontValidator extends FontValidator<Type3Container>
                 catch (ContentStreamException e)
                 {
                     // TODO spaces/isartor-6-2-3-3-t02-fail-h.pdf --> si ajout de l'erreur dans le container le test
-                    // echoue... pourquoi si la font est utilisée ca devrait planter???
+                    // echoue... pourquoi si la font est utilisÃ©e ca devrait planter???
                     this.context.addValidationError(new ValidationError(((ContentStreamException) e).getErrorCode(), e
-                            .getMessage()));
+                            .getMessage(),e));
                     return;
                 }
                 catch (IOException e)
@@ -332,13 +368,13 @@ public class Type3FontValidator extends FontValidator<Type3Container>
         }
     }
 
-    public List<Integer> getWidths(PDFont font)
+    public List<Float> getWidths(PDFont font)
     {
-        List<Integer> widths;
+        List<Float> widths;
         COSArray array = (COSArray) font.getCOSObject().getDictionaryObject(COSName.WIDTHS);
         if (array != null)
         {
-            widths = COSArrayList.convertIntegerCOSArrayToList(array);
+            widths = COSArrayList.convertFloatCOSArrayToList(array);
         }
         else
         {
@@ -375,7 +411,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
     }
 
     /**
-     * If the Resources entry is present, this method checks its content. Only fonts and Images are checked because this
+     * If the Resources entry is present, this method checks its content. Only fonts and images are checked because this
      * resource describes glyphs.
      */
     private void checkResources() throws ValidationException
@@ -383,7 +419,6 @@ public class Type3FontValidator extends FontValidator<Type3Container>
         COSBase resources = this.fontDictionary.getItem(COSName.RESOURCES);
         if (resources != null)
         {
-
             COSDictionary dictionary = COSUtils.getAsDictionary(resources, cosDocument);
             if (dictionary == null)
             {
