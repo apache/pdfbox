@@ -397,12 +397,10 @@ public class PDTrueTypeFont extends PDSimpleFont
                         cmapWinSymbol = cmap;
                     }
                 }
-                else if (CmapTable.PLATFORM_MACINTOSH == cmap.getPlatformId())
+                else if (CmapTable.PLATFORM_MACINTOSH == cmap.getPlatformId()
+                        && CmapTable.ENCODING_MAC_ROMAN == cmap.getPlatformEncodingId())
                 {
-                    if (CmapTable.ENCODING_MAC_ROMAN == cmap.getPlatformEncodingId())
-                    {
-                        cmapMacRoman = cmap;
-                    }
+                    cmapMacRoman = cmap;
                 }
             }
         }
