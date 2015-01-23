@@ -238,12 +238,9 @@ public final class ExternalFonts
             for (String substituteName : getSubstitutes("$" + registryOrdering))
             {
                 CFFFont cff = getProvider().getCFFFont(substituteName);
-                if (cff != null)
+                if (cff instanceof CFFCIDFont)
                 {
-                    if (cff instanceof CFFCIDFont)
-                    {
-                        return (CFFCIDFont)cff;
-                    }
+                    return (CFFCIDFont) cff;
                 }
             }
         }
