@@ -57,7 +57,7 @@ public class XmpSerializer
 
     private boolean parseTypeResourceForLi = true;
 
-    public XmpSerializer() throws XmpSerializationException
+    public XmpSerializer()
     {
         // xml init
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
@@ -67,9 +67,9 @@ public class XmpSerializer
         }
         catch (ParserConfigurationException e)
         {
-            throw new XmpSerializationException("Failed to init XmpSerializer", e);
+            // never happens, because we don't call builderFactory#setAttribute
+            throw new RuntimeException(e);
         }
-
     }
 
     public void serialize(XMPMetadata metadata, OutputStream os, boolean withXpacket) throws TransformerException
