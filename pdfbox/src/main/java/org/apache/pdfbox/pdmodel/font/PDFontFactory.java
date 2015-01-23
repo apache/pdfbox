@@ -55,24 +55,18 @@ public class PDFontFactory
         if (COSName.TYPE1.equals(subType))
         {
             COSBase fd = dictionary.getDictionaryObject(COSName.FONT_DESC);
-            if (fd != null && fd instanceof COSDictionary)
+            if (fd instanceof COSDictionary && ((COSDictionary) fd).containsKey(COSName.FONT_FILE3))
             {
-                if (((COSDictionary)fd).containsKey(COSName.FONT_FILE3))
-                {
-                    return new PDType1CFont(dictionary);
-                }
+                return new PDType1CFont(dictionary);
             }
             return new PDType1Font(dictionary);
         }
         else if (COSName.MM_TYPE1.equals(subType))
         {
             COSBase fd = dictionary.getDictionaryObject(COSName.FONT_DESC);
-            if (fd != null && fd instanceof COSDictionary)
+            if (fd instanceof COSDictionary && ((COSDictionary) fd).containsKey(COSName.FONT_FILE3))
             {
-                if (((COSDictionary)fd).containsKey(COSName.FONT_FILE3))
-                {
-                    return new PDType1CFont(dictionary);
-                }
+                return new PDType1CFont(dictionary);
             }
             return new PDMMType1Font(dictionary);
         }
