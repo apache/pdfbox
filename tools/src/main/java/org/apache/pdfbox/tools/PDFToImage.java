@@ -191,7 +191,7 @@ public class PDFToImage
             {
                 document = PDDocument.load(new File(pdfFile), password);
 
-                ImageType imageType = ImageType.RGB;
+                ImageType imageType;
                 if ("bilevel".equalsIgnoreCase(color))
                 {
                     imageType = ImageType.BINARY;
@@ -291,7 +291,7 @@ public class PDFToImage
         String[] formats = ImageIO.getReaderFormatNames();
         for( int i = 0; i < formats.length; i++ )
         {
-           if(formats[i].toLowerCase().equals(formats[i]))
+           if (formats[i].equalsIgnoreCase(formats[i]))
            {
                retval.append( formats[i] );
                if( i + 1 < formats.length )
