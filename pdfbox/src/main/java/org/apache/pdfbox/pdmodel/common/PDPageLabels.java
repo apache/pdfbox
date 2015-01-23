@@ -244,7 +244,7 @@ public class PDPageLabels implements COSObjectable
      */
     private static interface LabelHandler
     {
-        public void newLabel(int pageIndex, String label);
+        void newLabel(int pageIndex, String label);
     }
 
     private void computeLabels(LabelHandler handler)
