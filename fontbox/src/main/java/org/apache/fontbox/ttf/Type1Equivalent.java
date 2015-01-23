@@ -33,7 +33,7 @@ public interface Type1Equivalent
     /**
      * The PostScript name of the font.
      */
-    public String getName() throws IOException;
+    String getName() throws IOException;
 
     /**
      * Returns the Type 1 CharString for the character with the given name.
@@ -41,7 +41,7 @@ public interface Type1Equivalent
      * @return glyph path
      * @throws IOException if the path could not be read
      */
-    public GeneralPath getPath(String name) throws IOException;
+    GeneralPath getPath(String name) throws IOException;
 
     /**
      * Returns the advance width for the character with the given name.
@@ -49,21 +49,21 @@ public interface Type1Equivalent
      * @return glyph advance width
      * @throws IOException if the path could not be read
      */
-    public float getWidth(String name) throws IOException;
+    float getWidth(String name) throws IOException;
 
     /**
      * Returns true if the font contains the given glyph.
      * @param name PostScript glyph name
      */
-    public boolean hasGlyph(String name) throws IOException;
+    boolean hasGlyph(String name) throws IOException;
 
     /**
      * Returns the PostScript Encoding vector for the font.
      */
-    public Encoding getEncoding() throws IOException;
+    Encoding getEncoding() throws IOException;
 
     /**
      * Returns the font's bounding box in PostScript units.
      */
-    public abstract BoundingBox getFontBBox() throws IOException;
+    BoundingBox getFontBBox() throws IOException;
 }
