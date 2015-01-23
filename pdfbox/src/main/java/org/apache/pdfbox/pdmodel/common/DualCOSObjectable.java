@@ -31,12 +31,12 @@ public interface DualCOSObjectable
      *
      * @return The cos object that matches this Java object.
      */
-    public COSBase getFirstCOSObject();
+    COSBase getFirstCOSObject();
 
     /**
      * Convert this standard java object to a COS object.
      *
      * @return The cos object that matches this Java object.
      */
-    public COSBase getSecondCOSObject();
+    COSBase getSecondCOSObject();
 }
