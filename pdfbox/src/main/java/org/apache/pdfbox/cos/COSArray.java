@@ -465,13 +465,10 @@ public class COSArray extends COSBase implements Iterable<COSBase>
                 retval = i;
                 break;
             }
-            else if (item instanceof COSObject)
+            else if (item instanceof COSObject && ((COSObject) item).getObject().equals(object))
             {
-                if (((COSObject) item).getObject().equals(object))
-                {
-                    retval = i;
-                    break;
-                }
+                retval = i;
+                break;
             }
         }
         return retval;
