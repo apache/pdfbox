@@ -39,6 +39,44 @@ public final class CCITTFactory
     private CCITTFactory()
     {
     }
+    
+    /**
+     * Creates a new CCITT Fax compressed Image XObject from the first page of 
+     * a TIFF file.
+     * 
+     * @param document the document to create the image as part of.
+     * @param reader the random access TIFF file which contains a suitable CCITT
+     * compressed image
+     * @return a new Image XObject
+     * @throws IOException if there is an error reading the TIFF data.
+     * 
+     * @deprecated Use {@link #createFromFile(PDDocument, File)} instead.
+     */
+    @Deprecated
+    public static PDImageXObject createFromRandomAccess(PDDocument document, RandomAccess reader)
+            throws IOException
+    {
+        return createFromRandomAccessImpl(document, reader, 0);
+    }
+
+    /**
+     * Creates a new CCITT Fax compressed Image XObject from a TIFF file.
+     *
+     * @param document the document to create the image as part of.
+     * @param reader the random access TIFF file which contains a suitable CCITT
+     * compressed image
+     * @param number TIFF image number, starting from 0
+     * @return a new Image XObject, or null if no such page
+     * @throws IOException if there is an error reading the TIFF data.
+     * 
+     * @deprecated Use {@link #createFromFile(PDDocument, File, int)} instead.
+     */
+    @Deprecated
+    public static PDImageXObject createFromRandomAccess(PDDocument document, RandomAccess reader,
+                                                        int number) throws IOException
+    {
+        return createFromRandomAccessImpl(document, reader, number);
+    }
 
     /**
      * Creates a new CCITT Fax compressed Image XObject from the first page of 
@@ -52,7 +90,7 @@ public final class CCITTFactory
     public static PDImageXObject createFromFile(PDDocument document, File file)
             throws IOException
     {
-        return createFromRandomAccess(document, new RandomAccessFile(file, "r"), 0);
+        return createFromRandomAccessImpl(document, new RandomAccessFile(file, "r"), 0);
     }
 
     /**
@@ -68,26 +106,9 @@ public final class CCITTFactory
     public static PDImageXObject createFromFile(PDDocument document, File file, int number)
             throws IOException
     {
-        return createFromRandomAccess(document, new RandomAccessFile(file, "r"), number);
+        return createFromRandomAccessImpl(document, new RandomAccessFile(file, "r"), number);
     }
     
-    /**
-     * Creates a new CCITT Fax compressed Image XObject from the first page of 
-     * a TIFF file.
-     * 
-     * @param document the document to create the image as part of.
-     * @param reader the random access TIFF file which contains a suitable CCITT
-     * compressed image
-     * @return a new Image XObject
-     * @throws IOException if there is an error reading the TIFF data.
-     */
-    @Deprecated
-    public static PDImageXObject createFromRandomAccess(PDDocument document, RandomAccess reader)
-            throws IOException
-    {
-        return createFromRandomAccess(document, reader, 0);
-    }
-
     /**
      * Creates a new CCITT Fax compressed Image XObject from a TIFF file.
      * 
@@ -98,9 +119,9 @@ public final class CCITTFactory
      * @return a new Image XObject, or null if no such page
      * @throws IOException if there is an error reading the TIFF data.
      */
-    @Deprecated
-    public static PDImageXObject createFromRandomAccess(PDDocument document, RandomAccess reader,
-                                                        int number) throws IOException
+    private static PDImageXObject createFromRandomAccessImpl(PDDocument document,
+                                                             RandomAccess reader,
+                                                             int number) throws IOException
     {
         COSDictionary decodeParms = new COSDictionary();
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
