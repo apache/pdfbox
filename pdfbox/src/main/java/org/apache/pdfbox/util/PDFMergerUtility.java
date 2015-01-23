@@ -400,19 +400,16 @@ public class PDFMergerUtility
                     {
                         destParentTreeNextKey = destNumbersArray.size() / 2;
                     }
-                    if (destParentTreeNextKey > 0)
+                    if (destParentTreeNextKey > 0 && srcStructTree != null)
                     {
-                        if (srcStructTree != null)
+                        PDNumberTreeNode srcParentTree = srcStructTree.getParentTree();
+                        if (srcParentTree != null)
                         {
-                            PDNumberTreeNode srcParentTree = srcStructTree.getParentTree();
-                            if (srcParentTree != null)
+                            srcParentTreeDict = srcParentTree.getCOSDictionary();
+                            srcNumbersArray = (COSArray) srcParentTreeDict.getDictionaryObject(COSName.NUMS);
+                            if (srcNumbersArray != null)
                             {
-                                srcParentTreeDict = srcParentTree.getCOSDictionary();
-                                srcNumbersArray = (COSArray) srcParentTreeDict.getDictionaryObject(COSName.NUMS);
-                                if (srcNumbersArray != null)
-                                {
-                                    mergeStructTree = true;
-                                }
+                                mergeStructTree = true;
                             }
                         }
                     }
@@ -556,20 +553,14 @@ public class PDFMergerUtility
     private void updatePageReferences(COSDictionary parentTreeEntry, HashMap<COSDictionary, COSDictionary> objMapping)
     {
         COSBase page = parentTreeEntry.getDictionaryObject(COSName.PG);
-        if (page instanceof COSDictionary)
+        if (page instanceof COSDictionary && objMapping.containsKey(page))
         {
-            if (objMapping.containsKey(page))
-            {
-                parentTreeEntry.setItem(COSName.PG, objMapping.get(page));
-            }
+            parentTreeEntry.setItem(COSName.PG, objMapping.get(page));
         }
         COSBase obj = parentTreeEntry.getDictionaryObject(COSName.OBJ);
-        if (obj instanceof COSDictionary)
+        if (obj instanceof COSDictionary && objMapping.containsKey(obj))
         {
-            if (objMapping.containsKey(obj))
-            {
-                parentTreeEntry.setItem(COSName.OBJ, objMapping.get(obj));
-            }
+            parentTreeEntry.setItem(COSName.OBJ, objMapping.get(obj));
         }
         COSBase kSubEntry = parentTreeEntry.getDictionaryObject(COSName.K);
         if (kSubEntry instanceof COSArray)
