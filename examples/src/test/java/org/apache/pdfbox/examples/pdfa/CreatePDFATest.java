@@ -18,6 +18,7 @@ package org.apache.pdfbox.examples.pdfa;
 import junit.framework.TestCase;
 
 import java.io.File;
+import org.apache.pdfbox.examples.pdmodel.CreatePDFA;
 import org.apache.pdfbox.preflight.PreflightDocument;
 import org.apache.pdfbox.preflight.ValidationResult;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
