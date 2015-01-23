@@ -17,12 +17,11 @@
 package org.apache.pdfbox.examples.pdmodel;
 
 import java.io.File;
-
+import java.io.IOException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.util.LayerUtility;
@@ -30,77 +29,72 @@ import org.apache.pdfbox.util.Matrix;
 
 /**
  * Example to show superimposing a PDF page onto another PDF.
- *
  */
 public class SuperimposePage {
 
-    public static void main(String[] args)
+    public static void main(String[] args) throws IOException
     {
+        if (args.length != 2)
+        {
+            System.err.println("usage: " + SuperimposePage.class.getName() +
+                    " <source-pdf> <dest-pdf>");
+            System.exit(1);
+        }
+        String sourcePath = args[0];
+        String destPath = args[1];
+        
+        PDDocument sourceDoc = null;
         try
         {
-
-            // Create a new document with some basic content
-            PDDocument aDoc = new PDDocument();
-            PDPage aPage = new PDPage();
+            // load the source PDF
+            sourceDoc = PDDocument.load(new File(sourcePath));
+            int sourcePage = 1;
             
-            // get the page crop box. Will be used later to place the
-            // imported page.
-            PDRectangle cropBox = aPage.getCropBox();
+            // create a new PDF and add a blank page
+            PDDocument doc = new PDDocument();
+            PDPage page = new PDPage();
+            doc.addPage(page);
+
+            // write some sample text to the new page
+            PDPageContentStream contents = new PDPageContentStream(doc, page);
+            contents.beginText();
+            contents.setFont(PDType1Font.HELVETICA_BOLD, 12);
+            contents.newLineAtOffset(2, PDRectangle.LETTER.getHeight() - 12);
+            contents.showText("Sample text");
+            contents.endText();
             
-            aDoc.addPage(aPage);
-
-            PDPageContentStream aContent = new PDPageContentStream(aDoc, aPage);
-
-            PDFont font = PDType1Font.HELVETICA_BOLD;
-            aContent.beginText();
-            aContent.setFont(font, 12);
-            aContent.newLineAtOffset(2, 5);
-            aContent.showText("Import a pdf file:");
-            aContent.endText();
-            aContent.close();
+            // Create a Form XObject from the source document using LayerUtility
+            LayerUtility layerUtility = new LayerUtility(doc);
+            PDFormXObject form = layerUtility.importPageAsForm(sourceDoc, sourcePage - 1);
+            form.getPDStream().addCompression(); // use gzip for data
             
-            // Superimpose a page form a source document
-
-            // This will handle the actual import and resources
-            LayerUtility layerUtility = new LayerUtility(aDoc);
-
-            PDDocument toBeImported = PDDocument.load(new File(args[0]));
+            // draw the full form
+            contents.drawForm(form);
             
-            // Get the page as a PDXObjectForm to place it
-            PDFormXObject mountable = layerUtility.importPageAsForm(
-                    toBeImported, 0);
-            // add compression to the stream (import deactivates compression)
-            mountable.getPDStream().addCompression();
+            // draw a scaled form
+            contents.saveGraphicsState();
+            Matrix matrix = Matrix.getScaleInstance(0.5f, 0.5f);
+            contents.transform(matrix);
+            contents.drawForm(form);
+            contents.restoreGraphicsState();
 
-            // add to the existing content stream
-            PDPageContentStream contentStream = new PDPageContentStream(aDoc,
-                    aPage, true, true);
+            // draw a scaled and rotated form
+            contents.saveGraphicsState();
+            matrix.rotate(1.8 * Math.PI); // radians
+            contents.transform(matrix);
+            contents.drawForm(form);
+            contents.restoreGraphicsState();
 
-            // draw a transformed form
-            contentStream.saveGraphicsState();
-            contentStream.transform(new Matrix(0, 0.5f, -0.5f, 0, cropBox.getWidth(), 0));
-            contentStream.drawForm(mountable);
-            contentStream.restoreGraphicsState();
-
-            // draw another transformed form
-            Matrix matrix = new Matrix(0.5f, 0.5f, -0.5f, 0.5f, 0.5f * cropBox.getWidth(),
-                    0.2f * cropBox.getHeight());
-            contentStream.saveGraphicsState();
-            contentStream.transform(matrix);
-            contentStream.drawForm(mountable);
-            contentStream.restoreGraphicsState();
-
-            contentStream.close();
-
-            // close the imported document
-            toBeImported.close();
-
-            aDoc.save(args[1]);
-            aDoc.close();
+            contents.close();
+            doc.save(destPath);
+            doc.close();
         }
-        catch (Exception e)
+        finally
         {
-            System.out.println(" error creating pdf file." + e.toString());
+            if (sourceDoc != null)
+            {
+                sourceDoc.close();
+            }
         }
     }
 }
