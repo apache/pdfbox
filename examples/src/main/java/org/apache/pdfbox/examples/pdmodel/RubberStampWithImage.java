@@ -24,12 +24,9 @@ import java.io.OutputStream;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
-
 import javax.imageio.ImageIO;
-
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -100,7 +97,7 @@ public class RubberStampWithImage
                     }
                     else if (imageFilename.toLowerCase().endsWith(".tif") || imageFilename.toLowerCase().endsWith(".tiff"))
                     {
-                        ximage = CCITTFactory.createFromRandomAccess(document, new RandomAccessFile(new File(imageFilename),"r"));
+                        ximage = CCITTFactory.createFromFile(document, new File(imageFilename));
                     }
                     else if (imageFilename.toLowerCase().endsWith(".gif") || 
                             imageFilename.toLowerCase().endsWith(".bmp") || 

@@ -21,15 +21,14 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
-
 import junit.framework.TestCase;
-import org.apache.pdfbox.io.RandomAccess;
-import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
+
+
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.checkIdent;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.validate;
 
@@ -59,8 +58,7 @@ public class CCITTFactoryTest extends TestCase
         String tiffG4Path = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg4.tif";
         
         PDDocument document = new PDDocument();
-        RandomAccess reader = new RandomAccessFile(new File(tiffG3Path), "r");
-        PDImageXObject ximage3 = CCITTFactory.createFromRandomAccess(document, reader);
+        PDImageXObject ximage3 = CCITTFactory.createFromFile(document, new File(tiffG3Path));
         validate(ximage3, 1, 344, 287, "tiff", PDDeviceGray.INSTANCE.getName());
         BufferedImage bim3 = ImageIO.read(new File(tiffG3Path));
         checkIdent(bim3, ximage3.getOpaqueImage());
@@ -69,9 +67,8 @@ public class CCITTFactoryTest extends TestCase
         PDPageContentStream contentStream = new PDPageContentStream(document, page, true, false);
         contentStream.drawImage(ximage3, 0, 0, ximage3.getWidth(), ximage3.getHeight());
         contentStream.close();
-
-        reader = new RandomAccessFile(new File(tiffG4Path), "r");
-        PDImageXObject ximage4 = CCITTFactory.createFromRandomAccess(document, reader);
+        
+        PDImageXObject ximage4 = CCITTFactory.createFromFile(document, new File(tiffG4Path));
         validate(ximage4, 1, 344, 287, "tiff", PDDeviceGray.INSTANCE.getName());
         BufferedImage bim4 = ImageIO.read(new File(tiffG3Path));
         checkIdent(bim4, ximage4.getOpaqueImage());
@@ -105,12 +102,11 @@ public class CCITTFactoryTest extends TestCase
         assertTrue(countTiffImages > 1);
         
         PDDocument document = new PDDocument();
-        RandomAccess reader = new RandomAccessFile(new File(tiffPath), "r");
         
         int pdfPageNum = 0;
         while (true)
         {
-            PDImageXObject ximage = CCITTFactory.createFromRandomAccess(document, reader, pdfPageNum);
+            PDImageXObject ximage = CCITTFactory.createFromFile(document, new File(tiffPath), pdfPageNum);
             if (ximage == null)
             {
                 break;
