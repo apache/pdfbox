@@ -230,8 +230,12 @@ public class PDDocument implements Closeable
         if (signatureField == null)
         {
             signatureField = new PDSignatureField(acroForm);
-            signatureField.setSignature(sigObject); // append the signature object
-            signatureField.getWidget().setPage(page); // backward linking
+
+            // append the signature object
+            signatureField.setSignature(sigObject); 
+            
+            // backward linking
+            signatureField.getWidget().setPage(page); 
         }
 
         // Set the AcroForm Fields
@@ -387,7 +391,8 @@ public class PDDocument implements Closeable
         acroFormDict.setNeedToBeUpdate(true);
         if (!acroForm.isSignaturesExist())
         {
-            acroForm.setSignaturesExist(true); // 1 if at least one signature field is available
+            // 1 if at least one signature field is available
+            acroForm.setSignaturesExist(true); 
         }
 
         List<PDFieldTreeNode> field = acroForm.getFields();
@@ -397,7 +402,7 @@ public class PDDocument implements Closeable
             PDSignature sigObject = sigField.getSignature();
             sigField.getCOSObject().setNeedToBeUpdate(true);
 
-            // Check if the field already exist
+            // Check if the field already exists
             boolean checkFields = false;
             for (PDFieldTreeNode fieldNode : field)
             {
@@ -613,12 +618,9 @@ public class PDDocument implements Closeable
      */
     public PDEncryption getEncryption()
     {
-        if (encryption == null)
+        if (encryption == null && isEncrypted())
         {
-            if (isEncrypted())
-            {
-                encryption = new PDEncryption(document.getEncryptionDictionary());
-            }
+            encryption = new PDEncryption(document.getEncryptionDictionary());
         }
         return encryption;
     }
