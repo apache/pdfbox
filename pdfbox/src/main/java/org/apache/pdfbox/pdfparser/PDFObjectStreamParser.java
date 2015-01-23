@@ -100,17 +100,12 @@ public class PDFObjectStreamParser extends BaseParser
                 {
                     LOG.debug( "parsed=" + object );
                 }
-                // skip endobject marker
-                if (!pdfSource.isEOF())
+                // According to the spec objects within an object stream shall not be enclosed 
+                // by obj/endobj tags, but there are some pdfs in the wild using those tags 
+                // skip endobject marker if present
+                if (!pdfSource.isEOF() && pdfSource.peek() == 'e')
                 {
-                    if ( pdfSource.peek() == 'e')
-                    {
-                        readLine();
-                    }
-                    else
-                    {
-                        LOG.debug("no endobject marker found for object "+objNum+" in object stream");
-                    }
+                    readLine();
                 }
                 objectCounter++;
             }
