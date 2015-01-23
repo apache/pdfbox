@@ -29,6 +29,6 @@ public interface ColorSpaceHelper
      * Process the ColorSpace validation.
      * 
      */
-    public void validate() throws ValidationException;
+    void validate() throws ValidationException;
 
 }
