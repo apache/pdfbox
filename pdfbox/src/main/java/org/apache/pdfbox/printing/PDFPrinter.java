@@ -16,11 +16,6 @@
  */
 package org.apache.pdfbox.printing;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
-
-import javax.print.attribute.PrintRequestAttributeSet;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -35,6 +30,10 @@ import java.awt.print.PrinterException;
 import java.awt.print.PrinterIOException;
 import java.awt.print.PrinterJob;
 import java.io.IOException;
+import javax.print.attribute.PrintRequestAttributeSet;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
 /**
@@ -280,7 +279,7 @@ public class PDFPrinter
     /**
      * Returns the Pageable instance used in this class. Can be overridden by subclasses.
      */
-    public PDFPageable getPageable()
+    public Pageable getPageable()
     {
       return new PDFPageable();
     }
