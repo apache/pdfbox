@@ -23,7 +23,11 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.pdmodel.graphics.color.PDGamma;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 
 /**
@@ -91,12 +95,19 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
      * 
      * @return the border color.
      */
-    public PDGamma getBorderColour()
+    public PDColor getBorderColour()
     {
         COSBase c = this.getDictionary().getItem(COSName.getPDFName("BC"));
         if (c instanceof COSArray)
         {
-            return new PDGamma((COSArray) c);
+            PDColorSpace colorSpace = null;
+            switch (((COSArray) c).size())
+            {
+                case 1: colorSpace = PDDeviceGray.INSTANCE; break;
+                case 3: colorSpace = PDDeviceRGB.INSTANCE; break;
+                case 4: colorSpace = PDDeviceCMYK.INSTANCE; break;
+            }
+            return new PDColor((COSArray) c, colorSpace);
         }
         return null;
     }
@@ -106,9 +117,9 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
      * 
      * @param c the border color
      */
-    public void setBorderColour(PDGamma c)
+    public void setBorderColour(PDColor c)
     {
-        this.getDictionary().setItem("BC", c);
+        this.getDictionary().setItem("BC", c.toCOSArray());
     }
 
     /**
@@ -116,12 +127,19 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
      * 
      * @return the background color.
      */
-    public PDGamma getBackground()
+    public PDColor getBackground()
     {
         COSBase c = this.getDictionary().getItem(COSName.getPDFName("BG"));
         if (c instanceof COSArray)
         {
-            return new PDGamma((COSArray) c);
+            PDColorSpace colorSpace = null;
+            switch (((COSArray) c).size())
+            {
+                case 1: colorSpace = PDDeviceGray.INSTANCE; break;
+                case 3: colorSpace = PDDeviceRGB.INSTANCE; break;
+                case 4: colorSpace = PDDeviceCMYK.INSTANCE; break;
+            }
+            return new PDColor((COSArray) c, colorSpace);
         }
         return null;
     }
@@ -131,9 +149,9 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
      * 
      * @param c the background color
      */
-    public void setBackground(PDGamma c)
+    public void setBackground(PDColor c)
     {
-        this.getDictionary().setItem("BG", c);
+        this.getDictionary().setItem("BG", c.toCOSArray());
     }
 
     /**

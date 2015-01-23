@@ -20,7 +20,8 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.graphics.color.PDGamma;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 
 /**
  * This is the class that represents a line annotation.
@@ -249,33 +250,29 @@ public class PDAnnotationLine extends PDAnnotationMarkup
     }
 
     /**
-     * This will set interior colour of the line endings defined in the LE
-     * entry. Colour is in DeviceRGB colourspace.
+     * This will set interior color of the line endings defined in the LE
+     * entry. color is in DeviceRGB color space.
      *
-     * @param ic
-     *            colour in the DeviceRGB colourspace.
-     *
+     * @param ic color in the DeviceRGB color space.
      */
-    public void setInteriorColour( PDGamma ic )
+    public void setInteriorColor( PDColor ic )
     {
-        getDictionary().setItem( "IC", ic );
+        getDictionary().setItem( "IC", ic.toCOSArray() );
     }
 
     /**
-     * This will retrieve the interior colour of the line endings defined in the
-     * LE entry. Colour is in DeviceRGB colourspace.
+     * This will retrieve the interior color of the line endings defined in the
+     * LE entry. color is in DeviceRGB color space.
      *
-     *
-     * @return PDGamma object representing the colour.
-     *
+     * @return object representing the color.
      */
-    public PDGamma getInteriorColour()
+    public PDColor getInteriorColor()
     {
 
         COSArray ic = (COSArray) getDictionary().getDictionaryObject( "IC" );
         if (ic != null)
         {
-            return new PDGamma( ic );
+            return new PDColor( ic, PDDeviceRGB.INSTANCE );
         }
         else
         {
