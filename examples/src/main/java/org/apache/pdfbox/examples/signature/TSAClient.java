@@ -45,7 +45,7 @@ import org.bouncycastle.tsp.TimeStampToken;
  */
 public class TSAClient
 {
-    private static final Log log = LogFactory.getLog(TSAClient.class);
+    private static final Log LOG = LogFactory.getLog(TSAClient.class);
 
     private final URL url;
     private final String username;
@@ -116,7 +116,7 @@ public class TSAClient
     // throws IOException if a connection to the TSA cannot be established
     private byte[] getTSAResponse(byte[] request) throws IOException
     {
-        log.debug("Opening connection to TSA server");
+        LOG.debug("Opening connection to TSA server");
 
         // todo: support proxy servers
         URLConnection connection = url.openConnection();
@@ -124,14 +124,11 @@ public class TSAClient
         connection.setDoInput(true);
         connection.setRequestProperty("Content-Type", "application/timestamp-query");
 
-        log.debug("Established connection to TSA server");
+        LOG.debug("Established connection to TSA server");
 
-        if (username != null && password != null)
+        if (username != null && password != null && !username.isEmpty() && !password.isEmpty())
         {
-            if (!username.isEmpty() && !password.isEmpty())
-            {
-                connection.setRequestProperty(username, password);
-            }
+            connection.setRequestProperty(username, password);
         }
 
         // read response
@@ -146,7 +143,7 @@ public class TSAClient
             IOUtils.closeQuietly(output);
         }
 
-        log.debug("Waiting for response from TSA server");
+        LOG.debug("Waiting for response from TSA server");
 
         InputStream input = null;
         byte[] response;
@@ -160,7 +157,7 @@ public class TSAClient
             IOUtils.closeQuietly(input);
         }
 
-        log.debug("Received response from TSA server");
+        LOG.debug("Received response from TSA server");
 
         return response;
     }
