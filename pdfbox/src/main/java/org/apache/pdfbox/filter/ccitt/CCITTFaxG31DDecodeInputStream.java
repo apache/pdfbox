@@ -315,10 +315,8 @@ public final class CCITTFaxG31DDecodeInputStream extends InputStream
     /** Interface for code words. */
     private interface CodeWord
     {
-
-        public abstract int getType();
-        public abstract int execute(CCITTFaxG31DDecodeInputStream decoder) throws IOException;
-
+        int getType();
+        int execute(CCITTFaxG31DDecodeInputStream decoder) throws IOException;
     }
 
     /** Non-leaf nodes that hold a child node for both the 0 and 1 cases for the lookup tree. */
