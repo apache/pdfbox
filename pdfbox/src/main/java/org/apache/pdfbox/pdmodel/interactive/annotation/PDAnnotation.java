@@ -17,7 +17,6 @@
 package org.apache.pdfbox.pdmodel.interactive.annotation;
 
 import java.io.IOException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
@@ -28,7 +27,8 @@ import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.graphics.color.PDGamma;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 
 /**
  * A PDF annotation.
@@ -617,7 +617,7 @@ public abstract class PDAnnotation implements COSObjectable
     }
 
     /**
-     * This will set the colour used in drawing various elements. As of PDF 1.6 these are : Background of icon when
+     * This will set the color used in drawing various elements. As of PDF 1.6 these are : Background of icon when
      * closed Title bar of popup window Border of a link annotation
      * 
      * Colour is in DeviceRGB colourspace
@@ -625,13 +625,13 @@ public abstract class PDAnnotation implements COSObjectable
      * @param c colour in the DeviceRGB colourspace
      * 
      */
-    public void setColour(PDGamma c)
+    public void setColor(PDColor c)
     {
-        getDictionary().setItem(COSName.C, c);
+        getDictionary().setItem(COSName.C, c.toCOSArray());
     }
 
     /**
-     * This will retrieve the colour used in drawing various elements. As of PDF 1.6 these are : Background of icon when
+     * This will retrieve the color used in drawing various elements. As of PDF 1.6 these are : Background of icon when
      * closed Title bar of popup window Border of a link annotation
      * 
      * Colour is in DeviceRGB colourspace
@@ -639,12 +639,12 @@ public abstract class PDAnnotation implements COSObjectable
      * @return PDGamma object representing the colour
      * 
      */
-    public PDGamma getColour()
+    public PDColor getColor()
     {
         COSBase obj = getDictionary().getDictionaryObject(COSName.C);
         if (obj instanceof COSArray)
         {
-            return new PDGamma((COSArray) obj);
+            return new PDColor((COSArray) obj, PDDeviceRGB.INSTANCE);
         }
         else
         {
