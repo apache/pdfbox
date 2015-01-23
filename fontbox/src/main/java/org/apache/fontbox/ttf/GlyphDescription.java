@@ -33,49 +33,49 @@ public interface GlyphDescription
      * @param i the number of the contour
      * @return the index of the ending point of the given contour
      */
-    public int getEndPtOfContours(int i);
+    int getEndPtOfContours(int i);
     
     /**
      * Returns the flags of the given point.
      * @param i the given point
      * @return the flags value for the given point
      */
-    public byte getFlags(int i);
+    byte getFlags(int i);
     
     /**
      * Returns the x coordinate of the given point.
      * @param i the given point
      * @return the x coordinate value for the given point
      */
-    public short getXCoordinate(int i);
+    short getXCoordinate(int i);
 
     /**
      * Returns the y coordinate of the given point.
      * @param i the given point
      * @return the y coordinate value for the given point
      */
-    public short getYCoordinate(int i);
+    short getYCoordinate(int i);
 
     /**
      * Returns whether this point is a composite or not.
      * @return true if this point is a composite
      */
-    public boolean isComposite();
+    boolean isComposite();
     
     /**
      * Returns the number of points.
      * @return the number of points
      */
-    public int getPointCount();
+    int getPointCount();
     
     /**
      * Returns the number of contours.
      * @return the number of contours
      */
-    public int getContourCount();
+    int getContourCount();
     
     /**
      * Resolve all parts of an composite glyph.
      */
-    public void resolve(); 
+    void resolve(); 
 }
