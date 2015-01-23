@@ -84,13 +84,10 @@ public class XObjImageValidator extends AbstractXObjValidator
      */
     protected void checkInterpolate() throws ValidationException
     {
-        if (this.xobject.getItem("Interpolate") != null)
+        if (this.xobject.getBoolean("Interpolate", true))
         {
-            if (this.xobject.getBoolean("Interpolate", true))
-            {
-                context.addValidationError(new ValidationError(ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY,
-                        "Unexpected 'true' value for 'Interpolate' Key"));
-            }
+            context.addValidationError(new ValidationError(ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY,
+                    "Unexpected 'true' value for 'Interpolate' Key"));
         }
     }
 
@@ -156,7 +153,7 @@ public class XObjImageValidator extends AbstractXObjValidator
     private boolean isImageMaskTrue()
     {
         COSBase imgMask = this.xobject.getItem("ImageMask");
-        if (imgMask != null && imgMask instanceof COSBoolean)
+        if (imgMask instanceof COSBoolean)
         {
             return ((COSBoolean) imgMask).getValue();
         }
