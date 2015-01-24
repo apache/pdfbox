@@ -191,7 +191,7 @@ public class PDFToImage
             {
                 document = PDDocument.load(new File(pdfFile), password);
 
-                ImageType imageType;
+                ImageType imageType = null;
                 if ("bilevel".equalsIgnoreCase(color))
                 {
                     imageType = ImageType.BINARY;
@@ -208,7 +208,8 @@ public class PDFToImage
                 {
                     imageType = ImageType.ARGB;
                 }
-                else
+                
+                if (imageType == null)
                 {
                     System.err.println( "Error: Invalid color." );
                     System.exit( 2 );
