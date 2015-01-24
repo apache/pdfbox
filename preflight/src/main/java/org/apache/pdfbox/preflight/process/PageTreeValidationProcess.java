@@ -50,7 +50,7 @@ public class PageTreeValidationProcess extends AbstractProcess
         }
         else
         {
-            context.addValidationError(new ValidationError(ERROR_SYNTAX_NOCATALOG, "There are no Catalog entry in the Document."));
+            context.addValidationError(new ValidationError(ERROR_SYNTAX_NOCATALOG, "There are no Catalog entry in the Document"));
         }
     }
 
