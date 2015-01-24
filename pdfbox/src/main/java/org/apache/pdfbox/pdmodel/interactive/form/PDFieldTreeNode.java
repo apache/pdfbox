@@ -613,28 +613,28 @@ public abstract class PDFieldTreeNode implements COSObjectable
                 {
                     continue;
                 }
-                COSDictionary parentDictionary = (COSDictionary) kidDictionary.getDictionaryObject(
-                        COSName.PARENT, COSName.P);
-                if (kidDictionary.getDictionaryObject(COSName.FT) != null
-                        || (parentDictionary != null && parentDictionary.getDictionaryObject(COSName.FT) != null))
+                
+                // Decide if the kid is field or a widget annotation.
+                // A field dictionary that does not have a partial field name (T entry)
+                // of its own shall not be considered a field but simply a Widget annotation. 
+                
+                if (kidDictionary.getDictionaryObject(COSName.T) != null)
                 {
-                    PDFieldTreeNode field = PDFieldTreeNode.createField(acroForm, kidDictionary, this);
-                    if (field != null)
+                    COSDictionary parentDictionary = (COSDictionary) kidDictionary.getDictionaryObject(
+                            COSName.PARENT, COSName.P);
+                    if (kidDictionary.getDictionaryObject(COSName.FT) != null
+                            || (parentDictionary != null && parentDictionary.getDictionaryObject(COSName.FT) != null))
                     {
-                        kidsList.add(field);
+                        PDFieldTreeNode field = PDFieldTreeNode.createField(acroForm, kidDictionary, this);
+                        if (field != null)
+                        {
+                            kidsList.add(field);
+                        }
                     }
-                }
-                else if ("Widget".equals(kidDictionary.getNameAsString(COSName.SUBTYPE)))
-                {
-                    kidsList.add(new PDAnnotationWidget(kidDictionary));
                 }
                 else
                 {
-                    PDFieldTreeNode field = PDFieldTreeNode.createField(acroForm, kidDictionary, this);
-                    if (field != null)
-                    {
-                        kidsList.add(field);
-                    }
+                    kidsList.add(new PDAnnotationWidget(kidDictionary));
                 }
             }
             retval = new COSArrayList<COSObjectable>(kidsList, kids);
@@ -831,7 +831,7 @@ public abstract class PDFieldTreeNode implements COSObjectable
             // BJL: I have found that the radio flag bit is not always set
             // and that sometimes there is just a kids dictionary.
             // so, if there is a kids dictionary then it must be a radio button group.
-            if ((flags & PDButton.FLAG_RADIO) != 0 || field.getDictionaryObject(COSName.KIDS) != null)
+            if ((flags & PDButton.FLAG_RADIO) != 0)
             {
                 return new PDRadioButton(form, field, parentNode);
             }
