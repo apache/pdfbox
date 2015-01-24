@@ -159,13 +159,13 @@ public class PDOutlineNode implements COSObjectable
      */
     public PDOutlineItem getFirstChild()
     {
-        PDOutlineItem last = null;
-        COSDictionary lastDic = (COSDictionary)node.getDictionaryObject( "First" );
-        if( lastDic != null )
+        PDOutlineItem first = null;
+        COSDictionary firstDic = (COSDictionary)node.getDictionaryObject( "First" );
+        if( firstDic != null )
         {
-            last = new PDOutlineItem( lastDic );
+            first = new PDOutlineItem( firstDic );
         }
-        return last;
+        return first;
     }
 
     /**
