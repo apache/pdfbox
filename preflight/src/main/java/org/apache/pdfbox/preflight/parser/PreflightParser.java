@@ -67,7 +67,7 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdfparser.BaseParser;
-import org.apache.pdfbox.pdfparser.NonSequentialPDFParser;
+import org.apache.pdfbox.pdfparser.COSParser;
 import org.apache.pdfbox.pdfparser.PDFObjectStreamParser;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdfparser.XrefTrailerResolver.XRefType;
@@ -420,7 +420,7 @@ public class PreflightParser extends PDFParser
     }
 
     /**
-     * Wraps the {@link NonSequentialPDFParser#parseCOSStream} to check rules on 'stream' and 'endstream' keywords.
+     * Wraps the {@link COSParser#parseCOSStream} to check rules on 'stream' and 'endstream' keywords.
      * {@link #checkStreamKeyWord()} and {@link #checkEndstreamKeyWord()}
      */
     @Override

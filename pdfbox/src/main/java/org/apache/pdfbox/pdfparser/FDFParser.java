@@ -34,7 +34,7 @@ import org.apache.pdfbox.io.PushBackInputStream;
 import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 
-public class FDFParser extends NonSequentialPDFParser
+public class FDFParser extends COSParser
 {
     private static final Log LOG = LogFactory.getLog(FDFParser.class);
 

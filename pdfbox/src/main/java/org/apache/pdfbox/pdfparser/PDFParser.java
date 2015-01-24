@@ -41,7 +41,7 @@ import org.apache.pdfbox.pdmodel.encryption.PDEncryption;
 import org.apache.pdfbox.pdmodel.encryption.PublicKeyDecryptionMaterial;
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 
-public class PDFParser extends NonSequentialPDFParser
+public class PDFParser extends COSParser
 {
     private static final Log LOG = LogFactory.getLog(PDFParser.class);
 

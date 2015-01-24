@@ -63,7 +63,7 @@ public class TestPDFParser
         {
             public boolean accept(File dir, String name)
             {
-                return name.startsWith(NonSequentialPDFParser.TMP_FILE_PREFIX)
+                return name.startsWith(COSParser.TMP_FILE_PREFIX)
                         && name.endsWith("pdf");
             }
         });
