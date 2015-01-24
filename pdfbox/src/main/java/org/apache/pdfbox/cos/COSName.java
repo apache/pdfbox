@@ -283,6 +283,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName L = new COSName("L");
     public static final COSName LAB = new COSName("Lab");
     public static final COSName LANG = new COSName("Lang");
+    public static final COSName LAST = new COSName("Last");
     public static final COSName LAST_CHAR = new COSName("LastChar");
     public static final COSName LAST_MODIFIED = new COSName("LastModified");
     public static final COSName LC = new COSName("LC");
