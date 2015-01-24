@@ -38,6 +38,7 @@ import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
 import org.apache.pdfbox.pdfparser.BaseParser;
 import org.apache.pdfbox.pdfparser.NonSequentialPDFParser;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -786,7 +787,7 @@ public class PDDocument implements Closeable
     public static PDDocument load(File file, String password, InputStream keyStore, String alias,
             boolean useScratchFiles) throws IOException
     {
-        NonSequentialPDFParser parser = new NonSequentialPDFParser(file, password, keyStore, alias, useScratchFiles);
+        PDFParser parser = new PDFParser(file, password, keyStore, alias, useScratchFiles);
         parser.parse();
         PDDocument doc = parser.getPDDocument();
         doc.incrementalFile = file;
@@ -872,7 +873,7 @@ public class PDDocument implements Closeable
     public static PDDocument load(InputStream input, String password, InputStream keyStore, 
             String alias, boolean useScratchFiles) throws IOException
     {
-        NonSequentialPDFParser parser = new NonSequentialPDFParser(input, password, keyStore, alias, useScratchFiles);
+        PDFParser parser = new PDFParser(input, password, keyStore, alias, useScratchFiles);
         parser.parse();
         return parser.getPDDocument();
     }

@@ -32,7 +32,7 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TestNonSequentialPDFParser
+public class TestPDFParser
 {
 
     private static final String PATH_OF_PDF = "src/test/resources/org/apache/pdfbox/pdfparser/gdb-refcard.pdf";
@@ -77,52 +77,51 @@ public class TestNonSequentialPDFParser
     }
 
     @Test
-    public void testNonSequentialPDFParserString() throws Exception
+    public void testPDFParserString() throws Exception
     {
-        NonSequentialPDFParser nsp = new NonSequentialPDFParser(PATH_OF_PDF);
-        executeParserTest(nsp);
+        PDFParser pdfParser = new PDFParser(PATH_OF_PDF);
+        executeParserTest(pdfParser);
     }
 
     @Test
-    public void testNonSequentialPDFParserFile() throws IOException
+    public void testPDFParserFile() throws IOException
     {
-        NonSequentialPDFParser nsp = new NonSequentialPDFParser(new File(PATH_OF_PDF));
-        executeParserTest(nsp);
+        PDFParser pdfParser = new PDFParser(new File(PATH_OF_PDF));
+        executeParserTest(pdfParser);
     }
 
     @Test
-    public void testNonSequentialPDFParserInputStream() throws IOException
+    public void testPDFParserInputStream() throws IOException
     {
-        NonSequentialPDFParser nsp = new NonSequentialPDFParser(new FileInputStream(PATH_OF_PDF));
-        executeParserTest(nsp);
+        PDFParser pdfParser = new PDFParser(new FileInputStream(PATH_OF_PDF));
+        executeParserTest(pdfParser);
     }
 
     @Test
-    public void testNonSequentialPDFParserStringScratchFile() throws Exception
+    public void testPDFParserStringScratchFile() throws Exception
     {
-        NonSequentialPDFParser nsp = new NonSequentialPDFParser(PATH_OF_PDF, true);
-        executeParserTest(nsp);
+        PDFParser pdfParser = new PDFParser(PATH_OF_PDF, true);
+        executeParserTest(pdfParser);
     }
 
     @Test
-    public void testNonSequentialPDFParserFileScratchFile() throws IOException
+    public void testPDFParserFileScratchFile() throws IOException
     {
-        NonSequentialPDFParser nsp = new NonSequentialPDFParser(new File(PATH_OF_PDF), true);
-        executeParserTest(nsp);
+        PDFParser pdfParser = new PDFParser(new File(PATH_OF_PDF), true);
+        executeParserTest(pdfParser);
     }
 
     @Test
-    public void testNonSequentialPDFParserInputStreamScratchFile() throws IOException
+    public void testPDFParserInputStreamScratchFile() throws IOException
     {
-        NonSequentialPDFParser nsp = new NonSequentialPDFParser(new FileInputStream(PATH_OF_PDF),
-                true);
-        executeParserTest(nsp);
+        PDFParser pdfParser = new PDFParser(new FileInputStream(PATH_OF_PDF), true);
+        executeParserTest(pdfParser);
     }
 
-    private void executeParserTest(NonSequentialPDFParser nsp) throws IOException
+    private void executeParserTest(PDFParser pdfParser) throws IOException
     {
-        nsp.parse();
-        assertNotNull(nsp.getDocument());
+        pdfParser.parse();
+        assertNotNull(pdfParser.getDocument());
         // number tmp file must be the same
         assertEquals(numberOfTmpFiles, getNumberOfTempFile());
     }

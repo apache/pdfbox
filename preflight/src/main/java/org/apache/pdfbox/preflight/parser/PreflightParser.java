@@ -69,6 +69,7 @@ import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdfparser.BaseParser;
 import org.apache.pdfbox.pdfparser.NonSequentialPDFParser;
 import org.apache.pdfbox.pdfparser.PDFObjectStreamParser;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdfparser.XrefTrailerResolver.XRefType;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.persistence.util.COSObjectKey;
@@ -81,7 +82,7 @@ import org.apache.pdfbox.preflight.ValidationResult;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.SyntaxValidationException;
 
-public class PreflightParser extends NonSequentialPDFParser
+public class PreflightParser extends PDFParser
 {
     /**
      * Define a one byte encoding that hasn't specific encoding in UTF-8 charset. Avoid unexpected error when the
@@ -237,10 +238,6 @@ public class PreflightParser extends NonSequentialPDFParser
     protected void initialParse() throws IOException
     {
         super.initialParse();
-
-        // fill xref table
-        document.addXRefTable(xrefTrailerResolver.getXrefTable());
-
         // For each ObjectKey, we check if the object has been loaded
         // useful for linearized PDFs
         Map<COSObjectKey, Long> xrefTable = document.getXrefTable();
@@ -784,6 +781,7 @@ public class PreflightParser extends NonSequentialPDFParser
                     // parse object stream
                     PDFObjectStreamParser parser = new PDFObjectStreamParser((COSStream) objstmBaseObj, document);
                     parser.parse();
+                    parser.close();
 
                     // get set of object numbers referenced for this object stream
                     final Set<Long> refObjNrs = xrefTrailerResolver.getContainedObjectNumbers(objstmObjNr);
