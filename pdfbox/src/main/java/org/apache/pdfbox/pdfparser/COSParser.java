@@ -58,7 +58,7 @@ import org.apache.pdfbox.persistence.util.COSObjectKey;
  * This class is a much enhanced version of <code>QuickParser</code> presented in <a
  * href="https://issues.apache.org/jira/browse/PDFBOX-1104">PDFBOX-1104</a> by Jeremy Villalobos.
  */
-public class NonSequentialPDFParser extends BaseParser
+public class COSParser extends BaseParser
 {
     private static final String PDF_HEADER = "%PDF-";
     private static final String FDF_HEADER = "%FDF-";
@@ -140,7 +140,7 @@ public class NonSequentialPDFParser extends BaseParser
      */
     private int readTrailBytes = DEFAULT_TRAIL_BYTECOUNT; 
 
-    private static final Log LOG = LogFactory.getLog(NonSequentialPDFParser.class);
+    private static final Log LOG = LogFactory.getLog(COSParser.class);
 
     /** 
      * Collects all Xref/trailer objects and resolves them into single
@@ -160,7 +160,7 @@ public class NonSequentialPDFParser extends BaseParser
      * @param input inputStream of the pdf to be read
      * @throws IOException if something went wrong
      */
-    public NonSequentialPDFParser(InputStream input) throws IOException
+    public COSParser(InputStream input) throws IOException
     {
         super(input);
     }
