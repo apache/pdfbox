@@ -527,31 +527,31 @@ public abstract class PDField implements COSObjectable
             for (int i = 0; i < kids.size(); i++)
             {
                 COSDictionary kidDictionary = (COSDictionary) kids.getObject(i);
+                
                 if (kidDictionary == null)
                 {
-                    continue;
+                   continue;
                 }
-                COSDictionary parent = (COSDictionary) kidDictionary.getDictionaryObject(COSName.PARENT, COSName.P);
-                if (kidDictionary.getDictionaryObject(COSName.FT) != null
-                        || (parent != null && parent.getDictionaryObject(COSName.FT) != null))
+                
+                // Decide if the kid is field or a widget annotation.
+                // A field dictionary that does not have a partial field name (T entry)
+                // of its own shall not be considered a field but simply a Widget annotation.
+                if (kidDictionary.getDictionaryObject(COSName.T) != null)
                 {
-                    PDField field = PDFieldFactory.createField(acroForm, kidDictionary);
-                    if (field != null)
+                    COSDictionary parent = (COSDictionary) kidDictionary.getDictionaryObject(COSName.PARENT, COSName.P);
+                    if (kidDictionary.getDictionaryObject(COSName.FT) != null
+                            || (parent != null && parent.getDictionaryObject(COSName.FT) != null))
                     {
-                        kidsList.add(field);
+                        PDField field = PDFieldFactory.createField(acroForm, kidDictionary);
+                        if (field != null)
+                        {
+                            kidsList.add(field);
+                        }
                     }
                 }
                 else if ("Widget".equals(kidDictionary.getNameAsString(COSName.SUBTYPE)))
                 {
                     kidsList.add(new PDAnnotationWidget(kidDictionary));
-                }
-                else
-                {
-                    PDField field = PDFieldFactory.createField(acroForm, kidDictionary);
-                    if (field != null)
-                    {
-                        kidsList.add(field);
-                    }
                 }
             }
             retval = new COSArrayList<COSObjectable>(kidsList, kids);

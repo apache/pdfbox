@@ -68,12 +68,7 @@ public class PDFieldFactory
         if( isButton(pdField) )
         {
             int flags = pdField.getFieldFlags();
-            //BJL, I have found that the radio flag bit is not always set
-            //and that sometimes there is just a kids dictionary.
-            //so, if there is a kids dictionary then it must be a radio button
-            //group.
-            COSArray kids = (COSArray)field.getDictionaryObject( COSName.getPDFName( "Kids" ) );
-            if( kids != null || isRadio(flags) )
+            if(isRadio(flags) )
             {
                 pdField = new PDRadioCollection( acroForm, field );
             }
