@@ -155,10 +155,11 @@ public class NonSequentialPDFParser extends BaseParser
     private InputStream keyStoreInputStream = null;
     private String keyAlias = null;
     private String password = "";
-    private int readTrailBytes = DEFAULT_TRAIL_BYTECOUNT; // how many trailing
-                                                          // bytes to read for
-                                                          // EOF marker
-
+    
+    /**
+     *  how many trailing bytes to read for EOF marker.
+     */
+    private int readTrailBytes = DEFAULT_TRAIL_BYTECOUNT; 
     /**
      * If <code>true</code> object references in catalog are not followed; pro: page objects will be only parsed when
      * needed; cons: some information of catalog might not be available (e.g. outline). Catalog parsing without pages is
@@ -1086,16 +1087,13 @@ public class NonSequentialPDFParser extends BaseParser
             throw new IOException("Page " + pageNr + " not found.");
         }
 
-        // parse all objects necessary to load page.
         COSDictionary pageDict = (COSDictionary) pageObj.getObject();
 
+        // parse all objects necessary to load page.
         if (parseMinimalCatalog && (!allPagesParsed))
         {
-            // parse page resources since we did not do this on start
-            COSDictionary resDict = (COSDictionary) pageDict.getDictionaryObject(COSName.RESOURCES);
-            parseDictObjects(resDict);
+            parseDictObjects(pageDict);
         }
-
         return new PDPage(pageDict);
     }
 
