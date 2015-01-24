@@ -40,7 +40,6 @@ public class PDFPagePanel extends JPanel
     private static final long serialVersionUID = -4629033339560890669L;
 
     private PDFRenderer renderer;
-    private PDPage page;
     private int pageNum;
     private Dimension pageDimension = null;
     private Dimension drawDimension = null;
@@ -56,7 +55,6 @@ public class PDFPagePanel extends JPanel
     public void setPage(PDFRenderer renderer, PDPage page, int pageNum) throws IOException
     {
         this.renderer = renderer;
-        this.page = page;
         this.pageNum = pageNum;
 
         PDRectangle cropBox = page.getCropBox();
