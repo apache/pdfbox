@@ -31,7 +31,7 @@ import java.io.Writer;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdfparser.NonSequentialPDFParser;
+import org.apache.pdfbox.pdfparser.FDFParser;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -167,7 +167,9 @@ public class FDFDocument implements Closeable
      */
     public static FDFDocument load( String filename ) throws IOException
     {
-        return load( new BufferedInputStream( new FileInputStream( filename ) ) );
+        FDFParser parser = new FDFParser(filename);
+        parser.parse();
+        return parser.getFDFDocument();
     }
 
     /**
@@ -181,7 +183,9 @@ public class FDFDocument implements Closeable
      */
     public static FDFDocument load( File file ) throws IOException
     {
-        return load( new BufferedInputStream( new FileInputStream( file ) ) );
+        FDFParser parser = new FDFParser(file);
+        parser.parse();
+        return parser.getFDFDocument();
     }
 
     /**
@@ -195,7 +199,7 @@ public class FDFDocument implements Closeable
      */
     public static FDFDocument load( InputStream input ) throws IOException
     {
-        NonSequentialPDFParser parser = new NonSequentialPDFParser(input, false);
+        FDFParser parser = new FDFParser(input);
         parser.parse();
         return parser.getFDFDocument();
     }

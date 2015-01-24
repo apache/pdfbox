@@ -16,14 +16,9 @@
  */
 package org.apache.pdfbox.pdfparser;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -50,24 +45,12 @@ import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.io.PushBackInputStream;
-import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
 import org.apache.pdfbox.pdfparser.XrefTrailerResolver.XRefType;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
-import org.apache.pdfbox.pdmodel.encryption.DecryptionMaterial;
-import org.apache.pdfbox.pdmodel.encryption.PDEncryption;
-import org.apache.pdfbox.pdmodel.encryption.PublicKeyDecryptionMaterial;
 import org.apache.pdfbox.pdmodel.encryption.SecurityHandler;
-import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
-import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 import org.apache.pdfbox.persistence.util.COSObjectKey;
 
 /**
  * PDF-Parser which first reads startxref and xref tables in order to know valid objects and parse only these objects.
- * Thus it is closer to a conforming parser than the sequential reading of {@link PDFParser}.
  * 
  * First {@link #parse()} must be called before page objects
  * can be retrieved, e.g. {@link #getPDDocument()}.
@@ -90,7 +73,7 @@ public class NonSequentialPDFParser extends BaseParser
     private static final long MINIMUM_SEARCH_OFFSET = 6;
     
     private static final int X = 'x';
-    
+
     /**
      * Only parse the PDF file minimally allowing access to basic information.
      */
@@ -104,12 +87,10 @@ public class NonSequentialPDFParser extends BaseParser
     public static final String SYSPROP_EOFLOOKUPRANGE =
             "org.apache.pdfbox.pdfparser.nonSequentialPDFParser.eofLookupRange";
 
-    private static final InputStream EMPTY_INPUT_STREAM = new ByteArrayInputStream(new byte[0]);
-
     /**
      * How many trailing bytes to read for EOF marker.
      */
-    protected static final int DEFAULT_TRAIL_BYTECOUNT = 2048;
+    private static final int DEFAULT_TRAIL_BYTECOUNT = 2048;
     /**
      * EOF-marker.
      */
@@ -130,15 +111,18 @@ public class NonSequentialPDFParser extends BaseParser
     private static final char[] TRAILER_MARKER = new char[] { 't', 'r', 'a', 'i', 'l', 'e', 'r' };
     
     private long trailerOffset;
-    private final File pdfFile;
-    private long fileLen;
-    private final RandomAccessBufferedFileInputStream raStream;
+    
+    /**
+     * file length.
+     */
+    protected long fileLen;
 
     /**
      * is parser using auto healing capacity ?
      */
     private boolean isLenient = true;
 
+    protected boolean initialParseDone = false;
     /**
      * Contains all found objects of a brute force search.
      */
@@ -151,28 +135,12 @@ public class NonSequentialPDFParser extends BaseParser
      */
     protected SecurityHandler securityHandler = null;
 
-    private AccessPermission accessPermission;
-    private InputStream keyStoreInputStream = null;
-    private String keyAlias = null;
-    private String password = "";
-    
     /**
      *  how many trailing bytes to read for EOF marker.
      */
     private int readTrailBytes = DEFAULT_TRAIL_BYTECOUNT; 
-    /**
-     * If <code>true</code> object references in catalog are not followed; pro: page objects will be only parsed when
-     * needed; cons: some information of catalog might not be available (e.g. outline). Catalog parsing without pages is
-     * not an option since a number of entries will also refer to page objects (like OpenAction).
-     */
-    private final boolean parseMinimalCatalog = "true".equals(System.getProperty(SYSPROP_PARSEMINIMAL));
-
-    private boolean initialParseDone = false;
-    private boolean allPagesParsed = false;
 
     private static final Log LOG = LogFactory.getLog(NonSequentialPDFParser.class);
-
-    private boolean isFDFDocment = false;
 
     /** 
      * Collects all Xref/trailer objects and resolves them into single
@@ -182,285 +150,21 @@ public class NonSequentialPDFParser extends BaseParser
 
 
     /**
-     * <code>true</code> if the NonSequentialPDFParser is initialized by a InputStream, in this case a temporary file is
-     * created. At the end of the {@linkplain #parse()} method,the temporary file will be deleted.
-     */
-    private boolean isTmpPDFFile = false;
-
-    /**
      * The prefix for the temp file being used. 
      */
     public static final String TMP_FILE_PREFIX = "tmpPDF";
     
     /**
-     * Constructs parser for given file using memory buffer.
-     * 
-     * @param filename the filename of the pdf to be parsed
-     * 
-     * @throws IOException If something went wrong.
-     */
-    public NonSequentialPDFParser(String filename) throws IOException
-    {
-        this(new File(filename), null, false);
-    }
-
-    /**
-     * Constructs parser for given file using memory buffer.
-     * 
-     * @param filename the filename of the pdf to be parsed.
-     * @param useScratchFiles use a buffer for temporary storage.
-     * 
-     * @throws IOException If something went wrong.
-     */
-    public NonSequentialPDFParser(String filename, boolean useScratchFiles) throws IOException
-    {
-        this(new File(filename), null, useScratchFiles);
-    }
-
-    /**
-     * Constructs parser for given file using given buffer for temporary
-     * storage.
-     * 
-     * @param file the pdf to be parsed
-     * 
-     * @throws IOException If something went wrong.
-     */
-    public NonSequentialPDFParser(File file) throws IOException
-    {
-        this(file, "", false);
-    }
-
-    /**
-     * Constructs parser for given file using given buffer for temporary
-     * storage.
-     * 
-     * @param file the pdf to be parsed
-     * @param useScratchFiles use a buffer for temporary storage.
-     * 
-     * @throws IOException If something went wrong.
-     */
-    public NonSequentialPDFParser(File file, boolean useScratchFiles) throws IOException
-    {
-        this(file, "", useScratchFiles);
-    }
-
-    /**
-     * Constructs parser for given file using given buffer for temporary storage.
-     * 
-     * @param file the pdf to be parsed
-     * @param decryptionPassword password to be used for decryption
-     * 
-     * @throws IOException If something went wrong.
-     */
-    public NonSequentialPDFParser(File file, String decryptionPassword)
-            throws IOException
-    {
-        this (file, decryptionPassword, false);
-    }
-
-    /**
-     * Constructs parser for given file using given buffer for temporary storage.
-     * 
-     * @param file the pdf to be parsed.
-     * @param decryptionPassword password to be used for decryption.
-     * @param useScratchFiles use a buffer for temporary storage.
-     * 
-     * @throws IOException If something went wrong.
-     */
-    public NonSequentialPDFParser(File file, String decryptionPassword, boolean useScratchFiles)
-            throws IOException
-    {
-        this(file, decryptionPassword, null, null, useScratchFiles);
-    }
-
-    /**
-     * Constructs parser for given file using given buffer for temporary storage.
-     * 
-     * @param file the pdf to be parsed.
-     * @param decryptionPassword password to be used for decryption.
-     * @param keyStore key store to be used for decryption when using public key security 
-     * @param alias alias to be used for decryption when using public key security
-     * 
-     * @throws IOException If something went wrong.
-     */
-    public NonSequentialPDFParser(File file, String decryptionPassword, InputStream keyStore, String alias)
-            throws IOException
-    {
-        this(file, decryptionPassword, keyStore, alias, false);
-    }
-
-    /**
-     * Constructs parser for given file using given buffer for temporary storage.
-     * 
-     * @param file the pdf to be parsed.
-     * @param decryptionPassword password to be used for decryption.
-     * @param keyStore key store to be used for decryption when using public key security 
-     * @param alias alias to be used for decryption when using public key security
-     * @param useScratchFiles use a buffer for temporary storage.
-     * 
-     * @throws IOException If something went wrong.
-     */
-    public NonSequentialPDFParser(File file, String decryptionPassword, InputStream keyStore, 
-            String alias, boolean useScratchFiles) throws IOException
-    {
-        super(EMPTY_INPUT_STREAM);
-        pdfFile = file;
-        raStream = new RandomAccessBufferedFileInputStream(pdfFile);
-        password = decryptionPassword;
-        keyStoreInputStream = keyStore;
-        keyAlias = alias;
-        init(useScratchFiles);
-    }
-
-    private void init(boolean useScratchFiles) throws IOException
-    {
-        String eofLookupRangeStr = System.getProperty(SYSPROP_EOFLOOKUPRANGE);
-        if (eofLookupRangeStr != null)
-        {
-            try
-            {
-                setEOFLookupRange(Integer.parseInt(eofLookupRangeStr));
-            }
-            catch (NumberFormatException nfe)
-            {
-                LOG.warn("System property " + SYSPROP_EOFLOOKUPRANGE
-                        + " does not contain an integer value, but: '" + eofLookupRangeStr + "'");
-            }
-        }
-        document = new COSDocument(useScratchFiles);
-        pdfSource = new PushBackInputStream(raStream, 4096);
-    }
-
-    /**
      * Constructor.
      * 
-     * @param input input stream representing the pdf.
-     * @throws IOException If something went wrong.
+     * @param input inputStream of the pdf to be read
+     * @throws IOException if something went wrong
      */
     public NonSequentialPDFParser(InputStream input) throws IOException
     {
-        this(input, "", false);
+        super(input);
     }
 
-    /**
-     * Constructor.
-     * 
-     * @param input input stream representing the pdf.
-     * @param useScratchFiles use a buffer for temporary storage.
-     * 
-     * @throws IOException If something went wrong.
-     */
-    public NonSequentialPDFParser(InputStream input, boolean useScratchFiles) throws IOException
-    {
-        this(input, "", useScratchFiles);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param input input stream representing the pdf.
-     * @param decryptionPassword password to be used for decryption.
-     * @throws IOException If something went wrong.
-     */
-    public NonSequentialPDFParser(InputStream input, String decryptionPassword)
-            throws IOException
-    {
-        this(input, decryptionPassword, false);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param input input stream representing the pdf.
-     * @param decryptionPassword password to be used for decryption.
-     * @param useScratchFiles use a buffer for temporary storage.
-     *
-     * @throws IOException If something went wrong.
-     */
-    public NonSequentialPDFParser(InputStream input, String decryptionPassword, boolean useScratchFiles)
-            throws IOException
-    {
-        this(input, decryptionPassword, null, null, useScratchFiles);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param input input stream representing the pdf.
-     * @param decryptionPassword password to be used for decryption.
-     * @param keyStore key store to be used for decryption when using public key security 
-     * @param alias alias to be used for decryption when using public key security
-     *
-     * @throws IOException If something went wrong.
-     */
-    public NonSequentialPDFParser(InputStream input, String decryptionPassword, InputStream keyStore, String alias)
-            throws IOException
-    {
-        this(input, decryptionPassword, keyStore, alias, false);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param input input stream representing the pdf.
-     * @param decryptionPassword password to be used for decryption.
-     * @param keyStore key store to be used for decryption when using public key security 
-     * @param alias alias to be used for decryption when using public key security
-     * @param useScratchFiles use a buffer for temporary storage.
-     *
-     * @throws IOException If something went wrong.
-     */
-    public NonSequentialPDFParser(InputStream input, String decryptionPassword, InputStream keyStore,
-            String alias, boolean useScratchFiles) throws IOException
-    {
-        super(EMPTY_INPUT_STREAM);
-        pdfFile = createTmpFile(input);
-        raStream = new RandomAccessBufferedFileInputStream(pdfFile);
-        password = decryptionPassword;
-        keyStoreInputStream = keyStore;
-        keyAlias = alias;
-        init(useScratchFiles);
-    }
-
-    /**
-     * Create a temporary file with the input stream. If the creation succeed, the {@linkplain #isTmpPDFFile} is set to
-     * true. This Temporary file will be deleted at end of the parse method
-     * 
-     * @param input
-     * @return the temporary file
-     * @throws IOException If something went wrong.
-     */
-    private File createTmpFile(InputStream input) throws IOException
-    {
-        FileOutputStream fos = null;
-        try
-        {
-            File tmpFile = File.createTempFile(TMP_FILE_PREFIX, ".pdf");
-            fos = new FileOutputStream(tmpFile);
-            IOUtils.copy(input, fos);
-            isTmpPDFFile = true;
-            return tmpFile;
-        }
-        finally
-        {
-            IOUtils.closeQuietly(input);
-            IOUtils.closeQuietly(fos);
-        }
-    }
-
-    /**
-     * This will get the PD document that was parsed.  When you are done with
-     * this document you must call close() on it to release resources.
-     *
-     * @return The document at the PD layer.
-     *
-     * @throws IOException If there is an error getting the document.
-     */
-    public PDDocument getPDDocument() throws IOException
-    {
-        return new PDDocument( getDocument(), this, accessPermission );
-    }
-    
     /**
      * Sets how many trailing bytes of PDF file are searched for EOF marker and 'startxref' marker. If not set we use
      * default value {@link #DEFAULT_TRAIL_BYTECOUNT}.
@@ -484,166 +188,28 @@ public class NonSequentialPDFParser extends BaseParser
         }
     }
 
-    /**
-     * The initial parse will first parse only the trailer, the xrefstart and all xref tables to have a pointer (offset)
-     * to all the pdf's objects. It can handle linearized pdfs, which will have an xref at the end pointing to an xref
-     * at the beginning of the file. Last the root object is parsed.
-     * 
-     * @throws IOException If something went wrong.
-     */
-    protected void initialParse() throws IOException
+    protected COSDictionary searchXref(long startXRefOffset) throws IOException
     {
-        COSDictionary trailer = null;
-        // parse startxref
-        long startXRefOffset = getStartxrefOffset();
-        if (startXRefOffset > 0)
+        // signal start of new XRef
+        xrefTrailerResolver.nextXrefObj( startXRefOffset, XRefType.TABLE );
+        bfSearchForObjects();
+        for (COSObjectKey objectKey : bfSearchCOSObjectKeyOffsets.keySet())
         {
-            trailer = parseXref(startXRefOffset);
+            xrefTrailerResolver.setXRef(objectKey, bfSearchCOSObjectKeyOffsets.get(objectKey));
         }
-        else if (isFDFDocment || isLenient)
+        // parse the last trailer.
+        pdfSource.seek(trailerOffset);
+        if (!parseTrailer())
         {
-            // signal start of new XRef
-            xrefTrailerResolver.nextXrefObj( startXRefOffset, XRefType.TABLE );
-            bfSearchForObjects();
-            for (COSObjectKey objectKey : bfSearchCOSObjectKeyOffsets.keySet())
-            {
-                xrefTrailerResolver.setXRef(objectKey, bfSearchCOSObjectKeyOffsets.get(objectKey));
-            }
-            // parse the last trailer.
-            pdfSource.seek(trailerOffset);
-            if (!parseTrailer())
-            {
-                throw new IOException("Expected trailer object at position: "
-                        + pdfSource.getOffset());
-            }
-            xrefTrailerResolver.setStartxref(startXRefOffset);
-            trailer = xrefTrailerResolver.getCurrentTrailer();
-            document.setTrailer(trailer);
-            document.setIsXRefStream(false);
+            throw new IOException("Expected trailer object at position: "
+                    + pdfSource.getOffset());
         }
-        // ---- prepare decryption if necessary
-        prepareDecryption();
-
-        // PDFBOX-1557 - ensure that all COSObject are loaded in the trailer
-        // PDFBOX-1606 - after securityHandler has been instantiated
-        for (COSBase trailerEntry : trailer.getValues())
-        {
-            if (trailerEntry instanceof COSObject)
-            {
-                COSObject tmpObj = (COSObject) trailerEntry;
-                parseObjectDynamically(tmpObj, false);
-            }
-        }
-        // parse catalog or root object
-        COSObject root = (COSObject) xrefTrailerResolver.getTrailer().getItem(COSName.ROOT);
-
-        if (root == null)
-        {
-            throw new IOException("Missing root object specification in trailer.");
-        }
-
-        COSBase rootObject = parseObjectDynamically(root, false);
-
-        // ---- resolve all objects
-        if (isFDFDocment)
-        {
-            // A FDF doesn't have a catalog, all FDF fields are within the root object
-            if (rootObject instanceof COSDictionary)
-            {
-                parseDictObjects((COSDictionary) rootObject, (COSName[]) null);
-                allPagesParsed = true;
-                document.setDecrypted();
-            }
-        }
-        else if(!parseMinimalCatalog)
-        {
-            COSObject catalogObj = document.getCatalog();
-            if (catalogObj != null && catalogObj.getObject() instanceof COSDictionary)
-            {
-                parseDictObjects((COSDictionary) catalogObj.getObject(), (COSName[]) null);
-                allPagesParsed = true;
-                document.setDecrypted();
-            }
-        }
-
-        // PDFBOX-1922: read the version again now that all objects have been resolved
-        readVersionInTrailer(trailer);
-        getDocument().addXRefTable(xrefTrailerResolver.getXrefTable());
-        initialParseDone = true;
+        xrefTrailerResolver.setStartxref(startXRefOffset);
+        COSDictionary trailer = xrefTrailerResolver.getCurrentTrailer();
+        document.setTrailer(trailer);
+        document.setIsXRefStream(false);
+        return trailer;
     }
-
-    /**
-     * Resolves all not already parsed objects of a dictionary recursively.
-     * 
-     * @param dictionaryObject dictionary to be parsed
-     * @throws IOException if something went wrong
-     * 
-     */
-    private void parseDictionaryRecursive(COSObject dictionaryObject) throws IOException
-    {
-        parseObjectDynamically(dictionaryObject, true);
-        COSDictionary dictionary = (COSDictionary)dictionaryObject.getObject();
-        for(COSBase value : dictionary.getValues())
-        {
-            if (value instanceof COSObject)
-            {
-                COSObject object = (COSObject)value;
-                if (object.getObject() == null)
-                {
-                    parseDictionaryRecursive(object);
-                }
-            }
-        }
-    }
-    /**
-     * Prepare for decryption.
-     * 
-     * @throws IOException if something went wrong
-     */
-    private void prepareDecryption() throws IOException
-    {
-        COSBase trailerEncryptItem = document.getTrailer().getItem(COSName.ENCRYPT);
-        if (trailerEncryptItem != null && !(trailerEncryptItem instanceof COSNull))
-        {
-            if (trailerEncryptItem instanceof COSObject)
-            {
-                COSObject trailerEncryptObj = (COSObject) trailerEncryptItem;
-                parseDictionaryRecursive(trailerEncryptObj);
-            }
-            try
-            {
-                PDEncryption encryption = new PDEncryption(document.getEncryptionDictionary());
-
-                DecryptionMaterial decryptionMaterial;
-                if (keyStoreInputStream != null)
-                {
-                    KeyStore ks = KeyStore.getInstance("PKCS12");
-                    ks.load(keyStoreInputStream, password.toCharArray());
-
-                    decryptionMaterial = new PublicKeyDecryptionMaterial(ks, keyAlias, password);
-                }
-                else
-                {
-                    decryptionMaterial = new StandardDecryptionMaterial(password);
-                }
-
-                securityHandler = encryption.getSecurityHandler();
-                securityHandler.prepareForDecryption(encryption, document.getDocumentID(),
-                        decryptionMaterial);
-                accessPermission = securityHandler.getCurrentAccessPermission();
-            }
-            catch (IOException e)
-            {
-                throw e;
-            }
-            catch (Exception e)
-            {
-                throw new IOException("Error (" + e.getClass().getSimpleName()
-                        + ") while creating security handler for decryption", e);
-            }
-        }
-    }
-    
     /**
      * Parses cross reference tables.
      * 
@@ -651,7 +217,7 @@ public class NonSequentialPDFParser extends BaseParser
      * @return the trailer dictionary
      * @throws IOException if something went wrong
      */
-    private COSDictionary parseXref(long startXRefOffset) throws IOException
+    protected COSDictionary parseXref(long startXRefOffset) throws IOException
     {
         pdfSource.seek(startXRefOffset);
         long startXrefOffset = parseStartXref();
@@ -747,6 +313,8 @@ public class NonSequentialPDFParser extends BaseParser
         document.setIsXRefStream(XRefType.STREAM == xrefTrailerResolver.getXrefType());
         // check the offsets of all referenced objects
         checkXrefOffsets();
+        // copy xref table
+        document.addXRefTable(xrefTrailerResolver.getXrefTable());
         return trailer;
     }
 
@@ -782,24 +350,17 @@ public class NonSequentialPDFParser extends BaseParser
         byte[] buf;
         long skipBytes;
         // read trailing bytes into buffer
-        fileLen = pdfFile.length();
-
-        FileInputStream fileInputstream = null;
         try
         {
-            fileInputstream = new FileInputStream(pdfFile);
-
             final int trailByteCount = (fileLen < readTrailBytes) ? (int) fileLen : readTrailBytes;
             buf = new byte[trailByteCount];
-            fileInputstream.skip(skipBytes = fileLen - trailByteCount);
-
+            pdfSource.seek(skipBytes = fileLen - trailByteCount);
             int off = 0;
             int readBytes;
             while (off < trailByteCount)
             {
-                readBytes = fileInputstream.read(buf, off, trailByteCount - off);
-                // in order to not get stuck in a loop we check readBytes (this
-                // should never happen)
+                readBytes = pdfSource.read(buf, off, trailByteCount - off);
+                // in order to not get stuck in a loop we check readBytes (this should never happen)
                 if (readBytes < 1)
                 {
                     throw new IOException(
@@ -811,12 +372,10 @@ public class NonSequentialPDFParser extends BaseParser
         }
         finally
         {
-            IOUtils.closeQuietly(fileInputstream);
+            pdfSource.seek(0);
         }
-
         // find last '%%EOF'
         int bufOff = lastIndexOf(EOF_MARKER, buf, buf.length);
-
         if (bufOff < 0)
         {
             if (isLenient) 
@@ -888,112 +447,9 @@ public class NonSequentialPDFParser extends BaseParser
                 lookupCh = pattern[patOff];
             }
         }
-
         return -1;
     }
     
-    private COSDictionary pagesDictionary = null;
-
-    /**
-     * Returns PAGES {@link COSDictionary} object or throws {@link IOException} if PAGES dictionary does not exist.
-     */
-    private COSDictionary getPagesObject() throws IOException
-    {
-        if (pagesDictionary != null)
-        {
-            return pagesDictionary;
-        }
-        COSObject pages = (COSObject) document.getCatalog().getItem(COSName.PAGES);
-
-        if (pages == null)
-        {
-            throw new IOException("Missing PAGES entry in document catalog.");
-        }
-
-        COSBase object = parseObjectDynamically(pages, false);
-
-        if (!(object instanceof COSDictionary))
-        {
-            throw new IOException("PAGES not a dictionary object, but: "
-                    + object.getClass().getSimpleName());
-        }
-
-        pagesDictionary = (COSDictionary) object;
-
-        return pagesDictionary;
-    }
-
-    /**
-     * This will parse the stream and populate the COSDocument object.  This will close
-     * the stream when it is done parsing.
-     *
-     * @throws IOException If there is an error reading from the stream or corrupt data
-     * is found.
-     */
-     public void parse() throws IOException
-     {
-         // set to false if all is processed
-         boolean exceptionOccurred = true; 
-         try
-         {
-            // PDFBOX-1922 read the version header and rewind
-            if (!parseHeader(PDF_HEADER, PDF_DEFAULT_VERSION) && !parseHeader(FDF_HEADER, FDF_DEFAULT_VERSION))
-            {
-                throw new IOException( "Error: Header doesn't contain versioninfo" );
-            }
-
-            if (!initialParseDone)
-            {
-                initialParse();
-            }
-
-            // a FDF doesn't have any pages
-            if (!isFDFDocment)
-            {
-                if (!allPagesParsed)
-                {
-                    final int pageCount = getPageNumber();
-                    for (int pNr = 0; pNr < pageCount; pNr++)
-                    {
-                        getPage(pNr);
-                    }
-                    allPagesParsed = true;
-                    document.setDecrypted();
-                }
-            }
-            exceptionOccurred = false;
-        }
-        finally
-        {
-            IOUtils.closeQuietly(pdfSource);
-            IOUtils.closeQuietly(keyStoreInputStream);
-
-            deleteTempFile();
-
-            if (exceptionOccurred && document != null)
-            {
-                try
-                {
-                    document.close();
-                    document = null;
-                }
-                catch (IOException ioe)
-                {
-                }
-            }
-        }
-    }
-
-    /**
-     * Return the pdf file.
-     * 
-     * @return the pdf file
-     */
-    protected File getPdfFile()
-    {
-        return this.pdfFile;
-    }
-
     /**
      * Return true if parser is lenient. Meaning auto healing capacity of the parser are used.
      *
@@ -1019,146 +475,6 @@ public class NonSequentialPDFParser extends BaseParser
             throw new IllegalArgumentException("Cannot change leniency after parsing");
         }
         this.isLenient = lenient;
-    }
-
-    /**
-     * Remove the temporary file. A temporary file is created if this class is instantiated with an InputStream
-     */
-    private void deleteTempFile()
-    {
-        if (isTmpPDFFile)
-        {
-            try
-            {
-                if (!pdfFile.delete())
-                {
-                    LOG.warn("Temporary file '" + pdfFile.getName() + "' can't be deleted");
-                }
-            }
-            catch (SecurityException e)
-            {
-                LOG.warn("Temporary file '" + pdfFile.getName() + "' can't be deleted", e);
-            }
-        }
-    }
-    
-    /**
-     * Returns the number of pages in a document.
-     * 
-     * @return the number of pages.
-     * 
-     * @throws IOException if PAGES or other needed object is missing
-     */
-    public int getPageNumber() throws IOException
-    {
-        int pageCount = getPagesObject().getInt(COSName.COUNT);
-
-        if (pageCount < 0)
-        {
-            throw new IOException("No page number specified.");
-        }
-        return pageCount;
-    }
-    
-    /**
-     * Returns the page requested with all the objects loaded into it.
-     * 
-     * @param pageNr starts from 0 to the number of pages.
-     * @return the page with the given pagenumber.
-     * @throws IOException If something went wrong.
-     */
-    public PDPage getPage(int pageNr) throws IOException
-    {
-        getPagesObject();
-
-        // get list of top level pages
-        COSArray kids = (COSArray) pagesDictionary.getDictionaryObject(COSName.KIDS);
-
-        if (kids == null)
-        {
-            throw new IOException("Missing 'Kids' entry in pages dictionary.");
-        }
-
-        // get page we are looking for (possibly going recursively into subpages)
-        COSObject pageObj = getPageObject(pageNr, kids, 0);
-
-        if (pageObj == null)
-        {
-            throw new IOException("Page " + pageNr + " not found.");
-        }
-
-        COSDictionary pageDict = (COSDictionary) pageObj.getObject();
-
-        // parse all objects necessary to load page.
-        if (parseMinimalCatalog && (!allPagesParsed))
-        {
-            parseDictObjects(pageDict);
-        }
-        return new PDPage(pageDict);
-    }
-
-    /**
-     * Returns the object for a specific page. The page tree is made up of kids. The kids have COSArray with COSObjects
-     * inside of them. The COSObject can be parsed using the dynamic parsing method We want to only parse the minimum
-     * COSObjects and still return a complete page. ready to be used.
-     * 
-     * @param num the requested page number; numbering starts with 0
-     * @param startKids Kids array to start with looking up page number
-     * @param startPageCount
-     * 
-     * @return page object or <code>null</code> if no such page exists
-     * 
-     * @throws IOException
-     */
-    private COSObject getPageObject(int num, COSArray startKids, int startPageCount)
-            throws IOException
-    {
-        int curPageCount = startPageCount;
-        Iterator<COSBase> kidsIter = startKids.iterator();
-
-        while (kidsIter.hasNext())
-        {
-            COSObject obj = (COSObject) kidsIter.next();
-            COSBase base = obj.getObject();
-            if (base == null)
-            {
-                base = parseObjectDynamically(obj, false);
-                obj.setObject(base);
-            }
-
-            COSDictionary dic = (COSDictionary) base;
-            int count = dic.getInt(COSName.COUNT);
-            
-            // skip this branch if requested page comes later
-            if (count >= 0 && (curPageCount + count) <= num)
-            {
-                curPageCount += count;
-                continue;
-            }
-
-            COSArray kids = (COSArray) dic.getDictionaryObject(COSName.KIDS);
-            if (kids != null)
-            {
-                // recursively scan subpages
-                COSObject ans = getPageObject(num, kids, curPageCount);
-                // if ans is not null, we got what we were looking for
-                if (ans != null)
-                {
-                    return ans;
-                }
-            }
-            else
-            {
-                // found page?
-                if (curPageCount == num)
-                {
-                    return obj;
-                }
-                // page has no kids and it is not the page we are looking for
-                curPageCount++;
-            }
-        }
-        return null;
     }
 
     /**
@@ -1210,7 +526,7 @@ public class NonSequentialPDFParser extends BaseParser
      * 
      * @throws IOException
      */
-    private void parseDictObjects(COSDictionary dict, COSName... excludeObjects) throws IOException
+    protected void parseDictObjects(COSDictionary dict, COSName... excludeObjects) throws IOException
     {
         // ---- create queue for objects waiting for further parsing
         final Queue<COSBase> toBeParsedList = new LinkedList<COSBase>();
@@ -1332,8 +648,7 @@ public class NonSequentialPDFParser extends BaseParser
     }
 
     /**
-     * This will parse the next object from the stream and add it to the local state. This is taken from
-     * {@link PDFParser} and reduced to parsing an indirect object.
+     * This will parse the next object from the stream and add it to the local state. 
      * 
      * @param obj object to be parsed (we only take object number and generation number for lookup start offset)
      * @param requireExistingNotCompressedObj if <code>true</code> object to be parsed must not be contained within
@@ -1482,10 +797,9 @@ public class NonSequentialPDFParser extends BaseParser
                 if (objstmBaseObj instanceof COSStream)
                 {
                     // parse object stream
-                    PDFObjectStreamParser parser = new PDFObjectStreamParser(
-                            (COSStream) objstmBaseObj, document);
+                    PDFObjectStreamParser parser = new PDFObjectStreamParser((COSStream) objstmBaseObj, document);
                     parser.parse();
-
+                    parser.close();
                     // get set of object numbers referenced for this object
                     // stream
                     final Set<Long> refObjNrs = xrefTrailerResolver
@@ -1510,7 +824,9 @@ public class NonSequentialPDFParser extends BaseParser
     
     private boolean inGetLength = false;
 
-    /** Returns length value referred to or defined in given object. */
+    /** 
+     * Returns length value referred to or defined in given object. 
+     */
     private COSNumber getLength(final COSBase lengthBaseObj) throws IOException
     {
         if (lengthBaseObj == null)
@@ -1528,43 +844,33 @@ public class NonSequentialPDFParser extends BaseParser
         try
         {
             inGetLength = true;
-
-            // ---- maybe length was given directly
+            // maybe length was given directly
             if (lengthBaseObj instanceof COSNumber)
             {
                 retVal = (COSNumber) lengthBaseObj;
             }
-            // ---- length in referenced object
+            // length in referenced object
             else if (lengthBaseObj instanceof COSObject)
             {
                 COSObject lengthObj = (COSObject) lengthBaseObj;
-
                 if (lengthObj.getObject() == null)
                 {
-                    // not read so far
-
-                    // keep current stream position
+                    // not read so far, keep current stream position
                     final long curFileOffset = pdfSource.getOffset();
-
                     parseObjectDynamically(lengthObj, true);
-
                     // reset current stream position
                     pdfSource.seek(curFileOffset);
-
                     if (lengthObj.getObject() == null)
                     {
                         throw new IOException("Length object content was not read.");
                     }
                 }
-
                 if (!(lengthObj.getObject() instanceof COSNumber))
                 {
                     throw new IOException("Wrong type of referenced length object " + lengthObj
                             + ": " + lengthObj.getObject().getClass().getSimpleName());
                 }
-
                 retVal = (COSNumber) lengthObj.getObject();
-
             }
             else
             {
@@ -1602,10 +908,9 @@ public class NonSequentialPDFParser extends BaseParser
         OutputStream out = null;
         try
         {
-            readString(); // read 'stream'; this was already tested in
-                          // parseObjectsDynamically()
-
-            // ---- skip whitespaces before start of data
+            // read 'stream'; this was already tested in parseObjectsDynamically()
+            readString(); 
+            // skip whitespaces before start of data
             // PDF Ref 1.7, chap. 3.2.7:
             // 'stream' should be followed by either a CRLF (0x0d 0x0a) or LF
             // but nothing else.
@@ -1653,7 +958,7 @@ public class NonSequentialPDFParser extends BaseParser
             }
 
             boolean useReadUntilEnd = false;
-            // ---- get output stream to copy data to
+            // get output stream to copy data to
             if (streamLengthObj != null && validateStreamLength(streamLengthObj.longValue()))
             {
                 out = stream.createFilteredStream(streamLengthObj);
@@ -2195,6 +1500,28 @@ public class NonSequentialPDFParser extends BaseParser
         return true;
     }
 
+    /**
+     * Parse the header of a pdf.
+     * 
+     * @return true if a PDF header was found
+     * @throws IOException if something went wrong
+     */
+    protected boolean parsePDFHeader() throws IOException
+    {
+        return parseHeader(PDF_HEADER, PDF_DEFAULT_VERSION);
+    }
+
+    /**
+     * Parse the header of a fdf.
+     * 
+     * @return true if a FDF header was found
+     * @throws IOException if something went wrong
+     */
+    protected boolean parseFDFHeader() throws IOException
+    {
+        return parseHeader(FDF_HEADER, FDF_DEFAULT_VERSION);
+    }
+
     private boolean parseHeader(String headerMarker, String defaultVersion) throws IOException
     {
         // read first line
@@ -2268,7 +1595,6 @@ public class NonSequentialPDFParser extends BaseParser
         }
         // rewind
         pdfSource.seek(0);
-        isFDFDocment = FDF_HEADER.equals(headerMarker);
         return true;
     }
 
@@ -2278,7 +1604,7 @@ public class NonSequentialPDFParser extends BaseParser
      *
      * @param parsedTrailer the parsed catalog in the trailer
      */
-    private void readVersionInTrailer(COSDictionary parsedTrailer)
+    protected void readVersionInTrailer(COSDictionary parsedTrailer)
     {
         COSObject root = (COSObject) parsedTrailer.getItem(COSName.ROOT);
         if (root != null)
@@ -2333,10 +1659,7 @@ public class NonSequentialPDFParser extends BaseParser
             return false;
         }
         
-        /**
-         * Xref tables can have multiple sections.
-         * Each starts with a starting object id and a count.
-         */
+        // Xref tables can have multiple sections. Each starts with a starting object id and a count.
         while(true)
         {
             long currObjID = readObjectNumber(); // first obj id
@@ -2409,9 +1732,9 @@ public class NonSequentialPDFParser extends BaseParser
             xrefTrailerResolver.nextXrefObj( objByteOffset, XRefType.STREAM );
             xrefTrailerResolver.setTrailer( stream );
         }        
-        PDFXrefStreamParser parser =
-                new PDFXrefStreamParser( stream, document, xrefTrailerResolver );
+        PDFXrefStreamParser parser = new PDFXrefStreamParser( stream, document, xrefTrailerResolver );
         parser.parse();
+        parser.close();
     }
 
     /**
@@ -2432,16 +1755,4 @@ public class NonSequentialPDFParser extends BaseParser
         return document;
     }
 
-    /**
-     * This will get the FDF document that was parsed.  When you are done with
-     * this document you must call close() on it to release resources.
-     *
-     * @return The document at the PD layer.
-     *
-     * @throws IOException If there is an error getting the document.
-     */
-    public FDFDocument getFDFDocument() throws IOException
-    {
-        return new FDFDocument( getDocument() );
-    }
 }
