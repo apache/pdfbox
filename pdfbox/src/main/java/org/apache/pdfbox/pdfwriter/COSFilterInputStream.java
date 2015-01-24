@@ -25,8 +25,8 @@ import java.io.InputStream;
 
 public class COSFilterInputStream extends FilterInputStream
 {
-  int[] byteRange;
-  long position = 0;
+  private final int[] byteRange;
+  private long position = 0;
   
   public COSFilterInputStream(InputStream in, int[] byteRange)
   {
@@ -46,7 +46,9 @@ public class COSFilterInputStream extends FilterInputStream
     nextAvailable();
     int i = super.read();
     if (i>-1)
+    {
       ++position;
+    }
     return i;
   }
   
@@ -100,7 +102,9 @@ public class COSFilterInputStream extends FilterInputStream
     while (!inRange()) {
       ++position;
       if(super.read()<0)
+      {
         break;
+      }
     }
   }
   
@@ -110,7 +114,9 @@ public class COSFilterInputStream extends FilterInputStream
     byte[] buffer = new byte[1024];
     int c;
     while ((c = this.read(buffer)) != -1)
+    {
         byteOS.write(buffer, 0, c);
+    }
     return byteOS.toByteArray();
   }
 }
