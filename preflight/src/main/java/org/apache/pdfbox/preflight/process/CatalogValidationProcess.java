@@ -205,7 +205,7 @@ public class CatalogValidationProcess extends AbstractProcess
 
         if (this.catalog == null)
         {
-            ctx.addValidationError(new ValidationError(ERROR_SYNTAX_NOCATALOG, "There are no Catalog entry in the Document."));
+            ctx.addValidationError(new ValidationError(ERROR_SYNTAX_NOCATALOG, "There are no Catalog entry in the Document"));
         } 
         else 
         {
@@ -289,7 +289,7 @@ public class CatalogValidationProcess extends AbstractProcess
         if (catalog.getOCProperties() != null)
         {
             addValidationError(ctx, new ValidationError(ERROR_SYNTAX_TRAILER_CATALOG_OCPROPERTIES,
-                    "A Catalog shall not contain the OCPProperties entry."));
+                    "A Catalog shall not contain the OCPProperties entry"));
         }
     }
 

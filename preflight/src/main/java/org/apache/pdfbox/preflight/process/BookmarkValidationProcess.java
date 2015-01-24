@@ -41,6 +41,7 @@ import org.apache.pdfbox.preflight.utils.ContextHelper;
 public class BookmarkValidationProcess extends AbstractProcess
 {
 
+    @Override
     public void validate(PreflightContext ctx) throws ValidationException
     {
         PDDocumentCatalog catalog = ctx.getDocument().getDocumentCatalog();
@@ -70,7 +71,7 @@ public class BookmarkValidationProcess extends AbstractProcess
         }
         else
         {
-            ctx.addValidationError(new ValidationError(ERROR_SYNTAX_NOCATALOG, "There are no Catalog entry in the Document."));
+            ctx.addValidationError(new ValidationError(ERROR_SYNTAX_NOCATALOG, "There are no Catalog entry in the Document"));
         }
     }
 
@@ -160,7 +161,7 @@ public class BookmarkValidationProcess extends AbstractProcess
             if (!isCountEntryPresent(inputItem.getCOSDictionary()))
             {
                 addValidationError(ctx, new ValidationError(ERROR_SYNTAX_TRAILER_OUTLINES_INVALID,
-                        "Outline item doesn't have Count entry but has at least one descendant."));
+                        "Outline item doesn't have Count entry but has at least one descendant"));
                 isValid = false;
             }
             else

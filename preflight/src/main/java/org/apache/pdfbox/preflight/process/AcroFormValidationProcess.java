@@ -69,7 +69,7 @@ public class AcroFormValidationProcess extends AbstractProcess
         }
         else
         {
-            ctx.addValidationError(new ValidationError(ERROR_SYNTAX_NOCATALOG, "There is no Catalog entry in the Document."));
+            ctx.addValidationError(new ValidationError(ERROR_SYNTAX_NOCATALOG, "There is no Catalog entry in the Document"));
         }
     }
 
