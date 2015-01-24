@@ -40,7 +40,6 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
     private PDShadingType1 type1ShadingType;
     private AffineTransform rat;
     private final float[] domain;
-    private Matrix patternMatrix;
 
     /**
      * Constructor creates an instance to be used for fill operations.
@@ -69,14 +68,12 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
             domain = new float[] { 0, 1, 0, 1 };
         }
 
-        patternMatrix = shading.getMatrix();
-
         try
         {
             // get inverse transform to be independent of 
             // shading matrix and current user / device space 
             // when handling actual pixels in getRaster()
-            rat = patternMatrix.createAffineTransform().createInverse();
+            rat = shading.getMatrix().createAffineTransform().createInverse();
             rat.concatenate(matrix.createAffineTransform().createInverse());
             rat.concatenate(xform.createInverse());
         }
