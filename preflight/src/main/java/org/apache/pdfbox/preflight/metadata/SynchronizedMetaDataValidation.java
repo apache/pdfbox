@@ -41,7 +41,7 @@ import org.apache.xmpbox.type.AbstractField;
 import org.apache.xmpbox.type.TextType;
 
 /**
- * Class which check if document information available in a document are synchronized with XMP
+ * Class which checks if document information available in a document is synchronized with XMP
  * 
  * @author Germain Costenobel
  * 
@@ -65,8 +65,7 @@ public class SynchronizedMetaDataValidation
             title = removeTrailingNul(title);
             if (dc != null)
             {
-                // Check the x-default value, if not found, check with the first value
-                // found
+                // Check the x-default value, if not found, check with the first value found
                 if (dc.getTitle() != null)
                 {
                     if (dc.getTitle("x-default") != null)
@@ -95,24 +94,23 @@ public class SynchronizedMetaDataValidation
                             }
                             else
                             {
-                                ve.add(AbsentXMPPropertyError("Title", "Property is badly defined"));
+                                ve.add(absentXMPPropertyError("Title", "Property is badly defined"));
                             }
                         }
                         else
                         {
-                            ve.add(AbsentXMPPropertyError("Title", "Property is not defined"));
+                            ve.add(absentXMPPropertyError("Title", "Property is not defined"));
                         }
                     }
-
                 }
                 else
                 {
-                    ve.add(AbsentXMPPropertyError("Title", "Property is not defined"));
+                    ve.add(absentXMPPropertyError("Title", "Property is not defined"));
                 }
             }
             else
             {
-                ve.add(AbsentSchemaMetaDataError("Title", "Dublin Core"));
+                ve.add(absentSchemaMetaDataError("Title", "Dublin Core"));
             }
         }
     }
@@ -140,14 +138,14 @@ public class SynchronizedMetaDataValidation
                 {
                     if (dc.getCreators().size() != 1)
                     {
-                        ve.add(AbsentXMPPropertyError("Author",
+                        ve.add(absentXMPPropertyError("Author",
                                 "In XMP metadata, Author(s) must be represented by a single entry in a text array (dc:creator) "));
                     }
                     else
                     {
                         if (dc.getCreators().get(0) == null)
                         {
-                            ve.add(AbsentXMPPropertyError("Author", "Property is defined as null"));
+                            ve.add(absentXMPPropertyError("Author", "Property is defined as null"));
                         }
                         else
                         {
@@ -160,12 +158,12 @@ public class SynchronizedMetaDataValidation
                 }
                 else
                 {
-                    ve.add(AbsentXMPPropertyError("Author", "Property is not defined in XMP Metadata"));
+                    ve.add(absentXMPPropertyError("Author", "Property is not defined in XMP Metadata"));
                 }
             }
             else
             {
-                ve.add(AbsentSchemaMetaDataError("Author", "Dublin Core"));
+                ve.add(absentSchemaMetaDataError("Author", "Dublin Core"));
             }
         }
     }
@@ -195,7 +193,7 @@ public class SynchronizedMetaDataValidation
                 {
                     if (dc.getDescription("x-default") == null)
                     {
-                        ve.add(AbsentXMPPropertyError("Subject",
+                        ve.add(absentXMPPropertyError("Subject",
                                 "Subject not found in XMP (dc:description[\"x-default\"] not found)"));
                     }
                     else
@@ -209,12 +207,12 @@ public class SynchronizedMetaDataValidation
                 }
                 else
                 {
-                    ve.add(AbsentXMPPropertyError("Subject", "Property is defined as null"));
+                    ve.add(absentXMPPropertyError("Subject", "Property is defined as null"));
                 }
             }
             else
             {
-                ve.add(AbsentSchemaMetaDataError("Subject", "Dublin Core"));
+                ve.add(absentSchemaMetaDataError("Subject", "Dublin Core"));
             }
         }
     }
@@ -240,7 +238,7 @@ public class SynchronizedMetaDataValidation
             {
                 if (pdf.getKeywordsProperty() == null)
                 {
-                    ve.add(AbsentXMPPropertyError("Keywords", "Property is not defined"));
+                    ve.add(absentXMPPropertyError("Keywords", "Property is not defined"));
                 }
                 else
                 {
@@ -252,7 +250,7 @@ public class SynchronizedMetaDataValidation
             }
             else
             {
-                ve.add(AbsentSchemaMetaDataError("Keywords", "PDF"));
+                ve.add(absentSchemaMetaDataError("Keywords", "PDF"));
             }
         }
     }
@@ -278,7 +276,7 @@ public class SynchronizedMetaDataValidation
             {
                 if (pdf.getProducerProperty() == null)
                 {
-                    ve.add(AbsentXMPPropertyError("Producer", "Property is not defined"));
+                    ve.add(absentXMPPropertyError("Producer", "Property is not defined"));
                 }
                 else
                 {
@@ -290,7 +288,7 @@ public class SynchronizedMetaDataValidation
             }
             else
             {
-                ve.add(AbsentSchemaMetaDataError("Producer", "PDF"));
+                ve.add(absentSchemaMetaDataError("Producer", "PDF"));
             }
         }
 
@@ -318,7 +316,7 @@ public class SynchronizedMetaDataValidation
             {
                 if (xmp.getCreatorToolProperty() == null)
                 {
-                    ve.add(AbsentXMPPropertyError("CreatorTool", "Property is not defined"));
+                    ve.add(absentXMPPropertyError("CreatorTool", "Property is not defined"));
                 }
                 else
                 {
@@ -330,7 +328,7 @@ public class SynchronizedMetaDataValidation
             }
             else
             {
-                ve.add(AbsentSchemaMetaDataError("CreatorTool", "PDF"));
+                ve.add(absentSchemaMetaDataError("CreatorTool", "PDF"));
             }
         }
 
@@ -368,7 +366,7 @@ public class SynchronizedMetaDataValidation
 
                 if (xmpCreationDate == null)
                 {
-                    ve.add(AbsentXMPPropertyError("CreationDate", "Property is not defined"));
+                    ve.add(absentXMPPropertyError("CreationDate", "Property is not defined"));
                 }
                 else
                 {
@@ -381,7 +379,7 @@ public class SynchronizedMetaDataValidation
             }
             else
             {
-                ve.add(AbsentSchemaMetaDataError("CreationDate", "Basic XMP"));
+                ve.add(absentSchemaMetaDataError("CreationDate", "Basic XMP"));
             }
         }
     }
@@ -412,7 +410,7 @@ public class SynchronizedMetaDataValidation
                     Calendar xmpModifyDate = xmp.getModifyDate();
                     if (xmpModifyDate == null)
                     {
-                        ve.add(AbsentXMPPropertyError("ModifyDate", "Property is not defined"));
+                        ve.add(absentXMPPropertyError("ModifyDate", "Property is not defined"));
                     }
                     else
                     {
@@ -426,7 +424,7 @@ public class SynchronizedMetaDataValidation
                 }
                 else
                 {
-                    ve.add(AbsentSchemaMetaDataError("ModifyDate", "Basic XMP"));
+                    ve.add(absentSchemaMetaDataError("ModifyDate", "Basic XMP"));
                 }
             }
         }
@@ -555,7 +553,7 @@ public class SynchronizedMetaDataValidation
      *            the XMP schema which can't be found
      * @return the generated validation error
      */
-    protected ValidationError AbsentSchemaMetaDataError(String target, String schema)
+    protected ValidationError absentSchemaMetaDataError(String target, String schema)
     {
         StringBuilder sb = new StringBuilder(80);
         sb.append(target).append(" present in the document catalog dictionary can't be found in XMP information (")
@@ -572,7 +570,7 @@ public class SynchronizedMetaDataValidation
      *            comments about the XMP property
      * @return the generated validation error
      */
-    protected ValidationError AbsentXMPPropertyError(String target, String details)
+    protected ValidationError absentXMPPropertyError(String target, String details)
     {
         StringBuilder sb = new StringBuilder(80);
         sb.append(target).append(" present in the document catalog dictionary can't be found in XMP information (")
