@@ -1069,14 +1069,12 @@ public class NonSequentialPDFParser extends PDFParser
             throw new IOException("Page " + pageNr + " not found.");
         }
 
-        // ---- parse all objects necessary to load page.
+        // parse all objects necessary to load page.
         COSDictionary pageDict = (COSDictionary) pageObj.getObject();
-
+        // parse all objects necessary to load page.
         if (parseMinimalCatalog && (!allPagesParsed))
         {
-            // parse page resources since we did not do this on start
-            COSDictionary resDict = (COSDictionary) pageDict.getDictionaryObject(COSName.RESOURCES);
-            parseDictObjects(resDict);
+            parseDictObjects(pageDict);
         }
 
         return new PDPage(pageDict);
