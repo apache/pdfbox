@@ -206,7 +206,7 @@ public class ExtGStateValidationProcess extends AbstractProcess
             if (!(fca != null && fca == 1.0f) && !(ica != null && ica == 1))
             {
                 context.addValidationError(new ValidationError(ERROR_TRANSPARENCY_EXT_GS_CA,
-                        "ca entry in a ExtGState  is invalid."));
+                        "ca entry in a ExtGState is invalid"));
             }
         }
     }
