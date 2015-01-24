@@ -210,7 +210,7 @@ public class PreflightParser extends NonSequentialPDFParser
         this.ctx = new PreflightContext(this.originalDocument);
         ctx.setDocument(preflightDocument);
         preflightDocument.setContext(ctx);
-        ctx.setXrefTableResolver(xrefTrailerResolver);
+        ctx.setXrefTrailerResolver(xrefTrailerResolver);
     }
 
     @Override

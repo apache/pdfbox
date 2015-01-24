@@ -95,14 +95,14 @@ public class TrailerValidationProcess extends AbstractProcess
      */
     protected void checkTrailersForLinearizedPDF14(PreflightContext ctx)
     {
-        COSDictionary first = ctx.getXrefTableResolver().getFirstTrailer();
+        COSDictionary first = ctx.getXrefTrailerResolver().getFirstTrailer();
         if (first == null)
         {
             addValidationError(ctx, new ValidationError(ERROR_SYNTAX_TRAILER, "There are no trailer in the PDF file"));
         }
         else
         {
-            COSDictionary last = ctx.getXrefTableResolver().getLastTrailer();
+            COSDictionary last = ctx.getXrefTrailerResolver().getLastTrailer();
             COSDocument cosDoc = new COSDocument();
             checkMainTrailer(ctx, first);
             if (!compareIds(first, last, cosDoc))
