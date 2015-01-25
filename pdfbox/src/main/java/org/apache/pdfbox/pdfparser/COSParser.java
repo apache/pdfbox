@@ -354,7 +354,8 @@ public class COSParser extends BaseParser
         {
             final int trailByteCount = (fileLen < readTrailBytes) ? (int) fileLen : readTrailBytes;
             buf = new byte[trailByteCount];
-            pdfSource.seek(skipBytes = fileLen - trailByteCount);
+            skipBytes = fileLen - trailByteCount;
+            pdfSource.seek(skipBytes);
             int off = 0;
             int readBytes;
             while (off < trailByteCount)
@@ -759,7 +760,8 @@ public class COSParser extends BaseParser
                         if (endObjectKey.length() == 0)
                         {
                             // no other characters in extra endstream line
-                            endObjectKey = readLine(); // read next line
+                            // read next line
+                            endObjectKey = readLine();
                         }
                     }
                 }
@@ -1560,23 +1562,19 @@ public class COSParser extends BaseParser
         }
     
         // This is used if there is garbage after the header on the same line
-        if (header.startsWith(headerMarker))
+        if (header.startsWith(headerMarker) && !header.matches(headerMarker + "\\d.\\d"))
         {
-            if (!header.matches(headerMarker + "\\d.\\d"))
+            if (header.length() < headerMarker.length() + 3)
             {
-    
-                if (header.length() < headerMarker.length() + 3)
-                {
-                    // No version number at all, set to 1.4 as default
-                    header = headerMarker + defaultVersion;
-                    LOG.debug("No version found, set to " + defaultVersion + " as default.");
-                }
-                else
-                {
-                    String headerGarbage = header.substring(headerMarker.length() + 3, header.length()) + "\n";
-                    header = header.substring(0, headerMarker.length() + 3);
-                    pdfSource.unread(headerGarbage.getBytes(ISO_8859_1));
-                }
+                // No version number at all, set to 1.4 as default
+                header = headerMarker + defaultVersion;
+                LOG.debug("No version found, set to " + defaultVersion + " as default.");
+            }
+            else
+            {
+                String headerGarbage = header.substring(headerMarker.length() + 3, header.length()) + "\n";
+                header = header.substring(0, headerMarker.length() + 3);
+                pdfSource.unread(headerGarbage.getBytes(ISO_8859_1));
             }
         }
         document.setHeaderString(header);
@@ -1662,8 +1660,12 @@ public class COSParser extends BaseParser
         // Xref tables can have multiple sections. Each starts with a starting object id and a count.
         while(true)
         {
-            long currObjID = readObjectNumber(); // first obj id
-            long count = readLong(); // the number of objects in the xref table
+            // first obj id
+            long currObjID = readObjectNumber(); 
+            
+            // the number of objects in the xref table
+            long count = readLong();
+            
             skipSpaces();
             for(int i = 0; i < count; i++)
             {
