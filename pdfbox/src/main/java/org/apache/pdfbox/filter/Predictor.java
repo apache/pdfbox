@@ -24,8 +24,13 @@ import org.apache.pdfbox.io.IOUtils;
  * Helper class to contain predictor decoding used by Flate and LZW filter. 
  * To see the history, look at the FlateFilter class.
  */
-public class Predictor
+public final class Predictor
 {
+
+    private Predictor()
+    {
+    }
+    
     static void decodePredictor(int predictor, int colors, int bitsPerComponent, int columns, InputStream in, OutputStream out)
             throws IOException
     {
