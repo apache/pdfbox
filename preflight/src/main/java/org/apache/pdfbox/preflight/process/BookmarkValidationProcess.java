@@ -198,24 +198,10 @@ public class BookmarkValidationProcess extends AbstractProcess
         COSBase dest = dictionary.getItem(COSName.DEST);
         COSBase action = dictionary.getItem(COSName.A);
         
-        // Prev, Next, First and Last must be indirect objects
-        if (!checkIndirect(ctx, dictionary, COSName.PREV))
+        if (!checkIndirectObjects(ctx, dictionary))
         {
             return false;
         }
-        if (!checkIndirect(ctx, dictionary, COSName.NEXT))
-        {
-            return false;
-        }
-        if (!checkIndirect(ctx, dictionary, COSName.FIRST))
-        {
-            return false;
-        }
-        if (!checkIndirect(ctx, dictionary, COSName.LAST))
-        {
-            return false;
-        }
-
         if (action != null && dest != null)
         {
             addValidationError(ctx, new ValidationError(ERROR_SYNTAX_TRAILER_OUTLINES_INVALID,
@@ -257,8 +243,31 @@ public class BookmarkValidationProcess extends AbstractProcess
         return isValid;
     }
 
+    // verify that if certain named items exist, that they are indirect objects
+    private boolean checkIndirectObjects(PreflightContext ctx, COSDictionary dictionary)
+    {
+        // Prev, Next, First and Last must be indirect objects
+        if (!checkIndirectObject(ctx, dictionary, COSName.PREV))
+        {
+            return false;
+        }
+        if (!checkIndirectObject(ctx, dictionary, COSName.NEXT))
+        {
+            return false;
+        }
+        if (!checkIndirectObject(ctx, dictionary, COSName.FIRST))
+        {
+            return false;
+        }
+        if (!checkIndirectObject(ctx, dictionary, COSName.LAST))
+        {
+            return false;
+        }
+        return true;
+    }
+
     // verify that if the named item exists, that it is is an indirect object
-    private boolean checkIndirect(PreflightContext ctx, COSDictionary dictionary, COSName name)
+    private boolean checkIndirectObject(PreflightContext ctx, COSDictionary dictionary, COSName name)
     {
         COSBase item = dictionary.getItem(name);
         if (item != null && !(item instanceof COSObject))
