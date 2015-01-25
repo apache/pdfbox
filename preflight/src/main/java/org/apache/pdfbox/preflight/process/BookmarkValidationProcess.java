@@ -155,7 +155,7 @@ public class BookmarkValidationProcess extends AbstractProcess
             currentItem = currentItem.getNextSibling();
             if (currentItem == null)
             {
-                if (realPrevObject != lastObj)
+                if (!realPrevObject.equals(lastObj))
                 {
                     addValidationError(ctx, new ValidationError(ERROR_SYNTAX_TRAILER_OUTLINES_INVALID,
                             "Last object on a level isn't the expected /Last: " + lastObj
@@ -166,7 +166,7 @@ public class BookmarkValidationProcess extends AbstractProcess
             else 
             {
                 COSObject prevObject = (COSObject) currentItem.getCOSDictionary().getItem(COSName.PREV);
-                if (prevObject != realPrevObject)
+                if (!realPrevObject.equals(prevObject))
                 {
                     addValidationError(ctx, new ValidationError(ERROR_SYNTAX_TRAILER_OUTLINES_INVALID,
                             "The value of /Prev at " + currentObj
