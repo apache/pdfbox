@@ -38,10 +38,13 @@ import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.persistence.util.COSObjectKey;
 
-public class COSUtils
+public final class COSUtils
 {
-
     private static final Log LOGGER = LogFactory.getLog(COSUtils.class);
+
+    private COSUtils()
+    {
+    }
 
     /**
      * return true if the elt is a COSDictionary or a reference to a COSDictionary
