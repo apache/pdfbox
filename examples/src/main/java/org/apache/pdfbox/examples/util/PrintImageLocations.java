@@ -71,7 +71,6 @@ public class PrintImageLocations extends PDFStreamEngine
      */
     public static void main( String[] args ) throws Exception
     {
-        args = new String[]{"C:\\Users\\Tilman Hausherr\\Documents\\Java\\PDFBoxPageImageExtraction\\1.pdf"};
         if( args.length != 1 )
         {
             usage();
