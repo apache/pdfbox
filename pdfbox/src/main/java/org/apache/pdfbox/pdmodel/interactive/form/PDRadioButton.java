@@ -23,6 +23,8 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceEntry;
 
 /**
  * Radio button fields contain a set of related buttons that can each be on or off.
@@ -166,20 +168,23 @@ public final class PDRadioButton extends PDButton
         }
         else
         {
-            setInheritableAttribute(COSName.V, COSName.getPDFName(fieldValue));
+            COSName nameForValue = COSName.getPDFName(fieldValue);
+            setInheritableAttribute(COSName.V, nameForValue);
             List<COSObjectable> kids = getKids();
             for (COSObjectable kid : kids)
             {
-                if (kid instanceof PDCheckbox)
+                if (kid instanceof PDAnnotationWidget)
                 {
-                    PDCheckbox btn = (PDCheckbox) kid;
-                    if (btn.getOnValue().equals(fieldValue))
+                    PDAppearanceEntry appearanceEntry = ((PDAnnotationWidget) kid).getAppearance()
+                            .getNormalAppearance();
+                    
+                    if (((COSDictionary) appearanceEntry.getCOSObject()).containsKey(nameForValue))
                     {
-                        btn.check();
+                        ((COSDictionary) kid.getCOSObject()).setName(COSName.AS, fieldValue);
                     }
                     else
                     {
-                        btn.unCheck();
+                        ((COSDictionary) kid.getCOSObject()).setName(COSName.AS, "Off");
                     }
                 }
             }
