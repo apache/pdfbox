@@ -38,6 +38,15 @@ public abstract class PDButton extends PDField
 {
 
     /**
+     * The value for the Off state for PDCheckbox and PDRadioButton.
+     * 
+     * This shall not be confused with the OFF state as it is used within
+     * other parts of a PDF. 
+     * 
+     */
+    static final COSName OFF = COSName.getPDFName("Off");
+    
+    /**
      * A Ff flag. If set, the field is a set of radio buttons
      */
     public static final int FLAG_RADIO = 1 << 15;
