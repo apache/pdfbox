@@ -100,7 +100,7 @@ public final class PDCheckbox extends PDButton
      */
     public void unCheck()
     {
-        getDictionary().setItem(COSName.AS, COSName.OFF);
+        getDictionary().setItem(COSName.AS, PDButton.OFF);
     }
 
     /**
@@ -110,7 +110,7 @@ public final class PDCheckbox extends PDButton
      */
     public String getOffValue()
     {
-        return COSName.OFF.getName();
+        return PDButton.OFF.getName();
     }
 
     /**
@@ -128,7 +128,7 @@ public final class PDCheckbox extends PDButton
         {
             for( COSName key :((COSDictionary)n).keySet() )
             {
-                if( !key.equals( COSName.OFF) )
+                if( !key.equals( PDButton.OFF) )
                 {
                     return key.getName();
                 }
@@ -172,7 +172,7 @@ public final class PDCheckbox extends PDButton
         if (value == null)
         {
             getDictionary().removeItem(COSName.V);
-            getDictionary().setItem( COSName.AS, COSName.OFF );
+            getDictionary().setItem( COSName.AS, PDButton.OFF );
         }
         else
         {
