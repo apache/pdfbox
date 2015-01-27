@@ -80,9 +80,10 @@ public abstract class PDVariableText extends PDField
      * 
      * @return the DA element of the dictionary object
      */
-    public COSString getDefaultAppearance()
+    public String getDefaultAppearance()
     {
-        return (COSString) getInheritableAttribute(COSName.DA);
+        COSString defaultAppearance = (COSString) getInheritableAttribute(COSName.DA);
+        return defaultAppearance.getString();
     }
 
     /**

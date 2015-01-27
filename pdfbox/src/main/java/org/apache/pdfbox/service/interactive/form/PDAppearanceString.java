@@ -22,9 +22,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Stack;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,7 +37,6 @@ import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdfwriter.ContentStreamWriter;
@@ -69,7 +71,7 @@ public final class PDAppearanceString
     private final PDVariableText parent;
 
     private String value;
-    private final COSString defaultAppearance;
+    private final String defaultAppearance;
 
     private final PDAcroForm acroForm;
     private List<COSObjectable> widgets = new ArrayList<COSObjectable>();
@@ -100,23 +102,9 @@ public final class PDAppearanceString
      * 
      * @return The DA element
      */
-    private COSString getDefaultAppearance()
+    private String getDefaultAppearance()
     {
-        COSString dap = parent.getDefaultAppearance();
-        if (dap == null)
-        {
-            COSArray kids = (COSArray) parent.getDictionary().getDictionaryObject(COSName.KIDS);
-            if (kids != null && kids.size() > 0)
-            {
-                COSDictionary firstKid = (COSDictionary) kids.getObject(0);
-                dap = (COSString) firstKid.getDictionaryObject(COSName.DA);
-            }
-            if (dap == null)
-            {
-                dap = (COSString) acroForm.getDictionary().getDictionaryObject(COSName.DA);
-            }
-        }
-        return dap;
+        return parent.getDefaultAppearance();
     }
 
     private int getQ()
@@ -153,19 +141,20 @@ public final class PDAppearanceString
         return tokens;
     }
 
-    private List<Object> getStreamTokens(COSString string) throws IOException
+    private List<Object> getStreamTokens(String defaultAppearanceString) throws IOException
     {
         List<Object> tokens = new ArrayList<Object>();
-        if (string != null)
+        if (defaultAppearanceString != null && !defaultAppearanceString.isEmpty())
         {
-            ByteArrayInputStream stream = new ByteArrayInputStream(string.getBytes());
+            ByteArrayInputStream stream = new ByteArrayInputStream(defaultAppearanceString.getBytes());
             PDFStreamParser parser = new PDFStreamParser(stream);
             parser.parse();
             tokens = parser.getTokens();
+            parser.close();
         }
         return tokens;
     }
-
+       
     private List<Object> getStreamTokens(COSStream stream) throws IOException
     {
         List<Object> tokens = new ArrayList<Object>();
@@ -174,6 +163,7 @@ public final class PDAppearanceString
             PDFStreamParser parser = new PDFStreamParser(stream);
             parser.parse();
             tokens = parser.getTokens();
+            parser.close();
         }
         return tokens;
     }
@@ -360,6 +350,7 @@ public final class PDAppearanceString
 
         // Acrobat aligns left regardless of the quadding if the text is wider than the remaining width
         float stringWidth = (font.getStringWidth(value) / 1000) * fontSize;
+        
         int q = getQ();
         if (q == PDTextField.QUADDING_LEFT
                 || stringWidth > borderEdge.getWidth() - paddingLeft - paddingRight)
@@ -388,8 +379,7 @@ public final class PDAppearanceString
                 paddingRight)
         {
             printWriter.flush();
-            // TODO use font's encoding
-            COSWriter.writeString(value.getBytes(Charset.forName("ISO-8859-1")), output); 
+            COSWriter.writeString(font.encode(value), output); 
             printWriter.println(" Tj");
         }
         else
@@ -399,8 +389,7 @@ public final class PDAppearanceString
             {
                 boolean lastLine = i == paragraphs.length - 1;
                 printWriter.flush();
-                // TODO use font's encoding
-                COSWriter.writeString(value.getBytes(Charset.forName("ISO-8859-1")), output);
+                COSWriter.writeString(font.encode(value), output);
                 printWriter.println(lastLine ? " Tj\n" : "> Tj 0 -13 Td");
             }
         }
