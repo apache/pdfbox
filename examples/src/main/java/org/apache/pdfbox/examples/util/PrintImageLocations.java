@@ -28,7 +28,6 @@ import org.apache.pdfbox.contentstream.operator.DrawObject;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.PDFStreamEngine;
 
-import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -72,6 +71,7 @@ public class PrintImageLocations extends PDFStreamEngine
      */
     public static void main( String[] args ) throws Exception
     {
+        args = new String[]{"C:\\Users\\Tilman Hausherr\\Documents\\Java\\PDFBoxPageImageExtraction\\1.pdf"};
         if( args.length != 1 )
         {
             usage();
@@ -109,6 +109,7 @@ public class PrintImageLocations extends PDFStreamEngine
      *
      * @throws IOException If there is an error processing the operation.
      */
+    @Override
     protected void processOperator( Operator operator, List<COSBase> operands) throws IOException
     {
         String operation = operator.getName();
@@ -125,18 +126,13 @@ public class PrintImageLocations extends PDFStreamEngine
                 System.out.println("Found image [" + objectName.getName() + "]");
         
                 Matrix ctmNew = getGraphicsState().getCurrentTransformationMatrix();
-                AffineTransform imageTransform = ctmNew.createAffineTransform();
-                imageTransform.scale(1.0 / imageWidth, -1.0 / imageHeight);
-                imageTransform.translate(0, -imageHeight);
-
-                
-                double imageXScale = imageTransform.getScaleX();
-                double imageYScale = imageTransform.getScaleY();
+                float imageXScale = ctmNew.getScalingFactorX();
+                float imageYScale = ctmNew.getScalingFactorY();
                 System.out.println("position = " + ctmNew.getTranslateX() + ", " + ctmNew.getTranslateY());
                 // size in pixel
                 System.out.println("size = " + imageWidth + "px, " + imageHeight + "px");
                 // size in page units
-                System.out.println("size = " + imageXScale + ", " + imageYScale);
+                System.out.println("size = " + imageXScale + "pu, " + imageYScale + "pu");
                 // size in inches 
                 imageXScale /= 72;
                 imageYScale /= 72;
