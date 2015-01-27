@@ -27,8 +27,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
@@ -105,21 +103,7 @@ public final class PDAppearanceString
 
     private int getQ()
     {
-        int q = parent.getQ();
-        if (parent.getDictionary().getDictionaryObject(COSName.Q) == null)
-        {
-            COSArray kids = (COSArray) parent.getDictionary().getDictionaryObject(COSName.KIDS);
-            if (kids != null && kids.size() > 0)
-            {
-                COSDictionary firstKid = (COSDictionary) kids.getObject(0);
-                COSNumber qNum = (COSNumber) firstKid.getDictionaryObject(COSName.Q);
-                if (qNum != null)
-                {
-                    q = qNum.intValue();
-                }
-            }
-        }
-        return q;
+        return parent.getQ();
     }
 
     /**
