@@ -215,8 +215,7 @@ public class PDAnnotationWidget extends PDAnnotation
      */
     public PDBorderStyleDictionary getBorderStyle()
     {
-        COSDictionary bs = (COSDictionary) this.getDictionary().getItem(
-                COSName.getPDFName( "BS" ) );
+        COSDictionary bs = (COSDictionary) this.getDictionary().getItem(COSName.BS);
         if (bs != null)
         {
             return new PDBorderStyleDictionary( bs );

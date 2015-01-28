@@ -75,7 +75,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
      */
     public void setInteriorColor( PDColor ic )
     {
-        getDictionary().setItem( "IC", ic.toCOSArray() );
+        getDictionary().setItem(COSName.IC, ic.toCOSArray());
     }
 
     /**
@@ -86,8 +86,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
      */
     public PDColor getInteriorColor()
     {
-        COSArray ic = (COSArray) getDictionary().getItem(
-                COSName.getPDFName( "IC" ) );
+        COSArray ic = (COSArray) getDictionary().getItem(COSName.IC);
         if (ic != null)
         {
             return new PDColor( ic, PDDeviceRGB.INSTANCE );
@@ -207,8 +206,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
      */
     public PDBorderStyleDictionary getBorderStyle()
     {
-        COSDictionary bs = (COSDictionary) this.getDictionary().getItem(
-                COSName.getPDFName( "BS" ) );
+        COSDictionary bs = (COSDictionary) this.getDictionary().getItem(COSName.BS);
         if (bs != null)
         {
             return new PDBorderStyleDictionary( bs );

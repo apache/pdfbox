@@ -257,7 +257,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
      */
     public void setInteriorColor( PDColor ic )
     {
-        getDictionary().setItem( "IC", ic.toCOSArray() );
+        getDictionary().setItem(COSName.IC, ic.toCOSArray() );
     }
 
     /**
@@ -269,7 +269,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
     public PDColor getInteriorColor()
     {
 
-        COSArray ic = (COSArray) getDictionary().getDictionaryObject( "IC" );
+        COSArray ic = (COSArray) getDictionary().getDictionaryObject(COSName.IC);
         if (ic != null)
         {
             return new PDColor( ic, PDDeviceRGB.INSTANCE );
@@ -321,8 +321,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
      */
     public PDBorderStyleDictionary getBorderStyle()
     {
-        COSDictionary bs = (COSDictionary) this.getDictionary().getItem(
-                COSName.getPDFName( "BS" ) );
+        COSDictionary bs = (COSDictionary) this.getDictionary().getItem(COSName.BS);
         if (bs != null)
         {
             return new PDBorderStyleDictionary( bs );
