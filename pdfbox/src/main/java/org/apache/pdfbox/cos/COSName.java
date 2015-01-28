@@ -83,6 +83,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName BBOX = new COSName("BBox");
     public static final COSName BC = new COSName("BC");
     public static final COSName BEFORE = new COSName("Before");
+    public static final COSName BG = new COSName("BG");
     public static final COSName BITS_PER_COMPONENT = new COSName("BitsPerComponent");
     public static final COSName BITS_PER_COORDINATE = new COSName("BitsPerCoordinate");
     public static final COSName BITS_PER_FLAG = new COSName("BitsPerFlag");
@@ -315,6 +316,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName MEDIA_BOX = new COSName("MediaBox");
     public static final COSName METADATA = new COSName("Metadata");
     public static final COSName MISSING_WIDTH = new COSName("MissingWidth");
+    public static final COSName MK = new COSName("MK");
     public static final COSName ML = new COSName("ML");
     public static final COSName MM_TYPE1 = new COSName("MMType1");
     public static final COSName MOD_DATE = new COSName("ModDate");

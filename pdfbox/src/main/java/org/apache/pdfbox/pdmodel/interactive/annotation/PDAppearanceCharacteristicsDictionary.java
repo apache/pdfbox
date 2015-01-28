@@ -97,7 +97,7 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
      */
     public PDColor getBorderColour()
     {
-        COSBase c = this.getDictionary().getItem(COSName.getPDFName("BC"));
+        COSBase c = this.getDictionary().getItem(COSName.BC);
         if (c instanceof COSArray)
         {
             PDColorSpace colorSpace = null;
@@ -119,7 +119,7 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
      */
     public void setBorderColour(PDColor c)
     {
-        this.getDictionary().setItem("BC", c.toCOSArray());
+        this.getDictionary().setItem(COSName.BC, c.toCOSArray());
     }
 
     /**
@@ -129,7 +129,7 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
      */
     public PDColor getBackground()
     {
-        COSBase c = this.getDictionary().getItem(COSName.getPDFName("BG"));
+        COSBase c = this.getDictionary().getItem(COSName.BG);
         if (c instanceof COSArray)
         {
             PDColorSpace colorSpace = null;
@@ -151,7 +151,7 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
      */
     public void setBackground(PDColor c)
     {
-        this.getDictionary().setItem("BG", c.toCOSArray());
+        this.getDictionary().setItem(COSName.BG, c.toCOSArray());
     }
 
     /**
