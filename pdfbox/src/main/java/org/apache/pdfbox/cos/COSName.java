@@ -256,6 +256,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName HIDE_WINDOWUI = new COSName("HideWindowUI");
     // I
     public static final COSName I = new COSName("I");
+    public static final COSName IC = new COSName("IC");
     public static final COSName ICCBASED = new COSName("ICCBased");
     public static final COSName ID = new COSName("ID");
     public static final COSName ID_TREE = new COSName("IDTree");
