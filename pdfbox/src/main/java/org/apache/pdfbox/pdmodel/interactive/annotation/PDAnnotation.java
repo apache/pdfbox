@@ -28,6 +28,9 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 
 /**
@@ -631,25 +634,36 @@ public abstract class PDAnnotation implements COSObjectable
     }
 
     /**
-     * This will retrieve the color used in drawing various elements. As of PDF 1.6 these are : Background of icon when
-     * closed Title bar of popup window Border of a link annotation
-     * 
-     * Colour is in DeviceRGB colourspace
-     * 
-     * @return PDGamma object representing the colour
+     * This will retrieve the color used in drawing various elements. As of PDF
+     * 1.6 these are :
+     * <ul>
+     * <li>Background of icon when closed</li>
+     * <li>Title bar of popup window</li>
+     * <li>Border of a link annotation</li></ul>
+     *
+     * @return Color object representing the colour
      * 
      */
     public PDColor getColor()
     {
-        COSBase obj = getDictionary().getDictionaryObject(COSName.C);
-        if (obj instanceof COSArray)
+        return getColor(COSName.C);
+    }
+
+    protected PDColor getColor(COSName itemName)
+    {
+        COSBase c = this.getDictionary().getItem(itemName);
+        if (c instanceof COSArray)
         {
-            return new PDColor((COSArray) obj, PDDeviceRGB.INSTANCE);
+            PDColorSpace colorSpace = null;
+            switch (((COSArray) c).size())
+            {
+                case 1: colorSpace = PDDeviceGray.INSTANCE; break;
+                case 3: colorSpace = PDDeviceRGB.INSTANCE; break;
+                case 4: colorSpace = PDDeviceCMYK.INSTANCE; break;
+            }
+            return new PDColor((COSArray) c, colorSpace);
         }
-        else
-        {
-            return null;
-        }
+        return null;
     }
 
     /**
