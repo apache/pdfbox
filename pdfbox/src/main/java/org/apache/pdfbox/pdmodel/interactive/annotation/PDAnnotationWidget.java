@@ -127,7 +127,7 @@ public class PDAnnotationWidget extends PDAnnotation
      */
     public PDAppearanceCharacteristicsDictionary getAppearanceCharacteristics()
     {
-        COSBase mk = this.getDictionary().getDictionaryObject(COSName.getPDFName("MK"));
+        COSBase mk = this.getDictionary().getDictionaryObject(COSName.MK);
         if (mk instanceof COSDictionary)
         {
             return new PDAppearanceCharacteristicsDictionary((COSDictionary) mk);
@@ -142,7 +142,7 @@ public class PDAnnotationWidget extends PDAnnotation
      */
     public void setAppearanceCharacteristics(PDAppearanceCharacteristicsDictionary appearanceCharacteristics)
     {
-        this.getDictionary().setItem("MK", appearanceCharacteristics);
+        this.getDictionary().setItem(COSName.MK, appearanceCharacteristics);
     }
 
     /**
