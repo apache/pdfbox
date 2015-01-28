@@ -32,6 +32,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
@@ -55,8 +56,12 @@ public class BookmarkValidationProcess extends AbstractProcess
             if (outlineHierarchy != null)
             {
                 COSDictionary dict = outlineHierarchy.getCOSDictionary();
-                COSObject firstObj = (COSObject) dict.getItem(COSName.FIRST);
-                COSObject lastObj = (COSObject) dict.getItem(COSName.LAST);
+                if (!checkIndirectObjects(ctx, dict))
+                {
+                    return;
+                }
+                COSObject firstObj = toCOSObject(dict.getItem(COSName.FIRST));
+                COSObject lastObj = toCOSObject(dict.getItem(COSName.LAST));
 
                 // Count entry is mandatory if there are childrens
                 if (!isCountEntryPresent(dict)
@@ -91,7 +96,7 @@ public class BookmarkValidationProcess extends AbstractProcess
      */
     private boolean isCountEntryPresent(COSDictionary outline)
     {
-        return outline.getItem(COSName.getPDFName("Count")) != null;
+        return outline.getItem(COSName.COUNT) != null;
     }
 
     /**
@@ -103,7 +108,7 @@ public class BookmarkValidationProcess extends AbstractProcess
      */
     private boolean isCountEntryPositive(PreflightContext ctx, COSDictionary outline)
     {
-        COSBase countBase = outline.getItem(COSName.getPDFName("Count"));
+        COSBase countBase = outline.getItem(COSName.COUNT);
         COSDocument cosDocument = ctx.getDocument().getDocument();
         return COSUtils.isInteger(countBase, cosDocument) && (COSUtils.getAsInteger(countBase, cosDocument) > 0);
     }
@@ -144,7 +149,7 @@ public class BookmarkValidationProcess extends AbstractProcess
             {
                 result = false;
             }
-            currentObj = (COSObject) currentItem.getCOSDictionary().getItem(COSName.NEXT);
+            currentObj = toCOSObject(currentItem.getCOSDictionary().getItem(COSName.NEXT));
             if (levelObjects.contains(currentObj))
             {
                 addValidationError(ctx, new ValidationError(ERROR_SYNTAX_TRAILER_OUTLINES_INVALID,
@@ -165,7 +170,7 @@ public class BookmarkValidationProcess extends AbstractProcess
             }
             else 
             {
-                COSObject prevObject = (COSObject) currentItem.getCOSDictionary().getItem(COSName.PREV);
+                COSObject prevObject = toCOSObject(currentItem.getCOSDictionary().getItem(COSName.PREV));
                 if (!realPrevObject.equals(prevObject))
                 {
                     addValidationError(ctx, new ValidationError(ERROR_SYNTAX_TRAILER_OUTLINES_INVALID,
@@ -226,8 +231,8 @@ public class BookmarkValidationProcess extends AbstractProcess
             }
             else
             {
-                COSObject firstObj = (COSObject) dictionary.getItem(COSName.FIRST);
-                COSObject lastObj = (COSObject) dictionary.getItem(COSName.LAST);
+                COSObject firstObj = toCOSObject(dictionary.getItem(COSName.FIRST));
+                COSObject lastObj = toCOSObject(dictionary.getItem(COSName.LAST));
                 if ((firstObj == null && lastObj != null) || (firstObj != null && lastObj == null))
                 {
                     addValidationError(ctx, new ValidationError(ERROR_SYNTAX_TRAILER_OUTLINES_INVALID,
@@ -270,13 +275,36 @@ public class BookmarkValidationProcess extends AbstractProcess
     private boolean checkIndirectObject(PreflightContext ctx, COSDictionary dictionary, COSName name)
     {
         COSBase item = dictionary.getItem(name);
-        if (item != null && !(item instanceof COSObject))
+        if (item == null || item instanceof COSNull || item instanceof COSObject)
         {
-            addValidationError(ctx, new ValidationError(ERROR_SYNTAX_TRAILER_OUTLINES_INVALID,
-                    "/" + name.getName() + " entry must be an indirect object"));
-            return false;
+            return true;
         }
-        return true;
+        addValidationError(ctx, new ValidationError(ERROR_SYNTAX_TRAILER_OUTLINES_INVALID,
+                "/" + name.getName() + " entry must be an indirect object"));
+        return false;
+    }
+    
+    /**
+     * Returns a COSBase as a COSObject or null if null or COSNull. To avoid
+     * trouble, this method is to be called only after having called
+     * {@link #checkIndirectObjects()}.
+     *
+     * @param base should be null, COSNull or a COSObject.
+     * @return null if the parameter is COSNull or null; or else a COSObject.
+     * @throws IllegalArgumentException if the parameter is not null, COSNull or
+     * a COSObject.
+     */
+    private COSObject toCOSObject(COSBase base)
+    {
+        if (base == null || base instanceof COSNull)
+        {
+            return null;
+        }
+        if (!(base instanceof COSObject))
+        {
+            throw new IllegalArgumentException("Paremater " + base + " should be null, COSNull or a COSObject");
+        }
+        return (COSObject) base;
     }
 
 }
