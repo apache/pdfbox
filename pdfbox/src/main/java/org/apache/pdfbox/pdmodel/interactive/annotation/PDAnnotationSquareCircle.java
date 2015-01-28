@@ -21,7 +21,6 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 
 /**
  * This is the class that represents a rectangular or eliptical annotation
@@ -86,15 +85,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
      */
     public PDColor getInteriorColor()
     {
-        COSArray ic = (COSArray) getDictionary().getItem(COSName.IC);
-        if (ic != null)
-        {
-            return new PDColor( ic, PDDeviceRGB.INSTANCE );
-        }
-        else
-        {
-            return null;
-        }
+        return getColor(COSName.IC);
     }
 
 
@@ -179,6 +170,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
      *
      * @return The subtype of this annotation, see the SUB_TYPE_XXX constants.
      */
+    @Override
     public String getSubtype()
     {
         return getDictionary().getNameAsString( COSName.SUBTYPE);

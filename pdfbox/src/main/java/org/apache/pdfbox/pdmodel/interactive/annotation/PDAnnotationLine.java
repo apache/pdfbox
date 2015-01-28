@@ -21,7 +21,6 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 
 /**
  * This is the class that represents a line annotation.
@@ -118,7 +117,6 @@ public class PDAnnotationLine extends PDAnnotationMarkup
         getDictionary().setItem( COSName.SUBTYPE, COSName.getPDFName( SUB_TYPE ) );
         // Dictionary value L is mandatory, fill in with arbitary value
         setLine( new float[] { 0, 0, 0, 0 } );
-
     }
 
     /**
@@ -268,16 +266,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
      */
     public PDColor getInteriorColor()
     {
-
-        COSArray ic = (COSArray) getDictionary().getDictionaryObject(COSName.IC);
-        if (ic != null)
-        {
-            return new PDColor( ic, PDDeviceRGB.INSTANCE );
-        }
-        else
-        {
-            return null;
-        }
+        return getColor(COSName.IC);
     }
 
     /**
