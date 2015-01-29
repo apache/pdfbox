@@ -431,7 +431,7 @@ public class PDFPrinter
                 renderer.renderPageToGraphics(pageIndex, graphics2D, (float)scale);
 
                 // draw crop box
-                if (true)
+                if (showPageBorder)
                 {
                     graphics2D.setTransform(transform);
                     graphics2D.setClip(0, 0, (int)imageableWidth, (int)imageableHeight);
