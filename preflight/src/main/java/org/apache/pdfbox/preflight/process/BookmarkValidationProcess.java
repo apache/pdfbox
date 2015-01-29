@@ -264,11 +264,7 @@ public class BookmarkValidationProcess extends AbstractProcess
         {
             return false;
         }
-        if (!checkIndirectObject(ctx, dictionary, COSName.LAST))
-        {
-            return false;
-        }
-        return true;
+        return checkIndirectObject(ctx, dictionary, COSName.LAST);
     }
 
     // verify that if the named item exists, that it is is an indirect object
