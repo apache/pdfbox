@@ -22,6 +22,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.pdmodel.common.COSArrayList;
+
 /**
  * A set of utility methods to help with common AcroForm form and field related functions.
  */
@@ -136,5 +141,58 @@ public final class FieldUtils
     static void sortByKey(List<KeyValue> pairs)
     {
         Collections.sort(pairs, new FieldUtils.KeyValueKeyComparator());
+    }
+    
+    /**
+     * Return either one of a list which can have two-element arrays entries.
+     * <p>
+     * Some entries in a dictionary can either be an array of elements
+     * or an array of two-element arrays. This method will either return
+     * the elements in the array or in case of two-element arrays, the element
+     * designated by the pair index
+     * </p>
+     * <p>
+     * An {@link IllegalArgumentException} will be thrown if the items contain
+     * two-element arrays and the index is not 0 or 1.
+     * </p>
+     * 
+     * @param items the array of elements or two-element arrays
+     * @param pairIdx the index into the two-element array
+     * @return a List of single elements
+     */
+    static List<String> getPairableItems(COSBase items, int pairIdx)
+    {
+        if (items instanceof COSString)
+        {
+            List<String> array = new ArrayList<String>();
+            array.add(((COSString) items).getString());
+            return array;
+        }
+        else if (items instanceof COSArray)
+        {
+            // test if there is a single text or a two-element array 
+            COSBase entry = ((COSArray) items).get(0);
+            if (entry instanceof COSString)
+            {
+                return COSArrayList.convertCOSStringCOSArrayToList((COSArray)items);
+            } 
+            else
+            {
+                if (pairIdx < 0 || pairIdx > 1) 
+                {
+                    throw new IllegalArgumentException("Only 0 and 1 are allowed as an index into two-element arrays");
+                }
+                List<String> exportValues = new ArrayList<String>();
+                int numItems = ((COSArray) items).size();
+                for (int i=0;i<numItems;i++)
+                {
+                    COSArray pair = (COSArray) ((COSArray) items).get(i);
+                    COSString displayValue = (COSString) pair.get(pairIdx);
+                    exportValues.add(displayValue.getString());
+                }
+                return exportValues;
+            }            
+        }
+        return Collections.<String>emptyList();
     }
 }
