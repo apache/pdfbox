@@ -393,9 +393,21 @@ public abstract class PDSimpleFont extends PDFont
     }
 
     @Override
-    public void subset(Set<Integer> codePoints) throws IOException
+    public void addToSubset(int codePoint)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void subset() throws IOException
     {
         // only TTF subsetting via PDType0Font is currently supported
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean willBeSubset()
+    {
+        return false;
     }
 }

@@ -57,9 +57,9 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
      * @throws IOException if the TTF could not be read
      */
     PDCIDFontType2Embedder(PDDocument document, COSDictionary dict, InputStream ttfStream,
-                           PDType0Font parent) throws IOException
+                           boolean embedSubset, PDType0Font parent) throws IOException
     {
-        super(document, dict, ttfStream);
+        super(document, dict, ttfStream, embedSubset);
         this.document = document;
         this.dict = dict;
         this.parent = parent;

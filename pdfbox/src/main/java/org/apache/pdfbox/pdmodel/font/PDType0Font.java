@@ -20,8 +20,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.cmap.CMap;
@@ -47,7 +45,7 @@ public class PDType0Font extends PDFont
     private CMap cMap, cMapUCS2;
     private boolean isCMapPredefined;
     private PDCIDFontType2Embedder embedder;
-
+    
     /**
     * Loads a TTF to be embedded into a document.
     *
@@ -58,7 +56,7 @@ public class PDType0Font extends PDFont
     */
     public static PDType0Font load(PDDocument doc, File file) throws IOException
     {
-        return new PDType0Font(doc, new FileInputStream(file));
+        return new PDType0Font(doc, new FileInputStream(file), true);
     }
 
     /**
@@ -71,7 +69,22 @@ public class PDType0Font extends PDFont
     */
     public static PDType0Font load(PDDocument doc, InputStream input) throws IOException
     {
-        return new PDType0Font(doc, input);
+        return new PDType0Font(doc, input, true);
+    }
+
+    /**
+     * Loads a TTF to be embedded into a document.
+     *
+     * @param doc The PDF document that will hold the embedded font.
+     * @param input A TrueType font.
+     * @param embedSubset True if the font will be subset before embedding
+     * @return A Type0 font with a CIDFontType2 descendant.
+     * @throws IOException If there is an error reading the font stream.
+     */
+    public static PDType0Font load(PDDocument doc, InputStream input, boolean embedSubset)
+            throws IOException
+    {
+        return new PDType0Font(doc, input, embedSubset);
     }
 
     /**
@@ -98,18 +111,39 @@ public class PDType0Font extends PDFont
     /**
     * Private. Creates a new TrueType font for embedding.
     */
-    private PDType0Font(PDDocument document, InputStream ttfStream) throws IOException
+    private PDType0Font(PDDocument document, InputStream ttfStream, boolean embedSubset)
+            throws IOException
     {
-        embedder = new PDCIDFontType2Embedder(document, dict, ttfStream, this);
+        embedder = new PDCIDFontType2Embedder(document, dict, ttfStream, embedSubset, this);
         descendantFont = embedder.getCIDFont();
         readEncoding();
         fetchCMapUCS2();
     }
 
     @Override
-    public void subset(Set<Integer> codePoints) throws IOException
+    public void addToSubset(int codePoint)
     {
-        embedder.subset(codePoints);
+        if (!willBeSubset())
+        {
+            throw new IllegalStateException("This font was created with subsetting disabled");
+        }
+        embedder.addToSubset(codePoint);
+    }
+    
+    @Override
+    public void subset() throws IOException
+    {
+        if (!willBeSubset())
+        {
+            throw new IllegalStateException("This font was created with subsetting disabled");
+        }
+        embedder.subset();
+    }
+    
+    @Override
+    public boolean willBeSubset()
+    {
+        return embedder.needsSubset();
     }
 
     /**

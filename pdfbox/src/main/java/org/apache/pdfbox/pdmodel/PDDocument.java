@@ -23,9 +23,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-
+import java.util.Set;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -47,6 +48,7 @@ import org.apache.pdfbox.pdmodel.encryption.PDEncryption;
 import org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy;
 import org.apache.pdfbox.pdmodel.encryption.SecurityHandler;
 import org.apache.pdfbox.pdmodel.encryption.SecurityHandlerFactory;
+import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
@@ -90,6 +92,9 @@ public class PDDocument implements Closeable
 
     // the access permissions of the document
     private AccessPermission accessPermission;
+    
+    // fonts to subset before saving
+    private final Set<PDFont> fontsToSubset = new HashSet<PDFont>();
     
     /**
      * Creates an empty PDF document.
@@ -693,6 +698,14 @@ public class PDDocument implements Closeable
     }
 
     /**
+     * Returns the list of fonts which will be subset before the document is saved.
+     */
+    Set<PDFont> getFontsToSubset()
+    {
+        return fontsToSubset;
+    }
+
+    /**
      * Parses PDF with non sequential parser.
      * 
      * @param file file to be loaded
@@ -914,19 +927,24 @@ public class PDDocument implements Closeable
         {
             throw new IOException("Cannot save a document which has been closed");
         }
-        COSWriter writer = null;
+
+        // subset designated fonts
+        for (PDFont font : fontsToSubset)
+        {
+            font.subset();
+        }
+        fontsToSubset.clear();
+        
+        // save PDF
+        COSWriter writer = new COSWriter(output);
         try
         {
-            writer = new COSWriter(output);
             writer.write(this);
             writer.close();
         }
         finally
         {
-            if (writer != null)
-            {
-                writer.close();
-            }
+            writer.close();
         }
     }
 

@@ -150,7 +150,7 @@ public class PDFPrinter
         this.scaling = scaling;
         this.orientation = orientation;
         this.showPageBorder = showPageBorder;
-        this.paper = paper;
+        this.paper = paper != null ? paper : printerJob.defaultPage().getPaper();
         this.dpi = dpi;
     }
 
@@ -431,7 +431,7 @@ public class PDFPrinter
                 renderer.renderPageToGraphics(pageIndex, graphics2D, (float)scale);
 
                 // draw crop box
-                if (showPageBorder)
+                if (true)
                 {
                     graphics2D.setTransform(transform);
                     graphics2D.setClip(0, 0, (int)imageableWidth, (int)imageableHeight);

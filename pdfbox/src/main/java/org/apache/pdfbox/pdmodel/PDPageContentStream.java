@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.pdmodel.edit;
+package org.apache.pdfbox.pdmodel;
 
 import java.awt.Color;
 import java.awt.geom.AffineTransform;
@@ -24,13 +24,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-
-import java.util.Map;
-import java.util.Set;
 import java.util.Stack;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,15 +34,11 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdfwriter.COSWriter;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.COSStreamArray;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDPropertyList;
-import org.apache.pdfbox.pdmodel.font.PDCIDFontType2;
 import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
@@ -59,7 +50,6 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDPattern;
 import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
-import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDInlineImage;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
 import org.apache.pdfbox.util.Charsets;
@@ -74,13 +64,12 @@ public final class PDPageContentStream implements Closeable
 {
     private static final Log LOG = LogFactory.getLog(PDPageContentStream.class);
 
+    private final PDDocument document;
     private OutputStream output;
     private PDResources resources;
 
     private boolean inTextMode = false;
     private final Stack<PDFont> fontStack = new Stack<PDFont>();
-    private final Set<PDFont> fontsToSubset = new HashSet<PDFont>();
-    private final Map<PDFont, Set<Integer>> subsetCodePoints = new HashMap<PDFont, Set<Integer>>();
 
     private final Stack<PDColorSpace> nonStrokingColorSpaceStack = new Stack<PDColorSpace>();
     private final Stack<PDColorSpace> strokingColorSpaceStack = new Stack<PDColorSpace>();
@@ -128,6 +117,8 @@ public final class PDPageContentStream implements Closeable
     public PDPageContentStream(PDDocument document, PDPage sourcePage, boolean appendContent, boolean compress,
             boolean resetContext) throws IOException
     {
+        this.document = document;
+        
         // Get the pdstream from the source page instead of creating a new one
         PDStream contents = sourcePage.getStream();
         boolean hasContent = contents != null;
@@ -249,28 +240,15 @@ public final class PDPageContentStream implements Closeable
         writeOperator("ET");
         inTextMode = false;
     }
-
+    
     /**
-     * Set the font to draw text with.
+     * Set the font and font size to draw text with.
      *
      * @param font The font to use.
      * @param fontSize The font size to draw the text.
      * @throws IOException If there is an error writing the font information.
      */
     public void setFont(PDFont font, float fontSize) throws IOException
-    {
-        setFont(font, fontSize, true);
-    }
-
-    /**
-     * Set the font and font size to draw text with.
-     *
-     * @param font The font to use.
-     * @param fontSize The font size to draw the text.
-     * @param embedSubset True to subset this font when embedding it. Affects all uses of this font.
-     * @throws IOException If there is an error writing the font information.
-     */
-    public void setFont(PDFont font, float fontSize, boolean embedSubset) throws IOException
     {
         if (fontStack.isEmpty())
         {
@@ -280,20 +258,12 @@ public final class PDPageContentStream implements Closeable
         {
             fontStack.setElementAt(font, fontStack.size() - 1);
         }
-
-        if (embedSubset)
+        
+        if (font.willBeSubset() && !document.getFontsToSubset().contains(font))
         {
-            if (!fontsToSubset.contains(font))
-            {
-                fontsToSubset.add(font);
-                subsetCodePoints.put(font, new HashSet<Integer>());
-            }
+            document.getFontsToSubset().add(font);
         }
-        else
-        {
-            fontsToSubset.remove(font);
-        }
-
+        
         writeOperand(resources.add(font));
         writeOperand(fontSize);
         writeOperator("Tf");
@@ -333,16 +303,14 @@ public final class PDPageContentStream implements Closeable
         PDFont font = fontStack.peek();
 
         // Unicode code points to keep when subsetting
-        Set<Integer> codePoints = subsetCodePoints.get(font);
-        if (codePoints != null)
+        if (font.willBeSubset())
         {
             for (int offset = 0; offset < text.length(); )
             {
                 int codePoint = text.codePointAt(offset);
-                codePoints.add(codePoint);
+                font.addToSubset(codePoint);
                 offset += Character.charCount(codePoint);
             }
-
         }
 
         COSWriter.writeString(font.encode(text), output);
@@ -2039,15 +2007,6 @@ public final class PDPageContentStream implements Closeable
     @Override
     public void close() throws IOException
     {
-        for (PDFont font : fontsToSubset)
-        {
-            // currently we only support subsetting Type0/CIDFontType2 fonts
-            if (font instanceof PDType0Font
-                    && ((PDType0Font) font).getDescendantFont() instanceof PDCIDFontType2)
-            {
-                font.subset(subsetCodePoints.get(font));
-            }
-        }
         output.close();
     }
 }

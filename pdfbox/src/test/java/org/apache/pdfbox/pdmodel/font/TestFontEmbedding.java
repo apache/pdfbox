@@ -24,7 +24,7 @@ import junit.framework.TestCase;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.util.PDFTextStripper;
 
 /**
@@ -52,7 +52,7 @@ public class TestFontEmbedding extends TestCase
         validateCIDFontType2(true);
     }
 
-    private void validateCIDFontType2(boolean subset) throws Exception
+    private void validateCIDFontType2(boolean useSubset) throws Exception
     {
         PDDocument document = new PDDocument();
         PDPage page = new PDPage(PDRectangle.A4);
@@ -60,12 +60,12 @@ public class TestFontEmbedding extends TestCase
 
         InputStream input = TestFontEmbedding.class.getClassLoader().getResourceAsStream(
                 "org/apache/pdfbox/ttf/LiberationSans-Regular.ttf");
-        PDType0Font font = PDType0Font.load(document, input);
+        PDType0Font font = PDType0Font.load(document, input, useSubset);
 
         PDPageContentStream stream = new PDPageContentStream(document, page);
 
         stream.beginText();
-        stream.setFont(font, 12, subset);
+        stream.setFont(font, 12);
 
         String text = "Unicode русский язык Tiếng Việt";
         stream.newLineAtOffset(50, 600);
