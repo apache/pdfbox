@@ -97,19 +97,7 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
      */
     public PDColor getBorderColour()
     {
-        COSBase c = this.getDictionary().getItem(COSName.BC);
-        if (c instanceof COSArray)
-        {
-            PDColorSpace colorSpace = null;
-            switch (((COSArray) c).size())
-            {
-                case 1: colorSpace = PDDeviceGray.INSTANCE; break;
-                case 3: colorSpace = PDDeviceRGB.INSTANCE; break;
-                case 4: colorSpace = PDDeviceCMYK.INSTANCE; break;
-            }
-            return new PDColor((COSArray) c, colorSpace);
-        }
-        return null;
+        return getColor(COSName.BC);
     }
 
     /**
@@ -129,21 +117,9 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
      */
     public PDColor getBackground()
     {
-        COSBase c = this.getDictionary().getItem(COSName.BG);
-        if (c instanceof COSArray)
-        {
-            PDColorSpace colorSpace = null;
-            switch (((COSArray) c).size())
-            {
-                case 1: colorSpace = PDDeviceGray.INSTANCE; break;
-                case 3: colorSpace = PDDeviceRGB.INSTANCE; break;
-                case 4: colorSpace = PDDeviceCMYK.INSTANCE; break;
-            }
-            return new PDColor((COSArray) c, colorSpace);
-        }
-        return null;
+        return getColor(COSName.BG);
     }
-
+    
     /**
      * This will set the background color.
      * 
@@ -255,6 +231,24 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
         if (i instanceof COSStream)
         {
             return new PDFormXObject(new PDStream((COSStream) i), "IX");
+        }
+        return null;
+    }
+
+    private PDColor getColor(COSName itemName)
+    {
+        COSBase c = this.getDictionary().getItem(itemName);
+        if (c instanceof COSArray)
+        {
+            PDColorSpace colorSpace = null;
+            switch (((COSArray) c).size())
+            {
+                case 1: colorSpace = PDDeviceGray.INSTANCE; break;
+                case 3: colorSpace = PDDeviceRGB.INSTANCE; break;
+                case 4: colorSpace = PDDeviceCMYK.INSTANCE; break;
+                default: break;
+            }
+            return new PDColor((COSArray) c, colorSpace);
         }
         return null;
     }
