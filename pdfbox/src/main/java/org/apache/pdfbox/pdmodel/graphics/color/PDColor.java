@@ -45,7 +45,7 @@ public final class PDColor
      */
     public PDColor(COSArray array, PDColorSpace colorSpace)
     {
-        if (array.get(array.size() - 1) instanceof COSName)
+        if (array.size() > 0 && array.get(array.size() - 1) instanceof COSName)
         {
             // color components (optional)
             components = new float[array.size() - 1];
