@@ -243,10 +243,17 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
             PDColorSpace colorSpace = null;
             switch (((COSArray) c).size())
             {
-                case 1: colorSpace = PDDeviceGray.INSTANCE; break;
-                case 3: colorSpace = PDDeviceRGB.INSTANCE; break;
-                case 4: colorSpace = PDDeviceCMYK.INSTANCE; break;
-                default: break;
+                case 1:
+                    colorSpace = PDDeviceGray.INSTANCE;
+                    break;
+                case 3:
+                    colorSpace = PDDeviceRGB.INSTANCE;
+                    break;
+                case 4:
+                    colorSpace = PDDeviceCMYK.INSTANCE;
+                    break;
+                default:
+                    break;
             }
             return new PDColor((COSArray) c, colorSpace);
         }
