@@ -609,6 +609,7 @@ public abstract class PDFieldTreeNode implements COSObjectable
             for (int i = 0; i < kids.size(); i++)
             {
                 COSDictionary kidDictionary = (COSDictionary) kids.getObject(i);
+                
                 if (kidDictionary == null)
                 {
                     continue;
@@ -617,19 +618,12 @@ public abstract class PDFieldTreeNode implements COSObjectable
                 // Decide if the kid is field or a widget annotation.
                 // A field dictionary that does not have a partial field name (T entry)
                 // of its own shall not be considered a field but simply a Widget annotation. 
-                
                 if (kidDictionary.getDictionaryObject(COSName.T) != null)
                 {
-                    COSDictionary parentDictionary = (COSDictionary) kidDictionary.getDictionaryObject(
-                            COSName.PARENT, COSName.P);
-                    if (kidDictionary.getDictionaryObject(COSName.FT) != null
-                            || (parentDictionary != null && parentDictionary.getDictionaryObject(COSName.FT) != null))
+                    PDFieldTreeNode field = PDFieldTreeNode.createField(acroForm, kidDictionary, this);
+                    if (field != null)
                     {
-                        PDFieldTreeNode field = PDFieldTreeNode.createField(acroForm, kidDictionary, this);
-                        if (field != null)
-                        {
-                            kidsList.add(field);
-                        }
+                        kidsList.add(field);
                     }
                 }
                 else
