@@ -125,34 +125,7 @@ public abstract class PDChoice extends PDVariableText
     public List<String> getOptions()
     {
         COSBase values = getDictionary().getDictionaryObject(COSName.OPT);
-        if (values instanceof COSString)
-        {
-            List<String> array = new ArrayList<String>();
-            array.add(((COSString) values).getString());
-            return array;
-        }
-        else if (values instanceof COSArray)
-        {
-            // test if there is a single text or a two-element array 
-            COSBase entry = ((COSArray) values).get(0);
-            if (entry instanceof COSString)
-            {
-                return COSArrayList.convertCOSStringCOSArrayToList((COSArray)values);
-            } 
-            else
-            {
-                List<String> exportValues = new ArrayList<String>();
-                int numItems = ((COSArray) values).size();
-                for (int i=0;i<numItems;i++)
-                {
-                    COSArray pair = (COSArray) ((COSArray) values).get(i);
-                    COSString displayValue = (COSString) pair.get(0);
-                    exportValues.add(displayValue.getString());
-                }
-                return exportValues;
-            }            
-        }
-        return Collections.<String>emptyList();
+        return FieldUtils.getPairableItems(values, 0);
     }
 
     /**
@@ -254,35 +227,7 @@ public abstract class PDChoice extends PDVariableText
     public List<String> getOptionsDisplayValues()
     {
         COSBase values = getDictionary().getDictionaryObject(COSName.OPT);
-        if (values instanceof COSString)
-        {
-            List<String> array = new ArrayList<String>();
-            array.add(((COSString) values).getString());
-            return array;
-        }
-        else if (values instanceof COSArray)
-        {
-            // test if there is a single text or a two-element array 
-            COSBase entry = ((COSArray) values).get(0);
-            if (entry instanceof COSString)
-            {
-                return COSArrayList.convertCOSStringCOSArrayToList((COSArray)values);
-            } 
-            else
-            {
-                List<String> displayValues = new ArrayList<String>();
-                int numItems = ((COSArray) values).size();
-                for (int i=0;i<numItems;i++)
-                {
-                    COSArray pair = (COSArray) ((COSArray) values).get(i);
-                    COSString displayValue = (COSString) pair.get(1);
-                    displayValues.add(displayValue.getString());
-                }
-                return displayValues;
-            }
-            
-        }
-        return Collections.<String>emptyList();
+        return FieldUtils.getPairableItems(values, 1);
     }
 
     /**
