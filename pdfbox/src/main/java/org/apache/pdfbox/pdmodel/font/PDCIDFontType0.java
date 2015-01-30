@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.cff.CFFCIDFont;
@@ -49,7 +48,8 @@ public class PDCIDFontType0 extends PDCIDFont
 
     private final CFFCIDFont cidFont;  // Top DICT that uses CIDFont operators
     private final CFFType1Font t1Font; // Top DICT that does not use CIDFont operators
-
+    // todo: PDFBOX-2642 contains a Type1 PFB font in a CIDFont, but we can't handle that currently
+    
     private final Map<Integer, Float> glyphHeights = new HashMap<Integer, Float>();
     private final boolean isEmbedded;
     private final boolean isDamaged;
@@ -78,12 +78,10 @@ public class PDCIDFontType0 extends PDCIDFont
             }
         }
 
-        if (bytes != null)
-        {
-            // embedded
+        boolean fontIsDamaged = false;
+        CFFFont cffFont = null;
+        if (bytes != null) {
             CFFParser cffParser = new CFFParser();
-            boolean fontIsDamaged = false;
-            CFFFont cffFont = null;
             try
             {
                 cffFont = cffParser.parse(bytes).get(0);
@@ -93,7 +91,11 @@ public class PDCIDFontType0 extends PDCIDFont
                 LOG.error("Can't read the embedded CFF font " + fd.getFontName(), e);
                 fontIsDamaged = true;
             }
-
+        }
+        
+        if (cffFont != null)
+        {
+            // embedded
             if (cffFont instanceof CFFCIDFont)
             {
                 cidFont = (CFFCIDFont)cffFont;
@@ -105,7 +107,7 @@ public class PDCIDFontType0 extends PDCIDFont
                 t1Font = (CFFType1Font)cffFont;
             }
             isEmbedded = true;
-            isDamaged = fontIsDamaged;
+            isDamaged = false;
         }
         else
         {
@@ -148,7 +150,7 @@ public class PDCIDFontType0 extends PDCIDFont
                 }
             }
             isEmbedded = false;
-            isDamaged = false;
+            isDamaged = fontIsDamaged;
         }
         fontMatrixTransform = getFontMatrix().createAffineTransform();
         fontMatrixTransform.scale(1000, 1000);
