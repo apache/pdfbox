@@ -48,7 +48,6 @@ public class PDCIDFontType0 extends PDCIDFont
 
     private final CFFCIDFont cidFont;  // Top DICT that uses CIDFont operators
     private final CFFType1Font t1Font; // Top DICT that does not use CIDFont operators
-    // todo: PDFBOX-2642 contains a Type1 PFB font in a CIDFont, but we can't handle that currently
     
     private final Map<Integer, Float> glyphHeights = new HashMap<Integer, Float>();
     private final boolean isEmbedded;
@@ -80,7 +79,11 @@ public class PDCIDFontType0 extends PDCIDFont
 
         boolean fontIsDamaged = false;
         CFFFont cffFont = null;
-        if (bytes != null) {
+        if (bytes != null && bytes.length > 0 && (bytes[0] & 0xff) == '%') {
+            // todo: PDFBOX-2642 contains a Type1 PFB font in a CIDFont, but we can't handle it yet
+            LOG.error("Unsupported: Type1 font instead of CFF in " + fd.getFontName());
+            fontIsDamaged = true;
+        } else if (bytes != null) {
             CFFParser cffParser = new CFFParser();
             try
             {
@@ -142,7 +145,10 @@ public class PDCIDFontType0 extends PDCIDFont
                 {
                     // this error often indicates that the user needs to install the Adobe Reader
                     // Asian and Extended Language Pack
-                    LOG.error("Missing CID-keyed font " + getBaseFont());
+                    if (!fontIsDamaged)
+                    {
+                        LOG.error("Missing CID-keyed font " + getBaseFont());
+                    }
                 }
                 else
                 {
