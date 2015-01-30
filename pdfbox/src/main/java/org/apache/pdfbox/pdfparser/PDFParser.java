@@ -18,7 +18,6 @@ package org.apache.pdfbox.pdfparser;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
@@ -283,31 +282,6 @@ public class PDFParser extends COSParser
         }
         document = new COSDocument(useScratchFiles);
         pdfSource = new PushBackInputStream(raStream, 4096);
-    }
-
-    /**
-     * Create a temporary file with the input stream. If the creation succeed, the {@linkplain #isTmpPDFFile} is set to
-     * true. This Temporary file will be deleted at end of the parse method
-     * 
-     * @param input
-     * @return the temporary file
-     * @throws IOException If something went wrong.
-     */
-    private File createTmpFile(InputStream input) throws IOException
-    {
-        FileOutputStream fos = null;
-        try
-        {
-            File tmpFile = File.createTempFile(TMP_FILE_PREFIX, ".pdf");
-            fos = new FileOutputStream(tmpFile);
-            IOUtils.copy(input, fos);
-            return tmpFile;
-        }
-        finally
-        {
-            IOUtils.closeQuietly(input);
-            IOUtils.closeQuietly(fos);
-        }
     }
 
     /**
