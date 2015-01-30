@@ -49,28 +49,6 @@ public class PDActionNamed extends PDAction
     }
 
     /**
-     * Convert this standard java object to a COS object.
-     *
-     * @return The cos object that matches this Java object.
-     */
-    @Override
-    public COSBase getCOSObject()
-    {
-        return action;
-    }
-
-    /**
-     * Convert this standard java object to a COS object.
-     *
-     * @return The cos object that matches this Java object.
-     */
-    @Override
-    public COSDictionary getCOSDictionary()
-    {
-        return action;
-    }
-
-    /**
      * This will get the name of the action to be performed.
      *
      * @return The name of the action to be performed.

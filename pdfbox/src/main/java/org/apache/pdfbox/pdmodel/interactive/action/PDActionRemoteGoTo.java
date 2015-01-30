@@ -57,28 +57,6 @@ public class PDActionRemoteGoTo extends PDAction
     }
 
     /**
-     * Convert this standard java object to a COS object.
-     *
-     * @return The cos object that matches this Java object.
-     */
-    @Override
-    public COSBase getCOSObject()
-    {
-        return action;
-    }
-
-    /**
-     * Convert this standard java object to a COS object.
-     *
-     * @return The cos object that matches this Java object.
-     */
-    @Override
-    public COSDictionary getCOSDictionary()
-    {
-        return action;
-    }
-
-    /**
      * This will get the type of action that the actions dictionary describes.
      * It must be GoToR for a remote go-to action.
      *
