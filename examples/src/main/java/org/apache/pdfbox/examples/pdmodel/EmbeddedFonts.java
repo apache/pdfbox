@@ -49,7 +49,7 @@ public class EmbeddedFonts
         stream.setLeading(12 * 1.2);
 
         stream.newLineAtOffset(50, 600);
-        stream.showText("PDFBox Unicode with Embedded TrueType Font");
+        stream.showText("PDFBox's Unicode with Embedded TrueType Font");
         stream.newLine();
 
         stream.showText("Supports full Unicode text ☺");
