@@ -1332,11 +1332,6 @@ public class COSWriter implements ICOSVisitor, Closeable
                     case '(':
                     case ')':
                     case '\\':
-                    case '\r':
-                    case '\n':
-                    case '\t':
-                    case '\b':
-                    case '\f':
                         output.write('\\');
                         output.write(b);
                         break;
