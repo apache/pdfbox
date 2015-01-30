@@ -169,7 +169,7 @@ public class FDFDocument implements Closeable
      */
     public static FDFDocument load( String filename ) throws IOException
     {
-        return load( new BufferedInputStream( new FileInputStream( filename ) ) );
+        return load(new File(filename));
     }
 
     /**
@@ -183,7 +183,9 @@ public class FDFDocument implements Closeable
      */
     public static FDFDocument load( File file ) throws IOException
     {
-        return load( new BufferedInputStream( new FileInputStream( file ) ) );
+        NonSequentialPDFParser parser = new NonSequentialPDFParser(file, null);
+        parser.parse();
+        return parser.getFDFDocument();
     }
 
     /**
