@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
@@ -379,6 +380,11 @@ public class SynchronizedMetaDataValidation
                     {
                         ve.add(unsynchronizedMetaDataError("CreationDate"));
                     }
+                    else if (hasTimeZone(xmp.getCreateDateProperty().getRawValue()) != 
+                            hasTimeZone(dico.getPropertyStringValue("CreationDate")))
+                    {
+                        ve.add(unsynchronizedMetaDataError("CreationDate"));
+                    }
                 }
 
             }
@@ -422,6 +428,11 @@ public class SynchronizedMetaDataValidation
                         if (!DateConverter.toISO8601(xmpModifyDate).equals(DateConverter.toISO8601(modifyDate)))
                         {
 
+                            ve.add(unsynchronizedMetaDataError("ModificationDate"));
+                        }
+                        else if (hasTimeZone(xmp.getModifyDateProperty().getRawValue()) != 
+                                hasTimeZone(dico.getPropertyStringValue("ModDate")))
+                        {
                             ve.add(unsynchronizedMetaDataError("ModificationDate"));
                         }
                     }
@@ -599,5 +610,31 @@ public class SynchronizedMetaDataValidation
             length--;
         }
         return string.substring(0, length);
+    }
+    
+    /**
+     * Verify if the date string has time zone information.
+     * <p>
+     * <strong>This method doesn't do a complete parsing as
+     * this is a helper AFTER a date has proven to be valid
+     * </strong>
+     * </p>
+     * 
+     * @param date
+     * @return the validation result
+     */
+    private boolean hasTimeZone(Object date)
+    {
+        final String datePattern = "^D:.*[Z]$|^D:.*\\+.*|^\\d{4}.*T.*Z$|^\\d{4}.*T.*[\\+]\\d{2}.*$";
+        if (date instanceof Calendar)
+        {
+            // A Java Calendar object always has a time zone information
+            return true;
+        }
+        else if (date instanceof String)
+        {
+            return Pattern.matches(datePattern, (String) date);
+        }
+        return false;
     }
 }
