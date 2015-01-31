@@ -33,13 +33,10 @@ import org.junit.runners.Parameterized.Parameters;
 public class TestThumbnailType extends AbstractStructuredTypeTester
 {
 
-    protected ThumbnailType structured = null;
-
     @Before
     public void before() throws Exception
     {
         super.before();
-        structured = new ThumbnailType(xmp);
     }
 
     public TestThumbnailType(Class<? extends AbstractStructuredType> clz, String field, Types type)
@@ -50,7 +47,7 @@ public class TestThumbnailType extends AbstractStructuredTypeTester
     @Override
     protected AbstractStructuredType getStructured()
     {
-        return structured;
+        return new ThumbnailType(xmp);
     }
 
     @Parameters

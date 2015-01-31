@@ -33,13 +33,10 @@ import org.junit.runners.Parameterized.Parameters;
 public class TestLayerType extends AbstractStructuredTypeTester
 {
 
-    protected LayerType structured = null;
-
     @Before
     public void before() throws Exception
     {
         super.before();
-        structured = new LayerType(xmp);
     }
 
     public TestLayerType(Class<? extends AbstractStructuredType> clz, String field, Types type)
@@ -50,7 +47,7 @@ public class TestLayerType extends AbstractStructuredTypeTester
     @Override
     protected AbstractStructuredType getStructured()
     {
-        return structured;
+        return new LayerType(xmp);
     }
 
     @Parameters

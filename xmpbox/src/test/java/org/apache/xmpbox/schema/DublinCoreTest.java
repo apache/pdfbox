@@ -34,18 +34,15 @@ import org.junit.runners.Parameterized.Parameters;
 public class DublinCoreTest extends AbstractSchemaTester
 {
 
-    protected DublinCoreSchema schema = null;
-
     public DublinCoreSchema getSchema()
     {
-        return schema;
+        return xmp.createAndAddDublinCoreSchema();
     }
 
     @Before
     public void before() throws Exception
     {
         super.before();
-        schema = xmp.createAndAddDublinCoreSchema();
     }
 
     public DublinCoreTest(String fieldName, Types type, Cardinality card)
