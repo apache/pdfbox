@@ -36,6 +36,8 @@ public abstract class AbstractSimpleProperty extends AbstractField
 
     private String prefix;
 
+    private Object rawValue;
+    
     /**
      * Property specific type constructor (namespaceURI is given)
      * 
@@ -57,6 +59,7 @@ public abstract class AbstractSimpleProperty extends AbstractField
         setValue(value);
         this.namespace = namespaceURI;
         this.prefix = prefix;
+        this.rawValue = value;
 
     }
 
@@ -76,6 +79,22 @@ public abstract class AbstractSimpleProperty extends AbstractField
     public abstract String getStringValue();
 
     public abstract Object getValue();
+    
+    /**
+     * Return the properties raw value.
+     * <p>
+     * The properties raw value is how it has been
+     * serialized into the XML. Allows to retrieve the
+     * low level date for validation purposes.
+     * </p> 
+     * 
+     * @return the raw value.
+     */
+    public Object getRawValue()
+    {
+        return this.rawValue;
+    }
+    
 
     public String toString()
     {
