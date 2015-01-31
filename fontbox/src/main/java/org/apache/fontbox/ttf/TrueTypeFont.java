@@ -405,37 +405,59 @@ public class TrueTypeFont implements Type1Equivalent
     /**
      * Returns the best Unicode from the font (the most general). The PDF spec says that "The means
      * by which this is accomplished are implementation-dependent."
+     * 
+     * @throws IOException if the font could not be read
      */
-    private CmapSubtable getUnicodeCmap(CmapTable cmapTable)
+    public CmapSubtable getUnicodeCmap() throws IOException
     {
+        return getUnicodeCmap(true);
+    }
+
+    /**
+     * Returns the best Unicode from the font (the most general). The PDF spec says that "The means
+     * by which this is accomplished are implementation-dependent."
+     * 
+     * @param isStrict False if we allow falling back to any cmap, even if it's not Unicode.
+     * @throws IOException if the font could not be read, or there is no Unicode cmap
+     */
+    public CmapSubtable getUnicodeCmap(boolean isStrict) throws IOException
+    {
+        CmapTable cmapTable = getCmap();
         if (cmapTable == null)
         {
             return null;
         }
 
         CmapSubtable cmap = cmapTable.getSubtable(CmapTable.PLATFORM_UNICODE,
-                CmapTable.ENCODING_UNICODE_2_0_FULL);
+                                                  CmapTable.ENCODING_UNICODE_2_0_FULL);
         if (cmap == null)
         {
             cmap = cmapTable.getSubtable(CmapTable.PLATFORM_UNICODE,
-                    CmapTable.ENCODING_UNICODE_2_0_BMP);
+                                         CmapTable.ENCODING_UNICODE_2_0_BMP);
         }
         if (cmap == null)
         {
             cmap = cmapTable.getSubtable(CmapTable.PLATFORM_WINDOWS,
-                    CmapTable.ENCODING_WIN_UNICODE_BMP);
+                                         CmapTable.ENCODING_WIN_UNICODE_BMP);
         }
         if (cmap == null)
         {
             // Microsoft's "Recommendations for OpenType Fonts" says that "Symbol" encoding
             // actually means "Unicode, non-standard character set"
             cmap = cmapTable.getSubtable(CmapTable.PLATFORM_WINDOWS,
-                    CmapTable.ENCODING_WIN_SYMBOL);
+                                         CmapTable.ENCODING_WIN_SYMBOL);
         }
         if (cmap == null)
         {
-            // fallback to the first cmap (may not be Unicode, so may produce poor results)
-            cmap = cmapTable.getCmaps()[0];
+            if (isStrict)
+            {
+                throw new IOException("The TrueType font does not contain a Unicode cmap");
+            }
+            else
+            {
+                // fallback to the first cmap (may not be Unicode, so may produce poor results)
+                cmap = cmapTable.getCmaps()[0];
+            }
         }
         return cmap;
     }
@@ -457,7 +479,7 @@ public class TrueTypeFont implements Type1Equivalent
         int uni = parseUniName(name);
         if (uni > -1)
         {
-            CmapSubtable cmap = getUnicodeCmap(getCmap());
+            CmapSubtable cmap = getUnicodeCmap(false);
             return cmap.getGlyphId(uni);
         }
         

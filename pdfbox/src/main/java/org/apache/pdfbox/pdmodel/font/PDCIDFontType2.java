@@ -18,14 +18,12 @@ package org.apache.pdfbox.pdmodel.font;
 
 import java.io.IOException;
 import java.io.InputStream;
-
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.cmap.CMap;
 import org.apache.fontbox.ttf.CmapSubtable;
-import org.apache.fontbox.ttf.CmapTable;
 import org.apache.fontbox.ttf.OTFParser;
 import org.apache.fontbox.ttf.OpenTypeFont;
 import org.apache.fontbox.ttf.TTFParser;
@@ -148,7 +146,7 @@ public class PDCIDFontType2 extends PDCIDFont
             }
         }
         ttf = ttfFont;
-        cmap = getUnicodeCmap(ttf.getCmap());
+        cmap = ttf.getUnicodeCmap(false);
 
         cid2gid = readCIDToGIDMap();
         gid2cid = invert(cid2gid);
@@ -306,45 +304,6 @@ public class PDCIDFontType2 extends PDCIDFont
                 }
             }
         }
-    }
-
-    /**
-     * Returns the best Unicode from the font (the most general). The PDF spec says that "The means
-     * by which this is accomplished are implementation-dependent."
-     */
-    private CmapSubtable getUnicodeCmap(CmapTable cmapTable)
-    {
-        if (cmapTable == null)
-        {
-            return null;
-        }
-
-        CmapSubtable cmap = cmapTable.getSubtable(CmapTable.PLATFORM_UNICODE,
-                                                  CmapTable.ENCODING_UNICODE_2_0_FULL);
-        if (cmap == null)
-        {
-            cmap = cmapTable.getSubtable(CmapTable.PLATFORM_UNICODE,
-                                         CmapTable.ENCODING_UNICODE_2_0_BMP);
-        }
-        if (cmap == null)
-        {
-            cmap = cmapTable.getSubtable(CmapTable.PLATFORM_WINDOWS,
-                                         CmapTable.ENCODING_WIN_UNICODE_BMP);
-        }
-        if (cmap == null)
-        {
-            // Microsoft's "Recommendations for OpenType Fonts" says that "Symbol" encoding
-            // actually means "Unicode, non-standard character set"
-            cmap = cmapTable.getSubtable(CmapTable.PLATFORM_WINDOWS,
-                                         CmapTable.ENCODING_WIN_SYMBOL);
-        }
-        if (cmap == null)
-        {
-            // fallback to the first cmap (may not ne Unicode, so may produce poor results)
-            LOG.warn("Used fallback cmap for font " + getBaseFont());
-            cmap = cmapTable.getCmaps()[0];
-        }
-        return cmap;
     }
 
     @Override
