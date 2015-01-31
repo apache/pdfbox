@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -288,7 +289,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      * Returns the width of the given Unicode string.
      *
      * @param text The text to get the width of.
-     * @return The width of the string in 1000 units of text space, ie 333 567...
+     * @return The width of the string in 1/1000 units of text space.
      * @throws IOException If there is an error getting the width information.
      */
     public float getStringWidth(String text) throws IOException
@@ -299,7 +300,15 @@ public abstract class PDFont implements COSObjectable, PDFontLike
         {
             int codePoint = text.codePointAt(offset);
             offset += Character.charCount(codePoint);
-            width += getWidth(codePoint); // todo: *no* getWidth expects a PDF char code, not a Unicode code point
+            
+            byte[] bytes = encode(text);
+            ByteArrayInputStream in = new ByteArrayInputStream(bytes);
+            while (in.available() > 0)
+            {
+                int code = readCode(in);
+                width += getWidth(code);
+            }
+            
         }
         return width;
     }
