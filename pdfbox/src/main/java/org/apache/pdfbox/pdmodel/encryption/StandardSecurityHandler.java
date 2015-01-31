@@ -849,7 +849,7 @@ public final class StandardSecurityHandler extends SecurityHandler
      * @param password The plaintext password.
      * @param user The u entry of the encryption dictionary.
      * @param owner The o entry of the encryption dictionary.
-     * @param permissions The permissions set in the the PDF.
+     * @param permissions The permissions set in the PDF.
      * @param id The document id used for encryption.
      * @param encRevision The revision of the encryption algorithm.
      * @param length The length of the encryption key.
@@ -909,7 +909,7 @@ public final class StandardSecurityHandler extends SecurityHandler
      * @param password The plaintext password.
      * @param user The u entry of the encryption dictionary.
      * @param owner The o entry of the encryption dictionary.
-     * @param permissions The permissions set in the the PDF.
+     * @param permissions The permissions set in the PDF.
      * @param id The document id used for encryption.
      * @param encRevision The revision of the encryption algorithm.
      * @param length The length of the encryption key.

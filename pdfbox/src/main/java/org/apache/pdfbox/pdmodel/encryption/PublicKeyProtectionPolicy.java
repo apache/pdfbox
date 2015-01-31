@@ -108,7 +108,7 @@ public final class PublicKeyProtectionPolicy extends ProtectionPolicy
     }
 
     /**
-     * Sets the the decryption certificate
+     * Sets the decryption certificate
      * @param decryptionCertificate the new decryption certificate.
      */
     public void setDecryptionCertificate(X509Certificate decryptionCertificate)

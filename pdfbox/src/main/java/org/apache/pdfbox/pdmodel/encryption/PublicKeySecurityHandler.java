@@ -114,7 +114,7 @@ public final class PublicKeySecurityHandler extends SecurityHandler
      * @param decryptionMaterial Information used to decrypt the document.
      *
      * @throws IOException If there is an error accessing data. If verbose mode
-     * is enabled, the exception message will provide more details why the the
+     * is enabled, the exception message will provide more details why the
      * match wasn't successful.
      */
     @Override
