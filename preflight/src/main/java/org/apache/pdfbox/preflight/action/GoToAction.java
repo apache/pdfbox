@@ -21,6 +21,7 @@
 
 package org.apache.pdfbox.preflight.action;
 
+import java.io.IOException;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ACTION_INVALID_TYPE;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ACTION_MISING_KEY;
 import org.apache.pdfbox.cos.COSArray;
@@ -29,6 +30,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.utils.COSUtils;
@@ -103,6 +105,16 @@ public class GoToAction extends AbstractActionManager
             COSBase type = ob.getDictionaryObject(COSName.TYPE);
             if (COSName.PAGE.equals(type))
             {
+                try
+                {
+                    PDDestination.create(ar);
+                }
+                catch (IOException e)
+                {
+                    context.addValidationError(new ValidationError(ERROR_ACTION_INVALID_TYPE,
+                            e.getMessage(), e));
+                    return false;
+                }                
                 return true;
             }
         }
