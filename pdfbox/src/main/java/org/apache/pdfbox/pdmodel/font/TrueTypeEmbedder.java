@@ -19,13 +19,14 @@ package org.apache.pdfbox.pdmodel.font;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.fontbox.ttf.CmapSubtable;
-import org.apache.fontbox.ttf.CmapTable;
 import org.apache.fontbox.ttf.HeaderTable;
 import org.apache.fontbox.ttf.HorizontalHeaderTable;
 import org.apache.fontbox.ttf.OS2WindowsMetricsTable;
@@ -39,9 +40,6 @@ import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-
-import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * Common functionality for embedding TrueType fonts.
@@ -75,7 +73,7 @@ abstract class TrueTypeEmbedder implements Subsetter
         dict.setName(COSName.BASE_FONT, ttf.getName());
 
         // choose a Unicode "cmap"
-        cmap = getUnicodeCmap(ttf.getCmap());
+        cmap = ttf.getUnicodeCmap();
     }
 
     public void buildFontFile2(InputStream ttfStream) throws IOException
@@ -225,37 +223,6 @@ abstract class TrueTypeEmbedder implements Subsetter
         fd.setStemV(fd.getFontBoundingBox().getWidth() * .13f);
 
         return fd;
-    }
-
-    /**
-     * Returns the best Unicode from the font (the most general).
-     */
-    private CmapSubtable getUnicodeCmap(CmapTable cmapTable) throws IOException
-    {
-        CmapSubtable cmap = cmapTable.getSubtable(CmapTable.PLATFORM_UNICODE,
-                                                  CmapTable.ENCODING_UNICODE_2_0_FULL);
-        if (cmap == null)
-        {
-            cmap = cmapTable.getSubtable(CmapTable.PLATFORM_UNICODE,
-                                         CmapTable.ENCODING_UNICODE_2_0_BMP);
-        }
-        if (cmap == null)
-        {
-            cmap = cmapTable.getSubtable(CmapTable.PLATFORM_WINDOWS,
-                                         CmapTable.ENCODING_WIN_UNICODE_BMP);
-        }
-        if (cmap == null)
-        {
-            // Microsoft's "Recommendations for OpenType Fonts" says that "Symbol" encoding
-            // actually means "Unicode, non-standard character set"
-            cmap = cmapTable.getSubtable(CmapTable.PLATFORM_WINDOWS,
-                                         CmapTable.ENCODING_WIN_SYMBOL);
-        }
-        if (cmap == null)
-        {
-            throw new IOException("The TrueType font does not contain a Unicode cmap");
-        }
-        return cmap;
     }
 
     /**
