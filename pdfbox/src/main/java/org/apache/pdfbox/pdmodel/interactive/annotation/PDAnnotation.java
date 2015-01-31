@@ -568,7 +568,7 @@ public abstract class PDAnnotation implements COSObjectable
     }
 
     /**
-     * This will set the the date and time the annotation was modified.
+     * This will set the date and time the annotation was modified.
      * 
      * @param m the date and time the annotation was created.
      */

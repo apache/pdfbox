@@ -214,7 +214,7 @@ public class PDAnnotationMarkup extends PDAnnotation
     }
 
     /**
-     * This will set the the date and time the annotation was created.
+     * This will set the date and time the annotation was created.
      *
      * @param creationDate
      *            the date and time the annotation was created.
