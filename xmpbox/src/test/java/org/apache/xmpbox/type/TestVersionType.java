@@ -33,13 +33,10 @@ import org.junit.runners.Parameterized.Parameters;
 public class TestVersionType extends AbstractStructuredTypeTester
 {
 
-    protected VersionType structured = null;
-
     @Before
     public void before() throws Exception
     {
         super.before();
-        structured = new VersionType(xmp);
     }
 
     public TestVersionType(Class<? extends AbstractStructuredType> clz, String field, Types type)
@@ -50,7 +47,7 @@ public class TestVersionType extends AbstractStructuredTypeTester
     @Override
     protected AbstractStructuredType getStructured()
     {
-        return structured;
+        return new VersionType(xmp);
     }
 
     @Parameters
@@ -58,10 +55,6 @@ public class TestVersionType extends AbstractStructuredTypeTester
     {
         Collection<Object[]> result = new ArrayList<Object[]>();
 
-        // result.add(new Object [] {VersionType.class,"version",Types.Text});
-        // result.add(new Object [] {VersionType.class,"comments",Types.Text});
-        // result.add(new Object []
-        // {VersionType.class,"modifyDate",Types.Date});
         result.add(new Object[] { VersionType.class, "modifier", Types.ProperName });
 
         return result;

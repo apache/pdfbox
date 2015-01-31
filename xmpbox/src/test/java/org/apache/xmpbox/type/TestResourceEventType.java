@@ -33,13 +33,10 @@ import org.junit.runners.Parameterized.Parameters;
 public class TestResourceEventType extends AbstractStructuredTypeTester
 {
 
-    protected ResourceEventType structured = null;
-
     @Before
     public void before() throws Exception
     {
         super.before();
-        structured = new ResourceEventType(xmp);
     }
 
     public TestResourceEventType(Class<? extends AbstractStructuredType> clz, String field, Types type)
@@ -50,7 +47,7 @@ public class TestResourceEventType extends AbstractStructuredTypeTester
     @Override
     protected AbstractStructuredType getStructured()
     {
-        return structured;
+        return new ResourceEventType(xmp);
     }
 
     @Parameters

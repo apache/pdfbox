@@ -33,13 +33,10 @@ import org.junit.runners.Parameterized.Parameters;
 public class TestJobType extends AbstractStructuredTypeTester
 {
 
-    protected JobType structured = null;
-
     @Before
     public void before() throws Exception
     {
         super.before();
-        structured = new JobType(xmp, "job");
     }
 
     public TestJobType(Class<? extends AbstractStructuredType> clz, String field, Types type)
@@ -50,7 +47,7 @@ public class TestJobType extends AbstractStructuredTypeTester
     @Override
     protected AbstractStructuredType getStructured()
     {
-        return structured;
+        return new JobType(xmp, "job");
     }
 
     @Parameters

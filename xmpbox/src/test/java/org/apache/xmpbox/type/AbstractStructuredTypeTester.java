@@ -24,12 +24,14 @@ package org.apache.xmpbox.type;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Random;
+
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.xml.DomXmpParser;
 import org.junit.Assert;
 import org.junit.Test;
 
-public abstract class AbstractStructuredTypeTester
+public abstract class AbstractStructuredTypeTester extends AbstractTypeTester
 {
 
     protected XMPMetadata xmp;
@@ -63,11 +65,12 @@ public abstract class AbstractStructuredTypeTester
     @Test
     public void testInitializedToNull() throws Exception
     {
+        AbstractStructuredType structured = getStructured();
         // default method
-        Assert.assertNull(getStructured().getProperty(fieldName));
+        Assert.assertNull(structured.getProperty(fieldName));
         // accessor
-        Method get = clz.getMethod(TypeTestingHelper.calculateSimpleGetter(fieldName), new Class[0]);
-        Object result = get.invoke(getStructured(), new Object[0]);
+        Method get = clz.getMethod(calculateSimpleGetter(fieldName), new Class[0]);
+        Object result = get.invoke(structured, new Object[0]);
         Assert.assertNull(result);
 
     }
@@ -75,49 +78,94 @@ public abstract class AbstractStructuredTypeTester
     @Test
     public void testSettingValue() throws Exception
     {
-        Object value = TypeTestingHelper.getJavaValue(type);
-        getStructured().addSimpleProperty(fieldName, value);
-        Assert.assertNotNull(getStructured().getProperty(fieldName));
+        internalTestSettingValue();
+    }
+
+    @Test
+    public void testRandomSettingValue() throws Exception
+    {
+        initializeSeed(new Random());
+        for (int i=0; i < RAND_LOOP_COUNT;i++) {
+            internalTestSettingValue();
+        }
+    }
+
+    private void internalTestSettingValue () throws Exception
+    {
+        AbstractStructuredType structured = getStructured();
+        Object value = getJavaValue(type);
+        structured.addSimpleProperty(fieldName, value);
+        Assert.assertNotNull(structured.getProperty(fieldName));
         // check other properties not modified
-        List<Field> fields = TypeTestingHelper.getXmpFields(clz);
+        List<Field> fields = getXmpFields(clz);
         for (Field field : fields)
         {
             // do not check the current name
             String name = field.get(null).toString();
             if (!name.equals(fieldName))
             {
-                Assert.assertNull(getStructured().getProperty(name));
+                Assert.assertNull(structured.getProperty(name));
             }
         }
     }
 
+
     @Test
     public void testPropertyType() throws Exception
     {
-        Object value = TypeTestingHelper.getJavaValue(type);
-        getStructured().addSimpleProperty(fieldName, value);
-        Assert.assertNotNull(getStructured().getProperty(fieldName));
+        internalTestPropertyType();
+    }
+
+    @Test
+    public void testRandomPropertyType() throws Exception
+    {
+        initializeSeed(new Random());
+        for (int i=0; i < RAND_LOOP_COUNT;i++) {
+            internalTestPropertyType();
+        }
+    }
+
+
+    private void internalTestPropertyType () throws Exception
+    {
+        AbstractStructuredType structured = getStructured();
+        Object value = getJavaValue(type);
+        structured.addSimpleProperty(fieldName, value);
+        Assert.assertNotNull(structured.getProperty(fieldName));
         // check property type
-        AbstractSimpleProperty asp = (AbstractSimpleProperty) getStructured().getProperty(fieldName);
+        AbstractSimpleProperty asp = (AbstractSimpleProperty) structured.getProperty(fieldName);
         Assert.assertEquals(type.getImplementingClass(), asp.getClass());
     }
+
 
     @Test
     public void testSetter() throws Exception
     {
-        String setter = TypeTestingHelper.calculateSimpleSetter(fieldName);
-        Object value = TypeTestingHelper.getJavaValue(type);
-        Method set = clz.getMethod(setter, new Class<?>[] { TypeTestingHelper.getJavaType(type) });
-        set.invoke(getStructured(), new Object[] { value });
-        // check property set
-        Assert.assertEquals(value, ((AbstractSimpleProperty) getStructured().getProperty(fieldName)).getValue());
-        // check getter
-        Method get = clz.getMethod(TypeTestingHelper.calculateSimpleGetter(fieldName), new Class[0]);
-        Object result = get.invoke(getStructured(), new Object[0]);
-        // Assert.assertEquals(getJavaType(td),result.getClass());
-        Assert.assertTrue(TypeTestingHelper.getJavaType(type).isAssignableFrom(result.getClass()));
-        Assert.assertEquals(value, result);
-
+        internalTestSetter();
     }
 
+    @Test
+    public void testRandomSetter() throws Exception
+    {
+        initializeSeed(new Random());
+        for (int i=0; i < RAND_LOOP_COUNT;i++) {
+            internalTestSetter();
+        }
+    }
+
+    private void internalTestSetter () throws Exception
+    {
+        AbstractStructuredType structured = getStructured();
+        String setter = calculateSimpleSetter(fieldName);
+        Object value = getJavaValue(type);
+        Method set = clz.getMethod(setter, new Class<?>[] { getJavaType(type) });
+        set.invoke(structured, new Object[] { value });
+        // check property set
+        Assert.assertEquals(value, ((AbstractSimpleProperty) structured.getProperty(fieldName)).getValue());
+        // check getter
+        Method get = clz.getMethod(calculateSimpleGetter(fieldName), new Class[0]);
+        Object result = get.invoke(structured, new Object[0]);
+        Assert.assertTrue(getJavaType(type).isAssignableFrom(result.getClass()));
+        Assert.assertEquals(value, result);
+    }
 }

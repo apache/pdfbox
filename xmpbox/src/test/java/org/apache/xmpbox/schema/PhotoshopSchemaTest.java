@@ -34,12 +34,10 @@ import org.junit.runners.Parameterized.Parameters;
 public class PhotoshopSchemaTest extends AbstractSchemaTester
 {
 
-    protected PhotoshopSchema schema = null;
-
     @Override
     public PhotoshopSchema getSchema()
     {
-        return schema;
+        return xmp.createAndAddPhotoshopSchema();
     }
 
     @Before
@@ -47,7 +45,6 @@ public class PhotoshopSchemaTest extends AbstractSchemaTester
     public void before() throws Exception
     {
         super.before();
-        schema = xmp.createAndAddPhotoshopSchema();
     }
 
     public PhotoshopSchemaTest(String fieldName, Types type, Cardinality card)
