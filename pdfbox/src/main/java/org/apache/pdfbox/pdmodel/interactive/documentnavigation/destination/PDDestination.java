@@ -81,7 +81,7 @@ public abstract class PDDestination implements PDDestinationOrAction
             }
             else
             {
-                throw new IOException( "Unknown destination type:" + type );
+                throw new IOException( "Unknown destination type: " + type.getName() );
             }
         }
         else if( base instanceof COSString )
@@ -104,6 +104,7 @@ public abstract class PDDestination implements PDDestinationOrAction
      *
      * @return A human readable string.
      */
+    @Override
     public String toString()
     {
         return super.toString();
