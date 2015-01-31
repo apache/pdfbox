@@ -79,6 +79,21 @@ public class PDDocumentInformation implements COSObjectable
     {
         return info;
     }
+    
+    /**
+     * Return the properties String value.
+     * <p>
+     * Allows to retrieve the
+     * low level date for validation purposes.
+     * </p> 
+     * 
+     * @param propertyKey the dictionaries key
+     * @return the properties value
+     */
+     public Object getPropertyStringValue(String propertyKey)
+     {
+         return info.getString(propertyKey);
+     }
 
     /**
      * This will get the title of the document.  This will return null if no title exists.
