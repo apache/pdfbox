@@ -403,30 +403,101 @@ public class TrueTypeFont implements Type1Equivalent
     }
 
     /**
+     * Returns the best Unicode from the font (the most general). The PDF spec says that "The means
+     * by which this is accomplished are implementation-dependent."
+     */
+    private CmapSubtable getUnicodeCmap(CmapTable cmapTable)
+    {
+        if (cmapTable == null)
+        {
+            return null;
+        }
+
+        CmapSubtable cmap = cmapTable.getSubtable(CmapTable.PLATFORM_UNICODE,
+                CmapTable.ENCODING_UNICODE_2_0_FULL);
+        if (cmap == null)
+        {
+            cmap = cmapTable.getSubtable(CmapTable.PLATFORM_UNICODE,
+                    CmapTable.ENCODING_UNICODE_2_0_BMP);
+        }
+        if (cmap == null)
+        {
+            cmap = cmapTable.getSubtable(CmapTable.PLATFORM_WINDOWS,
+                    CmapTable.ENCODING_WIN_UNICODE_BMP);
+        }
+        if (cmap == null)
+        {
+            // Microsoft's "Recommendations for OpenType Fonts" says that "Symbol" encoding
+            // actually means "Unicode, non-standard character set"
+            cmap = cmapTable.getSubtable(CmapTable.PLATFORM_WINDOWS,
+                    CmapTable.ENCODING_WIN_SYMBOL);
+        }
+        if (cmap == null)
+        {
+            // fallback to the first cmap (may not be Unicode, so may produce poor results)
+            cmap = cmapTable.getCmaps()[0];
+        }
+        return cmap;
+    }
+
+    /**
      * Returns the GID for the given PostScript name, if the "post" table is present.
      */
     public int nameToGID(String name) throws IOException
     {
+        // look up in 'post' table
         readPostScriptNames();
-
         Integer gid = postScriptNames.get(name);
-        if (gid == null || gid < 0 || gid >= getMaximumProfile().getNumGlyphs())
+        if (gid != null && gid > 0 && gid < getMaximumProfile().getNumGlyphs())
         {
-            return 0;
+            return gid;
         }
-        return gid;
+
+        // look up in 'cmap'
+        int uni = parseUniName(name);
+        if (uni > -1)
+        {
+            CmapSubtable cmap = getUnicodeCmap(getCmap());
+            return cmap.getGlyphId(uni);
+        }
+        
+        return 0;
     }
 
+    /**
+     * Parses a Unicode PostScript name in the format uniXXXX.
+     */
+    private int parseUniName(String name) throws IOException
+    {
+        if (name.startsWith("uni") && name.length() == 7)
+        {
+            int nameLength = name.length();
+            StringBuilder uniStr = new StringBuilder();
+            try
+            {
+                for (int chPos = 3; chPos + 4 <= nameLength; chPos += 4)
+                {
+                    int codePoint = Integer.parseInt(name.substring(chPos, chPos + 4), 16);
+                    if (codePoint <= 0xD7FF && codePoint >= 0xE000)
+                    {
+                        uniStr.append((char) codePoint);
+                    }
+                }
+                String unicode = uniStr.toString();
+                return unicode.codePointAt(0);
+            }
+            catch (NumberFormatException e)
+            {
+                return -1;
+            }
+        }
+        return -1;
+    }
+    
     @Override
     public GeneralPath getPath(String name) throws IOException
     {
-        readPostScriptNames();
-
         int gid = nameToGID(name);
-        if (gid < 0 || gid >= getMaximumProfile().getNumGlyphs())
-        {
-            gid = 0;
-        }
 
         // some glyphs have no outlines (e.g. space, table, newline)
         GlyphData glyph = getGlyph().getGlyph(gid);
@@ -450,8 +521,6 @@ public class TrueTypeFont implements Type1Equivalent
     @Override
     public float getWidth(String name) throws IOException
     {
-        readPostScriptNames();
-
         Integer gid = nameToGID(name);
 
         int width = getAdvanceWidth(gid);
@@ -466,10 +535,7 @@ public class TrueTypeFont implements Type1Equivalent
     @Override
     public boolean hasGlyph(String name) throws IOException
     {
-        readPostScriptNames();
-
-        Integer gid = postScriptNames.get(name);
-        return !(gid == null || gid < 0 || gid >= getMaximumProfile().getNumGlyphs());
+        return nameToGID(name) != 0;
     }
 
     @Override
