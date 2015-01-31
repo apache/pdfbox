@@ -92,7 +92,7 @@ public abstract class AbstractSimpleProperty extends AbstractField
      */
     public Object getRawValue()
     {
-        return this.rawValue;
+        return rawValue;
     }
     
 
