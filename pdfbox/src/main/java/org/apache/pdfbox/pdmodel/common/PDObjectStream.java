@@ -43,7 +43,7 @@ public class PDObjectStream extends PDStream
     }
 
     /**
-     * This will create a new PDStream object.
+     * This will create a new PDObjectStream object.
      *
      * @param document The document that the stream will be part of.
      * @return A new stream object.

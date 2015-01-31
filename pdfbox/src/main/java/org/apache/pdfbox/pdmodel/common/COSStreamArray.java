@@ -133,7 +133,7 @@ public class COSStreamArray extends COSStream
     @Override
     public List<Object> getStreamTokens() throws IOException
     {
-        List<Object> retval = null;
+        List<Object> retval;
         if( streams.size() > 0 )
         {
             PDFStreamParser parser = new PDFStreamParser( this );
