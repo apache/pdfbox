@@ -190,53 +190,68 @@ public class MetadataValidationProcess extends AbstractProcess
         }
         for (ThumbnailType tb : tbProp)
         {
-            byte[] binImage;
-            try
-            {
-                binImage = DatatypeConverter.parseBase64Binary(tb.getImage());
-            }
-            catch (IllegalArgumentException e)
-            {
-                addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_METADATA_FORMAT, 
-                        "xapGImg:image is not correct base64 encoding"));
-                return;
-            }
-            if (binImage.length < 4 
-                    || binImage[0] != (byte) 0xFF || binImage[1] != (byte) 0xD8 
-                    || binImage[binImage.length - 2] != (byte) 0xFF || binImage[binImage.length - 1] != (byte) 0xD9)
-            {
-                addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_METADATA_FORMAT, 
-                        "xapGImg:image decoded base64 content is not in JPEG format"));
-                return;
-            }
-            BufferedImage bim;
-            try
-            {
-                bim = ImageIO.read(new ByteArrayInputStream(binImage));
-            }
-            catch (IOException e)
-            {
-                addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_METADATA_FORMAT, e.getMessage(), e));
-                return;
-            }
-            if (!"JPEG".equals(tb.getFormat()))
-            {
-                addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_METADATA_FORMAT,
-                        "xapGImg:format must be 'JPEG'"));
-            }
-            if (bim.getHeight() != tb.getHeight())
-            {
-                addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_METADATA_FORMAT,
-                        "xapGImg:height does not match the actual base64-encoded thumbnail image data"));
-            }
-            if (bim.getWidth() != tb.getWidth())
-            {
-                addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_METADATA_FORMAT,
-                        "xapGImg:witdh does not match the actual base64-encoded thumbnail image data"));
-            }
+            checkThumbnail(tb, ctx);
+        }
+    }
+
+    private void checkThumbnail(ThumbnailType tb, PreflightContext ctx)
+    {
+        byte[] binImage;
+        try
+        {
+            binImage = DatatypeConverter.parseBase64Binary(tb.getImage());
+        }
+        catch (IllegalArgumentException e)
+        {
+            addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_METADATA_FORMAT,
+                    "xapGImg:image is not correct base64 encoding"));
+            return;
+        }
+        if (!hasJpegMagicNumber(binImage))
+        {
+            addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_METADATA_FORMAT,
+                    "xapGImg:image decoded base64 content is not in JPEG format"));
+            return;
+        }
+        BufferedImage bim;
+        try
+        {
+            bim = ImageIO.read(new ByteArrayInputStream(binImage));
+        }
+        catch (IOException e)
+        {
+            addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_METADATA_FORMAT, e.getMessage(), e));
+            return;
+        }
+        if (!"JPEG".equals(tb.getFormat()))
+        {
+            addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_METADATA_FORMAT,
+                    "xapGImg:format must be 'JPEG'"));
+        }
+        if (bim.getHeight() != tb.getHeight())
+        {
+            addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_METADATA_FORMAT,
+                    "xapGImg:height does not match the actual base64-encoded thumbnail image data"));
+        }
+        if (bim.getWidth() != tb.getWidth())
+        {
+            addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_METADATA_FORMAT,
+                    "xapGImg:witdh does not match the actual base64-encoded thumbnail image data"));
         }
     }
     
+    private boolean hasJpegMagicNumber(byte[] binImage)
+    {
+        if (binImage.length < 4)
+        {
+            return false;
+        }
+        return (binImage[0] == (byte) 0xFF
+                && binImage[1] == (byte) 0xD8
+                && binImage[binImage.length - 2] == (byte) 0xFF
+                && binImage[binImage.length - 1] == (byte) 0xD9);
+    }
+
     /**
      * Return the xpacket from the dictionary's stream
      */
