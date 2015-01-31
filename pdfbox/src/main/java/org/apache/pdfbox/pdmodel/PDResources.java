@@ -72,8 +72,9 @@ public final class PDResources implements COSObjectable
     }
 
     /**
-     * Returns the the underlying dictionary.
+     * Returns the underlying dictionary.
      */
+    @Override
     public COSDictionary getCOSObject()
     {
         return resources;
