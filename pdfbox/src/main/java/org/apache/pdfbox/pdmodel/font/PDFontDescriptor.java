@@ -808,4 +808,15 @@ public final class PDFontDescriptor implements COSObjectable
     {
         dic.setItem( COSName.FONT_FILE3, stream );
     }
+
+    /**
+     * Set a stream containing a CIDSet.
+     *
+     * @param stream The font program stream.
+     */
+    public void setCIDSet( PDStream stream )
+    {
+        dic.setItem( COSName.CID_SET, stream );
+    }
+
 }

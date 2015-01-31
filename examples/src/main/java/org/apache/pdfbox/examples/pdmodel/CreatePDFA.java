@@ -23,10 +23,10 @@ import java.io.InputStream;
 import javax.xml.transform.TransformerException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.graphics.color.PDOutputIntent;
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.schema.PDFAIdentificationSchema;
@@ -58,7 +58,7 @@ public class CreatePDFA
             doc.addPage(page);
 
             // load the font as this needs to be embedded
-            PDFont font = PDTrueTypeFont.loadTTF(doc, new File(fontfile));
+            PDFont font = PDType0Font.load(doc, new File(fontfile));
 
             // create a page with the message
             PDPageContentStream contents = new PDPageContentStream(doc, page);
