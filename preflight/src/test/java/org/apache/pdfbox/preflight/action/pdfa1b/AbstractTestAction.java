@@ -29,6 +29,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
 import org.apache.pdfbox.preflight.Format;
+import org.apache.pdfbox.preflight.PreflightConfiguration;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.PreflightDocument;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
@@ -96,6 +97,7 @@ public abstract class AbstractTestAction
     {
         ActionManagerFactory fact = new ActionManagerFactory();
         PreflightContext ctx = createContext();
+        ctx.setConfig(PreflightConfiguration.createPdfA1BConfiguration());
         COSDictionary dict = new COSDictionary();
         dict.setItem(COSName.A, action);
 

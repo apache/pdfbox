@@ -38,6 +38,7 @@ public class TestGotoAction extends AbstractTestAction
         PDActionGoTo gotoAction = new PDActionGoTo();
         gotoAction.setDestination(new PDDestination()
         {
+            @Override
             public COSBase getCOSObject()
             {
                 return COSName.getPDFName("ADest");
@@ -53,6 +54,7 @@ public class TestGotoAction extends AbstractTestAction
         PDActionGoTo gotoAction = new PDActionGoTo();
         gotoAction.setDestination(new PDDestination()
         {
+            @Override
             public COSBase getCOSObject()
             {
                 return new COSDictionary();
