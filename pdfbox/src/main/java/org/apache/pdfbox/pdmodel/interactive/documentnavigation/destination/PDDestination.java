@@ -51,10 +51,12 @@ public abstract class PDDestination implements PDDestinationOrAction
         {
             //this is ok, just return null.
         }
-        else if( base instanceof COSArray && ((COSArray)base).size() > 0 )
+        else if (base instanceof COSArray 
+                && ((COSArray) base).size() > 1 
+                && ((COSArray) base).getObject(1) instanceof COSName)
         {
             COSArray array = (COSArray)base;
-            COSName type = (COSName)array.getObject( 1 );
+            COSName type = (COSName) array.getObject(1);
             String typeString = type.getName();
             if( typeString.equals( PDPageFitDestination.TYPE ) ||
                 typeString.equals( PDPageFitDestination.TYPE_BOUNDED ))
