@@ -25,12 +25,16 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ANNOT_FORBIDD
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ANNOT_INVALID_DEST;
 
 import java.io.IOException;
+import org.apache.pdfbox.cos.COSBase;
 
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
+import static org.apache.pdfbox.preflight.PreflightConfiguration.DESTINATION_PROCESS;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
+import org.apache.pdfbox.preflight.utils.ContextHelper;
 
 /**
  * Validation class for the LinkAnnotation
@@ -50,7 +54,7 @@ public class LinkAnnotationValidator extends AnnotationValidator
     }
 
     /**
-     * In addition of the AnnotationValidator.validate() method, this method executes the the checkDest method.
+     * In addition of the AnnotationValidator.validate() method, this method executes the checkDest method.
      * 
      * @see AnnotationValidator#validate()
      */
@@ -77,10 +81,16 @@ public class LinkAnnotationValidator extends AnnotationValidator
                         "Dest can't be used due to A element"));
                 return false;
             }
+            COSDictionary dict = pdLink.getDictionary();
+            COSBase dest = dict.getDictionaryObject(COSName.DEST);
+            if (dest != null)
+            {
+                ContextHelper.validateElement(ctx, dest, DESTINATION_PROCESS);    
+            }
         }
         catch (IOException e)
         {
-            ctx.addValidationError(new ValidationError(ERROR_ANNOT_INVALID_DEST, "Dest can't be checked"));
+            ctx.addValidationError(new ValidationError(ERROR_ANNOT_INVALID_DEST, e.getMessage(), e));
             return false;
         }
         return true;
