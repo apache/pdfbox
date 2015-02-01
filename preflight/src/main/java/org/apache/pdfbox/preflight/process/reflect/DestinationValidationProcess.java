@@ -74,6 +74,13 @@ public class DestinationValidationProcess extends AbstractProcess
                         "Destination array must have at least 2 elements"));
                 return;
             }
+            if (!(ar.get(1) instanceof COSName))
+            {
+                ctx.addValidationError(new ValidationResult.ValidationError(ERROR_SYNTAX_DICT_INVALID,
+                        "Second element of destination array must be a name"));
+                return;
+            }
+                
             validateExplicitDestination(ctx, ar);
         }
 
