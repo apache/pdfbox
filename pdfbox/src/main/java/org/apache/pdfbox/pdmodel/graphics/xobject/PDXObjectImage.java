@@ -496,6 +496,11 @@ public abstract class PDXObjectImage extends PDXObject
     BufferedImage extractAlphaImage(BufferedImage bi)
     {
         WritableRaster alphaRaster = bi.getAlphaRaster();
+        if (alphaRaster == null)
+        {
+            // happens sometimes (PDFBOX-2654) despite colormodel claiming to have alpha
+            return null;
+        }
         BufferedImage alphaImage = new BufferedImage(alphaRaster.getWidth(), 
                 alphaRaster.getHeight(), 
                 bi.getTransparency() == Transparency.BITMASK ? 
