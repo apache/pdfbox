@@ -645,7 +645,7 @@ public class PDCcitt extends PDXObjectImage
             {
                 decodeParms = (COSDictionary) dicOrArrayParms;
             }
-            else
+            else if (dicOrArrayParms instanceof COSArray)
             {
                 COSArray parmsArray = (COSArray) dicOrArrayParms;
                 if (parmsArray.size() == 1)
