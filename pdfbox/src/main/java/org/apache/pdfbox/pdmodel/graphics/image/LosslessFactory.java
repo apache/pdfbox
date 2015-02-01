@@ -136,6 +136,11 @@ public class LosslessFactory
 
         // extract the alpha information
         WritableRaster alphaRaster = image.getAlphaRaster();
+        if (alphaRaster == null)
+        {
+            // happens sometimes (PDFBOX-2654) despite colormodel claiming to have alpha
+            return null;
+        }
 
         int[] pixels = alphaRaster.getPixels(0, 0,
                 alphaRaster.getSampleModel().getWidth(),

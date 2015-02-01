@@ -181,6 +181,11 @@ public final class JPEGFactory extends ImageFactory
                     " useful, use LosslessImageFactory instead");
         }
         WritableRaster alphaRaster = image.getAlphaRaster();
+        if (alphaRaster == null)
+        {
+            // happens sometimes (PDFBOX-2654) despite colormodel claiming to have alpha
+            return null;
+        }
         BufferedImage alphaImage = new BufferedImage(image.getWidth(), image.getHeight(),
                 BufferedImage.TYPE_BYTE_GRAY);
         alphaImage.setData(alphaRaster);
