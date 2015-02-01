@@ -21,6 +21,7 @@
 
 package org.apache.pdfbox.preflight.process;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,8 +36,10 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
+import static org.apache.pdfbox.preflight.PreflightConfiguration.DESTINATION_PROCESS;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
@@ -216,6 +219,10 @@ public class BookmarkValidationProcess extends AbstractProcess
         else if (action != null)
         {
             ContextHelper.validateElement(ctx, dictionary, ACTIONS_PROCESS);
+        }
+        else if (dest != null)
+        {
+            ContextHelper.validateElement(ctx, dest, DESTINATION_PROCESS);
         }
         // else no specific validation
 

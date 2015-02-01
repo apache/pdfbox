@@ -35,10 +35,12 @@ import org.apache.pdfbox.preflight.process.AbstractProcess;
 public class AnnotationValidationProcess extends AbstractProcess
 {
 
+    @Override
     public void validate(PreflightContext context) throws ValidationException
     {
         PreflightPath vPath = context.getValidationPath();
-        if (vPath.isEmpty()) {
+        if (vPath.isEmpty()) 
+        {
             return;
         }
         else if (!vPath.isExpectedType(COSDictionary.class))

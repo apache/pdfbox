@@ -21,22 +21,18 @@
 
 package org.apache.pdfbox.preflight.action;
 
-import java.io.IOException;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ACTION_INVALID_TYPE;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ACTION_MISING_KEY;
-import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSObject;
-import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
+import static org.apache.pdfbox.preflight.PreflightConfiguration.DESTINATION_PROCESS;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
-import org.apache.pdfbox.preflight.utils.COSUtils;
+import org.apache.pdfbox.preflight.exception.ValidationException;
+import org.apache.pdfbox.preflight.utils.ContextHelper;
 
 /**
- * ActionManager for the GoTo action GoToAction is valid if the D entry is present.
+ * ActionManager for the GoTo action. GoToAction is valid if the D entry is present.
  */
 public class GoToAction extends AbstractActionManager
 {
@@ -56,72 +52,22 @@ public class GoToAction extends AbstractActionManager
     /*
      * (non-Javadoc)
      * 
-     * @see net.awl.edoc.pdfa.validation.actions.AbstractActionManager#valid(java.util .List)
+     * @see AbstractActionManager#valid(java.util.List)
      */
     @Override
-    protected boolean innerValid()
+    protected boolean innerValid() throws ValidationException
     {
-        COSBase d = this.actionDictionnary.getItem(COSName.D);
+        COSBase dest = this.actionDictionnary.getItem(COSName.D);
 
         // ---- D entry is mandatory
-        if (d == null)
+        if (dest == null)
         {
             context.addValidationError(new ValidationError(ERROR_ACTION_MISING_KEY,
                     "D entry is mandatory for the GoToActions"));
             return false;
         }
-
-        COSDocument cosDocument = this.context.getDocument().getDocument();
-        if (!(d instanceof COSName || COSUtils.isString(d, cosDocument) || COSUtils.isArray(d, cosDocument)))
-        {
-            context.addValidationError(new ValidationError(ERROR_ACTION_INVALID_TYPE, "Type of D entry is invalid"));
-            return false;
-        }
-        
-        if (d instanceof COSArray)
-        {
-            COSArray ar = (COSArray) d;
-            if (ar.size() < 2)
-            {
-                context.addValidationError(new ValidationError(ERROR_ACTION_INVALID_TYPE, 
-                        "/D entry of type array must have at least 2 elements"));
-                return false;
-            }            
-            if (!validateExplicitDestination(ar))
-            {
-                return false;
-            }
-        }
-
+        ContextHelper.validateElement(context, dest, DESTINATION_PROCESS);
         return true;
-    }
-
-    protected boolean validateExplicitDestination(COSArray ar)
-    {
-        // "In each case, page is an indirect reference to a page object."
-        if (ar.get(0) instanceof COSObject)
-        {
-            COSObject ob = (COSObject) ar.get(0);
-            COSBase type = ob.getDictionaryObject(COSName.TYPE);
-            if (COSName.PAGE.equals(type))
-            {
-                try
-                {
-                    PDDestination.create(ar);
-                }
-                catch (IOException e)
-                {
-                    context.addValidationError(new ValidationError(ERROR_ACTION_INVALID_TYPE,
-                            e.getMessage(), e));
-                    return false;
-                }                
-                return true;
-            }
-        }
-        context.addValidationError(new ValidationError(ERROR_ACTION_INVALID_TYPE,
-                "First element in /D array entry of GoToAction must be an indirect reference to a dictionary of /Type /Page, but is "
-                + ar.getName(0)));
-        return false;
     }
 
 }

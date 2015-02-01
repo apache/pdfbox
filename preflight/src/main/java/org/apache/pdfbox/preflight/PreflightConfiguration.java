@@ -44,6 +44,7 @@ import org.apache.pdfbox.preflight.process.ValidationProcess;
 import org.apache.pdfbox.preflight.process.XRefValidationProcess;
 import org.apache.pdfbox.preflight.process.reflect.ActionsValidationProcess;
 import org.apache.pdfbox.preflight.process.reflect.AnnotationValidationProcess;
+import org.apache.pdfbox.preflight.process.reflect.DestinationValidationProcess;
 import org.apache.pdfbox.preflight.process.reflect.ExtGStateValidationProcess;
 import org.apache.pdfbox.preflight.process.reflect.FontValidationProcess;
 import org.apache.pdfbox.preflight.process.reflect.GraphicObjectPageValidationProcess;
@@ -76,6 +77,7 @@ public class PreflightConfiguration
     public static final String EXTGSTATE_PROCESS = "extgstate-process";
     public static final String SHADDING_PATTERN_PROCESS = "shadding-pattern-process";
     public static final String TILING_PATTERN_PROCESS = "tiling-pattern-process";
+    public static final String DESTINATION_PROCESS = "destination-process";
 
     /*
      * TODO other configuration option should be possible : - skip some validation process ? - ???
@@ -135,6 +137,7 @@ public class PreflightConfiguration
         configuration.replacePageProcess(FONT_PROCESS, FontValidationProcess.class);
         configuration.replacePageProcess(ACTIONS_PROCESS, ActionsValidationProcess.class);
         configuration.replacePageProcess(ANNOTATIONS_PROCESS, AnnotationValidationProcess.class);
+        configuration.replacePageProcess(DESTINATION_PROCESS, DestinationValidationProcess.class);
 
         configuration.actionFact = new ActionManagerFactory();
         configuration.annotFact = new PDFAbAnnotationFactory();
