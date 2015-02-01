@@ -41,6 +41,8 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -60,6 +62,8 @@ import org.apache.pdfbox.pdmodel.PDDocument;
  */
 public abstract class SecurityHandler
 {
+    private static final Log LOG = LogFactory.getLog(SecurityHandler.class);
+    
     private static final int DEFAULT_KEY_LENGTH = 40;
 
     // see 7.6.2, page 58, PDF 32000-1:2008
@@ -302,6 +306,16 @@ public abstract class SecurityHandler
         try
         {
             IOUtils.copy(cis, output);
+        }
+        catch(IOException exception)
+        {
+            // starting with java 8 the JVM wraps an IOException around a GeneralSecurityException
+            // it should be safe to swallow a GeneralSecurityException
+            if (!(exception.getCause() instanceof GeneralSecurityException)) 
+            {
+                throw exception;
+            }
+            LOG.debug("A GeneralSecurityException occured when decrypting some stream data", exception);
         }
         finally
         {
