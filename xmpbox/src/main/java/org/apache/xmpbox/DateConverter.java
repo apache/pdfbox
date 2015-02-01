@@ -215,12 +215,12 @@ public class DateConverter
     }
 
     /**
-     * Append Zero to String Buffer before number &lt; 10 ('1' become '01')
+     * Append Zero to String Buffer.
      * 
-     * @param out
-     *            The String buffer
-     * @param number
-     *            The concerned number
+     * This will append zero before number &lt; 10 ('1' become '01')
+     * 
+     * @param out The String buffer
+     * @param number The concerned number
      */
     private static void zeroAppend(StringBuffer out, int number)
     {

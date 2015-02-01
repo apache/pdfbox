@@ -66,9 +66,9 @@ public class XMPMetadata
     private TypeMapping typeMapping;
 
     /**
-     * Contructor of an empty default XMPMetaData
+     * Contructor of an empty default XMPMetaData.
      * 
-      */
+     */
     protected XMPMetadata()
     {
         this(XmpConstants.DEFAULT_XPACKET_BEGIN, XmpConstants.DEFAULT_XPACKET_ID, XmpConstants.DEFAULT_XPACKET_BYTES,
@@ -76,16 +76,12 @@ public class XMPMetadata
     }
 
     /**
-     * creates blank XMP doc with specified parameters
+     * Creates blank XMP doc with specified parameters.
      * 
-     * @param xpacketBegin
-     *            Value of xpacketBegin
-     * @param xpacketId
-     *            Value of xpacketId
-     * @param xpacketBytes
-     *            Value of xpacketBytes
-     * @param xpacketEncoding
-     *            Value of xpacket encoding
+     * @param xpacketBegin Value of xpacketBegin
+     * @param xpacketId Value of xpacketId
+     * @param xpacketBytes Value of xpacketBytes
+     * @param xpacketEncoding Value of xpacket encoding
      */
     protected XMPMetadata(String xpacketBegin, String xpacketId, String xpacketBytes, String xpacketEncoding)
     {
@@ -98,24 +94,42 @@ public class XMPMetadata
         this.xpacketEncoding = xpacketEncoding;
     }
 
+    /**
+     * Creates blank XMP doc with default parameters.
+     *
+     * @return the XMPMetadata created.
+     */
     public static XMPMetadata createXMPMetadata()
     {
         return new XMPMetadata();
     }
 
+    /**
+     * Creates blank XMP doc with specified parameters.
+     * 
+     * @param xpacketBegin Value of xpacketBegin
+     * @param xpacketId Value of xpacketId
+     * @param xpacketBytes Value of xpacketBytes
+     * @param xpacketEncoding Value of xpacket encoding
+     * @return the XMPMetadata created.
+     */
     public static XMPMetadata createXMPMetadata(String xpacketBegin, String xpacketId, String xpacketBytes,
             String xpacketEncoding)
     {
         return new XMPMetadata(xpacketBegin, xpacketId, xpacketBytes, xpacketEncoding);
     }
 
+    /**
+     * Get TypeMapping.
+     * @return the defined TypeMapping.
+     */
     public TypeMapping getTypeMapping()
     {
         return this.typeMapping;
     }
 
     /**
-     * Get xpacketBytes
+     * Get xpacketBytes.
      * 
      * @return value of xpacketBytes field
      */
@@ -125,7 +139,7 @@ public class XMPMetadata
     }
 
     /**
-     * Get xpacket encoding
+     * Get xpacket encoding.
      * 
      * @return value of xpacket Encoding field
      */
@@ -135,7 +149,7 @@ public class XMPMetadata
     }
 
     /**
-     * Get xpacket Begin
+     * Get xpacket Begin.
      * 
      * @return value of xpacket Begin field
      */
@@ -145,7 +159,7 @@ public class XMPMetadata
     }
 
     /**
-     * Get xpacket Id
+     * Get xpacket Id.
      * 
      * @return value of xpacket Id field
      */
@@ -155,7 +169,7 @@ public class XMPMetadata
     }
 
     /**
-     * Get All Schemas declared in this metadata representation
+     * Get All Schemas declared in this metadata representation.
      * 
      * @return List of declared schemas
      */
@@ -171,10 +185,9 @@ public class XMPMetadata
     }
 
     /**
-     * Set special XPACKET END PI
+     * Set special XPACKET END PI.
      * 
-     * @param data
-     *            The XPacket End value
+     * @param data The XPacket End value
      */
     public void setEndXPacket(String data)
     {
@@ -182,7 +195,7 @@ public class XMPMetadata
     }
 
     /**
-     * get XPACKET END PI
+     * get XPACKET END PI.
      * 
      * @return XPACKET END Value
      */
@@ -192,12 +205,16 @@ public class XMPMetadata
     }
 
     /**
-     * Return the schema corresponding to this nsURI BE CAREFUL: typically, Metadata should contains one schema for each
-     * type this method return the first schema encountered corresponding to this NSURI Return null if unknown
+     * Get the XMPSchema for the specified namespace.
      * 
-     * @param nsURI
-     *            The namespace URI corresponding to the schema wanted
-     * @return The Class Schema representation
+     * Return the schema corresponding to this nsURI<br/>
+     * BE CAREFUL: typically, Metadata should contain one schema for each type.
+     * This method returns the first schema encountered
+     * corresponding to this NSURI.<br/>
+     * Return null if unknown
+     * 
+     * @param nsURI The namespace URI corresponding to the schema wanted
+     * @return The matching XMP schema representation
      */
     public XMPSchema getSchema(String nsURI)
     {
@@ -213,26 +230,33 @@ public class XMPMetadata
         }
         return null;
     }
-
+    
+    /** 
+     * Get the XMPSchema for the specified Class.
+     * 
+     * Return the schema corresponding to this Class<br/>
+     * BE CAREFUL: typically, Metadata should contain one schema for each type.
+     * This method returns the first schema encountered
+     * corresponding to this Class.<br/>
+     * Return null if unknown
+     * 
+     * @param clz The Class corresponding to the schema wanted
+     * @return The matching XMP schema representation
+     */
     public XMPSchema getSchema(Class<? extends XMPSchema> clz)
     {
         StructuredType st = clz.getAnnotation(StructuredType.class);
         return getSchema(st.namespace());
     }
 
-    public void clearSchemas()
-    {
-        schemas.clear();
-    }
-
     /**
-     * Return the schema corresponding to this nsURI and a prefix This method is here to treat metadata which embed more
-     * than one time the same schema It permit to retrieve a specific schema with its prefix
+     * Return the schema corresponding to this nsURI and a prefix.
      * 
-     * @param prefix
-     *            The prefix fixed in the schema wanted
-     * @param nsURI
-     *            The namespace URI corresponding to the schema wanted
+     * This method is here to treat metadata which embed more
+     * than one time the same schema. It permits to retrieve a specific schema with its prefix
+     * 
+     * @param prefix The prefix fixed in the schema wanted
+     * @param nsURI The namespace URI corresponding to the schema wanted
      * @return The Class Schema representation
      */
     public XMPSchema getSchema(String prefix, String nsURI)
@@ -251,12 +275,10 @@ public class XMPMetadata
     }
 
     /**
-     * Set a unspecialized schema
+     * Create and add an unspecified schema.
      * 
-     * @param nsPrefix
-     *            The prefix wanted for the schema
-     * @param nsURI
-     *            The namespace URI wanted for the schema
+     * @param nsPrefix The prefix wanted for the schema
+     * @param nsURI The namespace URI wanted for the schema
      * @return The schema added in order to work on it
      */
     public XMPSchema createAndAddDefaultSchema(String nsPrefix, String nsURI)
@@ -268,8 +290,10 @@ public class XMPMetadata
     }
 
     /**
-     * Create and add a default PDFA Extension schema to this metadata This method return the created schema to enter
-     * information This PDFAExtension is created with all default namespaces used in PDFAExtensionSchema
+     * Create and add a default PDFA Extension schema to this metadata.
+     * 
+     * This method return the created schema to enter information.
+     * This PDFAExtension is created with all default namespaces used in PDFAExtensionSchema.
      * 
      * @return PDFAExtension schema added in order to work on it
      */
@@ -282,28 +306,14 @@ public class XMPMetadata
     }
 
     /**
-     * Create and add a default XMPRights schema to this metadata This method return the created schema to enter
-     * information
+     * Create and add a default PDFA Extension schema to this metadata.
      * 
-     * @return schema added in order to work on it
-     */
-    public XMPRightsManagementSchema createAndAddXMPRightsManagementSchema()
-    {
-        XMPRightsManagementSchema rights = new XMPRightsManagementSchema(this);
-        rights.setAboutAsSimple("");
-        addSchema(rights);
-        return rights;
-    }
-
-    /**
-     * Create and add a default PDFA Extension schema to this metadata This method return the created schema to enter
-     * information This PDFAExtension is created with specified list of namespaces
+     * This method return the created schema to enter information.
+     * This PDFAExtension is created with specified list of namespaces.
      * 
-     * @param namespaces
-     *            Special namespaces list to use
+     * @param namespaces Special namespaces list to use
      * @return schema added in order to work on it
-     * @throws XmpSchemaException
-     *             If namespaces list not contains PDF/A Extension namespace URI
+     * @throws XmpSchemaException If namespaces list not contains PDF/A Extension namespace URI
      */
     public PDFAExtensionSchema createAndAddPDFAExtensionSchemaWithNS(Map<String, String> namespaces)
             throws XmpSchemaException
@@ -315,7 +325,9 @@ public class XMPMetadata
     }
 
     /**
-     * Get the PDFA Extension schema This method return null if not found
+     * Get the PDFA Extension schema.
+     * 
+     * This method return null if not found.
      * 
      * @return The PDFAExtension schema or null if not declared
      */
@@ -325,8 +337,9 @@ public class XMPMetadata
     }
 
     /**
-     * Create and add a default PDFA Identification schema to this metadata This method return the created schema to
-     * enter information
+     * Create and add a default PDFA Identification schema to this metadata.
+     * 
+     * This method return the created schema to enter information.
      * 
      * @return schema added in order to work on it
      */
@@ -339,7 +352,9 @@ public class XMPMetadata
     }
 
     /**
-     * Get the PDFA Identification schema This method return null if not found
+     * Get the PDFA Identification schema.
+     * 
+     * This method return null if not found.
      * 
      * @return The PDFAIdentificationSchema schema or null if not declared
      */
@@ -349,8 +364,9 @@ public class XMPMetadata
     }
 
     /**
-     * Create and add a default Dublin Core schema to this metadata This method return the created schema to enter
-     * information
+     * Create and add a default Dublin Core schema to this metadata.
+     * 
+     * This method return the created schema to enter information
      * 
      * @return schema added in order to work on it
      */
@@ -363,10 +379,23 @@ public class XMPMetadata
     }
 
     /**
-     * Create and add a default Basic Job Ticket schema to this metadata This method return the created schema to enter
-     * information
+     * Get the Dublin Core schema.
      * 
-     * @return schema added in order to work on it
+     * This method return null if not found
+     * 
+     * @return The DublinCoreSchema schema or null if not declared.
+     */
+    public DublinCoreSchema getDublinCoreSchema()
+    {
+        return (DublinCoreSchema) getSchema(DublinCoreSchema.class);
+    }
+
+    /**
+     * Create and add a default Basic Job Ticket schema to this metadata.
+     * 
+     * This method return the created schema to enter information.
+     * 
+     * @return schema added in order to work on it.
      */
     public XMPBasicJobTicketSchema createAndAddBasicJobTicketSchema()
     {
@@ -375,21 +404,13 @@ public class XMPMetadata
         addSchema(sc);
         return sc;
     }
-
+    
     /**
-     * Get the Dublin Core schema This method return null if not found
+     * Get the Basic Job Ticket Schema.
      * 
-     * @return The DublinCoreSchema schema or null if not declared
-     */
-    public DublinCoreSchema getDublinCoreSchema()
-    {
-        return (DublinCoreSchema) getSchema(DublinCoreSchema.class);
-    }
-
-    /**
-     * Get the Basic JOb Ticket Schema schema This method return null if not found
+     * This method return null if not found
      * 
-     * @return The XMPBasicJobTicketSchema schema or null if not declared
+     * @return The XMPBasicJobTicketSchema schema or null if not declared.
      */
     public XMPBasicJobTicketSchema getBasicJobTicketSchema()
     {
@@ -397,7 +418,24 @@ public class XMPMetadata
     }
 
     /**
-     * Get the XMPRights schema This method return null if not found
+     * Create and add a default XMP Rights Management Schema to this metadata.
+     * 
+     * This method return the created schema to enter information.
+     * 
+     * @return schema added in order to work on it
+     */
+    public XMPRightsManagementSchema createAndAddXMPRightsManagementSchema()
+    {
+        XMPRightsManagementSchema rights = new XMPRightsManagementSchema(this);
+        rights.setAboutAsSimple("");
+        addSchema(rights);
+        return rights;
+    }    
+    
+    /**
+     * Get the XMP Rights Management Schema.
+     * 
+     * This method return null if not found.
      * 
      * @return The XMPRightsManagementSchema schema or null if not declared
      */
@@ -407,20 +445,10 @@ public class XMPMetadata
     }
 
 
-    /*
-     * Get the Photoshop schema This method return null if not found
-     *
-     * @return The PhotoshopSchema schema or null if not declared
-     */
-    public PhotoshopSchema getPhotoshopSchema()
-    {
-        return (PhotoshopSchema) getSchema(PhotoshopSchema.class);
-    }
-
-
-
     /**
-     * Create and add a XMP Basic schema to this metadata This method return the created schema to enter information
+     * Create and add a XMP Basic schema to this metadata.
+     * 
+     * This method return the created schema to enter information
      * 
      * @return schema added in order to work on it
      */
@@ -433,7 +461,9 @@ public class XMPMetadata
     }
 
     /**
-     * Get the XMP Basic schema This method return null if not found
+     * Get the XMP Basic schema.
+     * 
+     * This method return null if not found
      * 
      * @return The XMPBasicSchema schema or null if not declared
      */
@@ -443,7 +473,9 @@ public class XMPMetadata
     }
 
     /**
-     * Create and add a XMP Media Management schema to this metadata This method return the created schema to enter
+     * Create and add a XMP Media Management schema to this metadata.
+     * 
+     * This method return the created schema to enter
      * information
      * 
      * @return schema added in order to work on it
@@ -457,7 +489,9 @@ public class XMPMetadata
     }
 
     /***
-     * create and add Photoshop Schema to this metadata. This method return the created schema to enter information
+     * Create and add Photoshop Schema to this metadata.
+     * 
+     * This method return the created schema to enter information
      * 
      * @return schema added in order to work on it
      */
@@ -470,7 +504,21 @@ public class XMPMetadata
     }
 
     /**
-     * Get the XMP Media Management schema This method return null if not found
+     * Get the Photoshop schema.
+     * 
+     * This method return null if not found
+     *
+     * @return The PhotoshopSchema schema or null if not declared
+     */
+    public PhotoshopSchema getPhotoshopSchema()
+    {
+        return (PhotoshopSchema) getSchema(PhotoshopSchema.class);
+    }
+    
+    /**
+     * Get the XMP Media Management schema.
+     * 
+     * This method return null if not found
      * 
      * @return The XMPMediaManagementSchema schema or null if not declared
      */
@@ -480,7 +528,9 @@ public class XMPMetadata
     }
 
     /**
-     * Create and add an Adobe PDF schema to this metadata This method return the created schema to enter information
+     * Create and add an Adobe PDF schema to this metadata.
+     * 
+     * This method return the created schema to enter information
      * 
      * @return schema added in order to work on it
      */
@@ -493,7 +543,9 @@ public class XMPMetadata
     }
 
     /**
-     * Get the Adobe PDF schema This method return null if not found
+     * Get the Adobe PDF schema.
+     * 
+     * This method return null if not found
      * 
      * @return The AdobePDFSchema schema or null if not declared
      */
@@ -503,10 +555,9 @@ public class XMPMetadata
     }
 
     /**
-     * Add a schema to the current structure
+     * Add a schema to the current structure.
      * 
-     * @param obj
-     *            the schema to add
+     * @param obj the schema to add
      */
     public void addSchema(XMPSchema obj)
     {
@@ -514,14 +565,21 @@ public class XMPMetadata
     }
 
     /**
-     * Remove a schema
+     * Remove a schema.
      * 
-     * @param schema
-     *            The schema to remove
+     * @param schema The schema to remove
      */
     public void removeSchema(XMPSchema schema)
     {
         schemas.remove(schema);
+    }
+    
+    /**
+     * Removes all schemas defined.
+     */
+    public void clearSchemas()
+    {
+        schemas.clear();
     }
 
 }
