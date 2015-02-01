@@ -61,7 +61,7 @@ public class TestGotoAction extends AbstractTestAction
             }
         });
 
-        valid(gotoAction, false, PreflightConstants.ERROR_ACTION_INVALID_TYPE);
+        valid(gotoAction, false, PreflightConstants.ERROR_SYNTAX_DICT_INVALID);
     }
 
     @Test
