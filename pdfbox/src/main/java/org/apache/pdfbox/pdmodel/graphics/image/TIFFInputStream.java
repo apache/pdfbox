@@ -50,7 +50,7 @@ public final class TIFFInputStream extends InputStream
 
     private int currentOffset; // When reading, where in the tiffheader are we.
     private byte[] tiffheader; // Byte array to store tiff header data
-    private InputStream datastream; // Original InputStream
+    private final InputStream datastream; // Original InputStream
 
     /**
      * Writes the TIFF image to an OutputStream.
@@ -77,11 +77,13 @@ public final class TIFFInputStream extends InputStream
     }
 
     // Implement basic methods from InputStream
+    @Override
     public boolean markSupported()
     {
         return false;
     }
 
+    @Override
     public void reset() throws IOException
     {
         throw new IOException("reset not supported");
@@ -91,6 +93,7 @@ public final class TIFFInputStream extends InputStream
      * For simple read, take a byte from the tiff header array or pass through.
      * {@inheritDoc}
      */
+    @Override
     public int read() throws IOException
     {
         if (currentOffset < tiffheader.length)
@@ -105,6 +108,7 @@ public final class TIFFInputStream extends InputStream
      * exhausted the header, pass through to the InputStream of the raw CCITT data.
      * {@inheritDoc}
      */
+    @Override
     public int read(byte[] data) throws IOException
     {
         if (currentOffset < tiffheader.length)
@@ -128,6 +132,7 @@ public final class TIFFInputStream extends InputStream
      * exhausted the header, pass  through to the InputStream of the raw CCITT data.
      * {@inheritDoc}
      */
+    @Override
     public int read(byte[] data, int off, int len) throws IOException
     {
         if (currentOffset < tiffheader.length)
@@ -151,6 +156,7 @@ public final class TIFFInputStream extends InputStream
      * skip what we've in the buffer Otherwise just pass through.
      * {@inheritDoc}
      */
+    @Override
     public long skip(long n) throws IOException
     {
         if (currentOffset < tiffheader.length)
@@ -213,7 +219,7 @@ public final class TIFFInputStream extends InputStream
         {
             decodeParms = (COSDictionary) dicOrArrayParms;
         }
-        else
+        else if (dicOrArrayParms instanceof COSArray)
         {
             COSArray parmsArray = (COSArray) dicOrArrayParms;
             if (parmsArray.size() == 1)
