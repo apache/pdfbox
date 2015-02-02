@@ -149,18 +149,28 @@ public class PDCcitt extends PDXObjectImage
             }
             decodeParms = (COSDictionary) ((COSArray) decodeP).getObject(index);
         }
-        int cols = decodeParms.getInt(COSName.COLUMNS, 1728);
-        int rows = decodeParms.getInt(COSName.ROWS, 0);
-        int height = stream.getInt(COSName.HEIGHT, 0);
-        if (rows > 0 && height > 0)
+
+        int cols, rows;
+        if (decodeParms == null)
         {
-            // ensure that rows doesn't contain implausible data, see PDFBOX-771
-            rows = Math.min(rows, height);
+            cols = stream.getInt(COSName.WIDTH, 1728);
+            rows = stream.getInt(COSName.HEIGHT, 0);
         }
         else
         {
-            // at least one of the values has to have a valid value
-            rows = Math.max(rows, height);
+            cols = decodeParms.getInt(COSName.COLUMNS, 1728);
+            rows = decodeParms.getInt(COSName.ROWS, 0);
+            int height = stream.getInt(COSName.HEIGHT, 0);
+            if (rows > 0 && height > 0)
+            {
+                // ensure that rows doesn't contain implausible data, see PDFBOX-771
+                rows = Math.min(rows, height);
+            }
+            else
+            {
+                // at least one of the values has to have a valid value
+                rows = Math.max(rows, height);
+            }
         }
         byte[] bufferData = null;
         ColorModel colorModel = null;
