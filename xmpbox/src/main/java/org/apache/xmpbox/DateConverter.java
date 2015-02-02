@@ -28,6 +28,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.SimpleTimeZone;
+import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * This class is used to convert dates to strings and back using the PDF date standards. Date are described in
@@ -47,8 +50,12 @@ public class DateConverter
     // to try if the original one does not work.
     private static final SimpleDateFormat[] POTENTIAL_FORMATS = new SimpleDateFormat[] {
             new SimpleDateFormat("EEEE, dd MMM yyyy hh:mm:ss a"),
-            new SimpleDateFormat("EEEE, MMM dd, yyyy hh:mm:ss a"), new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"),
-            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz") };
+            new SimpleDateFormat("EEEE, MMM dd, yyyy hh:mm:ss a"),
+            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"),
+            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz"),
+            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"),
+            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S")
+        };
 
     /**
      * According to check-style, Utility classes should not have a public or default constructor.
@@ -84,7 +91,13 @@ public class DateConverter
             try
             {
                 SimpleTimeZone zone = null;
-                if (date.startsWith("D:"))
+                
+                if (Pattern.matches("^\\d{4}-\\d{2}-\\d{2}T.*", date))
+                {
+                    // Assuming ISO860 date string
+                    return fromISO8601(date);
+                }
+                else if (date.startsWith("D:"))
                 {
                     date = date.substring(2, date.length());
                 }
@@ -280,5 +293,51 @@ public class DateConverter
         }
         retval.append(Integer.toString(minutes));
         return retval.toString();
+    }
+    
+    /**
+     * Get a Calendar from an ISO8601 date string.
+     * 
+     * @param dateString
+     * @return the Calendar instance.
+     */
+    private static Calendar fromISO8601(String dateString)
+    {
+        // Pattern to test for a time zone string
+        Pattern timeZonePattern = Pattern.compile(
+                    "[\\d-]*T?[\\d-\\.]([A-Z]{1,4})$|(.*\\d*)([A-Z][a-z]+\\/[A-Z][a-z]+)$"
+                );
+        Matcher timeZoneMatcher = timeZonePattern.matcher(dateString);
+        
+        String timeZoneString = null;
+        
+        while (timeZoneMatcher.find())
+        {
+            for (int i = 1; i <= timeZoneMatcher.groupCount(); i++)
+            {
+                if (timeZoneMatcher.group(i) != null)
+                {
+                    timeZoneString = timeZoneMatcher.group(i);
+                }
+            }
+        }
+
+        if (timeZoneString != null)
+        {
+            
+            Calendar cal = javax.xml.bind.DatatypeConverter.parseDateTime(
+                        dateString.substring(0, dateString.indexOf(timeZoneString))
+                        
+                    );
+            
+            TimeZone z = TimeZone.getTimeZone(timeZoneString);
+            cal.setTimeZone(z);
+            
+            return cal;
+        }
+        else
+        {
+            return javax.xml.bind.DatatypeConverter.parseDateTime(dateString);
+        }
     }
 }
