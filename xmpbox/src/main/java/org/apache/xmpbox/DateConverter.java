@@ -233,23 +233,6 @@ public class DateConverter
     }
 
     /**
-     * Append Zero to String Buffer.
-     * 
-     * This will append zero before number &lt; 10 ('1' become '01')
-     * 
-     * @param out The String buffer
-     * @param number The concerned number
-     */
-    private static void zeroAppend(StringBuffer out, int number)
-    {
-        if (number < 10)
-        {
-            out.append("0");
-        }
-        out.append(number);
-    }
-
-    /**
      * Convert the date to iso 8601 string format.
      * 
      * @param cal
@@ -258,46 +241,41 @@ public class DateConverter
      */
     public static String toISO8601(Calendar cal)
     {
-        StringBuffer retval = new StringBuffer();
-
-        retval.append(cal.get(Calendar.YEAR));
-        retval.append("-");
-        zeroAppend(retval, cal.get(Calendar.MONTH) + 1);
-        retval.append("-");
-        zeroAppend(retval, cal.get(Calendar.DAY_OF_MONTH));
-        retval.append("T");
-        zeroAppend(retval, cal.get(Calendar.HOUR_OF_DAY));
-        retval.append(":");
-        zeroAppend(retval, cal.get(Calendar.MINUTE));
-        retval.append(":");
-        zeroAppend(retval, cal.get(Calendar.SECOND));
-
-        int timeZone = cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET);
-        if (timeZone < 0)
+        return toISO8601(cal, false);
+    }
+    
+    /**
+     * Convert the date to iso 8601 string format.
+     * 
+     * @param cal The date to convert.
+     * @param printMillis Print Milliseconds.
+     * @return The date represented as an ISO 8601 string.
+     */
+    public static String toISO8601(Calendar cal, boolean printMillis)
+    {
+        final SimpleDateFormat iso8601Format = new SimpleDateFormat(
+                "yyyy-MM-dd'T'HH:mm:ssZ"
+            );        
+        final SimpleDateFormat iso8601FormatMillis = new SimpleDateFormat(
+                    "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+                );
+        
+        StringBuffer dateString = new StringBuffer();
+        
+        if (printMillis)
         {
-            retval.append("-");
+            dateString.append(iso8601FormatMillis.format(cal.getTime()));
         }
         else
         {
-            retval.append("+");
+            dateString.append(iso8601Format.format(cal.getTime()));
         }
-        timeZone = Math.abs(timeZone);
-        // milliseconds/1000 = seconds = seconds / 60 = minutes = minutes/60 =
-        // hours
-        int hours = timeZone / 1000 / 60 / 60;
-        int minutes = (timeZone - (hours * 1000 * 60 * 60)) / 1000 / 1000;
-        if (hours < 10)
-        {
-            retval.append("0");
-        }
-        retval.append(Integer.toString(hours));
-        retval.append(":");
-        if (minutes < 10)
-        {
-            retval.append("0");
-        }
-        retval.append(Integer.toString(minutes));
-        return retval.toString();
+
+        // The Z format option prints the time zone in the format 
+        // +0100. Unfortunately this is not in line with the IDO8601 specification
+        // the format is +01:00. We will insert the colon to the formatted date.
+        dateString.insert(dateString.length()-2, ':');
+        return dateString.toString();
     }
     
     /**
