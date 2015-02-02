@@ -70,8 +70,12 @@ public class CCITTFaxDecodeFilter implements Filter
         {
             decodeParms =  (COSDictionary)((COSArray)decodeP).getObject(filterIndex);
         }
-        int cols = decodeParms.getInt(COSName.COLUMNS, 1728);
-        int rows = decodeParms.getInt(COSName.ROWS, 0);
+        int cols = 1728, rows = 0;
+        if (decodeParms != null)
+        {
+            cols = decodeParms.getInt(COSName.COLUMNS, 1728);
+            rows = decodeParms.getInt(COSName.ROWS, 0);
+        }
         int height = options.getInt(COSName.HEIGHT, COSName.H, 0);
         if (rows > 0 && height > 0)
         {
@@ -83,8 +87,15 @@ public class CCITTFaxDecodeFilter implements Filter
             // at least one of the values has to have a valid value
             rows = Math.max(rows, height);
         }
-        int k = decodeParms.getInt(COSName.K, 0);
-        boolean encodedByteAlign = decodeParms.getBoolean(COSName.ENCODED_BYTE_ALIGN, false);        
+        int k = 0;
+        boolean encodedByteAlign = false;
+        boolean blackIsOne = false;
+        if (decodeParms != null)
+        {
+            k = decodeParms.getInt(COSName.K, 0);
+            encodedByteAlign = decodeParms.getBoolean(COSName.ENCODED_BYTE_ALIGN, false);        
+            blackIsOne = decodeParms.getBoolean(COSName.BLACK_IS_1, false);
+        }
         int arraySize = (cols + 7) / 8 * rows;
         TIFFFaxDecoder faxDecoder = new TIFFFaxDecoder(1, cols, rows);
         // TODO possible options??
@@ -111,7 +122,6 @@ public class CCITTFaxDecodeFilter implements Filter
         }
 
         // invert bitmap
-        boolean blackIsOne = decodeParms.getBoolean(COSName.BLACK_IS_1, false);
         if (!blackIsOne)
         {
             // Inverting the bitmap
