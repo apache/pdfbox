@@ -154,11 +154,13 @@ public class PDPixelMap extends PDXObjectImage
             getPDStream().addCompression();
             os = getCOSStream().createUnfilteredStream();
 
-            if (((isMask
-                    || bi.getType() == BufferedImage.TYPE_BYTE_GRAY)
-                    || bi.getType() == BufferedImage.TYPE_BYTE_BINARY)
-                    && bi.getColorModel().getPixelSize() <= 8)
+            if (isMask
+                    || (bi.getType() == BufferedImage.TYPE_BYTE_GRAY && bi.getColorModel().getPixelSize() <= 8)
+                    || (bi.getType() == BufferedImage.TYPE_BYTE_BINARY && bi.getColorModel().getPixelSize() == 1)
+                    )
             {
+                // optimized (1 byte per pixel handling) for 1bit and gray
+                //BEWARE: doesn't work with TYPE_BYTE_BINARY images with more than 1 bit (colored)!
                 setColorSpace(new PDDeviceGray());
                 bpc = bi.getColorModel().getPixelSize();
                 if (bpc < 8)
