@@ -624,6 +624,7 @@ public class COSWriter implements ICOSVisitor, Closeable
                 trailer.setLong(xrefStm, getStartxref());
             }
             doWriteXRefTable();
+            doWriteTrailer(doc);
         }
     }
 
