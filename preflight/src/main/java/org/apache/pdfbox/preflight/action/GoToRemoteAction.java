@@ -100,6 +100,12 @@ public class GoToRemoteAction extends GoToAction
                         "Destination array must have at least 2 elements"));
                 return false;
             }
+            if (!(ar.get(1) instanceof COSName))
+            {
+                context.addValidationError(new ValidationResult.ValidationError(ERROR_SYNTAX_DICT_INVALID,
+                        "Second element of destination array must be a name"));
+                return false;
+            }
             validateExplicitDestination(ar);
         }
         try
