@@ -4,9 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
-import java.util.regex.Pattern;
 
 import org.junit.Test;
 
