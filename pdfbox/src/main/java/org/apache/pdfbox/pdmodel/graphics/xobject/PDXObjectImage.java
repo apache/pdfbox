@@ -20,13 +20,7 @@ import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Transparency;
-import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
-import java.awt.image.DataBufferInt;
 import java.awt.image.WritableRaster;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -69,7 +63,7 @@ public abstract class PDXObjectImage extends PDXObject
     /**
      * This contains the suffix used when writing to file.
      */
-    private String suffix;
+    private final String suffix;
 
     private PDColorState stencilColor;
     
@@ -493,19 +487,36 @@ public abstract class PDXObjectImage extends PDXObject
         return null;
     }
 
+    // create alpha image the hard way: assign the alpha value to R, G and B
+    private BufferedImage createAlphaFromImage(BufferedImage bi, int alphaImageType)
+    {
+        BufferedImage alphaImage = new BufferedImage(bi.getWidth(), bi.getHeight(), alphaImageType);
+        for (int x = 0, w = bi.getWidth(); x < w; ++x)
+        {
+            for (int y = 0, h = bi.getHeight(); y < h; ++y)
+            {
+                int rgb = bi.getRGB(x, y);
+                alphaImage.setRGB(x, y, (rgb >>> 24) | (rgb >>> 16) | (rgb >>> 8));
+            }
+        }
+        return alphaImage;
+    }            
+
+    // create alpha image from alpha raster
     BufferedImage extractAlphaImage(BufferedImage bi)
     {
+        int imageType = bi.getTransparency() == Transparency.BITMASK ? 
+                BufferedImage.TYPE_BYTE_BINARY : 
+                BufferedImage.TYPE_BYTE_GRAY;
         WritableRaster alphaRaster = bi.getAlphaRaster();
         if (alphaRaster == null)
         {
             // happens sometimes (PDFBOX-2654) despite colormodel claiming to have alpha
-            return null;
+            return createAlphaFromImage(bi, imageType);
         }
         BufferedImage alphaImage = new BufferedImage(alphaRaster.getWidth(), 
                 alphaRaster.getHeight(), 
-                bi.getTransparency() == Transparency.BITMASK ? 
-                BufferedImage.TYPE_BYTE_BINARY : 
-                BufferedImage.TYPE_BYTE_GRAY);
+                imageType);
         alphaImage.setData(alphaRaster);
         return alphaImage;
     }
