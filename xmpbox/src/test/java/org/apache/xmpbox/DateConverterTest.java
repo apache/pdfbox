@@ -36,7 +36,7 @@ public class DateConverterTest
 {
 
     /**
-     * Test several ISO6801 date formats.
+     * Test parsing several ISO8601 date formats.
      * 
      * Test with additional time zone
      * information normally not supported by ISO8601
@@ -47,7 +47,7 @@ public class DateConverterTest
     public void testDateConversion() throws Exception
     {
 
-        final SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd'T'HH:mm.ss.SSSXXX");
+        final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
         Calendar jaxbCal = null,
                 convDate = null;
         // Test partial dates
@@ -74,6 +74,21 @@ public class DateConverterTest
         jaxbCal = javax.xml.bind.DatatypeConverter.parseDateTime("2015-02-02T16:37:19.192+01:00");
         convDate = DateConverter.toCalendar("2015-02-02T16:37:19.192Europe/Berlin");
         assertEquals(dateFormat.format(jaxbCal.getTime()), dateFormat.format(convDate.getTime()));
-
+    }
+    
+    /**
+     * Test formatting ISO8601 date formats.
+     * 
+     * Test with additional time zone
+     * information normally not supported by ISO8601
+     *
+     * @throws Exception when there is an exception
+     */
+    @Test
+    public void testDateFormatting() throws Exception
+    {
+        Calendar cal = DateConverter.toCalendar("2015-02-02T16:37:19.192Z");
+        assertEquals("2015-02-02T17:37:19+01:00", DateConverter.toISO8601(cal));
+        assertEquals("2015-02-02T17:37:19.192+01:00", DateConverter.toISO8601(cal,true));
     }
 }
