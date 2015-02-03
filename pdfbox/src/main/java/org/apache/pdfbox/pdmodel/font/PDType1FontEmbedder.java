@@ -151,6 +151,7 @@ class PDType1FontEmbedder
         fd.setXHeight(metrics.getXHeight());
         fd.setAverageWidth(metrics.getAverageCharacterWidth());
         fd.setCharacterSet(metrics.getCharacterSet());
+        fd.setStemV(0); // for PDF/A
         return fd;
     }
 
