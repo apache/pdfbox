@@ -310,6 +310,46 @@ public class PDPixelMapTest extends TestCase
         assertNull(ximage.getSMaskImage());
         document.close();
     }
+    
+    /**
+     * Tests LosslessFactoryTest#createFromImage(PDDocument document,
+     * BufferedImage image) with transparent GIF
+     *
+     * @throws java.io.IOException
+     */
+    public void testCreateLosslessFromTransparentGIF() throws IOException, COSVisitorException
+    {
+        PDDocument document = new PDDocument();
+        BufferedImage imageFromTransparentColorGif = ImageIO.read(this.getClass().getResourceAsStream("gif.gif"));
+        
+        assertEquals(Transparency.BITMASK, imageFromTransparentColorGif.getColorModel().getTransparency());
+        
+        PDXObjectImage ximage = new PDPixelMap(document, imageFromTransparentColorGif);
+
+        checkIdent(imageFromTransparentColorGif, ximage.getRGBImage());
+        validate(ximage, 8, 343, 287, "png", PDDeviceRGB.NAME);
+
+        validate(ximage.getSMaskImage(), 1, imageFromTransparentColorGif.getWidth(), imageFromTransparentColorGif.getHeight(), "png", PDDeviceGray.NAME);
+        assertEquals(2, colorCount(ximage.getSMaskImage().getRGBImage()));
+
+        // This part isn't really needed because this test doesn't break
+        // if the mask has the wrong colorspace (PDFBOX-2057), but it is still useful
+        // if something goes wrong in the future and we want to have a PDF to open.
+        PDPage page = new PDPage();
+        document.addPage(page);
+        PDPageContentStream contentStream = new PDPageContentStream(document, page, true, false);
+        contentStream.drawXObject(ximage, 150, 300, ximage.getWidth(), ximage.getHeight());
+        contentStream.drawXObject(ximage, 200, 350, ximage.getWidth(), ximage.getHeight());
+
+        contentStream.close();
+        File pdfFile = new File(testResultsDir, "gif.pdf");
+        document.save(pdfFile);
+        document.close();
+        document = PDDocument.loadNonSeq(pdfFile, null);
+        List<PDPage> pdPages = document.getDocumentCatalog().getAllPages();
+        pdPages.get(0).convertToImage();
+        document.close();
+    }
 
     /**
      * Tests INT_ARGB LosslessFactoryTest#createFromImage(PDDocument document,
