@@ -496,10 +496,14 @@ public abstract class PDXObjectImage extends PDXObject
             for (int y = 0, h = bi.getHeight(); y < h; ++y)
             {
                 int rgb = bi.getRGB(x, y);
-                alphaImage.setRGB(x, y, (rgb >>> 24) | (rgb >>> 16) | (rgb >>> 8));
+                int alpha = (rgb >>> 24);
+                alphaImage.setRGB(x, y, alpha | alpha << 8 | alpha << 16);
             }
         }
+        
         return alphaImage;
+        
+        
     }            
 
     // create alpha image from alpha raster
