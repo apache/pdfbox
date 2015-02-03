@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.service.interactive.form;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -65,7 +64,7 @@ public final class PDAppearanceString
     private final PDVariableText parent;
 
     private String value;
-    private final String defaultAppearance;
+    private final DefaultAppearanceHandler defaultAppearanceHandler;
 
     private final PDAcroForm acroForm;
     private List<COSObjectable> widgets = new ArrayList<COSObjectable>();
@@ -75,8 +74,9 @@ public final class PDAppearanceString
      *
      * @param theAcroForm the AcroForm that this field is part of.
      * @param field the field which you wish to control the appearance of
+     * @throws IOException 
      */
-    public PDAppearanceString(PDAcroForm theAcroForm, PDVariableText field)
+    public PDAppearanceString(PDAcroForm theAcroForm, PDVariableText field) throws IOException
     {
         acroForm = theAcroForm;
         parent = field;
@@ -87,7 +87,7 @@ public final class PDAppearanceString
             widgets = new ArrayList<COSObjectable>();
             widgets.add(field.getWidget());
         }
-        defaultAppearance = getDefaultAppearance();
+        defaultAppearanceHandler = new DefaultAppearanceHandler(getDefaultAppearance());
     }
 
     /**
@@ -121,20 +121,6 @@ public final class PDAppearanceString
         return tokens;
     }
 
-    private List<Object> getStreamTokens(String defaultAppearanceString) throws IOException
-    {
-        List<Object> tokens = new ArrayList<Object>();
-        if (defaultAppearanceString != null && !defaultAppearanceString.isEmpty())
-        {
-            ByteArrayInputStream stream = new ByteArrayInputStream(defaultAppearanceString.getBytes());
-            PDFStreamParser parser = new PDFStreamParser(stream);
-            parser.parse();
-            tokens = parser.getTokens();
-            parser.close();
-        }
-        return tokens;
-    }
-       
     private List<Object> getStreamTokens(COSStream stream) throws IOException
     {
         List<Object> tokens = new ArrayList<Object>();
@@ -218,9 +204,9 @@ public final class PDAppearanceString
                 }
 
                 List<Object> tokens = getStreamTokens(appearanceStream);
-                List<Object> daTokens = getStreamTokens(getDefaultAppearance());
-                PDFont pdFont = getFontAndUpdateResources(daTokens, appearanceStream);
 
+                PDFont pdFont = getFontAndUpdateResources(appearanceStream);
+                
                 if (!containsMarkedContent(tokens))
                 {
                     ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -236,7 +222,7 @@ public final class PDAppearanceString
                 }
                 else
                 {
-                    if (daTokens != null)
+                    if (!defaultAppearanceHandler.getTokens().isEmpty())
                     {
                         int bmcIndex = tokens.indexOf(Operator.getOperator("BMC"));
                         int emcIndex = tokens.indexOf(Operator.getOperator("EMC"));
@@ -244,13 +230,13 @@ public final class PDAppearanceString
                         {
                             // if the EMC immediately follows the BMC index then should
                             // insert the daTokens inbetween the two markers.
-                            tokens.addAll(emcIndex, daTokens);
+                            tokens.addAll(emcIndex, defaultAppearanceHandler.getTokens());
                         }
                     }
                     ByteArrayOutputStream output = new ByteArrayOutputStream();
                     ContentStreamWriter writer = new ContentStreamWriter(output);
                     float fontSize = calculateFontSize(pdFont,
-                            appearanceStream.getBBox(), tokens, daTokens);
+                            appearanceStream.getBBox(), tokens);
                     int setFontIndex = tokens.indexOf(Operator.getOperator("Tf"));
                     tokens.set(setFontIndex - 1, new COSFloat(fontSize));
 
@@ -289,17 +275,12 @@ public final class PDAppearanceString
             boundingBox = fieldWidget.getRectangle().createRetranslatedRectangle();
         }
         printWriter.println("BT");
-        if (defaultAppearance != null)
+        if (!defaultAppearanceHandler.getTokens().isEmpty())
         {
-            List<Object> daTokens = getStreamTokens(getDefaultAppearance());
-            fontSize = calculateFontSize(font, boundingBox, tokens, daTokens);
-            int fontIndex = daTokens.indexOf(Operator.getOperator("Tf"));
-            if (fontIndex != -1)
-            {
-                daTokens.set(fontIndex - 1, new COSFloat(fontSize));
-            }
+            fontSize = calculateFontSize(font, boundingBox, tokens);
+            defaultAppearanceHandler.setFontSize(fontSize);
             ContentStreamWriter daWriter = new ContentStreamWriter(output);
-            daWriter.writeTokens(daTokens);
+            daWriter.writeTokens(defaultAppearanceHandler.getTokens());
         }
 
         PDRectangle borderEdge = getSmallestDrawnRectangle(boundingBox, tokens);
@@ -377,32 +358,105 @@ public final class PDAppearanceString
         printWriter.flush();
     }
 
-    private PDFont getFontAndUpdateResources(List<Object> daTokens,
-            PDAppearanceStream appearanceStream) throws IOException
+    /*
+     * To update an existing appearance stream first copy any needed resources from the
+     * document’s DR dictionary into the stream’s Resources dictionary.
+     * If the DR and Resources dictionaries contain resources with the same name,
+     * the one already in the Resources dictionary shall be left intact,
+     * not replaced with the corresponding value from the DR dictionary. 
+     */
+    private PDFont getFontAndUpdateResources(PDAppearanceStream appearanceStream) throws IOException
     {
-        PDFont retval = null;
+        PDFont font = null;
         PDResources streamResources = appearanceStream.getResources();
         PDResources formResources = acroForm.getDefaultResources();
-        if (formResources != null)
+        
+        if (streamResources == null && formResources == null)
         {
-            if (streamResources == null)
+            throw new IOException("Unable to generate field appearance - missing required resources");
+        }
+        
+        COSName cosFontName = defaultAppearanceHandler.getFontName();
+        
+        if (streamResources != null)
+        {
+            font = streamResources.getFont(cosFontName);
+            if (font != null)
             {
-                streamResources = new PDResources();
-                appearanceStream.setResources(streamResources);
-            }
-
-            int setFontIndex = daTokens.indexOf(Operator.getOperator("Tf"));
-            COSName cosFontName = (COSName) daTokens.get(setFontIndex - 2);
-            retval = streamResources.getFont(cosFontName);
-            if (retval == null)
-            {
-                retval = formResources.getFont(cosFontName);
-                streamResources.put(cosFontName, retval);
+                return font;
             }
         }
-        return retval;
+        else
+        {
+            streamResources = new PDResources();
+            appearanceStream.setResources(streamResources);
+        }
+        
+        if (formResources != null)
+        {
+            font = formResources.getFont(cosFontName);
+            if (font != null)
+            {
+                streamResources.put(cosFontName, font);
+                return font;
+            }
+        }        
+        
+        // if we get here the font might be there but under a different name
+        // which is incorrect but try to treat the resource name as the font name
+        font = resolveFont(streamResources, formResources, cosFontName);
+            
+        if (font != null)
+        {
+            streamResources.put(cosFontName, font);
+            return font;
+        }
+        else
+        {
+            throw new IOException("Unable to generate field appearance - missing required font resources");
+        }
+    }
+    
+    /**
+     * Get the font from the resources.
+     * @return the retrieved font
+     * @throws IOException 
+     */
+    private PDFont resolveFont(PDResources streamResources, PDResources formResources, COSName cosFontName)
+            throws IOException
+    {
+        // if the font couldn't be retrieved it might be because the font name
+        // in the DA string didn't point to the font resources dictionary entry but
+        // is the name of the font itself. So try to resolve that.
+        
+        PDFont font = null;
+        if (streamResources != null)
+        {
+            for (COSName fontName : streamResources.getFontNames()) 
+            {
+                font = streamResources.getFont(fontName);
+                if (font.getName().equals(cosFontName.getName()))
+                {
+                    return font;
+                }
+            }
+        }
+
+        if (formResources != null)
+        {
+            for (COSName fontName : formResources.getFontNames()) 
+            {
+                font = formResources.getFont(fontName);
+                if (font.getName().equals(cosFontName.getName()))
+                {
+                    return font;
+                }
+            }
+        }
+        return null;
     }
 
+    
     private boolean isMultiLineValue(String multiLineValue)
     {
         return (parent instanceof PDTextField && ((PDTextField) parent).isMultiline() && multiLineValue.contains("\n"));
@@ -477,19 +531,12 @@ public final class PDAppearanceString
      *
      * @throws IOException If there is an error getting the font height.
      */
-    private float calculateFontSize(PDFont pdFont, PDRectangle boundingBox, List<Object> tokens,
-            List<Object> daTokens) throws IOException
+    private float calculateFontSize(PDFont pdFont, PDRectangle boundingBox, List<Object> tokens) throws IOException
     {
         float fontSize = 0;
-        if (daTokens != null)
+        if (!defaultAppearanceHandler.getTokens().isEmpty())
         {
-            // daString looks like "BMC /Helv 3.4 Tf EMC"
-            // use the fontsize of the default existing apperance stream
-            int fontIndex = daTokens.indexOf(Operator.getOperator("Tf"));
-            if (fontIndex != -1)
-            {
-                fontSize = ((COSNumber) daTokens.get(fontIndex - 1)).floatValue();
-            }
+            fontSize = defaultAppearanceHandler.getFontSize();
         }
 
         float widthBasedFontSize = Float.MAX_VALUE;
