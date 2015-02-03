@@ -49,14 +49,15 @@ public final class AppearanceGenerator
     {
         if (field instanceof PDVariableText)
         {
-            PDAppearanceString pdAppearance = new PDAppearanceString(field.getAcroForm(),
-                    (PDVariableText) field);
-
+            PDAppearanceString pdAppearance = null;
             Object fieldValue = null;
-            
             try
             {
-                fieldValue = field.getValue();
+                pdAppearance = new PDAppearanceString(field.getAcroForm(),
+                        (PDVariableText) field);
+    
+                
+                    fieldValue = field.getValue();
             }
             catch (IOException e)
             {
