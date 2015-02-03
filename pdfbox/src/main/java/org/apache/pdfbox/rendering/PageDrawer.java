@@ -776,7 +776,11 @@ public final class PageDrawer extends PDFGraphicsStreamEngine
     public void showAnnotation(PDAnnotation annotation) throws IOException
     {
         lastClip = null;
-        super.showAnnotation(annotation);
+        //TODO support more flags; make a difference between viewing and printing
+        if (!annotation.isHidden() && !annotation.isInvisible() && !annotation.isNoView())
+        {
+            super.showAnnotation(annotation);
+        }
     }
 
     @Override
