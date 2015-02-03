@@ -87,8 +87,10 @@ public class DateConverterTest
     @Test
     public void testDateFormatting() throws Exception
     {
+        final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
         Calendar cal = DateConverter.toCalendar("2015-02-02T16:37:19.192Z");
-        assertEquals("2015-02-02T17:37:19+01:00", DateConverter.toISO8601(cal));
-        assertEquals("2015-02-02T17:37:19.192+01:00", DateConverter.toISO8601(cal,true));
+        assertEquals(dateFormat.format(cal.getTime()), 
+                    dateFormat.format(DateConverter.toCalendar(DateConverter.toISO8601(cal,true)).getTime())
+                );
     }
 }
