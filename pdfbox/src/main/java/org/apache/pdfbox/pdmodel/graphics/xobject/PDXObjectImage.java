@@ -500,10 +500,7 @@ public abstract class PDXObjectImage extends PDXObject
                 alphaImage.setRGB(x, y, alpha | alpha << 8 | alpha << 16);
             }
         }
-        
         return alphaImage;
-        
-        
     }            
 
     // create alpha image from alpha raster
