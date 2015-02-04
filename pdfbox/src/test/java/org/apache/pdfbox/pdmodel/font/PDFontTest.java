@@ -19,78 +19,26 @@
 
 package org.apache.pdfbox.pdmodel.font;
 
+import junit.framework.TestCase;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 /**
  * 
  * @author adam
  */
-public class PDFontTest
+public class PDFontTest extends TestCase
 {
 
-    public PDFontTest()
-    {
-    }
-
-    @BeforeClass
-    public static void setUpClass() throws Exception
-    {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception
-    {
-    }
-
-    @Before
-    public void setUp()
-    {
-    }
-
-    @After
-    public void tearDown()
-    {
-    }
-
     /**
-     * Test of the error reported in PDFBox-998
+     * Test of the error reported in PDFBox-988
      */
-    @Test
     public void testPDFBox988() throws Exception
     {
         PDDocument doc = null;
         try
         {
             doc = PDDocument.load(PDFontTest.class.getResourceAsStream("F001u_3_7j.pdf"));
-            PDFRenderer renderer = new PDFRenderer(doc);
-            renderer.renderImage(0);
-            // the allegation is that renderImage() will crash the JVM or hang
-        }
-        finally
-        {
-            if (doc != null)
-            {
-                doc.close();
-            }
-        }
-    }
-
-    /**
-     * Test of the error reported in PDFBox-1019
-     */
-    @Test
-    public void testPDFBox1019() throws Exception
-    {
-        PDDocument doc = null;
-        try
-        {
-            doc = PDDocument.load(PDFontTest.class.getResourceAsStream("256.pdf"));
             PDFRenderer renderer = new PDFRenderer(doc);
             renderer.renderImage(0);
             // the allegation is that renderImage() will crash the JVM or hang
