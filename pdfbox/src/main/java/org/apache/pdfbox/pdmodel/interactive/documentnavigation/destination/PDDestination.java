@@ -51,7 +51,9 @@ public abstract class PDDestination implements PDDestinationOrAction
         {
             //this is ok, just return null.
         }
-        else if( base instanceof COSArray && ((COSArray)base).size() > 0 )
+        else if (base instanceof COSArray 
+                && ((COSArray) base).size() > 1 
+                && ((COSArray) base).getObject(1) instanceof COSName)
         {
             COSArray array = (COSArray)base;
             COSName type = (COSName)array.getObject( 1 );
@@ -81,7 +83,7 @@ public abstract class PDDestination implements PDDestinationOrAction
             }
             else
             {
-                throw new IOException( "Unknown destination type:" + type );
+                throw new IOException( "Unknown destination type: " + type.getName() );
             }
         }
         else if( base instanceof COSString )
