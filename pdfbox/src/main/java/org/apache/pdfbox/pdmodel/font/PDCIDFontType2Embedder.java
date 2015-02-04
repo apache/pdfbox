@@ -247,7 +247,7 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
      */
     private void buildCIDSet(Map<Integer, Integer> cidToGid) throws IOException
     {
-        byte[] bytes = new byte[(Collections.max(cidToGid.keySet()) + 7) / 8];
+        byte[] bytes = new byte[Collections.max(cidToGid.keySet()) / 8 + 1];
         for (int cid : cidToGid.keySet())
         {
             int mask = 1 << 7 - cid % 8;
