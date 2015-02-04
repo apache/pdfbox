@@ -413,7 +413,7 @@ public final class PDAppearanceString
         }
         else
         {
-            throw new IOException("Unable to generate field appearance - missing required font resources");
+            throw new IOException("Unable to generate field appearance - missing required font resources: " + cosFontName);
         }
     }
     

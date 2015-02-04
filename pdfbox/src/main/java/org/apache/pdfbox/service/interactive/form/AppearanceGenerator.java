@@ -44,51 +44,30 @@ public final class AppearanceGenerator
      * Generate the appearances for a single field.
      * 
      * @param field The field which appearances need to be generated.
+     * @throws IOException 
      */
-    public static void generateFieldAppearances(PDField field)
+    public static void generateFieldAppearances(PDField field) throws IOException
     {
         if (field instanceof PDVariableText)
         {
             PDAppearanceString pdAppearance = null;
             Object fieldValue = null;
-            try
-            {
-                pdAppearance = new PDAppearanceString(field.getAcroForm(),
+
+            pdAppearance = new PDAppearanceString(field.getAcroForm(),
                         (PDVariableText) field);
     
                 
-                    fieldValue = field.getValue();
-            }
-            catch (IOException e)
-            {
-                // TODO: Implement the removal of the appearance as this 
-                //       exception occurred either because the value couldn't be read or
-                //       the type is not valid for the field.
+            fieldValue = field.getValue();
 
-            }
             
             // TODO: implement the handling for additional values.
             if (fieldValue instanceof String)
             {
-                try
-                {
-                    pdAppearance.setAppearanceValue((String) fieldValue);
-                }
-                catch (IOException e)
-                {
-                    LOG.debug("Unable to generate the field appearance.", e);
-                }
+                pdAppearance.setAppearanceValue((String) fieldValue);
             } 
             else if (fieldValue instanceof PDTextStream)
             {
-                try
-                {
-                    pdAppearance.setAppearanceValue(((PDTextStream) fieldValue).getAsString());
-                }
-                catch (IOException e)
-                {
-                    LOG.debug("Unable to generate the field appearance.", e);
-                }                
+                pdAppearance.setAppearanceValue(((PDTextStream) fieldValue).getAsString());
             }
             else if (fieldValue != null)
             {

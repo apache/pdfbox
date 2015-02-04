@@ -289,8 +289,9 @@ public abstract class PDFieldTreeNode implements COSObjectable
      * reusing it.
      * 
      * @param fieldValue The new field value.
+     * @throws IOException if there is an error setting the field value.
      */    
-    public abstract void setValue(String fieldValue);
+    public abstract void setValue(String fieldValue) throws IOException;
     
 
     /**
