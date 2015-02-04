@@ -52,26 +52,6 @@ public class TestPDDocumentCatalog extends TestCase {
 
     /**
      * Test case for
-     * <a href="https://issues.apache.org/jira/browse/PDFBOX-900"
-     *   >PDFBOX-900</a> - Handle malformed PDFs
-     */
-    public void testLabelsOnMalformedPdf() throws Exception {
-        PDDocument doc = null;
-        try {
-            doc = PDDocument.load(TestPDDocumentCatalog.class.getResourceAsStream("page_label.pdf"));
-            PDDocumentCatalog cat = doc.getDocumentCatalog();
-            // getLabelsByPageIndices() should not throw an exception
-            cat.getPageLabels().getLabelsByPageIndices();
-        } catch(Exception e) {
-            fail("Threw exception!");
-        } finally {
-            if(doc != null)
-                doc.close();
-        }
-    }
-
-    /**
-     * Test case for
      * <a href="https://issues.apache.org/jira/browse/PDFBOX-911"
      *   >PDFBOX-911</a> - Method PDDocument.getNumberOfPages() returns wrong
      * number of pages
