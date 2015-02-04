@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import java.io.IOException;
+
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
@@ -111,8 +113,9 @@ public abstract class PDField extends PDFieldTreeNode
      * 
      * The fields appearance stream needs to be updated to reflect the new field
      * value. This will be done only if the NeedAppearances flag has not been set.
+     * @throws IOException if the appearance couldn't be generated
      */
-    protected void updateFieldAppearances()
+    protected void updateFieldAppearances() throws IOException
     {
         if (!getAcroForm().isNeedAppearances())
         {

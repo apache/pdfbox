@@ -266,9 +266,10 @@ public final class PDTextField extends PDVariableText
      * text stream {@link #setValue(PDTextStream)}
      * </p>
      * @param value the value
+     * @throws IOException if there is an error setting the field value
      */
     @Override
-    public void setValue(String value)
+    public void setValue(String value) throws IOException
     {
         if (value != null && !value.isEmpty())
         {
@@ -290,8 +291,9 @@ public final class PDTextField extends PDVariableText
      * The value is stored in the field dictionaries "V" entry.
      * 
      * @param textStream the value
+     * @throws IOException if there is an error setting the field value
      */
-    public void setValue(PDTextStream textStream)
+    public void setValue(PDTextStream textStream) throws IOException
     {
         if (textStream != null)
         {

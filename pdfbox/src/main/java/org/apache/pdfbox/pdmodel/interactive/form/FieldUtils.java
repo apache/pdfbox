@@ -57,7 +57,6 @@ public final class FieldUtils
             return this.key;
         }
 
-
         public String getValue()
         {
             return this.value;
