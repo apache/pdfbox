@@ -35,7 +35,7 @@ import org.junit.Test;
 
 public class TestNonSequentialPDFParser {
 
-    private static final String PATH_OF_PDF = "src/test/resources/org/apache/pdfbox/pdfparser/gdb-refcard.pdf";
+    private static final String PATH_OF_PDF = "src/test/resources/input/yaddatest.pdf";
     private static File tmpDirectory = new File(System.getProperty("java.io.tmpdir"));
 
     private int numberOfTmpFiles = 0;
