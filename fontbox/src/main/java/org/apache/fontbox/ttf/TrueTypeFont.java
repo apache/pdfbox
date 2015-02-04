@@ -500,12 +500,16 @@ public class TrueTypeFont implements Type1Equivalent
                 for (int chPos = 3; chPos + 4 <= nameLength; chPos += 4)
                 {
                     int codePoint = Integer.parseInt(name.substring(chPos, chPos + 4), 16);
-                    if (codePoint <= 0xD7FF && codePoint >= 0xE000)
+                    if (codePoint <= 0xD7FF || codePoint >= 0xE000) // disallowed code area
                     {
                         uniStr.append((char) codePoint);
                     }
                 }
                 String unicode = uniStr.toString();
+                if (unicode.length() == 0)
+                {
+                    return -1;
+                }
                 return unicode.codePointAt(0);
             }
             catch (NumberFormatException e)
