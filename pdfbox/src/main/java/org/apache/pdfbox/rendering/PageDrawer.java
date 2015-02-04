@@ -20,6 +20,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsDevice;
 import java.awt.Paint;
 import java.awt.RenderingHints;
 import java.awt.Shape;
@@ -776,11 +777,21 @@ public final class PageDrawer extends PDFGraphicsStreamEngine
     public void showAnnotation(PDAnnotation annotation) throws IOException
     {
         lastClip = null;
-        //TODO support more flags; make a difference between viewing and printing
-        if (!annotation.isHidden() && !annotation.isInvisible() && !annotation.isNoView())
+        //TODO support more annotation flags (Invisible, NoZoom, NoRotate)
+        int deviceType = graphics.getDeviceConfiguration().getDevice().getType();
+        if (deviceType == GraphicsDevice.TYPE_PRINTER && !annotation.isPrinted())
         {
-            super.showAnnotation(annotation);
+            return;
         }
+        if (deviceType == GraphicsDevice.TYPE_RASTER_SCREEN && annotation.isNoView())
+        {
+            return;
+        }
+        if (annotation.isHidden())
+        {
+            return;
+        }
+        super.showAnnotation(annotation);
     }
 
     @Override
