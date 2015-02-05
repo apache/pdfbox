@@ -212,6 +212,34 @@ public class LosslessFactoryTest extends TestCase
     }
 
     /**
+     * Tests LosslessFactoryTest#createFromImage(PDDocument document,
+     * BufferedImage image) with transparent GIF
+     *
+     * @throws java.io.IOException
+     */
+    public void testCreateLosslessFromTransparentGIF() throws IOException
+    {
+        PDDocument document = new PDDocument();
+        BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("gif.gif"));
+        
+        assertEquals(Transparency.BITMASK, image.getColorModel().getTransparency());
+
+        PDImageXObject ximage = LosslessFactory.createFromImage(document, image);
+
+        int w = image.getWidth();
+        int h = image.getHeight();
+        validate(ximage, 8, w, h, "png", PDDeviceRGB.INSTANCE.getName());
+        checkIdent(image, ximage.getImage());
+        checkIdentRGB(image, ximage.getOpaqueImage());
+
+        assertNotNull(ximage.getSoftMask());
+        validate(ximage.getSoftMask(), 1, w, h, "png", PDDeviceGray.INSTANCE.getName());
+        assertEquals(2, colorCount(ximage.getSoftMask().getImage()));
+
+        doWritePDF(document, ximage, testResultsDir, "gif.pdf");
+    }
+
+    /**
      * Check whether the RGB part of images are identical.
      *
      * @param expectedImage
