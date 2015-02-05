@@ -562,10 +562,7 @@ public class PDGraphicsState implements Cloneable
         // lazy cloning of clipping path for performance
         if (!isClippingPathDirty)
         {
-            // deep copy (can't use clone() as it performs only a shallow copy)
-            Area cloned = new Area();
-            cloned.add(clippingPath);
-            
+            clippingPath = (Area) clippingPath.clone();
             isClippingPathDirty = true;
         }
 
