@@ -16,74 +16,100 @@
  */
 package org.apache.fontbox.cff;
 
-import static org.junit.Assert.assertArrayEquals;
-
 import java.util.Random;
-import org.junit.Test;
+import junit.framework.TestCase;
+import static org.junit.Assert.assertArrayEquals;
+import org.junit.internal.ArrayComparisonFailure;
 
 /**
  * This class includes some tests for the Type1FontUtil class.
- * 
+ *
  * @author Villu Ruusmann
  * @version $Revision$
  */
-public class Type1FontUtilTest
+public class Type1FontUtilTest extends TestCase
 {
+    static final long DEFAULTSEED = 12345;
+    static final long LOOPS = 1000;
 
     /**
      * Tests the hex encoding/decoding.
      */
-    @Test
-    public void hexEncoding()
+    public void testHexEncoding()
     {
-        byte[] bytes = randomBytes(128);
+        long seed = DEFAULTSEED;
+        tryHexEncoding(seed);
+        for (int i = 0; i < LOOPS; ++i)
+        {
+            tryHexEncoding(System.currentTimeMillis());
+        }
+    }
+
+    private void tryHexEncoding(long seed) throws ArrayComparisonFailure
+    {
+        byte[] bytes = createRandomByteArray(128, seed);
 
         String encodedBytes = Type1FontUtil.hexEncode(bytes);
         byte[] decodedBytes = Type1FontUtil.hexDecode(encodedBytes);
-
-        assertArrayEquals(bytes, decodedBytes);
+        
+        assertArrayEquals("Seed: " + seed, bytes, decodedBytes);
     }
 
     /**
      * Tests the eexec encryption/decryption.
      */
-    @Test
-    public void eexecEncryption()
+    public void testEexecEncryption()
     {
-        byte[] bytes = randomBytes(128);
+        long seed = DEFAULTSEED;
+        tryEexecEncryption(seed);
+        for (int i = 0; i < LOOPS; ++i)
+        {
+            tryEexecEncryption(System.currentTimeMillis());
+        }
+    }
+
+    private void tryEexecEncryption(long seed) throws ArrayComparisonFailure
+    {
+        byte[] bytes = createRandomByteArray(128, seed);
 
         byte[] encryptedBytes = Type1FontUtil.eexecEncrypt(bytes);
         byte[] decryptedBytes = Type1FontUtil.eexecDecrypt(encryptedBytes);
 
-        assertArrayEquals(bytes, decryptedBytes);
+        assertArrayEquals("Seed: " + seed, bytes, decryptedBytes);
     }
 
     /**
      * Tests the charstring encryption/decryption.
      */
-    @Test
-    public void charstringEncryption()
+    public void testCharstringEncryption()
     {
-        byte[] bytes = randomBytes(128);
+        long seed = DEFAULTSEED;
+        tryCharstringEncryption(seed);
+        for (int i = 0; i < LOOPS; ++i)
+        {
+            tryCharstringEncryption(System.currentTimeMillis());
+        }
+    }
+
+    private void tryCharstringEncryption(long seed) throws ArrayComparisonFailure
+    {
+        byte[] bytes = createRandomByteArray(128, seed);
 
         byte[] encryptedBytes = Type1FontUtil.charstringEncrypt(bytes, 4);
-        byte[] decryptedBytes = Type1FontUtil.charstringDecrypt(encryptedBytes,
-                4);
+        byte[] decryptedBytes = Type1FontUtil.charstringDecrypt(encryptedBytes, 4);
 
-        assertArrayEquals(bytes, decryptedBytes);
+        assertArrayEquals("Seed: " + seed, bytes, decryptedBytes);
     }
 
-    private static byte[] randomBytes(int length)
+    private static byte[] createRandomByteArray(int arrayLength, long seed)
     {
-        byte[] bytes = new byte[length];
+        byte[] bytes = new byte[arrayLength];
+        Random ramdom = new Random(seed);
 
-        for (int i = 0; i < length; i++)
+        for (int i = 0; i < arrayLength; i++)
         {
-            bytes[i] = (byte) RANDOM.nextInt(256);
+            bytes[i] = (byte) ramdom.nextInt(256);
         }
-
         return bytes;
     }
-
-    private static final Random RANDOM = new Random();
 }
