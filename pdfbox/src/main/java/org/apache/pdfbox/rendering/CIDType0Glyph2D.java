@@ -19,6 +19,7 @@ package org.apache.pdfbox.rendering;
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,7 +35,7 @@ final class CIDType0Glyph2D implements Glyph2D
 {
     private static final Log LOG = LogFactory.getLog(CIDType0Glyph2D.class);
 
-    private final HashMap<Integer, GeneralPath> cache = new HashMap<Integer, GeneralPath>();
+    private final Map<Integer, GeneralPath> cache = new HashMap<Integer, GeneralPath>();
     private final PDCIDFontType0 font;
     private final String fontName;
 
