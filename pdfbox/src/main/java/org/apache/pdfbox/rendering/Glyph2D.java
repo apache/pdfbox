@@ -17,7 +17,7 @@
 
  */
 
-package org.apache.pdfbox.rendering.font;
+package org.apache.pdfbox.rendering;
 
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
@@ -26,7 +26,7 @@ import java.io.IOException;
  * This interface is implemented by several font specific classes which is called to get the
  * general path of a single glyph of the represented font most likely to render it.
  */
-public interface Glyph2D
+interface Glyph2D
 {
     /**
      * Returns the path describing the glyph for the given character code.
