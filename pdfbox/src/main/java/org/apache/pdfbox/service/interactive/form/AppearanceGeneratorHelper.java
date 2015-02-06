@@ -50,16 +50,16 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDVariableText;
 import org.apache.pdfbox.contentstream.operator.Operator;
 
 /**
- * A default appearance string contains any graphics state or text state operators needed to
- * establish the graphics state parameters, such as text size and colour, for displaying the field's
- * variable text. Only operators that are allowed within text objects shall occur in this string.
- *
+ * Create the AcroForms filed appearance helper.
+ * <p>
+ * A helper class to the {@link AppearanceGenerator} to generate update an AcroForm field appearance.
+ * </p>
  * @author Stephan Gerhard
  * @author Ben Litchfield
  */
-class PDAppearanceString
+class AppearanceGeneratorHelper
 {
-    private static final Log LOG = LogFactory.getLog(PDAppearanceString.class);
+    private static final Log LOG = LogFactory.getLog(AppearanceGeneratorHelper.class);
 
     private final PDVariableText parent;
 
@@ -76,7 +76,7 @@ class PDAppearanceString
      * @param field the field which you wish to control the appearance of
      * @throws IOException 
      */
-    public PDAppearanceString(PDAcroForm theAcroForm, PDVariableText field) throws IOException
+    public AppearanceGeneratorHelper(PDAcroForm theAcroForm, PDVariableText field) throws IOException
     {
         acroForm = theAcroForm;
         parent = field;

@@ -47,10 +47,10 @@ public class AppearanceGenerator
     {
         if (field instanceof PDVariableText)
         {
-            PDAppearanceString pdAppearance = null;
+            AppearanceGeneratorHelper apHelper = null;
             Object fieldValue = null;
 
-            pdAppearance = new PDAppearanceString(field.getAcroForm(),
+            apHelper = new AppearanceGeneratorHelper(field.getAcroForm(),
                         (PDVariableText) field);
     
                 
@@ -60,11 +60,11 @@ public class AppearanceGenerator
             // TODO: implement the handling for additional values.
             if (fieldValue instanceof String)
             {
-                pdAppearance.setAppearanceValue((String) fieldValue);
+                apHelper.setAppearanceValue((String) fieldValue);
             } 
             else if (fieldValue instanceof PDTextStream)
             {
-                pdAppearance.setAppearanceValue(((PDTextStream) fieldValue).getAsString());
+                apHelper.setAppearanceValue(((PDTextStream) fieldValue).getAsString());
             }
             else if (fieldValue != null)
             {
