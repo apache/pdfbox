@@ -34,7 +34,6 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
-import org.apache.pdfbox.pdmodel.font.encoding.MacOSRomanEncoding;
 import org.apache.pdfbox.pdmodel.font.encoding.StandardEncoding;
 import org.apache.pdfbox.pdmodel.font.encoding.Type1Encoding;
 import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
@@ -321,7 +320,7 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
         }
 
         invertedEncoding = new HashMap<String, Integer>();
-        Map<Integer, String> codeToName = MacOSRomanEncoding.INSTANCE.getCodeToNameMap();
+        Map<Integer, String> codeToName = encoding.getCodeToNameMap();
         for (Map.Entry<Integer, String> entry : codeToName.entrySet())
         {
             if (!invertedEncoding.containsKey(entry.getValue()))
