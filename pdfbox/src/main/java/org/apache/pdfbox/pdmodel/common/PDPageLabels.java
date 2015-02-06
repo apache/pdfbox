@@ -43,7 +43,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 public class PDPageLabels implements COSObjectable
 {
 
-    private SortedMap<Integer, PDPageLabelRange> labels;
+    private Map<Integer, PDPageLabelRange> labels;
 
     private PDDocument doc;
 
@@ -287,8 +287,8 @@ public class PDPageLabels implements COSObjectable
      */
     private static class LabelGenerator implements Iterator<String>
     {
-        private PDPageLabelRange labelInfo;
-        private int numPages;
+        private final PDPageLabelRange labelInfo;
+        private final int numPages;
         private int currentPage;
 
         LabelGenerator(PDPageLabelRange label, int pages)
