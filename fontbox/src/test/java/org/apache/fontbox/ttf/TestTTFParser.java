@@ -37,9 +37,7 @@ public class TestTTFParser extends TestCase
      */
     public void testUTCDate() throws IOException
     {
-        // ttf file is from TIKA trunk
-        // tika-parsers/src/test/resources/test-documents/testTrueType.ttf
-        final File testFile = new File("src/test/resources/ttf/testTrueType.ttf");
+        final File testFile = new File("src/test/resources/ttf/LiberationSans-Regular.ttf");
         TimeZone utc = TimeZone.getTimeZone("UTC");
         //Before PDFBOX-2122, TTFDataStream was using the default TimeZone
         //Set the default to something not UTC and see if a UTC timeZone is returned
@@ -50,9 +48,9 @@ public class TestTTFParser extends TestCase
         assertEquals(created.getTimeZone(), utc);
 
         Calendar target = Calendar.getInstance(utc);
-        target.set(1904, 0, 1, 0, 0, 0);
+        target.set(2012, 9, 4, 11, 2, 31);
         target.set(Calendar.MILLISECOND, 0);
-        assertEquals(created, target);
+        assertEquals(target, created);
     }
 
 }
