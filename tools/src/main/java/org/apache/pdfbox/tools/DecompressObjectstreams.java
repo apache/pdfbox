@@ -24,7 +24,7 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdfparser.PDFObjectStreamParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.persistence.util.COSObjectKey;
+import org.apache.pdfbox.cos.COSObjectKey;
 
 /**
  * This program will just take all of the stream objects in a PDF and dereference

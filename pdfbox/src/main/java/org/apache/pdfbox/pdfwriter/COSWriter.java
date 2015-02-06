@@ -59,7 +59,7 @@ import org.apache.pdfbox.pdfparser.PDFXRefStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.SecurityHandler;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
-import org.apache.pdfbox.persistence.util.COSObjectKey;
+import org.apache.pdfbox.cos.COSObjectKey;
 import org.apache.pdfbox.util.Charsets;
 import org.apache.pdfbox.util.Hex;
 
