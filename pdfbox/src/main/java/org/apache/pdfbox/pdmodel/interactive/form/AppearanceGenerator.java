@@ -14,26 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.service.interactive.form;
+package org.apache.pdfbox.pdmodel.interactive.form;
 
 import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdmodel.common.PDTextStream;
-import org.apache.pdfbox.pdmodel.interactive.form.PDField;
-import org.apache.pdfbox.pdmodel.interactive.form.PDVariableText;
 
 /**
  * (Re-) Generate the appearance for a field.
  * 
  * The fields appearance defines the 'look' the field has when it's rendered for display or printing.
- * 
  */
-
-public final class AppearanceGenerator
+class AppearanceGenerator
 {
-
     private static final Log LOG = LogFactory.getLog(AppearanceGenerator.class);
 
     private AppearanceGenerator()
