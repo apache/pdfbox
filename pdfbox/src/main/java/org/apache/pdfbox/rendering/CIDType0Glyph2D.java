@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.rendering.font;
+package org.apache.pdfbox.rendering;
 
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
@@ -22,53 +22,53 @@ import java.util.HashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.pdmodel.font.PDType1Equivalent;
+import org.apache.fontbox.cff.Type2CharString;
+import org.apache.pdfbox.pdmodel.font.PDCIDFontType0;
 
 /**
- * Glyph to GeneralPath conversion for Type 1 PFB and CFF, and TrueType fonts with a 'post' table.
+ * GeneralPath conversion for CFF CIDFont.
+ *
+ * @author John Hewson
  */
-public class Type1Glyph2D implements Glyph2D
+final class CIDType0Glyph2D implements Glyph2D
 {
-    private static final Log LOG = LogFactory.getLog(Type1Glyph2D.class);
+    private static final Log LOG = LogFactory.getLog(CIDType0Glyph2D.class);
 
     private final HashMap<Integer, GeneralPath> cache = new HashMap<Integer, GeneralPath>();
-    private final PDType1Equivalent font;
+    private final PDCIDFontType0 font;
+    private final String fontName;
 
     /**
      * Constructor.
      *
-     * @param font PDF Type1 font.
+     * @param font Type 0 CIDFont
      */
-    public Type1Glyph2D(PDType1Equivalent font)
+    public CIDType0Glyph2D(PDCIDFontType0 font) // todo: what about PDCIDFontType2?
     {
         this.font = font;
+        fontName = font.getBaseFont();
     }
 
     @Override
     public GeneralPath getPathForCharacterCode(int code)
     {
-        // cache
+        int cid = font.getParent().codeToCID(code);
         if (cache.containsKey(code))
         {
             return cache.get(code);
         }
 
-        // fetch
         try
         {
-            String name = font.codeToName(code);
-            if (name.equals(".notdef"))
+            Type2CharString charString = font.getType2CharString(cid);
+
+            if (charString.getGID() == 0)
             {
-                LOG.warn("No glyph for " + code + " (" + name + ") in font " + font.getName());
+                String cidHex = String.format("%04x", cid);
+                LOG.warn("No glyph for " + code + " (CID " + cidHex + ") in font " + fontName);
             }
 
-            // todo: can this happen? should it be encapsulated?
-            GeneralPath path = font.getPath(name);
-            if (path == null)
-            {
-                path = font.getPath(".notdef");
-            }
-
+            GeneralPath path = charString.getPath();
             cache.put(code, path);
             return path;
         }

@@ -16,7 +16,7 @@
    limitations under the License.
 
  */
-package org.apache.pdfbox.rendering.font;
+package org.apache.pdfbox.rendering;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
@@ -37,7 +37,7 @@ import org.apache.pdfbox.pdmodel.font.PDType0Font;
 /**
  * This class provides a glyph to GeneralPath conversion for TrueType fonts.
  */
-public class TTFGlyph2D implements Glyph2D
+final class TTFGlyph2D implements Glyph2D
 {
     private static final Log LOG = LogFactory.getLog(TTFGlyph2D.class);
 
