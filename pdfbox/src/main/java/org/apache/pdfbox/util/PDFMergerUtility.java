@@ -230,12 +230,20 @@ public class PDFMergerUtility
         {
             throw new IOException("Error: source PDF is encrypted, can't append encrypted PDF documents.");
         }
+
+        PDDocumentCatalog destCatalog = destination.getDocumentCatalog();
+        PDDocumentCatalog srcCatalog = source.getDocumentCatalog();
+        
+        if (isDynamicXfa(srcCatalog.getAcroForm()))
+        {
+            throw new IOException("Error: can't merge source document containing dynamic XFA form content.");
+        }   
+        
         PDDocumentInformation destInfo = destination.getDocumentInformation();
         PDDocumentInformation srcInfo = source.getDocumentInformation();
         destInfo.getDictionary().mergeInto(srcInfo.getDictionary());
 
-        PDDocumentCatalog destCatalog = destination.getDocumentCatalog();
-        PDDocumentCatalog srcCatalog = source.getDocumentCatalog();
+
 
         // use the highest version number for the resulting pdf
         float destVersion = destination.getDocument().getVersion();
@@ -628,6 +636,17 @@ public class PDFMergerUtility
             newannots.add(annot);
         }
         page.setAnnotations(newannots);
+    }
+    
+    /**
+     * Test for dynamic XFA content.
+     * 
+     * @param acroForm the AcroForm
+     * @return true if there is a dynamic XFA form.
+     */
+    private boolean isDynamicXfa(PDAcroForm acroForm)
+    {
+        return acroForm != null && acroForm.xfaIsDynamic();
     }
 
 }
