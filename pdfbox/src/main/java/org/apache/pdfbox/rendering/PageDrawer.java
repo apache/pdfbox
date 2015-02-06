@@ -507,7 +507,7 @@ public final class PageDrawer extends PDFGraphicsStreamEngine
             for (int i = 0; i < dashArray.length; ++i)
             {
                 // minimum line dash width avoids JVM crash, see PDFBOX-2373
-                dashArray[i] = Math.max(transformWidth(dashArray[i]), 0.25f);
+                dashArray[i] = Math.max(transformWidth(dashArray[i]), 0.016f);
             }
             phaseStart = (int)transformWidth(phaseStart);
 
