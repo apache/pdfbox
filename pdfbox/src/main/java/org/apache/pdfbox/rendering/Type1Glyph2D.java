@@ -19,6 +19,7 @@ package org.apache.pdfbox.rendering;
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,7 +32,7 @@ final class Type1Glyph2D implements Glyph2D
 {
     private static final Log LOG = LogFactory.getLog(Type1Glyph2D.class);
 
-    private final HashMap<Integer, GeneralPath> cache = new HashMap<Integer, GeneralPath>();
+    private final Map<Integer, GeneralPath> cache = new HashMap<Integer, GeneralPath>();
     private final PDType1Equivalent font;
 
     /**
