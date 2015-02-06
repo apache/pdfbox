@@ -16,7 +16,7 @@
  */
 package org.apache.pdfbox.pdfwriter;
 
-import org.apache.pdfbox.persistence.util.COSObjectKey;
+import org.apache.pdfbox.cos.COSObjectKey;
 
 import org.apache.pdfbox.cos.COSBase;
 

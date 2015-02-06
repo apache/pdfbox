@@ -26,7 +26,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.pdfwriter.COSWriter;
-import org.apache.pdfbox.persistence.util.COSObjectKey;
+import org.apache.pdfbox.cos.COSObjectKey;
 
 public class VisualSignatureParser extends BaseParser 
 {

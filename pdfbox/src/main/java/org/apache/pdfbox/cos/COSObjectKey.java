@@ -14,9 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.persistence.util;
-
-import org.apache.pdfbox.cos.COSObject;
+package org.apache.pdfbox.cos;
 
 /**
  * Object representing the physical reference to an indirect pdf object.
