@@ -109,7 +109,7 @@ public class TestValidFiles
         if (irp == null)
         {
             // no log file defined, use system.err
-            System.err.println("No result file defined, will use standart error");
+            System.err.println("No result file defined, will use standard error");
             isartorResultFile = System.err;
         }
         else
