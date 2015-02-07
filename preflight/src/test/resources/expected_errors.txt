@@ -17,7 +17,7 @@
 # under the License.
 # 
 #-------------------------------------------------------------------------------
-# filename=param1,param2...
+# filename=param1,param2... // comment
 
 isartor-6-1-2-t01-fail-a.pdf=1.1
 isartor-6-1-2-t02-fail-a.pdf=1.1
@@ -292,38 +292,27 @@ good0015.pdf=
 Pardes13_Art02.pdf=1.2.3
 hopf1971.pdf=3.1.2
 ide_diss_p1.pdf=1.0.1
-
-# also has 6.1.3
-laschewsky_1.pdf=2.3.2
-
+laschewsky_1.pdf=2.3.2,1.2.3
 laschewsky_2.pdf=1.2.3
 modules_acrobat9.pdf=2.1.2
 pardes14_Jid02_reduced.pdf=1.0.3
 stat_dis_30_fixed.pdf=3.1.2
-Funktionale_Varietaeten.pdf=3.1.4
-Funktionale_Varietaeten.pdf=3.1.11
-Funktionale_Varietaeten.pdf=7.3
-Funktionale_Varietaeten.pdf=2.4.2
+Funktionale_Varietaeten.pdf=3.1.4,3.1.11,7.3,2.4.2
 apogee.pdf=3.3.1
 
-# also has 2.1.2 (conflicting N information for OutputIntent)
-bug1771.pdf=7.1
+# operator "g" without profile not detected by PDF-Tools validator, maybe because it aborts after the conflicting N.
+bug1771.pdf=7.1,2.1.2,1.2.1,1.2.5,2.4.3
 
 empty_word.pdf=7.2
-
-literat.pdf=7.11
-literat.pdf=1.2.5
-nesrin.pdf=1.2.1
-nesrin.pdf=1.2.2
-nesrin.pdf=1.2.5
+literat.pdf=1.2.5,7.11
+nesrin.pdf=1.2.1,1.2.2,1.2.5
 paper56.pdf=7.3
 
-#also has 3.1.4 2.2.1
-validierung_von_pdfa.pdf=1.4.9
+# Bavaria.xml contradicts itself about transparency groups; PDFTools reports them
+# According to http://www.pdfa.org/2011/08/pdfa-%E2%80%93-a-look-at-the-technical-side/ transparency is not permitted
+validierung_von_pdfa.pdf=1.4.9,3.1.4,2.2.1
 
-vwdb_95.pdf=1.2.5
-vwdb_95.pdf=7.3
-
+vwdb_95.pdf=1.2.5,7.3
 2001_28.pdf=7.1
 
 # See PDFBOX-2643 - Property stRef:instanceID is correct!
@@ -334,8 +323,7 @@ UCC.pdf=7.1
 
 # also has schema description missing for cc:license (http://creativecommons.org/ns#)
 # is not displayed because of other error that aborts XMP
-# also has 6.1.3 (Destination contains invalid page reference 'null')
-rolfs_diss_A1b.pdf=7.1
+rolfs_diss_A1b.pdf=1.2.3,7.1
 
 terminanschreiben.pdf=7.1
 
