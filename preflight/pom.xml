@@ -29,6 +29,11 @@
 		<version>2.0.0-SNAPSHOT</version>
 		<relativePath>../parent/pom.xml</relativePath>
 	</parent>
+        
+        <!-- enable the Bavaria tests with -Dskip-bavaria=false  -->
+        <properties>
+            <skip-bavaria>true</skip-bavaria>
+        </properties>
 
 	<build>
 		<plugins>
@@ -128,7 +133,6 @@
 				<artifactId>apache-rat-plugin</artifactId>
 				<configuration>
 					<excludes>
-						<exclude>src/test/resources/org/apache/padaf/preflight/font/*.font</exclude>
 						<exclude>src/main/resources/project.version</exclude>
 						<exclude>release.properties</exclude>
 					</excludes>
@@ -158,6 +162,20 @@
                             <unpack>true</unpack>
                             <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
                             <md5>9f129c834bc6f9f8dabad4491c4c10ec</md5>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>get-bavaria</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${skip-bavaria}</skip>
+                            <url>http://www.pdflib.com/fileadmin/pdflib/Bavaria/2009-04-03-Bavaria-pdfa.zip</url>
+                            <unpack>true</unpack>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <md5>d8fccb2fea540ab49bef237f3579546b</md5>
                         </configuration>
                     </execution>
                 </executions>
