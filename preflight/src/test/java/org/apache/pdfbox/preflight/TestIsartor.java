@@ -27,8 +27,10 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.StringTokenizer;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -53,13 +55,15 @@ import static org.junit.Assert.fail;
 public class TestIsartor
 {
     private static final String FILTER_FILE = "isartor.filter";
+    private static final String SKIP_BAVARIA = "skip-bavaria";
     private static FileOutputStream isartorResultFile;
-    private static final Log logger = LogFactory.getLog(TestIsartor.class);
+    private static final Log LOG = LogFactory.getLog(TestIsartor.class);
 
     @Parameters(name = "{0}")
     public static Collection<Object[]> initializeParameters() throws Exception
     {
         String filter = System.getProperty(FILTER_FILE);
+        String skipBavaria = System.getProperty(SKIP_BAVARIA);
 
         // load expected errors
         File f = new File("src/test/resources/expected_errors.txt");
@@ -89,6 +93,50 @@ public class TestIsartor
         else
         {
             fail("Isartor data set has not been downloaded! Try running Maven?");
+        }
+        
+        if ("false".equals(skipBavaria))
+        {
+            File bavaria = new File("target/pdfs/Bavaria testsuite");
+            if (bavaria.isDirectory())
+            {
+                Collection<?> pdfFiles = FileUtils.listFiles(bavaria, new String[]
+                {
+                    "pdf", "PDF"
+                }, true);
+                for (Object pdfFile : pdfFiles)
+                {
+                    String fn = ((File) pdfFile).getName();
+                    if (filter == null || fn.contains(filter))
+                    {
+                        String path = props.getProperty(fn);
+                        if (path.isEmpty())
+                        {
+                            data.add(new Object[]
+                            {
+                                (File) pdfFile, ""
+                            });
+                        }
+                        else
+                        {
+                            String error = new StringTokenizer(path, "//").nextToken().trim();
+                            data.add(new Object[]
+                            {
+                                (File) pdfFile, error
+                            });
+                        }
+                    }
+                }
+            }
+            else
+            {
+                fail("Bavaria data set has not been downloaded! Try running Maven?");
+            }
+        }
+        else
+        {
+            System.out.println("Bavaria tests are skipped. You can enable them in Maven with -Dskip-bavaria=false");
+            System.out.println("About the tests: http://www.pdflib.com/knowledge-base/pdfa/validation-report/");
         }
         return data;
     }
@@ -159,51 +207,83 @@ public class TestIsartor
             {
                 result = e.getResult();
             }
-
-            assertFalse(file.getName() + " : Isartor file should be invalid (expected " +
-                    this.expectedError + ")", result.isValid());
-
-            assertTrue(file.getName() + " : Should find at least one error",
-                    result.getErrorsList().size() > 0);
-
-            // could contain more than one error
-            boolean found = false;
-            for (ValidationError error : result.getErrorsList())
+            
+            if (this.expectedError.isEmpty())
             {
-                if (error.getErrorCode().equals(this.expectedError))
+                Set<String> errorSet = new HashSet<String>();
+                for (ValidationError error : result.getErrorsList())
                 {
-                    found = true;
-                    if (isartorResultFile == null)
-                    {
-                        break;
-                    }
+                    errorSet.add(error.getErrorCode());
                 }
-                if (isartorResultFile != null)
+                StringBuilder message = new StringBuilder();
+                message.append(file.getName());
+                message.append( " : Isartor file should be valid, but has error");
+                if (errorSet.size() > 1)
                 {
-                    String log = file.getName().replace(".pdf", "") + "#" + error.getErrorCode() +
-                            "#" + error.getDetails() + "\n";
-                    isartorResultFile.write(log.getBytes());
+                    message.append('s');
                 }
-            }
-
-            if (result.getErrorsList().size() > 1)
-            {
-                if (!found)
+                message.append(':');
+                for (String errMsg : errorSet)
                 {
-                    StringBuilder message = new StringBuilder(100);
-                    for (ValidationError error : result.getErrorsList())
-                    {
-                        message.append(error.getErrorCode()).append(" ");
-                    }
-                    fail(String.format("%s : Invalid error code returned. Expected %s, found [%s]",
-                            file.getName(), expectedError, message.toString().trim()));
+                    message.append(' ');
+                    message.append(errMsg);
                 }
-                // if one of the error code of the list is the expected one, we consider test valid
+                assertTrue(message.toString(), result.isValid());
+                assertTrue(message.toString(), result.getErrorsList().isEmpty());
             }
             else
             {
-                assertEquals(file.getName() + " : Invalid error code returned.", this.expectedError,
-                        result.getErrorsList().get(0).getErrorCode());
+                assertFalse(file.getName() + " : Isartor file should be invalid (expected " +
+                        this.expectedError + ")", result.isValid());
+
+                assertTrue(file.getName() + " : Should find at least one error",
+                        result.getErrorsList().size() > 0);
+
+                // could contain more than one error
+                boolean found = false;
+                for (ValidationError error : result.getErrorsList())
+                {
+                    if (error.getErrorCode().equals(this.expectedError))
+                    {
+                        found = true;
+                        if (isartorResultFile == null)
+                        {
+                            break;
+                        }
+                    }
+                    if (isartorResultFile != null)
+                    {
+                        String log = file.getName().replace(".pdf", "") + "#" + error.getErrorCode() +
+                                "#" + error.getDetails() + "\n";
+                        isartorResultFile.write(log.getBytes());
+                    }
+                }
+
+                if (result.getErrorsList().size() > 1)
+                {
+                    if (!found)
+                    {
+                        Set<String> errorSet = new HashSet<String>();
+                        for (ValidationError error : result.getErrorsList())
+                        {
+                            errorSet.add(error.getErrorCode());
+                        }
+                        StringBuilder message = new StringBuilder();
+                        for (String errMsg : errorSet)
+                        {
+                            message.append(errMsg);
+                            message.append(' ');
+                        }
+                        fail(String.format("%s : Invalid error code returned. Expected %s, found [%s]",
+                                file.getName(), expectedError, message.toString().trim()));
+                    }
+                    // if one of the error code of the list is the expected one, we consider test valid
+                }
+                else
+                {
+                    assertEquals(file.getName() + " : Invalid error code returned.", this.expectedError,
+                            result.getErrorsList().get(0).getErrorCode());
+                }
             }
         }
         finally
