@@ -223,3 +223,129 @@ isartor-6-7-9-t01-fail-a.pdf=7.1
 isartor-6-9-t01-fail-a.pdf=1.2.3
 isartor-6-9-t02-fail-a.pdf=6.2.4
 isartor-6-9-t02-fail-b.pdf=6.2.2
+
+# Bavaria conforming
+Garamond.pdf=
+MotionMountain.pdf=
+images_to_pdfa.pdf=
+import_pdfa.pdf=
+pdfa1b.pdf=
+starter_pdfa.pdf=
+text_to_pdfa.pdf=
+transparent_stamp.pdf=
+04-Metadaten-KK.pdf=
+2002_28.pdf=
+ABNTNBR5298_1973.pdf=
+BIT2-2009.pdf=
+LT_demo.pdf=
+PBS7.pdf=
+PDFA_Conference_2009.pdf=
+Verbal_Dependencies.pdf=
+adobe7pie.pdf=
+allmbl-2009-01.pdf=
+beitraege_sorabistik.pdf=
+bley.pdf=
+braun_feudel.pdf=
+dms_signed.pdf=
+fmbl-2009-01.pdf=
+foerster_diss.pdf=
+isis09_04.pdf=
+jmbl-2009-01.pdf=
+kaiser_magister_fixed.pdf=
+koetter.pdf=
+kwmbl-2009-01.pdf=
+meister_dziourkevich.pdf=
+mgfn12_02_10.pdf=
+
+# See PDFBOX-2408 - this file is not correct
+mm_image2pdfa.pdf=1.2.1
+
+outcppxmp.pdf=
+paperG3_A1b.pdf=
+paperG8_A1b.pdf=
+pardes_10_a4.pdf=
+psgf1999_1.pdf=
+pueschel_etal_1987.pdf=
+schnurbein.pdf=
+signed_pdf.pdf=
+vjs_01.pdf=
+vjs_05_Art05.pdf=
+acmeemail_full.pdf=
+good0000.pdf=
+good0001.pdf=
+good0002.pdf=
+good0003.pdf=
+good0004.pdf=
+good0005.pdf=
+good0006.pdf=
+good0007.pdf=
+good0008.pdf=
+good0009.pdf=
+good0010.pdf=
+good0011.pdf=
+good0012.pdf=
+good0013.pdf=
+good0015.pdf=
+
+# Bavaria non conforming
+
+Pardes13_Art02.pdf=1.2.3
+hopf1971.pdf=3.1.2
+ide_diss_p1.pdf=1.0.1
+
+# also has 6.1.3
+laschewsky_1.pdf=2.3.2
+
+laschewsky_2.pdf=1.2.3
+modules_acrobat9.pdf=2.1.2
+pardes14_Jid02_reduced.pdf=1.0.3
+stat_dis_30_fixed.pdf=3.1.2
+Funktionale_Varietaeten.pdf=3.1.4
+Funktionale_Varietaeten.pdf=3.1.11
+Funktionale_Varietaeten.pdf=7.3
+Funktionale_Varietaeten.pdf=2.4.2
+apogee.pdf=3.3.1
+
+# also has 2.1.2 (conflicting N information for OutputIntent)
+bug1771.pdf=7.1
+
+empty_word.pdf=7.2
+
+literat.pdf=7.11
+literat.pdf=1.2.5
+nesrin.pdf=1.2.1
+nesrin.pdf=1.2.2
+nesrin.pdf=1.2.5
+paper56.pdf=7.3
+
+#also has 3.1.4 2.2.1
+validierung_von_pdfa.pdf=1.4.9
+
+vwdb_95.pdf=1.2.5
+vwdb_95.pdf=7.3
+
+2001_28.pdf=7.1
+
+# See PDFBOX-2643 - Property stRef:instanceID is correct!
+PDFA_Conference_2009_nc.pdf=7.1
+
+# weird text "XMP not included in xpacket element" in Bavaria.xml probably meant to be "XMP not embedded in xpacket element"
+UCC.pdf=7.1
+
+# also has schema description missing for cc:license (http://creativecommons.org/ns#)
+# is not displayed because of other error that aborts XMP
+# also has 6.1.3 (Destination contains invalid page reference 'null')
+rolfs_diss_A1b.pdf=7.1
+
+terminanschreiben.pdf=7.1
+
+# Bavaria unclear
+
+PDFExportDialog2.pdf=
+Pardes13_Rez02.pdf=1.4.6
+
+# <ptt:T_Real>IEEE754D,L,3A4901F387D31108</ptt:T_Real> because of <pdfaProperty:valueType>Real</pdfaProperty:valueType>
+good0016.pdf=7.1
+
+pdfa_article_v11.pdf=2.2.1
+wilhelm_diss_p1.pdf=7.1
