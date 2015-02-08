@@ -256,7 +256,11 @@ public class BookmarkValidationProcess extends AbstractProcess
     // verify that if certain named items exist, that they are indirect objects
     private boolean checkIndirectObjects(PreflightContext ctx, COSDictionary dictionary)
     {
-        // Prev, Next, First and Last must be indirect objects
+        // Parent, Prev, Next, First and Last must be indirect objects
+        if (!checkIndirectObject(ctx, dictionary, COSName.PARENT))
+        {
+            return false;
+        }
         if (!checkIndirectObject(ctx, dictionary, COSName.PREV))
         {
             return false;
