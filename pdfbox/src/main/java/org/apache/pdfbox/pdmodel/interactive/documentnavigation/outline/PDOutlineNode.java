@@ -83,10 +83,10 @@ public class PDOutlineNode implements COSObjectable
     protected PDOutlineNode getParent()
     {
         PDOutlineNode retval = null;
-        COSDictionary parent = (COSDictionary) node.getDictionaryObject(COSName.PARENT, COSName.P);
+        COSDictionary parent = (COSDictionary) node.getDictionaryObject(COSName.PARENT);
         if (parent != null)
         {
-            if (parent.getDictionaryObject(COSName.PARENT, COSName.P) == null)
+            if (parent.getDictionaryObject(COSName.PARENT) == null)
             {
                 retval = new PDDocumentOutline(parent);
             }
