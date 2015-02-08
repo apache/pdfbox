@@ -27,7 +27,6 @@ import java.io.IOException;
 /**
  * B* Fill and then stroke the path, using the even-odd rule to determine the region to fill.
  *
- * @author Andreas Lehmkühler
  */
 public final class FillEvenOddAndStrokePath extends GraphicsOperatorProcessor
 {

@@ -38,7 +38,6 @@ import org.apache.pdfbox.util.Matrix;
  *
  * Performance improvement done as part of GSoC2014, Tilman Hausherr is the mentor.
  *
- * @author Andreas Lehmkühler
  * @author Shaola Ren
  */
 public class AxialShadingContext extends ShadingContext implements PaintContext

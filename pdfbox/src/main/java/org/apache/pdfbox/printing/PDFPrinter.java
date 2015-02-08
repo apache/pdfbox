@@ -40,7 +40,6 @@ import org.apache.pdfbox.rendering.PDFRenderer;
  * Prints a PDF document using AWT.
  * This class may be overridden in order to perform custom printing.
  *
- * @author Andreas Lehmkühler
  * @author John Hewson
  */
 public class PDFPrinter

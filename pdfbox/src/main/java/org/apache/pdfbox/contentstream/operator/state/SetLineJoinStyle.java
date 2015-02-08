@@ -28,7 +28,6 @@ import java.io.IOException;
 /**
  * j: Set the line join style.
  *
- * @author Andreas Lehmkühler
  */
 public class SetLineJoinStyle extends OperatorProcessor
 {

@@ -30,7 +30,6 @@ import org.apache.pdfbox.util.Matrix;
 /**
  * AWT PaintContext for function-based (Type 1) shading.
  *
- * @author Andreas Lehmkühler
  * @author Tilman Hausherr
  */
 class Type1ShadingContext extends ShadingContext implements PaintContext

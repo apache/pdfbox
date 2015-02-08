@@ -44,7 +44,6 @@ import org.apache.pdfbox.util.Matrix;
 /**
  * AWT Paint for a tiling pattern, which consists of a small repeating graphical figure.
  *
- * @author Andreas Lehmkühler
  * @author John Hewson
  */
 class TilingPaint implements Paint

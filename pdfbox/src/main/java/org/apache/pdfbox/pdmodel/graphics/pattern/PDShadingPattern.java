@@ -26,7 +26,6 @@ import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
 /**
  * A shading pattern dictionary.
  *
- * @author Andreas Lehmkühler
  */
 public class PDShadingPattern extends PDAbstractPattern
 {
