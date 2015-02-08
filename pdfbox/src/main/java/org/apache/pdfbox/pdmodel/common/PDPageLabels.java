@@ -161,9 +161,14 @@ public class PDPageLabels implements COSObjectable
      *            page label range.
      * @param item
      *            the page label item to set.
+     * @throws IllegalArgumentException if the startPage parameter is &lt; 0.
      */
     public void setLabelItem(int startPage, PDPageLabelRange item)
     {
+        if (startPage < 0)
+        {
+            throw new IllegalArgumentException("startPage parameter of setLabelItem may not be < 0");
+        }
         labels.put(startPage, item);
     }
     
