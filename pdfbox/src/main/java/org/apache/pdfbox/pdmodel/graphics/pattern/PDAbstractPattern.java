@@ -29,7 +29,6 @@ import org.apache.pdfbox.util.Matrix;
 
 /**
  * A Pattern dictionary from a page's resources.
- * @author Andreas Lehmkühler
  */
 public abstract class PDAbstractPattern implements COSObjectable
 {

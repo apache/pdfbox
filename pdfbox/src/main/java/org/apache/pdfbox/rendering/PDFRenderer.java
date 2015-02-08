@@ -30,7 +30,6 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
  * This class may be overridden in order to perform custom rendering.
  *
  * @author John Hewson
- * @author Andreas Lehmkühler
  */
 public class PDFRenderer
 {

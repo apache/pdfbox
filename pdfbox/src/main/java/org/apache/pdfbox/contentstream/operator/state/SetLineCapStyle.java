@@ -28,7 +28,6 @@ import java.io.IOException;
 /**
  * J: Set the line cap style.
  *
- * @author Andreas Lehmkühler
  */
 public class SetLineCapStyle extends OperatorProcessor
 {

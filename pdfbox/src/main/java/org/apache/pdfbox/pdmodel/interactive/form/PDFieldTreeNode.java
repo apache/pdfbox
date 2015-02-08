@@ -34,8 +34,6 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 /**
  * A field in an interactive form.
  *
- * @author Andreas Lehmkühler
- * 
  */
 public abstract class PDFieldTreeNode implements COSObjectable
 {

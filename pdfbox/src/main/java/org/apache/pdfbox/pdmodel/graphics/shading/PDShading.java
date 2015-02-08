@@ -32,7 +32,6 @@ import org.apache.pdfbox.util.Matrix;
 /**
  * A Shading Resource.
  *
- * @author Andreas Lehmk�hler
  */
 public abstract class PDShading implements COSObjectable
 {

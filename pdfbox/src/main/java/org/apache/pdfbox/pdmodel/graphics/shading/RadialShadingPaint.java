@@ -33,7 +33,6 @@ import org.apache.pdfbox.util.Matrix;
 /**
  * AWT Paint for radial shading.
  *
- * @author Andreas Lehmkühler
  */
 public class RadialShadingPaint implements Paint
 {

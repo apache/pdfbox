@@ -33,7 +33,6 @@ import org.apache.pdfbox.util.Matrix;
 /**
  * AWT Paint for axial shading.
  *
- * @author Andreas Lehmkühler
  */
 public class AxialShadingPaint implements Paint
 {
