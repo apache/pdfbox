@@ -222,7 +222,7 @@ public class Encrypt
         System.err.println( "   -canModifyAnnotations <true|false>       Set the modify annots permission" );
         System.err.println( "   -canPrint <true|false>                   Set the print permission" );
         System.err.println( "   -canPrintDegraded <true|false>           Set the print degraded permission" );
-        System.err.println( "   -keyLength <length>                      The length of the key in bits(40)" );
+        System.err.println( "   -keyLength <length>                      The length of the key in bits (valid values: 40 and 128, default is 40)" );
         System.err.println( "\nNote: By default all permissions are set to true!" );
         System.exit( 1 );
     }
