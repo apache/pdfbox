@@ -57,6 +57,8 @@ public abstract class ShadingContext
      * @param xform transformation for user to device space
      * @param matrix the pattern matrix concatenated with that of the parent content stream
      * @param deviceBounds device bounds
+     * @throws java.io.IOException if there is an error getting the color space
+     * or doing background color conversion.
      */
     public ShadingContext(PDShading shading, ColorModel cm, AffineTransform xform,
                           Matrix matrix, Rectangle deviceBounds) throws IOException
@@ -114,6 +116,7 @@ public abstract class ShadingContext
      *
      * @param values color values in shading colorspace.
      * @return RGB values encoded in an integer.
+     * @throws java.io.IOException if the color conversion fails.
      */
     protected final int convertToRGB(float[] values) throws IOException
     {
