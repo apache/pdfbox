@@ -67,7 +67,7 @@ public class CreateBookmarks
                 document.getDocumentCatalog().setDocumentOutline( outline );
                 PDOutlineItem pagesOutline = new PDOutlineItem();
                 pagesOutline.setTitle( "All Pages" );
-                outline.appendChild( pagesOutline );
+                outline.addLast( pagesOutline );
                 int pageNum = 0;
                 for( PDPage page : document.getPages() )
                 {
@@ -77,7 +77,7 @@ public class CreateBookmarks
                     PDOutlineItem bookmark = new PDOutlineItem();
                     bookmark.setDestination( dest );
                     bookmark.setTitle( "Page " + pageNum );
-                    pagesOutline.appendChild( bookmark );
+                    pagesOutline.addLast( bookmark );
                 }
                 pagesOutline.openNode();
                 outline.openNode();
