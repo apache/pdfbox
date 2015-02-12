@@ -32,7 +32,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
-import java.security.interfaces.RSAPrivateKey;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -51,22 +50,20 @@ import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.cms.Attributes;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
-import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.cert.jcajce.JcaCertStore;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.CMSSignedDataGenerator;
-import org.bouncycastle.cms.SignerInfoGeneratorBuilder;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
-import org.bouncycastle.crypto.params.RSAKeyParameters;
+import org.bouncycastle.cms.jcajce.JcaSignerInfoGeneratorBuilder;
 import org.bouncycastle.operator.ContentSigner;
-import org.bouncycastle.operator.DefaultDigestAlgorithmIdentifierFinder;
-import org.bouncycastle.operator.DefaultSignatureAlgorithmIdentifierFinder;
 import org.bouncycastle.operator.OperatorCreationException;
-import org.bouncycastle.operator.bc.BcDigestCalculatorProvider;
-import org.bouncycastle.operator.bc.BcRSAContentSignerBuilder;
+import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 import org.bouncycastle.tsp.TSPException;
+import org.bouncycastle.util.Store;
 
 /**
  * An example for singing a PDF with bouncy castle.
@@ -82,7 +79,7 @@ import org.bouncycastle.tsp.TSPException;
 public class CreateSignature implements SignatureInterface
 {
     private final PrivateKey privateKey;
-    private final Certificate[] certificateChain;
+    private final Certificate certificate;
     private TSAClient tsaClient;
 
     /**
@@ -110,7 +107,8 @@ public class CreateSignature implements SignatureInterface
             throw new KeyStoreException("Keystore is empty");
         }
         privateKey = (PrivateKey) keystore.getKey(alias, password);
-        certificateChain = keystore.getCertificateChain(alias);
+        Certificate[] certificateChain = keystore.getCertificateChain(alias);
+        certificate = certificateChain[0];
     }
 
     /**
@@ -252,22 +250,18 @@ public class CreateSignature implements SignatureInterface
     {
         try
         {
-            org.bouncycastle.asn1.x509.Certificate certificate =
-                    org.bouncycastle.asn1.x509.Certificate.getInstance(ASN1Primitive.fromByteArray(certificateChain[0].getEncoded()));
+            List<Certificate> certList = new ArrayList<Certificate>();
+            certList.add(certificate);
+            Store certs = new JcaCertStore(certList);
             CMSSignedDataGenerator gen = new CMSSignedDataGenerator();
-
-            
-            AlgorithmIdentifier sigAlgId = new DefaultSignatureAlgorithmIdentifierFinder().find("SHA256WITHRSAENCRYPTION");
-            AlgorithmIdentifier digAlgId = new DefaultDigestAlgorithmIdentifierFinder().find(sigAlgId);
-            RSAPrivateKey privateRSAKey = (RSAPrivateKey)privateKey; 
-            RSAKeyParameters keyParams = new RSAKeyParameters(true, privateRSAKey.getModulus(), privateRSAKey.getPrivateExponent()); 
-            ContentSigner sigGen = new BcRSAContentSignerBuilder(sigAlgId, digAlgId).build(keyParams);
-
-            gen.addSignerInfoGenerator(
-                    new SignerInfoGeneratorBuilder(new BcDigestCalculatorProvider())
-                        .build(sigGen, new X509CertificateHolder(certificate)));
-            CMSProcessableInputStream processable = new CMSProcessableInputStream(content);
-            CMSSignedData signedData = gen.generate(processable, false);
+            org.bouncycastle.asn1.x509.Certificate cert =
+                    org.bouncycastle.asn1.x509.Certificate.getInstance(ASN1Primitive.fromByteArray(certificate.getEncoded()));
+            ContentSigner sha1Signer = new JcaContentSignerBuilder("SHA256WithRSA").build(privateKey);
+            gen.addSignerInfoGenerator(new JcaSignerInfoGeneratorBuilder(
+                    new JcaDigestCalculatorProviderBuilder().build()).build(sha1Signer, new X509CertificateHolder(cert)));
+            gen.addCertificates(certs);
+            CMSProcessableInputStream msg = new CMSProcessableInputStream(content);
+            CMSSignedData signedData = gen.generate(msg, false);
             if (tsaClient != null)
             {
                 signedData = signTimeStamps(signedData);
