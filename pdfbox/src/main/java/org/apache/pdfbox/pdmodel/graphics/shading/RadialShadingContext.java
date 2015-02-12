@@ -71,6 +71,7 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
      * @param xform transformation for user to device space
      * @param matrix the pattern matrix concatenated with that of the parent content stream
      * @param deviceBounds device bounds
+     * @throws java.io.IOException if there is an error getting the color space or doing color conversion.
      */
     public RadialShadingContext(PDShadingType3 shading, ColorModel colorModel,
                                 AffineTransform xform, Matrix matrix, Rectangle deviceBounds)

@@ -55,7 +55,7 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
      * @param cm the color model to be used
      * @param xform transformation for user to device space
      * @param matrix the pattern matrix concatenated with that of the parent content stream
-     * @throws IOException if something went wrong
+     * @throws IOException if there is an error getting the color space or doing background color conversion.
      */
     public TriangleBasedShadingContext(PDShading shading, ColorModel cm, AffineTransform xform,
                                        Matrix matrix, Rectangle deviceBounds) throws IOException
