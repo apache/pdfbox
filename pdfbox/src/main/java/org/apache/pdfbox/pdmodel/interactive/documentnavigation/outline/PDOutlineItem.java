@@ -344,7 +344,6 @@ public final class PDOutlineItem extends PDOutlineNode
      */
     public PDColor getTextColor()
     {
-        PDColor retval = null;
         COSArray csValues = (COSArray) getCOSDictionary().getDictionaryObject(COSName.C);
         if( csValues == null )
         {
@@ -352,8 +351,7 @@ public final class PDOutlineItem extends PDOutlineNode
             csValues.growToSize( 3, new COSFloat( 0 ) );
             getCOSDictionary().setItem( COSName.C, csValues );
         }
-        retval = new PDColor(csValues.toFloatArray(), PDDeviceRGB.INSTANCE);
-        return retval;
+        return new PDColor(csValues, PDDeviceRGB.INSTANCE);
     }
 
     /**
