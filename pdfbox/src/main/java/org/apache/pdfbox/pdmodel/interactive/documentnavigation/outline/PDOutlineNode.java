@@ -16,156 +16,180 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline;
 
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-
-import org.apache.pdfbox.pdmodel.common.COSObjectable;
+import org.apache.pdfbox.pdmodel.common.PDDictionaryWrapper;
 
 /**
- * This represents an node in an outline in a pdf document.
+ * Base class for a node in the outline of a PDF document.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.3 $
  */
-public class PDOutlineNode implements COSObjectable
+public abstract class PDOutlineNode extends PDDictionaryWrapper
 {
-    /**
-     * The dictionary for this node.
-     */
-    protected COSDictionary node;
 
-    /**
-     * Default Constructor.
-     */
     public PDOutlineNode()
     {
-        node = new COSDictionary();
+        super();
     }
 
     /**
-     * Default Constructor.
-     *
      * @param dict The dictionary storage.
      */
-    public PDOutlineNode( COSDictionary dict)
+    public PDOutlineNode(COSDictionary dict)
     {
-        node = dict;
+        super(dict);
     }
 
-    /**
-     * Convert this standard java object to a COS object.
-     *
-     * @return The cos object that matches this Java object.
-     */
     @Override
-    public COSBase getCOSObject()
-    {
-        return node;
-    }
-
-    /**
-     * Convert this standard java object to a COS object.
-     *
-     * @return The cos object that matches this Java object.
-     */
     public COSDictionary getCOSDictionary()
     {
-        return node;
+        return super.getCOSDictionary();
     }
-
+    
     /**
-     * Get the parent of this object.  This will either be a DocumentOutline or an OutlineItem.
-     *
-     * @return The parent of this object, or null if this is the document outline and there
-     * is no parent.
+     * @return The parent of this node or null if there is no parent.
      */
-    protected PDOutlineNode getParent()
+    PDOutlineNode getParent()
     {
-        PDOutlineNode retval = null;
-        COSDictionary parent = (COSDictionary) node.getDictionaryObject(COSName.PARENT);
-        if (parent != null)
+        COSDictionary item = (COSDictionary) getCOSDictionary().getDictionaryObject(COSName.PARENT);
+        if (item != null)
         {
-            if (parent.getDictionaryObject(COSName.PARENT) == null)
+            if (COSName.OUTLINES.equals(item.getCOSName(COSName.TYPE)))
             {
-                retval = new PDDocumentOutline(parent);
+                return new PDDocumentOutline(item);
             }
-            else
-            {
-                retval = new PDOutlineItem(parent);
-            }
+            return new PDOutlineItem(item);
         }
+        return null;
+    }
 
-        return retval;
+    void setParent(PDOutlineNode parent)
+    {
+    	getCOSDictionary().setItem(COSName.PARENT, parent);
     }
 
     /**
-     * Set the parent of this object, this is maintained by these objects and should not
-     * be called by any clients of PDFBox code.
+     * Adds the given node to the bottom of the children list.
      *
-     * @param parent The parent of this object.
+     * @param newChild The node to add.
+     * @throws IllegalArgumentException if the given node is part of a list (i.e. if it has a previous or a next
+     * sibling)
      */
-    protected void setParent( PDOutlineNode parent )
+    public void addLast(PDOutlineItem newChild)
     {
-        node.setItem(COSName.PARENT, parent );
+        requireSingleNode(newChild);
+        append(newChild);
+        updateParentOpenCountForAddedChild(newChild);
     }
 
     /**
-     * append a child node to this node.
-     *
-     * @param outlineNode The node to add.
+     * Adds the given node to the top of the children list.
+     * 
+     * @param newChild
+     * @return the newly added child
+     * @throws IllegalArgumentException if the given node is part of a list (i.e. if it has a previous or a next
+     * sibling)
      */
-    public void appendChild( PDOutlineItem outlineNode )
+    public void addFirst(PDOutlineItem newChild)
     {
-        outlineNode.setParent( this );
-        if( getFirstChild() == null )
+        requireSingleNode(newChild);
+        prepend(newChild);
+        updateParentOpenCountForAddedChild(newChild);
+    }
+
+    /**
+     * @param node
+     * @throws IllegalArgumentException if the given node is part of a list (i.e. if it has a previous or a next
+     * sibling)
+     */
+    void requireSingleNode(PDOutlineItem node)
+    {
+        if (node.getNextSibling() != null || node.getPreviousSibling() != null)
         {
-            int currentOpenCount = getOpenCount();
-            setFirstChild( outlineNode );
-            //1 for the the item we are adding;
-            int numberOfOpenNodesWeAreAdding = 1;
-            if( outlineNode.isNodeOpen() )
-            {
-                numberOfOpenNodesWeAreAdding += outlineNode.getOpenCount();
-            }
-            if( isNodeOpen() )
-            {
-                setOpenCount( currentOpenCount + numberOfOpenNodesWeAreAdding );
-            }
-            else
-            {
-                setOpenCount( currentOpenCount - numberOfOpenNodesWeAreAdding );
-            }
-            updateParentOpenCount( numberOfOpenNodesWeAreAdding );
+            throw new IllegalArgumentException("A single node with no siblings is required");
+        }
+    }
+
+    /**
+     * Appends the child to the linked list of children. This method only adjust pointers but doesn't take care of the
+     * Count key in the parent hierarchy.
+     * 
+     * @param newChild
+     */
+    private void append(PDOutlineItem newChild)
+    {
+        newChild.setParent(this);
+        if (!hasChildren())
+        {
+            setFirstChild(newChild);
         }
         else
         {
             PDOutlineItem previousLastChild = getLastChild();
-            previousLastChild.insertSiblingAfter( outlineNode );
+            previousLastChild.setNextSibling(newChild);
+            newChild.setPreviousSibling(previousLastChild);
         }
-        
-        PDOutlineItem lastNode = outlineNode;
-        while(lastNode.getNextSibling() != null)
-        {
-            lastNode = lastNode.getNextSibling();
-        }
-        setLastChild( lastNode );
+        setLastChild(newChild);
     }
 
     /**
-     * Return the first child or null if there is no child.
-     *
-     * @return The first child.
+     * Prepends the child to the linked list of children. This method only adjust pointers but doesn't take care of the
+     * Count key in the parent hierarchy.
+     * 
+     * @param newChild
+     */
+    private void prepend(PDOutlineItem newChild)
+    {
+        newChild.setParent(this);
+        if (!hasChildren())
+        {
+            setLastChild(newChild);
+        }
+        else
+        {
+            PDOutlineItem previousFirstChild = getFirstChild();
+            newChild.setNextSibling(previousFirstChild);
+            previousFirstChild.setPreviousSibling(newChild);
+        }
+        setFirstChild(newChild);
+    }
+
+    void updateParentOpenCountForAddedChild(PDOutlineItem newChild)
+    {
+        int delta = 1;
+        if (newChild.isNodeOpen())
+        {
+            delta += newChild.getOpenCount();
+        }
+        newChild.updateParentOpenCount(delta);
+    }
+
+    /**
+     * @return true if the node has at least one child
+     */
+    public boolean hasChildren()
+    {
+        return getFirstChild() != null;
+    }
+
+    PDOutlineItem getOutlineItem(COSName name)
+    {
+        COSDictionary item = (COSDictionary) getCOSDictionary().getDictionaryObject(name);
+        if (item != null)
+        {
+            return new PDOutlineItem(item);
+        }
+        return null;
+    }
+
+    /**
+     * @return The first child or null if there is no child.
      */
     public PDOutlineItem getFirstChild()
     {
-        PDOutlineItem first = null;
-        COSDictionary firstDic = (COSDictionary)node.getDictionaryObject( "First" );
-        if( firstDic != null )
-        {
-            first = new PDOutlineItem( firstDic );
-        }
-        return first;
+        return getOutlineItem(COSName.FIRST);
     }
 
     /**
@@ -173,25 +197,17 @@ public class PDOutlineNode implements COSObjectable
      *
      * @param outlineNode The new first child.
      */
-    protected void setFirstChild( PDOutlineNode outlineNode )
+    void setFirstChild(PDOutlineNode outlineNode)
     {
-        node.setItem(COSName.FIRST, outlineNode);
+    	getCOSDictionary().setItem(COSName.FIRST, outlineNode);
     }
 
     /**
-     * Return the last child or null if there is no child.
-     *
-     * @return The last child.
+     * @return The last child or null if there is no child.
      */
     public PDOutlineItem getLastChild()
     {
-        PDOutlineItem last = null;
-        COSDictionary lastDic = (COSDictionary)node.getDictionaryObject( "Last" );
-        if( lastDic != null )
-        {
-            last = new PDOutlineItem( lastDic );
-        }
-        return last;
+        return getOutlineItem(COSName.LAST);
     }
 
     /**
@@ -199,59 +215,43 @@ public class PDOutlineNode implements COSObjectable
      *
      * @param outlineNode The new last child.
      */
-    protected void setLastChild( PDOutlineNode outlineNode )
+    void setLastChild(PDOutlineNode outlineNode)
     {
-        node.setItem( "Last", outlineNode );
+    	getCOSDictionary().setItem(COSName.LAST, outlineNode);
     }
 
     /**
-     * Get the number of open nodes.  Or a negative number if this node
-     * is closed.  See PDF Reference for more details.  This value
-     * is updated as you append children and siblings.
+     * Get the number of open nodes or a negative number if this node is closed.
+     * See PDF Reference 32000-1:2008 table 152 and 153 for more details. This
+     * value is updated as you append children and siblings.
      *
      * @return The Count attribute of the outline dictionary.
      */
     public int getOpenCount()
     {
-        return node.getInt( "Count", 0 );
+        return getCOSDictionary().getInt(COSName.COUNT, 0);
     }
 
     /**
-     * Set the open count.  This number is automatically managed for you
-     * when you add items to the outline.
+     * Set the open count. This number is automatically managed for you when you add items to the outline.
      *
-     * @param openCount The new open cound.
+     * @param openCount The new open count.
      */
-    protected void setOpenCount( int openCount )
+    void setOpenCount(int openCount)
     {
-        node.setInt( "Count", openCount );
+    	getCOSDictionary().setInt(COSName.COUNT, openCount);
     }
 
     /**
-     * This will set this node to be open when it is shown in the viewer.  By default, when
-     * a new node is created it will be closed.
-     * This will do nothing if the node is already open.
+     * This will set this node to be open when it is shown in the viewer. By default, when a new node is created it will
+     * be closed. This will do nothing if the node is already open.
      */
     public void openNode()
     {
         //if the node is already open then do nothing.
         if( !isNodeOpen() )
         {
-            int openChildrenCount = 0;
-            PDOutlineItem currentChild = getFirstChild();
-            while( currentChild != null )
-            {
-                //first increase by one for the current child
-                openChildrenCount++;
-                //then increase by the number of open nodes the child has
-                if( currentChild.isNodeOpen() )
-                {
-                    openChildrenCount += currentChild.getOpenCount();
-                }
-                currentChild = currentChild.getNextSibling();
-            }
-            setOpenCount( openChildrenCount );
-            updateParentOpenCount( openChildrenCount );
+            switchNodeCount();
         }
     }
 
@@ -261,18 +261,21 @@ public class PDOutlineNode implements COSObjectable
      */
     public void closeNode()
     {
-        //if the node is already closed then do nothing.
-        if( isNodeOpen() )
+        if (isNodeOpen())
         {
-            int openCount = getOpenCount();
-            updateParentOpenCount( -openCount );
-            setOpenCount( -openCount );
+            switchNodeCount();
         }
     }
 
+    private void switchNodeCount()
+    {
+        int openCount = getOpenCount();
+        setOpenCount(-openCount);
+        updateParentOpenCount(-openCount);
+    }
+
     /**
-     * Node is open if the open count is greater than zero.
-     * @return true if this node is open.
+     * @return true if this node count is greater than zero, false otherwise.
      */
     public boolean isNodeOpen()
     {
@@ -280,34 +283,23 @@ public class PDOutlineNode implements COSObjectable
     }
 
     /**
-     * The count parameter needs to be updated when you add or remove elements to
-     * the outline.  When you add an element at a lower level then you need to
-     * increase all of the parents.
+     * The count parameter needs to be updated when you add, remove, open or close outline items.
      *
-     * @param amount The amount to update by.
+     * @param delta The amount to update by.
      */
-    protected void updateParentOpenCount( int amount )
+    void updateParentOpenCount(int delta)
     {
         PDOutlineNode parent = getParent();
-        if( parent != null )
+        if (parent != null)
         {
-            int currentCount = parent.getOpenCount();
-            //if the currentCount is negative or it is absent then
-            //we will treat it as negative.  The default is to be negative.
-            boolean negative = currentCount < 0 ||
-                parent.getCOSDictionary().getDictionaryObject( "Count" ) == null;
-            currentCount = Math.abs( currentCount );
-            currentCount += amount;
-            if( negative )
+            if (parent.isNodeOpen())
             {
-                currentCount = -currentCount;
+                parent.setOpenCount(parent.getOpenCount() + delta);
+                parent.updateParentOpenCount(delta);
             }
-            parent.setOpenCount( currentCount );
-            //recursively call parent to update count, but the parents count is only
-            //updated if this is an open node
-            if( !negative )
+            else
             {
-                parent.updateParentOpenCount( amount );
+                parent.setOpenCount(parent.getOpenCount() - delta);
             }
         }
     }
