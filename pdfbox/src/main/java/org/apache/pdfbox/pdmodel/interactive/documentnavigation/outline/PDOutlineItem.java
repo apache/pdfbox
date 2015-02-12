@@ -70,8 +70,8 @@ public final class PDOutlineItem extends PDOutlineNode
      * Insert a single sibling after this node.
      *
      * @param newSibling The item to insert.
-     * @throws IllegalArgumentException if the given node is part of a list (i.e. if it has a previous or a next
-     * sibling)
+     * @throws IllegalArgumentException if the given sibling node is part of a list 
+     * (i.e. if it has a previous or a next sibling)
      */
     public void insertSiblingAfter(PDOutlineItem newSibling)
     {
@@ -97,8 +97,8 @@ public final class PDOutlineItem extends PDOutlineNode
      * Insert a single sibling before this node.
      *
      * @param newSibling The item to insert.
-     * @throws IllegalArgumentException if the given node is part of a list (i.e. if it has a previous or a next
-     * sibling)
+     * @throws IllegalArgumentException if the given sibling node is part of a list 
+     * (i.e. if it has a previous or a next sibling)
      */
     public void insertSiblingBefore(PDOutlineItem newSibling)
     {
