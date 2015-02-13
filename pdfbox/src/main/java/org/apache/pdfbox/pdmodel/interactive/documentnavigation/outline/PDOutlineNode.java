@@ -88,7 +88,6 @@ public abstract class PDOutlineNode extends PDDictionaryWrapper
      * Adds the given node to the top of the children list.
      * 
      * @param newChild
-     * @return the newly added child
      * @throws IllegalArgumentException if the given node is part of a list (i.e. if it has a previous or a next
      * sibling)
      */
