@@ -284,7 +284,7 @@ public class FDFDocument implements Closeable
         try
         {
             writer = new COSWriter( output );
-            writer.write( document );
+            writer.write( this );
             writer.close();
         }
         finally
