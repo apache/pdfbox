@@ -156,7 +156,7 @@ public class TestOptionalContentGroups extends TestCase
         PDDocument doc = PDDocument.load(pdfFile);
         try
         {
-            assertEquals("%PDF-1.5", doc.getDocument().getHeaderString());
+            assertEquals(1.5f, doc.getVersion());
             PDDocumentCatalog catalog = doc.getDocumentCatalog();
 
             PDPage page = doc.getPage(0);

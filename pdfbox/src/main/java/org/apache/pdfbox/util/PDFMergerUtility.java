@@ -246,12 +246,12 @@ public class PDFMergerUtility
 
 
         // use the highest version number for the resulting pdf
-        float destVersion = destination.getDocument().getVersion();
-        float srcVersion = source.getDocument().getVersion();
+        float destVersion = destination.getVersion();
+        float srcVersion = source.getVersion();
 
         if (destVersion < srcVersion)
         {
-            destination.getDocument().setVersion(srcVersion);
+            destination.setVersion(srcVersion);
         }
 
         if (destCatalog.getOpenAction() == null)
