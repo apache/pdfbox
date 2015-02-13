@@ -42,12 +42,6 @@ public abstract class PDOutlineNode extends PDDictionaryWrapper
         super(dict);
     }
 
-    @Override
-    public COSDictionary getCOSDictionary()
-    {
-        return super.getCOSDictionary();
-    }
-    
     /**
      * @return The parent of this node or null if there is no parent.
      */
