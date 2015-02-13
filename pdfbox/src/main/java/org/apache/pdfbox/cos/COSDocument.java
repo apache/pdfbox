@@ -29,7 +29,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdfparser.PDFObjectStreamParser;
-import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
 
 /**
  * This is the in-memory representation of the PDF document.  You need to call
@@ -66,11 +65,6 @@ public class COSDocument extends COSBase implements Closeable
      */
     private COSDictionary trailer;
     
-    /**
-     * Signature interface.
-     */
-    private SignatureInterface signatureInterface;
-
     private boolean warnMissingClose = true;
     
     /** 
@@ -317,15 +311,6 @@ public class COSDocument extends COSBase implements Closeable
     }
 
     /**
-     * This will return the signature interface.
-     * @return the signature interface 
-     */
-    public SignatureInterface getSignatureInterface() 
-    {
-        return signatureInterface;
-    }
-    
-    /**
      * This will set the encryption dictionary, this should only be called when
      * encrypting the document.
      *
@@ -416,15 +401,6 @@ public class COSDocument extends COSBase implements Closeable
         getTrailer().setItem(COSName.ID, id);
     }
     
-    /**
-     * Set the signature interface to the given value.
-     * @param sigInterface the signature interface
-     */
-    public void setSignatureInterface(SignatureInterface sigInterface) 
-    {
-        signatureInterface = sigInterface;
-    }
-
     /**
      * This will get the document catalog.
      *

@@ -102,6 +102,9 @@ public class PDDocument implements Closeable
     // fonts to subset before saving
     private final Set<PDFont> fontsToSubset = new HashSet<PDFont>();
     
+    // Signature interface
+    private SignatureInterface signInterface;
+    
     /**
      * Creates an empty PDF document.
      * You need to add at least one page for the document to be valid.
@@ -180,7 +183,7 @@ public class PDDocument implements Closeable
         // Reserve ByteRange
         sigObject.setByteRange(new int[] { 0, 1000000000, 1000000000, 1000000000 });
 
-        getDocument().setSignatureInterface(signatureInterface);
+        signInterface = signatureInterface;
 
         //
         // Create SignatureForm for signature
@@ -967,7 +970,7 @@ public class PDDocument implements Closeable
         try
         {
             writer = new COSWriter(output, input);
-            writer.write(this);
+            writer.write(this, signInterface);
             writer.close();
         }
         finally
