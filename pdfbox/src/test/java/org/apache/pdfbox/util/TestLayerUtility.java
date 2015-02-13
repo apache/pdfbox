@@ -89,7 +89,7 @@ public class TestLayerUtility extends TestCase
             PDDocumentCatalog catalog = doc.getDocumentCatalog();
 
             //OCGs require PDF 1.5 or later
-            assertEquals("%PDF-1.5", doc.getDocument().getHeaderString());
+            assertEquals(1.5f, doc.getVersion());
 
             PDPage page = doc.getPage(0);
             PDOptionalContentGroup ocg = (PDOptionalContentGroup)page.getResources()

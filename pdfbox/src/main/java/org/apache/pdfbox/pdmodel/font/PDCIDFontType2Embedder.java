@@ -160,10 +160,10 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         // surrogate code points, requires PDF 1.5
         if (hasSurrogates)
         {
-            float version = document.getDocument().getVersion();
+            float version = document.getVersion();
             if (version < 1.5)
             {
-                document.getDocument().setVersion(1.5f);
+                document.setVersion(1.5f);
             }
         }
 
