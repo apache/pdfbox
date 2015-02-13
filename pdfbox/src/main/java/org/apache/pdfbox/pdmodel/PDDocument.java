@@ -27,6 +27,9 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -38,6 +41,7 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
 import org.apache.pdfbox.pdfparser.BaseParser;
+import org.apache.pdfbox.pdfparser.COSParser;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
@@ -67,6 +71,8 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
  */
 public class PDDocument implements Closeable
 {
+    private static final Log LOG = LogFactory.getLog(PDDocument.class);
+
     private final COSDocument document;
 
     // cached values
@@ -1103,5 +1109,74 @@ public class PDDocument implements Closeable
     public void setDocumentId(Long docId)
     {
         documentId = docId;
+    }
+    
+    /**
+     * Returns the PDF specification version this document conforms to.
+     *
+     * @return the PDF version (e.g. 1.4f)
+     */
+    public float getVersion()
+    {
+        String catalogVersion = getDocumentCatalog().getVersion();
+        float catalogVersionFloat = -1;
+        float headerVersionFloat = getDocument().getVersion();
+        if (catalogVersion != null)
+        {
+            try
+            {
+                catalogVersionFloat = Float.parseFloat(catalogVersion);
+            }
+            catch(NumberFormatException exception)
+            {
+                LOG.error("Can't extract the version number of the document catalog.", exception);
+            }
+        }
+        // there may be a second version information in the document catalog starting with 1.4
+        if (catalogVersionFloat >= 1.4f)
+        {
+            // the most recent version is the correct one
+            return Math.max(catalogVersionFloat, headerVersionFloat);
+        }
+        else
+        {
+            return headerVersionFloat;
+        }
+    }
+
+    /**
+     * Sets the PDF specification version for this document.
+     *
+     * @param newVersion the new PDF version (e.g. 1.4f)
+     * 
+     */
+    public void setVersion(float newVersion)
+    {
+        float currentVersion = getVersion();
+        // nothing to do?
+        if (newVersion == currentVersion)
+        {
+            return;
+        }
+        // the version can't be downgraded
+        if (newVersion < currentVersion)
+        {
+            LOG.error("It's not allowed to downgrade the version of a pdf.");
+            return;
+        }
+        // update the catalog version if the new version is >= 1.4
+        if (newVersion >= 1.4f)
+        {
+            getDocumentCatalog().setVersion(Float.toString(newVersion));
+            if (getDocument().getVersion() > newVersion)
+            {
+                getDocument().setVersion(newVersion);
+            }
+        }
+        else
+        {
+            // versions < 1.4f have a version header only
+            getDocument().setVersion(newVersion);
+        }
     }
 }
