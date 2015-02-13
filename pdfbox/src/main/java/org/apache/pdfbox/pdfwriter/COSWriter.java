@@ -210,6 +210,7 @@ public class COSWriter implements ICOSVisitor, Closeable
     private long byteRangeOffset, byteRangeLength;
     private InputStream incrementalInput;
     private OutputStream incrementalOutput;
+    private SignatureInterface signatureInterface;
 
     /**
      * COSWriter constructor comment.
@@ -724,7 +725,6 @@ public class COSWriter implements ICOSVisitor, Closeable
                 new ByteArrayInputStream(signBuffer));
 
         // sign the bytes
-        SignatureInterface signatureInterface = doc.getSignatureInterface();
         byte[] sign = signatureInterface.sign(signStream);
         String signature = new COSString(sign).toHexString();
         // substract 2 bytes because of the enclosing "<>"
@@ -1209,10 +1209,25 @@ public class COSWriter implements ICOSVisitor, Closeable
      */
     public void write(PDDocument doc) throws IOException
     {
+        write(doc, null);
+    }
+
+    /**
+     * This will write the pdf document.
+     *
+     * @param doc The document to write.
+     * @param signInterface class to be used for signing 
+     *
+     * @throws IOException If an error occurs while generating the data.
+     */
+    public void write(PDDocument doc, SignatureInterface signInterface) throws IOException
+    {
         Long idTime = doc.getDocumentId() == null ? System.currentTimeMillis() : 
                                                     doc.getDocumentId();
 
         pdDocument = doc;
+        signatureInterface = signInterface;
+        
         if(incrementalUpdate)
         {
             prepareIncrement(doc);
