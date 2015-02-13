@@ -71,8 +71,8 @@ public class TrailerValidationProcess extends AbstractProcess
             // and it must have the same ID than the last trailer.
             // According to the PDF version, trailers are available by the trailer key word (pdf <= 1.4)
             // or in the dictionary of the XRef stream ( PDF >= 1.5)
-            String pdfVersion = pdfDoc.getDocument().getHeaderString();
-            if (pdfVersion != null && pdfVersion.matches("%PDF-1\\.[1-4]"))
+            float pdfVersion = pdfDoc.getVersion();
+            if (pdfVersion <= 1.4f)
             {
                 checkTrailersForLinearizedPDF14(ctx);
             }
