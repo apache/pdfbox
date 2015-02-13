@@ -54,7 +54,7 @@ public class FDFDocument implements Closeable
     public FDFDocument() throws IOException
     {
         document = new COSDocument();
-        document.setHeaderString( "%FDF-1.2" );
+        document.setVersion( 1.2f );
 
         //First we need a trailer
         document.setTrailer( new COSDictionary() );
