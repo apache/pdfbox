@@ -1176,6 +1176,7 @@ public class COSParser extends BaseParser
                 }
             }
         }
+        // TODO cross check found objects
     }
 
     /**
@@ -1498,9 +1499,6 @@ public class COSParser extends BaseParser
         COSDictionary parsedTrailer = parseCOSDictionary();
         xrefTrailerResolver.setTrailer( parsedTrailer );
     
-        // The version can also be specified within the document /Catalog
-        readVersionInTrailer(parsedTrailer);
-    
         skipSpaces();
         return true;
     }
@@ -1580,51 +1578,27 @@ public class COSParser extends BaseParser
                 pdfSource.unread(headerGarbage.getBytes(ISO_8859_1));
             }
         }
-        document.setHeaderString(header);
+        float headerVersion = -1;
         try
         {
-            if (header.startsWith( headerMarker ))
+            String[] headerParts = header.split("-");
+            if (headerParts.length == 2)
             {
-                float pdfVersion = Float. parseFloat(
-                        header.substring( headerMarker.length(), Math.min( header.length(), headerMarker.length()+3) ) );
-                document.setVersion( pdfVersion );
+                headerVersion = Float.parseFloat(headerParts[1]);
             }
         }
-        catch ( NumberFormatException e )
+        catch (NumberFormatException exception)
         {
-            throw new IOException( "Error getting version: " + e.getMessage(), e );
+            LOG.debug("Can't parse the header version.", exception);
         }
+        if (headerVersion < 0)
+        {
+            throw new IOException( "Error getting header version: " + header);
+        }
+        document.setVersion(headerVersion);
         // rewind
         pdfSource.seek(0);
         return true;
-    }
-
-    /**
-     * The document catalog can also have a /Version parameter which overrides the version specified
-     * in the header if, and only if it is greater.
-     *
-     * @param parsedTrailer the parsed catalog in the trailer
-     */
-    protected void readVersionInTrailer(COSDictionary parsedTrailer)
-    {
-        COSObject root = (COSObject) parsedTrailer.getItem(COSName.ROOT);
-        if (root != null)
-        {
-            COSBase item = root.getItem(COSName.VERSION);
-            if (item instanceof COSName)
-            {
-                COSName version = (COSName) item;
-                float trailerVersion = Float.valueOf(version.getName());
-                if (trailerVersion > document.getVersion())
-                {
-                    document.setVersion(trailerVersion);
-                }
-            }
-            else if (item != null)
-            {
-                LOG.warn("Incorrect /Version entry is ignored: " + item);
-            }
-        }
     }
 
     /**

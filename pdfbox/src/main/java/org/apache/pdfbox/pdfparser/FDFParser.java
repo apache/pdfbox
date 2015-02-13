@@ -152,9 +152,6 @@ public class FDFParser extends COSParser
         {
             parseDictObjects((COSDictionary) rootObject, (COSName[]) null);
         }
-    
-        // PDFBOX-1922: read the version again now that all objects have been resolved
-        readVersionInTrailer(trailer);
         initialParseDone = true;
     }
 

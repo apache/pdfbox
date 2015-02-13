@@ -71,8 +71,6 @@ public class COSDocument extends COSBase implements Closeable
      */
     private SignatureInterface signatureInterface;
 
-    private String headerString = "%PDF-" + version;
-
     private boolean warnMissingClose = true;
     
     /** 
@@ -255,18 +253,13 @@ public class COSDocument extends COSBase implements Closeable
     }
 
     /**
-     * This will set the version of this PDF document.
+     * This will set the header version of this PDF document.
      *
      * @param versionValue The version of the PDF document.
      */
-    public void setVersion( double versionValue )
+    public void setVersion( float versionValue )
     {
-        // update header string
-        if (versionValue != version) 
-        {
-            headerString = headerString.replaceFirst(String.valueOf(version), String.valueOf(versionValue));
-        }
-        version = (float)versionValue;
+        version = versionValue;
     }
 
     /**
@@ -276,21 +269,6 @@ public class COSDocument extends COSBase implements Closeable
      */
     public float getVersion()
     {
-        if (version < 0)
-        {
-            try
-            {
-                String[] headerParts = headerString.split("-");
-                if (headerParts.length == 2)
-                {
-                    version = Float. parseFloat(headerParts[1]);
-                }
-            }
-            catch ( NumberFormatException e )
-            {
-                version = -1;
-            }
-        }
         return version;
     }
 
@@ -574,23 +552,6 @@ public class COSDocument extends COSBase implements Closeable
     public void setWarnMissingClose(boolean warn)
     {
         this.warnMissingClose = warn;
-    }
-
-    /**
-     * @return Returns the headerString.
-     */
-    public String getHeaderString()
-    {
-        return headerString;
-    }
-    /**
-     * @param header The headerString to set.
-     */
-    public void setHeaderString(String header)
-    {
-        headerString = header;
-        // reset version
-        version = -1;
     }
 
     /**
