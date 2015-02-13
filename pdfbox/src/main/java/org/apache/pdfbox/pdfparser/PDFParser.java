@@ -346,8 +346,6 @@ public class PDFParser extends COSParser
             parseDictObjects((COSDictionary) catalogObj.getObject(), (COSName[]) null);
             document.setDecrypted();
         }
-        // PDFBOX-1922: read the version again now that all objects have been resolved
-        readVersionInTrailer(trailer);
         initialParseDone = true;
     }
 
