@@ -270,12 +270,27 @@ public class COSDocument extends COSBase implements Closeable
     }
 
     /**
-     * This will get the version of this PDF document.
+     * This will get the version extracted from the header of this PDF document.
      *
-     * @return This documents version.
+     * @return The header version.
      */
     public float getVersion()
     {
+        if (version < 0)
+        {
+            try
+            {
+                String[] headerParts = headerString.split("-");
+                if (headerParts.length == 2)
+                {
+                    version = Float. parseFloat(headerParts[1]);
+                }
+            }
+            catch ( NumberFormatException e )
+            {
+                version = -1;
+            }
+        }
         return version;
     }
 
@@ -574,6 +589,8 @@ public class COSDocument extends COSBase implements Closeable
     public void setHeaderString(String header)
     {
         headerString = header;
+        // reset version
+        version = -1;
     }
 
     /**
