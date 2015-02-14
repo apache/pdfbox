@@ -1305,7 +1305,7 @@ public class COSWriter implements ICOSVisitor, Closeable
     }
 
     /**
-     * This will write the pdf document.
+     * This will write the fdf document.
      *
      * @param doc The document to write.
      *
