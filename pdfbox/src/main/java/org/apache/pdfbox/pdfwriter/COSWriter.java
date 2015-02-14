@@ -673,7 +673,7 @@ public class COSWriter implements ICOSVisitor, Closeable
         }
     }
 
-    private void doWriteSignature(COSDocument doc) throws IOException
+    private void doWriteSignature() throws IOException
     {
         if (signatureOffset == 0 || byteRangeOffset == 0)
         {
@@ -1055,7 +1055,7 @@ public class COSWriter implements ICOSVisitor, Closeable
 
         if(incrementalUpdate)
         {
-            doWriteSignature(doc);
+            doWriteSignature();
         }
 
         return null;
