@@ -602,7 +602,7 @@ public class SynchronizedMetaDataValidation
      */
     private boolean hasTimeZone(Object date)
     {
-        final String datePattern = "^D:.*[Z]$|^D:.*\\+.*|^\\d{4}.*T.*Z$|^\\d{4}.*T.*[\\+]\\d{2}.*$";
+        final String datePattern = "^D:.*[Z]$|^D:.*[+-].*|^\\d{4}.*T.*Z$|^\\d{4}.*T.*[\\+]\\d{2}.*$";
         if (date instanceof Calendar)
         {
             // A Java Calendar object always has a time zone information
