@@ -20,12 +20,21 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.awt.geom.GeneralPath;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class provides a glyph to GeneralPath conversion for true type fonts.
- * Based on code from Apache Batik a subproject of Apache XMLGraphics.
+ * Based on code from Apache Batik, a subproject of Apache XMLGraphics.
  *
- * @see <a href="http://xmlgraphics.apache.org/batik">http://xmlgraphics.apache.org/batik</a>
+ * @see
+ * <a href="http://xmlgraphics.apache.org/batik">http://xmlgraphics.apache.org/batik</a>
+ * 
+ * Contour rendering ported from PDF.js, viewed on 14.2.2015, rev 2e97c0d
+ *
+ * @see
+ * <a href="https://github.com/mozilla/pdf.js/blob/c0d17013a28ee7aa048831560b6494a26c52360c/src/core/font_renderer.js">pdf.js/src/core/font_renderer.js</a>
+ *
  */
 class GlyphRenderer
 {
@@ -33,7 +42,8 @@ class GlyphRenderer
 
     private GlyphDescription glyphDescription;
 
-    public GlyphRenderer(GlyphDescription glyphDescription) {
+    public GlyphRenderer(GlyphDescription glyphDescription)
+    {
         this.glyphDescription = glyphDescription;
     }
 
@@ -77,145 +87,57 @@ class GlyphRenderer
     private GeneralPath calculatePath(Point[] points)
     {
         GeneralPath path = new GeneralPath();
-        int numberOfPoints = points.length;
-        int i = 0;
-        boolean endOfContour = true;
-        Point startingPoint = null;
-        Point offCurveStartPoint = null;
-        while (i < numberOfPoints)
+        int start = 0;
+        for (int p = 0, len = points.length; p < len; ++p)
         {
-            Point point = points[i % numberOfPoints];
-            Point nextPoint1 = points[(i + 1) % numberOfPoints];
-            Point nextPoint2 = points[(i + 2) % numberOfPoints];
-            // new contour
-            if (endOfContour)
+            if (points[p].endOfContour)
             {
-                // skip endOfContour points
-                if (point.endOfContour)
+                Point firstPoint = points[start];
+                Point lastPoint = points[p];
+                List<Point> contour = new ArrayList<Point>();
+                for (int q = start; q <= p; ++q)
                 {
-                    i++;
-                    continue;
+                    contour.add(points[q]);
                 }
-                // move to the starting point
-                moveTo(path, point);
-                endOfContour = false;
-                startingPoint = point;
-
-                offCurveStartPoint = null;
-                if (!point.onCurve && !nextPoint1.onCurve)
+                if (points[start].onCurve)
                 {
-                    // off curve start
-                    offCurveStartPoint = point;
-                    startingPoint = midValue(point, nextPoint1);
-                    moveTo(path, startingPoint);
+                    // using start point at the contour end
+                    contour.add(firstPoint);
                 }
-            }
-
-            if (point.onCurve)
-            {
-                offCurveStartPoint = null;
-            }
-            // lineTo
-            if (point.onCurve && nextPoint1.onCurve)
-            {
-                lineTo(path, nextPoint1);
-                i++;
-                if (point.endOfContour || nextPoint1.endOfContour)
+                else if (points[p].onCurve)
                 {
-                    endOfContour = true;
-                    closePath(path);
-                }
-                continue;
-            }
-            // quadratic bezier
-            if (point.onCurve && !nextPoint1.onCurve && nextPoint2.onCurve)
-            {
-                if (nextPoint1.endOfContour)
-                {
-                    // use the starting point as end point
-                    quadTo(path, nextPoint1, startingPoint);
+                    // first is off-curve point, trying to use one from the end
+                    contour.add(0, lastPoint);
                 }
                 else
                 {
-                    quadTo(path, nextPoint1, nextPoint2);
+                    // start and end are off-curve points, creating implicit one
+                    Point pmid = midValue(firstPoint, lastPoint);
+                    contour.add(0, pmid);
+                    contour.add(pmid);
                 }
-                if (nextPoint1.endOfContour || nextPoint2.endOfContour)
+                moveTo(path, contour.get(0));
+                for (int j = 1, clen = contour.size(); j < clen; j++)
                 {
-                    endOfContour = true;
-                    closePath(path);
+                    Point pnow = contour.get(j);
+                    if (pnow.onCurve)
+                    {
+                        lineTo(path, pnow);
+                    }
+                    else if (contour.get(j + 1).onCurve)
+                    {
+                        quadTo(path, pnow, contour.get(j + 1));
+                        ++j;
+                    }
+                    else
+                    {
+                        quadTo(path, pnow, midValue(pnow, contour.get(j + 1)));
+                    }
                 }
-                i += 2;
-                continue;
+                start = p + 1;
             }
-
-            // TH segment for curves that start with an off-curve point
-            if (offCurveStartPoint != null && !nextPoint1.onCurve && !nextPoint2.onCurve)
-            {
-                // interpolate endPoint
-                quadTo(path, nextPoint1, midValue(nextPoint1, nextPoint2));
-                if (point.endOfContour || nextPoint1.endOfContour || nextPoint2.endOfContour)
-                {
-                    quadTo(path, nextPoint2, midValue(nextPoint2, offCurveStartPoint));
-                    quadTo(path, offCurveStartPoint, startingPoint);
-                    endOfContour = true;
-                    i += 2;
-                    continue;
-                }
-                ++i;
-                continue;
-            }
-
-            if (point.onCurve && !nextPoint1.onCurve && !nextPoint2.onCurve)
-            {
-                // interpolate endPoint
-                quadTo(path, nextPoint1, midValue(nextPoint1, nextPoint2));
-                if (point.endOfContour || nextPoint1.endOfContour || nextPoint2.endOfContour)
-                {
-                    quadTo(path, nextPoint2, startingPoint);
-                    endOfContour = true;
-                    closePath(path);
-                }
-                i += 2;
-                continue;
-            }
-
-            // TH the control point is never interpolated
-            if (!point.onCurve && !nextPoint1.onCurve)
-            {
-                quadTo(path, point, midValue(point, nextPoint1));
-                if (point.endOfContour || nextPoint1.endOfContour)
-                {
-                    endOfContour = true;
-                    quadTo(path, nextPoint1, startingPoint);
-                }
-                i++;
-                continue;
-            }
-
-            if (!point.onCurve && nextPoint1.onCurve)
-            {
-                quadTo(path, point, nextPoint1);
-                if (point.endOfContour || nextPoint1.endOfContour)
-                {
-                    endOfContour = true;
-                    closePath(path);
-                }
-                i++;
-                continue;
-            }
-            LOG.error("Unknown glyph command!!");
-            break;
         }
         return path;
-    }
-
-    private void closePath(GeneralPath path)
-    {
-        path.closePath();
-        if (LOG.isDebugEnabled())
-        {
-            LOG.trace("closePath");
-        }
     }
 
     private void moveTo(GeneralPath path, Point point)
@@ -251,6 +173,7 @@ class GlyphRenderer
         return a + (b - a) / 2;
     }
 
+    // this creates an onCurve point that is between point1 and point2
     private Point midValue(Point point1, Point point2)
     {
         return new Point(midValue(point1.x, point2.x), midValue(point1.y, point2.y));
@@ -274,9 +197,10 @@ class GlyphRenderer
             endOfContour = endOfContourValue;
         }
 
+        // this constructs an on-curve, non-endofcountour point
         Point(int xValue, int yValue)
         {
-            this(xValue, yValue, false, false);
+            this(xValue, yValue, true, false);
         }
 
         @Override
