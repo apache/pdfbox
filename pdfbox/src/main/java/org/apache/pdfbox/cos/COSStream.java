@@ -68,6 +68,8 @@ public class COSStream extends COSDictionary implements Closeable
     private RandomAccessFileOutputStream unFilteredStream;
     private DecodeResult decodeResult;
 
+    private File scratchFile;
+    
     /**
      * Constructor.  Creates a new stream with an empty dictionary.
      *
@@ -139,9 +141,7 @@ public class COSStream extends COSDictionary implements Closeable
     {
         try 
         {
-            File scratchFile = File.createTempFile("PDFBox", null, scratchDirectory);
-            // mark scratch file to deleted automatically after usage
-            scratchFile.deleteOnExit();
+            scratchFile = File.createTempFile("PDFBox", null, scratchDirectory);
             return new RandomAccessFile(scratchFile, "rw");
         }
         catch (IOException exception)
@@ -593,6 +593,10 @@ public class COSStream extends COSDictionary implements Closeable
         if (unFilteredStream != null)
         {
             unFilteredStream.close();
+        }
+        if (scratchFile != null)
+        {
+            scratchFile.delete();
         }
     }
 }
