@@ -20,6 +20,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.graphics.PDLineDashPattern;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
@@ -42,7 +43,7 @@ public class PDBoxStyle implements COSObjectable
      */
     public static final String GUIDELINE_STYLE_DASHED = "D";
 
-    private COSDictionary dictionary;
+    private final COSDictionary dictionary;
 
     /**
      * Default Constructor.
@@ -68,6 +69,7 @@ public class PDBoxStyle implements COSObjectable
      *
      * @return The cos object that matches this Java object.
      */
+    @Override
     public COSBase getCOSObject()
     {
         return dictionary;
@@ -91,14 +93,14 @@ public class PDBoxStyle implements COSObjectable
      */
     public PDColor getGuidelineColor()
     {
-        COSArray colorValues = (COSArray)dictionary.getDictionaryObject( "C" );
+        COSArray colorValues = (COSArray) dictionary.getDictionaryObject(COSName.C);
         if( colorValues == null )
         {
             colorValues = new COSArray();
             colorValues.add( COSInteger.ZERO );
             colorValues.add( COSInteger.ZERO );
             colorValues.add( COSInteger.ZERO );
-            dictionary.setItem( "C", colorValues );
+            dictionary.setItem(COSName.C, colorValues);
         }
         PDColor color = new PDColor(colorValues.toFloatArray(), PDDeviceRGB.INSTANCE);
         return color;
@@ -117,7 +119,7 @@ public class PDBoxStyle implements COSObjectable
         {
             values = color.toCOSArray();
         }
-        dictionary.setItem( "C", values );
+        dictionary.setItem(COSName.C, values);
     }
 
     /**
@@ -128,7 +130,7 @@ public class PDBoxStyle implements COSObjectable
      */
     public float getGuidelineWidth()
     {
-        return dictionary.getFloat( "W", 1 );
+        return dictionary.getFloat(COSName.W, 1);
     }
 
     /**
@@ -138,7 +140,7 @@ public class PDBoxStyle implements COSObjectable
      */
     public void setGuidelineWidth( float width )
     {
-        dictionary.setFloat( "W", width );
+        dictionary.setFloat(COSName.W, width);
     }
 
     /**
@@ -150,7 +152,7 @@ public class PDBoxStyle implements COSObjectable
      */
     public String getGuidelineStyle()
     {
-        return dictionary.getNameAsString( "S", GUIDELINE_STYLE_SOLID );
+        return dictionary.getNameAsString(COSName.S, GUIDELINE_STYLE_SOLID);
     }
 
     /**
@@ -162,7 +164,7 @@ public class PDBoxStyle implements COSObjectable
      */
     public void setGuidelineStyle( String style )
     {
-        dictionary.setName( "S", style );
+        dictionary.setName(COSName.S, style);
     }
 
     /**
@@ -173,13 +175,13 @@ public class PDBoxStyle implements COSObjectable
      */
     public PDLineDashPattern getLineDashPattern()
     {
-        PDLineDashPattern pattern = null;
-        COSArray d = (COSArray)dictionary.getDictionaryObject( "D" );
+        PDLineDashPattern pattern;
+        COSArray d = (COSArray) dictionary.getDictionaryObject(COSName.D);
         if( d == null )
         {
             d = new COSArray();
             d.add( COSInteger.THREE );
-            dictionary.setItem( "D", d );
+            dictionary.setItem(COSName.D, d);
         }
         COSArray lineArray = new COSArray();
         lineArray.add( d );
@@ -200,6 +202,6 @@ public class PDBoxStyle implements COSObjectable
         {
             array = dashArray;
         }
-        dictionary.setItem( "D", array );
+        dictionary.setItem(COSName.D, array);
     }
 }
