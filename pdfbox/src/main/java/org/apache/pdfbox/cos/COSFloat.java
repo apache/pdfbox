@@ -64,17 +64,17 @@ public class COSFloat extends COSNumber
         }
     }
 
-    private String removeNullDigits(String value)
+    private String removeNullDigits(String plainStringValue)
     {
         // remove fraction digit "0" only
-        if (value.indexOf('.') > -1 && !value.endsWith(".0"))
+        if (plainStringValue.indexOf('.') > -1 && !plainStringValue.endsWith(".0"))
         {
-            while (value.endsWith("0") && !value.endsWith(".0"))
+            while (plainStringValue.endsWith("0") && !plainStringValue.endsWith(".0"))
             {
-                value = value.substring(0,value.length()-1);
+                plainStringValue = plainStringValue.substring(0,plainStringValue.length()-1);
             }
         }
-        return value;
+        return plainStringValue;
     }
 
     /**
@@ -127,7 +127,8 @@ public class COSFloat extends COSNumber
     @Override
     public boolean equals( Object o )
     {
-        return o instanceof COSFloat && Float.floatToIntBits(((COSFloat)o).value.floatValue()) == Float.floatToIntBits(value.floatValue());
+        return o instanceof COSFloat && 
+                Float.floatToIntBits(((COSFloat)o).value.floatValue()) == Float.floatToIntBits(value.floatValue());
     }
 
     /**
