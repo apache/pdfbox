@@ -29,6 +29,9 @@ import org.apache.pdfbox.pdmodel.common.PDDictionaryWrapper;
 public abstract class PDOutlineNode extends PDDictionaryWrapper
 {
 
+    /**
+     * Default Constructor.
+     */
     public PDOutlineNode()
     {
         super();
@@ -61,7 +64,7 @@ public abstract class PDOutlineNode extends PDDictionaryWrapper
 
     void setParent(PDOutlineNode parent)
     {
-    	getCOSDictionary().setItem(COSName.PARENT, parent);
+        getCOSDictionary().setItem(COSName.PARENT, parent);
     }
 
     /**
@@ -81,7 +84,7 @@ public abstract class PDOutlineNode extends PDDictionaryWrapper
     /**
      * Adds the given node to the top of the children list.
      * 
-     * @param newChild
+     * @param newChild The node to add.
      * @throws IllegalArgumentException if the given node is part of a list (i.e. if it has a previous or a next
      * sibling)
      */
@@ -192,7 +195,7 @@ public abstract class PDOutlineNode extends PDDictionaryWrapper
      */
     void setFirstChild(PDOutlineNode outlineNode)
     {
-    	getCOSDictionary().setItem(COSName.FIRST, outlineNode);
+        getCOSDictionary().setItem(COSName.FIRST, outlineNode);
     }
 
     /**
@@ -210,7 +213,7 @@ public abstract class PDOutlineNode extends PDDictionaryWrapper
      */
     void setLastChild(PDOutlineNode outlineNode)
     {
-    	getCOSDictionary().setItem(COSName.LAST, outlineNode);
+        getCOSDictionary().setItem(COSName.LAST, outlineNode);
     }
 
     /**
@@ -232,7 +235,7 @@ public abstract class PDOutlineNode extends PDDictionaryWrapper
      */
     void setOpenCount(int openCount)
     {
-    	getCOSDictionary().setInt(COSName.COUNT, openCount);
+        getCOSDictionary().setInt(COSName.COUNT, openCount);
     }
 
     /**
