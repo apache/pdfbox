@@ -16,8 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel;
 
-import java.io.IOException;
-
 import java.util.Calendar;
 import java.util.Set;
 import java.util.TreeSet;
