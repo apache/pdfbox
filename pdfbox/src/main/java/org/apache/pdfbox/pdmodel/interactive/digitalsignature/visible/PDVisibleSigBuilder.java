@@ -374,7 +374,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
                                        PDResources holderFormResources) throws IOException
     {
         COSDictionary widgetDict = signatureField.getWidget().getDictionary();
-        widgetDict.setNeedToBeUpdate(true);
+        widgetDict.setNeedToBeUpdated(true);
         widgetDict.setItem(COSName.DR, holderFormResources.getCOSObject());
 
         pdfStructure.setWidgetDictionary(widgetDict);

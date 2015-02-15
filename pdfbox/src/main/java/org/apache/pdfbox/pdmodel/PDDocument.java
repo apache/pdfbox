@@ -202,7 +202,7 @@ public class PDDocument implements Closeable
 
         // Get the AcroForm from the Root-Dictionary and append the annotation
         PDAcroForm acroForm = catalog.getAcroForm();
-        catalog.getCOSObject().setNeedToBeUpdate(true);
+        catalog.getCOSObject().setNeedToBeUpdated(true);
 
         if (acroForm == null)
         {
@@ -211,7 +211,7 @@ public class PDDocument implements Closeable
         }
         else
         {
-            acroForm.getCOSObject().setNeedToBeUpdate(true);
+            acroForm.getDictionary().setNeedToBeUpdated(true);
         }
 
         // For invisible signatures, the annotation has a rectangle array with values [ 0 0 0 0 ]. This annotation is
@@ -264,7 +264,7 @@ public class PDDocument implements Closeable
                     && ((PDSignatureField) field).getCOSObject().equals(signatureField.getCOSObject()))
             {
                 checkFields = true;
-                signatureField.getCOSObject().setNeedToBeUpdate(true);
+                ((COSDictionary) signatureField.getCOSObject()).setNeedToBeUpdated(true);
                 break;
             }
         }
@@ -344,11 +344,11 @@ public class PDDocument implements Closeable
                         signatureField.getWidget().setAppearance(ap);
 
                         // read and set AcroForm DefaultResource
-                        COSBase dr = cosBaseDict.getItem(COSName.DR);
+                        COSDictionary dr = (COSDictionary) cosBaseDict.getItem(COSName.DR);
                         if (dr != null)
                         {
                             dr.setDirect(true);
-                            dr.setNeedToBeUpdate(true);
+                            dr.setNeedToBeUpdated(true);
                             acroFormDict.setItem(COSName.DR, dr);
                         }
                         sigFieldNotFound = false;
@@ -371,7 +371,7 @@ public class PDDocument implements Closeable
         {
             annotations.add(signatureField.getWidget());
         }
-        page.getCOSObject().setNeedToBeUpdate(true);
+        ((COSDictionary) page.getCOSObject()).setNeedToBeUpdated(true);
     }
 
     /**
@@ -386,7 +386,7 @@ public class PDDocument implements Closeable
             SignatureOptions options) throws IOException
     {
         PDDocumentCatalog catalog = getDocumentCatalog();
-        catalog.getCOSObject().setNeedToBeUpdate(true);
+        ((COSDictionary) catalog.getCOSObject()).setNeedToBeUpdated(true);
 
         PDAcroForm acroForm = catalog.getAcroForm();
         if (acroForm == null)
@@ -396,12 +396,12 @@ public class PDDocument implements Closeable
         }
         else
         {
-            acroForm.getCOSObject().setNeedToBeUpdate(true);
+            ((COSDictionary) acroForm.getCOSObject()).setNeedToBeUpdated(true);
         }
 
         COSDictionary acroFormDict = acroForm.getDictionary();
         acroFormDict.setDirect(true);
-        acroFormDict.setNeedToBeUpdate(true);
+        acroFormDict.setNeedToBeUpdated(true);
         if (!acroForm.isSignaturesExist())
         {
             // 1 if at least one signature field is available
@@ -413,7 +413,7 @@ public class PDDocument implements Closeable
         for (PDSignatureField sigField : sigFields)
         {
             PDSignature sigObject = sigField.getSignature();
-            sigField.getCOSObject().setNeedToBeUpdate(true);
+            ((COSDictionary) sigField.getCOSObject()).setNeedToBeUpdated(true);
 
             // Check if the field already exists
             boolean checkFields = false;
@@ -423,7 +423,7 @@ public class PDDocument implements Closeable
                         && fieldNode.getCOSObject().equals(sigField.getCOSObject()))
                 {
                     checkFields = true;
-                    sigField.getCOSObject().setNeedToBeUpdate(true);
+                    ((COSDictionary) sigField.getCOSObject()).setNeedToBeUpdated(true);
                     break;
                 }
             }
@@ -436,7 +436,7 @@ public class PDDocument implements Closeable
             // Check if we need to add a signature
             if (sigField.getSignature() != null)
             {
-                sigField.getCOSObject().setNeedToBeUpdate(true);
+                ((COSDictionary) sigField.getCOSObject()).setNeedToBeUpdated(true);
                 if (options == null)
                 {
 

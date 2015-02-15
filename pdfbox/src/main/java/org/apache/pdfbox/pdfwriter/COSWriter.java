@@ -480,11 +480,18 @@ public class COSWriter implements ICOSVisitor, Closeable
             {
                 cosBase = keyObject.get(cosObjectKey);
             }
+
             if(actual != null && objectKeys.containsKey(actual) &&
-                    !object.isNeedToBeUpdate() && (cosBase!= null &&
-                    !cosBase.isNeedToBeUpdate()))
+                    cosBase!= null)
             {
-                return;
+                if (object instanceof COSDictionary &&
+                        cosBase instanceof COSDictionary &&
+                        !((COSDictionary) object).isNeedToBeUpdated() &&
+                        !((COSDictionary) cosBase).isNeedToBeUpdated()
+                        )
+                {
+                    return;
+                }
             }
           
             objectsToWrite.add( object );

@@ -27,7 +27,6 @@ import java.io.IOException;
  */
 public abstract class COSBase implements COSObjectable
 {
-    private boolean needToBeUpdate;
     private boolean direct;
 
     /**
@@ -35,7 +34,6 @@ public abstract class COSBase implements COSObjectable
      */
     public COSBase()
     {
-      needToBeUpdate = false;
     }
 
     /**
@@ -58,11 +56,6 @@ public abstract class COSBase implements COSObjectable
      */
     public abstract Object accept(ICOSVisitor visitor) throws IOException;
     
-    public void setNeedToBeUpdate(boolean flag) 
-    {
-      needToBeUpdate = flag;
-    }
-    
     /**
      * If the state is set true, the dictionary will be written direct into the called object. 
      * This means, no indirect object will be created.
@@ -83,10 +76,4 @@ public abstract class COSBase implements COSObjectable
     {
       this.direct = direct;
     }
-    
-    public boolean isNeedToBeUpdate() 
-    {
-      return needToBeUpdate;
-    }
-
 }

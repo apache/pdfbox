@@ -35,6 +35,7 @@ import org.apache.pdfbox.util.DateConverter;
 public class COSDictionary extends COSBase
 {
     private static final String PATH_SEPARATOR = "/";
+    private boolean needToBeUpdated;
 
     /**
      * The name-value pairs of this dictionary. The pairs are kept in the order they were added to the dictionary.
@@ -1318,6 +1319,27 @@ public class COSDictionary extends COSBase
     {
         return visitor.visitFromDictionary(this);
     }
+    
+    /**
+     * Get the update state for the COSWriter.
+     * 
+     * @return the update state.
+     */
+    public boolean isNeedToBeUpdated() 
+    {
+      return needToBeUpdated;
+    }
+    
+    /**
+     * Set the update state of the dictionary for the COSWriter.
+     * 
+     * @param flag the update state.
+     */
+    public void setNeedToBeUpdated(boolean flag) 
+    {
+      needToBeUpdated = flag;
+    }
+    
 
     /**
      * This will add all of the dictionarys keys/values to this dictionary. Only called when adding keys to a trailer
