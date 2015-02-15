@@ -40,7 +40,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
  */
 public class PDDocumentInformation implements COSObjectable
 {
-    private COSDictionary info;
+    private final COSDictionary info;
 
     /**
      * Default Constructor.
@@ -75,6 +75,7 @@ public class PDDocumentInformation implements COSObjectable
      *
      * @return The cos object that matches this Java object.
      */
+    @Override
     public COSBase getCOSObject()
     {
         return info;
@@ -220,10 +221,8 @@ public class PDDocumentInformation implements COSObjectable
      * This will get the creation date of the document.  This will return null if no creation date exists.
      *
      * @return The creation date of the document.
-     *
-     * @throws IOException If there is an error creating the date.
      */
-    public Calendar getCreationDate() throws IOException
+    public Calendar getCreationDate()
     {
         return info.getDate( COSName.CREATION_DATE );
     }
@@ -242,10 +241,8 @@ public class PDDocumentInformation implements COSObjectable
      * This will get the modification date of the document.  This will return null if no modification date exists.
      *
      * @return The modification date of the document.
-     *
-     * @throws IOException If there is an error creating the date.
      */
-    public Calendar getModificationDate() throws IOException
+    public Calendar getModificationDate()
     {
         return info.getDate( COSName.MOD_DATE );
     }
