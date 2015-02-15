@@ -38,7 +38,10 @@ public class COSFloat extends COSNumber
      */
     public COSFloat( float aFloat )
     {
-        setValue(aFloat);
+        // use a BigDecimal as intermediate state to avoid 
+        // a floating point string representation of the float value
+        value = new BigDecimal(String.valueOf(aFloat));
+        valueAsString = removeNullDigits(value.toPlainString());
     }
 
     /**
@@ -59,19 +62,6 @@ public class COSFloat extends COSNumber
         {
             throw new IOException( "Error expected floating point number actual='" +aFloat + "'", e );
         }
-    }
-
-    /**
-     * Set the value of the float object.
-     *
-     * @param floatValue The new float value.
-     */
-    public final void setValue( float floatValue )
-    {
-        // use a BigDecimal as intermediate state to avoid 
-        // a floating point string representation of the float value
-        value = new BigDecimal(String.valueOf(floatValue));
-        valueAsString = removeNullDigits(value.toPlainString());
     }
 
     private String removeNullDigits(String value)

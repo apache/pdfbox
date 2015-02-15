@@ -133,16 +133,6 @@ public class COSInteger extends COSNumber
     }
 
     /**
-     * Change the value of this reference.
-     *
-     * @param newValue The new value.
-     */
-    public void setValue( long newValue )
-    {
-        value = newValue;
-    }
-
-    /**
      * polymorphic access to value as float.
      *
      * @return The float value of this object.
