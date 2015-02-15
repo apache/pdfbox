@@ -43,17 +43,6 @@ public abstract class TestCOSBase extends TestCase
     public abstract void testAccept() throws IOException;
 
     /**
-     * Tests isNeedToBeUpdate() and setNeedToBeUpdate() - tests the getter/setter methods.
-     */
-    public void testIsSetNeedToBeUpdate()
-    {
-        testCOSBase.setNeedToBeUpdate(true);
-        assertTrue(testCOSBase.isNeedToBeUpdate());
-        testCOSBase.setNeedToBeUpdate(false);
-        assertFalse(testCOSBase.isNeedToBeUpdate());
-    }
-
-    /**
      * Tests isDirect() and setDirect() - tests the getter/setter methods.
      */
     public void testIsSetDirect()

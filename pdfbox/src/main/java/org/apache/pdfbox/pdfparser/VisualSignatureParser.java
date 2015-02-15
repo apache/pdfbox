@@ -209,7 +209,10 @@ public class VisualSignatureParser extends BaseParser
                 endObjectKey = readString();
             }
             COSObject pdfObject = document.getObjectFromPool(key);
-            pb.setNeedToBeUpdate(true);
+            if (pb instanceof COSDictionary)
+            {
+                ((COSDictionary) pb).setNeedToBeUpdated(true);
+            }
             pdfObject.setObject(pb);
 
             if (!endObjectKey.equals(ENDOBJ_STRING))
