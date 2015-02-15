@@ -55,7 +55,7 @@ public class FilterHelper
      * @param context
      *            the preflight context
      * @param filter
-     *            the filter to checks
+     *            the filter to check
      */
     public static void isAuthorizedFilter(PreflightContext context, String filter)
     {
@@ -90,6 +90,7 @@ public class FilterHelper
             {
                 context.addValidationError(new ValidationError(ERROR_SYNTAX_STREAM_INVALID_FILTER,
                         "LZWDecode is forbidden"));
+                return;
             }
 
             // --- Filters declared in the PDF Reference for PDF 1.4
