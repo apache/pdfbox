@@ -21,6 +21,8 @@
 
 package org.apache.pdfbox.preflight.utils;
 
+import java.util.HashSet;
+import java.util.Set;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_STREAM_INVALID_FILTER;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_STREAM_UNDEFINED_FILTER;
 import static org.apache.pdfbox.preflight.PreflightConstants.INLINE_DICTIONARY_VALUE_FILTER_ASCII_85;
@@ -45,6 +47,25 @@ import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 
 public class FilterHelper
 {
+    
+    static final Set<String> allowedFilters = new HashSet<String>();
+    
+    static
+    {
+        allowedFilters.add(STREAM_DICTIONARY_VALUE_FILTER_FLATE_DECODE);
+        allowedFilters.add(STREAM_DICTIONARY_VALUE_FILTER_ASCII_HEX);
+        allowedFilters.add(STREAM_DICTIONARY_VALUE_FILTER_ASCII_85);
+        allowedFilters.add(STREAM_DICTIONARY_VALUE_FILTER_CCITTFF);
+        allowedFilters.add(STREAM_DICTIONARY_VALUE_FILTER_DCT);
+        allowedFilters.add(STREAM_DICTIONARY_VALUE_FILTER_JBIG);
+        allowedFilters.add(STREAM_DICTIONARY_VALUE_FILTER_RUN);
+        allowedFilters.add(INLINE_DICTIONARY_VALUE_FILTER_FLATE_DECODE);
+        allowedFilters.add(INLINE_DICTIONARY_VALUE_FILTER_ASCII_HEX);
+        allowedFilters.add(INLINE_DICTIONARY_VALUE_FILTER_ASCII_85);
+        allowedFilters.add(INLINE_DICTIONARY_VALUE_FILTER_CCITTFF);
+        allowedFilters.add(INLINE_DICTIONARY_VALUE_FILTER_DCT);
+        allowedFilters.add(INLINE_DICTIONARY_VALUE_FILTER_RUN);
+    }
 
     /**
      * This method checks if the filter is authorized for the PDF file according to the preflight document specification
@@ -95,22 +116,7 @@ public class FilterHelper
 
             // --- Filters declared in the PDF Reference for PDF 1.4
             // --- Other Filters are considered as invalid to avoid not consistent behaviour
-            boolean definedFilter = STREAM_DICTIONARY_VALUE_FILTER_FLATE_DECODE.equals(filter);
-            definedFilter = definedFilter || STREAM_DICTIONARY_VALUE_FILTER_ASCII_HEX.equals(filter);
-            definedFilter = definedFilter || STREAM_DICTIONARY_VALUE_FILTER_ASCII_85.equals(filter);
-            definedFilter = definedFilter || STREAM_DICTIONARY_VALUE_FILTER_CCITTFF.equals(filter);
-            definedFilter = definedFilter || STREAM_DICTIONARY_VALUE_FILTER_DCT.equals(filter);
-            definedFilter = definedFilter || STREAM_DICTIONARY_VALUE_FILTER_JBIG.equals(filter);
-            definedFilter = definedFilter || STREAM_DICTIONARY_VALUE_FILTER_RUN.equals(filter);
-
-            definedFilter = definedFilter || INLINE_DICTIONARY_VALUE_FILTER_FLATE_DECODE.equals(filter);
-            definedFilter = definedFilter || INLINE_DICTIONARY_VALUE_FILTER_ASCII_HEX.equals(filter);
-            definedFilter = definedFilter || INLINE_DICTIONARY_VALUE_FILTER_ASCII_85.equals(filter);
-            definedFilter = definedFilter || INLINE_DICTIONARY_VALUE_FILTER_CCITTFF.equals(filter);
-            definedFilter = definedFilter || INLINE_DICTIONARY_VALUE_FILTER_DCT.equals(filter);
-            definedFilter = definedFilter || INLINE_DICTIONARY_VALUE_FILTER_RUN.equals(filter);
-
-            if (!definedFilter)
+            if (!allowedFilters.contains(filter))
             {
                 context.addValidationError(new ValidationError(ERROR_SYNTAX_STREAM_UNDEFINED_FILTER,
                         "This filter isn't defined in the PDF Reference Third Edition : " + filter));
