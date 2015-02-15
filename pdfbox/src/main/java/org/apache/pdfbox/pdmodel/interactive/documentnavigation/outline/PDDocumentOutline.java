@@ -33,7 +33,7 @@ public final class PDDocumentOutline extends PDOutlineNode
      */
     public PDDocumentOutline()
     {
-    	getCOSDictionary().setName(COSName.TYPE, COSName.OUTLINES.getName());
+        getCOSDictionary().setName(COSName.TYPE, COSName.OUTLINES.getName());
     }
 
     /**

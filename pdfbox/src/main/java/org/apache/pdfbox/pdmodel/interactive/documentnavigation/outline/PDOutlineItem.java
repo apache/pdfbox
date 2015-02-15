@@ -137,7 +137,7 @@ public final class PDOutlineItem extends PDOutlineNode
      */
     void setPreviousSibling(PDOutlineNode outlineNode)
     {
-    	getCOSDictionary().setItem(COSName.PREV, outlineNode);
+        getCOSDictionary().setItem(COSName.PREV, outlineNode);
     }
 
     /**
@@ -155,7 +155,7 @@ public final class PDOutlineItem extends PDOutlineNode
      */
     void setNextSibling(PDOutlineNode outlineNode)
     {
-    	getCOSDictionary().setItem(COSName.NEXT, outlineNode);
+        getCOSDictionary().setItem(COSName.NEXT, outlineNode);
     }
 
     /**
@@ -175,7 +175,7 @@ public final class PDOutlineItem extends PDOutlineNode
      */
     public void setTitle(String title)
     {
-    	getCOSDictionary().setString(COSName.TITLE, title);
+        getCOSDictionary().setString(COSName.TITLE, title);
     }
 
     /**
@@ -196,7 +196,7 @@ public final class PDOutlineItem extends PDOutlineNode
      */
     public void setDestination(PDDestination dest)
     {
-    	getCOSDictionary().setItem(COSName.DEST, dest);
+        getCOSDictionary().setItem(COSName.DEST, dest);
     }
 
     /**
@@ -307,7 +307,7 @@ public final class PDOutlineItem extends PDOutlineNode
      */
     public void setAction( PDAction action )
     {
-    	getCOSDictionary().setItem(COSName.A, action);
+        getCOSDictionary().setItem(COSName.A, action);
     }
 
     /**
@@ -361,7 +361,7 @@ public final class PDOutlineItem extends PDOutlineNode
      */
     public void setTextColor( PDColor textColor )
     {
-    	getCOSDictionary().setItem( COSName.C, textColor.toCOSArray() );
+        getCOSDictionary().setItem( COSName.C, textColor.toCOSArray() );
     }
 
     /**
@@ -395,7 +395,7 @@ public final class PDOutlineItem extends PDOutlineNode
      */
     public void setItalic( boolean italic )
     {
-    	getCOSDictionary().setFlag( COSName.F, ITALIC_FLAG, italic );
+        getCOSDictionary().setFlag( COSName.F, ITALIC_FLAG, italic );
     }
 
     /**
@@ -415,7 +415,7 @@ public final class PDOutlineItem extends PDOutlineNode
      */
     public void setBold( boolean bold )
     {
-    	getCOSDictionary().setFlag( COSName.F, BOLD_FLAG, bold );
+        getCOSDictionary().setFlag( COSName.F, BOLD_FLAG, bold );
     }
 
 }
