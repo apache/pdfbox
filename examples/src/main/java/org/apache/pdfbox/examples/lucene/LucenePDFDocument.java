@@ -397,24 +397,10 @@ public class LucenePDFDocument
             if (info != null)
             {
                 addTextField(document, "Author", info.getAuthor());
-                try
-                {
-                    addTextField(document, "CreationDate", info.getCreationDate());
-                }
-                catch (IOException io)
-                {
-                    // ignore, bad date but continue with indexing
-                }
+                addTextField(document, "CreationDate", info.getCreationDate());
                 addTextField(document, "Creator", info.getCreator());
                 addTextField(document, "Keywords", info.getKeywords());
-                try
-                {
-                    addTextField(document, "ModificationDate", info.getModificationDate());
-                }
-                catch (IOException io)
-                {
-                    // ignore, bad date but continue with indexing
-                }
+                addTextField(document, "ModificationDate", info.getModificationDate());
                 addTextField(document, "Producer", info.getProducer());
                 addTextField(document, "Subject", info.getSubject());
                 addTextField(document, "Title", info.getTitle());
