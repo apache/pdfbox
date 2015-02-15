@@ -21,7 +21,6 @@
 
 package org.apache.pdfbox.preflight.metadata;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -350,15 +349,7 @@ public class SynchronizedMetaDataValidation
             throws ValidationException
     {
         Calendar creationDate = null;
-        try
-        {
-            creationDate = dico.getCreationDate();
-        }
-        catch (IOException e)
-        {
-            // If there is an error while converting this property to a date
-            ve.add(new ValidationError(PreflightConstants.ERROR_METADATA_DICT_INFO_CORRUPT, "Document Information 'CreationDate' can't be read : " + e.getMessage()));
-        }
+        creationDate = dico.getCreationDate();
         if (creationDate != null)
         {
             if (xmp != null)
@@ -405,46 +396,37 @@ public class SynchronizedMetaDataValidation
             throws ValidationException
     {
         Calendar modifyDate;
-        try
+        modifyDate = dico.getModificationDate();
+        if (modifyDate != null)
         {
-            modifyDate = dico.getModificationDate();
-            if (modifyDate != null)
+            if (xmp != null)
             {
-                if (xmp != null)
+
+                Calendar xmpModifyDate = xmp.getModifyDate();
+                if (xmpModifyDate == null)
                 {
-
-                    Calendar xmpModifyDate = xmp.getModifyDate();
-                    if (xmpModifyDate == null)
-                    {
-                        ve.add(absentXMPPropertyError("ModifyDate", "Property is not defined"));
-                    }
-                    else
-                    {
-                        if (!DateConverter.toISO8601(xmpModifyDate).equals(DateConverter.toISO8601(modifyDate)))
-                        {
-
-                            ve.add(unsynchronizedMetaDataError("ModificationDate"));
-                        }
-                        else if (hasTimeZone(xmp.getModifyDateProperty().getRawValue()) != 
-                                hasTimeZone(dico.getPropertyStringValue("ModDate")))
-                        {
-                            ve.add(unsynchronizedMetaDataError("ModificationDate"));
-                        }
-                    }
-
+                    ve.add(absentXMPPropertyError("ModifyDate", "Property is not defined"));
                 }
                 else
                 {
-                    ve.add(absentSchemaMetaDataError("ModifyDate", "Basic XMP"));
+                    if (!DateConverter.toISO8601(xmpModifyDate).equals(DateConverter.toISO8601(modifyDate)))
+                    {
+
+                        ve.add(unsynchronizedMetaDataError("ModificationDate"));
+                    }
+                    else if (hasTimeZone(xmp.getModifyDateProperty().getRawValue())
+                            != hasTimeZone(dico.getPropertyStringValue("ModDate")))
+                    {
+                        ve.add(unsynchronizedMetaDataError("ModificationDate"));
+                    }
                 }
+
+            }
+            else
+            {
+                ve.add(absentSchemaMetaDataError("ModifyDate", "Basic XMP"));
             }
         }
-        catch (IOException e)
-        {
-            // If there is an error while converting this property to a date
-            ve.add(new ValidationError(PreflightConstants.ERROR_METADATA_DICT_INFO_CORRUPT, "Document Information 'ModifyDate' can't be read : " + e.getMessage()));
-        }
-
     }
 
     /**
