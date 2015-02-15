@@ -182,7 +182,7 @@ class GlyphRenderer
     /**
      * This class represents one point of a glyph.
      */
-    private class Point
+    private static class Point
     {
         private int x = 0;
         private int y = 0;
@@ -210,4 +210,5 @@ class GlyphRenderer
                     endOfContour ? "endOfContour" : "");
         }
     }
+    
 }
