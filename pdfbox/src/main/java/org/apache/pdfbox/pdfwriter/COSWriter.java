@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.SequenceInputStream;
+import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
@@ -154,6 +155,8 @@ public class COSWriter implements ICOSVisitor, Closeable
      * The close stream token.
      */
     public static final byte[] ENDSTREAM = "endstream".getBytes(Charsets.US_ASCII);
+    
+    private static final Charset ISO_8859_1_CHARSET = Charset.forName("ISO-8859-1");
 
     private final NumberFormat formatXrefOffset = new DecimalFormat("0000000000");
 
@@ -530,9 +533,9 @@ public class COSWriter implements ICOSVisitor, Closeable
         // add a x ref entry
         addXRefEntry( new COSWriterXRefEntry(getStandardOutput().getPos(), obj, currentObjectKey));
         // write the object
-        getStandardOutput().write(String.valueOf(currentObjectKey.getNumber()).getBytes("ISO-8859-1"));
+        getStandardOutput().write(String.valueOf(currentObjectKey.getNumber()).getBytes(ISO_8859_1_CHARSET));
         getStandardOutput().write(SPACE);
-        getStandardOutput().write(String.valueOf(currentObjectKey.getGeneration()).getBytes("ISO-8859-1"));
+        getStandardOutput().write(String.valueOf(currentObjectKey.getGeneration()).getBytes(ISO_8859_1_CHARSET));
         getStandardOutput().write(SPACE);
         getStandardOutput().write(OBJ);
         getStandardOutput().writeEOL();
@@ -560,7 +563,7 @@ public class COSWriter implements ICOSVisitor, Closeable
         {
             headerString = "%PDF-"+ Float.toString(pdDocument.getDocument().getVersion());
         }
-        getStandardOutput().write( headerString.getBytes("ISO-8859-1") );
+        getStandardOutput().write( headerString.getBytes(ISO_8859_1_CHARSET) );
         
         getStandardOutput().writeEOL();
         getStandardOutput().write(COMMENT);
@@ -759,9 +762,9 @@ public class COSWriter implements ICOSVisitor, Closeable
     {
         String offset = formatXrefOffset.format(entry.getOffset());
         String generation = formatXrefGeneration.format(entry.getKey().getGeneration());
-        getStandardOutput().write(offset.getBytes("ISO-8859-1"));
+        getStandardOutput().write(offset.getBytes(ISO_8859_1_CHARSET));
         getStandardOutput().write(SPACE);
-        getStandardOutput().write(generation.getBytes("ISO-8859-1"));
+        getStandardOutput().write(generation.getBytes(ISO_8859_1_CHARSET));
         getStandardOutput().write(SPACE);
         getStandardOutput().write(entry.isFree() ? XREF_FREE : XREF_USED);
         getStandardOutput().writeCRLF();
@@ -1053,7 +1056,7 @@ public class COSWriter implements ICOSVisitor, Closeable
         // write endof
         getStandardOutput().write(STARTXREF);
         getStandardOutput().writeEOL();
-        getStandardOutput().write(String.valueOf(getStartxref()).getBytes("ISO-8859-1"));
+        getStandardOutput().write(String.valueOf(getStartxref()).getBytes(ISO_8859_1_CHARSET));
         getStandardOutput().writeEOL();
         getStandardOutput().write(EOF);
         getStandardOutput().writeEOL();
@@ -1104,9 +1107,9 @@ public class COSWriter implements ICOSVisitor, Closeable
     public void writeReference(COSBase obj) throws IOException
     {
         COSObjectKey key = getObjectKey(obj);
-        getStandardOutput().write(String.valueOf(key.getNumber()).getBytes("ISO-8859-1"));
+        getStandardOutput().write(String.valueOf(key.getNumber()).getBytes(ISO_8859_1_CHARSET));
         getStandardOutput().write(SPACE);
-        getStandardOutput().write(String.valueOf(key.getGeneration()).getBytes("ISO-8859-1"));
+        getStandardOutput().write(String.valueOf(key.getGeneration()).getBytes(ISO_8859_1_CHARSET));
         getStandardOutput().write(SPACE);
         getStandardOutput().write(REFERENCE);
     }
@@ -1286,7 +1289,7 @@ public class COSWriter implements ICOSVisitor, Closeable
 
             // algorithm says to use time/path/size/values in doc to generate the id.
             // we don't have path or size, so do the best we can
-            md5.update( Long.toString(idTime).getBytes("ISO-8859-1") );
+            md5.update( Long.toString(idTime).getBytes(ISO_8859_1_CHARSET) );
 
             COSDictionary info = (COSDictionary)trailer.getDictionaryObject( COSName.INFO );
             if( info != null )
@@ -1294,7 +1297,7 @@ public class COSWriter implements ICOSVisitor, Closeable
                 Iterator<COSBase> values = info.getValues().iterator();
                 while( values.hasNext() )
                 {
-                    md5.update( values.next().toString().getBytes("ISO-8859-1") );
+                    md5.update( values.next().toString().getBytes(ISO_8859_1_CHARSET) );
                 }
             }
             // reuse origin documentID if available as first value
