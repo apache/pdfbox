@@ -29,6 +29,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -185,7 +186,7 @@ public class COSWriter implements ICOSVisitor, Closeable
     private final Set<COSBase> objectsToWriteSet = new HashSet<COSBase>();
 
     //A list of objects to write.
-    private final LinkedList<COSBase> objectsToWrite = new LinkedList<COSBase>();
+    private final Deque<COSBase> objectsToWrite = new LinkedList<COSBase>();
 
     //a list of objects already written
     private final Set<COSBase> writtenObjects = new HashSet<COSBase>();
@@ -481,19 +482,16 @@ public class COSWriter implements ICOSVisitor, Closeable
                 cosBase = keyObject.get(cosObjectKey);
             }
 
-            if(actual != null && objectKeys.containsKey(actual) &&
-                    cosBase!= null)
+            if (actual != null && objectKeys.containsKey(actual)
+                    && object instanceof COSDictionary
+                    && cosBase instanceof COSDictionary
+                    && !((COSDictionary) object).isNeedToBeUpdated()
+                    && !((COSDictionary) cosBase).isNeedToBeUpdated())
             {
-                if (object instanceof COSDictionary &&
-                        cosBase instanceof COSDictionary &&
-                        !((COSDictionary) object).isNeedToBeUpdated() &&
-                        !((COSDictionary) cosBase).isNeedToBeUpdated()
-                        )
-                {
-                    return;
-                }
+                return;
+
             }
-          
+
             objectsToWrite.add( object );
             objectsToWriteSet.add( object );
             if( actual != null )
