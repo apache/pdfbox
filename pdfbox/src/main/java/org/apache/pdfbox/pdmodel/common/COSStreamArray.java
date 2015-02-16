@@ -22,8 +22,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.SequenceInputStream;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Vector;
 
 import org.apache.pdfbox.cos.COSArray;
@@ -33,13 +31,10 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.ICOSVisitor;
 
-import org.apache.pdfbox.pdfparser.PDFStreamParser;
-
 /**
  * This will take an array of streams and sequence them together.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.10 $
+ * @author Ben Litchfield
  */
 public class COSStreamArray extends COSStream
 {
@@ -121,30 +116,6 @@ public class COSStreamArray extends COSStream
     public String toString()
     {
         return "COSStream{}";
-    }
-
-    /**
-     * This will get all the tokens in the stream.
-     *
-     * @return All of the tokens in the stream.
-     *
-     * @throws IOException If there is an error parsing the stream.
-     */
-    @Override
-    public List<Object> getStreamTokens() throws IOException
-    {
-        List<Object> retval;
-        if( streams.size() > 0 )
-        {
-            PDFStreamParser parser = new PDFStreamParser( this );
-            parser.parse();
-            retval = parser.getTokens();
-        }
-        else
-        {
-            retval = new ArrayList<Object>();
-        }
-        return retval;
     }
 
     /**
