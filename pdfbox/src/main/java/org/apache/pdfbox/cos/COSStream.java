@@ -578,9 +578,13 @@ public class COSStream extends COSDictionary implements Closeable
         {
             unFilteredStream.close();
         }
-        if (scratchFile != null)
+        
+        if (scratchFile != null && scratchFile.exists())
         {
-            scratchFile.delete();
+            if (!scratchFile.delete())
+            {
+                throw new IOException("Can't delete the temporary scratch file "+scratchFile.getAbsolutePath());
+            }
         }
     }
 }
