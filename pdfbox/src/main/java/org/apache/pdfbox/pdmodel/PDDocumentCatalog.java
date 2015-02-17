@@ -331,12 +331,12 @@ public class PDDocumentCatalog implements COSObjectable
     public List<PDOutputIntent> getOutputIntent ()
     {
         List<PDOutputIntent> retval = new ArrayList<PDOutputIntent>();
-        COSArray array = (COSArray)root.getItem(COSName.OUTPUT_INTENTS);
+        COSArray array = (COSArray)root.getDictionaryObject(COSName.OUTPUT_INTENTS);
         if (array != null)
         {
             for (COSBase cosBase : array)
             {
-                PDOutputIntent oi = new PDOutputIntent((COSStream)cosBase);
+                PDOutputIntent oi = new PDOutputIntent((COSDictionary)cosBase);
                 retval.add(oi);
             }
         }
