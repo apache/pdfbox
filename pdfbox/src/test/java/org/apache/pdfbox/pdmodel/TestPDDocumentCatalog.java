@@ -16,6 +16,11 @@
  */
 package org.apache.pdfbox.pdmodel;
 
+import java.io.InputStream;
+import java.util.List;
+
+import org.apache.pdfbox.pdmodel.graphics.color.PDOutputIntent;
+
 import junit.framework.TestCase;
 
 public class TestPDDocumentCatalog extends TestCase {
@@ -82,6 +87,55 @@ public class TestPDDocumentCatalog extends TestCase {
         } finally {
             if(doc != null)
                 doc.close();
+        }
+    }
+    
+    /**
+     * Test case for
+     * <a https://issues.apache.org/jira/browse/PDFBOX-2687">PDFBOX-2687</a>
+     * ClassCastException when trying to get OutputIntents or add to it
+     */
+    public void testOutputIntents() throws Exception {
+        PDDocument doc = null;
+        InputStream colorProfile = null;
+        try {
+            
+            doc = PDDocument.load(TestPDDocumentCatalog.class.getResource("test.unc.pdf"));
+            PDDocumentCatalog catalog = doc.getDocumentCatalog();
+
+            // retrieve OutputIntents
+            List<PDOutputIntent> outputIntents = catalog.getOutputIntent();
+            assertTrue(outputIntents.isEmpty());
+            
+            // add an OutputIntent
+            colorProfile = TestPDDocumentCatalog.class.getResourceAsStream("sRGB Color Space Profile.icm");
+            // create output intent
+            PDOutputIntent oi = new PDOutputIntent(doc, colorProfile); 
+            oi.setInfo("sRGB IEC61966-2.1"); 
+            oi.setOutputCondition("sRGB IEC61966-2.1"); 
+            oi.setOutputConditionIdentifier("sRGB IEC61966-2.1"); 
+            oi.setRegistryName("http://www.color.org"); 
+            doc.getDocumentCatalog().addOutputIntent(oi);
+            
+            // retrieve OutputIntents
+            outputIntents = catalog.getOutputIntent();
+            assertEquals(1,outputIntents.size());
+            
+            // set OutputIntents
+            catalog.setOutputIntents(outputIntents);
+            outputIntents = catalog.getOutputIntent();
+            assertEquals(1,outputIntents.size());            
+            
+        } finally {
+            if(doc != null)
+            {
+                doc.close();
+            }
+            
+            if (colorProfile != null)
+            {
+                colorProfile.close();
+            }
         }
     }
 }

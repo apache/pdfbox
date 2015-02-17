@@ -1,0 +1,14 @@
+Obtained from: http://www.srgb.com/usingsrgb.html
+
+The file "sRGB Color Space Profile.icm" is:
+Copyright (c) 1998 Hewlett-Packard Company
+
+To anyone who acknowledges that the file "sRGB Color Space Profile.icm" 
+is provided "AS IS" WITH NO EXPRESS OR IMPLIED WARRANTY:
+permission to use, copy and distribute this file for any purpose is hereby 
+granted without fee, provided that the file is not changed including the HP 
+copyright notice tag, and that the name of Hewlett-Packard Company not be 
+used in advertising or publicity pertaining to distribution of the software 
+without specific, written prior permission.  Hewlett-Packard Company makes 
+no representations about the suitability of this software for any purpose.
+
