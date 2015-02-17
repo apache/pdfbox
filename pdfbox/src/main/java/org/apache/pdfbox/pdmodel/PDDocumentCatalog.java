@@ -168,7 +168,7 @@ public class PDDocumentCatalog implements COSObjectable
     }
 
     /**
-     * Returns the document?s article threads.
+     * Returns the document's article threads.
      */
     public List<PDThread> getThreads()
     {
