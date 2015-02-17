@@ -63,7 +63,8 @@ public final class Predictor
                     }
                     else
                     {
-                        linepredictor += 10; // add 10 to tread value 0 as 10, 1 as 11, ...
+                        // add 10 to tread value 0 as 10, 1 as 11, ...
+                        linepredictor += 10;
                     }
                 }
 
@@ -77,8 +78,9 @@ public final class Predictor
                 // do prediction as specified in PNG-Specification 1.2
                 switch (linepredictor)
                 {
-                    case 2:// PRED TIFF SUB
-                        // TODO decode tiff with bitsPerComponent < 8;
+                    case 2:
+                        // PRED TIFF SUB
+                        // TODO decode tiff with bpc smaller 8
                         // e.g. for 4 bpc each nibble must be subtracted separately
                         if (bitsPerComponent == 16)
                         {
@@ -97,7 +99,7 @@ public final class Predictor
                         if (bitsPerComponent != 8)
                         {
                             throw new IOException("TIFF-Predictor with " + bitsPerComponent
-                                    + " bits per component not supported");
+                                    + " bits per component not supported; please open JIRA issue with sample PDF");
                         }
                         // for 8 bits per component it is the same algorithm as PRED SUB of PNG format
                         for (int p = 0; p < rowlength; p++)
@@ -107,10 +109,12 @@ public final class Predictor
                             actline[p] = (byte) (sub + left);
                         }
                         break;
-                    case 10:// PRED NONE
+                    case 10:
+                        // PRED NONE
                         // do nothing
                         break;
-                    case 11:// PRED SUB
+                    case 11:
+                        // PRED SUB
                         for (int p = 0; p < rowlength; p++)
                         {
                             int sub = actline[p];
@@ -118,7 +122,8 @@ public final class Predictor
                             actline[p] = (byte) (sub + left);
                         }
                         break;
-                    case 12:// PRED UP
+                    case 12:
+                        // PRED UP
                         for (int p = 0; p < rowlength; p++)
                         {
                             int up = actline[p] & 0xff;
@@ -126,7 +131,8 @@ public final class Predictor
                             actline[p] = (byte) ((up + prior) & 0xff);
                         }
                         break;
-                    case 13:// PRED AVG
+                    case 13:
+                        // PRED AVG
                         for (int p = 0; p < rowlength; p++)
                         {
                             int avg = actline[p] & 0xff;
@@ -135,7 +141,8 @@ public final class Predictor
                             actline[p] = (byte) ((avg + (left + up) / 2) & 0xff);
                         }
                         break;
-                    case 14:// PRED PAETH
+                    case 14:
+                        // PRED PAETH
                         for (int p = 0; p < rowlength; p++)
                         {
                             int paeth = actline[p] & 0xff;
