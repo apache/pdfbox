@@ -202,9 +202,15 @@ public class PDFStreamParser extends BaseParser
         {
             case '<':
             {
-                int leftBracket = pdfSource.read();//pull off first left bracket
-                c = (char)pdfSource.peek(); //check for second left bracket
-                pdfSource.unread( leftBracket ); //put back first bracket
+                // pull off first left bracket
+                int leftBracket = pdfSource.read();
+
+                // check for second left bracket
+                c = (char) pdfSource.peek();
+
+                // put back first bracket
+                pdfSource.unread(leftBracket);
+                
                 if(c == '<')
                 {
                     COSDictionary pod = parseCOSDictionary();
@@ -224,19 +230,23 @@ public class PDFStreamParser extends BaseParser
                 }
                 break;
             }
-            case '[': // array
+            case '[':
             {
+                // array
                 retval = parseCOSArray();
                 break;
             }
-            case '(': // string
+            case '(':
+                // string
                 retval = parseCOSString();
                 break;
-            case '/':   // name
+            case '/':
+                // name
                 retval = parseCOSName();
                 break;
-            case 'n':   // null
+            case 'n':   
             {
+                // null
                 String nullString = readString();
                 if( nullString.equals( "null") )
                 {
@@ -376,7 +386,9 @@ public class PDFStreamParser extends BaseParser
                 // some ']' around without its previous '['
                 // this means a PDF is somewhat corrupt but we will continue to parse.
                 pdfSource.read();
-                retval = COSNull.NULL;  // must be a better solution than null...
+                
+                // must be a better solution than null...
+                retval = COSNull.NULL;  
                 break;
             }
             default:
@@ -436,7 +448,9 @@ public class PDFStreamParser extends BaseParser
                     endOpIdx = bIdx;
                 }
             }
-            if (readBytes == MAX_BIN_CHAR_TEST_LENGTH) // only if not close to eof
+            
+            // only if not close to eof
+            if (readBytes == MAX_BIN_CHAR_TEST_LENGTH) 
             {
                 // a PDF operator is 1-3 bytes long
                 if (startOpIdx != -1 && endOpIdx == -1)
