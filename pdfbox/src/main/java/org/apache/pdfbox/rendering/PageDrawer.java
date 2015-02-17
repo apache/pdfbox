@@ -148,7 +148,7 @@ public final class PageDrawer extends PDFGraphicsStreamEngine
 
         setRenderingHints();
 
-        graphics.translate(0, (int) pageSize.getHeight());
+        graphics.translate(0, pageSize.getHeight());
         graphics.scale(1, -1);
 
         // TODO use getStroke() to set the initial stroke
