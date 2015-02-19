@@ -38,7 +38,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
  *
  * @author Tilman Hausherr
  */
-public class LosslessFactory
+public final class LosslessFactory
 {
     private LosslessFactory()
     {
