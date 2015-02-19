@@ -68,10 +68,10 @@ public class GlyfCompositeComp
 
     private int firstIndex;
     private int firstContour;
-    private short argument1;
-    private short argument2;
-    private short flags;
-    private int glyphIndex;
+    private final short argument1;
+    private final short argument2;
+    private final short flags;
+    private final int glyphIndex;
     private double xscale = 1.0;
     private double yscale = 1.0;
     private double scale01 = 0.0;
