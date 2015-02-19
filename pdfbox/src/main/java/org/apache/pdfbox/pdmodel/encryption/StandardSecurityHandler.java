@@ -73,9 +73,7 @@ public final class StandardSecurityHandler extends SecurityHandler
     private static final String[] HASHES_2B = new String[] {"SHA-256", "SHA-384", "SHA-512"};
 
     private static final int DEFAULT_VERSION = 1;
-    private static final int DEFAULT_REVISION = 3;
 
-    private int revision = DEFAULT_REVISION;
     private StandardProtectionPolicy policy;
 
     /**
@@ -319,7 +317,7 @@ public final class StandardSecurityHandler extends SecurityHandler
             encryptionDictionary = new PDEncryption();
         }
         version = computeVersionNumber();
-        revision = computeRevisionNumber();
+        int revision = computeRevisionNumber();
         encryptionDictionary.setFilter(FILTER);
         encryptionDictionary.setVersion(version);
         encryptionDictionary.setRevision(revision);
@@ -558,8 +556,8 @@ public final class StandardSecurityHandler extends SecurityHandler
         else if( encRevision == 3 || encRevision == 4)
         {
             byte[] iterationKey = new byte[ rc4Key.length ];
-            byte[] otemp = new byte[ owner.length ]; //sm
-            System.arraycopy( owner, 0, otemp, 0, owner.length ); //sm
+            byte[] otemp = new byte[ owner.length ];
+            System.arraycopy( owner, 0, otemp, 0, owner.length );
             
             for( int i=19; i>=0; i-- )
             {
@@ -569,9 +567,9 @@ public final class StandardSecurityHandler extends SecurityHandler
                     iterationKey[j] = (byte)(iterationKey[j] ^ (byte)i);
                 }
                 rc4.setKey( iterationKey );
-                result.reset();  //sm
-                rc4.write( otemp, result ); //sm
-                otemp = result.toByteArray(); //sm
+                result.reset();
+                rc4.write( otemp, result );
+                otemp = result.toByteArray();
             }
         }
         return result.toByteArray();
