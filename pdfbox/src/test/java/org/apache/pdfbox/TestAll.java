@@ -30,7 +30,6 @@ import org.apache.pdfbox.filter.ccitt.TestCCITTFaxG31DDecodeInputStream;
 import org.apache.pdfbox.filter.ccitt.TestPackedBitArray;
 import org.apache.pdfbox.pdmodel.TestFDF;
 import org.apache.pdfbox.pdmodel.TestPDDocument;
-import org.apache.pdfbox.pdmodel.TestPDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.TestPDDocumentInformation;
 import org.apache.pdfbox.pdmodel.common.TestPDNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.TestPDNumberTreeNode;
@@ -88,7 +87,6 @@ public class TestAll extends TestCase
         suite.addTest( TestCOSInteger.suite() );
         suite.addTest( TestCOSFloat.suite() );
         suite.addTestSuite( TestPDDocument.class );
-        suite.addTestSuite( TestPDDocumentCatalog.class );
         suite.addTestSuite( TestPDDocumentInformation.class );
         suite.addTestSuite( TestOptionalContentGroups.class );
         suite.addTestSuite( org.apache.pdfbox.util.TestLayerUtility.class );

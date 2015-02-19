@@ -16,23 +16,39 @@
  */
 package org.apache.pdfbox.pdmodel;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
 import org.apache.pdfbox.pdmodel.graphics.color.PDOutputIntent;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-public class TestPDDocumentCatalog extends TestCase {
+import org.junit.Test;
+
+/**
+ * Test PDDocument Catalog functionality.
+ *
+ */
+public class TestPDDocumentCatalog
+{
 
     /**
+     * Test getPageLabels().
+     * 
      * Test case for
      * <a href="https://issues.apache.org/jira/browse/PDFBOX-90"
      *   >PDFBOX-90</a> - Support explicit retrieval of page labels.
+     *   
+     * @throws IOException in case the document can not be parsed.
      */
-    public void testPageLabels() throws Exception {
+    @Test
+    public void retrievePageLabels() throws IOException
+    {
         PDDocument doc = null;
-        try {
+        try
+        {
             doc = PDDocument.load(TestPDDocumentCatalog.class.getResourceAsStream("test_pagelabels.pdf"));
             PDDocumentCatalog cat = doc.getDocumentCatalog();
             String[] labels = cat.getPageLabels().getLabelsByPageIndices();
@@ -49,56 +65,84 @@ public class TestPDDocumentCatalog extends TestCase {
             assertEquals("vii", labels[9]);
             assertEquals("Appendix I", labels[10]);
             assertEquals("Appendix II", labels[11]);
-        } finally {
+        }
+        finally
+        {
             if(doc != null)
+            {
                 doc.close();
+            }
         }
     }
 
     /**
+     * Test page labels for malformed PDF.
+     * 
      * Test case for
      * <a href="https://issues.apache.org/jira/browse/PDFBOX-900"
      *   >PDFBOX-900</a> - Handle malformed PDFs
+     *   
+     * @throws IOException in case the document can not be parsed.
      */
-    public void testLabelsOnMalformedPdf() throws Exception {
+    @Test
+    public void retrievePageLabelsOnMalformedPdf() throws IOException
+    {
         PDDocument doc = null;
-        try {
+        try
+        {
             doc = PDDocument.load(TestPDDocumentCatalog.class.getResourceAsStream("badpagelabels.pdf"));
             PDDocumentCatalog cat = doc.getDocumentCatalog();
             // getLabelsByPageIndices() should not throw an exception
             cat.getPageLabels().getLabelsByPageIndices();
-        } catch(Exception e) {
-            e.printStackTrace();
-            fail("Threw exception!" + e);
-        } finally {
+        }
+        finally
+        {
             if(doc != null)
+            {
                 doc.close();
+            }
         }
     }
 
     /**
+     * Test getNumberOfPages().
+     * 
      * Test case for
      * <a href="https://issues.apache.org/jira/browse/PDFBOX-911"
      *   >PDFBOX-911</a> - Method PDDocument.getNumberOfPages() returns wrong
      * number of pages
+     * 
+     * @throws IOException in case the document can not be parsed.
      */
-    public void testGetNumberOfPages() throws Exception {
+    @Test
+    public void retrieveNumberOfPages() throws IOException
+    {
         PDDocument doc = null;
-        try {
+        try
+        {
             doc = PDDocument.load(TestPDDocumentCatalog.class.getResourceAsStream("test.unc.pdf"));
             assertEquals(4, doc.getNumberOfPages());
-        } finally {
+        }
+        finally
+        {
             if(doc != null)
+            {
                 doc.close();
+            }
         }
     }
     
     /**
+     * Test OutputIntents functionality.
+     * 
      * Test case for
      * <a https://issues.apache.org/jira/browse/PDFBOX-2687">PDFBOX-2687</a>
-     * ClassCastException when trying to get OutputIntents or add to it
+     * ClassCastException when trying to get OutputIntents or add to it.
+     * 
+     * @throws IOException in case the document can not be parsed.
      */
-    public void testOutputIntents() throws Exception
+    @Test
+    public void handleOutputIntents() throws IOException
     {
         PDDocument doc = null;
         InputStream colorProfile = null;
