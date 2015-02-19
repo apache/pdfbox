@@ -16,10 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.pagenavigation;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.pdfbox.cos.COSDictionary;
@@ -76,7 +74,7 @@ public class PDTransitionTest
     {
         PDTransition transition = new PDTransition();
         transition.setDirection(PDTransitionDirection.NONE);
-        assertThat(transition.getDirection(), instanceOf(COSName.class));
+        assertEquals(COSName.class.getName(), transition.getDirection().getClass().getName());
         assertEquals(COSName.NONE, transition.getDirection());
     }
 
@@ -84,9 +82,9 @@ public class PDTransitionTest
     public void directionNumber()
     {
         PDTransition transition = new PDTransition();
-        transition .setDirection(PDTransitionDirection.LEFT_TO_RIGHT);
-        assertThat(transition .getDirection(), instanceOf(COSInteger.class));
-        assertEquals(COSInteger.ZERO, transition .getDirection());
+        transition.setDirection(PDTransitionDirection.LEFT_TO_RIGHT);
+        assertEquals(COSInteger.class.getName(), transition.getDirection().getClass().getName());
+        assertEquals(COSInteger.ZERO, transition.getDirection());
     }
 
     @Test
