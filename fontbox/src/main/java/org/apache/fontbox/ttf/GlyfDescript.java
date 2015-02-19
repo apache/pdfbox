@@ -66,7 +66,7 @@ public abstract class GlyfDescript implements GlyphDescription
     public static final byte Y_DUAL = 0x20;
 
     private int[] instructions;
-    private int contourCount;
+    private final int contourCount;
 
     /**
      * Constructor.
@@ -83,6 +83,7 @@ public abstract class GlyfDescript implements GlyphDescription
     /**
      * {@inheritDoc}
      */
+    @Override
     public void resolve() 
     {
     }
@@ -90,6 +91,7 @@ public abstract class GlyfDescript implements GlyphDescription
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getContourCount() 
     {
         return contourCount;
