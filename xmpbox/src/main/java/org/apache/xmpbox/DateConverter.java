@@ -86,7 +86,6 @@ public class DateConverter
         if ((date != null) && (date.trim().length() > 0))
         {
             // these are the default values
-            int year = 0;
             int month = 1;
             int day = 1;
             int hour = 0;
@@ -113,7 +112,7 @@ public class DateConverter
                 {
                     throw new IOException("Error: Invalid date format '" + date + "'");
                 }
-                year = Integer.parseInt(date.substring(0, 4));
+                int year = Integer.parseInt(date.substring(0, 4));
                 if (date.length() >= 6)
                 {
                     month = Integer.parseInt(date.substring(4, 6));
@@ -231,23 +230,6 @@ public class DateConverter
         }
         return retval;
     }
-
-    /**
-     * Append Zero to String Buffer.
-     * 
-     * This will append zero before number &lt; 10 ('1' become '01')
-     * 
-     * @param out The String buffer
-     * @param number The concerned number
-     */
-    private static void zeroAppend(StringBuffer out, int number)
-    {
-        if (number < 10)
-        {
-            out.append("0");
-        }
-        out.append(number);
-    }    
     
     /**
      * Convert the date to iso 8601 string format.
