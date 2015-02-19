@@ -100,8 +100,8 @@ public class GlyfCompositeComp
         }
         else
         {
-            argument1 = (short) bais.readUnsignedByte();
-            argument2 = (short) bais.readUnsignedByte();
+            argument1 = (short) bais.readSignedByte();
+            argument2 = (short) bais.readSignedByte();
         }
 
         // Assign the arguments according to the flags
