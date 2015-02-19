@@ -26,6 +26,7 @@ import org.apache.pdfbox.contentstream.PDContentStream;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
@@ -38,6 +39,7 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.interactive.action.PDPageAdditionalActions;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDThreadBead;
+import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDTransition;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -532,6 +534,36 @@ public class PDPage implements COSObjectable, PDContentStream
     public void setActions(PDPageAdditionalActions actions)
     {
         page.setItem(COSName.AA, actions);
+    }
+
+    /**
+     * @return The page transition associated with this page or null if no transition is defined
+     */
+    public PDTransition getTransition()
+    {
+        COSDictionary transitionDictionary = (COSDictionary) page.getDictionaryObject(COSName.TRANS);
+        return transitionDictionary == null ? null : new PDTransition(transitionDictionary);
+    }
+
+    /**
+     * @param transition The new transition to set on this page.
+     */
+    public void setTransition(PDTransition transition)
+    {
+        page.setItem(COSName.TRANS, transition);
+    }
+
+    /**
+     * Convenient method to set a transition and the display duration
+     * 
+     * @param transition The new transition to set on this page.
+     * @param duration The maximum length of time, in seconds, that the page shall be displayed during presentations
+     * before the viewer application shall automatically advance to the next page.
+     */
+    public void setTransition(PDTransition transition, float duration)
+    {
+        page.setItem(COSName.TRANS, transition);
+        page.setItem(COSName.DUR, new COSFloat(duration));
     }
 
     /**
