@@ -47,6 +47,10 @@ import org.apache.pdfbox.pdmodel.common.PDMemoryStream;
 final class SampledImageReader
 {
     private static final Log LOG = LogFactory.getLog(SampledImageReader.class);
+    
+    private SampledImageReader()
+    {
+    }
 
     /**
      * Returns an ARGB image filled with the given paint and using the given image as a mask.
