@@ -124,7 +124,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
     /**
      * Iterator which walks all pages in the tree, in order.
      */
-    private class PageIterator implements Iterator<PDPage>
+    private final class PageIterator implements Iterator<PDPage>
     {
         private final Queue<COSDictionary> queue = new ArrayDeque<COSDictionary>();
 
