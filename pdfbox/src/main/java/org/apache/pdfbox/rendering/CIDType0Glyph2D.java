@@ -75,7 +75,8 @@ final class CIDType0Glyph2D implements Glyph2D
         }
         catch (IOException e)
         {
-            LOG.error("Glyph rendering failed", e); // todo: escalate this error?
+            // todo: escalate this error?
+            LOG.error("Glyph rendering failed", e);
             return new GeneralPath();
         }
     }
