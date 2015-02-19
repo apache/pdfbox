@@ -25,7 +25,7 @@ import java.io.OutputStream;
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.13 $
  */
-public class COSNull extends COSBase
+public final class COSNull extends COSBase
 {
     /**
      * The null token.
