@@ -40,6 +40,10 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
  */
 public class LosslessFactory
 {
+    private LosslessFactory()
+    {
+    }
+    
     /**
      * Creates a new lossless encoded Image XObject from a Buffered Image.
      *
