@@ -1751,7 +1751,7 @@ public class PDFTextStripper extends PDFTextStreamEngine
     private List<WordWithTextPositions> normalize(List<LineItem> line, boolean isRtlDominant,
                                                   boolean hasRtl)
     {
-        LinkedList<WordWithTextPositions> normalized = new LinkedList<WordWithTextPositions>();
+        List<WordWithTextPositions> normalized = new LinkedList<WordWithTextPositions>();
         StringBuilder lineBuilder = new StringBuilder();
         List<TextPosition> wordPositions = new ArrayList<TextPosition>();
         // concatenate the pieces of text in opposite order if RTL is dominant
@@ -1844,7 +1844,7 @@ public class PDFTextStripper extends PDFTextStreamEngine
      * Used within {@link #normalize(List, boolean, boolean)} to handle a {@link TextPosition}.
      * @return The StringBuilder that must be used when calling this method.
      */
-    private StringBuilder normalizeAdd(LinkedList<WordWithTextPositions> normalized,
+    private StringBuilder normalizeAdd(List<WordWithTextPositions> normalized,
             StringBuilder lineBuilder, List<TextPosition> wordPositions, LineItem item)
     {
         if (item.isWordSeparator())
