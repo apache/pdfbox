@@ -1069,7 +1069,7 @@ public class PDFTextStripper extends PDFTextStreamEngine
      *
      * @return A double List of TextPositions for all text strings on the page.
      */
-    protected Vector<List<TextPosition>> getCharactersByArticle()
+    protected List<List<TextPosition>> getCharactersByArticle()
     {
         return charactersByArticle;
     }
