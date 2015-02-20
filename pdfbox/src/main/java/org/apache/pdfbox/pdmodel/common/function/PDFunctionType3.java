@@ -49,6 +49,7 @@ public class PDFunctionType3 extends PDFunction
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getFunctionType()
     {
         return 3;
@@ -57,6 +58,7 @@ public class PDFunctionType3 extends PDFunction
     /**
     * {@inheritDoc}
     */
+    @Override
     public float[] eval(float[] input) throws IOException
     {
         //This function is known as a "stitching" function. Based on the input, it decides which child function to call.
@@ -99,6 +101,10 @@ public class PDFunctionType3 extends PDFunction
                     x = interpolate(x, partitionValues[i], partitionValues[i+1], encRange.getMin(), encRange.getMax());
                     break;
                 }
+            }
+            if (function == null)
+            {
+                throw new IOException("partition not found in type 3 function");
             }
         }
         float[] functionValues = new float[]{x};
