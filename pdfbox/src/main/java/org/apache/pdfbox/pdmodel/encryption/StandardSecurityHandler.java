@@ -20,6 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -71,6 +72,8 @@ public final class StandardSecurityHandler extends SecurityHandler
 
     // hashes used for Algorithm 2.B, depending on remainder from E modulo 3
     private static final String[] HASHES_2B = new String[] {"SHA-256", "SHA-384", "SHA-512"};
+
+    private static final Charset ISO_8859_1_CHARSET = Charset.forName("ISO-8859-1");
 
     private static final int DEFAULT_VERSION = 1;
 
@@ -175,18 +178,7 @@ public final class StandardSecurityHandler extends SecurityHandler
         int dicRevision = encryption.getRevision();
         int dicLength = encryption.getVersion() == 1 ? 5 : encryption.getLength() / 8;
 
-        //some documents may have not document id, see
-        //test\encryption\encrypted_doc_no_id.pdf
-        byte[] documentIDBytes;
-        if( documentIDArray != null && documentIDArray.size() >= 1 )
-        {
-            COSString id = (COSString)documentIDArray.getObject( 0 );
-            documentIDBytes = id.getBytes();
-        }
-        else
-        {
-            documentIDBytes = new byte[0];
-        }
+        byte[] documentIDBytes = getDocumentIDBytes(documentIDArray);
 
         // we need to know whether the meta data was encrypted for password calculation
         boolean encryptMetadata = encryption.isEncryptMetaData();
@@ -195,10 +187,10 @@ public final class StandardSecurityHandler extends SecurityHandler
         byte[] ownerKey = encryption.getOwnerKey();
         byte[] ue = null, oe = null;
 
-        String passwordCharset = "ISO-8859-1";
+        Charset passwordCharset = ISO_8859_1_CHARSET;
         if (dicRevision == 6 || dicRevision == 5)
         {
-            passwordCharset = "UTF-8";
+            passwordCharset = Charset.forName("UTF-8");
             ue = encryption.getUserEncryptionKey();
             oe = encryption.getOwnerEncryptionKey();
         }
@@ -252,37 +244,7 @@ public final class StandardSecurityHandler extends SecurityHandler
 
         if (dicRevision == 6 || dicRevision == 5)
         {
-            // Algorithm 13: validate permissions ("Perms" field). Relaxed to accomodate buggy encoders
-            try
-            {
-                Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
-                cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(encryptionKey, "AES"));
-                byte[] perms = cipher.doFinal(encryption.getPerms());
-                
-                if (perms[9] != 'a' || perms[10] != 'd' || perms[11] != 'b')
-                {
-                    LOG.warn("Verification of permissions failed (constant)");
-                }
-
-                int permsP = perms[0] & 0xFF | perms[1] & 0xFF << 8 | perms[2] & 0xFF << 16 |
-                        perms[3] & 0xFF << 24;
-                
-                if (permsP != dicPermissions)
-                {
-                    LOG.warn("Verification of permissions failed (" + permsP +
-                            " != " + dicPermissions + ")");
-                }
-                
-                if (encryptMetadata && perms[8] != 'T' || !encryptMetadata && perms[8] != 'F')
-                {
-                    LOG.warn("Verification of permissions failed (EncryptMetadata)");
-                }
-            }
-            catch (GeneralSecurityException e)
-            {
-                logIfStrongEncryptionMissing();
-                throw new IOException(e);
-            }
+            validatePerms(encryption, dicPermissions, encryptMetadata);
         }
 
         // detect whether AES encryption is used. This assumes that the encryption algo is 
@@ -297,6 +259,58 @@ public final class StandardSecurityHandler extends SecurityHandler
                 setAES("AESV2".equalsIgnoreCase(cryptFilterMethod.getName()) ||
                        "AESV3".equalsIgnoreCase(cryptFilterMethod.getName()));
             }
+        }
+    }
+
+    private byte[] getDocumentIDBytes(COSArray documentIDArray)
+    {
+        //some documents may not have document id, see
+        //test\encryption\encrypted_doc_no_id.pdf
+        byte[] documentIDBytes;
+        if( documentIDArray != null && documentIDArray.size() >= 1 )
+        {
+            COSString id = (COSString)documentIDArray.getObject( 0 );
+            documentIDBytes = id.getBytes();
+        }
+        else
+        {
+            documentIDBytes = new byte[0];
+        }
+        return documentIDBytes;
+    }
+
+    // Algorithm 13: validate permissions ("Perms" field). Relaxed to accomodate buggy encoders
+    private void validatePerms(PDEncryption encryption, int dicPermissions, boolean encryptMetadata) throws IOException
+    {
+        try
+        {
+            Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
+            cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(encryptionKey, "AES"));
+            byte[] perms = cipher.doFinal(encryption.getPerms());
+            
+            if (perms[9] != 'a' || perms[10] != 'd' || perms[11] != 'b')
+            {
+                LOG.warn("Verification of permissions failed (constant)");
+            }
+            
+            int permsP = perms[0] & 0xFF | perms[1] & 0xFF << 8 | perms[2] & 0xFF << 16 |
+                    perms[3] & 0xFF << 24;
+            
+            if (permsP != dicPermissions)
+            {
+                LOG.warn("Verification of permissions failed (" + permsP +
+                        " != " + dicPermissions + ")");
+            }
+            
+            if (encryptMetadata && perms[8] != 'T' || !encryptMetadata && perms[8] != 'F')
+            {
+                LOG.warn("Verification of permissions failed (EncryptMetadata)");
+            }
+        }
+        catch (GeneralSecurityException e)
+        {
+            logIfStrongEncryptionMissing();
+            throw new IOException(e);
         }
     }
     
@@ -447,11 +461,11 @@ public final class StandardSecurityHandler extends SecurityHandler
                 MessageDigest md = MessageDigests.getMD5();
                 BigInteger time = BigInteger.valueOf( System.currentTimeMillis() );
                 md.update( time.toByteArray() );
-                md.update( ownerPassword.getBytes("ISO-8859-1") );
-                md.update( userPassword.getBytes("ISO-8859-1") );
+                md.update( ownerPassword.getBytes(ISO_8859_1_CHARSET) );
+                md.update( userPassword.getBytes(ISO_8859_1_CHARSET) );
                 md.update( document.getDocument().toString().getBytes() );
 
-                byte[] id = md.digest( this.toString().getBytes("ISO-8859-1") );
+                byte[] id = md.digest( this.toString().getBytes(ISO_8859_1_CHARSET) );
                 COSString idString = new COSString(id);
 
                 idArray = new COSArray();
@@ -463,14 +477,14 @@ public final class StandardSecurityHandler extends SecurityHandler
             COSString id = (COSString)idArray.getObject( 0 );
 
             byte[] ownerBytes = computeOwnerPassword(
-                ownerPassword.getBytes("ISO-8859-1"),
-                userPassword.getBytes("ISO-8859-1"), revision, length);
+                ownerPassword.getBytes(ISO_8859_1_CHARSET),
+                userPassword.getBytes(ISO_8859_1_CHARSET), revision, length);
 
             byte[] userBytes = computeUserPassword(
-                userPassword.getBytes("ISO-8859-1"),
+                userPassword.getBytes(ISO_8859_1_CHARSET),
                 ownerBytes, permissionInt, id.getBytes(), revision, length, true);
 
-            encryptionKey = computeEncryptedKey(userPassword.getBytes("ISO-8859-1"), ownerBytes,
+            encryptionKey = computeEncryptedKey(userPassword.getBytes(ISO_8859_1_CHARSET), ownerBytes,
                     null, null, null, permissionInt, id.getBytes(), revision, length, true, false);
 
             encryptionDictionary.setOwnerKey(ownerBytes);
@@ -928,7 +942,7 @@ public final class StandardSecurityHandler extends SecurityHandler
         }
         else
         {
-            return isUserPassword(password.getBytes("ISO-8859-1"), user, owner, permissions, id,
+            return isUserPassword(password.getBytes(ISO_8859_1_CHARSET), user, owner, permissions, id,
                     encRevision, length, encryptMetadata);
         }
     }
@@ -953,7 +967,7 @@ public final class StandardSecurityHandler extends SecurityHandler
                                    byte[] id, int encRevision, int length, boolean encryptMetadata)
                                    throws IOException
     {
-        return isOwnerPassword(password.getBytes("ISO-8859-1"), user,owner,permissions, id,
+        return isOwnerPassword(password.getBytes(ISO_8859_1_CHARSET), user,owner,permissions, id,
                                encRevision, length, encryptMetadata);
     }
 
