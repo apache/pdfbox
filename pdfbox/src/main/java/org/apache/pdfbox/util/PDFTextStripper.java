@@ -58,8 +58,8 @@ import org.apache.pdfbox.text.TextPositionComparator;
  */
 public class PDFTextStripper extends PDFTextStreamEngine
 {
-    private static float DEFAULT_INDENT_THRESHOLD = 2.0f;
-    private static float DEFAULT_DROP_THRESHOLD = 2.5f;
+    private static float defaultIndentThreshold = 2.0f;
+    private static float defaultDropThreshold = 2.5f;
 
     private static final boolean useCustomQuicksort;
     
@@ -87,7 +87,7 @@ public class PDFTextStripper extends PDFTextStreamEngine
         {
             try
             {
-                DEFAULT_INDENT_THRESHOLD = Float.parseFloat(strIndent);
+                defaultIndentThreshold = Float.parseFloat(strIndent);
             }
             catch (NumberFormatException nfe)
             {
@@ -98,7 +98,7 @@ public class PDFTextStripper extends PDFTextStreamEngine
         {
             try
             {
-                DEFAULT_DROP_THRESHOLD = Float.parseFloat(strDrop);
+                defaultDropThreshold = Float.parseFloat(strDrop);
             }
             catch (NumberFormatException nfe)
             {
@@ -151,8 +151,8 @@ public class PDFTextStripper extends PDFTextStreamEngine
     private boolean sortByPosition = false;
     private boolean addMoreFormatting = false;
     
-    private float indentThreshold = DEFAULT_INDENT_THRESHOLD;
-    private float dropThreshold = DEFAULT_DROP_THRESHOLD;
+    private float indentThreshold = defaultIndentThreshold;
+    private float dropThreshold = defaultDropThreshold;
 
     // we will need to estimate where to add spaces, these are used to help guess
     private float spacingTolerance = .5f;
