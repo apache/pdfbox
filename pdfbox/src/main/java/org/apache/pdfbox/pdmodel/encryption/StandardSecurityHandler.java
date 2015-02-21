@@ -628,101 +628,109 @@ public final class StandardSecurityHandler extends SecurityHandler
                                       boolean encryptMetadata, boolean isOwnerPassword)
                                       throws IOException
     {
-        byte[] result = new byte[ length ];
-        
         if (encRevision == 6 || encRevision == 5)
         {
-            //Algorithm 2.A, based on SHA-2 and AES
-            
-            byte[] hash, fileKeyEnc;
-            if (isOwnerPassword)
-            {
-                byte[] oKeySalt = new byte[8];
-                System.arraycopy(o, 40, oKeySalt, 0, 8);
-
-                if (encRevision == 5)
-                {
-                    hash = computeSHA256(password, oKeySalt, u);
-                }
-                else
-                {
-                    hash = computeHash2A(password, oKeySalt, u);
-                }
-
-                fileKeyEnc = oe;
-            }
-            else
-            {
-                byte[] uKeySalt = new byte[8];
-                System.arraycopy(u, 40, uKeySalt, 0, 8);
-
-                if (encRevision == 5)
-                {
-                    hash = computeSHA256(password, uKeySalt, null);
-                }
-                else
-                {
-                    hash = computeHash2A(password, uKeySalt, null);
-                }
-
-                fileKeyEnc = ue;
-            }
-            
-            try
-            {
-                Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
-                cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(hash, "AES"),
-                        new IvParameterSpec(new byte[16]));
-                result = cipher.doFinal(fileKeyEnc);
-            }
-            catch (GeneralSecurityException e)
-            {
-                logIfStrongEncryptionMissing();
-                throw new IOException(e);
-            }
+            return computeEncryptedKeyRev56(password, isOwnerPassword, o, u, oe, ue, encRevision);
         }
         else
         {
-            //Algorithm 2, based on MD5
+            return computeEncryptedKeyRev234(password, o, permissions, id, encryptMetadata, length, encRevision);
+        }
+    }
 
-            //PDFReference 1.4 pg 78
-            byte[] padded = truncateOrPad( password );
+    private byte[] computeEncryptedKeyRev234(byte[] password, byte[] o, int permissions, 
+            byte[] id, boolean encryptMetadata, int length, int encRevision)
+    {
+        //Algorithm 2, based on MD5
 
-            MessageDigest md = MessageDigests.getMD5();
-            md.update( padded );
+        //PDFReference 1.4 pg 78
+        byte[] padded = truncateOrPad(password);
 
-            md.update( o );
+        MessageDigest md = MessageDigests.getMD5();
+        md.update(padded);
 
-            md.update( (byte)permissions );
-            md.update( (byte)(permissions >>> 8));
-            md.update( (byte)(permissions >>> 16));
-            md.update( (byte)(permissions >>> 24));
+        md.update(o);
 
-            md.update( id );
+        md.update((byte) permissions);
+        md.update((byte) (permissions >>> 8));
+        md.update((byte) (permissions >>> 16));
+        md.update((byte) (permissions >>> 24));
 
-            //(Security handlers of revision 4 or greater) If document metadata is not being
-            // encrypted, pass 4 bytes with the value 0xFFFFFFFF to the MD5 hash function.
-            //see 7.6.3.3 Algorithm 2 Step f of PDF 32000-1:2008
-            if( encRevision == 4 && !encryptMetadata)
+        md.update(id);
+
+        //(Security handlers of revision 4 or greater) If document metadata is not being
+        // encrypted, pass 4 bytes with the value 0xFFFFFFFF to the MD5 hash function.
+        //see 7.6.3.3 Algorithm 2 Step f of PDF 32000-1:2008
+        if (encRevision == 4 && !encryptMetadata)
+        {
+            md.update(new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff });
+        }
+        byte[] digest = md.digest();
+
+        if (encRevision == 3 || encRevision == 4)
+        {
+            for (int i = 0; i < 50; i++)
             {
-                md.update(new byte[]{(byte)0xff, (byte)0xff, (byte)0xff, (byte)0xff});
+                md.reset();
+                md.update(digest, 0, length);
+                digest = md.digest();
             }
-            byte[] digest = md.digest();
-
-            if( encRevision == 3 || encRevision == 4)
-            {
-                for( int i=0; i < 50; i++ )
-                {
-                    md.reset();
-                    md.update( digest, 0, length );
-                    digest = md.digest();
-                }
-            }
-
-            System.arraycopy( digest, 0, result, 0, length );
         }
 
+        byte[] result = new byte[length];
+        System.arraycopy(digest, 0, result, 0, length);
         return result;
+    }
+
+    private byte[] computeEncryptedKeyRev56(byte[] password, boolean isOwnerPassword, 
+            byte[] o, byte[] u, byte[] oe, byte[] ue, int encRevision) 
+            throws IOException
+    {
+        byte[] hash, fileKeyEnc;
+
+        if (isOwnerPassword)
+        {
+            byte[] oKeySalt = new byte[8];
+            System.arraycopy(o, 40, oKeySalt, 0, 8);
+
+            if (encRevision == 5)
+            {
+                hash = computeSHA256(password, oKeySalt, u);
+            }
+            else
+            {
+                hash = computeHash2A(password, oKeySalt, u);
+            }
+
+            fileKeyEnc = oe;
+        }
+        else
+        {
+            byte[] uKeySalt = new byte[8];
+            System.arraycopy(u, 40, uKeySalt, 0, 8);
+
+            if (encRevision == 5)
+            {
+                hash = computeSHA256(password, uKeySalt, null);
+            }
+            else
+            {
+                hash = computeHash2A(password, uKeySalt, null);
+            }
+
+            fileKeyEnc = ue;
+        }
+        try
+        {
+            Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
+            cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(hash, "AES"), new IvParameterSpec(new byte[16]));
+            return cipher.doFinal(fileKeyEnc);
+        }
+        catch (GeneralSecurityException e)
+        {
+            logIfStrongEncryptionMissing();
+            throw new IOException(e);
+        }
     }
 
     /**
