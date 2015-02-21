@@ -362,137 +362,152 @@ public final class StandardSecurityHandler extends SecurityHandler
 
         if (revision == 6)
         {
-            try
-            {
-                SecureRandom rnd = new SecureRandom();
-                Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
-
-                // make a random 256-bit file encryption key
-                encryptionKey = new byte[32];
-                rnd.nextBytes(encryptionKey);
-                
-                // Algorithm 8a: Compute U
-                byte[] userPasswordBytes = truncate127(userPassword.getBytes("UTF-8"));
-                byte[] userValidationSalt = new byte[8];
-                byte[] userKeySalt = new byte[8];
-                rnd.nextBytes(userValidationSalt);
-                rnd.nextBytes(userKeySalt);
-                byte[] hashU = computeHash2B(concat(userPasswordBytes, userValidationSalt),
-                        userPasswordBytes, null);
-                byte[] u = concat(hashU, userValidationSalt, userKeySalt);
-                
-                // Algorithm 8b: Compute UE
-                byte[] hashUE = computeHash2B(concat(userPasswordBytes, userKeySalt),
-                        userPasswordBytes, null);
-                cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(hashUE, "AES"),
-                        new IvParameterSpec(new byte[16]));
-                byte[] ue = cipher.doFinal(encryptionKey);
-                
-                // Algorithm 9a: Compute O
-                byte[] ownerPasswordBytes = truncate127(ownerPassword.getBytes("UTF-8"));
-                byte[] ownerValidationSalt = new byte[8];
-                byte[] ownerKeySalt = new byte[8];
-                rnd.nextBytes(ownerValidationSalt);
-                rnd.nextBytes(ownerKeySalt);
-                byte[] hashO = computeHash2B(concat(ownerPasswordBytes, ownerValidationSalt, u),
-                        ownerPasswordBytes, u);
-                byte[] o = concat(hashO, ownerValidationSalt, ownerKeySalt);
-                
-                // Algorithm 9b: Compute OE
-                byte[] hashOE = computeHash2B(concat(ownerPasswordBytes, ownerKeySalt, u),
-                        ownerPasswordBytes, u);
-                cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(hashOE, "AES"),
-                        new IvParameterSpec(new byte[16]));
-                byte[] oe = cipher.doFinal(encryptionKey);
-                
-                // Set keys and other required constants in encryption dictionary
-                encryptionDictionary.setUserKey(u);
-                encryptionDictionary.setUserEncryptionKey(ue);
-                encryptionDictionary.setOwnerKey(o);
-                encryptionDictionary.setOwnerEncryptionKey(oe);
-                
-                PDCryptFilterDictionary cryptFilterDictionary = new PDCryptFilterDictionary();
-                cryptFilterDictionary.setCryptFilterMethod(COSName.AESV3);
-                cryptFilterDictionary.setLength(keyLength);
-                encryptionDictionary.setStdCryptFilterDictionary(cryptFilterDictionary);
-                encryptionDictionary.setStreamFilterName(COSName.STD_CF);
-                encryptionDictionary.setStringFilterName(COSName.STD_CF);
-                setAES(true);
-                
-                // Algorithm 10: compute "Perms" value
-                byte[] perms = new byte[16];
-                perms[0] = (byte) permissionInt;
-                perms[1] = (byte) (permissionInt >>> 8);
-                perms[2] = (byte) (permissionInt >>> 16);
-                perms[3] = (byte) (permissionInt >>> 24);
-                perms[4] = (byte) 0xFF;
-                perms[5] = (byte) 0xFF;
-                perms[6] = (byte) 0xFF;
-                perms[7] = (byte) 0xFF;
-                perms[8] = 'T';    // we always encrypt Metadata
-                perms[9] = 'a';
-                perms[10] = 'd';
-                perms[11] = 'b';
-                for (int i = 12; i <= 15; i++)
-                {
-                    perms[i] = (byte)rnd.nextInt();
-                }
-                
-                cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(encryptionKey, "AES"),
-                        new IvParameterSpec(new byte[16]));
-
-                byte[] permsEnc = cipher.doFinal(perms);
-                
-                encryptionDictionary.setPerms(permsEnc);
-            }
-            catch (GeneralSecurityException e)
-            {
-                logIfStrongEncryptionMissing();
-                throw new IOException(e);
-            }
+            prepareEncryptionDictRev6(ownerPassword, userPassword, encryptionDictionary, permissionInt);
         }
         else
         {
-            COSArray idArray = document.getDocument().getDocumentID();
-
-            //check if the document has an id yet.  If it does not then generate one
-            if( idArray == null || idArray.size() < 2 )
-            {
-                MessageDigest md = MessageDigests.getMD5();
-                BigInteger time = BigInteger.valueOf( System.currentTimeMillis() );
-                md.update( time.toByteArray() );
-                md.update( ownerPassword.getBytes(ISO_8859_1_CHARSET) );
-                md.update( userPassword.getBytes(ISO_8859_1_CHARSET) );
-                md.update( document.getDocument().toString().getBytes() );
-
-                byte[] id = md.digest( this.toString().getBytes(ISO_8859_1_CHARSET) );
-                COSString idString = new COSString(id);
-
-                idArray = new COSArray();
-                idArray.add( idString );
-                idArray.add( idString );
-                document.getDocument().setDocumentID( idArray );
-            }
-
-            COSString id = (COSString)idArray.getObject( 0 );
-
-            byte[] ownerBytes = computeOwnerPassword(
-                ownerPassword.getBytes(ISO_8859_1_CHARSET),
-                userPassword.getBytes(ISO_8859_1_CHARSET), revision, length);
-
-            byte[] userBytes = computeUserPassword(
-                userPassword.getBytes(ISO_8859_1_CHARSET),
-                ownerBytes, permissionInt, id.getBytes(), revision, length, true);
-
-            encryptionKey = computeEncryptedKey(userPassword.getBytes(ISO_8859_1_CHARSET), ownerBytes,
-                    null, null, null, permissionInt, id.getBytes(), revision, length, true, false);
-
-            encryptionDictionary.setOwnerKey(ownerBytes);
-            encryptionDictionary.setUserKey(userBytes);
+            prepareEncryptionDictRev2345(ownerPassword, userPassword, encryptionDictionary, permissionInt, 
+                    revision, length);
         }
 
         document.setEncryptionDictionary( encryptionDictionary );
         document.getDocument().setEncryptionDictionary(encryptionDictionary.getCOSDictionary());
+    }
+
+    private void prepareEncryptionDictRev6(String ownerPassword, String userPassword,
+            PDEncryption encryptionDictionary, int permissionInt)
+            throws IOException
+    {
+        try
+        {
+            SecureRandom rnd = new SecureRandom();
+            Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
+
+            // make a random 256-bit file encryption key
+            encryptionKey = new byte[32];
+            rnd.nextBytes(encryptionKey);
+
+            // Algorithm 8a: Compute U
+            byte[] userPasswordBytes = truncate127(userPassword.getBytes("UTF-8"));
+            byte[] userValidationSalt = new byte[8];
+            byte[] userKeySalt = new byte[8];
+            rnd.nextBytes(userValidationSalt);
+            rnd.nextBytes(userKeySalt);
+            byte[] hashU = computeHash2B(concat(userPasswordBytes, userValidationSalt),
+                    userPasswordBytes, null);
+            byte[] u = concat(hashU, userValidationSalt, userKeySalt);
+
+            // Algorithm 8b: Compute UE
+            byte[] hashUE = computeHash2B(concat(userPasswordBytes, userKeySalt),
+                    userPasswordBytes, null);
+            cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(hashUE, "AES"),
+                    new IvParameterSpec(new byte[16]));
+            byte[] ue = cipher.doFinal(encryptionKey);
+
+            // Algorithm 9a: Compute O
+            byte[] ownerPasswordBytes = truncate127(ownerPassword.getBytes("UTF-8"));
+            byte[] ownerValidationSalt = new byte[8];
+            byte[] ownerKeySalt = new byte[8];
+            rnd.nextBytes(ownerValidationSalt);
+            rnd.nextBytes(ownerKeySalt);
+            byte[] hashO = computeHash2B(concat(ownerPasswordBytes, ownerValidationSalt, u),
+                    ownerPasswordBytes, u);
+            byte[] o = concat(hashO, ownerValidationSalt, ownerKeySalt);
+
+            // Algorithm 9b: Compute OE
+            byte[] hashOE = computeHash2B(concat(ownerPasswordBytes, ownerKeySalt, u),
+                    ownerPasswordBytes, u);
+            cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(hashOE, "AES"),
+                    new IvParameterSpec(new byte[16]));
+            byte[] oe = cipher.doFinal(encryptionKey);
+
+            // Set keys and other required constants in encryption dictionary
+            encryptionDictionary.setUserKey(u);
+            encryptionDictionary.setUserEncryptionKey(ue);
+            encryptionDictionary.setOwnerKey(o);
+            encryptionDictionary.setOwnerEncryptionKey(oe);
+
+            PDCryptFilterDictionary cryptFilterDictionary = new PDCryptFilterDictionary();
+            cryptFilterDictionary.setCryptFilterMethod(COSName.AESV3);
+            cryptFilterDictionary.setLength(keyLength);
+            encryptionDictionary.setStdCryptFilterDictionary(cryptFilterDictionary);
+            encryptionDictionary.setStreamFilterName(COSName.STD_CF);
+            encryptionDictionary.setStringFilterName(COSName.STD_CF);
+            setAES(true);
+
+            // Algorithm 10: compute "Perms" value
+            byte[] perms = new byte[16];
+            perms[0] = (byte) permissionInt;
+            perms[1] = (byte) (permissionInt >>> 8);
+            perms[2] = (byte) (permissionInt >>> 16);
+            perms[3] = (byte) (permissionInt >>> 24);
+            perms[4] = (byte) 0xFF;
+            perms[5] = (byte) 0xFF;
+            perms[6] = (byte) 0xFF;
+            perms[7] = (byte) 0xFF;
+            perms[8] = 'T';    // we always encrypt Metadata
+            perms[9] = 'a';
+            perms[10] = 'd';
+            perms[11] = 'b';
+            for (int i = 12; i <= 15; i++)
+            {
+                perms[i] = (byte) rnd.nextInt();
+            }
+
+            cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(encryptionKey, "AES"),
+                    new IvParameterSpec(new byte[16]));
+
+            byte[] permsEnc = cipher.doFinal(perms);
+
+            encryptionDictionary.setPerms(permsEnc);
+        }
+        catch (GeneralSecurityException e)
+        {
+            logIfStrongEncryptionMissing();
+            throw new IOException(e);
+        }
+    }
+
+    private void prepareEncryptionDictRev2345(String ownerPassword, String userPassword,
+            PDEncryption encryptionDictionary, int permissionInt, int revision, int length)
+            throws IOException
+    {
+        COSArray idArray = document.getDocument().getDocumentID();
+
+        //check if the document has an id yet.  If it does not then generate one
+        if (idArray == null || idArray.size() < 2)
+        {
+            MessageDigest md = MessageDigests.getMD5();
+            BigInteger time = BigInteger.valueOf(System.currentTimeMillis());
+            md.update(time.toByteArray());
+            md.update(ownerPassword.getBytes(ISO_8859_1_CHARSET));
+            md.update(userPassword.getBytes(ISO_8859_1_CHARSET));
+            md.update(document.getDocument().toString().getBytes());
+
+            byte[] id = md.digest(this.toString().getBytes(ISO_8859_1_CHARSET));
+            COSString idString = new COSString(id);
+
+            idArray = new COSArray();
+            idArray.add(idString);
+            idArray.add(idString);
+            document.getDocument().setDocumentID(idArray);
+        }
+
+        COSString id = (COSString) idArray.getObject(0);
+
+        byte[] ownerBytes = computeOwnerPassword(
+                ownerPassword.getBytes(ISO_8859_1_CHARSET),
+                userPassword.getBytes(ISO_8859_1_CHARSET), revision, length);
+
+        byte[] userBytes = computeUserPassword(
+                userPassword.getBytes(ISO_8859_1_CHARSET),
+                ownerBytes, permissionInt, id.getBytes(), revision, length, true);
+
+        encryptionKey = computeEncryptedKey(userPassword.getBytes(ISO_8859_1_CHARSET), ownerBytes,
+                null, null, null, permissionInt, id.getBytes(), revision, length, true, false);
+
+        encryptionDictionary.setOwnerKey(ownerBytes);
+        encryptionDictionary.setUserKey(userBytes);
     }
 
     /**
