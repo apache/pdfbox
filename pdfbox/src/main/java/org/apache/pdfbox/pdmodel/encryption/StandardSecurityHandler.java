@@ -671,7 +671,6 @@ public final class StandardSecurityHandler extends SecurityHandler
         {
             for (int i = 0; i < 50; i++)
             {
-                md.reset();
                 md.update(digest, 0, length);
                 digest = md.digest();
             }
