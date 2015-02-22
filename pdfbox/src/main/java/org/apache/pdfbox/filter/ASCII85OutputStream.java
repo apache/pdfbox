@@ -114,7 +114,7 @@ final class ASCII85OutputStream extends FilterOutputStream
     /**
      * This will transform the next four ascii bytes.
      */
-    private final void transformASCII85()
+    private void transformASCII85()
     {
         long word = ((((indata[0] << 8) | (indata[1] & 0xFF)) << 16) | ((indata[2] & 0xFF) << 8) | (indata[3] & 0xFF)) & 0xFFFFFFFFL;
 
@@ -150,7 +150,8 @@ final class ASCII85OutputStream extends FilterOutputStream
      *
      * @throws IOException If there is an error writing to the stream.
      */
-    public final void write(int b) throws IOException
+    @Override
+    public void write(int b) throws IOException
     {
         flushed = false;
         indata[count++] = (byte) b;
@@ -180,7 +181,8 @@ final class ASCII85OutputStream extends FilterOutputStream
      *
      * @throws IOException If there is an error writing the data to the stream.
      */
-    public final void flush() throws IOException
+    @Override
+    public void flush() throws IOException
     {
         if (flushed)
         {
@@ -227,6 +229,7 @@ final class ASCII85OutputStream extends FilterOutputStream
      *
      * @throws IOException If there is an error closing the wrapped stream.
      */
+    @Override
     public void close() throws IOException
     {
         try
