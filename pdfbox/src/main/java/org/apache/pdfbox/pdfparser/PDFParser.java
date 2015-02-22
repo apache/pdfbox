@@ -315,7 +315,7 @@ public class PDFParser extends COSParser
         }
         else if (isLenient())
         {
-            trailer = searchXref(startXRefOffset);
+            trailer = searchXref(0);
         }
         // prepare decryption if necessary
         prepareDecryption();
