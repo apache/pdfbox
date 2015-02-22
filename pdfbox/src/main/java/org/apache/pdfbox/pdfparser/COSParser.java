@@ -99,20 +99,10 @@ public class COSParser extends BaseParser
      */
     protected static final char[] EOF_MARKER = new char[] { '%', '%', 'E', 'O', 'F' };
     /**
-     * StartXRef-marker.
-     */
-    protected static final char[] STARTXREF_MARKER = new char[] { 's', 't', 'a', 'r', 't', 'x',
-            'r', 'e', 'f' };
-    /**
      * obj-marker.
      */
     protected static final char[] OBJ_MARKER = new char[] { 'o', 'b', 'j' };
 
-    /**
-     * trailer-marker.
-     */
-    private static final char[] TRAILER_MARKER = new char[] { 't', 'r', 'a', 'i', 'l', 'e', 'r' };
-    
     private long trailerOffset;
     
     /**
@@ -224,7 +214,7 @@ public class COSParser extends BaseParser
     protected COSDictionary parseXref(long startXRefOffset) throws IOException
     {
         pdfSource.seek(startXRefOffset);
-        long startXrefOffset = parseStartXref();
+        long startXrefOffset = Math.max(0, parseStartXref());
         // check the startxref offset
         long fixedOffset = checkXRefOffset(startXrefOffset);
         if (fixedOffset > -1)
@@ -271,7 +261,7 @@ public class COSParser extends BaseParser
                 {
                     int streamOffset = trailer.getInt(COSName.XREF_STM);
                     // check the xref stream reference
-                    fixedOffset = checkXRefStreamOffset(streamOffset);
+                    fixedOffset = checkXRefStreamOffset(streamOffset, false);
                     if (fixedOffset > -1 && fixedOffset != streamOffset)
                     {
                         streamOffset = (int)fixedOffset;
@@ -395,25 +385,30 @@ public class COSParser extends BaseParser
             }
         }
         // find last startxref preceding EOF marker
-        bufOff = lastIndexOf(STARTXREF_MARKER, buf, bufOff);
+        bufOff = lastIndexOf(STARTXREF, buf, bufOff);
+        long startXRefOffset = -1;
 
         if (bufOff < 0)
         {
             if (isLenient) 
             {
-                trailerOffset = lastIndexOf(TRAILER_MARKER, buf, buf.length);
-                if (trailerOffset > 0)
+            	// brute force search for startxref
+                startXRefOffset = bfSearchForStartXref();
+                if (startXRefOffset > -1)
                 {
-                    trailerOffset += skipBytes;
+                    LOG.debug("Fixed offset for startxref " + startXRefOffset);
                 }
-                return -1;
             }
             else
             {
                 throw new IOException("Missing 'startxref' marker.");
             }
         }
-        return skipBytes + bufOff;
+        else
+        {
+        	startXRefOffset = skipBytes + bufOff;
+        }
+        return startXRefOffset;
     }
     
     /**
@@ -1076,10 +1071,13 @@ public class COSParser extends BaseParser
         {
             return startXRefOffset;
         }
-        long fixedOffset = checkXRefStreamOffset(startXRefOffset);
-        if (fixedOffset > -1)
+        if (startXRefOffset > 0)
         {
-        	return fixedOffset;
+	        long fixedOffset = checkXRefStreamOffset(startXRefOffset, true);
+	        if (fixedOffset > -1)
+	        {
+	        	return fixedOffset;
+	        }
         }
         // try to find a fixed offset
         return calculateXRefFixedOffset(startXRefOffset, false);
@@ -1092,10 +1090,10 @@ public class COSParser extends BaseParser
      * @return the revised offset
      * @throws IOException
      */
-    private long checkXRefStreamOffset(long startXRefOffset) throws IOException
+    private long checkXRefStreamOffset(long startXRefOffset, boolean checkOnly) throws IOException
     {
         // repair mode isn't available in non-lenient mode
-        if (!isLenient)
+        if (!isLenient || startXRefOffset == 0)
         {
             return startXRefOffset;
         }
@@ -1127,7 +1125,7 @@ public class COSParser extends BaseParser
             }
         }
         // try to find a fixed offset
-        return calculateXRefFixedOffset(startXRefOffset, true);
+        return checkOnly ? -1 : calculateXRefFixedOffset(startXRefOffset, true);
     }
     /**
      * Try to find a fixed offset for the given xref table/stream.
@@ -1538,6 +1536,31 @@ public class COSParser extends BaseParser
             startXref = readLong();
         }
         return startXref;
+    }
+
+    /**
+     * Brute force search for startxref.
+     * 
+     * @return the offset of startxref  
+     * 
+     * @throws IOException if something went wrong
+     */
+    private long bfSearchForStartXref() throws IOException
+    {
+    	long newOffset = -1;
+    	long originOffset = pdfSource.getOffset();
+        pdfSource.seek(MINIMUM_SEARCH_OFFSET);
+        while (!pdfSource.isEOF())
+        {
+            if (isString(STARTXREF))
+            {
+            	newOffset = pdfSource.getOffset(); 
+            	break;
+            }
+            pdfSource.read();
+        }
+        pdfSource.seek(originOffset);
+        return newOffset;
     }
 
     /**
