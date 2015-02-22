@@ -216,7 +216,7 @@ abstract class TrueTypeEmbedder implements Subsetter
             fd.setCapHeight((os2.getTypoAscender() + os2.getTypoDescender()) / scaling);
 
             // estimate by halving the typographical ascender
-            fd.setXHeight((os2.getTypoAscender() / 2) / scaling);
+            fd.setXHeight((os2.getTypoAscender() / 2.0f) / scaling);
         }
 
         // StemV - there's no true TTF equivalent of this, so we estimate it
