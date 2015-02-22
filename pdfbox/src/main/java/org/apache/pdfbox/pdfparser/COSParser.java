@@ -131,7 +131,8 @@ public class COSParser extends BaseParser
      */
     private Map<String, Long> bfSearchObjectOffsets = null;
     private Map<COSObjectKey, Long> bfSearchCOSObjectKeyOffsets = null;
-    private List<Long> bfSearchXRefOffsets = null;
+    private List<Long> bfSearchXRefTablesOffsets = null;
+    private List<Long> bfSearchXRefStreamsOffsets = null;
 
     /**
      * The security handler.
@@ -270,7 +271,7 @@ public class COSParser extends BaseParser
                 {
                     int streamOffset = trailer.getInt(COSName.XREF_STM);
                     // check the xref stream reference
-                    fixedOffset = checkXRefOffset(streamOffset);
+                    fixedOffset = checkXRefStreamOffset(streamOffset);
                     if (fixedOffset > -1 && fixedOffset != streamOffset)
                     {
                         streamOffset = (int)fixedOffset;
@@ -1070,24 +1071,47 @@ public class COSParser extends BaseParser
         {
             return startXRefOffset;
         }
-        pdfSource.seek(startXRefOffset-1);
-        // save the previous character
-        int previous = pdfSource.read();
+        pdfSource.seek(startXRefOffset);
         if (pdfSource.peek() == X && isString(XREF_TABLE))
         {
             return startXRefOffset;
         }
-        // the previous character has to be a whitespace
-        if (isWhitespace(previous))
+        long fixedOffset = checkXRefStreamOffset(startXRefOffset);
+        if (fixedOffset > -1)
         {
-            int nextValue = pdfSource.peek();
-            // maybe there isn't a xref table but a xref stream
+        	return fixedOffset;
+        }
+        // try to find a fixed offset
+        return calculateXRefFixedOffset(startXRefOffset, false);
+    }
+
+    /**
+     * Check if the cross reference stream can be found at the current offset.
+     * 
+     * @param startXRefOffset
+     * @return the revised offset
+     * @throws IOException
+     */
+    private long checkXRefStreamOffset(long startXRefOffset) throws IOException
+    {
+        // repair mode isn't available in non-lenient mode
+        if (!isLenient)
+        {
+            return startXRefOffset;
+        }
+        // seek to offset-1 
+        pdfSource.seek(startXRefOffset-1);
+        int nextValue = pdfSource.read();
+        // the first character has to be a whitespace
+        if (isWhitespace(nextValue))
+        {
+        	nextValue = pdfSource.peek();
             // is the next character a digit?
             if (nextValue > 47 && nextValue < 58)
             {
                 try
                 {
-                    // Maybe it's a XRef stream
+                    // it's a XRef stream
                     readObjectNumber();
                     readGenerationNumber();
                     readExpectedString(OBJ_MARKER, true);
@@ -1103,18 +1127,18 @@ public class COSParser extends BaseParser
             }
         }
         // try to find a fixed offset
-        return calculateXRefFixedOffset(startXRefOffset);
+        return calculateXRefFixedOffset(startXRefOffset, true);
     }
-
     /**
      * Try to find a fixed offset for the given xref table/stream.
      * 
      * @param objectOffset the given offset where to look at
+     * @param streamsOnly search for xref streams only
      * @return the fixed offset
      * 
      * @throws IOException if something went wrong
      */
-    private long calculateXRefFixedOffset(long objectOffset) throws IOException
+    private long calculateXRefFixedOffset(long objectOffset, boolean streamsOnly) throws IOException
     {
         if (objectOffset < 0)
         {
@@ -1122,7 +1146,7 @@ public class COSParser extends BaseParser
             return 0;
         }
         // start a brute force search for all xref tables and try to find the offset we are looking for
-        long newOffset = bfSearchForXRef(objectOffset);
+        long newOffset = bfSearchForXRef(objectOffset, streamsOnly);
         if (newOffset > -1)
         {
             LOG.debug("Fixed reference for xref table/stream " + objectOffset + " -> " + newOffset);
@@ -1303,50 +1327,94 @@ public class COSParser extends BaseParser
     /**
      * Search for the offset of the given xref table/stream among those found by a brute force search.
      * 
+     * @param streamsOnly search for xref streams only
      * @return the offset of the xref entry
      * @throws IOException if something went wrong
      */
-    private long bfSearchForXRef(long xrefOffset) throws IOException
+    private long bfSearchForXRef(long xrefOffset, boolean streamsOnly) throws IOException
     {
         long newOffset = -1;
-        bfSearchForXRefs();
-        if (bfSearchXRefOffsets != null)
+        long newOffsetTable = -1;
+        long newOffsetStream = -1;
+        if (!streamsOnly)
         {
-            long currentDifference = -1;
-            int currentOffsetIndex = -1;
-            int numberOfOffsets = bfSearchXRefOffsets.size();
-            // find the most likely value
+        	bfSearchForXRefTables();
+        }
+        bfSearchForXRefStreams();
+        if (!streamsOnly && bfSearchXRefTablesOffsets != null)
+        {
             // TODO to be optimized, this won't work in every case
-            for (int i = 0; i < numberOfOffsets; i++)
-            {
-                long newDifference = xrefOffset - bfSearchXRefOffsets.get(i);
-                // find the nearest offset
-                if (currentDifference == -1
-                        || (Math.abs(currentDifference) > Math.abs(newDifference)))
-                {
-                    currentDifference = newDifference;
-                    currentOffsetIndex = i;
-                }
-            }
-            if (currentOffsetIndex > -1)
-            {
-                newOffset = bfSearchXRefOffsets.remove(currentOffsetIndex);
-            }
+        	newOffsetTable = searchNearestValue(bfSearchXRefTablesOffsets, xrefOffset);
+        }
+        if (bfSearchXRefStreamsOffsets != null)
+        {
+            // TODO to be optimized, this won't work in every case
+        	newOffsetStream = searchNearestValue(bfSearchXRefStreamsOffsets, xrefOffset);
+        }
+        // choose the nearest value
+        if (newOffsetTable > -1 && newOffsetStream > -1)
+        {
+            long differenceTable = xrefOffset - newOffsetTable;
+            long differenceStream = xrefOffset - newOffsetStream;
+        	if (Math.abs(differenceTable) > Math.abs(differenceStream))
+        	{
+        		newOffset = differenceStream;
+        		bfSearchXRefStreamsOffsets.remove(newOffsetStream);
+        	}
+        	else
+        	{
+        		newOffset = differenceTable;
+        		bfSearchXRefTablesOffsets.remove(newOffsetTable);
+        	}
+        }
+        else if (newOffsetTable > -1)
+        {
+        	newOffset = newOffsetTable;
+    		bfSearchXRefTablesOffsets.remove(newOffsetTable);
+        }
+        else if (newOffsetStream > -1)
+        {
+        	newOffset = newOffsetStream;
+    		bfSearchXRefStreamsOffsets.remove(newOffsetStream);
         }
         return newOffset;
     }
 
+    private long searchNearestValue(List<Long> values, long offset)
+    {
+    	long newValue = -1;
+        long currentDifference = -1;
+        int currentOffsetIndex = -1;
+        int numberOfOffsets = values.size();
+        // find the nearest value
+        for (int i = 0; i < numberOfOffsets; i++)
+        {
+            long newDifference = offset - values.get(i);
+            // find the nearest offset
+            if (currentDifference == -1
+                    || (Math.abs(currentDifference) > Math.abs(newDifference)))
+            {
+                currentDifference = newDifference;
+                currentOffsetIndex = i;
+            }
+        }
+        if (currentOffsetIndex > -1)
+        {
+        	newValue = values.get(currentOffsetIndex);
+        }
+        return newValue;
+    }
     /**
-     * Brute force search for all xref entries.
+     * Brute force search for all xref entries (tables).
      * 
      * @throws IOException if something went wrong
      */
-    private void bfSearchForXRefs() throws IOException
+    private void bfSearchForXRefTables() throws IOException
     {
-        if (bfSearchXRefOffsets == null)
+        if (bfSearchXRefTablesOffsets == null)
         {
             // a pdf may contain more than one xref entry
-            bfSearchXRefOffsets = new Vector<Long>();
+        	bfSearchXRefTablesOffsets = new Vector<Long>();
             long originOffset = pdfSource.getOffset();
             pdfSource.seek(MINIMUM_SEARCH_OFFSET);
             // search for xref tables
@@ -1359,12 +1427,28 @@ public class COSParser extends BaseParser
                     // ensure that we don't read "startxref" instead of "xref"
                     if (isWhitespace())
                     {
-                        bfSearchXRefOffsets.add(newOffset);
+                    	bfSearchXRefTablesOffsets.add(newOffset);
                     }
                     pdfSource.seek(newOffset + 4);
                 }
                 pdfSource.read();
             }
+            pdfSource.seek(originOffset);
+        }
+    }
+
+    /**
+     * Brute force search for all /XRef entries (streams).
+     * 
+     * @throws IOException if something went wrong
+     */
+    private void bfSearchForXRefStreams() throws IOException
+    {
+        if (bfSearchXRefStreamsOffsets == null)
+        {
+            // a pdf may contain more than one /XRef entry
+        	bfSearchXRefStreamsOffsets = new Vector<Long>();
+            long originOffset = pdfSource.getOffset();
             pdfSource.seek(MINIMUM_SEARCH_OFFSET);
             // search for XRef streams
             String objString = " obj";
@@ -1427,7 +1511,7 @@ public class COSParser extends BaseParser
                     }
                     if (newOffset > -1)
                     {
-                        bfSearchXRefOffsets.add(newOffset);
+                    	bfSearchXRefStreamsOffsets.add(newOffset);
                     }
                     pdfSource.seek(xrefOffset + 5);
                 }
@@ -1436,7 +1520,6 @@ public class COSParser extends BaseParser
             pdfSource.seek(originOffset);
         }
     }
-
     /**
      * This will parse the startxref section from the stream.
      * The startxref value is ignored.
