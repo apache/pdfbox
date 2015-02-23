@@ -386,27 +386,19 @@ public class COSParser extends BaseParser
         }
         // find last startxref preceding EOF marker
         bufOff = lastIndexOf(STARTXREF, buf, bufOff);
-        long startXRefOffset = -1;
+        long startXRefOffset = skipBytes + bufOff;
 
         if (bufOff < 0)
         {
             if (isLenient) 
             {
-            	// brute force search for startxref
-                startXRefOffset = bfSearchForStartXref();
-                if (startXRefOffset > -1)
-                {
-                    LOG.debug("Fixed offset for startxref " + startXRefOffset);
-                }
+            	LOG.debug("Can't find offset for startxref");
+            	return -1;
             }
             else
             {
                 throw new IOException("Missing 'startxref' marker.");
             }
-        }
-        else
-        {
-        	startXRefOffset = skipBytes + bufOff;
         }
         return startXRefOffset;
     }
@@ -1518,6 +1510,67 @@ public class COSParser extends BaseParser
             pdfSource.seek(originOffset);
         }
     }
+    
+    /**
+     * Rebuild the trailer dictionary if startxref can't be found.
+     *  
+     * @return the rebuild trailer dictionary
+     * 
+     * @throws IOException if something went wrong
+     */
+    protected final COSDictionary rebuildTrailer() throws IOException
+    {
+    	COSDictionary trailer = null;
+    	bfSearchForObjects();
+    	if (bfSearchCOSObjectKeyOffsets != null)
+    	{
+            xrefTrailerResolver.nextXrefObj( 0, XRefType.TABLE );
+            for (COSObjectKey objectKey : bfSearchCOSObjectKeyOffsets.keySet())
+            {
+                xrefTrailerResolver.setXRef(objectKey, bfSearchCOSObjectKeyOffsets.get(objectKey));
+            }
+            xrefTrailerResolver.setStartxref(0);
+    		trailer = xrefTrailerResolver.getTrailer();
+    		getDocument().setTrailer(trailer);
+    		for(COSObjectKey key : bfSearchCOSObjectKeyOffsets.keySet())
+    		{
+    			Long offset = bfSearchCOSObjectKeyOffsets.get(key);
+    			pdfSource.seek(offset);
+    	        readObjectNumber();
+    	        readGenerationNumber();
+    	        readExpectedString(OBJ_MARKER, true);
+    			COSDictionary dictionary = null;
+    			try
+    			{
+    				dictionary = parseCOSDictionary();
+	    			if (dictionary != null)
+	    			{
+	    				if (COSName.CATALOG.equals(dictionary.getCOSName(COSName.TYPE)))
+	    				{
+	    					trailer.setItem(COSName.ROOT, document.getObjectFromPool(key));
+	    				}
+	    				else if (dictionary.containsKey(COSName.TITLE)
+	    						|| dictionary.containsKey(COSName.AUTHOR)
+	    						|| dictionary.containsKey(COSName.SUBJECT)
+	    						|| dictionary.containsKey(COSName.KEYWORDS)
+	    						|| dictionary.containsKey(COSName.CREATOR)
+	    						|| dictionary.containsKey(COSName.PRODUCER)
+	    						|| dictionary.containsKey(COSName.CREATION_DATE))
+	    				{
+	    					trailer.setItem(COSName.INFO, document.getObjectFromPool(key));
+	    				}
+	    				// TODO find/assign Encrypt entry
+	    			}
+    			}
+    			catch(IOException exception)
+    			{
+    				LOG.error("Skipped invalid dictionary for object "+key);
+    			}
+    		}
+    	}
+    	return trailer;
+    }
+    
     /**
      * This will parse the startxref section from the stream.
      * The startxref value is ignored.
@@ -1536,31 +1589,6 @@ public class COSParser extends BaseParser
             startXref = readLong();
         }
         return startXref;
-    }
-
-    /**
-     * Brute force search for startxref.
-     * 
-     * @return the offset of startxref  
-     * 
-     * @throws IOException if something went wrong
-     */
-    private long bfSearchForStartXref() throws IOException
-    {
-    	long newOffset = -1;
-    	long originOffset = pdfSource.getOffset();
-        pdfSource.seek(MINIMUM_SEARCH_OFFSET);
-        while (!pdfSource.isEOF())
-        {
-            if (isString(STARTXREF))
-            {
-            	newOffset = pdfSource.getOffset(); 
-            	break;
-            }
-            pdfSource.read();
-        }
-        pdfSource.seek(originOffset);
-        return newOffset;
     }
 
     /**
