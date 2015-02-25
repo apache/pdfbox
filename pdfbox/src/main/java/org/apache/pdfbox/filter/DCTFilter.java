@@ -23,17 +23,16 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.cos.COSDictionary;
-import org.w3c.dom.Element;
-
+import java.lang.reflect.Field;
 import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.cos.COSDictionary;
+import org.w3c.dom.Element;
 
 /**
  * Decompresses data encoded using a DCT (discrete cosine transform)
@@ -91,9 +90,34 @@ final class DCTFilter extends Filter
                 catch (IIOException e)
                 {
                     // catches the error "Inconsistent metadata read from stream"
-                    // which seems to be present indicate a YCCK image, but who knows?
-                    LOG.warn("Inconsistent metadata read from JPEG stream");
-                    transform = 2; // YCCK
+                    // if we're using the Sun decoder then can be caused by either a YCCK
+                    // image or by a CMYK image which the decoder has problems reading
+                    try
+                    {
+                        // if this is Sun's decoder, use reflection to determine if the 
+                        // color space is CMYK or YCCK
+                        Field field = reader.getClass().getDeclaredField("colorSpaceCode");
+                        field.setAccessible(true);
+                        int colorSpaceCode = field.getInt(reader);
+                        
+                        if (colorSpaceCode == 7 || colorSpaceCode == 8 || colorSpaceCode == 9) {
+                            transform = 2; // YCCK
+                        } else if (colorSpaceCode == 4) {
+                            transform = 0; // CMYK
+                        } else {
+                            throw new IOException("Unexpected color space: " + colorSpaceCode);
+                        }
+                    }
+                    catch (NoSuchFieldException e1)
+                    {
+                        // error from non-Sun JPEG decoder
+                        throw e;
+                    }
+                    catch (IllegalAccessException e1)
+                    {
+                        // error from non-Sun JPEG decoder
+                        throw e;
+                    }
                 }
                 int colorTransform = transform != null ? transform : 0;
 
