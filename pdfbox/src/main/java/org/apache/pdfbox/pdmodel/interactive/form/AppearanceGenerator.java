@@ -27,7 +27,7 @@ import org.apache.pdfbox.pdmodel.common.PDTextStream;
  * 
  * The fields appearance defines the 'look' the field has when it's rendered for display or printing.
  */
-public class AppearanceGenerator
+public final class AppearanceGenerator
 {
     private static final Log LOG = LogFactory.getLog(AppearanceGenerator.class);
 
