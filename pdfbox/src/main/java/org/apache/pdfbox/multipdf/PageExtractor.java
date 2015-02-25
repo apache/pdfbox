@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.pdfbox.util;
+package org.apache.pdfbox.multipdf;
 
 import java.io.IOException;
 import org.apache.pdfbox.pdmodel.PDDocument;

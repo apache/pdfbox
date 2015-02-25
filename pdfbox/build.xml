@@ -189,7 +189,7 @@
                 <pathelement path="${fontbox.dest.dir}"/>
             </classpath>
             <formatter usefile="false" type="plain" />
-            <test name="org.apache.pdfbox.util.TestPDFToImage" />
+            <test name="org.apache.pdfbox.rendering.TestPDFToImage" />
         </junit>
     </target>
 

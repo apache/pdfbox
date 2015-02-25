@@ -1024,9 +1024,8 @@ public class COSParser extends BaseParser
         if (expectedEndOfStream > fileLen)
         {
             streamLengthIsValid = false;
-            LOG.error("The end of the stream is out of range, using workaround to read the stream");
-            LOG.error("Stream start offset: " + originOffset);
-            LOG.error("Expected endofstream offset: " + expectedEndOfStream);
+            LOG.error("The end of the stream is out of range, using workaround to read the stream, " +
+                      "found " + originOffset + " but expected " + expectedEndOfStream);
         }
         else
         {
@@ -1035,9 +1034,8 @@ public class COSParser extends BaseParser
             if (!isString(ENDSTREAM))
             {
                 streamLengthIsValid = false;
-                LOG.error("The end of the stream doesn't point to the correct offset, using workaround to read the stream");
-                LOG.error("Stream start offset: " + originOffset);
-                LOG.error("Expected endofstream offset: " + expectedEndOfStream);
+                LOG.error("The end of the stream doesn't point to the correct offset, using workaround to read the stream, " +
+                          "found " + originOffset + " but expected " + expectedEndOfStream);
             }
             pdfSource.seek(originOffset);
         }

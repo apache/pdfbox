@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.util;
+package org.apache.pdfbox.multipdf;
 
 import java.awt.Color;
 import java.awt.geom.AffineTransform;
@@ -24,6 +24,7 @@ import java.io.IOException;
 import junit.framework.TestCase;
 
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.multipdf.LayerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -35,9 +36,10 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentGroup;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentProperties;
+import org.apache.pdfbox.util.Matrix;
 
 /**
- * Tests the {@link LayerUtility} class.
+ * Tests the {@link org.apache.pdfbox.multipdf.LayerUtility} class.
  *
  * @version $Revision$
  */

@@ -16,7 +16,7 @@
  */
 package org.apache.pdfbox.tools;
 
-import org.apache.pdfbox.util.PDFMergerUtility;
+import org.apache.pdfbox.multipdf.PDFMergerUtility;
 
 /**
  * This is the main program that will take a list of pdf documents and merge them,

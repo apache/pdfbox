@@ -14,11 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.contentstream;
+package org.apache.pdfbox.text;
 
 import java.io.InputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.font.encoding.GlyphList;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -26,7 +27,6 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
-import org.apache.pdfbox.text.TextPosition;
 
 import java.io.IOException;
 import org.apache.pdfbox.util.Matrix;
@@ -61,7 +61,7 @@ import org.apache.pdfbox.contentstream.operator.text.ShowText;
  * @author Ben Litchfield
  * @author John Hewson
  */
-public class PDFTextStreamEngine extends PDFStreamEngine
+class PDFTextStreamEngine extends PDFStreamEngine
 {
     private static final Log log = LogFactory.getLog(PDFTextStreamEngine.class);
 

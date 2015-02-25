@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.util;
+package org.apache.pdfbox.text;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -33,8 +33,6 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 import java.util.regex.Pattern;
-
-import org.apache.pdfbox.contentstream.PDFTextStreamEngine;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageTree;
@@ -42,8 +40,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDThreadBead;
-import org.apache.pdfbox.text.TextPosition;
-import org.apache.pdfbox.text.TextPositionComparator;
+import org.apache.pdfbox.util.QuickSort;
 
 /**
  * This class will take a pdf document and strip out all of the text and ignore the
@@ -462,7 +459,7 @@ public class PDFTextStripper extends PDFTextStreamEngine
                 // a custom quicksort implementation (which is slower, unfortunately).
                 if(USE_CUSTOM_QUICKSORT) 
                 {
-                    QuickSort.sort( textList, comparator );
+                    QuickSort.sort(textList, comparator);
                 }
                 else 
                 {
