@@ -39,8 +39,8 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
 class PDFCloneUtility
 {
 
-    private PDDocument destination;
-    private Map<Object,COSBase> clonedVersion = new HashMap<Object,COSBase>();
+    private final PDDocument destination;
+    private final Map<Object,COSBase> clonedVersion = new HashMap<Object,COSBase>();
 
     /**
      * Creates a new instance for the given target document.
