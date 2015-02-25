@@ -40,6 +40,9 @@ public class MetaUtil
     static final String JPEG_NATIVE_FORMAT = "javax_imageio_jpeg_image_1.0";
     static final String STANDARD_METADATA_FORMAT = "javax_imageio_1.0";
     
+    private MetaUtil()
+    {
+    }    
 
     // logs metadata as an XML tree if debug is enabled
     static void debugLogMetadata(IIOMetadata metadata, String format)
