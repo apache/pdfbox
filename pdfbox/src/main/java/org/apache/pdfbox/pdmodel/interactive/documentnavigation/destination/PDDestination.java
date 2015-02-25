@@ -101,14 +101,4 @@ public abstract class PDDestination implements PDDestinationOrAction
         return retval;
     }
 
-    /**
-     * Return a string representation of this class.
-     *
-     * @return A human readable string.
-     */
-    @Override
-    public String toString()
-    {
-        return super.toString();
-    }
 }
