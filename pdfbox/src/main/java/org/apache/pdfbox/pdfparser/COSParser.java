@@ -392,8 +392,8 @@ public class COSParser extends BaseParser
         {
             if (isLenient) 
             {
-            	LOG.debug("Can't find offset for startxref");
-            	return -1;
+                LOG.debug("Can't find offset for startxref");
+                return -1;
             }
             else
             {
@@ -1065,11 +1065,11 @@ public class COSParser extends BaseParser
         }
         if (startXRefOffset > 0)
         {
-	        long fixedOffset = checkXRefStreamOffset(startXRefOffset, true);
-	        if (fixedOffset > -1)
-	        {
-	        	return fixedOffset;
-	        }
+            long fixedOffset = checkXRefStreamOffset(startXRefOffset, true);
+            if (fixedOffset > -1)
+            {
+                return fixedOffset;
+            }
         }
         // try to find a fixed offset
         return calculateXRefFixedOffset(startXRefOffset, false);
@@ -1095,7 +1095,7 @@ public class COSParser extends BaseParser
         // the first character has to be a whitespace
         if (isWhitespace(nextValue))
         {
-        	nextValue = pdfSource.peek();
+            nextValue = pdfSource.peek();
             // is the next character a digit?
             if (nextValue > 47 && nextValue < 58)
             {
@@ -1328,51 +1328,51 @@ public class COSParser extends BaseParser
         long newOffsetStream = -1;
         if (!streamsOnly)
         {
-        	bfSearchForXRefTables();
+            bfSearchForXRefTables();
         }
         bfSearchForXRefStreams();
         if (!streamsOnly && bfSearchXRefTablesOffsets != null)
         {
             // TODO to be optimized, this won't work in every case
-        	newOffsetTable = searchNearestValue(bfSearchXRefTablesOffsets, xrefOffset);
+            newOffsetTable = searchNearestValue(bfSearchXRefTablesOffsets, xrefOffset);
         }
         if (bfSearchXRefStreamsOffsets != null)
         {
             // TODO to be optimized, this won't work in every case
-        	newOffsetStream = searchNearestValue(bfSearchXRefStreamsOffsets, xrefOffset);
+            newOffsetStream = searchNearestValue(bfSearchXRefStreamsOffsets, xrefOffset);
         }
         // choose the nearest value
         if (newOffsetTable > -1 && newOffsetStream > -1)
         {
             long differenceTable = xrefOffset - newOffsetTable;
             long differenceStream = xrefOffset - newOffsetStream;
-        	if (Math.abs(differenceTable) > Math.abs(differenceStream))
-        	{
-        		newOffset = differenceStream;
-        		bfSearchXRefStreamsOffsets.remove(newOffsetStream);
-        	}
-        	else
-        	{
-        		newOffset = differenceTable;
-        		bfSearchXRefTablesOffsets.remove(newOffsetTable);
-        	}
+            if (Math.abs(differenceTable) > Math.abs(differenceStream))
+            {
+                newOffset = differenceStream;
+                bfSearchXRefStreamsOffsets.remove(newOffsetStream);
+            }
+            else
+            {
+                newOffset = differenceTable;
+                bfSearchXRefTablesOffsets.remove(newOffsetTable);
+            }
         }
         else if (newOffsetTable > -1)
         {
-        	newOffset = newOffsetTable;
-    		bfSearchXRefTablesOffsets.remove(newOffsetTable);
+            newOffset = newOffsetTable;
+            bfSearchXRefTablesOffsets.remove(newOffsetTable);
         }
         else if (newOffsetStream > -1)
         {
-        	newOffset = newOffsetStream;
-    		bfSearchXRefStreamsOffsets.remove(newOffsetStream);
+            newOffset = newOffsetStream;
+            bfSearchXRefStreamsOffsets.remove(newOffsetStream);
         }
         return newOffset;
     }
 
     private long searchNearestValue(List<Long> values, long offset)
     {
-    	long newValue = -1;
+        long newValue = -1;
         long currentDifference = -1;
         int currentOffsetIndex = -1;
         int numberOfOffsets = values.size();
@@ -1390,7 +1390,7 @@ public class COSParser extends BaseParser
         }
         if (currentOffsetIndex > -1)
         {
-        	newValue = values.get(currentOffsetIndex);
+            newValue = values.get(currentOffsetIndex);
         }
         return newValue;
     }
@@ -1404,7 +1404,7 @@ public class COSParser extends BaseParser
         if (bfSearchXRefTablesOffsets == null)
         {
             // a pdf may contain more than one xref entry
-        	bfSearchXRefTablesOffsets = new Vector<Long>();
+            bfSearchXRefTablesOffsets = new Vector<Long>();
             long originOffset = pdfSource.getOffset();
             pdfSource.seek(MINIMUM_SEARCH_OFFSET);
             // search for xref tables
@@ -1417,7 +1417,7 @@ public class COSParser extends BaseParser
                     // ensure that we don't read "startxref" instead of "xref"
                     if (isWhitespace())
                     {
-                    	bfSearchXRefTablesOffsets.add(newOffset);
+                        bfSearchXRefTablesOffsets.add(newOffset);
                     }
                     pdfSource.seek(newOffset + 4);
                 }
@@ -1437,7 +1437,7 @@ public class COSParser extends BaseParser
         if (bfSearchXRefStreamsOffsets == null)
         {
             // a pdf may contain more than one /XRef entry
-        	bfSearchXRefStreamsOffsets = new Vector<Long>();
+            bfSearchXRefStreamsOffsets = new Vector<Long>();
             long originOffset = pdfSource.getOffset();
             pdfSource.seek(MINIMUM_SEARCH_OFFSET);
             // search for XRef streams
@@ -1501,7 +1501,7 @@ public class COSParser extends BaseParser
                     }
                     if (newOffset > -1)
                     {
-                    	bfSearchXRefStreamsOffsets.add(newOffset);
+                        bfSearchXRefStreamsOffsets.add(newOffset);
                     }
                     pdfSource.seek(xrefOffset + 5);
                 }
@@ -1520,55 +1520,55 @@ public class COSParser extends BaseParser
      */
     protected final COSDictionary rebuildTrailer() throws IOException
     {
-    	COSDictionary trailer = null;
-    	bfSearchForObjects();
-    	if (bfSearchCOSObjectKeyOffsets != null)
-    	{
+        COSDictionary trailer = null;
+        bfSearchForObjects();
+        if (bfSearchCOSObjectKeyOffsets != null)
+        {
             xrefTrailerResolver.nextXrefObj( 0, XRefType.TABLE );
             for (COSObjectKey objectKey : bfSearchCOSObjectKeyOffsets.keySet())
             {
                 xrefTrailerResolver.setXRef(objectKey, bfSearchCOSObjectKeyOffsets.get(objectKey));
             }
             xrefTrailerResolver.setStartxref(0);
-    		trailer = xrefTrailerResolver.getTrailer();
-    		getDocument().setTrailer(trailer);
-    		for(COSObjectKey key : bfSearchCOSObjectKeyOffsets.keySet())
-    		{
-    			Long offset = bfSearchCOSObjectKeyOffsets.get(key);
-    			pdfSource.seek(offset);
-    	        readObjectNumber();
-    	        readGenerationNumber();
-    	        readExpectedString(OBJ_MARKER, true);
-    			COSDictionary dictionary = null;
-    			try
-    			{
-    				dictionary = parseCOSDictionary();
-	    			if (dictionary != null)
-	    			{
-	    				if (COSName.CATALOG.equals(dictionary.getCOSName(COSName.TYPE)))
-	    				{
-	    					trailer.setItem(COSName.ROOT, document.getObjectFromPool(key));
-	    				}
-	    				else if (dictionary.containsKey(COSName.TITLE)
-	    						|| dictionary.containsKey(COSName.AUTHOR)
-	    						|| dictionary.containsKey(COSName.SUBJECT)
-	    						|| dictionary.containsKey(COSName.KEYWORDS)
-	    						|| dictionary.containsKey(COSName.CREATOR)
-	    						|| dictionary.containsKey(COSName.PRODUCER)
-	    						|| dictionary.containsKey(COSName.CREATION_DATE))
-	    				{
-	    					trailer.setItem(COSName.INFO, document.getObjectFromPool(key));
-	    				}
-	    				// TODO find/assign Encrypt entry
-	    			}
-    			}
-    			catch(IOException exception)
-    			{
-    				LOG.error("Skipped invalid dictionary for object "+key);
-    			}
-    		}
-    	}
-    	return trailer;
+            trailer = xrefTrailerResolver.getTrailer();
+            getDocument().setTrailer(trailer);
+            for(COSObjectKey key : bfSearchCOSObjectKeyOffsets.keySet())
+            {
+                Long offset = bfSearchCOSObjectKeyOffsets.get(key);
+                pdfSource.seek(offset);
+                readObjectNumber();
+                readGenerationNumber();
+                readExpectedString(OBJ_MARKER, true);
+                COSDictionary dictionary = null;
+                try
+                {
+                    dictionary = parseCOSDictionary();
+                    if (dictionary != null)
+                    {
+                        if (COSName.CATALOG.equals(dictionary.getCOSName(COSName.TYPE)))
+                        {
+                            trailer.setItem(COSName.ROOT, document.getObjectFromPool(key));
+                        }
+                        else if (dictionary.containsKey(COSName.TITLE)
+                                || dictionary.containsKey(COSName.AUTHOR)
+                                || dictionary.containsKey(COSName.SUBJECT)
+                                || dictionary.containsKey(COSName.KEYWORDS)
+                                || dictionary.containsKey(COSName.CREATOR)
+                                || dictionary.containsKey(COSName.PRODUCER)
+                                || dictionary.containsKey(COSName.CREATION_DATE))
+                        {
+                            trailer.setItem(COSName.INFO, document.getObjectFromPool(key));
+                        }
+                        // TODO find/assign Encrypt entry
+                    }
+                }
+                catch(IOException exception)
+                {
+                    LOG.error("Skipped invalid dictionary for object "+key);
+                }
+            }
+        }
+        return trailer;
     }
     
     /**
