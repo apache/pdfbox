@@ -67,6 +67,10 @@ public class FilterHelper
         ALLOWED_FILTERS.add(INLINE_DICTIONARY_VALUE_FILTER_RUN);
     }
 
+    private FilterHelper()
+    {
+    }
+    
     /**
      * This method checks if the filter is authorized for the PDF file according to the preflight document specification
      * attribute. For example according to the PDF/A-1 specification, only the LZW filter is forbidden due to Copyright
