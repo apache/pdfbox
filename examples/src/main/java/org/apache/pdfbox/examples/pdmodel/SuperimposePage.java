@@ -24,7 +24,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
-import org.apache.pdfbox.util.LayerUtility;
+import org.apache.pdfbox.multipdf.LayerUtility;
 import org.apache.pdfbox.util.Matrix;
 
 /**

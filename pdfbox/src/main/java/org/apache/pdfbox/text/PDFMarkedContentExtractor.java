@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.util;
+package org.apache.pdfbox.text;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,12 +23,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-import org.apache.pdfbox.contentstream.PDFTextStreamEngine;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDMarkedContent;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
-import org.apache.pdfbox.text.TextPosition;
 import org.apache.pdfbox.contentstream.operator.markedcontent.BeginMarkedContentSequence;
 import org.apache.pdfbox.contentstream.operator.markedcontent.BeginMarkedContentSequenceWithProperties;
 import org.apache.pdfbox.contentstream.operator.markedcontent.EndMarkedContentSequence;

@@ -20,7 +20,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
-import org.apache.pdfbox.util.PDFMarkedContentExtractor;
+import org.apache.pdfbox.text.PDFMarkedContentExtractor;
 
 import java.io.IOException;
 import java.util.List;

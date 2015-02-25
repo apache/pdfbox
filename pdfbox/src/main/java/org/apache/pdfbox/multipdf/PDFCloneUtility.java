@@ -14,13 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.util;
+package org.apache.pdfbox.multipdf;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -37,7 +36,7 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
  *
  * @version $Revision$
  */
-public class PDFCloneUtility
+class PDFCloneUtility
 {
 
     private PDDocument destination;
@@ -79,7 +78,7 @@ public class PDFCloneUtility
           {
               //we are done, it has already been converted.
           }
-          else if( base instanceof List )
+          else if( base instanceof List)
           {
               COSArray array = new COSArray();
               List list = (List)base;
@@ -197,7 +196,7 @@ public class PDFCloneUtility
           else if( base instanceof COSObjectable && !(base instanceof COSBase) )
           {
               cloneMerge(((COSObjectable)base).getCOSObject(), ((COSObjectable)target).getCOSObject() );
-              clonedVersion.put( base, retval );
+              clonedVersion.put(base, retval);
           }
           else if( base instanceof COSObject )
           {

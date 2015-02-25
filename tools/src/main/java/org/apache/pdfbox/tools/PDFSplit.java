@@ -24,7 +24,7 @@ import java.util.List;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdfwriter.COSWriter;
-import org.apache.pdfbox.util.Splitter;
+import org.apache.pdfbox.multipdf.Splitter;
 
 /**
  * This is the main program that will take a pdf document and split it into

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.pdfbox.util;
+package org.apache.pdfbox.rendering;
 
 import org.apache.pdfbox.ParallelParameterized;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -35,7 +35,7 @@ import java.util.List;
  * Functional test for PDF rendering. This test simply tries to render
  * a series of PDFs using PDFBox to make sure that no exceptions are thrown.
  *
- * It does not attempt to detect if rendering is correct, see {@link TestPDFToImage}.
+ * It does not attempt to detect if rendering is correct, see {@link org.apache.pdfbox.rendering.TestPDFToImage}.
  *
  * @author John Hewson
  */

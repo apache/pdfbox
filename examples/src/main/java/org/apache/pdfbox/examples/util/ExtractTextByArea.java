@@ -18,7 +18,7 @@ package org.apache.pdfbox.examples.util;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.util.PDFTextStripperByArea;
+import org.apache.pdfbox.text.PDFTextStripperByArea;
 
 import java.awt.Rectangle;
 import java.io.File;

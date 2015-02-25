@@ -21,8 +21,8 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.util.Overlay;
-import org.apache.pdfbox.util.Overlay.Position;
+import org.apache.pdfbox.multipdf.Overlay;
+import org.apache.pdfbox.multipdf.Overlay.Position;
 
 /**
  * 

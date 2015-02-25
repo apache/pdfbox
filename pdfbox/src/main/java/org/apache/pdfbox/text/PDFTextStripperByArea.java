@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.util;
+package org.apache.pdfbox.text;
 
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
@@ -28,7 +28,6 @@ import java.util.Vector;
 
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.text.TextPosition;
 
 /**
  * This will extract text from a specified region in the PDF.
