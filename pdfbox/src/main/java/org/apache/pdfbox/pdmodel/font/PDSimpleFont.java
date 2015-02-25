@@ -376,11 +376,12 @@ public abstract class PDSimpleFont extends PDFont
         throw new IllegalStateException("No AFM");
     }
 
+    @Override
     public boolean isStandard14()
     {
         // this logic is based on Acrobat's behaviour, see see PDFBOX-2372
         // the Encoding entry cannot have Differences if we want "standard 14" font handling
-        if (getEncoding() != null && getEncoding() instanceof DictionaryEncoding)
+        if (getEncoding() instanceof DictionaryEncoding)
         {
             DictionaryEncoding dictionary = (DictionaryEncoding)getEncoding();
             if (dictionary.getDifferences().size() > 0)
