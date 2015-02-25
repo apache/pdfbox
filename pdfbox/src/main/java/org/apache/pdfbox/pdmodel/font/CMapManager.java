@@ -33,6 +33,10 @@ class CMapManager
     protected static Map<String, CMap> cMapCache =
             Collections.synchronizedMap(new HashMap<String, CMap>());
 
+    private CMapManager()
+    {
+    }
+
     /**
      * Fetches the predefined CMap from disk (or cache).
      *
