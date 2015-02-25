@@ -443,7 +443,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
     public COSArray getDecode()
     {
         COSBase decode = getCOSStream().getDictionaryObject(COSName.DECODE);
-        if (decode != null && decode instanceof COSArray)
+        if (decode instanceof COSArray)
         {
             return (COSArray) decode;
         }
