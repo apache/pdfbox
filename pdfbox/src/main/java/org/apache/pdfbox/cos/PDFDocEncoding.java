@@ -29,13 +29,13 @@ class PDFDocEncoding
 {
     private static final char REPLACEMENT_CHARACTER = '\uFFFD';
 
-    private static final int[] codeToUni;
-    private static final Map<Character, Integer> uniToCode;
+    private static final int[] CODE_TO_UNI;
+    private static final Map<Character, Integer> UNI_TO_CODE;
 
     static
     {
-        codeToUni = new int[256];
-        uniToCode = new HashMap<Character, Integer>(256);
+        CODE_TO_UNI = new int[256];
+        UNI_TO_CODE = new HashMap<Character, Integer>(256);
 
         // initialize with basically ISO-8859-1
         for (int i = 0; i < 256; i++)
@@ -97,8 +97,8 @@ class PDFDocEncoding
 
     private static void set(int code, char unicode)
     {
-        codeToUni[code] = unicode;
-        uniToCode.put(unicode, code);
+        CODE_TO_UNI[code] = unicode;
+        UNI_TO_CODE.put(unicode, code);
     }
 
     /**
@@ -109,13 +109,13 @@ class PDFDocEncoding
         StringBuilder sb = new StringBuilder();
         for (byte b : bytes)
         {
-            if ((b & 0xff) >= codeToUni.length)
+            if ((b & 0xff) >= CODE_TO_UNI.length)
             {
                 sb.append('?');
             }
             else
             {
-                sb.append((char)codeToUni[b & 0xff]);
+                sb.append((char)CODE_TO_UNI[b & 0xff]);
             }
         }
         return sb.toString();
@@ -129,7 +129,7 @@ class PDFDocEncoding
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         for (char c : text.toCharArray())
         {
-            Integer code = uniToCode.get(c);
+            Integer code = UNI_TO_CODE.get(c);
             if (code == null)
             {
                 out.write(0);
@@ -149,6 +149,6 @@ class PDFDocEncoding
      */
     public static boolean containsChar(char character)
     {
-        return uniToCode.containsKey(character);
+        return UNI_TO_CODE.containsKey(character);
     }
 }
