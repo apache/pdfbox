@@ -90,6 +90,10 @@ class PDFDocEncoding
         set(0xA0, '\u20AC'); // EURO SIGN
         // end of deviations
     }
+    
+    private PDFDocEncoding()
+    {
+    }
 
     private static void set(int code, char unicode)
     {
