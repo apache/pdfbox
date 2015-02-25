@@ -582,10 +582,10 @@ public class PDEncryption
     public byte[] getPerms() throws IOException
     {
         byte[] perms = null;
-        COSString cos_perms = (COSString)dictionary.getDictionaryObject( COSName.PERMS );
-        if( cos_perms != null )
+        COSString permsCosString = (COSString)dictionary.getDictionaryObject( COSName.PERMS );
+        if( permsCosString != null )
         {
-            perms = cos_perms.getBytes();
+            perms = permsCosString.getBytes();
         }
         return perms;
     }
