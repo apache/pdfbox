@@ -19,20 +19,21 @@ package org.apache.pdfbox.contentstream.operator;
 import org.apache.pdfbox.cos.COSDictionary;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * An Operator in a PDF content stream.
  *
  * @author Ben Litchfield
  */
-public class Operator
+public final class Operator
 {
     private final String theOperator;
     private byte[] imageData;
     private COSDictionary imageParameters;
 
     /** map for singleton operator objects; use {@link ConcurrentHashMap} for better scalability with multiple threads */
-    private static final ConcurrentHashMap<String,Operator> operators = new ConcurrentHashMap<String, Operator>();
+    private static final ConcurrentMap<String,Operator> operators = new ConcurrentHashMap<String, Operator>();
 
     /**
      * Constructor.
