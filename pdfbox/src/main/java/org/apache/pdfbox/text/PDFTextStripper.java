@@ -57,8 +57,7 @@ public class PDFTextStripper extends PDFTextStreamEngine
 {
     private static float defaultIndentThreshold = 2.0f;
     private static float defaultDropThreshold = 2.5f;
-
-    private static final boolean USE_CUSTOM_QUICKSORT;
+    private static final boolean useCustomQuickSort;
     
     // enable the ability to set the default indent/drop thresholds
     // with -D system properties:
@@ -119,7 +118,7 @@ public class PDFTextStripper extends PDFTextStreamEngine
             // when run in an applet ignore and use default
             // assume 1.7 or higher so that quicksort is used
         }
-        USE_CUSTOM_QUICKSORT = !is16orLess;
+        useCustomQuickSort = !is16orLess;
     }
 
     /**
@@ -457,7 +456,7 @@ public class PDFTextStripper extends PDFTextStreamEngine
                 // because the TextPositionComparator is not transitive, but 
                 // JDK7+ enforces transitivity on comparators, we need to use
                 // a custom quicksort implementation (which is slower, unfortunately).
-                if(USE_CUSTOM_QUICKSORT) 
+                if (useCustomQuickSort) 
                 {
                     QuickSort.sort(textList, comparator);
                 }
