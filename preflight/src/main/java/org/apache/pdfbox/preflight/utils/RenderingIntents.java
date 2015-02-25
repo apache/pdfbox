@@ -42,7 +42,7 @@ import java.util.List;
  */
 public class RenderingIntents
 {
-    private static List<String> RENDERING_INTENTS;
+    private static final List<String> RENDERING_INTENTS;
 
     static
     {
@@ -54,7 +54,11 @@ public class RenderingIntents
         RENDERING_INTENTS = Collections.unmodifiableList(al);
     }
 
-    public static boolean contains(Object riArg)
+    private RenderingIntents()
+    {
+    }
+
+    public static boolean contains(String riArg)
     {
         return RENDERING_INTENTS.contains(riArg);
     }
