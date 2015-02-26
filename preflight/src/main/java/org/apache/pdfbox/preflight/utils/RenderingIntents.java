@@ -40,7 +40,7 @@ import java.util.List;
  * <li>RelativeColorimetric
  * </UL>
  */
-public class RenderingIntents
+public final class RenderingIntents
 {
     private static final List<String> RENDERING_INTENTS;
 
