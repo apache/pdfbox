@@ -245,8 +245,8 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
                 bytes[offset + 3] == 'c')
             {
                 offset += 4;
-                // skip additional CR LF characters
-                while (offset < length1 && (bytes[offset] == '\r' || bytes[offset] == '\n'))
+                // skip additional CR LF space characters
+                while (offset < length1 && (bytes[offset] == '\r' || bytes[offset] == '\n' || bytes[offset] == ' '))
                 {
                     offset++;
                 }
