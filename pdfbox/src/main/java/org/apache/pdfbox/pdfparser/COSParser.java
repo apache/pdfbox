@@ -182,28 +182,6 @@ public class COSParser extends BaseParser
         }
     }
 
-    protected COSDictionary searchXref(long startXRefOffset) throws IOException
-    {
-        // signal start of new XRef
-        xrefTrailerResolver.nextXrefObj( startXRefOffset, XRefType.TABLE );
-        bfSearchForObjects();
-        for (COSObjectKey objectKey : bfSearchCOSObjectKeyOffsets.keySet())
-        {
-            xrefTrailerResolver.setXRef(objectKey, bfSearchCOSObjectKeyOffsets.get(objectKey));
-        }
-        // parse the last trailer.
-        pdfSource.seek(trailerOffset);
-        if (!parseTrailer())
-        {
-            throw new IOException("Expected trailer object at position: "
-                    + pdfSource.getOffset());
-        }
-        xrefTrailerResolver.setStartxref(startXRefOffset);
-        COSDictionary trailer = xrefTrailerResolver.getCurrentTrailer();
-        document.setTrailer(trailer);
-        document.setIsXRefStream(false);
-        return trailer;
-    }
     /**
      * Parses cross reference tables.
      * 
@@ -267,9 +245,23 @@ public class COSParser extends BaseParser
                         streamOffset = (int)fixedOffset;
                         trailer.setInt(COSName.XREF_STM, streamOffset);
                     }
-                    pdfSource.seek(streamOffset);
-                    skipSpaces();
-                    parseXrefObjStream(prev, false); 
+                    if (streamOffset > 0)
+                    {
+                        pdfSource.seek(streamOffset);
+                        skipSpaces();
+                        parseXrefObjStream(prev, false);
+                    }
+                    else
+                    {
+                        if(isLenient)
+                        {
+                            LOG.error("Skipped XRef stream due to a corrupt offset:"+streamOffset);
+                        }
+                        else
+                        {
+                            throw new IOException("Skipped XRef stream due to a corrupt offset:"+streamOffset);
+                        }
+                    }
                 }
                 prev = trailer.getInt(COSName.PREV);
                 if (prev > -1)
@@ -516,7 +508,7 @@ public class COSParser extends BaseParser
      * @param dict the COSObject from the parent pages.
      * @param excludeObjects dictionary object reference entries with these names will not be parsed
      * 
-     * @throws IOException
+     * @throws IOException if something went wrong
      */
     protected void parseDictObjects(COSDictionary dict, COSName... excludeObjects) throws IOException
     {
@@ -1076,9 +1068,10 @@ public class COSParser extends BaseParser
     /**
      * Check if the cross reference stream can be found at the current offset.
      * 
-     * @param startXRefOffset
+     * @param startXRefOffset the expected start offset of the XRef stream
+     * @param checkOnly check only but don't repair the offset if set to true
      * @return the revised offset
-     * @throws IOException
+     * @throws IOException if something went wrong
      */
     private long checkXRefStreamOffset(long startXRefOffset, boolean checkOnly) throws IOException
     {
@@ -1117,6 +1110,7 @@ public class COSParser extends BaseParser
         // try to find a fixed offset
         return checkOnly ? -1 : calculateXRefFixedOffset(startXRefOffset, true);
     }
+    
     /**
      * Try to find a fixed offset for the given xref table/stream.
      * 
