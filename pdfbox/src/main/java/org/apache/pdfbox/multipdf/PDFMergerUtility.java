@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -387,7 +388,7 @@ public class PDFMergerUtility
         boolean mergeStructTree = false;
         int destParentTreeNextKey = -1;
         COSDictionary destParentTreeDict = null;
-        COSDictionary srcParentTreeDict = null;
+        COSDictionary srcParentTreeDict;
         COSArray destNumbersArray = null;
         COSArray srcNumbersArray = null;
         PDMarkInfo destMark = destCatalog.getMarkInfo();
@@ -433,7 +434,7 @@ public class PDFMergerUtility
             }
         }
 
-        HashMap<COSDictionary, COSDictionary> objMapping = new HashMap<COSDictionary, COSDictionary>();
+        Map<COSDictionary, COSDictionary> objMapping = new HashMap<COSDictionary, COSDictionary>();
         for (PDPage page : srcCatalog.getPages())
         {
             PDPage newPage = new PDPage((COSDictionary) cloner.cloneForNewDocument(page.getCOSObject()));
@@ -558,7 +559,7 @@ public class PDFMergerUtility
      * @param parentTreeEntry
      * @param objMapping mapping between old and new references
      */
-    private void updatePageReferences(COSDictionary parentTreeEntry, HashMap<COSDictionary, COSDictionary> objMapping)
+    private void updatePageReferences(COSDictionary parentTreeEntry, Map<COSDictionary, COSDictionary> objMapping)
     {
         COSBase page = parentTreeEntry.getDictionaryObject(COSName.PG);
         if (page instanceof COSDictionary && objMapping.containsKey(page))
@@ -581,7 +582,7 @@ public class PDFMergerUtility
         }
     }
 
-    private void updatePageReferences(COSArray parentTreeEntry, HashMap<COSDictionary, COSDictionary> objMapping)
+    private void updatePageReferences(COSArray parentTreeEntry, Map<COSDictionary, COSDictionary> objMapping)
     {
         for (int i = 0; i < parentTreeEntry.size(); i++)
         {
