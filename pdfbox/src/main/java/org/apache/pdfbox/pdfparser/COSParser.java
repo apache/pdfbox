@@ -1524,6 +1524,7 @@ public class COSParser extends BaseParser
             xrefTrailerResolver.setStartxref(0);
             trailer = xrefTrailerResolver.getTrailer();
             getDocument().setTrailer(trailer);
+            // search for the different parts of the trailer dictionary 
             for(COSObjectKey key : bfSearchCOSObjectKeyOffsets.keySet())
             {
                 Long offset = bfSearchCOSObjectKeyOffsets.get(key);
@@ -1537,10 +1538,12 @@ public class COSParser extends BaseParser
                     dictionary = parseCOSDictionary();
                     if (dictionary != null)
                     {
+                        // document catalog
                         if (COSName.CATALOG.equals(dictionary.getCOSName(COSName.TYPE)))
                         {
                             trailer.setItem(COSName.ROOT, document.getObjectFromPool(key));
                         }
+                        // info dictionary
                         else if (dictionary.containsKey(COSName.TITLE)
                                 || dictionary.containsKey(COSName.AUTHOR)
                                 || dictionary.containsKey(COSName.SUBJECT)
@@ -1551,7 +1554,17 @@ public class COSParser extends BaseParser
                         {
                             trailer.setItem(COSName.INFO, document.getObjectFromPool(key));
                         }
-                        // TODO find/assign Encrypt entry
+                        // encryption dictionary
+                        else if (dictionary.containsKey(COSName.FILTER)
+                                && (dictionary.containsKey(COSName.V)
+                                        || dictionary.containsKey(COSName.P)
+                                        || dictionary.containsKey(COSName.SUB_FILTER)
+                                        || dictionary.containsKey(COSName.ENCRYPT_META_DATA)
+                                        || dictionary.containsKey(COSName.STM_F)
+                                        || dictionary.containsKey(COSName.STR_F)))
+                        {
+                            trailer.setItem(COSName.ENCRYPT, document.getObjectFromPool(key));
+                        }
                     }
                 }
                 catch(IOException exception)
