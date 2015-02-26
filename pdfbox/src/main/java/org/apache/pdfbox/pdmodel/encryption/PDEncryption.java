@@ -75,7 +75,7 @@ public class PDEncryption
      */
     public static final int DEFAULT_VERSION = VERSION0_UNDOCUMENTED_UNSUPPORTED;
 
-    private COSDictionary dictionary;
+    private final COSDictionary dictionary;
     private SecurityHandler securityHandler;
 
     /**
@@ -154,7 +154,7 @@ public class PDEncryption
      *
      * @return The filter name contained in this encryption dictionary.
      */
-    public String getFilter()
+    public final String getFilter()
     {
         return dictionary.getNameAsString( COSName.FILTER );
     }
