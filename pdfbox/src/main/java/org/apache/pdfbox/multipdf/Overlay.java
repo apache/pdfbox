@@ -228,7 +228,7 @@ public class Overlay
     /**
      * Stores the overlay page information.
      */
-    private static class LayoutPage
+    private static final class LayoutPage
     {
         private final PDRectangle overlayMediaBox;
         private final COSStream overlayContentStream;
@@ -255,10 +255,10 @@ public class Overlay
                 resources.getCOSObject());
     }
     
-    private HashMap<Integer,LayoutPage> getLayoutPages(PDDocument doc) throws IOException
+    private Map<Integer,LayoutPage> getLayoutPages(PDDocument doc) throws IOException
     {
         int numberOfPages = doc.getNumberOfPages();
-        HashMap<Integer,LayoutPage> layoutPages = new HashMap<Integer, Overlay.LayoutPage>(numberOfPages);
+        Map<Integer,LayoutPage> layoutPages = new HashMap<Integer, Overlay.LayoutPage>(numberOfPages);
         for (int i=0;i<numberOfPages;i++)
         {
             PDPage page = doc.getPage(i);
