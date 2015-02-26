@@ -63,11 +63,11 @@ import org.apache.pdfbox.contentstream.operator.text.ShowText;
  */
 class PDFTextStreamEngine extends PDFStreamEngine
 {
-    private static final Log log = LogFactory.getLog(PDFTextStreamEngine.class);
+    private static final Log LOG = LogFactory.getLog(PDFTextStreamEngine.class);
 
     private int pageRotation;
     private PDRectangle pageSize;
-    private GlyphList glyphList;
+    private final GlyphList glyphList;
 
     /**
      * Constructor.
@@ -187,7 +187,7 @@ class PDFTextStreamEngine extends PDFStreamEngine
         }
         catch (Throwable exception)
         {
-            log.warn(exception, exception);
+            LOG.warn(exception, exception);
         }
 
         if (spaceWidthText == 0)
