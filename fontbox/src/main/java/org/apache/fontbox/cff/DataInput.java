@@ -23,7 +23,6 @@ import java.io.IOException;
  * This class contains some functionality to read a byte buffer.
  * 
  * @author Villu Ruusmann
- * @version $Revision$
  */
 public class DataInput
 {
@@ -202,5 +201,10 @@ public class DataInput
         {
             return -1;
         }
+    }
+    
+    public int length()
+    {
+        return inputBuffer.length;
     }
 }
