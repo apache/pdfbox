@@ -32,7 +32,7 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author Tilman Hausherr
  */
-public class MetaUtil
+public final class MetaUtil
 {
     private static final Log LOG = LogFactory.getLog(MetaUtil.class);
 
