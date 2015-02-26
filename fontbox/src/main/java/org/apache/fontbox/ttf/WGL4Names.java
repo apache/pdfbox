@@ -22,7 +22,7 @@ import java.util.Map;
 /**
  * Windows Glyph List 4 (WGL4) names for Mac glyphs.
  */
-public class WGL4Names
+public final class WGL4Names
 {
     /**
      * The number of standard mac glyph names.
