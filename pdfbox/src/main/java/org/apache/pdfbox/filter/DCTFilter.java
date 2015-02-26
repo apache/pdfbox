@@ -28,10 +28,12 @@ import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadata;
+import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageInputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
 /**
@@ -61,17 +63,32 @@ final class DCTFilter extends Filter
             }
             
             reader.setInput(iis);
+            
+            String numChannels = getNumChannels(reader);
 
             // get the raster using horrible JAI workarounds
             ImageIO.setUseCache(false);
             Raster raster;
-            try
+
+            // Strategy: use read() for RGB or "can't get metadata"
+            // use readRaster() for CMYK and gray and as fallback if read() fails 
+            // after "can't get metadata" because "no meta" file was CMYK
+            if ("3".equals(numChannels) || numChannels.isEmpty())
             {
-                // I'd like to use ImageReader#readRaster but it is buggy and can't read RGB correctly
-                BufferedImage image = reader.read(0);
-                raster = image.getRaster();
+                try
+                {
+                    // I'd like to use ImageReader#readRaster but it is buggy and can't read RGB correctly
+                    BufferedImage image = reader.read(0);
+                    raster = image.getRaster();
+                }
+                catch (IIOException e)
+                {
+                    // JAI can't read CMYK JPEGs using ImageReader#read or ImageIO.read but
+                    // fortunately ImageReader#readRaster isn't buggy when reading 4-channel files
+                    raster = reader.readRaster(0, null);
+                }
             }
-            catch (IIOException e)
+            else
             {
                 // JAI can't read CMYK JPEGs using ImageReader#read or ImageIO.read but
                 // fortunately ImageReader#readRaster isn't buggy when reading 4-channel files
@@ -100,11 +117,18 @@ final class DCTFilter extends Filter
                         field.setAccessible(true);
                         int colorSpaceCode = field.getInt(reader);
                         
-                        if (colorSpaceCode == 7 || colorSpaceCode == 8 || colorSpaceCode == 9) {
-                            transform = 2; // YCCK
-                        } else if (colorSpaceCode == 4) {
-                            transform = 0; // CMYK
-                        } else {
+                        if (colorSpaceCode == 7 || colorSpaceCode == 8 || colorSpaceCode == 9)
+                        {
+                            // YCCK
+                            transform = 2;
+                        }
+                        else if (colorSpaceCode == 4)
+                        {
+                            // CMYK
+                            transform = 0;
+                        }
+                        else
+                        {
                             throw new IOException("Unexpected color space: " + colorSpaceCode);
                         }
                     }
@@ -227,6 +251,30 @@ final class DCTFilter extends Filter
         }
         return writableRaster;
     }
+    
+    // returns the number of channels as a string, or an empty string if there is an error getting the meta data
+    private String getNumChannels(ImageReader reader) throws DOMException, IOException
+    {
+        try
+        {
+            IIOMetadata imageMetadata = reader.getImageMetadata(0);
+            if (imageMetadata == null)
+            {
+                return "";
+            }
+            IIOMetadataNode metaTree = (IIOMetadataNode) imageMetadata.getAsTree("javax_imageio_1.0");
+            Element numChannelsItem = (Element) metaTree.getElementsByTagName("NumChannels").item(0);
+            if (numChannelsItem == null)
+            {
+                return "";
+            }
+            return numChannelsItem.getAttribute("value");
+        }
+        catch (IOException e)
+        {
+            return "";
+        }
+    }    
 
     // clamps value to 0-255 range
     private int clamp(float value)
