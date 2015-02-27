@@ -33,8 +33,8 @@ import javax.imageio.stream.ImageInputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 /**
  * Decompresses data encoded using a DCT (discrete cosine transform)
@@ -148,9 +148,16 @@ final class DCTFilter extends Filter
                 // 0 = Unknown (RGB or CMYK), 1 = YCbCr, 2 = YCCK
                 switch (colorTransform)
                 {
-                    case 0: break; // already CMYK
-                    case 1: LOG.warn("YCbCr JPEGs not implemented"); break; // TODO YCbCr
-                    case 2: raster = fromYCCKtoCMYK(raster); break;
+                    case 0:
+                        // already CMYK
+                        break;
+                    case 1:
+                        // TODO YCbCr
+                        LOG.warn("YCbCr JPEGs not implemented");
+                        break;
+                    case 2:
+                        raster = fromYCCKtoCMYK(raster);
+                        break;
                 }
             }
             else if (raster.getNumBands() == 3)
@@ -173,18 +180,18 @@ final class DCTFilter extends Filter
         return new DecodeResult(parameters);
     }
 
-    // reads the APP14 Adobe transform tag
+    // reads the APP14 Adobe transform tag and returns its value, or 0 if unknown
     private Integer getAdobeTransform(IIOMetadata metadata)
     {
         Element tree = (Element)metadata.getAsTree("javax_imageio_jpeg_image_1.0");
         Element markerSequence = (Element)tree.getElementsByTagName("markerSequence").item(0);
-
-        if (markerSequence.getElementsByTagName("app14Adobe") != null)
+        NodeList app14AdobeNodeList = markerSequence.getElementsByTagName("app14Adobe");
+        if (app14AdobeNodeList != null && app14AdobeNodeList.getLength() > 0)
         {
-            Element adobe = (Element)markerSequence.getElementsByTagName("app14Adobe").item(0);
+            Element adobe = (Element) app14AdobeNodeList.item(0);
             return Integer.parseInt(adobe.getAttribute("transform"));
         }
-        return 0; // Unknown
+        return 0;
     }
 
     // converts YCCK image to CMYK. YCCK is an equivalent encoding for
@@ -253,7 +260,7 @@ final class DCTFilter extends Filter
     }
     
     // returns the number of channels as a string, or an empty string if there is an error getting the meta data
-    private String getNumChannels(ImageReader reader) throws DOMException, IOException
+    private String getNumChannels(ImageReader reader) throws IOException
     {
         try
         {
