@@ -119,12 +119,29 @@ public class COSObjectKey implements Comparable<COSObjectKey>
     @Override
     public int compareTo(COSObjectKey other)
     {
-        int compareNumber = Long.compare(getNumber(), other.getNumber());
-        if (compareNumber == 0)
+        if (getNumber() < other.getNumber())
         {
-            return Long.compare(getGeneration(), other.getGeneration());
+            return -1;
         }
-        return compareNumber;
+        else if (getNumber() > other.getNumber())
+        {
+            return 1;
+        }
+        else
+        {
+            if (getGeneration() < other.getGeneration())
+            {
+                return -1;
+            }
+            else if (getGeneration() > other.getGeneration())
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
     }
 
 }
