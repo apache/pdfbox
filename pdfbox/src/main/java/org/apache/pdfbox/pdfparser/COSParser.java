@@ -1532,10 +1532,9 @@ public class COSParser extends BaseParser
                 readObjectNumber();
                 readGenerationNumber();
                 readExpectedString(OBJ_MARKER, true);
-                COSDictionary dictionary = null;
                 try
                 {
-                    dictionary = parseCOSDictionary();
+                    COSDictionary dictionary = parseCOSDictionary();
                     if (dictionary != null)
                     {
                         // document catalog
