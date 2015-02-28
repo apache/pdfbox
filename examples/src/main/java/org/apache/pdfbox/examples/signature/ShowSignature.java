@@ -90,7 +90,7 @@ public class ShowSignature
                             System.out.println( "Certificate found" );
                             System.out.println( "Name=" + cert.getDictionaryObject( COSName.NAME ) );
                             System.out.println( "Modified=" + cert.getDictionaryObject( COSName.M ) );
-                            COSName subFilter = (COSName)cert.getDictionaryObject( COSName.SUBFILTER );
+                            COSName subFilter = (COSName)cert.getDictionaryObject( COSName.SUB_FILTER );
                             if( subFilter != null )
                             {
                                 if( subFilter.getName().equals( "adbe.x509.rsa_sha1" ) )

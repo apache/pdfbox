@@ -203,8 +203,8 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName ENCODING = new COSName("Encoding");
     public static final COSName ENCODING_90MS_RKSJ_H = new COSName("90ms-RKSJ-H");
     public static final COSName ENCODING_90MS_RKSJ_V = new COSName("90ms-RKSJ-V");
-    public static final COSName ENCODING_ETEN_B5_H = new COSName("ETen?B5?H");
-    public static final COSName ENCODING_ETEN_B5_V = new COSName("ETen?B5?V");
+    public static final COSName ENCODING_ETEN_B5_H = new COSName("ETen-B5-H");
+    public static final COSName ENCODING_ETEN_B5_V = new COSName("ETen-B5-V");
     public static final COSName ENCRYPT = new COSName("Encrypt");
     public static final COSName ENCRYPT_META_DATA = new COSName("EncryptMetadata");
     public static final COSName END_OF_LINE = new COSName("EndOfLine");
@@ -445,7 +445,6 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName STRUCT_PARENTS = new COSName("StructParents");
     public static final COSName STRUCT_TREE_ROOT = new COSName("StructTreeRoot");
     public static final COSName SUB_FILTER = new COSName("SubFilter");
-    public static final COSName SUBFILTER = new COSName("SubFilter");
     public static final COSName SUBJ = new COSName("Subj");
     public static final COSName SUBJECT = new COSName("Subject");
     public static final COSName SUBTYPE = new COSName("Subtype");
