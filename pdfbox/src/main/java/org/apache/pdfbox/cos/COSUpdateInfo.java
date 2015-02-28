@@ -14,33 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.pdfbox.cos;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-
-import org.junit.Test;
-
-/**
- * Test class for {@link COSDictionary}.
- */
-public class TestCOSDictionary
+public interface COSUpdateInfo 
 {
-    
-    /** The COSDictionary abstraction of the object being tested. */
-    protected COSDictionary testCOSDictionary = new COSDictionary();;
-    
     /**
-     * Tests isNeedToBeUpdate() and setNeedToBeUpdate() - tests the getter/setter methods.
+     * Get the update state for the COSWriter.
+     * 
+     * @return the update state.
      */
-    @Test
-    public void testIsSetNeedToBeUpdate()
-    {
-        testCOSDictionary.setNeedToBeUpdated(true);
-        assertTrue(testCOSDictionary.isNeedToBeUpdated());
-        testCOSDictionary.setNeedToBeUpdated(false);
-        assertFalse(testCOSDictionary.isNeedToBeUpdated());
-    }
+    public abstract boolean isNeedToBeUpdated();
+
+    /**
+     * Set the update state of the dictionary for the COSWriter.
+     * 
+     * @param flag the update state.
+     */
+    public abstract void setNeedToBeUpdated(boolean flag);
 
 }

@@ -21,14 +21,15 @@ import java.io.IOException;
 /**
  * This class represents a PDF object.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.37 $
+ * @author Ben Litchfield
+ * 
  */
-public class COSObject extends COSBase
+public class COSObject extends COSBase implements COSUpdateInfo
 {
     private COSBase baseObject;
     private COSInteger objectNumber;
     private COSInteger generationNumber;
+    private boolean needToBeUpdated;
 
     /**
      * Constructor.
@@ -155,4 +156,27 @@ public class COSObject extends COSBase
     {
         return getObject() != null ? getObject().accept( visitor ) : COSNull.NULL.accept( visitor );
     }
+    
+    /**
+     * Get the update state for the COSWriter.
+     * 
+     * @return the update state.
+     */
+    @Override
+    public boolean isNeedToBeUpdated() 
+    {
+      return needToBeUpdated;
+    }
+    
+    /**
+     * Set the update state of the dictionary for the COSWriter.
+     * 
+     * @param flag the update state.
+     */
+    @Override
+    public void setNeedToBeUpdated(boolean flag) 
+    {
+      needToBeUpdated = flag;
+    }
+
 }

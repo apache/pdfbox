@@ -29,10 +29,10 @@ import org.apache.pdfbox.util.DateConverter;
 /**
  * This class represents a dictionary where name/value pairs reside.
  *
- * @author <a href="ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.32 $
+ * @author Ben Litchfield
+ * 
  */
-public class COSDictionary extends COSBase
+public class COSDictionary extends COSBase implements COSUpdateInfo
 {
     private static final String PATH_SEPARATOR = "/";
     private boolean needToBeUpdated;
@@ -1320,26 +1320,17 @@ public class COSDictionary extends COSBase
         return visitor.visitFromDictionary(this);
     }
     
-    /**
-     * Get the update state for the COSWriter.
-     * 
-     * @return the update state.
-     */
+    @Override
     public boolean isNeedToBeUpdated() 
     {
       return needToBeUpdated;
     }
     
-    /**
-     * Set the update state of the dictionary for the COSWriter.
-     * 
-     * @param flag the update state.
-     */
+    @Override
     public void setNeedToBeUpdated(boolean flag) 
     {
       needToBeUpdated = flag;
     }
-    
 
     /**
      * This will add all of the dictionarys keys/values to this dictionary. Only called when adding keys to a trailer

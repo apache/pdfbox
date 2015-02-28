@@ -55,6 +55,7 @@ import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.cos.COSUpdateInfo;
 import org.apache.pdfbox.cos.ICOSVisitor;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdfparser.PDFXRefStream;
@@ -484,17 +485,12 @@ public class COSWriter implements ICOSVisitor, Closeable
             {
                 cosBase = keyObject.get(cosObjectKey);
             }
-
-            if (actual != null && objectKeys.containsKey(actual)
-                    && object instanceof COSDictionary
-                    && cosBase instanceof COSDictionary
-                    && !((COSDictionary) object).isNeedToBeUpdated()
-                    && !((COSDictionary) cosBase).isNeedToBeUpdated())
+            if (actual != null && objectKeys.containsKey(actual) 
+                    && object instanceof COSUpdateInfo && !((COSUpdateInfo)object).isNeedToBeUpdated() 
+                    && cosBase instanceof COSUpdateInfo && !((COSUpdateInfo)cosBase).isNeedToBeUpdated() )
             {
                 return;
-
             }
-
             objectsToWrite.add( object );
             objectsToWriteSet.add( object );
             if( actual != null )
