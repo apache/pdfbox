@@ -20,12 +20,12 @@ package org.apache.pdfbox.cos;
  * Object representing the physical reference to an indirect pdf object.
  *
  * @author Michael Traut
- * @version $Revision: 1.5 $
+ * 
  */
 public class COSObjectKey implements Comparable<COSObjectKey>
 {
-    private long number;
-    private long generation;
+    private int number;
+    private int generation;
 
     /**
      * PDFObjectKey constructor comment.
@@ -34,7 +34,7 @@ public class COSObjectKey implements Comparable<COSObjectKey>
      */
     public COSObjectKey(COSObject object)
     {
-        this( object.getObjectNumber().longValue(), object.getGenerationNumber().longValue() );
+        this( object.getObjectNumber().intValue(), object.getGenerationNumber().intValue() );
     }
 
     /**
@@ -43,7 +43,7 @@ public class COSObjectKey implements Comparable<COSObjectKey>
      * @param num The object number.
      * @param gen The object generation number.
      */
-    public COSObjectKey(long num, long gen)
+    public COSObjectKey(int num, int gen)
     {
         number = num;
         generation = gen;
@@ -65,7 +65,7 @@ public class COSObjectKey implements Comparable<COSObjectKey>
      *
      * @return The objects generation number.
      */
-    public long getGeneration()
+    public int getGeneration()
     {
         return generation;
     }
@@ -74,7 +74,7 @@ public class COSObjectKey implements Comparable<COSObjectKey>
      *
      * @return The object's id.
      */
-    public long getNumber()
+    public int getNumber()
     {
         return number;
     }
@@ -85,14 +85,14 @@ public class COSObjectKey implements Comparable<COSObjectKey>
     @Override
     public int hashCode()
     {
-        return (int)(number + generation);
+        return number + generation;
     }
     /**
      * This will set the objects generation number.
      *
      * @param newGeneration The objects generation number.
      */
-    public void setGeneration(long newGeneration)
+    public void setGeneration(int newGeneration)
     {
         generation = newGeneration;
     }
@@ -101,21 +101,17 @@ public class COSObjectKey implements Comparable<COSObjectKey>
      *
      * @param newNumber The objects number.
      */
-    public void setNumber(long newNumber)
+    public void setNumber(int newNumber)
     {
         number = newNumber;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String toString()
     {
-        return "" + getNumber() + " " + getGeneration() + " R";
+        return Integer.toString(number) + " " +  Integer.toString(generation) + " R";
     }
 
-    /** {@inheritDoc} */
     @Override
     public int compareTo(COSObjectKey other)
     {

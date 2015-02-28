@@ -51,7 +51,7 @@ import org.apache.pdfbox.cos.COSObjectKey;
  * using {@link #setStartxref(long)}. This is used to build the chain of
  * active xref/trailer objects used for creating document trailer and xref table.
  *
- * @author Timo Böhme (timo.boehme at ontochem.com)
+ * @author Timo Böhme
  */
 public class XrefTrailerResolver
 {
@@ -313,14 +313,14 @@ public class XrefTrailerResolver
      *          or <code>null</code> if {@link #setStartxref(long)} was not
      *          called before so that no resolved xref table exists
      */
-    public Set<Long> getContainedObjectNumbers( final int objstmObjNr ) 
+    public Set<Integer> getContainedObjectNumbers( final int objstmObjNr ) 
     {
         if ( resolvedXrefTrailer == null )
         {
             return null;
         }
-        final Set<Long> refObjNrs = new HashSet<Long>();
-        final int       cmpVal    = - objstmObjNr;
+        final Set<Integer> refObjNrs = new HashSet<Integer>();
+        final int cmpVal = - objstmObjNr;
         
         for ( Entry<COSObjectKey,Long> xrefEntry : resolvedXrefTrailer.xrefTable.entrySet() ) 
         {
