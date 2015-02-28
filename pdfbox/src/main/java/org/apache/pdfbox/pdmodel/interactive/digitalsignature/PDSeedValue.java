@@ -283,7 +283,7 @@ public class PDSeedValue implements COSObjectable
     public List<String> getSubFilter()
     {
         List<String> retval = null;
-        COSArray fields = (COSArray)dictionary.getDictionaryObject(COSName.SUBFILTER);
+        COSArray fields = (COSArray)dictionary.getDictionaryObject(COSName.SUB_FILTER);
 
         if (fields != null)
         {
@@ -310,7 +310,7 @@ public class PDSeedValue implements COSObjectable
      */
     public void setSubFilter(List<COSName> subfilter)
     {
-        dictionary.setItem(COSName.SUBFILTER, COSArrayList.converterToCOSArray(subfilter));
+        dictionary.setItem(COSName.SUB_FILTER, COSArrayList.converterToCOSArray(subfilter));
     }
 
     /**
