@@ -1658,9 +1658,9 @@ public abstract class BaseParser implements Closeable
      * @return the object number being read.
      * @throws IOException if an I/O error occurs
      */
-    protected long readObjectNumber() throws IOException
+    protected int readObjectNumber() throws IOException
     {
-        long retval = readLong();
+        int retval = readInt();
         if (retval < 0 || retval >= OBJECT_NUMBER_THRESHOLD)
         {
             throw new IOException("Object Number '" + retval + "' has more than 10 digits or is negative");
@@ -1826,7 +1826,7 @@ public abstract class BaseParser implements Closeable
     protected COSObjectKey parseObjectKey(boolean continueOnError) throws IOException
     {
         //we are going to parse a normal object
-        long number = -1;
+        int number = -1;
         int genNum;
         boolean missingObjectNumber = false;
         try

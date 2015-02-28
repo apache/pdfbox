@@ -339,8 +339,8 @@ public class PreflightParser extends PDFParser
         while (true)
         {
             // just after the xref<EOL> there are an integer
-            long currObjID; // first obj id
-            long count; // the number of objects in the xref table
+            int currObjID; // first obj id
+            int count; // the number of objects in the xref table
 
             long offset = pdfSource.getOffset();
             String line = readLine();
@@ -358,7 +358,7 @@ public class PreflightParser extends PDFParser
                 // reset pdfSource cursor to read xref information
                 pdfSource.seek(offset);
                 currObjID = readObjectNumber(); // first obj id
-                count = readLong(); // the number of objects in the xref table
+                count = readInt(); // the number of objects in the xref table
             }
 
             skipSpaces();
@@ -390,7 +390,7 @@ public class PreflightParser extends PDFParser
                 {
                     try
                     {
-                        long currOffset = Long.parseLong(splitString[0]);
+                        int currOffset = Integer.parseInt(splitString[0]);
                         int currGenID = Integer.parseInt(splitString[1]);
                         COSObjectKey objKey = new COSObjectKey(currObjID, currGenID);
                         xrefTrailerResolver.setXRef(objKey, currOffset);
@@ -784,7 +784,7 @@ public class PreflightParser extends PDFParser
                     parser.close();
 
                     // get set of object numbers referenced for this object stream
-                    final Set<Long> refObjNrs = xrefTrailerResolver.getContainedObjectNumbers(objstmObjNr);
+                    final Set<Integer> refObjNrs = xrefTrailerResolver.getContainedObjectNumbers(objstmObjNr);
 
                     // register all objects which are referenced to be contained in object stream
                     for (COSObject next : parser.getObjects())

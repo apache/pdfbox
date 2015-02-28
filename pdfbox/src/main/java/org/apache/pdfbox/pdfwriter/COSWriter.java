@@ -176,7 +176,7 @@ public class COSWriter implements ICOSVisitor, Closeable
     private long startxref = 0;
 
     // the current object number
-    private long number = 0;
+    private int number = 0;
 
     // maps the object to the keys generated in the writer
     // these are used for indirect references in other objects
@@ -265,7 +265,7 @@ public class COSWriter implements ICOSVisitor, Closeable
           
           Map<COSObjectKey, Long> xrefTable = cosDoc.getXrefTable();
           Set<COSObjectKey> keySet = xrefTable.keySet();
-          long highestNumber=0;
+          int highestNumber=0;
           for ( COSObjectKey cosObjectKey : keySet ) 
           {
             COSBase object = cosDoc.getObjectFromPool(cosObjectKey).getObject();
@@ -275,7 +275,7 @@ public class COSWriter implements ICOSVisitor, Closeable
                 keyObject.put(cosObjectKey,object);
             }
             
-            long num = cosObjectKey.getNumber();
+            int num = cosObjectKey.getNumber();
             if (num > highestNumber)
             {
                 highestNumber=num;
@@ -327,7 +327,7 @@ public class COSWriter implements ICOSVisitor, Closeable
      *
      * @return The current object number.
      */
-    protected long getNumber()
+    protected int getNumber()
     {
         return number;
     }
@@ -386,7 +386,7 @@ public class COSWriter implements ICOSVisitor, Closeable
      *
      * @param newNumber The new object number.
      */
-    protected void setNumber(long newNumber)
+    protected void setNumber(int newNumber)
     {
         number = newNumber;
     }

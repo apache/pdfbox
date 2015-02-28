@@ -569,7 +569,7 @@ public class COSParser extends BaseParser
                                 // object within object stream;
                                 // get offset of object stream
                                 fileOffset = xrefTrailerResolver.getXrefTable().get(
-                                        new COSObjectKey(-fileOffset, 0));
+                                        new COSObjectKey((int)-fileOffset, 0));
                                 if ((fileOffset == null) || (fileOffset <= 0))
                                 {
                                     throw new IOException(
@@ -787,8 +787,7 @@ public class COSParser extends BaseParser
                     parser.close();
                     // get set of object numbers referenced for this object
                     // stream
-                    final Set<Long> refObjNrs = xrefTrailerResolver
-                            .getContainedObjectNumbers(objstmObjNr);
+                    final Set<Integer> refObjNrs = xrefTrailerResolver.getContainedObjectNumbers(objstmObjNr);
 
                     // register all objects which are referenced to be contained
                     // in object stream
@@ -1279,10 +1278,10 @@ public class COSParser extends BaseParser
                                 byte[] objIDBytes = pdfSource.readFully(length);
                                 String objIdString = new String(objIDBytes, 0,
                                         objIDBytes.length, ISO_8859_1);
-                                Long objectID;
+                                Integer objectID;
                                 try
                                 {
-                                    objectID = Long.valueOf(objIdString);
+                                    objectID = Integer.valueOf(objIdString);
                                 }
                                 catch (NumberFormatException exception)
                                 {
@@ -1777,7 +1776,7 @@ public class COSParser extends BaseParser
         while(true)
         {
             // first obj id
-            long currObjID = readObjectNumber(); 
+            int currObjID = readObjectNumber(); 
             
             // the number of objects in the xref table
             long count = readLong();
@@ -1807,7 +1806,7 @@ public class COSParser extends BaseParser
                 {
                     try
                     {
-                        long currOffset = Long.parseLong(splitString[0]);
+                        int currOffset = Integer.parseInt(splitString[0]);
                         int currGenID = Integer.parseInt(splitString[1]);
                         COSObjectKey objKey = new COSObjectKey(currObjID, currGenID);
                         xrefTrailerResolver.setXRef(objKey, currOffset);
