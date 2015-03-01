@@ -43,7 +43,7 @@ final class CCITTFaxFilter extends Filter
     private static final Log LOG = LogFactory.getLog(CCITTFaxFilter.class);
 
     @Override
-    public final DecodeResult decode(InputStream encoded, OutputStream decoded,
+    public DecodeResult decode(InputStream encoded, OutputStream decoded,
                                          COSDictionary parameters, int index) throws IOException
     {
         DecodeResult result = new DecodeResult(new COSDictionary());
@@ -125,7 +125,7 @@ final class CCITTFaxFilter extends Filter
     }
 
     @Override
-    protected final void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
+    protected void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
             throws IOException
     {
         LOG.warn("CCITTFaxDecode.encode is not implemented yet, skipping this stream.");

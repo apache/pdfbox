@@ -51,7 +51,7 @@ final class JBIG2Filter extends Filter
     private static final Log LOG = LogFactory.getLog(JBIG2Filter.class);
 
     @Override
-    public final DecodeResult decode(InputStream encoded, OutputStream decoded,
+    public DecodeResult decode(InputStream encoded, OutputStream decoded,
                                          COSDictionary parameters, int index) throws IOException
     {
         ImageReader reader = findImageReader("JBIG2", "jbig2-imageio is not installed");
@@ -138,7 +138,7 @@ final class JBIG2Filter extends Filter
     }
 
     @Override
-    protected final void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
+    protected void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
             throws IOException
     {
         throw new UnsupportedOperationException("JBIG2 encoding not implemented");
