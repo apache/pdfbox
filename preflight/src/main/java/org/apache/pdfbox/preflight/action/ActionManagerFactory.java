@@ -90,15 +90,11 @@ public class ActionManagerFactory
 
         COSDocument cosDocument = ctx.getDocument().getDocument();
         COSBase oaDict = dictionary.getDictionaryObject(DICTIONARY_KEY_OPEN_ACTION);
-        if (oaDict != null)
+        if (oaDict != null && !COSUtils.isArray(oaDict, cosDocument))
         {
-            if (!COSUtils.isArray(oaDict, cosDocument))
-            {
-                callCreateAction(oaDict, ctx, result, alreadyCreated);
-            }
-            // else Nothing to do because of an array contains a Destination not an
-            // action.
+            callCreateAction(oaDict, ctx, result, alreadyCreated);
         }
+        // else nothing to do because an array contains a Destination and not an Action.
 
         COSBase aa = dictionary.getDictionaryObject(DICTIONARY_KEY_ADDITIONAL_ACTION);
         if (aa != null)
