@@ -548,7 +548,7 @@ public class COSDocument extends COSBase implements Closeable
                 COSObjectKey key = new COSObjectKey( next );
                 if ( objectPool.get(key) == null || objectPool.get(key).getObject() == null ||
                      // xrefTable stores negated objNr of objStream for objects in objStreams
-                     (xrefTable.containsKey(key) && xrefTable.get(key) == -objStream.getObjectNumber().longValue()) )
+                     (xrefTable.containsKey(key) && xrefTable.get(key) == -objStream.getObjectNumber()) )
                 {
                     COSObject obj = getObjectFromPool(key);
                     obj.setObject(next.getObject());
@@ -579,8 +579,8 @@ public class COSDocument extends COSBase implements Closeable
             obj = new COSObject(null);
             if( key != null )
             {
-                obj.setObjectNumber( COSInteger.get( key.getNumber() ) );
-                obj.setGenerationNumber( COSInteger.get( key.getGeneration() ) );
+                obj.setObjectNumber(key.getNumber());
+                obj.setGenerationNumber(key.getGeneration());
                 objectPool.put(key, obj);
             }
         }

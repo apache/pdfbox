@@ -24,7 +24,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDocument;
-import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 
@@ -85,15 +84,13 @@ public class PDFObjectStreamParser extends BaseParser
             while( (cosObject = parseDirObject()) != null )
             {
                 object = new COSObject(cosObject);
-                object.setGenerationNumber( COSInteger.ZERO );
+                object.setGenerationNumber(0);
                 if (objectCounter >= objectNumbers.size())
                 {
                     LOG.error("/ObjStm (object stream) has more objects than /N " + numberOfObjects);
                     break;
                 }
-                COSInteger objNum =
-                    COSInteger.get( objectNumbers.get( objectCounter).intValue() );
-                object.setObjectNumber( objNum );
+                object.setObjectNumber( objectNumbers.get( objectCounter) );
                 streamObjects.add( object );
                 if(LOG.isDebugEnabled())
                 {
