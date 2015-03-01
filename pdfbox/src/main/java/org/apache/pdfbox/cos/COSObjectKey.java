@@ -24,9 +24,9 @@ package org.apache.pdfbox.cos;
  */
 public class COSObjectKey implements Comparable<COSObjectKey>
 {
-    private int number;
-    private int generation;
-
+    private final long number;
+    private final int generation;
+    
     /**
      * PDFObjectKey constructor comment.
      *
@@ -43,7 +43,7 @@ public class COSObjectKey implements Comparable<COSObjectKey>
      * @param num The object number.
      * @param gen The object generation number.
      */
-    public COSObjectKey(int num, int gen)
+    public COSObjectKey(long num, int gen)
     {
         number = num;
         generation = gen;
@@ -55,9 +55,10 @@ public class COSObjectKey implements Comparable<COSObjectKey>
     @Override
     public boolean equals(Object obj)
     {
-        return (obj instanceof COSObjectKey) &&
-               ((COSObjectKey)obj).getNumber() == getNumber() &&
-               ((COSObjectKey)obj).getGeneration() == getGeneration();
+        COSObjectKey objToBeCompared = obj instanceof COSObjectKey ? (COSObjectKey)obj : null;
+        return objToBeCompared != null &&
+                objToBeCompared.getNumber() == getNumber() &&
+                objToBeCompared.getGeneration() == getGeneration();
     }
 
     /**
@@ -74,7 +75,7 @@ public class COSObjectKey implements Comparable<COSObjectKey>
      *
      * @return The object's id.
      */
-    public int getNumber()
+    public long getNumber()
     {
         return number;
     }
@@ -85,31 +86,13 @@ public class COSObjectKey implements Comparable<COSObjectKey>
     @Override
     public int hashCode()
     {
-        return number + generation;
-    }
-    /**
-     * This will set the objects generation number.
-     *
-     * @param newGeneration The objects generation number.
-     */
-    public void setGeneration(int newGeneration)
-    {
-        generation = newGeneration;
-    }
-    /**
-     * This will set the objects id.
-     *
-     * @param newNumber The objects number.
-     */
-    public void setNumber(int newNumber)
-    {
-        number = newNumber;
+        return Long.valueOf(number+generation).hashCode();
     }
 
     @Override
     public String toString()
     {
-        return Integer.toString(number) + " " +  Integer.toString(generation) + " R";
+        return Long.toString(number) + " " +  Integer.toString(generation) + " R";
     }
 
     @Override

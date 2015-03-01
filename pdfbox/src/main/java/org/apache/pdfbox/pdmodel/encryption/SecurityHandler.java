@@ -393,7 +393,7 @@ public abstract class SecurityHandler
      *
      * @throws IOException If there is an error getting the stream data.
      */
-    public void encryptStream(COSStream stream, long objNum, long genNum) throws IOException
+    public void encryptStream(COSStream stream, long objNum, int genNum) throws IOException
     {
         InputStream encryptedStream = stream.getFilteredStream();
         encryptData(objNum, genNum, encryptedStream, stream.createFilteredStream(), false /* encrypt */);
@@ -457,7 +457,7 @@ public abstract class SecurityHandler
      *
      * @throws IOException If an error occurs writing the new string.
      */
-    public void encryptString(COSString string, long objNum, long genNum) throws IOException
+    public void encryptString(COSString string, long objNum, int genNum) throws IOException
     {
         ByteArrayInputStream data = new ByteArrayInputStream(string.getBytes());
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();

@@ -547,7 +547,7 @@ public class COSParser extends BaseParser
                 {
                     COSObject obj = (COSObject) baseObj;
                     long objId = getObjectId(obj);
-                    COSObjectKey objKey = new COSObjectKey(obj.getObjectNumber().intValue(), obj
+                    COSObjectKey objKey = new COSObjectKey(obj.getObjectNumber().longValue(), obj
                             .getGenerationNumber().intValue());
 
                     if (!(parsedObjects.contains(objId) /*
@@ -662,7 +662,7 @@ public class COSParser extends BaseParser
      * 
      * @throws IOException If an IO error occurs.
      */
-    protected COSBase parseObjectDynamically(int objNr, int objGenNr,
+    protected COSBase parseObjectDynamically(long objNr, int objGenNr,
             boolean requireExistingNotCompressedObj) throws IOException
     {
         // ---- create object key and get object (container) from pool
@@ -696,7 +696,7 @@ public class COSParser extends BaseParser
 
                 // ---- we must have an indirect object
                 final long readObjNr = readObjectNumber();
-                final long readObjGen = readGenerationNumber();
+                final int readObjGen = readGenerationNumber();
                 readExpectedString(OBJ_MARKER, true);
 
                 // ---- consistency check
@@ -787,7 +787,7 @@ public class COSParser extends BaseParser
                     parser.close();
                     // get set of object numbers referenced for this object
                     // stream
-                    final Set<Integer> refObjNrs = xrefTrailerResolver.getContainedObjectNumbers(objstmObjNr);
+                    final Set<Long> refObjNrs = xrefTrailerResolver.getContainedObjectNumbers(objstmObjNr);
 
                     // register all objects which are referenced to be contained
                     // in object stream
@@ -1161,7 +1161,7 @@ public class COSParser extends BaseParser
                 if (objectOffset != null && objectOffset >= 0)
                 {
                     long objectNr = objectKey.getNumber();
-                    long objectGen = objectKey.getGeneration();
+                    int objectGen = objectKey.getGeneration();
                     String objectString = createObjectString(objectNr, objectGen);
                     if (!checkObjectId(objectString, objectOffset))
                     {
@@ -1208,9 +1208,9 @@ public class COSParser extends BaseParser
      * @param genID the generation id
      * @return the generated string
      */
-    private String createObjectString(long objectID, long genID)
+    private String createObjectString(long objectID, int genID)
     {
-        return Long.toString(objectID) + " " + Long.toString(genID) + " obj";
+        return Long.toString(objectID) + " " + Integer.toString(genID) + " obj";
     }
 
     /**
@@ -1278,10 +1278,10 @@ public class COSParser extends BaseParser
                                 byte[] objIDBytes = pdfSource.readFully(length);
                                 String objIdString = new String(objIDBytes, 0,
                                         objIDBytes.length, ISO_8859_1);
-                                Integer objectID;
+                                Long objectID;
                                 try
                                 {
-                                    objectID = Integer.valueOf(objIdString);
+                                    objectID = Long.valueOf(objIdString);
                                 }
                                 catch (NumberFormatException exception)
                                 {
@@ -1776,7 +1776,7 @@ public class COSParser extends BaseParser
         while(true)
         {
             // first obj id
-            int currObjID = readObjectNumber(); 
+            long currObjID = readObjectNumber(); 
             
             // the number of objects in the xref table
             long count = readLong();

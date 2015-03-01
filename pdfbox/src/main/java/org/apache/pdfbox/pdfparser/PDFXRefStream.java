@@ -47,9 +47,9 @@ public class PDFXRefStream implements PDFXRef
 
     private static final int ENTRY_FREE = 0;
 
-    private final Map<Integer, Object> streamData;
+    private final Map<Long, Object> streamData;
 
-    private final Set<Integer> objectNumbers;
+    private final Set<Long> objectNumbers;
 
     private final COSStream stream;
 
@@ -61,8 +61,8 @@ public class PDFXRefStream implements PDFXRef
     public PDFXRefStream()
     {
         this.stream = new COSStream(new COSDictionary());
-        streamData = new TreeMap<Integer, Object>();
-        objectNumbers = new TreeSet<Integer>();
+        streamData = new TreeMap<Long, Object>();
+        objectNumbers = new TreeSet<Long>();
     }
 
     /**
@@ -81,9 +81,9 @@ public class PDFXRefStream implements PDFXRef
         stream.setFilters(COSName.FLATE_DECODE);
 
         {
-            List<Integer> indexEntry = getIndexEntry();
+            List<Long> indexEntry = getIndexEntry();
             COSArray indexAsArray = new COSArray();
-            for ( Integer i : indexEntry )
+            for ( Long i : indexEntry )
             {
                 indexAsArray.add(COSInteger.get(i));
             }
@@ -136,14 +136,14 @@ public class PDFXRefStream implements PDFXRef
      */
     public void addEntry(COSWriterXRefEntry entry)
     {
-        objectNumbers.add((int)entry.getKey().getNumber());
+        objectNumbers.add(entry.getKey().getNumber());
         if (entry.isFree())
         {
             // what would be a f-Entry in the xref table
             FreeReference value = new FreeReference();
             value.nextGenNumber = entry.getKey().getGeneration();
             value.nextFree = entry.getKey().getNumber();
-            streamData.put((int)value.nextFree, value);
+            streamData.put(value.nextFree, value);
         }
         else
         {
@@ -152,7 +152,7 @@ public class PDFXRefStream implements PDFXRef
             NormalReference value = new NormalReference();
             value.genNumber = entry.getKey().getGeneration();
             value.offset = entry.getOffset();
-            streamData.put((int)entry.getKey().getNumber(), value);
+            streamData.put(entry.getKey().getNumber(), value);
         }
     }
 
@@ -221,18 +221,18 @@ public class PDFXRefStream implements PDFXRef
         this.size = streamSize;
     }
 
-    private List<Integer> getIndexEntry()
+    private List<Long> getIndexEntry()
     {
-        LinkedList<Integer> linkedList = new LinkedList<Integer>();
-        Integer first = null;
-        Integer length = null;
+        LinkedList<Long> linkedList = new LinkedList<Long>();
+        Long first = null;
+        Long length = null;
 
-        for ( Integer objNumber : objectNumbers )
+        for ( Long objNumber : objectNumbers )
         {
             if (first == null)
             {
                 first = objNumber;
-                length = 1;
+                length = 1L;
             }
             if (first + length == objNumber)
             {
@@ -243,7 +243,7 @@ public class PDFXRefStream implements PDFXRef
                 linkedList.add(first);
                 linkedList.add(length);
                 first = objNumber;
-                length = 1;
+                length = 1L;
             }
         }
         linkedList.add(first);
@@ -319,7 +319,7 @@ public class PDFXRefStream implements PDFXRef
      */
     class NormalReference
     {
-        long genNumber;
+        int genNumber;
         long offset;
     }
 
@@ -329,7 +329,7 @@ public class PDFXRefStream implements PDFXRef
      */
     class FreeReference
     {
-        long nextGenNumber;
+        int nextGenNumber;
         long nextFree;
     }
 

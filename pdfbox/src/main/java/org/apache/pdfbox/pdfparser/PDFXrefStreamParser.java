@@ -79,7 +79,7 @@ public class PDFXrefStreamParser extends BaseParser
                 indexArray.add(stream.getDictionaryObject(COSName.SIZE));
             }
 
-            ArrayList<Integer> objNums = new ArrayList<Integer>();
+            ArrayList<Long> objNums = new ArrayList<Long>();
 
             /*
              * Populates objNums with all object numbers available
@@ -87,14 +87,14 @@ public class PDFXrefStreamParser extends BaseParser
             Iterator<COSBase> indexIter = indexArray.iterator();
             while(indexIter.hasNext())
             {
-                int objID = ((COSInteger)indexIter.next()).intValue();
+                long objID = ((COSInteger)indexIter.next()).longValue();
                 int size = ((COSInteger)indexIter.next()).intValue();
                 for(int i = 0; i < size; i++)
                 {
                     objNums.add(objID + i);
                 }
             }
-            Iterator<Integer> objIter = objNums.iterator();
+            Iterator<Long> objIter = objNums.iterator();
             /*
              * Calculating the size of the line in bytes
              */
@@ -118,7 +118,7 @@ public class PDFXrefStreamParser extends BaseParser
                     type += (currLine[i] & 0x00ff) << ((w0 - i - 1)* 8);
                 }
                 //Need to remember the current objID
-                Integer objID = objIter.next();
+                Long objID = objIter.next();
                 /*
                  * 3 different types of entries.
                  */

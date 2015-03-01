@@ -49,13 +49,21 @@ public class COSWriterXRefEntry implements Comparable<COSWriterXRefEntry>
     {
         if (obj != null)
         {
-            return (int)(getKey().getNumber() - obj.getKey().getNumber());
+            if (getKey().getNumber() < obj.getKey().getNumber())
+            {
+                return -1;
+            }
+            else if (getKey().getNumber() > obj.getKey().getNumber())
+            {
+                return 1;
+            }
+            return 0;
         }
         return -1;
     }
     
     /**
-     * This will return a null entry: 0000000000 65535 f
+     * This will return a null entry: 0000000000 65535 f.
      * 
      * @return null COSWriterXRefEntry
      */
