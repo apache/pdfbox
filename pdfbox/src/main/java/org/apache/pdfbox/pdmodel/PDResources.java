@@ -186,7 +186,7 @@ public final class PDResources implements COSObjectable
             COSObject object = (COSObject)value;
             // add the object number to create an unique identifier
             String id = name.getName();
-            id += "#" + object.getObjectNumber().intValue();
+            id += "#" + object.getObjectNumber();
             return PDXObject.createXObject(object.getObject(), id, this);
         }
         else

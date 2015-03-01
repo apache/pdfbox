@@ -27,8 +27,8 @@ import java.io.IOException;
 public class COSObject extends COSBase implements COSUpdateInfo
 {
     private COSBase baseObject;
-    private COSInteger objectNumber;
-    private COSInteger generationNumber;
+    private long objectNumber;
+    private int generationNumber;
     private boolean needToBeUpdated;
 
     /**
@@ -106,40 +106,41 @@ public class COSObject extends COSBase implements COSUpdateInfo
     @Override
     public String toString()
     {
-        return "COSObject{" +
-            (objectNumber == null ? "unknown" : "" + objectNumber.intValue() ) + ", " +
-            (generationNumber == null ? "unknown" : "" + generationNumber.intValue() ) +
-            "}";
+        return "COSObject{" + Long.toString(objectNumber) + ", " + Integer.toString(generationNumber) + "}";
     }
 
-    /** Getter for property objectNumber.
+    /** 
+     * Getter for property objectNumber.
      * @return Value of property objectNumber.
      */
-    public COSInteger getObjectNumber()
+    public long getObjectNumber()
     {
         return objectNumber;
     }
 
-    /** Setter for property objectNumber.
+    /** 
+     * Setter for property objectNumber.
      * @param objectNum New value of property objectNumber.
      */
-    public void setObjectNumber(COSInteger objectNum)
+    public void setObjectNumber(long objectNum)
     {
         objectNumber = objectNum;
     }
 
-    /** Getter for property generationNumber.
+    /** 
+     * Getter for property generationNumber.
      * @return Value of property generationNumber.
      */
-    public COSInteger getGenerationNumber()
+    public int getGenerationNumber()
     {
         return generationNumber;
     }
 
-    /** Setter for property generationNumber.
+    /** 
+     * Setter for property generationNumber.
      * @param generationNumberValue New value of property generationNumber.
      */
-    public void setGenerationNumber(COSInteger generationNumberValue)
+    public void setGenerationNumber(int generationNumberValue)
     {
         generationNumber = generationNumberValue;
     }
@@ -165,7 +166,7 @@ public class COSObject extends COSBase implements COSUpdateInfo
     @Override
     public boolean isNeedToBeUpdated() 
     {
-      return needToBeUpdated;
+        return needToBeUpdated;
     }
     
     /**
@@ -176,7 +177,7 @@ public class COSObject extends COSBase implements COSUpdateInfo
     @Override
     public void setNeedToBeUpdated(boolean flag) 
     {
-      needToBeUpdated = flag;
+        needToBeUpdated = flag;
     }
 
 }

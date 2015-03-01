@@ -467,7 +467,7 @@ public class COSParser extends BaseParser
      */
     private long getObjectId(final COSObject obj)
     {
-        return (obj.getObjectNumber().longValue() << 32) | obj.getGenerationNumber().longValue();
+        return obj.getObjectNumber() << 32 | obj.getGenerationNumber();
     }
 
     /**
@@ -547,12 +547,9 @@ public class COSParser extends BaseParser
                 {
                     COSObject obj = (COSObject) baseObj;
                     long objId = getObjectId(obj);
-                    COSObjectKey objKey = new COSObjectKey(obj.getObjectNumber().longValue(), obj
-                            .getGenerationNumber().intValue());
+                    COSObjectKey objKey = new COSObjectKey(obj.getObjectNumber(), obj.getGenerationNumber());
 
-                    if (!(parsedObjects.contains(objId) /*
-                                                         * || document.hasObjectInPool ( objKey )
-                                                         */))
+                    if (!parsedObjects.contains(objId))
                     {
                         Long fileOffset = xrefTrailerResolver.getXrefTable().get(objKey);
                         // it is allowed that object references point to null,
@@ -644,8 +641,8 @@ public class COSParser extends BaseParser
     protected final COSBase parseObjectDynamically(COSObject obj,
             boolean requireExistingNotCompressedObj) throws IOException
     {
-        return parseObjectDynamically(obj.getObjectNumber().intValue(), obj.getGenerationNumber()
-                .intValue(), requireExistingNotCompressedObj);
+        return parseObjectDynamically(obj.getObjectNumber(), 
+                obj.getGenerationNumber(), requireExistingNotCompressedObj);
     }
 
     /**

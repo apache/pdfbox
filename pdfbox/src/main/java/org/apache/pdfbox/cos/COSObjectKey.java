@@ -34,7 +34,7 @@ public class COSObjectKey implements Comparable<COSObjectKey>
      */
     public COSObjectKey(COSObject object)
     {
-        this( object.getObjectNumber().intValue(), object.getGenerationNumber().intValue() );
+        this(object.getObjectNumber(), object.getGenerationNumber());
     }
 
     /**
