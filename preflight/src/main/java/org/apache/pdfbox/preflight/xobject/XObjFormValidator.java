@@ -126,14 +126,16 @@ public class XObjFormValidator extends AbstractXObjValidator
         {
             if (!XOBJECT_DICTIONARY_KEY_GROUP.equals(groupDictionary.getNameAsString(COSName.TYPE)))
             {
-                context.addValidationError(new ValidationError(PreflightConstants.ERROR_GRAPHIC_MISSING_FIELD, "The Group dictionary hasn't Group as Type value"));
+                context.addValidationError(new ValidationError(PreflightConstants.ERROR_GRAPHIC_MISSING_FIELD, 
+                        "The Group dictionary hasn't Group as Type value"));
             } 
             else 
             {
                 String sVal = groupDictionary.getNameAsString(COSName.S);
                 if (sVal == null || XOBJECT_DICTIONARY_VALUE_S_TRANSPARENCY.equals(sVal))
                 {
-                    context.addValidationError(new ValidationError(ERROR_GRAPHIC_TRANSPARENCY_GROUP, "Group has a transparency S entry or the S entry is null ["+xobject.toString()+"]"));
+                    context.addValidationError(new ValidationError(ERROR_GRAPHIC_TRANSPARENCY_GROUP, 
+                            "Group has a transparency S entry or the S entry is null ["+xobject.toString()+"]"));
                     return;
                 }
             }
@@ -148,7 +150,8 @@ public class XObjFormValidator extends AbstractXObjValidator
         // 6.2.4 and 6.2.5 no PS
         if (this.xobject.getItem(COSName.getPDFName("PS")) != null)
         {
-            context.addValidationError(new ValidationError(ERROR_GRAPHIC_UNEXPECTED_KEY, "Unexpected 'PS' Key"));
+            context.addValidationError(new ValidationError(ERROR_GRAPHIC_UNEXPECTED_KEY, 
+                    "Unexpected 'PS' Key"));
             return;
         }
     }
@@ -159,14 +162,12 @@ public class XObjFormValidator extends AbstractXObjValidator
     protected void checkSubtype2Value()
     {
         // 6.2.5 if Subtype2, value not PS
-        if (this.xobject.getItem(COSName.getPDFName("Subtype2")) != null)
+        if (this.xobject.getItem(COSName.getPDFName("Subtype2")) != null
+                && "PS".equals(this.xobject.getNameAsString("Subtype2")))
         {
-            if ("PS".equals(this.xobject.getNameAsString("Subtype2")))
-            {
-                context.addValidationError(new ValidationError(ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY,
-                        "Unexpected 'PS' value for 'Subtype2' Key"));
-                return;
-            }
+            context.addValidationError(new ValidationError(ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY,
+                    "Unexpected 'PS' value for 'Subtype2' Key"));
+            return;
         }
     }
 
