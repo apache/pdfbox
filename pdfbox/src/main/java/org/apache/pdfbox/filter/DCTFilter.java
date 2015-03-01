@@ -47,7 +47,7 @@ final class DCTFilter extends Filter
     private static final Log LOG = LogFactory.getLog(DCTFilter.class);
 
     @Override
-    public final DecodeResult decode(InputStream encoded, OutputStream decoded,
+    public DecodeResult decode(InputStream encoded, OutputStream decoded,
                                          COSDictionary parameters, int index) throws IOException
     {
         ImageReader reader = findImageReader("JPEG", "a suitable JAI I/O image filter is not installed");
@@ -290,7 +290,7 @@ final class DCTFilter extends Filter
     }
 
     @Override
-    protected final void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
+    protected void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
             throws IOException
     {
         LOG.warn("DCTFilter#encode is not implemented yet, skipping this stream.");
