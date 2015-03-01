@@ -49,7 +49,7 @@ final class ASCIIHexFilter extends Filter
     };
 
     @Override
-    public final DecodeResult decode(InputStream encoded, OutputStream decoded,
+    public DecodeResult decode(InputStream encoded, OutputStream decoded,
                                          COSDictionary parameters, int index) throws IOException
     {
         int value, firstByte, secondByte;

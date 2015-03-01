@@ -36,7 +36,7 @@ final class RunLengthDecodeFilter extends Filter
     private static final int RUN_LENGTH_EOD = 128;
 
     @Override
-    public final DecodeResult decode(InputStream encoded, OutputStream decoded,
+    public DecodeResult decode(InputStream encoded, OutputStream decoded,
                                          COSDictionary parameters, int index) throws IOException
     {
         int dupAmount;
@@ -67,7 +67,7 @@ final class RunLengthDecodeFilter extends Filter
     }
 
     @Override
-    protected final void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
+    protected void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
             throws IOException
     {
         LOG.warn("RunLengthDecodeFilter.encode is not implemented yet, skipping this stream.");

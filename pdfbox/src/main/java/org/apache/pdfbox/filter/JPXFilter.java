@@ -50,7 +50,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDJPXColorSpace;
 public final class JPXFilter extends Filter
 {
     @Override
-    public final DecodeResult decode(InputStream encoded, OutputStream decoded,
+    public DecodeResult decode(InputStream encoded, OutputStream decoded,
                                          COSDictionary parameters, int index) throws IOException
     {
         DecodeResult result = new DecodeResult(new COSDictionary());
@@ -124,7 +124,7 @@ public final class JPXFilter extends Filter
     }
 
     @Override
-    protected final void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
+    protected void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
             throws IOException
     {
         throw new UnsupportedOperationException("JPX encoding not implemented");
