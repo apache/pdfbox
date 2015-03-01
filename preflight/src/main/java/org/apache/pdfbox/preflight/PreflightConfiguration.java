@@ -152,14 +152,15 @@ public class PreflightConfiguration
 
     /**
      * Return the validation process linked with the given name
-     * 
+     *
      * @param processName
-     * @return an instance of validationProcess, null if it doesn't exist and if the errorOnMissingProcess is false
-     * @throws MissingValidationProcessException
-     *             if the Process doesn't exist (errorOnMissingProcess is true)
+     * @return an instance of validationProcess, null if it doesn't exist and if
+     * the errorOnMissingProcess is false.
+     * @throws MissingValidationProcessException if the Process doesn't exist
+     * (errorOnMissingProcess is true).
+     * @throws ValidationException if the process instance can't be created.
      */
-    public ValidationProcess getInstanceOfProcess(String processName) throws MissingValidationProcessException,
-            ValidationException
+    public ValidationProcess getInstanceOfProcess(String processName) throws ValidationException
     {
         Class<? extends ValidationProcess> clazz = null;
         if (processes.containsKey(processName))
@@ -191,7 +192,6 @@ public class PreflightConfiguration
         {
             throw new ValidationException(processName + " can't be created", e);
         }
-
     }
 
     public void replaceProcess(String processName, Class<? extends ValidationProcess> process)
