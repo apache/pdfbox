@@ -80,30 +80,26 @@ public class BodyParseException extends PdfParseException
         // default error code
         this.errorCode = PreflightConstants.ERROR_SYNTAX_BODY;
 
-        if (!isTokenMgrError)
+        // it is a parse error, according to the ExpectedTokens data
+        // some error code can be returned
+        if (!isTokenMgrError && this.expectedTokenSequences != null)
         {
-            // it is a parse error, according to the ExpectedTokens data
-            // some error code can be returned
-            if (this.expectedTokenSequences != null)
+            // check object delimiters error
+            for (int expectedTokenSequence[] : this.expectedTokenSequences)
             {
-                // check object delimiters error
-                for (int i = 0; i < this.expectedTokenSequences.length; ++i)
+                // Check only the first expected token on each array.
+                // Others can be checked if some choice can started by the same token
+                // in this case, a factorization is possible
+                switch (expectedTokenSequence[0])
                 {
-                    // Check only the first Expected token on each array.
-                    // Others can be check if some choice can start by the same token
-                    // in this case, a factorization is possible
-                    switch (this.expectedTokenSequences[i][0])
-                    {
                     case PDFParserConstants.START_OBJECT:
                     case PDFParserConstants.END_OBJECT:
                         this.errorCode = PreflightConstants.ERROR_SYNTAX_OBJ_DELIMITER;
                         break;
-                    }
                 }
-                // add here other error code
             }
+            // add other error code here
         }
-
         return errorCode;
     }
 }
