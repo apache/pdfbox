@@ -313,14 +313,14 @@ public class XrefTrailerResolver
      *          or <code>null</code> if {@link #setStartxref(long)} was not
      *          called before so that no resolved xref table exists
      */
-    public Set<Integer> getContainedObjectNumbers( final int objstmObjNr ) 
+    public Set<Long> getContainedObjectNumbers( final int objstmObjNr ) 
     {
         if ( resolvedXrefTrailer == null )
         {
             return null;
         }
-        final Set<Integer> refObjNrs = new HashSet<Integer>();
-        final int cmpVal = - objstmObjNr;
+        final Set<Long> refObjNrs = new HashSet<Long>();
+        final long cmpVal = - objstmObjNr;
         
         for ( Entry<COSObjectKey,Long> xrefEntry : resolvedXrefTrailer.xrefTable.entrySet() ) 
         {

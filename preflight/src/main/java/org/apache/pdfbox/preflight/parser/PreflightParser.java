@@ -333,14 +333,14 @@ public class PreflightParser extends PDFParser
         // signal start of new XRef
         xrefTrailerResolver.nextXrefObj(startByteOffset,XRefType.TABLE);
 
-        /*
-         * Xref tables can have multiple sections. Each starts with a starting object id and a count.
-         */
+        // Xref tables can have multiple sections. Each starts with a starting object id and a count.
         while (true)
         {
             // just after the xref<EOL> there are an integer
-            int currObjID; // first obj id
-            int count; // the number of objects in the xref table
+            // first obj id
+            long currObjID;
+            // the number of objects in the xref table
+            int count; 
 
             long offset = pdfSource.getOffset();
             String line = readLine();
@@ -348,7 +348,7 @@ public class PreflightParser extends PDFParser
             Matcher matcher = pattern.matcher(line);
             if (matcher.matches())
             {
-                currObjID = Integer.parseInt(matcher.group(1));
+                currObjID = Long.parseLong(matcher.group(1));
                 count = Integer.parseInt(matcher.group(2));
             }
             else
@@ -357,8 +357,10 @@ public class PreflightParser extends PDFParser
                         "Cross reference subsection header is invalid"));
                 // reset pdfSource cursor to read xref information
                 pdfSource.seek(offset);
-                currObjID = readObjectNumber(); // first obj id
-                count = readInt(); // the number of objects in the xref table
+                // first obj id
+                currObjID = readObjectNumber();
+                // the number of objects in the xref table
+                count = readInt();
             }
 
             skipSpaces();
@@ -383,14 +385,12 @@ public class PreflightParser extends PDFParser
                             "invalid xref line: " + currentLine));
                     break;
                 }
-                /*
-                 * This supports the corrupt table as reported in PDFBOX-474 (XXXX XXX XX n)
-                 */
+                // This supports the corrupt table as reported in PDFBOX-474 (XXXX XXX XX n)
                 if (splitString[splitString.length - 1].equals("n"))
                 {
                     try
                     {
-                        int currOffset = Integer.parseInt(splitString[0]);
+                        long currOffset = Long.parseLong(splitString[0]);
                         int currGenID = Integer.parseInt(splitString[1]);
                         COSObjectKey objKey = new COSObjectKey(currObjID, currGenID);
                         xrefTrailerResolver.setXRef(objKey, currOffset);
@@ -618,7 +618,7 @@ public class PreflightParser extends PDFParser
     }
 
     @Override
-    protected COSBase parseObjectDynamically(int objNr, int objGenNr, boolean requireExistingNotCompressedObj)
+    protected COSBase parseObjectDynamically(long objNr, int objGenNr, boolean requireExistingNotCompressedObj)
             throws IOException
     {
         // ---- create object key and get object (container) from pool
@@ -666,7 +666,7 @@ public class PreflightParser extends PDFParser
                 Matcher matcher = pattern.matcher(line);
                 if (matcher.matches())
                 {
-                    readObjNr = Integer.parseInt(matcher.group(1));
+                    readObjNr = Long.parseLong(matcher.group(1));
                     readObjGen = Integer.parseInt(matcher.group(2));
                 }
                 else
@@ -784,7 +784,7 @@ public class PreflightParser extends PDFParser
                     parser.close();
 
                     // get set of object numbers referenced for this object stream
-                    final Set<Integer> refObjNrs = xrefTrailerResolver.getContainedObjectNumbers(objstmObjNr);
+                    final Set<Long> refObjNrs = xrefTrailerResolver.getContainedObjectNumbers(objstmObjNr);
 
                     // register all objects which are referenced to be contained in object stream
                     for (COSObject next : parser.getObjects())

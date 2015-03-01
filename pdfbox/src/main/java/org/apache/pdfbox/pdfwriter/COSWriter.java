@@ -176,7 +176,7 @@ public class COSWriter implements ICOSVisitor, Closeable
     private long startxref = 0;
 
     // the current object number
-    private int number = 0;
+    private long number = 0;
 
     // maps the object to the keys generated in the writer
     // these are used for indirect references in other objects
@@ -265,7 +265,7 @@ public class COSWriter implements ICOSVisitor, Closeable
           
           Map<COSObjectKey, Long> xrefTable = cosDoc.getXrefTable();
           Set<COSObjectKey> keySet = xrefTable.keySet();
-          int highestNumber=0;
+          long highestNumber=0;
           for ( COSObjectKey cosObjectKey : keySet ) 
           {
             COSBase object = cosDoc.getObjectFromPool(cosObjectKey).getObject();
@@ -275,7 +275,7 @@ public class COSWriter implements ICOSVisitor, Closeable
                 keyObject.put(cosObjectKey,object);
             }
             
-            int num = cosObjectKey.getNumber();
+            long num = cosObjectKey.getNumber();
             if (num > highestNumber)
             {
                 highestNumber=num;
@@ -327,7 +327,7 @@ public class COSWriter implements ICOSVisitor, Closeable
      *
      * @return The current object number.
      */
-    protected int getNumber()
+    protected long getNumber()
     {
         return number;
     }
@@ -386,7 +386,7 @@ public class COSWriter implements ICOSVisitor, Closeable
      *
      * @param newNumber The new object number.
      */
-    protected void setNumber(int newNumber)
+    protected void setNumber(long newNumber)
     {
         number = newNumber;
     }
@@ -584,7 +584,7 @@ public class COSWriter implements ICOSVisitor, Closeable
         //sort xref, needed only if object keys not regenerated
         Collections.sort(getXRefEntries());
         COSWriterXRefEntry lastEntry = getXRefEntries().get( getXRefEntries().size()-1);
-        trailer.setInt(COSName.SIZE, (int)lastEntry.getKey().getNumber()+1);
+        trailer.setLong(COSName.SIZE, lastEntry.getKey().getNumber()+1);
         // Only need to stay, if an incremental update will be performed
         if (!incrementalUpdate) 
         {
@@ -661,7 +661,7 @@ public class COSWriter implements ICOSVisitor, Closeable
         // write start object number and object count for this x ref section
         // we assume starting from scratch
 
-        Integer[] xRefRanges = getXRefRanges(getXRefEntries());
+        Long[] xRefRanges = getXRefRanges(getXRefEntries());
         int xRefLength = xRefRanges.length;
         int x = 0;
         int j = 0;
@@ -784,15 +784,15 @@ public class COSWriter implements ICOSVisitor, Closeable
      * @param xRefEntriesList list with the xRef entries that was written
      * @return a integer array with the ranges
      */
-    protected Integer[] getXRefRanges(List<COSWriterXRefEntry> xRefEntriesList)
+    protected Long[] getXRefRanges(List<COSWriterXRefEntry> xRefEntriesList)
     {
-        int last = -2;
-        int count = 1;
+        long last = -2;
+        long count = 1;
 
-        ArrayList<Integer> list = new ArrayList<Integer>();
+        ArrayList<Long> list = new ArrayList<Long>();
         for( Object object : xRefEntriesList )
         {
-            int nr = (int) ((COSWriterXRefEntry) object).getKey().getNumber();
+            long nr = (int) ((COSWriterXRefEntry) object).getKey().getNumber();
             if (nr == last + 1)
             {
                 ++count;
@@ -816,7 +816,7 @@ public class COSWriter implements ICOSVisitor, Closeable
             list.add(last - count + 1);
             list.add(count);
         }
-        return list.toArray(new Integer[list.size()]);
+        return list.toArray(new Long[list.size()]);
     }
     
     /**
@@ -1187,7 +1187,6 @@ public class COSWriter implements ICOSVisitor, Closeable
                     currentObjectKey.getNumber(),
                     currentObjectKey.getGeneration());
         }
-
         COSWriter.writeString(obj, getStandardOutput());
         return null;
     }
