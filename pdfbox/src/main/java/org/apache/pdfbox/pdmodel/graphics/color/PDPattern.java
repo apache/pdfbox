@@ -102,7 +102,7 @@ public final class PDPattern extends PDSpecialColorSpace
      * @return pattern for the given color
      * @throws java.io.IOException if the pattern name was not found.
      */
-    public final PDAbstractPattern getPattern(PDColor color) throws IOException
+    public PDAbstractPattern getPattern(PDColor color) throws IOException
     {
         PDAbstractPattern pattern = resources.getPattern(color.getPatternName());
         if (pattern == null)
@@ -118,7 +118,7 @@ public final class PDPattern extends PDSpecialColorSpace
     /**
      * Returns the underlying color space, if this is an uncolored tiling pattern, otherwise null.
      */
-    public final PDColorSpace getUnderlyingColorSpace()
+    public PDColorSpace getUnderlyingColorSpace()
     {
         return underlyingColorSpace;
     }
