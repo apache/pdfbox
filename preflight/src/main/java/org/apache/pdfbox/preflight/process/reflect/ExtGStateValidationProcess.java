@@ -58,10 +58,12 @@ public class ExtGStateValidationProcess extends AbstractProcess
      * @param context the context which contains the Resource dictionary.
      * @throws ValidationException thrown if a the Extended Graphic State isn't valid.
      */
+    @Override
     public void validate(PreflightContext context) throws ValidationException
     {
         PreflightPath vPath = context.getValidationPath();
-        if (vPath.isEmpty()) {
+        if (vPath.isEmpty())
+        {
             return;
         }
         else if (!vPath.isExpectedType(COSDictionary.class)) 
@@ -86,7 +88,7 @@ public class ExtGStateValidationProcess extends AbstractProcess
      */
     public List<COSDictionary> extractExtGStateDictionaries(PreflightContext context, COSDictionary egsEntry)
             throws ValidationException
-            {
+    {
         List<COSDictionary> listOfExtGState = new ArrayList<COSDictionary>(0);
         COSDocument cosDocument = context.getDocument().getDocument();
         COSDictionary extGStates = COSUtils.getAsDictionary(egsEntry, cosDocument);
@@ -109,7 +111,7 @@ public class ExtGStateValidationProcess extends AbstractProcess
             }
         }
         return listOfExtGState;
-            }
+    }
 
     /**
      * Validate all ExtGState dictionaries of this container
@@ -140,15 +142,12 @@ public class ExtGStateValidationProcess extends AbstractProcess
     private void checkSoftMask(PreflightContext context, COSDictionary egs)
     {
         COSBase smVal = egs.getItem(COSName.SMASK);
-        if (smVal != null)
+        if (smVal != null && 
+                !(smVal instanceof COSName && TRANSPARENCY_DICTIONARY_VALUE_SOFT_MASK_NONE.equals(((COSName) smVal).getName())))
         {
             // ---- Soft Mask is valid only if it is a COSName equals to None
-            if (!(smVal instanceof COSName && TRANSPARENCY_DICTIONARY_VALUE_SOFT_MASK_NONE.equals(((COSName) smVal)
-                    .getName())))
-            {
-                context.addValidationError(new ValidationError(ERROR_TRANSPARENCY_EXT_GS_SOFT_MASK,
-                        "SoftMask must be null or None"));
-            }
+            context.addValidationError(new ValidationError(ERROR_TRANSPARENCY_EXT_GS_SOFT_MASK,
+                    "SoftMask must be null or None"));
         }
     }
 
