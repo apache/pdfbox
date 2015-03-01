@@ -23,13 +23,13 @@ public interface COSUpdateInfo
      * 
      * @return the update state.
      */
-    public abstract boolean isNeedToBeUpdated();
+    boolean isNeedToBeUpdated();
 
     /**
      * Set the update state of the dictionary for the COSWriter.
      * 
      * @param flag the update state.
      */
-    public abstract void setNeedToBeUpdated(boolean flag);
+    void setNeedToBeUpdated(boolean flag);
 
 }
