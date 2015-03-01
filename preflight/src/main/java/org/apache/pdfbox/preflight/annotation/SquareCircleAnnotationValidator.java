@@ -68,14 +68,11 @@ public class SquareCircleAnnotationValidator extends AnnotationValidator
      */
     protected boolean checkIColors() throws ValidationException
     {
-        if (this.pdSquareCircle.getInteriorColor() != null)
+        if (this.pdSquareCircle.getInteriorColor() != null && !searchRGBProfile())
         {
-            if (!searchRGBProfile())
-            {
-                ctx.addValidationError(new ValidationError(ERROR_ANNOT_FORBIDDEN_COLOR,
-                        "Annotation uses a Color profile which isn't the same than the profile contained by the OutputIntent"));
-                return false;
-            }
+            ctx.addValidationError(new ValidationError(ERROR_ANNOT_FORBIDDEN_COLOR,
+                    "Annotation uses a Color profile which isn't the same than the profile contained by the OutputIntent"));
+            return false;
         }
         return true;
     }
