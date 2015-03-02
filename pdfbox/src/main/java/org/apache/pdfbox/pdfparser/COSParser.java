@@ -1549,23 +1549,12 @@ public class COSParser extends BaseParser
                         {
                             trailer.setItem(COSName.INFO, document.getObjectFromPool(key));
                         }
-                        // encryption dictionary
-                        else if (dictionary.containsKey(COSName.FILTER)
-                                && (dictionary.containsKey(COSName.V)
-                                        || dictionary.containsKey(COSName.P)
-                                        || dictionary.containsKey(COSName.CF)
-                                        || dictionary.containsKey(COSName.SUB_FILTER)
-                                        || dictionary.containsKey(COSName.ENCRYPT_META_DATA)
-                                        || dictionary.containsKey(COSName.STM_F)
-                                        || dictionary.containsKey(COSName.STR_F)))
-                        {
-                            trailer.setItem(COSName.ENCRYPT, document.getObjectFromPool(key));
-                        }
+                        // TODO encryption dictionary
                     }
                 }
                 catch(IOException exception)
                 {
-                    LOG.error("Skipped invalid dictionary for object "+key);
+                    LOG.debug("Skipped object "+key+", either it's corrupt or not a dictionary");
                 }
             }
         }
