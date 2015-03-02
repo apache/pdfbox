@@ -342,6 +342,32 @@ public class PDOutlineNodeTest
     }
 
     @Test
+    public void iterator()
+    {
+        PDOutlineItem first = new PDOutlineItem();
+        root.addFirst(first);
+        root.addLast(new PDOutlineItem());
+        PDOutlineItem second = new PDOutlineItem();
+        first.insertSiblingAfter(second);
+        int counter = 0;
+        for (PDOutlineItem current : root.children())
+        {
+            counter++;
+        }
+        assertEquals(3, counter);
+    }
+
+    @Test
+    public void iteratorNoChildre()
+    {
+        int counter = 0;
+        for (PDOutlineItem current : new PDOutlineItem().children())
+        {
+            counter++;
+        }
+        assertEquals(0, counter);
+    }
+    @Test
     public void openNodeAndAppend()
     {
         // TODO

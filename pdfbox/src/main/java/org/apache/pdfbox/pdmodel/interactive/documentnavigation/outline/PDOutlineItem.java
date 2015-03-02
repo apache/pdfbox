@@ -39,7 +39,8 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPa
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageXYZDestination;
 
 /**
- * This represents an outline item in a pdf document.
+ * This represents an outline item in a pdf document. The items at each level of the hierarchy form an iterable linked
+ * list, chained together through their Prev and Next entries.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  */
