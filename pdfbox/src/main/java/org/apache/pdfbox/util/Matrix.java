@@ -481,7 +481,7 @@ public final class Matrix implements Cloneable
      * @param theta The angle of rotation measured in radians
      * @param tx The x translation.
      * @param ty The y translation.
-     * @return A new matrix with just the x/y translating.
+     * @return A new matrix with the rotation and the x/y translating.
      */
     public static Matrix getRotateInstance(double theta, float tx, float ty)
     {
