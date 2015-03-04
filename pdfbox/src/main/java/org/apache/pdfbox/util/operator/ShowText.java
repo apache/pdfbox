@@ -41,6 +41,11 @@ public class ShowText extends OperatorProcessor
      */
     public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
+        if (arguments.size() < 1)
+        {
+            // ignore ( )Tj
+            return;
+        }
         COSString string = (COSString)arguments.get( 0 );
         context.processEncodedText( string.getBytes() );
     }
