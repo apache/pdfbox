@@ -46,7 +46,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.contentstream.operator.Operator;
 
 /**
- * Create the AcroForms filed appearance helper.
+ * Create the AcroForms field appearance helper.
  * <p>
  * A helper class to the {@link AppearanceGenerator} to generate update an AcroForm field appearance.
  * </p>
@@ -325,30 +325,37 @@ class AppearanceGeneratorHelper
         else
         {
             // Unknown quadding value - default to left
-            printWriter.println(paddingLeft + " " + verticalOffset + " Td");
+            leftOffset = paddingLeft;
             LOG.debug("Unknown justification value, defaulting to left: " + q);
         }
 
-        printWriter.println(leftOffset + " " + verticalOffset + " Td");
-
         // show the text
-        if (!isMultiLineValue(value) || stringWidth > borderEdge.getWidth() - paddingLeft -
-                paddingRight)
+        if (!isMultiLine())
         {
+            printWriter.println(leftOffset + " " + verticalOffset + " Td");
             printWriter.flush();
             COSWriter.writeString(font.encode(value), output); 
             printWriter.println(" Tj");
         }
         else
         {
-            String[] paragraphs = value.split("\n");
-            for (int i = 0; i < paragraphs.length; i++)
-            {
-                boolean lastLine = i == paragraphs.length - 1;
-                printWriter.flush();
-                COSWriter.writeString(font.encode(value), output);
-                printWriter.println(lastLine ? " Tj\n" : "> Tj 0 -13 Td");
-            }
+            // adjust offset
+            // TODO: offset is dependent on border value if there is one
+            verticalOffset = verticalOffset + font.getFontDescriptor().getAscent() / 1000 * fontSize -4f;
+            printWriter.println(leftOffset + " " + verticalOffset + " Td");
+            PlainText textContent = new PlainText(value);
+            AppearanceStyle appearanceStyle = new AppearanceStyle();
+            appearanceStyle.setFont(font);
+            appearanceStyle.setFontSize(fontSize);
+            PlainTextFormatter formatter = new PlainTextFormatter
+                                                .Builder(output)
+                                                    .style(appearanceStyle)
+                                                    .text(textContent)
+                                                    .width(borderEdge.getWidth() - paddingLeft - paddingRight)
+                                                    .wrapLines(true)
+                                                    .build();
+            formatter.format();
+
         }
         printWriter.println("ET");
         printWriter.flush();
@@ -453,9 +460,9 @@ class AppearanceGeneratorHelper
     }
 
     
-    private boolean isMultiLineValue(String multiLineValue)
+    private boolean isMultiLine()
     {
-        return (parent instanceof PDTextField && ((PDTextField) parent).isMultiline() && multiLineValue.contains("\n"));
+        return (parent instanceof PDTextField && ((PDTextField) parent).isMultiline());
     }
 
     /**
