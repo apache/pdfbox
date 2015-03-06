@@ -117,7 +117,7 @@ final class DCTFilter extends Filter
                         field.setAccessible(true);
                         int colorSpaceCode = field.getInt(reader);
                         
-                        if (colorSpaceCode == 7 || colorSpaceCode == 8 || colorSpaceCode == 9)
+                        if (colorSpaceCode == 7 || colorSpaceCode == 8 || colorSpaceCode == 9 || colorSpaceCode == 11)
                         {
                             // YCCK
                             transform = 2;
