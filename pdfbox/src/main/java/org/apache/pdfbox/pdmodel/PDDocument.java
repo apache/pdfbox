@@ -1114,23 +1114,23 @@ public class PDDocument implements Closeable
      */
     public float getVersion()
     {
-        String catalogVersion = getDocumentCatalog().getVersion();
-        float catalogVersionFloat = -1;
         float headerVersionFloat = getDocument().getVersion();
-        if (catalogVersion != null)
-        {
-            try
-            {
-                catalogVersionFloat = Float.parseFloat(catalogVersion);
-            }
-            catch(NumberFormatException exception)
-            {
-                LOG.error("Can't extract the version number of the document catalog.", exception);
-            }
-        }
         // there may be a second version information in the document catalog starting with 1.4
-        if (catalogVersionFloat >= 1.4f)
+        if (headerVersionFloat >= 1.4f)
         {
+            String catalogVersion = getDocumentCatalog().getVersion();
+            float catalogVersionFloat = -1;
+            if (catalogVersion != null)
+            {
+                try
+                {
+                    catalogVersionFloat = Float.parseFloat(catalogVersion);
+                }
+                catch(NumberFormatException exception)
+                {
+                    LOG.error("Can't extract the version number of the document catalog.", exception);
+                }
+            }
             // the most recent version is the correct one
             return Math.max(catalogVersionFloat, headerVersionFloat);
         }
@@ -1160,14 +1160,10 @@ public class PDDocument implements Closeable
             LOG.error("It's not allowed to downgrade the version of a pdf.");
             return;
         }
-        // update the catalog version if the new version is >= 1.4
-        if (newVersion >= 1.4f)
+        // update the catalog version if the document version is >= 1.4
+        if (getDocument().getVersion() >= 1.4f)
         {
             getDocumentCatalog().setVersion(Float.toString(newVersion));
-            if (getDocument().getVersion() > newVersion)
-            {
-                getDocument().setVersion(newVersion);
-            }
         }
         else
         {
