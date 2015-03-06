@@ -62,6 +62,7 @@ public final class FieldUtils
             return this.value;
         }
         
+        @Override
         public String toString()
         {
             return "(" + this.key + ", " + this.value + ")";
@@ -161,6 +162,11 @@ public final class FieldUtils
      */
     static List<String> getPairableItems(COSBase items, int pairIdx)
     {
+        if (pairIdx < 0 || pairIdx > 1) 
+        {
+            throw new IllegalArgumentException("Only 0 and 1 are allowed as an index into two-element arrays");
+        }
+        
         if (items instanceof COSString)
         {
             List<String> array = new ArrayList<String>();
@@ -177,21 +183,29 @@ public final class FieldUtils
             } 
             else
             {
-                if (pairIdx < 0 || pairIdx > 1) 
-                {
-                    throw new IllegalArgumentException("Only 0 and 1 are allowed as an index into two-element arrays");
-                }
-                List<String> exportValues = new ArrayList<String>();
-                int numItems = ((COSArray) items).size();
-                for (int i=0;i<numItems;i++)
-                {
-                    COSArray pair = (COSArray) ((COSArray) items).get(i);
-                    COSString displayValue = (COSString) pair.get(pairIdx);
-                    exportValues.add(displayValue.getString());
-                }
-                return exportValues;
+                return getItemsFromPair(items, pairIdx);
             }            
         }
         return Collections.<String>emptyList();
+    }    
+
+    /**
+     * Return either one of a list of two-element arrays entries.
+     *
+     * @param items the array of elements or two-element arrays
+     * @param pairIdx the index into the two-element array
+     * @return a List of single elements
+     */
+    private static List<String> getItemsFromPair(COSBase items, int pairIdx)
+    {
+        List<String> exportValues = new ArrayList<String>();
+        int numItems = ((COSArray) items).size();
+        for (int i=0;i<numItems;i++)
+        {
+            COSArray pair = (COSArray) ((COSArray) items).get(i);
+            COSString displayValue = (COSString) pair.get(pairIdx);
+            exportValues.add(displayValue.getString());
+        }
+        return exportValues;        
     }
 }
