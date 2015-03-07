@@ -46,7 +46,7 @@ public class ReplaceURLs
 
     /**
      * This will read in a document and replace all of the urls with
-     * http://www.pdfbox.org.
+     * http://pdfbox.apache.org.
      * <br />
      * see usage() for commandline
      *
@@ -83,7 +83,7 @@ public class ReplaceURLs
                             {
                                 PDActionURI uri = (PDActionURI)action;
                                 String oldURI = uri.getURI();
-                                String newURI = "http://www.pdfbox.org";
+                                String newURI = "http://pdfbox.apache.org";
                                 System.out.println( "Page " + pageNum +": Replacing " + oldURI + " with " + newURI );
                                 uri.setURI( newURI );
                             }
