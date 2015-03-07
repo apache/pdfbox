@@ -160,12 +160,14 @@ class PlainText
             int end = iterator.next();
             float lineWidth = 0;
             float wordWidth = 0f;
+            float whitespaceWidth = 0f;
             
             List<Line> textLines = new ArrayList<Line>();
             Line textLine =  new Line();
 
             while (end != BreakIterator.DONE)
             {
+                whitespaceWidth = 0f;
                 String word = textContent.substring(start,end);
                 wordWidth = font.getStringWidth(word) * scale;
                 
@@ -174,13 +176,13 @@ class PlainText
                 // check if the last word would fit without the whitespace ending it
                 if (lineWidth >= width && Character.isWhitespace(word.charAt(word.length()-1)))
                 {
-                    float whitespaceWidth = font.getStringWidth(word.substring(word.length()-1)) * scale;
+                    whitespaceWidth = font.getStringWidth(word.substring(word.length()-1)) * scale;
                     lineWidth = lineWidth - whitespaceWidth;
                 }
                 
                 if (lineWidth >= width)
                 {
-                    textLine.setWidth(lineWidth);
+                    textLine.setWidth(textLine.calculateWidth(font, fontSize));
                     textLines.add(textLine);
                     textLine = new Line();
                     lineWidth = font.getStringWidth(word) * scale;
@@ -194,6 +196,7 @@ class PlainText
                 start = end;
                 end = iterator.next();
             }
+            textLine.setWidth(textLine.calculateWidth(font, fontSize));
             textLines.add(textLine);
             return textLines;
         }
@@ -215,6 +218,24 @@ class PlainText
         void setWidth(float width)
         {
             lineWidth = width;
+        }
+        
+        float calculateWidth(PDFont font, float fontSize) throws IOException
+        {
+            final float scale = fontSize/FONTSCALE;
+            float calculatedWidth = 0f;
+            for (Word word : words)
+            {
+                calculatedWidth = calculatedWidth + 
+                        (Float) word.getAttributes().getIterator().getAttribute(TextAttribute.WIDTH);
+                String text = word.getText();
+                if (words.indexOf(word) == words.size() -1 && Character.isWhitespace(text.charAt(text.length()-1)))
+                {
+                    float whitespaceWidth = font.getStringWidth(text.substring(text.length()-1)) * scale;
+                    calculatedWidth = calculatedWidth - whitespaceWidth;
+                }
+            }
+            return calculatedWidth;
         }
 
         List<Word> getWords()

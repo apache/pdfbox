@@ -39,11 +39,44 @@ import org.apache.pdfbox.util.Charsets;
 
 class PlainTextFormatter
 {
+    
+    enum HorizontalAlignment
+    {
+        LEFT(0), CENTERED(1), RIGHT(2);
+        
+        private final int quadding;
+        
+        private HorizontalAlignment(int quadding)
+        {
+            this.quadding = quadding;
+        }
+        
+        int getQuadding()
+        {
+            return quadding;
+        }
+        
+        public static HorizontalAlignment valueOf(int quadding)
+        {
+            for (HorizontalAlignment hAlignment : HorizontalAlignment.values())
+            {
+                if (hAlignment.getQuadding() == quadding)
+                {
+                    return hAlignment;
+                }
+            }
+            return HorizontalAlignment.LEFT;
+        }
+    }
+    
+    
     private AppearanceStyle appearanceStyle;
     private final boolean wrapLines;
     private final float width;
     private final OutputStream outputstream;
     private final PlainText textContent;
+    private final HorizontalAlignment hAlign;
+    
     
     // number format
     private final NumberFormat formatDecimal = NumberFormat.getNumberInstance(Locale.US);
@@ -59,6 +92,7 @@ class PlainTextFormatter
         private boolean wrapLines = false;
         private float width = 0f;
         private PlainText textContent;
+        private HorizontalAlignment hAlign = HorizontalAlignment.LEFT;
         
         public Builder(OutputStream outputstream)
         {
@@ -83,11 +117,18 @@ class PlainTextFormatter
             return this;
         }
 
+        Builder hAlign(int quadding)
+        {
+            this.hAlign  = HorizontalAlignment.valueOf(quadding);
+            return this;
+        }
+        
+        
         Builder text(PlainText textContent)
         {
             this.textContent  = textContent;
             return this;
-        }        
+        }
         
         PlainTextFormatter build()
         {
@@ -102,6 +143,7 @@ class PlainTextFormatter
         width = builder.width;
         outputstream = builder.outputstream;
         textContent = builder.textContent;
+        hAlign = builder.hAlign;
     }
     
     /**
@@ -145,26 +187,42 @@ class PlainTextFormatter
     {
         PDFont font = appearanceStyle.getFont();
         float wordWidth = 0f;
-        
+
+        float lastPos = 0f;
+        float startOffset = 0f;
+
         for (Line line : lines)
         {
-           float offset = 0f;
-           List<Word> words = line.getWords();
-           for (Word word : words)
-           {
-               showText(word.getText(), font);
-               wordWidth = (Float) word.getAttributes().getIterator().getAttribute(TextAttribute.WIDTH);
-               
-               if (words.indexOf(word) != words.size() -1)
-               {
-                   newLineAtOffset(wordWidth, 0f);
-                   offset = offset + wordWidth;
-               }
-           }
-           if (lines.indexOf(line) != lines.size()-1)
-           {
-               newLineAtOffset(-offset, -appearanceStyle.getLeading());
-           }
+            switch (hAlign)
+            {
+            case LEFT:
+                startOffset = 0f;
+                break;
+            case CENTERED:
+                startOffset = (width - line.getWidth())/2;
+                break;
+            case RIGHT:
+                startOffset = width - line.getWidth();
+                break;
+            default:
+                startOffset = 0f;
+            }
+            
+            float offset = -lastPos + startOffset;
+            newLineAtOffset(offset, -appearanceStyle.getLeading());
+            lastPos = startOffset; 
+
+            List<Word> words = line.getWords();
+            for (Word word : words)
+            {
+                showText(word.getText(), font);
+                wordWidth = (Float) word.getAttributes().getIterator().getAttribute(TextAttribute.WIDTH);
+                if (words.indexOf(word) != words.size() -1)
+                {
+                    newLineAtOffset(wordWidth, 0f);
+                    lastPos = lastPos + wordWidth;
+                }
+            }
         }
     }
     
