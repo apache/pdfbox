@@ -353,7 +353,7 @@ class AppearanceGeneratorHelper
                                                     .text(textContent)
                                                     .width(borderEdge.getWidth() - paddingLeft - paddingRight)
                                                     .wrapLines(true)
-                                                    .hAlign(q)
+                                                    .textAlign(q)
                                                     .build();
             formatter.format();
 

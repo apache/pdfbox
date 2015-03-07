@@ -40,32 +40,32 @@ import org.apache.pdfbox.util.Charsets;
 class PlainTextFormatter
 {
     
-    enum HorizontalAlignment
+    enum TextAlign
     {
-        LEFT(0), CENTERED(1), RIGHT(2);
+        LEFT(0), CENTER(1), RIGHT(2), JUSTIFY(4);
         
-        private final int quadding;
+        private final int alignment;
         
-        private HorizontalAlignment(int quadding)
+        private TextAlign(int alignment)
         {
-            this.quadding = quadding;
+            this.alignment = alignment;
         }
         
-        int getQuadding()
+        int getTextAlign()
         {
-            return quadding;
+            return alignment;
         }
         
-        public static HorizontalAlignment valueOf(int quadding)
+        public static TextAlign valueOf(int alignment)
         {
-            for (HorizontalAlignment hAlignment : HorizontalAlignment.values())
+            for (TextAlign textAlignment : TextAlign.values())
             {
-                if (hAlignment.getQuadding() == quadding)
+                if (textAlignment.getTextAlign() == alignment)
                 {
-                    return hAlignment;
+                    return textAlignment;
                 }
             }
-            return HorizontalAlignment.LEFT;
+            return TextAlign.LEFT;
         }
     }
     
@@ -75,7 +75,7 @@ class PlainTextFormatter
     private final float width;
     private final OutputStream outputstream;
     private final PlainText textContent;
-    private final HorizontalAlignment hAlign;
+    private final TextAlign textAlignment;
     
     
     // number format
@@ -92,7 +92,7 @@ class PlainTextFormatter
         private boolean wrapLines = false;
         private float width = 0f;
         private PlainText textContent;
-        private HorizontalAlignment hAlign = HorizontalAlignment.LEFT;
+        private TextAlign textAlignment = TextAlign.LEFT;
         
         public Builder(OutputStream outputstream)
         {
@@ -117,9 +117,15 @@ class PlainTextFormatter
             return this;
         }
 
-        Builder hAlign(int quadding)
+        Builder textAlign(int alignment)
         {
-            this.hAlign  = HorizontalAlignment.valueOf(quadding);
+            this.textAlignment  = TextAlign.valueOf(alignment);
+            return this;
+        }
+        
+        Builder textAlign(TextAlign alignment)
+        {
+            this.textAlignment  = alignment;
             return this;
         }
         
@@ -143,7 +149,7 @@ class PlainTextFormatter
         width = builder.width;
         outputstream = builder.outputstream;
         textContent = builder.textContent;
-        hAlign = builder.hAlign;
+        textAlignment = builder.textAlignment;
     }
     
     /**
@@ -190,19 +196,23 @@ class PlainTextFormatter
 
         float lastPos = 0f;
         float startOffset = 0f;
+        float interWordSpacing = 0f;
 
         for (Line line : lines)
         {
-            switch (hAlign)
+            switch (textAlignment)
             {
-            case LEFT:
-                startOffset = 0f;
-                break;
-            case CENTERED:
+            case CENTER:
                 startOffset = (width - line.getWidth())/2;
                 break;
             case RIGHT:
                 startOffset = width - line.getWidth();
+                break;
+            case JUSTIFY:
+                if (lines.indexOf(line) != lines.size() -1)
+                {
+                    interWordSpacing = line.getInterWordSpacing(width);
+                }
                 break;
             default:
                 startOffset = 0f;
@@ -219,8 +229,8 @@ class PlainTextFormatter
                 wordWidth = (Float) word.getAttributes().getIterator().getAttribute(TextAttribute.WIDTH);
                 if (words.indexOf(word) != words.size() -1)
                 {
-                    newLineAtOffset(wordWidth, 0f);
-                    lastPos = lastPos + wordWidth;
+                    newLineAtOffset(wordWidth + interWordSpacing, 0f);
+                    lastPos = lastPos + wordWidth + interWordSpacing;
                 }
             }
         }
