@@ -341,7 +341,7 @@ class AppearanceGeneratorHelper
         {
             // adjust offset
             // TODO: offset is dependent on border value if there is one
-            verticalOffset = verticalOffset + font.getFontDescriptor().getAscent() / 1000 * fontSize -4f;
+            verticalOffset = verticalOffset + font.getFontDescriptor().getAscent() / 1000 * fontSize;
             printWriter.println(leftOffset + " " + verticalOffset + " Td");
             PlainText textContent = new PlainText(value);
             AppearanceStyle appearanceStyle = new AppearanceStyle();
@@ -353,6 +353,7 @@ class AppearanceGeneratorHelper
                                                     .text(textContent)
                                                     .width(borderEdge.getWidth() - paddingLeft - paddingRight)
                                                     .wrapLines(true)
+                                                    .hAlign(q)
                                                     .build();
             formatter.format();
 
@@ -462,7 +463,7 @@ class AppearanceGeneratorHelper
     
     private boolean isMultiLine()
     {
-        return (parent instanceof PDTextField && ((PDTextField) parent).isMultiline());
+        return parent instanceof PDTextField && ((PDTextField) parent).isMultiline();
     }
 
     /**
@@ -557,7 +558,7 @@ class AppearanceGeneratorHelper
             float lineWidth = getLineWidth(tokens);
             float height = pdFont.getFontDescriptor().getFontBoundingBox().getHeight() / 1000f;
             float availHeight = getAvailableHeight(boundingBox, lineWidth);
-            fontSize = Math.min((availHeight / height), widthBasedFontSize);
+            fontSize = Math.min(availHeight / height, widthBasedFontSize);
         }
         return fontSize;
     }
