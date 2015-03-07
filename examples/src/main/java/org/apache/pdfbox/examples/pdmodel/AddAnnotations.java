@@ -134,7 +134,7 @@ public class AddAnnotations
 
             // add an action
             PDActionURI action = new PDActionURI();
-            action.setURI("http://www.pdfbox.org");
+            action.setURI("http://pdfbox.apache.org");
             txtLink.setAction(action);
             annotations.add(txtLink);
             
