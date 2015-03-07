@@ -242,6 +242,11 @@ class PlainText
         {
             return words;
         }
+        
+        float getInterWordSpacing(float width)
+        {
+            return (width - lineWidth)/(words.size()-1);
+        }
 
         void addWord(Word word)
         {
