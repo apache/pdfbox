@@ -25,8 +25,7 @@ import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDMarkedConte
 /**
  * An artifact marked content.
  *
- * @author <a href="mailto:Johannes%20Koch%20%3Ckoch@apache.org%3E">Johannes Koch</a>
- * @version $Revision: $
+ * @author Johannes Koch
  *
  */
 public class PDArtifactMarkedContent extends PDMarkedContent
