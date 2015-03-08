@@ -22,7 +22,7 @@ import org.apache.pdfbox.cos.COSName;
 /**
  * This is an interface to a text encoder.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
+ * @author Ben Litchfield
  */
 public class MacRomanEncoding extends Encoding
 {

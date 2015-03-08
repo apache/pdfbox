@@ -30,9 +30,8 @@ import org.apache.pdfbox.pdmodel.common.PDDestinationOrAction;
 /**
  * This represents an action that can be executed in a PDF document.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @author Panagiotis Toumasis (ptoumasis@mail.gr)
- * @version $Revision: 1.3 $
+ * @author Ben Litchfield
+ * @author Panagiotis Toumasis
  */
 public abstract class PDAction implements PDDestinationOrAction
 {

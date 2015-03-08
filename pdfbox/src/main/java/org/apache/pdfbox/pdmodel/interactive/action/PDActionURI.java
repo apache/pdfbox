@@ -21,9 +21,8 @@ import org.apache.pdfbox.cos.COSDictionary;
 /**
  * This represents a URI action that can be executed in a PDF document.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @author Panagiotis Toumasis (ptoumasis@mail.gr)
- * @version $Revision: 1.3 $
+ * @author Ben Litchfield
+ * @author Panagiotis Toumasis
  */
 public class PDActionURI extends PDAction
 {

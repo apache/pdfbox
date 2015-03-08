@@ -22,8 +22,7 @@ import org.apache.pdfbox.cos.COSName;
 /**
  * This is an interface to a text encoder.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.10 $
+ * @author Ben Litchfield
  */
 public class StandardEncoding extends Encoding
 {

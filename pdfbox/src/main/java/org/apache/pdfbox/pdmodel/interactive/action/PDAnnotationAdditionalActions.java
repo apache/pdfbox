@@ -25,9 +25,8 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
  * This class represents an annotation's dictionary of actions
  * that occur due to events.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @author Panagiotis Toumasis (ptoumasis@mail.gr)
- * @version $Revision: 1.2 $
+ * @author Ben Litchfield
+ * @author Panagiotis Toumasis
  */
 public class PDAnnotationAdditionalActions implements COSObjectable
 {

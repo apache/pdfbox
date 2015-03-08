@@ -24,7 +24,6 @@ import org.apache.pdfbox.cos.COSName;
  * Introduced in PDF 1.3 specification
  *
  * @author Paul King
- * @version $Revision: 1.2 $
  */
 public class PDAnnotationRubberStamp extends PDAnnotationMarkup
 {

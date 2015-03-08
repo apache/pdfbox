@@ -25,7 +25,6 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
  * This class represents a PDF /BE entry the border effect dictionary.
  *
  * @author Paul King
- * @version $Revision: 1.1 $
  */
 public class PDBorderEffectDictionary implements COSObjectable
 {
