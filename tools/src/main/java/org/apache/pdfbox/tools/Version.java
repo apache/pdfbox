@@ -19,8 +19,7 @@ package org.apache.pdfbox.tools;
 /**
  * A simple command line utility to get the version of PDFBox.
  *
- * @author <a href="ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.5 $
+ * @author Ben Litchfield
  */
 class Version
 {

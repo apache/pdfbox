@@ -32,8 +32,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 /**
  * This is a simple JPanel that can be used to display a PDF page.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.4 $
+ * @author Ben Litchfield
  */
 public class PDFPagePanel extends JPanel
 {
