@@ -33,8 +33,7 @@ import org.apache.pdfbox.io.IOUtils;
  * class will help abstract that and give a single unified interface to
  * those types of fields.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.3 $
+ * @author Ben Litchfield
  */
 public class PDTextStream implements COSObjectable
 {

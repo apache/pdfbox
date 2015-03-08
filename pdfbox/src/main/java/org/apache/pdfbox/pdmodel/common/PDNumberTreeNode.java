@@ -36,9 +36,8 @@ import org.apache.pdfbox.cos.COSName;
  * This class represents a PDF Number tree. See the PDF Reference 1.7 section
  * 7.9.7 for more details.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>,
- *         <a href="igor.podolskiy@ievvwi.uni-stuttgart.de">Igor Podolskiy</a>
- * @version $Revision: 1.4 $
+ * @author Ben Litchfield,
+ * @author Igor Podolskiy
  */
 public class PDNumberTreeNode implements COSObjectable
 {

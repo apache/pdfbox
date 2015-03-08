@@ -23,7 +23,6 @@ import java.util.regex.Pattern;
 /**
  * Basic parser for Type 4 functions which is used to build up instruction sequences.
  *
- * @version $Revision$
  */
 public final class InstructionSequenceBuilder extends Parser.AbstractSyntaxHandler
 {

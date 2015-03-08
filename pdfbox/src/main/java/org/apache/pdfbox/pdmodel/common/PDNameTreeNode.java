@@ -35,8 +35,7 @@ import org.apache.pdfbox.cos.COSString;
  * This class represents a PDF Name tree.  See the PDF Reference 1.5 section 3.8.5
  * for more details.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.4 $
+ * @author Ben Litchfield
  */
 public class PDNameTreeNode implements COSObjectable
 {

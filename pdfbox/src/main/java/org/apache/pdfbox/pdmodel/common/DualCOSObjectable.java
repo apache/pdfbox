@@ -21,8 +21,7 @@ import org.apache.pdfbox.cos.COSBase;
 /**
  * This is an interface to represent a PDModel object that holds two COS objects.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.2 $
+ * @author Ben Litchfield
  */
 public interface DualCOSObjectable
 {

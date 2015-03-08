@@ -23,12 +23,10 @@ import org.apache.pdfbox.cos.COSName;
 /**
  * Contains information for a page label range.
  * 
- * @author <a href="mailto:igor.podolskiy@ievvwi.uni-stuttgart.de">Igor
- *         Podolskiy</a>
+ * @author Igor Podolskiy
  * 
  * @see PDPageLabels
  * 
- * @version $Revision$
  */
 public class PDPageLabelRange implements COSObjectable
 {

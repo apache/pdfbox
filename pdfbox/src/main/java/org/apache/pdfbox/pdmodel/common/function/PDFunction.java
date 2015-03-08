@@ -31,7 +31,7 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
 /**
  * This class represents a function in a PDF document.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
+ * @author Ben Litchfield
  * 
  */
 public abstract class PDFunction implements COSObjectable

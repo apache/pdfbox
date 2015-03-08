@@ -23,8 +23,7 @@ import org.apache.pdfbox.cos.COSName;
  * A named text stream is a combination of a name and a PDTextStream object.  This
  * is used in name trees.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.3 $
+ * @author Ben Litchfield
  */
 public class PDNamedTextStream implements DualCOSObjectable
 {
