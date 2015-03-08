@@ -32,8 +32,7 @@ import org.apache.tools.ant.types.FileSet;
  * This is an ant task that will allow pdf documents to be converted using an
  * and task.
  *
- * @author <a href="ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.8 $
+ * @author Ben Litchfield
  */
 public class PDFToTextTask extends Task
 {

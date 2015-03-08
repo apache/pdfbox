@@ -38,8 +38,7 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 /**
  * This is an example that creates a simple document and embeds a file into it..
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.2 $
+ * @author Ben Litchfield
  */
 public class EmbeddedFiles
 {
