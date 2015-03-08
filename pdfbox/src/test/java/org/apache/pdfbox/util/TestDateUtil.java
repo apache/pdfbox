@@ -33,8 +33,8 @@ import org.apache.pdfbox.cos.COSString;
 /**
  * Test the date conversion utility.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @author <a href="mailto:zweibieren@ahoo.com">Fred Hansen</a>
+ * @author Ben Litchfield
+ * @author Fred Hansen
  * 
  */
 public class TestDateUtil extends TestCase

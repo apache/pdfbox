@@ -30,8 +30,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 /**
  * This will test the form fields in PDFBox.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.4 $
+ * @author Ben Litchfield
  */
 public class TestFields extends TestCase
 {

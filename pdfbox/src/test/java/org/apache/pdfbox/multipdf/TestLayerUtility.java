@@ -41,7 +41,6 @@ import org.apache.pdfbox.util.Matrix;
 /**
  * Tests the {@link org.apache.pdfbox.multipdf.LayerUtility} class.
  *
- * @version $Revision$
  */
 public class TestLayerUtility extends TestCase
 {

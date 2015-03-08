@@ -26,7 +26,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 /**
  * Test suite for PDFCloneUtility, see PDFBOX-2052.
  *
- * @author <a href="mailto:c.hoeflake@gmail.com">Cornelis Hoeflake</a>
+ * @author Cornelis Hoeflake
  * @author Tilman Hausherr
  */
 public class PDFCloneUtilityTest extends TestCase
