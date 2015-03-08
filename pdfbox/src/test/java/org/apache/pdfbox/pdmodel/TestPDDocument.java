@@ -45,6 +45,7 @@ public class TestPDDocument extends TestCase
 
     /**
      * Test document save/load using a stream.
+     * @throws IOException if something went wrong
      */
     public void testSaveLoadStream() throws IOException
     {
@@ -71,6 +72,7 @@ public class TestPDDocument extends TestCase
 
     /**
      * Test document save/load using a file.
+     * @throws IOException if something went wrong
      */
     public void testSaveLoadFile() throws IOException
     {
@@ -100,6 +102,7 @@ public class TestPDDocument extends TestCase
 
     /**
      * Test document save/loadNonSeq using a stream.
+     * @throws IOException if something went wrong
      */
     public void testSaveLoadNonSeqStream() throws IOException
     {
@@ -126,6 +129,7 @@ public class TestPDDocument extends TestCase
 
     /**
      * Test document save/loadNonSeq using a file.
+     * @throws IOException if something went wrong
      */
     public void testSaveLoadNonSeqFile() throws IOException
     {
@@ -151,5 +155,44 @@ public class TestPDDocument extends TestCase
         PDDocument loadDoc = PDDocument.load(targetFile);
         assertEquals(1, loadDoc.getNumberOfPages());
         loadDoc.close();
+    }
+    
+    /**
+     * Test get/setVersion.
+     * @throws IOException if something went wrong
+     */
+    public void testVersions() throws IOException
+    {
+        PDDocument document = new PDDocument();
+        // test default version
+        assertEquals(1.4f, document.getVersion());
+        assertEquals(1.4f, document.getDocument().getVersion());
+        assertEquals("1.4", document.getDocumentCatalog().getVersion());
+        // force downgrading version (header)
+        document.getDocument().setVersion(1.3f);
+        document.getDocumentCatalog().setVersion(null);
+        // test new version (header)
+        assertEquals(1.3f, document.getVersion());
+        assertEquals(1.3f, document.getDocument().getVersion());
+        assertNull(document.getDocumentCatalog().getVersion());
+        document.close();
+
+        // check if version downgrade is denied
+        document = new PDDocument();
+        document.setVersion(1.3f);
+        // all versions shall have their default value
+        assertEquals(1.4f, document.getVersion());
+        assertEquals(1.4f, document.getDocument().getVersion());
+        assertEquals("1.4", document.getDocumentCatalog().getVersion());
+        
+        // check version upgrade
+        document.setVersion(1.5f);
+        // overall version has to be 1.5f
+        assertEquals(1.5f, document.getVersion());
+        // header version has to be unchanged
+        assertEquals(1.4f, document.getDocument().getVersion());
+        // catalog version version has to be 1.5
+        assertEquals("1.5", document.getDocumentCatalog().getVersion());
+        document.close();
     }
 }
