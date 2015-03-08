@@ -24,8 +24,6 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 /**
  * This class represents a number format dictionary.
  * 
- * @version $Revision: 1.0$
- *
  */
 public class PDNumberFormatDictionary implements COSObjectable
 {

@@ -29,7 +29,6 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
  * This class represents the optional content properties dictionary.
  *
  * @since PDF 1.5
- * @version $Revision$
  */
 public class PDOptionalContentProperties implements COSObjectable
 {
