@@ -28,7 +28,6 @@ import org.apache.pdfbox.util.Matrix;
 
 /**
  * This is an example of how to use a text matrix.
- * @version $Revision: 1.0 $
  */
 public class UsingTextMatrix
 {
