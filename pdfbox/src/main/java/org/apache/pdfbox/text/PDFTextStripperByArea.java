@@ -32,8 +32,7 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
 /**
  * This will extract text from a specified region in the PDF.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.5 $
+ * @author Ben Litchfield
  */
 public class PDFTextStripperByArea extends PDFTextStripper
 {
