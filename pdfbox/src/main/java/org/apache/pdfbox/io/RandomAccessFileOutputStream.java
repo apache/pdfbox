@@ -27,8 +27,7 @@ import org.apache.pdfbox.cos.COSNumber;
  * This will write to a RandomAccessFile in the filesystem and keep track
  * of the position it is writing to and the length of the stream.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.6 $
+ * @author Ben Litchfield
  */
 public class RandomAccessFileOutputStream extends OutputStream
 {

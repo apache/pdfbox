@@ -22,8 +22,7 @@ import java.io.IOException;
  * An interface to allow PDF files to be stored completely in memory or
  * to use a scratch file on the disk.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.2 $
+ * @author Ben Litchfield
  */
 public interface RandomAccess extends RandomAccessRead
 {

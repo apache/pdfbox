@@ -35,7 +35,7 @@ import org.apache.pdfbox.cos.COSName;
  *
  * This is the filter used for the LZWDecode filter.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
+ * @author Ben Litchfield
  * @author Tilman Hausherr
  */
 public class LZWFilter extends Filter

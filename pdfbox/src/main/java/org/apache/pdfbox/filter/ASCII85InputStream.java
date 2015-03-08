@@ -23,7 +23,7 @@ import java.io.InputStream;
 /**
  * This class represents an ASCII85 stream.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
+ * @author Ben Litchfield
  *
  */
 final class ASCII85InputStream extends FilterInputStream

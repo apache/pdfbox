@@ -23,8 +23,7 @@ import java.io.IOException;
  * This class allows a section of a RandomAccessFile to be accessed as an
  * input stream.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.5 $
+ * @author Ben Litchfield
  */
 public class RandomAccessFileInputStream extends InputStream
 {
