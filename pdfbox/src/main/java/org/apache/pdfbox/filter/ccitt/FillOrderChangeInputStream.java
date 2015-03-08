@@ -25,7 +25,6 @@ import java.io.InputStream;
 
 /**
  * This filtering input stream does a fill order change required for certain TIFF images.
- * @version $Revision$
  */
 public final class FillOrderChangeInputStream extends FilterInputStream
 {

@@ -24,7 +24,6 @@ import java.io.InputStream;
 
 /**
  * This is a CCITT Group 3 1D decoder (ITU T.4).
- * @version $Revision$
  */
 public final class CCITTFaxG31DDecodeInputStream extends InputStream
 {
