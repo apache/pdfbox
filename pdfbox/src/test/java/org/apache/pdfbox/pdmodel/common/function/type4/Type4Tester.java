@@ -20,8 +20,6 @@ import org.junit.Assert;
 
 /**
  * Testing helper class for testing type 4 functions from the PDF specification.
- *
- * @version $Revision$
  */
 public class Type4Tester
 {

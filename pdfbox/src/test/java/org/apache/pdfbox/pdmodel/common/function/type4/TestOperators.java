@@ -23,7 +23,6 @@ import junit.framework.TestCase;
 /**
  * Tests all implemented PostScript operators.
  *
- * @version $Revision$
  */
 public class TestOperators extends TestCase
 {

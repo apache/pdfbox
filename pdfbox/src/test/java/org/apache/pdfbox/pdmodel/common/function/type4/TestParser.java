@@ -21,7 +21,6 @@ import junit.framework.TestCase;
 /**
  * Tests the type 4 function parser.
  *
- * @version $Revision$
  */
 public class TestParser extends TestCase
 {

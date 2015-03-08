@@ -27,7 +27,6 @@ import org.apache.pdfbox.io.IOUtils;
 
 /**
  * Tests the CCITT Fax G3 1D decoder.
- * @version $Revision$
  */
 public class TestCCITTFaxG31DDecodeInputStream extends AbstractCCITTFaxTestCase
 {
