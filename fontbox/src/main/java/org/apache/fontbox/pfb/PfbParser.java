@@ -28,9 +28,8 @@ import java.util.Arrays;
 /**
  * Parser for a pfb-file.
  *
- * @author Ben Litchfield (ben@benlitchfield.com)
- * @author <a href="mailto:m.g.n@gmx.de">Michael Niedermair</a>
- * @version $Revision: 1.1 $
+ * @author Ben Litchfield
+ * @author Michael Niedermair
  */
 public class PfbParser 
 {
