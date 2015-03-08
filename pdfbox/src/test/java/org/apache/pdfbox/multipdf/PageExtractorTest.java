@@ -27,7 +27,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
  * that the correct number of pages are extracted as this is virtually the only
  * thing which could go wrong when coping pages from one PDF to a new one.
  *
- * @author Adam Nichols (adam@apache.org)
+ * @author Adam Nichols
  */
 public class PageExtractorTest extends TestCase {
     

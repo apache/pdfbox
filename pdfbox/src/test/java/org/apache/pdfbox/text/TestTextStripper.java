@@ -81,9 +81,8 @@ import org.apache.pdfbox.pdmodel.PDDocument;
  *
  *    ant testextract -Dfile=hello.pdf
  *
- * @author Robert Dickinson (bob@brutesquadlabs.com)
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.19 $
+ * @author Robert Dickinson
+ * @author Ben Litchfield
  */
 public class TestTextStripper extends TestCase
 {

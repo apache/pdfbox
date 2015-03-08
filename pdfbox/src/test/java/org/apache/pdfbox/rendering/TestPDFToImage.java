@@ -57,9 +57,9 @@ import javax.imageio.ImageIO;
  * Errors are flagged by creating empty files with appropriate names in the
  * target directory.
  *
- * @author <a href="mailto:DanielWilson@Users.Sourceforge.net">Daniel Wilson</a>
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @author <a href="mailto:tilman@snafu.de">Tilman Hausherr</a>
+ * @author Daniel Wilson
+ * @author Ben Litchfield
+ * @author Tilman Hausherr
  */
 public class TestPDFToImage extends TestCase
 {
