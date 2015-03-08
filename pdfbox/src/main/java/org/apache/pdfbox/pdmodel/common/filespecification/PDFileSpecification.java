@@ -27,8 +27,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 /**
  * This represents a file specification.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.4 $
+ * @author Ben Litchfield
  */
 public abstract class PDFileSpecification implements COSObjectable
 {

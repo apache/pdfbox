@@ -30,7 +30,6 @@ import java.io.IOException;
  * <p>
  * See section 3.9.4 of the PDF 1.4 Reference.
  *
- * @version $Revision: 1.2 $
  */
 public class PDFunctionType4 extends PDFunction
 {

@@ -20,7 +20,6 @@ package org.apache.pdfbox.pdmodel.common.function.type4;
  * Parser for PDF Type 4 functions. This implements a small subset of the PostScript
  * language but is no full PostScript interpreter.
  *
- * @version $Revision$
  */
 public final class Parser
 {

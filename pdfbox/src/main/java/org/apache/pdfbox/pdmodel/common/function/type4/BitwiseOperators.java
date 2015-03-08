@@ -21,7 +21,6 @@ import java.util.Stack;
 /**
  * Provides the bitwise operators such as "and" and "xor".
  *
- * @version $Revision$
  */
 class BitwiseOperators
 {

@@ -24,7 +24,7 @@ import org.apache.pdfbox.cos.COSStream;
 /**
  * This represents a file specification.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
+ * @author Ben Litchfield
  * 
  */
 public class PDComplexFileSpecification extends PDFileSpecification

@@ -21,7 +21,6 @@ import java.util.Stack;
 /**
  * Makes up the execution context, holding the available operators and the execution stack.
  *
- * @version $Revision$
  */
 public class ExecutionContext
 {

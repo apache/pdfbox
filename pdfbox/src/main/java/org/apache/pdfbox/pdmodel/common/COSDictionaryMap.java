@@ -34,8 +34,7 @@ import org.apache.pdfbox.cos.COSString;
 /**
  * This is a Map that will automatically sync the contents to a COSDictionary.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.10 $
+ * @author Ben Litchfield
  */
 public class COSDictionaryMap<K,V> implements Map<K,V>
 {
