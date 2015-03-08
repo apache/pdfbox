@@ -22,8 +22,7 @@ package org.apache.pdfbox.pdmodel.encryption;
  * be a password for standard security or a X509 certificate with a private
  * key for public key security.
  *
- * @author Benoit Guillon (benoit.guillon@snv.jussieu.fr)
- * @version $Revision: 1.2 $
+ * @author Benoit Guillon
  */
 public abstract class DecryptionMaterial
 {

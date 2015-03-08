@@ -26,7 +26,6 @@ package org.apache.pdfbox.pdmodel.encryption;
  * @see org.apache.pdfbox.pdmodel.PDDocument#protect(ProtectionPolicy)
  *
  * @author Benoit Guillon (benoit.guillon@snv.jussieu.fr)
- * @version $Revision: 1.3 $
  */
 public abstract class ProtectionPolicy
 {
