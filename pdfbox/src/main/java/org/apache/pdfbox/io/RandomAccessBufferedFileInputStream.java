@@ -31,7 +31,7 @@ import java.util.Map;
  * File is accessed via {@link RandomAccessFile} and is read in byte chunks
  * which are cached.
  * 
- * @author Timo Boehme (timo.boehme at ontochem com)
+ * @author Timo Boehme
  */
 public class RandomAccessBufferedFileInputStream
 extends InputStream implements RandomAccessRead

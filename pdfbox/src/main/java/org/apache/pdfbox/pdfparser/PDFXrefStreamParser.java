@@ -33,8 +33,7 @@ import org.apache.pdfbox.cos.COSObjectKey;
  * This will parse a PDF 1.5 (or better) Xref stream and
  * extract the xref information from the stream.
  *
- *  @author <a href="mailto:justinl@basistech.com">Justin LeFebvre</a>
- *  @version $Revision: 1.0 $
+ *  @author Justin LeFebvre
  */
 public class PDFXrefStreamParser extends BaseParser
 {

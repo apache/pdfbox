@@ -23,7 +23,7 @@ import java.math.BigDecimal;
 /**
  * This class represents a floating point number in a PDF document.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
+ * @author Ben Litchfield
  * 
  */
 public class COSFloat extends COSNumber

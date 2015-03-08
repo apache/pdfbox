@@ -21,8 +21,7 @@ import java.io.IOException;
 /**
  * This class represents an abstract number in a PDF document.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.10 $
+ * @author Ben Litchfield
  */
 public abstract class COSNumber extends COSBase
 {

@@ -23,8 +23,7 @@ import java.io.EOFException;
 /**
  * A simple subclass that adds a few convience methods.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.6 $
+ * @author Ben Litchfield
  */
 public class PushBackInputStream extends java.io.PushbackInputStream
 {

@@ -22,8 +22,7 @@ import java.io.OutputStream;
 /**
  * This class represents an integer number in a PDF document.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.12 $
+ * @author Ben Litchfield
  */
 public final class COSInteger extends COSNumber
 {

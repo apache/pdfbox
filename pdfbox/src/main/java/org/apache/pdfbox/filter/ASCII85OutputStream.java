@@ -23,7 +23,7 @@ import java.io.OutputStream;
 /**
  * This class represents an ASCII85 output stream.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
+ * @author Ben Litchfield
  *
  */
 final class ASCII85OutputStream extends FilterOutputStream
