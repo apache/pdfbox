@@ -28,8 +28,7 @@ import org.apache.pdfbox.pdmodel.common.PDDestinationOrAction;
 /**
  * This represents a destination in a PDF document.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.6 $
+ * @author Ben Litchfield
  */
 public abstract class PDDestination implements PDDestinationOrAction
 {

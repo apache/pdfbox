@@ -22,8 +22,7 @@ import org.apache.pdfbox.cos.COSName;
 /**
  * This represents an outline in a pdf document.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.2 $
+ * @author Ben Litchfield
  */
 public final class PDDocumentOutline extends PDOutlineNode
 {
