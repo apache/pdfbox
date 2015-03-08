@@ -27,7 +27,6 @@ import junit.framework.TestCase;
 
 /**
  * This is a unit test for {@link IOUtils}.
- * @version $Revision$
  */
 public class TestIOUtils extends TestCase
 {

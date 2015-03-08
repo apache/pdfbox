@@ -23,7 +23,6 @@ import junit.framework.TestCase;
 
 /**
  * Abstract base class for testing CCITT fax encoding.
- * @version $Revision$
  */
 public abstract class AbstractCCITTFaxTestCase extends TestCase
 {

@@ -24,8 +24,6 @@ import junit.framework.TestSuite;
 
 /**
  * Tests PDF functions.
- *
- * @version $Revision$
  */
 public class TestFunctions extends TestCase
 {

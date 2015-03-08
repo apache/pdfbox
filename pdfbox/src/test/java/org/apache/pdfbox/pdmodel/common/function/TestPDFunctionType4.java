@@ -27,8 +27,6 @@ import junit.framework.TestCase;
 
 /**
  * Tests the {@link PDFunctionType4} class.
- *
- * @version $Revision$
  */
 public class TestPDFunctionType4 extends TestCase
 {

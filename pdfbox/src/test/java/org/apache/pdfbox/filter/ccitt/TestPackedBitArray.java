@@ -23,7 +23,6 @@ import junit.framework.TestCase;
 
 /**
  * This is a unit test for {@link PackedBitArray}.
- * @version $Revision$
  */
 public class TestPackedBitArray extends TestCase
 {
