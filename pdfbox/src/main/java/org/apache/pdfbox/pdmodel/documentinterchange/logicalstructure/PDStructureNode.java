@@ -34,8 +34,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 /**
  * A node in the structure tree.
  * 
- * @author Koch
- * @version $Revision: $
+ * @author Johannes Koch
  */
 public abstract class PDStructureNode implements COSObjectable
 {

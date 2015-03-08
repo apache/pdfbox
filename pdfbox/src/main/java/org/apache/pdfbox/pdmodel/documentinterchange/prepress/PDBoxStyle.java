@@ -29,8 +29,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 /**
  * The Box Style specifies visual characteristics for displaying box areas.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.3 $
+ * @author Ben Litchfield
  */
 public class PDBoxStyle implements COSObjectable
 {

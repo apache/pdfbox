@@ -21,8 +21,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 /**
  * A List attribute object.
  * 
- * @author <a href="mailto:Johannes%20Koch%20%3Ckoch@apache.org%3E">Johannes Koch</a>
- * @version $Revision: $
+ * @author Johannes Koch
  */
 public class PDListAttributeObject extends PDStandardAttributeObject
 {

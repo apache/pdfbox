@@ -29,8 +29,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDGamma;
 /**
  * A standard attribute object.
  * 
- * @author <a href="mailto:Johannes%20Koch%20%3Ckoch@apache.org%3E">Johannes Koch</a>
- * @version $Revision: $
+ * @author Johannes Koch
  */
 public abstract class PDStandardAttributeObject extends PDAttributeObject
 {

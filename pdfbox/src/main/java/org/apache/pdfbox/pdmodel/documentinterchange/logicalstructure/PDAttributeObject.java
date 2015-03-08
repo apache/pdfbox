@@ -29,8 +29,7 @@ import org.apache.pdfbox.pdmodel.documentinterchange.taggedpdf.PDTableAttributeO
 /**
  * An attribute object.
  *
- * @author <a href="mailto:Johannes%20Koch%20%3Ckoch@apache.org%3E">Johannes Koch</a>
- * @version $Revision: $
+ * @author Johannes Koch
  *
  */
 public abstract class PDAttributeObject extends PDDictionaryWrapper
