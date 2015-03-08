@@ -24,8 +24,6 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 /**
  * This class represents a measure dictionary.
  * 
- * @version $Revision: 1.0 $
- *
  */
 public class PDMeasureDictionary implements COSObjectable
 {
