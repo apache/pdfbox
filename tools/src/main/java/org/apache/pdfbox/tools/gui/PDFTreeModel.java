@@ -45,7 +45,6 @@ import java.util.List;
  * A class to model a PDF document as a tree structure.
  *
  * @author Ben Litchfield
- * @version $Revision: 1.9 $
  */
 public class PDFTreeModel implements TreeModel
 {
