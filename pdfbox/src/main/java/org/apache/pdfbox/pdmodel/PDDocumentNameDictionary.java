@@ -24,8 +24,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 /**
  * This class holds all of the name trees that are available at the document level.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.4 $
+ * @author Ben Litchfield
  */
 public class PDDocumentNameDictionary implements COSObjectable
 {

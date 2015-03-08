@@ -29,8 +29,7 @@ import org.apache.pdfbox.pdmodel.common.PDTextStream;
 /**
  * This class holds all of the name trees that are available at the document level.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.1 $
+ * @author Ben Litchfield
  */
 public class PDJavascriptNameTreeNode extends PDNameTreeNode
 {
