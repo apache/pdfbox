@@ -21,7 +21,6 @@ package org.apache.pdfbox.filter.ccitt;
 
 /**
  * Constants for CCITT Fax Filter.
- * @version $Revision$
  */
 final class CCITTFaxConstants
 {
