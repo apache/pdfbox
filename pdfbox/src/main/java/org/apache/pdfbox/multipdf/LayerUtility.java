@@ -45,7 +45,6 @@ import org.apache.pdfbox.util.Matrix;
  * This class allows to import pages as Form XObjects into a PDF file and use them to create
  * layers (optional content groups).
  *
- * @version $Revision$
  */
 public class LayerUtility
 {

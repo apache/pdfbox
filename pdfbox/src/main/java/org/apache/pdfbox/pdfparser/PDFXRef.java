@@ -20,7 +20,6 @@ import org.apache.pdfbox.cos.COSObject;
 
 /**
  * @author Alexander Funk
- * @version $Revision: $
  */
 public interface PDFXRef
 {

@@ -22,7 +22,6 @@ import java.io.IOException;
  * An interface for visiting a PDF document at the type (COS) level.
  *
  * @author Michael Traut
- * @version $Revision: 1.6 $
  */
 public interface ICOSVisitor
 {
