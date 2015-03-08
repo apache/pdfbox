@@ -24,8 +24,7 @@ import org.apache.pdfbox.cos.COSBase;
  * The default x,y,z will be whatever is the current value in the viewer application and
  * are not required.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.2 $
+ * @author Ben Litchfield
  */
 public class PDPageXYZDestination extends PDPageDestination
 {

@@ -42,7 +42,7 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPa
  * This represents an outline item in a pdf document. The items at each level of the hierarchy form an iterable linked
  * list, chained together through their Prev and Next entries.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
+ * @author Ben Litchfield
  */
 public final class PDOutlineItem extends PDOutlineNode
 {

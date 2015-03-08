@@ -25,8 +25,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 /**
  * This is the document viewing preferences.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.3 $
+ * @author Ben Litchfield
  */
 public class PDViewerPreferences implements COSObjectable
 {

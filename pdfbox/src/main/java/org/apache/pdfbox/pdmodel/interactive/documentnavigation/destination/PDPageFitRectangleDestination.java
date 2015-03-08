@@ -23,8 +23,7 @@ import org.apache.pdfbox.cos.COSBase;
  * This represents a destination to a page at a y location and the width is magnified
  * to just fit on the screen.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.2 $
+ * @author Ben Litchfield
  */
 public class PDPageFitRectangleDestination extends PDPageDestination
 {

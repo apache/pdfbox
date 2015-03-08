@@ -25,8 +25,7 @@ import org.apache.pdfbox.pdmodel.common.PDDictionaryWrapper;
 /**
  * Base class for a node in the outline of a PDF document.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.3 $
+ * @author Ben Litchfield
  */
 public abstract class PDOutlineNode extends PDDictionaryWrapper
 {

@@ -28,8 +28,7 @@ import org.apache.pdfbox.pdmodel.PDPageTree;
 /**
  * This represents a destination to a page, see subclasses for specific parameters.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.2 $
+ * @author Ben Litchfield
  */
 public abstract class PDPageDestination extends PDDestination
 {
