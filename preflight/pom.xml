@@ -108,7 +108,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>cobertura-maven-plugin</artifactId>
-				<version>2.3</version>
+				<version>2.6</version>
 				<configuration>
 					<instrumentation>
 						<ignores>
@@ -141,7 +141,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>2.13</version>
 				<configuration>
 					<configLocation>../pdfbox-checkstyle-5.xml</configLocation>
 				</configuration>
