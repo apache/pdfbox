@@ -20,7 +20,6 @@ package org.apache.fontbox.cff;
  * This class contains some helper methods handling Type1-Fonts.
  *
  * @author Villu Ruusmann
- * @version $Revision$
  */
 public final class Type1FontUtil
 {

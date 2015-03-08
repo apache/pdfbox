@@ -27,7 +27,7 @@ import java.util.TimeZone;
 /**
  * An interface into a data stream.
  * 
- * @author Ben Litchfield (ben@benlitchfield.com)
+ * @author Ben Litchfield
  * 
  */
 public abstract class TTFDataStream implements Closeable

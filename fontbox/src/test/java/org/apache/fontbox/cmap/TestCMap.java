@@ -23,7 +23,6 @@ import junit.framework.TestCase;
 /**
  * This will test the CMap implementation.
  *
- * @version $Revision$
  */
 public class TestCMap extends TestCase 
 {

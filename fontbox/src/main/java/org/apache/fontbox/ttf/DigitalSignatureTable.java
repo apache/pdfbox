@@ -19,8 +19,7 @@ package org.apache.fontbox.ttf;
 /**
  * A table in a true type font.
  * 
- * @author Ben Litchfield (ben@benlitchfield.com)
- * @version $Revision: 1.1 $
+ * @author Ben Litchfield
  */
 public class DigitalSignatureTable extends TTFTable
 {

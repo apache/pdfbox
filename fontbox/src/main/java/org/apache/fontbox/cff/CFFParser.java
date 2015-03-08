@@ -27,7 +27,6 @@ import java.util.Map;
 /**
  * This class represents a parser for a CFF font. 
  * @author Villu Ruusmann
- * @version $Revision: 1.0 $
  */
 public class CFFParser
 {

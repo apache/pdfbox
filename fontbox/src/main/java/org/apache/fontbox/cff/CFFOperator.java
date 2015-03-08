@@ -23,7 +23,6 @@ import java.util.Map;
 /**
  * This class represents a CFF operator.
  * @author Villu Ruusmann
- * @version $Revision: 1.0 $
  */
 public final class CFFOperator
 {

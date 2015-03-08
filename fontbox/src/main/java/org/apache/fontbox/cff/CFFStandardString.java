@@ -19,7 +19,6 @@ package org.apache.fontbox.cff;
 /**
  * This class represents a standard SID to String mapping.
  * @author Villu Ruusmann
- * @version $Revision: 1.0 $
  */
 public final class CFFStandardString 
 {

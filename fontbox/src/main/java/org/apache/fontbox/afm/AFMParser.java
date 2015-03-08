@@ -30,7 +30,7 @@ import org.apache.fontbox.util.BoundingBox;
  *
  * @see <A href="http://partners.adobe.com/asn/developer/type/">AFM Documentation</A>
  *
- * @author Ben Litchfield (ben@benlitchfield.com)
+ * @author Ben Litchfield
  * 
  */
 public class AFMParser

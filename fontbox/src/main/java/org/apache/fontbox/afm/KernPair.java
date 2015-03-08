@@ -19,8 +19,7 @@ package org.apache.fontbox.afm;
 /**
  * This represents some kern pair data.
  *
- * @author Ben Litchfield (ben@benlitchfield.com)
- * @version $Revision: 1.1 $
+ * @author Ben Litchfield
  */
 public class KernPair
 {

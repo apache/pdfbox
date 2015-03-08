@@ -25,7 +25,6 @@ import org.junit.internal.ArrayComparisonFailure;
  * This class includes some tests for the Type1FontUtil class.
  *
  * @author Villu Ruusmann
- * @version $Revision$
  */
 public class Type1FontUtilTest extends TestCase
 {
