@@ -23,7 +23,7 @@ import java.util.List;
  * This is an implementation of a bounding box.  This was originally written for the
  * AMF parser.
  *
- * @author Ben Litchfield (ben@benlitchfield.com)
+ * @author Ben Litchfield
  */
 public class BoundingBox
 {

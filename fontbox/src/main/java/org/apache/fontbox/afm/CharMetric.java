@@ -24,8 +24,7 @@ import org.apache.fontbox.util.BoundingBox;
 /**
  * This class represents a single character metric.
  *
- * @author Ben Litchfield (ben@benlitchfield.com)
- * @version $Revision: 1.1 $
+ * @author Ben Litchfield
  */
 public class CharMetric
 {

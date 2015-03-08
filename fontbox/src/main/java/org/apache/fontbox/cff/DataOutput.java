@@ -20,9 +20,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 /**
- * 
  * @author Villu Ruusmann
- * @version $Revision: 1.0 $
  */
 public class DataOutput
 {

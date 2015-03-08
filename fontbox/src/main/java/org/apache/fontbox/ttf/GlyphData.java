@@ -24,7 +24,7 @@ import org.apache.fontbox.util.BoundingBox;
 /**
  * A glyph data record in the glyf table.
  * 
- * @author Ben Litchfield (ben@benlitchfield.com)
+ * @author Ben Litchfield
  */
 public class GlyphData
 {

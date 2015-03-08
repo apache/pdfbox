@@ -19,8 +19,7 @@ package org.apache.fontbox.afm;
 /**
  * This class represents a ligature, which is an entry of the CharMetrics.
  *
- * @author Ben Litchfield (ben@benlitchfield.com)
- * @version $Revision: 1.1 $
+ * @author Ben Litchfield
  */
 public class Ligature
 {

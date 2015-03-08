@@ -21,7 +21,7 @@ import java.io.IOException;
 /**
  * A table in a true type font.
  * 
- * @author Ben Litchfield (ben@benlitchfield.com)
+ * @author Ben Litchfield
  */
 public class HorizontalHeaderTable extends TTFTable
 {

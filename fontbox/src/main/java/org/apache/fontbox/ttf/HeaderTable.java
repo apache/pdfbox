@@ -22,7 +22,7 @@ import java.util.Calendar;
 /**
  * A table in a true type font.
  * 
- * @author Ben Litchfield (ben@benlitchfield.com)
+ * @author Ben Litchfield
  */
 public class HeaderTable extends TTFTable
 {

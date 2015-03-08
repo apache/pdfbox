@@ -22,8 +22,7 @@ import java.util.List;
 /**
  * This class represents composite character data.
  *
- * @author Ben Litchfield (ben@benlitchfield.com)
- * @version $Revision: 1.1 $
+ * @author Ben Litchfield
  */
 public class Composite
 {

@@ -21,7 +21,6 @@ package org.apache.fontbox.cff;
  * This is specialized CFFCharset. It's used if the CharsetId of a font is set to 2.
  * 
  * @author Villu Ruusmann
- * @version $Revision$
  */
 public final class CFFExpertSubsetCharset extends CFFCharset
 {
