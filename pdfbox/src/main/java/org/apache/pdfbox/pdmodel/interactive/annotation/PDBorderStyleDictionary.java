@@ -28,7 +28,6 @@ import org.apache.pdfbox.pdmodel.graphics.PDLineDashPattern;
  * This class represents a PDF /BS entry the border style dictionary.
  *
  * @author Paul King
- * @version $Revision: 1.1 $
  */
 public class PDBorderStyleDictionary implements COSObjectable
 {

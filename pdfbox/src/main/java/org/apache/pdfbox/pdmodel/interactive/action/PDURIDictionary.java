@@ -23,8 +23,6 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 /**
  * This is the implementation of an URI dictionary.
  *
- * @version $Revision: 1.0 $
- *
  */
 public class PDURIDictionary implements COSObjectable
 {

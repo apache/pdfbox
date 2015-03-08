@@ -25,8 +25,7 @@ import org.apache.pdfbox.pdmodel.common.filespecification.PDFileSpecification;
 /**
  * This is the class that represents a file attachement.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.2 $
+ * @author Ben Litchfield
  */
 public class PDAnnotationFileAttachment extends PDAnnotationMarkup
 {

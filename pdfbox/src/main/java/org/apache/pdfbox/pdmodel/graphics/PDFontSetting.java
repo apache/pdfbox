@@ -33,8 +33,7 @@ import java.io.IOException;
  * This class represents a font setting used for the graphics state.  A font setting is a font and a
  * font size.  Maybe there is a better name for this?
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.4 $
+ * @author Ben Litchfield
  */
 public class PDFontSetting implements COSObjectable
 {

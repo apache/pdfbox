@@ -33,8 +33,6 @@ import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 /**
  * This class represents an appearance characteristics dictionary.
  *
- * @version $Revision: 1.0 $ 
- *
  */
 public class PDAppearanceCharacteristicsDictionary implements COSObjectable
 {

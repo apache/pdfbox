@@ -22,8 +22,7 @@ import org.apache.pdfbox.pdmodel.common.PDTextStream;
 /**
  * This represents a JavaScript action.
  *
- * @author Michael Schwarzenberger (mi2kee@gmail.com)
- * @version $Revision: 1.1 $
+ * @author Michael Schwarzenberger
  */
 public class PDActionJavaScript extends PDAction
 {

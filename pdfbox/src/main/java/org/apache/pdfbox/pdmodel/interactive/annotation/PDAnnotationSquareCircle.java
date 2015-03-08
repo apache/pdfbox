@@ -27,7 +27,6 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
  * Introduced in PDF 1.3 specification .
  *
  * @author Paul King
- * @version $Revision: 1.1 $
  */
 public class PDAnnotationSquareCircle extends PDAnnotationMarkup
 {

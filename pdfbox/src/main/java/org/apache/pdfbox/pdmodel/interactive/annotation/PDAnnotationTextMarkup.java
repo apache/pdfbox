@@ -25,7 +25,6 @@ import org.apache.pdfbox.cos.COSName;
  * Introduced in PDF 1.3 specification, except Squiggly lines in 1.4.
  *
  * @author Paul King
- * @version $Revision: 1.1 $
  */
 public class PDAnnotationTextMarkup extends PDAnnotationMarkup
 {

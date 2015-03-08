@@ -22,7 +22,7 @@ import org.apache.pdfbox.cos.COSName;
 /**
  * This the win ansi encoding.
  * 
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
+ * @author Ben Litchfield
  */
 public class WinAnsiEncoding extends Encoding
 {

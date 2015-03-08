@@ -25,9 +25,8 @@ import org.apache.pdfbox.pdmodel.common.filespecification.PDFileSpecification;
 /**
  * This represents a launch action that can be executed in a PDF document.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @author Panagiotis Toumasis (ptoumasis@mail.gr)
- * @version $Revision: 1.5 $
+ * @author Ben Litchfield
+ * @author Panagiotis Toumasis
  */
 public class PDActionLaunch extends PDAction
 {

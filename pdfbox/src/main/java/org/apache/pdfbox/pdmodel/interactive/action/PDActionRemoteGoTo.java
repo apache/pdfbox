@@ -26,9 +26,8 @@ import org.apache.pdfbox.pdmodel.common.filespecification.PDFileSpecification;
 /**
  * This represents a remote go-to action that can be executed in a PDF document.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @author Panagiotis Toumasis (ptoumasis@mail.gr)
- * @version $Revision: 1.4 $
+ * @author Ben Litchfield
+ * @author Panagiotis Toumasis
  */
 public class PDActionRemoteGoTo extends PDAction
 {

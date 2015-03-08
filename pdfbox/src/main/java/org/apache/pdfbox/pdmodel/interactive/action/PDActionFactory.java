@@ -21,7 +21,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 /**
  * This class will take a dictionary and determine which type of action to create.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
+ * @author Ben Litchfield
  * 
  */
 public final class PDActionFactory

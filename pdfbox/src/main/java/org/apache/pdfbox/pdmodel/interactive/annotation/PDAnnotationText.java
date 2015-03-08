@@ -23,7 +23,6 @@ import org.apache.pdfbox.cos.COSName;
  * This is the class that represents a text annotation.
  *
  * @author Paul King
- * @version $Revision: 1.1 $
  */
 public class PDAnnotationText extends PDAnnotationMarkup
 {

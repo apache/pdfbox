@@ -30,9 +30,8 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDe
 /**
  * This is the class that represents a link annotation.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
+ * @author Ben Litchfield
  * @author Paul King
- * @version $Revision: 1.3 $
  */
 public class PDAnnotationLink extends PDAnnotation
 {

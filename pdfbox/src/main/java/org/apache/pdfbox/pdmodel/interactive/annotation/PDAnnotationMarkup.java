@@ -31,7 +31,6 @@ import java.util.Calendar;
  * annotation types.
  *
  * @author Paul King
- * @version $Revision: 1.1 $
  */
 public class PDAnnotationMarkup extends PDAnnotation
 {
