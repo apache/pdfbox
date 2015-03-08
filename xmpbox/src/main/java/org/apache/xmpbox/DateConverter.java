@@ -41,10 +41,9 @@ import java.util.regex.Pattern;
  * support for various strings as it’s main use case it to parse from PDF date strings.</strong>
  * </p>
  * 
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @author <a href="mailto:chris@oezbek.net">Christopher Oezbek</a>
+ * @author Ben Litchfield
+ * @author Christopher Oezbek
  * 
- * @version $Revision: 1.3 $
  */
 public class DateConverter
 {
