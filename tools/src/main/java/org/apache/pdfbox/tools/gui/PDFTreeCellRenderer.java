@@ -35,8 +35,7 @@ import org.apache.pdfbox.cos.COSString;
 /**
  * A class to render tree cells for the pdfviewer.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.6 $
+ * @author Ben Litchfield
  */
 public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
 {

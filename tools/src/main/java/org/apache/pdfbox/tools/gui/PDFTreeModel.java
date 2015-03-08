@@ -20,9 +20,8 @@ package org.apache.pdfbox.tools.gui;
  * A tree model that uses a cos document.
  *
  *
- * @author  wurtz
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.9 $
+ * @author wurtz
+ * @author Ben Litchfield
  */
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeModel;
@@ -45,7 +44,7 @@ import java.util.List;
 /**
  * A class to model a PDF document as a tree structure.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
+ * @author Ben Litchfield
  * @version $Revision: 1.9 $
  */
 public class PDFTreeModel implements TreeModel

@@ -24,8 +24,7 @@ import javax.swing.filechooser.FileFilter;
 /**
  * A FileFilter that will only accept files of a certain extension.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.2 $
+ * @author Ben Litchfield
  */
 public class ExtensionFileFilter extends FileFilter
 {

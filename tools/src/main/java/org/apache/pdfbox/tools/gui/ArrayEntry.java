@@ -19,8 +19,7 @@ package org.apache.pdfbox.tools.gui;
 /**
  * This is a simple class that will contain an index and a value.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @version $Revision: 1.3 $
+ * @author Ben Litchfield
  */
 public class ArrayEntry
 {
