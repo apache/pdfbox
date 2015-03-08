@@ -41,8 +41,8 @@ package org.apache.pdfbox.pdmodel.encryption;
  * @see ProtectionPolicy
  * @see org.apache.pdfbox.pdmodel.PDDocument#getCurrentAccessPermission()
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
- * @author Benoit Guillon (benoit.guillon@snv.jussieu.fr)
+ * @author Ben Litchfield
+ * @author Benoit Guillon
  *
  */
 

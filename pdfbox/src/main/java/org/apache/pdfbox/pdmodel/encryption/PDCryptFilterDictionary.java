@@ -27,8 +27,6 @@ import org.apache.pdfbox.cos.COSName;
  * It contains a low level dictionary (COSDictionary) and provides the methods to
  * manage its fields.
  *
- *
- * @version $Revision: 1.0 $
  */
 public class PDCryptFilterDictionary
 {
