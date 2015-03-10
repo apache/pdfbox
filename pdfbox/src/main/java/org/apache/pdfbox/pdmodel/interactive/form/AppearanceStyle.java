@@ -28,7 +28,7 @@ class AppearanceStyle
     /**
      * The font size to be used for text formatting.
      *
-     * Defaulting to 12 to math Acrobats default.
+     * Defaulting to 12 to match Acrobats default.
      */
     private float fontSize = 12.0f;
     
