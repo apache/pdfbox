@@ -106,29 +106,6 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>cobertura-maven-plugin</artifactId>
-				<version>2.6</version>
-				<configuration>
-					<instrumentation>
-						<ignores>
-							<ignore>org.apache.pdfbox.preflight.javacc.*</ignore>
-							<ignore>org.apache.pdfbox.preflight.javacc.extractor.*</ignore>
-						</ignores>
-						<excludes>
-							<exclude>org/apache/pdfbox/preflight/javacc/**/*.class</exclude>
-						</excludes>
-					</instrumentation>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>clean</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.rat</groupId>
 				<artifactId>apache-rat-plugin</artifactId>
 				<configuration>
@@ -233,40 +210,6 @@
 
 	<reporting>
 		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>taglist-maven-plugin</artifactId>
-				<version>2.4</version>
-				<configuration>
-					<encoding>UTF-8</encoding>
-					<sourceFileLocale>en</sourceFileLocale>
-					<emptyComments>false</emptyComments>
-					<tagListOptions>
-						<tagClasses>
-							<tagClass>
-								<displayName>TODO List</displayName>
-								<tags>
-									<tag>
-										<matchString>TODO</matchString>
-										<matchType>exact</matchType>
-									</tag>
-									<tag>
-										<matchString>FIXME</matchString>
-										<matchType>exact</matchType>
-									</tag>
-								</tags>
-							</tagClass>
-						</tagClasses>
-					</tagListOptions>
-				</configuration>
-			</plugin>
-
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>cobertura-maven-plugin</artifactId>
-				<version>2.7</version>
-			</plugin>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-report-plugin</artifactId>
