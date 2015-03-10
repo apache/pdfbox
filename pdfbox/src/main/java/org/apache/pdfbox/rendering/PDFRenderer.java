@@ -199,7 +199,7 @@ public class PDFRenderer
             graphics.rotate((float) Math.toRadians(rotationAngle));
         }
 
-        PageDrawer drawer = new PageDrawer(this, page);
+        PageDrawer drawer = new PageDrawer(page);
         drawer.drawPage(graphics, cropBox);
     }
 }
