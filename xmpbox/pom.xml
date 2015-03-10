@@ -69,41 +69,6 @@
 	<reporting>
 		<plugins>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>taglist-maven-plugin</artifactId>
-				<version>2.4</version>
-				<configuration>
-					<encoding>UTF-8</encoding>
-					<sourceFileLocale>en</sourceFileLocale>
-					<emptyComments>false</emptyComments>
-					<tagListOptions>
-						<tagClasses>
-							<tagClass>
-								<displayName>TODO List</displayName>
-								<tags>
-									<tag>
-										<matchString>TODO</matchString>
-										<matchType>exact</matchType>
-									</tag>
-									<tag>
-										<matchString>FIXME</matchString>
-										<matchType>exact</matchType>
-									</tag>
-								</tags>
-							</tagClass>
-						</tagClasses>
-					</tagListOptions>
-				</configuration>
-			</plugin>
-
-
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>cobertura-maven-plugin</artifactId>
-				<version>2.7</version>
-			</plugin>
-
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-report-plugin</artifactId>
 				<version>2.18.1</version>
