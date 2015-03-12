@@ -149,13 +149,9 @@ public class PreflightType3Stream extends PreflightStreamEngine
         {
             width = ((Number) obj).intValue();
         }
-        else if (obj instanceof COSInteger)
+        else if (obj instanceof COSNumber)
         {
-            width = ((COSInteger) obj).floatValue();
-        }
-        else if (obj instanceof COSFloat)
-        {
-            width = ((COSFloat) obj).floatValue();
+            width = ((COSNumber) obj).floatValue();
         }
         else
         {
