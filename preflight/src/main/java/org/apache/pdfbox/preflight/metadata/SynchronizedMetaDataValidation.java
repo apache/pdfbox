@@ -582,7 +582,7 @@ public class SynchronizedMetaDataValidation
     {
         // remove trailing NUL values
         int length = string.length();
-        while(length > 0 && (int)string.charAt(length-1) == 0)
+        while (length > 0 && string.charAt(length - 1) == 0)
         {
             length--;
         }
