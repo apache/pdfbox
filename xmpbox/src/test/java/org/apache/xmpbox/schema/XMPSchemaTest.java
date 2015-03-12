@@ -302,7 +302,7 @@ public class XMPSchemaTest
         {
             ok = true;
         }
-        Assert.assertEquals(true, ok);
+        Assert.assertTrue(ok);
         ok = false;
         try
         {
@@ -312,7 +312,7 @@ public class XMPSchemaTest
         {
             ok = true;
         }
-        Assert.assertEquals(true, ok);
+        Assert.assertTrue(ok);
         ok = false;
         try
         {
@@ -322,7 +322,7 @@ public class XMPSchemaTest
         {
             ok = true;
         }
-        Assert.assertEquals(true, ok);
+        Assert.assertTrue(ok);
         ok = false;
         try
         {
