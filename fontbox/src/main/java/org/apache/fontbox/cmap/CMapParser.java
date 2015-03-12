@@ -182,7 +182,7 @@ public class CMapParser
             Object next = parseNextToken(cmapStream);
             if (next instanceof Number)
             {
-                result.setVersion(((Number) next).toString());
+                result.setVersion(next.toString());
             }
             else if (next instanceof String)
             {
@@ -400,7 +400,7 @@ public class CMapParser
                     arrayIndex++;
                     if (arrayIndex < array.size())
                     {
-                        tokenBytes = (byte[]) array.get(arrayIndex);
+                        tokenBytes = array.get(arrayIndex);
                     }
                 }
             }
