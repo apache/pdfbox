@@ -37,7 +37,7 @@ import java.util.Map;
 public class PropertiesDescription
 {
 
-    private Map<String, PropertyType> types;
+    private final Map<String, PropertyType> types;
 
     /**
      * Build PropMapping for specified namespace
