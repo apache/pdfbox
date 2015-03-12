@@ -49,7 +49,7 @@ public class PreflightDocument extends PDDocument
      */
     public PreflightDocument(Format format) throws IOException
     {
-        this(format, (PreflightConfiguration) null);
+        this(format, null);
     }
 
     /**
