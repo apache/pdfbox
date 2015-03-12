@@ -29,7 +29,6 @@ import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VAL
 import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VALUE_ENCODING_WIN;
 
 import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
@@ -56,7 +55,7 @@ public class Type1FontValidator extends SimpleFontValidator<Type1Container>
     @Override
     protected void checkEncoding()
     {
-        COSBase encoding = ((COSDictionary) fontDictionary).getItem(COSName.ENCODING);
+        COSBase encoding = fontDictionary.getItem(COSName.ENCODING);
         if (encoding != null)
         {
             COSDocument cosDocument = context.getDocument().getDocument();
