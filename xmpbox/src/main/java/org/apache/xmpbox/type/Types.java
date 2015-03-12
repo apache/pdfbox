@@ -47,11 +47,11 @@ public enum Types
 
     // For defined types
 
-    private boolean simple;
+    private final boolean simple;
 
-    private Types basic;
+    private final Types basic;
 
-    private Class<? extends AbstractField> clz;
+    private final Class<? extends AbstractField> clz;
 
     private Types(boolean s, Types b, Class<? extends AbstractField> c)
     {
