@@ -353,9 +353,8 @@ public class Type3FontValidator extends FontValidator<Type3Container>
                 catch (ContentStreamException e)
                 {
                     // TODO spaces/isartor-6-2-3-3-t02-fail-h.pdf --> si ajout de l'erreur dans le container le test
-                    // echoue... pourquoi si la font est utilisÃ©e ca devrait planter???
-                    this.context.addValidationError(new ValidationError(((ContentStreamException) e).getErrorCode(), e
-                            .getMessage(),e));
+                    // echoue... pourquoi si la font est utilisée ca devrait planter???
+                    this.context.addValidationError(new ValidationError(e.getErrorCode(), e.getMessage(), e));
                     return;
                 }
                 catch (IOException e)
