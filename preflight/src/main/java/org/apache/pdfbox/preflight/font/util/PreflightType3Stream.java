@@ -26,8 +26,6 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.fontbox.util.BoundingBox;
-import org.apache.pdfbox.cos.COSFloat;
-import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.font.PDType3CharProc;
