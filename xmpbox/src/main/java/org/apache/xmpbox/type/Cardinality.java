@@ -26,7 +26,7 @@ public enum Cardinality
 
     Simple(false), Bag(true), Seq(true), Alt(true);
 
-    private boolean array;
+    private final boolean array;
 
     private Cardinality(boolean a)
     {
