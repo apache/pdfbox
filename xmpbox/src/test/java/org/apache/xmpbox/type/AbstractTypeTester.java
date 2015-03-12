@@ -114,7 +114,7 @@ public abstract class AbstractTypeTester
         }
         else if (type.getImplementingClass() == IntegerType.class)
         {
-            return new Integer(counterRandom.nextInt());
+            return counterRandom.nextInt();
         }
         else
         {
