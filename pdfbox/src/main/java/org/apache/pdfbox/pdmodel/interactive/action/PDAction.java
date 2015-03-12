@@ -23,7 +23,6 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.PDDestinationOrAction;
 
@@ -136,24 +135,24 @@ public abstract class PDAction implements PDDestinationOrAction
      *
      * @return The Next action or sequence of actions.
      */
-    public List getNext()
+    public List<PDAction> getNext()
     {
-        List retval = null;
+        List<PDAction> retval = null;
         COSBase next = action.getDictionaryObject(COSName.NEXT);
         if( next instanceof COSDictionary )
         {
             PDAction pdAction = PDActionFactory.createAction( (COSDictionary) next );
-            retval = new COSArrayList(pdAction, next, action, COSName.NEXT);
+            retval = new COSArrayList<PDAction>(pdAction, next, action, COSName.NEXT);
         }
         else if( next instanceof COSArray )
         {
             COSArray array = (COSArray)next;
-            List actions = new ArrayList();
+            List<PDAction> actions = new ArrayList<PDAction>();
             for( int i=0; i<array.size(); i++ )
             {
                 actions.add( PDActionFactory.createAction( (COSDictionary) array.getObject( i )));
             }
-            retval = new COSArrayList( actions, array );
+            retval = new COSArrayList<PDAction>( actions, array );
         }
 
         return retval;
@@ -166,7 +165,7 @@ public abstract class PDAction implements PDDestinationOrAction
      *
      * @param next The Next action or sequence of actions.
      */
-    public void setNext( List next )
+    public void setNext( List<?> next )
     {
         action.setItem(COSName.NEXT, COSArrayList.converterToCOSArray(next));
     }
