@@ -32,6 +32,7 @@ import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
@@ -401,13 +402,9 @@ public final class COSUtils
                 {
                     return null;
                 }
-                else if (obj.getObject() instanceof COSFloat)
+                else if (obj.getObject() instanceof COSNumber)
                 {
-                    return ((COSFloat) obj.getObject()).floatValue();
-                }
-                else if (obj.getObject() instanceof COSInteger)
-                {
-                    return (float) ((COSInteger) obj.getObject()).intValue();
+                    return ((COSNumber) obj.getObject()).floatValue();
                 }
                 else
                 {
@@ -419,13 +416,9 @@ public final class COSUtils
                 return null;
             }
         }
-        else if (cbase instanceof COSFloat)
+        else if (cbase instanceof COSNumber)
         {
-            return ((COSFloat) cbase).floatValue();
-        }
-        else if (cbase instanceof COSInteger)
-        {
-            return (float) ((COSInteger) cbase).intValue();
+            return ((COSNumber) cbase).floatValue();
         }
         else
         {
@@ -453,13 +446,9 @@ public final class COSUtils
                 {
                     return null;
                 }
-                else if (obj.getObject() instanceof COSInteger)
+                else if (obj.getObject() instanceof COSNumber)
                 {
-                    return ((COSInteger) obj.getObject()).intValue();
-                }
-                else if (obj.getObject() instanceof COSFloat)
-                {
-                    return ((COSFloat) obj.getObject()).intValue();
+                    return ((COSNumber) obj.getObject()).intValue();
                 }
                 else
                 {
@@ -471,13 +460,9 @@ public final class COSUtils
                 return null;
             }
         }
-        else if (cbase instanceof COSInteger)
+        else if (cbase instanceof COSNumber)
         {
-            return ((COSInteger) cbase).intValue();
-        }
-        else if (cbase instanceof COSFloat)
-        {
-            return ((COSFloat) cbase).intValue();
+            return ((COSNumber) cbase).intValue();
         }
         else
         {
