@@ -40,8 +40,8 @@ import org.apache.pdfbox.cos.COSObject;
  */
 public class COSArrayList<E> implements List<E>
 {
-    private COSArray array;
-    private List<E> actual;
+    private final COSArray array;
+    private final List<E> actual;
 
     private COSDictionary parentDict;
     private COSName dictKey;
