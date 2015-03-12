@@ -37,11 +37,11 @@ import org.apache.xmpbox.XMPMetadata;
 public class ArrayProperty extends AbstractComplexProperty
 {
 
-    private Cardinality arrayType;
+    private final Cardinality arrayType;
 
-    private String namespace;
+    private final String namespace;
 
-    private String prefix;
+    private final String prefix;
 
     /**
      * Contructor of a complex property
@@ -72,7 +72,7 @@ public class ArrayProperty extends AbstractComplexProperty
 
     public List<String> getElementsAsString()
     {
-        List<String> retval = null;
+        List<String> retval;
         retval = new ArrayList<String>();
         Iterator<AbstractField> it = getContainer().getAllProperties().iterator();
         AbstractSimpleProperty tmp;
@@ -90,6 +90,7 @@ public class ArrayProperty extends AbstractComplexProperty
      * 
      * @return the namespace URI
      */
+    @Override
     public final String getNamespace()
     {
         return namespace;
@@ -100,6 +101,7 @@ public class ArrayProperty extends AbstractComplexProperty
      * 
      * @return the prefix specified
      */
+    @Override
     public String getPrefix()
     {
         return prefix;
