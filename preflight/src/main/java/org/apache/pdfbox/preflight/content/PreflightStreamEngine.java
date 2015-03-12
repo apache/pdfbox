@@ -494,7 +494,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
         }
         else if (arguments.get(0) instanceof COSString)
         {
-            colorSpaceName = ((COSString) arguments.get(0)).toString();
+            colorSpaceName = (arguments.get(0)).toString();
         }
         else if (arguments.get(0) instanceof COSName)
         {
