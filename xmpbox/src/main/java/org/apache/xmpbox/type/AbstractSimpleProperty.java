@@ -32,11 +32,11 @@ import org.apache.xmpbox.XMPMetadata;
 public abstract class AbstractSimpleProperty extends AbstractField
 {
 
-    private String namespace;
+    private final String namespace;
 
-    private String prefix;
+    private final String prefix;
 
-    private Object rawValue;
+    private final Object rawValue;
     
     /**
      * Property specific type constructor (namespaceURI is given)
@@ -96,6 +96,7 @@ public abstract class AbstractSimpleProperty extends AbstractField
     }
     
 
+    @Override
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
@@ -109,6 +110,7 @@ public abstract class AbstractSimpleProperty extends AbstractField
      * 
      * @return the namespace URI
      */
+    @Override
     public final String getNamespace()
     {
         return namespace;
@@ -119,6 +121,7 @@ public abstract class AbstractSimpleProperty extends AbstractField
      * 
      * @return the prefix specified
      */
+    @Override
     public String getPrefix()
     {
         return prefix;
