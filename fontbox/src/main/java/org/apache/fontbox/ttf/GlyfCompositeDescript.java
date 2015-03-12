@@ -97,7 +97,7 @@ public class GlyfCompositeDescript extends GlyfDescript
         Iterator<GlyfCompositeComp> i = components.iterator();
         while (i.hasNext())
         {
-            GlyfCompositeComp comp = (GlyfCompositeComp) i.next();
+            GlyfCompositeComp comp = i.next();
             comp.setFirstIndex(firstIndex);
             comp.setFirstContour(firstContour);
 
@@ -203,7 +203,7 @@ public class GlyfCompositeDescript extends GlyfDescript
         {
             LOG.error("getPointCount called on unresolved GlyfCompositeDescript");
         }
-        GlyfCompositeComp c = (GlyfCompositeComp) components.get(components.size() - 1);
+        GlyfCompositeComp c = components.get(components.size() - 1);
         GlyphDescription gd = getGlypDescription(c.getGlyphIndex());
         if (gd == null)
         {
@@ -223,7 +223,7 @@ public class GlyfCompositeDescript extends GlyfDescript
         {
             LOG.error("getContourCount called on unresolved GlyfCompositeDescript");
         }
-        GlyfCompositeComp c = (GlyfCompositeComp) components.get(components.size() - 1);
+        GlyfCompositeComp c = components.get(components.size() - 1);
         return c.getFirstContour() + getGlypDescription(c.getGlyphIndex()).getContourCount();
     }
 
