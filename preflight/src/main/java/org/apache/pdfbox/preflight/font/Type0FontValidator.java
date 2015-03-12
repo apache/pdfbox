@@ -87,7 +87,7 @@ public class Type0FontValidator extends FontValidator<Type0Container>
      */
     protected void checkMandatoryFields()
     {
-        COSDictionary fontDictionary = (COSDictionary) font.getCOSObject();
+        COSDictionary fontDictionary = font.getCOSObject();
         boolean areFieldsPResent = fontDictionary.containsKey(COSName.TYPE);
         areFieldsPResent &= fontDictionary.containsKey(COSName.SUBTYPE);
         areFieldsPResent &= fontDictionary.containsKey(COSName.BASE_FONT);
@@ -107,7 +107,7 @@ public class Type0FontValidator extends FontValidator<Type0Container>
      */
     protected void processDescendantFont() throws ValidationException
     {
-        COSDictionary fontDictionary = (COSDictionary) font.getCOSObject();
+        COSDictionary fontDictionary = font.getCOSObject();
         // a CIDFont is contained in the DescendantFonts array
         COSArray array = COSUtils.getAsArray(fontDictionary.getItem(COSName.DESCENDANT_FONTS), cosDocument);
         if (array == null || array.size() != 1)
@@ -197,9 +197,10 @@ public class Type0FontValidator extends FontValidator<Type0Container>
      * The CMap entry must be a dictionary in a PDF/A. This entry can be a String only if the String value is Identity-H
      * or Identity-V
      */
+    @Override
     protected void checkEncoding()
     {
-        COSBase encoding = ((COSDictionary) font.getCOSObject()).getItem(COSName.ENCODING);
+        COSBase encoding = (font.getCOSObject()).getItem(COSName.ENCODING);
         checkCMapEncoding(encoding);
     }
 
@@ -339,7 +340,7 @@ public class Type0FontValidator extends FontValidator<Type0Container>
      */
     private void compareCIDSystemInfo(COSDictionary cmap)
     {
-        COSDictionary fontDictionary = (COSDictionary) font.getCOSObject();
+        COSDictionary fontDictionary = font.getCOSObject();
         COSArray array = COSUtils.getAsArray(fontDictionary.getItem(COSName.DESCENDANT_FONTS), cosDocument);
 
         if (array != null && array.size() > 0)
