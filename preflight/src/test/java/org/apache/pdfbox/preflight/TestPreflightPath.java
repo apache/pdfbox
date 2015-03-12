@@ -45,7 +45,7 @@ public class TestPreflightPath
         int position = path.getClosestTypePosition(String.class);
         assertEquals(0, position);
 
-        path.pushObject(new Integer(6));
+        path.pushObject(6);
         assertEquals(2, path.size());
 
         position = path.getClosestTypePosition(String.class);
@@ -68,12 +68,12 @@ public class TestPreflightPath
         Object str = path.peek();
         assertEquals(3, path.size());
         assertEquals(String.class, str.getClass());
-        assertEquals("b", (String) str);
+        assertEquals("b", str);
 
         str = path.pop();
         assertEquals(2, path.size());
         assertEquals(String.class, str.getClass());
-        assertEquals("b", (String) str);
+        assertEquals("b", str);
 
         path.clear();
         assertTrue(path.isEmpty());
