@@ -24,7 +24,6 @@ import java.io.IOException;
 import junit.framework.TestCase;
 
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.multipdf.LayerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -45,7 +44,7 @@ import org.apache.pdfbox.util.Matrix;
 public class TestLayerUtility extends TestCase
 {
 
-    private File testResultsDir = new File("target/test-output");
+    private final File testResultsDir = new File("target/test-output");
 
     /** {@inheritDoc} */
     @Override
