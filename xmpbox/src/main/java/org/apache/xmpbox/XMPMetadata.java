@@ -179,7 +179,7 @@ public class XMPMetadata
         Iterator<XMPSchema> it = schemas.iterator();
         while (it.hasNext())
         {
-            schem.add((XMPSchema) it.next());
+            schem.add(it.next());
         }
         return schem;
     }
