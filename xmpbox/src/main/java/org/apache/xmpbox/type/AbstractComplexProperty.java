@@ -30,9 +30,9 @@ import org.apache.xmpbox.XMPMetadata;
 public abstract class AbstractComplexProperty extends AbstractField
 {
 
-    private ComplexPropertyContainer container;
+    private final ComplexPropertyContainer container;
 
-    private Map<String, String> namespaceToPrefix;
+    private final Map<String, String> namespaceToPrefix;
 
     public AbstractComplexProperty(XMPMetadata metadata, String propertyName)
     {
