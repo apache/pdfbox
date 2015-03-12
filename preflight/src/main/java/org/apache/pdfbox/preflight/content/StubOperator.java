@@ -53,7 +53,7 @@ import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
  */
 public class StubOperator extends OperatorProcessor
 {
-    private String name;
+    private final String name;
 
     public StubOperator(String name)
     {
@@ -339,13 +339,13 @@ public class StubOperator extends OperatorProcessor
             if (arg instanceof COSInteger
                     && (((COSInteger) arg).longValue() > Integer.MAX_VALUE || ((COSInteger) arg).longValue() < Integer.MIN_VALUE))
             {
-                throw createLimitError(ERROR_SYNTAX_NUMERIC_RANGE, "Invalid integer range in a Number operands");
+                throw createLimitError(ERROR_SYNTAX_NUMERIC_RANGE, "Invalid integer range in a Number operand");
             }
 
             if (arg instanceof COSFloat
                     && (((COSFloat) arg).doubleValue() > MAX_POSITIVE_FLOAT || ((COSFloat) arg).doubleValue() < MAX_NEGATIVE_FLOAT))
             {
-                throw createLimitError(ERROR_SYNTAX_NUMERIC_RANGE, "Invalid float range in a Number operands");
+                throw createLimitError(ERROR_SYNTAX_NUMERIC_RANGE, "Invalid float range in a Number operand");
             }
         }
     }
