@@ -105,7 +105,7 @@ public class PDFAIdentificationSchema extends XMPSchema
      */
     public void setPart(Integer value)
     {
-        setPartValueWithInt(value.intValue());
+        setPartValueWithInt(value);
     }
 
     /**
