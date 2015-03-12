@@ -35,7 +35,7 @@ import java.util.List;
 public class ComplexPropertyContainer
 {
 
-    private List<AbstractField> properties;
+    private final List<AbstractField> properties;
 
     /**
      * Complex Property type constructor (namespaceURI is given)
@@ -116,7 +116,7 @@ public class ComplexPropertyContainer
                     list.add(abstractField);
                 }
             }
-            if (list.size() == 0)
+            if (list.isEmpty())
             {
                 return null;
             }
