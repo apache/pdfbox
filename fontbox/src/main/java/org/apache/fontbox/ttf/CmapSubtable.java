@@ -399,7 +399,7 @@ public class CmapSubtable
                         if (glyphIndex != 0)
                         {
                             glyphIndex += delta;
-                            glyphIndex = glyphIndex % 65536;
+                            glyphIndex %= 65536;
                             if (!tmpGlyphToChar.containsKey(glyphIndex))
                             {
                                 tmpGlyphToChar.put(glyphIndex, j);
