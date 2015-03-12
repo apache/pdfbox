@@ -27,7 +27,7 @@ public class MissingValidationProcessException extends ValidationException
     /**
      * Name of the Missing process
      */
-    private String processName;
+    private final String processName;
 
     public MissingValidationProcessException(String process)
     {
