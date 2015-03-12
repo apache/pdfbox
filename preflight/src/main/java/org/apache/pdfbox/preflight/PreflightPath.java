@@ -32,10 +32,10 @@ public class PreflightPath
 {
 
     @SuppressWarnings("rawtypes")
-    private Stack objectPath = new Stack();
+    private final Stack objectPath = new Stack();
 
     @SuppressWarnings("rawtypes")
-    private Stack<Class> classObjPath = new Stack<Class>();
+    private final Stack<Class> classObjPath = new Stack<Class>();
 
     @SuppressWarnings("unchecked")
     public boolean pushObject(Object pathElement)
