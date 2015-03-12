@@ -156,7 +156,7 @@ public class DateType extends AbstractSimpleProperty
     {
         try
         {
-            setValueFromCalendar(DateConverter.toCalendar((String) value));
+            setValueFromCalendar(DateConverter.toCalendar(value));
         }
         catch (IOException e)
         {
