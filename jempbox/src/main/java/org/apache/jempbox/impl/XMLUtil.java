@@ -72,6 +72,8 @@ public class XMLUtil
         {
             DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = builderFactory.newDocumentBuilder();
+            // prevents validation messages polluting the console
+            builder.setErrorHandler(null);
             return builder.parse( is );
         }
         catch( Exception e )
@@ -94,6 +96,8 @@ public class XMLUtil
         {
             DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = builderFactory.newDocumentBuilder();
+            // prevents validation messages polluting the console
+            builder.setErrorHandler(null);
             return builder.parse( is );
         }
         catch( Exception e )
@@ -116,6 +120,8 @@ public class XMLUtil
         {
             DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = builderFactory.newDocumentBuilder();
+            // prevents validation messages polluting the console
+            builder.setErrorHandler(null);
             return builder.parse( fileName );
         }
         catch( Exception e )
