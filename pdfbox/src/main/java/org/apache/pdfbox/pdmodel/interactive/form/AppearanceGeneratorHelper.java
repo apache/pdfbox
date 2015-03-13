@@ -55,6 +55,9 @@ class AppearanceGeneratorHelper
 {
     private static final Log LOG = LogFactory.getLog(AppearanceGeneratorHelper.class);
 
+    // scale of font glyph units
+    private static final float GLYPH_TO_PDF_SCALE = 1000f;
+    
     private final PDVariableText parent;
 
     private String value;
@@ -292,27 +295,14 @@ class AppearanceGeneratorHelper
 
         float paddingLeft = contentEdge.getLowerLeftX();
         float paddingRight = boundingBox.getUpperRightX() - contentEdge.getUpperRightX();
-        
-        float verticalOffset = getVerticalOffset(boundingBox, font, fontSize, tokens);
-        
-        // Acrobat shifts the value so it aligns to the bottom if
-        // the font's caps are larger than the height of the borderEdge
-        //
-        // This is based on a small sample of test files and might not be generally the case.
-        // The fontHeight calculation has been taken from getVerticalOffset().
-        // We potentially need to revisit that calculation
-        float fontHeight = boundingBox.getHeight() - verticalOffset * 2;
 
-        if (fontHeight + 2 * paddingEdge.getLowerLeftX() > paddingEdge.getHeight())
-        {
-            verticalOffset = font.getBoundingBox().getHeight() / 1000 * fontSize
-                    - paddingEdge.getHeight();
-        }
-
+        // calculation of the vertical offset from where the text will be printed 
+        float verticalOffset = calculateVerticalOffset(paddingEdge, contentEdge, font, fontSize);
+        
         float leftOffset = 0f;
 
         // Acrobat aligns left regardless of the quadding if the text is wider than the remaining width
-        float stringWidth = (font.getStringWidth(value) / 1000) * fontSize;
+        float stringWidth = (font.getStringWidth(value) / GLYPH_TO_PDF_SCALE) * fontSize;
         
         int q = getQ();
         if (q == PDTextField.QUADDING_LEFT
@@ -343,10 +333,6 @@ class AppearanceGeneratorHelper
         }
         else
         {
-            // adjust offset
-            // TODO: offset is dependent on border value if there is one
-            verticalOffset = verticalOffset + font.getFontDescriptor().getAscent() / 1000 * fontSize;
-
             composer.newLineAtOffset(leftOffset, verticalOffset);
 
             PlainText textContent = new PlainText(value);
@@ -527,14 +513,14 @@ class AppearanceGeneratorHelper
         if (parent instanceof PDTextField && ((PDTextField) parent).doNotScroll())
         {
             // if we don't scroll then we will shrink the font to fit into the text area.
-            float widthAtFontSize1 = pdFont.getStringWidth(value) / 1000.f;
+            float widthAtFontSize1 = pdFont.getStringWidth(value) / GLYPH_TO_PDF_SCALE;
             float availableWidth = getAvailableWidth(boundingBox, getLineWidth(tokens));
             widthBasedFontSize = availableWidth / widthAtFontSize1;
         }
         if (fontSize == 0)
         {
             float lineWidth = getLineWidth(tokens);
-            float height = pdFont.getFontDescriptor().getFontBoundingBox().getHeight() / 1000f;
+            float height = pdFont.getFontDescriptor().getFontBoundingBox().getHeight() / GLYPH_TO_PDF_SCALE;
             float availHeight = getAvailableHeight(boundingBox, lineWidth);
             fontSize = Math.min(availHeight / height, widthBasedFontSize);
         }
@@ -544,36 +530,42 @@ class AppearanceGeneratorHelper
     /**
      * Calculates where to start putting the text in the box. The positioning is not quite as
      * accurate as when Acrobat places the elements, but it works though.
+     * 
+     * @param paddingEdge the content edge
+     * @param contentEdge the content edge
+     * @param pdFont the font to use for formatting
+     * @param fontSite the font size to use for formating
      *
      * @return the sting for representing the start position of the text
      *
      * @throws IOException If there is an error calculating the text position.
      */
-    private float getVerticalOffset(PDRectangle boundingBox, PDFont pdFont, float fontSize,
-            List<Object> tokens) throws IOException
+    private float calculateVerticalOffset(PDRectangle paddingEdge, 
+            PDRectangle contentEdge, PDFont pdFont, float fontSize) throws IOException
     {
-        float lineWidth = getLineWidth(tokens);
         float verticalOffset;
+        float capHeight = getCapHeight(pdFont, fontSize);
+        float descent = getDescent(pdFont, fontSize);
+        
         if (parent instanceof PDTextField && ((PDTextField) parent).isMultiline())
         {
-            int rows = (int) (getAvailableHeight(boundingBox, lineWidth) / ((int) fontSize));
-            verticalOffset = ((rows) * fontSize) - fontSize;
+            verticalOffset = contentEdge.getUpperRightY() + descent;
         }
         else
         {
-            // BJL 9/25/2004
-            // This algorithm is a little bit of black magic. It does
-            // not appear to be documented anywhere. Through examining a few
-            // PDF documents and the value that Acrobat places in there I
-            // have determined that the below method of computing the position
-            // is correct for certain documents, but maybe not all. It does
-            // work f1040ez.pdf and Form_1.pdf
-            PDFontDescriptor fd = pdFont.getFontDescriptor();
-            float bBoxHeight = boundingBox.getHeight();
-            float fontHeight = fd.getFontBoundingBox().getHeight() + 2 * fd.getDescent();
-            fontHeight = (fontHeight / 1000) * fontSize;
-            verticalOffset = (bBoxHeight - fontHeight) / 2;
+            // Acrobat shifts the value so it aligns to the bottom if
+            // the font's caps are larger than the height of the paddingEdge
+            if (capHeight > paddingEdge.getHeight())
+            {
+                verticalOffset = paddingEdge.getLowerLeftX() 
+                        - pdFont.getFontDescriptor().getDescent() / GLYPH_TO_PDF_SCALE * fontSize;
+            }
+            else 
+            {
+                verticalOffset = (paddingEdge.getHeight() - capHeight) / 2f + paddingEdge.getLowerLeftX();
+            }
         }
+        
         return verticalOffset;
     }
 
@@ -596,6 +588,49 @@ class AppearanceGeneratorHelper
     {
         return boundingBox.getHeight() - 2 * lineWidth;
     }
+    
+    /**
+     * Get the capHeight for a font.
+     * @throws IOException in case the font information can not be retrieved.
+     */
+    private float getCapHeight(PDFont pdFont, float fontSize) throws IOException
+    {
+        final PDFontDescriptor fontDescriptor = pdFont.getFontDescriptor();
+        
+        // as the font descriptor might be null or the cap height might be 0 
+        // alternate calculation for the cap height
+        if (fontDescriptor == null || fontDescriptor.getCapHeight() == 0)
+        {
+            // TODO: refine the calculation if needed
+            return pdFont.getBoundingBox().getHeight() / GLYPH_TO_PDF_SCALE * fontSize * 0.7f;
+        }
+        else
+        {
+            return pdFont.getFontDescriptor().getCapHeight() / GLYPH_TO_PDF_SCALE * fontSize;
+        }
+    }
+    
+    /**
+     * Get the descent for a font.
+     * @throws IOException in case the font information can not be retrieved.
+     */
+    private float getDescent(PDFont pdFont, float fontSize) throws IOException
+    {
+        final PDFontDescriptor fontDescriptor = pdFont.getFontDescriptor();
+        
+        // as the font descriptor might be null or the cap height might be 0 
+        // alternate calculation for the cap height
+        if (fontDescriptor == null || fontDescriptor.getDescent() == 0)
+        {
+            // TODO: refine the calculation if needed
+            return -pdFont.getBoundingBox().getHeight() / GLYPH_TO_PDF_SCALE * fontSize * 0.3f;
+        }
+        else
+        {
+            return pdFont.getFontDescriptor().getDescent() / GLYPH_TO_PDF_SCALE * fontSize;
+        }
+    }
+    
     
     /**
      * Apply padding to a box.
