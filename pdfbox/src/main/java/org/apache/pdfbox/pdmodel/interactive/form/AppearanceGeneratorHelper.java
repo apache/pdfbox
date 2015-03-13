@@ -98,11 +98,6 @@ class AppearanceGeneratorHelper
         return parent.getDefaultAppearance();
     }
 
-    private int getQ()
-    {
-        return parent.getQ();
-    }
-
     /**
      * Extracts the original appearance stream into a list of tokens.
      *
@@ -293,37 +288,11 @@ class AppearanceGeneratorHelper
             daWriter.writeTokens(defaultAppearanceHandler.getTokens());
         }
 
-        float paddingLeft = contentEdge.getLowerLeftX();
-        float paddingRight = boundingBox.getUpperRightX() - contentEdge.getUpperRightX();
-
         // calculation of the vertical offset from where the text will be printed 
         float verticalOffset = calculateVerticalOffset(paddingEdge, contentEdge, font, fontSize);
-        
-        float leftOffset = 0f;
 
-        // Acrobat aligns left regardless of the quadding if the text is wider than the remaining width
-        float stringWidth = (font.getStringWidth(value) / GLYPH_TO_PDF_SCALE) * fontSize;
-        
-        int q = getQ();
-        if (q == PDTextField.QUADDING_LEFT
-                || stringWidth > contentEdge.getWidth())
-        {
-            leftOffset = paddingLeft;
-        }
-        else if (q == PDTextField.QUADDING_CENTERED)
-        {
-            leftOffset = (boundingBox.getWidth() - stringWidth) / 2;
-        }
-        else if (q == PDTextField.QUADDING_RIGHT)
-        {
-            leftOffset = boundingBox.getWidth() - stringWidth - paddingRight;
-        }
-        else
-        {
-            // Unknown quadding value - default to left
-            leftOffset = paddingLeft;
-            LOG.debug("Unknown justification value, defaulting to left: " + q);
-        }
+        // calculation of the horizontal offset from where the text will be printed
+        float leftOffset = calculateHorizontalOffset(contentEdge, font, fontSize);
 
         // show the text
         if (!isMultiLine())
@@ -346,7 +315,7 @@ class AppearanceGeneratorHelper
                                                     .text(textContent)
                                                     .width(contentEdge.getWidth())
                                                     .wrapLines(true)
-                                                    .textAlign(q)
+                                                    .textAlign(parent.getQ())
                                                     .build();
             formatter.format();
 
@@ -528,15 +497,14 @@ class AppearanceGeneratorHelper
     }
 
     /**
-     * Calculates where to start putting the text in the box. The positioning is not quite as
-     * accurate as when Acrobat places the elements, but it works though.
+     * Calculate the vertical start position for the text.
      * 
      * @param paddingEdge the content edge
      * @param contentEdge the content edge
      * @param pdFont the font to use for formatting
      * @param fontSite the font size to use for formating
      *
-     * @return the sting for representing the start position of the text
+     * @return the vertical start position of the text
      *
      * @throws IOException If there is an error calculating the text position.
      */
@@ -569,6 +537,48 @@ class AppearanceGeneratorHelper
         return verticalOffset;
     }
 
+    /**
+     * Calculate the horizontal start position for the text.
+     * 
+     * @param contentEdge the content edge
+     * @param pdFont the font to use for formatting
+     * @param fontSite the font size to use for formating
+     *
+     * @return the horizontal start position of the text
+     *
+     * @throws IOException If there is an error calculating the text position.
+     */
+    private float calculateHorizontalOffset(PDRectangle contentEdge, PDFont pdFont, float fontSize) throws IOException
+    {
+        // Acrobat aligns left regardless of the quadding if the text is wider than the remaining width
+        float stringWidth = (pdFont.getStringWidth(value) / GLYPH_TO_PDF_SCALE) * fontSize;
+        float leftOffset = 0f;
+        
+        int q = parent.getQ();
+        
+        if (q == PDTextField.QUADDING_LEFT
+                || stringWidth > contentEdge.getWidth())
+        {
+            leftOffset = contentEdge.getLowerLeftX();
+        }
+        else if (q == PDTextField.QUADDING_CENTERED)
+        {
+            leftOffset = contentEdge.getLowerLeftX() + (contentEdge.getWidth() - stringWidth) / 2;
+        }
+        else if (q == PDTextField.QUADDING_RIGHT)
+        {
+            leftOffset = contentEdge.getLowerLeftX() + contentEdge.getWidth() - stringWidth;
+        }
+        else
+        {
+            // Unknown quadding value - default to left
+            leftOffset = contentEdge.getLowerLeftX();
+            LOG.debug("Unknown justification value, defaulting to left: " + q);
+        }
+        
+        return leftOffset;
+    }
+    
     /**
      * calculates the available width of the box.
      * 
@@ -630,8 +640,7 @@ class AppearanceGeneratorHelper
             return pdFont.getFontDescriptor().getDescent() / GLYPH_TO_PDF_SCALE * fontSize;
         }
     }
-    
-    
+       
     /**
      * Apply padding to a box.
      * 
