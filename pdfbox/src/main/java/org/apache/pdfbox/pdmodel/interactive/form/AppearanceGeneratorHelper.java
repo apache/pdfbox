@@ -19,6 +19,7 @@ package org.apache.pdfbox.pdmodel.interactive.form;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -201,72 +202,92 @@ class AppearanceGeneratorHelper
                 
                 if (!containsMarkedContent(tokens))
                 {
-                    ByteArrayOutputStream output = new ByteArrayOutputStream();
-                    // BJL 9/25/2004 Must prepend existing stream
-                    // because it might have operators to draw things like
-                    // rectangles and such
-                    ContentStreamWriter writer = new ContentStreamWriter(output);
-                    writer.writeTokens(tokens);
-                    output.write("/Tx BMC\n".getBytes("ISO-8859-1"));
-                    insertGeneratedAppearance(widget, output, pdFont, tokens, appearanceStream);
-                    output.write("EMC".getBytes("ISO-8859-1"));
-                    writeToStream(output.toByteArray(), appearanceStream);
+                    createAppearanceContent(tokens, widget, pdFont, appearanceStream);
                 }
                 else
                 {
-                    if (!defaultAppearanceHandler.getTokens().isEmpty())
-                    {
-                        int bmcIndex = tokens.indexOf(Operator.getOperator("BMC"));
-                        int emcIndex = tokens.indexOf(Operator.getOperator("EMC"));
-                        if (bmcIndex != -1 && emcIndex != -1 && emcIndex == bmcIndex + 1)
-                        {
-                            // if the EMC immediately follows the BMC index then should
-                            // insert the daTokens inbetween the two markers.
-                            tokens.addAll(emcIndex, defaultAppearanceHandler.getTokens());
-                        }
-                    }
-                    ByteArrayOutputStream output = new ByteArrayOutputStream();
-                    ContentStreamWriter writer = new ContentStreamWriter(output);
-                    float fontSize = calculateFontSize(pdFont,
-                            appearanceStream.getBBox(), tokens);
-                    int setFontIndex = tokens.indexOf(Operator.getOperator("Tf"));
-                    tokens.set(setFontIndex - 1, new COSFloat(fontSize));
-
-                    int bmcIndex = tokens.indexOf(Operator.getOperator("BMC"));
-                    int emcIndex = tokens.indexOf(Operator.getOperator("EMC"));
-
-                    if (bmcIndex != -1)
-                    {
-                        writer.writeTokens(tokens, 0, bmcIndex + 1);
-                    }
-                    else
-                    {
-                        writer.writeTokens(tokens);
-                    }
-                    output.write("\n".getBytes("ISO-8859-1"));
-                    insertGeneratedAppearance(widget, output, pdFont, tokens, appearanceStream);
-                    if (emcIndex != -1)
-                    {
-                        writer.writeTokens(tokens, emcIndex, tokens.size());
-                    }
-                    writeToStream(output.toByteArray(), appearanceStream);
+                    updateAppearanceContent(tokens, widget, pdFont, appearanceStream);
                 }
             }
         }
     }
+    
+    /*
+     * Create new content. 
+     */
+    private void createAppearanceContent(List<Object> tokens, PDAnnotationWidget widget, 
+            PDFont pdFont, PDAppearanceStream appearanceStream)
+            throws UnsupportedEncodingException, IOException
+    {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        // BJL 9/25/2004 Must prepend existing stream
+        // because it might have operators to draw things like
+        // rectangles and such
+        ContentStreamWriter writer = new ContentStreamWriter(output);
+        writer.writeTokens(tokens);
+        output.write("/Tx BMC\n".getBytes("ISO-8859-1"));
+        PDRectangle boundingBox = resolveBoundingBox(widget, appearanceStream);
+        insertGeneratedAppearance(boundingBox, output, pdFont, tokens);
+        output.write("EMC".getBytes("ISO-8859-1"));
+        writeToStream(output.toByteArray(), appearanceStream);
+    }
 
-    private void insertGeneratedAppearance(PDAnnotationWidget fieldWidget, OutputStream output,
-            PDFont font, List<Object> tokens, PDAppearanceStream appearanceStream)
+    /*
+     * Update existing content.
+     */
+    private void updateAppearanceContent(List<Object> tokens, PDAnnotationWidget widget, 
+            PDFont pdFont, PDAppearanceStream appearanceStream)
+            throws UnsupportedEncodingException, IOException
+    {
+        if (!defaultAppearanceHandler.getTokens().isEmpty())
+        {
+            int bmcIndex = tokens.indexOf(Operator.getOperator("BMC"));
+            int emcIndex = tokens.indexOf(Operator.getOperator("EMC"));
+            if (bmcIndex != -1 && emcIndex != -1 && emcIndex == bmcIndex + 1)
+            {
+                // if the EMC immediately follows the BMC index then should
+                // insert the daTokens inbetween the two markers.
+                tokens.addAll(emcIndex, defaultAppearanceHandler.getTokens());
+            }
+        }
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        ContentStreamWriter writer = new ContentStreamWriter(output);
+        float fontSize = calculateFontSize(pdFont,
+                appearanceStream.getBBox(), tokens);
+        int setFontIndex = tokens.indexOf(Operator.getOperator("Tf"));
+        tokens.set(setFontIndex - 1, new COSFloat(fontSize));
+
+        int bmcIndex = tokens.indexOf(Operator.getOperator("BMC"));
+        int emcIndex = tokens.indexOf(Operator.getOperator("EMC"));
+
+        if (bmcIndex != -1)
+        {
+            writer.writeTokens(tokens, 0, bmcIndex + 1);
+        }
+        else
+        {
+            writer.writeTokens(tokens);
+        }
+        output.write("\n".getBytes("ISO-8859-1"));
+        PDRectangle boundingBox = resolveBoundingBox(widget, appearanceStream);
+        insertGeneratedAppearance(boundingBox, output, pdFont, tokens);
+        if (emcIndex != -1)
+        {
+            writer.writeTokens(tokens, emcIndex, tokens.size());
+        }
+        writeToStream(output.toByteArray(), appearanceStream);
+    }
+    
+    /*
+     * Generate and insert text content and clipping around it.   
+     */
+    private void insertGeneratedAppearance(PDRectangle boundingBox, OutputStream output,
+            PDFont font, List<Object> tokens)
             throws IOException
     {
         AppearancePrimitivesComposer composer = new AppearancePrimitivesComposer(output);
         float fontSize = 0.0f;
-        PDRectangle boundingBox = appearanceStream.getBBox();
-        if (boundingBox == null)
-        {
-            boundingBox = fieldWidget.getRectangle().createRetranslatedRectangle();
-        }
-        
+
         // Acrobat calculates the left and right padding dependent on the offset of the border edge
         // This calculation works for forms having been generated by Acrobat.
         // The minimum distance is always 1f even if there is no rectangle being drawn around.
@@ -604,6 +625,24 @@ class AppearanceGeneratorHelper
             return pdFont.getFontDescriptor().getCapHeight() / GLYPH_TO_PDF_SCALE * fontSize;
         }
     }
+    
+    /**
+     * Resolve the bounding box.
+     * 
+     * @param fieldWidget the annotation widget.
+     * @param appearanceStream the annotations appearance stream.
+     * @return the resolved boundingBox.
+     */
+    private PDRectangle resolveBoundingBox(PDAnnotationWidget fieldWidget, PDAppearanceStream appearanceStream)
+    {
+        PDRectangle boundingBox = appearanceStream.getBBox();
+        if (boundingBox == null)
+        {
+            boundingBox = fieldWidget.getRectangle().createRetranslatedRectangle();
+        }
+        return boundingBox;
+    }
+    
     
     /**
      * Apply padding to a box.
