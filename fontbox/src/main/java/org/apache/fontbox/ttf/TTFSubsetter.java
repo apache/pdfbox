@@ -173,7 +173,7 @@ public final class TTFSubsetter
         long checksum = 0;
         for (int nup = 0, n = bytes.length; nup < n; nup++)
         {
-            checksum += ((long)bytes[nup] & 0xffL) << 24- nup % 4 *8;
+            checksum += (bytes[nup] & 0xffL) << 24 - nup % 4 * 8;
         }
         checksum &= 0xffffffffL;
 
@@ -493,9 +493,9 @@ public final class TTFSubsetter
                         int flags;
                         do
                         {
-                            flags = ((int)buf[off] & 0xff) << 8 | buf[off + 1] & 0xff;
+                            flags = (buf[off] & 0xff) << 8 | buf[off + 1] & 0xff;
                             off +=2;
-                            int ogid = ((int)buf[off] & 0xff) << 8 | buf[off + 1] & 0xff;
+                            int ogid = (buf[off] & 0xff) << 8 | buf[off + 1] & 0xff;
                             if (!glyphIds.contains(ogid))
                             {
                                 if (glyphIdsToAdd == null)
@@ -584,11 +584,11 @@ public final class TTFSubsetter
                     do
                     {
                         // flags
-                        flags = ((int)buf[off] & 0xff) << 8 | (int)buf[off + 1] & 0xff;
+                        flags = (buf[off] & 0xff) << 8 | buf[off + 1] & 0xff;
                         off += 2;
 
                         // glyphIndex
-                        int componentGid = ((int)buf[off] & 0xff) << 8 | (int)buf[off + 1] & 0xff;
+                        int componentGid = (buf[off] & 0xff) << 8 | buf[off + 1] & 0xff;
                         if (!glyphIds.contains(componentGid))
                         {
                             glyphIds.add(componentGid);
@@ -630,7 +630,7 @@ public final class TTFSubsetter
                     if ((flags & 0x0100) == 0x0100)
                     {
                         // USHORT numInstr
-                        int numInstr = ((int)buf[off] & 0xff) << 8 | (int)buf[off + 1] & 0xff;
+                        int numInstr = (buf[off] & 0xff) << 8 | buf[off + 1] & 0xff;
                         off += 2;
 
                         // BYTE instr[numInstr]
@@ -1025,15 +1025,15 @@ public final class TTFSubsetter
 
     private static long toUInt32(int high, int low)
     {
-        return ((long)high & 0xffffL) << 16 | (long)low & 0xffffL;
+        return (high & 0xffffL) << 16 | low & 0xffffL;
     }
 
     private static long toUInt32(byte[] bytes)
     {
-        return ((long)bytes[0] & 0xffL) << 24 |
-               ((long)bytes[1] & 0xffL) << 16 |
-               ((long)bytes[2] & 0xffL) << 8 |
-                (long)bytes[3] & 0xffL;
+        return (bytes[0] & 0xffL) << 24
+                | (bytes[1] & 0xffL) << 16
+                | (bytes[2] & 0xffL) << 8
+                | bytes[3] & 0xffL;
     }
 
     private static int log2(int num)
