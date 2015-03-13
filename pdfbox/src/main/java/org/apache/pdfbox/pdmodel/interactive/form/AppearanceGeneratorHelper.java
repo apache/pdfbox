@@ -302,12 +302,13 @@ class AppearanceGeneratorHelper
         }
         else
         {
-            composer.newLineAtOffset(leftOffset, verticalOffset);
-
             PlainText textContent = new PlainText(value);
             AppearanceStyle appearanceStyle = new AppearanceStyle();
             appearanceStyle.setFont(font);
             appearanceStyle.setFontSize(fontSize);
+            
+            //Adobe Acrobat uses the font's bounding box for the leading between the lines
+            appearanceStyle.setLeading(font.getBoundingBox().getHeight() / GLYPH_TO_PDF_SCALE * fontSize);
             
             PlainTextFormatter formatter = new PlainTextFormatter
                                                 .Builder(composer)
@@ -315,6 +316,7 @@ class AppearanceGeneratorHelper
                                                     .text(textContent)
                                                     .width(contentEdge.getWidth())
                                                     .wrapLines(true)
+                                                    .initialOffset(leftOffset, verticalOffset)
                                                     .textAlign(parent.getQ())
                                                     .build();
             formatter.format();
@@ -513,11 +515,11 @@ class AppearanceGeneratorHelper
     {
         float verticalOffset;
         float capHeight = getCapHeight(pdFont, fontSize);
-        float descent = getDescent(pdFont, fontSize);
+        float fontHeight = pdFont.getBoundingBox().getHeight()  / GLYPH_TO_PDF_SCALE * fontSize;
         
         if (parent instanceof PDTextField && ((PDTextField) parent).isMultiline())
         {
-            verticalOffset = contentEdge.getUpperRightY() + descent;
+            verticalOffset = contentEdge.getUpperRightY() - fontHeight;
         }
         else
         {
@@ -620,27 +622,6 @@ class AppearanceGeneratorHelper
         }
     }
     
-    /**
-     * Get the descent for a font.
-     * @throws IOException in case the font information can not be retrieved.
-     */
-    private float getDescent(PDFont pdFont, float fontSize) throws IOException
-    {
-        final PDFontDescriptor fontDescriptor = pdFont.getFontDescriptor();
-        
-        // as the font descriptor might be null or the cap height might be 0 
-        // alternate calculation for the cap height
-        if (fontDescriptor == null || fontDescriptor.getDescent() == 0)
-        {
-            // TODO: refine the calculation if needed
-            return -pdFont.getBoundingBox().getHeight() / GLYPH_TO_PDF_SCALE * fontSize * 0.3f;
-        }
-        else
-        {
-            return pdFont.getFontDescriptor().getDescent() / GLYPH_TO_PDF_SCALE * fontSize;
-        }
-    }
-       
     /**
      * Apply padding to a box.
      * 
