@@ -100,7 +100,7 @@ public final class SecurityHandlerFactory
             return null;
         }
 
-        Class[] argsClasses = { policy.getClass() };
+        Class<?>[] argsClasses = { policy.getClass() };
         Object[] args = { policy };
         return newSecurityHandler(handlerClass, argsClasses, args);
     }
@@ -118,7 +118,7 @@ public final class SecurityHandlerFactory
             return null;
         }
 
-        Class[] argsClasses = { };
+        Class<?>[] argsClasses = { };
         Object[] args = { };
         return newSecurityHandler(handlerClass, argsClasses, args);
     }
@@ -130,8 +130,8 @@ public final class SecurityHandlerFactory
      * @param args array of objects to be passed as arguments to the constructor call.
      * @return a new SecurityHandler instance, or null if none is available.
      */
-    private SecurityHandler newSecurityHandler(Class<? extends SecurityHandler> handlerClass, 
-            Class[] argsClasses, Object[] args)
+    private static SecurityHandler newSecurityHandler(Class<? extends SecurityHandler> handlerClass, 
+            Class<?>[] argsClasses, Object[] args)
     {
         try
         {
