@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import javax.imageio.ImageIO;
 import junit.framework.TestCase;
-import static junit.framework.TestCase.assertTrue;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
@@ -115,7 +114,8 @@ public class JPEGFactoryTest extends TestCase
         // http://bugs.java.com/bugdatabase/view_bug.do?bug_id=7044758
         if (System.getProperty("java.runtime.name").equals("OpenJDK Runtime Environment")
                 && (System.getProperty("java.specification.version").equals("1.6")
-                || System.getProperty("java.specification.version").equals("1.7")))
+                || System.getProperty("java.specification.version").equals("1.7")
+                || System.getProperty("java.specification.version").equals("1.8")))
         {
             return;
         }
@@ -158,7 +158,8 @@ public class JPEGFactoryTest extends TestCase
         // http://bugs.java.com/bugdatabase/view_bug.do?bug_id=7044758
         if (System.getProperty("java.runtime.name").equals("OpenJDK Runtime Environment")
                 && (System.getProperty("java.specification.version").equals("1.6")
-                || System.getProperty("java.specification.version").equals("1.7")))
+                || System.getProperty("java.specification.version").equals("1.7")
+                || System.getProperty("java.specification.version").equals("1.8")))
         {
             return;
         }
