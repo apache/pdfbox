@@ -72,6 +72,9 @@ class PlainTextFormatter
     private final PlainText textContent;
     private final TextAlign textAlignment;
     
+    private final float horizontalOffset;
+    private final float verticalOffset;
+    
     static class Builder
     {
 
@@ -84,6 +87,11 @@ class PlainTextFormatter
         private float width = 0f;
         private PlainText textContent;
         private TextAlign textAlignment = TextAlign.LEFT;
+        
+       
+        // initial offset from where to start the position of the first line
+        private float horizontalOffset = 0f;
+        private float verticalOffset = 0f;
         
         public Builder(AppearancePrimitivesComposer composer)
         {
@@ -127,6 +135,13 @@ class PlainTextFormatter
             return this;
         }
         
+        Builder initialOffset(float horizontalOffset, float verticalOffset)
+        {
+            this.horizontalOffset = horizontalOffset;
+            this.verticalOffset = verticalOffset;
+            return this;
+        }
+        
         PlainTextFormatter build()
         {
             return new PlainTextFormatter(this);
@@ -141,6 +156,8 @@ class PlainTextFormatter
         composer = builder.composer;
         textContent = builder.textContent;
         textAlignment = builder.textAlignment;
+        horizontalOffset = builder.horizontalOffset;
+        verticalOffset = builder.verticalOffset;
     }
     
     /**
@@ -210,7 +227,15 @@ class PlainTextFormatter
             }
             
             float offset = -lastPos + startOffset;
-            composer.newLineAtOffset(offset, -appearanceStyle.getLeading());
+            
+            if (lines.indexOf(line) == 0)
+            {
+                composer.newLineAtOffset(offset + horizontalOffset, verticalOffset);
+            }
+            else
+            {
+                composer.newLineAtOffset(offset, -appearanceStyle.getLeading());
+            }
             lastPos = startOffset; 
 
             List<Word> words = line.getWords();
