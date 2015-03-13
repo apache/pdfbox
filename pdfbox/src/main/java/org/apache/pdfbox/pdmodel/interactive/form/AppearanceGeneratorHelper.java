@@ -280,9 +280,12 @@ class AppearanceGeneratorHelper
         
         // start the text output
         composer.beginText();
+        
+        // calculate the fontSize 
+        fontSize = calculateFontSize(font, contentEdge, tokens);
+        
         if (!defaultAppearanceHandler.getTokens().isEmpty())
         {
-            fontSize = calculateFontSize(font, boundingBox, tokens);
             defaultAppearanceHandler.setFontSize(fontSize);
             ContentStreamWriter daWriter = new ContentStreamWriter(output);
             daWriter.writeTokens(defaultAppearanceHandler.getTokens());
@@ -470,31 +473,31 @@ class AppearanceGeneratorHelper
      *
      * @throws IOException If there is an error getting the font height.
      */
-    private float calculateFontSize(PDFont pdFont, PDRectangle boundingBox, List<Object> tokens) throws IOException
+    private float calculateFontSize(PDFont pdFont, PDRectangle contentEdge, List<Object> tokens) throws IOException
     {
-        float fontSize = 0;
+        // default font size is 12 in Acrobat
+        float fontSize = 12f;
+        
         if (!defaultAppearanceHandler.getTokens().isEmpty())
         {
             fontSize = defaultAppearanceHandler.getFontSize();
         }
 
-        float widthBasedFontSize = Float.MAX_VALUE;
-
-        // TODO review the calculation as this seems to not reflect how Acrobat calculates the font size
-        if (parent instanceof PDTextField && ((PDTextField) parent).doNotScroll())
+        // if the font size is 0 the size depends on the content
+        if (fontSize == 0 && !isMultiLine())
         {
-            // if we don't scroll then we will shrink the font to fit into the text area.
             float widthAtFontSize1 = pdFont.getStringWidth(value) / GLYPH_TO_PDF_SCALE;
-            float availableWidth = getAvailableWidth(boundingBox, getLineWidth(tokens));
-            widthBasedFontSize = availableWidth / widthAtFontSize1;
+            float widthBasedFontSize = contentEdge.getWidth() / widthAtFontSize1;
+            float height = pdFont.getFontDescriptor().getFontBoundingBox().getHeight() / GLYPH_TO_PDF_SCALE;
+            fontSize = Math.min(contentEdge.getHeight() / height, widthBasedFontSize);
         }
+        
+        // restore to default size for multiline text
         if (fontSize == 0)
         {
-            float lineWidth = getLineWidth(tokens);
-            float height = pdFont.getFontDescriptor().getFontBoundingBox().getHeight() / GLYPH_TO_PDF_SCALE;
-            float availHeight = getAvailableHeight(boundingBox, lineWidth);
-            fontSize = Math.min(availHeight / height, widthBasedFontSize);
+            fontSize = 12f;
         }
+
         return fontSize;
     }
 
@@ -579,26 +582,6 @@ class AppearanceGeneratorHelper
         }
         
         return leftOffset;
-    }
-    
-    /**
-     * calculates the available width of the box.
-     * 
-     * @return the calculated available width of the box
-     */
-    private float getAvailableWidth(PDRectangle boundingBox, float lineWidth)
-    {
-        return boundingBox.getWidth() - 2 * lineWidth;
-    }
-
-    /**
-     * calculates the available height of the box.
-     * 
-     * @return the calculated available height of the box
-     */
-    private float getAvailableHeight(PDRectangle boundingBox, float lineWidth)
-    {
-        return boundingBox.getHeight() - 2 * lineWidth;
     }
     
     /**
