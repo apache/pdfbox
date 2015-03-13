@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -72,7 +73,7 @@ class PDFCloneUtility
           {
               return null;
           }
-          COSBase retval = (COSBase)clonedVersion.get( base );
+          COSBase retval = clonedVersion.get(base);
           if( retval != null )
           {
               //we are done, it has already been converted.
@@ -80,7 +81,7 @@ class PDFCloneUtility
           else if( base instanceof List)
           {
               COSArray array = new COSArray();
-              List list = (List)base;
+              List<?> list = (List<?>) base;
               for (Object obj : list)
               {
                   array.add(cloneForNewDocument(obj));
@@ -109,8 +110,9 @@ class PDFCloneUtility
               retval = newArray;
               clonedVersion.put( base, retval );
           }
-          else if (base instanceof COSStreamArray) // PDFBOX-2052
+          else if (base instanceof COSStreamArray)
           {
+              // PDFBOX-2052
               COSStreamArray originalStream = (COSStreamArray) base;
 
               if (originalStream.size() > 0)
@@ -170,13 +172,13 @@ class PDFCloneUtility
        * @param target the merge target
        * @throws IOException if an I/O error occurs
        */
-      public void cloneMerge( COSObjectable base, COSObjectable target) throws IOException
+      public void cloneMerge( final COSObjectable base, COSObjectable target) throws IOException
       {
           if( base == null )
           {
               return;
           }
-          COSBase retval = (COSBase)clonedVersion.get( base );
+          COSBase retval = clonedVersion.get( base );
           if( retval != null )
           {
               return;
@@ -185,16 +187,16 @@ class PDFCloneUtility
           else if( base instanceof List )
           {
               COSArray array = new COSArray();
-              List list = (List)base;
+              List<?> list = (List<?>) base;
               for (Object obj : list)
               {
                   array.add(cloneForNewDocument(obj));
               }
-              ((List)target).add(array);
+              ((List<COSArray>) target).add(array);
           }
           else if( base instanceof COSObjectable && !(base instanceof COSBase) )
           {
-              cloneMerge(((COSObjectable)base).getCOSObject(), ((COSObjectable)target).getCOSObject() );
+              cloneMerge(base.getCOSObject(), target.getCOSObject());
               clonedVersion.put(base, retval);
           }
           else if( base instanceof COSObject )
@@ -205,7 +207,7 @@ class PDFCloneUtility
               }
               else if(target instanceof COSDictionary)
               {
-                  cloneMerge(((COSObject)base).getObject(), ((COSDictionary)target));
+                  cloneMerge(((COSObject) base).getObject(), target);
               }
               clonedVersion.put( base, retval );
           }
@@ -256,7 +258,6 @@ class PDFCloneUtility
               retval = (COSBase)base;
           }
           clonedVersion.put( base, retval );
-
       }
 
 }
