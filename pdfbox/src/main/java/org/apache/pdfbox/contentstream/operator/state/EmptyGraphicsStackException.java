@@ -24,6 +24,11 @@ import java.io.IOException;
  */
 public final class EmptyGraphicsStackException extends IOException
 {
+    /**
+     * See https://stackoverflow.com/questions/285793/
+     */
+    private static final long serialVersionUID = 1L;
+
     EmptyGraphicsStackException()
     {
         super("Cannot execute restore, the graphics stack is empty");
