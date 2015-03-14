@@ -24,7 +24,8 @@ import java.awt.image.BufferedImage;
 public enum ImageType
 {
     /** Black or white. */
-    BINARY {
+    BINARY
+    {
         @Override
         int toBufferedImageType()
         {
@@ -33,7 +34,8 @@ public enum ImageType
     },
 
     /** Shades of gray */
-    GRAY {
+    GRAY
+    {
         @Override
         int toBufferedImageType()
         {
@@ -42,7 +44,8 @@ public enum ImageType
     },
 
     /** Red, Green, Blue */
-    RGB {
+    RGB
+    {
         @Override
         int toBufferedImageType()
         {
@@ -51,7 +54,8 @@ public enum ImageType
     },
 
     /** Alpha, Red, Green, Blue */
-    ARGB {
+    ARGB
+    {
         @Override
         int toBufferedImageType()
         {

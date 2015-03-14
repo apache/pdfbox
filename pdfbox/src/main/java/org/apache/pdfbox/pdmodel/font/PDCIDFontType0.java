@@ -79,11 +79,14 @@ public class PDCIDFontType0 extends PDCIDFont
 
         boolean fontIsDamaged = false;
         CFFFont cffFont = null;
-        if (bytes != null && bytes.length > 0 && (bytes[0] & 0xff) == '%') {
+        if (bytes != null && bytes.length > 0 && (bytes[0] & 0xff) == '%')
+        {
             // todo: PDFBOX-2642 contains a Type1 PFB font in a CIDFont, but we can't handle it yet
             LOG.error("Unsupported: Type1 font instead of CFF in " + fd.getFontName());
             fontIsDamaged = true;
-        } else if (bytes != null) {
+        }
+        else if (bytes != null)
+        {
             CFFParser cffParser = new CFFParser();
             try
             {
