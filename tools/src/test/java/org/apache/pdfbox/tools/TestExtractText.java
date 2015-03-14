@@ -20,7 +20,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
 import junit.framework.TestCase;
-import org.apache.pdfbox.tools.ExtractText;
 
 /**
  * Test suite for ExtractText. 
