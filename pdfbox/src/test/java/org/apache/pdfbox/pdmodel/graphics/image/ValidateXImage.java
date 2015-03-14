@@ -41,7 +41,7 @@ import static junit.framework.TestCase.assertTrue;
  */
 public class ValidateXImage
 {
-    static public void validate(PDImageXObject ximage, int bpc, int width, int height, String format, String colorSpaceName) throws IOException
+    public static void validate(PDImageXObject ximage, int bpc, int width, int height, String format, String colorSpaceName) throws IOException
     {
         // check the dictionary
         assertNotNull(ximage);
@@ -129,7 +129,7 @@ public class ValidateXImage
      * @param expectedImage
      * @param actualImage
      */
-    static public void checkIdent(BufferedImage expectedImage, BufferedImage actualImage)
+    public static void checkIdent(BufferedImage expectedImage, BufferedImage actualImage)
     {
         String errMsg = "";
 
