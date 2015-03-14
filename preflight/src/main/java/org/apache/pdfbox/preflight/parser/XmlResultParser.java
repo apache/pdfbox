@@ -184,7 +184,7 @@ public class XmlResultParser
         return preflight;
     }
 
-    protected Element generateResponseSkeleton (Document rdocument, String name, long duration)
+    protected Element generateResponseSkeleton(Document rdocument, String name, long duration)
     {
         Element preflight = rdocument.createElement("preflight");
         preflight.setAttribute("name", name);
