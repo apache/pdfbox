@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
@@ -229,6 +228,7 @@ class AppearanceGeneratorHelper
         PDRectangle boundingBox = resolveBoundingBox(widget, appearanceStream);
         insertGeneratedAppearance(boundingBox, output, pdFont, tokens);
         output.write("EMC".getBytes("ISO-8859-1"));
+        output.close();
         writeToStream(output.toByteArray(), appearanceStream);
     }
 
@@ -239,42 +239,24 @@ class AppearanceGeneratorHelper
             PDFont pdFont, PDAppearanceStream appearanceStream)
             throws UnsupportedEncodingException, IOException
     {
-        if (!defaultAppearanceHandler.getTokens().isEmpty())
-        {
-            int bmcIndex = tokens.indexOf(Operator.getOperator("BMC"));
-            int emcIndex = tokens.indexOf(Operator.getOperator("EMC"));
-            if (bmcIndex != -1 && emcIndex != -1 && emcIndex == bmcIndex + 1)
-            {
-                // if the EMC immediately follows the BMC index then should
-                // insert the daTokens inbetween the two markers.
-                tokens.addAll(emcIndex, defaultAppearanceHandler.getTokens());
-            }
-        }
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         ContentStreamWriter writer = new ContentStreamWriter(output);
-        float fontSize = calculateFontSize(pdFont,
-                appearanceStream.getBBox(), tokens);
-        int setFontIndex = tokens.indexOf(Operator.getOperator("Tf"));
-        tokens.set(setFontIndex - 1, new COSFloat(fontSize));
+        PDRectangle boundingBox = resolveBoundingBox(widget, appearanceStream);
 
         int bmcIndex = tokens.indexOf(Operator.getOperator("BMC"));
         int emcIndex = tokens.indexOf(Operator.getOperator("EMC"));
 
-        if (bmcIndex != -1)
-        {
-            writer.writeTokens(tokens, 0, bmcIndex + 1);
-        }
-        else
-        {
-            writer.writeTokens(tokens);
-        }
+        writer.writeTokens(tokens, 0, bmcIndex + 1);
+
         output.write("\n".getBytes("ISO-8859-1"));
-        PDRectangle boundingBox = resolveBoundingBox(widget, appearanceStream);
+        
         insertGeneratedAppearance(boundingBox, output, pdFont, tokens);
+
         if (emcIndex != -1)
         {
             writer.writeTokens(tokens, emcIndex, tokens.size());
         }
+        output.close();
         writeToStream(output.toByteArray(), appearanceStream);
     }
     
@@ -303,7 +285,7 @@ class AppearanceGeneratorHelper
         composer.beginText();
         
         // calculate the fontSize 
-        fontSize = calculateFontSize(font, contentEdge, tokens);
+        fontSize = calculateFontSize(font, contentEdge);
         
         if (!defaultAppearanceHandler.getTokens().isEmpty())
         {
@@ -404,7 +386,8 @@ class AppearanceGeneratorHelper
         }
         else
         {
-            throw new IOException("Unable to generate field appearance - missing required font resources: " + cosFontName);
+            throw new IOException("Unable to generate field appearance - missing required font resources: "
+                        + cosFontName);
         }
     }
     
@@ -492,9 +475,9 @@ class AppearanceGeneratorHelper
      * 
      * @return the calculated font-size
      *
-     * @throws IOException If there is an error getting the font height.
+     * @throws IOException If there is an error getting the font information.
      */
-    private float calculateFontSize(PDFont pdFont, PDRectangle contentEdge, List<Object> tokens) throws IOException
+    private float calculateFontSize(PDFont pdFont, PDRectangle contentEdge) throws IOException
     {
         // default font size is 12 in Acrobat
         float fontSize = 12f;
