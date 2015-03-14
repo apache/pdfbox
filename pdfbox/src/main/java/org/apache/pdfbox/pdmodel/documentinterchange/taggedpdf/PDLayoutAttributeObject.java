@@ -1518,7 +1518,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
             }
             else
             {
-                sb.append(String.valueOf((Float) borderThickness));
+                sb.append(String.valueOf(borderThickness));
             }
         }
         if (this.isSpecified(PADDING))
@@ -1531,7 +1531,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
             }
             else
             {
-                sb.append(String.valueOf((Float) padding));
+                sb.append(String.valueOf(padding));
             }
         }
         if (this.isSpecified(COLOR))
@@ -1577,7 +1577,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
             sb.append(", Width=");
             if (width instanceof Float)
             {
-                sb.append(String.valueOf((Float) width));
+                sb.append(String.valueOf(width));
             }
             else
             {
@@ -1590,7 +1590,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
             sb.append(", Height=");
             if (height instanceof Float)
             {
-                sb.append(String.valueOf((Float) height));
+                sb.append(String.valueOf(height));
             }
             else
             {
@@ -1628,7 +1628,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
             }
             else
             {
-                sb.append(String.valueOf((Float) tPadding));
+                sb.append(String.valueOf(tPadding));
             }
         }
         if (this.isSpecified(BASELINE_SHIFT))
@@ -1642,7 +1642,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
             sb.append(", LineHeight=");
             if (lineHeight instanceof Float)
             {
-                sb.append(String.valueOf((Float) lineHeight));
+                sb.append(String.valueOf(lineHeight));
             }
             else
             {
@@ -1692,7 +1692,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
             }
             else
             {
-                sb.append(String.valueOf((Float) columnGap));
+                sb.append(String.valueOf(columnGap));
             }
         }
         if (this.isSpecified(COLUMN_WIDTHS))
@@ -1705,7 +1705,7 @@ public class PDLayoutAttributeObject extends PDStandardAttributeObject
             }
             else
             {
-                sb.append(String.valueOf((Float) columnWidth));
+                sb.append(String.valueOf(columnWidth));
             }
         }
         return sb.toString();

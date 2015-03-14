@@ -159,7 +159,7 @@ public abstract class PDAttributeObject extends PDDictionaryWrapper
      */
     protected void potentiallyNotifyChanged(COSBase oldBase, COSBase newBase)
     {
-        if (this.isValueChanged(oldBase, newBase))
+        if (PDAttributeObject.isValueChanged(oldBase, newBase))
         {
             this.notifyChanged();
         }
@@ -173,7 +173,7 @@ public abstract class PDAttributeObject extends PDDictionaryWrapper
      * @return <code>true</code> if the value is changed, <code>false</code>
      * otherwise
      */
-    private boolean isValueChanged(COSBase oldValue, COSBase newValue)
+    private static boolean isValueChanged(COSBase oldValue, COSBase newValue)
     {
         if (oldValue == null)
         {
