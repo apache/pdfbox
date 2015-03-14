@@ -31,7 +31,8 @@ import org.apache.xmpbox.type.StructuredType;
 import org.apache.xmpbox.type.Types;
 
 @StructuredType(preferedPrefix = "tiff", namespace = "http://ns.adobe.com/tiff/1.0/")
-public class TiffSchema extends XMPSchema{
+public class TiffSchema extends XMPSchema
+{
 
     @PropertyType(type = Types.LangAlt, card = Cardinality.Simple)
     public static final String IMAGE_DESCRIPTION = "ImageDescription";
@@ -108,11 +109,13 @@ public class TiffSchema extends XMPSchema{
     @PropertyType(type = Types.ProperName, card = Cardinality.Simple)
     public static final String MODEL = "Model";
 
-    public TiffSchema(XMPMetadata metadata) {
+    public TiffSchema(XMPMetadata metadata)
+    {
         super(metadata);
     }
 
-    public TiffSchema(XMPMetadata metadata, String prefix) {
+    public TiffSchema(XMPMetadata metadata, String prefix)
+    {
         super(metadata, prefix);
     }
 

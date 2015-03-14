@@ -259,9 +259,12 @@ public final class PdfaExtensionHelper
             return TypeMapping.createPropertyType(Types.LangAlt, Cardinality.Simple);
         }
         // else all other cases
-        if (valueType.startsWith(CLOSED_CHOICE)) {
+        if (valueType.startsWith(CLOSED_CHOICE))
+        {
             valueType = valueType.substring(CLOSED_CHOICE.length());
-        } else if (valueType.startsWith(OPEN_CHOICE)) {
+        }
+        else if (valueType.startsWith(OPEN_CHOICE))
+        {
             valueType = valueType.substring(OPEN_CHOICE.length());
         }
         int pos = valueType.indexOf(' ');

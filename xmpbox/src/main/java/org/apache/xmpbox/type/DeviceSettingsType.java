@@ -25,7 +25,8 @@ import org.apache.xmpbox.XMPMetadata;
 /**
  */
 @StructuredType(preferedPrefix = "exif",namespace = "http://ns.adobe.com/exif/1.0/")
-public class DeviceSettingsType extends AbstractStructuredType{
+public class DeviceSettingsType extends AbstractStructuredType
+{
 
     @PropertyType(type = Types.Integer)
     public static final String COLUMNS = "Columns";
@@ -36,7 +37,8 @@ public class DeviceSettingsType extends AbstractStructuredType{
     @PropertyType(type = Types.Text, card = Cardinality.Seq)
     public static final String SETTINGS = "Settings";
 
-    public DeviceSettingsType(XMPMetadata metadata) {
+    public DeviceSettingsType(XMPMetadata metadata)
+    {
         super(metadata);
     }
 
