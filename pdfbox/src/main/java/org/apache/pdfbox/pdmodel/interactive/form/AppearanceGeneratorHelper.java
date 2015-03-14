@@ -216,7 +216,7 @@ class AppearanceGeneratorHelper
      */
     private void createAppearanceContent(List<Object> tokens, PDAnnotationWidget widget, 
             PDFont pdFont, PDAppearanceStream appearanceStream)
-            throws UnsupportedEncodingException, IOException
+            throws IOException
     {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         // BJL 9/25/2004 Must prepend existing stream
@@ -237,7 +237,7 @@ class AppearanceGeneratorHelper
      */
     private void updateAppearanceContent(List<Object> tokens, PDAnnotationWidget widget, 
             PDFont pdFont, PDAppearanceStream appearanceStream)
-            throws UnsupportedEncodingException, IOException
+            throws IOException
     {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         ContentStreamWriter writer = new ContentStreamWriter(output);
