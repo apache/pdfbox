@@ -107,14 +107,18 @@ public abstract class AbstractSchemaTester extends AbstractTypeTester
     public void testRandomSettingValue() throws Exception
     {
         initializeSeed(new Random());
-        for (int i=0; i < RAND_LOOP_COUNT;i++) {
+        for (int i=0; i < RAND_LOOP_COUNT;i++)
+        {
             internalTestSettingValue();
         }
     }
 
-    private void internalTestSettingValue() throws Exception {
+    private void internalTestSettingValue() throws Exception
+    {
         if (cardinality != Cardinality.Simple)
+        {
             return;
+        }
         XMPSchema schema = getSchema();
         // only test simple properties
         Object value = getJavaValue(type);
@@ -145,14 +149,18 @@ public abstract class AbstractSchemaTester extends AbstractTypeTester
     public void testRandomSettingValueInArray() throws Exception
     {
         initializeSeed(new Random());
-        for (int i=0; i < RAND_LOOP_COUNT;i++) {
+        for (int i=0; i < RAND_LOOP_COUNT;i++)
+        {
             internalTestSettingValueInArray();
         }
     }
 
-    private void internalTestSettingValueInArray() throws Exception {
+    private void internalTestSettingValueInArray() throws Exception
+    {
         if (cardinality == Cardinality.Simple)
+        {
             return;
+        }
         XMPSchema schema = getSchema();
         // only test array properties
         Object value = getJavaValue(type);
@@ -193,14 +201,18 @@ public abstract class AbstractSchemaTester extends AbstractTypeTester
     public void testRandomPropertySetterSimple() throws Exception
     {
         initializeSeed(new Random());
-        for (int i=0; i < RAND_LOOP_COUNT;i++) {
+        for (int i=0; i < RAND_LOOP_COUNT;i++)
+        {
             internalTestPropertySetterSimple();
         }
     }
 
-    private void internalTestPropertySetterSimple() throws Exception {
+    private void internalTestPropertySetterSimple() throws Exception
+    {
         if (cardinality != Cardinality.Simple)
+        {
             return;
+        }
         XMPSchema schema = getSchema();
         String setter = calculateSimpleSetter(fieldName) + "Property";
         Object value = getJavaValue(type);
@@ -220,7 +232,8 @@ public abstract class AbstractSchemaTester extends AbstractTypeTester
     }
 
     @Test
-    public void testPropertySetterInArray() throws Exception {
+    public void testPropertySetterInArray() throws Exception
+    {
         internalTestPropertySetterInArray();
     }
 
@@ -228,14 +241,18 @@ public abstract class AbstractSchemaTester extends AbstractTypeTester
     public void testRandomPropertySetterInArray() throws Exception
     {
         initializeSeed(new Random());
-        for (int i=0; i < RAND_LOOP_COUNT;i++) {
+        for (int i=0; i < RAND_LOOP_COUNT;i++)
+        {
             internalTestPropertySetterInArray();
         }
     }
 
-    private void internalTestPropertySetterInArray() throws Exception {
+    private void internalTestPropertySetterInArray() throws Exception
+    {
         if (cardinality == Cardinality.Simple)
+        {
             return;
+        }
         XMPSchema schema = getSchema();
         // add value
         String setter = "add" + calculateFieldNameForMethod(fieldName);

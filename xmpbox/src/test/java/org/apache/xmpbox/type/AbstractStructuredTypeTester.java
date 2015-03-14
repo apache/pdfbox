@@ -85,12 +85,13 @@ public abstract class AbstractStructuredTypeTester extends AbstractTypeTester
     public void testRandomSettingValue() throws Exception
     {
         initializeSeed(new Random());
-        for (int i=0; i < RAND_LOOP_COUNT;i++) {
+        for (int i=0; i < RAND_LOOP_COUNT;i++)
+        {
             internalTestSettingValue();
         }
     }
 
-    private void internalTestSettingValue () throws Exception
+    private void internalTestSettingValue() throws Exception
     {
         AbstractStructuredType structured = getStructured();
         Object value = getJavaValue(type);
@@ -120,13 +121,14 @@ public abstract class AbstractStructuredTypeTester extends AbstractTypeTester
     public void testRandomPropertyType() throws Exception
     {
         initializeSeed(new Random());
-        for (int i=0; i < RAND_LOOP_COUNT;i++) {
+        for (int i=0; i < RAND_LOOP_COUNT;i++)
+        {
             internalTestPropertyType();
         }
     }
 
 
-    private void internalTestPropertyType () throws Exception
+    private void internalTestPropertyType() throws Exception
     {
         AbstractStructuredType structured = getStructured();
         Object value = getJavaValue(type);
@@ -148,12 +150,13 @@ public abstract class AbstractStructuredTypeTester extends AbstractTypeTester
     public void testRandomSetter() throws Exception
     {
         initializeSeed(new Random());
-        for (int i=0; i < RAND_LOOP_COUNT;i++) {
+        for (int i=0; i < RAND_LOOP_COUNT;i++)
+        {
             internalTestSetter();
         }
     }
 
-    private void internalTestSetter () throws Exception
+    private void internalTestSetter() throws Exception
     {
         AbstractStructuredType structured = getStructured();
         String setter = calculateSimpleSetter(fieldName);
