@@ -79,7 +79,8 @@ public class ContextHelper
         PreflightConfiguration config = context.getConfig();
         ValidationProcess process = config.getInstanceOfProcess(processName);
         process.validate(context);
-        if (needPop) {
+        if (needPop)
+        {
             validationPath.pop();
         }
     }

@@ -218,10 +218,12 @@ public class PreflightConfiguration
 
     public void replacePageProcess(String processName, Class<? extends ValidationProcess> process)
     {
-        if (process == null) {
+        if (process == null)
+        {
             removePageProcess(processName);    
         }
-        else {
+        else
+        {
             this.innerProcesses.put(processName, process);
         }
     }

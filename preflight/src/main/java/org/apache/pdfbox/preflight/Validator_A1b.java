@@ -77,23 +77,28 @@ public class Validator_A1b
         boolean isBatch = "batch".equals(args[posFile]);
         posFile += isBatch?1:0;
 
-        if (isGroup||isBatch) {
+        if (isGroup||isBatch)
+        {
             // prepare the list
             List<File> ftp = listFiles(args[posFile]);
             int status = 0;
-            if (!outputXml) {
+            if (!outputXml)
+            {
                 // simple list of files
                 for (File file2 : ftp)
                 {
                     status |= runSimple(new FileDataSource(file2));
                 }
                 System.exit(status);
-            } else {
+            }
+            else
+            {
                 Transformer transformer = TransformerFactory.newInstance().newTransformer();
                 transformer.setOutputProperty(OutputKeys.INDENT, "yes");
                 transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
                 XmlResultParser xrp = new XmlResultParser();
-                if (isGroup) {
+                if (isGroup)
+                {
                     Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
                     Element root = document.createElement("preflights");
                     document.appendChild(root);
@@ -103,28 +108,37 @@ public class Validator_A1b
                         Element result = xrp.validate(document,new FileDataSource(file));
                         root.appendChild(result);
                     }
-                    transformer.transform(new DOMSource(document), new StreamResult(new File(args[posFile]+".preflight.xml")));
-                } else {
+                    transformer.transform(new DOMSource(document), 
+                            new StreamResult(new File(args[posFile]+".preflight.xml")));
+                }
+                else
+                {
                     // isBatch
                     for (File file : ftp)
                     {
                         Element result = xrp.validate(new FileDataSource(file));
                         Document document = result.getOwnerDocument();
                         document.appendChild(result);
-                        transformer.transform(new DOMSource(document), new StreamResult(new File(file.getAbsolutePath()+".preflight.xml")));
+                        transformer.transform(new DOMSource(document), 
+                                new StreamResult(new File(file.getAbsolutePath()+".preflight.xml")));
                     }
                 }
             }
 
 
 
-        } else {
+        } 
+        else
+        {
             // only one file
             FileDataSource fd = new FileDataSource(args[posFile]);
-            if (!outputXml) {
+            if (!outputXml)
+            {
                 // simple validation 
                 System.exit(runSimple(fd));
-            } else {
+            }
+            else
+            {
                 // generate xml output
                 XmlResultParser xrp = new XmlResultParser();
                 Element result = xrp.validate(fd);
@@ -139,7 +153,8 @@ public class Validator_A1b
 
     }
 
-    private static void usage () throws IOException {
+    private static void usage() throws IOException 
+    {
         String version = Version.getVersion();
 
         System.out.println("Usage : java org.apache.pdfbox.preflight.Validator_A1b [xml] [<mode>] <file path>");
@@ -151,7 +166,8 @@ public class Validator_A1b
         System.out.println("Version : " + version);
     }
 
-    private static int runSimple (DataSource fd) throws Exception {
+    private static int runSimple(DataSource fd) throws Exception
+    {
         ValidationResult result = null;
         PreflightParser parser = new PreflightParser(fd);
         try
@@ -195,20 +211,26 @@ public class Validator_A1b
     }
 
 
-    private static List<File> listFiles (String path) throws IOException {
+    private static List<File> listFiles(String path) throws IOException
+    {
         List<File> files = new ArrayList<File>();
         File f = new File(path);
-        if (f.isFile()) {
+        if (f.isFile())
+        {
             FileReader fr = new FileReader(f);
             BufferedReader buf = new BufferedReader(fr);
-            while (buf.ready()) {
+            while (buf.ready())
+            {
                 File fn = new File(buf.readLine());
-                if (fn.exists()) {
+                if (fn.exists())
+                {
                     files.add(fn);
                 } // else warn ?
             }
             IOUtils.closeQuietly(buf);
-        } else {
+        }
+        else
+        {
             files.addAll(Arrays.asList(f.listFiles()));
         }
         return files;

@@ -49,12 +49,14 @@ public class ShaddingPatternValidationProcess extends AbstractProcess
     public void validate(PreflightContext context) throws ValidationException
     {
         PreflightPath vPath = context.getValidationPath();
-        if (vPath.isEmpty()) {
+        if (vPath.isEmpty())
+        {
             return;
         }
         else if (!vPath.isExpectedType(PDShading.class))
         {
-            context.addValidationError(new ValidationError(PreflightConstants.ERROR_GRAPHIC_MISSING_OBJECT, "ShadingPattern validation required at least a PDResources"));
+            context.addValidationError(new ValidationError(PreflightConstants.ERROR_GRAPHIC_MISSING_OBJECT,
+                    "ShadingPattern validation required at least a PDResources"));
         } 
         else 
         {

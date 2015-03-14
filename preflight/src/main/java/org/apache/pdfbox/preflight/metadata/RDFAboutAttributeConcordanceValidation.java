@@ -63,7 +63,8 @@ public class RDFAboutAttributeConcordanceValidation
                 throw new DifferentRDFAboutException();
             }
             
-            if ("".equals(about)) {
+            if ("".equals(about))
+            {
                 about = schemaAboutValue;
             }
         }
