@@ -309,10 +309,12 @@ public class StandardStructureTypes
                 try
                 {
                     types.add(field.get(null).toString());
-                }catch (IllegalArgumentException e)
+                }
+                catch (IllegalArgumentException e)
                 {
                     LOG.error(e,e);
-                }catch (IllegalAccessException e)
+                }
+                catch (IllegalAccessException e)
                 {
                     LOG.error(e,e);
                 }
