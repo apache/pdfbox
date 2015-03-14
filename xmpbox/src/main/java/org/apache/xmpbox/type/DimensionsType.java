@@ -25,7 +25,8 @@ import org.apache.xmpbox.XMPMetadata;
 /**
  */
 @StructuredType(preferedPrefix = "stDim",namespace = "http://ns.adobe.com/xap/1.0/sType/Dimensions#")
-public class DimensionsType extends AbstractStructuredType{
+public class DimensionsType extends AbstractStructuredType
+{
 
     @PropertyType(type = Types.Real)
     public static final String H = "h";
@@ -36,7 +37,8 @@ public class DimensionsType extends AbstractStructuredType{
     @PropertyType(type = Types.Text)
     public static final String UNIT = "unit";
 
-    public DimensionsType(XMPMetadata metadata) {
+    public DimensionsType(XMPMetadata metadata)
+    {
         super(metadata);
     }
 

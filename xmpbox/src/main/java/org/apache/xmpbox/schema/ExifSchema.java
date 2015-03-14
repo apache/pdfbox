@@ -36,7 +36,8 @@ import org.apache.xmpbox.type.Types;
  */
 
 @StructuredType(preferedPrefix = "exif", namespace = "http://ns.adobe.com/exif/1.0/")
-public class ExifSchema extends XMPSchema {
+public class ExifSchema extends XMPSchema
+{
 
     @PropertyType(type = Types.LangAlt, card = Cardinality.Simple)
     public static final String USER_COMMENT = "UserComment";

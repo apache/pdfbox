@@ -25,7 +25,8 @@ import org.apache.xmpbox.XMPMetadata;
 /**
  */
 @StructuredType(preferedPrefix = "exif",namespace = "http://ns.adobe.com/exif/1.0/")
-public class OECFType extends AbstractStructuredType {
+public class OECFType extends AbstractStructuredType
+{
 
     @PropertyType(type = Types.Integer)
     public static final String COLUMNS = "Columns";
@@ -40,7 +41,8 @@ public class OECFType extends AbstractStructuredType {
     public static final String VALUES = "Values";
 
 
-    public OECFType(XMPMetadata metadata) {
+    public OECFType(XMPMetadata metadata)
+    {
         super(metadata);
     }
 

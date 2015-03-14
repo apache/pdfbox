@@ -25,7 +25,8 @@ import org.apache.xmpbox.XMPMetadata;
 /**
  */
 @StructuredType(preferedPrefix = "exif",namespace = "http://ns.adobe.com/exif/1.0/")
-public class FlashType extends AbstractStructuredType{
+public class FlashType extends AbstractStructuredType
+{
 
     @PropertyType(type = Types.Boolean)
     public static final String FIRED = "Fired";
@@ -42,7 +43,8 @@ public class FlashType extends AbstractStructuredType{
     @PropertyType(type = Types.Integer)
     public static final String RETURN = "Return";
 
-    public FlashType(XMPMetadata metadata) {
+    public FlashType(XMPMetadata metadata)
+    {
         super(metadata);
     }
 
