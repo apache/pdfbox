@@ -18,14 +18,12 @@ package org.apache.pdfbox.tools;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.List;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 
 /**
  * Test suite for TextToPDF.
