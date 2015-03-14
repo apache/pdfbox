@@ -30,7 +30,8 @@ import org.apache.pdfbox.util.Matrix;
 /**
  * Example to show superimposing a PDF page onto another PDF.
  */
-public class SuperimposePage {
+public class SuperimposePage
+{
 
     public static void main(String[] args) throws IOException
     {
