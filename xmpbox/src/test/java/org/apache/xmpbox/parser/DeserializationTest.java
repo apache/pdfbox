@@ -341,7 +341,8 @@ public class DeserializationTest
     }
 
     @Test
-    public void testSpaceTextValues () throws Exception {
+    public void testSpaceTextValues() throws Exception
+    {
         // check values with spaces at start or end
         // in this case, the value should not be trimmed
         InputStream is = DomXmpParser.class.getResourceAsStream("/validxmp/only_space_fields.xmp");

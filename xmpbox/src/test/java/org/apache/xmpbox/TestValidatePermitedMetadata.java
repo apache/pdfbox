@@ -42,7 +42,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
-public class TestValidatePermitedMetadata {
+public class TestValidatePermitedMetadata
+{
 
     @Parameters(name="{0} {1} {2}")
     public static Collection<Object[]> initializeParameters() throws Exception
@@ -51,8 +52,10 @@ public class TestValidatePermitedMetadata {
         InputStream is =  TestValidatePermitedMetadata.class.getResourceAsStream("/permited_metadata.txt");
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         String line = reader.readLine();
-        while (line!=null) {
-            if (line.startsWith("http://")) {
+        while (line!=null)
+        {
+            if (line.startsWith("http://"))
+            {
                 // this is a line to handle
                 int pos = line.lastIndexOf(':');
                 int spos = line.lastIndexOf('/',pos);
@@ -73,13 +76,15 @@ public class TestValidatePermitedMetadata {
 
     private String preferred;
 
-    public TestValidatePermitedMetadata (String ns, String prf, String fn) {
+    public TestValidatePermitedMetadata (String ns, String prf, String fn)
+    {
         this.namespace = ns;
         this.preferred = prf;
         this.fieldname = fn;
     }
     @Test
-    public void checkExistence () throws Exception {
+    public void checkExistence() throws Exception
+    {
         // ensure schema exists
         XMPMetadata xmpmd = new XMPMetadata();
         TypeMapping mapping = new TypeMapping(xmpmd);
@@ -91,18 +96,24 @@ public class TestValidatePermitedMetadata {
         // ensure field is defined
         boolean found = false;
         Class<?> clz  = schema.getClass();
-        for (Field dfield : clz.getDeclaredFields()) {
+        for (Field dfield : clz.getDeclaredFields())
+        {
             PropertyType ptype = dfield.getAnnotation(PropertyType.class);
-            if (ptype!=null) {
+            if (ptype!=null)
+            {
                 // is a field definition
-                if (String.class.equals(dfield.getType())) {
+                if (String.class.equals(dfield.getType()))
+                {
                     String value = (String) dfield.get(clz);
-                    if (fieldname.equals(value)) {
+                    if (fieldname.equals(value))
+                    {
                         // found the field defining
                         found = true;
                         break;
                     }
-                } else {
+                }
+                else
+                {
                     // All field declaration are string
                     throw new IllegalArgumentException("Should be a string : "+dfield.getName());
                 }
@@ -110,7 +121,8 @@ public class TestValidatePermitedMetadata {
 
             }
         }
-        String msg = String.format("Did not find field definition for '%s' in %s (%s)",fieldname,clz.getSimpleName(),namespace);
+        String msg = String.format("Did not find field definition for '%s' in %s (%s)",
+                fieldname,clz.getSimpleName(),namespace);
         assertTrue(msg,found);
     }
 
