@@ -17,7 +17,6 @@
 package org.apache.pdfbox.pdmodel.documentinterchange.taggedpdf;
 
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureElement;
 
 /**
  * An Export Format attribute object.
