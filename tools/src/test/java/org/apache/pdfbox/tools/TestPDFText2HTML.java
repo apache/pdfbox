@@ -29,9 +29,11 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import junit.framework.TestCase;
 import org.apache.pdfbox.text.PDFTextStripper;
 
-public class TestPDFText2HTML extends TestCase {
+public class TestPDFText2HTML extends TestCase
+{
 
-    private PDDocument createDocument(String title, PDFont font, String text) throws IOException {
+    private PDDocument createDocument(String title, PDFont font, String text) throws IOException
+    {
         PDDocument doc = new PDDocument();
         doc.getDocumentInformation().setTitle(title);
         PDPage page = new PDPage();
@@ -46,7 +48,8 @@ public class TestPDFText2HTML extends TestCase {
         return doc;
     }
 
-    public void testEscapeTitle() throws IOException {
+    public void testEscapeTitle() throws IOException
+    {
         PDFTextStripper stripper = new PDFText2HTML();
         PDDocument doc = createDocument("<script>\u3042", PDType1Font.HELVETICA, "<foo>");
         String text = stripper.getText(doc);
@@ -58,7 +61,8 @@ public class TestPDFText2HTML extends TestCase {
         assertTrue(text.indexOf("&lt;foo&gt;") >= 0);
     }
 
-    public void testStyle() throws IOException {
+    public void testStyle() throws IOException
+    {
         PDFTextStripper stripper = new PDFText2HTML();
         PDDocument doc = createDocument("t", PDType1Font.HELVETICA_BOLD, "<bold>");
         String text = stripper.getText(doc);
