@@ -178,12 +178,15 @@ public class MemoryTTFDataStream extends TTFDataStream
             int len)
      throws IOException
      {
-        if (currentPosition < data.length) {
+        if (currentPosition < data.length)
+        {
             int amountRead = Math.min( len, data.length-currentPosition );
             System.arraycopy(data,currentPosition,b, off, amountRead );
             currentPosition+=amountRead;
             return amountRead;
-        } else {
+        }
+        else
+        {
             return -1;
         }
      }

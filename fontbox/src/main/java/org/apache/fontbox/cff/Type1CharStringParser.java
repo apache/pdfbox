@@ -128,7 +128,8 @@ public class Type1CharStringParser
                 else
                 {
                     // all remaining othersubrs use this fallback mechanism
-                    for (int i = 0; i < numArgs; i++) {
+                    for (int i = 0; i < numArgs; i++)
+                    {
                         Integer arg = removeInteger(sequence);
                         results.push(arg);
                     }

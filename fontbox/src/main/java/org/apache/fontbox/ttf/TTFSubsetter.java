@@ -937,16 +937,34 @@ public final class TTFSubsetter
 
             // save to TTF in optimized order
             Map<String, byte[]> tables = new TreeMap<String, byte[]>();
-            if (os2 != null)  { tables.put("OS/2", os2); }
-            if (cmap != null) { tables.put("cmap", cmap); }
-            if (glyf != null) { tables.put("glyf", glyf); }
+            if (os2 != null)
+            {
+                tables.put("OS/2", os2);
+            }
+            if (cmap != null)
+            {
+                tables.put("cmap", cmap);
+            }
+            if (glyf != null)
+            {
+                tables.put("glyf", glyf); 
+            }
             tables.put("head", head);
             tables.put("hhea", hhea);
             tables.put("hmtx", hmtx);
-            if (loca != null) { tables.put("loca", loca); }
+            if (loca != null)
+            {
+                tables.put("loca", loca);
+            }
             tables.put("maxp", maxp);
-            if (name != null) { tables.put("name", name); }
-            if (post != null) { tables.put("post", post); }
+            if (name != null)
+            {
+                tables.put("name", name);
+            }
+            if (post != null)
+            {
+                tables.put("post", post);
+            }
 
             // copy all other tables
             for (Map.Entry<String, TTFTable> entry : ttf.getTableMap().entrySet())
