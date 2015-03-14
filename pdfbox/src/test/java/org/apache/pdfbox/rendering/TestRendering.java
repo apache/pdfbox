@@ -44,7 +44,8 @@ public class TestRendering
     private static final String INPUT_DIR = "src/test/resources/input/rendering";
 
     @Parameters(name = "{0}")
-    public static Collection<Object[]> data() {
+    public static Collection<Object[]> data()
+    {
         File[] testFiles = new File(INPUT_DIR).listFiles(new FilenameFilter()
         {
             @Override
@@ -64,7 +65,8 @@ public class TestRendering
 
     private final String fileName;
 
-    public TestRendering(String fileName) {
+    public TestRendering(String fileName)
+    {
         this.fileName = fileName;
     }
 

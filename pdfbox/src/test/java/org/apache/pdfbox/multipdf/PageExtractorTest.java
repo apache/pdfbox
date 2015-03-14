@@ -29,37 +29,48 @@ import org.apache.pdfbox.pdmodel.PDDocument;
  *
  * @author Adam Nichols
  */
-public class PageExtractorTest extends TestCase {
+public class PageExtractorTest extends TestCase
+{
     
-    public PageExtractorTest(String testName) {
+    public PageExtractorTest(String testName)
+    {
         super(testName);
     }
 
     @Override
-    protected void setUp() throws Exception {
+    protected void setUp() throws Exception
+    {
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    protected void tearDown() throws Exception
+    {
     }
 
-    private void closeDoc(PDDocument doc) {
-        if(doc != null) {
-            try {
+    private void closeDoc(PDDocument doc)
+    {
+        if(doc != null)
+        {
+            try
+            {
                 doc.close(); 
-            } catch(Exception e) {
+            }
+            catch(Exception e)
+            {
                 /* Can't do much about this... */ 
-            };
+            }
         }
     }
     
     /**
      * Test of extract method, of class org.apache.pdfbox.util.PageExtractor.
      */
-    public void testExtract() throws Exception {
+    public void testExtract() throws Exception
+    {
         PDDocument sourcePdf = null;
         PDDocument result = null;
-        try {
+        try
+        {
             // this should work for most users
             sourcePdf = PDDocument.load(new File("src/test/resources/input/cweb.pdf"));
             PageExtractor instance = new PageExtractor(sourcePdf);
@@ -86,7 +97,9 @@ public class PageExtractorTest extends TestCase {
             result = instance.extract();
             assertEquals(0, result.getNumberOfPages());
             closeDoc(result);
-        } finally {
+        }
+        finally
+        {
             closeDoc(sourcePdf);
             closeDoc(result);
         }

@@ -247,20 +247,26 @@ public class TestTextStripper extends TestCase
             }
 
             OutputStream os = new FileOutputStream(outFile);
-            try {
+            try
+            {
                 os.write( 0xFF );
                 os.write( 0xFE );
 
                 Writer writer = new OutputStreamWriter(os, encoding);
-                try {
+                try
+                {
                     //Allows for sorted tests 
                     stripper.setSortByPosition(bSort);
                     stripper.writeText(document, writer);
-                } finally {
+                }
+                finally
+                {
                     // close the written file before reading it again
                     writer.close();
                 }
-            } finally {
+            }
+            finally
+            {
                 os.close();
             }
 
