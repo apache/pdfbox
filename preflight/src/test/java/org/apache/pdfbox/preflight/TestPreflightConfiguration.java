@@ -32,7 +32,8 @@ public class TestPreflightConfiguration
 {
 
     @Test
-    public void testGetValidationProcess() throws Exception {
+    public void testGetValidationProcess() throws Exception
+    {
         PreflightConfiguration confg = PreflightConfiguration.createPdfA1BConfiguration();
         ValidationProcess vp = confg.getInstanceOfProcess(PreflightConfiguration.BOOKMARK_PROCESS);
         Assert.assertNotNull(vp);
@@ -40,7 +41,8 @@ public class TestPreflightConfiguration
     }
     
     @Test
-    public void testGetValidationPageProcess() throws Exception {
+    public void testGetValidationPageProcess() throws Exception
+    {
         PreflightConfiguration confg = PreflightConfiguration.createPdfA1BConfiguration();
         ValidationProcess vp = confg.getInstanceOfProcess(PreflightConfiguration.RESOURCES_PROCESS);
         Assert.assertNotNull(vp);
@@ -48,7 +50,8 @@ public class TestPreflightConfiguration
     }
     
     @Test
-    public void testGetValidationProcess_noError() throws Exception {
+    public void testGetValidationProcess_noError() throws Exception
+    {
         PreflightConfiguration confg = PreflightConfiguration.createPdfA1BConfiguration();
         confg.setErrorOnMissingProcess(false);
         confg.removeProcess(PreflightConfiguration.BOOKMARK_PROCESS);
@@ -58,7 +61,8 @@ public class TestPreflightConfiguration
     }
     
     @Test
-    public void testGetValidationPageProcess_noError() throws Exception {
+    public void testGetValidationPageProcess_noError() throws Exception
+    {
         PreflightConfiguration confg = PreflightConfiguration.createPdfA1BConfiguration();
         confg.setErrorOnMissingProcess(false);
         confg.removePageProcess(PreflightConfiguration.RESOURCES_PROCESS);
@@ -68,7 +72,8 @@ public class TestPreflightConfiguration
     }
 
     @Test(expected=ValidationException.class)
-    public void testGetMissingValidationProcess() throws Exception {
+    public void testGetMissingValidationProcess() throws Exception
+    {
         PreflightConfiguration confg = PreflightConfiguration.createPdfA1BConfiguration();
         confg.removeProcess(PreflightConfiguration.BOOKMARK_PROCESS);
         confg.getInstanceOfProcess(PreflightConfiguration.BOOKMARK_PROCESS);
@@ -76,7 +81,8 @@ public class TestPreflightConfiguration
     }
 
     @Test(expected=ValidationException.class)
-    public void testGetMissingValidationPageProcess() throws Exception {
+    public void testGetMissingValidationPageProcess() throws Exception
+    {
         PreflightConfiguration confg = PreflightConfiguration.createPdfA1BConfiguration();
         confg.removePageProcess(PreflightConfiguration.RESOURCES_PROCESS);
         confg.getInstanceOfProcess(PreflightConfiguration.RESOURCES_PROCESS);
@@ -84,7 +90,8 @@ public class TestPreflightConfiguration
     }
     
     @Test(expected=ValidationException.class)
-    public void testGetMissingValidationProcess2() throws Exception {
+    public void testGetMissingValidationProcess2() throws Exception
+    {
         PreflightConfiguration confg = PreflightConfiguration.createPdfA1BConfiguration();
         confg.replaceProcess(PreflightConfiguration.BOOKMARK_PROCESS, null);
         confg.getInstanceOfProcess(PreflightConfiguration.BOOKMARK_PROCESS);
@@ -92,7 +99,8 @@ public class TestPreflightConfiguration
     }
 
     @Test(expected=ValidationException.class)
-    public void testGetMissingValidationPageProcess2() throws Exception {
+    public void testGetMissingValidationPageProcess2() throws Exception
+    {
         PreflightConfiguration confg = PreflightConfiguration.createPdfA1BConfiguration();
         confg.replacePageProcess(PreflightConfiguration.RESOURCES_PROCESS, null);
         confg.getInstanceOfProcess(PreflightConfiguration.RESOURCES_PROCESS);

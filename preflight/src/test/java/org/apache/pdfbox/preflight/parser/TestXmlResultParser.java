@@ -34,7 +34,8 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
-public class TestXmlResultParser {
+public class TestXmlResultParser
+{
 
     public static final String ERROR_CODE = "000";
 
@@ -47,14 +48,16 @@ public class TestXmlResultParser {
     protected XPath xpath;
 
     @Before
-    public void before () throws Exception {
+    public void before() throws Exception
+    {
         document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
         preflight = parser.generateResponseSkeleton(document, "myname", 14);
         xpath = XPathFactory.newInstance().newXPath();
     }
 
     @Test
-    public void testOneError () throws Exception {
+    public void testOneError() throws Exception
+    {
         ValidationResult result = new ValidationResult(false);
         result.addError(new ValidationResult.ValidationError("7"));
         parser.createResponseWithError(document, "pdftype", result, preflight);
@@ -64,7 +67,8 @@ public class TestXmlResultParser {
     }
 
     @Test
-    public void testTwoError () throws Exception {
+    public void testTwoError() throws Exception
+    {
         ValidationResult result = new ValidationResult(false);
         result.addError(new ValidationResult.ValidationError("7"));
         result.addError(new ValidationResult.ValidationError(ERROR_CODE));
@@ -75,7 +79,8 @@ public class TestXmlResultParser {
     }
 
     @Test
-    public void testSameErrorTwice () throws Exception {
+    public void testSameErrorTwice() throws Exception
+    {
         ValidationResult result = new ValidationResult(false);
         result.addError(new ValidationResult.ValidationError(ERROR_CODE));
         result.addError(new ValidationResult.ValidationError(ERROR_CODE));
@@ -88,7 +93,8 @@ public class TestXmlResultParser {
     }
 
     @Test
-    public void testSameCodeWithDifferentMessages () throws Exception {
+    public void testSameCodeWithDifferentMessages() throws Exception
+    {
         ValidationResult result = new ValidationResult(false);
         result.addError(new ValidationResult.ValidationError(ERROR_CODE,"message 1"));
         result.addError(new ValidationResult.ValidationError(ERROR_CODE,"message 2"));
