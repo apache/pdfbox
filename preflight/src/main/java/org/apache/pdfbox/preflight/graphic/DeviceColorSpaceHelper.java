@@ -21,12 +21,12 @@
 
 package org.apache.pdfbox.preflight.graphic;
 
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE_FORBIDDEN;
-
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
+
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE_FORBIDDEN;
 
 /**
  * This class defines restrictions on Color Spaces. It checks the consistency of the Color space with the
@@ -46,7 +46,7 @@ public class DeviceColorSpaceHelper extends StandardColorSpaceHelper
      * and returns false.
      */
     @Override
-    protected void processPatternColorSpace(PDColorSpace pdcs)
+    protected void processPatternColorSpace(PDColorSpace colorSpace)
     {
         context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_FORBIDDEN,
                 "Pattern ColorSpace is forbidden"));
@@ -57,7 +57,7 @@ public class DeviceColorSpaceHelper extends StandardColorSpaceHelper
      * and returns false.
      */
     @Override
-    protected void processDeviceNColorSpace(PDColorSpace pdcs)
+    protected void processDeviceNColorSpace(PDColorSpace colorSpace)
     {
         context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_FORBIDDEN,
                 "DeviceN ColorSpace is forbidden"));
@@ -69,21 +69,21 @@ public class DeviceColorSpaceHelper extends StandardColorSpaceHelper
      * false.
      */
     @Override
-    protected void processIndexedColorSpace(PDColorSpace pdcs)
+    protected void processIndexedColorSpace(PDColorSpace colorSpace)
     {
-        PDIndexed indexed = (PDIndexed) pdcs;
-        PDColorSpace based = indexed.getBaseColorSpace();
-        ColorSpaces colorSpace = ColorSpaces.valueOf(based.getName());
-        switch (colorSpace)
+        PDIndexed indexed = (PDIndexed) colorSpace;
+        PDColorSpace baseColorSpace = indexed.getBaseColorSpace();
+        ColorSpaces colorSpaces = ColorSpaces.valueOf(baseColorSpace.getName());
+        switch (colorSpaces)
         {
         case Indexed:
         case Indexed_SHORT:
         case Pattern:
-            context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_FORBIDDEN, colorSpace
+            context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_FORBIDDEN, colorSpaces
                     .getLabel() + " ColorSpace is forbidden"));
             break;
         default:
-            processAllColorSpace(based);
+            processAllColorSpace(baseColorSpace);
         }
     }
 }

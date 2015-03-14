@@ -21,18 +21,6 @@
 
 package org.apache.pdfbox.preflight.graphic;
 
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE_ALTERNATE;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE_CMYK;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE_ICCBASED;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE_INDEXED;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE_MISSING;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE_RGB;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE_TOO_MANY_COMPONENTS_DEVICEN;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_PATTERN_COLOR_SPACE_FORBIDDEN;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_UNKNOWN_COLOR_SPACE;
-import static org.apache.pdfbox.preflight.PreflightConstants.MAX_DEVICE_N_LIMIT;
-
 import java.awt.color.ICC_Profile;
 import java.io.IOException;
 import java.util.Map;
@@ -46,10 +34,23 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceN;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceNAttributes;
 import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
+import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.PreflightPath;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
+
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE_ALTERNATE;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE_CMYK;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE_ICCBASED;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE_INDEXED;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE_MISSING;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE_RGB;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE_TOO_MANY_COMPONENTS_DEVICEN;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_PATTERN_COLOR_SPACE_FORBIDDEN;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_UNKNOWN_COLOR_SPACE;
+import static org.apache.pdfbox.preflight.PreflightConstants.MAX_DEVICE_N_LIMIT;
 
 /**
  * This class doesn't define restrictions on ColorSpace. It checks only the consistency of the Color space with the
@@ -96,46 +97,46 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
     /**
      * Method called by the validate method. According to the ColorSpace, a specific ColorSpace method is called.
      * 
-     * @param pdcs the color space object to check.
+     * @param colorSpace the color space object to check.
      */
-    protected final void processAllColorSpace(PDColorSpace pdcs)
+    protected final void processAllColorSpace(PDColorSpace colorSpace)
     {
-        ColorSpaces cs = ColorSpaces.valueOf(pdcs.getName());
+        ColorSpaces cs = ColorSpaces.valueOf(colorSpace.getName());
 
         switch (cs)
         {
         case DeviceRGB:
         case DeviceRGB_SHORT:
-            processRGBColorSpace(pdcs);
+            processRGBColorSpace(colorSpace);
             break;
         case DeviceCMYK:
         case DeviceCMYK_SHORT:
-            processCYMKColorSpace(pdcs);
+            processCYMKColorSpace(colorSpace);
             break;
         case CalRGB:
         case CalGray:
         case Lab:
-            processCalibratedColorSpace(pdcs);
+            processCalibratedColorSpace(colorSpace);
             break;
         case DeviceGray:
         case DeviceGray_SHORT:
-            processGrayColorSpace(pdcs);
+            processGrayColorSpace(colorSpace);
             break;
         case ICCBased:
-            processICCBasedColorSpace(pdcs);
+            processICCBasedColorSpace(colorSpace);
             break;
         case DeviceN:
-            processDeviceNColorSpace(pdcs);
+            processDeviceNColorSpace(colorSpace);
             break;
         case Indexed:
         case Indexed_SHORT:
-            processIndexedColorSpace(pdcs);
+            processIndexedColorSpace(colorSpace);
             break;
         case Separation:
-            processSeparationColorSpace(pdcs);
+            processSeparationColorSpace(colorSpace);
             break;
         case Pattern:
-            processPatternColorSpace(pdcs);
+            processPatternColorSpace(colorSpace);
             break;
         default:
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_UNKNOWN_COLOR_SPACE, cs.getLabel()
@@ -147,9 +148,9 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
      * Method called by the processAllColorSpace if the ColorSpace to check is DeviceRGB.
      * 
      */
-    protected void processRGBColorSpace(PDColorSpace pdcs)
+    protected void processRGBColorSpace(PDColorSpace colorSpace)
     {
-        if (!processDefaultColorSpace(pdcs))
+        if (!processDefaultColorSpace(colorSpace))
         {
             if (iccpw == null)
             {
@@ -168,9 +169,9 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
      * Method called by the processAllColorSpace if the ColorSpace to check is DeviceCYMK.
      * 
      */
-    protected void processCYMKColorSpace(PDColorSpace pdcs)
+    protected void processCYMKColorSpace(PDColorSpace colorSpace)
     {
-        if (!processDefaultColorSpace(pdcs))
+        if (!processDefaultColorSpace(colorSpace))
         {
             if (iccpw == null)
             {
@@ -187,8 +188,9 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
 
     /**
      * Method called by the processAllColorSpace if the ColorSpace to check is a Pattern.
+     * @param colorSpace 
      */
-    protected void processPatternColorSpace(PDColorSpace pdcs)
+    protected void processPatternColorSpace(PDColorSpace colorSpace)
     {
         if (iccpw == null)
         {
@@ -201,9 +203,9 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
      * Method called by the processAllColorSpace if the ColorSpace to check is DeviceGray.
      * 
      */
-    protected void processGrayColorSpace(PDColorSpace pdcs)
+    protected void processGrayColorSpace(PDColorSpace colorSpace)
     {
-        if (!processDefaultColorSpace(pdcs) && iccpw == null)
+        if (!processDefaultColorSpace(colorSpace) && iccpw == null)
         {
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_MISSING,
                     "DestOutputProfile is missing"));
@@ -212,9 +214,10 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
 
     /**
      * Method called by the processAllColorSpace if the ColorSpace to check is a Clibrated Color (CalGary, CalRGB, Lab).
+     * @param colorSpace 
      * 
      */
-    protected void processCalibratedColorSpace(PDColorSpace pdcs)
+    protected void processCalibratedColorSpace(PDColorSpace colorSpace)
     {
         // ---- OutputIntent isn't mandatory
     }
@@ -224,12 +227,12 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
      * of ColorSpace can have alternate color space, the processAllColorSpace is called to check this alternate color
      * space. (Pattern is forbidden as Alternate Color Space)
      * 
-     * @param pdcs
+     * @param colorSpace
      *            the color space object to check.
      */
-    protected void processICCBasedColorSpace(PDColorSpace pdcs)
+    protected void processICCBasedColorSpace(PDColorSpace colorSpace)
     {
-        PDICCBased iccBased = (PDICCBased) pdcs;
+        PDICCBased iccBased = (PDICCBased) colorSpace;
         try
         {
             ICC_Profile.getInstance(iccBased.getPDStream().getByteArray());
@@ -272,12 +275,12 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
      * can have alternate color space, the processAllColorSpace is called to check this alternate color space. (There
      * are no restrictions on the Alternate Color space)
      * 
-     * @param pdcs
+     * @param colorSpace
      *            the color space object to check.
      */
-    protected void processDeviceNColorSpace(PDColorSpace pdcs)
+    protected void processDeviceNColorSpace(PDColorSpace colorSpace)
     {
-        PDDeviceN deviceN = (PDDeviceN) pdcs;
+        PDDeviceN deviceN = (PDDeviceN) colorSpace;
         try
         {
             if (iccpw == null)
@@ -287,7 +290,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
                 return;
             }
 
-            COSBase cosAlt = ((COSArray)pdcs.getCOSObject()).getObject(2);
+            COSBase cosAlt = ((COSArray)colorSpace.getCOSObject()).getObject(2);
             PDColorSpace altColor = PDColorSpace.create(cosAlt);
             if (altColor != null)
             {
@@ -298,15 +301,15 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
             PDDeviceNAttributes attr = deviceN.getAttributes();
             if (attr != null)
             {
-                Map colorants = attr.getColorants();
+                final Map<String, PDSeparation> colorants = attr.getColorants();
                 if (colorants != null)
                 {
                     numberOfColorants = colorants.size();
-                    for (Object col : colorants.values())
+                    for (PDSeparation col : colorants.values())
                     {
                         if (col != null)
                         {
-                            processAllColorSpace((PDColorSpace) col);
+                            processAllColorSpace(col);
                         }
                     }
                 }
@@ -331,12 +334,12 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
      * can have a Base color space, the processAllColorSpace is called to check this base color space. (Indexed and
      * Pattern can't be a Base color space)
      * 
-     * @param pdcs
+     * @param colorSpace
      *            the color space object to check.
      */
-    protected void processIndexedColorSpace(PDColorSpace pdcs)
+    protected void processIndexedColorSpace(PDColorSpace colorSpace)
     {
-        PDIndexed indexed = (PDIndexed) pdcs;
+        PDIndexed indexed = (PDIndexed) colorSpace;
         PDColorSpace based = indexed.getBaseColorSpace();
         ColorSpaces cs = ColorSpaces.valueOf(based.getName());
         if (cs == ColorSpaces.Indexed || cs == ColorSpaces.Indexed_SHORT)
@@ -359,14 +362,14 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
      * ColorSpace can have an alternate color space, the processAllColorSpace is called to check this alternate color
      * space. (Indexed, Separation, DeviceN and Pattern can't be a Base color space)
      * 
-     * @param pdcs
+     * @param colorSpace
      *            the color space object to check.
      */
-    protected void processSeparationColorSpace(PDColorSpace pdcs)
+    protected void processSeparationColorSpace(PDColorSpace colorSpace)
     {
         try
         {
-            COSBase cosAlt = ((COSArray)pdcs.getCOSObject()).getObject(2);
+            COSBase cosAlt = ((COSArray)colorSpace.getCOSObject()).getObject(2);
             PDColorSpace altCol = PDColorSpace.create(cosAlt);
             if (altCol != null)
             {
@@ -397,10 +400,10 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
      * Look up in the closest PDResources objects if there are a default ColorSpace. If there are, check that is a
      * authorized ColorSpace.
      * 
-     * @param pdcs
+     * @param colorSpace
      * @return true if the default colorspace is a right one, false otherwise.
      */
-    protected boolean processDefaultColorSpace(PDColorSpace pdcs)
+    protected boolean processDefaultColorSpace(PDColorSpace colorSpace)
     {
         boolean result = false;
 
@@ -413,17 +416,17 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
 
             try
             {
-                if (pdcs.getName().equals(ColorSpaces.DeviceCMYK.getLabel()) &&
+                if (colorSpace.getName().equals(ColorSpaces.DeviceCMYK.getLabel()) &&
                     resources.hasColorSpace(COSName.DEFAULT_CMYK))
                 {
                     defaultCS = resources.getColorSpace(COSName.DEFAULT_CMYK);
                 }
-                else if (pdcs.getName().equals(ColorSpaces.DeviceRGB.getLabel()) &&
+                else if (colorSpace.getName().equals(ColorSpaces.DeviceRGB.getLabel()) &&
                          resources.hasColorSpace(COSName.DEFAULT_RGB))
                 {
                     defaultCS = resources.getColorSpace(COSName.DEFAULT_RGB);
                 }
-                else if (pdcs.getName().equals(ColorSpaces.DeviceGray.getLabel()) &&
+                else if (colorSpace.getName().equals(ColorSpaces.DeviceGray.getLabel()) &&
                          resources.hasColorSpace(COSName.DEFAULT_GRAY))
                 {
                     defaultCS = resources.getColorSpace(COSName.DEFAULT_GRAY);
