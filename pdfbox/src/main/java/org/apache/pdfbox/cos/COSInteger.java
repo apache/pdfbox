@@ -85,10 +85,7 @@ public final class COSInteger extends COSNumber
             }
             return STATIC[index];
         }
-        else
-        {
-            return new COSInteger(val);
-        }
+        return new COSInteger(val);
     }
 
     private final long value;

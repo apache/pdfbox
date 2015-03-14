@@ -21,8 +21,8 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.Closeable;
 import java.io.File;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.commons.logging.Log;
@@ -286,10 +286,7 @@ public class COSStream extends COSDictionary implements Closeable
             String subtype = getNameAsString(COSName.SUBTYPE);
             throw new IOException(subtype + " stream was not read" + filterInfo);
         }
-        else
-        {
-            return decodeResult;
-        }
+        return decodeResult;
     }
 
     @Override
@@ -400,7 +397,7 @@ public class COSStream extends COSDictionary implements Closeable
                 }
             }
         }
-        if (!done)
+        if (!done && exception != null)
         {
             throw exception;
         }

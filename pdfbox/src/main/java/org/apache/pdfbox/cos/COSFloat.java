@@ -64,7 +64,7 @@ public class COSFloat extends COSNumber
         }
     }
 
-    private String removeNullDigits(String plainStringValue)
+    private static String removeNullDigits(String plainStringValue)
     {
         // remove fraction digit "0" only
         if (plainStringValue.indexOf('.') > -1 && !plainStringValue.endsWith(".0"))
