@@ -21,11 +21,11 @@
 
 package org.apache.pdfbox.preflight.graphic;
 
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_PATTERN_COLOR_SPACE_FORBIDDEN;
-
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
+
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_PATTERN_COLOR_SPACE_FORBIDDEN;
 
 /**
  * This class defines restrictions on Pattern ColorSpace. It checks the consistency of the Color space with the
@@ -44,7 +44,7 @@ public class NoPatternColorSpaceHelper extends StandardColorSpaceHelper
      * and returns false.
      */
     @Override
-    protected void processPatternColorSpace(PDColorSpace pdcs)
+    protected void processPatternColorSpace(PDColorSpace colorSpace)
     {
         context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_PATTERN_COLOR_SPACE_FORBIDDEN,
                 "Pattern color space is forbidden"));
