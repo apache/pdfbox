@@ -235,9 +235,10 @@ public abstract class SecurityHandler
             IvParameterSpec ips = new IvParameterSpec(iv);
             decryptCipher.init(decrypt ? Cipher.DECRYPT_MODE : Cipher.ENCRYPT_MODE, aesKey, ips);
             byte[] buffer = new byte[256];
-            for (int n = 0; -1 != (n = data.read(buffer));)
+            int n;
+            while ((n = data.read(buffer)) != -1)
             {
-                output.write(decryptCipher.update(buffer,0, n ));
+                output.write(decryptCipher.update(buffer, 0, n));
             }
             output.write(decryptCipher.doFinal());
         }
@@ -421,8 +422,9 @@ public abstract class SecurityHandler
                 {
                     // if we are a signature dictionary and contain a Contents entry then
                     // we don't decrypt it.
-                    if (!(entry.getKey().equals(COSName.CONTENTS) && value instanceof COSString && potentialSignatures
-                            .contains(dictionary)))
+                    if (!(entry.getKey().equals(COSName.CONTENTS)
+                            && value instanceof COSString
+                            && potentialSignatures.contains(dictionary)))
                     {
                         decrypt(value, objNum, genNum);
                     }
