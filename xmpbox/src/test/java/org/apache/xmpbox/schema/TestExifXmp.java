@@ -50,7 +50,7 @@ public class TestExifXmp
     }
 
     @Test
-    public void testGenerate () throws Exception
+    public void testGenerate() throws Exception
     {
         XMPMetadata metadata = XMPMetadata.createXMPMetadata();
         TypeMapping tmapping = metadata.getTypeMapping();

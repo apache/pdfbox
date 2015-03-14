@@ -76,7 +76,7 @@ public class TestValidatePermitedMetadata
 
     private String preferred;
 
-    public TestValidatePermitedMetadata (String ns, String prf, String fn)
+    public TestValidatePermitedMetadata(String ns, String prf, String fn)
     {
         this.namespace = ns;
         this.preferred = prf;
