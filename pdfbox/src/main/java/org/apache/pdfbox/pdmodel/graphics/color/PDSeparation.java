@@ -129,7 +129,7 @@ public class PDSeparation extends PDSpecialColorSpace
             for (int x = 0; x < width; x++)
             {
                 raster.getPixel(x, y, samples);
-                int alt[] = calculatedValues.get(hash = Float.floatToIntBits(samples[0]));
+                int[] alt = calculatedValues.get(hash = Float.floatToIntBits(samples[0]));
                 if (alt == null)
                 {
                     alt = new int[numAltComponents];
@@ -144,10 +144,10 @@ public class PDSeparation extends PDSpecialColorSpace
         return alternateColorSpace.toRGBImage(altRaster);
     }
 
-    protected void tintTransform(float samples[], int alt[]) throws IOException
+    protected void tintTransform(float[] samples, int[] alt) throws IOException
     {
         samples[0] /= 255; // 0..1
-        float result[] = tintTransform.eval(samples);
+        float[] result = tintTransform.eval(samples);
         for (int s = 0; s < alt.length; s++)
         {
             // scale to 0..255
