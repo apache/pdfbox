@@ -779,7 +779,7 @@ public class DomXmpParser
             return;
         }
         NodeList nl = root.getChildNodes();
-        for (int i=0; i < nl.getLength() ; i ++) 
+        for (int i=0; i < nl.getLength(); i++) 
         {
             Node node = nl.item(i);
             if (node instanceof Comment)
