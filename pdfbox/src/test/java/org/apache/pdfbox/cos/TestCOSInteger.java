@@ -18,7 +18,6 @@ package org.apache.pdfbox.cos;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
