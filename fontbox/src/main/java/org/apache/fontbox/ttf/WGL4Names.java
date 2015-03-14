@@ -92,7 +92,7 @@ public final class WGL4Names
         }
     }
     
-    private WGL4Names ()
+    private WGL4Names()
     {
     }
 }
