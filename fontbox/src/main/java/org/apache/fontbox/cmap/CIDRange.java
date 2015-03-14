@@ -20,7 +20,8 @@ package org.apache.fontbox.cmap;
 /**
  * Range of continuous CIDs between two Unicode characters.
  */
-class CIDRange {
+class CIDRange
+{
 
     private final char from;
 
@@ -28,7 +29,8 @@ class CIDRange {
 
     private final int cid;
 
-    public CIDRange(char from, char to, int cid) {
+    public CIDRange(char from, char to, int cid)
+    {
         this.from = from;
         this.to = to;
         this.cid = cid;
@@ -40,10 +42,14 @@ class CIDRange {
      * @param ch Unicode character
      * @return corresponding CID, or -1 if the character is out of range
      */
-    public int map(char ch) {
-        if (from <= ch && ch <= to) {
+    public int map(char ch)
+    {
+        if (from <= ch && ch <= to)
+        {
             return cid + (ch - from);
-        } else {
+        }
+        else
+        {
             return -1;
         }
     }
@@ -54,10 +60,14 @@ class CIDRange {
      * @param code CID
      * @return corresponding Unicode character, or -1 if the CID is out of range
      */
-    public int unmap(int code) {
-        if (cid <= code && code <= cid + (to - from)) {
+    public int unmap(int code)
+    {
+        if (cid <= code && code <= cid + (to - from))
+        {
             return from + (code - cid);
-        } else {
+        }
+        else
+        {
             return -1;
         }
     }
