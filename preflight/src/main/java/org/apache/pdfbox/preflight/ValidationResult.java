@@ -416,7 +416,8 @@ public class ValidationResult
         }
 
         @Override
-        public int hashCode() {
+        public int hashCode()
+        {
             return errorCode.hashCode();
         }
 
