@@ -44,7 +44,7 @@ public class TestRandomAccessFileOutputStream extends TestCase
     public void testWrite() throws IOException
     {
         RandomAccessFileOutputStream out;
-        byte buffer[];
+        byte[] buffer;
 
         File file = new File(testResultsDir, "raf-outputstream.bin");
 
@@ -142,7 +142,7 @@ public class TestRandomAccessFileOutputStream extends TestCase
 
         RandomAccessFile raFile = new RandomAccessFile(file, "rw");
 
-        byte buffer[] = createDataSequence(16, 10);
+        byte[] buffer = createDataSequence(16, 10);
 
         // Test COSInteger
         out = new RandomAccessFileOutputStream(raFile);
@@ -208,7 +208,7 @@ public class TestRandomAccessFileOutputStream extends TestCase
 
     protected byte[] createDataSequence(int length, int firstByteValue)
     {
-        byte buffer[] = new byte[length];
+        byte[] buffer = new byte[length];
         for (int i = 0; i < buffer.length; i++)
         {
             buffer[i] = (byte) (firstByteValue + i);
