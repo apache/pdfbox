@@ -253,7 +253,8 @@ public class TestCOSString extends TestCOSBase
         out.reset();
         COSWriter.writeString(string8Bit, out);
         StringBuffer hex = new StringBuffer();
-        for(char c : text8Bit.toCharArray()) {
+        for(char c : text8Bit.toCharArray())
+        {
            hex.append( Integer.toHexString(c).toUpperCase() );
         }
         assertEquals("<"+hex.toString()+">", new String(out.toByteArray(), "ASCII"));
@@ -262,7 +263,8 @@ public class TestCOSString extends TestCOSBase
         COSWriter.writeString(stringHighBits, out);
         hex = new StringBuffer();
         hex.append("FEFF"); // Byte Order Mark
-        for(char c : textHighBits.toCharArray()) {
+        for(char c : textHighBits.toCharArray())
+        {
            hex.append( Integer.toHexString(c).toUpperCase() );
         }
         assertEquals("<"+hex.toString()+">", new String(out.toByteArray(), "ASCII")); 

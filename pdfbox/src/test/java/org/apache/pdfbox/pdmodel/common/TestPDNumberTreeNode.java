@@ -41,14 +41,17 @@ public class TestPDNumberTreeNode extends TestCase
     private PDNumberTreeNode node5;
     private PDNumberTreeNode node24;
     
-    public static class PDTest implements COSObjectable {
+    public static class PDTest implements COSObjectable
+    {
         private final int value;
 
-        public PDTest(int value) {
+        public PDTest(int value)
+        {
             this.value = value;
         }
         
-        public PDTest(COSInteger cosInt) {
+        public PDTest(COSInteger cosInt)
+        {
             this.value = cosInt.intValue();
         }
 
@@ -71,11 +74,17 @@ public class TestPDNumberTreeNode extends TestCase
         public boolean equals( Object obj )
         {
             if ( this == obj)
+            {
                 return true;
+            }
             if ( obj == null)
+            {
                 return false;
+            }
             if ( getClass() != obj.getClass())
+            {
                 return false;
+            }
             PDTest other = (PDTest) obj;
             return value == other.value;
         }
@@ -133,7 +142,8 @@ public class TestPDNumberTreeNode extends TestCase
         this.node1.setKids( kids );
     }
     
-    public void testGetValue() throws IOException {
+    public void testGetValue() throws IOException
+    {
         Assert.assertEquals(new PDTest( 51 ), this.node5.getValue( 4 ));
         Assert.assertEquals(new PDTest(70), this.node1.getValue( 9 ));
         
