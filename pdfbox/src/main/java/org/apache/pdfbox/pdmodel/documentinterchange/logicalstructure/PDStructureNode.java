@@ -28,6 +28,8 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
+import org.apache.pdfbox.pdmodel.graphics.PDXObject;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 
 /**
  * A node in the structure tree.
@@ -121,7 +123,7 @@ public abstract class PDStructureNode implements COSObjectable
             while (kids.hasNext())
             {
                 COSBase kid = kids.next();
-                Object kidObject = this.createObject(kid);
+                Object kidObject = PDStructureNode.createObject(kid);
                 if (kidObject != null)
                 {
                     kidObjects.add(kidObject);
@@ -130,7 +132,7 @@ public abstract class PDStructureNode implements COSObjectable
         }
         else
         {
-            Object kidObject = this.createObject(k);
+            Object kidObject = PDStructureNode.createObject(k);
             if (kidObject != null)
             {
                 kidObjects.add(kidObject);
@@ -377,7 +379,7 @@ public abstract class PDStructureNode implements COSObjectable
      * @param kid the kid
      * @return the object
      */
-    protected Object createObject(COSBase kid)
+    protected static Object createObject(COSBase kid)
     {
         COSDictionary kidDic = null;
         if (kid instanceof COSDictionary)

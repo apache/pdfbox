@@ -44,15 +44,15 @@ public class PDMarkedContent
     {
         if (COSName.ARTIFACT.equals(tag))
         {
-            new PDArtifactMarkedContent(properties);
+            return new PDArtifactMarkedContent(properties);
         }
         return new PDMarkedContent(tag, properties);
     }
 
 
-    private String tag;
-    private COSDictionary properties;
-    private List<Object> contents;
+    private final String tag;
+    private final COSDictionary properties;
+    private final List<Object> contents;
 
 
     /**

@@ -30,7 +30,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDGamma;
 public class PDFourColours implements COSObjectable
 {
 
-    private COSArray array;
+    private final COSArray array;
 
     public PDFourColours()
     {
@@ -139,6 +139,7 @@ public class PDFourColours implements COSObjectable
     /**
      * {@inheritDoc}
      */
+    @Override
     public COSBase getCOSObject()
     {
         return this.array;
