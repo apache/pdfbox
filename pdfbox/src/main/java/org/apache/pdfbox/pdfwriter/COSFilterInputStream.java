@@ -67,26 +67,33 @@ public class COSFilterInputStream extends FilterInputStream
     }
     
     int c = read();
-    if (c == -1) {
+    if (c == -1)
+    {
         return -1;
     }
     b[off] = (byte)c;
   
     int i = 1;
-    try {
-        for (; i < len ; i++) {
+    try
+    {
+        for (; i < len; i++)
+        {
             c = read();
-            if (c == -1) {
+            if (c == -1)
+            {
                 break;
             }
             b[off + i] = (byte)c;
         }
-    } catch (IOException ee) {
+    }
+    catch (IOException ee) 
+    {
     }
     return i;
   }
 
-  private boolean inRange() throws IOException {
+  private boolean inRange() throws IOException
+  {
     long pos = position;
     for (int i = 0; i<byteRange.length/2;++i)
     {
@@ -98,8 +105,10 @@ public class COSFilterInputStream extends FilterInputStream
     return false;
   }
 
-  private void nextAvailable() throws IOException {
-    while (!inRange()) {
+  private void nextAvailable() throws IOException
+  {
+    while (!inRange())
+    {
       ++position;
       if(super.read()<0)
       {

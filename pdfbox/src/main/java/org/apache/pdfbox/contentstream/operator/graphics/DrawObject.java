@@ -54,7 +54,8 @@ public final class DrawObject extends GraphicsOperatorProcessor
         {
             PDFormXObject form = (PDFormXObject) xobject;
             if (form.getGroup() != null &&
-                COSName.TRANSPARENCY.equals(form.getGroup().getSubType())) {
+                COSName.TRANSPARENCY.equals(form.getGroup().getSubType()))
+            {
                 getContext().showTransparencyGroup(form);
             }
             else

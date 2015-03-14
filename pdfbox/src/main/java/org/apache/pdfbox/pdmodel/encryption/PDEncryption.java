@@ -401,7 +401,8 @@ public class PDEncryption
         
         COSBase value = dictionary.getDictionaryObject(COSName.ENCRYPT_META_DATA);
         
-        if (value instanceof COSBoolean) {
+        if (value instanceof COSBoolean)
+        {
             encryptMetaData = ((COSBoolean)value).getValue();
         }
         

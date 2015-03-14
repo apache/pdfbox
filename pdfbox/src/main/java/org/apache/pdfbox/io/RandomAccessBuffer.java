@@ -62,18 +62,23 @@ public class RandomAccessBuffer implements RandomAccess, Closeable, Cloneable
     }
 
     @Override
-    public RandomAccessBuffer clone() {
+    public RandomAccessBuffer clone()
+    {
         RandomAccessBuffer copy = new RandomAccessBuffer();
 
         copy.bufferList = new ArrayList<byte[]>(bufferList.size());
-        for (byte [] buffer : bufferList) {
+        for (byte [] buffer : bufferList)
+        {
             byte [] newBuffer = new byte [buffer.length];
             System.arraycopy(buffer,0,newBuffer,0,buffer.length);
             copy.bufferList.add(newBuffer);
         }
-        if (currentBuffer!=null) {
+        if (currentBuffer!=null)
+        {
             copy.currentBuffer = copy.bufferList.get(copy.bufferList.size()-1);
-        } else {
+        }
+        else
+        {
             copy.currentBuffer = null;
         }
         copy.pointer = pointer;
@@ -117,7 +122,8 @@ public class RandomAccessBuffer implements RandomAccess, Closeable, Cloneable
      * {@inheritDoc}
      */
     @Override
-    public long getPosition() throws IOException {
+    public long getPosition() throws IOException
+    {
        checkClosed();
        return pointer;
     }
@@ -322,8 +328,10 @@ public class RandomAccessBuffer implements RandomAccess, Closeable, Cloneable
      * Ensure that the RandomAccessBuffer is not closed
      * @throws IOException
      */
-    private void checkClosed () throws IOException {
-        if (currentBuffer==null) {
+    private void checkClosed() throws IOException
+    {
+        if (currentBuffer==null)
+        {
             // consider that the rab is closed if there is no current buffer
             throw new IOException("RandomAccessBuffer already closed");
         }

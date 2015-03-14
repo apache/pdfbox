@@ -518,7 +518,8 @@ public class PDExtendedGraphicsState implements COSObjectable
      *
      * @return the blending mode
      */
-    public BlendMode getBlendMode() {
+    public BlendMode getBlendMode()
+    {
         return BlendMode.getInstance(dict.getDictionaryObject(COSName.BM));
     }
 
