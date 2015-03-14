@@ -542,17 +542,25 @@ public class COSDocument extends COSBase implements Closeable
         {
             COSStream stream = (COSStream)objStream.getObject();
             PDFObjectStreamParser parser = new PDFObjectStreamParser(stream, this);
-            parser.parse();
-            for( COSObject next : parser.getObjects() )
+            try
             {
-                COSObjectKey key = new COSObjectKey( next );
-                if ( objectPool.get(key) == null || objectPool.get(key).getObject() == null ||
-                     // xrefTable stores negated objNr of objStream for objects in objStreams
-                     (xrefTable.containsKey(key) && xrefTable.get(key) == -objStream.getObjectNumber()) )
+                parser.parse();
+                for (COSObject next : parser.getObjects())
                 {
-                    COSObject obj = getObjectFromPool(key);
-                    obj.setObject(next.getObject());
+                    COSObjectKey key = new COSObjectKey(next);
+                    if (objectPool.get(key) == null || objectPool.get(key).getObject() == null
+                            // xrefTable stores negated objNr of objStream for objects in objStreams
+                            || (xrefTable.containsKey(key)
+                                && xrefTable.get(key) == -objStream.getObjectNumber()))
+                    {
+                        COSObject obj = getObjectFromPool(key);
+                        obj.setObject(next.getObject());
+                    }
                 }
+            }
+            finally
+            {
+                parser.close();
             }
         }
     }
