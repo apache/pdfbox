@@ -197,19 +197,29 @@ public class PDUserProperty extends PDDictionaryWrapper
     public boolean equals(Object obj)
     {
         if (this == obj)
+        {
             return true;
+        }
         if (!super.equals(obj))
+        {
             return false;
+        }
         if (getClass() != obj.getClass())
+        {
             return false;
+        }
         PDUserProperty other = (PDUserProperty) obj;
         if (userAttributeObject == null)
         {
             if (other.userAttributeObject != null)
+            {
                 return false;
+            }
         }
         else if (!userAttributeObject.equals(other.userAttributeObject))
+        {
             return false;
+        }
         return true;
     }
 
