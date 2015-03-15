@@ -296,17 +296,19 @@ class AppearanceGeneratorHelper
         // calculation of the vertical offset from where the text will be printed 
         float verticalOffset = calculateVerticalOffset(paddingEdge, contentEdge, font, fontSize);
 
-        // calculation of the horizontal offset from where the text will be printed
-        float leftOffset = calculateHorizontalOffset(contentEdge, font, fontSize);
+        float leftOffset = 0f;
 
         // show the text
         if (!isMultiLine())
         {
+            // calculation of the horizontal offset from where the text will be printed
+            leftOffset = calculateHorizontalOffset(contentEdge, font, fontSize);
             composer.newLineAtOffset(leftOffset, verticalOffset);
             composer.showText(value, font);
         }
         else
         {
+            leftOffset = contentEdge.getLowerLeftX();
             PlainText textContent = new PlainText(value);
             AppearanceStyle appearanceStyle = new AppearanceStyle();
             appearanceStyle.setFont(font);

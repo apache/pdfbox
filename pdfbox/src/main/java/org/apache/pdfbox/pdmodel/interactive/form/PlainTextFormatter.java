@@ -72,8 +72,8 @@ class PlainTextFormatter
     private final PlainText textContent;
     private final TextAlign textAlignment;
     
-    private final float horizontalOffset;
-    private final float verticalOffset;
+    private float horizontalOffset;
+    private float verticalOffset;
     
     static class Builder
     {
@@ -226,14 +226,19 @@ class PlainTextFormatter
                 startOffset = 0f;
             }
             
-            float offset = -lastPos + startOffset;
+            float offset = -lastPos + startOffset + horizontalOffset;
             
             if (lines.indexOf(line) == 0)
             {
-                composer.newLineAtOffset(offset + horizontalOffset, verticalOffset);
+                composer.newLineAtOffset(offset, verticalOffset);
+                // reset the initial verticalOffset
+                verticalOffset = 0f;
+                horizontalOffset = 0f;
             }
             else
             {
+                // keep the last position
+                verticalOffset = verticalOffset - appearanceStyle.getLeading();
                 composer.newLineAtOffset(offset, -appearanceStyle.getLeading());
             }
             lastPos = startOffset; 
@@ -250,5 +255,6 @@ class PlainTextFormatter
                 }
             }
         }
+        horizontalOffset = horizontalOffset -lastPos;
     }
 }
