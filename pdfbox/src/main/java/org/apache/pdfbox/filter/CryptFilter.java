@@ -19,6 +19,7 @@ package org.apache.pdfbox.filter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 
@@ -40,10 +41,7 @@ final class CryptFilter extends Filter
             identityFilter.decode(encoded, decoded, parameters, index);
             return new DecodeResult(parameters);
         }
-        else
-        {
-            throw new IOException("Unsupported crypt filter " + encryptionName.getName());
-        }
+        throw new IOException("Unsupported crypt filter " + encryptionName.getName());
     }
 
     @Override
