@@ -521,6 +521,7 @@ public abstract class PDField implements COSObjectable
     {
         List<COSObjectable> retval = null;
         COSArray kids = (COSArray) getDictionary().getDictionaryObject(COSName.KIDS);
+        
         if (kids != null)
         {
             List<COSObjectable> kidsList = new ArrayList<COSObjectable>();
@@ -538,15 +539,11 @@ public abstract class PDField implements COSObjectable
                 // of its own shall not be considered a field but simply a Widget annotation.
                 if (kidDictionary.getDictionaryObject(COSName.T) != null)
                 {
-                    COSDictionary parent = (COSDictionary) kidDictionary.getDictionaryObject(COSName.PARENT, COSName.P);
-                    if (kidDictionary.getDictionaryObject(COSName.FT) != null
-                            || (parent != null && parent.getDictionaryObject(COSName.FT) != null))
+                    PDField field = PDFieldFactory.createField(acroForm, kidDictionary);
+                        
+                    if (field != null)
                     {
-                        PDField field = PDFieldFactory.createField(acroForm, kidDictionary);
-                        if (field != null)
-                        {
-                            kidsList.add(field);
-                        }
+                       kidsList.add(field);
                     }
                 }
                 else if ("Widget".equals(kidDictionary.getNameAsString(COSName.SUBTYPE)))
