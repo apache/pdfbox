@@ -61,6 +61,7 @@ public class PDMarkedContentReference implements COSObjectable
     /**
      * {@inheritDoc}
      */
+    @Override
     public COSBase getCOSObject()
     {
         return this.dictionary;

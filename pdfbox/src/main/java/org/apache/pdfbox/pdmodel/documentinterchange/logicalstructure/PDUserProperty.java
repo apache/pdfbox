@@ -183,4 +183,34 @@ public class PDUserProperty extends PDDictionaryWrapper
         return !oldEntry.equals(newEntry);
     }
 
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result
+                + ((userAttributeObject == null) ? 0 : userAttributeObject.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        PDUserProperty other = (PDUserProperty) obj;
+        if (userAttributeObject == null)
+        {
+            if (other.userAttributeObject != null)
+                return false;
+        }
+        else if (!userAttributeObject.equals(other.userAttributeObject))
+            return false;
+        return true;
+    }
+
 }
