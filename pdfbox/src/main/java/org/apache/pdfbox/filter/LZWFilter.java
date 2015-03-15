@@ -100,7 +100,7 @@ public class LZWFilter extends Filter
 
     private void doLZWDecode(InputStream encoded, OutputStream decoded, int earlyChange) throws IOException
     {
-        List<byte[]> codeTable = null;
+        List<byte[]> codeTable = new ArrayList<byte[]>();
         int chunk = 9;
         MemoryCacheImageInputStream in = new MemoryCacheImageInputStream(encoded);
         long nextCommand;

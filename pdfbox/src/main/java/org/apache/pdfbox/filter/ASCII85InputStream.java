@@ -65,7 +65,8 @@ final class ASCII85InputStream extends FilterInputStream
      *
      * @throws IOException If there is an error reading from the wrapped stream.
      */
-    public final int read() throws IOException
+    @Override
+    public int read() throws IOException
     {
         if (index >= n)
         {
@@ -175,7 +176,8 @@ final class ASCII85InputStream extends FilterInputStream
      *
      * @throws IOException If there is an error reading data from the underlying stream.
      */
-    public final int read(byte[] data, int offset, int len) throws IOException
+    @Override
+    public int read(byte[] data, int offset, int len) throws IOException
     {
         if (eof && index >= n)
         {
@@ -205,6 +207,7 @@ final class ASCII85InputStream extends FilterInputStream
      *
      * @throws IOException If there is an error closing the underlying stream.
      */
+    @Override
     public void close() throws IOException
     {
         ascii = null;
@@ -218,6 +221,7 @@ final class ASCII85InputStream extends FilterInputStream
      *
      * @return False always.
      */
+    @Override
     public boolean markSupported()
     {
         return false;
@@ -230,6 +234,7 @@ final class ASCII85InputStream extends FilterInputStream
      *
      * @return Always zero.
      */
+    @Override
     public long skip(long nValue)
     {
         return 0;
@@ -240,6 +245,7 @@ final class ASCII85InputStream extends FilterInputStream
      *
      * @return Always zero.
      */
+    @Override
     public int available()
     {
         return 0;
@@ -250,6 +256,7 @@ final class ASCII85InputStream extends FilterInputStream
      *
      * @param readlimit ignored.
      */
+    @Override
     public void mark(int readlimit)
     {
     }
@@ -259,6 +266,7 @@ final class ASCII85InputStream extends FilterInputStream
      *
      * @throws IOException telling that this is an unsupported action.
      */
+    @Override
     public void reset() throws IOException
     {
         throw new IOException("Reset is not supported");
