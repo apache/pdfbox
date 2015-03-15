@@ -18,9 +18,8 @@ package org.apache.fontbox.afm;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
 import java.io.IOException;
-
+import java.io.InputStream;
 import java.util.StringTokenizer;
 
 import org.apache.fontbox.util.BoundingBox;
@@ -302,16 +301,19 @@ public class AFMParser
     {
         java.io.File afmDir = new java.io.File( "Resources/afm" );
         java.io.File[] files = afmDir.listFiles();
-        for (File file : files)
+        if (files != null)
         {
-            if (file.getPath().toUpperCase().endsWith(".AFM"))
+            for (File file : files)
             {
-                long start = System.currentTimeMillis();
-                FileInputStream input = new FileInputStream(file);
-                AFMParser parser = new AFMParser( input );
-                parser.parse();
-                long stop = System.currentTimeMillis();
-                System.out.println("Parsing:" + file.getPath() + " " + (stop-start));
+                if (file.getPath().toUpperCase().endsWith(".AFM"))
+                {
+                    long start = System.currentTimeMillis();
+                    FileInputStream input = new FileInputStream(file);
+                    AFMParser parser = new AFMParser(input);
+                    parser.parse();
+                    long stop = System.currentTimeMillis();
+                    System.out.println("Parsing:" + file.getPath() + " " + (stop - start));
+                }
             }
         }
     }
@@ -673,7 +675,7 @@ public class AFMParser
      *
      * @throws IOException If the string is in an invalid format.
      */
-    private String hexToString( String hexString ) throws IOException
+    private static String hexToString( String hexString ) throws IOException
     {
         if( hexString.length() < 2 )
         {
@@ -916,7 +918,7 @@ public class AFMParser
      *
      * @throws IOException If the semicolon is missing.
      */
-    private void verifySemicolon( StringTokenizer tokenizer ) throws IOException
+    private static void verifySemicolon( StringTokenizer tokenizer ) throws IOException
     {
         if( tokenizer.hasMoreTokens() )
         {
@@ -1032,7 +1034,7 @@ public class AFMParser
      *
      * @return true If the character is whitespace as defined by the AFM spec.
      */
-    private boolean isEOL( int character )
+    private static boolean isEOL( int character )
     {
         return character == 0x0D ||
                character == 0x0A;
@@ -1045,7 +1047,7 @@ public class AFMParser
      *
      * @return true If the character is whitespace as defined by the AFM spec.
      */
-    private boolean isWhitespace( int character )
+    private static boolean isWhitespace( int character )
     {
         return character == ' ' ||
                character == '\t' ||
