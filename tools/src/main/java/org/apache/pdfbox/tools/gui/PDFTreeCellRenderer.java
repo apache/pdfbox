@@ -42,88 +42,90 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
     /**
      * {@inheritDoc}
      */
+    @Override
     public Component getTreeCellRendererComponent(
-        JTree tree,
-        Object nodeValue,
-        boolean isSelected,
-        boolean expanded,
-        boolean leaf,
-        int row,
-        boolean componentHasFocus)
+            JTree tree,
+            Object nodeValue,
+            boolean isSelected,
+            boolean expanded,
+            boolean leaf,
+            int row,
+            boolean componentHasFocus)
     {
-        nodeValue = convertToTreeObject( nodeValue );
-        return super.getTreeCellRendererComponent( tree, nodeValue, isSelected, expanded, leaf,
-                row, componentHasFocus );
+        return super.getTreeCellRendererComponent(tree,
+                convertToTreeObject(nodeValue),
+                isSelected, expanded, leaf, row, componentHasFocus);
     }
 
-    private Object convertToTreeObject( Object nodeValue )
+    private Object convertToTreeObject(Object nodeValue)
     {
-        if( nodeValue instanceof MapEntry)
+        Object result = nodeValue;
+        if (nodeValue instanceof MapEntry)
         {
-            MapEntry entry = (MapEntry)nodeValue;
-            COSName key = (COSName)entry.getKey();
-            COSBase value = (COSBase)entry.getValue();
-            nodeValue = key.getName() + ":" + convertToTreeObject( value );
+            MapEntry entry = (MapEntry) nodeValue;
+            COSName key = (COSName) entry.getKey();
+            COSBase value = (COSBase) entry.getValue();
+            result = key.getName() + ":" + convertToTreeObject(value);
         }
-        else if( nodeValue instanceof COSFloat )
+        else if (nodeValue instanceof COSFloat)
         {
-            nodeValue = "" + ((COSFloat)nodeValue).floatValue();
+            result = "" + ((COSFloat) nodeValue).floatValue();
         }
-        else if( nodeValue instanceof COSInteger )
+        else if (nodeValue instanceof COSInteger)
         {
-            nodeValue = "" + ((COSInteger)nodeValue).intValue();
+            result = "" + ((COSInteger) nodeValue).intValue();
         }
-        else if( nodeValue instanceof COSString )
+        else if (nodeValue instanceof COSString)
         {
-            nodeValue = ((COSString)nodeValue).getString();
+            result = ((COSString) nodeValue).getString();
         }
-        else if( nodeValue instanceof COSName )
+        else if (nodeValue instanceof COSName)
         {
-            nodeValue = ((COSName)nodeValue).getName();
+            result = ((COSName) nodeValue).getName();
         }
-        else if( nodeValue instanceof ArrayEntry)
+        else if (nodeValue instanceof ArrayEntry)
         {
-            ArrayEntry entry = (ArrayEntry)nodeValue;
-            nodeValue = "[" + entry.getIndex() + "]" + convertToTreeObject( entry.getValue() );
+            ArrayEntry entry = (ArrayEntry) nodeValue;
+            result = "[" + entry.getIndex() + "]" + convertToTreeObject(entry.getValue());
         }
-        else if( nodeValue instanceof COSNull )
+        else if (nodeValue instanceof COSNull)
         {
-            nodeValue = "null";
+            result = "null";
         }
-        else if( nodeValue instanceof COSDictionary )
+        else if (nodeValue instanceof COSDictionary)
         {
-            COSDictionary dict = (COSDictionary)nodeValue;
-            if( nodeValue instanceof COSStream )
+            COSDictionary dict = (COSDictionary) nodeValue;
+            if (nodeValue instanceof COSStream)
             {
-                nodeValue = "Stream";
+                result = "Stream";
             }
             else
             {
-                nodeValue = "Dictionary";
+                result = "Dictionary";
             }
 
-            COSName type = (COSName)dict.getDictionaryObject( COSName.TYPE );
-            if( type != null )
+            COSName type = (COSName) dict.getDictionaryObject(COSName.TYPE);
+            if (type != null)
             {
-                nodeValue = nodeValue + "(" + type.getName();
-                COSName subType = (COSName)dict.getDictionaryObject( COSName.SUBTYPE );
-                if( subType != null )
+                result = result + "(" + type.getName();
+                COSName subType = (COSName) dict.getDictionaryObject(COSName.SUBTYPE);
+                if (subType != null)
                 {
-                    nodeValue = nodeValue + ":" + subType.getName();
+                    result = result + ":" + subType.getName();
                 }
 
-                nodeValue = nodeValue + ")";
+                result += ")";
             }
         }
-        else if( nodeValue instanceof COSArray )
+        else if (nodeValue instanceof COSArray)
         {
-            nodeValue="Array";
+            result = "Array";
         }
-        else if( nodeValue instanceof COSString )
+        else if (nodeValue instanceof COSString)
         {
-            nodeValue = ((COSString)nodeValue).getString();
+            result = ((COSString) nodeValue).getString();
         }
-        return nodeValue;
+        return result;
 
     }
 }
