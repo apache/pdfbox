@@ -266,10 +266,12 @@ public class PDFMergerUtility
         {
             PDAcroForm destAcroForm = destCatalog.getAcroForm();
             PDAcroForm srcAcroForm = srcCatalog.getAcroForm();
-            if (destAcroForm == null)
+            
+            if (destAcroForm == null && srcAcroForm != null)
             {
-                cloner.cloneForNewDocument(srcAcroForm);
-                destCatalog.setAcroForm(srcAcroForm);
+                destCatalog.getCOSObject().setItem(COSName.ACRO_FORM,
+                        cloner.cloneForNewDocument(srcAcroForm.getDictionary()));       
+                
             }
             else
             {
