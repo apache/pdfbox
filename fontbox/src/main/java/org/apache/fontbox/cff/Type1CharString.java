@@ -16,11 +16,6 @@
  */
 package org.apache.fontbox.cff;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.fontbox.encoding.StandardEncoding;
-import org.apache.fontbox.type1.Type1CharStringReader;
-
 import java.awt.Point;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
@@ -29,6 +24,11 @@ import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.encoding.StandardEncoding;
+import org.apache.fontbox.type1.Type1CharStringReader;
 
 /**
  * This class represents and renders a Type 1 CharString.
@@ -138,6 +138,7 @@ public class Type1CharString
         leftSideBearing = new Point2D.Float(0, 0);
         width = 0;
         CharStringHandler handler = new CharStringHandler() {
+            @Override
             public List<Integer> handleCommand(List<Integer> numbers, CharStringCommand command)
             {
                 return Type1CharString.this.handleCommand(numbers, command);
@@ -411,6 +412,7 @@ public class Type1CharString
      * Standard Encoding Accented Character
      *
      * Makes an accented character from two other characters.
+     * @param asb 
      */
     private void seac(Number asb, Number adx, Number ady, Number bchar, Number achar)
     {
