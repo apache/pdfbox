@@ -91,10 +91,7 @@ public class CharStringCommand
         {
             return getKey().toString() + '|';
         }
-        else
-        {
-            return str + '|';
-        }
+        return str + '|';
     }
 
     /**

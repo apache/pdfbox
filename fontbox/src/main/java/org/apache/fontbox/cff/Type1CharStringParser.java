@@ -16,13 +16,13 @@
  */
 package org.apache.fontbox.cff;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This class represents a converter for a mapping into a Type 1 sequence.
@@ -167,32 +167,26 @@ public class Type1CharStringParser
 
     // this method is a workaround for the fact that Type1CharStringParser assumes that subrs and
     // othersubrs can be unrolled without executing the 'div' operator, which isn't true
-    private Integer removeInteger(List<Object> sequence) throws IOException
+    private static Integer removeInteger(List<Object> sequence) throws IOException
     {
         Object item = sequence.remove(sequence.size() - 1);
         if (item instanceof Integer)
         {
             return (Integer)item;
         }
-        else
-        {
-            CharStringCommand command = (CharStringCommand)item;
+        CharStringCommand command = (CharStringCommand) item;
 
-            // div
-            if (command.getKey().getValue()[0] == 12 && command.getKey().getValue()[0] == 12)
-            {
-                int a = (Integer)sequence.remove(sequence.size() - 1);
-                int b = (Integer)sequence.remove(sequence.size() - 1);
-                return b / a;
-            }
-            else
-            {
-                throw new IOException("Unexpected char string command: " + command.getKey());
-            }
+        // div
+        if (command.getKey().getValue()[0] == 12 && command.getKey().getValue()[0] == 12)
+        {
+            int a = (Integer) sequence.remove(sequence.size() - 1);
+            int b = (Integer) sequence.remove(sequence.size() - 1);
+            return b / a;
         }
+        throw new IOException("Unexpected char string command: " + command.getKey());
     }
 
-    private CharStringCommand readCommand(DataInput input, int b0) throws IOException
+    private static CharStringCommand readCommand(DataInput input, int b0) throws IOException
     {
         if (b0 == 12)
         {
@@ -202,7 +196,7 @@ public class Type1CharStringParser
         return new CharStringCommand(b0);
     }
 
-    private Integer readNumber(DataInput input, int b0) throws IOException
+    private static Integer readNumber(DataInput input, int b0) throws IOException
     {
         if (b0 >= 32 && b0 <= 246)
         {

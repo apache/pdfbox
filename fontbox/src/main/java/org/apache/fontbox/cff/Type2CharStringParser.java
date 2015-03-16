@@ -207,7 +207,7 @@ public class Type2CharStringParser
         return new CharStringCommand(b0);
     }
 
-    private Integer readNumber(int b0, DataInput input) throws IOException
+    private static Integer readNumber(int b0, DataInput input) throws IOException
     {
 
         if (b0 == 28)
