@@ -48,10 +48,7 @@ class CIDRange
         {
             return cid + (ch - from);
         }
-        else
-        {
-            return -1;
-        }
+        return -1;
     }
 
     /**
@@ -66,10 +63,7 @@ class CIDRange
         {
             return from + (code - cid);
         }
-        else
-        {
-            return -1;
-        }
+        return -1;
     }
 
 }
