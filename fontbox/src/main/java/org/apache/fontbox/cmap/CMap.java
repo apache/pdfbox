@@ -157,7 +157,7 @@ public class CMap
             }
 
             // we're done when we have enough bytes for the matched range
-            if (match.getStart().length == bytes.size())
+            if (match != null && match.getStart().length == bytes.size())
             {
                 return toInt(bytes);
             }
@@ -169,7 +169,7 @@ public class CMap
     /**
      * Returns an int given a List<Byte>
      */
-    private int toInt(List<Byte> data)
+    private static int toInt(List<Byte> data)
     {
         int code = 0;
         for (byte b : data)
@@ -192,18 +192,15 @@ public class CMap
         {
             return codeToCid.get(code);
         }
-        else
+        for (CIDRange range : codeToCidRanges)
         {
-            for (CIDRange range : codeToCidRanges)
+            int ch = range.map((char)code);
+            if (ch != -1)
             {
-                int ch = range.map((char)code);
-                if (ch != -1)
-                {
-                    return ch;
-                }
+                return ch;
             }
-            return 0;
         }
+        return 0;
     }
     
     /**
@@ -213,7 +210,7 @@ public class CMap
      * @param length The length of the data we are getting.
      * @return the resulting integer
      */
-    private int getCodeFromArray( byte[] data, int offset, int length )
+    private static int getCodeFromArray( byte[] data, int offset, int length )
     {
         int code = 0;
         for( int i=0; i<length; i++ )
