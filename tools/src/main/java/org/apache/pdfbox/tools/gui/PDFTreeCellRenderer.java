@@ -114,7 +114,7 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
                     result = result + ":" + subType.getName();
                 }
 
-                result += ")";
+                result = result + ")";
             }
         }
         else if (nodeValue instanceof COSArray)
