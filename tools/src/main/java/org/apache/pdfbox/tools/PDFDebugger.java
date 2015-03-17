@@ -124,7 +124,6 @@ public class PDFDebugger extends javax.swing.JFrame
         jSplitPane1.setLeftComponent(jScrollPane1);
 
         JScrollPane documentScroller = new JScrollPane();
-        //documentScroller.setPreferredSize( new Dimension( 300, 500 ) );
         documentScroller.setViewportView( documentPanel );
 
         getContentPane().add( jSplitPane1, java.awt.BorderLayout.CENTER );

@@ -151,7 +151,6 @@ public class TextToPDF
                                 margin, y);
 
                     }
-                    //System.out.println( "Drawing string at " + x + "," + y );
 
                     if( contentStream == null )
                     {
