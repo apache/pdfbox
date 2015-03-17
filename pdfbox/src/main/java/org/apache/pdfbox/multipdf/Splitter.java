@@ -16,6 +16,10 @@
  */
 package org.apache.pdfbox.multipdf;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
@@ -24,10 +28,6 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Split a document into several other documents.
@@ -182,6 +182,7 @@ public class Splitter
     protected PDDocument createNewDocument() throws IOException
     {
         PDDocument document = new PDDocument();
+        document.getDocument().setVersion(getSourceDocument().getVersion());
         document.setDocumentInformation(getSourceDocument().getDocumentInformation());
         document.getDocumentCatalog().setViewerPreferences(
                 getSourceDocument().getDocumentCatalog().getViewerPreferences());
