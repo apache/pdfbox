@@ -203,10 +203,20 @@ public class ExtractTTFFonts
             PDStream ff2Stream = fd.getFontFile2();
             if (ff2Stream != null)
             {
-                System.out.println("Writing font:" + name);
-                FileOutputStream fos = new FileOutputStream(new File(name + ".ttf"));
-                IOUtils.copy(ff2Stream.createInputStream(), fos);
-                fos.close();
+                FileOutputStream fos = null;
+                try
+                {
+                    System.out.println("Writing font:" + name);
+                    fos = new FileOutputStream(new File(name + ".ttf"));
+                    IOUtils.copy(ff2Stream.createInputStream(), fos);
+                }
+                finally
+                {
+                    if (fos != null)
+                    {
+                        fos.close();
+                    }
+                }
             }
         }
     }
