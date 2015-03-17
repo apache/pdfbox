@@ -41,7 +41,6 @@ import org.apache.pdfbox.text.PDFTextStripper;
 public class PDFHighlighter extends PDFTextStripper
 {
     private Writer highlighterOutput = null;
-    //private Color highlightColor = Color.YELLOW;
 
     private String[] searchedWords;
     private ByteArrayOutputStream textOS = null;
@@ -90,10 +89,6 @@ public class PDFHighlighter extends PDFTextStripper
         highlighterOutput = xmlOutput;
         searchedWords = sWords;
         highlighterOutput.write("<XML>\n<Body units=characters " +
-                                //color and mode are not implemented by the highlight spec
-                                //so don't include them for now
-                                //" color=#" + getHighlightColorAsString() +
-                                //" mode=active " + */
                                 " version=2>\n<Highlight>\n");
         textOS = new ByteArrayOutputStream();
         textWriter = new OutputStreamWriter( textOS, ENCODING);
@@ -111,10 +106,6 @@ public class PDFHighlighter extends PDFTextStripper
 
         String page = new String( textOS.toByteArray(), ENCODING );
         textOS.reset();
-        //page = page.replaceAll( "\n", "" );
-        //page = page.replaceAll( "\r", "" );
-        //page = CCRStringUtil.stripChar(page, '\n');
-        //page = CCRStringUtil.stripChar(page, '\r');
 
         // Traitement des listes � puces (caract�res sp�ciaux)
         if (page.indexOf('a') != -1)
@@ -178,52 +169,4 @@ public class PDFHighlighter extends PDFTextStripper
         System.err.println( "usage: java " + PDFHighlighter.class.getName() + " <pdf file> word1 word2 word3 ..." );
         System.exit( 1 );
     }
-
-
-    /**
-     * Get the color to highlight the strings with.  Default is Color.YELLOW.
-     *
-     * @return The color to highlight strings with.
-     */
-    /*public Color getHighlightColor()
-    {
-        return highlightColor;
-    }**/
-
-    /**
-     * Get the color to highlight the strings with.  Default is Color.YELLOW.
-     *
-     * @param color The color to highlight strings with.
-     */
-    /*public void setHighlightColor(Color color)
-    {
-        this.highlightColor = color;
-    }**/
-
-    /**
-     * Set the highlight color using HTML like rgb string.  The string must be 6 characters long.
-     *
-     * @param color The color to use for highlighting.  Should be in the format of "FF0000".
-     */
-    /*public void setHighlightColor( String color )
-    {
-        highlightColor = Color.decode( color );
-    }**/
-
-    /**
-     * Get the highlight color as an HTML like string.  This will return a string of six characters.
-     *
-     * @return The current highlight color.  For example FF0000
-     */
-    /*public String getHighlightColorAsString()
-    {
-        //BJL: kudos to anyone that has a cleaner way of doing this!
-        String red = Integer.toHexString( highlightColor.getRed() );
-        String green = Integer.toHexString( highlightColor.getGreen() );
-        String blue = Integer.toHexString( highlightColor.getBlue() );
-
-        return (red.length() < 2 ? "0" + red : red) +
-               (green.length() < 2 ? "0" + green : green) +
-               (blue.length() < 2 ? "0" + blue : blue);
-    }**/
 }

@@ -81,9 +81,10 @@ public class AddImageToPDF
             }
             PDPageContentStream contentStream = new PDPageContentStream(doc, page, true, true);
 
-            //contentStream.drawImage(ximage, 20, 20 );
+            // contentStream.drawImage(ximage, 20, 20 );
             // better method inspired by http://stackoverflow.com/a/22318681/535646
-            float scale = 1f; // reduce this value if the image is too large
+            // reduce this value if the image is too large
+            float scale = 1f;
             contentStream.drawImage(ximage, 20, 20, ximage.getWidth()*scale, ximage.getHeight()*scale);
 
             contentStream.close();

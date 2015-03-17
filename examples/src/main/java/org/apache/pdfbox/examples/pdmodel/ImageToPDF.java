@@ -86,8 +86,8 @@ public class ImageToPDF
             // draw the image at full size at (x=20, y=20)
             contents.drawImage(pdImage, 20, 20);
             
-            // draw the image at half size at (x=20, y=20)
-            //contents.drawImage(pdImage, 20, 20, pdImage.getWidth() / 2, pdImage.getHeight() / 2);
+            // to draw the image at half size at (x=20, y=20) use
+            // contents.drawImage(pdImage, 20, 20, pdImage.getWidth() / 2, pdImage.getHeight() / 2);
             
             contents.close();
             doc.save(pdfPath);
