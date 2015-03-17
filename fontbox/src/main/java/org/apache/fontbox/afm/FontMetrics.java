@@ -94,8 +94,6 @@ public class FontMetrics
         if( metric == null )
         {
             result=0;
-            //don't throw an exception right away.
-            //throw new IOException( "Unknown AFM(" + getFullName() + ") characer '" + name + "'" );
         }
         else
         {
@@ -117,8 +115,6 @@ public class FontMetrics
         if( metric == null )
         {
             result=0;
-            //don't throw an exception right away.
-            //throw new IOException( "Unknown AFM(" + getFullName() + ") characer '" + name + "'" );
         }
         else
         {

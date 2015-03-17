@@ -598,9 +598,9 @@ public class CFFParser
         input.setPosition(fdSelectPos);
         FDSelect fdSelect = readFDSelect(input, charStringsIndex.getCount(), font);
 
-        // todo: almost certainly erroneous - CIDFonts do not have a top-level private dict
-        //font.addValueToPrivateDict("defaultWidthX", 1000);
-        //font.addValueToPrivateDict("nominalWidthX", 0);
+        // TODO almost certainly erroneous - CIDFonts do not have a top-level private dict
+        // font.addValueToPrivateDict("defaultWidthX", 1000);
+        // font.addValueToPrivateDict("nominalWidthX", 0);
 
         font.setFontDict(fontDictionaries);
         font.setPrivDict(privateDictionaries);
@@ -1243,15 +1243,6 @@ public class CFFParser
     {
         private int nSups;
         private Supplement[] supplement;
-
-        /*List<Supplement> getSupplements()
-        {
-            if (supplement == null)
-            {
-                return Collections.emptyList();
-            }
-            return Arrays.asList(supplement);
-        }*/
 
         /**
          * Inner class representing a supplement for an encoding. 
