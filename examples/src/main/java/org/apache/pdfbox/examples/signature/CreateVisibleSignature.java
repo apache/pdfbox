@@ -150,8 +150,6 @@ public class CreateVisibleSignature implements SignatureInterface
             {
                 options = new SignatureOptions();
                 options.setVisualSignature(signatureProperties);
-                // options.setPage(signatureProperties.getPage());
-                // options.setPreferedSignatureSize(signatureProperties.getPreferredSize());
                 doc.addSignature(signature, this, options);
             }
             finally
