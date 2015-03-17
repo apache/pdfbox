@@ -373,11 +373,7 @@ public class CMapParser
                 tokenBytes = (byte[]) nextToken;
             }
             boolean done = false;
-            // don't add 1:1 mappings to reduce the memory footprint
-            /*if (Arrays.equals(startCode, tokenBytes))
-             {
-             done = true;
-             }*/
+
             String value = null;
 
             int arrayIndex = 0;
@@ -574,7 +570,7 @@ public class CMapParser
         }
         case -1:
         {
-            // EOF return null;
+            // EOF returning null
             break;
         }
         case '0':
