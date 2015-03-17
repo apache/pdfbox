@@ -109,7 +109,6 @@ public final class CCITTFaxG31DDecodeInputStream extends InputStream
         }
         byte data = this.decodedLine.getData()[this.decodedReadPos++];
 
-        //System.out.println("Returning " + PackedBitArray.visualizeByte(data));
         return data & 0xFF;
     }
 
@@ -123,14 +122,15 @@ public final class CCITTFaxG31DDecodeInputStream extends InputStream
         }
         if (this.bits < 0)
         {
-            return false; //Shortcut after EOD
+            //Shortcut after EOD
+            return false;
         }
         this.y++;
-        //System.out.println("decodeLine " + this.y);
         int x = 0;
         if (this.rows > 0 && this.y >= this.rows)
         {
-            return false; //All rows decoded, ignore further bits
+            //All rows decoded, ignore further bits
+            return false;
         }
         this.decodedLine.clear();
         this.decodedWritePos = 0;
@@ -160,13 +160,13 @@ public final class CCITTFaxG31DDecodeInputStream extends InputStream
                 expectRTC--;
                 if (expectRTC == 0)
                 {
-                    //System.out.println("Return to Control");
-                    return false; //Return to Control = End Of Data
+                    //Return to Control = End Of Data
+                    return false;
                 }
                 if (x == 0)
                 {
-                    //System.out.println("Ignoring leading EOL");
-                    continue; //Ignore leading EOL
+                    //Ignore leading EOL
+                    continue;
                 }
             }
             else
@@ -188,7 +188,6 @@ public final class CCITTFaxG31DDecodeInputStream extends InputStream
     {
         this.accumulatedRunLength += length;
 
-        //System.out.println(" Run " + bit + " for " + this.accumulatedRunLength + " at " + decodedWritePos);
         if (bit != 0)
         {
             this.decodedLine.setBits(this.decodedWritePos, this.accumulatedRunLength);
@@ -199,7 +198,6 @@ public final class CCITTFaxG31DDecodeInputStream extends InputStream
 
     private void writeNonTerminating(int length)
     {
-        //System.out.println(" Make up code for " + length + " bits");
         this.accumulatedRunLength += length;
     }
 
@@ -217,7 +215,6 @@ public final class CCITTFaxG31DDecodeInputStream extends InputStream
             }
         }
         final int bit = (this.bits & BIT_POS_MASKS[this.bitPos++]) == 0 ? 0 : 1;
-        //System.out.print(bit);
         return bit;
     }
 
@@ -440,7 +437,8 @@ public final class CCITTFaxG31DDecodeInputStream extends InputStream
             do
             {
                 bit = decoder.readBit();
-            } while (bit == 0); //bit 1 finishes the EOL, any number of bit 0 allowed as fillers
+              //bit 1 finishes the EOL, any number of bit 0 allowed as fillers
+            } while (bit == 0);
             if (bit < 0)
             {
                 return null;
