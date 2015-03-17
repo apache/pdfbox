@@ -170,11 +170,21 @@ public class Encrypt
 
 
                         CertificateFactory cf = CertificateFactory.getInstance("X.509");
-                        InputStream inStream = new FileInputStream(certFile);
-                        X509Certificate certificate = (X509Certificate)cf.generateCertificate(inStream);
-                        inStream.close();
-
-                        recip.setX509(certificate);
+                        
+                        InputStream inStream = null;
+                        try
+                        {
+                            inStream = new FileInputStream(certFile);
+                            X509Certificate certificate = (X509Certificate)cf.generateCertificate(inStream);
+                            recip.setX509(certificate);
+                        }
+                        finally
+                        {
+                            if (inStream != null)
+                            {
+                                inStream.close();
+                            }
+                        }                        
 
                         ppp.addRecipient(recip);
 
