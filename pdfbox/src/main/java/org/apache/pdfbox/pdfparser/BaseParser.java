@@ -410,9 +410,8 @@ public abstract class BaseParser implements Closeable
                 pdfSource.unread( whitespace );
             }
 
-            /*This needs to be dic.getItem because when we are parsing, the underlying object
-             * might still be null.
-             */
+            // This needs to be dic.getItem because when we are parsing, the underlying object
+            // might still be null.
             COSBase streamLength = dic.getItem(COSName.LENGTH);
 
             //Need to keep track of the
@@ -579,7 +578,8 @@ public abstract class BaseParser implements Closeable
         int charMatchCount = 0;
         byte[] keyw = ENDSTREAM;
         
-        final int quickTestOffset = 5;  // last character position of shortest keyword ('endobj')
+        // last character position of shortest keyword ('endobj')
+        final int quickTestOffset = 5;
         
         // read next chunk into buffer; already matched chars are added to beginning of buffer
         while ( ( bufSize = pdfSource.read( strmBuf, charMatchCount, STRMBUFLEN - charMatchCount ) ) > 0 ) 
@@ -611,7 +611,8 @@ public abstract class BaseParser implements Closeable
                     }
                 }
                 
-                final byte ch = strmBuf[bIdx];  // could be negative - but we only compare to ASCII
+                // could be negative - but we only compare to ASCII
+                final byte ch = strmBuf[bIdx];
             
                 if ( ch == keyw[ charMatchCount ] ) 
                 {
@@ -1273,8 +1274,6 @@ public abstract class BaseParser implements Closeable
                 //so we are more compatible with POS writers that don't
                 //follow the spec
                 String badString = readString();
-                //throw new IOException( "Unknown dir object c='" + c +
-                //"' peek='" + (char)pdfSource.peek() + "' " + pdfSource );
                 if( badString == null || badString.length() == 0 )
                 {
                     int peek = pdfSource.peek();

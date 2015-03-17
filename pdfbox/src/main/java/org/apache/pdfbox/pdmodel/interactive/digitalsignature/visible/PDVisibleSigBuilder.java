@@ -294,24 +294,14 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
                                 PDStream imageFormStream, PDRectangle formrect, AffineTransform at,
                                 PDImageXObject img) throws IOException
     {
-        // if you need text on the visible signature:
-        //
-        // PDFont font = PDTrueTypeFont.loadTTF(this.pdfStructure.getTemplate(),
-        //                                      new File("D:\\arial.ttf"));
-        // font.setFontEncoding(new WinAnsiEncoding());
-        //
-        // Map<String, PDFont> fonts = new HashMap<String, PDFont>(); fonts.put("arial", font);
-
         PDFormXObject imageForm = new PDFormXObject(imageFormStream);
         imageForm.setBBox(formrect);
         imageForm.setMatrix(at);
         imageForm.setResources(imageFormResources);
         imageForm.setFormType(1);
 
-        // imageForm.getResources().addFont(font);
-        // imageForm.getResources().setFonts(fonts);
-
         imageFormResources.getCOSObject().setDirect(true);
+
         COSName imageFormName = innerFormResource.add(imageForm, "n");
         COSName imageName = imageFormResources.add(img, "img");
         pdfStructure.setImageForm(imageForm);
