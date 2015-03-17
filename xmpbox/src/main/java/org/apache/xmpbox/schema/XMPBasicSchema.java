@@ -355,7 +355,6 @@ public class XMPBasicSchema extends XMPSchema
      */
     public void setRating(Integer rate)
     {
-        // addProperty(new IntegerType(metadata, localPrefix, RATING, rate));
         IntegerType tt = (IntegerType) instanciateSimple(RATING, rate);
         setRatingProperty(tt);
 
