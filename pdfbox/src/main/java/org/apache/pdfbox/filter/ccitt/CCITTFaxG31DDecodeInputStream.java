@@ -214,8 +214,7 @@ public final class CCITTFaxG31DDecodeInputStream extends InputStream
                 return SIGNAL_EOD;
             }
         }
-        final int bit = (this.bits & BIT_POS_MASKS[this.bitPos++]) == 0 ? 0 : 1;
-        return bit;
+        return (this.bits & BIT_POS_MASKS[this.bitPos++]) == 0 ? 0 : 1;
     }
 
     private void readByte() throws IOException
