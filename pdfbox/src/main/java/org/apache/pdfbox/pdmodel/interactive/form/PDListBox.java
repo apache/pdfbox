@@ -32,10 +32,11 @@ public final class PDListBox extends PDChoice
      *
      * @param theAcroForm The acroform.
      */
-    protected PDListBox(PDAcroForm theAcroForm)
+    public PDListBox(PDAcroForm theAcroForm)
     {
         super( theAcroForm );
     }
+    
     
     /**
      * Constructor.

@@ -50,9 +50,10 @@ public abstract class PDChoice extends PDVariableText
      *
      * @param theAcroForm The acroform.
      */
-    protected PDChoice(PDAcroForm theAcroForm)
+    public PDChoice(PDAcroForm theAcroForm)
     {
         super( theAcroForm );
+        getDictionary().setItem(COSName.FT, COSName.CH);
     }
 
     /**
@@ -62,7 +63,7 @@ public abstract class PDChoice extends PDVariableText
      * @param field the PDF object to represent as a field.
      * @param parentNode the parent node of the node to be created
      */
-    protected PDChoice(PDAcroForm acroForm, COSDictionary field, PDFieldTreeNode parentNode)
+    public PDChoice(PDAcroForm acroForm, COSDictionary field, PDFieldTreeNode parentNode)
     {
         super(acroForm, field, parentNode);
     }
