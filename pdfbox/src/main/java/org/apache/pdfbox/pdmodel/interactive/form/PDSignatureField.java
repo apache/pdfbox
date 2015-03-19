@@ -19,7 +19,6 @@ package org.apache.pdfbox.pdmodel.interactive.form;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSeedValue;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 
@@ -46,9 +45,6 @@ public class PDSignatureField extends PDField
     public PDSignatureField(PDAcroForm theAcroForm, COSDictionary field, PDFieldTreeNode parentNode)
     {
         super(theAcroForm, field, parentNode);
-        // dirty hack to avoid npe caused through getWidget() method
-        getDictionary().setItem( COSName.TYPE, COSName.ANNOT );
-        getDictionary().setName( COSName.SUBTYPE, PDAnnotationWidget.SUB_TYPE);
     }
 
     /**
@@ -65,8 +61,6 @@ public class PDSignatureField extends PDField
         getWidget().setLocked(true);
         getWidget().setPrinted(true);
         setPartialName(generatePartialName());
-        getDictionary().setItem( COSName.TYPE, COSName.ANNOT );
-        getDictionary().setName( COSName.SUBTYPE, PDAnnotationWidget.SUB_TYPE);
     }
     
     /**
