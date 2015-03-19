@@ -30,6 +30,17 @@ public final class PDComboBox extends PDChoice
      *  Ff-flag.
      */
     private static final int FLAG_EDIT = 1 << 18;
+    
+    /**
+     * @see PDFieldTreeNode#PDFieldTreeNode(PDAcroForm)
+     *
+     * @param theAcroForm The acroform.
+     */
+    public PDComboBox(PDAcroForm theAcroForm)
+    {
+        super( theAcroForm );
+        setCombo(true);
+    }    
 
     /**
      * Constructor.

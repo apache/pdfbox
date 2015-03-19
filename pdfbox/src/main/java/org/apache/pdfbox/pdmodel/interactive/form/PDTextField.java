@@ -54,6 +54,7 @@ public final class PDTextField extends PDVariableText
     public PDTextField(PDAcroForm theAcroForm)
     {
         super( theAcroForm );
+        getDictionary().setItem(COSName.FT, COSName.TX);
     }
 
     /**

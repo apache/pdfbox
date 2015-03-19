@@ -66,9 +66,10 @@ public abstract class PDButton extends PDField
      *
      * @param theAcroForm The acroform.
      */
-    PDButton(PDAcroForm theAcroForm)
+    public PDButton(PDAcroForm theAcroForm)
     {
         super( theAcroForm );
+        getDictionary().setItem(COSName.FT, COSName.BTN);
     }
     
     /**
@@ -78,10 +79,51 @@ public abstract class PDButton extends PDField
      * @param field the PDF object to represent as a field.
      * @param parentNode the parent node of the node to be created
      */
-    protected PDButton(PDAcroForm acroForm, COSDictionary field, PDFieldTreeNode parentNode)
+    public PDButton(PDAcroForm acroForm, COSDictionary field, PDFieldTreeNode parentNode)
     {
         super(acroForm, field, parentNode);
     }
+    
+    /**
+     * Determines if push button bit is set.
+     * 
+     * @return true if type of button field is a push button.
+     */
+    public boolean isPushButton()
+    {
+        return getDictionary().getFlag( COSName.FF, FLAG_PUSHBUTTON );
+    }
+
+    /**
+     * Set the push button bit.
+     *
+     * @param pushbutton if true the button field is treated as a push button field.
+     */
+    public void setPushButton( boolean pushbutton )
+    {
+        getDictionary().setFlag( COSName.FF, FLAG_PUSHBUTTON, pushbutton );
+    }
+
+    /**
+     * Determines if radio button bit is set.
+     * 
+     * @return true if type of button field is a push button.
+     */
+    public boolean isRadioButton()
+    {
+        return getDictionary().getFlag( COSName.FF, FLAG_RADIO );
+    }
+
+    /**
+     * Set the radio button bit.
+     *
+     * @param radiobutton if true the button field is treated as a radio button field.
+     */
+    public void setRadioButton( boolean radiobutton )
+    {
+        getDictionary().setFlag( COSName.FF, FLAG_RADIO, radiobutton );
+    }   
+    
     
     @Override
     public String getDefaultValue() throws IOException

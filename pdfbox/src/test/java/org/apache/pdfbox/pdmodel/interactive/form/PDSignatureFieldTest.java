@@ -28,7 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test for the PDAnnotation classes.
+ * Test for the PDSignatureField class.
  *
  */
 public class PDSignatureFieldTest
@@ -47,6 +47,10 @@ public class PDSignatureFieldTest
     public void createDefaultSignatureField() throws IOException
     {
         PDSignatureField sigField = new PDSignatureField(acroForm);
+        
+        assertEquals(sigField.getFieldType(), sigField.getDictionary().getNameAsString(COSName.FT));
+        assertEquals(sigField.getFieldType(), "Sig");
+        
         assertEquals(COSName.ANNOT, sigField.getDictionary().getItem(COSName.TYPE));
         assertEquals(PDAnnotationWidget.SUB_TYPE, sigField.getDictionary().getNameAsString(COSName.SUBTYPE));
     }
