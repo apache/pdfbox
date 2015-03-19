@@ -184,6 +184,7 @@ public abstract class PDAnnotation implements COSObjectable
     public PDAnnotation(COSDictionary dict)
     {
         dictionary = dict;
+        dictionary.setItem(COSName.TYPE, COSName.ANNOT);
     }
 
     /**

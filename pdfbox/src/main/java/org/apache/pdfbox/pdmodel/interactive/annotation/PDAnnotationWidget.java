@@ -50,11 +50,12 @@ public class PDAnnotationWidget extends PDAnnotation
      * Creates a PDWidget from a COSDictionary, expected to be
      * a correct object definition for a field in PDF.
      *
-     * @param field the PDF objet to represent as a field.
+     * @param field the PDF object to represent as a field.
      */
     public PDAnnotationWidget(COSDictionary field)
     {
         super( field );
+        getDictionary().setName( COSName.SUBTYPE, SUB_TYPE);
     }
 
     /**
