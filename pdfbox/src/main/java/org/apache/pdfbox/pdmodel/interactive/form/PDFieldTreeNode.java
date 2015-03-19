@@ -128,7 +128,10 @@ public abstract class PDFieldTreeNode implements COSObjectable
         {
             return attributesNode.getDictionary().getDictionaryObject(key);
         }
-        return null;
+        else
+        {
+            return getAcroForm().getDictionary().getDictionaryObject(key);
+        }
     }    
     
     /**
