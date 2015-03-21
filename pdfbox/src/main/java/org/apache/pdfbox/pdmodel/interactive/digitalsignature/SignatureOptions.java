@@ -38,7 +38,7 @@ public class SignatureOptions implements Closeable
      */
     public SignatureOptions()
     {
-        pageNo = 1;
+        pageNo = 0;
     }
 
     /**

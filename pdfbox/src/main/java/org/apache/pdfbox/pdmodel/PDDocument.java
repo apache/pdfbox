@@ -198,7 +198,7 @@ public class PDDocument implements Closeable
             throw new IllegalStateException("Cannot sign an empty document");
         }
 
-        int startIndex = Math.max(Math.min(options.getPage(), 0), pageCount - 1);
+        int startIndex = Math.min(Math.max(options.getPage(), 0), pageCount - 1);
         PDPage page = catalog.getPages().get(startIndex);
 
         // Get the AcroForm from the Root-Dictionary and append the annotation
