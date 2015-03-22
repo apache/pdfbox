@@ -402,11 +402,11 @@ public abstract class PDFieldTreeNode implements COSObjectable
         {
             if (fieldValue instanceof String)
             {
-                fdfField.setValue((String) fieldValue);
+                setValue((String) fieldValue);
             }
             else if (fieldValue instanceof PDTextStream)
             {
-                fdfField.setValue(((PDTextStream) fieldValue).getAsString());
+                setValue(((PDTextStream) fieldValue).getAsString());
             }
             else
             {
