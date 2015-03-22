@@ -1218,6 +1218,11 @@ public class COSParser extends BaseParser
      */
     private COSObjectKey checkObjectKeys(COSObjectKey objectKey, long offset) throws IOException
     {
+        // there can't be any object at the very beginning of a pdf
+        if (offset < MINIMUM_SEARCH_OFFSET)
+        {
+            return null;
+        }
         long objectNr = objectKey.getNumber();
         int objectGen = objectKey.getGeneration();
         long originOffset = pdfSource.getOffset();
