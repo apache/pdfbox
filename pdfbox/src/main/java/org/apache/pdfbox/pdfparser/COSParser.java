@@ -319,6 +319,7 @@ public class COSParser extends BaseParser
         COSDictionary dict = parseCOSDictionary();
         COSStream xrefStream = parseCOSStream(dict);
         parseXrefStream(xrefStream, (int) objByteOffset, isStandalone);
+        xrefStream.close();
 
         return dict.getLong(COSName.PREV);
     }
