@@ -119,7 +119,6 @@ public class COSParser extends BaseParser
     /**
      * Contains all found objects of a brute force search.
      */
-    private Map<String, Long> bfSearchObjectOffsets = null;
     private Map<COSObjectKey, Long> bfSearchCOSObjectKeyOffsets = null;
     private List<Long> bfSearchXRefTablesOffsets = null;
     private List<Long> bfSearchXRefStreamsOffsets = null;
@@ -1148,9 +1147,9 @@ public class COSParser extends BaseParser
             return;
         }
         Map<COSObjectKey, Long> xrefOffset = xrefTrailerResolver.getXrefTable();
-        Map<COSObjectKey, COSObjectKey> replacedKeys = new HashMap<COSObjectKey,COSObjectKey>();
         if (xrefOffset != null)
         {
+            boolean bruteForceSearch = false;
             for (Entry<COSObjectKey, Long> objectEntry : xrefOffset.entrySet())
             {
                 COSObjectKey objectKey = objectEntry.getKey();
@@ -1159,47 +1158,23 @@ public class COSParser extends BaseParser
                 // see type 2 entry in xref stream
                 if (objectOffset != null && objectOffset >= 0)
                 {
-                    COSObjectKey newObjectKey = checkObjectKeys(objectKey,objectOffset);
-                    if (newObjectKey == null)
+                    if (!checkObjectKeys(objectKey,objectOffset))
                     {
-                        long objectNr = objectKey.getNumber();
-                        int objectGen = objectKey.getGeneration();
-                        String objectString = createObjectString(objectNr, objectGen);
-                        long newOffset = bfSearchForObject(objectString);
-                        if (newOffset > -1)
-                        {
-                            xrefOffset.put(objectKey, newOffset);
-                            LOG.debug("Fixed reference for object " + objectNr + " " + objectGen
-                                    + " " + objectOffset + " -> " + newOffset);
-                        }
-                        else
-                        {
-                            LOG.error("Can't find the object " + objectNr + " " + objectGen
-                                    + " (origin offset " + objectOffset + ")");
-                        }
-                    }
-                    else if (!objectKey.equals(newObjectKey))
-                    {
-                        replacedKeys.put(objectKey, newObjectKey);
+                        LOG.debug("Stop checking xref offsets as at least one couldn't be dereferenced");
+                        bruteForceSearch = true;
+                        break;
                     }
                 }
             }
-        }
-        // are there any replaced object keys
-        if (!replacedKeys.isEmpty())
-        {
-            Map<COSObjectKey,Long> offsets = new HashMap<COSObjectKey, Long>(replacedKeys.size());
-            for (COSObjectKey oldObjectKey : replacedKeys.keySet())
+            if (bruteForceSearch)
             {
-                // remove to be replaced entries first
-                offsets.put(oldObjectKey, xrefOffset.remove(oldObjectKey));
-            }
-            for (COSObjectKey oldObjectKey : replacedKeys.keySet())
-            {
-                COSObjectKey newObjectKey = replacedKeys.get(oldObjectKey);
-                // add mapped entry
-                xrefOffset.put(newObjectKey, offsets.get(oldObjectKey));
-                LOG.debug("Object key replaced within xref table: " + oldObjectKey + " -> " + newObjectKey);
+                bfSearchForObjects();
+                if (bfSearchCOSObjectKeyOffsets != null && !bfSearchCOSObjectKeyOffsets.isEmpty())
+                {
+                    LOG.debug("Replaced read xref table with the results of a brute force search");
+                    xrefOffset.clear();
+                    xrefOffset.putAll(bfSearchCOSObjectKeyOffsets);
+                }
             }
         }
     }
@@ -1207,47 +1182,30 @@ public class COSParser extends BaseParser
     /**
      * Check if the given object can be found at the given offset.
      * 
-     * Returns the given object key if the object can be found.
-     * Returns a new object key if an object can be found but the number doesn't fit.
-     * Returns null if non valid object can be found at the given offset.
-     * 
      * @param objectKey the object we are looking for
      * @param offset the offset where to look
-     * @return returns the object key of the object at the given offset
+     * @return returns true if the given object can be dereferenced at the given offset
      * @throws IOException if something went wrong
      */
-    private COSObjectKey checkObjectKeys(COSObjectKey objectKey, long offset) throws IOException
+    private boolean checkObjectKeys(COSObjectKey objectKey, long offset) throws IOException
     {
         // there can't be any object at the very beginning of a pdf
         if (offset < MINIMUM_SEARCH_OFFSET)
         {
-            return null;
+            return false;
         }
         long objectNr = objectKey.getNumber();
         int objectGen = objectKey.getGeneration();
         long originOffset = pdfSource.getOffset();
         pdfSource.seek(offset);
         String objectString = createObjectString(objectNr, objectGen);
-        if (isString(objectString.getBytes(ISO_8859_1)))
-        {
-            // everything is ok, return origin object key
-            pdfSource.seek(originOffset);
-            return objectKey;
-        }
         try 
         {
-            // can't find the object key, maybe we are looking for the wrong number
-            pdfSource.seek(offset);
-            long objectNrRead = readLong();
-            if (objectNrRead > 0)
+            if (isString(objectString.getBytes(ISO_8859_1)))
             {
-                skipSpaces();
-                int objectGenRead = readInt();
-                if (objectGenRead >= 0)
-                {
-                    // found a valid object number, return a new COSObjectKey
-                    return new COSObjectKey(objectNrRead, objectGenRead);
-                }
+                // everything is ok, return origin object key
+                pdfSource.seek(originOffset);
+                return true;
             }
         }
         catch (IOException exception)
@@ -1259,7 +1217,7 @@ public class COSParser extends BaseParser
             pdfSource.seek(originOffset);
         }
         // no valid object number found
-        return null;
+        return false;
     }
     /**
      * Create a string for the given object id.
@@ -1274,33 +1232,14 @@ public class COSParser extends BaseParser
     }
 
     /**
-     * Search for the offset of the given object among the objects found by a brute force search.
-     * 
-     * @param objectString the object we are looking for
-     * @return the offset of the object
-     * @throws IOException if something went wrong
-     */
-    private long bfSearchForObject(String objectString) throws IOException
-    {
-        long newOffset = -1;
-        bfSearchForObjects();
-        if (bfSearchObjectOffsets.containsKey(objectString))
-        {
-            newOffset = bfSearchObjectOffsets.get(objectString);
-        }
-        return newOffset;
-    }
-
-    /**
      * Brute force search for every object in the pdf.
      *   
      * @throws IOException if something went wrong
      */
     private void bfSearchForObjects() throws IOException
     {
-        if (bfSearchObjectOffsets == null)
+        if (bfSearchCOSObjectKeyOffsets == null)
         {
-            bfSearchObjectOffsets = new HashMap<String, Long>();
             bfSearchCOSObjectKeyOffsets = new HashMap<COSObjectKey, Long>();
             long originOffset = pdfSource.getOffset();
             long currentOffset = MINIMUM_SEARCH_OFFSET;
@@ -1349,8 +1288,6 @@ public class COSParser extends BaseParser
                                 }
                                 if (objectID != null)
                                 {
-                                    bfSearchObjectOffsets.put(
-                                            createObjectString(objectID, genID), ++tempOffset);
                                     bfSearchCOSObjectKeyOffsets.put(new COSObjectKey(objectID, genID), tempOffset);
                                 }
                             }
