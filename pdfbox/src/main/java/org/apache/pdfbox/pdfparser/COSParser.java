@@ -46,11 +46,11 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
+import org.apache.pdfbox.cos.COSObjectKey;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdfparser.XrefTrailerResolver.XRefType;
 import org.apache.pdfbox.pdmodel.encryption.SecurityHandler;
-import org.apache.pdfbox.cos.COSObjectKey;
 
 /**
  * PDF-Parser which first reads startxref and xref tables in order to know valid objects and parse only these objects.
@@ -1148,6 +1148,7 @@ public class COSParser extends BaseParser
             return;
         }
         Map<COSObjectKey, Long> xrefOffset = xrefTrailerResolver.getXrefTable();
+        Map<COSObjectKey, COSObjectKey> replacedKeys = new HashMap<COSObjectKey,COSObjectKey>();
         if (xrefOffset != null)
         {
             for (Entry<COSObjectKey, Long> objectEntry : xrefOffset.entrySet())
@@ -1158,11 +1159,12 @@ public class COSParser extends BaseParser
                 // see type 2 entry in xref stream
                 if (objectOffset != null && objectOffset >= 0)
                 {
-                    long objectNr = objectKey.getNumber();
-                    int objectGen = objectKey.getGeneration();
-                    String objectString = createObjectString(objectNr, objectGen);
-                    if (!checkObjectId(objectString, objectOffset))
+                    COSObjectKey newObjectKey = checkObjectKeys(objectKey,objectOffset);
+                    if (newObjectKey == null)
                     {
+                        long objectNr = objectKey.getNumber();
+                        int objectGen = objectKey.getGeneration();
+                        String objectString = createObjectString(objectNr, objectGen);
                         long newOffset = bfSearchForObject(objectString);
                         if (newOffset > -1)
                         {
@@ -1176,29 +1178,84 @@ public class COSParser extends BaseParser
                                     + " (origin offset " + objectOffset + ")");
                         }
                     }
+                    else if (!objectKey.equals(newObjectKey))
+                    {
+                        replacedKeys.put(objectKey, newObjectKey);
+                    }
                 }
             }
         }
-        // TODO cross check found objects
+        // are there any replaced object keys
+        if (!replacedKeys.isEmpty())
+        {
+            Map<COSObjectKey,Long> offsets = new HashMap<COSObjectKey, Long>(replacedKeys.size());
+            for (COSObjectKey oldObjectKey : replacedKeys.keySet())
+            {
+                // remove to be replaced entries first
+                offsets.put(oldObjectKey, xrefOffset.remove(oldObjectKey));
+            }
+            for (COSObjectKey oldObjectKey : replacedKeys.keySet())
+            {
+                COSObjectKey newObjectKey = replacedKeys.get(oldObjectKey);
+                // add mapped entry
+                xrefOffset.put(newObjectKey, offsets.get(oldObjectKey));
+                LOG.debug("Object key replaced within xref table: " + oldObjectKey + " -> " + newObjectKey);
+            }
+        }
     }
 
     /**
-     * Check if the given string can be found at the given offset.
+     * Check if the given object can be found at the given offset.
      * 
-     * @param objectString the string we are looking for
-     * @param offset the given where to look
-     * @return returns true if the given string can be found at the givwen offset
+     * Returns the given object key if the object can be found.
+     * Returns a new object key if an object can be found but the number doesn't fit.
+     * Returns null if non valid object can be found at the given offset.
+     * 
+     * @param objectKey the object we are looking for
+     * @param offset the offset where to look
+     * @return returns the object key of the object at the given offset
      * @throws IOException if something went wrong
      */
-    private boolean checkObjectId(String objectString, long offset) throws IOException
+    private COSObjectKey checkObjectKeys(COSObjectKey objectKey, long offset) throws IOException
     {
+        long objectNr = objectKey.getNumber();
+        int objectGen = objectKey.getGeneration();
         long originOffset = pdfSource.getOffset();
         pdfSource.seek(offset);
-        boolean objectFound = isString(objectString.getBytes(ISO_8859_1));
-        pdfSource.seek(originOffset);
-        return objectFound;
+        String objectString = createObjectString(objectNr, objectGen);
+        if (isString(objectString.getBytes(ISO_8859_1)))
+        {
+            // everything is ok, return origin object key
+            pdfSource.seek(originOffset);
+            return objectKey;
+        }
+        try 
+        {
+            // can't find the object key, maybe we are looking for the wrong number
+            pdfSource.seek(offset);
+            long objectNrRead = readLong();
+            if (objectNrRead > 0)
+            {
+                skipSpaces();
+                int objectGenRead = readInt();
+                if (objectGenRead >= 0)
+                {
+                    // found a valid object number, return a new COSObjectKey
+                    return new COSObjectKey(objectNrRead, objectGenRead);
+                }
+            }
+        }
+        catch (IOException exception)
+        {
+            // Swallow the exception, obviously there isn't any valid object number
+        }
+        finally 
+        {
+            pdfSource.seek(originOffset);
+        }
+        // no valid object number found
+        return null;
     }
-
     /**
      * Create a string for the given object id.
      * 
