@@ -623,7 +623,6 @@ public class NonSequentialPDFParser extends PDFParser
         COSDictionary dict = parseCOSDictionary();
         COSStream xrefStream = parseCOSStream(dict, getDocument().getScratchFile());
         parseXrefStream(xrefStream, (int) objByteOffset,isStandalone);
-        xrefStream.close();
         return dict.getLong(COSName.PREV);
     }
 
