@@ -32,6 +32,8 @@ import javax.imageio.stream.ImageInputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
@@ -70,12 +72,21 @@ public class JBIG2Filter implements Filter
             return;
         }
         ImageReader reader = readers.next();
-        COSDictionary decodeP = (COSDictionary) options.getDictionaryObject(COSName.DECODE_PARMS);
+        COSBase decodeP = options.getDictionaryObject(COSName.DECODE_PARMS, COSName.DP);
+        COSDictionary decodeParms = null;
+        if (decodeP instanceof COSDictionary)
+        {
+            decodeParms = (COSDictionary) decodeP;
+        }
+        else if (decodeP instanceof COSArray)
+        {
+            decodeParms = (COSDictionary) ((COSArray) decodeP).getObject(filterIndex);
+        }
         COSInteger bits = (COSInteger) options.getDictionaryObject(COSName.BITS_PER_COMPONENT);
         COSStream st = null;
-        if (decodeP != null)
+        if (decodeParms != null)
         {
-            st = (COSStream) decodeP.getDictionaryObject(COSName.JBIG2_GLOBALS);
+            st = (COSStream) decodeParms.getDictionaryObject(COSName.JBIG2_GLOBALS);
         }
         if (st != null)
         {
