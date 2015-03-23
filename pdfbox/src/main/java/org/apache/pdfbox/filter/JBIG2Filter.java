@@ -57,7 +57,7 @@ final class JBIG2Filter extends Filter
         result.getParameters().addAll(parameters);
 
         COSInteger bits = (COSInteger) parameters.getDictionaryObject(COSName.BITS_PER_COMPONENT);
-        COSDictionary params = (COSDictionary) parameters.getDictionaryObject(COSName.DECODE_PARMS);
+        COSDictionary params = getDecodeParams(parameters, index);
 
         COSStream globals = null;
         if (params != null)
