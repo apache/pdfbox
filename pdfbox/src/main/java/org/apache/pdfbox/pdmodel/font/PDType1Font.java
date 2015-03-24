@@ -296,9 +296,10 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
         }
 
         String name = getGlyphList().codePointToName(unicode);
+        String nameInFont = getNameInFont(name);
         Map<String, Integer> inverted = getInvertedEncoding();
 
-        if (name.equals(".notdef") || !type1Equivalent.hasGlyph(name))
+        if (nameInFont.equals(".notdef") || !type1Equivalent.hasGlyph(nameInFont))
         {
             throw new IllegalArgumentException(
                     String.format("No glyph for U+%04X in font %s", unicode, getName()));
@@ -423,6 +424,15 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
     public String codeToName(int code) throws IOException
     {
         String name = getEncoding().getName(code);
+        return getNameInFont(name);
+    }
+
+    /**
+     * Maps a PostScript glyph name to the name in the underlying font, for example when
+     * using a TTF font we might map "W" to "uni0057".
+     */
+    private String getNameInFont(String name) throws IOException
+    {
         if (isEmbedded() || type1Equivalent.hasGlyph(name))
         {
             return name;
