@@ -55,8 +55,8 @@ import org.apache.pdfbox.pdmodel.encryption.SecurityHandler;
 /**
  * PDF-Parser which first reads startxref and xref tables in order to know valid objects and parse only these objects.
  * 
- * First {@link #parse()} must be called before page objects
- * can be retrieved, e.g. {@link #getPDDocument()}.
+ * First {@link PDFParser#parse()} or  {@link FDFParser#parse()} must be called before page objects
+ * can be retrieved, e.g. {@link PDFParser#getPDDocument()}.
  * 
  * This class is a much enhanced version of <code>QuickParser</code> presented in <a
  * href="https://issues.apache.org/jira/browse/PDFBOX-1104">PDFBOX-1104</a> by Jeremy Villalobos.
