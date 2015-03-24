@@ -1825,7 +1825,6 @@ public class COSParser extends BaseParser
      */
     private void parseXrefStream(COSStream stream, long objByteOffset, boolean isStandalone) throws IOException
     {
-//LOG.info ("parseXrefStream: objByteOffset = " + objByteOffset);
         // the cross reference stream of a hybrid xref table will be added to the existing one
         // and we must not override the offset and the trailer
         if ( isStandalone )
