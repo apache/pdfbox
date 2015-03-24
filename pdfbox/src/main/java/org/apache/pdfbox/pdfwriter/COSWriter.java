@@ -53,6 +53,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
+import org.apache.pdfbox.cos.COSObjectKey;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.cos.COSUpdateInfo;
@@ -63,7 +64,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.SecurityHandler;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
-import org.apache.pdfbox.cos.COSObjectKey;
 import org.apache.pdfbox.util.Charsets;
 import org.apache.pdfbox.util.Hex;
 
@@ -275,10 +275,13 @@ public class COSWriter implements ICOSVisitor, Closeable
                 keyObject.put(cosObjectKey,object);
             }
             
-            long num = cosObjectKey.getNumber();
-            if (num > highestNumber)
+            if (cosObjectKey != null)
             {
-                highestNumber=num;
+                long num = cosObjectKey.getNumber();
+                if (num > highestNumber)
+                {
+                    highestNumber = num;
+                }
             }
           }
           setNumber(highestNumber);
@@ -784,7 +787,7 @@ public class COSWriter implements ICOSVisitor, Closeable
      * @param xRefEntriesList list with the xRef entries that was written
      * @return a integer array with the ranges
      */
-    protected Long[] getXRefRanges(List<COSWriterXRefEntry> xRefEntriesList)
+    protected static Long[] getXRefRanges(List<COSWriterXRefEntry> xRefEntriesList)
     {
         long last = -2;
         long count = 1;
@@ -1089,7 +1092,7 @@ public class COSWriter implements ICOSVisitor, Closeable
     @Override
     public Object visitFromNull(COSNull obj) throws IOException
     {
-        obj.writePDF( getStandardOutput() );
+        COSNull.writePDF(getStandardOutput());
         return null;
     }
 
