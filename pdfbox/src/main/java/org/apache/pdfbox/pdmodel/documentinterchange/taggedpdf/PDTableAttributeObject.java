@@ -117,7 +117,7 @@ public class PDTableAttributeObject extends PDStandardAttributeObject
     /**
      * Gets the headers (Headers). An array of byte strings, where each string
      * shall be the element identifier (see the
-     * {@link PDStructureElement#getElementIdentifier()}) for a TH structure
+     * {@link org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureElement#getElementIdentifier()}) for a TH structure
      * element that shall be used as a header associated with this cell.
      * 
      * @return the headers.
@@ -130,7 +130,7 @@ public class PDTableAttributeObject extends PDStandardAttributeObject
     /**
      * Sets the headers (Headers). An array of byte strings, where each string
      * shall be the element identifier (see the
-     * {@link PDStructureElement#getElementIdentifier()}) for a TH structure
+     * {@link org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureElement#getElementIdentifier()}) for a TH structure
      * element that shall be used as a header associated with this cell.
      * 
      * @param headers the headers

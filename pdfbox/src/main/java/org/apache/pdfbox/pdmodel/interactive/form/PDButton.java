@@ -62,7 +62,7 @@ public abstract class PDButton extends PDField
 
     
     /**
-     * @see PDField#PDField(PDAcroForm,COSDictionary)
+     * @see PDFieldTreeNode#PDFieldTreeNode(PDAcroForm)
      *
      * @param theAcroForm The acroform.
      */

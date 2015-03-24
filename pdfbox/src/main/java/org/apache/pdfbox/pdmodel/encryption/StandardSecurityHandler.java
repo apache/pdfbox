@@ -147,8 +147,7 @@ public final class StandardSecurityHandler extends SecurityHandler
     /**
      * Prepares everything to decrypt the document.
      *
-     * Called from {@link #decryptDocument(PDDocument, DecryptionMaterial)}.
-     * Only if decryption of single objects is needed this should be called instead.
+     * Only if decryption of single objects is needed this should be called.
      *
      * @param encryption  encryption dictionary
      * @param documentIDArray  document id
