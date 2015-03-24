@@ -1,11 +1,11 @@
-Release Notes -- Apache PDFBox -- Version 1.8.8
+Release Notes -- Apache PDFBox -- Version 1.8.9
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is an incremental bugfix release based on the earlier 1.8.7 release. It 
+This is an incremental bugfix release based on the earlier 1.8.8 release. It 
 contains a couple of fixes and small improvements.
 
 For more details on all fixes included in this release, please refer to the following
@@ -13,94 +13,52 @@ issues on the PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFB
 
 Bug
 
-[PDFBOX-649] - loading an fdf containing a file attachment throws IOException
-[PDFBOX-1036] - FDFExport/Import gives strange results
-[PDFBOX-1060] - convertToImage includes "ghost" annotation outlines
-[PDFBOX-1087] - FDF parsing is unreliable when xref are missing
-[PDFBOX-1273] - java.io.IOException: Error: Unknown annotation type null
-[PDFBOX-1512] - TextPositionComparator is not compatible with Java 7
-[PDFBOX-1574] - ImportFDF fails to do anything
-[PDFBOX-1595] - PDFMerger failed with the following exception: java.lang.NullPointerException
-[PDFBOX-1918] - PDF with incorrect startxref
-[PDFBOX-2001] - Digital Signature information (parser bug?)
-[PDFBOX-2015] - Hybrid reference pdf still contain XRefStm info in the trailer dictionary
-                afterPDDocument#save
-[PDFBOX-2173] - Nullpointer when validating empty file
-[PDFBOX-2296] - Wrong stream length
-[PDFBOX-2306] - Error reading stream, expected='endstream' actual='endobj'
-[PDFBOX-2320] - IOException: Could not read embedded TTF for font TimesNewRoman
-[PDFBOX-2332] - Error reading stream, expected='endstream' actual='endstream8' at offset 1993
-[PDFBOX-2342] - WriteDecodedDoc cant decrypt pdf form correctly
-[PDFBOX-2351] - /XRefStm content missing in saved file
-[PDFBOX-2356] - Error Validating PDF Archive Document with half hour timezone
-[PDFBOX-2371] - Overlay page off by one when using -useAllPages
-[PDFBOX-2376] - Small regression in text extraction with PDFBox 1.8.7 vs. 1.8.6
-[PDFBOX-2377] - Apparent regression in character mapping in a few files from govdocs1
-[PDFBOX-2385] - inline image with EI at the end incorrectly parsed
-[PDFBOX-2395] - Signing PDF document changes documentID
-[PDFBOX-2401] - Image has wrong colors after Merge
-[PDFBOX-2402] - NonSequentialPDFParser cannot recover from spurious closing brackets
-[PDFBOX-2406] - fix typo "AlpaConstant"
-[PDFBOX-2411] - Pushback buffer is full on seamingly small PDF
-[PDFBOX-2412] - Loading XFDF document fails with ClassCastException
-[PDFBOX-2413] - Loaded FDF document returns null fields
-[PDFBOX-2419] - XFDF export is not XML compliant
-[PDFBOX-2424] - ClassCastException in getMetaData if no real meta data
-[PDFBOX-2434] - ClassCastException in readVersionInTrailer
-[PDFBOX-2435] - ConvertToImage Appears To Invert Colors
-[PDFBOX-2441] - Improve XRef self healing mechanism when more than one xref table
-[PDFBOX-2443] - About to return NULL from unhandled branch when constructing a PDJpeg
-[PDFBOX-2449] - Character missing in text extraction
-[PDFBOX-2455] - NonSequentialParser does not tolerate missing %%EOF markers
-[PDFBOX-2458] - Signing doesn't work anymore using BC 1.51 instead of 1.50
-[PDFBOX-2465] - NPE in PdfaExtensionHelper.populateSchemaMapping
-[PDFBOX-2469] - javax.crypto.BadPaddingException in PDFBox 1.8.8-SNAPSHOT
-[PDFBOX-2470] - Exception in PDDocument.addSignature(PDSignature sigObject, SignatureInterface
-                signatureInterface, SignatureOptions options))
-[PDFBOX-2471] - AES encryption failing to write Acroform field names and values
-[PDFBOX-2477] - NPE in DomXmpParser.createProperty
-[PDFBOX-2478] - NPE in XObjImageValidator.checkColorSpaceAndImageMask
-[PDFBOX-2481] - Adding large TYPE_BYTE_BINARY image to pdf document generates distorted result
-[PDFBOX-2483] - StackOverflowError in preflight
-[PDFBOX-2484] - Cannot decrypt AES256 encrypted files with nonSeq parser
-[PDFBOX-2488] - NPE in FontValidator.isSubSet in preflight
-[PDFBOX-2490] - Return value of COSDocument#isEncrypted is unclear
-[PDFBOX-2491] - NPE in PDFAIdentificationValidation.checkConformanceLevel()
-[PDFBOX-2492] - Java 8u25 IllegalBlockSizeException decrypting pdf
-[PDFBOX-2497] - GRAVE: FlateFilter: stop reading corrupt stream due to a DataFormatException
-[PDFBOX-2498] - ArrayIndexOutOfBoundsException in PreflightParser.lastIndexOf
-[PDFBOX-2500] - ClassCastException in StreamValidationProcess.checkFilters
-[PDFBOX-2502] - false negative? 1.4.6 : Trailer Syntax error, ID is different in the first 
-                and the last trailer
-[PDFBOX-2503] - false negative? 1: 7.2 : Error on MetaData, Producer present in the document 
-                catalog dictionary doesn't match with XMP information
-[PDFBOX-2504] - ClassCastException in preflight: PDAnnotationWidget cannot be cast to PDField
-[PDFBOX-2512] - OutOfMemory while signing large documents
-[PDFBOX-2517] - Better error message on pdfA identification
-[PDFBOX-2520] - Don't decrypt already decrypted pdfs
-[PDFBOX-2521] - Don't throw IOException if stream length is missing in lenient mode
-[PDFBOX-2522] - javax.crypto.IllegalBlockSizeException in ExtractText
-[PDFBOX-2523] - IOException: Error: Expected a long type at offset 1218571, instead got 'xref'
-[PDFBOX-2528] - IOException: Object must be defined and must not be compressed object: 0:0
-[PDFBOX-2533] - Poor rendering with non-sequential parser
-[PDFBOX-2541] - ClassCastException in BaseParser.parseCOSDictionaryValue
+[PDFBOX-159] - Field renaming character set problem
+[PDFBOX-785] - Spliting a PDF creates unnecessarily large files
+[PDFBOX-1002] - Form field not rendered after being processed by pdfbox-1.1.0, wrong
+ position of same field in pdfbox-1.5.0
+[PDFBOX-1618] - Split PDF file to single page files, some files are inflated in size
+[PDFBOX-1651] - PDFBox doesn't read the permission bits correct. 
+ PDDocument.getCurrentAccessPermission().canPrint() is allways returning true 
+ irrespective of the document print permissions
+[PDFBOX-1750] - PDTextbox and PDAnnotationWidget are not correct initialized from
+ it's own constructor .
+[PDFBOX-1859] - ClassCastException for unknown destination type
+[PDFBOX-1874] - PDFTextStripper.isParagraphSeparation(...)
+[PDFBOX-1965] - NPE in NonSequentialPDFParser when parseMinimal property is set to true
+[PDFBOX-2525] - Overlay: data black & white after import
+[PDFBOX-2549] - TIFF-Predictor with 16 bits per component not supported
+[PDFBOX-2550] - ClassCastException in PDAnnotation.getColour
+[PDFBOX-2552] - Blank rendering when negative page rotation
+[PDFBOX-2559] - TTF font cannot be loaded
+[PDFBOX-2579] - Exception in thread "main" java.io.IOException: Error: Expected a long
+ type at offset 1029, instead got '12688(Deleted'
+[PDFBOX-2582] - Form fields missing entirely or incorrect in PDField list
+[PDFBOX-2583] - Error when rendering a PDF with annotations
+[PDFBOX-2595] - Pdfbox always sets the second part of documentID to the same value
+[PDFBOX-2615] - IllegalArgumentException in PDPageTree constructor: root cannot be null
+[PDFBOX-2617] - Group of Button fields treated as a Radio Button group
+[PDFBOX-2620] - Support named actions
+[PDFBOX-2622] - PDAnnotationLink::getBorderStyle() don't understand external border style
+[PDFBOX-2644] - Load FDF document creates Temp file when called with file parameter
+[PDFBOX-2653] - Image extraction fails with attached PDF
+[PDFBOX-2654] - NullPointerException when reading a GIF file with a transparent color
+[PDFBOX-2676] - PDPageLabelRange.setLabelItem() should not allow negative startPage
+[PDFBOX-2678] - possible NPE in ExtractText tool of trunk
+[PDFBOX-2687] - ClassCastException when trying to get OutputIntents or add to it
+[PDFBOX-2698] - PDFToImage IndexOutOfBoundsException
+[PDFBOX-2702] - Merging PDFs created using "Nuance PDF Create" not possible
+[PDFBOX-2710] - Form fields missing in 1.8.9 version
+[PDFBOX-2726] - org.apache.pdfbox.cos.COSArray cannot be cast to 
+ org.apache.pdfbox.cos.COSDictionary
 
 Improvement
 
-[PDFBOX-543] - Document the dependencies of PDFBox
-[PDFBOX-1224] - Angle units are not consistent
-[PDFBOX-1648] - FontBox can't load CMaps with no spaces between tokens
-[PDFBOX-1738] - PDF with parsing IOException
-[PDFBOX-1798] - Performance problem with PDDocument.saveIncremental (when signing document)
-[PDFBOX-1833] - BaseParser tidy up
-[PDFBOX-2197] - Add sample how to import a page as PDFormXObject
-[PDFBOX-2250] - Improve XRef self healing mechanism
-[PDFBOX-2394] - Add example code to extract embedded files in annotations
-[PDFBOX-2414] - Allow non-sequential parser for PDFMerger in app
-[PDFBOX-2456] - create TestSymmetricKeyEncryption.java
-[PDFBOX-2468] - Switch FDFDocument.load from PDFParser to NonSequentialParser
-[PDFBOX-2475] - Fix Checkstyle errors in the 1.8 branch
-[PDFBOX-2480] - Add information about Snapshots to download section
+[PDFBOX-1523] - Manifest should support Specification entries
+[PDFBOX-2594] - Set default params in JBIG2Filter
+[PDFBOX-2619] - XMP dates contain time zone, while document info dates do not, 
+ and this isn't detected by preflight
+[PDFBOX-2673] - Add output path prefix param in PDFSplit/Splitter
 
 
 Release Contents
