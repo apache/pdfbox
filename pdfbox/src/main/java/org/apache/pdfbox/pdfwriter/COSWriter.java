@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.SequenceInputStream;
-import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
@@ -65,6 +64,7 @@ import org.apache.pdfbox.pdmodel.encryption.SecurityHandler;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
 import org.apache.pdfbox.util.Charsets;
+import static org.apache.pdfbox.util.Charsets.ISO_8859_1_CHARSET;
 import org.apache.pdfbox.util.Hex;
 
 /**
@@ -157,8 +157,6 @@ public class COSWriter implements ICOSVisitor, Closeable
      */
     public static final byte[] ENDSTREAM = "endstream".getBytes(Charsets.US_ASCII);
     
-    private static final Charset ISO_8859_1_CHARSET = Charset.forName("ISO-8859-1");
-
     private final NumberFormat formatXrefOffset = new DecimalFormat("0000000000");
 
     // the decimal format for the xref object generation number data
