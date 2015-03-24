@@ -37,6 +37,8 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import static org.apache.pdfbox.util.Charsets.ISO_8859_1_CHARSET;
+import static org.apache.pdfbox.util.Charsets.UTF_8_CHARSET;
 
 /**
  * The standard security handler. This security handler protects document with password.
@@ -72,9 +74,6 @@ public final class StandardSecurityHandler extends SecurityHandler
 
     // hashes used for Algorithm 2.B, depending on remainder from E modulo 3
     private static final String[] HASHES_2B = new String[] {"SHA-256", "SHA-384", "SHA-512"};
-
-    private static final Charset ISO_8859_1_CHARSET = Charset.forName("ISO-8859-1");
-    private static final Charset UTF_8_CHARSET = Charset.forName("UTF-8");
 
     private static final int DEFAULT_VERSION = 1;
 
@@ -854,7 +853,7 @@ public final class StandardSecurityHandler extends SecurityHandler
                 digest = md.digest();
             }
         }
-        byte[] rc4Key = new byte[(int) length];
+        byte[] rc4Key = new byte[length];
         System.arraycopy(digest, 0, rc4Key, 0, length);
         return rc4Key;
     }
