@@ -64,7 +64,6 @@ import org.apache.pdfbox.pdmodel.encryption.SecurityHandler;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
 import org.apache.pdfbox.util.Charsets;
-import static org.apache.pdfbox.util.Charsets.ISO_8859_1_CHARSET;
 import org.apache.pdfbox.util.Hex;
 
 /**
@@ -530,9 +529,9 @@ public class COSWriter implements ICOSVisitor, Closeable
         // add a x ref entry
         addXRefEntry( new COSWriterXRefEntry(getStandardOutput().getPos(), obj, currentObjectKey));
         // write the object
-        getStandardOutput().write(String.valueOf(currentObjectKey.getNumber()).getBytes(ISO_8859_1_CHARSET));
+        getStandardOutput().write(String.valueOf(currentObjectKey.getNumber()).getBytes(Charsets.ISO_8859_1));
         getStandardOutput().write(SPACE);
-        getStandardOutput().write(String.valueOf(currentObjectKey.getGeneration()).getBytes(ISO_8859_1_CHARSET));
+        getStandardOutput().write(String.valueOf(currentObjectKey.getGeneration()).getBytes(Charsets.ISO_8859_1));
         getStandardOutput().write(SPACE);
         getStandardOutput().write(OBJ);
         getStandardOutput().writeEOL();
@@ -560,7 +559,7 @@ public class COSWriter implements ICOSVisitor, Closeable
         {
             headerString = "%PDF-"+ Float.toString(pdDocument.getDocument().getVersion());
         }
-        getStandardOutput().write( headerString.getBytes(ISO_8859_1_CHARSET) );
+        getStandardOutput().write( headerString.getBytes(Charsets.ISO_8859_1) );
         
         getStandardOutput().writeEOL();
         getStandardOutput().write(COMMENT);
@@ -759,9 +758,9 @@ public class COSWriter implements ICOSVisitor, Closeable
     {
         String offset = formatXrefOffset.format(entry.getOffset());
         String generation = formatXrefGeneration.format(entry.getKey().getGeneration());
-        getStandardOutput().write(offset.getBytes(ISO_8859_1_CHARSET));
+        getStandardOutput().write(offset.getBytes(Charsets.ISO_8859_1));
         getStandardOutput().write(SPACE);
-        getStandardOutput().write(generation.getBytes(ISO_8859_1_CHARSET));
+        getStandardOutput().write(generation.getBytes(Charsets.ISO_8859_1));
         getStandardOutput().write(SPACE);
         getStandardOutput().write(entry.isFree() ? XREF_FREE : XREF_USED);
         getStandardOutput().writeCRLF();
@@ -1053,7 +1052,7 @@ public class COSWriter implements ICOSVisitor, Closeable
         // write endof
         getStandardOutput().write(STARTXREF);
         getStandardOutput().writeEOL();
-        getStandardOutput().write(String.valueOf(getStartxref()).getBytes(ISO_8859_1_CHARSET));
+        getStandardOutput().write(String.valueOf(getStartxref()).getBytes(Charsets.ISO_8859_1));
         getStandardOutput().writeEOL();
         getStandardOutput().write(EOF);
         getStandardOutput().writeEOL();
@@ -1104,9 +1103,9 @@ public class COSWriter implements ICOSVisitor, Closeable
     public void writeReference(COSBase obj) throws IOException
     {
         COSObjectKey key = getObjectKey(obj);
-        getStandardOutput().write(String.valueOf(key.getNumber()).getBytes(ISO_8859_1_CHARSET));
+        getStandardOutput().write(String.valueOf(key.getNumber()).getBytes(Charsets.ISO_8859_1));
         getStandardOutput().write(SPACE);
-        getStandardOutput().write(String.valueOf(key.getGeneration()).getBytes(ISO_8859_1_CHARSET));
+        getStandardOutput().write(String.valueOf(key.getGeneration()).getBytes(Charsets.ISO_8859_1));
         getStandardOutput().write(SPACE);
         getStandardOutput().write(REFERENCE);
     }
@@ -1285,7 +1284,7 @@ public class COSWriter implements ICOSVisitor, Closeable
 
             // algorithm says to use time/path/size/values in doc to generate the id.
             // we don't have path or size, so do the best we can
-            md5.update( Long.toString(idTime).getBytes(ISO_8859_1_CHARSET) );
+            md5.update( Long.toString(idTime).getBytes(Charsets.ISO_8859_1) );
 
             COSDictionary info = (COSDictionary)trailer.getDictionaryObject( COSName.INFO );
             if( info != null )
@@ -1293,7 +1292,7 @@ public class COSWriter implements ICOSVisitor, Closeable
                 Iterator<COSBase> values = info.getValues().iterator();
                 while( values.hasNext() )
                 {
-                    md5.update( values.next().toString().getBytes(ISO_8859_1_CHARSET) );
+                    md5.update(values.next().toString().getBytes(Charsets.ISO_8859_1));
                 }
             }
             // reuse origin documentID if available as first value
