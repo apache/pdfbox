@@ -31,8 +31,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.common.COSStreamArray;
 import org.apache.pdfbox.pdmodel.common.PDStream;
@@ -603,7 +603,7 @@ public final class PDPageContentStream implements Closeable
             sb.append("[");
             for (COSBase base : inlineImage.getDecode())
             {
-                sb.append(((COSInteger)base).intValue());
+                sb.append(((COSNumber) base).intValue());
                 sb.append(" ");
             }
             sb.append("]");
@@ -1666,7 +1666,9 @@ public final class PDPageContentStream implements Closeable
             throw new IOException("Error: clip is not allowed within a text block.");
         }
         writeOperator("W");
-        writeOperator("n"); // end path without filling or stroking
+        
+        // end path without filling or stroking
+        writeOperator("n");
     }
 
     /**
@@ -1681,7 +1683,9 @@ public final class PDPageContentStream implements Closeable
             throw new IOException("Error: clipEvenOdd is not allowed within a text block.");
         }
         writeOperator("W*");
-        writeOperator("n"); // end path without filling or stroking
+        
+        // end path without filling or stroking
+        writeOperator("n");
     }
 
     /**
