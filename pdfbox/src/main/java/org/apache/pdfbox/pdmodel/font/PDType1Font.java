@@ -105,7 +105,25 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
 
         // todo: could load the PFB font here if we wanted to support Standard 14 embedding
         type1font = null;
-        type1Equivalent = ExternalFonts.getType1EquivalentFont(getBaseFont());
+        Type1Equivalent t1Equiv = ExternalFonts.getType1EquivalentFont(getBaseFont());
+        if (t1Equiv != null)
+        {
+            type1Equivalent = t1Equiv;
+        }
+        else
+        {
+            type1Equivalent = ExternalFonts.getType1FallbackFont(getFontDescriptor());
+            String fontName;
+            try
+            {
+                fontName = type1Equivalent.getName();
+            }
+            catch (IOException e)
+            {
+                fontName = "?";
+            }
+            LOG.warn("Using fallback font " + fontName + " for base font " + getBaseFont());
+        }
         isEmbedded = false;
         isDamaged = false;
     }
