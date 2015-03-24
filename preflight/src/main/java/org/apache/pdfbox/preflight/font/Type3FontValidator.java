@@ -191,8 +191,6 @@ public class Type3FontValidator extends FontValidator<Type3Container>
      * and a well formed "Differences" array (the array is optional)
      * </UL>
      *
-     * At the end of this method, if the validation succeed the Font encoding is
-     * kept in the {@link #encoding} attribute
      */
     @Override
     protected void checkEncoding()
