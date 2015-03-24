@@ -518,24 +518,7 @@ public class CFFParser
             DictData privateDict = readDictData(privateDictData);
 
             // populate private dict
-            Map<String, Object> privDict = new LinkedHashMap<String, Object>();
-            privDict.put("BlueValues", getDelta(privateDict, "BlueValues", null));
-            privDict.put("OtherBlues", getDelta(privateDict, "OtherBlues", null));
-            privDict.put("FamilyBlues", getDelta(privateDict, "FamilyBlues", null));
-            privDict.put("FamilyOtherBlues", getDelta(privateDict, "FamilyOtherBlues", null));
-            privDict.put("BlueScale", getNumber(privateDict, "BlueScale", 0.039625));
-            privDict.put("BlueShift", getNumber(privateDict, "BlueShift", 7));
-            privDict.put("BlueFuzz", getNumber(privateDict, "BlueFuzz", 1));
-            privDict.put("StdHW", getNumber(privateDict, "StdHW", null));
-            privDict.put("StdVW", getNumber(privateDict, "StdVW", null));
-            privDict.put("StemSnapH", getDelta(privateDict, "StemSnapH", null));
-            privDict.put("StemSnapV", getDelta(privateDict, "StemSnapV", null));
-            privDict.put("ForceBold", getBoolean(privateDict, "ForceBold", false));
-            privDict.put("LanguageGroup", getNumber(privateDict, "LanguageGroup", 0));
-            privDict.put("ExpansionFactor", getNumber(privateDict, "ExpansionFactor", 0.06));
-            privDict.put("initialRandomSeed", getNumber(privateDict, "initialRandomSeed", 0));
-            privDict.put("defaultWidthX", getNumber(privateDict, "defaultWidthX", 0));
-            privDict.put("nominalWidthX", getNumber(privateDict, "nominalWidthX", 0));
+            Map<String, Object> privDict = readPrivateDict(privateDict);
             privateDictionaries.add(privDict);
 
             // local subrs
@@ -565,6 +548,29 @@ public class CFFParser
         font.setFontDict(fontDictionaries);
         font.setPrivDict(privateDictionaries);
         font.setFdSelect(fdSelect);
+    }
+
+    private Map<String, Object> readPrivateDict(DictData privateDict)
+    {
+        Map<String, Object> privDict = new LinkedHashMap<String, Object>();
+        privDict.put("BlueValues", getDelta(privateDict, "BlueValues", null));
+        privDict.put("OtherBlues", getDelta(privateDict, "OtherBlues", null));
+        privDict.put("FamilyBlues", getDelta(privateDict, "FamilyBlues", null));
+        privDict.put("FamilyOtherBlues", getDelta(privateDict, "FamilyOtherBlues", null));
+        privDict.put("BlueScale", getNumber(privateDict, "BlueScale", 0.039625));
+        privDict.put("BlueShift", getNumber(privateDict, "BlueShift", 7));
+        privDict.put("BlueFuzz", getNumber(privateDict, "BlueFuzz", 1));
+        privDict.put("StdHW", getNumber(privateDict, "StdHW", null));
+        privDict.put("StdVW", getNumber(privateDict, "StdVW", null));
+        privDict.put("StemSnapH", getDelta(privateDict, "StemSnapH", null));
+        privDict.put("StemSnapV", getDelta(privateDict, "StemSnapV", null));
+        privDict.put("ForceBold", getBoolean(privateDict, "ForceBold", false));
+        privDict.put("LanguageGroup", getNumber(privateDict, "LanguageGroup", 0));
+        privDict.put("ExpansionFactor", getNumber(privateDict, "ExpansionFactor", 0.06));
+        privDict.put("initialRandomSeed", getNumber(privateDict, "initialRandomSeed", 0));
+        privDict.put("defaultWidthX", getNumber(privateDict, "defaultWidthX", 0));
+        privDict.put("nominalWidthX", getNumber(privateDict, "nominalWidthX", 0));
+        return privDict;
     }
 
     /**
@@ -601,23 +607,11 @@ public class CFFParser
         DictData privateDict = readDictData(privateDictData);
 
         // populate private dict
-        font.addToPrivateDict("BlueValues", getDelta(privateDict, "BlueValues", null));
-        font.addToPrivateDict("OtherBlues", getDelta(privateDict, "OtherBlues", null));
-        font.addToPrivateDict("FamilyBlues", getDelta(privateDict, "FamilyBlues", null));
-        font.addToPrivateDict("FamilyOtherBlues", getDelta(privateDict, "FamilyOtherBlues", null));
-        font.addToPrivateDict("BlueScale", getNumber(privateDict, "BlueScale", 0.039625));
-        font.addToPrivateDict("BlueShift", getNumber(privateDict, "BlueShift", 7));
-        font.addToPrivateDict("BlueFuzz", getNumber(privateDict, "BlueFuzz", 1));
-        font.addToPrivateDict("StdHW", getNumber(privateDict, "StdHW", null));
-        font.addToPrivateDict("StdVW", getNumber(privateDict, "StdVW", null));
-        font.addToPrivateDict("StemSnapH", getDelta(privateDict, "StemSnapH", null));
-        font.addToPrivateDict("StemSnapV", getDelta(privateDict, "StemSnapV", null));
-        font.addToPrivateDict("ForceBold", getBoolean(privateDict, "ForceBold", false));
-        font.addToPrivateDict("LanguageGroup", getNumber(privateDict, "LanguageGroup", 0));
-        font.addToPrivateDict("ExpansionFactor", getNumber(privateDict, "ExpansionFactor", 0.06));
-        font.addToPrivateDict("initialRandomSeed", getNumber(privateDict, "initialRandomSeed", 0));
-        font.addToPrivateDict("defaultWidthX", getNumber(privateDict, "defaultWidthX", 0));
-        font.addToPrivateDict("nominalWidthX", getNumber(privateDict, "nominalWidthX", 0));
+        Map<String, Object> privDict = readPrivateDict(privateDict);
+        for (Map.Entry<String, Object> entry : privDict.entrySet())
+        {
+            font.addToPrivateDict(entry.getKey(), entry.getValue());
+        }
 
         // local subrs
         int localSubrOffset = (Integer) getNumber(privateDict, "Subrs", 0);
