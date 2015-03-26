@@ -19,6 +19,8 @@ package org.apache.pdfbox.contentstream.operator.graphics;
 import java.io.IOException;
 import java.util.List;
 import java.awt.geom.Point2D;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
@@ -31,6 +33,8 @@ import org.apache.pdfbox.contentstream.operator.Operator;
  */
 public class CurveTo extends GraphicsOperatorProcessor
 {
+    private static final Log LOG = LogFactory.getLog(CurveTo.class);
+    
     @Override
     public void process(Operator operator, List<COSBase> operands) throws IOException
     {
@@ -45,9 +49,17 @@ public class CurveTo extends GraphicsOperatorProcessor
         Point2D.Float point2 = context.transformedPoint(x2.floatValue(), y2.floatValue());
         Point2D.Float point3 = context.transformedPoint(x3.floatValue(), y3.floatValue());
 
-        context.curveTo(point1.x, point1.y,
-                        point2.x, point2.y,
-                        point3.x, point3.y);
+        if (context.getCurrentPoint() == null)
+        {
+            LOG.warn("curveTo (" + point3.x + "," + point3.y + ") without initial MoveTo");
+            context.moveTo(point3.x, point3.y);
+        }
+        else
+        {
+            context.curveTo(point1.x, point1.y,
+                    point2.x, point2.y,
+                    point3.x, point3.y);
+        }
     }
 
     @Override
