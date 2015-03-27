@@ -62,8 +62,6 @@ public class PDDeviceN extends PDColorSpace
      */
     public static final String NAME = "DeviceN";
 
-    private COSArray array;
-
     /**
      * Constructor.
      */
@@ -87,6 +85,12 @@ public class PDDeviceN extends PDColorSpace
         array = csAttributes;
     }
 
+    @Override
+    public COSBase getCOSObject()
+    {
+        return array;
+    }
+    
     /**
      * This will return the name of the color space.  For a PDDeviceN object
      * this will always return "DeviceN"
@@ -262,7 +266,7 @@ public class PDDeviceN extends PDColorSpace
         else
         {
             //make sure array is large enough
-            while( array.size() <= DEVICEN_ATTRIBUTES + 1 )
+            while (array.size() <= DEVICEN_ATTRIBUTES)
             {
                 array.add( COSNull.NULL );
             }
