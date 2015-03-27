@@ -216,7 +216,7 @@ public abstract class PDFGraphicsStreamEngine extends PDFStreamEngine
     /**
      * Returns the current point of the current path.
      */
-    public abstract Point2D.Float getCurrentPoint() throws IOException;
+    public abstract Point2D getCurrentPoint() throws IOException;
 
     /**
      * Closes the current path.

@@ -646,10 +646,9 @@ public final class PageDrawer extends PDFGraphicsStreamEngine
     }
 
     @Override
-    public Point2D.Float getCurrentPoint()
+    public Point2D getCurrentPoint()
     {
-        Point2D current = linePath.getCurrentPoint();
-        return new Point2D.Float((float)current.getX(), (float)current.getY());
+        return linePath.getCurrentPoint();
     }
 
     @Override
