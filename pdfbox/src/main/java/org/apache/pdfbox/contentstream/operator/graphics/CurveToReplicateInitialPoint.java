@@ -20,6 +20,8 @@ import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.contentstream.operator.Operator;
@@ -31,22 +33,32 @@ import org.apache.pdfbox.contentstream.operator.Operator;
  */
 public class CurveToReplicateInitialPoint extends GraphicsOperatorProcessor
 {
+    private static final Log LOG = LogFactory.getLog(CurveToReplicateInitialPoint.class);
+    
     @Override
     public void process(Operator operator, List<COSBase> operands) throws IOException
     {
-        COSNumber x2 = (COSNumber)operands.get(0 );
+        COSNumber x2 = (COSNumber)operands.get(0);
         COSNumber y2 = (COSNumber)operands.get(1);
         COSNumber x3 = (COSNumber)operands.get(2);
         COSNumber y3 = (COSNumber)operands.get(3);
 
-        Point2D.Float currentPoint = context.getCurrentPoint();
+        Point2D currentPoint = context.getCurrentPoint();
 
         Point2D.Float point2 = context.transformedPoint(x2.floatValue(), y2.floatValue());
         Point2D.Float point3 = context.transformedPoint(x3.floatValue(), y3.floatValue());
 
-        context.curveTo(currentPoint.x, currentPoint.y,
-                        point2.x, point2.y,
-                        point3.x, point3.y);
+        if (currentPoint == null)
+        {
+            LOG.warn("curveTo (" + point3.x + "," + point3.y + ") without initial MoveTo");
+            context.moveTo(point3.x, point3.y);
+        }
+        else
+        {
+            context.curveTo((float) currentPoint.getX(), (float) currentPoint.getY(),
+                    point2.x, point2.y,
+                    point3.x, point3.y);
+        }
     }
 
     @Override
