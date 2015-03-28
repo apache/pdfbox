@@ -263,7 +263,7 @@ public class COSParser extends BaseParser
                     }
                 }
                 prev = trailer.getInt(COSName.PREV);
-                if (prev > -1)
+                if (prev > 0)
                 {
                     // check the xref table reference
                     fixedOffset = checkXRefOffset(prev);
@@ -278,7 +278,7 @@ public class COSParser extends BaseParser
             {
                 // parse xref stream
                 prev = parseXrefObjStream(prev, true);
-                if (prev > -1)
+                if (prev > 0)
                 {
                     // check the xref table reference
                     fixedOffset = checkXRefOffset(prev);
