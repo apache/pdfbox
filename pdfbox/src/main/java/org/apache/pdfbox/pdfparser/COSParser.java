@@ -201,7 +201,7 @@ public class COSParser extends BaseParser
         document.setStartXref(startXrefOffset);
         long prev = startXrefOffset;
         // ---- parse whole chain of xref tables/object streams using PREV reference
-        while (prev > -1)
+        while (prev > 0)
         {
             // seek to xref table
             pdfSource.seek(prev);
@@ -930,7 +930,8 @@ public class COSParser extends BaseParser
             {
                 if (isLenient)
                 {
-                   LOG.warn("The stream doesn't provide any stream length, using fallback readUntilEnd"); 
+                   LOG.warn("The stream doesn't provide any stream length, using fallback readUntilEnd, at offset "
+                        + pdfSource.getOffset());
                 }
                 else
                 {
