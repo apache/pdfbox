@@ -65,8 +65,7 @@ class TilingPaint implements Paint
             throws IOException
     {
         this.drawer = drawer;
-        this.paint = new TexturePaint(getImage(drawer, pattern, null, null, xform),
-                                      getAnchorRect(pattern, drawer));
+        this.paint = new TexturePaint(getImage(null, null, xform), getAnchorRect());
         this.pattern = pattern;
     }
 
@@ -84,8 +83,7 @@ class TilingPaint implements Paint
                        PDColor color, AffineTransform xform) throws IOException
     {
         this.drawer = drawer;
-        this.paint = new TexturePaint(getImage(drawer, pattern, colorSpace, color, xform),
-                                      getAnchorRect(pattern, drawer));
+        this.paint = new TexturePaint(getImage(colorSpace, color, xform), getAnchorRect());
         this.pattern = pattern;
     }
 
@@ -113,15 +111,14 @@ class TilingPaint implements Paint
     /**
      * Returns the pattern image in parent stream coordinates.
      */
-    private static BufferedImage getImage(PageDrawer drawer, PDTilingPattern pattern,
-                                          PDColorSpace colorSpace, PDColor color,
+    private BufferedImage getImage(PDColorSpace colorSpace, PDColor color,
                                           AffineTransform xform) throws IOException
     {
         ColorSpace outputCS = ColorSpace.getInstance(ColorSpace.CS_sRGB);
         ColorModel cm = new ComponentColorModel(outputCS, true, false,
                 Transparency.TRANSLUCENT, DataBuffer.TYPE_BYTE);
 
-        Rectangle2D anchor = getAnchorRect(pattern, drawer);
+        Rectangle2D anchor = getAnchorRect();
         float width = (float)Math.abs(anchor.getWidth());
         float height = (float)Math.abs(anchor.getHeight());
 
@@ -197,7 +194,7 @@ class TilingPaint implements Paint
     /**
      * Returns the anchor rectangle, which includes the XStep/YStep and scaling.
      */
-    private static Rectangle2D getAnchorRect(PDTilingPattern pattern, PageDrawer drawer)
+    private Rectangle2D getAnchorRect()
     {
         float xStep = pattern.getXStep();
         if (xStep == 0)
