@@ -65,8 +65,8 @@ class TilingPaint implements Paint
             throws IOException
     {
         this.drawer = drawer;
-        this.paint = new TexturePaint(getImage(null, null, xform), getAnchorRect());
         this.pattern = pattern;
+        this.paint = new TexturePaint(getImage(null, null, xform), getAnchorRect());
     }
 
     /**
@@ -83,8 +83,8 @@ class TilingPaint implements Paint
                        PDColor color, AffineTransform xform) throws IOException
     {
         this.drawer = drawer;
-        this.paint = new TexturePaint(getImage(colorSpace, color, xform), getAnchorRect());
         this.pattern = pattern;
+        this.paint = new TexturePaint(getImage(colorSpace, color, xform), getAnchorRect());
     }
 
     /**
