@@ -16,6 +16,10 @@
  */
 package org.apache.pdfbox.tools;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
@@ -30,6 +34,11 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
+import javax.swing.Action;
+import javax.swing.InputMap;
+import javax.swing.JComponent;
+import javax.swing.JScrollBar;
+import javax.swing.AbstractAction;
 
 import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.printing.PDFPrinter;
@@ -69,7 +78,11 @@ public class PDFReader extends JFrame
     private static final String PASSWORD = "-password";
 
     private static final String VERSION = Version.getVersion();
-    private static final String BASETITLE = "PDFBox " + VERSION; 
+    private static final String BASETITLE = "PDFBox " + VERSION;
+
+    private static final String PREVIOUS_PAGE = "previous_page";
+    private static final String NEXT_PAGE = "next_page";
+    
     /**
      * Constructor.
      */
@@ -109,11 +122,12 @@ public class PDFReader extends JFrame
 
         fileMenu.setText("File");
         openMenuItem.setText("Open");
+        openMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,InputEvent.CTRL_DOWN_MASK));
         openMenuItem.setToolTipText("Open PDF file");
         openMenuItem.addActionListener(new java.awt.event.ActionListener()
         {
             @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt)
+            public void actionPerformed(ActionEvent evt)
             {
                 openMenuItemActionPerformed(evt);
             }
@@ -122,10 +136,11 @@ public class PDFReader extends JFrame
         fileMenu.add(openMenuItem);
 
         printMenuItem.setText("Print");
-        printMenuItem.addActionListener(new java.awt.event.ActionListener()
+        printMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_DOWN_MASK));
+        printMenuItem.addActionListener(new ActionListener()
         {
             @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt)
+            public void actionPerformed(ActionEvent evt)
             {
                 try
                 {
@@ -149,9 +164,10 @@ public class PDFReader extends JFrame
         fileMenu.add(printMenuItem);
 
         saveAsImageMenuItem.setText("Save as image");
-        saveAsImageMenuItem.addActionListener(new java.awt.event.ActionListener()
+        saveAsImageMenuItem.addActionListener(new ActionListener()
         {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
+            @Override
+            public void actionPerformed(ActionEvent evt)
             {
                 if (document != null)
                 {
@@ -172,7 +188,7 @@ public class PDFReader extends JFrame
         exitMenuItem.addActionListener(new java.awt.event.ActionListener()
         {
             @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt)
+            public void actionPerformed(ActionEvent evt)
             {
                 exitApplication();
             }
@@ -182,32 +198,10 @@ public class PDFReader extends JFrame
 
         menuBar.add(fileMenu);
 
-        viewMenu.setText("View");
-        nextPageItem.setText("Next page");
-        nextPageItem.setAccelerator(KeyStroke.getKeyStroke('+'));
-        nextPageItem.addActionListener(new java.awt.event.ActionListener()
+        Action previousPageAction = new AbstractAction()
         {
             @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                try
-                {
-                    nextPage();
-                }
-                catch (IOException e)
-                {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
-        viewMenu.add(nextPageItem);
-
-        previousPageItem.setText("Previous page");
-        previousPageItem.setAccelerator(KeyStroke.getKeyStroke('-'));
-        previousPageItem.addActionListener(new java.awt.event.ActionListener()
-        {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt)
+            public void actionPerformed(ActionEvent actionEvent)
             {
                 try
                 {
@@ -218,12 +212,50 @@ public class PDFReader extends JFrame
                     throw new RuntimeException(e);
                 }
             }
-        });
+        };
+
+        Action nextPageAction = new AbstractAction()
+        {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                try
+                {
+                    nextPage();
+                }
+                catch (IOException e)
+                {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+
+        viewMenu.setText("View");
+        nextPageItem.setText("Next page");
+        nextPageItem.setAccelerator(KeyStroke.getKeyStroke('+'));
+        nextPageItem.addActionListener(nextPageAction);
+        viewMenu.add(nextPageItem);
+
+        previousPageItem.setText("Previous page");
+        previousPageItem.setAccelerator(KeyStroke.getKeyStroke('-'));
+        previousPageItem.addActionListener(previousPageAction);
         viewMenu.add(previousPageItem);
 
         menuBar.add(viewMenu);
 
         setJMenuBar(menuBar);
+
+        InputMap documentInputMap = documentPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        documentInputMap.put(KeyStroke.getKeyStroke("PAGE_UP"), PREVIOUS_PAGE);
+        documentInputMap.put(KeyStroke.getKeyStroke("PAGE_DOWN"), NEXT_PAGE);
+        documentPanel.getActionMap().put(PREVIOUS_PAGE, previousPageAction);
+        documentPanel.getActionMap().put(NEXT_PAGE, nextPageAction);
+
+        JScrollBar verticalScroller = documentScroller.getVerticalScrollBar();
+        verticalScroller.setUnitIncrement(20);
+        InputMap scrollerInputMap = verticalScroller.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        scrollerInputMap.put(KeyStroke.getKeyStroke("DOWN"), "positiveUnitIncrement");
+        scrollerInputMap.put(KeyStroke.getKeyStroke("UP"), "negativeUnitIncrement");
 
         java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         setBounds((screenSize.width - 700) / 2, (screenSize.height - 600) / 2, 700, 600);
