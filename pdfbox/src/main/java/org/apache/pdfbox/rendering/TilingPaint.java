@@ -61,7 +61,7 @@ class TilingPaint implements Paint
      * @throws java.io.IOException if something goes wrong while drawing the
      * pattern
      */
-    public TilingPaint(PageDrawer drawer, PDTilingPattern pattern, AffineTransform xform)
+    TilingPaint(PageDrawer drawer, PDTilingPattern pattern, AffineTransform xform)
             throws IOException
     {
         this.drawer = drawer;
@@ -79,7 +79,7 @@ class TilingPaint implements Paint
      *
      * @throws java.io.IOException if something goes wrong while drawing the pattern
      */
-    public TilingPaint(PageDrawer drawer, PDTilingPattern pattern, PDColorSpace colorSpace,
+    TilingPaint(PageDrawer drawer, PDTilingPattern pattern, PDColorSpace colorSpace,
                        PDColor color, AffineTransform xform) throws IOException
     {
         this.drawer = drawer;
