@@ -36,6 +36,7 @@ import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.Action;
 import javax.swing.InputMap;
+import javax.swing.ActionMap;
 import javax.swing.JComponent;
 import javax.swing.JScrollBar;
 import javax.swing.AbstractAction;
@@ -64,6 +65,8 @@ public class PDFReader extends JFrame
     private JMenu viewMenu;
     private JMenuItem nextPageItem;
     private JMenuItem previousPageItem;
+    private JMenuItem firstPageItem;
+    private JMenuItem lastPageItem;
     private final JPanel documentPanel = new JPanel();
     private final ReaderBottomPanel bottomStatusPanel = new ReaderBottomPanel();
 
@@ -82,7 +85,9 @@ public class PDFReader extends JFrame
 
     private static final String PREVIOUS_PAGE = "previous_page";
     private static final String NEXT_PAGE = "next_page";
-    
+    private static final String FIRST_PAGE = "first_page";
+    private static final String LAST_PAGE = "last_page";
+
     /**
      * Constructor.
      */
@@ -103,6 +108,8 @@ public class PDFReader extends JFrame
         viewMenu = new JMenu();
         nextPageItem = new JMenuItem();
         previousPageItem = new JMenuItem();
+        firstPageItem = new JMenuItem();
+        lastPageItem = new JMenuItem();
 
         setTitle(BASETITLE);
         addWindowListener(new java.awt.event.WindowAdapter()
@@ -230,16 +237,63 @@ public class PDFReader extends JFrame
             }
         };
 
+        Action firstPageAction = new AbstractAction()
+        {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                try
+                {
+                    firstPage();
+                }
+                catch (IOException e)
+                {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+
+        Action lastPageAction = new AbstractAction()
+        {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                try
+                {
+                    lastPage();
+                }
+                catch (IOException e)
+                {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+
         viewMenu.setText("View");
         nextPageItem.setText("Next page");
         nextPageItem.setAccelerator(KeyStroke.getKeyStroke('+'));
         nextPageItem.addActionListener(nextPageAction);
+        nextPageItem.setEnabled(false);
         viewMenu.add(nextPageItem);
 
         previousPageItem.setText("Previous page");
         previousPageItem.setAccelerator(KeyStroke.getKeyStroke('-'));
         previousPageItem.addActionListener(previousPageAction);
+        previousPageItem.setEnabled(false);
         viewMenu.add(previousPageItem);
+
+        viewMenu.addSeparator();
+        firstPageItem.setText("First Page");
+        firstPageItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, InputEvent.CTRL_DOWN_MASK));
+        firstPageItem.addActionListener(firstPageAction);
+        firstPageItem.setEnabled(false);
+        viewMenu.add(firstPageItem);
+
+        lastPageItem.setText("Last Page");
+        lastPageItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_END, InputEvent.CTRL_DOWN_MASK));
+        lastPageItem.addActionListener(lastPageAction);
+        lastPageItem.setEnabled(false);
+        viewMenu.add(lastPageItem);
 
         menuBar.add(viewMenu);
 
@@ -248,8 +302,14 @@ public class PDFReader extends JFrame
         InputMap documentInputMap = documentPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         documentInputMap.put(KeyStroke.getKeyStroke("PAGE_UP"), PREVIOUS_PAGE);
         documentInputMap.put(KeyStroke.getKeyStroke("PAGE_DOWN"), NEXT_PAGE);
-        documentPanel.getActionMap().put(PREVIOUS_PAGE, previousPageAction);
-        documentPanel.getActionMap().put(NEXT_PAGE, nextPageAction);
+        documentInputMap.put(KeyStroke.getKeyStroke("HOME"), FIRST_PAGE);
+        documentInputMap.put(KeyStroke.getKeyStroke("END"), LAST_PAGE);
+
+        ActionMap documentActionMap = documentPanel.getActionMap();
+        documentActionMap.put(PREVIOUS_PAGE, previousPageAction);
+        documentActionMap.put(NEXT_PAGE, nextPageAction);
+        documentActionMap.put(FIRST_PAGE, firstPageAction);
+        documentActionMap.put(LAST_PAGE, lastPageAction);
 
         JScrollBar verticalScroller = documentScroller.getVerticalScrollBar();
         verticalScroller.setUnitIncrement(20);
@@ -282,6 +342,24 @@ public class PDFReader extends JFrame
         {
             currentPage--;
             updateTitle();
+            showPage(currentPage);
+        }
+    }
+
+    private void firstPage() throws IOException
+    {
+        if (currentPage > 0)
+        {
+            currentPage = 0;
+            showPage(currentPage);
+        }
+    }
+
+    private void lastPage() throws IOException
+    {
+        if (currentPage < numberOfPages - 1)
+        {
+            currentPage = numberOfPages - 1;
             showPage(currentPage);
         }
     }
@@ -388,6 +466,32 @@ public class PDFReader extends JFrame
         }
         documentPanel.add(wrapper.getPanel());
         pack();
+        updateViewMenu();
+    }
+
+    private void updateViewMenu()
+    {
+        if (currentPage == 0)
+        {
+            nextPageItem.setEnabled(true);
+            previousPageItem.setEnabled(false);
+            firstPageItem.setEnabled(false);
+            lastPageItem.setEnabled(true);
+        }
+        else if (currentPage == numberOfPages - 1)
+        {
+            nextPageItem.setEnabled(false);
+            previousPageItem.setEnabled(true);
+            firstPageItem.setEnabled(true);
+            lastPageItem.setEnabled(false);
+        }
+        else
+        {
+            nextPageItem.setEnabled(true);
+            previousPageItem.setEnabled(true);
+            firstPageItem.setEnabled(true);
+            lastPageItem.setEnabled(true);
+        }
     }
 
     private void saveImage() throws IOException
