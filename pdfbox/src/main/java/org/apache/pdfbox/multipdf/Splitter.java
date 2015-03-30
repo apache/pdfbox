@@ -233,11 +233,8 @@ public class Splitter
                     ((PDPageDestination) destination).setPage(null);
                 }
             }
-            else
-            {
-                // TODO preserve links to pages within the splitted result  
-                annotation.setPage(null);
-            }
+            // TODO preserve links to pages within the splitted result  
+            annotation.setPage(null);
         }
     }
     /**
