@@ -249,7 +249,7 @@ public class ExtractImages
         }
 
         @Override
-        public Point2D.Float getCurrentPoint() throws IOException
+        public Point2D getCurrentPoint() throws IOException
         {
             return new Point2D.Float(0, 0);
         }
