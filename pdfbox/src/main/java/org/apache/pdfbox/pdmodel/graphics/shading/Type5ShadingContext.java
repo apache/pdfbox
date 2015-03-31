@@ -83,18 +83,25 @@ class Type5ShadingContext extends GouraudShadingContext
         COSStream cosStream = (COSStream) cosDictionary;
 
         ImageInputStream mciis = new MemoryCacheImageInputStream(cosStream.getUnfilteredStream());
-        while (true)
+        try
         {
-            Vertex p;
-            try
+            while (true)
             {
-                p = readVertex(mciis, maxSrcCoord, maxSrcColor, rangeX, rangeY, colRange, matrix, xform);
-                vlist.add(p);
+                Vertex p;
+                try
+                {
+                    p = readVertex(mciis, maxSrcCoord, maxSrcColor, rangeX, rangeY, colRange, matrix, xform);
+                    vlist.add(p);
+                }
+                catch (EOFException ex)
+                {
+                    break;
+                }
             }
-            catch (EOFException ex)
-            {
-                break;
-            }
+        }
+        finally
+        {
+            mciis.close();
         }
         int sz = vlist.size(), rowNum = sz / numPerRow;
         Vertex[][] latticeArray = new Vertex[rowNum][numPerRow];
