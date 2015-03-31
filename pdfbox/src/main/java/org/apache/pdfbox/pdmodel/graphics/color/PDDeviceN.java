@@ -16,13 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.color;
 
-import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSNull;
-import org.apache.pdfbox.pdmodel.common.COSArrayList;
-import org.apache.pdfbox.pdmodel.common.function.PDFunction;
-
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -33,6 +26,14 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSNull;
+import org.apache.pdfbox.pdmodel.common.COSArrayList;
+import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 
 /**
  * DeviceN colour spaces may contain an arbitrary number of colour components.
@@ -484,13 +485,74 @@ public class PDDeviceN extends PDSpecialColorSpace
         else
         {
             // make sure array is large enough
-            while(array.size() <= DEVICEN_ATTRIBUTES + 1)
+            while (array.size() <= DEVICEN_ATTRIBUTES)
             {
                 array.add(COSNull.NULL);
             }
             array.set(DEVICEN_ATTRIBUTES, attributes.getCOSDictionary());
         }
     }
+ 
+    /**
+     * This will get the alternate color space for this separation.
+     *
+     * @return The alternate color space.
+     *
+     * @throws IOException If there is an error getting the alternate color
+     * space.
+     */
+    public PDColorSpace getAlternateColorSpace() throws IOException
+    {
+        if (alternateColorSpace == null)
+        {
+            alternateColorSpace = PDColorSpace.create(array.getObject(ALTERNATE_CS));
+        }
+        return alternateColorSpace;
+    }
+
+    /**
+     * This will set the alternate color space.
+     *
+     * @param cs The alternate color space.
+     */
+    public void setAlternateColorSpace(PDColorSpace cs)
+    {
+        alternateColorSpace = cs;
+        COSBase space = null;
+        if (cs != null)
+        {
+            space = cs.getCOSObject();
+        }
+        array.set(ALTERNATE_CS, space);
+    }
+
+    /**
+     * This will get the tint transform function.
+     *
+     * @return The tint transform function.
+     *
+     * @throws IOException if there is an error creating the function.
+     */
+    public PDFunction getTintTransform() throws IOException
+    {
+        if (tintTransform == null)
+        {
+            tintTransform = PDFunction.create(array.getObject(TINT_TRANSFORM));
+        }
+        return tintTransform;
+    }
+
+    /**
+     * This will set the tint transform function.
+     *
+     * @param tint The tint transform function.
+     */
+    public void setTintTransform(PDFunction tint)
+    {
+        tintTransform = tint;
+        array.set(TINT_TRANSFORM, tint);
+    }
+
 
     @Override
     public String toString()
