@@ -65,7 +65,7 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
     {
         super(shading, colorModel, xform, matrix, deviceBounds);
         patchMeshesShadingType = shading;
-        bitsPerFlag = ((PDShadingType6) shading).getBitsPerFlag();
+        bitsPerFlag = ((PDShadingType4) shading).getBitsPerFlag();
         patchList = new ArrayList<Patch>();
     }
 
@@ -214,8 +214,8 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
                 for (int j = 0; j < numberOfColorComponents; j++)
                 {
                     long c = input.readBits(bitsPerColorComponent);
-                    color[i][j] = (float) interpolate(c, maxSrcColor, colRange[j].getMin(),
-                                                      colRange[j].getMax());
+                    color[i][j] = interpolate(c, maxSrcColor, colRange[j].getMin(),
+                            colRange[j].getMax());
                 }
             }
         }
