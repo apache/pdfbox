@@ -95,6 +95,10 @@ public class JPXFilter implements Filter
                 LOG.error("Image data buffer not of type byte but type " + dBuf.getDataType());
             }
         }
+        else
+        {
+            LOG.error("ImageIO.read() did not return any data - is JAI installed?");
+        }
     }
 
     /**
