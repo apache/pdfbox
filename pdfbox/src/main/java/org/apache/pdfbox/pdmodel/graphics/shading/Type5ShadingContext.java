@@ -52,7 +52,7 @@ class Type5ShadingContext extends GouraudShadingContext
      * @param matrix the pattern matrix concatenated with that of the parent content stream
      * @throws IOException if something went wrong
      */
-    public Type5ShadingContext(PDShadingType5 shading, ColorModel cm, AffineTransform xform,
+    Type5ShadingContext(PDShadingType5 shading, ColorModel cm, AffineTransform xform,
                                Matrix matrix, Rectangle deviceBounds) throws IOException
     {
         super(shading, cm, xform, matrix, deviceBounds);
