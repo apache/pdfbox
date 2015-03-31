@@ -113,6 +113,7 @@ public class TestTextStripper extends TestCase
     /**
      * Test suite setup.
      */
+    @Override
     public void setUp()
     {
         // If you want to test a single file using DEBUG logging, from an IDE,
@@ -174,8 +175,11 @@ public class TestTextStripper extends TestCase
                 }
             }
         }
-        else equals = ( expected == null && actual != null && actual.trim().isEmpty(  ) ) ||
-                ( actual == null && expected != null && expected.trim().isEmpty(  ) );
+        else
+        {
+            equals = (expected == null && actual != null && actual.trim().isEmpty())
+                    || (actual == null && expected != null && expected.trim().isEmpty());
+        }
         return equals;
     }
 
@@ -230,10 +234,9 @@ public class TestTextStripper extends TestCase
         //System.out.println("  " + inFile + (bSort ? " (sorted)" : ""));
         PDDocument document = PDDocument.load(inFile);
         try
-        {
-            
-            File outFile = null;
-            File expectedFile = null;
+        {            
+            File outFile;
+            File expectedFile;
 
             if(bSort)
             {
@@ -320,6 +323,8 @@ public class TestTextStripper extends TestCase
                     break;
                 }
             }
+            expectedReader.close();
+            actualReader.close();
         }
         finally
         {
@@ -336,6 +341,7 @@ public class TestTextStripper extends TestCase
     {
         File[] testFiles = inDir.listFiles(new FilenameFilter() 
         {
+            @Override
             public boolean accept(File dir, String name) 
             {
                 return (name.endsWith(".pdf"));
