@@ -49,7 +49,7 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
      * @param matrix the pattern matrix concatenated with that of the parent content stream
      * @param deviceBounds device bounds
      */
-    public Type1ShadingContext(PDShadingType1 shading, ColorModel colorModel, AffineTransform xform,
+    Type1ShadingContext(PDShadingType1 shading, ColorModel colorModel, AffineTransform xform,
                                Matrix matrix, Rectangle deviceBounds) throws IOException
     {
         super(shading, colorModel, xform, matrix, deviceBounds);

@@ -43,7 +43,7 @@ class Type7ShadingContext extends PatchMeshesShadingContext
      * @param deviceBounds device bounds
      * @throws IOException if something went wrong
      */
-    public Type7ShadingContext(PDShadingType7 shading, ColorModel colorModel, AffineTransform xform,
+    Type7ShadingContext(PDShadingType7 shading, ColorModel colorModel, AffineTransform xform,
                                Matrix matrix, Rectangle deviceBounds) throws IOException
     {
         super(shading, colorModel, xform, matrix, deviceBounds);

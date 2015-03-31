@@ -52,14 +52,15 @@ class Type4ShadingContext extends GouraudShadingContext
      * @param xform transformation for user to device space
      * @param matrix the pattern matrix concatenated with that of the parent content stream
      */
-    public Type4ShadingContext(PDShadingType4 shading, ColorModel cm, AffineTransform xform,
+    Type4ShadingContext(PDShadingType4 shading, ColorModel cm, AffineTransform xform,
                                Matrix matrix, Rectangle deviceBounds) throws IOException
     {
         super(shading, cm, xform, matrix, deviceBounds);
         LOG.debug("Type4ShadingContext");
 
         bitsPerFlag = shading.getBitsPerFlag();
-        LOG.debug("bitsPerFlag: " + bitsPerFlag); //TODO handle cases where bitperflag isn't 8
+        //TODO handle cases where bitperflag isn't 8
+        LOG.debug("bitsPerFlag: " + bitsPerFlag);
         triangleList = getTriangleList(xform, matrix);
         createPixelTable();
     }
