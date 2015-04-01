@@ -35,7 +35,7 @@ import org.apache.pdfbox.util.Matrix;
  */
 public abstract class PDShading implements COSObjectable
 {
-    private COSDictionary dictionary;
+    private final COSDictionary dictionary;
     private COSArray background = null;
     private PDRectangle bBox = null;
     private PDColorSpace colorSpace = null;
@@ -110,6 +110,7 @@ public abstract class PDShading implements COSObjectable
      *
      * @return the cos object that matches this Java object
      */
+    @Override
     public COSBase getCOSObject()
     {
         return dictionary;
@@ -341,7 +342,7 @@ public abstract class PDShading implements COSObjectable
      * This will return the function used to convert the color values.
      *
      * @return the function
-     * @exception IOException if we are unable to create the PDFunction object
+     * @throws java.io.IOException if we were not able to create the function.
      */
     public PDFunction getFunction() throws IOException
     {
@@ -409,7 +410,7 @@ public abstract class PDShading implements COSObjectable
     {
         PDFunction[] functions = getFunctionsArray();
         int numberOfFunctions = functions.length;
-        float[] returnValues = null;
+        float[] returnValues;
         if (numberOfFunctions == 1)
         {
             returnValues = functions[0].eval(input);

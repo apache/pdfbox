@@ -42,7 +42,7 @@ class Line
      * @param c0 color of point p0
      * @param c1 color of point p1
      */
-    public Line(Point p0, Point p1, float[] c0, float[] c1)
+    Line(Point p0, Point p1, float[] c0, float[] c1)
     {
         point0 = p0;
         point1 = p1;
@@ -81,13 +81,13 @@ class Line
             int e2 = 2 * err;
             if (e2 > -dy)
             {
-                err = err - dy;
-                x0 = x0 + sx;
+                err -= dy;
+                x0 += sx;
             }
             if (e2 < dx)
             {
-                err = err + dx;
-                y0 = y0 + sy;
+                err += dx;
+                y0 += sy;
             }
         }
         return points;
@@ -113,7 +113,7 @@ class Line
             float l = point1.y - point0.y;
             for (int i = 0; i < numberOfColorComponents; i++)
             {
-                pc[i] = (float) (color0[i] * (point1.y - p.y) / l
+                pc[i] = (color0[i] * (point1.y - p.y) / l
                         + color1[i] * (p.y - point0.y) / l);
             }
         }
@@ -122,7 +122,7 @@ class Line
             float l = point1.x - point0.x;
             for (int i = 0; i < numberOfColorComponents; i++)
             {
-                pc[i] = (float) (color0[i] * (point1.x - p.x) / l
+                pc[i] = (color0[i] * (point1.x - p.x) / l
                         + color1[i] * (p.x - point0.x) / l);
             }
         }

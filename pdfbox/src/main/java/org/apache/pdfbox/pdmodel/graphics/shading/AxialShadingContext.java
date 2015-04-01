@@ -132,6 +132,7 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
      *
      * @return an array, index denotes the relative position, the corresponding
      * value is the color on the axial line
+     * @throws IOException if the color conversion fails.
      */
     private int[] calcColorTable() throws IOException
     {
@@ -145,7 +146,7 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
         {
             for (int i = 0; i <= factor; i++)
             {
-                float t = domain[0] + d1d0 * i / (float) factor;
+                float t = domain[0] + d1d0 * i / factor;
                 float[] values = axialShadingType.evalFunction(t);
                 map[i] = convertToRGB(values);
             }
@@ -292,6 +293,8 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
 
     /**
      * Returns the function.
+     *
+     * @throws java.io.IOException if we were not able to create the function.
      */
     public PDFunction getFunction() throws IOException
     {

@@ -47,7 +47,7 @@ class Type6ShadingPaint implements Paint
      * @param shading the shading resources
      * @param matrix the pattern matrix concatenated with that of the parent content stream
      */
-    public Type6ShadingPaint(PDShadingType6 shading, Matrix matrix)
+    Type6ShadingPaint(PDShadingType6 shading, Matrix matrix)
     {
         this.shading = shading;
         this.matrix = matrix;

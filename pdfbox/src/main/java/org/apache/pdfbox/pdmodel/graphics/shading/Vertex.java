@@ -28,7 +28,7 @@ class Vertex
     public Point2D point;
     public float[] color;
 
-    public Vertex(Point2D p, float[] c)
+    Vertex(Point2D p, float[] c)
     {
         point = p;
         color = c.clone();
