@@ -180,7 +180,7 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
         {
             for (int i = 0; i <= factor; i++)
             {
-                float t = domain[0] + d1d0 * i / (float) factor;
+                float t = domain[0] + d1d0 * i / factor;
                 float[] values = radialShadingType.evalFunction(t);
                 map[i] = convertToRGB(values);
             }
@@ -407,6 +407,8 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
 
     /**
      * Returns the function.
+     *
+     * @throws java.io.IOException if we were not able to create the function.
      */
     public PDFunction getFunction() throws IOException
     {

@@ -37,8 +37,8 @@ class Type5ShadingPaint implements Paint
 {
     private static final Log LOG = LogFactory.getLog(Type5ShadingPaint.class);
 
-    private PDShadingType5 shading;
-    private Matrix matrix;
+    private final PDShadingType5 shading;
+    private final Matrix matrix;
 
     /**
      * Constructor.

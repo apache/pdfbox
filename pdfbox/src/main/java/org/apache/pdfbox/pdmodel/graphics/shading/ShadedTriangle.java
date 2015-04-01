@@ -55,7 +55,7 @@ class ShadedTriangle
      * @param p an array of the 3 vertices of a triangle
      * @param c an array of color corresponding the vertex array p
      */
-    public ShadedTriangle(Point2D[] p, float[][] c)
+    ShadedTriangle(Point2D[] p, float[][] c)
     {
         corner = p.clone();
         color = c.clone();

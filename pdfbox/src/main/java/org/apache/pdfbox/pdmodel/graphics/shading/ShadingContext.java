@@ -120,10 +120,9 @@ public abstract class ShadingContext
      */
     protected final int convertToRGB(float[] values) throws IOException
     {
-        float[] rgbValues;
-        int normRGBValues = 0;
+        int normRGBValues;
 
-        rgbValues = shadingColorSpace.toRGB(values);
+        float[] rgbValues = shadingColorSpace.toRGB(values);
         normRGBValues = (int) (rgbValues[0] * 255);
         normRGBValues |= (int) (rgbValues[1] * 255) << 8;
         normRGBValues |= (int) (rgbValues[2] * 255) << 16;

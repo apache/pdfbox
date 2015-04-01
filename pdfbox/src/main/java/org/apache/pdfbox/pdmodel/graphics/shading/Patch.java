@@ -45,7 +45,7 @@ abstract class Patch
      * type 7 shading)
      * @param color 4 corner's colors
      */
-    public Patch(Point2D[] ctl, float[][] color)
+    Patch(Point2D[] ctl, float[][] color)
     {
         cornerColor = color.clone();
     }

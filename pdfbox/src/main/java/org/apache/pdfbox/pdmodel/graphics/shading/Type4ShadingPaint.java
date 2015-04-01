@@ -37,8 +37,8 @@ class Type4ShadingPaint implements Paint
 {
     private static final Log LOG = LogFactory.getLog(Type4ShadingPaint.class);
 
-    private PDShadingType4 shading;
-    private Matrix matrix;
+    private final PDShadingType4 shading;
+    private final Matrix matrix;
 
     /**
      * Constructor.

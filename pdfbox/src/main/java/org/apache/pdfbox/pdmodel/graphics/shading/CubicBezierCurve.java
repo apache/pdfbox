@@ -37,7 +37,7 @@ class CubicBezierCurve
      * into 2^0 = 1 segments, if l = n, one cubic Bezier curve is divided into
      * 2^n segments
      */
-    public CubicBezierCurve(Point2D[] ctrlPnts, int l)
+    CubicBezierCurve(Point2D[] ctrlPnts, int l)
     {
         controlPoints = ctrlPnts.clone();
         level = l;
@@ -49,7 +49,7 @@ class CubicBezierCurve
      *
      * @return level
      */
-    public int getLevel()
+    int getLevel()
     {
         return level;
     }
@@ -86,7 +86,7 @@ class CubicBezierCurve
      *
      * @return sampled points
      */
-    public Point2D[] getCubicBezierCurve()
+    Point2D[] getCubicBezierCurve()
     {
         return curve;
     }
