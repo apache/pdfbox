@@ -261,7 +261,7 @@ public class PDNumberTreeNode implements COSObjectable
             for (Integer key : keys)
             {
                 array.add( COSInteger.get( key ) );
-                COSObjectable obj = (COSObjectable)numbers.get( key );
+                COSObjectable obj = numbers.get( key );
                 array.add( obj );
             }
             Integer lower = null;
