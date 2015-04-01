@@ -46,7 +46,7 @@ class PDFCloneUtility
      * Creates a new instance for the given target document.
      * @param dest the destination PDF document that will receive the clones
      */
-    public PDFCloneUtility(PDDocument dest)
+    PDFCloneUtility(PDDocument dest)
     {
         this.destination = dest;
     }
@@ -184,16 +184,6 @@ class PDFCloneUtility
               return;
               //we are done, it has already been converted. // ### Is that correct for cloneMerge???
           }
-          else if( base instanceof List )
-          {
-              COSArray array = new COSArray();
-              List<?> list = (List<?>) base;
-              for (Object obj : list)
-              {
-                  array.add(cloneForNewDocument(obj));
-              }
-              ((List<COSArray>) target).add(array);
-          }
           else if( base instanceof COSObjectable && !(base instanceof COSBase) )
           {
               cloneMerge(base.getCOSObject(), target.getCOSObject());
@@ -233,7 +223,6 @@ class PDFCloneUtility
                           cloneForNewDocument(entry.getValue()));
               }
               retval = stream.getStream();
-              target = retval;
           }
           else if( base instanceof COSDictionary )
           {
