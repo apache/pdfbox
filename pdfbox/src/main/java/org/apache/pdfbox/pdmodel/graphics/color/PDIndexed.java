@@ -52,8 +52,6 @@ public class PDIndexed extends PDColorSpace
      */
     public static final String ABBREVIATED_NAME = "I";
 
-    private COSArray array;
-
     private PDColorSpace baseColorspace = null;
     private ColorModel baseColorModel = null;
 
@@ -93,6 +91,12 @@ public class PDIndexed extends PDColorSpace
         array = indexedArray;
     }
 
+    @Override
+    public COSBase getCOSObject()
+    {
+        return array;
+    }
+    
     /**
      * This will return the number of color components. This will return the number of color components in the base
      * color.
@@ -312,7 +316,7 @@ public class PDIndexed extends PDColorSpace
             colorValues = new float[indexNumOfComponents];
             for (int i = 0; i < indexNumOfComponents; i++)
             {
-                colorValues[i] = (float) indexedColorValues[bufferIndex + i];
+                colorValues[i] = indexedColorValues[bufferIndex + i];
             }
         }
         return colorValues;
