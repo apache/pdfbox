@@ -143,7 +143,7 @@ public class FDFField implements COSObjectable
         {
             for (FDFField kid : kids)
             {
-                ((FDFField) kid).writeXML(output);
+                kid.writeXML(output);
             }
         }
         output.write( "</field>\n");
@@ -154,6 +154,7 @@ public class FDFField implements COSObjectable
      *
      * @return The cos object that matches this Java object.
      */
+    @Override
     public COSBase getCOSObject()
     {
         return field;
@@ -776,7 +777,7 @@ public class FDFField implements COSObjectable
             default:
                 if (c > 0x7e)
                 {
-                    escapedXML.append("&#" + ((int) c) + ";");
+                    escapedXML.append("&#").append((int) c).append(";");
                 }
                 else
                 {
