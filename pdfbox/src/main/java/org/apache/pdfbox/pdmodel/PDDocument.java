@@ -38,7 +38,6 @@ import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.cos.COSUpdateInfo;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
 import org.apache.pdfbox.pdfparser.BaseParser;
@@ -262,7 +261,7 @@ public class PDDocument implements Closeable
         for (PDFieldTreeNode field : acroFormFields)
         {
             if (field instanceof PDSignatureField
-                    && ((PDSignatureField) field).getCOSObject().equals(signatureField.getCOSObject()))
+                    && field.getCOSObject().equals(signatureField.getCOSObject()))
             {
                 checkFields = true;
                 signatureField.getDictionary().setNeedToBeUpdated(true);
@@ -372,7 +371,7 @@ public class PDDocument implements Closeable
         {
             annotations.add(signatureField.getWidget());
         }
-        ((COSUpdateInfo)page.getCOSObject()).setNeedToBeUpdated(true);
+        page.getCOSObject().setNeedToBeUpdated(true);
     }
 
     /**
@@ -387,7 +386,7 @@ public class PDDocument implements Closeable
             SignatureOptions options) throws IOException
     {
         PDDocumentCatalog catalog = getDocumentCatalog();
-        ((COSUpdateInfo) catalog.getCOSObject()).setNeedToBeUpdated(true);
+        catalog.getCOSObject().setNeedToBeUpdated(true);
 
         PDAcroForm acroForm = catalog.getAcroForm();
         if (acroForm == null)
