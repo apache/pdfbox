@@ -46,7 +46,7 @@ public class PDOptionalContentProperties implements COSObjectable
         /** The "Unchanged" value. */
         UNCHANGED(COSName.UNCHANGED);
 
-        private COSName name;
+        private final COSName name;
 
         private BaseState(COSName value)
         {
@@ -78,7 +78,7 @@ public class PDOptionalContentProperties implements COSObjectable
 
     }
 
-    private COSDictionary dict;
+    private final COSDictionary dict;
 
     /**
      * Creates a new optional content properties dictionary.
@@ -100,6 +100,7 @@ public class PDOptionalContentProperties implements COSObjectable
     }
 
     /** {@inheritDoc} */
+    @Override
     public COSBase getCOSObject()
     {
         return this.dict;
@@ -214,7 +215,7 @@ public class PDOptionalContentProperties implements COSObjectable
         String[] groups = new String[size];
         for (int i = 0; i < size; i++)
         {
-            COSBase obj = (COSBase)ocgs.get(i);
+            COSBase obj = ocgs.get(i);
             COSDictionary ocg = toDictionary(obj);
             groups[i] = ocg.getString(COSName.NAME);
         }
