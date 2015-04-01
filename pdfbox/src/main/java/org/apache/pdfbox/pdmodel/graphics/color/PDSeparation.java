@@ -71,6 +71,12 @@ public class PDSeparation extends PDColorSpace
         array = separation;
     }
 
+    @Override
+    public COSBase getCOSObject()
+    {
+        return array;
+    }
+
     /**
      * This will return the name of the color space.  For a PDSeparation object
      * this will always return "Separation"
