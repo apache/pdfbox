@@ -31,7 +31,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
  */
 public final class PDGroup implements COSObjectable
 {
-    private COSDictionary dictionary;
+    private final COSDictionary dictionary;
     private COSName subType;
     private PDColorSpace colorSpace;
 
@@ -44,6 +44,7 @@ public final class PDGroup implements COSObjectable
         dictionary = dic;
     }
 
+    @Override
     public COSBase getCOSObject()
     {
         return dictionary;

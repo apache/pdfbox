@@ -68,7 +68,7 @@ public final class PDSoftMask implements COSObjectable
 
     private static final Log LOG = LogFactory.getLog(PDSoftMask.class);
 
-    private COSDictionary dictionary;
+    private final COSDictionary dictionary;
     private COSName subType = null;
     private PDFormXObject group = null;
     private COSArray backdropColor = null;
@@ -83,6 +83,7 @@ public final class PDSoftMask implements COSObjectable
         this.dictionary = dictionary;
     }
 
+    @Override
     public COSBase getCOSObject()
     {
         return dictionary;
