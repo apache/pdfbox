@@ -17,7 +17,10 @@
 package org.apache.pdfbox.pdmodel.graphics.image;
 
 import java.awt.Transparency;
+import java.awt.color.ColorSpace;
+import java.awt.color.ICC_ColorSpace;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorConvertOp;
 import java.awt.image.WritableRaster;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -25,27 +28,31 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Iterator;
-
 import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
 import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.ImageWriter;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
+import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
+
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.filter.MissingImageReaderException;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.w3c.dom.Element;
 
 /**
  * Factory for creating a PDImageXObject containing a JPEG compressed image.
  * @author John Hewson
  */
-public final class JPEGFactory extends ImageFactory
+public final class JPEGFactory
 {
     private JPEGFactory()
     {
@@ -205,7 +212,6 @@ public final class JPEGFactory extends ImageFactory
         encodeImageToJPEGStream(awtColorImage, quality, dpi, baos);
         ByteArrayInputStream byteStream = new ByteArrayInputStream(baos.toByteArray());
         
-        
         PDImageXObject pdImage = new PDImageXObject(document, byteStream, 
                 COSName.DCT_DECODE, awtColorImage.getWidth(), awtColorImage.getHeight(), 
                 awtColorImage.getColorModel().getComponentSize(0),
@@ -264,5 +270,59 @@ public final class JPEGFactory extends ImageFactory
                 imageWriter.dispose();
             }
         }
+    }
+    
+    // returns a PDColorSpace for a given BufferedImage
+    private static PDColorSpace getColorSpaceFromAWT(BufferedImage awtImage)
+    {
+        if (awtImage.getColorModel().getNumComponents() == 1)
+        {
+            // 256 color (gray) JPEG
+            return PDDeviceGray.INSTANCE;
+        }
+        
+        ColorSpace awtColorSpace = awtImage.getColorModel().getColorSpace();
+        if (awtColorSpace instanceof ICC_ColorSpace && !awtColorSpace.isCS_sRGB())
+        {
+            throw new UnsupportedOperationException("ICC color spaces not implemented");
+        }
+        
+        switch (awtColorSpace.getType())
+        {
+            case ColorSpace.TYPE_RGB:
+                return PDDeviceRGB.INSTANCE;
+            case ColorSpace.TYPE_GRAY:
+                return PDDeviceGray.INSTANCE;
+            case ColorSpace.TYPE_CMYK:
+                return PDDeviceCMYK.INSTANCE;
+            default:
+                throw new UnsupportedOperationException("color space not implemented: "
+                        + awtColorSpace.getType());
+        }
+    }
+
+    // returns the color channels of an image
+    private static BufferedImage getColorImage(BufferedImage image)
+    {
+        if (!image.getColorModel().hasAlpha())
+        {
+            return image;
+        }
+
+        if (image.getColorModel().getColorSpace().getType() != ColorSpace.TYPE_RGB)
+        {
+            throw new UnsupportedOperationException("only RGB color spaces are implemented");
+        }
+
+        // create an RGB image without alpha
+        //BEWARE: the previous solution in the history 
+        // g.setComposite(AlphaComposite.Src) and g.drawImage()
+        // didn't work properly for TYPE_4BYTE_ABGR.
+        // alpha values of 0 result in a black dest pixel!!!
+        BufferedImage rgbImage = new BufferedImage(
+                image.getWidth(),
+                image.getHeight(),
+                BufferedImage.TYPE_3BYTE_BGR);
+        return new ColorConvertOp(null).filter(image, rgbImage);
     }
 }
