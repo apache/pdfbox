@@ -40,7 +40,7 @@ final class ToUnicodeWriter
     /**
      * Creates a new ToUnicode CMap writer.
      */
-    public ToUnicodeWriter()
+    ToUnicodeWriter()
     {
         this.wMode = 0;
     }
