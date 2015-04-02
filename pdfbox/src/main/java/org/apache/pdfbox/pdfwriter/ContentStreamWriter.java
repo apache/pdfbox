@@ -40,7 +40,7 @@ import org.apache.pdfbox.contentstream.operator.Operator;
  */
 public class ContentStreamWriter
 {
-    private OutputStream output;
+    private final OutputStream output;
     /**
      * space character.
      */

@@ -37,8 +37,8 @@ import org.apache.pdfbox.cos.COSObjectKey;
  */
 public class PDFXrefStreamParser extends BaseParser
 {
-    private COSStream stream;
-    private XrefTrailerResolver xrefTrailerResolver;
+    private final COSStream stream;
+    private final XrefTrailerResolver xrefTrailerResolver;
 
     /**
      * Constructor.
