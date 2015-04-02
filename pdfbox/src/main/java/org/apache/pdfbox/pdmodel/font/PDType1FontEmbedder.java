@@ -61,7 +61,7 @@ class PDType1FontEmbedder
      * @param pfbStream The pfb input.
      * @throws IOException If there is an error loading the data.
      */
-    public PDType1FontEmbedder(PDDocument doc, COSDictionary dict, InputStream afmStream,
+    PDType1FontEmbedder(PDDocument doc, COSDictionary dict, InputStream afmStream,
                                InputStream pfbStream) throws IOException
     {
         dict.setItem(COSName.SUBTYPE, COSName.TYPE1);
@@ -98,7 +98,6 @@ class PDType1FontEmbedder
 
         // widths
         List<CharMetric> listmetric = metrics.getCharMetrics();
-        Encoding encoding = getFontEncoding();
         int maxWidths = 256;
         List<Integer> widths = new ArrayList<Integer>(maxWidths);
         int zero = 250;
