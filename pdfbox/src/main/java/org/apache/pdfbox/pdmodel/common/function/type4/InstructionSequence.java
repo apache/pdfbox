@@ -27,7 +27,7 @@ import java.util.Stack;
 public class InstructionSequence
 {
 
-    private final List<Object> instructions = new java.util.ArrayList<Object>();
+    private List<Object> instructions = new java.util.ArrayList<Object>();
 
     /**
      * Add a name (ex. an operator)
