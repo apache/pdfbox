@@ -26,8 +26,8 @@ import java.util.Stack;
 public class ExecutionContext
 {
 
-    private Operators operators;
-    private Stack<Object> stack = new Stack<Object>();
+    private final Operators operators;
+    private final Stack<Object> stack = new Stack<Object>();
 
     /**
      * Creates a new execution context.
@@ -73,7 +73,7 @@ public class ExecutionContext
      */
     public int popInt()
     {
-        return ((Integer)stack.pop()).intValue();
+        return ((Integer) stack.pop());
     }
 
     /**
