@@ -30,7 +30,7 @@ import java.util.Map;
  */
 final class CMapManager
 {
-    protected static Map<String, CMap> cMapCache =
+    static Map<String, CMap> cMapCache =
             Collections.synchronizedMap(new HashMap<String, CMap>());
 
     private CMapManager()
