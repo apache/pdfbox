@@ -19,6 +19,7 @@ package org.apache.pdfbox.pdfwriter;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +43,7 @@ import org.apache.pdfbox.util.PDFOperator;
  */
 public class ContentStreamWriter
 {
-    private final OutputStream output;
+    private OutputStream output;
     /**
      * space character.
      */
