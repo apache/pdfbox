@@ -713,9 +713,15 @@ public class PDPageContentStream implements Closeable
      * @param g The green value.
      * @param b The blue value.
      * @throws IOException If an IO error occurs while writing to the stream.
+     * @throws IllegalArgumentException If the parameters are invalid.
      */
     public void setStrokingColor(int r, int g, int b) throws IOException
     {
+        if (isOutside255Interval(r) || isOutside255Interval(g) || isOutside255Interval(b))
+        {
+            throw new IllegalArgumentException("Parameters must be within 0..255, but are "
+                    + String.format("(%d,%d,%d)", r, g, b));
+        }
         appendRawCommands(r / 255d);
         appendRawCommands(SPACE);
         appendRawCommands(g / 255d);
@@ -733,9 +739,15 @@ public class PDPageContentStream implements Closeable
      * @param y The yellow value.
      * @param k The black value.
      * @throws IOException If an IO error occurs while writing to the stream.
+     * @throws IllegalArgumentException If the parameters are invalid.
      */
     public void setStrokingColor(int c, int m, int y, int k) throws IOException
     {
+        if (isOutside255Interval(c) || isOutside255Interval(m) || isOutside255Interval(y) || isOutside255Interval(k))
+        {
+            throw new IllegalArgumentException("Parameters must be within 0..255, but are "
+                    + String.format("(%d,%d,%d,%d)", c, m, y, k));
+        }
         appendRawCommands(c / 255d);
         appendRawCommands(SPACE);
         appendRawCommands(m / 255d);
@@ -755,9 +767,15 @@ public class PDPageContentStream implements Closeable
      * @param y The yellow value.
      * @param k The black value.
      * @throws IOException If an IO error occurs while writing to the stream.
+     * @throws IllegalArgumentException If the parameters are invalid.
      */
     public void setStrokingColor(double c, double m, double y, double k) throws IOException
     {
+        if (isOutsideOneInterval(c) || isOutsideOneInterval(m) || isOutsideOneInterval(y) || isOutsideOneInterval(k))
+        {
+            throw new IllegalArgumentException("Parameters must be within 0..1, but are "
+                    + String.format("(%.2f,%.2f,%.2f,%.2f)", c, m, y, k));
+        }
         appendRawCommands(c);
         appendRawCommands(SPACE);
         appendRawCommands(m);
@@ -774,9 +792,14 @@ public class PDPageContentStream implements Closeable
      *
      * @param g The gray value.
      * @throws IOException If an IO error occurs while writing to the stream.
+     * @throws IllegalArgumentException If the parameter is invalid.
      */
     public void setStrokingColor(int g) throws IOException
     {
+        if (isOutside255Interval(g))
+        {
+            throw new IllegalArgumentException("Parameter must be within 0..255, but is " + g);
+        }
         appendRawCommands(g / 255d);
         appendRawCommands(SPACE);
         appendRawCommands(G_STROKING);
@@ -787,9 +810,14 @@ public class PDPageContentStream implements Closeable
      *
      * @param g The gray value.
      * @throws IOException If an IO error occurs while writing to the stream.
+     * @throws IllegalArgumentException If the parameter is invalid.
      */
     public void setStrokingColor(double g) throws IOException
     {
+        if (isOutsideOneInterval(g))
+        {
+            throw new IllegalArgumentException("Parameter must be within 0..1, but is " + g);
+        }
         appendRawCommands(g);
         appendRawCommands(SPACE);
         appendRawCommands(G_STROKING);
@@ -827,9 +855,15 @@ public class PDPageContentStream implements Closeable
      * @param g The green value.
      * @param b The blue value.
      * @throws IOException If an IO error occurs while writing to the stream.
+     * @throws IllegalArgumentException If the parameters are invalid.
      */
     public void setNonStrokingColor(int r, int g, int b) throws IOException
     {
+        if (isOutside255Interval(r) || isOutside255Interval(g) || isOutside255Interval(b))
+        {
+            throw new IllegalArgumentException("Parameters must be within 0..255, but are "
+                    + String.format("(%d,%d,%d)", r, g, b));
+        }
         appendRawCommands(r / 255d);
         appendRawCommands(SPACE);
         appendRawCommands(g / 255d);
@@ -847,9 +881,16 @@ public class PDPageContentStream implements Closeable
      * @param y The yellow value.
      * @param k The black value.
      * @throws IOException If an IO error occurs while writing to the stream.
+     * @throws IllegalArgumentException If the current colorspace is not
+     * DeviceCMYK, or if the parameters are invalid.
      */
     public void setNonStrokingColor(int c, int m, int y, int k) throws IOException
     {
+        if (isOutside255Interval(c) || isOutside255Interval(m) || isOutside255Interval(y) || isOutside255Interval(k))
+        {
+            throw new IllegalArgumentException("Parameters must be within 0..255, but are "
+                    + String.format("(%d,%d,%d,%d)", c, m, y, k));
+        }
         appendRawCommands(c / 255d);
         appendRawCommands(SPACE);
         appendRawCommands(m / 255d);
@@ -869,9 +910,16 @@ public class PDPageContentStream implements Closeable
      * @param y The yellow value.
      * @param k The black value.
      * @throws IOException If an IO error occurs while writing to the stream.
+     * @throws IllegalArgumentException If the current colorspace is not
+     * DeviceCMYK, or if the parameters are invalid.
      */
     public void setNonStrokingColor(double c, double m, double y, double k) throws IOException
     {
+        if (isOutsideOneInterval(c) || isOutsideOneInterval(m) || isOutsideOneInterval(y) || isOutsideOneInterval(k))
+        {
+            throw new IllegalArgumentException("Parameters must be within 0..1, but are "
+                    + String.format("(%.2f,%.2f,%.2f,%.2f)", c, m, y, k));
+        }
         appendRawCommands(c);
         appendRawCommands(SPACE);
         appendRawCommands(m);
@@ -888,9 +936,15 @@ public class PDPageContentStream implements Closeable
      *
      * @param g The gray value.
      * @throws IOException If an IO error occurs while writing to the stream.
+     * @throws IllegalArgumentException If the current colorspace is not
+     * DeviceGray, or if the parameter is invalid.
      */
     public void setNonStrokingColor(int g) throws IOException
     {
+        if (isOutside255Interval(g))
+        {
+            throw new IllegalArgumentException("Parameter must be within 0..255, but is " + g);
+        }
         appendRawCommands(g / 255d);
         appendRawCommands(SPACE);
         appendRawCommands(G_NON_STROKING);
@@ -901,9 +955,15 @@ public class PDPageContentStream implements Closeable
      *
      * @param g The gray value.
      * @throws IOException If an IO error occurs while writing to the stream.
+     * @throws IllegalArgumentException If the current colorspace is not
+     * DeviceGray, or if the parameter is invalid.
      */
     public void setNonStrokingColor(double g) throws IOException
     {
+        if (isOutsideOneInterval(g))
+        {
+            throw new IllegalArgumentException("Parameter must be within 0..1, but is " + g);
+        }
         appendRawCommands(g);
         appendRawCommands(SPACE);
         appendRawCommands(G_NON_STROKING);
@@ -1513,5 +1573,15 @@ public class PDPageContentStream implements Closeable
         currentNonStrokingColorSpace = null;
         currentStrokingColorSpace = null;
         resources = null;
+    }
+    
+    private boolean isOutside255Interval(int val)
+    {
+        return val < 0 || val > 255;
+    }
+
+    private boolean isOutsideOneInterval(double val)
+    {
+        return val < 0 || val > 1;
     }
 }
