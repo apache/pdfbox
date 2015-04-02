@@ -28,8 +28,8 @@ import java.util.regex.Pattern;
 public class InstructionSequenceBuilder extends Parser.AbstractSyntaxHandler
 {
 
-    private final InstructionSequence mainSequence = new InstructionSequence();
-    private final Stack<InstructionSequence> seqStack = new Stack<InstructionSequence>();
+    private InstructionSequence mainSequence = new InstructionSequence();
+    private Stack<InstructionSequence> seqStack = new Stack<InstructionSequence>();
 
     private InstructionSequenceBuilder()
     {
