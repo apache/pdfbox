@@ -214,12 +214,13 @@ public final class PDPageContentStream implements Closeable
      *
      * @throws IOException If there is an error writing to the stream or if you attempt to
      *         nest beginText calls.
+     * @throws IllegalStateException If the method was not allowed to be called at this time.
      */
     public void beginText() throws IOException
     {
         if (inTextMode)
         {
-            throw new IOException("Error: Nested beginText() calls are not allowed.");
+            throw new IllegalStateException("Error: Nested beginText() calls are not allowed.");
         }
         writeOperator("BT");
         inTextMode = true;
@@ -230,12 +231,13 @@ public final class PDPageContentStream implements Closeable
      *
      * @throws IOException If there is an error writing to the stream or if you attempt to
      *         nest endText calls.
+     * @throws IllegalStateException If the method was not allowed to be called at this time.
      */
     public void endText() throws IOException
     {
         if (!inTextMode)
         {
-            throw new IOException("Error: You must call beginText() before calling endText.");
+            throw new IllegalStateException("Error: You must call beginText() before calling endText.");
         }
         writeOperator("ET");
         inTextMode = false;
@@ -366,12 +368,13 @@ public final class PDPageContentStream implements Closeable
      * @param tx The x translation.
      * @param ty The y translation.
      * @throws IOException If there is an error writing to the stream.
+     * @throws IllegalStateException If the method was not allowed to be called at this time.
      */
     public void newLineAtOffset(float tx, float ty) throws IOException
     {
         if (!inTextMode)
         {
-            throw new IOException("Error: must call beginText() before newLineAtOffset()");
+            throw new IllegalStateException("Error: must call beginText() before newLineAtOffset()");
         }
         writeOperand(tx);
         writeOperand(ty);
@@ -415,12 +418,13 @@ public final class PDPageContentStream implements Closeable
      *
      * @param matrix the transformation matrix
      * @throws IOException If there is an error writing to the stream.
+     * @throws IllegalStateException If the method was not allowed to be called at this time.
      */
     public void setTextMatrix(Matrix matrix) throws IOException
     {
         if (!inTextMode)
         {
-            throw new IOException("Error: must call beginText() before setTextMatrix");
+            throw new IllegalStateException("Error: must call beginText() before setTextMatrix");
         }
         writeAffineTransform(matrix.createAffineTransform());
         writeOperator("Tm");
@@ -495,12 +499,13 @@ public final class PDPageContentStream implements Closeable
      * @param height The height to draw the image.
      *
      * @throws IOException If there is an error writing to the stream.
+     * @throws IllegalStateException If the method was called within a text block.
      */
     public void drawImage(PDImageXObject image, float x, float y, float width, float height) throws IOException
     {
         if (inTextMode)
         {
-            throw new IOException("Error: drawImage is not allowed within a text block.");
+            throw new IllegalStateException("Error: drawImage is not allowed within a text block.");
         }
 
         saveGraphicsState();
@@ -572,12 +577,13 @@ public final class PDPageContentStream implements Closeable
      * @param height The height of the inline image to draw.
      *
      * @throws IOException If there is an error writing to the stream.
+     * @throws IllegalStateException If the method was called within a text block.
      */
     public void drawImage(PDInlineImage inlineImage, float x, float y, float width, float height) throws IOException
     {
         if (inTextMode)
         {
-            throw new IOException("Error: drawImage is not allowed within a text block.");
+            throw new IllegalStateException("Error: drawImage is not allowed within a text block.");
         }
 
         saveGraphicsState();
@@ -656,6 +662,7 @@ public final class PDPageContentStream implements Closeable
      * @param xobject The xobject to draw.
      * @param transform the transformation matrix
      * @throws IOException If there is an error writing to the stream.
+     * @throws IllegalStateException If the method was called within a text block.
      * @deprecated Use {@link #drawImage} or {@link #drawForm} instead.
      */
     @Deprecated
@@ -663,7 +670,7 @@ public final class PDPageContentStream implements Closeable
     {
         if (inTextMode)
         {
-            throw new IOException("Error: drawXObject is not allowed within a text block.");
+            throw new IllegalStateException("Error: drawXObject is not allowed within a text block.");
         }
 
         String xObjectPrefix;
@@ -691,12 +698,13 @@ public final class PDPageContentStream implements Closeable
      *
      * @param form Form XObject
      * @throws IOException if the content stream could not be written
+     * @throws IllegalStateException If the method was called within a text block.
      */
     public void drawForm(PDFormXObject form) throws IOException
     {
         if (inTextMode)
         {
-            throw new IOException("Error: drawForm is not allowed within a text block.");
+            throw new IllegalStateException("Error: drawForm is not allowed within a text block.");
         }
 
         writeOperand(resources.add(form));
@@ -952,9 +960,15 @@ public final class PDPageContentStream implements Closeable
      * @param g The green value.
      * @param b The blue value.
      * @throws IOException If an IO error occurs while writing to the stream.
+     * @throws IllegalArgumentException If the parameters are invalid.
      */
     public void setStrokingColor(int r, int g, int b) throws IOException
     {
+        if (isOutside255Interval(r) || isOutside255Interval(g) || isOutside255Interval(b))
+        {
+            throw new IllegalArgumentException("Parameters must be within 0..255, but are "
+                    + String.format("(%d,%d,%d)", r, g, b));
+        }
         writeOperand(r / 255f);
         writeOperand(g / 255f);
         writeOperand(b / 255f);
@@ -969,11 +983,17 @@ public final class PDPageContentStream implements Closeable
      * @param y The yellow value.
      * @param k The black value.
      * @throws IOException If an IO error occurs while writing to the stream.
+     * @throws IllegalArgumentException If the parameters are invalid.
      * @deprecated Use {@link #setStrokingColor(float, float, float, float)} instead.
      */
     @Deprecated
     public void setStrokingColor(int c, int m, int y, int k) throws IOException
     {
+        if (isOutside255Interval(c) || isOutside255Interval(m) || isOutside255Interval(y) || isOutside255Interval(k))
+        {
+            throw new IllegalArgumentException("Parameters must be within 0..255, but are "
+                    + String.format("(%d,%d,%d,%d)", c, m, y, k));
+        }
         setStrokingColor(c / 255f, m / 255f, y / 255f, k / 255f);
     }
 
@@ -985,9 +1005,15 @@ public final class PDPageContentStream implements Closeable
      * @param y The yellow value.
      * @param k The black value.
      * @throws IOException If an IO error occurs while writing to the stream.
+     * @throws IllegalArgumentException If the parameters are invalid.
      */
     public void setStrokingColor(float c, float m, float y, float k) throws IOException
     {
+        if (isOutsideOneInterval(c) || isOutsideOneInterval(m) || isOutsideOneInterval(y) || isOutsideOneInterval(k))
+        {
+            throw new IllegalArgumentException("Parameters must be within 0..1, but are "
+                    + String.format("(%.2f,%.2f,%.2f,%.2f)", c, m, y, k));
+        }
         writeOperand(c);
         writeOperand(m);
         writeOperand(y);
@@ -1000,11 +1026,16 @@ public final class PDPageContentStream implements Closeable
      *
      * @param g The gray value.
      * @throws IOException If an IO error occurs while writing to the stream.
+     * @throws IllegalArgumentException If the parameter is invalid.
      * @deprecated Use {@link #setStrokingColor(double)} instead.
      */
     @Deprecated
     public void setStrokingColor(int g) throws IOException
     {
+        if (isOutside255Interval(g))
+        {
+            throw new IllegalArgumentException("Parameter must be within 0..255, but is " + g);
+        }
         setStrokingColor(g / 255f);
     }
 
@@ -1013,9 +1044,14 @@ public final class PDPageContentStream implements Closeable
      *
      * @param g The gray value.
      * @throws IOException If an IO error occurs while writing to the stream.
+     * @throws IllegalArgumentException If the parameter is invalid.
      */
     public void setStrokingColor(double g) throws IOException
     {
+        if (isOutsideOneInterval(g))
+        {
+            throw new IllegalArgumentException("Parameter must be within 0..1, but is " + g);
+        }
         writeOperand((float) g);
         writeOperator("G");
     }
@@ -1123,9 +1159,15 @@ public final class PDPageContentStream implements Closeable
      * @param g The green value.
      * @param b The blue value.
      * @throws IOException If an IO error occurs while writing to the stream.
+     * @throws IllegalArgumentException If the parameters are invalid.
      */
     public void setNonStrokingColor(int r, int g, int b) throws IOException
     {
+        if (isOutside255Interval(r) || isOutside255Interval(g) || isOutside255Interval(b))
+        {
+            throw new IllegalArgumentException("Parameters must be within 0..255, but are "
+                    + String.format("(%d,%d,%d)", r, g, b));
+        }
         writeOperand(r / 255f);
         writeOperand(g / 255f);
         writeOperand(b / 255f);
@@ -1140,9 +1182,15 @@ public final class PDPageContentStream implements Closeable
      * @param y The yellow value.
      * @param k The black value.
      * @throws IOException If an IO error occurs while writing to the stream.
+     * @throws IllegalArgumentException If the parameters are invalid.
      */
     public void setNonStrokingColor(int c, int m, int y, int k) throws IOException
     {
+        if (isOutside255Interval(c) || isOutside255Interval(m) || isOutside255Interval(y) || isOutside255Interval(k))
+        {
+            throw new IllegalArgumentException("Parameters must be within 0..255, but are "
+                    + String.format("(%d,%d,%d,%d)", c, m, y, k));
+        }
         setNonStrokingColor(c / 255f, m / 255f, y / 255f, k / 255f);
     }
 
@@ -1157,6 +1205,11 @@ public final class PDPageContentStream implements Closeable
      */
     public void setNonStrokingColor(double c, double m, double y, double k) throws IOException
     {
+        if (isOutsideOneInterval(c) || isOutsideOneInterval(m) || isOutsideOneInterval(y) || isOutsideOneInterval(k))
+        {
+            throw new IllegalArgumentException("Parameters must be within 0..1, but are "
+                    + String.format("(%.2f,%.2f,%.2f,%.2f)", c, m, y, k));
+        }
         writeOperand((float) c);
         writeOperand((float) m);
         writeOperand((float) y);
@@ -1169,20 +1222,30 @@ public final class PDPageContentStream implements Closeable
      *
      * @param g The gray value.
      * @throws IOException If an IO error occurs while writing to the stream.
+     * @throws IllegalArgumentException If the parameter is invalid.
      */
     public void setNonStrokingColor(int g) throws IOException
     {
+        if (isOutside255Interval(g))
+        {
+            throw new IllegalArgumentException("Parameter must be within 0..255, but is " + g);
+        }
         setNonStrokingColor(g / 255f);
     }
 
     /**
-     * Set the non-stroking color in the DeviceGray color space. Range is 0..255.
+     * Set the non-stroking color in the DeviceGray color space. Range is 0..1.
      *
      * @param g The gray value.
      * @throws IOException If an IO error occurs while writing to the stream.
+     * @throws IllegalArgumentException If the parameter is invalid.
      */
     public void setNonStrokingColor(double g) throws IOException
     {
+        if (isOutsideOneInterval(g))
+        {
+            throw new IllegalArgumentException("Parameter must be within 0..1, but is " + g);
+        }
         writeOperand((float) g);
         writeOperator("g");
     }
@@ -1195,12 +1258,13 @@ public final class PDPageContentStream implements Closeable
      * @param width The width of the rectangle.
      * @param height The height of the rectangle.
      * @throws IOException If the content stream could not be written.
+     * @throws IllegalStateException If the method was called within a text block.
      */
     public void addRect(float x, float y, float width, float height) throws IOException
     {
         if (inTextMode)
         {
-            throw new IOException("Error: addRect is not allowed within a text block.");
+            throw new IllegalStateException("Error: addRect is not allowed within a text block.");
         }
         writeOperand(x);
         writeOperand(y);
@@ -1217,6 +1281,7 @@ public final class PDPageContentStream implements Closeable
      * @param width The width of the rectangle.
      * @param height The height of the rectangle.
      * @throws IOException If there is an error while drawing on the screen.
+     * @throws IllegalStateException If the method was called within a text block.
      * @deprecated Use {@link #addRect} followed by {@link #fill()} instead.
      */
     @Deprecated
@@ -1224,7 +1289,7 @@ public final class PDPageContentStream implements Closeable
     {
         if (inTextMode)
         {
-            throw new IOException("Error: fillRect is not allowed within a text block.");
+            throw new IllegalStateException("Error: fillRect is not allowed within a text block.");
         }
         addRect(x, y, width, height);
         fill();
@@ -1259,12 +1324,13 @@ public final class PDPageContentStream implements Closeable
      * @param x3 x coordinate of the point 3
      * @param y3 y coordinate of the point 3
      * @throws IOException If the content stream could not be written.
+     * @throws IllegalStateException If the method was called within a text block.
      */
     public void curveTo(float x1, float y1, float x2, float y2, float x3, float y3) throws IOException
     {
         if (inTextMode)
         {
-            throw new IOException("Error: curveTo is not allowed within a text block.");
+            throw new IllegalStateException("Error: curveTo is not allowed within a text block.");
         }
         writeOperand(x1);
         writeOperand(y1);
@@ -1300,13 +1366,14 @@ public final class PDPageContentStream implements Closeable
      * @param y2 y coordinate of the point 2
      * @param x3 x coordinate of the point 3
      * @param y3 y coordinate of the point 3
+     * @throws IllegalStateException If the method was called within a text block.
      * @throws IOException If the content stream could not be written.
      */
     public void curveTo2(float x2, float y2, float x3, float y3) throws IOException
     {
         if (inTextMode)
         {
-            throw new IOException("Error: curveTo2 is not allowed within a text block.");
+            throw new IllegalStateException("Error: curveTo2 is not allowed within a text block.");
         }
         writeOperand(x2);
         writeOperand(y2);
@@ -1341,12 +1408,13 @@ public final class PDPageContentStream implements Closeable
      * @param x3 x coordinate of the point 3
      * @param y3 y coordinate of the point 3
      * @throws IOException If the content stream could not be written.
+     * @throws IllegalStateException If the method was called within a text block.
      */
     public void curveTo1(float x1, float y1, float x3, float y3) throws IOException
     {
         if (inTextMode)
         {
-            throw new IOException("Error: curveTo1 is not allowed within a text block.");
+            throw new IllegalStateException("Error: curveTo1 is not allowed within a text block.");
         }
         writeOperand(x1);
         writeOperand(y1);
@@ -1361,12 +1429,13 @@ public final class PDPageContentStream implements Closeable
      * @param x The x coordinate.
      * @param y The y coordinate.
      * @throws IOException If the content stream could not be written.
+     * @throws IllegalStateException If the method was called within a text block.
      */
     public void moveTo(float x, float y) throws IOException
     {
         if (inTextMode)
         {
-            throw new IOException("Error: moveTo is not allowed within a text block.");
+            throw new IllegalStateException("Error: moveTo is not allowed within a text block.");
         }
         writeOperand(x);
         writeOperand(y);
@@ -1379,12 +1448,13 @@ public final class PDPageContentStream implements Closeable
      * @param x The x coordinate.
      * @param y The y coordinate.
      * @throws IOException If the content stream could not be written.
+     * @throws IllegalStateException If the method was called within a text block.
      */
     public void lineTo(float x, float y) throws IOException
     {
         if (inTextMode)
         {
-            throw new IOException("Error: lineTo is not allowed within a text block.");
+            throw new IllegalStateException("Error: lineTo is not allowed within a text block.");
         }
         writeOperand(x);
         writeOperand(y);
@@ -1399,6 +1469,7 @@ public final class PDPageContentStream implements Closeable
      * @param xEnd The end x coordinate.
      * @param yEnd The end y coordinate.
      * @throws IOException If there is an error while adding the line.
+     * @throws IllegalStateException If the method was called within a text block.
      * @deprecated Use {@link #moveTo} followed by {@link #lineTo}.
      */
     @Deprecated
@@ -1406,7 +1477,7 @@ public final class PDPageContentStream implements Closeable
     {
         if (inTextMode)
         {
-            throw new IOException("Error: addLine is not allowed within a text block.");
+            throw new IllegalStateException("Error: addLine is not allowed within a text block.");
         }
         moveTo(xStart, yStart);
         lineTo(xEnd, yEnd);
@@ -1420,6 +1491,7 @@ public final class PDPageContentStream implements Closeable
      * @param xEnd The end x coordinate.
      * @param yEnd The end y coordinate.
      * @throws IOException If there is an error while drawing on the screen.
+     * @throws IllegalStateException If the method was called within a text block.
      * @deprecated Use {@link #moveTo} followed by {@link #lineTo} followed by {@link #stroke}.
      */
     @Deprecated
@@ -1427,7 +1499,7 @@ public final class PDPageContentStream implements Closeable
     {
         if (inTextMode)
         {
-            throw new IOException("Error: drawLine is not allowed within a text block.");
+            throw new IllegalStateException("Error: drawLine is not allowed within a text block.");
         }
         moveTo(xStart, yStart);
         lineTo(xEnd, yEnd);
@@ -1439,6 +1511,8 @@ public final class PDPageContentStream implements Closeable
      * @param x x coordinate of each points
      * @param y y coordinate of each points
      * @throws IOException If there is an error while drawing on the screen.
+     * @throws IllegalStateException If the method was called within a text block.
+     * @throws IllegalArgumentException If the two arrays have different lengths.
      * @deprecated Use {@link #moveTo} and {@link #lineTo} methods instead.
      */
     @Deprecated
@@ -1446,11 +1520,11 @@ public final class PDPageContentStream implements Closeable
     {
         if (inTextMode)
         {
-            throw new IOException("Error: addPolygon is not allowed within a text block.");
+            throw new IllegalStateException("Error: addPolygon is not allowed within a text block.");
         }
         if (x.length != y.length)
         {
-            throw new IOException("Error: some points are missing coordinate");
+            throw new IllegalArgumentException("Error: some points are missing coordinate");
         }
         for (int i = 0; i < x.length; i++)
         {
@@ -1471,6 +1545,7 @@ public final class PDPageContentStream implements Closeable
      * @param x x coordinate of each points
      * @param y y coordinate of each points
      * @throws IOException If there is an error while drawing on the screen.
+     * @throws IllegalStateException If the method was called within a text block.
      * @deprecated Use {@link #moveTo} and {@link #lineTo} methods instead.
      */
     @Deprecated
@@ -1478,7 +1553,7 @@ public final class PDPageContentStream implements Closeable
     {
         if (inTextMode)
         {
-            throw new IOException("Error: drawPolygon is not allowed within a text block.");
+            throw new IllegalStateException("Error: drawPolygon is not allowed within a text block.");
         }
         addPolygon(x, y);
         stroke();
@@ -1489,6 +1564,7 @@ public final class PDPageContentStream implements Closeable
      * @param x x coordinate of each points
      * @param y y coordinate of each points
      * @throws IOException If there is an error while drawing on the screen.
+     * @throws IllegalStateException If the method was called within a text block.
      * @deprecated Use {@link #moveTo} and {@link #lineTo} methods instead.
      */
     @Deprecated
@@ -1496,7 +1572,7 @@ public final class PDPageContentStream implements Closeable
     {
         if (inTextMode)
         {
-            throw new IOException("Error: fillPolygon is not allowed within a text block.");
+            throw new IllegalStateException("Error: fillPolygon is not allowed within a text block.");
         }
         addPolygon(x, y);
         fill();
@@ -1506,12 +1582,13 @@ public final class PDPageContentStream implements Closeable
      * Stroke the path.
      * 
      * @throws IOException If the content stream could not be written
+     * @throws IllegalStateException If the method was called within a text block.
      */
     public void stroke() throws IOException
     {
         if (inTextMode)
         {
-            throw new IOException("Error: stroke is not allowed within a text block.");
+            throw new IllegalStateException("Error: stroke is not allowed within a text block.");
         }
         writeOperator("S");
     }
@@ -1520,12 +1597,13 @@ public final class PDPageContentStream implements Closeable
      * Close and stroke the path.
      * 
      * @throws IOException If the content stream could not be written
+     * @throws IllegalStateException If the method was called within a text block.
      */
     public void closeAndStroke() throws IOException
     {
         if (inTextMode)
         {
-            throw new IOException("Error: closeAndStroke is not allowed within a text block.");
+            throw new IllegalStateException("Error: closeAndStroke is not allowed within a text block.");
         }
         writeOperator("s");
     }
@@ -1535,6 +1613,7 @@ public final class PDPageContentStream implements Closeable
      * 
      * @param windingRule the winding rule to be used for filling
      * @throws IOException If the content stream could not be written
+     * @throws IllegalArgumentException If the parameter is not a valid winding rule.
      * @deprecated Use {@link #fill()} or {@link #fillEvenOdd} instead.
      */
     @Deprecated
@@ -1550,7 +1629,7 @@ public final class PDPageContentStream implements Closeable
         }
         else
         {
-            throw new IOException("Error: unknown value for winding rule");
+            throw new IllegalArgumentException("Error: unknown value for winding rule");
         }
     }
 
@@ -1558,12 +1637,13 @@ public final class PDPageContentStream implements Closeable
      * Fills the path using the nonzero winding rule.
      *
      * @throws IOException If the content stream could not be written
+     * @throws IllegalStateException If the method was called within a text block.
      */
     public void fill() throws IOException
     {
         if (inTextMode)
         {
-            throw new IOException("Error: fill is not allowed within a text block.");
+            throw new IllegalStateException("Error: fill is not allowed within a text block.");
         }
         writeOperator("f");
     }
@@ -1572,12 +1652,13 @@ public final class PDPageContentStream implements Closeable
      * Fills the path using the even-odd winding rule.
      *
      * @throws IOException If the content stream could not be written
+     * @throws IllegalStateException If the method was called within a text block.
      */
     public void fillEvenOdd() throws IOException
     {
         if (inTextMode)
         {
-            throw new IOException("Error: fill is not allowed within a text block.");
+            throw new IllegalStateException("Error: fill is not allowed within a text block.");
         }
         writeOperator("f*");
     }
@@ -1587,12 +1668,13 @@ public final class PDPageContentStream implements Closeable
      *
      * @param shading Shading resource
      * @throws IOException If the content stream could not be written
+     * @throws IllegalStateException If the method was called within a text block.
      */
     public void shadingFill(PDShading shading) throws IOException
     {
         if (inTextMode)
         {
-            throw new IOException("Error: shadingFill is not allowed within a text block.");
+            throw new IllegalStateException("Error: shadingFill is not allowed within a text block.");
         }
 
         writeOperand(resources.add(shading));
@@ -1615,12 +1697,13 @@ public final class PDPageContentStream implements Closeable
      * Closes the current subpath.
      *
      * @throws IOException If the content stream could not be written
+     * @throws IllegalStateException If the method was called within a text block.
      */
     public void closePath() throws IOException
     {
         if (inTextMode)
         {
-            throw new IOException("Error: closePath is not allowed within a text block.");
+            throw new IllegalStateException("Error: closePath is not allowed within a text block.");
         }
         writeOperator("h");
     }
@@ -1630,6 +1713,7 @@ public final class PDPageContentStream implements Closeable
      * 
      * @param windingRule the winding rule to be used for clipping
      * @throws IOException If there is an error while clipping the path.
+     * @throws IllegalStateException If the method was called within a text block.
      * @deprecated Use {@link #clip()} or {@link #clipEvenOdd} instead.
      */
     @Deprecated
@@ -1637,7 +1721,7 @@ public final class PDPageContentStream implements Closeable
     {
         if (inTextMode)
         {
-            throw new IOException("Error: clipPath is not allowed within a text block.");
+            throw new IllegalStateException("Error: clipPath is not allowed within a text block.");
         }
         if (windingRule == PathIterator.WIND_NON_ZERO)
         {
@@ -1649,7 +1733,7 @@ public final class PDPageContentStream implements Closeable
         }
         else
         {
-            throw new IOException("Error: unknown value for winding rule");
+            throw new IllegalArgumentException("Error: unknown value for winding rule");
         }
         writeOperator("n");
     }
@@ -1658,12 +1742,13 @@ public final class PDPageContentStream implements Closeable
      * Intersects the current clipping path with the current path, using the nonzero rule.
      *
      * @throws IOException If the content stream could not be written
+     * @throws IllegalStateException If the method was called within a text block.
      */
     public void clip() throws IOException
     {
         if (inTextMode)
         {
-            throw new IOException("Error: clip is not allowed within a text block.");
+            throw new IllegalStateException("Error: clip is not allowed within a text block.");
         }
         writeOperator("W");
         
@@ -1675,12 +1760,13 @@ public final class PDPageContentStream implements Closeable
      * Intersects the current clipping path with the current path, using the even-odd rule.
      *
      * @throws IOException If the content stream could not be written
+     * @throws IllegalStateException If the method was called within a text block.
      */
     public void clipEvenOdd() throws IOException
     {
         if (inTextMode)
         {
-            throw new IOException("Error: clipEvenOdd is not allowed within a text block.");
+            throw new IllegalStateException("Error: clipEvenOdd is not allowed within a text block.");
         }
         writeOperator("W*");
         
@@ -1693,12 +1779,13 @@ public final class PDPageContentStream implements Closeable
      *
      * @param lineWidth The width which is used for drwaing.
      * @throws IOException If the content stream could not be written
+     * @throws IllegalStateException If the method was called within a text block.
      */
     public void setLineWidth(float lineWidth) throws IOException
     {
         if (inTextMode)
         {
-            throw new IOException("Error: setLineWidth is not allowed within a text block.");
+            throw new IllegalStateException("Error: setLineWidth is not allowed within a text block.");
         }
         writeOperand(lineWidth);
         writeOperator("w");
@@ -1709,12 +1796,14 @@ public final class PDPageContentStream implements Closeable
      *
      * @param lineJoinStyle 0 for miter join, 1 for round join, and 2 for bevel join.
      * @throws IOException If the content stream could not be written.
+     * @throws IllegalStateException If the method was called within a text block.
+     * @throws IllegalArgumentException If the parameter is not a valid line join style.
      */
     public void setLineJoinStyle(int lineJoinStyle) throws IOException
     {
         if (inTextMode)
         {
-            throw new IOException("Error: setLineJoinStyle is not allowed within a text block.");
+            throw new IllegalStateException("Error: setLineJoinStyle is not allowed within a text block.");
         }
         if (lineJoinStyle >= 0 && lineJoinStyle <= 2)
         {
@@ -1723,7 +1812,7 @@ public final class PDPageContentStream implements Closeable
         }
         else
         {
-            throw new IOException("Error: unknown value for line join style");
+            throw new IllegalArgumentException("Error: unknown value for line join style");
         }
     }
 
@@ -1732,12 +1821,14 @@ public final class PDPageContentStream implements Closeable
      *
      * @param lineCapStyle 0 for butt cap, 1 for round cap, and 2 for projecting square cap.
      * @throws IOException If the content stream could not be written.
+     * @throws IllegalStateException If the method was called within a text block.
+     * @throws IllegalArgumentException If the parameter is not a valid line cap style.
      */
     public void setLineCapStyle(int lineCapStyle) throws IOException
     {
         if (inTextMode)
         {
-            throw new IOException("Error: setLineCapStyle is not allowed within a text block.");
+            throw new IllegalStateException("Error: setLineCapStyle is not allowed within a text block.");
         }
         if (lineCapStyle >= 0 && lineCapStyle <= 2)
         {
@@ -1746,7 +1837,7 @@ public final class PDPageContentStream implements Closeable
         }
         else
         {
-            throw new IOException("Error: unknown value for line cap style");
+            throw new IllegalArgumentException("Error: unknown value for line cap style");
         }
     }
 
@@ -1756,12 +1847,13 @@ public final class PDPageContentStream implements Closeable
      * @param pattern The pattern array
      * @param phase The phase of the pattern
      * @throws IOException If the content stream could not be written.
+     * @throws IllegalStateException If the method was called within a text block.
      */
     public void setLineDashPattern(float[] pattern, float phase) throws IOException
     {
         if (inTextMode)
         {
-            throw new IOException("Error: setLineDashPattern is not allowed within a text block.");
+            throw new IllegalStateException("Error: setLineDashPattern is not allowed within a text block.");
         }
         write("[");
         for (float value : pattern)
@@ -2012,5 +2104,15 @@ public final class PDPageContentStream implements Closeable
     public void close() throws IOException
     {
         output.close();
+    }
+
+    private boolean isOutside255Interval(int val)
+    {
+        return val < 0 || val > 255;
+    }
+
+    private boolean isOutsideOneInterval(double val)
+    {
+        return val < 0 || val > 1;
     }
 }
