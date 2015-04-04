@@ -28,6 +28,7 @@ import java.util.Map;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 
 /**
@@ -60,6 +61,9 @@ public class PDSeparation extends PDSpecialColorSpace
         array = new COSArray();
         array.add(COSName.SEPARATION);
         array.add(COSName.getPDFName(""));
+        // add some placeholder
+        array.add(COSNull.NULL);
+        array.add(COSNull.NULL);
     }
 
     /**
