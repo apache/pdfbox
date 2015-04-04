@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Map;
+import org.apache.pdfbox.io.IOUtils;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
@@ -92,7 +93,6 @@ public class ExtractText
     {
         boolean toConsole = false;
         boolean toHTML = false;
-        boolean force = false;
         boolean sort = false;
         boolean separateBeads = true;
         String password = "";
@@ -274,10 +274,7 @@ public class ExtractText
                                     } 
                                     finally 
                                     {
-                                        if (subDoc != null)
-                                        {
-                                            subDoc.close();
-                                        }
+                                        IOUtils.closeQuietly(subDoc);                                       
                                     }
                                 }
                             } 
