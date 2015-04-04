@@ -769,7 +769,7 @@ public final class PDPageContentStream implements Closeable
         }
         if (!nonStrokingColorSpaceStack.isEmpty())
         {
-            nonStrokingColorSpaceStack.push(strokingColorSpaceStack.peek());
+            nonStrokingColorSpaceStack.push(nonStrokingColorSpaceStack.peek());
         }
         writeOperator("q");
     }
