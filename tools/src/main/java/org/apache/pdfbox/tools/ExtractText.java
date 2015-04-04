@@ -274,7 +274,10 @@ public class ExtractText
                                     } 
                                     finally 
                                     {
-                                        subDoc.close();
+                                        if (subDoc != null)
+                                        {
+                                            subDoc.close();
+                                        }
                                     }
                                 }
                             } 
