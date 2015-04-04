@@ -285,14 +285,8 @@ public class ExtractText
             }
             finally
             {
-                if( output != null )
-                {
-                    output.close();
-                }
-                if( document != null )
-                {
-                    document.close();
-                }
+                IOUtils.closeQuietly(output);
+                IOUtils.closeQuietly(document);
             }
         }
     }
