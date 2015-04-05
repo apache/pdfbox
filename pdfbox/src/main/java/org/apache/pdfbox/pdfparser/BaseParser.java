@@ -375,40 +375,7 @@ public abstract class BaseParser implements Closeable
         {
             readExpectedString(STREAM_STRING);
 
-            //PDF Ref 3.2.7 A stream must be followed by either
-            //a CRLF or LF but nothing else.
-
-            int whitespace = pdfSource.read();
-
-            //see brother_scan_cover.pdf, it adds whitespaces
-            //after the stream but before the start of the
-            //data, so just read those first
-            while (ASCII_SPACE == whitespace)
-            {
-                whitespace = pdfSource.read();
-            }
-
-            if( ASCII_CR == whitespace )
-            {
-                whitespace = pdfSource.read();
-                if( ASCII_LF != whitespace )
-                {
-                    pdfSource.unread( whitespace );
-                    //The spec says this is invalid but it happens in the real
-                    //world so we must support it.
-                }
-            }
-            else if (ASCII_LF == whitespace)
-            {
-                //that is fine
-            }
-            else
-            {
-                //we are in an error.
-                //but again we will do a lenient parsing and just assume that everything
-                //is fine
-                pdfSource.unread( whitespace );
-            }
+            skipWhiteSpaces();
 
             // This needs to be dic.getItem because when we are parsing, the underlying object
             // might still be null.
@@ -555,6 +522,40 @@ public abstract class BaseParser implements Closeable
             }
         }
         return stream;
+    }
+
+    protected void skipWhiteSpaces() throws IOException
+    {
+        //PDF Ref 3.2.7 A stream must be followed by either
+        //a CRLF or LF but nothing else.
+
+        int whitespace = pdfSource.read();
+
+        //see brother_scan_cover.pdf, it adds whitespaces
+        //after the stream but before the start of the
+        //data, so just read those first
+        while (ASCII_SPACE == whitespace)
+        {
+            whitespace = pdfSource.read();
+        }
+
+        if (ASCII_CR == whitespace)
+        {
+            whitespace = pdfSource.read();
+            if (ASCII_LF != whitespace)
+            {
+                pdfSource.unread(whitespace);
+                //The spec says this is invalid but it happens in the real
+                //world so we must support it.
+            }
+        }
+        else if (ASCII_LF != whitespace)
+        {
+            //we are in an error.
+            //but again we will do a lenient parsing and just assume that everything
+            //is fine
+            pdfSource.unread(whitespace);
+        }
     }
 
     /**

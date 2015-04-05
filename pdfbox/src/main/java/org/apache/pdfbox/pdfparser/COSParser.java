@@ -891,36 +891,8 @@ public class COSParser extends BaseParser
         {
             // read 'stream'; this was already tested in parseObjectsDynamically()
             readString(); 
-            // skip whitespaces before start of data
-            // PDF Ref 1.7, chap. 3.2.7:
-            // 'stream' should be followed by either a CRLF (0x0d 0x0a) or LF
-            // but nothing else.
-            int whitespace = pdfSource.read();
             
-            // see brother_scan_cover.pdf, it adds whitespaces
-            // after the stream but before the start of the
-            // data, so just read those first
-            while (whitespace == 0x20)
-            {
-                whitespace = pdfSource.read();
-            }
-
-            if (whitespace == 0x0D)
-            {
-                whitespace = pdfSource.read();
-                if (whitespace != 0x0A)
-                {
-                    // the spec says this is invalid but it happens in the
-                    // real world so we must support it
-                    pdfSource.unread(whitespace);
-                }
-            }
-            else if (whitespace != 0x0A)
-            {
-                // no whitespace after 'stream'; PDF ref. says 'should' so
-                // that is ok
-                pdfSource.unread(whitespace);
-            }
+            skipWhiteSpaces();
 
             /*
              * This needs to be dic.getItem because when we are parsing, the underlying object might still be null.
