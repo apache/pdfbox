@@ -911,36 +911,13 @@ public class COSParser extends BaseParser
                 }
             }
 
-            boolean useReadUntilEnd = false;
             // get output stream to copy data to
             if (streamLengthObj != null && validateStreamLength(streamLengthObj.longValue()))
             {
                 out = stream.createFilteredStream(streamLengthObj);
-                long remainBytes = streamLengthObj.longValue();
-                int bytesRead = 0;
-                while (remainBytes > 0)
-                {
-                    final int readBytes = pdfSource
-                            .read(streamCopyBuf,
-                                    0,
-                                    (remainBytes > STREAMCOPYBUFLEN) ? STREAMCOPYBUFLEN : (int) remainBytes);
-                    if (readBytes <= 0)
-                    {
-                        useReadUntilEnd = true;
-                        out.close();
-                        pdfSource.unread(bytesRead);
-                        break;
-                    }
-                    out.write(streamCopyBuf, 0, readBytes);
-                    remainBytes -= readBytes;
-                    bytesRead += readBytes;
-                }
+                readValidStream(out, streamLengthObj);
             }
             else
-            {
-                useReadUntilEnd = true;
-            }
-            if (useReadUntilEnd)
             {
                 out = stream.createFilteredStream();
                 readUntilEndStream(new EndstreamOutputStream(out));
@@ -975,6 +952,24 @@ public class COSParser extends BaseParser
             }
         }
         return stream;
+    }
+
+    private void readValidStream(OutputStream out, COSNumber streamLengthObj) throws IOException
+    {
+        long remainBytes = streamLengthObj.longValue();
+        while (remainBytes > 0)
+        {
+            final int chunk = (remainBytes > STREAMCOPYBUFLEN) ? STREAMCOPYBUFLEN : (int) remainBytes;
+            final int readBytes = pdfSource.read(streamCopyBuf, 0, chunk);
+            if (readBytes <= 0)
+            {
+                // shouldn't happen, the stream length has already been validated
+                throw new IOException("read error at offset " + pdfSource.getOffset()
+                        + ": expected " + chunk + " bytes, but read() returns " + readBytes);
+            }
+            out.write(streamCopyBuf, 0, readBytes);
+            remainBytes -= readBytes;
+        }
     }
 
     private boolean validateStreamLength(long streamLength) throws IOException
