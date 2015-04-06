@@ -28,6 +28,7 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSUpdateInfo;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.cos.COSObjectKey;
+import static org.apache.pdfbox.util.Charsets.ISO_8859_1;
 
 public class VisualSignatureParser extends BaseParser 
 {

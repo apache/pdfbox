@@ -43,6 +43,7 @@ import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.PushBackInputStream;
 import org.apache.pdfbox.cos.COSObjectKey;
+import static org.apache.pdfbox.util.Charsets.ISO_8859_1;
 
 /**
  * This class is used to contain parsing logic that will be used by both the
@@ -56,11 +57,6 @@ public abstract class BaseParser implements Closeable
     private static final long OBJECT_NUMBER_THRESHOLD = 10000000000L;
 
     private static final long GENERATION_NUMBER_THRESHOLD = 65535;
-    
-    /**
-     * String constant for ISO-8859-1 charset.
-     */
-    public static final String ISO_8859_1 = "ISO-8859-1";
     
     /**
      * system property allowing to define size of push back buffer.
