@@ -180,17 +180,6 @@ public abstract class BaseParser implements Closeable
     }
 
     /**
-     * Constructor.
-     *
-     * @param input The array to read the data from.
-     * @throws IOException If there is an error reading the byte data.
-     */
-    protected BaseParser(byte[] input) throws IOException 
-    {
-        this(new ByteArrayInputStream(input));
-    }
-
-    /**
      * Returns a new instance of a COSStream.
      * 
      * @param dictionary the dictionary belonging to the stream
