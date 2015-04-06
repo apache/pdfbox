@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdfparser;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,8 +37,6 @@ public class FDFParser extends COSParser
     private static final Log LOG = LogFactory.getLog(FDFParser.class);
 
     private final RandomAccessBufferedFileInputStream raStream;
-
-    private static final InputStream EMPTY_INPUT_STREAM = new ByteArrayInputStream(new byte[0]);
 
     private File tempPDFFile;
 
@@ -65,7 +62,6 @@ public class FDFParser extends COSParser
      */
     public FDFParser(File file) throws IOException
     {
-        super(EMPTY_INPUT_STREAM);
         fileLen = file.length();
         raStream = new RandomAccessBufferedFileInputStream(file);
         init();
@@ -79,7 +75,6 @@ public class FDFParser extends COSParser
      */
     public FDFParser(InputStream input) throws IOException
     {
-        super(EMPTY_INPUT_STREAM);
         tempPDFFile = createTmpFile(input);
         fileLen = tempPDFFile.length();
         raStream = new RandomAccessBufferedFileInputStream(tempPDFFile);
