@@ -17,13 +17,11 @@
 package org.apache.pdfbox.pdfparser;
 
 import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
 import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
@@ -1549,60 +1547,7 @@ public abstract class BaseParser implements Closeable
     {
         return c >= ASCII_ZERO && c <= ASCII_NINE;
     }
-    /**
-     * Checks if the given string can be found at the current offset.
-     * 
-     * @param string the bytes of the string to look for
-     * @return true if the bytes are in place, false if not
-     * @throws IOException if something went wrong
-     */
-    protected boolean isString(byte[] string) throws IOException
-    {
-        boolean bytesMatching = false;
-        if (pdfSource.peek() == string[0])
-        {
-            int length = string.length;
-            byte[] bytesRead = new byte[length];
-            int numberOfBytes = pdfSource.read(bytesRead, 0, length);
-            while (numberOfBytes < length)
-            {
-                int readMore = pdfSource.read(bytesRead, numberOfBytes, length - numberOfBytes);
-                if (readMore < 0)
-                {
-                    break;
-                }
-                numberOfBytes += readMore;
-            }
-            if (Arrays.equals(string, bytesRead))
-            {
-                bytesMatching = true;
-            }
-            pdfSource.unread(bytesRead, 0, numberOfBytes);
-        }
-        return bytesMatching;
-    }
 
-    /**
-     * Checks if the given string can be found at the current offset.
-     * 
-     * @param string the bytes of the string to look for
-     * @return true if the bytes are in place, false if not
-     * @throws IOException if something went wrong
-     */
-    protected boolean isString(char[] string) throws IOException
-    {
-        boolean bytesMatching = true;
-        long originOffset = pdfSource.getOffset();
-        for (char c : string)
-        {
-            if (pdfSource.read() != c)
-            {
-                bytesMatching = false;
-            }
-        }
-        pdfSource.seek(originOffset);
-        return bytesMatching;
-    }
     /**
      * This will skip all spaces and comments that are present.
      *

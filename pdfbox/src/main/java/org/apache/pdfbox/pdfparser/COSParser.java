@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -1552,6 +1553,61 @@ public class COSParser extends BaseParser
             startXref = readLong();
         }
         return startXref;
+    }
+    
+    /**
+     * Checks if the given string can be found at the current offset.
+     * 
+     * @param string the bytes of the string to look for
+     * @return true if the bytes are in place, false if not
+     * @throws IOException if something went wrong
+     */
+    private boolean isString(byte[] string) throws IOException
+    {
+        boolean bytesMatching = false;
+        if (pdfSource.peek() == string[0])
+        {
+            int length = string.length;
+            byte[] bytesRead = new byte[length];
+            int numberOfBytes = pdfSource.read(bytesRead, 0, length);
+            while (numberOfBytes < length)
+            {
+                int readMore = pdfSource.read(bytesRead, numberOfBytes, length - numberOfBytes);
+                if (readMore < 0)
+                {
+                    break;
+                }
+                numberOfBytes += readMore;
+            }
+            if (Arrays.equals(string, bytesRead))
+            {
+                bytesMatching = true;
+            }
+            pdfSource.unread(bytesRead, 0, numberOfBytes);
+        }
+        return bytesMatching;
+    }
+
+    /**
+     * Checks if the given string can be found at the current offset.
+     * 
+     * @param string the bytes of the string to look for
+     * @return true if the bytes are in place, false if not
+     * @throws IOException if something went wrong
+     */
+    private boolean isString(char[] string) throws IOException
+    {
+        boolean bytesMatching = true;
+        long originOffset = pdfSource.getOffset();
+        for (char c : string)
+        {
+            if (pdfSource.read() != c)
+            {
+                bytesMatching = false;
+            }
+        }
+        pdfSource.seek(originOffset);
+        return bytesMatching;
     }
 
     /**
