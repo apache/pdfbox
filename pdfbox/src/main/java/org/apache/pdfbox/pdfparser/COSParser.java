@@ -1912,4 +1912,33 @@ public class COSParser extends BaseParser
         }
     }
 
+    /**
+     * Parse the values of the trailer dictionary and return the root object.
+     *
+     * @param trailer The trailer dictionary.
+     * @return The parsed root object.
+     * @throws IOException If an IO error occurs or if the root object is
+     * missing in the trailer dictionary.
+     */
+    protected COSBase parseTrailerValuesDynamically(COSDictionary trailer) throws IOException
+    {
+        // PDFBOX-1557 - ensure that all COSObject are loaded in the trailer
+        // PDFBOX-1606 - after securityHandler has been instantiated
+        for (COSBase trailerEntry : trailer.getValues())
+        {
+            if (trailerEntry instanceof COSObject)
+            {
+                COSObject tmpObj = (COSObject) trailerEntry;
+                parseObjectDynamically(tmpObj, false);
+            }
+        }
+        // parse catalog or root object
+        COSObject root = (COSObject) trailer.getItem(COSName.ROOT);
+        if (root == null)
+        {
+            throw new IOException("Missing root object specification in trailer.");
+        }
+        return parseObjectDynamically(root, false);
+    }
+
 }
