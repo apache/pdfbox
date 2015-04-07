@@ -121,25 +121,7 @@ public class FDFParser extends COSParser
             trailer = rebuildTrailer();
         }
     
-        // PDFBOX-1557 - ensure that all COSObject are loaded in the trailer
-        // PDFBOX-1606 - after securityHandler has been instantiated
-        for (COSBase trailerEntry : trailer.getValues())
-        {
-            if (trailerEntry instanceof COSObject)
-            {
-                COSObject tmpObj = (COSObject) trailerEntry;
-                parseObjectDynamically(tmpObj, false);
-            }
-        }
-        // parse catalog or root object
-        COSObject root = (COSObject)trailer.getItem(COSName.ROOT);
-    
-        if (root == null)
-        {
-            throw new IOException("Missing root object specification in trailer.");
-        }
-    
-        COSBase rootObject = parseObjectDynamically(root, false);
+        COSBase rootObject = parseTrailerValuesDynamically(trailer);
     
         // resolve all objects
         // A FDF doesn't have a catalog, all FDF fields are within the root object
@@ -177,14 +159,8 @@ public class FDFParser extends COSParser
     
             if (exceptionOccurred && document != null)
             {
-                try
-                {
-                    document.close();
-                    document = null;
-                }
-                catch (IOException ioe)
-                {
-                }
+                IOUtils.closeQuietly(document);
+                document = null;
             }
         }
     }
