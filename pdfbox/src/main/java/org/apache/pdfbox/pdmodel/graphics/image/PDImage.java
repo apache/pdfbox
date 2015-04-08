@@ -34,6 +34,7 @@ public interface PDImage extends COSObjectable
 {
     /**
      * Returns the content of this image as an AWT buffered image with an (A)RGB color space.
+     * The size of the returned image is the larger of the size of the image itself or its mask. 
      * @return content of this image as a buffered image.
      * @throws IOException
      */
