@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.image;
 
+import java.awt.RenderingHints;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
@@ -244,19 +245,20 @@ public final class PDImageXObject extends PDXObject implements PDImage
         int width = image.getWidth();
         int height = image.getHeight();
 
-        // compose to ARGB
-        BufferedImage masked = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-
-        // scale mask to fit image
-        if (mask.getWidth() != width || mask.getHeight() != height)
+        // scale mask to fit image, or image to fit mask, whichever is larger
+        if (mask.getWidth() < width || mask.getHeight() < height)
         {
-            BufferedImage mask2 = new BufferedImage(width, height, mask.getType());
-            Graphics2D g = mask2.createGraphics();
-            g.drawImage(mask, 0, 0, width, height, 0, 0, mask.getWidth(), mask.getHeight(), null);
-            g.dispose();
-            mask = mask2;
+            mask = scaleImage(mask, width, height);
+        }
+        else if (mask.getWidth() > width || mask.getHeight() > height)
+        {
+            width = mask.getWidth();
+            height = mask.getHeight();
+            image = scaleImage(image, width, height);
         }
 
+        // compose to ARGB
+        BufferedImage masked = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         WritableRaster src = image.getRaster();
         WritableRaster dest = masked.getRaster();
         WritableRaster alpha = mask.getRaster();
@@ -289,6 +291,22 @@ public final class PDImageXObject extends PDXObject implements PDImage
         }
 
         return masked;
+    }
+
+    /**
+     * High-quality image scaling.
+     */
+    private BufferedImage scaleImage(BufferedImage image, int width, int height)
+    {
+        BufferedImage image2 = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = image2.createGraphics();
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                           RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        g.setRenderingHint(RenderingHints.KEY_RENDERING,
+                           RenderingHints.VALUE_RENDER_QUALITY);
+        g.drawImage(image, 0, 0, width, height, 0, 0, image.getWidth(), image.getHeight(), null);
+        g.dispose();
+        return image2;
     }
 
     /**
