@@ -155,7 +155,7 @@ public final class ExternalFonts
                              "TimesNewRoman-BoldItalic", "LiberationSerif-BoldItalic",
                              "NimbusRomNo9L-MediItal"));
         substitutes.put("Symbol", Arrays.asList("SymbolMT", "StandardSymL"));
-        substitutes.put("ZapfDingbats", Arrays.asList("ZapfDingbatsITC", "Dingbats"));
+        substitutes.put("ZapfDingbats", Arrays.asList("ZapfDingbatsITC", "Dingbats", "arialuni"));
 
         // extra substitute mechanism for CJK CIDFonts when all we know is the ROS
         substitutes.put("$Adobe-CNS1", Arrays.asList("AdobeMingStd-Light"));
