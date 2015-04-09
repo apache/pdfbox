@@ -147,7 +147,7 @@ public final class TTFSubsetter
      * @return The file offset of the first TTF table to write.
      * @throws IOException Upon errors.
      */
-    private static long writeFileHeader(DataOutputStream out, int nTables) throws IOException
+    private long writeFileHeader(DataOutputStream out, int nTables) throws IOException
     {
         out.writeInt(0x00010000);
         out.writeShort(nTables);
@@ -167,7 +167,7 @@ public final class TTFSubsetter
         return 0x00010000L + toUInt32(nTables, searchRange) + toUInt32(entrySelector, last);
     }
         
-    private static long writeTableHeader(DataOutputStream out, String tag, long offset, byte[] bytes)
+    private long writeTableHeader(DataOutputStream out, String tag, long offset, byte[] bytes)
             throws IOException 
     {
         long checksum = 0;
@@ -188,7 +188,7 @@ public final class TTFSubsetter
         return toUInt32(tagbytes) + checksum + checksum + offset + bytes.length;
     }
 
-    private static void writeTableBody(OutputStream os, byte[] bytes) throws IOException
+    private void writeTableBody(OutputStream os, byte[] bytes) throws IOException
     {
         int n = bytes.length;
         os.write(bytes);
@@ -255,7 +255,7 @@ public final class TTFSubsetter
         return bos.toByteArray();
     }
 
-    private static boolean shouldCopyNameRecord(NameRecord nr)
+    private boolean shouldCopyNameRecord(NameRecord nr)
     {
         return nr.getPlatformId() == NameRecord.PLATFORM_WINDOWS
                 && nr.getPlatformEncodingId() == NameRecord.ENCODING_WINDOWS_UNICODE_BMP
@@ -443,7 +443,7 @@ public final class TTFSubsetter
         return bos.toByteArray();
     }
 
-    private static byte[] buildLocaTable(long[] newOffsets) throws IOException
+    private byte[] buildLocaTable(long[] newOffsets) throws IOException
     {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream(bos);
@@ -1004,7 +1004,7 @@ public final class TTFSubsetter
         }
     }
 
-    private static void writeFixed(DataOutputStream out, double f) throws IOException
+    private void writeFixed(DataOutputStream out, double f) throws IOException
     {
         double ip = Math.floor(f);
         double fp = (f-ip) * 65536.0;
@@ -1012,27 +1012,27 @@ public final class TTFSubsetter
         out.writeShort((int)fp);
     }
 
-    private static void writeUint32(DataOutputStream out, long l) throws IOException
+    private void writeUint32(DataOutputStream out, long l) throws IOException
     {
         out.writeInt((int)l);
     }
 
-    private static void writeUint16(DataOutputStream out, int i) throws IOException
+    private void writeUint16(DataOutputStream out, int i) throws IOException
     {
         out.writeShort(i);
     }
 
-    private static void writeSInt16(DataOutputStream out, short i) throws IOException
+    private void writeSInt16(DataOutputStream out, short i) throws IOException
     {
         out.writeShort(i);
     }
 
-    private static void writeUint8(DataOutputStream out, int i) throws IOException
+    private void writeUint8(DataOutputStream out, int i) throws IOException
     {
         out.writeByte(i);
     }
 
-    private static void writeLongDateTime(DataOutputStream out, Calendar calendar) throws IOException
+    private void writeLongDateTime(DataOutputStream out, Calendar calendar) throws IOException
     {
         // inverse operation of TTFDataStream.readInternationalDate()
         GregorianCalendar cal = new GregorianCalendar( 1904, 0, 1 );
@@ -1041,12 +1041,12 @@ public final class TTFSubsetter
         out.writeLong(secondsSince1904);
     }
 
-    private static long toUInt32(int high, int low)
+    private long toUInt32(int high, int low)
     {
         return (high & 0xffffL) << 16 | low & 0xffffL;
     }
 
-    private static long toUInt32(byte[] bytes)
+    private long toUInt32(byte[] bytes)
     {
         return (bytes[0] & 0xffL) << 24
                 | (bytes[1] & 0xffL) << 16
@@ -1054,7 +1054,7 @@ public final class TTFSubsetter
                 | bytes[3] & 0xffL;
     }
 
-    private static int log2(int num)
+    private int log2(int num)
     {
         return (int)Math.round(Math.log(num) / Math.log(2));
     }
