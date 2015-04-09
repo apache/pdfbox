@@ -87,7 +87,7 @@ final class FlateFilter extends Filter
 
     // Use Inflater instead of InflateInputStream to avoid an EOFException due to a probably
     // missing Z_STREAM_END, see PDFBOX-1232 for details
-    private static void decompress(InputStream in, OutputStream out) throws IOException, DataFormatException 
+    private void decompress(InputStream in, OutputStream out) throws IOException, DataFormatException 
     { 
         byte[] buf = new byte[2048]; 
         int read = in.read(buf); 

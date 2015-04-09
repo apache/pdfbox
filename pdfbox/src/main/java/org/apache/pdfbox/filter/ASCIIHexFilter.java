@@ -99,12 +99,12 @@ final class ASCIIHexFilter extends Filter
     //  12  0x0C  Form feed (FF)
     //  13  0x0D  Carriage return (CR)
     //  32  0x20  Space (SP)
-    private static boolean isWhitespace(int c)
+    private boolean isWhitespace(int c)
     {
         return c == 0 || c == 9 || c == 10 || c == 12 || c == 13 || c == 32;
     }
 
-    private static boolean isEOD(int c)
+    private boolean isEOD(int c)
     {
         return c == '>';
     }
