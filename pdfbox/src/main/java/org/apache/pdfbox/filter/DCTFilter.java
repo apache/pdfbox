@@ -185,7 +185,7 @@ final class DCTFilter extends Filter
     }
 
     // reads the APP14 Adobe transform tag and returns its value, or 0 if unknown
-    private static Integer getAdobeTransform(IIOMetadata metadata)
+    private Integer getAdobeTransform(IIOMetadata metadata)
     {
         Element tree = (Element)metadata.getAsTree("javax_imageio_jpeg_image_1.0");
         Element markerSequence = (Element)tree.getElementsByTagName("markerSequence").item(0);
@@ -201,7 +201,7 @@ final class DCTFilter extends Filter
     // converts YCCK image to CMYK. YCCK is an equivalent encoding for
     // CMYK data, so no color management code is needed here, nor does the
     // PDF color space have to be consulted
-    private static WritableRaster fromYCCKtoCMYK(Raster raster)
+    private WritableRaster fromYCCKtoCMYK(Raster raster)
     {
         WritableRaster writableRaster = raster.createCompatibleWritableRaster();
 
@@ -240,7 +240,7 @@ final class DCTFilter extends Filter
     }
 
     // converts from BGR to RGB
-    private static WritableRaster fromBGRtoRGB(Raster raster)
+    private WritableRaster fromBGRtoRGB(Raster raster)
     {
         WritableRaster writableRaster = raster.createCompatibleWritableRaster();
 
@@ -264,7 +264,7 @@ final class DCTFilter extends Filter
     }
     
     // returns the number of channels as a string, or an empty string if there is an error getting the meta data
-    private static String getNumChannels(ImageReader reader)
+    private String getNumChannels(ImageReader reader)
     {
         try
         {
@@ -288,7 +288,7 @@ final class DCTFilter extends Filter
     }    
 
     // clamps value to 0-255 range
-    private static int clamp(float value)
+    private int clamp(float value)
     {
         return (int)((value < 0) ? 0 : ((value > 255) ? 255 : value));
     }

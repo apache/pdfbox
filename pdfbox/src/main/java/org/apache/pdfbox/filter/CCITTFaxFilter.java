@@ -115,7 +115,7 @@ final class CCITTFaxFilter extends Filter
         return new DecodeResult(parameters);
     }
 
-    private static void invertBitmap(byte[] bufferData)
+    private void invertBitmap(byte[] bufferData)
     {
         for (int i = 0, c = bufferData.length; i < c; i++)
         {

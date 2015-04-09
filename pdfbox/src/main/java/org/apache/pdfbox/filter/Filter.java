@@ -77,7 +77,7 @@ public abstract class Filter
 
     // gets the decode params for a specific filter index, this is used to
     // normalise the DecodeParams entry so that it is always a dictionary
-    protected static COSDictionary getDecodeParams(COSDictionary dictionary, int index)
+    protected COSDictionary getDecodeParams(COSDictionary dictionary, int index)
     {
         COSBase obj = dictionary.getDictionaryObject(COSName.DECODE_PARMS, COSName.DP);
         if (obj instanceof COSDictionary)
