@@ -36,7 +36,6 @@ import java.awt.image.Raster;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
@@ -529,8 +528,12 @@ public final class PageDrawer extends PDFGraphicsStreamEngine
 
         // disable anti-aliasing for rectangular paths, this is a workaround to avoid small stripes
         // which occur when solid fills are used to simulate piecewise gradients, see PDFBOX-2302
-        boolean isRectangular = isRectangular(linePath);
-        if (isRectangular)
+        // note that we ignore paths with a width/height under 1 as these are fills used as strokes,
+        // see PDFBOX-1658 for an example
+        Rectangle2D bounds = linePath.getBounds2D();
+        boolean noAntiAlias = isRectangular(linePath) && bounds.getWidth() > 1 &&
+                                                         bounds.getHeight() > 1;
+        if (noAntiAlias)
         {
             graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                                       RenderingHints.VALUE_ANTIALIAS_OFF);
@@ -539,7 +542,7 @@ public final class PageDrawer extends PDFGraphicsStreamEngine
         graphics.fill(linePath);
         linePath.reset();
 
-        if (isRectangular)
+        if (noAntiAlias)
         {
             // JDK 1.7 has a bug where rendering hints are reset by the above call to
             // the setRenderingHint method, so we re-set all hints, see PDFBOX-2302
