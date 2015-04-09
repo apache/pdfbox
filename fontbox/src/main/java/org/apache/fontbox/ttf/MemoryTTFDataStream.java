@@ -28,7 +28,7 @@ import java.io.InputStream;
  * @author Ben Litchfield
  * 
  */
-public class MemoryTTFDataStream extends TTFDataStream 
+class MemoryTTFDataStream extends TTFDataStream 
 {
     private byte[] data = null;
     private int currentPosition = 0;
@@ -38,7 +38,7 @@ public class MemoryTTFDataStream extends TTFDataStream
      * @param is The stream of read from.
      * @throws IOException If an error occurs while reading from the stream.
      */
-    public MemoryTTFDataStream( InputStream is ) throws IOException
+    MemoryTTFDataStream( InputStream is ) throws IOException
     {
         try
         {
@@ -59,8 +59,6 @@ public class MemoryTTFDataStream extends TTFDataStream
             }
         }
     }
-    
-
     
     /**
      * Read an unsigned byte.

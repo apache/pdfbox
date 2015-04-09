@@ -24,7 +24,7 @@ import java.io.InputStream;
 /**
  * OpenType font file parser.
  */
-public class OTFParser extends TTFParser
+public final class OTFParser extends TTFParser
 {
     /**
      * Constructor.
@@ -74,13 +74,13 @@ public class OTFParser extends TTFParser
     }
 
     @Override
-    public OpenTypeFont parse(TTFDataStream raf) throws IOException
+    protected OpenTypeFont parse(TTFDataStream raf) throws IOException
     {
         return (OpenTypeFont)super.parse(raf);
     }
-
+    
     @Override
-    protected OpenTypeFont newFont(TTFDataStream raf)
+    OpenTypeFont newFont(TTFDataStream raf)
     {
         return new OpenTypeFont(raf);
     }

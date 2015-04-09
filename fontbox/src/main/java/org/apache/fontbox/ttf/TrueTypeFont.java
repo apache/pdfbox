@@ -18,6 +18,7 @@ package org.apache.fontbox.ttf;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
+import java.io.Closeable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,7 +33,7 @@ import org.apache.fontbox.util.BoundingBox;
  * 
  * @author Ben Litchfield
  */
-public class TrueTypeFont implements Type1Equivalent
+public class TrueTypeFont implements Type1Equivalent, Closeable
 {
     private float version;
     private int numberOfGlyphs = -1;
@@ -51,11 +52,7 @@ public class TrueTypeFont implements Type1Equivalent
         data = fontData;
     }
     
-    /**
-     * Close the underlying resources.
-     * 
-     * @throws IOException If there is an error closing the resources.
-     */
+    @Override
     public void close() throws IOException
     {
         data.close();
