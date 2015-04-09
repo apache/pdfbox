@@ -630,7 +630,7 @@ public class CMapParser
         return retval;
     }
 
-    private static void readUntilEndOfLine(InputStream is, StringBuffer buf) throws IOException
+    private void readUntilEndOfLine(InputStream is, StringBuffer buf) throws IOException
     {
         int nextByte = is.read();
         while (nextByte != -1 && nextByte != 0x0D && nextByte != 0x0A)
@@ -640,13 +640,13 @@ public class CMapParser
         }
     }
 
-    private static boolean isWhitespaceOrEOF(int aByte)
+    private boolean isWhitespaceOrEOF(int aByte)
     {
         return aByte == -1 || aByte == 0x20 || aByte == 0x0D || aByte == 0x0A;
     }
 
     /** Is this a standard PDF delimiter character? */
-    private static boolean isDelimiter(int aByte) 
+    private boolean isDelimiter(int aByte) 
     {
         switch (aByte) 
         {
@@ -684,7 +684,7 @@ public class CMapParser
         }
     }
 
-    private static int createIntFromBytes(byte[] bytes)
+    private int createIntFromBytes(byte[] bytes)
     {
         int intValue = (bytes[0] + 256) % 256;
         if (bytes.length == 2)
@@ -695,7 +695,7 @@ public class CMapParser
         return intValue;
     }
 
-    private static String createStringFromBytes(byte[] bytes) throws IOException
+    private String createStringFromBytes(byte[] bytes) throws IOException
     {
         String retval;
         if (bytes.length == 1)
@@ -709,7 +709,7 @@ public class CMapParser
         return retval;
     }
 
-    private static int compare(byte[] first, byte[] second)
+    private int compare(byte[] first, byte[] second)
     {
         int retval = 1;
         int firstLength = first.length;
