@@ -169,7 +169,7 @@ public class CMap
     /**
      * Returns an int given a List<Byte>
      */
-    private static int toInt(List<Byte> data)
+    private int toInt(List<Byte> data)
     {
         int code = 0;
         for (byte b : data)
@@ -210,7 +210,7 @@ public class CMap
      * @param length The length of the data we are getting.
      * @return the resulting integer
      */
-    private static int getCodeFromArray( byte[] data, int offset, int length )
+    private int getCodeFromArray( byte[] data, int offset, int length )
     {
         int code = 0;
         for( int i=0; i<length; i++ )
