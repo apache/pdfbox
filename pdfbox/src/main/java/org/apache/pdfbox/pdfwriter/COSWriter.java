@@ -784,7 +784,7 @@ public class COSWriter implements ICOSVisitor, Closeable
      * @param xRefEntriesList list with the xRef entries that was written
      * @return a integer array with the ranges
      */
-    protected static Long[] getXRefRanges(List<COSWriterXRefEntry> xRefEntriesList)
+    protected Long[] getXRefRanges(List<COSWriterXRefEntry> xRefEntriesList)
     {
         long last = -2;
         long count = 1;
