@@ -130,7 +130,7 @@ public final class SecurityHandlerFactory
      * @param args array of objects to be passed as arguments to the constructor call.
      * @return a new SecurityHandler instance, or null if none is available.
      */
-    private static SecurityHandler newSecurityHandler(Class<? extends SecurityHandler> handlerClass, 
+    private SecurityHandler newSecurityHandler(Class<? extends SecurityHandler> handlerClass, 
             Class<?>[] argsClasses, Object[] args)
     {
         try
