@@ -116,7 +116,7 @@ public class TTFParser
      * @return A true type font.
      * @throws IOException If there is an error parsing the true type font.
      */
-    public TrueTypeFont parse(TTFDataStream raf) throws IOException
+    TrueTypeFont parse(TTFDataStream raf) throws IOException
     {
         TrueTypeFont font = newFont(raf);
         font.setVersion(raf.read32Fixed());
@@ -138,7 +138,7 @@ public class TTFParser
         return font;
     }
 
-    protected TrueTypeFont newFont(TTFDataStream raf)
+    TrueTypeFont newFont(TTFDataStream raf)
     {
         return new TrueTypeFont(raf);
     }

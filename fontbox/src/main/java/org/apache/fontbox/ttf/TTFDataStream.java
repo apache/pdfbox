@@ -28,11 +28,13 @@ import java.util.TimeZone;
  * An interface into a data stream.
  * 
  * @author Ben Litchfield
- * 
  */
-public abstract class TTFDataStream implements Closeable
+abstract class TTFDataStream implements Closeable
 {
-
+    TTFDataStream()
+    {
+    }
+    
     /**
      * Read a 16.16 fixed value, where the first 16 bits are the decimal and the last 16 bits are the fraction.
      * 
@@ -202,6 +204,15 @@ public abstract class TTFDataStream implements Closeable
         millisFor1904 += (secondsSince1904 * 1000);
         cal.setTimeInMillis(millisFor1904);
         return cal;
+    }
+
+    /**
+     * Reads a tag, an arrau of four uint8s used to identify a script, language system, feature,
+     * or baseline.
+     */
+    public String readTag() throws IOException
+    {
+        return new String(read(4), "US-ASCII");
     }
 
     /**

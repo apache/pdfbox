@@ -28,7 +28,7 @@ import java.io.RandomAccessFile;
  * 
  * @author Ben Litchfield
  */
-public class RAFDataStream extends TTFDataStream 
+class RAFDataStream extends TTFDataStream 
 {
     private RandomAccessFile raf = null;
     private File ttfFile = null;
@@ -43,7 +43,7 @@ public class RAFDataStream extends TTFDataStream
      * 
      * @see RandomAccessFile#RandomAccessFile( String, String )
      */
-    public RAFDataStream(String name, String mode) throws FileNotFoundException
+    RAFDataStream(String name, String mode) throws FileNotFoundException
     {
         this( new File( name ), mode );
     }
@@ -58,7 +58,7 @@ public class RAFDataStream extends TTFDataStream
      * 
      * @see RandomAccessFile#RandomAccessFile( File, String )
      */
-    public RAFDataStream(File file, String mode) throws FileNotFoundException
+    RAFDataStream(File file, String mode) throws FileNotFoundException
     {
         raf = new RandomAccessFile( file, mode );
         ttfFile = file;
