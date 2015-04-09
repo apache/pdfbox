@@ -67,7 +67,7 @@ public final class JPXFilter extends Filter
     }
 
     // try to read using JAI Image I/O
-    private static BufferedImage readJPX(InputStream input, DecodeResult result) throws IOException
+    private BufferedImage readJPX(InputStream input, DecodeResult result) throws IOException
     {
         ImageReader reader = findImageReader("JPEG2000", "Java Advanced Imaging (JAI) Image I/O Tools are not installed");
         ImageInputStream iis = null;
