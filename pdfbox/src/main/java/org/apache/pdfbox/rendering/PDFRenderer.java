@@ -199,7 +199,17 @@ public class PDFRenderer
             graphics.rotate((float) Math.toRadians(rotationAngle));
         }
 
-        PageDrawer drawer = new PageDrawer(page);
+        // the end-user may provide a custom PageDrawer
+        PageDrawerParameters parameters = new PageDrawerParameters(this, page);
+        PageDrawer drawer = createPageDrawer(parameters);
         drawer.drawPage(graphics, cropBox);
+    }
+
+    /**
+     * Returns a new PageDrawer instance, using the given parameters. May be overridden.
+     */
+    protected PageDrawer createPageDrawer(PageDrawerParameters parameters) throws IOException
+    {
+        return new PageDrawer(parameters);
     }
 }
