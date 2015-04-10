@@ -40,7 +40,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDCIDFontType0;
 import org.apache.pdfbox.pdmodel.font.PDCIDFontType2;
@@ -68,20 +67,28 @@ import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
 
 /**
- * Paints a page in a PDF document to a Graphics context.
+ * Paints a page in a PDF document to a Graphics context. May be subclassed to provide custom
+ * rendering.
+ * 
+ * <p>If you want to do custom graphics processing rather than Graphics2D rendering, then you should
+ * subclass PDFGraphicsStreamEngine instead. Subclassing PageDrawer is only suitable for cases
+ * where the goal is to render onto a Graphics2D surface.
  * 
  * @author Ben Litchfield
  */
-public final class PageDrawer extends PDFGraphicsStreamEngine
+public class PageDrawer extends PDFGraphicsStreamEngine
 {
     private static final Log LOG = LogFactory.getLog(PageDrawer.class);
 
+    // parent document renderer - note: this is needed for not-yet-implemented resource caching
+    private final PDFRenderer renderer;
+    
     // the graphics device to draw to, xform is the initial transform of the device (i.e. DPI)
     private Graphics2D graphics;
     private AffineTransform xform;
 
     // the page box to draw (usually the crop box but may be another)
-    PDRectangle pageSize;
+    private PDRectangle pageSize;
     
     // clipping winding rule used for the clipping path
     private int clipWindingRule = -1;
@@ -93,17 +100,43 @@ public final class PageDrawer extends PDFGraphicsStreamEngine
     // buffered clipping area for text being drawn
     private Area textClippingArea;
 
+    // glyph cache
     private final Map<PDFont, Glyph2D> fontGlyph2D = new HashMap<PDFont, Glyph2D>();
     
     /**
      * Constructor.
-     * 
-     * @param page the page that is to be rendered.
+     *
+     * @param parameters Parameters for page drawing.
      * @throws IOException If there is an error loading properties from the file.
      */
-    public PageDrawer(PDPage page) throws IOException
+    public PageDrawer(PageDrawerParameters parameters) throws IOException
     {
-        super(page);
+        super(parameters.getPage());
+        this.renderer = parameters.getRenderer();
+    }
+
+    /**
+     * Returns the parent renderer.
+     */
+    public final PDFRenderer getRenderer()
+    {
+        return renderer;
+    }
+
+    /**
+     * Returns the underlying Graphics2D. May be null if drawPage has not yet been called.
+     */
+    protected final Graphics2D getGraphics()
+    {
+        return graphics;
+    }
+
+    /**
+     * Returns the current line path. This is reset to empty after each fill/stroke.
+     */
+    protected final GeneralPath getLinePath()
+    {
+        return linePath;
     }
 
     /**
@@ -163,7 +196,7 @@ public final class PageDrawer extends PDFGraphicsStreamEngine
      * @param patternMatrix the pattern matrix
      * @throws IOException If there is an IO error while drawing the page.
      */
-    public void drawTilingPattern(Graphics2D g, PDTilingPattern pattern, PDColorSpace colorSpace,
+    void drawTilingPattern(Graphics2D g, PDTilingPattern pattern, PDColorSpace colorSpace,
                                   PDColor color, Matrix patternMatrix) throws IOException
     {
         Graphics2D oldGraphics = graphics;
@@ -186,7 +219,7 @@ public final class PageDrawer extends PDFGraphicsStreamEngine
     /**
      * Returns an AWT paint for the given PDColor.
      */
-    private Paint getPaint(PDColor color) throws IOException
+    protected Paint getPaint(PDColor color) throws IOException
     {
         PDColorSpace colorSpace = color.getColorSpace();
         if (!(colorSpace instanceof PDPattern))
@@ -696,8 +729,7 @@ public final class PageDrawer extends PDFGraphicsStreamEngine
         if (pdImage.isStencil())
         {
             // fill the image with paint
-            PDColor color = getGraphicsState().getNonStrokingColor();
-            BufferedImage image = pdImage.getStencilImage(getPaint(color));
+            BufferedImage image = pdImage.getStencilImage(getNonStrokingPaint());
 
             // draw the image
             drawBufferedImage(image, at);
@@ -716,7 +748,7 @@ public final class PageDrawer extends PDFGraphicsStreamEngine
         }
     }
 
-    public void drawBufferedImage(BufferedImage image, AffineTransform at) throws IOException
+    private void drawBufferedImage(BufferedImage image, AffineTransform at) throws IOException
     {
         graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
         setClip();
