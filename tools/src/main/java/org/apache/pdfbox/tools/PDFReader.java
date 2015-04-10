@@ -18,7 +18,7 @@ package org.apache.pdfbox.tools;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.awt.print.PrinterException;
@@ -129,7 +129,8 @@ public class PDFReader extends JFrame
 
         fileMenu.setText("File");
         openMenuItem.setText("Open");
-        openMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,InputEvent.CTRL_DOWN_MASK));
+        openMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,
+                                    Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         openMenuItem.setToolTipText("Open PDF file");
         openMenuItem.addActionListener(new java.awt.event.ActionListener()
         {
@@ -143,7 +144,8 @@ public class PDFReader extends JFrame
         fileMenu.add(openMenuItem);
 
         printMenuItem.setText("Print");
-        printMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_DOWN_MASK));
+        printMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P,
+                                     Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         printMenuItem.addActionListener(new ActionListener()
         {
             @Override
@@ -284,13 +286,15 @@ public class PDFReader extends JFrame
 
         viewMenu.addSeparator();
         firstPageItem.setText("First Page");
-        firstPageItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, InputEvent.CTRL_DOWN_MASK));
+        firstPageItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_HOME,
+                                     Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         firstPageItem.addActionListener(firstPageAction);
         firstPageItem.setEnabled(false);
         viewMenu.add(firstPageItem);
 
         lastPageItem.setText("Last Page");
-        lastPageItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_END, InputEvent.CTRL_DOWN_MASK));
+        lastPageItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_END,
+                                    Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         lastPageItem.addActionListener(lastPageAction);
         lastPageItem.setEnabled(false);
         viewMenu.add(lastPageItem);
@@ -323,7 +327,8 @@ public class PDFReader extends JFrame
 
     private void updateTitle()
     {
-        setTitle(BASETITLE + ": " + currentFilename + " (" + (currentPage + 1) + "/" + numberOfPages + ")");
+        setTitle(BASETITLE + ": " + currentFilename + " " + 
+                "(" + (currentPage + 1) + "/" + numberOfPages + ")");
     }
 
     private void nextPage() throws IOException
@@ -351,6 +356,7 @@ public class PDFReader extends JFrame
         if (currentPage > 0)
         {
             currentPage = 0;
+            updateTitle();
             showPage(currentPage);
         }
     }
@@ -360,6 +366,7 @@ public class PDFReader extends JFrame
         if (currentPage < numberOfPages - 1)
         {
             currentPage = numberOfPages - 1;
+            updateTitle();
             showPage(currentPage);
         }
     }
@@ -369,7 +376,7 @@ public class PDFReader extends JFrame
         JFileChooser chooser = new JFileChooser();
         chooser.setCurrentDirectory(currentDir);
 
-        ExtensionFileFilter pdfFilter = new ExtensionFileFilter(new String[] { "PDF" }, "PDF Files");
+        ExtensionFileFilter pdfFilter = new ExtensionFileFilter(new String[] {"PDF"}, "PDF Files");
         chooser.setFileFilter(pdfFilter);
         int result = chooser.showOpenDialog(PDFReader.this);
         if (result == JFileChooser.APPROVE_OPTION)
@@ -523,7 +530,8 @@ public class PDFReader extends JFrame
 
     private static void usage()
     {
-        System.err.println("usage: java -jar pdfbox-app-" + VERSION + ".jar PDFReader [OPTIONS] <input-file>\n"
+        System.err.println(
+                "usage: java -jar pdfbox-app-" + VERSION + ".jar PDFReader [OPTIONS] <input-file>\n"
                 + "  -password <password>      Password to decrypt the document\n"
                 + "  <input-file>              The PDF document to be loaded\n");
     }
