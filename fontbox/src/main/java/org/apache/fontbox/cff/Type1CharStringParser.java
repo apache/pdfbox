@@ -186,7 +186,7 @@ public class Type1CharStringParser
         throw new IOException("Unexpected char string command: " + command.getKey());
     }
 
-    private static CharStringCommand readCommand(DataInput input, int b0) throws IOException
+    private CharStringCommand readCommand(DataInput input, int b0) throws IOException
     {
         if (b0 == 12)
         {
@@ -196,7 +196,7 @@ public class Type1CharStringParser
         return new CharStringCommand(b0);
     }
 
-    private static Integer readNumber(DataInput input, int b0) throws IOException
+    private Integer readNumber(DataInput input, int b0) throws IOException
     {
         if (b0 >= 32 && b0 <= 246)
         {
