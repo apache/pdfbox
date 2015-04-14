@@ -2,9 +2,9 @@ package org.apache.pdfbox.tools.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.prefs.Preferences;
 
 /**
@@ -35,7 +35,7 @@ public class RecentFiles
         filePaths = readHistoryFromPref();
         if (filePaths == null)
         {
-            filePaths = new ConcurrentLinkedDeque<String>();
+            filePaths = new ArrayDeque<String>();
         }
     }
 
@@ -170,7 +170,7 @@ public class RecentFiles
         {
             return null;
         }
-        Queue<String> history = new ConcurrentLinkedDeque<String>();
+        Queue<String> history = new ArrayDeque<String>();
 
         for (int i = 1; i <= historyLength; i++)
         {
