@@ -20,11 +20,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -44,6 +48,7 @@ import javax.swing.AbstractAction;
 import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.printing.PDFPrinter;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.apache.pdfbox.tools.util.RecentFiles;
 import org.apache.pdfbox.tools.gui.PageWrapper;
 import org.apache.pdfbox.tools.gui.ReaderBottomPanel;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -61,6 +66,7 @@ public class PDFReader extends JFrame
     private JMenu fileMenu;
     private JMenuBar menuBar;
     private JMenuItem openMenuItem;
+    private JMenu recentFileSubmenu;
     private JMenuItem printMenuItem;
     private JMenu viewMenu;
     private JMenuItem nextPageItem;
@@ -77,6 +83,7 @@ public class PDFReader extends JFrame
     private int currentPage = 0;
     private int numberOfPages = 0;
     private String currentFilename = null;
+    private String currentFilePath = null;
 
     private static final String PASSWORD = "-password";
 
@@ -87,6 +94,8 @@ public class PDFReader extends JFrame
     private static final String NEXT_PAGE = "next_page";
     private static final String FIRST_PAGE = "first_page";
     private static final String LAST_PAGE = "last_page";
+
+    private RecentFiles recentFiles;
 
     /**
      * Constructor.
@@ -101,6 +110,7 @@ public class PDFReader extends JFrame
     {
         menuBar = new JMenuBar();
         fileMenu = new JMenu();
+        recentFileSubmenu = new JMenu();
         openMenuItem = new JMenuItem();
         saveAsImageMenuItem = new JMenuItem();
         exitMenuItem = new JMenuItem();
@@ -143,6 +153,20 @@ public class PDFReader extends JFrame
 
         fileMenu.add(openMenuItem);
 
+        try
+        {
+            recentFiles = new RecentFiles(this.getClass(), 5);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
+
+        recentFileSubmenu.setText("Open recent Files");
+        recentFileSubmenu.setEnabled(false);
+        addRecentFileItems();
+        fileMenu.add(recentFileSubmenu);
+        fileMenu.addSeparator();
         printMenuItem.setText("Print");
         printMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P,
                                      Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
@@ -325,9 +349,77 @@ public class PDFReader extends JFrame
         setBounds((screenSize.width - 700) / 2, (screenSize.height - 600) / 2, 700, 600);
     }
 
+    private void addRecentFileItems()
+    {
+        Action recentMenuAction = new AbstractAction()
+        {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                String filePath = (String) ((JComponent) actionEvent.getSource()).getClientProperty("path");
+                try
+                {
+                    openPDFFile(filePath, "");
+                }
+                catch (IOException e)
+                {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+
+        MouseListener mouseListener = new MouseListener()
+        {
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent)
+            {
+            }
+
+            @Override
+            public void mousePressed(MouseEvent mouseEvent)
+            {
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent mouseEvent)
+            {
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent)
+            {
+                String filePath = (String) ((JComponent) mouseEvent.getSource()).getClientProperty("path");
+                bottomStatusPanel.getStatusLabel().setText(filePath);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent)
+            {
+                bottomStatusPanel.getStatusLabel().setText("");
+            }
+        };
+
+        if (!recentFiles.isEmpty())
+        {
+            recentFileSubmenu.removeAll();
+            ArrayList<String> files = recentFiles.getFiles();
+            for (int i = files.size() - 1; i >= 0; i--)
+            {
+                String path = files.get(i);
+                String name = new File(path).getName();
+                JMenuItem recentFileMenuItem = new JMenuItem(name);
+                recentFileMenuItem.putClientProperty("path", path);
+                recentFileMenuItem.addActionListener(recentMenuAction);
+                recentFileMenuItem.addMouseListener(mouseListener);
+                recentFileSubmenu.add(recentFileMenuItem);
+            }
+            recentFileSubmenu.setEnabled(true);
+        }
+    }
+
     private void updateTitle()
     {
-        setTitle(BASETITLE + ": " + currentFilename + " " + 
+        setTitle(BASETITLE + ": " + currentFilename + " " +
                 "(" + (currentPage + 1) + "/" + numberOfPages + ")");
     }
 
@@ -401,7 +493,9 @@ public class PDFReader extends JFrame
             if (document != null)
             {
                 document.close();
+                recentFiles.addFile(currentFilePath);
             }
+            recentFiles.close();
         }
         catch (IOException io)
         {
@@ -451,9 +545,12 @@ public class PDFReader extends JFrame
         {
             document.close();
             documentPanel.removeAll();
+            recentFiles.addFile(currentFilePath);
         }
 
         File file = new File(filename);
+        currentFilePath = file.getPath();
+        recentFiles.removeFile(file.getPath());
         parseDocument(file, password);
         pages = document.getPages();
         numberOfPages = document.getNumberOfPages();
@@ -461,6 +558,7 @@ public class PDFReader extends JFrame
         currentPage = 0;
         updateTitle();
         showPage(0);
+        addRecentFileItems();
     }
 
     private void showPage(int pageNumber) throws IOException
