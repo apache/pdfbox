@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
 import java.util.prefs.Preferences;
 
@@ -105,13 +106,13 @@ public class RecentFiles
      * This gives the file in descending order where order is according to the time it is added.
      * This checks for file's existence in file history.
      *
-     * @return return the file paths in an ArrayList.
+     * @return return the file paths in a List.
      */
-    public ArrayList<String> getFiles()
+    public List<String> getFiles()
     {
         if (!isEmpty())
         {
-            ArrayList<String> files = new ArrayList<String>();
+            List<String> files = new ArrayList<String>();
             for (String path : filePaths)
             {
                 File file = new File(path);
@@ -143,7 +144,7 @@ public class RecentFiles
     private String[] breakString(String fullPath)
     {
         int allowedStringLength = Preferences.MAX_VALUE_LENGTH;
-        ArrayList<String> pieces = new ArrayList<String>();
+        List<String> pieces = new ArrayList<String>();
         int beginIndex = 0;
         int remainingLength = fullPath.length();
         int endIndex = 0;

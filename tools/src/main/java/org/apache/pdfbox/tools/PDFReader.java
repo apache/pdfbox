@@ -28,7 +28,7 @@ import java.awt.print.PrinterJob;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -402,7 +402,7 @@ public class PDFReader extends JFrame
         if (!recentFiles.isEmpty())
         {
             recentFileSubmenu.removeAll();
-            ArrayList<String> files = recentFiles.getFiles();
+            List<String> files = recentFiles.getFiles();
             for (int i = files.size() - 1; i >= 0; i--)
             {
                 String path = files.get(i);
