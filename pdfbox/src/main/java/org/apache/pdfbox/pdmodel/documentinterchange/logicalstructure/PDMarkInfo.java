@@ -28,7 +28,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
  */
 public class PDMarkInfo implements COSObjectable
 {
-    private COSDictionary dictionary;
+    private final COSDictionary dictionary;
 
     /**
      * Default Constructor.

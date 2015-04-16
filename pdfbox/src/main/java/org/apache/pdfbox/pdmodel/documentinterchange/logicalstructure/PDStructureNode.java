@@ -61,7 +61,7 @@ public abstract class PDStructureNode implements COSObjectable
 
     private final COSDictionary dictionary;
 
-    protected COSDictionary getCOSDictionary()
+    public COSDictionary getCOSDictionary()
     {
         return dictionary;
     }
