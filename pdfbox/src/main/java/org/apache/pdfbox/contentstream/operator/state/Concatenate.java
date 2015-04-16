@@ -18,6 +18,7 @@ package org.apache.pdfbox.contentstream.operator.state;
 
 import java.util.List;
 import java.io.IOException;
+import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
@@ -35,6 +36,11 @@ public class Concatenate extends OperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
+        if (arguments.size() < 6)
+        {
+            throw new MissingOperandException(operator, arguments);
+        }
+        
         // concatenate matrix to current transformation matrix
         COSNumber a = (COSNumber) arguments.get(0);
         COSNumber b = (COSNumber) arguments.get(1);

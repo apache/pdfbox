@@ -18,11 +18,12 @@ package org.apache.pdfbox.contentstream.operator.text;
 
 import java.util.List;
 
+import org.apache.pdfbox.contentstream.operator.MissingOperandException;
+import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.util.Matrix;
-import org.apache.pdfbox.contentstream.operator.Operator;
-import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 
 /**
  * Td: Move text position.
@@ -32,8 +33,13 @@ import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 public class MoveText extends OperatorProcessor
 {
     @Override
-    public void process(Operator operator, List<COSBase> arguments)
+    public void process(Operator operator, List<COSBase> arguments) throws MissingOperandException
     {
+        if (arguments.size() < 2)
+        {
+            throw new MissingOperandException(operator, arguments);
+        }
+        
         COSNumber x = (COSNumber)arguments.get( 0 );
         COSNumber y = (COSNumber)arguments.get( 1 );
 
