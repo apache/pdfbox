@@ -39,14 +39,14 @@ public class PDObjectReference implements COSObjectable
      */
     public static final String TYPE = "OBJR";
 
-    private COSDictionary dictionary;
+    private final COSDictionary dictionary;
 
     /**
      * Returns the underlying dictionary.
      * 
      * @return the dictionary
      */
-    protected COSDictionary getCOSDictionary()
+    public COSDictionary getCOSDictionary()
     {
         return this.dictionary;
     }
