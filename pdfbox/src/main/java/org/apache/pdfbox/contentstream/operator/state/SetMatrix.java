@@ -18,11 +18,12 @@ package org.apache.pdfbox.contentstream.operator.state;
 
 import java.util.List;
 
+import org.apache.pdfbox.contentstream.operator.MissingOperandException;
+import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.util.Matrix;
-import org.apache.pdfbox.contentstream.operator.Operator;
-import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 
 /**
  * Tm: Set text matrix and text line matrix.
@@ -32,8 +33,13 @@ import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 public class SetMatrix extends OperatorProcessor
 {
     @Override
-    public void process(Operator operator, List<COSBase> arguments)
+    public void process(Operator operator, List<COSBase> arguments) throws MissingOperandException
     {
+        if (arguments.size() < 6)
+        {
+            throw new MissingOperandException(operator, arguments);
+        }
+        
         COSNumber a = (COSNumber)arguments.get( 0 );
         COSNumber b = (COSNumber)arguments.get( 1 );
         COSNumber c = (COSNumber)arguments.get( 2 );
