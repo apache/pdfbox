@@ -232,13 +232,22 @@ public abstract class BaseParser implements Closeable
             }
             COSObjectKey key = new COSObjectKey(((COSInteger) number).longValue(),
                     ((COSInteger) generationNumber).intValue());
-            retval = document.getObjectFromPool(key);
+            retval = getObjectFromPool(key);
         }
         else
         {
             retval = number;
         }
         return retval;
+    }
+
+    private COSBase getObjectFromPool(COSObjectKey key) throws IOException
+    {
+        if (document == null)
+        {
+            throw new IOException("object reference " + key + " at offset " + pdfSource.getOffset() + " in content stream");
+        }
+        return document.getObjectFromPool(key);
     }
 
     /**
@@ -979,7 +988,7 @@ public abstract class BaseParser implements Closeable
                     {
                         COSInteger number = (COSInteger)po.remove( po.size() -1 );
                         COSObjectKey key = new COSObjectKey(number.longValue(), genNumber.intValue());
-                        pbo = document.getObjectFromPool(key);
+                        pbo = getObjectFromPool(key);
                     }
                     else
                     {
