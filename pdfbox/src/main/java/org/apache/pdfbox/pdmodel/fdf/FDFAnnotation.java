@@ -153,7 +153,7 @@ public abstract class FDFAnnotation implements COSObjectable
             setRectangle( new PDRectangle( array ) );
         }
 
-        setName( element.getAttribute( "title" ) );
+        setTitle( element.getAttribute( "title" ) );
         setCreationDate( DateConverter.toCalendar( element.getAttribute( "creationdate" ) ) );
         String opac = element.getAttribute( "opacity" );
         if( opac != null )
