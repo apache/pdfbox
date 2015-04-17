@@ -135,7 +135,6 @@ public abstract class FDFAnnotation implements COSObjectable
                     setToggleNoView( true );
                 }
             }
-
         }
 
         setName( element.getAttribute( "name" ) );
@@ -176,15 +175,75 @@ public abstract class FDFAnnotation implements COSObjectable
     public static FDFAnnotation create( COSDictionary fdfDic ) throws IOException
     {
         FDFAnnotation retval = null;
-        if( fdfDic != null )
+        if (fdfDic != null)
         {
-        if( FDFAnnotationText.SUBTYPE.equals( fdfDic.getNameAsString( COSName.SUBTYPE ) ) )
+            if (FDFAnnotationText.SUBTYPE.equals(fdfDic.getNameAsString(COSName.SUBTYPE)))
             {
                 retval = new FDFAnnotationText( fdfDic );
             }
+            else if (FDFAnnotationCaret.SUBTYPE.equals(fdfDic.getNameAsString(COSName.SUBTYPE)))
+            {
+                retval = new FDFAnnotationCaret(fdfDic);
+            }
+            else if (FDFAnnotationFreeText.SUBTYPE.equals(fdfDic.getNameAsString(COSName.SUBTYPE)))
+            {
+                retval = new FDFAnnotationFreeText(fdfDic);
+            }
+            else if (FDFAnnotationFileAttachment.SUBTYPE.equals(fdfDic.getNameAsString(COSName.SUBTYPE)))
+            {
+                retval = new FDFAnnotationFileAttachment(fdfDic);
+            }
+            else if (FDFAnnotationHighlight.SUBTYPE.equals(fdfDic.getNameAsString(COSName.SUBTYPE)))
+            {
+                retval = new FDFAnnotationHighlight(fdfDic);
+            }
+            else if (FDFAnnotationInk.SUBTYPE.equals(fdfDic.getNameAsString(COSName.SUBTYPE)))
+            {
+                retval = new FDFAnnotationInk(fdfDic);
+            }
+            else if (FDFAnnotationLine.SUBTYPE.equals(fdfDic.getNameAsString(COSName.SUBTYPE)))
+            {
+                retval = new FDFAnnotationLine(fdfDic);
+            }
+            else if (FDFAnnotationCircle.SUBTYPE.equals(fdfDic.getNameAsString(COSName.SUBTYPE)))
+            {
+                retval = new FDFAnnotationCircle(fdfDic);
+            }
+            else if (FDFAnnotationSquare.SUBTYPE.equals(fdfDic.getNameAsString(COSName.SUBTYPE)))
+            {
+                retval = new FDFAnnotationSquare(fdfDic);
+            }
+            else if (FDFAnnotationPolygon.SUBTYPE.equals(fdfDic.getNameAsString(COSName.SUBTYPE)))
+            {
+                retval = new FDFAnnotationPolygon(fdfDic);
+            }
+            else if (FDFAnnotationPolyline.SUBTYPE.equals(fdfDic.getNameAsString(COSName.SUBTYPE)))
+            {
+                retval = new FDFAnnotationPolyline(fdfDic);
+            }
+            else if (FDFAnnotationSound.SUBTYPE.equals(fdfDic.getNameAsString(COSName.SUBTYPE)))
+            {
+                retval = new FDFAnnotationSound(fdfDic);
+            }                            
+            else if (FDFAnnotationSquiggly.SUBTYPE.equals(fdfDic.getNameAsString(COSName.SUBTYPE)))
+            {
+                retval = new FDFAnnotationSquiggly(fdfDic);
+            }                            
+            else if (FDFAnnotationStamp.SUBTYPE.equals(fdfDic.getNameAsString(COSName.SUBTYPE)))
+            {
+                retval = new FDFAnnotationStamp(fdfDic);
+            }                            
+            else if (FDFAnnotationStrikeOut.SUBTYPE.equals(fdfDic.getNameAsString(COSName.SUBTYPE)))
+            {
+                retval = new FDFAnnotationStrikeOut(fdfDic);
+            }
+            else if (FDFAnnotationUnderline.SUBTYPE.equals(fdfDic.getNameAsString(COSName.SUBTYPE)))
+            {
+                retval = new FDFAnnotationUnderline(fdfDic);
+            }
             else
             {
-                LOG.warn("Unknown annotation type '" + fdfDic.getNameAsString( COSName.SUBTYPE ) + "'" );
+                LOG.warn("Unknown or unsupported annotation type '" + fdfDic.getNameAsString( COSName.SUBTYPE ) + "'" );
             }
         }
         return retval;
