@@ -210,19 +210,10 @@ public class PDFStreamParser extends BaseParser
 
                 // put back first bracket
                 pdfSource.unread(leftBracket);
-                
-                if(c == '<')
+
+                if (c == '<')
                 {
-                    COSDictionary pod = parseCOSDictionary();
-                    skipSpaces();
-                    if((char)pdfSource.peek() == 's')
-                    {
-                        retval = parseCOSStream( pod );
-                    }
-                    else
-                    {
-                        retval = pod;
-                    }
+                    retval = parseCOSDictionary();
                 }
                 else
                 {
