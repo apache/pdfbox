@@ -156,7 +156,7 @@ public class FDFDictionary implements COSObjectable
                             }
                             else if (annotationName.equals("link"))
                             {
-                                // TODO: support link annotation
+                                annotList.add(new FDFAnnotationLink(annot));
                             }
                             else if (annotationName.equals("circle"))
                             {

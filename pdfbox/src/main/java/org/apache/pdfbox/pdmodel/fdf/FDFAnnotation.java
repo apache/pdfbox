@@ -205,6 +205,10 @@ public abstract class FDFAnnotation implements COSObjectable
             {
                 retval = new FDFAnnotationLine(fdfDic);
             }
+            else if (FDFAnnotationLink.SUBTYPE.equals(fdfDic.getNameAsString(COSName.SUBTYPE)))
+            {
+                retval = new FDFAnnotationLink(fdfDic);
+            }
             else if (FDFAnnotationCircle.SUBTYPE.equals(fdfDic.getNameAsString(COSName.SUBTYPE)))
             {
                 retval = new FDFAnnotationCircle(fdfDic);
