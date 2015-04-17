@@ -160,7 +160,7 @@ public class PDUserProperty extends PDDictionaryWrapper
      */
     private void potentiallyNotifyChanged(Object oldEntry, Object newEntry)
     {
-        if (PDUserProperty.isEntryChanged(oldEntry, newEntry))
+        if (this.isEntryChanged(oldEntry, newEntry))
         {
             this.userAttributeObject.userPropertyChanged(this);
         }
@@ -174,7 +174,7 @@ public class PDUserProperty extends PDDictionaryWrapper
      * @return <code>true</code> if the entry is changed, <code>false</code>
      * otherwise
      */
-    private static boolean isEntryChanged(Object oldEntry, Object newEntry)
+    private boolean isEntryChanged(Object oldEntry, Object newEntry)
     {
         if (oldEntry == null)
         {
