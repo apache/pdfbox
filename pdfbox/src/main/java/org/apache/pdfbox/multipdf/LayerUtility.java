@@ -50,8 +50,8 @@ public class LayerUtility
 {
     private static final boolean DEBUG = true;
 
-    private PDDocument targetDoc;
-    private PDFCloneUtility cloner;
+    private final PDDocument targetDoc;
+    private final PDFCloneUtility cloner;
 
     /**
      * Creates a new instance.
