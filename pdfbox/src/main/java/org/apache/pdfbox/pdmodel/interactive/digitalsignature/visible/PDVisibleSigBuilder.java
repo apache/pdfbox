@@ -49,7 +49,7 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
  */
 public class PDVisibleSigBuilder implements PDFTemplateBuilder
 {
-    private PDFTemplateStructure pdfStructure;
+    private final PDFTemplateStructure pdfStructure;
     private static final Log log = LogFactory.getLog(PDVisibleSigBuilder.class);
 
     @Override
@@ -110,7 +110,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
         pdSignature.setByteRange(new int[] { 0, 0, 0, 0 });
         pdSignature.setContents(new byte[4096]);
         pdfStructure.setPdSignature(pdSignature);
-        log.info("PDSignatur has been created");
+        log.info("PDSignature has been created");
     }
 
     @Override
