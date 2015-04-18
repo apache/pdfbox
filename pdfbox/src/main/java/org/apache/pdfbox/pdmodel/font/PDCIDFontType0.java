@@ -55,7 +55,7 @@ public class PDCIDFontType0 extends PDCIDFont
 
     private Float avgWidth = null;
     private Matrix fontMatrix;
-    private AffineTransform fontMatrixTransform;
+    private final AffineTransform fontMatrixTransform;
 
     /**
      * Constructor.
@@ -246,6 +246,7 @@ public class PDCIDFontType0 extends PDCIDFont
      * @param code character code
      * @return CID
      */
+    @Override
     public int codeToCID(int code)
     {
         return parent.getCMap().toCID(code);
