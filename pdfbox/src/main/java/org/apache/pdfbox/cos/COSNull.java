@@ -63,7 +63,7 @@ public final class COSNull extends COSBase
      * @param output The stream to write to.
      * @throws IOException If there is an error writing to the stream.
      */
-    public static void writePDF( OutputStream output ) throws IOException
+    public void writePDF( OutputStream output ) throws IOException
     {
         output.write(NULL_BYTES);
     }
