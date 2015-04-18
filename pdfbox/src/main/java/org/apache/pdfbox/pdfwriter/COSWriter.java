@@ -1089,7 +1089,7 @@ public class COSWriter implements ICOSVisitor, Closeable
     @Override
     public Object visitFromNull(COSNull obj) throws IOException
     {
-        COSNull.writePDF(getStandardOutput());
+        obj.writePDF(getStandardOutput());
         return null;
     }
 
