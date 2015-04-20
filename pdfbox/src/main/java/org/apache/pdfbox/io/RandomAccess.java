@@ -45,4 +45,8 @@ public interface RandomAccess extends RandomAccessRead
      */
     void write(byte[] b, int offset, int length) throws IOException;
 
+    /**
+     * Clears all data of the buffer.
+     */
+    void clear();
 }
