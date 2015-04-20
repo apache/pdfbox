@@ -968,13 +968,18 @@ public class PDDocument implements Closeable
     }
 
    /**
-     * Save the PDF as an incremental update.
+     * Save the PDF as an incremental update. This is only possible if the PDF was loaded from a file.
      *
      * @param output stream to write
      * @throws IOException if the output could not be written
+     * @throws IllegalStateException if the document was not loaded from a file.
      */
     public void saveIncremental(OutputStream output) throws IOException
     {
+        if (incrementalFile == null)
+        {
+            throw new IllegalStateException("Incremental save is only possible if the document was loaded from a file");
+        }
         InputStream input = new RandomAccessBufferedFileInputStream(incrementalFile);
         COSWriter writer = null;
         try
