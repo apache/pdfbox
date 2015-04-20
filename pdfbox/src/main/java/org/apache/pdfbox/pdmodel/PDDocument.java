@@ -463,9 +463,9 @@ public class PDDocument implements Pageable, Closeable
                 COSBase base = cosObject.getObject();
                 if (base != null && base instanceof COSDictionary)
                 {
-                    COSBase ft = ((COSDictionary)base).getItem(COSName.FT);
-                    COSBase type = ((COSDictionary)base).getItem(COSName.TYPE);
-                    COSBase apDict = ((COSDictionary)base).getItem(COSName.AP);
+                    COSBase ft = ((COSDictionary)base).getDictionaryObject(COSName.FT);
+                    COSBase type = ((COSDictionary)base).getDictionaryObject(COSName.TYPE);
+                    COSBase apDict = ((COSDictionary)base).getDictionaryObject(COSName.AP);
             
                     // Search for signature annotation
                     if (annotNotFound && COSName.ANNOT.equals(type))
@@ -473,7 +473,7 @@ public class PDDocument implements Pageable, Closeable
                         COSDictionary cosBaseDict = (COSDictionary)base;
               
                         // Read and set the Rectangle for visual signature
-                        COSArray rectAry = (COSArray)cosBaseDict.getItem(COSName.RECT);
+                        COSArray rectAry = (COSArray)cosBaseDict.getDictionaryObject(COSName.RECT);
                         PDRectangle rect = new PDRectangle(rectAry);
                         signatureField.getWidget().setRectangle(rect);
                         annotNotFound = false;
@@ -491,7 +491,7 @@ public class PDDocument implements Pageable, Closeable
                         signatureField.getWidget().setAppearance(ap);
               
                         // read and set AcroForm DefaultResource
-                        COSBase dr = cosBaseDict.getItem(COSName.DR);
+                        COSBase dr = cosBaseDict.getDictionaryObject(COSName.DR);
                         if (dr != null)
                         {
                             dr.setDirect(true);
