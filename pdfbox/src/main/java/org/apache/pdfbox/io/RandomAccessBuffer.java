@@ -23,7 +23,7 @@ import java.util.List;
 
 /**
  * An implementation of the RandomAccess interface to store a pdf in memory.
- * The data will be stored in chunks organized in an ArrayList.  
+ * The data will be stored in chunks organized in an ArrayList.
  *
  */
 public class RandomAccessBuffer implements RandomAccess, Closeable, Cloneable
@@ -102,6 +102,22 @@ public class RandomAccessBuffer implements RandomAccess, Closeable, Cloneable
         currentBufferPointer = 0;
         size = 0;
         bufferListIndex = 0;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void clear()
+    {
+        bufferList.clear();
+        currentBuffer = new byte[CHUNK_SIZE];
+        bufferList.add(currentBuffer);
+        pointer = 0;
+        currentBufferPointer = 0;
+        size = 0;
+        bufferListIndex = 0;
+        bufferListMaxIndex = 0;
     }
 
     /**
