@@ -316,6 +316,7 @@ public class PDDocument implements Closeable
                 COSBase base = cosObject.getObject();
                 if (base instanceof COSDictionary)
                 {
+                    COSDictionary cosBaseDict = (COSDictionary) base;
                     COSBase ft = ((COSDictionary) base).getItem(COSName.FT);
                     COSBase type = ((COSDictionary) base).getItem(COSName.TYPE);
                     COSBase apDict = ((COSDictionary) base).getItem(COSName.AP);
@@ -323,8 +324,6 @@ public class PDDocument implements Closeable
                     // Search for signature annotation
                     if (annotNotFound && COSName.ANNOT.equals(type))
                     {
-                        COSDictionary cosBaseDict = (COSDictionary) base;
-
                         // Read and set the Rectangle for visual signature
                         COSArray rectAry = (COSArray) cosBaseDict.getItem(COSName.RECT);
                         PDRectangle rect = new PDRectangle(rectAry);
@@ -335,8 +334,6 @@ public class PDDocument implements Closeable
                     // Search for Signature-Field
                     if (sigFieldNotFound && COSName.SIG.equals(ft) && apDict != null)
                     {
-                        COSDictionary cosBaseDict = (COSDictionary) base;
-
                         // read and set Appearance Dictionary
                         PDAppearanceDictionary ap = 
                                 new PDAppearanceDictionary((COSDictionary)cosBaseDict.getDictionaryObject(COSName.AP));
