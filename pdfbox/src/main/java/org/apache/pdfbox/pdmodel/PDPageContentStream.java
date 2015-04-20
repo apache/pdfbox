@@ -52,6 +52,7 @@ import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDInlineImage;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
+import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.util.Charsets;
 import org.apache.pdfbox.util.Matrix;
 
@@ -2020,6 +2021,18 @@ public final class PDPageContentStream implements Closeable
     public void appendCOSName(COSName name) throws IOException
     {
         name.writePDF(output);
+    }
+    
+    /**
+     * Set an extended graphics state.
+     * 
+     * @param state The extended graphics state.
+     * @throws IOException If the content stream could not be written.
+     */
+    public void setGraphicsStateParameters(PDExtendedGraphicsState state) throws IOException
+    {
+        writeOperand(resources.add(state));
+        writeOperator("gs");
     }
 
     /**
