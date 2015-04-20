@@ -317,15 +317,15 @@ public class PDDocument implements Closeable
                 if (base instanceof COSDictionary)
                 {
                     COSDictionary cosBaseDict = (COSDictionary) base;
-                    COSBase ft = ((COSDictionary) base).getItem(COSName.FT);
-                    COSBase type = ((COSDictionary) base).getItem(COSName.TYPE);
-                    COSBase apDict = ((COSDictionary) base).getItem(COSName.AP);
+                    COSBase ft = cosBaseDict.getDictionaryObject(COSName.FT);
+                    COSBase type = cosBaseDict.getDictionaryObject(COSName.TYPE);
+                    COSBase apDict = cosBaseDict.getDictionaryObject(COSName.AP);
 
                     // Search for signature annotation
                     if (annotNotFound && COSName.ANNOT.equals(type))
                     {
                         // Read and set the Rectangle for visual signature
-                        COSArray rectAry = (COSArray) cosBaseDict.getItem(COSName.RECT);
+                        COSArray rectAry = (COSArray) cosBaseDict.getDictionaryObject(COSName.RECT);
                         PDRectangle rect = new PDRectangle(rectAry);
                         signatureField.getWidget().setRectangle(rect);
                         annotNotFound = false;
@@ -341,7 +341,7 @@ public class PDDocument implements Closeable
                         signatureField.getWidget().setAppearance(ap);
 
                         // read and set AcroForm DefaultResource
-                        COSDictionary dr = (COSDictionary) cosBaseDict.getItem(COSName.DR);
+                        COSDictionary dr = (COSDictionary) cosBaseDict.getDictionaryObject(COSName.DR);
                         if (dr != null)
                         {
                             dr.setDirect(true);
