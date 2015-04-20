@@ -875,6 +875,24 @@ public class PDDocument implements Closeable
      * 
      * @param input stream that contains the document.
      * @param password password to be used for decryption
+     * @param useScratchFiles enables the usage of a scratch file if set to true
+     * 
+     * @return loaded document
+     * 
+     * @throws IOException in case of a file reading or parsing error
+     */
+    public static PDDocument load(InputStream input, String password, boolean useScratchFiles) throws IOException
+    {
+        PDFParser parser = new PDFParser(input, password, null, null, useScratchFiles);
+        parser.parse();
+        return parser.getPDDocument();
+    }
+    
+    /**
+     * Parses PDF with non sequential parser.
+     * 
+     * @param input stream that contains the document.
+     * @param password password to be used for decryption
      * @param keyStore key store to be used for decryption when using public key security 
      * @param alias alias to be used for decryption when using public key security
      * @param useScratchFiles enables the usage of a scratch file if set to true
