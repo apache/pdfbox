@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.interactive.digitalsignature;
 
 import java.io.Closeable;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -61,6 +62,19 @@ public class SignatureOptions implements Closeable
         return pageNo;
     }
   
+    /**
+     * Reads the visual signature from the given file.
+     *  
+     * @param is the file containing the visual signature
+     * @throws IOException when something went wrong during parsing 
+     */
+    public void setVisualSignature(File file) throws IOException
+    { 
+        PDFParser parser = new PDFParser(file);
+        parser.parse();
+        visualSignature = parser.getDocument();
+    }
+    
     /**
      * Reads the visual signature from the given input stream.
      *  
