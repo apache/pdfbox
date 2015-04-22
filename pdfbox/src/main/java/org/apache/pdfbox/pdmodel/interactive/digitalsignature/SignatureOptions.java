@@ -65,7 +65,7 @@ public class SignatureOptions implements Closeable
     /**
      * Reads the visual signature from the given file.
      *  
-     * @param is the file containing the visual signature
+     * @param file the file containing the visual signature
      * @throws IOException when something went wrong during parsing 
      */
     public void setVisualSignature(File file) throws IOException
