@@ -154,6 +154,9 @@ public class ContentStreamWriter
                 output.write( "ID".getBytes("ISO-8859-1") );
                 output.write( EOL );
                 output.write( op.getImageData() );
+                output.write( EOL );
+                output.write( "EI".getBytes("ISO-8859-1") );
+                output.write( EOL );
             }
             else
             {
