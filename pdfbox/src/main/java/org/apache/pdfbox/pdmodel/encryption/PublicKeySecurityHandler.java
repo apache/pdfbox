@@ -483,4 +483,13 @@ public final class PublicKeySecurityHandler extends SecurityHandler
         RecipientIdentifier recipientId = new RecipientIdentifier(serial);
         return new KeyTransRecipientInfo(recipientId, algorithmId, octets);
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasProtectionPolicy()
+    {
+        return policy != null;
+    }
 }

@@ -533,4 +533,11 @@ public abstract class SecurityHandler
     {
         useAES = aesValue;
     }
+
+    /**
+     * Returns whether a protection policy has been set.
+     * 
+     * @return true if a protection policy has been set.
+     */
+    public abstract boolean hasProtectionPolicy();
 }
