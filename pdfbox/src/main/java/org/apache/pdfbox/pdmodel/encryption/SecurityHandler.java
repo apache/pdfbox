@@ -88,7 +88,6 @@ public abstract class SecurityHandler
     protected boolean decryptMetadata; 
     
     private final Set<COSBase> objects = new HashSet<COSBase>();
-    private final Set<COSDictionary> potentialSignatures = new HashSet<COSDictionary>();
 
     private boolean useAES;
     
@@ -424,9 +423,7 @@ public abstract class SecurityHandler
                 {
                     // if we are a signature dictionary and contain a Contents entry then
                     // we don't decrypt it.
-                    if (!(entry.getKey().equals(COSName.CONTENTS)
-                            && value instanceof COSString
-                            && potentialSignatures.contains(dictionary)))
+                    if (!(entry.getKey().equals(COSName.CONTENTS) && value instanceof COSString))
                     {
                         decrypt(value, objNum, genNum);
                     }
