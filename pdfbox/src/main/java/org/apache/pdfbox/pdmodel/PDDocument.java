@@ -417,14 +417,14 @@ public class PDDocument implements Closeable
             acroForm.setSignaturesExist(true); 
         }
 
-        List<PDFieldTreeNode> field = acroForm.getFields();
+        List<PDFieldTreeNode> acroformFields = acroForm.getFields();
 
         for (PDSignatureField sigField : sigFields)
         {
             sigField.getDictionary().setNeedToBeUpdated(true);
             
             // Check if the field already exists
-            checkSignatureField(field, sigField);
+            checkSignatureField(acroformFields, sigField);
 
             // Check if we need to add a signature
             if (sigField.getSignature() != null)
