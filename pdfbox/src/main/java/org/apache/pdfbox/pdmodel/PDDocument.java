@@ -223,32 +223,15 @@ public class PDDocument implements Closeable
         List<PDAnnotation> annotations = page.getAnnotations();
 
         List<PDFieldTreeNode> fields = acroForm.getFields();
-        PDSignatureField signatureField = null;
-        if(fields == null) 
+        if (fields == null)
         {
             fields = new ArrayList<PDFieldTreeNode>();
             acroForm.setFields(fields);
         }
-        for (PDFieldTreeNode pdField : fields)
-        {
-            if (pdField instanceof PDSignatureField)
-            {
-                PDSignature signature = ((PDSignatureField) pdField).getSignature();
-                if (signature != null && signature.getDictionary().equals(sigObject.getDictionary()))
-                {
-                    signatureField = (PDSignatureField) pdField;
-                }
-            }
-        }
+        PDSignatureField signatureField = findSignatureField(fields, sigObject);
         if (signatureField == null)
         {
-            signatureField = new PDSignatureField(acroForm);
-
-            // append the signature object
-            signatureField.setSignature(sigObject); 
-            
-            // backward linking
-            signatureField.getWidget().setPage(page); 
+            signatureField = createSignatureField(acroForm, sigObject, page); 
         }
 
         // Set the AcroForm Fields
@@ -284,6 +267,35 @@ public class PDDocument implements Closeable
         page.getCOSObject().setNeedToBeUpdated(true);
     }
 
+    private PDSignatureField createSignatureField(PDAcroForm acroForm, PDSignature sigObject, PDPage page)
+            throws IOException
+    {
+        PDSignatureField signatureField = new PDSignatureField(acroForm);
+        // append the signature object
+        signatureField.setSignature(sigObject);
+        // backward linking
+        signatureField.getWidget().setPage(page);
+        return signatureField;
+    }
+
+    // search acroform field list for signature field with specific signature dictionary
+    private PDSignatureField findSignatureField(List<PDFieldTreeNode> fields, PDSignature sigObject)
+    {
+        PDSignatureField signatureField = null;
+        for (PDFieldTreeNode pdField : fields)
+        {
+            if (pdField instanceof PDSignatureField)
+            {
+                PDSignature signature = ((PDSignatureField) pdField).getSignature();
+                if (signature != null && signature.getDictionary().equals(sigObject.getDictionary()))
+                {
+                    signatureField = (PDSignatureField) pdField;
+                }
+            }
+        }
+        return signatureField;
+    }
+
     // return true if the field already existed in the field list, in that case, it is marked for update
     private boolean checkSignatureField(List<PDFieldTreeNode> acroFormFields, PDSignatureField signatureField)
     {
@@ -306,15 +318,12 @@ public class PDDocument implements Closeable
     }
 
     private void prepareVisibleSignature(PDSignatureField signatureField, PDAcroForm acroForm, 
-            COSDocument visualSignature) throws IllegalArgumentException
+            COSDocument visualSignature)
     {
         // Obtain visual signature object
-        List<COSObject> cosObjects = visualSignature.getObjects();
-        
         boolean annotNotFound = true;
         boolean sigFieldNotFound = true;
-        COSDictionary acroFormDict = acroForm.getDictionary();
-        for (COSObject cosObject : cosObjects)
+        for (COSObject cosObject : visualSignature.getObjects())
         {
             if (!annotNotFound && !sigFieldNotFound)
             {
@@ -325,37 +334,22 @@ public class PDDocument implements Closeable
             if (base instanceof COSDictionary)
             {
                 COSDictionary cosBaseDict = (COSDictionary) base;
-                COSBase ft = cosBaseDict.getDictionaryObject(COSName.FT);
-                COSBase type = cosBaseDict.getDictionaryObject(COSName.TYPE);
-                COSBase apDict = cosBaseDict.getDictionaryObject(COSName.AP);
-                
+
                 // Search for signature annotation
+                COSBase type = cosBaseDict.getDictionaryObject(COSName.TYPE);
                 if (annotNotFound && COSName.ANNOT.equals(type))
                 {
-                    // Read and set the Rectangle for visual signature
-                    COSArray rectAry = (COSArray) cosBaseDict.getDictionaryObject(COSName.RECT);
-                    PDRectangle rect = new PDRectangle(rectAry);
-                    signatureField.getWidget().setRectangle(rect);
+                    assignSignatureRectangle(signatureField, cosBaseDict);
                     annotNotFound = false;
                 }
-                
-                // Search for Signature-Field
+
+                // Search for signature field
+                COSBase ft = cosBaseDict.getDictionaryObject(COSName.FT);
+                COSBase apDict = cosBaseDict.getDictionaryObject(COSName.AP);
                 if (sigFieldNotFound && COSName.SIG.equals(ft) && apDict != null)
                 {
-                    // read and set Appearance Dictionary
-                    PDAppearanceDictionary ap =
-                            new PDAppearanceDictionary((COSDictionary)cosBaseDict.getDictionaryObject(COSName.AP));
-                    ap.getCOSObject().setDirect(true);
-                    signatureField.getWidget().setAppearance(ap);
-                    
-                    // read and set AcroForm DefaultResource
-                    COSDictionary dr = (COSDictionary) cosBaseDict.getDictionaryObject(COSName.DR);
-                    if (dr != null)
-                    {
-                        dr.setDirect(true);
-                        dr.setNeedToBeUpdated(true);
-                        acroFormDict.setItem(COSName.DR, dr);
-                    }
+                    assignAppearanceDictionary(signatureField, cosBaseDict);
+                    assignAcroFormDefaultResource(acroForm, cosBaseDict);
                     sigFieldNotFound = false;
                 }
             }
@@ -367,10 +361,41 @@ public class PDDocument implements Closeable
         }
     }
 
-    private void prepareNonVisibleSignature(PDSignatureField signatureField, PDAcroForm acroForm) throws IOException
+    private void assignSignatureRectangle(PDSignatureField signatureField, COSDictionary cosBaseDict)
     {
-        // Set rectangle for non-visual signature to 0 0 0 0
-        signatureField.getWidget().setRectangle(new PDRectangle()); // rectangle array [ 0 0 0 0 ]
+        // Read and set the Rectangle for visual signature
+        COSArray rectAry = (COSArray) cosBaseDict.getDictionaryObject(COSName.RECT);
+        PDRectangle rect = new PDRectangle(rectAry);
+        signatureField.getWidget().setRectangle(rect);
+    }
+
+    private void assignAppearanceDictionary(PDSignatureField signatureField, COSDictionary dict)
+    {
+        // read and set Appearance Dictionary
+        PDAppearanceDictionary ap
+                = new PDAppearanceDictionary((COSDictionary) dict.getDictionaryObject(COSName.AP));
+        ap.getCOSObject().setDirect(true);
+        signatureField.getWidget().setAppearance(ap);
+    }
+
+    private void assignAcroFormDefaultResource(PDAcroForm acroForm, COSDictionary dict)
+    {
+        // read and set AcroForm DefaultResource
+        COSDictionary dr = (COSDictionary) dict.getDictionaryObject(COSName.DR);
+        if (dr != null)
+        {
+            dr.setDirect(true);
+            dr.setNeedToBeUpdated(true);
+            COSDictionary acroFormDict = acroForm.getDictionary();
+            acroFormDict.setItem(COSName.DR, dr);
+        }
+    }
+
+    private void prepareNonVisibleSignature(PDSignatureField signatureField, PDAcroForm acroForm)
+            throws IOException
+    {
+        // Set rectangle for non-visual signature to rectangle array [ 0 0 0 0 ]
+        signatureField.getWidget().setRectangle(new PDRectangle());
         // Clear AcroForm / Set DefaultRessource
         acroForm.setDefaultResources(null);
         // Set empty Appearance-Dictionary
