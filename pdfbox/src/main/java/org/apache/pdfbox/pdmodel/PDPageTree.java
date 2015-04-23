@@ -276,33 +276,56 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
 
     /**
      * Returns the index of the given page, or -1 if it does not exist.
+     *
+     * @param page The page to search for.
+     * @return the zero-based index of the given page, or -1 if the page is not found.
      */
     public int indexOf(PDPage page)
     {
-        int num = 0;
-        COSDictionary node = page.getCOSObject();
-        do
+        SearchContext context = new SearchContext(page);
+        if (findPage(context, root))
         {
-            if (isPageTreeNode(node))
+            return context.index;
+        }
+        return -1;
+    }
+
+    private boolean findPage(SearchContext context, COSDictionary node)
+    {
+        for (COSDictionary kid : getKids(node))
+        {
+            if (context.found)
             {
-                // count kids up until this node
-                for (COSDictionary kid : getKids(node))
-                {
-                    if (kid == node)
-                    {
-                        break;
-                    }
-                    num++;
-                }
+                break;
+            }
+            if (isPageTreeNode(kid))
+            {
+                findPage(context, kid);
             }
             else
             {
-                num++;
+                context.visitPage(kid);
             }
-            node = (COSDictionary) node.getDictionaryObject(COSName.PARENT, COSName.P);
         }
-        while (node != null);
-        return num - 1;
+        return context.found;
+    }
+
+    private static class SearchContext
+    {
+        private final COSDictionary searched;
+        private int index = -1;
+        private boolean found;
+
+        private SearchContext(PDPage page)
+        {
+            this.searched = page.getCOSObject();
+        }
+
+        private void visitPage(COSDictionary current)
+        {
+            index++;
+            found = searched.equals(current);
+        }
     }
 
     /**
@@ -332,6 +355,8 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
 
     /**
      * Removes the given page from the page tree.
+     *
+     * @param page The page to remove.
      */
     public void remove(PDPage page)
     {
@@ -363,6 +388,8 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
 
     /**
      * Adds the given page to this page tree.
+     * 
+     * @param page The page to add.
      */
     public void add(PDPage page)
     {
