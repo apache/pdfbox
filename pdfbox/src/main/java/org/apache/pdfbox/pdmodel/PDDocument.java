@@ -277,86 +277,13 @@ public class PDDocument implements Closeable
         COSDocument visualSignature = options.getVisualSignature();
 
         // Distinction of case for visual and non-visual signature
-        if (visualSignature == null) // non-visual signature
+        if (visualSignature == null)
         {
-            // Set rectangle for non-visual signature to 0 0 0 0
-            signatureField.getWidget().setRectangle(new PDRectangle()); // rectangle array [ 0 0 0 0 ]
-            // Clear AcroForm / Set DefaultRessource
-            acroForm.setDefaultResources(null);
-            // Set empty Appearance-Dictionary
-            PDAppearanceDictionary ap = new PDAppearanceDictionary();
-
-            COSStream apsStream = getDocument().createCOSStream();
-            apsStream.createUnfilteredStream();
-            PDAppearanceStream aps = new PDAppearanceStream(apsStream);
-            COSDictionary cosObject = (COSDictionary) aps.getCOSObject();
-            cosObject.setItem(COSName.SUBTYPE, COSName.FORM);
-            cosObject.setItem(COSName.BBOX, new PDRectangle());
-
-            ap.setNormalAppearance(aps);
-            ap.getCOSObject().setDirect(true);
-            signatureField.getWidget().setAppearance(ap);
+            prepareNonVisibleSignature(signatureField, acroForm);
         }
         else
-        // visual signature
         {
-            // Obtain visual signature object
-            List<COSObject> cosObjects = visualSignature.getObjects();
-
-            boolean annotNotFound = true;
-            boolean sigFieldNotFound = true;
-            COSDictionary acroFormDict = acroForm.getDictionary();
-            for (COSObject cosObject : cosObjects)
-            {
-                if (!annotNotFound && !sigFieldNotFound)
-                {
-                    break;
-                }
-
-                COSBase base = cosObject.getObject();
-                if (base instanceof COSDictionary)
-                {
-                    COSDictionary cosBaseDict = (COSDictionary) base;
-                    COSBase ft = cosBaseDict.getDictionaryObject(COSName.FT);
-                    COSBase type = cosBaseDict.getDictionaryObject(COSName.TYPE);
-                    COSBase apDict = cosBaseDict.getDictionaryObject(COSName.AP);
-
-                    // Search for signature annotation
-                    if (annotNotFound && COSName.ANNOT.equals(type))
-                    {
-                        // Read and set the Rectangle for visual signature
-                        COSArray rectAry = (COSArray) cosBaseDict.getDictionaryObject(COSName.RECT);
-                        PDRectangle rect = new PDRectangle(rectAry);
-                        signatureField.getWidget().setRectangle(rect);
-                        annotNotFound = false;
-                    }
-
-                    // Search for Signature-Field
-                    if (sigFieldNotFound && COSName.SIG.equals(ft) && apDict != null)
-                    {
-                        // read and set Appearance Dictionary
-                        PDAppearanceDictionary ap = 
-                                new PDAppearanceDictionary((COSDictionary)cosBaseDict.getDictionaryObject(COSName.AP));
-                        ap.getCOSObject().setDirect(true);
-                        signatureField.getWidget().setAppearance(ap);
-
-                        // read and set AcroForm DefaultResource
-                        COSDictionary dr = (COSDictionary) cosBaseDict.getDictionaryObject(COSName.DR);
-                        if (dr != null)
-                        {
-                            dr.setDirect(true);
-                            dr.setNeedToBeUpdated(true);
-                            acroFormDict.setItem(COSName.DR, dr);
-                        }
-                        sigFieldNotFound = false;
-                    }
-                }
-            }
-
-            if (annotNotFound || sigFieldNotFound)
-            {
-                throw new IllegalArgumentException("Template is missing required objects");
-            }
+            prepareVisibleSignature(signatureField, acroForm, visualSignature);
         }
 
         // Get the annotations of the page and append the signature-annotation to it
@@ -369,6 +296,89 @@ public class PDDocument implements Closeable
             annotations.add(signatureField.getWidget());
         }
         page.getCOSObject().setNeedToBeUpdated(true);
+    }
+
+    private void prepareVisibleSignature(PDSignatureField signatureField, PDAcroForm acroForm, 
+            COSDocument visualSignature) throws IllegalArgumentException
+    {
+        // Obtain visual signature object
+        List<COSObject> cosObjects = visualSignature.getObjects();
+        
+        boolean annotNotFound = true;
+        boolean sigFieldNotFound = true;
+        COSDictionary acroFormDict = acroForm.getDictionary();
+        for (COSObject cosObject : cosObjects)
+        {
+            if (!annotNotFound && !sigFieldNotFound)
+            {
+                break;
+            }
+            
+            COSBase base = cosObject.getObject();
+            if (base instanceof COSDictionary)
+            {
+                COSDictionary cosBaseDict = (COSDictionary) base;
+                COSBase ft = cosBaseDict.getDictionaryObject(COSName.FT);
+                COSBase type = cosBaseDict.getDictionaryObject(COSName.TYPE);
+                COSBase apDict = cosBaseDict.getDictionaryObject(COSName.AP);
+                
+                // Search for signature annotation
+                if (annotNotFound && COSName.ANNOT.equals(type))
+                {
+                    // Read and set the Rectangle for visual signature
+                    COSArray rectAry = (COSArray) cosBaseDict.getDictionaryObject(COSName.RECT);
+                    PDRectangle rect = new PDRectangle(rectAry);
+                    signatureField.getWidget().setRectangle(rect);
+                    annotNotFound = false;
+                }
+                
+                // Search for Signature-Field
+                if (sigFieldNotFound && COSName.SIG.equals(ft) && apDict != null)
+                {
+                    // read and set Appearance Dictionary
+                    PDAppearanceDictionary ap =
+                            new PDAppearanceDictionary((COSDictionary)cosBaseDict.getDictionaryObject(COSName.AP));
+                    ap.getCOSObject().setDirect(true);
+                    signatureField.getWidget().setAppearance(ap);
+                    
+                    // read and set AcroForm DefaultResource
+                    COSDictionary dr = (COSDictionary) cosBaseDict.getDictionaryObject(COSName.DR);
+                    if (dr != null)
+                    {
+                        dr.setDirect(true);
+                        dr.setNeedToBeUpdated(true);
+                        acroFormDict.setItem(COSName.DR, dr);
+                    }
+                    sigFieldNotFound = false;
+                }
+            }
+        }
+        
+        if (annotNotFound || sigFieldNotFound)
+        {
+            throw new IllegalArgumentException("Template is missing required objects");
+        }
+    }
+
+    private void prepareNonVisibleSignature(PDSignatureField signatureField, PDAcroForm acroForm) throws IOException
+    {
+        // Set rectangle for non-visual signature to 0 0 0 0
+        signatureField.getWidget().setRectangle(new PDRectangle()); // rectangle array [ 0 0 0 0 ]
+        // Clear AcroForm / Set DefaultRessource
+        acroForm.setDefaultResources(null);
+        // Set empty Appearance-Dictionary
+        PDAppearanceDictionary ap = new PDAppearanceDictionary();
+        
+        COSStream apsStream = getDocument().createCOSStream();
+        apsStream.createUnfilteredStream();
+        PDAppearanceStream aps = new PDAppearanceStream(apsStream);
+        COSDictionary cosObject = (COSDictionary) aps.getCOSObject();
+        cosObject.setItem(COSName.SUBTYPE, COSName.FORM);
+        cosObject.setItem(COSName.BBOX, new PDRectangle());
+        
+        ap.setNormalAppearance(aps);
+        ap.getCOSObject().setDirect(true);
+        signatureField.getWidget().setAppearance(ap);
     }
 
     /**
