@@ -257,21 +257,7 @@ public class PDDocument implements Closeable
         acroForm.setSignaturesExist(true);
         acroForm.setAppendOnly(true);
 
-        boolean checkFields = false;
-        for (PDFieldTreeNode field : acroFormFields)
-        {
-            if (field instanceof PDSignatureField
-                    && field.getCOSObject().equals(signatureField.getCOSObject()))
-            {
-                checkFields = true;
-                signatureField.getDictionary().setNeedToBeUpdated(true);
-                break;
-            }
-        }
-        if (!checkFields)
-        {
-            acroFormFields.add(signatureField);
-        }
+        boolean checkFields = checkSignatureField(acroFormFields, signatureField);
 
         // Get the object from the visual signature
         COSDocument visualSignature = options.getVisualSignature();
@@ -296,6 +282,27 @@ public class PDDocument implements Closeable
             annotations.add(signatureField.getWidget());
         }
         page.getCOSObject().setNeedToBeUpdated(true);
+    }
+
+    // return true if the field already existed in the field list, in that case, it is marked for update
+    private boolean checkSignatureField(List<PDFieldTreeNode> acroFormFields, PDSignatureField signatureField)
+    {
+        boolean checkFields = false;
+        for (PDFieldTreeNode field : acroFormFields)
+        {
+            if (field instanceof PDSignatureField
+                    && field.getCOSObject().equals(signatureField.getCOSObject()))
+            {
+                checkFields = true;
+                signatureField.getDictionary().setNeedToBeUpdated(true);
+                break;
+            }
+        }
+        if (!checkFields)
+        {
+            acroFormFields.add(signatureField);
+        }
+        return checkFields;
     }
 
     private void prepareVisibleSignature(PDSignatureField signatureField, PDAcroForm acroForm, 
@@ -415,23 +422,9 @@ public class PDDocument implements Closeable
         for (PDSignatureField sigField : sigFields)
         {
             sigField.getDictionary().setNeedToBeUpdated(true);
+            
             // Check if the field already exists
-            boolean checkFields = false;
-            for (PDFieldTreeNode fieldNode : field)
-            {
-                if (fieldNode instanceof PDSignatureField 
-                        && fieldNode.getCOSObject().equals(sigField.getCOSObject()))
-                {
-                    checkFields = true;
-                    sigField.getDictionary().setNeedToBeUpdated(true);
-                    break;
-                }
-            }
-
-            if (!checkFields)
-            {
-                field.add(sigField);
-            }
+            checkSignatureField(field, sigField);
 
             // Check if we need to add a signature
             if (sigField.getSignature() != null)
