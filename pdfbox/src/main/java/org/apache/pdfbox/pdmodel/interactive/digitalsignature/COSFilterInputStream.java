@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.pdfwriter;
+package org.apache.pdfbox.pdmodel.interactive.digitalsignature;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -23,18 +23,18 @@ import java.io.IOException;
 import java.io.InputStream;
 
 
-public class COSFilterInputStream extends FilterInputStream
+class COSFilterInputStream extends FilterInputStream
 {
   private final int[] byteRange;
   private long position = 0;
   
-  public COSFilterInputStream(InputStream in, int[] byteRange)
+  COSFilterInputStream(InputStream in, int[] byteRange)
   {
     super(in);
     this.byteRange = byteRange;
   }
 
-  public COSFilterInputStream(byte[] in, int[] byteRange)
+  COSFilterInputStream(byte[] in, int[] byteRange)
   {
     super(new ByteArrayInputStream(in));
     this.byteRange = byteRange;
