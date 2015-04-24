@@ -22,7 +22,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -1538,46 +1537,6 @@ public abstract class BaseParser implements Closeable
         return buffer;
     }
     
-    /**
-     * Skip to the start of the next object. This is used to recover from a
-     * corrupt object. This should handle all cases that parseObject supports.
-     * This assumes that the next object will start on its own line.
-     *
-     * @throws IOException if something went wrong.
-     */
-    protected void skipToNextObj() throws IOException
-    {
-        byte[] b = new byte[16];
-        Pattern p = Pattern.compile("\\d+\\s+\\d+\\s+obj.*", Pattern.DOTALL);
-        /* Read a buffer of data each time to see if it starts with a
-         * known keyword. This is not the most efficient design, but we should
-         * rarely be needing this function. We could update this to use the
-         * circular buffer, like in readUntilEndStream().
-         */
-        while (!pdfSource.isEOF())
-        {
-            int l = pdfSource.read(b);
-            if (l < 1)
-            {
-                break;
-            }
-            String s = new String(b, "US-ASCII");
-            if (s.startsWith("trailer")
-                    || s.startsWith("xref")
-                    || s.startsWith("startxref")
-                    || s.startsWith(STREAM_STRING)
-                    || p.matcher(s).matches())
-            {
-                pdfSource.unread(b);
-                break;
-            }
-            else
-            {
-                pdfSource.unread(b, 1, l - 1);
-            }
-        }
-    }
-
     @Override
     public void close() throws IOException
     {
@@ -1585,58 +1544,5 @@ public abstract class BaseParser implements Closeable
         {
             pdfSource.close();
         }
-    }
-
-    /**
-     * Parse object key (number and generation).
-     *
-     * @param continueOnError true to continue on error, false if not.
-     * @return a new object key.
-     * @throws IOException if something goes wrong.
-     */
-    protected COSObjectKey parseObjectKey(boolean continueOnError) throws IOException
-    {
-        //we are going to parse a normal object
-        long number = -1;
-        int genNum;
-        boolean missingObjectNumber = false;
-        try
-        {
-            char peeked = (char) pdfSource.peek();
-            if (peeked == '<')
-            {
-                missingObjectNumber = true;
-            }
-            else
-            {
-                number = readObjectNumber();
-            }
-        }
-        catch (IOException e)
-        {
-            //ok for some reason "GNU Ghostscript 5.10" puts two endobj
-            //statements after an object, of course this is nonsense
-            //but because we want to support as many PDFs as possible
-            //we will simply try again
-            number = readObjectNumber();
-        }
-        if (!missingObjectNumber)
-        {
-            skipSpaces();
-            genNum = readGenerationNumber();
-            String objectKey = readString(3);
-            if (!objectKey.equals("obj") && continueOnError && objectKey.equals("o"))
-            {
-                throw new IOException("expected='obj' actual='" + objectKey + "' " + pdfSource);
-            }
-            //assume that "o" was meant to be "obj" (this is a workaround for
-            // PDFBOX-773 attached PDF Andersens_Fairy_Tales.pdf).
-        }
-        else
-        {
-            number = -1;
-            genNum = -1;
-        }
-        return new COSObjectKey(number, genNum);
     }
 }
