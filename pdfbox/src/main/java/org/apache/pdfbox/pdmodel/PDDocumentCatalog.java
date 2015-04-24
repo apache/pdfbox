@@ -24,6 +24,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
@@ -336,7 +337,11 @@ public class PDDocumentCatalog implements COSObjectable
         {
             for (COSBase cosBase : array)
             {
-                PDOutputIntent oi = new PDOutputIntent((COSDictionary)cosBase);
+                if (cosBase instanceof COSObject)
+                {
+                    cosBase = ((COSObject)cosBase).getObject();
+                }
+                PDOutputIntent oi = new PDOutputIntent((COSDictionary) cosBase);
                 retval.add(oi);
             }
         }
