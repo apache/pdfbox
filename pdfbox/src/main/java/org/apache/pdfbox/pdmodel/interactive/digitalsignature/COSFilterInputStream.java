@@ -23,18 +23,18 @@ import java.io.IOException;
 import java.io.InputStream;
 
 
-class COSFilterInputStream extends FilterInputStream
+public class COSFilterInputStream extends FilterInputStream
 {
   private final int[] byteRange;
   private long position = 0;
   
-  COSFilterInputStream(InputStream in, int[] byteRange)
+  public COSFilterInputStream(InputStream in, int[] byteRange)
   {
     super(in);
     this.byteRange = byteRange;
   }
 
-  COSFilterInputStream(byte[] in, int[] byteRange)
+  public COSFilterInputStream(byte[] in, int[] byteRange)
   {
     super(new ByteArrayInputStream(in));
     this.byteRange = byteRange;
