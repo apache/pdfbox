@@ -310,7 +310,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
         return context.found;
     }
 
-    private static class SearchContext
+    private static final class SearchContext
     {
         private final COSDictionary searched;
         private int index = -1;
