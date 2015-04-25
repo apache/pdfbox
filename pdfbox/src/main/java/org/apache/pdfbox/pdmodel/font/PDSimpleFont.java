@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSBase;
@@ -45,7 +47,8 @@ public abstract class PDSimpleFont extends PDFont
     protected GlyphList glyphList;
     private Boolean isSymbolic;
     private final Set<Integer> noUnicode = new HashSet<Integer>(); // for logging
-
+    private Map<String, Integer> invertedEncoding; // for writing
+    
     /**
      * Constructor for embedding.
      */
@@ -186,6 +189,29 @@ public abstract class PDSimpleFont extends PDFont
         return glyphList;
     }
 
+    /**
+     * Inverts the font's Encoding. Any duplicate (Name -> Code) mappings will be lost.
+     */
+    protected Map<String, Integer> getInvertedEncoding()
+    {
+        if (invertedEncoding != null)
+        {
+            return invertedEncoding;
+        }
+
+        invertedEncoding = new HashMap<String, Integer>();
+        //Map<Integer, String> codeToName = MacOSRomanEncoding.INSTANCE.getCodeToNameMap();
+        Map<Integer, String> codeToName = encoding.getCodeToNameMap();
+        for (Map.Entry<Integer, String> entry : codeToName.entrySet())
+        {
+            if (!invertedEncoding.containsKey(entry.getValue()))
+            {
+                invertedEncoding.put(entry.getValue(), entry.getKey());
+            }
+        }
+        return invertedEncoding;
+    }
+    
     /**
      * Returns true the font is a symbolic (that is, it does not use the Adobe Standard Roman
      * character set).

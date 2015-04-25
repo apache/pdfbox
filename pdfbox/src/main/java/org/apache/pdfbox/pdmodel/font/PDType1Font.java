@@ -87,8 +87,6 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
     private final boolean isDamaged;
     private Matrix fontMatrix;
 
-    private Map<String, Integer> invertedEncoding; // for writing
-
     /**
      * Creates a Type 1 standard 14 font for embedding.
      *
@@ -325,29 +323,6 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
 
         int code = inverted.get(name);
         return new byte[] { (byte)code };
-    }
-
-    /**
-     * Inverts the font's Encoding. Any duplicate (Name -> Code) mappings will be lost.
-     */
-    private Map<String, Integer> getInvertedEncoding()
-    {
-        if (invertedEncoding != null)
-        {
-            return invertedEncoding;
-        }
-
-        invertedEncoding = new HashMap<String, Integer>();
-        //Map<Integer, String> codeToName = MacOSRomanEncoding.INSTANCE.getCodeToNameMap();
-        Map<Integer, String> codeToName = encoding.getCodeToNameMap();
-        for (Map.Entry<Integer, String> entry : codeToName.entrySet())
-        {
-            if (!invertedEncoding.containsKey(entry.getValue()))
-            {
-                invertedEncoding.put(entry.getValue(), entry.getKey());
-            }
-        }
-        return invertedEncoding;
     }
 
     @Override
