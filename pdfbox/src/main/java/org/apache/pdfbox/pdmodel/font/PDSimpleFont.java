@@ -90,7 +90,7 @@ public abstract class PDSimpleFont extends PDFont
      * Reads the Encoding from the Font dictionary or the embedded or substituted font file.
      * Must be called at the end of any subclass constructors.
      *
-     * @throws IOException if the font file could not be read
+     * @throws IOException if the font file could not be read.
      */
     protected final void readEncoding() throws IOException
     {
@@ -99,39 +99,11 @@ public abstract class PDSimpleFont extends PDFont
         {
             if (encoding instanceof COSName)
             {
-                COSName encodingName = (COSName)encoding;
-                this.encoding = Encoding.getInstance(encodingName);
-                if (this.encoding == null)
-                {
-                    LOG.warn("Unknown encoding: " + encodingName.getName());
-                    this.encoding = readEncodingFromFont(); // fallback
-                }
+                readEncodingFromName((COSName) encoding);
             }
             else if (encoding instanceof COSDictionary)
             {
-                COSDictionary encodingDict = (COSDictionary)encoding;
-                Encoding builtIn = null;
-                Boolean symbolic = getSymbolicFlag();
-                boolean isFlaggedAsSymbolic = symbolic != null && symbolic;
-                if (!encodingDict.containsKey(COSName.BASE_ENCODING) && isFlaggedAsSymbolic)
-                {
-                    builtIn = readEncodingFromFont();
-                }
-
-                if (symbolic == null)
-                {
-                    symbolic = false;
-                }
-
-                if (builtIn == null && !encodingDict.containsKey(COSName.BASE_ENCODING) && symbolic)
-                {
-                    // TTF built-in encoding is handled by PDTrueTypeFont#codeToGID
-                    this.encoding = null;
-                }
-                else
-                {
-                    this.encoding = new DictionaryEncoding(encodingDict, !symbolic, builtIn);
-                }
+                readEncodingFromDictionary((COSDictionary) encoding);
             }
         }
         else
@@ -165,10 +137,45 @@ public abstract class PDSimpleFont extends PDFont
         }
     }
 
+    private void readEncodingFromDictionary(COSDictionary encodingDict) throws IOException
+    {
+        Encoding builtIn = null;
+        Boolean symbolic = getSymbolicFlag();
+        boolean isFlaggedAsSymbolic = symbolic != null && symbolic;
+        if (!encodingDict.containsKey(COSName.BASE_ENCODING) && isFlaggedAsSymbolic)
+        {
+            builtIn = readEncodingFromFont();
+        }
+        if (symbolic == null)
+        {
+            symbolic = false;
+        }
+        if (builtIn == null && !encodingDict.containsKey(COSName.BASE_ENCODING) && symbolic)
+        {
+            // TTF built-in encoding is handled by PDTrueTypeFont#codeToGID
+            this.encoding = null;
+        }
+        else
+        {
+            this.encoding = new DictionaryEncoding(encodingDict, !symbolic, builtIn);
+        }
+    }
+    
+    private void readEncodingFromName(COSName encodingName) throws IOException
+    {
+        this.encoding = Encoding.getInstance(encodingName);
+        if (this.encoding == null)
+        {
+            LOG.warn("Unknown encoding: " + encodingName.getName());
+            // fallback
+            this.encoding = readEncodingFromFont();
+        }
+    }
+
     /**
      * Called by readEncoding() if the encoding needs to be extracted from the font file.
      *
-     * @throws IOException if the font file could not be read
+     * @throws IOException if the font file could not be read.
      */
     protected abstract Encoding readEncodingFromFont() throws IOException;
 
@@ -384,6 +391,7 @@ public abstract class PDSimpleFont extends PDFont
      * @param code character code
      * @return width in 1/1000 text space
      */
+    @Override
     protected final float getStandard14Width(int code)
     {
         if (getStandard14AFM() != null)
