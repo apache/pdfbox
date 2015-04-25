@@ -893,7 +893,7 @@ public class COSParser extends BaseParser
      */
     protected COSStream parseCOSStream(COSDictionary dic) throws IOException
     {
-        final COSStream stream = createCOSStream(dic);
+        final COSStream stream = document.createCOSStream(dic);
         OutputStream out = null;
         try
         {
