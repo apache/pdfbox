@@ -35,7 +35,6 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
-import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.io.PushBackInputStream;
 import org.apache.pdfbox.cos.COSObjectKey;
@@ -235,7 +234,7 @@ public abstract class BaseParser implements Closeable
      *
      * @return The parsed dictionary.
      *
-     * @throws IOException IF there is an error reading the stream.
+     * @throws IOException If there is an error reading the stream.
      */
     protected COSDictionary parseCOSDictionary() throws IOException
     {
@@ -380,7 +379,6 @@ public abstract class BaseParser implements Closeable
      */
     protected void readUntilEndStream( final OutputStream out ) throws IOException
     {
-
         int bufSize;
         int charMatchCount = 0;
         byte[] keyw = ENDSTREAM;
