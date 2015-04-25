@@ -237,10 +237,24 @@ public abstract class PDFont implements COSObjectable, PDFontLike
             }
         }
 
+        // standard 14 font widths are specified by an AFM
+        if (isStandard14())
+        {
+            return getStandard14Width(code);
+        }
+        
         // if there's nothing to override with, then obviously we fall back to the font
         return getWidthFromFont(code);
     }
 
+    /**
+     * Returns the glyph width from the AFM if this is a Standard 14 font.
+     * 
+     * @param code character code
+     * @return width in 1/1000 text space
+     */
+    protected abstract float getStandard14Width(int code);
+    
     @Override
     public abstract float getWidthFromFont(int code) throws IOException;
 

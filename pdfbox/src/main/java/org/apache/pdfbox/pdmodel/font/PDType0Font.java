@@ -317,6 +317,12 @@ public class PDType0Font extends PDFont
     }
 
     @Override
+    protected float getStandard14Width(int code)
+    {
+        throw new UnsupportedOperationException("not suppported");
+    }
+
+    @Override
     public float getWidthFromFont(int code) throws IOException
     {
         return descendantFont.getWidthFromFont(code);

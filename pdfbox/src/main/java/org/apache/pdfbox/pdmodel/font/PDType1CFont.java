@@ -217,11 +217,6 @@ public class PDType1CFont extends PDSimpleFont implements PDType1Equivalent
     @Override
     public float getWidthFromFont(int code) throws IOException
     {
-        if (getStandard14AFM() != null)
-        {
-            return getStandard14Width(code);
-        }
-
         String name = codeToName(code);
         float width = type1Equivalent.getWidth(name);
 

@@ -225,11 +225,6 @@ public class PDTrueTypeFont extends PDSimpleFont
     @Override
     public float getWidthFromFont(int code) throws IOException
     {
-        if (getStandard14AFM() != null && getEncoding() != null)
-        {
-            return getStandard14Width(code);
-        }
-
         int gid = codeToGID(code);
         float width = ttf.getAdvanceWidth(gid);
         float unitsPerEM = ttf.getUnitsPerEm();
