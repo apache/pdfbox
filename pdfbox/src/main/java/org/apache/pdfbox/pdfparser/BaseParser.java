@@ -175,24 +175,6 @@ public abstract class BaseParser implements Closeable
                 new BufferedInputStream(input, 16384), pushbacksize);
     }
 
-    /**
-     * Returns a new instance of a COSStream.
-     * 
-     * @param dictionary the dictionary belonging to the stream
-     * @return the new COSStream
-     */
-    protected final COSStream createCOSStream(COSDictionary dictionary)
-    {
-        if (document != null)
-        {
-            return document.createCOSStream(dictionary);
-        }
-        else
-        {
-            return null;
-        }
-    }
-    
     private static boolean isHexDigit(char ch)
     {
         return (ch >= ASCII_ZERO && ch <= ASCII_NINE) ||
