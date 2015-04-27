@@ -58,9 +58,10 @@ public class RandomAccessFile implements RandomAccess, Closeable
      * {@inheritDoc}
      */
     @Override
-    public void clear()
+    public void clear() throws IOException
     {
-        throw new java.lang.UnsupportedOperationException(RandomAccessFile.class.getName()+"clear() isn't yet supported");
+        ras.seek(0);
+        ras.setLength(0);
     }
 
     /**
@@ -80,7 +81,7 @@ public class RandomAccessFile implements RandomAccess, Closeable
     {
         return ras.getFilePointer();
     }
-    
+
     /**
      * {@inheritDoc}
      */

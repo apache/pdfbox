@@ -48,5 +48,5 @@ public interface RandomAccess extends RandomAccessRead
     /**
      * Clears all data of the buffer.
      */
-    void clear();
+    void clear() throws IOException;
 }
