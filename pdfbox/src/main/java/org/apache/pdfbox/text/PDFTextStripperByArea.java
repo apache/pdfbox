@@ -49,6 +49,18 @@ public class PDFTextStripperByArea extends PDFTextStripper
     public PDFTextStripperByArea() throws IOException
     {
         super();
+        super.setShouldSeparateByBeads(false);
+    }
+
+    /**
+     * This method does nothing in this derived class, because beads and regions are incompatible. Beads are
+     * ignored when stripping by area.
+     *
+     * @param aShouldSeparateByBeads The new grouping of beads.
+     */
+    @Override
+    public void setShouldSeparateByBeads(boolean aShouldSeparateByBeads)
+    {
     }
 
    /**
