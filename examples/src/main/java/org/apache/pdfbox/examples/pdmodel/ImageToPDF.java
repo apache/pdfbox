@@ -16,17 +16,10 @@
  */
 package org.apache.pdfbox.examples.pdmodel;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import javax.imageio.ImageIO;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.graphics.image.CCITTFactory;
-import org.apache.pdfbox.pdmodel.graphics.image.JPEGFactory;
-import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
 /**
@@ -59,27 +52,10 @@ public class ImageToPDF
             PDPage page = new PDPage();
             doc.addPage(page);
 
-            PDImageXObject pdImage;
-            if (imagePath.toLowerCase().endsWith(".jpg"))
-            {
-                pdImage = JPEGFactory.createFromStream(doc, new FileInputStream(imagePath));
-            }
-            else if (imagePath.toLowerCase().endsWith(".tif") ||
-                     imagePath.toLowerCase().endsWith(".tiff"))
-            {
-                pdImage = CCITTFactory.createFromFile(doc, new File(imagePath));
-            }
-            else if (imagePath.toLowerCase().endsWith(".gif") ||
-                     imagePath.toLowerCase().endsWith(".bmp") ||
-                     imagePath.toLowerCase().endsWith(".png"))
-            {
-                BufferedImage bim = ImageIO.read(new File(imagePath));
-                pdImage = LosslessFactory.createFromImage(doc, bim);
-            }
-            else
-            {
-                throw new IOException("Image type not supported: " + imagePath);
-            }
+            // createFromFile is the easiest way with an image file
+            // if you already have the image in a BufferedImage, 
+            // call LosslessFactory.createFromImage() instead
+            PDImageXObject pdImage = PDImageXObject.createFromFile(imagePath, doc);
             
             PDPageContentStream contents = new PDPageContentStream(doc, page);
             
