@@ -23,6 +23,7 @@ import java.awt.image.DataBufferByte;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PushbackInputStream;
 
 import javax.imageio.ImageIO;
 
@@ -45,7 +46,7 @@ public class JPXFilter implements Filter
     private static final Log LOG = LogFactory.getLog(JPXFilter.class);
 
     /**
-     * Decode JPEG2000 data using Java ImageIO library.
+     * Decode JPEG and JPEG2000 data using Java ImageIO library.
      *
      * {@inheritDoc}
      *
@@ -53,7 +54,15 @@ public class JPXFilter implements Filter
     public void decode(InputStream compressedData, OutputStream result, COSDictionary options, int filterIndex)
             throws IOException
     {
-        BufferedImage bi = ImageIO.read(compressedData);
+        // skip one LF if there
+        PushbackInputStream pbis = new PushbackInputStream(compressedData, 1);
+        int by = pbis.read();
+        if (by != 0x0A)
+        {
+            pbis.unread(by);
+        }
+        
+        BufferedImage bi = ImageIO.read(pbis);
         if (bi != null)
         {
             DataBuffer dBuf = bi.getData().getDataBuffer();
