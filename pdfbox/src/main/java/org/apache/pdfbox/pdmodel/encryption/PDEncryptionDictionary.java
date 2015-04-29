@@ -428,6 +428,16 @@ public class PDEncryptionDictionary
         return strF;
     }
 
+    /**
+     * remove CF, StmF, and StrF entries. This is to be called if V is not 4 or 5.
+     */
+    void removeV45filters()
+    {
+        encryptionDictionary.setItem(COSName.CF, null);
+        encryptionDictionary.setItem(COSName.STM_F, null);
+        encryptionDictionary.setItem(COSName.STR_F, null);
+    }
+
 }
 
     
