@@ -103,7 +103,7 @@ public class StandardSecurityHandler extends SecurityHandler
     /**
      * Computes the version number of the StandardSecurityHandler
      * regarding the encryption key length.
-     * See PDF Spec 1.6 p 93
+     * See PDF Spec 1.6 p 93 and PDF 1.7 AEL3
      *
      * @return The computed cersion number.
      */
@@ -266,16 +266,20 @@ public class StandardSecurityHandler extends SecurityHandler
                 "Error: The supplied password does not match either the owner or user password in the document." );
         }
 
-        // detect whether AES encryption is used. This assumes that the encryption algo is 
-        // stored in the PDCryptFilterDictionary
-        PDCryptFilterDictionary stdCryptFilterDictionary =  encDictionary.getStdCryptFilterDictionary();
-
-        if (stdCryptFilterDictionary != null)
+        if (encDictionary.getVersion() == 4 || encDictionary.getVersion() == 5)
         {
-            COSName cryptFilterMethod = stdCryptFilterDictionary.getCryptFilterMethod();
-            if (cryptFilterMethod != null) 
+            // detect whether AES encryption is used. This assumes that the encryption algo is 
+            // stored in the PDCryptFilterDictionary
+            // However, crypt filters are used only when V is 4 or 5.
+            PDCryptFilterDictionary stdCryptFilterDictionary = encDictionary.getStdCryptFilterDictionary();
+
+            if (stdCryptFilterDictionary != null)
             {
-                setAES("AESV2".equalsIgnoreCase(cryptFilterMethod.getName()));
+                COSName cryptFilterMethod = stdCryptFilterDictionary.getCryptFilterMethod();
+                if (cryptFilterMethod != null)
+                {
+                    setAES("AESV2".equalsIgnoreCase(cryptFilterMethod.getName()));
+                }
             }
         }
     }
@@ -300,6 +304,13 @@ public class StandardSecurityHandler extends SecurityHandler
         revision = computeRevisionNumber();
         encryptionDictionary.setFilter(FILTER);
         encryptionDictionary.setVersion(version);
+        
+        if (version != 4 && version != 5)
+        {
+            // remove CF, StmF, and StrF entries that may be left from a previous encryption
+            encryptionDictionary.removeV45filters();
+        }
+
         encryptionDictionary.setRevision(revision);
         encryptionDictionary.setLength(keyLength);
 
