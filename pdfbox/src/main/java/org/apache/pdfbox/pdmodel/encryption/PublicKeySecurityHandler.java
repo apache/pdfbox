@@ -297,6 +297,10 @@ public final class PublicKeySecurityHandler extends SecurityHandler
             dictionary.setFilter(FILTER);
             dictionary.setLength(this.keyLength);
             dictionary.setVersion(2);
+            
+            // remove CF, StmF, and StrF entries that may be left from a previous encryption
+            dictionary.removeV45filters();
+            
             dictionary.setSubFilter(SUBFILTER);
 
             // create the 20 bytes seed
