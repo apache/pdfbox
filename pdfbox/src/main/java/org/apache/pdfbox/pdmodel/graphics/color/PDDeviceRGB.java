@@ -35,10 +35,11 @@ import org.apache.pdfbox.cos.COSName;
  */
 public final class PDDeviceRGB extends PDDeviceColorSpace
 {
+    private static final ColorSpace colorSpaceRGB = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+    
     /**  This is the single instance of this class. */
     public static final PDDeviceRGB INSTANCE = new PDDeviceRGB();
 
-    private final ColorSpace colorSpaceRGB = ColorSpace.getInstance(ColorSpace.CS_sRGB);
     private final PDColor initialColor = new PDColor(new float[] { 0, 0, 0 }, this);
 
     private PDDeviceRGB()
