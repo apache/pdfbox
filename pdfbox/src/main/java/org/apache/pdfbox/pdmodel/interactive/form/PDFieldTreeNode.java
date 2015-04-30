@@ -657,7 +657,7 @@ public abstract class PDFieldTreeNode implements COSObjectable
     @Override
     public String toString()
     {
-        return "" + getDictionary().getDictionaryObject(COSName.V);
+        return getFullyQualifiedName() + "{type: " + getClass().getSimpleName() + " value: "+ getInheritableAttribute(COSName.V) + "}";
     }
 
     /**
@@ -725,10 +725,8 @@ public abstract class PDFieldTreeNode implements COSObjectable
      * Returns the fully qualified name of the field, which is a concatenation of the names of all the parents fields.
      * 
      * @return the name of the field
-     * 
-     * @throws IOException If there is an error generating the fully qualified name.
      */
-    public String getFullyQualifiedName() throws IOException
+    public String getFullyQualifiedName()
     {
         String finalName = getPartialName();
         String parentName = getParent() != null ? getParent().getFullyQualifiedName() : null;

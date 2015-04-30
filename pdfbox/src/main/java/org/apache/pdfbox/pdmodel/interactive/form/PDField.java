@@ -54,17 +54,6 @@ public abstract class PDField extends PDFieldTreeNode
     }
 
     /**
-     * This will return a string representation of this field.
-     * 
-     * @return A string representation of this field.
-     */
-    @Override
-    public String toString()
-    {
-        return "" + getDictionary().getDictionaryObject(COSName.V);
-    }
-
-    /**
      * Set the actions of the field.
      * 
      * @param actions The field actions.
