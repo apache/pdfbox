@@ -78,7 +78,7 @@ final class CCITTFaxFilter extends Filter
         if (k == 0)
         {
             InputStream in = new CCITTFaxG31DDecodeInputStream(
-                    new ByteArrayInputStream(compressed), cols, encodedByteAlign);
+                    new ByteArrayInputStream(compressed), cols, rows, encodedByteAlign);
             in = new FillOrderChangeInputStream(in); //Decorate to change fill order
             decompressed = IOUtils.toByteArray(in);
             in.close();
