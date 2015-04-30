@@ -431,4 +431,12 @@ public class PublicKeySecurityHandler extends SecurityHandler
         return new KeyTransRecipientInfo( recipId, algorithmidentifier, deroctetstring);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasProtectionPolicy()
+    {
+        return policy != null;
+    }
 }
