@@ -70,28 +70,30 @@ final class CCITTFaxFilter extends Filter
         int k = decodeParms.getInt(COSName.K, 0);
         boolean encodedByteAlign = decodeParms.getBoolean(COSName.ENCODED_BYTE_ALIGN, false);
         int arraySize = (cols + 7) / 8 * rows;
-        TIFFFaxDecoder faxDecoder = new TIFFFaxDecoder(1, cols, rows);
         // TODO possible options??
         long tiffOptions = 0;
-        byte[] compressed = IOUtils.toByteArray(encoded);
         byte[] decompressed = null;
         if (k == 0)
         {
-            InputStream in = new CCITTFaxG31DDecodeInputStream(
-                    new ByteArrayInputStream(compressed), cols, rows, encodedByteAlign);
-            in = new FillOrderChangeInputStream(in); //Decorate to change fill order
+            InputStream in = new CCITTFaxG31DDecodeInputStream(encoded, cols, rows, encodedByteAlign);
+            in = new FillOrderChangeInputStream(in);
             decompressed = IOUtils.toByteArray(in);
             in.close();
         }
-        else if (k > 0)
+        else
         {
+            TIFFFaxDecoder faxDecoder = new TIFFFaxDecoder(1, cols, rows);
+            byte[] compressed = IOUtils.toByteArray(encoded);
             decompressed = new byte[arraySize];
-            faxDecoder.decode2D(decompressed, compressed, 0, rows, tiffOptions);
-        }
-        else if (k < 0)
-        {
-            decompressed = new byte[arraySize];
-            faxDecoder.decodeT6(decompressed, compressed, 0, rows, tiffOptions, encodedByteAlign);
+            if (k > 0)
+            {
+                faxDecoder.decode2D(decompressed, compressed, 0, rows, tiffOptions);
+            }
+            else
+            {
+                // k < 0
+                faxDecoder.decodeT6(decompressed, compressed, 0, rows, tiffOptions, encodedByteAlign);
+            }
         }
 
         // invert bitmap
