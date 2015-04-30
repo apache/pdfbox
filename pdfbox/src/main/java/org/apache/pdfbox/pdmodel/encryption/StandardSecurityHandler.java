@@ -895,4 +895,12 @@ public class StandardSecurityHandler extends SecurityHandler
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasProtectionPolicy()
+    {
+        return policy != null;
+    }
 }
