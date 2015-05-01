@@ -118,7 +118,7 @@ public abstract class PDVariableText extends PDField
      */
     public String getDefaultStyleString()
     {
-        COSString defaultStyleString = (COSString) getDictionary().getDictionaryObject(COSName.DS);
+        COSString defaultStyleString = (COSString) getCOSObject().getDictionaryObject(COSName.DS);
         return defaultStyleString.getString();
     }
 
@@ -133,11 +133,11 @@ public abstract class PDVariableText extends PDField
     {
         if (defaultStyleString != null)
         {
-            getDictionary().setItem(COSName.DS, new COSString(defaultStyleString));
+            getCOSObject().setItem(COSName.DS, new COSString(defaultStyleString));
         }
         else
         {
-            getDictionary().removeItem(COSName.DS);
+            getCOSObject().removeItem(COSName.DS);
         }
     }    
 
@@ -173,7 +173,7 @@ public abstract class PDVariableText extends PDField
      */
     public void setQ( int q )
     {
-        getDictionary().setInt( COSName.Q, q );
+        getCOSObject().setInt( COSName.Q, q );
     }
     
     /**
@@ -229,11 +229,11 @@ public abstract class PDVariableText extends PDField
     {
         if (richTextValue != null)
         {
-            getDictionary().setItem(COSName.RV, new COSString(richTextValue));
+            getCOSObject().setItem(COSName.RV, new COSString(richTextValue));
         }
         else
         {
-            getDictionary().removeItem(COSName.RV);
+            getCOSObject().removeItem(COSName.RV);
         }        
     }
     
@@ -255,11 +255,11 @@ public abstract class PDVariableText extends PDField
     {
         if (richTextValue != null)
         {
-            getDictionary().setItem(COSName.RV, richTextValue.getCOSObject());
+            getCOSObject().setItem(COSName.RV, richTextValue.getCOSObject());
         }
         else
         {
-            getDictionary().removeItem(COSName.RV);
+            getCOSObject().removeItem(COSName.RV);
         }        
     } 
 }

@@ -146,36 +146,36 @@ public class TestFields extends TestCase
             // assert that there is no value, set the field value and
             // ensure it has been set 
             PDFieldTreeNode field = form.getField("TextField");
-            assertNull(field.getDictionary().getItem(COSName.V));
+            assertNull(field.getCOSObject().getItem(COSName.V));
             field.setValue("field value");
-            assertNotNull(field.getDictionary().getItem(COSName.V));
+            assertNotNull(field.getCOSObject().getItem(COSName.V));
             assertEquals(field.getValue(),"field value");
             
             // assert when setting to null the key has also been removed
-            assertNotNull(field.getDictionary().getItem(COSName.V));
+            assertNotNull(field.getCOSObject().getItem(COSName.V));
             field.setValue(null);
-            assertNull(field.getDictionary().getItem(COSName.V));
+            assertNull(field.getCOSObject().getItem(COSName.V));
             
             // get the RadioButton with a DV entry
             field = form.getField("RadioButtonGroup-DefaultValue");
             assertNotNull(field);
             assertEquals(field.getDefaultValue(),"RadioButton01");
             assertEquals(COSName.getPDFName((String)field.getDefaultValue()),
-                    field.getDictionary().getDictionaryObject(COSName.DV));
+                    field.getCOSObject().getDictionaryObject(COSName.DV));
 
             // get the Checkbox with a DV entry
             field = form.getField("Checkbox-DefaultValue");
             assertNotNull(field);
             assertEquals(field.getDefaultValue(),"Yes");
             assertEquals(field.getDefaultValue(),
-                    ((COSName) field.getDictionary().getDictionaryObject(COSName.DV)).getName());
+                    ((COSName) field.getCOSObject().getDictionaryObject(COSName.DV)).getName());
             
             // get the TextField with a DV entry
             field = form.getField("TextField-DefaultValue");
             assertNotNull(field);
             assertEquals(field.getDefaultValue(),"DefaultValue");
             assertEquals(field.getDefaultValue(),
-                    ((COSString)field.getDictionary().getDictionaryObject(COSName.DV)).getString());
+                    ((COSString)field.getCOSObject().getDictionaryObject(COSName.DV)).getString());
             assertEquals(((PDVariableText)field).getDefaultAppearance(),"/Helv 12 Tf 0 g");
 
             // get a rich text field with a  DV entry
@@ -183,7 +183,7 @@ public class TestFields extends TestCase
             assertNotNull(field);
             assertEquals(field.getDefaultValue(),"DefaultValue");
             assertEquals(field.getDefaultValue(),
-                    ((COSString)field.getDictionary().getDictionaryObject(COSName.DV)).getString());
+                    ((COSString)field.getCOSObject().getDictionaryObject(COSName.DV)).getString());
             assertEquals(field.getValue(), "DefaultValue");
             assertEquals(((PDVariableText)field).getDefaultAppearance(), "/Helv 12 Tf 0 g");
             assertEquals(((PDVariableText)field).getDefaultStyleString(),
@@ -194,7 +194,7 @@ public class TestFields extends TestCase
             // get a rich text field with a text stream for the value
             field = form.getField("LongRichTextField");
             assertNotNull(field);
-            assertEquals(field.getDictionary().getDictionaryObject(
+            assertEquals(field.getCOSObject().getDictionaryObject(
                     COSName.V).getClass().getName(),
                     "org.apache.pdfbox.cos.COSStream");
             assertEquals(((PDTextField)field).getValue().length(),145396);

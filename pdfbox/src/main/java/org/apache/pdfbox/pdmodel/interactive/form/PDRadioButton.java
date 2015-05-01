@@ -72,7 +72,7 @@ public final class PDRadioButton extends PDButton
      */
     public void setRadiosInUnison(boolean radiosInUnison)
     {
-        getDictionary().setFlag(COSName.FF, FLAG_RADIOS_IN_UNISON, radiosInUnison);
+        getCOSObject().setFlag(COSName.FF, FLAG_RADIOS_IN_UNISON, radiosInUnison);
     }
 
     /**
@@ -81,7 +81,7 @@ public final class PDRadioButton extends PDButton
      */
     public boolean isRadiosInUnison()
     {
-        return getDictionary().getFlag(COSName.FF, FLAG_RADIOS_IN_UNISON);
+        return getCOSObject().getFlag(COSName.FF, FLAG_RADIOS_IN_UNISON);
     }
 
     /**

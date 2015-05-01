@@ -76,7 +76,7 @@ public final class PDCheckbox extends PDButton
             // empty catch blocks.
             return false;
         }
-        COSName radioValue = (COSName)getDictionary().getDictionaryObject( COSName.AS );
+        COSName radioValue = (COSName)getCOSObject().getDictionaryObject( COSName.AS );
         if( radioValue != null && fieldValue != null && radioValue.getName().equals( onValue ) )
         {
             return true;
@@ -92,7 +92,7 @@ public final class PDCheckbox extends PDButton
     {
         String onValue = getOnValue();
         setValue(onValue);
-        getDictionary().setItem(COSName.AS, COSName.getPDFName(onValue));
+        getCOSObject().setItem(COSName.AS, COSName.getPDFName(onValue));
     }
 
     /**
@@ -100,7 +100,7 @@ public final class PDCheckbox extends PDButton
      */
     public void unCheck()
     {
-        getDictionary().setItem(COSName.AS, PDButton.OFF);
+        getCOSObject().setItem(COSName.AS, PDButton.OFF);
     }
 
     /**
@@ -120,7 +120,7 @@ public final class PDCheckbox extends PDButton
      */
     public String getOnValue()
     {
-        COSDictionary ap = (COSDictionary) getDictionary().getDictionaryObject(COSName.AP);
+        COSDictionary ap = (COSDictionary) getCOSObject().getDictionaryObject(COSName.AP);
         COSBase n = ap.getDictionaryObject(COSName.N);
 
         //N can be a COSDictionary or a COSStream
@@ -171,14 +171,14 @@ public final class PDCheckbox extends PDButton
     {
         if (value == null)
         {
-            getDictionary().removeItem(COSName.V);
-            getDictionary().setItem( COSName.AS, PDButton.OFF );
+            getCOSObject().removeItem(COSName.V);
+            getCOSObject().setItem( COSName.AS, PDButton.OFF );
         }
         else
         {
             COSName nameValue = COSName.getPDFName(value);
-            getDictionary().setItem(COSName.V, nameValue);
-            getDictionary().setItem( COSName.AS, nameValue);
+            getCOSObject().setItem(COSName.V, nameValue);
+            getCOSObject().setItem( COSName.AS, nameValue);
         }
     }
 }

@@ -48,10 +48,10 @@ public class PDSignatureFieldTest
     {
         PDSignatureField sigField = new PDSignatureField(acroForm);
         
-        assertEquals(sigField.getFieldType(), sigField.getDictionary().getNameAsString(COSName.FT));
+        assertEquals(sigField.getFieldType(), sigField.getCOSObject().getNameAsString(COSName.FT));
         assertEquals(sigField.getFieldType(), "Sig");
         
-        assertEquals(COSName.ANNOT, sigField.getDictionary().getItem(COSName.TYPE));
-        assertEquals(PDAnnotationWidget.SUB_TYPE, sigField.getDictionary().getNameAsString(COSName.SUBTYPE));
+        assertEquals(COSName.ANNOT, sigField.getCOSObject().getItem(COSName.TYPE));
+        assertEquals(PDAnnotationWidget.SUB_TYPE, sigField.getCOSObject().getNameAsString(COSName.SUBTYPE));
     }
 }

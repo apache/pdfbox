@@ -113,8 +113,8 @@ public class TestListBox extends TestCase
             assertEquals(exportValues,choice.getOptionsExportValues());
 
             // assert that the option values have been correctly set
-            COSArray optItem = (COSArray) choice.getDictionary().getItem(COSName.OPT);
-            assertNotNull(choice.getDictionary().getItem(COSName.OPT));
+            COSArray optItem = (COSArray) choice.getCOSObject().getItem(COSName.OPT);
+            assertNotNull(choice.getCOSObject().getItem(COSName.OPT));
             assertEquals(optItem.size(),exportValues.size());
             assertEquals(exportValues.get(0), optItem.getString(0));
             
@@ -151,24 +151,24 @@ public class TestListBox extends TestCase
             choice.setValue(exportValues);
             
             // assert that the option values have been correctly set
-            COSArray valueItems = (COSArray) choice.getDictionary().getItem(COSName.V);
+            COSArray valueItems = (COSArray) choice.getCOSObject().getItem(COSName.V);
             assertNotNull(valueItems);
             assertEquals(valueItems.size(),exportValues.size());
             assertEquals(exportValues.get(0), valueItems.getString(0));
             
             // assert that the index values have been correctly set
-            COSArray indexItems = (COSArray) choice.getDictionary().getItem(COSName.I);
+            COSArray indexItems = (COSArray) choice.getCOSObject().getItem(COSName.I);
             assertNotNull(indexItems);
             assertEquals(indexItems.size(),exportValues.size());
             
             // setting a single value shall remove the indices
             choice.setValue("export01");
-            indexItems = (COSArray) choice.getDictionary().getItem(COSName.I);
+            indexItems = (COSArray) choice.getCOSObject().getItem(COSName.I);
             assertNull(indexItems);
 
             // assert that the Opt entry is removed
             choice.setOptions(null);
-            assertNull(choice.getDictionary().getItem(COSName.OPT));
+            assertNull(choice.getCOSObject().getItem(COSName.OPT));
             // if there is no Opt entry an empty List shall be returned
             assertEquals(choice.getOptions(), Collections.<String>emptyList());
             
@@ -194,7 +194,7 @@ public class TestListBox extends TestCase
              */
             // assert that the Opt entry is removed
             choice.setOptions(null, displayValues);
-            assertNull(choice.getDictionary().getItem(COSName.OPT));
+            assertNull(choice.getCOSObject().getItem(COSName.OPT));
             
             // if there is no Opt entry an empty list shall be returned
             assertEquals(choice.getOptions(), Collections.<String>emptyList());

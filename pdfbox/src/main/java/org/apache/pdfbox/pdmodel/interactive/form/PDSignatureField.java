@@ -57,7 +57,7 @@ public class PDSignatureField extends PDField
     public PDSignatureField(PDAcroForm theAcroForm) throws IOException
     {
         super( theAcroForm );
-        getDictionary().setItem(COSName.FT, COSName.SIG);
+        getCOSObject().setItem(COSName.FT, COSName.SIG);
         getWidget().setLocked(true);
         getWidget().setPrinted(true);
         setPartialName(generatePartialName());
@@ -129,11 +129,11 @@ public class PDSignatureField extends PDField
     {
         if (value == null)
         {
-            getDictionary().removeItem(COSName.V);
+            getCOSObject().removeItem(COSName.V);
         }
         else
         {
-            getDictionary().setItem(COSName.V, (PDSignature)value);
+            getCOSObject().setItem(COSName.V, (PDSignature)value);
         }
     }
     
@@ -152,7 +152,7 @@ public class PDSignatureField extends PDField
      */
     public PDSignature getValue()
     {
-        COSBase dictionary = getDictionary().getDictionaryObject(COSName.V);
+        COSBase dictionary = getCOSObject().getDictionaryObject(COSName.V);
         if (dictionary == null)
         {
             return null;
@@ -169,7 +169,7 @@ public class PDSignatureField extends PDField
      */
     public PDSeedValue getSeedValue()
     {
-        COSDictionary dict = (COSDictionary)getDictionary().getDictionaryObject(COSName.SV);
+        COSDictionary dict = (COSDictionary) getCOSObject().getDictionaryObject(COSName.SV);
         PDSeedValue sv = null;
         if (dict != null)
         {
@@ -189,7 +189,7 @@ public class PDSignatureField extends PDField
     {
         if (sv != null)
         {
-            getDictionary().setItem(COSName.SV, sv.getCOSObject());
+            getCOSObject().setItem(COSName.SV, sv.getCOSObject());
         }
     }
     

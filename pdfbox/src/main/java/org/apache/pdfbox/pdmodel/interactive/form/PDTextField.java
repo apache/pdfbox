@@ -54,7 +54,7 @@ public final class PDTextField extends PDVariableText
     public PDTextField(PDAcroForm theAcroForm)
     {
         super( theAcroForm );
-        getDictionary().setItem(COSName.FT, COSName.TX);
+        getCOSObject().setItem(COSName.FT, COSName.TX);
     }
 
     /**
@@ -74,7 +74,7 @@ public final class PDTextField extends PDVariableText
      */
     public boolean isMultiline()
     {
-        return getDictionary().getFlag( COSName.FF, FLAG_MULTILINE );
+        return getCOSObject().getFlag( COSName.FF, FLAG_MULTILINE );
     }
 
     /**
@@ -84,7 +84,7 @@ public final class PDTextField extends PDVariableText
      */
     public void setMultiline( boolean multiline )
     {
-        getDictionary().setFlag( COSName.FF, FLAG_MULTILINE, multiline );
+        getCOSObject().setFlag( COSName.FF, FLAG_MULTILINE, multiline );
     }
 
     /**
@@ -92,7 +92,7 @@ public final class PDTextField extends PDVariableText
      */
     public boolean isPassword()
     {
-        return getDictionary().getFlag( COSName.FF, FLAG_PASSWORD );
+        return getCOSObject().getFlag( COSName.FF, FLAG_PASSWORD );
     }
 
     /**
@@ -102,7 +102,7 @@ public final class PDTextField extends PDVariableText
      */
     public void setPassword( boolean password )
     {
-        getDictionary().setFlag( COSName.FF, FLAG_PASSWORD, password );
+        getCOSObject().setFlag( COSName.FF, FLAG_PASSWORD, password );
     }
 
     /**
@@ -110,7 +110,7 @@ public final class PDTextField extends PDVariableText
      */
     public boolean isFileSelect()
     {
-        return getDictionary().getFlag( COSName.FF, FLAG_FILE_SELECT );
+        return getCOSObject().getFlag( COSName.FF, FLAG_FILE_SELECT );
     }
 
     /**
@@ -120,7 +120,7 @@ public final class PDTextField extends PDVariableText
      */
     public void setFileSelect( boolean fileSelect )
     {
-        getDictionary().setFlag( COSName.FF, FLAG_FILE_SELECT, fileSelect );
+        getCOSObject().setFlag( COSName.FF, FLAG_FILE_SELECT, fileSelect );
     }
 
     /**
@@ -128,7 +128,7 @@ public final class PDTextField extends PDVariableText
      */
     public boolean doNotSpellCheck()
     {
-        return getDictionary().getFlag( COSName.FF, FLAG_DO_NOT_SPELL_CHECK );
+        return getCOSObject().getFlag( COSName.FF, FLAG_DO_NOT_SPELL_CHECK );
     }
 
     /**
@@ -138,7 +138,7 @@ public final class PDTextField extends PDVariableText
      */
     public void setDoNotSpellCheck( boolean doNotSpellCheck )
     {
-        getDictionary().setFlag( COSName.FF, FLAG_DO_NOT_SPELL_CHECK, doNotSpellCheck );
+        getCOSObject().setFlag( COSName.FF, FLAG_DO_NOT_SPELL_CHECK, doNotSpellCheck );
     }
 
     /**
@@ -146,7 +146,7 @@ public final class PDTextField extends PDVariableText
      */
     public boolean doNotScroll()
     {
-        return getDictionary().getFlag( COSName.FF, FLAG_DO_NOT_SCROLL );
+        return getCOSObject().getFlag( COSName.FF, FLAG_DO_NOT_SCROLL );
     }
 
     /**
@@ -156,7 +156,7 @@ public final class PDTextField extends PDVariableText
      */
     public void setDoNotScroll( boolean doNotScroll )
     {
-        getDictionary().setFlag( COSName.FF, FLAG_DO_NOT_SCROLL, doNotScroll );
+        getCOSObject().setFlag( COSName.FF, FLAG_DO_NOT_SCROLL, doNotScroll );
     }
 
     /**
@@ -164,7 +164,7 @@ public final class PDTextField extends PDVariableText
      */
     public boolean isComb()
     {
-        return getDictionary().getFlag( COSName.FF, FLAG_COMB );
+        return getCOSObject().getFlag( COSName.FF, FLAG_COMB );
     }
 
     /**
@@ -174,7 +174,7 @@ public final class PDTextField extends PDVariableText
      */
     public void setComb( boolean comb )
     {
-        getDictionary().setFlag( COSName.FF, FLAG_COMB, comb );
+        getCOSObject().setFlag( COSName.FF, FLAG_COMB, comb );
     }
 
     /**
@@ -182,7 +182,7 @@ public final class PDTextField extends PDVariableText
      */
     public boolean isRichText()
     {
-        return getDictionary().getFlag( COSName.FF, FLAG_RICH_TEXT );
+        return getCOSObject().getFlag( COSName.FF, FLAG_RICH_TEXT );
     }
 
     /**
@@ -192,7 +192,7 @@ public final class PDTextField extends PDVariableText
      */
     public void setRichText( boolean richText )
     {
-        getDictionary().setFlag( COSName.FF, FLAG_RICH_TEXT, richText );
+        getCOSObject().setFlag( COSName.FF, FLAG_RICH_TEXT, richText );
     }    
     
     
@@ -204,7 +204,7 @@ public final class PDTextField extends PDVariableText
      */
     public int getMaxLen()
     {
-        return getDictionary().getInt(COSName.MAX_LEN);
+        return getCOSObject().getInt(COSName.MAX_LEN);
     }
 
     /**
@@ -214,7 +214,7 @@ public final class PDTextField extends PDVariableText
      */
     public void setMaxLen(int maxLen)
     {
-        getDictionary().setInt(COSName.MAX_LEN, maxLen);
+        getCOSObject().setInt(COSName.MAX_LEN, maxLen);
     }
 
     /**
