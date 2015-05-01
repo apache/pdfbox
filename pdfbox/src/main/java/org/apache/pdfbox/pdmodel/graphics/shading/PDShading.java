@@ -98,20 +98,10 @@ public abstract class PDShading implements COSObjectable
     /**
      * This will get the underlying dictionary.
      *
-     * @return the dictionary for this shading
-     */
-    public COSDictionary getCOSDictionary()
-    {
-        return dictionary;
-    }
-
-    /**
-     * Convert this standard java object to a COS object.
-     *
-     * @return the cos object that matches this Java object
+     * @return the dictionary for this shading.
      */
     @Override
-    public COSBase getCOSObject()
+    public COSDictionary getCOSObject()
     {
         return dictionary;
     }
@@ -309,14 +299,7 @@ public abstract class PDShading implements COSObjectable
     {
         functionArray = null;
         function = newFunction;
-        if (newFunction == null)
-        {
-            getCOSDictionary().removeItem(COSName.FUNCTION);
-        }
-        else
-        {
-            getCOSDictionary().setItem(COSName.FUNCTION, newFunction);
-        }
+        getCOSObject().setItem(COSName.FUNCTION, newFunction);
     }
 
     /**
@@ -328,14 +311,7 @@ public abstract class PDShading implements COSObjectable
     {
         functionArray = null;
         function = null;
-        if (newFunctions == null)
-        {
-            getCOSDictionary().removeItem(COSName.FUNCTION);
-        }
-        else
-        {
-            getCOSDictionary().setItem(COSName.FUNCTION, newFunctions);
-        }
+        getCOSObject().setItem(COSName.FUNCTION, newFunctions);
     }
 
     /**
@@ -348,7 +324,7 @@ public abstract class PDShading implements COSObjectable
     {
         if (function == null)
         {
-            COSBase dictionaryFunctionObject = getCOSDictionary().getDictionaryObject(COSName.FUNCTION);
+            COSBase dictionaryFunctionObject = getCOSObject().getDictionaryObject(COSName.FUNCTION);
             if (dictionaryFunctionObject != null)
             {
                 function = PDFunction.create(dictionaryFunctionObject);
@@ -367,7 +343,7 @@ public abstract class PDShading implements COSObjectable
     {
         if (functionArray == null)
         {
-            COSBase functionObject = getCOSDictionary().getDictionaryObject(COSName.FUNCTION);
+            COSBase functionObject = getCOSObject().getDictionaryObject(COSName.FUNCTION);
             if (functionObject instanceof COSDictionary)
             {
                 functionArray = new PDFunction[1];

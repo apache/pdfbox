@@ -55,7 +55,7 @@ class Type6ShadingContext extends PatchMeshesShadingContext
     private List<Patch> getCoonsPatchList(AffineTransform xform, Matrix matrix) throws IOException
     {
         PDShadingType6 coonsShadingType = (PDShadingType6) patchMeshesShadingType;
-        COSDictionary dict = coonsShadingType.getCOSDictionary();
+        COSDictionary dict = coonsShadingType.getCOSObject();
         PDRange rangeX = coonsShadingType.getDecodeForParameter(0);
         PDRange rangeY = coonsShadingType.getDecodeForParameter(1);
         PDRange[] colRange = new PDRange[numberOfColorComponents];

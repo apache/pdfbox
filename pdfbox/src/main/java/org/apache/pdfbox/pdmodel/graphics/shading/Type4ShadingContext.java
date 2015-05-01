@@ -69,7 +69,7 @@ class Type4ShadingContext extends GouraudShadingContext
             throws IOException
     {
         PDShadingType4 freeTriangleShadingType = (PDShadingType4) shading;
-        COSDictionary dict = freeTriangleShadingType.getCOSDictionary();
+        COSDictionary dict = freeTriangleShadingType.getCOSObject();
         PDRange rangeX = freeTriangleShadingType.getDecodeForParameter(0);
         PDRange rangeY = freeTriangleShadingType.getDecodeForParameter(1);
         PDRange[] colRange = new PDRange[numberOfColorComponents];
