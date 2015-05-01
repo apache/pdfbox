@@ -82,8 +82,8 @@ public abstract class PDAbstractPattern implements COSObjectable
     }
 
     /**
-     * Convert this standard java object to a COS object.
-     * @return The cos object that matches this Java object.
+     * This will get the underlying dictionary.
+     * @return The dictionary for these pattern resources.
      */
     @Override
     public COSDictionary getCOSObject()
