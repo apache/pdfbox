@@ -46,7 +46,7 @@ public class PDButtonTest
     {
         PDButton buttonField = new PDCheckbox(acroForm);
         
-        assertEquals(buttonField.getFieldType(), buttonField.getDictionary().getNameAsString(COSName.FT));
+        assertEquals(buttonField.getFieldType(), buttonField.getCOSObject().getNameAsString(COSName.FT));
         assertEquals(buttonField.getFieldType(), "Btn");
         assertFalse(buttonField.isPushButton());
         assertFalse(buttonField.isRadioButton());
@@ -57,7 +57,7 @@ public class PDButtonTest
     {
         PDButton buttonField = new PDPushButton(acroForm);
         
-        assertEquals(buttonField.getFieldType(), buttonField.getDictionary().getNameAsString(COSName.FT));
+        assertEquals(buttonField.getFieldType(), buttonField.getCOSObject().getNameAsString(COSName.FT));
         assertEquals(buttonField.getFieldType(), "Btn");
         assertTrue(buttonField.isPushButton());
         assertFalse(buttonField.isRadioButton());
@@ -68,7 +68,7 @@ public class PDButtonTest
     {
         PDButton buttonField = new PDRadioButton(acroForm);
         
-        assertEquals(buttonField.getFieldType(), buttonField.getDictionary().getNameAsString(COSName.FT));
+        assertEquals(buttonField.getFieldType(), buttonField.getCOSObject().getNameAsString(COSName.FT));
         assertEquals(buttonField.getFieldType(), "Btn");
         assertTrue(buttonField.isRadioButton());
         assertFalse(buttonField.isPushButton());

@@ -683,8 +683,10 @@ public abstract class PDFieldTreeNode implements COSObjectable
     /**
      * This will get the dictionary associated with this field.
      * 
-     * @return The dictionary that this class wraps.
+     * @deprecated  use {@link #getCOSObject()} instead.
+     * @return the dictionary that this class wraps.
      */
+    @Deprecated
     public COSDictionary getDictionary()
     {
         return dictionary;
@@ -693,10 +695,10 @@ public abstract class PDFieldTreeNode implements COSObjectable
     /**
      * Convert this standard java object to a COS object.
      * 
-     * @return The cos object that matches this Java object.
+     * @return the COS object that matches this Java object.
      */
     @Override
-    public COSBase getCOSObject()
+    public COSDictionary getCOSObject()
     {
         return dictionary;
     }

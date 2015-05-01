@@ -91,10 +91,10 @@ public class TestCheckBox extends TestCase
             options.add("Value02");
             checkBox.setOptions(options);
 
-            COSArray optItem = (COSArray) checkBox.getDictionary().getItem(COSName.OPT);
+            COSArray optItem = (COSArray) checkBox.getCOSObject().getItem(COSName.OPT);
 
             // assert that the values have been correctly set
-            assertNotNull(checkBox.getDictionary().getItem(COSName.OPT));
+            assertNotNull(checkBox.getCOSObject().getItem(COSName.OPT));
             assertEquals(optItem.size(),2);
             assertEquals(options.get(0), optItem.getString(0));
             
@@ -105,7 +105,7 @@ public class TestCheckBox extends TestCase
 
             // assert that the Opt entry is removed
             checkBox.setOptions(null);
-            assertNull(checkBox.getDictionary().getItem(COSName.OPT));
+            assertNull(checkBox.getCOSObject().getItem(COSName.OPT));
             // if there is no Opt entry an empty List shall be returned
             assertEquals(checkBox.getOptions(), new ArrayList<String>());
         }

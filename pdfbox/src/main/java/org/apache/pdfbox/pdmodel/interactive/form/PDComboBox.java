@@ -61,7 +61,7 @@ public final class PDComboBox extends PDChoice
      */
     public boolean isEdit()
     {
-        return getDictionary().getFlag( COSName.FF, FLAG_EDIT );
+        return getCOSObject().getFlag( COSName.FF, FLAG_EDIT );
     }
 
     /**
@@ -71,7 +71,7 @@ public final class PDComboBox extends PDChoice
      */
     public void setEdit( boolean edit )
     {
-        getDictionary().setFlag( COSName.FF, FLAG_EDIT, edit );
+        getCOSObject().setFlag( COSName.FF, FLAG_EDIT, edit );
     }
 
     /**
@@ -93,14 +93,14 @@ public final class PDComboBox extends PDChoice
             }
             else
             {
-                getDictionary().setString(COSName.V, (String)value);
+                getCOSObject().setString(COSName.V, (String)value);
                 // remove I key for single valued choice field
                 setSelectedOptionsIndex(null);
             }
         }
         else
         {
-            getDictionary().removeItem(COSName.V);
+            getCOSObject().removeItem(COSName.V);
         }
         // TODO create/update appearance
     }

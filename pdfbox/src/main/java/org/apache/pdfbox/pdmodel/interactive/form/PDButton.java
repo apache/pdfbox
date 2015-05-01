@@ -69,7 +69,7 @@ public abstract class PDButton extends PDField
     public PDButton(PDAcroForm theAcroForm)
     {
         super( theAcroForm );
-        getDictionary().setItem(COSName.FT, COSName.BTN);
+        getCOSObject().setItem(COSName.FT, COSName.BTN);
     }
     
     /**
@@ -91,7 +91,7 @@ public abstract class PDButton extends PDField
      */
     public boolean isPushButton()
     {
-        return getDictionary().getFlag( COSName.FF, FLAG_PUSHBUTTON );
+        return getCOSObject().getFlag( COSName.FF, FLAG_PUSHBUTTON );
     }
 
     /**
@@ -101,7 +101,7 @@ public abstract class PDButton extends PDField
      */
     public void setPushButton( boolean pushbutton )
     {
-        getDictionary().setFlag( COSName.FF, FLAG_PUSHBUTTON, pushbutton );
+        getCOSObject().setFlag( COSName.FF, FLAG_PUSHBUTTON, pushbutton );
     }
 
     /**
@@ -111,7 +111,7 @@ public abstract class PDButton extends PDField
      */
     public boolean isRadioButton()
     {
-        return getDictionary().getFlag( COSName.FF, FLAG_RADIO );
+        return getCOSObject().getFlag( COSName.FF, FLAG_RADIO );
     }
 
     /**
@@ -121,7 +121,7 @@ public abstract class PDButton extends PDField
      */
     public void setRadioButton( boolean radiobutton )
     {
-        getDictionary().setFlag( COSName.FF, FLAG_RADIO, radiobutton );
+        getCOSObject().setFlag( COSName.FF, FLAG_RADIO, radiobutton );
     }   
     
     
@@ -161,11 +161,11 @@ public abstract class PDButton extends PDField
     {
         if (defaultValue == null)
         {
-            getDictionary().removeItem(COSName.DV);
+            getCOSObject().removeItem(COSName.DV);
         }
         else
         {
-            getDictionary().setItem(COSName.DV, COSName.getPDFName(defaultValue));
+            getCOSObject().setItem(COSName.DV, COSName.getPDFName(defaultValue));
         }
     }
     

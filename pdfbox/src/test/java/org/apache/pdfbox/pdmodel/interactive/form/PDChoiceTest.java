@@ -46,7 +46,7 @@ public class PDChoiceTest
     {
         PDChoice choiceField = new PDListBox(acroForm);
         
-        assertEquals(choiceField.getFieldType(), choiceField.getDictionary().getNameAsString(COSName.FT));
+        assertEquals(choiceField.getFieldType(), choiceField.getCOSObject().getNameAsString(COSName.FT));
         assertEquals(choiceField.getFieldType(), "Ch");
         assertFalse(choiceField.isCombo());
     }
@@ -56,7 +56,7 @@ public class PDChoiceTest
     {
         PDChoice choiceField = new PDComboBox(acroForm);
         
-        assertEquals(choiceField.getFieldType(), choiceField.getDictionary().getNameAsString(COSName.FT));
+        assertEquals(choiceField.getFieldType(), choiceField.getCOSObject().getNameAsString(COSName.FT));
         assertEquals(choiceField.getFieldType(), "Ch");
         assertTrue(choiceField.isCombo());
     }
