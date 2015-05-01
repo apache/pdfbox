@@ -109,7 +109,7 @@ public class SinglePageValidationProcess extends AbstractProcess
      * @param context the preflight context.
      * @param page the page to check.
      */
-    protected void validateColorSpaces(PreflightContext context, PDPage page) throws ValidationException
+    protected void validateColorSpaces(PreflightContext context, PDPage page)
     {
         PDResources resources = page.getResources();
         if (resources != null)
