@@ -40,6 +40,7 @@ import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 public class GraphicObjectPageValidationProcess extends AbstractProcess
 {
 
+    @Override
     public void validate(PreflightContext context) throws ValidationException
     {
         PreflightPath vPath = context.getValidationPath();
