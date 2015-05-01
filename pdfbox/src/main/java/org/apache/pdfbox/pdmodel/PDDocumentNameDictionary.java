@@ -28,8 +28,8 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
  */
 public class PDDocumentNameDictionary implements COSObjectable
 {
-    private COSDictionary nameDictionary;
-    private PDDocumentCatalog catalog;
+    private final COSDictionary nameDictionary;
+    private final PDDocumentCatalog catalog;
 
     /**
      * Constructor.
@@ -66,19 +66,10 @@ public class PDDocumentNameDictionary implements COSObjectable
     /**
      * Convert this standard java object to a COS object.
      *
-     * @return The cos object that matches this Java object.
-     */
-    public COSBase getCOSObject()
-    {
-        return nameDictionary;
-    }
-
-    /**
-     * Convert this standard java object to a COS object.
-     *
      * @return The cos dictionary for this object.
      */
-    public COSDictionary getCOSDictionary()
+    @Override
+    public COSDictionary getCOSObject()
     {
         return nameDictionary;
     }
@@ -106,7 +97,6 @@ public class PDDocumentNameDictionary implements COSObjectable
         {
             dests = new PDDestinationNameTreeNode( dic );
         }
-
 
         return dests;
     }
@@ -166,7 +156,7 @@ public class PDDocumentNameDictionary implements COSObjectable
     {
         PDJavascriptNameTreeNode retval = null;
 
-        COSDictionary dic = (COSDictionary)nameDictionary.getDictionaryObject( COSName.JAVA_SCRIPT );
+        COSDictionary dic = (COSDictionary) nameDictionary.getDictionaryObject(COSName.JAVA_SCRIPT);
 
         if( dic != null )
         {
