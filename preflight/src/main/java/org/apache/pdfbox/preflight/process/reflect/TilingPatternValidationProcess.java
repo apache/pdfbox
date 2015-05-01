@@ -89,7 +89,7 @@ public class TilingPatternValidationProcess extends AbstractProcess
      */
     protected void checkMandatoryFields(PreflightContext context, PDPage page, PDTilingPattern pattern)
     {
-        COSDictionary dictionary = pattern.getCOSDictionary();
+        COSDictionary dictionary = pattern.getCOSObject();
         boolean res = dictionary.getItem(COSName.RESOURCES) != null;
         res = res && dictionary.getItem(COSName.BBOX) != null;
         res = res && dictionary.getItem(COSName.PAINT_TYPE) != null;
