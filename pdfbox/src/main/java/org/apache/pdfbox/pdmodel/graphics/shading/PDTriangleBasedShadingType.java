@@ -43,7 +43,7 @@ abstract class PDTriangleBasedShadingType extends PDShading
      */
     public int getBitsPerComponent()
     {
-        return getCOSDictionary().getInt(COSName.BITS_PER_COMPONENT, -1);
+        return getCOSObject().getInt(COSName.BITS_PER_COMPONENT, -1);
     }
 
     /**
@@ -53,7 +53,7 @@ abstract class PDTriangleBasedShadingType extends PDShading
      */
     public void setBitsPerComponent(int bitsPerComponent)
     {
-        getCOSDictionary().setInt(COSName.BITS_PER_COMPONENT, bitsPerComponent);
+        getCOSObject().setInt(COSName.BITS_PER_COMPONENT, bitsPerComponent);
     }
 
     /**
@@ -64,7 +64,7 @@ abstract class PDTriangleBasedShadingType extends PDShading
      */
     public int getBitsPerCoordinate()
     {
-        return getCOSDictionary().getInt(COSName.BITS_PER_COORDINATE, -1);
+        return getCOSObject().getInt(COSName.BITS_PER_COORDINATE, -1);
     }
 
     /**
@@ -74,7 +74,7 @@ abstract class PDTriangleBasedShadingType extends PDShading
      */
     public void setBitsPerCoordinate(int bitsPerComponent)
     {
-        getCOSDictionary().setInt(COSName.BITS_PER_COORDINATE, bitsPerComponent);
+        getCOSObject().setInt(COSName.BITS_PER_COORDINATE, bitsPerComponent);
     }
 
     /**
@@ -86,7 +86,7 @@ abstract class PDTriangleBasedShadingType extends PDShading
     {
         if (decode == null)
         {
-            decode = (COSArray) getCOSDictionary().getDictionaryObject(COSName.DECODE);
+            decode = (COSArray) getCOSObject().getDictionaryObject(COSName.DECODE);
         }
         return decode;
     }
@@ -99,7 +99,7 @@ abstract class PDTriangleBasedShadingType extends PDShading
     public void setDecodeValues(COSArray decodeValues)
     {
         decode = decodeValues;
-        getCOSDictionary().setItem(COSName.DECODE, decodeValues);
+        getCOSObject().setItem(COSName.DECODE, decodeValues);
     }
 
     /**

@@ -68,7 +68,7 @@ class Type5ShadingContext extends GouraudShadingContext
     {
         List<ShadedTriangle> list = new ArrayList<ShadedTriangle>();
         PDShadingType5 latticeTriangleShadingType = (PDShadingType5) shading;
-        COSDictionary cosDictionary = latticeTriangleShadingType.getCOSDictionary();
+        COSDictionary cosDictionary = latticeTriangleShadingType.getCOSObject();
         PDRange rangeX = latticeTriangleShadingType.getDecodeForParameter(0);
         PDRange rangeY = latticeTriangleShadingType.getDecodeForParameter(1);
         int numPerRow = latticeTriangleShadingType.getVerticesPerRow();

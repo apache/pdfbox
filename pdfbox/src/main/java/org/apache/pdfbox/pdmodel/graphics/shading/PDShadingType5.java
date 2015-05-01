@@ -51,7 +51,7 @@ public class PDShadingType5 extends PDTriangleBasedShadingType
      */
     public int getVerticesPerRow()
     {
-        return getCOSDictionary().getInt(COSName.VERTICES_PER_ROW, -1);
+        return getCOSObject().getInt(COSName.VERTICES_PER_ROW, -1);
     }
 
     /**
@@ -61,7 +61,7 @@ public class PDShadingType5 extends PDTriangleBasedShadingType
      */
     public void setVerticesPerRow(int verticesPerRow)
     {
-        getCOSDictionary().setInt(COSName.VERTICES_PER_ROW, verticesPerRow);
+        getCOSObject().setInt(COSName.VERTICES_PER_ROW, verticesPerRow);
     }
 
     @Override
