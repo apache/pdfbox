@@ -49,8 +49,8 @@ public final class PDTransition extends PDDictionaryWrapper
     public PDTransition(PDTransitionStyle style)
     {
         super();
-        getCOSDictionary().setName(COSName.TYPE, COSName.TRANS.getName());
-        getCOSDictionary().setName(COSName.S, style.name());
+        getCOSObject().setName(COSName.TYPE, COSName.TRANS.getName());
+        getCOSObject().setName(COSName.S, style.name());
     }
 
     /**
@@ -69,7 +69,7 @@ public final class PDTransition extends PDDictionaryWrapper
      */
     public String getStyle()
     {
-        return getCOSDictionary().getNameAsString(COSName.S, PDTransitionStyle.R.name());
+        return getCOSObject().getNameAsString(COSName.S, PDTransitionStyle.R.name());
     }
 
     /**
@@ -79,7 +79,7 @@ public final class PDTransition extends PDDictionaryWrapper
      */
     public String getDimension()
     {
-        return getCOSDictionary().getNameAsString(COSName.DM, PDTransitionDimension.H.name());
+        return getCOSObject().getNameAsString(COSName.DM, PDTransitionDimension.H.name());
     }
 
     /**
@@ -88,7 +88,7 @@ public final class PDTransition extends PDDictionaryWrapper
      */
     public void setDimension(PDTransitionDimension dimension)
     {
-        getCOSDictionary().setName(COSName.DM, dimension.name());
+        getCOSObject().setName(COSName.DM, dimension.name());
     }
 
     /**
@@ -98,7 +98,7 @@ public final class PDTransition extends PDDictionaryWrapper
      */
     public String getMotion()
     {
-        return getCOSDictionary().getNameAsString(COSName.M, PDTransitionMotion.I.name());
+        return getCOSObject().getNameAsString(COSName.M, PDTransitionMotion.I.name());
     }
 
     /**
@@ -107,7 +107,7 @@ public final class PDTransition extends PDDictionaryWrapper
      */
     public void setMotion(PDTransitionMotion motion)
     {
-        getCOSDictionary().setName(COSName.M, motion.name());
+        getCOSObject().setName(COSName.M, motion.name());
     }
 
     /**
@@ -117,7 +117,7 @@ public final class PDTransition extends PDDictionaryWrapper
      */
     public COSBase getDirection()
     {
-        COSBase item = getCOSDictionary().getItem(COSName.DI);
+        COSBase item = getCOSObject().getItem(COSName.DI);
         if (item == null)
         {
             return COSInteger.ZERO;
@@ -132,7 +132,7 @@ public final class PDTransition extends PDDictionaryWrapper
      */
     public void setDirection(PDTransitionDirection direction)
     {
-        getCOSDictionary().setItem(COSName.DI, direction.getCOSBase());
+        getCOSObject().setItem(COSName.DI, direction.getCOSBase());
     }
 
     /**
@@ -140,7 +140,7 @@ public final class PDTransition extends PDDictionaryWrapper
      */
     public float getDuration()
     {
-        return getCOSDictionary().getFloat(COSName.D, 1);
+        return getCOSObject().getFloat(COSName.D, 1);
     }
 
     /**
@@ -148,7 +148,7 @@ public final class PDTransition extends PDDictionaryWrapper
      */
     public void setDuration(float duration)
     {
-        getCOSDictionary().setItem(COSName.D, new COSFloat(duration));
+        getCOSObject().setItem(COSName.D, new COSFloat(duration));
     }
 
     /**
@@ -157,7 +157,7 @@ public final class PDTransition extends PDDictionaryWrapper
      */
     public float getFlyScale()
     {
-        return getCOSDictionary().getFloat(COSName.SS, 1);
+        return getCOSObject().getFloat(COSName.SS, 1);
     }
 
     /**
@@ -166,7 +166,7 @@ public final class PDTransition extends PDDictionaryWrapper
      */
     public void setFlyScale(float scale)
     {
-        getCOSDictionary().setItem(COSName.SS, new COSFloat(scale));
+        getCOSObject().setItem(COSName.SS, new COSFloat(scale));
     }
 
     /**
@@ -175,7 +175,7 @@ public final class PDTransition extends PDDictionaryWrapper
      */
     public boolean isFlyAreaOpaque()
     {
-        return getCOSDictionary().getBoolean(COSName.B, false);
+        return getCOSObject().getBoolean(COSName.B, false);
     }
 
     /**
@@ -184,6 +184,6 @@ public final class PDTransition extends PDDictionaryWrapper
      */
     public void setFlyAreaOpaque(boolean opaque)
     {
-        getCOSDictionary().setItem(COSName.B, COSBoolean.getBoolean(opaque));
+        getCOSObject().setItem(COSName.B, COSBoolean.getBoolean(opaque));
     }
 }
