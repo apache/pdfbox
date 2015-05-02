@@ -29,7 +29,7 @@ import org.apache.pdfbox.cos.COSStream;
  */
 public class PDComplexFileSpecification extends PDFileSpecification
 {
-    private COSDictionary fs;
+    private final COSDictionary fs;
     private COSDictionary efDictionary;
 
     /**
@@ -64,21 +64,12 @@ public class PDComplexFileSpecification extends PDFileSpecification
      *
      * @return The cos object that matches this Java object.
      */
-    public COSBase getCOSObject()
+    @Override
+    public COSDictionary getCOSObject()
     {
         return fs;
     }
-
-    /**
-     * Convert this standard java object to a COS object.
-     *
-     * @return The cos object that matches this Java object.
-     */
-    public COSDictionary getCOSDictionary()
-    {
-        return fs;
-    }
-
+    
     private COSDictionary getEFDictionary()
     {
         if (efDictionary == null && fs != null)
@@ -154,6 +145,7 @@ public class PDComplexFileSpecification extends PDFileSpecification
      *
      * @return The file name.
      */
+    @Override
     public String getFile()
     {
         return fs.getString( COSName.F );
@@ -164,6 +156,7 @@ public class PDComplexFileSpecification extends PDFileSpecification
      *
      * @param file The name of the file.
      */
+    @Override
     public void setFile( String file )
     {
         fs.setString( COSName.F, file );
