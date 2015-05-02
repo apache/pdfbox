@@ -59,7 +59,7 @@ public class PDDefaultAttributeObject extends PDAttributeObject
     public List<String> getAttributeNames()
     {
         List<String> attrNames = new ArrayList<String>();
-        for (Entry<COSName, COSBase> entry : this.getCOSDictionary().entrySet())
+        for (Entry<COSName, COSBase> entry : this.getCOSObject().entrySet())
         {
             COSName key = entry.getKey();
             if (!COSName.O.equals(key))
@@ -78,7 +78,7 @@ public class PDDefaultAttributeObject extends PDAttributeObject
      */
     public COSBase getAttributeValue(String attrName)
     {
-        return this.getCOSDictionary().getDictionaryObject(attrName);
+        return this.getCOSObject().getDictionaryObject(attrName);
     }
 
     /**
@@ -90,7 +90,7 @@ public class PDDefaultAttributeObject extends PDAttributeObject
      */
     protected COSBase getAttributeValue(String attrName, COSBase defaultValue)
     {
-        COSBase value = this.getCOSDictionary().getDictionaryObject(attrName);
+        COSBase value = this.getCOSObject().getDictionaryObject(attrName);
         if (value == null)
         {
             return defaultValue;
@@ -107,7 +107,7 @@ public class PDDefaultAttributeObject extends PDAttributeObject
     public void setAttribute(String attrName, COSBase attrValue)
     {
         COSBase old = this.getAttributeValue(attrName);
-        this.getCOSDictionary().setItem(COSName.getPDFName(attrName), attrValue);
+        this.getCOSObject().setItem(COSName.getPDFName(attrName), attrValue);
         this.potentiallyNotifyChanged(old, attrValue);
     }
 

@@ -62,7 +62,7 @@ public class PDUserProperty extends PDDictionaryWrapper
      */
     public String getName()
     {
-        return this.getCOSDictionary().getNameAsString(COSName.N);
+        return this.getCOSObject().getNameAsString(COSName.N);
     }
 
     /**
@@ -73,7 +73,7 @@ public class PDUserProperty extends PDDictionaryWrapper
     public void setName(String name)
     {
         this.potentiallyNotifyChanged(this.getName(), name);
-        this.getCOSDictionary().setName(COSName.N, name);
+        this.getCOSObject().setName(COSName.N, name);
     }
 
     /**
@@ -83,7 +83,7 @@ public class PDUserProperty extends PDDictionaryWrapper
      */
     public COSBase getValue()
     {
-        return this.getCOSDictionary().getDictionaryObject(COSName.V);
+        return this.getCOSObject().getDictionaryObject(COSName.V);
     }
 
     /**
@@ -94,7 +94,7 @@ public class PDUserProperty extends PDDictionaryWrapper
     public void setValue(COSBase value)
     {
         this.potentiallyNotifyChanged(this.getValue(), value);
-        this.getCOSDictionary().setItem(COSName.V, value);
+        this.getCOSObject().setItem(COSName.V, value);
     }
 
     /**
@@ -104,7 +104,7 @@ public class PDUserProperty extends PDDictionaryWrapper
      */
     public String getFormattedValue()
     {
-        return this.getCOSDictionary().getString(COSName.F);
+        return this.getCOSObject().getString(COSName.F);
     }
 
     /**
@@ -115,7 +115,7 @@ public class PDUserProperty extends PDDictionaryWrapper
     public void setFormattedValue(String formattedValue)
     {
         this.potentiallyNotifyChanged(this.getFormattedValue(), formattedValue);
-        this.getCOSDictionary().setString(COSName.F, formattedValue);
+        this.getCOSObject().setString(COSName.F, formattedValue);
     }
 
     /**
@@ -126,7 +126,7 @@ public class PDUserProperty extends PDDictionaryWrapper
      */
     public boolean isHidden()
     {
-        return this.getCOSDictionary().getBoolean(COSName.H, false);
+        return this.getCOSObject().getBoolean(COSName.H, false);
     }
 
     /**
@@ -138,7 +138,7 @@ public class PDUserProperty extends PDDictionaryWrapper
     public void setHidden(boolean hidden)
     {
         this.potentiallyNotifyChanged(this.isHidden(), hidden);
-        this.getCOSDictionary().setBoolean(COSName.H, hidden);
+        this.getCOSObject().setBoolean(COSName.H, hidden);
     }
 
 
