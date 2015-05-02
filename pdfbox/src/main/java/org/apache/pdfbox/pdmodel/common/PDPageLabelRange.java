@@ -91,13 +91,8 @@ public class PDPageLabelRange implements COSObjectable
      * 
      * @return the underlying dictionary.
      */
-    public COSDictionary getCOSDictionary()
-    {
-        return root;
-    }
-
     @Override
-    public COSBase getCOSObject()
+    public COSDictionary getCOSObject()
     {
         return root;
     }

@@ -36,7 +36,7 @@ public class PDTypedDictionaryWrapper extends PDDictionaryWrapper
     public PDTypedDictionaryWrapper(String type)
     {
         super();
-        this.getCOSDictionary().setName(COSName.TYPE, type);
+        this.getCOSObject().setName(COSName.TYPE, type);
     }
 
     /**
@@ -57,7 +57,7 @@ public class PDTypedDictionaryWrapper extends PDDictionaryWrapper
      */
     public String getType()
     {
-        return this.getCOSDictionary().getNameAsString(COSName.TYPE);
+        return this.getCOSObject().getNameAsString(COSName.TYPE);
     }
 
     // There is no setType(String) method because changing the Type would most
