@@ -49,7 +49,7 @@ import org.apache.pdfbox.preflight.process.reflect.ExtGStateValidationProcess;
 import org.apache.pdfbox.preflight.process.reflect.FontValidationProcess;
 import org.apache.pdfbox.preflight.process.reflect.GraphicObjectPageValidationProcess;
 import org.apache.pdfbox.preflight.process.reflect.ResourcesValidationProcess;
-import org.apache.pdfbox.preflight.process.reflect.ShaddingPatternValidationProcess;
+import org.apache.pdfbox.preflight.process.reflect.ShadingPatternValidationProcess;
 import org.apache.pdfbox.preflight.process.reflect.SinglePageValidationProcess;
 import org.apache.pdfbox.preflight.process.reflect.TilingPatternValidationProcess;
 
@@ -75,7 +75,7 @@ public class PreflightConfiguration
     public static final String GRAPHIC_PROCESS = "graphic-process";
     public static final String FONT_PROCESS = "font-process";
     public static final String EXTGSTATE_PROCESS = "extgstate-process";
-    public static final String SHADDING_PATTERN_PROCESS = "shadding-pattern-process";
+    public static final String SHADING_PATTERN_PROCESS = "shadding-pattern-process";
     public static final String TILING_PATTERN_PROCESS = "tiling-pattern-process";
     public static final String DESTINATION_PROCESS = "destination-process";
 
@@ -130,7 +130,7 @@ public class PreflightConfiguration
 
         configuration.replacePageProcess(PAGE_PROCESS, SinglePageValidationProcess.class);
         configuration.replacePageProcess(EXTGSTATE_PROCESS, ExtGStateValidationProcess.class);
-        configuration.replacePageProcess(SHADDING_PATTERN_PROCESS, ShaddingPatternValidationProcess.class);
+        configuration.replacePageProcess(SHADING_PATTERN_PROCESS, ShadingPatternValidationProcess.class);
         configuration.replacePageProcess(GRAPHIC_PROCESS, GraphicObjectPageValidationProcess.class);
         configuration.replacePageProcess(TILING_PATTERN_PROCESS, TilingPatternValidationProcess.class);
         configuration.replacePageProcess(RESOURCES_PROCESS, ResourcesValidationProcess.class);
