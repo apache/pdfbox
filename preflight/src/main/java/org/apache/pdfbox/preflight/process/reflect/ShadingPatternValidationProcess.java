@@ -43,7 +43,7 @@ import org.apache.pdfbox.preflight.graphic.ColorSpaceHelperFactory.ColorSpaceRes
 import org.apache.pdfbox.preflight.process.AbstractProcess;
 import org.apache.pdfbox.preflight.utils.ContextHelper;
 
-public class ShaddingPatternValidationProcess extends AbstractProcess
+public class ShadingPatternValidationProcess extends AbstractProcess
 {
 
     @Override
@@ -61,10 +61,10 @@ public class ShaddingPatternValidationProcess extends AbstractProcess
         } 
         else 
         {
-            PDShading shaddingResource = (PDShading) vPath.peek();
+            PDShading shadingResource = (PDShading) vPath.peek();
             PDPage page = vPath.getClosestPathElement(PDPage.class);
-            checkColorSpace(context, page, shaddingResource);
-            checkGraphicState(context, page, shaddingResource);
+            checkColorSpace(context, page, shadingResource);
+            checkGraphicState(context, page, shadingResource);
         }
     }
 

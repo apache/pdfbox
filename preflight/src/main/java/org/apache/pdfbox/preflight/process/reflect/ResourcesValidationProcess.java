@@ -24,7 +24,7 @@ package org.apache.pdfbox.preflight.process.reflect;
 import static org.apache.pdfbox.preflight.PreflightConfiguration.EXTGSTATE_PROCESS;
 import static org.apache.pdfbox.preflight.PreflightConfiguration.FONT_PROCESS;
 import static org.apache.pdfbox.preflight.PreflightConfiguration.GRAPHIC_PROCESS;
-import static org.apache.pdfbox.preflight.PreflightConfiguration.SHADDING_PATTERN_PROCESS;
+import static org.apache.pdfbox.preflight.PreflightConfiguration.SHADING_PATTERN_PROCESS;
 import static org.apache.pdfbox.preflight.PreflightConfiguration.TILING_PATTERN_PROCESS;
 
 import java.io.IOException;
@@ -233,7 +233,7 @@ public class ResourcesValidationProcess extends AbstractProcess
             for (COSName name : resources.getShadingNames())
             {
                 PDShading shading = resources.getShading(name);
-                ContextHelper.validateElement(context, shading, SHADDING_PATTERN_PROCESS);
+                ContextHelper.validateElement(context, shading, SHADING_PATTERN_PROCESS);
             }
         }
         catch (IOException e)
