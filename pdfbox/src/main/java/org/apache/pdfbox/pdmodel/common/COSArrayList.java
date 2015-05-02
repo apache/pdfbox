@@ -515,7 +515,7 @@ public class COSArrayList<E> implements List<E>
         //in the dictionary from a single item to an array.
         if( parentDict != null )
         {
-            parentDict.setItem( dictKey, (COSBase)null );
+            parentDict.setItem( dictKey, null );
         }
         actual.clear();
         array.clear();

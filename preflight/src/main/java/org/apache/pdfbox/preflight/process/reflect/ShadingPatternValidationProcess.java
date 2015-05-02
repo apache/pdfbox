@@ -21,11 +21,11 @@
 
 package org.apache.pdfbox.preflight.process.reflect;
 
+import java.io.IOException;
+
 import static org.apache.pdfbox.preflight.PreflightConfiguration.EXTGSTATE_PROCESS;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_UNKNOWN_COLOR_SPACE;
 import static org.apache.pdfbox.preflight.PreflightConstants.TRANPARENCY_DICTIONARY_KEY_EXTGSTATE;
-
-import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -43,9 +43,10 @@ import org.apache.pdfbox.preflight.graphic.ColorSpaceHelperFactory.ColorSpaceRes
 import org.apache.pdfbox.preflight.process.AbstractProcess;
 import org.apache.pdfbox.preflight.utils.ContextHelper;
 
-public class ShaddingPatternValidationProcess extends AbstractProcess
+public class ShadingPatternValidationProcess extends AbstractProcess
 {
 
+    @Override
     public void validate(PreflightContext context) throws ValidationException
     {
         PreflightPath vPath = context.getValidationPath();
@@ -53,17 +54,17 @@ public class ShaddingPatternValidationProcess extends AbstractProcess
         {
             return;
         }
-        else if (!vPath.isExpectedType(PDShading.class))
+        if (!vPath.isExpectedType(PDShading.class))
         {
             context.addValidationError(new ValidationError(PreflightConstants.ERROR_GRAPHIC_MISSING_OBJECT,
                     "ShadingPattern validation required at least a PDResources"));
         } 
         else 
         {
-            PDShading shaddingResource = (PDShading) vPath.peek();
+            PDShading shadingResource = (PDShading) vPath.peek();
             PDPage page = vPath.getClosestPathElement(PDPage.class);
-            checkColorSpace(context, page, shaddingResource);
-            checkGraphicState(context, page, shaddingResource);
+            checkColorSpace(context, page, shadingResource);
+            checkGraphicState(context, page, shadingResource);
         }
     }
 
@@ -80,7 +81,7 @@ public class ShaddingPatternValidationProcess extends AbstractProcess
      */
     protected void checkColorSpace(PreflightContext context, PDPage page, PDShading shadingRes)
             throws ValidationException
-            {
+    {
         try
         {
             PDColorSpace pColorSpace = shadingRes.getColorSpace();
@@ -93,7 +94,7 @@ public class ShaddingPatternValidationProcess extends AbstractProcess
         {
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_UNKNOWN_COLOR_SPACE, e.getMessage()));
         }
-            }
+    }
 
     /**
      * Check the Extended Graphic State contains in the ShadingPattern dictionary if it is present. To check this
@@ -106,12 +107,12 @@ public class ShaddingPatternValidationProcess extends AbstractProcess
      */
     protected void checkGraphicState(PreflightContext context, PDPage page, PDShading shadingRes)
             throws ValidationException
-            {
-        COSDictionary resources = (COSDictionary) shadingRes.getCOSDictionary().getDictionaryObject(
+    {
+        COSDictionary resources = (COSDictionary) shadingRes.getCOSObject().getDictionaryObject(
                 TRANPARENCY_DICTIONARY_KEY_EXTGSTATE);
         if (resources != null)
         {
             ContextHelper.validateElement(context, resources, EXTGSTATE_PROCESS);
         }
-            }
+    }
 }

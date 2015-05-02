@@ -125,7 +125,7 @@ public abstract class PDAttributeObject extends PDDictionaryWrapper
      */
     public String getOwner()
     {
-        return this.getCOSDictionary().getNameAsString(COSName.O);
+        return this.getCOSObject().getNameAsString(COSName.O);
     }
 
     /**
@@ -135,7 +135,7 @@ public abstract class PDAttributeObject extends PDDictionaryWrapper
      */
     protected void setOwner(String owner)
     {
-        this.getCOSDictionary().setName(COSName.O, owner);
+        this.getCOSObject().setName(COSName.O, owner);
     }
 
     /**
@@ -147,7 +147,7 @@ public abstract class PDAttributeObject extends PDDictionaryWrapper
     public boolean isEmpty()
     {
         // only entry is the owner?
-        return (this.getCOSDictionary().size() == 1) && (this.getOwner() != null);
+        return (this.getCOSObject().size() == 1) && (this.getOwner() != null);
     }
 
 

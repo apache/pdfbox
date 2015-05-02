@@ -54,24 +54,13 @@ public abstract class PDField extends PDFieldTreeNode
     }
 
     /**
-     * This will return a string representation of this field.
-     * 
-     * @return A string representation of this field.
-     */
-    @Override
-    public String toString()
-    {
-        return "" + getDictionary().getDictionaryObject(COSName.V);
-    }
-
-    /**
      * Set the actions of the field.
      * 
      * @param actions The field actions.
      */
     public void setActions(PDFormFieldAdditionalActions actions)
     {
-        getDictionary().setItem(COSName.AA, actions);
+        getCOSObject().setItem(COSName.AA, actions);
     }
     
     /**
@@ -81,7 +70,7 @@ public abstract class PDField extends PDFieldTreeNode
     public int getFieldFlags()
     {
         int retval = 0;
-        COSInteger ff = (COSInteger) getDictionary().getDictionaryObject(COSName.FF);
+        COSInteger ff = (COSInteger) getCOSObject().getDictionaryObject(COSName.FF);
         if (ff != null)
         {
             retval = ff.intValue();
@@ -99,7 +88,7 @@ public abstract class PDField extends PDFieldTreeNode
     @Override
     public String getFieldType()
     {
-        String fieldType = getDictionary().getNameAsString(COSName.FT);
+        String fieldType = getCOSObject().getNameAsString(COSName.FT);
         if (fieldType == null && getParent() != null)
         {
             fieldType = getParent().getFieldType();

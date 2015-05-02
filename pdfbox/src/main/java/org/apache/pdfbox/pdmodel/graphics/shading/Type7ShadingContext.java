@@ -55,7 +55,7 @@ class Type7ShadingContext extends PatchMeshesShadingContext
     private List<Patch> getTensorPatchList(AffineTransform xform, Matrix matrix) throws IOException
     {
         PDShadingType7 tensorShadingType = (PDShadingType7) patchMeshesShadingType;
-        COSDictionary dict = tensorShadingType.getCOSDictionary();
+        COSDictionary dict = tensorShadingType.getCOSObject();
         PDRange rangeX = tensorShadingType.getDecodeForParameter(0);
         PDRange rangeY = tensorShadingType.getDecodeForParameter(1);
         PDRange[] colRange = new PDRange[numberOfColorComponents];

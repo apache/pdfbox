@@ -38,7 +38,7 @@ public class PDShadingPattern extends PDAbstractPattern
     public PDShadingPattern()
     {
         super();
-        getCOSDictionary().setInt(COSName.PATTERN_TYPE, PDAbstractPattern.TYPE_SHADING_PATTERN);
+        getCOSObject().setInt(COSName.PATTERN_TYPE, PDAbstractPattern.TYPE_SHADING_PATTERN);
     }
 
     /**
@@ -64,7 +64,7 @@ public class PDShadingPattern extends PDAbstractPattern
     {
         if (extendedGraphicsState == null)
         {
-            COSDictionary dictionary = (COSDictionary)getCOSDictionary()
+            COSDictionary dictionary = (COSDictionary)getCOSObject()
                     .getDictionaryObject(COSName.EXT_G_STATE);
 
             if( dictionary != null )
@@ -82,14 +82,7 @@ public class PDShadingPattern extends PDAbstractPattern
     public void setExtendedGraphicsState(PDExtendedGraphicsState extendedGraphicsState)
     {
         this.extendedGraphicsState = extendedGraphicsState;
-        if (extendedGraphicsState != null)
-        {
-            getCOSDictionary().setItem( COSName.EXT_G_STATE, extendedGraphicsState);
-        }
-        else
-        {
-            getCOSDictionary().removeItem(COSName.EXT_G_STATE);
-        }
+        getCOSObject().setItem(COSName.EXT_G_STATE, extendedGraphicsState);
     }
 
     /**
@@ -101,9 +94,7 @@ public class PDShadingPattern extends PDAbstractPattern
     {
         if (shading == null) 
         {
-            COSDictionary dictionary = (COSDictionary)getCOSDictionary()
-                    .getDictionaryObject(COSName.SHADING);
-
+            COSDictionary dictionary = (COSDictionary) getCOSObject().getDictionaryObject(COSName.SHADING);
             if( dictionary != null )
             {
                 shading = PDShading.create(dictionary);
@@ -119,13 +110,6 @@ public class PDShadingPattern extends PDAbstractPattern
     public void setShading( PDShading shadingResources )
     {
         shading = shadingResources;
-        if (shadingResources != null)
-        {
-            getCOSDictionary().setItem( COSName.SHADING, shadingResources );
-        }
-        else
-        {
-            getCOSDictionary().removeItem(COSName.SHADING);
-        }
+        getCOSObject().setItem(COSName.SHADING, shadingResources);
     }
 }

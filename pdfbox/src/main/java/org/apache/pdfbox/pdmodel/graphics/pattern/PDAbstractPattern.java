@@ -20,7 +20,6 @@ import java.awt.geom.AffineTransform;
 import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
@@ -86,17 +85,8 @@ public abstract class PDAbstractPattern implements COSObjectable
      * This will get the underlying dictionary.
      * @return The dictionary for these pattern resources.
      */
-    public COSDictionary getCOSDictionary()
-    {
-        return patternDictionary;
-    }
-
-    /**
-     * Convert this standard java object to a COS object.
-     * @return The cos object that matches this Java object.
-     */
     @Override
-    public COSBase getCOSObject()
+    public COSDictionary getCOSObject()
     {
         return patternDictionary;
     }
@@ -175,7 +165,7 @@ public abstract class PDAbstractPattern implements COSObjectable
      */
     public Matrix getMatrix()
     {
-        COSArray array = (COSArray)getCOSDictionary().getDictionaryObject(COSName.MATRIX);
+        COSArray array = (COSArray)getCOSObject().getDictionaryObject(COSName.MATRIX);
         if (array != null)
         {
             return new Matrix(array);
@@ -200,7 +190,7 @@ public abstract class PDAbstractPattern implements COSObjectable
         {
             matrix.add(new COSFloat((float)v));
         }
-        getCOSDictionary().setItem(COSName.MATRIX, matrix);
+        getCOSObject().setItem(COSName.MATRIX, matrix);
     }
 
 }

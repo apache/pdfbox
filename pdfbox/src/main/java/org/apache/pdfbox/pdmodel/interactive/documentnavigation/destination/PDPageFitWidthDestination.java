@@ -81,7 +81,7 @@ public class PDPageFitWidthDestination extends PDPageDestination
         array.growToSize( 3 );
         if( y == -1 )
         {
-            array.set( 2, (COSBase)null );
+            array.set(2, null);
         }
         else
         {

@@ -52,6 +52,7 @@ public class PDSimpleFileSpecification extends PDFileSpecification
      *
      * @return The file name.
      */
+    @Override
     public String getFile()
     {
     return file.getString();
@@ -62,6 +63,7 @@ public class PDSimpleFileSpecification extends PDFileSpecification
      *
      * @param fileName The name of the file.
      */
+    @Override
     public void setFile( String fileName )
     {
     file = new COSString( fileName );
@@ -72,6 +74,7 @@ public class PDSimpleFileSpecification extends PDFileSpecification
      *
      * @return The cos object that matches this Java object.
      */
+    @Override
     public COSBase getCOSObject()
     {
         return file;

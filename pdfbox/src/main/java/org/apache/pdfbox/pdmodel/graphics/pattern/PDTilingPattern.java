@@ -51,7 +51,7 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
     public PDTilingPattern()
     {
         super();
-        getCOSDictionary().setInt(COSName.PATTERN_TYPE, PDAbstractPattern.TYPE_TILING_PATTERN);
+        getCOSObject().setInt(COSName.PATTERN_TYPE, PDAbstractPattern.TYPE_TILING_PATTERN);
     }
 
     /**
@@ -76,7 +76,7 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
     @Override
     public void setLength(int length)
     {
-        getCOSDictionary().setInt(COSName.LENGTH, length);
+        getCOSObject().setInt(COSName.LENGTH, length);
     }
 
     /**
@@ -86,7 +86,7 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
     @Override
     public int getLength()
     {
-        return getCOSDictionary().getInt( COSName.LENGTH, 0 );
+        return getCOSObject().getInt( COSName.LENGTH, 0 );
     }
 
     /**
@@ -96,7 +96,7 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
     @Override
     public void setPaintType(int paintType)
     {
-        getCOSDictionary().setInt(COSName.PAINT_TYPE, paintType);
+        getCOSObject().setInt(COSName.PAINT_TYPE, paintType);
     }
 
     /**
@@ -105,7 +105,7 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
      */
     public int getPaintType()
     {
-        return getCOSDictionary().getInt( COSName.PAINT_TYPE, 0 );
+        return getCOSObject().getInt( COSName.PAINT_TYPE, 0 );
     }
 
     /**
@@ -114,7 +114,7 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
      */
     public void setTilingType(int tilingType)
     {
-        getCOSDictionary().setInt(COSName.TILING_TYPE, tilingType);
+        getCOSObject().setInt(COSName.TILING_TYPE, tilingType);
     }
 
     /**
@@ -123,7 +123,7 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
      */
     public int getTilingType()
     {
-        return getCOSDictionary().getInt( COSName.TILING_TYPE, 0 );
+        return getCOSObject().getInt( COSName.TILING_TYPE, 0 );
     }
 
     /**
@@ -132,7 +132,7 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
      */
     public void setXStep(float xStep)
     {
-        getCOSDictionary().setFloat(COSName.X_STEP, xStep);
+        getCOSObject().setFloat(COSName.X_STEP, xStep);
     }
 
     /**
@@ -142,7 +142,7 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
     public float getXStep()
     {
         // ignores invalid values, see PDFBOX-1094-065514-XStep32767.pdf
-        float xStep = getCOSDictionary().getFloat( COSName.X_STEP, 0 );
+        float xStep = getCOSObject().getFloat( COSName.X_STEP, 0 );
         return xStep == Short.MAX_VALUE ? 0 : xStep;
     }
 
@@ -152,7 +152,7 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
      */
     public void setYStep(float yStep)
     {
-        getCOSDictionary().setFloat(COSName.Y_STEP, yStep);
+        getCOSObject().setFloat(COSName.Y_STEP, yStep);
     }
 
     /**
@@ -162,7 +162,7 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
     public float getYStep()
     {
         // ignores invalid values, see PDFBOX-1094-065514-XStep32767.pdf
-        float yStep = getCOSDictionary().getFloat( COSName.Y_STEP, 0 );
+        float yStep = getCOSObject().getFloat( COSName.Y_STEP, 0 );
         return yStep == Short.MAX_VALUE ? 0 : yStep;
     }
 
@@ -181,8 +181,7 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
     public PDResources getResources()
     {
         PDResources retval = null;
-        COSDictionary resources = (COSDictionary)getCOSDictionary()
-                .getDictionaryObject( COSName.RESOURCES );
+        COSDictionary resources = (COSDictionary) getCOSObject().getDictionaryObject(COSName.RESOURCES);
         if( resources != null )
         {
             retval = new PDResources( resources );
@@ -196,14 +195,7 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
      */
     public void setResources( PDResources resources )
     {
-        if (resources != null)
-        {
-            getCOSDictionary().setItem( COSName.RESOURCES, resources );
-        }
-        else
-        {
-            getCOSDictionary().removeItem( COSName.RESOURCES );
-        }
+        getCOSObject().setItem(COSName.RESOURCES, resources);
     }
 
     /**
@@ -217,7 +209,7 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
     public PDRectangle getBBox()
     {
         PDRectangle retval = null;
-        COSArray array = (COSArray)getCOSDictionary().getDictionaryObject( COSName.BBOX );
+        COSArray array = (COSArray)getCOSObject().getDictionaryObject( COSName.BBOX );
         if( array != null )
         {
             retval = new PDRectangle( array );
@@ -233,11 +225,11 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
     {
         if( bbox == null )
         {
-            getCOSDictionary().removeItem( COSName.BBOX );
+            getCOSObject().removeItem( COSName.BBOX );
         }
         else
         {
-            getCOSDictionary().setItem( COSName.BBOX, bbox.getCOSArray() );
+            getCOSObject().setItem( COSName.BBOX, bbox.getCOSArray() );
         }
     }
 }

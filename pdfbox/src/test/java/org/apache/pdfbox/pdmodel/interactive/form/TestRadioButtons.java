@@ -92,10 +92,10 @@ public class TestRadioButtons extends TestCase
             options.add("Value02");
             radioButton.setOptions(options);
 
-            COSArray optItem = (COSArray) radioButton.getDictionary().getItem(COSName.OPT);
+            COSArray optItem = (COSArray) radioButton.getCOSObject().getItem(COSName.OPT);
 
             // assert that the values have been correctly set
-            assertNotNull(radioButton.getDictionary().getItem(COSName.OPT));
+            assertNotNull(radioButton.getCOSObject().getItem(COSName.OPT));
             assertEquals(optItem.size(),2);
             assertEquals(options.get(0), optItem.getString(0));
             
@@ -106,7 +106,7 @@ public class TestRadioButtons extends TestCase
 
             // assert that the Opt entry is removed
             radioButton.setOptions(null);
-            assertNull(radioButton.getDictionary().getItem(COSName.OPT));
+            assertNull(radioButton.getCOSObject().getItem(COSName.OPT));
             // if there is no Opt entry an empty List shall be returned
             assertEquals(radioButton.getOptions(), new ArrayList<String>());
         }

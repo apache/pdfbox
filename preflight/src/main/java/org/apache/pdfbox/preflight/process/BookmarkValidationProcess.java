@@ -56,7 +56,7 @@ public class BookmarkValidationProcess extends AbstractProcess
             PDDocumentOutline outlineHierarchy = catalog.getDocumentOutline();
             if (outlineHierarchy != null)
             {
-                COSDictionary dict = outlineHierarchy.getCOSDictionary();
+                COSDictionary dict = outlineHierarchy.getCOSObject();
                 if (!checkIndirectObjects(ctx, dict))
                 {
                     return;
@@ -138,7 +138,7 @@ public class BookmarkValidationProcess extends AbstractProcess
         {
             addValidationError(ctx, new ValidationError(ERROR_SYNTAX_TRAILER_OUTLINES_INVALID,
                     "The value of /Prev of first object " + firstObj + " on a level is " 
-                            + inputItem.getCOSDictionary().getItem(COSName.PREV) 
+                            + inputItem.getCOSObject().getItem(COSName.PREV) 
                             + ", but shouldn't exist"));
             result = false;
         }
@@ -150,7 +150,7 @@ public class BookmarkValidationProcess extends AbstractProcess
             {
                 result = false;
             }
-            currentObj = toCOSObject(currentItem.getCOSDictionary().getItem(COSName.NEXT));
+            currentObj = toCOSObject(currentItem.getCOSObject().getItem(COSName.NEXT));
             if (levelObjects.contains(currentObj))
             {
                 addValidationError(ctx, new ValidationError(ERROR_SYNTAX_TRAILER_OUTLINES_INVALID,
@@ -171,7 +171,7 @@ public class BookmarkValidationProcess extends AbstractProcess
             }
             else 
             {
-                COSObject prevObject = toCOSObject(currentItem.getCOSDictionary().getItem(COSName.PREV));
+                COSObject prevObject = toCOSObject(currentItem.getCOSObject().getItem(COSName.PREV));
                 if (!realPrevObject.equals(prevObject))
                 {
                     addValidationError(ctx, new ValidationError(ERROR_SYNTAX_TRAILER_OUTLINES_INVALID,
@@ -200,7 +200,7 @@ public class BookmarkValidationProcess extends AbstractProcess
         // Dest entry isn't permitted if the A entry is present
         // A entry isn't permitted if the Dest entry is present
         // If the A entry is present, the referenced actions is validated
-        COSDictionary dictionary = inputItem.getCOSDictionary();
+        COSDictionary dictionary = inputItem.getCOSObject();
         COSBase dest = dictionary.getItem(COSName.DEST);
         COSBase action = dictionary.getItem(COSName.A);
         
@@ -228,7 +228,7 @@ public class BookmarkValidationProcess extends AbstractProcess
         PDOutlineItem fChild = inputItem.getFirstChild();
         if (fChild != null)
         {
-            if (!isCountEntryPresent(inputItem.getCOSDictionary()))
+            if (!isCountEntryPresent(inputItem.getCOSObject()))
             {
                 addValidationError(ctx, new ValidationError(ERROR_SYNTAX_TRAILER_OUTLINES_INVALID,
                         "Outline item doesn't have Count entry but has at least one descendant"));

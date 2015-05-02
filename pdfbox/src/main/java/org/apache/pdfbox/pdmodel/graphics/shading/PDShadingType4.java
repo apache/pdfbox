@@ -51,7 +51,7 @@ public class PDShadingType4 extends PDTriangleBasedShadingType
      */
     public int getBitsPerFlag()
     {
-        return getCOSDictionary().getInt(COSName.BITS_PER_FLAG, -1);
+        return getCOSObject().getInt(COSName.BITS_PER_FLAG, -1);
     }
 
     /**
@@ -61,7 +61,7 @@ public class PDShadingType4 extends PDTriangleBasedShadingType
      */
     public void setBitsPerFlag(int bitsPerFlag)
     {
-        getCOSDictionary().setInt(COSName.BITS_PER_FLAG, bitsPerFlag);
+        getCOSObject().setInt(COSName.BITS_PER_FLAG, bitsPerFlag);
     }
 
     @Override

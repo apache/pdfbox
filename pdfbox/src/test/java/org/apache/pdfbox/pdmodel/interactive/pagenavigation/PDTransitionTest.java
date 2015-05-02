@@ -36,7 +36,7 @@ public class PDTransitionTest
     public void defaultStyle()
     {
         PDTransition transition = new PDTransition();
-        assertEquals(COSName.TRANS, transition.getCOSDictionary().getCOSName(COSName.TYPE));
+        assertEquals(COSName.TRANS, transition.getCOSObject().getCOSName(COSName.TYPE));
         assertEquals(PDTransitionStyle.R.name(), transition.getStyle());
     }
 
@@ -44,7 +44,7 @@ public class PDTransitionTest
     public void getStyle()
     {
         PDTransition transition = new PDTransition(PDTransitionStyle.Fade);
-        assertEquals(COSName.TRANS, transition.getCOSDictionary().getCOSName(COSName.TYPE));
+        assertEquals(COSName.TRANS, transition.getCOSObject().getCOSName(COSName.TYPE));
         assertEquals(PDTransitionStyle.Fade.name(), transition.getStyle());
     }
 

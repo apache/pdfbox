@@ -657,7 +657,7 @@ public abstract class PDFieldTreeNode implements COSObjectable
     @Override
     public String toString()
     {
-        return "" + getDictionary().getDictionaryObject(COSName.V);
+        return getFullyQualifiedName() + "{type: " + getClass().getSimpleName() + " value: "+ getInheritableAttribute(COSName.V) + "}";
     }
 
     /**
@@ -683,8 +683,10 @@ public abstract class PDFieldTreeNode implements COSObjectable
     /**
      * This will get the dictionary associated with this field.
      * 
-     * @return The dictionary that this class wraps.
+     * @deprecated  use {@link #getCOSObject()} instead.
+     * @return the dictionary that this class wraps.
      */
+    @Deprecated
     public COSDictionary getDictionary()
     {
         return dictionary;
@@ -693,10 +695,10 @@ public abstract class PDFieldTreeNode implements COSObjectable
     /**
      * Convert this standard java object to a COS object.
      * 
-     * @return The cos object that matches this Java object.
+     * @return the COS object that matches this Java object.
      */
     @Override
-    public COSBase getCOSObject()
+    public COSDictionary getCOSObject()
     {
         return dictionary;
     }
@@ -725,10 +727,8 @@ public abstract class PDFieldTreeNode implements COSObjectable
      * Returns the fully qualified name of the field, which is a concatenation of the names of all the parents fields.
      * 
      * @return the name of the field
-     * 
-     * @throws IOException If there is an error generating the fully qualified name.
      */
-    public String getFullyQualifiedName() throws IOException
+    public String getFullyQualifiedName()
     {
         String finalName = getPartialName();
         String parentName = getParent() != null ? getParent().getFullyQualifiedName() : null;

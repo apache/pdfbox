@@ -591,6 +591,13 @@ public class PDEncryption
         return perms;
     }
 
+    /**
+     * remove CF, StmF, and StrF entries. This is to be called if V is not 4 or 5.
+     */
+    public void removeV45filters()
+    {
+        dictionary.setItem(COSName.CF, null);
+        dictionary.setItem(COSName.STM_F, null);
+        dictionary.setItem(COSName.STR_F, null);
+    }
 }
-
-    
