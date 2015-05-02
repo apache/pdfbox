@@ -411,7 +411,7 @@ public class PDFMergerUtility
             destParentTreeNextKey = destStructTree.getParentTreeNextKey();
             if (destParentTree != null)
             {
-                destParentTreeDict = destParentTree.getCOSDictionary();
+                destParentTreeDict = destParentTree.getCOSObject();
                 destNumbersArray = (COSArray) destParentTreeDict.getDictionaryObject(COSName.NUMS);
                 if (destNumbersArray != null)
                 {
@@ -424,7 +424,7 @@ public class PDFMergerUtility
                         PDNumberTreeNode srcParentTree = srcStructTree.getParentTree();
                         if (srcParentTree != null)
                         {
-                            srcParentTreeDict = srcParentTree.getCOSDictionary();
+                            srcParentTreeDict = srcParentTree.getCOSObject();
                             srcNumbersArray = (COSArray) srcParentTreeDict.getDictionaryObject(COSName.NUMS);
                             if (srcNumbersArray != null)
                             {
