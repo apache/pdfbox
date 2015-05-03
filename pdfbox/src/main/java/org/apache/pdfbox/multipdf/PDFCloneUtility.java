@@ -184,7 +184,7 @@ class PDFCloneUtility
               return;
               //we are done, it has already been converted. // ### Is that correct for cloneMerge???
           }
-          else if( base instanceof COSObjectable && !(base instanceof COSBase) )
+          else if (!(base instanceof COSBase))
           {
               cloneMerge(base.getCOSObject(), target.getCOSObject());
               clonedVersion.put(base, retval);
