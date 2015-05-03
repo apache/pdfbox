@@ -178,7 +178,15 @@ public class PDType1CFont extends PDSimpleFont implements PDType1Equivalent
     @Override
     protected Encoding readEncodingFromFont() throws IOException
     {
-        return Type1Encoding.fromFontBox(type1Equivalent.getEncoding());
+        if (getStandard14AFM() != null)
+        {
+            // read from AFM
+            return new Type1Encoding(getStandard14AFM());
+        }
+        else
+        {
+            return Type1Encoding.fromFontBox(type1Equivalent.getEncoding());
+        }
     }
 
     @Override

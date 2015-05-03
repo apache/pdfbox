@@ -154,7 +154,7 @@ public final class ExternalFonts
                 Arrays.asList("TimesNewRomanPS-BoldItalicMT", "TimesNewRomanPS-BoldItalic",
                              "TimesNewRoman-BoldItalic", "LiberationSerif-BoldItalic",
                              "NimbusRomNo9L-MediItal"));
-        substitutes.put("Symbol", Arrays.asList("SymbolMT", "StandardSymL"));
+        substitutes.put("Symbol", Arrays.asList("Symbol", "SymbolMT", "StandardSymL"));
         substitutes.put("ZapfDingbats", Arrays.asList("ZapfDingbatsITC", "Dingbats", "MS-Gothic"));
 
         // extra substitute mechanism for CJK CIDFonts when all we know is the ROS

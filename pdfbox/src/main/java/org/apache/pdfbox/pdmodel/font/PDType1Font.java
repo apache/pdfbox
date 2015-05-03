@@ -329,14 +329,14 @@ public class PDType1Font extends PDSimpleFont implements PDType1Equivalent
     public float getWidthFromFont(int code) throws IOException
     {
         String name = codeToName(code);
-        if (getStandard14AFM() != null)
+
+        // width of .notdef is ignored for substitutes, see PDFBOX-1900
+        if (!isEmbedded && name.equals(".notdef"))
         {
-            return getStandard14Width(code);
+            return 250;
         }
-        else
-        {
-            return type1Equivalent.getWidth(name);
-        }
+
+        return type1Equivalent.getWidth(name);
     }
 
     @Override

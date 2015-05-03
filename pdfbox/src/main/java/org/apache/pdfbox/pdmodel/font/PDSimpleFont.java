@@ -145,22 +145,25 @@ public abstract class PDSimpleFont extends PDFont
             this.encoding = StandardEncoding.INSTANCE;
         }
 
+        // normalise the standard 14 name, e.g "Symbol,Italic" -> "Symbol"
+        String standard14Name = Standard14Fonts.getMappedFontName(getName());
+        
         // TTFs may have null encoding, but if it's standard 14 then we know it's Standard Encoding
         if (this.encoding == null && isStandard14() &&
-                !getName().equals("Symbol") &&
-                !getName().equals("ZapfDingbats"))
+                !standard14Name.equals("Symbol") &&
+                !standard14Name.equals("ZapfDingbats"))
         {
             this.encoding = StandardEncoding.INSTANCE;
         }
-        // todo: what about Symbol and ZapfDingbats?
 
         // assign the glyph list based on the font
-        if ("ZapfDingbats".equals(getName()))
+        if ("ZapfDingbats".equals(standard14Name))
         {
             glyphList = GlyphList.getZapfDingbats();
         }
         else
         {
+            // StandardEncoding and Symbol are in the AGL
             glyphList = GlyphList.getAdobeGlyphList();
         }
     }
@@ -245,7 +248,8 @@ public abstract class PDSimpleFont extends PDFont
         }
         else if (isStandard14())
         {
-            return getName().equals("Symbol") || getName().equals("ZapfDingbats");
+            String mappedName = Standard14Fonts.getMappedFontName(getName());
+            return mappedName.equals("Symbol") || mappedName.equals("ZapfDingbats");
         }
         else
         {
@@ -378,11 +382,7 @@ public abstract class PDSimpleFont extends PDFont
         return false;
     }
 
-    /**
-     * Returns the glyph width from the AFM if this is a Standard 14 font.
-     * @param code character code
-     * @return width in 1/1000 text space
-     */
+    @Override
     protected final float getStandard14Width(int code)
     {
         if (getStandard14AFM() != null)
