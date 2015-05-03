@@ -319,14 +319,13 @@ public final class StandardSecurityHandler extends SecurityHandler
     /**
      * Prepare document for encryption.
      *
-     * @param doc The documeent to encrypt.
+     * @param document The documeent to encrypt.
      *
      * @throws IOException If there is an error accessing data.
      */
     @Override
-    public void prepareDocumentForEncryption(PDDocument doc) throws IOException
+    public void prepareDocumentForEncryption(PDDocument document) throws IOException
     {
-        document = doc;
         PDEncryption encryptionDictionary = document.getEncryption();
         if(encryptionDictionary == null)
         {
@@ -373,8 +372,8 @@ public final class StandardSecurityHandler extends SecurityHandler
         }
         else
         {
-            prepareEncryptionDictRev2345(ownerPassword, userPassword, encryptionDictionary, permissionInt, 
-                    revision, length);
+            prepareEncryptionDictRev2345(ownerPassword, userPassword, encryptionDictionary, permissionInt,
+                    document, revision, length);
         }
 
         document.setEncryptionDictionary( encryptionDictionary );
@@ -476,7 +475,8 @@ public final class StandardSecurityHandler extends SecurityHandler
     }
 
     private void prepareEncryptionDictRev2345(String ownerPassword, String userPassword,
-            PDEncryption encryptionDictionary, int permissionInt, int revision, int length)
+            PDEncryption encryptionDictionary, int permissionInt, PDDocument document, 
+            int revision, int length)
             throws IOException
     {
         COSArray idArray = document.getDocument().getDocumentID();
