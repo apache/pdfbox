@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.apache.pdfbox.io.IOUtils;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
@@ -133,9 +134,16 @@ public class ExtractEmbeddedFiles
         String embeddedFilename = filePath + filename;
         File file = new File(filePath + filename);
         System.out.println("Writing " + embeddedFilename);
-        FileOutputStream fos = new FileOutputStream(file);
-        fos.write(embeddedFile.getByteArray());
-        fos.close();
+        FileOutputStream fos = null;
+        try
+        {
+            fos = new FileOutputStream(file);
+            fos.write(embeddedFile.getByteArray());
+        }
+        finally
+        {
+            IOUtils.closeQuietly(fos);
+        }
     }
     
     private static PDEmbeddedFile getEmbeddedFile(PDComplexFileSpecification fileSpec )
