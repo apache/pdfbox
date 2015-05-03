@@ -1062,27 +1062,23 @@ public class COSParser extends BaseParser
         // seek to offset-1 
         pdfSource.seek(startXRefOffset-1);
         int nextValue = pdfSource.read();
-        // the first character has to be a whitespace
-        if (isWhitespace(nextValue))
+        // the first character has to be a whitespace, and then a digit
+        if (isWhitespace(nextValue) && isDigit())
         {
-            // is the next character a digit?
-            if (isDigit())
+            try
             {
-                try
-                {
-                    // it's a XRef stream
-                    readObjectNumber();
-                    readGenerationNumber();
-                    readExpectedString(OBJ_MARKER, true);
-                    pdfSource.seek(startXRefOffset);
-                    return startXRefOffset;
-                }
-                catch (IOException exception)
-                {
-                    // there wasn't an object of a xref stream
-                    // try to repair the offset
-                    pdfSource.seek(startXRefOffset);
-                }
+                // it's a XRef stream
+                readObjectNumber();
+                readGenerationNumber();
+                readExpectedString(OBJ_MARKER, true);
+                pdfSource.seek(startXRefOffset);
+                return startXRefOffset;
+            }
+            catch (IOException exception)
+            {
+                // there wasn't an object of a xref stream
+                // try to repair the offset
+                pdfSource.seek(startXRefOffset);
             }
         }
         // try to find a fixed offset
