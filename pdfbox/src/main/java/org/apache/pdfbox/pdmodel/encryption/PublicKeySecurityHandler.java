@@ -207,8 +207,9 @@ public final class PublicKeySecurityHandler extends SecurityHandler
             byte[] accessBytes = new byte[4];
             System.arraycopy(envelopedData, 20, accessBytes, 0, 4);
 
-            currentAccessPermission = new AccessPermission(accessBytes);
+            AccessPermission currentAccessPermission = new AccessPermission(accessBytes);
             currentAccessPermission.setReadOnly();
+            setCurrentAccessPermission(currentAccessPermission);
 
             // what we will put in the SHA1 = the seed + each byte contained in the recipients array
             byte[] sha1Input = new byte[recipientFieldsLength + 20];
