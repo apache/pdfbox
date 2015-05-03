@@ -89,7 +89,7 @@ public abstract class SecurityHandler
      * The access permission granted to the current user for the document. These
      * permissions are computed during decryption and are in read only mode.
      */
-    protected AccessPermission currentAccessPermission = null;
+    private AccessPermission currentAccessPermission = null;
 
     /**
      * Set wether to decrypt meta data.
@@ -535,6 +535,16 @@ public abstract class SecurityHandler
     public void setKeyLength(int keyLen)
     {
         this.keyLength = keyLen;
+    }
+
+    /**
+     * Sets the access permissions.
+     * 
+     * @param currentAccessPermission The access permissions to be set.
+     */
+    public void setCurrentAccessPermission(AccessPermission currentAccessPermission)
+    {
+        this.currentAccessPermission = currentAccessPermission;
     }
 
     /**

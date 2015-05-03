@@ -193,12 +193,15 @@ public final class StandardSecurityHandler extends SecurityHandler
             ue = encryption.getUserEncryptionKey();
             oe = encryption.getOwnerEncryptionKey();
         }
+        
+        AccessPermission currentAccessPermission;
 
         if( isOwnerPassword(password.getBytes(passwordCharset), userKey, ownerKey,
                                  dicPermissions, documentIDBytes, dicRevision,
                                  dicLength, encryptMetadata) )
         {
             currentAccessPermission = AccessPermission.getOwnerAccessPermission();
+            setCurrentAccessPermission(currentAccessPermission);
             
             byte[] computedPassword;
             if (dicRevision == 6 || dicRevision == 5)
@@ -225,7 +228,9 @@ public final class StandardSecurityHandler extends SecurityHandler
                            dicPermissions, documentIDBytes, dicRevision,
                            dicLength, encryptMetadata) )
         {
-            currentAccessPermission = new AccessPermission( dicPermissions );
+            currentAccessPermission = new AccessPermission(dicPermissions);
+            setCurrentAccessPermission(currentAccessPermission);
+            
             encryptionKey =
                 computeEncryptedKey(
                     password.getBytes(passwordCharset),
