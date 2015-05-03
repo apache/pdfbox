@@ -50,7 +50,7 @@ import org.w3c.dom.Element;
 /**
  * This class is a simple main class used to check the validity of a pdf file.
  * 
- * Usage : java net.awl.edoc.pdfa.Validator <file path>
+ * Usage : java net.awl.edoc.pdfa.Validator &lt;file path&gt;
  * 
  * @author gbailleul
  * 
@@ -168,7 +168,7 @@ public class Validator_A1b
 
     private static int runSimple(DataSource fd) throws Exception
     {
-        ValidationResult result = null;
+        ValidationResult result;
         PreflightParser parser = new PreflightParser(fd);
         try
         {
@@ -231,7 +231,11 @@ public class Validator_A1b
         }
         else
         {
-            files.addAll(Arrays.asList(f.listFiles()));
+            File[] fileList = f.listFiles();
+            if (fileList != null)
+            {
+                files.addAll(Arrays.asList(fileList));
+            }
         }
         return files;
     }
