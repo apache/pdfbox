@@ -27,7 +27,7 @@ import junit.framework.TestCase;
  */
 public class PDDeviceCMYKTest extends TestCase
 {
-    private void testCMYK() throws IOException
+    public void testCMYK() throws IOException
     {
         PDDeviceCMYK.INSTANCE = new CustomDeviceCMYK();
     }
