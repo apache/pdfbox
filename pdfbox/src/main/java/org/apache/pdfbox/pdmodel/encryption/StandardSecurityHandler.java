@@ -121,10 +121,12 @@ public final class StandardSecurityHandler extends SecurityHandler
      * Computes the revision version of the StandardSecurityHandler to
      * use regarding the version number and the permissions bits set.
      * See PDF Spec 1.6 p98
+     * 
+     * @param version The version number.
      *
      * @return The computed revision number.
      */
-    private int computeRevisionNumber()
+    private int computeRevisionNumber(int version)
     {
         if(version < 2 && !policy.getPermissions().hasAnyRevision3PermissionSet())
         {
@@ -331,8 +333,8 @@ public final class StandardSecurityHandler extends SecurityHandler
         {
             encryptionDictionary = new PDEncryption();
         }
-        version = computeVersionNumber();
-        int revision = computeRevisionNumber();
+        int version = computeVersionNumber();
+        int revision = computeRevisionNumber(version);
         encryptionDictionary.setFilter(FILTER);
         encryptionDictionary.setVersion(version);
         if (version != 4 && version != 5)
