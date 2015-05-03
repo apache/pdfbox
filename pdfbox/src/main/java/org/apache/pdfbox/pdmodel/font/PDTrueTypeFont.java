@@ -38,6 +38,7 @@ import org.apache.pdfbox.pdmodel.font.encoding.GlyphList;
 import org.apache.pdfbox.pdmodel.font.encoding.MacOSRomanEncoding;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.font.encoding.Type1Encoding;
 
 /**
  * TrueType font.
@@ -171,9 +172,17 @@ public class PDTrueTypeFont extends PDSimpleFont
     @Override
     protected Encoding readEncodingFromFont() throws IOException
     {
-        // for symbolic fonts the (3, 0) (Windows, Symbol) cmap is the font's built-in encoding
-        // but this is handled by codeToGID
-        return null;
+        if (getStandard14AFM() != null)
+        {
+            // read from AFM
+            return new Type1Encoding(getStandard14AFM());
+        }
+        else
+        {
+            // for symbolic fonts the (3, 0) (Windows, Symbol) cmap is the font's built-in encoding
+            // but this is handled by codeToGID
+            return null;
+        }
     }
 
     /**
