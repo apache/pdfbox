@@ -76,7 +76,7 @@ public abstract class SecurityHandler
     protected byte[] encryptionKey;
 
     /** The RC4 implementation used for cryptographic functions. */
-    protected RC4Cipher rc4 = new RC4Cipher();
+    private final RC4Cipher rc4 = new RC4Cipher();
 
     /** indicates if the Metadata have to be decrypted of not. */ 
     private boolean decryptMetadata; 
@@ -156,8 +156,7 @@ public abstract class SecurityHandler
             }
             else
             {
-                rc4.setKey(finalKey);
-                rc4.write(data, output);
+                encryptDataRC4(finalKey, data, output);
             }
         }
         output.flush();
@@ -197,6 +196,38 @@ public abstract class SecurityHandler
         System.arraycopy(digestedKey, 0, finalKey, 0, length);
         return finalKey;
     }
+    
+    /**
+     * Encrypt or decrypt data with RC4.
+     *
+     * @param finalKey The final key obtained with via {@link #calcFinalKey()}.
+     * @param input The data to encrypt.
+     * @param output The output to write the encrypted data to.
+     *
+     * @throws IOException If there is an error reading the data.
+     */
+    protected void encryptDataRC4(byte[] finalKey, InputStream input, OutputStream output)
+            throws IOException
+    {
+        rc4.setKey(finalKey);
+        rc4.write(input, output);
+    }
+
+    /**
+     * Encrypt or decrypt data with RC4.
+     *
+     * @param finalKey The final key obtained with via {@link #calcFinalKey()}.
+     * @param input The data to encrypt.
+     * @param output The output to write the encrypted data to.
+     *
+     * @throws IOException If there is an error reading the data.
+     */
+    protected void encryptDataRC4(byte[] finalKey, byte[] input, OutputStream output) throws IOException
+    {
+        rc4.setKey(finalKey);
+        rc4.write(input, output);
+    }
+
     
     /**
      * Encrypt or decrypt data with AES with key length other than 256 bits.

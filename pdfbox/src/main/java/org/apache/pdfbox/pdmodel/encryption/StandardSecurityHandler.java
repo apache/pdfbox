@@ -587,8 +587,7 @@ public final class StandardSecurityHandler extends SecurityHandler
 
         if( encRevision == 2 )
         {
-            rc4.setKey( rc4Key );
-            rc4.write( owner, result );
+            encryptDataRC4(rc4Key, owner, result);
         }
         else if( encRevision == 3 || encRevision == 4)
         {
@@ -603,9 +602,8 @@ public final class StandardSecurityHandler extends SecurityHandler
                 {
                     iterationKey[j] = (byte)(iterationKey[j] ^ (byte)i);
                 }
-                rc4.setKey( iterationKey );
                 result.reset();
-                rc4.write( otemp, result );
+                encryptDataRC4(iterationKey, otemp, result);
                 otemp = result.toByteArray();
             }
         }
@@ -765,8 +763,7 @@ public final class StandardSecurityHandler extends SecurityHandler
         
         if( encRevision == 2 )
         {
-            rc4.setKey( encKey );
-            rc4.write( ENCRYPT_PADDING, result );
+            encryptDataRC4(encKey, ENCRYPT_PADDING, result );
         }
         else if( encRevision == 3 || encRevision == 4 )
         {
@@ -784,10 +781,9 @@ public final class StandardSecurityHandler extends SecurityHandler
                 {
                     iterationKey[j] = (byte)(iterationKey[j] ^ i);
                 }
-                rc4.setKey( iterationKey );
-                ByteArrayInputStream input = new ByteArrayInputStream( result.toByteArray() );
+                ByteArrayInputStream input = new ByteArrayInputStream(result.toByteArray());
                 result.reset();
-                rc4.write( input, result );
+                encryptDataRC4(iterationKey, input, result);
             }
 
             byte[] finalResult = new byte[32];
@@ -822,9 +818,8 @@ public final class StandardSecurityHandler extends SecurityHandler
         byte[] rc4Key = computeRC4key(ownerPassword, encRevision, length);
         byte[] paddedUser = truncateOrPad( userPassword );
 
-        rc4.setKey( rc4Key );
         ByteArrayOutputStream encrypted = new ByteArrayOutputStream();
-        rc4.write( new ByteArrayInputStream( paddedUser ), encrypted );
+        encryptDataRC4(rc4Key, new ByteArrayInputStream(paddedUser), encrypted);
 
         if( encRevision == 3 || encRevision == 4 )
         {
@@ -836,10 +831,9 @@ public final class StandardSecurityHandler extends SecurityHandler
                 {
                     iterationKey[j] = (byte)(iterationKey[j] ^ (byte)i);
                 }
-                rc4.setKey( iterationKey );
                 ByteArrayInputStream input = new ByteArrayInputStream( encrypted.toByteArray() );
                 encrypted.reset();
-                rc4.write( input, encrypted );
+                encryptDataRC4(iterationKey, input, encrypted );
             }
         }
 
