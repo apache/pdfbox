@@ -78,9 +78,6 @@ public abstract class SecurityHandler
     /** The encryption key that will used to encrypt / decrypt.*/
     protected byte[] encryptionKey;
 
-    /** The document whose security is handled by this security handler.*/
-    protected PDDocument document;
-
     /** The RC4 implementation used for cryptographic functions. */
     protected RC4Cipher rc4 = new RC4Cipher();
 
