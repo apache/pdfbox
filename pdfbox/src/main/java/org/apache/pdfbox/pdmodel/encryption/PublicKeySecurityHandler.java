@@ -128,7 +128,7 @@ public final class PublicKeySecurityHandler extends SecurityHandler
                     "Provided decryption material is not compatible with the document");
         }
 
-        decryptMetadata = encryption.isEncryptMetaData();
+        setDecryptMetadata(encryption.isEncryptMetaData());
         if (encryption.getLength() != 0)
         {
             this.keyLength = encryption.getLength();
