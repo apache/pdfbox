@@ -79,7 +79,7 @@ public abstract class SecurityHandler
     protected RC4Cipher rc4 = new RC4Cipher();
 
     /** indicates if the Metadata have to be decrypted of not. */ 
-    protected boolean decryptMetadata; 
+    private boolean decryptMetadata; 
     
     private final Set<COSBase> objects = new HashSet<COSBase>();
 
@@ -90,6 +90,16 @@ public abstract class SecurityHandler
      * permissions are computed during decryption and are in read only mode.
      */
     protected AccessPermission currentAccessPermission = null;
+
+    /**
+     * Set wether to decrypt meta data.
+     *
+     * @param decryptMetadata true if meta data has to be decrypted.
+     */
+    protected void setDecryptMetadata(boolean decryptMetadata)
+    {
+        this.decryptMetadata = decryptMetadata;
+    }   
 
     /**
      * Prepare the document for encryption.
