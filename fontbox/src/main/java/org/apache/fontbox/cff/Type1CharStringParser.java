@@ -177,7 +177,7 @@ public class Type1CharStringParser
         CharStringCommand command = (CharStringCommand) item;
 
         // div
-        if (command.getKey().getValue()[0] == 12 && command.getKey().getValue()[0] == 12)
+        if (command.getKey().getValue()[0] == 12 && command.getKey().getValue()[1] == 12)
         {
             int a = (Integer) sequence.remove(sequence.size() - 1);
             int b = (Integer) sequence.remove(sequence.size() - 1);
