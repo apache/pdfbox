@@ -392,8 +392,7 @@ public class PDStream implements COSObjectable
     public PDFileSpecification getFile() throws IOException
     {
         COSBase f = stream.getDictionaryObject(COSName.F);
-        PDFileSpecification retval = PDFileSpecification.createFS(f);
-        return retval;
+        return PDFileSpecification.createFS(f);
     }
 
     /**
