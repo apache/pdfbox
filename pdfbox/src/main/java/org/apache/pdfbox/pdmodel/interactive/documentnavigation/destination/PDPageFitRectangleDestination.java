@@ -17,7 +17,6 @@
 package org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination;
 
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
 
 /**
  * This represents a destination to a page at a y location and the width is magnified
