@@ -55,12 +55,12 @@ class Type5ShadingContext extends GouraudShadingContext
     Type5ShadingContext(PDShadingType5 shading, ColorModel cm, AffineTransform xform,
                                Matrix matrix, Rectangle deviceBounds) throws IOException
     {
-        super(shading, cm, xform, matrix, deviceBounds);
+        super(shading, cm, xform, matrix);
 
         LOG.debug("Type5ShadingContext");
 
         triangleList = getTriangleList(xform, matrix);
-        createPixelTable();
+        createPixelTable(deviceBounds);
     }
 
     private List<ShadedTriangle> getTriangleList(AffineTransform xform, Matrix matrix)

@@ -77,7 +77,7 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
                                 AffineTransform xform, Matrix matrix, Rectangle deviceBounds)
                                 throws IOException
     {
-        super(shading, colorModel, xform, matrix, deviceBounds);
+        super(shading, colorModel, xform, matrix);
         this.radialShadingType = shading;
         coords = shading.getCoords().toFloatArray();
 

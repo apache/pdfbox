@@ -58,9 +58,9 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
      * @throws IOException if there is an error getting the color space or doing background color conversion.
      */
     TriangleBasedShadingContext(PDShading shading, ColorModel cm, AffineTransform xform,
-                                       Matrix matrix, Rectangle deviceBounds) throws IOException
+                                       Matrix matrix) throws IOException
     {
-        super(shading, cm, xform, matrix, deviceBounds);
+        super(shading, cm, xform, matrix);
         PDTriangleBasedShadingType triangleBasedShadingType = (PDTriangleBasedShadingType) shading;
         hasFunction = shading.getFunction() != null;
         bitsPerCoordinate = triangleBasedShadingType.getBitsPerCoordinate();
@@ -74,9 +74,9 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
     /**
      * Creates the pixel table.
      */
-    protected final void createPixelTable() throws IOException
+    protected final void createPixelTable(Rectangle deviceBounds) throws IOException
     {
-        pixelTable = calcPixelTable();
+        pixelTable = calcPixelTable(deviceBounds);
     }
 
     /**
@@ -84,13 +84,13 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
      *
      * @return a Hash table which contains all the points' positions and colors of one image
      */
-    abstract Map<Point, Integer> calcPixelTable() throws IOException;
+    abstract Map<Point, Integer> calcPixelTable(Rectangle deviceBounds) throws IOException;
 
     /**
-     * Get the points from the triangles, calculate their color and add  point-color mappings.
+     * Get the points from the triangles, calculate their color and add point-color mappings.
      */
-    protected void calcPixelTable(List<ShadedTriangle> triangleList, Map<Point, Integer> map)
-            throws IOException
+    protected void calcPixelTable(List<ShadedTriangle> triangleList, Map<Point, Integer> map,
+            Rectangle deviceBounds) throws IOException
     {
         for (ShadedTriangle tri : triangleList)
         {

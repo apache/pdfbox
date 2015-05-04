@@ -55,14 +55,14 @@ class Type4ShadingContext extends GouraudShadingContext
     Type4ShadingContext(PDShadingType4 shading, ColorModel cm, AffineTransform xform,
                                Matrix matrix, Rectangle deviceBounds) throws IOException
     {
-        super(shading, cm, xform, matrix, deviceBounds);
+        super(shading, cm, xform, matrix);
         LOG.debug("Type4ShadingContext");
 
         bitsPerFlag = shading.getBitsPerFlag();
         //TODO handle cases where bitperflag isn't 8
         LOG.debug("bitsPerFlag: " + bitsPerFlag);
         triangleList = getTriangleList(xform, matrix);
-        createPixelTable();
+        createPixelTable(deviceBounds);
     }
 
     private List<ShadedTriangle> getTriangleList(AffineTransform xform, Matrix matrix)

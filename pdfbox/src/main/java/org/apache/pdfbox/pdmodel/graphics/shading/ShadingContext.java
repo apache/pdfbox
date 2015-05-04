@@ -41,7 +41,6 @@ public abstract class ShadingContext
     private static final Log LOG = LogFactory.getLog(ShadingContext.class);
 
     protected final PDShading shading;
-    protected final Rectangle deviceBounds;
     protected PDColorSpace shadingColorSpace;
     protected PDRectangle bboxRect;
     protected float minBBoxX, minBBoxY, maxBBoxX, maxBBoxY;
@@ -56,15 +55,13 @@ public abstract class ShadingContext
      * @param cm the color model to be used
      * @param xform transformation for user to device space
      * @param matrix the pattern matrix concatenated with that of the parent content stream
-     * @param deviceBounds device bounds
      * @throws java.io.IOException if there is an error getting the color space
      * or doing background color conversion.
      */
     public ShadingContext(PDShading shading, ColorModel cm, AffineTransform xform,
-                          Matrix matrix, Rectangle deviceBounds) throws IOException
+                          Matrix matrix) throws IOException
     {
         this.shading = shading;
-        this.deviceBounds = deviceBounds;
         shadingColorSpace = shading.getColorSpace();
 
         // create the output color model using RGB+alpha as color space

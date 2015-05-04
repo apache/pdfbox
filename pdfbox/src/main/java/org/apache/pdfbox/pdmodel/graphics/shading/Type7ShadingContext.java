@@ -46,9 +46,9 @@ class Type7ShadingContext extends PatchMeshesShadingContext
     Type7ShadingContext(PDShadingType7 shading, ColorModel colorModel, AffineTransform xform,
                                Matrix matrix, Rectangle deviceBounds) throws IOException
     {
-        super(shading, colorModel, xform, matrix, deviceBounds);
+        super(shading, colorModel, xform, matrix);
         patchList = getTensorPatchList(xform, matrix);
-        createPixelTable();
+        createPixelTable(deviceBounds);
     }
 
     // get the patch list which forms the type 7 shading image from data stream
