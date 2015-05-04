@@ -224,7 +224,7 @@ public class TestFDF extends TestCase
                 //the appearance stream is suppose to be null because there
                 //is an F action in the AA dictionary that populates that field.
                 PDFieldTreeNode totalAmt = form.getField( "eeSuppTotalAmt" );
-                assertTrue( totalAmt.getDictionary().getDictionaryObject( COSName.AP ) == null );
+                assertTrue( totalAmt.getCOSObject().getDictionaryObject( COSName.AP ) == null );
     
             }
             finally
