@@ -74,7 +74,7 @@ public final class OTFParser extends TTFParser
     }
 
     @Override
-    protected OpenTypeFont parse(TTFDataStream raf) throws IOException
+    OpenTypeFont parse(TTFDataStream raf) throws IOException
     {
         return (OpenTypeFont)super.parse(raf);
     }
