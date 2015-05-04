@@ -72,7 +72,7 @@ public class CIDType0DescriptorHelper extends FontDescriptorHelper<CIDType0Conta
                 {
                     this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID,
                             fontDescriptor.getFontName()
-                            + ": The FontFile3 stream doesn't have the right Subtype"));
+                            + ": invalid /Subtype /" + st + " in /FontFile3 stream"));
                 }
 
                 checkCIDSet(fontDescriptor);
