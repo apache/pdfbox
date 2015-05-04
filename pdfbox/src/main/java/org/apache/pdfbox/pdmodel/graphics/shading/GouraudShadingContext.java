@@ -57,9 +57,9 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext
      * @throws IOException if something went wrong
      */
     protected GouraudShadingContext(PDShading shading, ColorModel colorModel, AffineTransform xform,
-                                    Matrix matrix, Rectangle deviceBounds) throws IOException
+                                    Matrix matrix) throws IOException
     {
-        super(shading, colorModel, xform, matrix, deviceBounds);
+        super(shading, colorModel, xform, matrix);
         triangleList = new ArrayList<ShadedTriangle>();
     }
 
@@ -101,10 +101,10 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext
     }
 
     @Override
-    protected Map<Point, Integer> calcPixelTable() throws IOException
+    protected Map<Point, Integer> calcPixelTable(Rectangle deviceBounds) throws IOException
     {
         Map<Point, Integer> map = new HashMap<Point, Integer>();
-        super.calcPixelTable(triangleList, map);
+        super.calcPixelTable(triangleList, map, deviceBounds);
         return map;
     }
 

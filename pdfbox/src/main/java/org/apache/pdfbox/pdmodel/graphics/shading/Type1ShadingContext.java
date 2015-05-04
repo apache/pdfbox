@@ -52,7 +52,7 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
     Type1ShadingContext(PDShadingType1 shading, ColorModel colorModel, AffineTransform xform,
                                Matrix matrix, Rectangle deviceBounds) throws IOException
     {
-        super(shading, colorModel, xform, matrix, deviceBounds);
+        super(shading, colorModel, xform, matrix);
         this.type1ShadingType = shading;
 
         // (Optional) An array of four numbers [ xmin xmax ymin ymax ] 

@@ -72,7 +72,7 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
     public AxialShadingContext(PDShadingType2 shading, ColorModel colorModel, AffineTransform xform,
                                Matrix matrix, Rectangle deviceBounds) throws IOException
     {
-        super(shading, colorModel, xform, matrix, deviceBounds);
+        super(shading, colorModel, xform, matrix);
         this.axialShadingType = shading;
         coords = shading.getCoords().toFloatArray();
 

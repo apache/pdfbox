@@ -56,14 +56,13 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
      * @param colorModel the color model to be used
      * @param xform transformation for user to device space
      * @param matrix the pattern matrix concatenated with that of the parent content stream
-     * @param deviceBounds device bounds
      * @throws IOException if something went wrong
      */
     protected PatchMeshesShadingContext(PDShading shading, ColorModel colorModel,
-                                        AffineTransform xform, Matrix matrix, Rectangle deviceBounds)
+                                        AffineTransform xform, Matrix matrix)
                                         throws IOException
     {
-        super(shading, colorModel, xform, matrix, deviceBounds);
+        super(shading, colorModel, xform, matrix);
         patchMeshesShadingType = shading;
         bitsPerFlag = ((PDShadingType4) shading).getBitsPerFlag();
         patchList = new ArrayList<Patch>();
@@ -252,12 +251,12 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
     }
 
     @Override
-    protected Map<Point, Integer> calcPixelTable()  throws IOException
+    protected Map<Point, Integer> calcPixelTable(Rectangle deviceBounds)  throws IOException
     {
         Map<Point, Integer> map = new HashMap<Point, Integer>();
         for (Patch it : patchList)
         {
-            super.calcPixelTable(it.listOfTriangles, map);
+            super.calcPixelTable(it.listOfTriangles, map, deviceBounds);
         }
         return map;
     }

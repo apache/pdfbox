@@ -40,15 +40,15 @@ class Type6ShadingContext extends PatchMeshesShadingContext
      * @param colorModel the color model to be used
      * @param xform transformation for user to device space
      * @param matrix the pattern matrix concatenated with that of the parent content stream
-     * @param dBounds device bounds
+     * @param deviceBounds device bounds
      * @throws IOException if something went wrong
      */
     Type6ShadingContext(PDShadingType6 shading, ColorModel colorModel, AffineTransform xform,
-                               Matrix matrix, Rectangle dBounds) throws IOException
+                               Matrix matrix, Rectangle deviceBounds) throws IOException
     {
-        super(shading, colorModel, xform, matrix, dBounds);
+        super(shading, colorModel, xform, matrix);
         patchList = getCoonsPatchList(xform, matrix);
-        createPixelTable();
+        createPixelTable(deviceBounds);
     }
 
     // get the patch list which forms the type 6 shading image from data stream
