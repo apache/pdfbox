@@ -530,7 +530,7 @@ public class PDFMergerUtility
             {
                 PDFieldTreeNode srcField = srcFieldsIterator.next();
                 PDFieldTreeNode destFieldNode = PDFieldTreeNode.createField(destAcroForm,
-                        (COSDictionary) cloner.cloneForNewDocument(srcField.getDictionary()), null);
+                        (COSDictionary) cloner.cloneForNewDocument(srcField.getCOSObject()), null);
                 // if the form already has a field with this name then we need to rename this field
                 // to prevent merge conflicts.
                 if (destAcroForm.getField(destFieldNode.getFullyQualifiedName()) != null)
