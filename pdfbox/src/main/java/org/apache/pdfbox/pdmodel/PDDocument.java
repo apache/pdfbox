@@ -604,7 +604,7 @@ public class PDDocument implements Closeable
     public void setDocumentInformation(PDDocumentInformation info)
     {
         documentInformation = info;
-        document.getTrailer().setItem(COSName.INFO, info.getDictionary());
+        document.getTrailer().setItem(COSName.INFO, info.getCOSObject());
     }
 
     /**
