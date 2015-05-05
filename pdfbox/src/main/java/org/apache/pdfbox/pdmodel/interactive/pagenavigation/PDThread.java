@@ -58,17 +58,8 @@ public class PDThread implements COSObjectable
      *
      * @return The underlying info dictionary.
      */
-    public COSDictionary getDictionary()
-    {
-        return thread;
-    }
-
-    /**
-     * Convert this standard java object to a COS object.
-     *
-     * @return The cos object that matches this Java object.
-     */
-    public COSBase getCOSObject()
+    @Override
+    public COSDictionary getCOSObject()
     {
         return thread;
     }
