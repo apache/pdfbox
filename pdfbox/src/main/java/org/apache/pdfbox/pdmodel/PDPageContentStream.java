@@ -53,6 +53,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDInlineImage;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.util.Charsets;
 import org.apache.pdfbox.util.Matrix;
 
@@ -208,6 +209,24 @@ public final class PDPageContentStream implements Closeable
             resources = new PDResources();
             sourcePage.setResources(resources);
         }
+    }
+
+    /**
+     * Create a new appearance stream. Note that this is not actually a "page" content stream.
+     *
+     * @param doc The document the page is part of.
+     * @param appearance The appearance stream to write to.
+     * @throws IOException If there is an error writing to the page contents.
+     */
+    public PDPageContentStream(PDDocument doc, PDAppearanceStream appearance) throws IOException
+    {
+        this.document = doc;
+        
+        output = appearance.getPDStream().createOutputStream();
+        this.resources = appearance.getResources();
+        
+        formatDecimal.setMaximumFractionDigits(10);
+        formatDecimal.setGroupingUsed(false);
     }
 
     /**
