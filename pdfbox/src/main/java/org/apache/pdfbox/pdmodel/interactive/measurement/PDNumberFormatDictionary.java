@@ -81,19 +81,12 @@ public class PDNumberFormatDictionary implements COSObjectable
     }
 
     /**
-     * {@inheritDoc}
-     */
-    public COSBase getCOSObject()
-    {
-        return this.numberFormatDictionary;
-    }
-
-    /**
      * This will return the dictionary.
      * 
      * @return the number format dictionary
      */
-    public COSDictionary getDictionary()
+    @Override
+    public COSDictionary getCOSObject()
     {
         return this.numberFormatDictionary;
     }
@@ -116,7 +109,7 @@ public class PDNumberFormatDictionary implements COSObjectable
      */
     public String getUnits()
     {
-        return this.getDictionary().getString("U");
+        return this.getCOSObject().getString("U");
     }
 
     /**
@@ -126,7 +119,7 @@ public class PDNumberFormatDictionary implements COSObjectable
      */
     public void setUnits(String units)
     {
-        this.getDictionary().setString("U", units);
+        this.getCOSObject().setString("U", units);
     }
 
     /**
@@ -136,7 +129,7 @@ public class PDNumberFormatDictionary implements COSObjectable
      */
     public float getConversionFactor()
     {
-        return this.getDictionary().getFloat("C");
+        return this.getCOSObject().getFloat("C");
     }
 
     /**
@@ -146,7 +139,7 @@ public class PDNumberFormatDictionary implements COSObjectable
      */
     public void setConversionFactor(float conversionFactor)
     {
-        this.getDictionary().setFloat("C", conversionFactor);
+        this.getCOSObject().setFloat("C", conversionFactor);
     }
 
     /** 
@@ -156,7 +149,7 @@ public class PDNumberFormatDictionary implements COSObjectable
      */
     public String getFractionalDisplay()
     {
-        return this.getDictionary().getString("F", FRACTIONAL_DISPLAY_DECIMAL);
+        return this.getCOSObject().getString("F", FRACTIONAL_DISPLAY_DECIMAL);
     }
 
     /** 
@@ -172,7 +165,7 @@ public class PDNumberFormatDictionary implements COSObjectable
             || FRACTIONAL_DISPLAY_ROUND.equals(fractionalDisplay)
             || FRACTIONAL_DISPLAY_TRUNCATE.equals(fractionalDisplay))
         {
-            this.getDictionary().setString("F", fractionalDisplay);
+            this.getCOSObject().setString("F", fractionalDisplay);
         }
         else
         {
@@ -187,7 +180,7 @@ public class PDNumberFormatDictionary implements COSObjectable
      */
     public int getDenominator()
     {
-        return this.getDictionary().getInt("D");
+        return this.getCOSObject().getInt("D");
     }
 
     /**
@@ -197,7 +190,7 @@ public class PDNumberFormatDictionary implements COSObjectable
      */
     public void setDenominator(int denominator)
     {
-        this.getDictionary().setInt("D", denominator);
+        this.getCOSObject().setInt("D", denominator);
     }
 
     /**
@@ -207,7 +200,7 @@ public class PDNumberFormatDictionary implements COSObjectable
      */
     public boolean isFD()
     {
-        return this.getDictionary().getBoolean("FD", false);
+        return this.getCOSObject().getBoolean("FD", false);
     }
 
     /**
@@ -217,7 +210,7 @@ public class PDNumberFormatDictionary implements COSObjectable
      */
     public void setFD(boolean fd)
     {
-        this.getDictionary().setBoolean("FD", fd);
+        this.getCOSObject().setBoolean("FD", fd);
     }
 
     /**
@@ -227,7 +220,7 @@ public class PDNumberFormatDictionary implements COSObjectable
      */
     public String getThousandsSeparator()
     {
-        return this.getDictionary().getString("RT", ",");
+        return this.getCOSObject().getString("RT", ",");
     }
 
     /**
@@ -237,7 +230,7 @@ public class PDNumberFormatDictionary implements COSObjectable
      */
     public void setThousandsSeparator(String thousandsSeparator)
     {
-        this.getDictionary().setString("RT", thousandsSeparator);
+        this.getCOSObject().setString("RT", thousandsSeparator);
     }
 
     /**
@@ -247,7 +240,7 @@ public class PDNumberFormatDictionary implements COSObjectable
      */
     public String getDecimalSeparator()
     {
-        return this.getDictionary().getString("RD", ".");
+        return this.getCOSObject().getString("RD", ".");
     }
 
     /**
@@ -257,7 +250,7 @@ public class PDNumberFormatDictionary implements COSObjectable
      */
     public void setDecimalSeparator(String decimalSeparator)
     {
-        this.getDictionary().setString("RD", decimalSeparator);
+        this.getCOSObject().setString("RD", decimalSeparator);
     }
 
     /**
@@ -266,7 +259,7 @@ public class PDNumberFormatDictionary implements COSObjectable
      */
     public String getLabelPrefixString()
     {
-        return this.getDictionary().getString("PS", " ");
+        return this.getCOSObject().getString("PS", " ");
     }
 
     /**
@@ -275,7 +268,7 @@ public class PDNumberFormatDictionary implements COSObjectable
      */
     public void setLabelPrefixString(String labelPrefixString)
     {
-        this.getDictionary().setString("PS", labelPrefixString);
+        this.getCOSObject().setString("PS", labelPrefixString);
     }
 
     /**
@@ -285,7 +278,7 @@ public class PDNumberFormatDictionary implements COSObjectable
      */
     public String getLabelSuffixString()
     {
-        return this.getDictionary().getString("SS", " ");
+        return this.getCOSObject().getString("SS", " ");
     }
 
     /**
@@ -295,7 +288,7 @@ public class PDNumberFormatDictionary implements COSObjectable
      */
     public void setLabelSuffixString(String labelSuffixString)
     {
-        this.getDictionary().setString("SS", labelSuffixString);
+        this.getCOSObject().setString("SS", labelSuffixString);
     }
 
     /**
@@ -305,7 +298,7 @@ public class PDNumberFormatDictionary implements COSObjectable
      */
     public String getLabelPositionToValue()
     {
-        return this.getDictionary().getString("O", LABEL_SUFFIX_TO_VALUE);
+        return this.getCOSObject().getString("O", LABEL_SUFFIX_TO_VALUE);
     }
 
     /**
@@ -320,7 +313,7 @@ public class PDNumberFormatDictionary implements COSObjectable
             || LABEL_PREFIX_TO_VALUE.equals(labelPositionToValue)
             || LABEL_SUFFIX_TO_VALUE.equals(labelPositionToValue))
         {
-            this.getDictionary().setString("O", labelPositionToValue);
+            this.getCOSObject().setString("O", labelPositionToValue);
         }
         else
         {
