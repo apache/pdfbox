@@ -228,6 +228,25 @@ public final class PDPageContentStream implements Closeable
         formatDecimal.setMaximumFractionDigits(10);
         formatDecimal.setGroupingUsed(false);
     }
+    
+    /**
+     * Create a new appearance stream. Note that this is not actually a "page" content stream.
+     *
+     * @param doc The document the appearance is part of.
+     * @param appearance The appearance stream to add to.
+     * @param outputStream The appearances output stream to write to.
+     * @throws IOException If there is an error writing to the page contents.
+     */
+    public PDPageContentStream(PDDocument doc, PDAppearanceStream appearance, OutputStream outputStream) throws IOException
+    {
+        this.document = doc;
+        
+        output = outputStream;
+        this.resources = appearance.getResources();
+        
+        formatDecimal.setMaximumFractionDigits(10);
+        formatDecimal.setGroupingUsed(false);
+    }
 
     /**
      * Begin some text operations.
