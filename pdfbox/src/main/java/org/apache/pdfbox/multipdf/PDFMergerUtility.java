@@ -250,7 +250,7 @@ public class PDFMergerUtility
         
         PDDocumentInformation destInfo = destination.getDocumentInformation();
         PDDocumentInformation srcInfo = source.getDocumentInformation();
-        destInfo.getDictionary().mergeInto(srcInfo.getDictionary());
+        destInfo.getCOSObject().mergeInto(srcInfo.getCOSObject());
 
 
 
