@@ -170,8 +170,6 @@ class PlainTextFormatter
     {
         if (textContent != null && !textContent.getParagraphs().isEmpty())
         {
-            contents.setFont(appearanceStyle.getFont(), appearanceStyle.getFontSize());
-            
             for (Paragraph paragraph : textContent.getParagraphs())
             {
                 if (wrapLines)
@@ -247,7 +245,6 @@ class PlainTextFormatter
             lastPos = startOffset; 
 
             List<Word> words = line.getWords();
-            contents.setFont(appearanceStyle.getFont(), appearanceStyle.getFontSize());
             for (Word word : words)
             {
                 contents.showText(word.getText());
