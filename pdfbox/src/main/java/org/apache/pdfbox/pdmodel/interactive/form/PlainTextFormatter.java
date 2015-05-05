@@ -19,6 +19,7 @@ package org.apache.pdfbox.pdmodel.interactive.form;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.interactive.form.PlainText.Line;
 import org.apache.pdfbox.pdmodel.interactive.form.PlainText.Paragraph;
@@ -68,7 +69,7 @@ class PlainTextFormatter
     private final boolean wrapLines;
     private final float width;
     
-    private final AppearancePrimitivesComposer composer;
+    private final PDPageContentStream contents;
     private final PlainText textContent;
     private final TextAlign textAlignment;
     
@@ -79,7 +80,7 @@ class PlainTextFormatter
     {
 
         // required parameters
-        private AppearancePrimitivesComposer composer;
+        private PDPageContentStream contents;
 
         // optional parameters
         private AppearanceStyle appearanceStyle;
@@ -93,9 +94,9 @@ class PlainTextFormatter
         private float horizontalOffset = 0f;
         private float verticalOffset = 0f;
         
-        public Builder(AppearancePrimitivesComposer composer)
+        public Builder(PDPageContentStream contents)
         {
-            this.composer = composer;
+            this.contents = contents;
         }
 
         Builder style(AppearanceStyle appearanceStyle)
@@ -153,7 +154,7 @@ class PlainTextFormatter
         appearanceStyle = builder.appearanceStyle;
         wrapLines = builder.wrapLines;
         width = builder.width;
-        composer = builder.composer;
+        contents = builder.contents;
         textContent = builder.textContent;
         textAlignment = builder.textAlignment;
         horizontalOffset = builder.horizontalOffset;
@@ -169,6 +170,8 @@ class PlainTextFormatter
     {
         if (textContent != null && !textContent.getParagraphs().isEmpty())
         {
+            contents.setFont(appearanceStyle.getFont(), appearanceStyle.getFontSize());
+            
             for (Paragraph paragraph : textContent.getParagraphs())
             {
                 if (wrapLines)
@@ -182,7 +185,7 @@ class PlainTextFormatter
                 }
                 else
                 {
-                    composer.showText(paragraph.getText(), appearanceStyle.getFont());
+                    contents.showText(paragraph.getText());
                 }
             }
         }
@@ -230,7 +233,7 @@ class PlainTextFormatter
             
             if (lines.indexOf(line) == 0)
             {
-                composer.newLineAtOffset(offset, verticalOffset);
+                contents.newLineAtOffset(offset, verticalOffset);
                 // reset the initial verticalOffset
                 verticalOffset = 0f;
                 horizontalOffset = 0f;
@@ -239,18 +242,19 @@ class PlainTextFormatter
             {
                 // keep the last position
                 verticalOffset = verticalOffset - appearanceStyle.getLeading();
-                composer.newLineAtOffset(offset, -appearanceStyle.getLeading());
+                contents.newLineAtOffset(offset, -appearanceStyle.getLeading());
             }
             lastPos = startOffset; 
 
             List<Word> words = line.getWords();
+            contents.setFont(appearanceStyle.getFont(), appearanceStyle.getFontSize());
             for (Word word : words)
             {
-                composer.showText(word.getText(), font);
+                contents.showText(word.getText());
                 wordWidth = (Float) word.getAttributes().getIterator().getAttribute(TextAttribute.WIDTH);
                 if (words.indexOf(word) != words.size() -1)
                 {
-                    composer.newLineAtOffset(wordWidth + interWordSpacing, 0f);
+                    contents.newLineAtOffset(wordWidth + interWordSpacing, 0f);
                     lastPos = lastPos + wordWidth + interWordSpacing;
                 }
             }
