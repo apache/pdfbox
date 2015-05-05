@@ -43,7 +43,8 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
     protected int bitsPerCoordinate;
     protected int bitsPerColorComponent;
     protected int numberOfColorComponents;
-    protected final boolean hasFunction;
+    
+    private final boolean hasFunction;
 
     // map of pixels within triangles to their RGB color
     private Map<Point, Integer> pixelTable;
