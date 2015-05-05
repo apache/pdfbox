@@ -59,15 +59,13 @@ class Type5ShadingContext extends GouraudShadingContext
 
         LOG.debug("Type5ShadingContext");
 
-        triangleList = getTriangleList(xform, matrix);
+        setTriangleList(collectTriangles(shading, xform, matrix));
         createPixelTable(deviceBounds);
     }
 
-    private List<ShadedTriangle> getTriangleList(AffineTransform xform, Matrix matrix)
-            throws IOException
+    private List<ShadedTriangle> collectTriangles(PDShadingType5 latticeTriangleShadingType,
+            AffineTransform xform, Matrix matrix) throws IOException
     {
-        List<ShadedTriangle> list = new ArrayList<ShadedTriangle>();
-        PDShadingType5 latticeTriangleShadingType = (PDShadingType5) shading;
         COSDictionary cosDictionary = latticeTriangleShadingType.getCOSObject();
         PDRange rangeX = latticeTriangleShadingType.getDecodeForParameter(0);
         PDRange rangeY = latticeTriangleShadingType.getDecodeForParameter(1);
@@ -105,9 +103,11 @@ class Type5ShadingContext extends GouraudShadingContext
         }
         int sz = vlist.size(), rowNum = sz / numPerRow;
         Vertex[][] latticeArray = new Vertex[rowNum][numPerRow];
+        List<ShadedTriangle> list = new ArrayList<ShadedTriangle>();
         if (rowNum < 2)
         {
-            return triangleList;
+            // must have at least two rows; if not, return empty list
+            return list;
         }
         for (int i = 0; i < rowNum; i++)
         {

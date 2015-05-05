@@ -61,14 +61,13 @@ class Type4ShadingContext extends GouraudShadingContext
         bitsPerFlag = shading.getBitsPerFlag();
         //TODO handle cases where bitperflag isn't 8
         LOG.debug("bitsPerFlag: " + bitsPerFlag);
-        triangleList = getTriangleList(xform, matrix);
+        setTriangleList(collectTriangles(shading, xform, matrix));
         createPixelTable(deviceBounds);
     }
 
-    private List<ShadedTriangle> getTriangleList(AffineTransform xform, Matrix matrix)
+    private List<ShadedTriangle> collectTriangles(PDShadingType4 freeTriangleShadingType, AffineTransform xform, Matrix matrix)
             throws IOException
     {
-        PDShadingType4 freeTriangleShadingType = (PDShadingType4) shading;
         COSDictionary dict = freeTriangleShadingType.getCOSObject();
         PDRange rangeX = freeTriangleShadingType.getDecodeForParameter(0);
         PDRange rangeY = freeTriangleShadingType.getDecodeForParameter(1);

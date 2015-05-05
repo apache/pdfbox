@@ -17,7 +17,6 @@
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
 import java.awt.PaintContext;
-import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
@@ -25,7 +24,6 @@ import java.awt.image.ColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
@@ -66,11 +64,10 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
      * @param colorModel the color model to be used
      * @param xform transformation for user to device space
      * @param matrix the pattern matrix concatenated with that of the parent content stream
-     * @param deviceBounds device bounds
      * @throws java.io.IOException if there is an error getting the color space or doing color conversion.
      */
     public AxialShadingContext(PDShadingType2 shading, ColorModel colorModel, AffineTransform xform,
-                               Matrix matrix, Rectangle deviceBounds) throws IOException
+                               Matrix matrix) throws IOException
     {
         super(shading, colorModel, xform, matrix);
         this.axialShadingType = shading;
@@ -157,15 +154,14 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
     @Override
     public void dispose()
     {
-        outputColorModel = null;
-        shadingColorSpace = null;
+        super.dispose();
         axialShadingType = null;
     }
 
     @Override
     public ColorModel getColorModel()
     {
-        return outputColorModel;
+        return super.getColorModel();
     }
 
     @Override
@@ -194,12 +190,11 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
                 rat.transform(values, 0, values, 0, 1);
                 currentX = values[0];
                 currentY = values[1];
-                double inputValue = x1x0 * (currentX - coords[0]);
-                inputValue += y1y0 * (currentY - coords[1]);
+                double inputValue = x1x0 * (currentX - coords[0]) + y1y0 * (currentY - coords[1]);
                 // TODO this happens if start == end, see PDFBOX-1442
                 if (denom == 0)
                 {
-                    if (background == null)
+                    if (getBackground() == null)
                     {
                         continue;
                     }
@@ -219,7 +214,7 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
                     }
                     else
                     {
-                        if (background == null)
+                        if (getBackground() == null)
                         {
                             continue;
                         }
@@ -236,7 +231,7 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
                     }
                     else
                     {
-                        if (background == null)
+                        if (getBackground() == null)
                         {
                             continue;
                         }
@@ -247,7 +242,7 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
                 if (useBackground)
                 {
                     // use the given backgound color values
-                    value = rgbBackground;
+                    value = getRgbBackground();
                 }
                 else
                 {

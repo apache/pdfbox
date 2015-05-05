@@ -16,9 +16,9 @@
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.PDRange;
-import org.apache.pdfbox.cos.COSDictionary;
 
 /**
  * Common resources for shading types 4,5,6 and 7

@@ -17,7 +17,6 @@
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
 import java.awt.PaintContext;
-import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
@@ -25,7 +24,6 @@ import java.awt.image.ColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
@@ -70,11 +68,10 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
      * @param colorModel the color model to be used
      * @param xform transformation for user to device space
      * @param matrix the pattern matrix concatenated with that of the parent content stream
-     * @param deviceBounds device bounds
      * @throws java.io.IOException if there is an error getting the color space or doing color conversion.
      */
     public RadialShadingContext(PDShadingType3 shading, ColorModel colorModel,
-                                AffineTransform xform, Matrix matrix, Rectangle deviceBounds)
+                                AffineTransform xform, Matrix matrix)
                                 throws IOException
     {
         super(shading, colorModel, xform, matrix);
@@ -191,15 +188,14 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
     @Override
     public void dispose()
     {
-        outputColorModel = null;
+        super.dispose();
         radialShadingType = null;
-        shadingColorSpace = null;
     }
 
     @Override
     public ColorModel getColorModel()
     {
-        return outputColorModel;
+        return super.getColorModel();
     }
 
     @Override
@@ -234,7 +230,7 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
                 float[] inputValues = calculateInputValues(currentX, currentY);
                 if (Float.isNaN(inputValues[0]) && Float.isNaN(inputValues[1]))
                 {
-                    if (background == null)
+                    if (getBackground() == null)
                     {
                         continue;
                     }
@@ -279,7 +275,7 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
                             {
                                 inputValue = inputValues[1];
                             }
-                            else if (background != null)
+                            else if (getBackground() != null)
                             {
                                 useBackground = true;
                             }
@@ -299,7 +295,7 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
                         }
                         else
                         {
-                            if (background == null)
+                            if (getBackground() == null)
                             {
                                 continue;
                             }
@@ -316,7 +312,7 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
                         }
                         else
                         {
-                            if (background == null)
+                            if (getBackground() == null)
                             {
                                 continue;
                             }
@@ -328,7 +324,7 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
                 if (useBackground)
                 {
                     // use the given backgound color values
-                    value = rgbBackground;
+                    value = getRgbBackground();
                 }
                 else
                 {

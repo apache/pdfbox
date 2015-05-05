@@ -16,10 +16,10 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
+import java.awt.Paint;
+
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.util.Matrix;
-
-import java.awt.Paint;
 
 /**
  * Resources for a radial shading.

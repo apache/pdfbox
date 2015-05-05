@@ -25,7 +25,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.ColorModel;
 import java.io.IOException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.util.Matrix;
@@ -65,7 +64,7 @@ public class AxialShadingPaint implements Paint
     {
         try
         {
-            return new AxialShadingContext(shading, cm, xform, matrix, deviceBounds);
+            return new AxialShadingContext(shading, cm, xform, matrix);
         }
         catch (IOException e)
         {

@@ -15,7 +15,6 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
-import java.awt.Rectangle;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
 import java.awt.geom.AffineTransform;
@@ -40,13 +39,14 @@ public abstract class ShadingContext
 {
     private static final Log LOG = LogFactory.getLog(ShadingContext.class);
 
-    protected final PDShading shading;
-    protected PDColorSpace shadingColorSpace;
     protected PDRectangle bboxRect;
     protected float minBBoxX, minBBoxY, maxBBoxX, maxBBoxY;
-    protected ColorModel outputColorModel;
-    protected float[] background;
-    protected int rgbBackground;
+
+    private float[] background;
+    private int rgbBackground;
+    final private PDShading shading;
+    private ColorModel outputColorModel;
+    private PDColorSpace shadingColorSpace;
 
     /**
      * Constructor.
@@ -84,6 +84,26 @@ public abstract class ShadingContext
         }
     }
 
+    PDColorSpace getShadingColorSpace()
+    {
+        return shadingColorSpace;
+    }
+
+    PDShading getShading()
+    {
+        return shading;
+    }
+
+    float[] getBackground()
+    {
+        return background;
+    }
+
+    int getRgbBackground()
+    {
+        return rgbBackground;
+    }
+    
     private void transformBBox(Matrix matrix, AffineTransform xform)
     {
         float[] bboxTab = new float[4];
@@ -115,7 +135,7 @@ public abstract class ShadingContext
      * @return RGB values encoded in an integer.
      * @throws java.io.IOException if the color conversion fails.
      */
-    protected final int convertToRGB(float[] values) throws IOException
+    final int convertToRGB(float[] values) throws IOException
     {
         int normRGBValues;
 
@@ -126,4 +146,16 @@ public abstract class ShadingContext
 
         return normRGBValues;
     }
+    
+    ColorModel getColorModel()
+    {
+        return outputColorModel;
+    }
+
+    void dispose()
+    {
+        outputColorModel = null;
+        shadingColorSpace = null;
+    }
+
 }

@@ -45,7 +45,7 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext
     /**
      * triangle list.
      */
-    protected List<ShadedTriangle> triangleList;
+    private List<ShadedTriangle> triangleList = new ArrayList<ShadedTriangle>();
 
     /**
      * Constructor creates an instance to be used for fill operations.
@@ -60,7 +60,6 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext
                                     Matrix matrix) throws IOException
     {
         super(shading, colorModel, xform, matrix);
-        triangleList = new ArrayList<ShadedTriangle>();
     }
 
     /**
@@ -98,6 +97,11 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext
                     + "-> color[" + n + "]: " + colorComponentTab[n]);
         }
         return new Vertex(p, colorComponentTab);
+    }
+
+    void setTriangleList(List<ShadedTriangle> triangleList)
+    {
+        this.triangleList = triangleList;
     }
 
     @Override
