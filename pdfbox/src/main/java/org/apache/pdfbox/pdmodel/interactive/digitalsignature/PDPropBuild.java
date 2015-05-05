@@ -57,21 +57,11 @@ public class PDPropBuild implements COSObjectable
     }
 
     /**
-     * Convert this standard java object to a COS object.
-     *
-     * @return The cos object that matches this Java object.
-     */
-    public COSBase getCOSObject()
-    {
-        return getDictionary();
-    }
-
-    /**
      * Convert this standard java object to a COS dictionary.
      *
      * @return The COS dictionary that matches this Java object.
      */
-    public COSDictionary getDictionary()
+    public COSDictionary getCOSObject()
     {
         return dictionary;
     }

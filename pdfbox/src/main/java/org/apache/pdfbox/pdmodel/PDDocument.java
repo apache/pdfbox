@@ -287,7 +287,7 @@ public class PDDocument implements Closeable
             if (pdField instanceof PDSignatureField)
             {
                 PDSignature signature = ((PDSignatureField) pdField).getSignature();
-                if (signature != null && signature.getDictionary().equals(sigObject.getDictionary()))
+                if (signature != null && signature.getCOSObject().equals(sigObject.getCOSObject()))
                 {
                     signatureField = (PDSignatureField) pdField;
                 }
