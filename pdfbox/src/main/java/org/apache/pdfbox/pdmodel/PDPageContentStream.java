@@ -225,7 +225,7 @@ public final class PDPageContentStream implements Closeable
         output = appearance.getPDStream().createOutputStream();
         this.resources = appearance.getResources();
         
-        formatDecimal.setMaximumFractionDigits(10);
+        formatDecimal.setMaximumFractionDigits(4);
         formatDecimal.setGroupingUsed(false);
     }
     
@@ -237,14 +237,15 @@ public final class PDPageContentStream implements Closeable
      * @param outputStream The appearances output stream to write to.
      * @throws IOException If there is an error writing to the page contents.
      */
-    public PDPageContentStream(PDDocument doc, PDAppearanceStream appearance, OutputStream outputStream) throws IOException
+    public PDPageContentStream(PDDocument doc, PDAppearanceStream appearance, OutputStream outputStream)
+            throws IOException
     {
         this.document = doc;
         
         output = outputStream;
         this.resources = appearance.getResources();
         
-        formatDecimal.setMaximumFractionDigits(10);
+        formatDecimal.setMaximumFractionDigits(4);
         formatDecimal.setGroupingUsed(false);
     }
 
