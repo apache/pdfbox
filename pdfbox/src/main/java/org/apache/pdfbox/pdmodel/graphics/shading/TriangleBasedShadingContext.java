@@ -67,7 +67,7 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
         LOG.debug("bitsPerCoordinate: " + (Math.pow(2, bitsPerCoordinate) - 1));
         bitsPerColorComponent = triangleBasedShadingType.getBitsPerComponent();
         LOG.debug("bitsPerColorComponent: " + bitsPerColorComponent);
-        numberOfColorComponents = hasFunction ? 1 : shadingColorSpace.getNumberOfComponents();
+        numberOfColorComponents = hasFunction ? 1 : getShadingColorSpace().getNumberOfComponents();
         LOG.debug("numberOfColorComponents: " + numberOfColorComponents);
     }
 
@@ -133,7 +133,7 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
     {
         if (hasFunction)
         {
-            values = shading.evalFunction(values);
+            values = getShading().evalFunction(values);
         }
         return convertToRGB(values);
     }
@@ -146,14 +146,13 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
     @Override
     public final ColorModel getColorModel()
     {
-        return outputColorModel;
+        return super.getColorModel();
     }
 
     @Override
     public void dispose()
     {
-        outputColorModel = null;
-        shadingColorSpace = null;
+        super.dispose();
     }
 
     @Override
@@ -161,7 +160,7 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
     {
         WritableRaster raster = getColorModel().createCompatibleWritableRaster(w, h);
         int[] data = new int[w * h * 4];
-        if (!isDataEmpty() || background != null)
+        if (!isDataEmpty() || getBackground() != null)
         {
             for (int row = 0; row < h; row++)
             {
@@ -185,11 +184,11 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
                     }
                     else
                     {
-                        if (background == null)
+                        if (getBackground() == null)
                         {
                             continue;
                         }
-                        value = rgbBackground;
+                        value = getRgbBackground();
                     }
                     int index = (row * w + col) * 4;
                     data[index] = value & 255;

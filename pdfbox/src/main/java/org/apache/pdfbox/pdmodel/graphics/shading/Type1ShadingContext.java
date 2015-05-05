@@ -16,7 +16,6 @@
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
 import java.awt.PaintContext;
-import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.ColorModel;
@@ -25,6 +24,7 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -47,10 +47,9 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
      * @param colorModel the color model to be used
      * @param xform transformation for user to device space
      * @param matrix the pattern matrix concatenated with that of the parent content stream
-     * @param deviceBounds device bounds
      */
     Type1ShadingContext(PDShadingType1 shading, ColorModel colorModel, AffineTransform xform,
-                               Matrix matrix, Rectangle deviceBounds) throws IOException
+                               Matrix matrix) throws IOException
     {
         super(shading, colorModel, xform, matrix);
         this.type1ShadingType = shading;
@@ -85,15 +84,15 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
     @Override
     public void dispose()
     {
-        outputColorModel = null;
-        shadingColorSpace = null;
+        super.dispose();
+        
         type1ShadingType = null;
     }
 
     @Override
     public ColorModel getColorModel()
     {
-        return outputColorModel;
+        return super.getColorModel();
     }
 
     @Override
@@ -124,7 +123,7 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
                 if (values[0] < domain[0] || values[0] > domain[1] ||
                     values[1] < domain[2] || values[1] > domain[3])
                 {
-                    if (background == null)
+                    if (getBackground() == null)
                     {
                         continue;
                     }
@@ -134,7 +133,7 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
                 // evaluate function
                 if (useBackground)
                 {
-                    values = background;
+                    values = getBackground();
                 }
                 else
                 {
@@ -149,6 +148,7 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
                 }
 
                 // convert color values from shading color space to RGB
+                PDColorSpace shadingColorSpace = getShadingColorSpace();
                 if (shadingColorSpace != null)
                 {
                     try

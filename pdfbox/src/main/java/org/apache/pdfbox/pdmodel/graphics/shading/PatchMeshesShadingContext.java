@@ -45,10 +45,11 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
 {
     private static final Log LOG = LogFactory.getLog(PatchMeshesShadingContext.class);
 
-    protected final PDShading patchMeshesShadingType;
-    protected List<Patch> patchList; // patch list
-    protected int bitsPerFlag; // bits per flag
-
+    /**
+     * patch list
+     */
+    private List<Patch> patchList = new ArrayList<Patch>();
+    
     /**
      * Constructor creates an instance to be used for fill operations.
      *
@@ -56,36 +57,42 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
      * @param colorModel the color model to be used
      * @param xform transformation for user to device space
      * @param matrix the pattern matrix concatenated with that of the parent content stream
+     * @param deviceBounds device bounds
+     * @param controlPoints number of control points, 12 for type 6 shading and 16 for type 7 shading
      * @throws IOException if something went wrong
      */
-    protected PatchMeshesShadingContext(PDShading shading, ColorModel colorModel,
-                                        AffineTransform xform, Matrix matrix)
-                                        throws IOException
+    protected PatchMeshesShadingContext(PDShadingType6 shading, ColorModel colorModel,
+            AffineTransform xform, Matrix matrix, Rectangle deviceBounds,
+            int controlPoints) throws IOException
     {
         super(shading, colorModel, xform, matrix);
-        patchMeshesShadingType = shading;
-        bitsPerFlag = ((PDShadingType4) shading).getBitsPerFlag();
-        patchList = new ArrayList<Patch>();
+        patchList = collectPatches(shading, xform, matrix, controlPoints);
+        createPixelTable(deviceBounds);
     }
 
     /**
      * Create a patch list from a data stream, the returned list contains all the patches contained
      * in the data stream.
      *
+     * @param shadingType the shading type
      * @param xform transformation for user to device space
      * @param matrix the pattern matrix concatenated with that of the parent content stream
-     * @param dict dictionary object to give the image information
-     * @param rangeX range for coordinate x
-     * @param rangeY range for coordinate y
-     * @param colRange range for color
-     * @param numP number of control points, 12 for type 6 shading and 16 for type 7 shading
+     * @param controlPoints number of control points, 12 for type 6 shading and 16 for type 7 shading
      * @return the obtained patch list
      * @throws IOException when something went wrong
      */
-    protected List<Patch> getPatchList(AffineTransform xform, Matrix matrix, COSDictionary dict,
-                                       PDRange rangeX, PDRange rangeY, PDRange[] colRange, int numP)
-                                       throws IOException
+    final List<Patch> collectPatches(PDShadingType6 shadingType, AffineTransform xform,
+            Matrix matrix, int controlPoints) throws IOException
     {
+        COSDictionary dict = shadingType.getCOSObject();
+        int bitsPerFlag = shadingType.getBitsPerFlag();
+        PDRange rangeX = shadingType.getDecodeForParameter(0);
+        PDRange rangeY = shadingType.getDecodeForParameter(1);
+        PDRange[] colRange = new PDRange[numberOfColorComponents];
+        for (int i = 0; i < numberOfColorComponents; ++i)
+        {
+            colRange[i] = shadingType.getDecodeForParameter(2 + i);
+        }
         List<Patch> list = new ArrayList<Patch>();
         long maxSrcCoord = (long) Math.pow(2, bitsPerCoordinate) - 1;
         long maxSrcColor = (long) Math.pow(2, bitsPerColorComponent) - 1;
@@ -96,8 +103,7 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
         {
             Point2D[] implicitEdge = new Point2D[4];
             float[][] implicitCornerColor = new float[2][numberOfColorComponents];
-
-            byte flag = (byte) 0;
+            byte flag = 0;
 
             try
             {
@@ -114,7 +120,7 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
                 {
                     boolean isFree = (flag == 0);
                     Patch current = readPatch(mciis, isFree, implicitEdge, implicitCornerColor,
-                            maxSrcCoord, maxSrcColor, rangeX, rangeY, colRange, matrix, xform, numP);
+                            maxSrcCoord, maxSrcColor, rangeX, rangeY, colRange, matrix, xform, controlPoints);
                     if (current == null)
                     {
                         break;
@@ -170,17 +176,17 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
      * @param colRange range for color
      * @param matrix the pattern matrix concatenated with that of the parent content stream
      * @param xform transformation for user to device space
-     * @param numP number of control points, 12 for type 6 shading and 16 for type 7 shading
+     * @param controlPoints number of control points, 12 for type 6 shading and 16 for type 7 shading
      * @return a single patch
      * @throws IOException when something went wrong
      */
     protected Patch readPatch(ImageInputStream input, boolean isFree, Point2D[] implicitEdge,
                               float[][] implicitCornerColor, long maxSrcCoord, long maxSrcColor,
                               PDRange rangeX, PDRange rangeY, PDRange[] colRange, Matrix matrix,
-                              AffineTransform xform, int numP) throws IOException
+                              AffineTransform xform, int controlPoints) throws IOException
     {
         float[][] color = new float[4][numberOfColorComponents];
-        Point2D[] points = new Point2D[numP];
+        Point2D[] points = new Point2D[controlPoints];
         int pStart = 4, cStart = 2;
         if (isFree)
         {
@@ -203,7 +209,7 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
 
         try
         {
-            for (int i = pStart; i < numP; i++)
+            for (int i = pStart; i < controlPoints; i++)
             {
                 long x = input.readBits(bitsPerCoordinate);
                 long y = input.readBits(bitsPerCoordinate);

@@ -16,12 +16,12 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
+import java.awt.Paint;
+
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.util.Matrix;
-
-import java.awt.Paint;
 
 /**
  * Resources for an axial shading.

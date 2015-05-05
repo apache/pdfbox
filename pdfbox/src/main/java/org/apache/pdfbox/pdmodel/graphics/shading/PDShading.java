@@ -18,7 +18,6 @@ package org.apache.pdfbox.pdmodel.graphics.shading;
 
 import java.awt.Paint;
 import java.io.IOException;
-
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
