@@ -99,22 +99,11 @@ public class PDSignature implements COSObjectable
     }
 
     /**
-     * Convert this standard java object to a COS object.
-     *
-     * @return The cos object that matches this Java object.
-     */
-    @Override
-    public COSBase getCOSObject()
-    {
-        return getDictionary();
-    }
-
-    /**
      * Convert this standard java object to a COS dictionary.
      *
      * @return The COS dictionary that matches this Java object.
      */
-    public COSDictionary getDictionary()
+    public COSDictionary getCOSObject()
     {
         return dictionary;
     }
