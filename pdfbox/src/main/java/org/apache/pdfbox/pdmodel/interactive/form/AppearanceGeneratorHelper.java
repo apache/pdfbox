@@ -277,6 +277,8 @@ class AppearanceGeneratorHelper
         PDRectangle paddingEdge = applyPadding(boundingBox,Math.max(1f, lineWidth));
         PDRectangle contentEdge = applyPadding(paddingEdge,Math.max(1f, lineWidth));
         
+        contents.saveGraphicsState();
+        
         // add a clipping path to avoid overlapping with the border
         contents.addRect(paddingEdge.getLowerLeftX(), paddingEdge.getLowerLeftY(),
                          paddingEdge.getWidth(), paddingEdge.getHeight());
@@ -338,6 +340,7 @@ class AppearanceGeneratorHelper
 
         }
         contents.endText();
+        contents.restoreGraphicsState();
         contents.close();
     }
 
