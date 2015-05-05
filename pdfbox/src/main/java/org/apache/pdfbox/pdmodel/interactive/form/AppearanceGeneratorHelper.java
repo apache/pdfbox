@@ -292,7 +292,13 @@ class AppearanceGeneratorHelper
         {
             defaultAppearanceHandler.setFontSize(fontSize);
             ContentStreamWriter daWriter = new ContentStreamWriter(output);
-            daWriter.writeTokens(defaultAppearanceHandler.getTokens());
+            contents.setFont(font, fontSize);
+            
+            // the font has already been set so only write the remaining parts of the DA string
+            daWriter.writeTokens(defaultAppearanceHandler.getTokens().subList(
+                        defaultAppearanceHandler.getTokens().indexOf(Operator.getOperator("Tf"))+1, 
+                        defaultAppearanceHandler.getTokens().size()
+                    ));
         }
 
         // calculation of the vertical offset from where the text will be printed 
@@ -306,7 +312,6 @@ class AppearanceGeneratorHelper
             // calculation of the horizontal offset from where the text will be printed
             leftOffset = calculateHorizontalOffset(contentEdge, font, fontSize);
             contents.newLineAtOffset(leftOffset, verticalOffset);
-            contents.setFont(font, fontSize);
             contents.showText(value);
         }
         else
