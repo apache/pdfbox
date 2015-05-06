@@ -19,6 +19,7 @@ package org.apache.pdfbox.pdmodel.interactive.action;
 import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 
 import org.apache.pdfbox.pdmodel.common.filespecification.PDFileSpecification;
 
@@ -68,7 +69,7 @@ public class PDActionLaunch extends PDAction
      */
     public PDFileSpecification getFile() throws IOException
     {
-        return PDFileSpecification.createFS( getCOSDictionary().getDictionaryObject( "F" ) );
+        return PDFileSpecification.createFS(getCOSObject().getDictionaryObject(COSName.F));
     }
 
     /**
@@ -82,7 +83,7 @@ public class PDActionLaunch extends PDAction
      */
     public void setFile( PDFileSpecification fs )
     {
-        getCOSDictionary().setItem( "F", fs );
+        getCOSObject().setItem(COSName.F, fs);
     }
 
     /**
@@ -121,7 +122,7 @@ public class PDActionLaunch extends PDAction
      */
     public String getF()
     {
-        return action.getString( "F" );
+        return action.getString(COSName.F);
     }
 
     /**
@@ -134,7 +135,7 @@ public class PDActionLaunch extends PDAction
      */
     public void setF( String f )
     {
-        action.setString( "F", f );
+        action.setString(COSName.F, f );
     }
 
     /**
@@ -144,7 +145,7 @@ public class PDActionLaunch extends PDAction
      */
     public String getD()
     {
-        return action.getString( "D" );
+        return action.getString(COSName.D);
     }
 
     /**
@@ -154,7 +155,7 @@ public class PDActionLaunch extends PDAction
      */
     public void setD( String d )
     {
-        action.setString( "D", d );
+        action.setString(COSName.D, d );
     }
 
     /**
@@ -168,7 +169,7 @@ public class PDActionLaunch extends PDAction
      */
     public String getO()
     {
-        return action.getString( "O" );
+        return action.getString(COSName.O);
     }
 
     /**
@@ -182,7 +183,7 @@ public class PDActionLaunch extends PDAction
      */
     public void setO( String o )
     {
-        action.setString( "O", o );
+        action.setString(COSName.O, o );
     }
 
     /**
@@ -193,7 +194,7 @@ public class PDActionLaunch extends PDAction
      */
     public String getP()
     {
-        return action.getString( "P" );
+        return action.getString(COSName.P);
     }
 
     /**
@@ -204,7 +205,7 @@ public class PDActionLaunch extends PDAction
      */
     public void setP( String p )
     {
-        action.setString( "P", p );
+        action.setString(COSName.P, p );
     }
 
     /**

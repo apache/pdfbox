@@ -66,7 +66,7 @@ public class PDActionGoTo extends PDAction
      */
     public PDDestination getDestination() throws IOException
     {
-        return PDDestination.create(getCOSDictionary().getDictionaryObject(COSName.D));
+        return PDDestination.create(getCOSObject().getDictionaryObject(COSName.D));
     }
 
     /**
@@ -92,6 +92,6 @@ public class PDActionGoTo extends PDAction
                 }
             }
         }
-        getCOSDictionary().setItem(COSName.D, d);
+        getCOSObject().setItem(COSName.D, d);
     }
 }
