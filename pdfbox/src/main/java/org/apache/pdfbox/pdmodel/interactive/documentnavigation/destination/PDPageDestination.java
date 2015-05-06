@@ -21,7 +21,6 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
-
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageTree;
 
@@ -57,10 +56,10 @@ public abstract class PDPageDestination extends PDDestination
     }
 
     /**
-     * This will get the page for this destination.  A page destination
-     * can either reference a page or a page number(when doing a remote destination to
-     * another PDF).  If this object is referencing by page number then this method will
-     * return null and getPageNumber should be used.
+     * This will get the page for this destination. A page destination can either reference a page
+     * (for a local destination) or a page number (when doing a remote destination to another PDF).
+     * If this object is referencing by page number then this method will return null and
+     * {@link #getPageNumber()} should be used.
      *
      * @return The page for this destination.
      */
@@ -89,10 +88,10 @@ public abstract class PDPageDestination extends PDDestination
     }
 
     /**
-     * This will get the page number for this destination.  A page destination
-     * can either reference a page or a page number(when doing a remote destination to
-     * another PDF).  If this object is referencing by page number then this method will
-     * return that number, otherwise -1 will be returned.
+     * This will get the page number for this destination. A page destination can either reference a
+     * page (for a local destination) or a page number (when doing a remote destination to another
+     * PDF). If this object is referencing by page number then this method will return that number,
+     * otherwise -1 will be returned.
      *
      * @return The page number for this destination.
      */
@@ -111,13 +110,17 @@ public abstract class PDPageDestination extends PDDestination
     }
 
     /**
-     * Returns the page number for this destination, regardless of whether
-     * this is a page number or a reference to a page.
+     * Returns the page number for this destination, regardless of whether this is a page number or
+     * a reference to a page.
      *
      * @since Apache PDFBox 1.0.0
      * @see org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem
-     * @return page number, or -1 if the destination type is unknown
+     * @return page number, or -1 if the destination type is unknown. The page number is 0-based if
+     * it was in the dictionary (for remote destinations), and 1-based if it was computed from a
+     * page reference (for local destinations).
+     * @deprecated This method has inconsistent behavior (see returns), use {@link #retrievePageNumber()} instead.
      */
+    @Deprecated
     public int findPageNumber()
     {
         int retval = -1;
@@ -144,6 +147,38 @@ public abstract class PDPageDestination extends PDDestination
     }
 
     /**
+     * Returns the page number for this destination, regardless of whether this is a page number or
+     * a reference to a page.
+     *
+     * @see org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem
+     * @return the 0-based page number, or -1 if the destination type is unknown.
+     */
+    public int retrievePageNumber()
+    {
+        int retval = -1;
+        if (array.size() > 0)
+        {
+            COSBase page = array.getObject(0);
+            if (page instanceof COSNumber)
+            {
+                retval = ((COSNumber) page).intValue();
+            }
+            else if (page instanceof COSDictionary)
+            {
+                COSBase parent = page;
+                while (((COSDictionary) parent).getDictionaryObject(COSName.PARENT, COSName.P) != null)
+                {
+                    parent = ((COSDictionary) parent).getDictionaryObject(COSName.PARENT, COSName.P);
+                }
+                // now parent is the pages node
+                PDPageTree pages = new PDPageTree((COSDictionary) parent);
+                return pages.indexOf(new PDPage((COSDictionary) page));
+            }
+        }
+        return retval;
+    }
+
+    /**
      * Set the page number for this destination.
      *
      * @param pageNumber The page for the destination.
@@ -158,18 +193,10 @@ public abstract class PDPageDestination extends PDDestination
      *
      * @return The cos object that matches this Java object.
      */
-    public COSBase getCOSObject()
+    @Override
+    public COSArray getCOSObject()
     {
         return array;
     }
 
-    /**
-     * Convert this standard java object to a COS object.
-     *
-     * @return The cos object that matches this Java object.
-     */
-    public COSArray getCOSArray()
-    {
-        return array;
-    }
 }
