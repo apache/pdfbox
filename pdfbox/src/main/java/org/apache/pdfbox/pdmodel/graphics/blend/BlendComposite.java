@@ -44,7 +44,7 @@ public final class BlendComposite implements Composite
      *
      * @param blendMode Desired blend mode
      * @param constantAlpha Constant alpha, must be in the inclusive range
-     * [0.0,�1.0] or it will be clipped.
+     * [0.0...1.0] or it will be clipped.
      */
     public static Composite getInstance(BlendMode blendMode, float constantAlpha)
     {
