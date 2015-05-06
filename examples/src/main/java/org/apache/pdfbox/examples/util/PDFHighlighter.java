@@ -100,6 +100,7 @@ public class PDFHighlighter extends PDFTextStripper
     /**
      * {@inheritDoc}
      */
+    @Override
     protected void endPage( PDPage pdPage ) throws IOException
     {
         textWriter.flush();
@@ -107,7 +108,7 @@ public class PDFHighlighter extends PDFTextStripper
         String page = new String( textOS.toByteArray(), ENCODING );
         textOS.reset();
 
-        // Traitement des listes � puces (caract�res sp�ciaux)
+        // Traitement des listes à puces (caractères spéciaux)
         if (page.indexOf('a') != -1)
         {
             page = page.replaceAll("a[0-9]{1,3}", ".");
