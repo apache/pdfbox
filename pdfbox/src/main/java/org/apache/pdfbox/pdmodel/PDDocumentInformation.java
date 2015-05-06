@@ -20,7 +20,6 @@ import java.util.Calendar;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 
