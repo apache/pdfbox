@@ -58,7 +58,7 @@ public class TestUriAction extends AbstractTestAction
     public void testInvalidURI() throws Exception
     {
         PDActionURI action = new PDActionURI();
-        action.getCOSDictionary().setBoolean(COSName.URI, true);
+        action.getCOSObject().setBoolean(COSName.URI, true);
         valid(action, false, PreflightConstants.ERROR_ACTION_INVALID_TYPE);
     }
 

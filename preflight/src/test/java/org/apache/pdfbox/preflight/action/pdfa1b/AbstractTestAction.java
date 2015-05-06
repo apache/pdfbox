@@ -90,7 +90,7 @@ public abstract class AbstractTestAction
      */
     protected void valid(PDAction action, boolean valid, String expectedCode) throws Exception
     {
-        valid(action.getCOSDictionary(), valid, expectedCode);
+        valid(action.getCOSObject(), valid, expectedCode);
     }
 
     protected void valid(COSDictionary action, boolean valid, String expectedCode) throws Exception
