@@ -268,7 +268,7 @@ public class PDPageContentStream implements Closeable
         formatDecimal.setMaximumFractionDigits(10);
         formatDecimal.setGroupingUsed(false);
         // this has to be done here, as the resources will be set to null when reseting the content stream
-        resources = sourcePage.getResources();
+        resources = sourcePage.findResources();
         if (resources == null)
         {
             resources = new PDResources();
