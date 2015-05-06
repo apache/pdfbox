@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.digitalsignature;
 
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
@@ -61,6 +60,7 @@ public class PDPropBuild implements COSObjectable
      *
      * @return The COS dictionary that matches this Java object.
      */
+    @Override
     public COSDictionary getCOSObject()
     {
         return dictionary;
