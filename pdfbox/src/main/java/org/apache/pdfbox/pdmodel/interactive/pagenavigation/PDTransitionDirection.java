@@ -56,7 +56,7 @@ public enum PDTransitionDirection
         }
     };
 
-    private int degrees;
+    private final int degrees;
 
     private PDTransitionDirection(int degrees)
     {
