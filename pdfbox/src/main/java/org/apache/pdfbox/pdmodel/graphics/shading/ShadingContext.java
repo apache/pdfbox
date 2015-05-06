@@ -44,7 +44,7 @@ public abstract class ShadingContext
 
     private float[] background;
     private int rgbBackground;
-    final private PDShading shading;
+    private final PDShading shading;
     private ColorModel outputColorModel;
     private PDColorSpace shadingColorSpace;
 
