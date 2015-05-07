@@ -83,7 +83,7 @@ public class AcroFormValidationProcess extends AbstractProcess
      */
     protected void checkNeedAppearences(PreflightContext ctx, PDAcroForm acroForm)
     {
-        if (acroForm.getDictionary().getBoolean(ACROFORM_DICTIONARY_KEY_NEED_APPEARANCES, false))
+        if (acroForm.getCOSObject().getBoolean(ACROFORM_DICTIONARY_KEY_NEED_APPEARANCES, false))
         {
             addValidationError(ctx, new ValidationError(ERROR_SYNTAX_DICT_INVALID,
                     "NeedAppearance is present with the value \"true\""));
