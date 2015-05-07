@@ -73,7 +73,7 @@ public class PDStructureTreeRoot extends PDStructureNode
      */
     public COSArray getKArray()
     {
-        COSBase k = this.getCOSDictionary().getDictionaryObject(COSName.K);
+        COSBase k = this.getCOSObject().getDictionaryObject(COSName.K);
         if (k != null)
         {
             if (k instanceof COSDictionary)
@@ -100,7 +100,7 @@ public class PDStructureTreeRoot extends PDStructureNode
      */
     public COSBase getK()
     {
-        return this.getCOSDictionary().getDictionaryObject(COSName.K);
+        return this.getCOSObject().getDictionaryObject(COSName.K);
     }
 
     /**
@@ -110,7 +110,7 @@ public class PDStructureTreeRoot extends PDStructureNode
      */
     public void setK(COSBase k)
     {
-        this.getCOSDictionary().setItem(COSName.K, k);
+        this.getCOSObject().setItem(COSName.K, k);
     }
 
     /**
@@ -120,7 +120,7 @@ public class PDStructureTreeRoot extends PDStructureNode
      */
     public PDNameTreeNode getIDTree()
     {
-        COSDictionary idTreeDic = (COSDictionary) this.getCOSDictionary().getDictionaryObject(COSName.ID_TREE);
+        COSDictionary idTreeDic = (COSDictionary) this.getCOSObject().getDictionaryObject(COSName.ID_TREE);
         if (idTreeDic != null)
         {
             return new PDNameTreeNode(idTreeDic, PDStructureElement.class);
@@ -135,7 +135,7 @@ public class PDStructureTreeRoot extends PDStructureNode
      */
     public void setIDTree(PDNameTreeNode idTree)
     {
-        this.getCOSDictionary().setItem(COSName.ID_TREE, idTree);
+        this.getCOSObject().setItem(COSName.ID_TREE, idTree);
     }
 
     /**
@@ -145,7 +145,7 @@ public class PDStructureTreeRoot extends PDStructureNode
      */
     public PDNumberTreeNode getParentTree()
     {
-        COSDictionary parentTreeDic = (COSDictionary) this.getCOSDictionary().getDictionaryObject(COSName.PARENT_TREE);
+        COSDictionary parentTreeDic = (COSDictionary) this.getCOSObject().getDictionaryObject(COSName.PARENT_TREE);
         if (parentTreeDic != null)
         {
             return new PDNumberTreeNode(parentTreeDic, COSBase.class);
@@ -160,7 +160,7 @@ public class PDStructureTreeRoot extends PDStructureNode
      */
     public void setParentTree(PDNumberTreeNode parentTree)
     {
-        this.getCOSDictionary().setItem(COSName.PARENT_TREE, parentTree);
+        this.getCOSObject().setItem(COSName.PARENT_TREE, parentTree);
     }
 
     /**
@@ -170,7 +170,7 @@ public class PDStructureTreeRoot extends PDStructureNode
      */
     public int getParentTreeNextKey()
     {
-        return this.getCOSDictionary().getInt(COSName.PARENT_TREE_NEXT_KEY);
+        return this.getCOSObject().getInt(COSName.PARENT_TREE_NEXT_KEY);
     }
 
     /**
@@ -180,7 +180,7 @@ public class PDStructureTreeRoot extends PDStructureNode
      */
     public void setParentTreeNextKey(int parentTreeNextkey)
     {
-        this.getCOSDictionary().setInt(COSName.PARENT_TREE_NEXT_KEY, parentTreeNextkey);
+        this.getCOSObject().setInt(COSName.PARENT_TREE_NEXT_KEY, parentTreeNextkey);
     }
 
     /**
@@ -190,7 +190,7 @@ public class PDStructureTreeRoot extends PDStructureNode
      */
     public Map<String, Object> getRoleMap()
     {
-        COSBase rm = this.getCOSDictionary().getDictionaryObject(COSName.ROLE_MAP);
+        COSBase rm = this.getCOSObject().getDictionaryObject(COSName.ROLE_MAP);
         if (rm instanceof COSDictionary)
         {
             try
@@ -217,7 +217,7 @@ public class PDStructureTreeRoot extends PDStructureNode
         {
             rmDic.setName(entry.getKey(), entry.getValue());
         }
-        this.getCOSDictionary().setItem(COSName.ROLE_MAP, rmDic);
+        this.getCOSObject().setItem(COSName.ROLE_MAP, rmDic);
     }
 
 }
