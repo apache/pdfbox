@@ -73,7 +73,7 @@ class AppearanceGeneratorHelper
      * @param field the field which you wish to control the appearance of
      * @throws IOException 
      */
-    public AppearanceGeneratorHelper(PDAcroForm acroForm, PDVariableText field) throws IOException
+    AppearanceGeneratorHelper(PDAcroForm acroForm, PDVariableText field) throws IOException
     {
         this.acroForm = acroForm;
         parent = field;
@@ -304,7 +304,7 @@ class AppearanceGeneratorHelper
         // calculation of the vertical offset from where the text will be printed 
         float verticalOffset = calculateVerticalOffset(paddingEdge, contentEdge, font, fontSize);
 
-        float leftOffset = 0f;
+        float leftOffset;
 
         // show the text
         if (!isMultiLine())
@@ -576,7 +576,7 @@ class AppearanceGeneratorHelper
         // Acrobat aligns left regardless of the quadding if the text is wider than the remaining
         // width
         float stringWidth = pdFont.getStringWidth(value) / GLYPH_TO_PDF_SCALE * fontSize;
-        float leftOffset = 0f;
+        float leftOffset;
         
         int q = parent.getQ();
         
