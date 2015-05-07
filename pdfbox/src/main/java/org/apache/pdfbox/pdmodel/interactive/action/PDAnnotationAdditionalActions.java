@@ -18,7 +18,6 @@ package org.apache.pdfbox.pdmodel.interactive.action;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 /**
@@ -30,7 +29,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
  */
 public class PDAnnotationAdditionalActions implements COSObjectable
 {
-    private COSDictionary actions;
+    private final COSDictionary actions;
 
     /**
      * Default constructor.
@@ -57,16 +56,6 @@ public class PDAnnotationAdditionalActions implements COSObjectable
      */
     @Override
     public COSBase getCOSObject()
-    {
-        return actions;
-    }
-
-    /**
-     * Convert this standard java object to a COS object.
-     *
-     * @return The cos object that matches this Java object.
-     */
-    public COSDictionary getCOSDictionary()
     {
         return actions;
     }
