@@ -57,7 +57,7 @@ public class PDAnnotationFileAttachment extends PDAnnotationMarkup
     public PDAnnotationFileAttachment()
     {
         super();
-        getDictionary().setItem( COSName.SUBTYPE, COSName.getPDFName( SUB_TYPE ) );
+        getCOSObject().setItem( COSName.SUBTYPE, COSName.getPDFName( SUB_TYPE ) );
     }
 
     /**
@@ -80,7 +80,7 @@ public class PDAnnotationFileAttachment extends PDAnnotationMarkup
      */
     public PDFileSpecification getFile() throws IOException
     {
-        return PDFileSpecification.createFS( getDictionary().getDictionaryObject( "FS" ) );
+        return PDFileSpecification.createFS( getCOSObject().getDictionaryObject( "FS" ) );
     }
 
     /**
@@ -90,7 +90,7 @@ public class PDAnnotationFileAttachment extends PDAnnotationMarkup
      */
     public void setFile( PDFileSpecification file )
     {
-        getDictionary().setItem( "FS", file );
+        getCOSObject().setItem( "FS", file );
     }
 
     /**
@@ -101,7 +101,7 @@ public class PDAnnotationFileAttachment extends PDAnnotationMarkup
      */
     public String getAttachmentName()
     {
-        return getDictionary().getNameAsString( "Name", ATTACHMENT_NAME_PUSH_PIN );
+        return getCOSObject().getNameAsString( "Name", ATTACHMENT_NAME_PUSH_PIN );
     }
 
     /**
@@ -112,6 +112,6 @@ public class PDAnnotationFileAttachment extends PDAnnotationMarkup
      */
     public void setAttachementName( String name )
     {
-        getDictionary().setName( "Name", name );
+        getCOSObject().setName( "Name", name );
     }
 }

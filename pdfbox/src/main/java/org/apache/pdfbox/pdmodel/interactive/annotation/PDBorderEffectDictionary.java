@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.annotation;
 
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
@@ -44,7 +43,7 @@ public class PDBorderEffectDictionary implements COSObjectable
      */
     public static final String STYLE_CLOUDY = "C";
 
-    private COSDictionary dictionary;
+    private final COSDictionary dictionary;
 
     /**
      * Constructor.
@@ -70,17 +69,8 @@ public class PDBorderEffectDictionary implements COSObjectable
      *
      * @return the dictionary
      */
-    public COSDictionary getDictionary()
-    {
-        return dictionary;
-    }
-
-    /**
-     * returns the dictionary.
-     *
-     * @return the dictionary
-     */
-    public COSBase getCOSObject()
+    @Override
+    public COSDictionary getCOSObject()
     {
         return dictionary;
     }
@@ -93,7 +83,7 @@ public class PDBorderEffectDictionary implements COSObjectable
      */
     public void setIntensity( float i )
     {
-        getDictionary().setFloat( "I", i );
+        getCOSObject().setFloat( "I", i );
     }
 
     /**
@@ -103,7 +93,7 @@ public class PDBorderEffectDictionary implements COSObjectable
      */
     public float getIntensity()
     {
-        return getDictionary().getFloat( "I", 0 );
+        return getCOSObject().getFloat( "I", 0 );
     }
 
     /**
@@ -114,7 +104,7 @@ public class PDBorderEffectDictionary implements COSObjectable
      */
     public void setStyle( String s )
     {
-        getDictionary().setName( "S", s );
+        getCOSObject().setName( "S", s );
     }
 
     /**
@@ -125,7 +115,7 @@ public class PDBorderEffectDictionary implements COSObjectable
      */
     public String getStyle()
     {
-        return getDictionary().getNameAsString( "S", STYLE_SOLID );
+        return getCOSObject().getNameAsString( "S", STYLE_SOLID );
     }
 
 }

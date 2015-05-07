@@ -49,21 +49,17 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
         this.dictionary = dict;
     }
 
-
-    /**
-     * returns the dictionary.
-     * @return the dictionary
-     */
     public COSDictionary getDictionary()
     {
         return this.dictionary;
     }
 
     /**
-     * {@inheritDoc}
-     * 
+     * returns the dictionary.
+     * @return the dictionary
      */
-    public COSBase getCOSObject()
+    @Override
+    public COSDictionary getCOSObject()
     {
         return this.dictionary;
     }
