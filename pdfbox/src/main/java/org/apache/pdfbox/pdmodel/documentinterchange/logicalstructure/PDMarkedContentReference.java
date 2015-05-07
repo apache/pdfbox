@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure;
 
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -29,12 +28,15 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
  */
 public class PDMarkedContentReference implements COSObjectable
 {
-
     public static final String TYPE = "MCR";
 
     private final COSDictionary dictionary;
-
-    public COSDictionary getCOSDictionary()
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public COSDictionary getCOSObject()
     {
         return this.dictionary;
     }
@@ -59,23 +61,13 @@ public class PDMarkedContentReference implements COSObjectable
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public COSBase getCOSObject()
-    {
-        return this.dictionary;
-    }
-
-    /**
      * Gets the page.
      * 
      * @return the page
      */
     public PDPage getPage()
     {
-        COSDictionary pg = (COSDictionary) this.getCOSDictionary()
-            .getDictionaryObject(COSName.PG);
+        COSDictionary pg = (COSDictionary) this.getCOSObject().getDictionaryObject(COSName.PG);
         if (pg != null)
         {
             return new PDPage(pg);
@@ -90,7 +82,7 @@ public class PDMarkedContentReference implements COSObjectable
      */
     public void setPage(PDPage page)
     {
-        this.getCOSDictionary().setItem(COSName.PG, page);
+        this.getCOSObject().setItem(COSName.PG, page);
     }
 
     /**
@@ -100,7 +92,7 @@ public class PDMarkedContentReference implements COSObjectable
      */
     public int getMCID()
     {
-        return this.getCOSDictionary().getInt(COSName.MCID);
+        return this.getCOSObject().getInt(COSName.MCID);
     }
 
     /**
@@ -110,15 +102,14 @@ public class PDMarkedContentReference implements COSObjectable
      */
     public void setMCID(int mcid)
     {
-        this.getCOSDictionary().setInt(COSName.MCID, mcid);
+        this.getCOSObject().setInt(COSName.MCID, mcid);
     }
 
 
     @Override
     public String toString()
     {
-        return new StringBuilder()
-            .append("mcid=").append(this.getMCID()).toString();
+        return new StringBuilder().append("mcid=").append(this.getMCID()).toString();
     }
 
 }
