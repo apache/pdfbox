@@ -81,7 +81,7 @@ public class LinkAnnotationValidator extends AnnotationValidator
                         "Dest can't be used due to A element"));
                 return false;
             }
-            COSDictionary dict = pdLink.getDictionary();
+            COSDictionary dict = pdLink.getCOSObject();
             COSBase dest = dict.getDictionaryObject(COSName.DEST);
             if (dest != null)
             {

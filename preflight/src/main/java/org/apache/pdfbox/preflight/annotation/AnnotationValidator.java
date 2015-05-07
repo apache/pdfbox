@@ -108,7 +108,7 @@ public abstract class AnnotationValidator
      */
     protected boolean checkCA()
     {
-        COSBase ca = this.pdAnnot.getDictionary().getItem(COSName.CA);
+        COSBase ca = this.pdAnnot.getCOSObject().getItem(COSName.CA);
         if (ca != null)
         {
             float caf = COSUtils.getAsFloat(ca, cosDocument);
