@@ -35,8 +35,8 @@ public class PDAnnotationTest
     public void createDefaultWidgetAnnotation()
     {
         PDAnnotation annotation = new PDAnnotationWidget();
-        assertEquals(COSName.ANNOT, annotation.getDictionary().getItem(COSName.TYPE));
-        assertEquals(PDAnnotationWidget.SUB_TYPE, annotation.getDictionary().getNameAsString(COSName.SUBTYPE));
+        assertEquals(COSName.ANNOT, annotation.getCOSObject().getItem(COSName.TYPE));
+        assertEquals(PDAnnotationWidget.SUB_TYPE, annotation.getCOSObject().getNameAsString(COSName.SUBTYPE));
     }
 
     @Test
@@ -46,8 +46,8 @@ public class PDAnnotationTest
         PDAcroForm acroForm = new PDAcroForm(document);
         PDTextField textField = new PDTextField(acroForm);
         PDAnnotation annotation = textField.getWidget();
-        assertEquals(COSName.ANNOT, annotation.getDictionary().getItem(COSName.TYPE));
-        assertEquals(PDAnnotationWidget.SUB_TYPE, annotation.getDictionary().getNameAsString(COSName.SUBTYPE));
+        assertEquals(COSName.ANNOT, annotation.getCOSObject().getItem(COSName.TYPE));
+        assertEquals(PDAnnotationWidget.SUB_TYPE, annotation.getCOSObject().getNameAsString(COSName.SUBTYPE));
     }
 
 }
