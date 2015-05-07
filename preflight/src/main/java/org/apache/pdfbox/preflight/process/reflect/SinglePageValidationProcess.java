@@ -204,7 +204,7 @@ public class SinglePageValidationProcess extends AbstractProcess
             {
                 if (object instanceof PDAnnotation)
                 {
-                    COSDictionary cosAnnot = ((PDAnnotation) object).getDictionary();
+                    COSDictionary cosAnnot = ((PDAnnotation) object).getCOSObject();
                     ContextHelper.validateElement(context, cosAnnot, ANNOTATIONS_PROCESS);
                 }
             }

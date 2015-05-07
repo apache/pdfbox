@@ -117,7 +117,7 @@ public class AcroFormValidationProcess extends AbstractProcess
                 else if (obj instanceof PDAnnotationWidget)
                 {
                     // "A field's children in the hierarchy may also include widget annotations"
-                    ContextHelper.validateElement(ctx, ((PDAnnotationWidget) obj).getDictionary(), ANNOTATIONS_PROCESS);
+                    ContextHelper.validateElement(ctx, ((PDAnnotationWidget) obj).getCOSObject(), ANNOTATIONS_PROCESS);
                 }
                 else
                 {
@@ -158,8 +158,8 @@ public class AcroFormValidationProcess extends AbstractProcess
         PDAnnotationWidget widget = aField.getWidget();
         if (res && widget != null)
         {
-            ContextHelper.validateElement(ctx, widget.getDictionary(), ANNOTATIONS_PROCESS);
-            COSBase act = widget.getDictionary().getDictionaryObject(COSName.A);
+            ContextHelper.validateElement(ctx, widget.getCOSObject(), ANNOTATIONS_PROCESS);
+            COSBase act = widget.getCOSObject().getDictionaryObject(COSName.A);
             if (act != null)
             {
                 addValidationError(ctx, new ValidationError(ERROR_ACTION_FORBIDDEN_WIDGET_ACTION_FIELD,
