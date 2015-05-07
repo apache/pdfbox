@@ -211,7 +211,7 @@ public class PDDocument implements Closeable
         }
         else
         {
-            acroForm.getDictionary().setNeedToBeUpdated(true);
+            acroForm.getCOSObject().setNeedToBeUpdated(true);
         }
 
         // For invisible signatures, the annotation has a rectangle array with values [ 0 0 0 0 ]. This annotation is
@@ -236,7 +236,7 @@ public class PDDocument implements Closeable
 
         // Set the AcroForm Fields
         List<PDFieldTreeNode> acroFormFields = acroForm.getFields();
-        acroForm.getDictionary().setDirect(true);
+        acroForm.getCOSObject().setDirect(true);
         acroForm.setSignaturesExist(true);
         acroForm.setAppendOnly(true);
 
@@ -386,7 +386,7 @@ public class PDDocument implements Closeable
         {
             dr.setDirect(true);
             dr.setNeedToBeUpdated(true);
-            COSDictionary acroFormDict = acroForm.getDictionary();
+            COSDictionary acroFormDict = acroForm.getCOSObject();
             acroFormDict.setItem(COSName.DR, dr);
         }
     }
@@ -434,7 +434,7 @@ public class PDDocument implements Closeable
             acroForm = new PDAcroForm(this);
             catalog.setAcroForm(acroForm);
         }
-        COSDictionary acroFormDict = acroForm.getDictionary();
+        COSDictionary acroFormDict = acroForm.getCOSObject();
         acroFormDict.setDirect(true);
         acroFormDict.setNeedToBeUpdated(true);
         if (!acroForm.isSignaturesExist())

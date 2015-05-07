@@ -278,7 +278,7 @@ public class PDFMergerUtility
             if (destAcroForm == null && srcAcroForm != null)
             {
                 destCatalog.getCOSObject().setItem(COSName.ACRO_FORM,
-                        cloner.cloneForNewDocument(srcAcroForm.getDictionary()));       
+                        cloner.cloneForNewDocument(srcAcroForm.getCOSObject()));       
                 
             }
             else

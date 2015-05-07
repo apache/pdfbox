@@ -126,11 +126,11 @@ public abstract class PDFieldTreeNode implements COSObjectable
         PDFieldTreeNode attributesNode = getInheritableAttributesNode(this,key);
         if (attributesNode != null)
         {
-            return attributesNode.getDictionary().getDictionaryObject(key);
+            return attributesNode.getCOSObject().getDictionaryObject(key);
         }
         else
         {
-            return getAcroForm().getDictionary().getDictionaryObject(key);
+            return getAcroForm().getCOSObject().getDictionaryObject(key);
         }
     }    
     

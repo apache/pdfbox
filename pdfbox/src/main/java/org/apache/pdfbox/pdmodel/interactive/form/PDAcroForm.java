@@ -49,8 +49,8 @@ public final class PDAcroForm implements COSObjectable
     private static final int FLAG_SIGNATURES_EXIST = 1;
     private static final int FLAG_APPEND_ONLY = 1 << 1;
     
-    private COSDictionary acroForm;
-    private PDDocument document;
+    private final COSDictionary acroForm;
+    private final PDDocument document;
 
     private Map<String,PDFieldTreeNode> fieldCache;
 
@@ -94,7 +94,8 @@ public final class PDAcroForm implements COSObjectable
      *
      * @return The dictionary for this form.
      */
-    public COSDictionary getDictionary()
+    @Override
+    public COSDictionary getCOSObject()
     {
         return acroForm;
     }
@@ -325,7 +326,7 @@ public final class PDAcroForm implements COSObjectable
      */
     public String getDefaultAppearance()
     {
-        COSString defaultAppearance = (COSString) getDictionary().getItem(COSName.DA);
+        COSString defaultAppearance = (COSString) getCOSObject().getItem(COSName.DA);
         return defaultAppearance.getString();
     }
 
@@ -338,11 +339,11 @@ public final class PDAcroForm implements COSObjectable
     {
         if (daValue != null)
         {
-            getDictionary().setString(COSName.DA, daValue);
+            getCOSObject().setString(COSName.DA, daValue);
         }
         else
         {
-            getDictionary().removeItem(COSName.DA);
+            getCOSObject().removeItem(COSName.DA);
         }
     }
 
@@ -353,7 +354,7 @@ public final class PDAcroForm implements COSObjectable
      */
     public boolean isNeedAppearances()
     {
-        return getDictionary().getBoolean(COSName.NEED_APPEARANCES, false);
+        return getCOSObject().getBoolean(COSName.NEED_APPEARANCES, false);
     }
 
     /**
@@ -365,11 +366,11 @@ public final class PDAcroForm implements COSObjectable
     {
         if (value != null)
         {
-            getDictionary().setBoolean(COSName.NEED_APPEARANCES, value);
+            getCOSObject().setBoolean(COSName.NEED_APPEARANCES, value);
         }
         else
         {
-            getDictionary().removeItem(COSName.NEED_APPEARANCES);
+            getCOSObject().removeItem(COSName.NEED_APPEARANCES);
         }
     }
     
@@ -402,12 +403,6 @@ public final class PDAcroForm implements COSObjectable
             drDict = dr.getCOSObject();
         }
         acroForm.setItem( COSName.DR, drDict );
-    }
-
-    @Override
-    public COSBase getCOSObject()
-    {
-        return acroForm;
     }
 
     /**
@@ -469,7 +464,7 @@ public final class PDAcroForm implements COSObjectable
     public int getQ()
     {
         int retval = 0;
-        COSNumber number = (COSNumber)getDictionary().getDictionaryObject( COSName.Q );
+        COSNumber number = (COSNumber)getCOSObject().getDictionaryObject( COSName.Q );
         if( number != null )
         {
             retval = number.intValue();
@@ -484,7 +479,7 @@ public final class PDAcroForm implements COSObjectable
      */
     public void setQ( int q )
     {
-        getDictionary().setInt( COSName.Q, q );
+        getCOSObject().setInt( COSName.Q, q );
     }
 
     /**
@@ -494,7 +489,7 @@ public final class PDAcroForm implements COSObjectable
      */
     public boolean isSignaturesExist()
     {
-        return getDictionary().getFlag( COSName.SIG_FLAGS, FLAG_SIGNATURES_EXIST );
+        return getCOSObject().getFlag( COSName.SIG_FLAGS, FLAG_SIGNATURES_EXIST );
     }
 
     /**
@@ -504,7 +499,7 @@ public final class PDAcroForm implements COSObjectable
      */
     public void setSignaturesExist( boolean signaturesExist )
     {
-        getDictionary().setFlag( COSName.SIG_FLAGS, FLAG_SIGNATURES_EXIST, signaturesExist );
+        getCOSObject().setFlag( COSName.SIG_FLAGS, FLAG_SIGNATURES_EXIST, signaturesExist );
     }
 
     /**
@@ -514,7 +509,7 @@ public final class PDAcroForm implements COSObjectable
      */
     public boolean isAppendOnly()
     {
-        return getDictionary().getFlag( COSName.SIG_FLAGS, FLAG_APPEND_ONLY );
+        return getCOSObject().getFlag( COSName.SIG_FLAGS, FLAG_APPEND_ONLY );
     }
 
     /**
@@ -524,6 +519,6 @@ public final class PDAcroForm implements COSObjectable
      */
     public void setAppendOnly( boolean appendOnly )
     {
-        getDictionary().setFlag( COSName.SIG_FLAGS, FLAG_APPEND_ONLY, appendOnly );
+        getCOSObject().setFlag( COSName.SIG_FLAGS, FLAG_APPEND_ONLY, appendOnly );
     }
 }
