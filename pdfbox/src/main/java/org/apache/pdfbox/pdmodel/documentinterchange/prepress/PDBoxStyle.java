@@ -17,7 +17,6 @@
 package org.apache.pdfbox.pdmodel.documentinterchange.prepress;
 
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
@@ -69,17 +68,7 @@ public class PDBoxStyle implements COSObjectable
      * @return The cos object that matches this Java object.
      */
     @Override
-    public COSBase getCOSObject()
-    {
-        return dictionary;
-    }
-
-    /**
-     * Convert this standard java object to a COS object.
-     *
-     * @return The cos object that matches this Java object.
-     */
-    public COSDictionary getDictionary()
+    public COSDictionary getCOSObject()
     {
         return dictionary;
     }
