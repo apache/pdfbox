@@ -171,7 +171,7 @@ class AppearanceGeneratorHelper
             // in case all tests fail the field will be formatted by acrobat
             // when it is opened. See FreedomExpressions.pdf for an example of this.  
             if (actions == null || actions.getF() == null || 
-                    widget.getDictionary().getDictionaryObject(COSName.AP) != null)
+                    widget.getCOSObject().getDictionaryObject(COSName.AP) != null)
             {
                 PDAppearanceDictionary appearance = widget.getAppearance();
                 if (appearance == null)

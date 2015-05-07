@@ -41,8 +41,7 @@ public class PDAnnotationPopup extends PDAnnotation
     public PDAnnotationPopup()
     {
         super();
-        getDictionary()
-                .setItem( COSName.SUBTYPE, COSName.getPDFName( SUB_TYPE ) );
+        getCOSObject().setItem( COSName.SUBTYPE, COSName.getPDFName( SUB_TYPE ) );
     }
 
     /**
@@ -65,7 +64,7 @@ public class PDAnnotationPopup extends PDAnnotation
      */
     public void setOpen( boolean open )
     {
-        getDictionary().setBoolean( "Open" , open );
+        getCOSObject().setBoolean( "Open" , open );
     }
 
     /**
@@ -76,7 +75,7 @@ public class PDAnnotationPopup extends PDAnnotation
      */
     public boolean getOpen()
     {
-        return getDictionary().getBoolean( "Open" , false );
+        return getCOSObject().getBoolean( "Open" , false );
     }
 
     /**
@@ -87,7 +86,7 @@ public class PDAnnotationPopup extends PDAnnotation
      */
     public void setParent( PDAnnotationMarkup annot )
     {
-        getDictionary().setItem( COSName.PARENT, annot.getDictionary() );
+        getCOSObject().setItem( COSName.PARENT, annot.getCOSObject());
     }
 
     /**
@@ -101,7 +100,7 @@ public class PDAnnotationPopup extends PDAnnotation
         try
         {
             am = (PDAnnotationMarkup) PDAnnotation.createAnnotation(
-                    getDictionary().getDictionaryObject(COSName.PARENT, COSName.P));
+                    getCOSObject().getDictionaryObject(COSName.PARENT, COSName.P));
         }
         catch (IOException ioe)
         {

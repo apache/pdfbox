@@ -66,7 +66,7 @@ public class PDAnnotationLink extends PDAnnotation
     public PDAnnotationLink()
     {
         super();
-        getDictionary().setItem( COSName.SUBTYPE, COSName.getPDFName( SUB_TYPE ) );
+        getCOSObject().setItem( COSName.SUBTYPE, COSName.getPDFName( SUB_TYPE ) );
     }
 
     /**
@@ -90,7 +90,7 @@ public class PDAnnotationLink extends PDAnnotation
     public PDAction getAction()
     {
         COSDictionary action = (COSDictionary)
-            this.getDictionary().getDictionaryObject( COSName.A );
+            this.getCOSObject().getDictionaryObject( COSName.A );
         return PDActionFactory.createAction( action );
     }
 
@@ -102,7 +102,7 @@ public class PDAnnotationLink extends PDAnnotation
      */
     public void setAction( PDAction action )
     {
-        this.getDictionary().setItem( COSName.A, action );
+        this.getCOSObject().setItem( COSName.A, action );
     }
 
     /**
@@ -115,7 +115,7 @@ public class PDAnnotationLink extends PDAnnotation
      */
     public void setBorderStyle(PDBorderStyleDictionary bs)
     {
-        this.getDictionary().setItem(COSName.BS, bs);
+        this.getCOSObject().setItem(COSName.BS, bs);
     }
 
     /**
@@ -126,7 +126,7 @@ public class PDAnnotationLink extends PDAnnotation
      */
     public PDBorderStyleDictionary getBorderStyle()
     {
-        COSBase bs = this.getDictionary().getDictionaryObject(COSName.BS);
+        COSBase bs = this.getCOSObject().getDictionaryObject(COSName.BS);
         if (bs instanceof COSDictionary)
         {
             return new PDBorderStyleDictionary((COSDictionary) bs);
@@ -147,7 +147,7 @@ public class PDAnnotationLink extends PDAnnotation
      */
     public PDDestination getDestination() throws IOException
     {
-        COSBase base = getDictionary().getDictionaryObject( COSName.DEST );
+        COSBase base = getCOSObject().getDictionaryObject( COSName.DEST );
         PDDestination retval = PDDestination.create( base );
 
         return retval;
@@ -160,7 +160,7 @@ public class PDAnnotationLink extends PDAnnotation
      */
     public void setDestination( PDDestination dest )
     {
-        getDictionary().setItem( COSName.DEST, dest );
+        getCOSObject().setItem( COSName.DEST, dest );
     }
 
     /**
@@ -171,7 +171,7 @@ public class PDAnnotationLink extends PDAnnotation
      */
     public String getHighlightMode()
     {
-        return getDictionary().getNameAsString( COSName.H, HIGHLIGHT_MODE_INVERT );
+        return getCOSObject().getNameAsString( COSName.H, HIGHLIGHT_MODE_INVERT );
     }
 
     /**
@@ -181,7 +181,7 @@ public class PDAnnotationLink extends PDAnnotation
      */
     public void setHighlightMode( String mode )
     {
-        getDictionary().setName( COSName.H, mode );
+        getCOSObject().setName( COSName.H, mode );
     }
 
     /**
@@ -192,7 +192,7 @@ public class PDAnnotationLink extends PDAnnotation
      */
     public void setPreviousURI( PDActionURI pa )
     {
-        getDictionary().setItem( "PA", pa );
+        getCOSObject().setItem( "PA", pa );
     }
 
     /**
@@ -203,7 +203,7 @@ public class PDAnnotationLink extends PDAnnotation
      */
     public PDActionURI getPreviousURI()
     {
-        COSDictionary pa = (COSDictionary) getDictionary().getDictionaryObject("PA");
+        COSDictionary pa = (COSDictionary) getCOSObject().getDictionaryObject("PA");
         if ( pa != null )
         {
             return new PDActionURI( pa );
@@ -225,7 +225,7 @@ public class PDAnnotationLink extends PDAnnotation
     {
         COSArray newQuadPoints = new COSArray();
         newQuadPoints.setFloatArray( quadPoints );
-        getDictionary().setItem( "QuadPoints", newQuadPoints );
+        getCOSObject().setItem( "QuadPoints", newQuadPoints );
     }
 
     /**
@@ -236,7 +236,7 @@ public class PDAnnotationLink extends PDAnnotation
      */
     public float[] getQuadPoints()
     {
-        COSArray quadPoints = (COSArray) getDictionary().getDictionaryObject( "QuadPoints" );
+        COSArray quadPoints = (COSArray) getCOSObject().getDictionaryObject( "QuadPoints" );
         if (quadPoints != null)
         {
             return quadPoints.toFloatArray();

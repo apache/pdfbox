@@ -73,7 +73,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
      */
     public void setInteriorColor( PDColor ic )
     {
-        getDictionary().setItem(COSName.IC, ic.toCOSArray());
+        getCOSObject().setItem(COSName.IC, ic.toCOSArray());
     }
 
     /**
@@ -97,7 +97,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
      */
     public void setBorderEffect( PDBorderEffectDictionary be )
     {
-        getDictionary().setItem( "BE", be );
+        getCOSObject().setItem( "BE", be );
     }
 
     /**
@@ -108,7 +108,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
      */
     public PDBorderEffectDictionary getBorderEffect()
     {
-        COSDictionary be = (COSDictionary) getDictionary().getDictionaryObject( "BE" );
+        COSDictionary be = (COSDictionary) getCOSObject().getDictionaryObject( "BE" );
         if (be != null)
         {
             return new PDBorderEffectDictionary( be );
@@ -129,7 +129,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
      */
     public void setRectDifference( PDRectangle rd )
     {
-        getDictionary().setItem( "RD", rd );
+        getCOSObject().setItem( "RD", rd );
     }
 
     /**
@@ -141,7 +141,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
      */
     public PDRectangle getRectDifference()
     {
-        COSArray rd = (COSArray) getDictionary().getDictionaryObject( "RD" );
+        COSArray rd = (COSArray) getCOSObject().getDictionaryObject( "RD" );
         if (rd != null)
         {
             return new PDRectangle( rd );
@@ -160,7 +160,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
      */
     public void setSubtype( String subType )
     {
-        getDictionary().setName( COSName.SUBTYPE, subType );
+        getCOSObject().setName( COSName.SUBTYPE, subType );
     }
 
     /**
@@ -172,7 +172,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
     @Override
     public String getSubtype()
     {
-        return getDictionary().getNameAsString( COSName.SUBTYPE);
+        return getCOSObject().getNameAsString( COSName.SUBTYPE);
     }
 
     /**
@@ -185,7 +185,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
      */
     public void setBorderStyle( PDBorderStyleDictionary bs )
     {
-        this.getDictionary().setItem( "BS", bs);
+        this.getCOSObject().setItem( "BS", bs);
     }
 
     /**
@@ -197,7 +197,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
      */
     public PDBorderStyleDictionary getBorderStyle()
     {
-        COSDictionary bs = (COSDictionary) this.getDictionary().getItem(COSName.BS);
+        COSDictionary bs = (COSDictionary) this.getCOSObject().getItem(COSName.BS);
         if (bs != null)
         {
             return new PDBorderStyleDictionary( bs );

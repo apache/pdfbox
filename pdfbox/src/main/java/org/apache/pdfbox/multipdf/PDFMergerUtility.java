@@ -461,7 +461,7 @@ public class PDFMergerUtility
                 List<PDAnnotation> newAnnots = newPage.getAnnotations();
                 for (int i = 0; i < oldAnnots.size(); i++)
                 {
-                    objMapping.put(oldAnnots.get(i).getDictionary(), newAnnots.get(i).getDictionary());
+                    objMapping.put(oldAnnots.get(i).getCOSObject(), newAnnots.get(i).getCOSObject());
                 }
                 // TODO update mapping for XObjects
             }
