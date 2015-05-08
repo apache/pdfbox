@@ -176,7 +176,7 @@ public abstract class BaseParser implements Closeable
 
     private static boolean isHexDigit(char ch)
     {
-        return (ch >= ASCII_ZERO && ch <= ASCII_NINE) ||
+        return isDigit(ch) ||
         (ch >= 'a' && ch <= 'f') ||
         (ch >= 'A' && ch <= 'F');
     }
@@ -190,34 +190,28 @@ public abstract class BaseParser implements Closeable
      */
     private COSBase parseCOSDictionaryValue() throws IOException
     {
-        COSBase retval = null;
         long numOffset = pdfSource.getOffset();
         COSBase number = parseDirObject();
         skipSpaces();
-        char next = (char)pdfSource.peek();
-        if( next >= ASCII_ZERO && next <= ASCII_NINE )
+        if (!isDigit())
         {
-            long genOffset = pdfSource.getOffset();
-            COSBase generationNumber = parseDirObject();
-            skipSpaces();
-            readExpectedChar('R');
-            if (!(number instanceof COSInteger))
-            {
-                throw new IOException("expected number, actual=" + number + " at offset " + numOffset);
-            }
-            if (!(generationNumber instanceof COSInteger))
-            {
-                throw new IOException("expected number, actual=" + number + " at offset " + genOffset);
-            }
-            COSObjectKey key = new COSObjectKey(((COSInteger) number).longValue(),
-                    ((COSInteger) generationNumber).intValue());
-            retval = getObjectFromPool(key);
+            return number;
         }
-        else
+        long genOffset = pdfSource.getOffset();
+        COSBase generationNumber = parseDirObject();
+        skipSpaces();
+        readExpectedChar('R');
+        if (!(number instanceof COSInteger))
         {
-            retval = number;
+            throw new IOException("expected number, actual=" + number + " at offset " + numOffset);
         }
-        return retval;
+        if (!(generationNumber instanceof COSInteger))
+        {
+            throw new IOException("expected number, actual=" + number + " at offset " + genOffset);
+        }
+        COSObjectKey key = new COSObjectKey(((COSInteger) number).longValue(),
+                ((COSInteger) generationNumber).intValue());
+        return getObjectFromPool(key);
     }
 
     private COSBase getObjectFromPool(COSObjectKey key) throws IOException
@@ -1364,7 +1358,7 @@ public abstract class BaseParser implements Closeable
      * @param c The character to be checked
      * @return true if the next byte in the stream is a digit.
      */
-    protected boolean isDigit(int c)
+    protected static boolean isDigit(int c)
     {
         return c >= ASCII_ZERO && c <= ASCII_NINE;
     }
