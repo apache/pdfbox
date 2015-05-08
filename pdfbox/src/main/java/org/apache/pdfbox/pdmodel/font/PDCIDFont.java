@@ -375,6 +375,23 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike
     }
 
     /**
+     * Returns the CIDSystemInfo, or null if it is missing (which isn't allowed but could happen).
+     */
+    public PDCIDSystemInfo getCIDSystemInfo()
+    {
+        COSDictionary cidSystemInfoDict = (COSDictionary)
+                dict.getDictionaryObject(COSName.CIDSYSTEMINFO);
+
+        PDCIDSystemInfo cidSystemInfo = null;
+        if (cidSystemInfoDict != null)
+        {
+            cidSystemInfo = new PDCIDSystemInfo(cidSystemInfoDict);
+        }
+
+        return cidSystemInfo;
+    }
+    
+    /**
      * Returns the CID for the given character code. If not found then CID 0 is returned.
      *
      * @param code character code
