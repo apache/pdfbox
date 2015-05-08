@@ -57,7 +57,7 @@ final class Type1Parser
      */
     public Type1Font parse(byte[] segment1, byte[] segment2) throws IOException
     {
-        font = new Type1Font();
+        font = new Type1Font(segment1, segment2);
         parseASCII(segment1);
         if (segment2.length > 0)
         {

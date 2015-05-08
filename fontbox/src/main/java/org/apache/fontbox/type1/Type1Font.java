@@ -128,12 +128,17 @@ public final class Type1Font implements Type1CharStringReader, Type1Equivalent
     // private caches
     private final Map<String, Type1CharString> charStringCache =
             new ConcurrentHashMap<String, Type1CharString>();
+    
+    // raw data
+    final private byte[] segment1, segment2;
 
     /**
      * Constructs a new Type1Font, called by Type1Parser.
      */
-    Type1Font()
+    Type1Font(byte[] segment1, byte[] segment2)
     {
+        this.segment1 = segment1;
+        this.segment2 = segment2;
     }
 
     /**
@@ -514,6 +519,26 @@ public final class Type1Font implements Type1CharStringReader, Type1Equivalent
     public int getLanguageGroup()
     {
         return languageGroup;
+    }
+
+    /**
+     * Returns the ASCII segment.
+     *
+     * @return the ASCII segment.
+     */
+    public byte[] getASCIISegment()
+    {
+        return segment1;
+    }
+
+    /**
+     * Returns the binary segment.
+     *
+     * @return the binary segment.
+     */
+    public byte[] getBinarySegment()
+    {
+        return segment2;
     }
 
     /**
