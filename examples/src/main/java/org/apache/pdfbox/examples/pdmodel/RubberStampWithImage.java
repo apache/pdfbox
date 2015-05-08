@@ -16,15 +16,12 @@
  */
 package org.apache.pdfbox.examples.pdmodel;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
-import javax.imageio.ImageIO;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -33,9 +30,6 @@ import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
-import org.apache.pdfbox.pdmodel.graphics.image.CCITTFactory;
-import org.apache.pdfbox.pdmodel.graphics.image.JPEGFactory;
-import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationRubberStamp;
@@ -88,27 +82,9 @@ public class RubberStampWithImage
                     rubberStamp.setContents("A top secret note");
 
                     // create a PDXObjectImage with the given image file
-                    String imageFilename = args[2];
-                    PDImageXObject ximage;
-                    if( imageFilename.toLowerCase().endsWith( ".jpg" ) )
-                    {
-                        ximage = JPEGFactory.createFromStream(document, new FileInputStream(imageFilename));
-                    }
-                    else if (imageFilename.toLowerCase().endsWith(".tif") || imageFilename.toLowerCase().endsWith(".tiff"))
-                    {
-                        ximage = CCITTFactory.createFromFile(document, new File(imageFilename));
-                    }
-                    else if (imageFilename.toLowerCase().endsWith(".gif") || 
-                            imageFilename.toLowerCase().endsWith(".bmp") || 
-                            imageFilename.toLowerCase().endsWith(".png"))
-                    {
-                        BufferedImage bim = ImageIO.read(new File(imageFilename));
-                        ximage = LosslessFactory.createFromImage(document, bim);
-                    }
-                    else
-                    {
-                        throw new IOException( "Image type not supported: " + imageFilename );
-                    }                    
+                    // if you already have the image in a BufferedImage, 
+                    // call LosslessFactory.createFromImage() instead
+                    PDImageXObject ximage = PDImageXObject.createFromFile(args[2], document);           
 
                     // define and set the target rectangle
                     int lowerLeftX = 250;
