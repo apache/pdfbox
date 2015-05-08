@@ -358,6 +358,8 @@ public class PDType0Font extends PDFont
         else
         {
             // if no value has been produced, there is no way to obtain Unicode for the character.
+            String cid = "CID+" + codeToCID(code);
+            LOG.warn("No Unicode mapping for " + cid + " (" + code + ") in font " + getName());
             return null;
         }
     }
