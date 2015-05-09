@@ -40,7 +40,7 @@ final class Type1Glyph2D implements Glyph2D
      *
      * @param font PDF Type1 font.
      */
-    public Type1Glyph2D(PDType1Equivalent font)
+    Type1Glyph2D(PDType1Equivalent font)
     {
         this.font = font;
     }
