@@ -130,7 +130,7 @@ public final class Type1Font implements Type1CharStringReader, Type1Equivalent
             new ConcurrentHashMap<String, Type1CharString>();
     
     // raw data
-    final private byte[] segment1, segment2;
+    private final byte[] segment1, segment2;
 
     /**
      * Constructs a new Type1Font, called by Type1Parser.
