@@ -26,6 +26,7 @@ import java.io.LineNumberReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.Iterator;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -34,6 +35,10 @@ import junit.framework.TestSuite;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.TestPDDocumentCatalog;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 
 
 /**
@@ -392,6 +397,89 @@ public class TestTextStripper extends TestCase
             }
     }
 
+    
+    private int findOutlineItemDestPageNum(PDDocument doc, PDOutlineItem oi) throws IOException
+    {
+        PDPageDestination pageDest = (PDPageDestination) oi.getDestination();
+        
+        // two methods to get the page index, the result should be identical!
+        int indexOfPage = doc.getDocumentCatalog().getAllPages().indexOf(oi.findDestinationPage(doc));
+        int pageNum = pageDest.retrieveDestPageNumber();
+        assertEquals(indexOfPage, pageNum);
+                
+        return pageNum;
+    }
+
+    /**
+     * Test whether stripping controlled by outline items works properly. The test file has 4
+     * outline items at the top level, that point to 0-based pages 0, 2, 3 and 4. We are testing
+     * text stripping by outlines pointing to 0-based pages 2 and 3, and also text stripping of the
+     * 0-based page 2. The test makes sure that the output is different to a complete strip, not
+     * empty, different to each other when different bookmark intervals are used, but identical from
+     * bookmark intervals to strips with page intervals.
+     *
+     * @throws IOException
+     */
+    public void testStripByOutlineItems() throws IOException
+    {
+        PDDocument doc = PDDocument.load(TestPDDocumentCatalog.class.getResourceAsStream("with_outline.pdf"));
+        PDDocumentOutline outline = doc.getDocumentCatalog().getDocumentOutline();
+        PDOutlineItem oi0 = outline.getFirstChild();
+        PDOutlineItem oi2 = oi0.getNextSibling();
+        PDOutlineItem oi3 = oi2.getNextSibling();
+        PDOutlineItem oi4 = oi3.getNextSibling();
+
+        assertEquals(0, findOutlineItemDestPageNum(doc, oi0));
+        assertEquals(2, findOutlineItemDestPageNum(doc, oi2));
+        assertEquals(3, findOutlineItemDestPageNum(doc, oi3));
+        assertEquals(4, findOutlineItemDestPageNum(doc, oi4));
+
+        String textFull = stripper.getText(doc);
+        assertFalse(textFull.isEmpty());
+        
+        // this should grab 0-based pages 2 and 3, i.e. 1-based pages 3 and 4
+        // by their bookmarks
+        stripper.setStartBookmark(oi2);
+        stripper.setEndBookmark(oi3);
+        String textoi23 = stripper.getText(doc);
+        assertFalse(textoi23.isEmpty());
+        assertFalse(textoi23.equals(textFull));
+        
+        // this should grab 0-based pages 2 and 3, i.e. 1-based pages 3 and 4
+        // by their page numbers
+        stripper.setStartBookmark(null);
+        stripper.setEndBookmark(null);
+        stripper.setStartPage(3);
+        stripper.setEndPage(4);
+        String textp34 = stripper.getText(doc);
+        assertFalse(textp34.isEmpty());
+        assertFalse(textoi23.equals(textFull));
+        assertTrue(textoi23.equals(textp34));
+        
+        
+        // this should grab 0-based page 2, i.e. 1-based page 3
+        // by the bookmark
+        stripper.setStartBookmark(oi2);
+        stripper.setEndBookmark(oi2);
+        String textoi2 = stripper.getText(doc);
+        assertFalse(textoi2.isEmpty());
+        assertFalse(textoi2.equals(textoi23));
+        assertFalse(textoi23.equals(textFull));
+         
+        // this should grab 0-based page 2, i.e. 1-based page 3
+        // by the page number
+        stripper.setStartBookmark(null);
+        stripper.setEndBookmark(null);
+        stripper.setStartPage(3);
+        stripper.setEndPage(3);
+        String textp3 = stripper.getText(doc);
+        assertFalse(textp3.isEmpty());
+        assertFalse(textp3.equals(textp34));
+        assertFalse(textoi23.equals(textFull));
+        assertTrue(textoi2.equals(textp3));
+    }
+
+    
     /**
      * Set the tests in the suite for this test class.
      *

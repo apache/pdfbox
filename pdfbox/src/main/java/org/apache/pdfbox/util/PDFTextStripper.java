@@ -316,8 +316,6 @@ public class PDFTextStripper extends PDFStreamEngine
         {
             characterListMapping.clear();
         }
-        startBookmark = null;
-        endBookmark = null;
     }
     
     /**
