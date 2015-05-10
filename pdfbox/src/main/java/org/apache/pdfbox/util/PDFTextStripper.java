@@ -1083,7 +1083,7 @@ public class PDFTextStripper extends PDFStreamEngine
     /**
      * This will set the first page to be extracted by this class.
      *
-     * @param startPageValue New value of property startPage.
+     * @param startPageValue New value of 1-based startPage property.
      */
     public void setStartPage(int startPageValue)
     {
@@ -1106,7 +1106,7 @@ public class PDFTextStripper extends PDFStreamEngine
     /**
      * This will set the last page to be extracted by this class.
      *
-     * @param endPageValue New value of property endPage.
+     * @param endPageValue New value of 1-based endPage property.
      */
     public void setEndPage(int endPageValue)
     {
