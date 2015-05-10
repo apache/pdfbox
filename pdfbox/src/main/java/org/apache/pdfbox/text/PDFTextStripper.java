@@ -139,9 +139,12 @@ public class PDFTextStripper extends PDFTextStreamEngine
     private int startPage = 1;
     private int endPage = Integer.MAX_VALUE;
     private PDOutlineItem startBookmark = null;
+    
+    // 1-based bookmark pages
     private int startBookmarkPageNumber = -1;
-    private PDOutlineItem endBookmark = null;
     private int endBookmarkPageNumber = -1;
+    
+    private PDOutlineItem endBookmark = null;
     private boolean suppressDuplicateOverlappingText = true;
     private boolean shouldSeparateByBeads = true;
     private boolean sortByPosition = false;
@@ -220,8 +223,6 @@ public class PDFTextStripper extends PDFTextStreamEngine
         {
             characterListMapping.clear();
         }
-        startBookmark = null;
-        endBookmark = null;
     }
     
     /**
@@ -258,13 +259,34 @@ public class PDFTextStripper extends PDFTextStreamEngine
      */
     protected void processPages(PDPageTree pages) throws IOException
     {
-        PDPage startPage = startBookmark == null ? null :
-                startBookmark.findDestinationPage(document);
+        PDPageTree pagesTree = document.getPages();
+        
+        PDPage startBookmarkPage = startBookmark == null ? null
+                           : startBookmark.findDestinationPage(document);
+        if (startBookmarkPage != null)
+        {
+            startBookmarkPageNumber = pagesTree.indexOf(startBookmarkPage) + 1;
+        }
+        else
+        {
+            // -1 = undefined
+            startBookmarkPageNumber = -1;
+        }
 
-        PDPage endPage = endBookmark == null ? null :
-                endBookmark.findDestinationPage(document);
+        PDPage endBookmarkPage = endBookmark == null ? null
+                         : endBookmark.findDestinationPage(document);
+        if (endBookmarkPage != null)
+        {
+            endBookmarkPageNumber = pagesTree.indexOf(endBookmarkPage) + 1;
+        }
+        else
+        {
+            // -1 = undefined
+            endBookmarkPageNumber = -1;
+        }
 
-        if (startPage != null && endPage != null &&
+        if (startBookmarkPageNumber == -1 && startBookmark != null &&
+            endBookmarkPageNumber == -1 && endBookmark != null &&
             startBookmark.getCOSObject() == endBookmark.getCOSObject())
         {
             // this is a special case where both the start and end bookmark
@@ -954,7 +976,7 @@ public class PDFTextStripper extends PDFTextStreamEngine
     /**
      * This will set the first page to be extracted by this class.
      *
-     * @param startPageValue New value of property startPage.
+     * @param startPageValue New value of 1-based startPage property.
      */
     public void setStartPage(int startPageValue)
     {
@@ -977,7 +999,7 @@ public class PDFTextStripper extends PDFTextStreamEngine
     /**
      * This will set the last page to be extracted by this class.
      *
-     * @param endPageValue New value of property endPage.
+     * @param endPageValue New value of 1-based endPage property.
      */
     public void setEndPage(int endPageValue)
     {
