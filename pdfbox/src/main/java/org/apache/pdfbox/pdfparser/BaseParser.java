@@ -218,7 +218,8 @@ public abstract class BaseParser implements Closeable
     {
         if (document == null)
         {
-            throw new IOException("object reference " + key + " at offset " + pdfSource.getOffset() + " in content stream");
+            throw new IOException("object reference " + key + " at offset " + pdfSource.getOffset()
+                    + " in content stream");
         }
         return document.getObjectFromPool(key);
     }
@@ -237,90 +238,109 @@ public abstract class BaseParser implements Closeable
         skipSpaces();
         COSDictionary obj = new COSDictionary();
         boolean done = false;
-        while( !done )
+        while (!done)
         {
             skipSpaces();
-            char c = (char)pdfSource.peek();
-            if( c == '>')
+            char c = (char) pdfSource.peek();
+            if (c == '>')
             {
                 done = true;
             }
-            else
-                if(c != '/')
-                {
-                    //an invalid dictionary, we are expecting
-                    //the key, read until we can recover
-                    LOG.warn("Invalid dictionary, found: '" + c + "' but expected: '/'");
-                    int read = pdfSource.read();
-                    while(read != -1 && read != '/' && read != '>')
-                    {
-                        // in addition to stopping when we find / or >, we also want
-                        // to stop when we find endstream or endobj.
-                        if(read==E) 
-                        {
-                            read = pdfSource.read();
-                            if(read==N) 
-                            {
-                                read = pdfSource.read();
-                                if(read==D)
-                                {
-                                    read = pdfSource.read();
-                                    boolean isStream = read == S && pdfSource.read() == T && pdfSource.read() == R
-                                            && pdfSource.read() == E && pdfSource.read() == A && pdfSource.read() == M;
-
-                                    boolean isObj = !isStream && read == O && pdfSource.read() == B && pdfSource.read() == J;
-                                    if (isStream || isObj)
-                                    {
-                                        return obj; // we're done reading this object!
-                                    }
-                                }
-                            }
-                        }
-                        read = pdfSource.read();
-                    }
-                    if(read != -1)
-                    {
-                        pdfSource.unread(read);
-                    }
-                    else
-                    {
-                        return obj;
-                    }
-                }
+            else if (c == '/')
+            {
+                parseCOSDictionaryNameValuePair(obj);
+            }
             else
             {
-                COSName key = parseCOSName();
-                COSBase value = parseCOSDictionaryValue();
-                skipSpaces();
-                if( ((char)pdfSource.peek()) == 'd' )
+                // invalid dictionary, we were expecting a /Name, read until the end or until we can recover
+                LOG.warn("Invalid dictionary, found: '" + c + "' but expected: '/'");
+                if (readUntilEndOfCOSDictionary())
                 {
-                    //if the next string is 'def' then we are parsing a cmap stream
-                    //and want to ignore it, otherwise throw an exception.
-                    String potentialDEF = readString();
-                    if( !potentialDEF.equals( DEF ) )
-                    {
-                        pdfSource.unread( potentialDEF.getBytes(ISO_8859_1) );
-                    }
-                    else
-                    {
-                        skipSpaces();
-                    }
-                }
-
-                if( value == null )
-                {
-                    LOG.warn("Bad Dictionary Declaration " + pdfSource );
-                }
-                else
-                {
-                    value.setDirect(true);
-                    obj.setItem( key, value );
+                    // we couldn't recover
+                    return obj;
                 }
             }
         }
         readExpectedChar('>');
         readExpectedChar('>');
         return obj;
+    }
+
+    /**
+     * Keep reading until the end of the dictionary object or the file has been hit, or until a '/'
+     * has been found.
+     *
+     * @return true if the end of the object or the file has been found, false if not, i.e. that the
+     * caller can continue to parse the dictionary at the current position.
+     *
+     * @throws IOException if there is a reading error.
+     */
+    private boolean readUntilEndOfCOSDictionary() throws IOException
+    {
+        int c = pdfSource.read();
+        while (c != -1 && c != '/' && c != '>')
+        {
+            // in addition to stopping when we find / or >, we also want
+            // to stop when we find endstream or endobj.
+            if (c == E)
+            {
+                c = pdfSource.read();
+                if (c == N)
+                {
+                    c = pdfSource.read();
+                    if (c == D)
+                    {
+                        c = pdfSource.read();
+                        boolean isStream = c == S && pdfSource.read() == T && pdfSource.read() == R
+                                && pdfSource.read() == E && pdfSource.read() == A && pdfSource.read() == M;
+                        boolean isObj = !isStream && c == O && pdfSource.read() == B && pdfSource.read() == J;
+                        if (isStream || isObj)
+                        {
+                            // we're done reading this object!
+                            return true;
+                        }
+                    }
+                }
+            }
+            c = pdfSource.read();
+        }
+        if (c == -1)
+        {
+            return true;
+        }
+        pdfSource.unread(c);
+        return false;
+    }
+
+    private void parseCOSDictionaryNameValuePair(COSDictionary obj) throws IOException
+    {
+        COSName key = parseCOSName();
+        COSBase value = parseCOSDictionaryValue();
+        skipSpaces();
+        if (((char) pdfSource.peek()) == 'd')
+        {
+            // if the next string is 'def' then we are parsing a cmap stream
+            // and want to ignore it, otherwise throw an exception.
+            String potentialDEF = readString();
+            if (!potentialDEF.equals(DEF))
+            {
+                pdfSource.unread(potentialDEF.getBytes(ISO_8859_1));
+            }
+            else
+            {
+                skipSpaces();
+            }
+        }
+
+        if (value == null)
+        {
+            LOG.warn("Bad Dictionary Declaration " + pdfSource);
+        }
+        else
+        {
+            value.setDirect(true);
+            obj.setItem(key, value);
+        }
     }
 
     protected void skipWhiteSpaces() throws IOException
