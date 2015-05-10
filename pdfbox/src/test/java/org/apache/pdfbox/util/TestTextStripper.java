@@ -416,7 +416,8 @@ public class TestTextStripper extends TestCase
      * text stripping by outlines pointing to 0-based pages 2 and 3, and also text stripping of the
      * 0-based page 2. The test makes sure that the output is different to a complete strip, not
      * empty, different to each other when different bookmark intervals are used, but identical from
-     * bookmark intervals to strips with page intervals.
+     * bookmark intervals to strips with page intervals. When fed with orphan bookmarks, stripping
+     * must be empty.
      *
      * @throws IOException
      */
@@ -477,6 +478,13 @@ public class TestTextStripper extends TestCase
         assertFalse(textp3.equals(textp34));
         assertFalse(textoi23.equals(textFull));
         assertTrue(textoi2.equals(textp3));
+        
+        // Test with orphan bookmark
+        PDOutlineItem oiOrphan = new PDOutlineItem();
+        stripper.setStartBookmark(oiOrphan);
+        stripper.setEndBookmark(oiOrphan);
+        String textOiOrphan = stripper.getText(doc);
+        assertTrue(textOiOrphan.isEmpty());
     }
 
     
