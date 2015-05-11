@@ -18,7 +18,6 @@ package org.apache.pdfbox.pdmodel.font;
 
 import java.io.IOException;
 import java.io.InputStream;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.util.BoundingBox;
@@ -26,9 +25,11 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.encoding.DictionaryEncoding;
+import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
+import org.apache.pdfbox.pdmodel.font.encoding.GlyphList;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
 
@@ -63,8 +64,17 @@ public class PDType3Font extends PDSimpleFont
     }
 
     @Override
+    protected final void readEncoding() throws IOException
+    {
+        COSDictionary encodingDict = (COSDictionary)dict.getDictionaryObject(COSName.ENCODING);
+        encoding = new DictionaryEncoding(encodingDict);
+        glyphList = GlyphList.getZapfDingbats();
+    }
+    
+    @Override
     protected Encoding readEncodingFromFont() throws IOException
     {
+        // Type 3 fonts do not have a built-in encoding
         throw new UnsupportedOperationException("not supported for Type 3 fonts");
     }
 
