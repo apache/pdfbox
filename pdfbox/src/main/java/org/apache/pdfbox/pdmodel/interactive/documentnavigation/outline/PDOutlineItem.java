@@ -27,6 +27,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.exceptions.OutlineNotLocalException;
 import org.apache.pdfbox.pdmodel.PDDestinationNameTreeNode;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentNameDestinationDictionary;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureElement;
@@ -251,6 +252,16 @@ public class PDOutlineItem extends PDOutlineNode
                 if( destsTree != null )
                 {
                     pageDest = (PDPageDestination)destsTree.getValue( namedDest.getNamedDestination() );
+                }
+            }
+            else
+            {
+                // Look up /Dests dictionary from catalog
+                PDDocumentNameDestinationDictionary nameDestDict = doc.getDocumentCatalog().getDests();
+                if (nameDestDict != null)
+                {
+                    String name = namedDest.getNamedDestination();
+                    pageDest = (PDPageDestination) nameDestDict.getDestination(name);
                 }
             }
         }
