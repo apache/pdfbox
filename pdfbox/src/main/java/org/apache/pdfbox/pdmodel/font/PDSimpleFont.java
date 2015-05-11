@@ -92,7 +92,7 @@ public abstract class PDSimpleFont extends PDFont
      *
      * @throws IOException if the font file could not be read
      */
-    protected final void readEncoding() throws IOException
+    protected void readEncoding() throws IOException
     {
         COSBase encoding = dict.getDictionaryObject(COSName.ENCODING);
         if (encoding != null)
