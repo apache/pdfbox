@@ -41,6 +41,7 @@ import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
+import org.apache.pdfbox.pdmodel.PDDocumentNameDestinationDictionary;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -360,6 +361,20 @@ public class PDFMergerUtility
             else
             {
                 cloner.cloneMerge(srcNames, destNames);
+            }
+        }
+        
+        PDDocumentNameDestinationDictionary destDests = destCatalog.getDests();
+        PDDocumentNameDestinationDictionary srcDests = srcCatalog.getDests();
+        if (srcDests != null)
+        {
+            if (destDests == null)
+            {
+                destCatalog.getCOSDictionary().setItem(COSName.DESTS, cloner.cloneForNewDocument(srcDests));
+            }
+            else
+            {
+                cloner.cloneMerge(srcDests, destDests);
             }
         }
 
