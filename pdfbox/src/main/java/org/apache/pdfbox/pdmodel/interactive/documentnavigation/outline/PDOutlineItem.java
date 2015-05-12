@@ -210,8 +210,8 @@ public class PDOutlineItem extends PDOutlineNode
 
     /**
      * This method will attempt to find the page in this PDF document that this outline points to.
-     * If the outline does not point to anything then this method will return null.  If the outline
-     * is an action that is not a GoTo action then this methods will throw the OutlineNotLocationException
+     * If the outline does not point to anything then this method will return null. If the outline
+     * is an action that is not a GoTo action then this method will also return null.
      *
      * @param doc The document to get the page from.
      *
@@ -283,6 +283,8 @@ public class PDOutlineItem extends PDOutlineNode
             page = pageDest.getPage();
             if( page == null )
             {
+                // Malformed PDF: local destinations must have a page object,
+                // not a page number, these are meant for remote destinations.
                 int pageNumber = pageDest.getPageNumber();
                 if( pageNumber != -1 )
                 {
