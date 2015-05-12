@@ -93,7 +93,7 @@ public abstract class PDPageDestination extends PDDestination
      * PDF). If this object is referencing by page number then this method will return that number,
      * otherwise -1 will be returned.
      *
-     * @return The page number for this destination.
+     * @return The zero-based page number for this destination.
      */
     public int getPageNumber()
     {
