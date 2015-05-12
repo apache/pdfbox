@@ -39,6 +39,7 @@ import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
+import org.apache.pdfbox.pdmodel.PDDocumentNameDestinationDictionary;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -321,6 +322,20 @@ public class PDFMergerUtility
             else
             {
                 cloner.cloneMerge(srcNames, destNames);
+            }
+        }
+        
+        PDDocumentNameDestinationDictionary destDests = destCatalog.getDests();
+        PDDocumentNameDestinationDictionary srcDests = srcCatalog.getDests();
+        if (srcDests != null)
+        {
+            if (destDests == null)
+            {
+                destCatalog.getCOSObject().setItem(COSName.DESTS, cloner.cloneForNewDocument(srcDests));
+            }
+            else
+            {
+                cloner.cloneMerge(srcDests, destDests);
             }
         }
 

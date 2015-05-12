@@ -293,6 +293,20 @@ public class PDDocumentCatalog implements COSObjectable
     }
 
     /**
+     * @return The named destinations dictionary for this document or null if none exists.
+     */
+    public PDDocumentNameDestinationDictionary getDests()
+    {
+        PDDocumentNameDestinationDictionary nameDic = null;
+        COSDictionary dests = (COSDictionary) root.getDictionaryObject(COSName.DESTS);
+        if (dests != null)
+        {
+            nameDic = new PDDocumentNameDestinationDictionary(dests);
+        }
+        return nameDic;
+    }
+    
+    /**
      * Sets the names dictionary for the document.
      *
      * @param names The names dictionary that is associated with this document.

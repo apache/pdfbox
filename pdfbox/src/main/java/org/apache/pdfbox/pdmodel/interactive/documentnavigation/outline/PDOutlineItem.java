@@ -25,6 +25,7 @@ import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDestinationNameTreeNode;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentNameDestinationDictionary;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureElement;
@@ -236,13 +237,13 @@ public final class PDOutlineItem extends PDOutlineNode
             {
                 dest = ((PDActionGoTo)outlineAction).getDestination();
             }
-            else
-            {
-                return null;
-            }
+        }
+        if (dest == null)
+        {
+            return null;
         }
 
-        PDPageDestination pageDestination;
+        PDPageDestination pageDestination = null;
         if( dest instanceof PDNamedDestination )
         {
             //if we have a named destination we need to lookup the PDPageDestination
@@ -255,12 +256,18 @@ public final class PDOutlineItem extends PDOutlineNode
                 {
                     pageDestination = (PDPageDestination)destsTree.getValue( namedDest.getNamedDestination() );
                 }
-                else
+            }
+            if (pageDestination == null)
+            {
+                // Look up /Dests dictionary from catalog
+                PDDocumentNameDestinationDictionary nameDestDict = doc.getDocumentCatalog().getDests();
+                if (nameDestDict != null)
                 {
-                    return null;
+                    String name = namedDest.getNamedDestination();
+                    pageDestination = (PDPageDestination) nameDestDict.getDestination(name);
                 }
             }
-            else
+            if (pageDestination == null)
             {
                 return null;
             }
@@ -268,10 +275,6 @@ public final class PDOutlineItem extends PDOutlineNode
         else if( dest instanceof PDPageDestination)
         {
             pageDestination = (PDPageDestination) dest;
-        }
-        else if( dest == null )
-        {
-            return null;
         }
         else
         {
