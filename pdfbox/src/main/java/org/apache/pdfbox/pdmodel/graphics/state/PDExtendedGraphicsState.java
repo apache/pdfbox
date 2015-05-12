@@ -149,18 +149,8 @@ public class PDExtendedGraphicsState implements COSObjectable
      *
      * @return The underlying dictionary for this class.
      */
-    public COSDictionary getCOSDictionary()
-    {
-        return dict;
-    }
-
-    /**
-     * Convert this standard java object to a COS object.
-     *
-     * @return The cos object that matches this Java object.
-     */
     @Override
-    public COSBase getCOSObject()
+    public COSDictionary getCOSObject()
     {
         return dict;
     }
