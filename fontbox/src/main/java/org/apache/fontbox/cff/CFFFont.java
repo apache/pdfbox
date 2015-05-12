@@ -36,6 +36,7 @@ public abstract class CFFFont
     protected CFFCharset charset;
     protected final List<byte[]> charStrings = new ArrayList<byte[]>();
     protected IndexData globalSubrIndex;
+    private byte[] data;
 
     /**
      * The name of the font.
@@ -125,6 +126,26 @@ public abstract class CFFFont
         return charStrings;
     }
 
+    /**
+     * Sets the original data.
+     *
+     * @param data the original data.
+     */
+    void setData(byte[] data)
+    {
+        this.data = data;
+    }
+
+    /**
+     * Returns the the original data.
+     *
+     * @return the dictionary
+     */
+    public byte[] getData()
+    {
+        return data;
+    }
+    
     /**
      * Returns the number of charstrings in the font.
      */
