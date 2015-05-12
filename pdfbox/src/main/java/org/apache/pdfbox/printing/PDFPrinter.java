@@ -267,7 +267,7 @@ public class PDFPrinter
             {
                 if (job.printDialog(attributes))
                 {
-                    job.print();
+                    job.print(attributes);
                     return true;
                 }
             }
