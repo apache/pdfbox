@@ -287,7 +287,7 @@ public final class PDOutlineItem extends PDOutlineNode
             int pageNumber = pageDestination.getPageNumber();
             if( pageNumber != -1 )
             {
-                page = doc.getPage( pageNumber - 1 );
+                page = doc.getPage(pageNumber);
             }
         }
 
