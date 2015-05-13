@@ -89,12 +89,24 @@ public class CFFType1Font extends CFFFont implements Type1Equivalent
      */
     public Type1CharString getType1CharString(String name) throws IOException
     {
-        // some fonts have glyphs beyond their encoding, so we look up by charset SID
-        int sid = charset.getSID(name);
-        int gid = charset.getGIDForSID(sid);
+        // lookup via charset
+        int gid = nameToGID(name);
 
         // lookup in CharStrings INDEX
         return getType2CharString(gid, name);
+    }
+
+    /**
+     * Returns the GID for the given PostScript glyph name.
+     * 
+     * @param name a PostScript glyph name.
+     * @return GID
+     */
+    public int nameToGID(String name)
+    {
+        // some fonts have glyphs beyond their encoding, so we look up by charset SID
+        int sid = charset.getSID(name);
+        return charset.getGIDForSID(sid);
     }
 
     /**
