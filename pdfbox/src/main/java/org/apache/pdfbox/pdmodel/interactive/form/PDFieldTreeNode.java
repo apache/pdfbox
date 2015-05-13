@@ -19,14 +19,14 @@ package org.apache.pdfbox.pdmodel.interactive.form;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
-import org.apache.pdfbox.pdmodel.common.PDTextStream;
 import org.apache.pdfbox.pdmodel.fdf.FDFField;
 import org.apache.pdfbox.pdmodel.interactive.action.PDFormFieldAdditionalActions;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
@@ -179,31 +179,29 @@ public abstract class PDFieldTreeNode implements COSObjectable
      * 
      * Some dictionary entries allow either a text or a text stream.
      * 
-     * @param cosBaseEntry the potential text or text stream
+     * @param base the potential text or text stream
      * @return the text stream
      * @throws IOException if the field dictionary entry is not a text type
      */
-    protected PDTextStream getAsTextStream(COSBase cosBaseEntry) throws IOException
+    protected String valueToString(COSBase base) throws IOException
     {
-        if (cosBaseEntry == null)
+        if (base == null)
         {
             return null;
         }
+        else if (base instanceof COSString)
+        {
+            return ((COSString)base).getString();
+        }
+        else if (base instanceof COSStream)
+        {
+            return ((COSStream)base).getString();
+        }
         else
         {
-            PDTextStream textStream = PDTextStream.createTextStream(cosBaseEntry);
-            // This will happen if the entry was not a COSString or COSStream
-            if (textStream == null)
-            {
-                throw new IOException("Invalid field value. Unexpected type " + cosBaseEntry.getClass().getName());
-            }
-            else
-            {
-                return textStream;
-            }
+            throw new IOException("Unexpected field value of type: " + base.getClass().getName());
         }
     }
-    
     
     /**
      * Get the FT entry of the field. This is a read only field and is set depending on the actual type. The field type
@@ -400,13 +398,13 @@ public abstract class PDFieldTreeNode implements COSObjectable
 
         if (fieldValue != null)
         {
-            if (fieldValue instanceof String)
+            if (fieldValue instanceof COSString)
             {
-                setValue((String) fieldValue);
+                setValue(((COSString) fieldValue).getString());
             }
-            else if (fieldValue instanceof PDTextStream)
+            else if (fieldValue instanceof COSStream)
             {
-                setValue(((PDTextStream) fieldValue).getAsString());
+                setValue(((COSStream) fieldValue).getString());
             }
             else
             {

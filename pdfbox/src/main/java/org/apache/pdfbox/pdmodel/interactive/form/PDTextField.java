@@ -17,12 +17,10 @@
 package org.apache.pdfbox.pdmodel.interactive.form;
 
 import java.io.IOException;
-
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.pdmodel.common.PDTextStream;
 
 /**
  * A text field is a box or space for text fill-in data typically entered from a keyboard.
@@ -256,16 +254,11 @@ public final class PDTextField extends PDVariableText
         return "";
     }    
     
-    
-    
     /**
-     * Set the fields value.
+     * Set the field's value.
      * 
      * The value is stored in the field dictionaries "V" entry.
-     * <p>
-     * For long text it's more efficient to provide the text content as a
-     * text stream {@link #setValue(PDTextStream)}
-     * </p>
+     * 
      * @param value the value
      * @throws IOException if there is an error setting the field value
      */
@@ -287,32 +280,7 @@ public final class PDTextField extends PDVariableText
     }
     
     /**
-     * Set the fields value.
-     * 
-     * The value is stored in the field dictionaries "V" entry.
-     * 
-     * @param textStream the value
-     * @throws IOException if there is an error setting the field value
-     */
-    public void setValue(PDTextStream textStream) throws IOException
-    {
-        if (textStream != null)
-        {
-            setInheritableAttribute(COSName.V, textStream.getCOSObject());
-        }  
-        else
-        {
-            removeInheritableAttribute(COSName.V);
-        }
-        
-        // TODO move appearance generation out of fields PD model
-        updateFieldAppearances();
-    }
-    
-    
-
-    /**
-     * Get the fields value.
+     * Get the field's value.
      * 
      * The value is stored in the field dictionaries "V" entry.
      * 
@@ -322,25 +290,11 @@ public final class PDTextField extends PDVariableText
     @Override
     public String getValue() throws IOException
     {
-        PDTextStream textStream = getAsTextStream(getInheritableAttribute(COSName.V));
-
-        if (textStream != null) 
+        String string = valueToString(getInheritableAttribute(COSName.V));
+        if (string != null) 
         {
-            return textStream.getAsString();
+            return string;
         }
         return "";
-    }
-    
-    /**
-     * Get the fields value.
-     * 
-     * The value is stored in the field dictionaries "V" entry.
-     * 
-     * @return The value of this entry.
-     * @throws IOException if the field dictionary entry is not a text type
-     */
-    public PDTextStream getValueAsStream() throws IOException
-    {
-        return getAsTextStream(getInheritableAttribute(COSName.V));
     }
 }

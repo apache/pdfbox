@@ -19,6 +19,7 @@ package org.apache.pdfbox.cos;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
@@ -492,6 +493,30 @@ public class COSStream extends COSDictionary implements Closeable
         return getDictionaryObject(COSName.FILTER);
     }
 
+    /**
+     * Returns the contents of the stream as a text string.
+     */
+    public String getString()
+    {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        InputStream input = null;
+        try
+        {
+            input = getUnfilteredStream();
+            IOUtils.copy(input, out);
+        }
+        catch (IOException e)
+        {
+            return "";
+        }
+        finally
+        {
+            IOUtils.closeQuietly(input);
+        }
+        COSString string = new COSString(out.toByteArray());
+        return string.getString();
+    }
+    
     /**
      * This will create a new stream for which filtered byte should be
      * written to.  You probably don't want this but want to use the
