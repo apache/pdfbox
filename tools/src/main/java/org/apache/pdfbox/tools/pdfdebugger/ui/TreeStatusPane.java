@@ -52,7 +52,6 @@ public class TreeStatusPane extends JPanel implements MouseListener
     {
         if (this.getComponent(0) == statusTextEditField)
         {
-            System.out.println("removing edit box");
             this.removeAll();
             this.revalidate();
             this.repaint();
@@ -76,7 +75,6 @@ public class TreeStatusPane extends JPanel implements MouseListener
     {
         if (mouseEvent.getClickCount() == 2 && !mouseEvent.isConsumed())
         {
-            System.out.println("here");
             statusLabel.setText("");
             mouseEvent.consume();
             this.remove(statusLabel);
