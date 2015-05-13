@@ -291,6 +291,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName JBIG2_DECODE = new COSName("JBIG2Decode");
     public static final COSName JBIG2_GLOBALS = new COSName("JBIG2Globals");
     public static final COSName JPX_DECODE = new COSName("JPXDecode");
+    public static final COSName JS = new COSName("JS");
     // K
     public static final COSName K = new COSName("K");
     public static final COSName KEYWORDS = new COSName("Keywords");

@@ -22,7 +22,6 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.pdmodel.common.PDTextStream;
 
 /**
  * Base class for fields which use "Variable Text".
@@ -49,7 +48,7 @@ public abstract class PDVariableText extends PDField
     public static final int QUADDING_RIGHT = 2;
 
     /**
-     * @see PDField#PDField(PDAcroForm,COSDictionary)
+     * @see PDField#PDField(PDAcroForm)
      *
      * @param theAcroForm The acroform.
      */
@@ -184,26 +183,12 @@ public abstract class PDVariableText extends PDField
      */
     public String getRichTextValue() throws IOException
     {
-        PDTextStream textStream = getAsTextStream(getInheritableAttribute(COSName.RV));
-        
-        if (textStream != null)
+        String string = valueToString(getInheritableAttribute(COSName.RV));
+        if (string != null)
         {
-            return textStream.getAsString();
+            return string;
         }
         return "";
-    }
-    
-    /**
-     * Get the fields rich text value.
-     * 
-     * The value is stored in the field dictionaries "V" entry.
-     * 
-     * @return The value of this entry.
-     * @throws IOException if the field dictionary entry is not a text type
-     */
-    public PDTextStream getRichTextValueAsStream() throws IOException
-    {
-        return getAsTextStream(getInheritableAttribute(COSName.RV));
     }
     
     /**
@@ -215,10 +200,6 @@ public abstract class PDVariableText extends PDField
      * <br/>
      * You can set {@link PDAcroForm#setNeedAppearances(Boolean)} to
      * signal a conforming reader to generate the appearance stream.
-     * </p>
-     * <p>
-     * For long text it's more efficient to provide the text content as a
-     * text stream {@link #setRichTextValue(PDTextStream)}
      * </p>
      * 
      * Providing null as the value will remove the default style string.
@@ -236,30 +217,4 @@ public abstract class PDVariableText extends PDField
             getCOSObject().removeItem(COSName.RV);
         }        
     }
-    
-    
-    /**
-     * Set the fields rich text value.
-     * 
-     * Setting the rich text value will not generate the appearance
-     * for the field.
-     * 
-     * You can set {@link PDAcroForm#setNeedAppearances(Boolean)} to
-     * signal a conforming reader to generate the appearance stream.
-     * 
-     * Providing null as the value will remove the default style string.
-     * 
-     * @param richTextValue a rich text string
-     */
-    public void setRichTextValue(PDTextStream richTextValue)
-    {
-        if (richTextValue != null)
-        {
-            getCOSObject().setItem(COSName.RV, richTextValue.getCOSObject());
-        }
-        else
-        {
-            getCOSObject().removeItem(COSName.RV);
-        }        
-    } 
 }

@@ -17,10 +17,8 @@
 package org.apache.pdfbox.pdmodel.interactive.form;
 
 import java.io.IOException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.pdmodel.common.PDTextStream;
 
 /**
  * (Re-) Generate the appearance for a field.
@@ -53,16 +51,11 @@ public final class AppearanceGenerator
     
                 
             fieldValue = field.getValue();
-
             
             // TODO: implement the handling for additional values.
             if (fieldValue instanceof String)
             {
                 apHelper.setAppearanceValue((String) fieldValue);
-            } 
-            else if (fieldValue instanceof PDTextStream)
-            {
-                apHelper.setAppearanceValue(((PDTextStream) fieldValue).getAsString());
             }
             else if (fieldValue != null)
             {
