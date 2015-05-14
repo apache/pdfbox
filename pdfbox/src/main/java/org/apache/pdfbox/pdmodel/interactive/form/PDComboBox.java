@@ -36,7 +36,7 @@ public final class PDComboBox extends PDChoice
      */
     public PDComboBox(PDAcroForm acroForm)
     {
-        super( acroForm );
+        super(acroForm);
         setCombo(true);
     }    
 
@@ -67,7 +67,7 @@ public final class PDComboBox extends PDChoice
      *
      * @param edit The value for Edit.
      */
-    public void setEdit( boolean edit )
+    public void setEdit(boolean edit)
     {
         dictionary.setFlag(COSName.FF, FLAG_EDIT, edit);
     }

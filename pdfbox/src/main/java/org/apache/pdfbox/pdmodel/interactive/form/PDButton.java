@@ -59,7 +59,7 @@ public abstract class PDButton extends PDTerminalField
      */
     public PDButton(PDAcroForm acroForm)
     {
-        super( acroForm );
+        super(acroForm);
         dictionary.setItem(COSName.FT, COSName.BTN);
     }
     
@@ -90,7 +90,7 @@ public abstract class PDButton extends PDTerminalField
      *
      * @param pushbutton if true the button field is treated as a push button field.
      */
-    public void setPushButton( boolean pushbutton )
+    public void setPushButton(boolean pushbutton)
     {
         dictionary.setFlag(COSName.FF, FLAG_PUSHBUTTON, pushbutton);
     }
@@ -110,7 +110,7 @@ public abstract class PDButton extends PDTerminalField
      *
      * @param radiobutton if true the button field is treated as a radio button field.
      */
-    public void setRadioButton( boolean radiobutton )
+    public void setRadioButton(boolean radiobutton)
     {
         dictionary.setFlag(COSName.FF, FLAG_RADIO, radiobutton);
     }   
@@ -177,7 +177,7 @@ public abstract class PDButton extends PDTerminalField
         {
             return COSArrayList.convertCOSStringCOSArrayToList((COSArray)value);
         }
-        return Collections.<String>emptyList();
+        return Collections.emptyList();
     }
     
     /**

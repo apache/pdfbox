@@ -36,7 +36,7 @@ public class PDPushButton extends PDButton
      */
     public PDPushButton(PDAcroForm acroForm)
     {
-        super( acroForm );
+        super(acroForm);
         setPushButton(true);
     }
     
@@ -47,7 +47,7 @@ public class PDPushButton extends PDButton
      * @param field the PDF object to represent as a field.
      * @param parent the parent node of the node
      */
-    PDPushButton( PDAcroForm acroForm, COSDictionary field, PDNonTerminalField parent)
+    PDPushButton(PDAcroForm acroForm, COSDictionary field, PDNonTerminalField parent)
     {
         super(acroForm, field, parent);
     }
@@ -71,7 +71,7 @@ public class PDPushButton extends PDButton
     @Override
     public List<String> getOptions()
     {
-        return Collections.<String>emptyList();
+        return Collections.emptyList();
     }
     
     @Override
