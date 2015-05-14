@@ -438,6 +438,24 @@ public class TestTextStripper extends TestCase
         String textFull = stripper.getText(doc);
         assertFalse(textFull.isEmpty());
         
+        String expectedTextFull = 
+                "First level 1\n"
+                + "First level 2\n"
+                + "Fist level 3\n"
+                + "Some content\r\n"
+                + "Some other content\r\n"
+                + "Second at level 1\n"
+                + "Second level 2\n"
+                + "Content\r\n"
+                + "Third level 1\n"
+                + "Third level 2\n"
+                + "Third level 3\n"
+                + "Content\r\n"
+                + "Fourth level 1\n"
+                + "Content\r\n"
+                + "Content\r\n";
+        assertEquals(expectedTextFull, textFull);
+        
         // this should grab 0-based pages 2 and 3, i.e. 1-based pages 3 and 4
         // by their bookmarks
         stripper.setStartBookmark(oi2);
@@ -445,6 +463,16 @@ public class TestTextStripper extends TestCase
         String textoi23 = stripper.getText(doc);
         assertFalse(textoi23.isEmpty());
         assertFalse(textoi23.equals(textFull));
+        
+        String expectedTextoi23 = 
+                "Second at level 1\n"
+                + "Second level 2\n"
+                + "Content\r\n"
+                + "Third level 1\n"
+                + "Third level 2\n"
+                + "Third level 3\n"
+                + "Content\r\n";
+        assertEquals(expectedTextoi23, textoi23);
         
         // this should grab 0-based pages 2 and 3, i.e. 1-based pages 3 and 4
         // by their page numbers
@@ -466,6 +494,13 @@ public class TestTextStripper extends TestCase
         assertFalse(textoi2.isEmpty());
         assertFalse(textoi2.equals(textoi23));
         assertFalse(textoi23.equals(textFull));
+        
+        String expectedTextoi2 = 
+                "Second at level 1\n"
+                + "Second level 2\n"
+                + "Content\r\n";        
+        assertEquals(expectedTextoi2, textoi2);
+        
          
         // this should grab 0-based page 2, i.e. 1-based page 3
         // by the page number
