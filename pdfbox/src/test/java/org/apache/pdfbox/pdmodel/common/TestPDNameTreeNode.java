@@ -41,7 +41,7 @@ public class TestPDNameTreeNode extends TestCase
     @Override
     protected void setUp() throws Exception
     {
-        this.node5 = new PDNameTreeNode(COSInteger.class);
+        this.node5 = new PDIntegerNameTreeNode();
         SortedMap<String, COSObjectable> names = new TreeMap<String, COSObjectable>();
         names.put("Actinium", COSInteger.get(89));
         names.put("Aluminum", COSInteger.get(13));
@@ -52,7 +52,7 @@ public class TestPDNameTreeNode extends TestCase
         names.put("Astatine", COSInteger.get(85));
         this.node5.setNames(names);
 
-        this.node24 = new PDNameTreeNode(COSInteger.class);
+        this.node24 = new PDIntegerNameTreeNode();
         names = new TreeMap<String, COSObjectable>();
         names.put("Xenon", COSInteger.get(54));
         names.put("Ytterbium", COSInteger.get(70));
@@ -61,7 +61,7 @@ public class TestPDNameTreeNode extends TestCase
         names.put("Zirconium", COSInteger.get(40));
         this.node24.setNames(names);
 
-        this.node2 = new PDNameTreeNode(COSInteger.class);
+        this.node2 = new PDIntegerNameTreeNode();
         List<PDNameTreeNode> kids = this.node2.getKids();
         if (kids == null)
         {
@@ -70,7 +70,7 @@ public class TestPDNameTreeNode extends TestCase
         kids.add(this.node5);
         this.node2.setKids(kids);
 
-        this.node4 = new PDNameTreeNode(COSInteger.class);
+        this.node4 = new PDIntegerNameTreeNode();
         kids = this.node4.getKids();
         if (kids == null)
         {
@@ -79,7 +79,7 @@ public class TestPDNameTreeNode extends TestCase
         kids.add(this.node24);
         this.node4.setKids(kids);
 
-        this.node1 = new PDNameTreeNode(COSInteger.class);
+        this.node1 = new PDIntegerNameTreeNode();
         kids = this.node1.getKids();
         if (kids == null)
         {

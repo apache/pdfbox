@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
@@ -32,39 +33,33 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
 
 /**
- * This class represents a PDF Name tree.  See the PDF Reference 1.5 section 3.8.5
- * for more details.
+ * This class represents a node in a name tree.
  *
  * @author Ben Litchfield
  */
-public class PDNameTreeNode implements COSObjectable
+public abstract class PDNameTreeNode<T extends COSObjectable> implements COSObjectable
 {
     private static final Log LOG = LogFactory.getLog(PDNameTreeNode.class);
+    
     private final COSDictionary node;
-    private Class<? extends COSObjectable> valueType = null;
-    private PDNameTreeNode parent = null;
+    private PDNameTreeNode parent;
 
     /**
      * Constructor.
-     *
-     * @param valueClass The PD Model type of object that is the value.
      */
-    public PDNameTreeNode( Class<? extends COSObjectable> valueClass )
+    protected PDNameTreeNode()
     {
         node = new COSDictionary();
-        valueType = valueClass;
     }
 
     /**
      * Constructor.
      *
      * @param dict The dictionary that holds the name information.
-     * @param valueClass The PD Model type of object that is the value.
      */
-    public PDNameTreeNode( COSDictionary dict, Class<? extends COSObjectable> valueClass )
+    protected PDNameTreeNode( COSDictionary dict )
     {
         node = dict;
-        valueType = valueClass;
     }
 
     /**
@@ -108,24 +103,24 @@ public class PDNameTreeNode implements COSObjectable
     {
         return parent == null;
     }
+    
     /**
      * Return the children of this node.  This list will contain PDNameTreeNode objects.
      *
      * @return The list of children or null if there are no children.
      */
-    public List<PDNameTreeNode> getKids()
+    public List<PDNameTreeNode<T>> getKids()
     {
-
-        List<PDNameTreeNode> retval = null;
+        List<PDNameTreeNode<T>> retval = null;
         COSArray kids = (COSArray)node.getDictionaryObject( COSName.KIDS );
         if( kids != null )
         {
-            List<PDNameTreeNode> pdObjects = new ArrayList<PDNameTreeNode>();
+            List<PDNameTreeNode<T>> pdObjects = new ArrayList<PDNameTreeNode<T>>();
             for( int i=0; i<kids.size(); i++ )
             {
                 pdObjects.add( createChildNode( (COSDictionary)kids.getObject(i) ) );
             }
-            retval = new COSArrayList<PDNameTreeNode>(pdObjects,kids);
+            retval = new COSArrayList<PDNameTreeNode<T>>(pdObjects, kids);
         }
 
         return retval;
@@ -136,7 +131,7 @@ public class PDNameTreeNode implements COSObjectable
      *
      * @param kids The children of this named tree.
      */
-    public void setKids( List<? extends PDNameTreeNode> kids )
+    public void setKids( List<? extends PDNameTreeNode<T>> kids )
     {
         if (kids != null && kids.size() > 0)
         {
@@ -169,7 +164,7 @@ public class PDNameTreeNode implements COSObjectable
         }
         else
         {
-            List<PDNameTreeNode> kids = getKids();
+            List<PDNameTreeNode<T>> kids = getKids();
             if (kids != null && kids.size() > 0)
             {
                 PDNameTreeNode firstKid = kids.get(0);
@@ -183,13 +178,14 @@ public class PDNameTreeNode implements COSObjectable
             {
                 try 
                 {
-                    Map<String, COSObjectable> names = getNames();
+                    Map<String, T> names = getNames();
                     if (names != null && names.size() > 0)
                     {
-                        Object[] keys = names.keySet().toArray();
-                        String lowerLimit = (String)keys[0];
+                        Set<String> strings = names.keySet();
+                        String[] keys = strings.toArray(new String[strings.size()]);
+                        String lowerLimit = keys[0];
                         setLowerLimit(lowerLimit);
-                        String upperLimit = (String)keys[keys.length-1];
+                        String upperLimit = keys[keys.length-1];
                         setUpperLimit(upperLimit);
                     }
                     else
@@ -205,31 +201,30 @@ public class PDNameTreeNode implements COSObjectable
             }
         }
     }
+    
     /**
      * The name to retrieve.
      *
      * @param name The name in the tree.
-     *
      * @return The value of the name in the tree.
-     *
      * @throws IOException If an there is a problem creating the destinations.
      */
-    public Object getValue( String name ) throws IOException
+    public T getValue( String name ) throws IOException
     {
-        Object retval = null;
-        Map<String, COSObjectable> names = getNames();
+        T retval = null;
+        Map<String, T> names = getNames();
         if( names != null )
         {
             retval = names.get( name );
         }
         else
         {
-            List<PDNameTreeNode> kids = getKids();
+            List<PDNameTreeNode<T>> kids = getKids();
             if (kids != null)
             {
                 for( int i=0; i<kids.size() && retval == null; i++ )
                 {
-                    PDNameTreeNode childNode = kids.get( i );
+                    PDNameTreeNode<T> childNode = kids.get( i );
                     if( childNode.getLowerLimit().compareTo( name ) <= 0 &&
                         childNode.getUpperLimit().compareTo( name ) >= 0 )
                     {
@@ -245,7 +240,6 @@ public class PDNameTreeNode implements COSObjectable
         return retval;
     }
 
-
     /**
      * This will return a map of names. The key will be a string, and the
      * value will depend on where this class is being used.
@@ -254,12 +248,12 @@ public class PDNameTreeNode implements COSObjectable
      *         contains no 'Names' entry
      * @throws IOException If there is an error while creating the sub types.
      */
-    public Map<String, COSObjectable> getNames() throws IOException
+    public Map<String, T> getNames() throws IOException
     {
         COSArray namesArray = (COSArray)node.getDictionaryObject( COSName.NAMES );
         if( namesArray != null )
         {
-            Map<String, COSObjectable> names = new LinkedHashMap<String, COSObjectable>();
+            Map<String, T> names = new LinkedHashMap<String, T>();
             for( int i=0; i<namesArray.size(); i+=2 )
             {
                 COSString key = (COSString)namesArray.getObject(i);
@@ -283,10 +277,7 @@ public class PDNameTreeNode implements COSObjectable
      * @return The converted PD Model object.
      * @throws IOException If there is an error during creation.
      */
-    protected COSObjectable convertCOSToPD( COSBase base ) throws IOException
-    {
-        return base;
-    }
+    protected abstract T convertCOSToPD( COSBase base ) throws IOException;
 
     /**
      * Create a child node object.
@@ -294,10 +285,7 @@ public class PDNameTreeNode implements COSObjectable
      * @param dic The dictionary for the child node object to refer to.
      * @return The new child node object.
      */
-    protected PDNameTreeNode createChildNode( COSDictionary dic )
-    {
-        return new PDNameTreeNode(dic,valueType);
-    }
+    protected abstract PDNameTreeNode<T> createChildNode( COSDictionary dic );
 
     /**
      * Set the names of for this node.  The keys should be java.lang.String and the
@@ -306,7 +294,7 @@ public class PDNameTreeNode implements COSObjectable
      *
      * @param names map of names to objects, or <code>null</code>
      */
-    public void setNames( Map<String, ? extends COSObjectable> names )
+    public void setNames( Map<String, T> names )
     {
         if( names == null )
         {

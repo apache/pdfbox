@@ -24,12 +24,10 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Map;
 import org.apache.pdfbox.io.IOUtils;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDEmbeddedFilesNameTreeNode;
-import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDComplexFileSpecification;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
@@ -241,10 +239,10 @@ public class ExtractText
                     PDEmbeddedFilesNameTreeNode embeddedFiles = names.getEmbeddedFiles();
                     if (embeddedFiles != null)
                     {
-                        Map<String,COSObjectable> embeddedFileNames = embeddedFiles.getNames();
+                        Map<String, PDComplexFileSpecification> embeddedFileNames = embeddedFiles.getNames();
                         if (embeddedFileNames != null)
                         {
-                            for (Map.Entry<String,COSObjectable> ent : embeddedFileNames.entrySet()) 
+                            for (Map.Entry<String, PDComplexFileSpecification> ent : embeddedFileNames.entrySet()) 
                             {
                                 if (debug)
                                 {

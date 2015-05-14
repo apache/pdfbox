@@ -23,12 +23,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.apache.pdfbox.io.IOUtils;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDEmbeddedFilesNameTreeNode;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDComplexFileSpecification;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
@@ -74,15 +72,15 @@ public class ExtractEmbeddedFiles
                 PDEmbeddedFilesNameTreeNode efTree = namesDictionary.getEmbeddedFiles();
                 if (efTree != null)
                 {
-                    Map<String,COSObjectable> names = efTree.getNames();
+                    Map<String, PDComplexFileSpecification> names = efTree.getNames();
                     if (names != null)
                     {
                         extractFiles(names, filePath);
                     }
                     else
                     {
-                        List<PDNameTreeNode> kids = efTree.getKids();
-                        for (PDNameTreeNode node : kids)
+                        List<PDNameTreeNode<PDComplexFileSpecification>> kids = efTree.getKids();
+                        for (PDNameTreeNode<PDComplexFileSpecification> node : kids)
                         {
                             names = node.getNames();
                             extractFiles(names, filePath);
@@ -116,13 +114,13 @@ public class ExtractEmbeddedFiles
         }
     }
 
-    private static void extractFiles(Map<String,COSObjectable> names, String filePath) 
+    private static void extractFiles(Map<String, PDComplexFileSpecification> names, String filePath) 
             throws IOException
     {
-        for (Entry<String,COSObjectable> entry : names.entrySet())
+        for (Entry<String, PDComplexFileSpecification> entry : names.entrySet())
         {
             String filename = entry.getKey();
-            PDComplexFileSpecification fileSpec = (PDComplexFileSpecification) entry.getValue();
+            PDComplexFileSpecification fileSpec = entry.getValue();
             PDEmbeddedFile embeddedFile = getEmbeddedFile(fileSpec);
             extractFile(filePath, filename, embeddedFile);
         }

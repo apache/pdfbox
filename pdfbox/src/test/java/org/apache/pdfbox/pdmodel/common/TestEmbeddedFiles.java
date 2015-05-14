@@ -85,19 +85,17 @@ public class TestEmbeddedFiles extends TestCase
         PDDocumentCatalog catalog = doc.getDocumentCatalog();
         PDDocumentNameDictionary names = catalog.getNames();
         PDEmbeddedFilesNameTreeNode treeNode = names.getEmbeddedFiles();
-        List<PDNameTreeNode> kids = treeNode.getKids();
+        List<PDNameTreeNode<PDComplexFileSpecification>> kids = treeNode.getKids();
         for (PDNameTreeNode kid : kids)
         {
-            Map<String, COSObjectable> tmpNames = kid.getNames();
+            Map<String, PDComplexFileSpecification> tmpNames = kid.getNames();
             COSObjectable obj = tmpNames.get("My first attachment");
-            if (obj instanceof PDComplexFileSpecification)
-            {
-                PDComplexFileSpecification spec = (PDComplexFileSpecification) obj;
-                nonOSFile = spec.getEmbeddedFile();
-                macFile = spec.getEmbeddedFileMac();
-                dosFile = spec.getEmbeddedFileDos();
-                unixFile = spec.getEmbeddedFileUnix();
-            }
+            
+            PDComplexFileSpecification spec = (PDComplexFileSpecification) obj;
+            nonOSFile = spec.getEmbeddedFile();
+            macFile = spec.getEmbeddedFileMac();
+            dosFile = spec.getEmbeddedFileDos();
+            unixFile = spec.getEmbeddedFileUnix();
         }
 
         assertTrue("non os specific",
