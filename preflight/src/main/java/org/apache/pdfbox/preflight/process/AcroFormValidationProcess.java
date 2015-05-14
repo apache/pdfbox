@@ -21,28 +21,28 @@
 
 package org.apache.pdfbox.preflight.process;
 
-import static org.apache.pdfbox.preflight.PreflightConfiguration.ANNOTATIONS_PROCESS;
-import static org.apache.pdfbox.preflight.PreflightConstants.ACROFORM_DICTIONARY_KEY_NEED_APPEARANCES;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ACTION_FORBIDDEN_ADDITIONAL_ACTIONS_FIELD;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ACTION_FORBIDDEN_WIDGET_ACTION_FIELD;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_DICT_INVALID;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_NOCATALOG;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_BODY;
-
 import java.io.IOException;
 import java.util.List;
-
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.interactive.action.PDFormFieldAdditionalActions;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
-import org.apache.pdfbox.pdmodel.interactive.form.PDFieldTreeNode;
+import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.utils.ContextHelper;
+
+
+import static org.apache.pdfbox.preflight.PreflightConfiguration.ANNOTATIONS_PROCESS;
+import static org.apache.pdfbox.preflight.PreflightConstants.ACROFORM_DICTIONARY_KEY_NEED_APPEARANCES;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ACTION_FORBIDDEN_ADDITIONAL_ACTIONS_FIELD;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ACTION_FORBIDDEN_WIDGET_ACTION_FIELD;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_BODY;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_DICT_INVALID;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_NOCATALOG;
 
 public class AcroFormValidationProcess extends AbstractProcess
 {
@@ -93,7 +93,7 @@ public class AcroFormValidationProcess extends AbstractProcess
     /**
      * This function explores all fields and their children to validate them.
      * 
-     * @see #validateField(PreflightContext, PDFieldTreeNode) 
+     * @see #validateField(PreflightContext, PDField) 
      * 
      * @param ctx the preflight context.
      * @param lFields the list of fields, can be null.
@@ -107,9 +107,9 @@ public class AcroFormValidationProcess extends AbstractProcess
             // the list can be null if the field doesn't have children
             for (Object obj : lFields)
             {
-                if (obj instanceof PDFieldTreeNode)
+                if (obj instanceof PDField)
                 {
-                    if (!validateField(ctx, (PDFieldTreeNode) obj))
+                    if (!validateField(ctx, (PDField) obj))
                     {
                         return false;
                     }
@@ -141,7 +141,7 @@ public class AcroFormValidationProcess extends AbstractProcess
      * @return the result of the check for A or AA entries.
      * @throws IOException
      */
-    protected boolean validateField(PreflightContext ctx, PDFieldTreeNode aField) throws IOException
+    protected boolean validateField(PreflightContext ctx, PDField aField) throws IOException
     {
         boolean res = true;
         PDFormFieldAdditionalActions aa = aField.getActions();

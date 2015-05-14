@@ -30,50 +30,35 @@ import org.apache.pdfbox.cos.COSDictionary;
 public class PDPushButton extends PDButton
 {
     /**
-     * @see PDFieldTreeNode#PDFieldTreeNode(PDAcroForm)
+     * @see PDField#PDField(PDAcroForm)
      *
-     * @param theAcroForm The acroform.
+     * @param acroForm The acroform.
      */
-    public PDPushButton(PDAcroForm theAcroForm)
+    public PDPushButton(PDAcroForm acroForm)
     {
-        super( theAcroForm );
+        super( acroForm );
         setPushButton(true);
     }
     
     /**
      * Constructor.
      * 
-     * @param theAcroForm The form that this field is part of.
+     * @param acroForm The form that this field is part of.
      * @param field the PDF object to represent as a field.
-     * @param parentNode the parent node of the node to be created
+     * @param parent the parent node of the node
      */
-    public PDPushButton( PDAcroForm theAcroForm, COSDictionary field, PDFieldTreeNode parentNode)
+    PDPushButton( PDAcroForm acroForm, COSDictionary field, PDNonTerminalField parent)
     {
-        super(theAcroForm, field, parentNode);
+        super(acroForm, field, parent);
     }
     
-    /**
-     * Get the fields default value.
-     * 
-     * A push button field does not have a field value.
-     * 
-     * @return This will always return an empty string.
-     */
     @Override
     public String getDefaultValue()
     {
         // PushButton fields don't support the "DV" entry.
         return "";
     }    
-
-    /**
-     * Set the fields default value.
-     * 
-     * A push button field does not have a field value.
-     * 
-     * @param defaultValue The field doesn't support setting any value
-     * @throws IllegalArgumentException when trying to set a value other than null
-     */
+    
     @Override
     public void setDefaultValue(String defaultValue)
     {
@@ -82,28 +67,13 @@ public class PDPushButton extends PDButton
             throw new IllegalArgumentException("A PDPushButton shall not use the DV entry in the field dictionary");
         }
     }
-
-    /**
-     * Get the fields options.
-     * 
-     * A push button field does not have option value.
-     * 
-     * @return This will always return an empty List.
-     */
+    
     @Override
     public List<String> getOptions()
     {
         return Collections.<String>emptyList();
     }
-
-    /**
-     * Set the fields options.
-     * 
-     * A push button field does not have a option values.
-     * 
-     * @param values The field doesn't support setting any option value
-     * @throws IllegalArgumentException when trying to set the a value other than null or an empty list.
-     */
+    
     @Override
     public void setOptions(List<String> values)
     {
@@ -113,28 +83,13 @@ public class PDPushButton extends PDButton
         }
     }
     
-    /**
-     * Get the fields value.
-     * 
-     * A push button field does not have field value.
-     * 
-     * @return This will always return an empty String.
-     */    
     @Override
     public String getValue()
     {
         // PushButton fields don't support the "V" entry.
         return "";
     }
-
-    /**
-     * Set the fields value.
-     * 
-     * A push button field does not have a field value.
-     * 
-     * @param fieldValue The field doesn't support setting any field value.
-     * @throws IllegalArgumentException when trying to set the a value other than null or an empty String.
-     */
+    
     @Override
     public void setValue(String fieldValue)
     {

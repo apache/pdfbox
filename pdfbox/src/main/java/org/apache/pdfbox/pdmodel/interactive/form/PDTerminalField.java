@@ -16,28 +16,27 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import java.io.IOException;
+
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.interactive.action.PDFormFieldAdditionalActions;
 
 /**
- * A non terminal field in an interactive form.
- * 
- * A non terminal field is a node in the fields tree node whose descendants
- * are fields. 
- * 
- * The attributes such as FT (field type) or V (field value) do not logically
- * belong to the non terminal field but are inheritable attributes
- * for descendant terminal fields.
+ * A field in an interactive form.
+ * Fields may be one of four types: button, text, choice, or signature.
+ *
+ * @author sug
  */
-public class PDNonTerminalField extends PDField
+public abstract class PDTerminalField extends PDField
 {
     /**
      * Constructor.
      * 
      * @param acroForm The form that this field is part of.
      */
-    public PDNonTerminalField(PDAcroForm acroForm)
+    protected PDTerminalField(PDAcroForm acroForm)
     {
         super(acroForm);
     }
@@ -47,11 +46,21 @@ public class PDNonTerminalField extends PDField
      * 
      * @param acroForm The form that this field is part of.
      * @param field the PDF object to represent as a field.
-     * @param parent the parent node of the node to be created
+     * @param parent the parent node of the node
      */
-    PDNonTerminalField(PDAcroForm acroForm, COSDictionary field, PDNonTerminalField parent)
+    PDTerminalField(PDAcroForm acroForm, COSDictionary field, PDNonTerminalField parent)
     {
         super(acroForm, field, parent);
+    }
+
+    /**
+     * Set the actions of the field.
+     * 
+     * @param actions The field actions.
+     */
+    public void setActions(PDFormFieldAdditionalActions actions)
+    {
+        dictionary.setItem(COSName.AA, actions);
     }
     
     @Override
@@ -63,42 +72,37 @@ public class PDNonTerminalField extends PDField
         {
             retval = ff.intValue();
         }
-        // There is no need to look up the parent hierarchy within a non terminal field
+        else if (parent != null)
+        {
+            retval = parent.getFieldFlags();
+        }
         return retval;
     }
     
     @Override
     public String getFieldType()
     {
-        // There is no need to look up the parent hierarchy within a non terminal field
-        return dictionary.getNameAsString(COSName.FT);
+        String fieldType = dictionary.getNameAsString(COSName.FT);
+        if (fieldType == null && parent != null)
+        {
+            fieldType = parent.getFieldType();
+        }
+        return fieldType;
     }
     
-    @Override
-    public Object getValue()
+    /**
+     * Update the fields appearance stream.
+     * 
+     * The fields appearance stream needs to be updated to reflect the new field
+     * value. This will be done only if the NeedAppearances flag has not been set.
+     * 
+     * @throws IOException if the appearance couldn't be generated
+     */
+    protected void updateFieldAppearances() throws IOException
     {
-        // There is no need to look up the parent hierarchy within a non terminal field
-        return dictionary.getNameAsString(COSName.V);
-    }
-    
-    @Override
-    public void setValue(String fieldValue)
-    {
-        // There is no need to look up the parent hierarchy within a non terminal field
-        dictionary.setString(COSName.V, fieldValue);
-    }
-    
-    @Override
-    public Object getDefaultValue()
-    {
-        // There is no need to look up the parent hierarchy within a non terminal field
-        return dictionary.getNameAsString(COSName.V);
-    }
-    
-    @Override
-    public void setDefaultValue(String defaultValue)
-    {
-        // There is no need to look up the parent hierarchy within a non terminal field
-        dictionary.setString(COSName.V, defaultValue);
+        if (!acroForm.isNeedAppearances())
+        {
+            AppearanceGenerator.generateFieldAppearances(this);
+        }
     }
 }

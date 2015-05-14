@@ -145,7 +145,7 @@ public class TestFields extends TestCase
             
             // assert that there is no value, set the field value and
             // ensure it has been set 
-            PDFieldTreeNode field = form.getField("TextField");
+            PDField field = form.getField("TextField");
             assertNull(field.getCOSObject().getItem(COSName.V));
             field.setValue("field value");
             assertNotNull(field.getCOSObject().getItem(COSName.V));

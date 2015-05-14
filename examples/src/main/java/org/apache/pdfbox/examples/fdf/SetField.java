@@ -25,7 +25,7 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDCheckbox;
 import org.apache.pdfbox.pdmodel.interactive.form.PDChoice;
 import org.apache.pdfbox.pdmodel.interactive.form.PDComboBox;
-import org.apache.pdfbox.pdmodel.interactive.form.PDFieldTreeNode;
+import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDListBox;
 import org.apache.pdfbox.pdmodel.interactive.form.PDRadioButton;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
@@ -51,7 +51,7 @@ public class SetField
     {
         PDDocumentCatalog docCatalog = pdfDocument.getDocumentCatalog();
         PDAcroForm acroForm = docCatalog.getAcroForm();
-        PDFieldTreeNode field = acroForm.getField(name);
+        PDField field = acroForm.getField(name);
         if (field != null)
         {
             if (field instanceof PDCheckbox)

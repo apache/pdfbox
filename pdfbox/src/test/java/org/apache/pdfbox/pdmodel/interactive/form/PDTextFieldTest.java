@@ -16,14 +16,15 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.junit.Before;
 import org.junit.Test;
+
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * Test for the PDSignatureField class.
@@ -44,7 +45,7 @@ public class PDTextFieldTest
     @Test
     public void createDefaultTextField()
     {
-        PDFieldTreeNode textField = new PDTextField(acroForm);
+        PDField textField = new PDTextField(acroForm);
         
         assertEquals(textField.getFieldType(), textField.getCOSObject().getNameAsString(COSName.FT));
         assertEquals(textField.getFieldType(), "Tx");

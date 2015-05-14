@@ -29,44 +29,32 @@ import org.apache.pdfbox.cos.COSString;
  *
  * @author Ben Litchfield
  */
-public abstract class PDVariableText extends PDField
+public abstract class PDVariableText extends PDTerminalField
 {
+    static final int QUADDING_LEFT = 0;
+    static final int QUADDING_CENTERED = 1;
+    static final int QUADDING_RIGHT = 2;
 
     /**
-     * A Q value.
-     */
-    public static final int QUADDING_LEFT = 0;
-
-    /**
-     * A Q value.
-     */
-    public static final int QUADDING_CENTERED = 1;
-
-    /**
-     * A Q value.
-     */
-    public static final int QUADDING_RIGHT = 2;
-
-    /**
-     * @see PDField#PDField(PDAcroForm)
+     * @see PDTerminalField#PDTerminalField(PDAcroForm)
      *
-     * @param theAcroForm The acroform.
+     * @param acroForm The acroform.
      */
-    PDVariableText(PDAcroForm theAcroForm)
+    PDVariableText(PDAcroForm acroForm)
     {
-        super( theAcroForm );
+        super( acroForm );
     }
 
     /**
      * Constructor.
      * 
-     * @param theAcroForm The form that this field is part of.
+     * @param acroForm The form that this field is part of.
      * @param field the PDF object to represent as a field.
-     * @param parentNode the parent node of the node to be created
+     * @param parent the parent node of the node
      */
-    protected PDVariableText(PDAcroForm theAcroForm, COSDictionary field, PDFieldTreeNode parentNode)
+    PDVariableText(PDAcroForm acroForm, COSDictionary field, PDNonTerminalField parent)
     {
-        super( theAcroForm, field, parentNode);
+        super( acroForm, field, parent);
     }
 
     /**
@@ -117,7 +105,7 @@ public abstract class PDVariableText extends PDField
      */
     public String getDefaultStyleString()
     {
-        COSString defaultStyleString = (COSString) getCOSObject().getDictionaryObject(COSName.DS);
+        COSString defaultStyleString = (COSString) dictionary.getDictionaryObject(COSName.DS);
         return defaultStyleString.getString();
     }
 
@@ -132,11 +120,11 @@ public abstract class PDVariableText extends PDField
     {
         if (defaultStyleString != null)
         {
-            getCOSObject().setItem(COSName.DS, new COSString(defaultStyleString));
+            dictionary.setItem(COSName.DS, new COSString(defaultStyleString));
         }
         else
         {
-            getCOSObject().removeItem(COSName.DS);
+            dictionary.removeItem(COSName.DS);
         }
     }    
 
@@ -172,7 +160,7 @@ public abstract class PDVariableText extends PDField
      */
     public void setQ( int q )
     {
-        getCOSObject().setInt( COSName.Q, q );
+        dictionary.setInt(COSName.Q, q);
     }
     
     /**
@@ -210,11 +198,11 @@ public abstract class PDVariableText extends PDField
     {
         if (richTextValue != null)
         {
-            getCOSObject().setItem(COSName.RV, new COSString(richTextValue));
+            dictionary.setItem(COSName.RV, new COSString(richTextValue));
         }
         else
         {
-            getCOSObject().removeItem(COSName.RV);
+            dictionary.removeItem(COSName.RV);
         }        
     }
 }

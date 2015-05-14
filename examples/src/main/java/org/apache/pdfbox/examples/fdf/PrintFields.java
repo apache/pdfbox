@@ -25,7 +25,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
-import org.apache.pdfbox.pdmodel.interactive.form.PDFieldTreeNode;
+import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDNonTerminalField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
 
@@ -49,19 +49,19 @@ public class PrintFields
     {
         PDDocumentCatalog docCatalog = pdfDocument.getDocumentCatalog();
         PDAcroForm acroForm = docCatalog.getAcroForm();
-        List<PDFieldTreeNode> fields = acroForm.getFields();
-        Iterator<PDFieldTreeNode> fieldsIter = fields.iterator();
+        List<PDField> fields = acroForm.getFields();
+        Iterator<PDField> fieldsIter = fields.iterator();
 
         System.out.println(fields.size() + " top-level fields were found on the form");
 
         while (fieldsIter.hasNext())
         {
-            PDFieldTreeNode field = fieldsIter.next();
+            PDField field = fieldsIter.next();
             processField(field, "|--", field.getPartialName());
         }
     }
 
-    private void processField(PDFieldTreeNode field, String sLevel, String sParent) throws IOException
+    private void processField(PDField field, String sLevel, String sParent) throws IOException
     {
         String partialName = field != null ? field.getPartialName() : "";
         List<COSObjectable> kids = field.getKids();
@@ -79,9 +79,9 @@ public class PrintFields
             while (kidsIter.hasNext())
             {
                 Object pdfObj = kidsIter.next();
-                if (pdfObj instanceof PDFieldTreeNode)
+                if (pdfObj instanceof PDField)
                 {
-                    PDFieldTreeNode kid = (PDFieldTreeNode) pdfObj;
+                    PDField kid = (PDField) pdfObj;
                     processField(kid, "|  " + sLevel, sParent);
                 }
             }
