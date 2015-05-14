@@ -247,27 +247,7 @@ public final class PDOutlineItem extends PDOutlineNode
         PDPageDestination pageDestination = null;
         if (dest instanceof PDNamedDestination)
         {
-            //if we have a named destination we need to lookup the PDPageDestination
-            PDNamedDestination namedDest = (PDNamedDestination) dest;
-            PDDocumentNameDictionary namesDict = doc.getDocumentCatalog().getNames();
-            if (namesDict != null)
-            {
-                PDDestinationNameTreeNode destsTree = namesDict.getDests();
-                if (destsTree != null)
-                {
-                    pageDestination = (PDPageDestination) destsTree.getValue(namedDest.getNamedDestination());
-                }
-            }
-            if (pageDestination == null)
-            {
-                // Look up /Dests dictionary from catalog
-                PDDocumentNameDestinationDictionary nameDestDict = doc.getDocumentCatalog().getDests();
-                if (nameDestDict != null)
-                {
-                    String name = namedDest.getNamedDestination();
-                    pageDestination = (PDPageDestination) nameDestDict.getDestination(name);
-                }
-            }
+            pageDestination = findNamedDestinationPage((PDNamedDestination) dest, doc);
             if (pageDestination == null)
             {
                 return null;
@@ -293,8 +273,34 @@ public final class PDOutlineItem extends PDOutlineNode
                 page = doc.getPage(pageNumber);
             }
         }
-
         return page;
+    }
+
+    //if we have a named destination we need to lookup the PDPageDestination
+    private PDPageDestination findNamedDestinationPage(PDNamedDestination namedDest, PDDocument doc)
+            throws IOException
+    {
+        PDPageDestination pageDestination = null;
+        PDDocumentNameDictionary namesDict = doc.getDocumentCatalog().getNames();
+        if (namesDict != null)
+        {
+            PDDestinationNameTreeNode destsTree = namesDict.getDests();
+            if (destsTree != null)
+            {
+                pageDestination = destsTree.getValue(namedDest.getNamedDestination());
+            }
+        }
+        if (pageDestination == null)
+        {
+            // Look up /Dests dictionary from catalog
+            PDDocumentNameDestinationDictionary nameDestDict = doc.getDocumentCatalog().getDests();
+            if (nameDestDict != null)
+            {
+                String name = namedDest.getNamedDestination();
+                pageDestination = (PDPageDestination) nameDestDict.getDestination(name);
+            }
+        }
+        return pageDestination;
     }
 
     /**
