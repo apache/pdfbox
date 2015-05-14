@@ -16,10 +16,10 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -492,5 +492,12 @@ public abstract class PDChoice extends PDVariableText
         // Indices have to be "... array of integers, sorted in ascending order ..."
         Collections.sort(indices);
         setSelectedOptionsIndex(indices);
+    }
+
+    @Override
+    void constructAppearances() throws IOException
+    {
+        // TODO: implement appearance generation for choices
+        throw new UnsupportedOperationException("not implemented");
     }
 }

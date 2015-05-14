@@ -194,4 +194,11 @@ public class PDSignatureField extends PDTerminalField
     {
         return "PDSignatureField";
     }
+
+    @Override
+    void constructAppearances() throws IOException
+    {
+        // TODO: implement appearance generation for signatures
+        throw new UnsupportedOperationException("not implemented");
+    }
 }

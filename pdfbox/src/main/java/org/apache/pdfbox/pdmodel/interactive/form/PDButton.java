@@ -197,4 +197,11 @@ public abstract class PDButton extends PDTerminalField
             setInheritableAttribute(COSName.OPT, COSArrayList.convertStringListToCOSStringCOSArray(values));
         }
     }
+
+    @Override
+    void constructAppearances() throws IOException
+    {
+        // TODO: implement appearance generation for buttons
+        throw new UnsupportedOperationException("not implemented");
+    }
 }

@@ -244,9 +244,7 @@ public final class PDTextField extends PDVariableText
         {
             removeInheritableAttribute(COSName.V);
         }
-        
-        // TODO move appearance generation out of fields PD model
-        updateFieldAppearances();
+        applyChange();
     }
     
     @Override
@@ -258,5 +256,13 @@ public final class PDTextField extends PDVariableText
             return string;
         }
         return "";
+    }
+
+    @Override
+    void constructAppearances() throws IOException
+    {
+        AppearanceGeneratorHelper apHelper;
+        apHelper = new AppearanceGeneratorHelper(this.getAcroForm(), this);
+        apHelper.setAppearanceValue(getValue());
     }
 }
