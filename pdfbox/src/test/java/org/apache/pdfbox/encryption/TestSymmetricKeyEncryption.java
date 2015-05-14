@@ -27,18 +27,15 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Map;
 import javax.crypto.Cipher;
-
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDEmbeddedFilesNameTreeNode;
-import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDComplexFileSpecification;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
@@ -330,11 +327,11 @@ public class TestSymmetricKeyEncryption extends TestCase
         PDDocumentCatalog catalog = docWithEmbeddedFile.getDocumentCatalog();
         PDDocumentNameDictionary names = catalog.getNames();
         PDEmbeddedFilesNameTreeNode embeddedFiles = names.getEmbeddedFiles();
-        Map<String, COSObjectable> embeddedFileNames = embeddedFiles.getNames();
+        Map<String, PDComplexFileSpecification> embeddedFileNames = embeddedFiles.getNames();
         Assert.assertEquals(1, embeddedFileNames.size());
-        Map.Entry<String, COSObjectable> entry = embeddedFileNames.entrySet().iterator().next();
+        Map.Entry<String, PDComplexFileSpecification> entry = embeddedFileNames.entrySet().iterator().next();
         LOG.info("Processing embedded file " + entry.getKey() + ":");
-        PDComplexFileSpecification complexFileSpec = (PDComplexFileSpecification) entry.getValue();
+        PDComplexFileSpecification complexFileSpec = entry.getValue();
         PDEmbeddedFile embeddedFile = complexFileSpec.getEmbeddedFile();
 
         File resultFile = new File(testResultsDir, name);

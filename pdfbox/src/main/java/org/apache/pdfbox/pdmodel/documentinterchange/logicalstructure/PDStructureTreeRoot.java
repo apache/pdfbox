@@ -21,11 +21,11 @@ import java.util.Hashtable;
 import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.PDStructureElementNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.COSDictionaryMap;
 import org.apache.pdfbox.pdmodel.common.PDNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.PDNumberTreeNode;
@@ -123,7 +123,7 @@ public class PDStructureTreeRoot extends PDStructureNode
         COSDictionary idTreeDic = (COSDictionary) this.getCOSObject().getDictionaryObject(COSName.ID_TREE);
         if (idTreeDic != null)
         {
-            return new PDNameTreeNode(idTreeDic, PDStructureElement.class);
+            return new PDStructureElementNameTreeNode(idTreeDic);
         }
         return null;
     }

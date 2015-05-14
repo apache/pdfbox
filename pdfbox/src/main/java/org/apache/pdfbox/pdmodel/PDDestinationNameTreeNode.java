@@ -17,11 +17,9 @@
 package org.apache.pdfbox.pdmodel;
 
 import java.io.IOException;
-
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDNameTreeNode;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
@@ -31,15 +29,14 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPa
  *
  * @author Ben Litchfield
  */
-public class PDDestinationNameTreeNode extends PDNameTreeNode
+public class PDDestinationNameTreeNode extends PDNameTreeNode<PDPageDestination>
 {
-
     /**
      * Constructor.
      */
     public PDDestinationNameTreeNode()
     {
-        super( PDPageDestination.class );
+        super();
     }
 
     /**
@@ -49,13 +46,11 @@ public class PDDestinationNameTreeNode extends PDNameTreeNode
      */
     public PDDestinationNameTreeNode( COSDictionary dic )
     {
-        super( dic, PDPageDestination.class );
+        super(dic);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    protected COSObjectable convertCOSToPD( COSBase base ) throws IOException
+    @Override
+    protected PDPageDestination convertCOSToPD( COSBase base ) throws IOException
     {
         COSBase destination = base;
         if( base instanceof COSDictionary )
@@ -65,12 +60,10 @@ public class PDDestinationNameTreeNode extends PDNameTreeNode
             //it for now
             destination = ((COSDictionary)base).getDictionaryObject( COSName.D );
         }
-        return PDDestination.create( destination );
+        return (PDPageDestination)PDDestination.create( destination );
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     protected PDNameTreeNode createChildNode( COSDictionary dic )
     {
         return new PDDestinationNameTreeNode(dic);
