@@ -131,9 +131,6 @@ public class TreeStatusPane extends JPanel implements MouseListener
         {
             if (node.startsWith("["))
             {
-                ;
-            }
-            {
                 node = node.replace("]", "").replace("[", "");
             }
             node = node.trim();
