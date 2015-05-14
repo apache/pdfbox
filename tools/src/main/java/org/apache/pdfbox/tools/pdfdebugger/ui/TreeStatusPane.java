@@ -3,8 +3,6 @@ package org.apache.pdfbox.tools.pdfdebugger.ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -15,18 +13,18 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JTree;
+import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 import javax.swing.tree.TreePath;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
-import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.tools.gui.ArrayEntry;
 import org.apache.pdfbox.tools.gui.MapEntry;
 
 /**
- * Created by kbashar on 5/5/15.
+ * Created by khyrul Bashar.
  */
 public class TreeStatusPane extends JPanel implements MouseListener
 {
@@ -48,14 +46,15 @@ public class TreeStatusPane extends JPanel implements MouseListener
 
     private void init()
     {
+        this.setLayout(new BorderLayout());
         this.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         statusString = new String();
         statusTextEditField = new JTextField();
         statusLabel = new JLabel();
-        this.add(statusLabel);
+        this.add(statusLabel, BorderLayout.PAGE_END);
         this.addMouseListener(this);
-        textFieldDefaultBorder = BorderFactory.createLineBorder(Color.black);
-        textFieldErrorBorder = BorderFactory.createLineBorder(Color.RED);
+        textFieldDefaultBorder = new BevelBorder(BevelBorder.LOWERED);
+        textFieldErrorBorder = new BevelBorder(BevelBorder.LOWERED, Color.RED, Color.RED);
         textInputAction = new AbstractAction()
         {
             @Override
@@ -67,7 +66,7 @@ public class TreeStatusPane extends JPanel implements MouseListener
                     TreePath path = getPath(statusTextEditField.getText());
                     tree.setSelectionPath(path);
                 }
-                catch (NullPointerException e)
+                catch (RuntimeException e)
                 {
                     statusTextEditField.setBorder(textFieldErrorBorder);
                 }
@@ -111,7 +110,7 @@ public class TreeStatusPane extends JPanel implements MouseListener
         }
     }
 
-    private TreePath getPath(String statusString) throws NullPointerException
+    private TreePath getPath(String statusString) throws RuntimeException
     {
         ArrayList<String> nodes = parsePathString(statusString);
         Object obj = rootNode;
@@ -129,12 +128,16 @@ public class TreeStatusPane extends JPanel implements MouseListener
         ArrayList<String> nodes = new ArrayList<String>();
         for (String node : path.split(">"))
         {
+            node = node.trim();
             if (node.startsWith("["))
             {
                 node = node.replace("]", "").replace("[", "");
             }
             node = node.trim();
-            System.out.println(node);
+            if (node.isEmpty())
+            {
+                throw new RuntimeException("an empty node is not permitted");
+            }
             nodes.add(node);
         }
         return nodes;
@@ -179,7 +182,6 @@ public class TreeStatusPane extends JPanel implements MouseListener
         }
         else
         {
-            System.out.println(obj.toString());
             return null;
         }
         return null;
@@ -195,7 +197,6 @@ public class TreeStatusPane extends JPanel implements MouseListener
             path = path.getParentPath();
         }
         pathStringBuilder.delete(0, 2);
-        System.out.println(pathStringBuilder.toString());
         this.setStatusString(pathStringBuilder.toString());
     }
 
@@ -234,23 +235,21 @@ public class TreeStatusPane extends JPanel implements MouseListener
             statusLabel.setText("");
             mouseEvent.consume();
             this.remove(statusLabel);
-            this.validate();
             statusTextEditField.setText(statusString);
             statusTextEditField.setBorder(textFieldDefaultBorder);
             this.add(statusTextEditField, BorderLayout.PAGE_END);
+            this.validate();
         }
     }
 
     @Override
     public void mouseReleased(MouseEvent mouseEvent)
     {
-
     }
 
     @Override
     public void mouseEntered(MouseEvent mouseEvent)
     {
-
     }
 
     @Override
