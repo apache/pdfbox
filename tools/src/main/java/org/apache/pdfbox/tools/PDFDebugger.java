@@ -16,6 +16,18 @@
  */
 package org.apache.pdfbox.tools;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.List;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JComponent;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.border.BevelBorder;
 import org.apache.pdfbox.tools.gui.PDFTreeModel;
 import org.apache.pdfbox.tools.gui.PDFTreeCellRenderer;
 import org.apache.pdfbox.tools.gui.ArrayEntry;
@@ -42,6 +54,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
+import org.apache.pdfbox.tools.pdfdebugger.ui.TreeStatusPane;
+import org.apache.pdfbox.tools.util.RecentFiles;
 
 /**
  *
@@ -51,9 +65,13 @@ import java.io.IOException;
 public class PDFDebugger extends javax.swing.JFrame
 {
     private File currentDir=new File(".");
+    private String currentFileName = null;
     private PDDocument document = null;
 
+    private RecentFiles recentFiles;
+
     private static final String PASSWORD = "-password";
+    private String currentFilePath = null;
 
     /**
      * Constructor.
@@ -81,6 +99,7 @@ public class PDFDebugger extends javax.swing.JFrame
         openMenuItem = new javax.swing.JMenuItem();
         saveMenuItem = new javax.swing.JMenuItem();
         saveAsMenuItem = new javax.swing.JMenuItem();
+        recentFileSubmenu = new JMenu();
         exitMenuItem = new javax.swing.JMenuItem();
         editMenu = new javax.swing.JMenu();
         cutMenuItem = new javax.swing.JMenuItem();
@@ -126,6 +145,11 @@ public class PDFDebugger extends javax.swing.JFrame
         JScrollPane documentScroller = new JScrollPane();
         documentScroller.setViewportView( documentPanel );
 
+        treeStatusPane = new TreeStatusPane(jTree1);
+        treeStatusPane.setBorder(new BevelBorder(BevelBorder.RAISED));
+        treeStatusPane.setPreferredSize(new Dimension(300, 25));
+        getContentPane().add(treeStatusPane, BorderLayout.PAGE_START);
+
         getContentPane().add( jSplitPane1, java.awt.BorderLayout.CENTER );
 
         fileMenu.setText("File");
@@ -144,6 +168,20 @@ public class PDFDebugger extends javax.swing.JFrame
         saveMenuItem.setText("Save");
 
         saveAsMenuItem.setText("Save As ...");
+
+        try
+        {
+            recentFiles = new RecentFiles(this.getClass(), 5);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
+
+        recentFileSubmenu.setText("Open recent Files");
+        recentFileSubmenu.setEnabled(false);
+        addRecentFileItems();
+        fileMenu.add(recentFileSubmenu);
 
         exitMenuItem.setText("Exit");
         exitMenuItem.addActionListener(new java.awt.event.ActionListener()
@@ -228,6 +266,7 @@ public class PDFDebugger extends javax.swing.JFrame
                 {
                     jTextPane1.setText( "" );
                 }
+                treeStatusPane.showPath(path);
             }
             catch (Exception e)
             {
@@ -320,6 +359,8 @@ public class PDFDebugger extends javax.swing.JFrame
             try
             {
                 document.close();
+                recentFiles.addFile(currentFilePath);
+                recentFiles.close();
             }
             catch( IOException e )
             {
@@ -364,17 +405,21 @@ public class PDFDebugger extends javax.swing.JFrame
         viewer.setVisible(true);
     }
 
-    private void readPDFFile(String file, String password) throws Exception
+    private void readPDFFile(String filePath, String password) throws Exception
     {
         if( document != null )
         {
             document.close();
+            recentFiles.addFile(currentFilePath);
         }
-        File f = new File( file );
-        parseDocument( f, password );
+        File file = new File( filePath );
+        currentFilePath = file.getPath();
+        recentFiles.removeFile(file.getPath());
+        parseDocument( file, password );
         TreeModel model=new PDFTreeModel(document);
         jTree1.setModel(model);
-        setTitle( "PDFBox - " + f.getAbsolutePath() );
+        setTitle( "PDFBox - " + file.getAbsolutePath() );
+        addRecentFileItems();
     }
     /**
      * This will parse a document.
@@ -386,11 +431,50 @@ public class PDFDebugger extends javax.swing.JFrame
     private void parseDocument( File file, String password )throws IOException
     {
         document = PDDocument.load(file, password);
+        currentFileName = file.getName();
+        treeStatusPane.updateRootNode(document.getDocument().getTrailer());
     }
 
-    /**
-     * This will print out a message telling how to use this utility.
-     */
+    private void addRecentFileItems()
+    {
+        Action recentMenuAction = new AbstractAction()
+        {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                String filePath = (String) ((JComponent) actionEvent.getSource()).getClientProperty("path");
+                try
+                {
+                    readPDFFile(filePath, "");
+                }
+                catch (Exception e)
+                {
+                    throw new RuntimeException(e);
+                }
+
+            }
+        };
+        if (!recentFiles.isEmpty())
+        {
+            recentFileSubmenu.removeAll();
+            List<String> files = recentFiles.getFiles();
+            for (int i = files.size() - 1; i >= 0; i--)
+            {
+                String path = files.get(i);
+                String name = new File(path).getName();
+                JMenuItem recentFileMenuItem = new JMenuItem(name);
+                recentFileMenuItem.putClientProperty("path", path);
+                recentFileMenuItem.addActionListener(recentMenuAction);
+                recentFileSubmenu.add(recentFileMenuItem);
+            }
+            recentFileSubmenu.setEnabled(true);
+        }
+    }
+
+
+        /**
+         * This will print out a message telling how to use this utility.
+         */
     private static void usage()
     {
         System.err.println(
@@ -420,7 +504,10 @@ public class PDFDebugger extends javax.swing.JFrame
     private javax.swing.JMenuItem pasteMenuItem;
     private javax.swing.JMenuItem saveAsMenuItem;
     private javax.swing.JMenuItem saveMenuItem;
+    private javax.swing.JMenu recentFileSubmenu;
     private JPanel documentPanel = new JPanel();
+
+    private TreeStatusPane treeStatusPane;
     // End of variables declaration//GEN-END:variables
 
 }
