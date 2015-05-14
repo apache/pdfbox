@@ -79,29 +79,6 @@ public abstract class PDField implements COSObjectable
         this.dictionary = field;
         this.parent = parent;
     }
-
-    /**
-     * Returns the node in the field tree from which a specific attribute might be inherited.
-     *
-     * @param field the field from which to look for the attribute
-     * @param key the key to look for
-     * @return PDFieldTreeNode the node from which the attribute will be inherited or null
-     */    
-    public PDField getInheritableAttributesNode(PDField field, COSName key)
-    {
-        if (field.dictionary.containsKey(key))
-        {
-            return field;
-        }
-        else
-        {
-            if (field.parent != null)
-            {
-                getInheritableAttributesNode(field.parent, key);
-            }
-        }
-        return null;
-    }
     
     /**
      * Returns the given attribute, inheriting from parent nodes if necessary.
@@ -111,56 +88,19 @@ public abstract class PDField implements COSObjectable
      */
     protected COSBase getInheritableAttribute(COSName key)
     {
-        PDField attributesNode = getInheritableAttributesNode(this, key);
-        if (attributesNode != null)
+        if (dictionary.containsKey(key))
         {
-            return attributesNode.dictionary.getDictionaryObject(key);
+            return dictionary.getDictionaryObject(key);
+        }
+        else if (parent != null)
+        {
+            return parent.getInheritableAttribute(key);
         }
         else
         {
             return acroForm.getCOSObject().getDictionaryObject(key);
         }
-    }    
-    
-    /**
-     * Sets the given attribute, inheriting from parent nodes if necessary.
-     *
-     * @param key the key to look up
-     * @param value the new attributes value
-     */
-    protected void setInheritableAttribute(COSName key, COSBase value)
-    {
-        if (value == null)
-        {
-            removeInheritableAttribute(key);
-        } 
-        else 
-        {
-            PDField attributesNode = getInheritableAttributesNode(this, key);
-            if (attributesNode != null)
-            {
-                attributesNode.dictionary.setItem(key, value);
-            } 
-            else
-            {
-                dictionary.setItem(key, value);
-            }
-        }
-    }  
-    
-    /**
-     * Removes the given attribute, inheriting from parent nodes if necessary.
-     *
-     * @param key the key to look up
-     */
-    protected void removeInheritableAttribute(COSName key)
-    {
-        PDField attributesNode = getInheritableAttributesNode(this, key);
-        if (attributesNode != null)
-        {
-            attributesNode.dictionary.removeItem(key);
-        }
-    }      
+    }
     
     /**
      * Get a text as text stream.

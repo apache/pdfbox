@@ -152,30 +152,23 @@ public final class PDRadioButton extends PDButton
     @Override
     public void setValue(String fieldValue)
     {
-        if (fieldValue == null)
+        COSName nameForValue = COSName.getPDFName(fieldValue);
+        dictionary.setItem(COSName.V, nameForValue);
+        List<COSObjectable> kids = getKids();
+        for (COSObjectable kid : kids)
         {
-            removeInheritableAttribute(COSName.V);
-        }
-        else
-        {
-            COSName nameForValue = COSName.getPDFName(fieldValue);
-            setInheritableAttribute(COSName.V, nameForValue);
-            List<COSObjectable> kids = getKids();
-            for (COSObjectable kid : kids)
+            if (kid instanceof PDAnnotationWidget)
             {
-                if (kid instanceof PDAnnotationWidget)
+                PDAppearanceEntry appearanceEntry = ((PDAnnotationWidget) kid).getAppearance()
+                        .getNormalAppearance();
+
+                if (((COSDictionary) appearanceEntry.getCOSObject()).containsKey(nameForValue))
                 {
-                    PDAppearanceEntry appearanceEntry = ((PDAnnotationWidget) kid).getAppearance()
-                            .getNormalAppearance();
-                    
-                    if (((COSDictionary) appearanceEntry.getCOSObject()).containsKey(nameForValue))
-                    {
-                        ((COSDictionary) kid.getCOSObject()).setName(COSName.AS, fieldValue);
-                    }
-                    else
-                    {
-                        ((COSDictionary) kid.getCOSObject()).setItem(COSName.AS, COSName.OFF);
-                    }
+                    ((COSDictionary) kid.getCOSObject()).setName(COSName.AS, fieldValue);
+                }
+                else
+                {
+                    ((COSDictionary) kid.getCOSObject()).setItem(COSName.AS, COSName.OFF);
                 }
             }
         }
