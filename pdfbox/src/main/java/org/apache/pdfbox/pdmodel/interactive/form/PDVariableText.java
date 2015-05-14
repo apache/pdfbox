@@ -85,9 +85,9 @@ public abstract class PDVariableText extends PDTerminalField
      */
     public void setDefaultAppearance(String daValue)
     {
-        dictionary.setItem(COSName.DA, new COSString(daValue));
+        dictionary.setString(COSName.DA, daValue);
     }
-    
+
     /**
      * Get the default style string.
      * 

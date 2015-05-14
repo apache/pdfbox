@@ -210,8 +210,7 @@ public final class PDTextField extends PDVariableText
     @Override
     public void setDefaultValue(String value)
     {
-        COSString fieldValue = new COSString(value);
-        dictionary.setItem(COSName.DV, fieldValue);
+        dictionary.setString(COSName.DV, value);
     }
     
     @Override
@@ -228,7 +227,7 @@ public final class PDTextField extends PDVariableText
     @Override
     public void setValue(String value) throws IOException
     {
-        dictionary.setItem(COSName.V, new COSString(value));
+        dictionary.setString(COSName.V, value);
         applyChange();
     }
     
