@@ -36,6 +36,12 @@ public class TestFontEmbedding extends TestCase
 {
     private static final File OUT_DIR = new File("target/test-output");
 
+    @Override
+    protected void setUp() throws Exception
+    {
+        OUT_DIR.mkdirs();
+    }
+
     /**
      * Embed a TTF as CIDFontType2.
      */
@@ -73,7 +79,7 @@ public class TestFontEmbedding extends TestCase
 
         stream.endText();
         stream.close();
-
+        
         File file = new File(OUT_DIR, "CIDFontType2.pdf");
         document.save(file);
         document.close();
