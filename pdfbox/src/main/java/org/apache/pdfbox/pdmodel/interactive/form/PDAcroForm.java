@@ -325,7 +325,8 @@ public final class PDAcroForm implements COSObjectable
     }
 
     /**
-     * Get the value of NeedAppearances.
+     * True if the viewing application should construct the appearances of all field widgets.
+     * The default value is false.
      * 
      * @return the value of NeedAppearances, false if the value isn't set
      */
@@ -335,7 +336,8 @@ public final class PDAcroForm implements COSObjectable
     }
 
     /**
-     * Set the NeedAppearances value.
+     * Set the NeedAppearances value. If this is false, PDFBox will create appearances for all field
+     * widget.
      * 
      * @param value the value for NeedAppearances
      */

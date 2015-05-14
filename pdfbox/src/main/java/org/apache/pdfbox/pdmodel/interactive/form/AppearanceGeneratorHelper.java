@@ -45,9 +45,7 @@ import org.apache.pdfbox.contentstream.operator.Operator;
 
 /**
  * Create the AcroForms field appearance helper.
- * <p>
- * A helper class to the {@link AppearanceGenerator} to generate update an AcroForm field appearance.
- * </p>
+ * 
  * @author Stephan Gerhard
  * @author Ben Litchfield
  */

@@ -89,20 +89,26 @@ public abstract class PDTerminalField extends PDField
         }
         return fieldType;
     }
-    
+
     /**
-     * Update the fields appearance stream.
-     * 
-     * The fields appearance stream needs to be updated to reflect the new field
-     * value. This will be done only if the NeedAppearances flag has not been set.
+     * Applies a value change to the field. Generates appearances if required and raises events.
      * 
      * @throws IOException if the appearance couldn't be generated
      */
-    protected void updateFieldAppearances() throws IOException
+    protected final void applyChange() throws IOException
     {
         if (!acroForm.getNeedAppearances())
         {
-            AppearanceGenerator.generateFieldAppearances(this);
+            constructAppearances();
         }
+        // if we supported JavaScript we would raise a field changed event here
     }
+    
+    /**
+     * Constructs appearance streams and appearance dictionaries for all widget annotations.
+     * Subclasses should not call this method directly but via {@link #applyChange()}.
+     * 
+     * @throws IOException if the appearance couldn't be generated
+     */
+    abstract void constructAppearances() throws IOException;
 }
