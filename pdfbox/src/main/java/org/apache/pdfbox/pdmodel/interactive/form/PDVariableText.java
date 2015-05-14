@@ -85,14 +85,7 @@ public abstract class PDVariableText extends PDTerminalField
      */
     public void setDefaultAppearance(String daValue)
     {
-        if (daValue != null)
-        {
-            setInheritableAttribute(COSName.DA, new COSString(daValue));
-        }
-        else
-        {
-            removeInheritableAttribute(COSName.DA);
-        }
+        dictionary.setItem(COSName.DA, new COSString(daValue));
     }
     
     /**

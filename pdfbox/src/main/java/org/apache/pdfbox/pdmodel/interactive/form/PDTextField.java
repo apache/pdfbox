@@ -210,15 +210,8 @@ public final class PDTextField extends PDVariableText
     @Override
     public void setDefaultValue(String value)
     {
-        if (value != null)
-        {
-            COSString fieldValue = new COSString(value);
-            setInheritableAttribute(COSName.DV, fieldValue);
-        }  
-        else
-        {
-            removeInheritableAttribute(COSName.DV);
-        }
+        COSString fieldValue = new COSString(value);
+        dictionary.setItem(COSName.DV, fieldValue);
     }
     
     @Override
@@ -235,15 +228,7 @@ public final class PDTextField extends PDVariableText
     @Override
     public void setValue(String value) throws IOException
     {
-        if (value != null && !value.isEmpty())
-        {
-            COSString fieldValue = new COSString(value);
-            setInheritableAttribute(COSName.V, fieldValue);
-        }  
-        else
-        {
-            removeInheritableAttribute(COSName.V);
-        }
+        dictionary.setItem(COSName.V, new COSString(value));
         applyChange();
     }
     

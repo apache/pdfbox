@@ -188,14 +188,7 @@ public abstract class PDButton extends PDTerminalField
      */
     public void setOptions(List<String> values)
     {
-        if (values == null || values.isEmpty())
-        {
-            removeInheritableAttribute(COSName.OPT);            
-        }
-        else
-        {
-            setInheritableAttribute(COSName.OPT, COSArrayList.convertStringListToCOSStringCOSArray(values));
-        }
+        dictionary.setItem(COSName.OPT, COSArrayList.convertStringListToCOSStringCOSArray(values));
     }
 
     @Override
