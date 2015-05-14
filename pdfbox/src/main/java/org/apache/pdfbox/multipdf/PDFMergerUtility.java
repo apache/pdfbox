@@ -53,7 +53,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
-import org.apache.pdfbox.pdmodel.interactive.form.PDFieldTreeNode;
+import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 
 /**
  * This class will take a list of pdf documents and merge them, saving the
@@ -531,29 +531,24 @@ public class PDFMergerUtility
     private void mergeAcroForm(PDFCloneUtility cloner, PDAcroForm destAcroForm, PDAcroForm srcAcroForm)
             throws IOException
     {
-        List<PDFieldTreeNode> destFields = destAcroForm.getFields();
-        List<PDFieldTreeNode> srcFields = srcAcroForm.getFields();
+        List<PDField> srcFields = srcAcroForm.getFields();
         if (srcFields != null)
         {
-            if (destFields == null)
+            List<COSDictionary> destFields = new ArrayList<COSDictionary>();
+            // fixme: we're only iterating over the root fields, names of kids aren't being checked
+            for (PDField srcField : srcFields)
             {
-                destFields = new COSArrayList<PDFieldTreeNode>();
-                destAcroForm.setFields(destFields);
-            }
-            Iterator<PDFieldTreeNode> srcFieldsIterator = srcFields.iterator();
-            while (srcFieldsIterator.hasNext())
-            {
-                PDFieldTreeNode srcField = srcFieldsIterator.next();
-                PDFieldTreeNode destFieldNode = PDFieldTreeNode.createField(destAcroForm,
-                        (COSDictionary) cloner.cloneForNewDocument(srcField.getCOSObject()), null);
+                COSDictionary dstField = (COSDictionary) cloner.cloneForNewDocument(srcField.getCOSObject());
                 // if the form already has a field with this name then we need to rename this field
                 // to prevent merge conflicts.
-                if (destAcroForm.getField(destFieldNode.getFullyQualifiedName()) != null)
+                if (destAcroForm.getField(srcField.getFullyQualifiedName()) != null)
                 {
-                    destFieldNode.setPartialName("dummyFieldName" + (nextFieldNum++));
+                    dstField.setString(COSName.T, "dummyFieldName" + nextFieldNum++);
                 }
-                destFields.add(destFieldNode);
+                destFields.add(dstField);
             }
+            destAcroForm.getCOSObject().setItem(COSName.FIELDS,
+                                                COSArrayList.converterToCOSArray(destFields));
         }
     }
 

@@ -151,11 +151,11 @@ class AppearanceGeneratorHelper
         while (widgetIter.hasNext())
         {
             COSObjectable next = widgetIter.next();
-            PDField field = null;
+            PDTerminalField field = null;
             PDAnnotationWidget widget;
-            if (next instanceof PDField)
+            if (next instanceof PDTerminalField)
             {
-                field = (PDField) next;
+                field = (PDTerminalField) next;
                 widget = field.getWidget();
             }
             else

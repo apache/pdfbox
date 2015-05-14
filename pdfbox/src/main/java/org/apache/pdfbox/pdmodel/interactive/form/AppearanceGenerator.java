@@ -39,18 +39,14 @@ public final class AppearanceGenerator
      * @param field The field which appearances need to be generated.
      * @throws IOException 
      */
-    public static void generateFieldAppearances(PDField field) throws IOException
+    public static void generateFieldAppearances(PDTerminalField field) throws IOException
     {
         if (field instanceof PDVariableText)
         {
-            AppearanceGeneratorHelper apHelper = null;
-            Object fieldValue = null;
-
-            apHelper = new AppearanceGeneratorHelper(field.getAcroForm(),
-                        (PDVariableText) field);
-    
-                
-            fieldValue = field.getValue();
+            AppearanceGeneratorHelper apHelper = new AppearanceGeneratorHelper(
+                    field.getAcroForm(), (PDVariableText) field);
+            
+            Object fieldValue = field.getValue();
             
             // TODO: implement the handling for additional values.
             if (fieldValue instanceof String)

@@ -37,8 +37,9 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
-import org.apache.pdfbox.pdmodel.interactive.form.PDFieldTreeNode;
+import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
+import org.apache.pdfbox.pdmodel.interactive.form.PDTerminalField;
 
 /**
  * Structure of PDF document with visible signature.
@@ -67,7 +68,7 @@ public class PDFTemplateStructure
     private PDFormXObject innerForm;
     private PDStream imageFormStream;
     private PDResources imageFormResources;
-    private List<PDFieldTreeNode> acroFormFields;
+    private List<PDField> acroFormFields;
     private COSName innerFormName;
     private COSName imageFormName;
     private COSName imageName;
@@ -555,7 +556,7 @@ public class PDFTemplateStructure
      * Gets acroFormFields
      * @return the AcroForm fields
      */
-    public List<PDFieldTreeNode> getAcroFormFields()
+    public List<PDField> getAcroFormFields()
     {
         return acroFormFields;
     }
@@ -564,7 +565,7 @@ public class PDFTemplateStructure
      * Sets acroFormFields
      * @param acroFormFields
      */
-    public void setAcroFormFields(List<PDFieldTreeNode> acroFormFields)
+    public void setAcroFormFields(List<PDField> acroFormFields)
     {
         this.acroFormFields = acroFormFields;
     }
@@ -590,8 +591,8 @@ public class PDFTemplateStructure
 
     /**
      * Gets Widget Dictionary.
-     * {@link org.apache.pdfbox.pdmodel.interactive.form.PDField}
-     * @see org.apache.pdfbox.pdmodel.interactive.form.PDField#getWidget()
+     * {@link PDTerminalField}
+     * @see PDTerminalField#getWidget()
      * @return the widget dictionary
      */
     public COSDictionary getWidgetDictionary()
@@ -601,8 +602,8 @@ public class PDFTemplateStructure
 
     /**
      * Sets Widget Dictionary.
-     * {@link org.apache.pdfbox.pdmodel.interactive.form.PDField}
-     * @see org.apache.pdfbox.pdmodel.interactive.form.PDField#getWidget()
+     * {@link PDTerminalField}
+     * @see PDTerminalField#getWidget()
      * @param widgetDictionary
      */
     public void setWidgetDictionary(COSDictionary widgetDictionary)

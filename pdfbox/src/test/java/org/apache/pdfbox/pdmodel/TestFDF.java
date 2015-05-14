@@ -35,7 +35,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceEntry;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
-import org.apache.pdfbox.pdmodel.interactive.form.PDFieldTreeNode;
+import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDRadioButton;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
 
@@ -216,14 +216,14 @@ public class TestFDF extends TestCase
                 form.importFDF( fdf );
                 PDTextField feld2 = (PDTextField)form.getField( "eeFirstName" );
                 List<COSObjectable> kids = feld2.getKids();
-                PDFieldTreeNode firstKid = (PDFieldTreeNode)kids.get( 0 );
-                PDFieldTreeNode secondKid = (PDFieldTreeNode)kids.get( 1 );
+                PDField firstKid = (PDField)kids.get( 0 );
+                PDField secondKid = (PDField)kids.get( 1 );
                 testContentStreamContains( freedom, firstKid, "Steve" );
                 testContentStreamContains( freedom, secondKid, "Steve" );
     
                 //the appearance stream is suppose to be null because there
                 //is an F action in the AA dictionary that populates that field.
-                PDFieldTreeNode totalAmt = form.getField( "eeSuppTotalAmt" );
+                PDField totalAmt = form.getField( "eeSuppTotalAmt" );
                 assertTrue( totalAmt.getCOSObject().getDictionaryObject( COSName.AP ) == null );
     
             }
@@ -241,7 +241,7 @@ public class TestFDF extends TestCase
         }
     }
 
-    private void testContentStreamContains( PDDocument doc, PDFieldTreeNode field, String expected ) throws Exception
+    private void testContentStreamContains( PDDocument doc, PDField field, String expected ) throws Exception
     {
         PDAnnotationWidget widget = field.getWidget();
         PDAppearanceEntry normalAppearance = widget.getAppearance().getNormalAppearance();
@@ -252,7 +252,7 @@ public class TestFDF extends TestCase
         assertTrue( actualTokens.contains( new COSString( expected ) ) );
     }
 
-    private void testContentStreams( PDDocument doc, PDFieldTreeNode field, String expected ) throws Exception
+    private void testContentStreams( PDDocument doc, PDField field, String expected ) throws Exception
     {
         PDAnnotationWidget widget = field.getWidget();
         PDAppearanceEntry normalAppearance = widget.getAppearance().getNormalAppearance();

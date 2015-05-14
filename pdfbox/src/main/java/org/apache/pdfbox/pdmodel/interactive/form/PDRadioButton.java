@@ -33,33 +33,32 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceEntry;
  */
 public final class PDRadioButton extends PDButton
 {
-
     /**
      * A Ff flag.
      */
-    public static final int FLAG_NO_TOGGLE_TO_OFF = 1 << 14;
+    private static final int FLAG_NO_TOGGLE_TO_OFF = 1 << 14;
     
     /**
-     * @see PDFieldTreeNode#PDFieldTreeNode(PDAcroForm)
+     * @see PDField#PDField(PDAcroForm)
      *
-     * @param theAcroForm The acroform.
+     * @param acroForm The acroform.
      */
-    public PDRadioButton(PDAcroForm theAcroForm)
+    public PDRadioButton(PDAcroForm acroForm)
     {
-        super( theAcroForm );
+        super( acroForm );
         setRadioButton(true);
     }
     
     /**
      * Constructor.
      * 
-     * @param theAcroForm The form that this field is part of.
+     * @param acroForm The form that this field is part of.
      * @param field the PDF object to represent as a field.
-     * @param parentNode the parent node of the node to be created
+     * @param parent the parent node of the node
      */
-    public PDRadioButton(PDAcroForm theAcroForm, COSDictionary field, PDFieldTreeNode parentNode)
+    PDRadioButton(PDAcroForm acroForm, COSDictionary field, PDNonTerminalField parent)
     {
-        super(theAcroForm, field, parentNode);
+        super(acroForm, field, parent);
     }
 
     /**
@@ -72,7 +71,7 @@ public final class PDRadioButton extends PDButton
      */
     public void setRadiosInUnison(boolean radiosInUnison)
     {
-        getCOSObject().setFlag(COSName.FF, FLAG_RADIOS_IN_UNISON, radiosInUnison);
+        dictionary.setFlag(COSName.FF, FLAG_RADIOS_IN_UNISON, radiosInUnison);
     }
 
     /**
@@ -81,7 +80,7 @@ public final class PDRadioButton extends PDButton
      */
     public boolean isRadiosInUnison()
     {
-        return getCOSObject().getFlag(COSName.FF, FLAG_RADIOS_IN_UNISON);
+        return dictionary.getFlag(COSName.FF, FLAG_RADIOS_IN_UNISON);
     }
 
     /**
@@ -149,17 +148,7 @@ public final class PDRadioButton extends PDButton
             throw new IOException("Expected a COSName entry but got " + attribute.getClass().getName());
         }
     }
-
-    /**
-     * Set the field value.
-     * 
-     * The field value holds a name object which is corresponding to the 
-     * appearance state of the child field being in the on state.
-     * 
-     * The default value is Off.
-     * 
-     * @param fieldValue the COSName object to set the field value.
-     */
+    
     @Override
     public void setValue(String fieldValue)
     {
@@ -185,7 +174,7 @@ public final class PDRadioButton extends PDButton
                     }
                     else
                     {
-                        ((COSDictionary) kid.getCOSObject()).setItem(COSName.AS, PDButton.OFF);
+                        ((COSDictionary) kid.getCOSObject()).setItem(COSName.AS, COSName.OFF);
                     }
                 }
             }
