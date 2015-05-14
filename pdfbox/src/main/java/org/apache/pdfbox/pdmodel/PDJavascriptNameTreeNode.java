@@ -20,11 +20,11 @@ import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.PDTextStream;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionFactory;
+import org.apache.pdfbox.pdmodel.interactive.action.type.PDActionJavaScript;
 
 /**
  * This class holds all of the name trees that are available at the document level.
@@ -57,21 +57,11 @@ public class PDJavascriptNameTreeNode extends PDNameTreeNode
      */
     protected COSObjectable convertCOSToPD( COSBase base ) throws IOException
     {
-        PDTextStream stream = null;
-        if( base instanceof COSString )
+        if (!(base instanceof COSDictionary))
         {
-            stream = new PDTextStream((COSString)base);
+            throw new IOException( "Error creating Javascript object, expected a COSDictionary and not " + base);
         }
-        else if( base instanceof COSStream )
-        {
-            stream = new PDTextStream((COSStream)base);
-        }
-        else
-        {
-            throw new IOException( "Error creating Javascript object, expected either COSString or COSStream and not " 
-                    + base );
-        }
-        return stream;
+        return (PDActionJavaScript)PDActionFactory.createAction((COSDictionary) base);
     }
 
     /**
