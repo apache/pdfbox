@@ -26,7 +26,6 @@ import java.io.LineNumberReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.Iterator;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -442,19 +441,19 @@ public class TestTextStripper extends TestCase
                 "First level 1\n"
                 + "First level 2\n"
                 + "Fist level 3\n"
-                + "Some content\r\n"
-                + "Some other content\r\n"
+                + "Some content\n"
+                + "Some other content\n"
                 + "Second at level 1\n"
                 + "Second level 2\n"
-                + "Content\r\n"
+                + "Content\n"
                 + "Third level 1\n"
                 + "Third level 2\n"
                 + "Third level 3\n"
-                + "Content\r\n"
+                + "Content\n"
                 + "Fourth level 1\n"
-                + "Content\r\n"
-                + "Content\r\n";
-        assertEquals(expectedTextFull, textFull);
+                + "Content\n"
+                + "Content\n";
+        assertEquals(expectedTextFull, textFull.replaceAll("\r", ""));
         
         // this should grab 0-based pages 2 and 3, i.e. 1-based pages 3 and 4
         // by their bookmarks
@@ -467,12 +466,12 @@ public class TestTextStripper extends TestCase
         String expectedTextoi23 = 
                 "Second at level 1\n"
                 + "Second level 2\n"
-                + "Content\r\n"
+                + "Content\n"
                 + "Third level 1\n"
                 + "Third level 2\n"
                 + "Third level 3\n"
-                + "Content\r\n";
-        assertEquals(expectedTextoi23, textoi23);
+                + "Content\n";
+        assertEquals(expectedTextoi23, textoi23.replaceAll("\r", ""));
         
         // this should grab 0-based pages 2 and 3, i.e. 1-based pages 3 and 4
         // by their page numbers
@@ -498,8 +497,8 @@ public class TestTextStripper extends TestCase
         String expectedTextoi2 = 
                 "Second at level 1\n"
                 + "Second level 2\n"
-                + "Content\r\n";        
-        assertEquals(expectedTextoi2, textoi2);
+                + "Content\n";        
+        assertEquals(expectedTextoi2, textoi2.replaceAll("\r", ""));
         
          
         // this should grab 0-based page 2, i.e. 1-based page 3
