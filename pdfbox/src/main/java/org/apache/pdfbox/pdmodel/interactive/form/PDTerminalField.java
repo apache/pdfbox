@@ -100,7 +100,7 @@ public abstract class PDTerminalField extends PDField
      */
     protected void updateFieldAppearances() throws IOException
     {
-        if (!acroForm.isNeedAppearances())
+        if (!acroForm.getNeedAppearances())
         {
             AppearanceGenerator.generateFieldAppearances(this);
         }
