@@ -45,7 +45,7 @@ public final class PDRadioButton extends PDButton
      */
     public PDRadioButton(PDAcroForm acroForm)
     {
-        super( acroForm );
+        super(acroForm);
         setRadioButton(true);
     }
     

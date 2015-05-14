@@ -71,7 +71,7 @@ public class PDSignatureField extends PDTerminalField
         String fieldName = "Signature";
         Set<String> sigNames = new HashSet<String>();
         // fixme: this ignores non-terminal fields, so will miss any descendant signatures
-        for ( PDField field : acroForm.getFields() )
+        for (PDField field : acroForm.getFields())
         {
             if(field instanceof PDSignatureField)
             {
@@ -128,7 +128,7 @@ public class PDSignatureField extends PDTerminalField
     public void setValue(String fieldValue)
     {
         // Signature fields don't support the strings for value
-        throw new IllegalArgumentException( "Signature fields don't support a string for the value entry." );     
+        throw new IllegalArgumentException("Signature fields don't support a string for the value entry.");     
     }    
     
     @Override
@@ -186,7 +186,7 @@ public class PDSignatureField extends PDTerminalField
     public void setDefaultValue(String defaultValue)
     {
         // Signature fields don't support the "DV" entry.
-        throw new IllegalArgumentException( "Signature fields don't support the \"DV\" entry." );     
+        throw new IllegalArgumentException("Signature fields don't support the \"DV\" entry.");     
     }
 
     @Override

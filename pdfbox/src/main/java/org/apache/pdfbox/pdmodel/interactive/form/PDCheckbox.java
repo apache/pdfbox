@@ -37,7 +37,7 @@ public final class PDCheckbox extends PDButton
      */
     public PDCheckbox(PDAcroForm acroForm)
     {
-        super( acroForm );
+        super(acroForm);
     }
     
     /**
@@ -47,9 +47,9 @@ public final class PDCheckbox extends PDButton
      * @param field the PDF object to represent as a field.
      * @param parent the parent node of the node
      */
-    PDCheckbox( PDAcroForm acroForm, COSDictionary field, PDNonTerminalField parent)
+    PDCheckbox(PDAcroForm acroForm, COSDictionary field, PDNonTerminalField parent)
     {
-        super( acroForm, field, parent);
+        super(acroForm, field, parent);
     }
 
     /**
@@ -76,7 +76,7 @@ public final class PDCheckbox extends PDButton
             return false;
         }
         COSName radioValue = (COSName)dictionary.getDictionaryObject(COSName.AS);
-        if( radioValue != null && fieldValue != null && radioValue.getName().equals( onValue ) )
+        if (radioValue != null && fieldValue != null && radioValue.getName().equals(onValue))
         {
             return true;
         }
@@ -123,11 +123,11 @@ public final class PDCheckbox extends PDButton
         COSBase n = ap.getDictionaryObject(COSName.N);
 
         //N can be a COSDictionary or a COSStream
-        if( n instanceof COSDictionary )
+        if (n instanceof COSDictionary)
         {
-            for( COSName key :((COSDictionary)n).keySet() )
+            for (COSName key :((COSDictionary)n).keySet())
             {
-                if( !key.equals( COSName.OFF) )
+                if (!key.equals(COSName.OFF))
                 {
                     return key.getName();
                 }

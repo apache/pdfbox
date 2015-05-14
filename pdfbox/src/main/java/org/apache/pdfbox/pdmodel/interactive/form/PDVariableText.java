@@ -42,7 +42,7 @@ public abstract class PDVariableText extends PDTerminalField
      */
     PDVariableText(PDAcroForm acroForm)
     {
-        super( acroForm );
+        super(acroForm);
     }
 
     /**
@@ -54,7 +54,7 @@ public abstract class PDVariableText extends PDTerminalField
      */
     PDVariableText(PDAcroForm acroForm, COSDictionary field, PDNonTerminalField parent)
     {
-        super( acroForm, field, parent);
+        super(acroForm, field, parent);
     }
 
     /**
@@ -144,9 +144,9 @@ public abstract class PDVariableText extends PDTerminalField
     {
         int retval = 0;
 
-        COSNumber number = (COSNumber)getInheritableAttribute(COSName.Q );
+        COSNumber number = (COSNumber)getInheritableAttribute(COSName.Q);
         
-        if( number != null )
+        if (number != null)
         {
             retval = number.intValue();
         }
@@ -158,7 +158,7 @@ public abstract class PDVariableText extends PDTerminalField
      *
      * @param q The new text justification.
      */
-    public void setQ( int q )
+    public void setQ(int q)
     {
         dictionary.setInt(COSName.Q, q);
     }

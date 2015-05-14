@@ -51,7 +51,7 @@ public abstract class PDChoice extends PDVariableText
      */
     public PDChoice(PDAcroForm acroForm)
     {
-        super( acroForm );
+        super(acroForm);
         dictionary.setItem(COSName.FT, COSName.CH);
     }
 
@@ -320,7 +320,7 @@ public abstract class PDChoice extends PDVariableText
      * @see #isSort()
      * @param sort The value for Sort.
      */
-    public void setSort( boolean sort )
+    public void setSort(boolean sort)
     {
         dictionary.setFlag(COSName.FF, FLAG_SORT, sort);
     }
@@ -340,7 +340,7 @@ public abstract class PDChoice extends PDVariableText
      *
      * @param multiSelect The value for MultiSelect.
      */
-    public void setMultiSelect( boolean multiSelect )
+    public void setMultiSelect(boolean multiSelect)
     {
         dictionary.setFlag(COSName.FF, FLAG_MULTI_SELECT, multiSelect);
     }
@@ -360,7 +360,7 @@ public abstract class PDChoice extends PDVariableText
      *
      * @param doNotSpellCheck The value for DoNotSpellCheck.
      */
-    public void setDoNotSpellCheck( boolean doNotSpellCheck )
+    public void setDoNotSpellCheck(boolean doNotSpellCheck)
     {
         dictionary.setFlag(COSName.FF, FLAG_DO_NOT_SPELL_CHECK, doNotSpellCheck);
     }
@@ -380,7 +380,7 @@ public abstract class PDChoice extends PDVariableText
      *
      * @param commitOnSelChange The value for CommitOnSelChange.
      */
-    public void setCommitOnSelChange( boolean commitOnSelChange )
+    public void setCommitOnSelChange(boolean commitOnSelChange)
     {
         dictionary.setFlag(COSName.FF, FLAG_COMMIT_ON_SEL_CHANGE, commitOnSelChange);
     }
@@ -400,7 +400,7 @@ public abstract class PDChoice extends PDVariableText
      *
      * @param combo The value for Combo.
      */
-    public void setCombo( boolean combo )
+    public void setCombo(boolean combo)
     {
         dictionary.setFlag(COSName.FF, FLAG_COMBO, combo);
     }
@@ -473,7 +473,7 @@ public abstract class PDChoice extends PDVariableText
         {
             return COSArrayList.convertCOSStringCOSArrayToList((COSArray)value);
         }
-        return Collections.<String>emptyList();
+        return Collections.emptyList();
     }
     
     /**
