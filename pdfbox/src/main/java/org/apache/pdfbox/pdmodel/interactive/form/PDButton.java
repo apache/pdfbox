@@ -184,11 +184,16 @@ public abstract class PDButton extends PDTerminalField
      * This will set the options.
      * 
      * @see #getOptions()
-     * @param values List containing all possible options. Supplying null or an empty list will remove the Opt entry.
+     * @param values List containing all possible options. Supplying null list will remove the Opt entry.
      */
     public void setOptions(List<String> values)
     {
-        dictionary.setItem(COSName.OPT, COSArrayList.convertStringListToCOSStringCOSArray(values));
+        COSArray cosValues = null;
+        if (values != null)
+        {
+            cosValues = COSArrayList.convertStringListToCOSStringCOSArray(values);
+        }
+        dictionary.setItem(COSName.OPT, cosValues);
     }
 
     @Override
