@@ -454,14 +454,9 @@ public abstract class SecurityHandler
             {
                 COSBase value = entry.getValue();
                 // within a dictionary only the following kind of COS objects have to be decrypted
-                if (value instanceof COSString || value instanceof COSStream || value instanceof COSArray || value instanceof COSDictionary)
+                if (value instanceof COSString || value instanceof COSArray || value instanceof COSDictionary)
                 {
-                    // if we are a signature dictionary and contain a Contents entry then
-                    // we don't decrypt it.
-                    if (!(entry.getKey().equals(COSName.CONTENTS) && value instanceof COSString))
-                    {
-                        decrypt(value, objNum, genNum);
-                    }
+                    decrypt(value, objNum, genNum);
                 }
             }
         }
