@@ -18,9 +18,11 @@ package org.apache.pdfbox.pdmodel.interactive.form;
 
 import java.io.IOException;
 
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 
 /**
@@ -164,7 +166,7 @@ public abstract class PDVariableText extends PDTerminalField
      */
     public String getRichTextValue() throws IOException
     {
-        String string = valueToString(getInheritableAttribute(COSName.RV));
+        String string = getStringOrStream(getInheritableAttribute(COSName.RV));
         if (string != null)
         {
             return string;
@@ -197,5 +199,34 @@ public abstract class PDVariableText extends PDTerminalField
         {
             dictionary.removeItem(COSName.RV);
         }        
+    }
+
+    /**
+     * Get a text as text stream.
+     *
+     * Some dictionary entries allow either a text or a text stream.
+     *
+     * @param base the potential text or text stream
+     * @return the text stream
+     * @throws IOException if the field dictionary entry is not a text type
+     */
+    protected final String getStringOrStream(COSBase base) throws IOException
+    {
+        if (base == null)
+        {
+            return null;
+        }
+        else if (base instanceof COSString)
+        {
+            return ((COSString)base).getString();
+        }
+        else if (base instanceof COSStream)
+        {
+            return ((COSStream)base).getString();
+        }
+        else
+        {
+            throw new IOException("Unexpected field value of type: " + base.getClass().getName());
+        }
     }
 }
