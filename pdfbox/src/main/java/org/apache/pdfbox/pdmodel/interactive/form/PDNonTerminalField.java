@@ -148,7 +148,7 @@ public class PDNonTerminalField extends PDField
     /**
      * @inheritDoc
      *
-     * <p><b>>Note:</b while non-terminal fields <b>do</b> inherit field values, this method returns
+     * <p><b>Note:</b> while non-terminal fields <b>do</b> inherit field values, this method returns
      * the local value, without inheritance.
      */
     @Override
@@ -160,7 +160,7 @@ public class PDNonTerminalField extends PDField
     /**
      * @inheritDoc
      *
-     * <p><b>>Note:</b while non-terminal fields <b>do</b> inherit field values, this method returns
+     * <p><b>Note:</b> while non-terminal fields <b>do</b> inherit field values, this method returns
      * the local value, without inheritance.
      */
     @Override
@@ -172,7 +172,7 @@ public class PDNonTerminalField extends PDField
     /**
      * @inheritDoc
      *
-     * <p><b>>Note:</b while non-terminal fields <b>do</b> inherit field values, this method returns
+     * <p><b>Note:</b> while non-terminal fields <b>do</b> inherit field values, this method returns
      * the local value, without inheritance.
      */
     @Override
@@ -184,7 +184,7 @@ public class PDNonTerminalField extends PDField
     /**
      * @inheritDoc
      *
-     * <p><b>>Note:</b while non-terminal fields <b>do</b> inherit field values, this method returns
+     * <p><b>Note:</b> while non-terminal fields <b>do</b> inherit field values, this method returns
      * the local value, without inheritance.
      */
     @Override
@@ -196,7 +196,7 @@ public class PDNonTerminalField extends PDField
     /**
      * @inheritDoc
      *
-     * <p><b>>Note:</b while non-terminal fields <b>do</b> inherit field values, this method returns
+     * <p><b>Note:</b> while non-terminal fields <b>do</b> inherit field values, this method returns
      * the local value, without inheritance.
      */
     @Override
