@@ -190,7 +190,7 @@ public class PDNonTerminalField extends PDField
     @Override
     public Object getDefaultValue()
     {
-        return dictionary.getNameAsString(COSName.V);
+        return dictionary.getNameAsString(COSName.DV);
     }
 
     /**
