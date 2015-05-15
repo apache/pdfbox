@@ -234,7 +234,7 @@ public final class PDTextField extends PDVariableText
     @Override
     public String getValue() throws IOException
     {
-        String string = valueToString(getInheritableAttribute(COSName.V));
+        String string = getStringOrStream(getInheritableAttribute(COSName.V));
         if (string != null) 
         {
             return string;

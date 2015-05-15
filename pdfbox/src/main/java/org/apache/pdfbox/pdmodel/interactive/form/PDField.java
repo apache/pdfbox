@@ -103,35 +103,6 @@ public abstract class PDField implements COSObjectable
     }
     
     /**
-     * Get a text as text stream.
-     * 
-     * Some dictionary entries allow either a text or a text stream.
-     * 
-     * @param base the potential text or text stream
-     * @return the text stream
-     * @throws IOException if the field dictionary entry is not a text type
-     */
-    protected String valueToString(COSBase base) throws IOException
-    {
-        if (base == null)
-        {
-            return null;
-        }
-        else if (base instanceof COSString)
-        {
-            return ((COSString)base).getString();
-        }
-        else if (base instanceof COSStream)
-        {
-            return ((COSStream)base).getString();
-        }
-        else
-        {
-            throw new IOException("Unexpected field value of type: " + base.getClass().getName());
-        }
-    }
-    
-    /**
      * Get the FT entry of the field. This is a read only field and is set depending on the actual type. The field type
      * is an inheritable attribute.
      * 
