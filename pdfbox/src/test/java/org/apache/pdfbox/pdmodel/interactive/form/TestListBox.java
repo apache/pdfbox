@@ -98,6 +98,9 @@ public class TestListBox extends TestCase
             PDAcroForm form = new PDAcroForm( doc );
             PDChoice choice = new PDListBox(form);
             
+            // appearance construction is not implemented, so turn on NeedAppearances
+            form.setNeedAppearances(true);
+            
             // test that there are no nulls returned for an empty field
             // only specific methods are tested here
             assertNotNull(choice.getOptions());
@@ -137,7 +140,7 @@ public class TestListBox extends TestCase
             // without multiselect setting multiple items shall fail
             try
             {
-                choice.setValue(exportValues);
+                choice.setValues(exportValues);
                 fail( "Missing IllegalArgumentException" );
             }
             catch( IllegalArgumentException e )
@@ -148,7 +151,7 @@ public class TestListBox extends TestCase
             // ensure that the choice field does allow multiple selections
             choice.setMultiSelect(true);
             // now this call must suceed
-            choice.setValue(exportValues);
+            choice.setValues(exportValues);
             
             // assert that the option values have been correctly set
             COSArray valueItems = (COSArray) choice.getCOSObject().getItem(COSName.V);

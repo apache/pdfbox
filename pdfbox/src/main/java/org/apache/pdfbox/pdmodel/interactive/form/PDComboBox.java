@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import java.io.IOException;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 
@@ -73,7 +74,7 @@ public final class PDComboBox extends PDChoice
     }
     
     @Override
-    public void setValue(String value)
+    public void setValue(String value) throws IOException
     {
         if (value != null)
         {
@@ -95,6 +96,6 @@ public final class PDComboBox extends PDChoice
         {
             dictionary.removeItem(COSName.V);
         }
-        // TODO create/update appearance
+        applyChange();
     }
 }

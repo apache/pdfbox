@@ -269,7 +269,7 @@ public abstract class PDChoice extends PDVariableText
     /**
      * This will set the indices of the selected options - the 'I' key.
      * <p>
-     * This method is preferred over {@link #setValue(List)} for choice fields which
+     * This method is preferred over {@link #setValues(List)} for choice fields which
      * <ul>
      *  <li>do support multiple selections</li>
      *  <li>have export values with the same value</li>
@@ -404,40 +404,13 @@ public abstract class PDChoice extends PDVariableText
     {
         dictionary.setFlag(COSName.FF, FLAG_COMBO, combo);
     }
-
-    /**
-     * setValue sets the entry "V" to the given value.
-     * 
-     * @param value the value
-     */
-    public void setValue(String value)
-    {
-        if (value != null)
-        {
-            if (getOptions().indexOf(value) == -1)
-            {
-                throw new IllegalArgumentException("The list box does not contain the given value.");
-            }
-            else
-            {
-                dictionary.setString(COSName.V, value);
-                // remove I key for single valued choice field
-                setSelectedOptionsIndex(null);
-            }
-        }
-        else
-        {
-            dictionary.removeItem(COSName.V);
-        }
-        // TODO create/update appearance
-    }
     
     /**
-     * setValue sets the entry "V" to the given value.
+     * setValues sets the entry "V" to the given values.
      * 
      * @param values the list of values
      */    
-    public void setValue(List<String> values)
+    public void setValues(List<String> values) throws IOException
     {
         if (values != null && !values.isEmpty())
         {
@@ -456,8 +429,8 @@ public abstract class PDChoice extends PDVariableText
         {
             dictionary.removeItem(COSName.V);
         }
-        // TODO create/update appearance
-    }    
+        applyChange();
+    }
     
     @Override
     public List<String> getValue()

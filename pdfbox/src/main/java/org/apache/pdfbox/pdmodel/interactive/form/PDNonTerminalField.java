@@ -160,10 +160,10 @@ public class PDNonTerminalField extends PDField
     }
     
     @Override
-    public void setValue(String fieldValue)
+    public void setValue(String value)
     {
         // There is no need to look up the parent hierarchy within a non terminal field
-        dictionary.setString(COSName.V, fieldValue);
+        dictionary.setString(COSName.V, value);
     }
     
     @Override

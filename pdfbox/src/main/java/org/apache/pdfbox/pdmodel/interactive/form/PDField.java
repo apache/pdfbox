@@ -180,10 +180,10 @@ public abstract class PDField implements COSObjectable
      * As a result it might be necessary to check the type of the value before
      * reusing it.
      * 
-     * @param fieldValue The new field value.
+     * @param value The new field value.
      * @throws IOException if there is an error setting the field value.
      */    
-    public abstract void setValue(String fieldValue) throws IOException;
+    public abstract void setValue(String value) throws IOException;
     
     /**
      * sets the field to be read-only.
