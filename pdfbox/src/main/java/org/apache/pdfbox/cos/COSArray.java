@@ -197,7 +197,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>
     }
 
     /**
-     * This will get an object from the array.  This will NOT derefernce
+     * This will get an object from the array.  This will NOT dereference
      * the COS object.
      *
      * @param index The index into the array to get the object.
