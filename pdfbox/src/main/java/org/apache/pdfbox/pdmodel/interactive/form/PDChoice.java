@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.interactive.form;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.apache.pdfbox.cos.COSArray;
@@ -431,8 +432,13 @@ public abstract class PDChoice extends PDVariableText
         }
         applyChange();
     }
-    
-    @Override
+
+    /**
+     * Returns the selected values, or an empty string. This list always contains a single item
+     * unless {@link #isMultiSelect()} is true.
+     *
+     * @return A non-null string.
+     */
     public List<String> getValue()
     {
         COSBase value = dictionary.getDictionaryObject(COSName.V);
@@ -447,6 +453,12 @@ public abstract class PDChoice extends PDVariableText
             return COSArrayList.convertCOSStringCOSArrayToList((COSArray)value);
         }
         return Collections.emptyList();
+    }
+
+    @Override
+    public String getValueAsString()
+    {
+        return Arrays.toString(getValue().toArray());
     }
     
     /**

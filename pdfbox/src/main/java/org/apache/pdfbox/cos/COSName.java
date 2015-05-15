@@ -532,6 +532,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName XREF_STM = new COSName("XRefStm");
     // Y
     public static final COSName Y_STEP = new COSName("YStep");
+    public static final COSName YES = new COSName("Yes");
 
     // fields
     private final String name;

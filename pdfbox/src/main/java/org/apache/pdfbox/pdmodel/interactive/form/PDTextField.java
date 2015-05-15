@@ -230,18 +230,23 @@ public final class PDTextField extends PDVariableText
         dictionary.setString(COSName.V, value);
         applyChange();
     }
-    
-    @Override
-    public String getValue() throws IOException
+
+    /**
+     * Returns the value of this field, or an empty string.
+     * 
+     * @return A non-null string.
+     */
+    public String getValue()
     {
-        String string = getStringOrStream(getInheritableAttribute(COSName.V));
-        if (string != null) 
-        {
-            return string;
-        }
-        return "";
+        return getStringOrStream(getInheritableAttribute(COSName.V));
     }
 
+    @Override
+    public String getValueAsString()
+    {
+        return getValue();
+    }
+    
     @Override
     void constructAppearances() throws IOException
     {
