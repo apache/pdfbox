@@ -19,8 +19,10 @@ package org.apache.pdfbox.pdmodel.interactive.form;
 
 import java.io.File;
 import java.io.IOException;
+import static junit.framework.TestCase.fail;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.TestPDFToImage;
 
 import org.junit.After;
 import org.junit.Before;
@@ -29,8 +31,8 @@ import org.junit.Test;
 public class MultilineFieldsTest
 {
     private static final File OUT_DIR = new File("target/test-output");
-    private static final String PATH_OF_PDF = 
-            "src/test/resources/org/apache/pdfbox/pdmodel/interactive/form/MultilineFields.pdf";
+    private static final File IN_DIR = new File("src/test/resources/org/apache/pdfbox/pdmodel/interactive/form");
+    private static final String NAME_OF_PDF = "MultilineFields.pdf";
     private static final String TEST_VALUE = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, " +
             "sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam";
 
@@ -41,7 +43,7 @@ public class MultilineFieldsTest
     @Before
     public void setUp() throws IOException
     {
-        document = PDDocument.load(new File(PATH_OF_PDF));
+        document = PDDocument.load(new File(IN_DIR, NAME_OF_PDF));
         acroForm = document.getDocumentCatalog().getAcroForm();
         OUT_DIR.mkdirs();
     }
@@ -84,13 +86,21 @@ public class MultilineFieldsTest
 
         field = (PDField) acroForm.getField("AlignRight-Border_Wide");
         field.setValue(TEST_VALUE);
+        
+        
+        // compare rendering
+        File file = new File(OUT_DIR, NAME_OF_PDF);
+        document.save(file);
+        TestPDFToImage testPDFToImage = new TestPDFToImage(TestPDFToImage.class.getName());
+        if (!testPDFToImage.doTestFile(file, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
+        {
+            fail("Rendering of " + file + " failed or is not identical to expected rendering in " + IN_DIR + " directory");
+        }       
     }
     
     @After
     public void tearDown() throws IOException
     {
-        File file = new File(OUT_DIR, "MultilineTests.pdf");
-        document.save(file);
         document.close();
     }
     
