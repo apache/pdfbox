@@ -172,7 +172,7 @@ public abstract class PDTerminalField extends PDField
             // there are multiple widgets
             for (int i = 0; i < kids.size(); i++)
             {
-                COSBase kid = kids.get(i);
+                COSBase kid = kids.getObject(i);
                 if (kid instanceof COSDictionary)
                 {
                     widgets.add(new PDAnnotationWidget((COSDictionary)kid));
