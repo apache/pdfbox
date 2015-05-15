@@ -144,39 +144,64 @@ public class PDNonTerminalField extends PDField
         COSArray kidsArray = COSArrayList.converterToCOSArray(children);
         dictionary.setItem(COSName.KIDS, kidsArray);
     }
-    
+
+    /**
+     * @inheritDoc
+     *
+     * <p><b>>Note:</b while non-terminal fields <b>do</b> inherit field values, this method returns
+     * the local value, without inheritance.
+     */
     @Override
     public String getFieldType()
     {
-        // There is no need to look up the parent hierarchy within a non terminal field
         return dictionary.getNameAsString(COSName.FT);
     }
-    
+
+    /**
+     * @inheritDoc
+     *
+     * <p><b>>Note:</b while non-terminal fields <b>do</b> inherit field values, this method returns
+     * the local value, without inheritance.
+     */
     @Override
     public Object getValue()
     {
-        // There is no need to look up the parent hierarchy within a non terminal field
         return dictionary.getNameAsString(COSName.V);
     }
-    
+
+    /**
+     * @inheritDoc
+     *
+     * <p><b>>Note:</b while non-terminal fields <b>do</b> inherit field values, this method returns
+     * the local value, without inheritance.
+     */
     @Override
     public void setValue(String value)
     {
-        // There is no need to look up the parent hierarchy within a non terminal field
         dictionary.setString(COSName.V, value);
     }
-    
+
+    /**
+     * @inheritDoc
+     *
+     * <p><b>>Note:</b while non-terminal fields <b>do</b> inherit field values, this method returns
+     * the local value, without inheritance.
+     */
     @Override
     public Object getDefaultValue()
     {
-        // There is no need to look up the parent hierarchy within a non terminal field
         return dictionary.getNameAsString(COSName.V);
     }
-    
+
+    /**
+     * @inheritDoc
+     *
+     * <p><b>>Note:</b while non-terminal fields <b>do</b> inherit field values, this method returns
+     * the local value, without inheritance.
+     */
     @Override
     public void setDefaultValue(String defaultValue)
     {
-        // There is no need to look up the parent hierarchy within a non terminal field
         dictionary.setString(COSName.V, defaultValue);
     }
 }
