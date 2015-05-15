@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import java.io.IOException;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 
@@ -74,5 +75,28 @@ public final class PDListBox extends PDChoice
         {
             dictionary.removeItem(COSName.TI);
         }
+    }
+    
+    @Override
+    public void setValue(String value) throws IOException
+    {
+        if (value != null)
+        {
+            if (getOptions().indexOf(value) == -1)
+            {
+                throw new IllegalArgumentException("The list box does not contain the given value.");
+            }
+            else
+            {
+                dictionary.setString(COSName.V, value);
+                // remove I key for single valued choice field
+                setSelectedOptionsIndex(null);
+            }
+        }
+        else
+        {
+            dictionary.removeItem(COSName.V);
+        }
+        applyChange();
     }
 }

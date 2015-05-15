@@ -22,6 +22,7 @@ import java.util.Set;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSeedValue;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 
@@ -90,8 +91,10 @@ public class PDSignatureField extends PDTerminalField
      * Add a signature dictionary to the signature field.
      * 
      * @param value is the PDSignatureField
+     * @deprecated Use {@link #setValue(PDSignature)} instead.
      */
-    public void setSignature(PDSignature value)
+    @Deprecated
+    public void setSignature(PDSignature value) throws IOException
     {
         setValue(value);
     }
@@ -112,20 +115,14 @@ public class PDSignatureField extends PDTerminalField
      * 
      * @param value is the PDSignatureField
      */
-    public void setValue(PDSignature value)
+    public void setValue(PDSignature value) throws IOException
     {
-        if (value == null)
-        {
-            dictionary.removeItem(COSName.V);
-        }
-        else
-        {
-            dictionary.setItem(COSName.V, (PDSignature)value);
-        }
+        dictionary.setItem(COSName.V, value);
+        applyChange();
     }
     
     @Override
-    public void setValue(String fieldValue)
+    public void setValue(String value)
     {
         // Signature fields don't support the strings for value
         throw new IllegalArgumentException("Signature fields don't support a string for the value entry.");     
@@ -198,7 +195,19 @@ public class PDSignatureField extends PDTerminalField
     @Override
     void constructAppearances() throws IOException
     {
-        // TODO: implement appearance generation for signatures
-        throw new UnsupportedOperationException("not implemented");
+        PDAnnotationWidget widget = this.getWidgets().get(0);
+        if (widget != null)
+        {
+            // check if the signature is visible
+            if (widget.getRectangle() != null &&
+                widget.getRectangle().getHeight() == 0 && widget.getRectangle().getWidth() == 0 ||
+                widget.isNoView() ||  widget.isHidden())
+            {
+                return;
+            }
+
+            // TODO: implement appearance generation for signatures
+            throw new UnsupportedOperationException("not implemented");
+        }
     }
 }

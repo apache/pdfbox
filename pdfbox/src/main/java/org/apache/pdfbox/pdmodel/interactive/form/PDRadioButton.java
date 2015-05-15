@@ -150,22 +150,22 @@ public final class PDRadioButton extends PDButton
     }
     
     @Override
-    public void setValue(String fieldValue)
+    public void setValue(String value) throws IOException
     {
-        COSName nameForValue = COSName.getPDFName(fieldValue);
-        dictionary.setItem(COSName.V, nameForValue);
-        
+        dictionary.setName(COSName.V, value);
+        // update the appearance state (AS)
         for (PDAnnotationWidget widget : getWidgets())
         {
             PDAppearanceEntry appearanceEntry = widget.getAppearance().getNormalAppearance();
-            if (((COSDictionary)appearanceEntry.getCOSObject()).containsKey(nameForValue))
+            if (((COSDictionary)appearanceEntry.getCOSObject()).containsKey(value))
             {
-                widget.getCOSObject().setName(COSName.AS, fieldValue);
+                widget.getCOSObject().setName(COSName.AS, value);
             }
             else
             {
                 widget.getCOSObject().setItem(COSName.AS, COSName.OFF);
             }
         }
+        applyChange();
     }
 }

@@ -51,6 +51,7 @@ import org.apache.pdfbox.pdmodel.encryption.SecurityHandler;
 import org.apache.pdfbox.pdmodel.encryption.SecurityHandlerFactory;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
@@ -229,7 +230,16 @@ public class PDDocument implements Closeable
         PDSignatureField signatureField = findSignatureField(fields, sigObject);
         if (signatureField == null)
         {
-            signatureField = createSignatureField(acroForm, sigObject, page); 
+            signatureField = new PDSignatureField(acroForm);
+            // set visibility flags
+            if (options.getVisualSignature() == null)
+            {
+                signatureField.getWidget().setAnnotationFlags(PDAnnotationWidget.FLAG_NO_VIEW);
+            }
+            // append the signature object
+            signatureField.setValue(sigObject);
+            // backward linking
+            signatureField.getWidget().setPage(page);
         }
 
         // Set the AcroForm Fields
@@ -263,17 +273,6 @@ public class PDDocument implements Closeable
             annotations.add(signatureField.getWidget());
         }
         page.getCOSObject().setNeedToBeUpdated(true);
-    }
-
-    private PDSignatureField createSignatureField(PDAcroForm acroForm, PDSignature sigObject, PDPage page)
-            throws IOException
-    {
-        PDSignatureField signatureField = new PDSignatureField(acroForm);
-        // append the signature object
-        signatureField.setSignature(sigObject);
-        // backward linking
-        signatureField.getWidget().setPage(page);
-        return signatureField;
     }
 
     // search acroform field list for signature field with specific signature dictionary

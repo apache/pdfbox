@@ -87,7 +87,7 @@ public final class PDCheckbox extends PDButton
     /**
      * Checks the check box.
      */
-    public void check()
+    public void check() throws IOException
     {
         String onValue = getOnValue();
         setValue(onValue);
@@ -156,18 +156,20 @@ public final class PDCheckbox extends PDButton
     }
 
     @Override
-    public void setValue(String value)
+    public void setValue(String value) throws IOException
     {
+        dictionary.setName(COSName.V, value);
+        
+        // update the appearance state (AS)
         if (value == null)
         {
-            dictionary.removeItem(COSName.V);
             dictionary.setItem(COSName.AS, COSName.OFF);
         }
         else
         {
-            COSName nameValue = COSName.getPDFName(value);
-            dictionary.setItem(COSName.V, nameValue);
-            dictionary.setItem(COSName.AS, nameValue);
+            dictionary.setName(COSName.AS, value);
         }
+        
+        applyChange();
     }
 }

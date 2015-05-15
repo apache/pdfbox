@@ -91,9 +91,9 @@ public class PDPushButton extends PDButton
     }
     
     @Override
-    public void setValue(String fieldValue)
+    public void setValue(String value)
     {
-        if (fieldValue != null && !fieldValue.isEmpty())
+        if (value != null && !value.isEmpty())
         {
             throw new IllegalArgumentException("A PDPushButton shall not use the V entry in the field dictionary");
         }

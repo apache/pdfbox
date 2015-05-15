@@ -103,7 +103,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
                                 String signatureName) throws IOException
     {
         PDSignature pdSignature = new PDSignature();
-        pdSignatureField.setSignature(pdSignature);
+        pdSignatureField.setValue(pdSignature);
         pdSignatureField.getWidget().setPage(page);
         page.getAnnotations().add(pdSignatureField.getWidget());
         pdSignature.setName(signatureName);
