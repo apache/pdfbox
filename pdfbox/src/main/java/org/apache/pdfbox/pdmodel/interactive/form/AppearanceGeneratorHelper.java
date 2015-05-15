@@ -20,11 +20,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
@@ -32,16 +31,14 @@ import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdfwriter.ContentStreamWriter;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDResources;
-import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
 import org.apache.pdfbox.pdmodel.interactive.action.PDFormFieldAdditionalActions;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceEntry;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
-import org.apache.pdfbox.contentstream.operator.Operator;
 
 /**
  * Create the AcroForms field appearance helper.
@@ -52,48 +49,22 @@ import org.apache.pdfbox.contentstream.operator.Operator;
 class AppearanceGeneratorHelper
 {
     private static final Log LOG = LogFactory.getLog(AppearanceGeneratorHelper.class);
-
-    // scale of font glyph units
     private static final float GLYPH_TO_PDF_SCALE = 1000f;
     
-    private final PDVariableText parent;
-
-    private String value;
+    private final PDVariableText field;
     private final DefaultAppearanceHandler defaultAppearanceHandler;
-
-    private final PDAcroForm acroForm;
-    private List<COSObjectable> widgets = new ArrayList<COSObjectable>();
-
+    private String value;
+    
     /**
      * Constructs a COSAppearance from the given field.
      *
-     * @param acroForm the AcroForm that this field is part of.
      * @param field the field which you wish to control the appearance of
      * @throws IOException 
      */
-    AppearanceGeneratorHelper(PDAcroForm acroForm, PDVariableText field) throws IOException
+    AppearanceGeneratorHelper(PDVariableText field) throws IOException
     {
-        this.acroForm = acroForm;
-        parent = field;
-
-        widgets = field.getKids();
-        if (widgets == null)
-        {
-            widgets = new ArrayList<COSObjectable>();
-            widgets.add(field.getWidget());
-        }
-        defaultAppearanceHandler = new DefaultAppearanceHandler(getDefaultAppearance());
-    }
-
-    /**
-     * Returns the default appearance of a textbox. If the textbox does not have one,
-     * then it will be taken from the AcroForm.
-     * 
-     * @return The DA element
-     */
-    private String getDefaultAppearance()
-    {
-        return parent.getDefaultAppearance();
+        this.field = field;
+        this.defaultAppearanceHandler = new DefaultAppearanceHandler(field.getDefaultAppearance());
     }
 
     /**
@@ -144,31 +115,14 @@ class AppearanceGeneratorHelper
     public void setAppearanceValue(String apValue) throws IOException
     {
         value = apValue;
-        Iterator<COSObjectable> widgetIter = widgets.iterator();
-        
-        while (widgetIter.hasNext())
+
+        for (PDAnnotationWidget widget : field.getWidgets())
         {
-            COSObjectable next = widgetIter.next();
-            PDTerminalField field = null;
-            PDAnnotationWidget widget;
-            if (next instanceof PDTerminalField)
-            {
-                field = (PDTerminalField) next;
-                widget = field.getWidget();
-            }
-            else
-            {
-                widget = (PDAnnotationWidget) next;
-            }
-            PDFormFieldAdditionalActions actions = null;
-            if (field != null)
-            {
-                actions = field.getActions();
-            }
+            PDFormFieldAdditionalActions actions = field.getActions();
 
             // in case all tests fail the field will be formatted by acrobat
             // when it is opened. See FreedomExpressions.pdf for an example of this.  
-            if (actions == null || actions.getF() == null || 
+            if (actions == null || actions.getF() == null ||
                     widget.getCOSObject().getDictionaryObject(COSName.AP) != null)
             {
                 PDAppearanceDictionary appearance = widget.getAppearance();
@@ -180,11 +134,11 @@ class AppearanceGeneratorHelper
 
                 PDAppearanceEntry normalAppearance = appearance.getNormalAppearance();
                 // TODO support more than one appearance stream
-                PDAppearanceStream appearanceStream = 
+                PDAppearanceStream appearanceStream =
                         normalAppearance.isStream() ? normalAppearance.getAppearanceStream() : null;
                 if (appearanceStream == null)
                 {
-                    COSStream cosStream = acroForm.getDocument().getDocument().createCOSStream();
+                    COSStream cosStream = field.getAcroForm().getDocument().getDocument().createCOSStream();
                     appearanceStream = new PDAppearanceStream(cosStream);
                     appearanceStream.setBBox(widget.getRectangle()
                             .createRetranslatedRectangle());
@@ -194,7 +148,7 @@ class AppearanceGeneratorHelper
                 List<Object> tokens = getStreamTokens(appearanceStream);
 
                 PDFont pdFont = getFontAndUpdateResources(appearanceStream);
-                
+
                 if (!containsMarkedContent(tokens))
                 {
                     createAppearanceContent(tokens, widget, pdFont, appearanceStream);
@@ -263,7 +217,7 @@ class AppearanceGeneratorHelper
             PDFont font, List<Object> tokens, PDAppearanceStream appearanceStream)
             throws IOException
     {
-        PDPageContentStream contents = new PDPageContentStream(acroForm.getDocument(),
+        PDPageContentStream contents = new PDPageContentStream(field.getAcroForm().getDocument(),
                                                                appearanceStream, output);
 
         // Acrobat calculates the left and right padding dependent on the offset of the border edge
@@ -331,7 +285,7 @@ class AppearanceGeneratorHelper
                                                     .width(contentEdge.getWidth())
                                                     .wrapLines(true)
                                                     .initialOffset(leftOffset, verticalOffset)
-                                                    .textAlign(parent.getQ())
+                                                    .textAlign(field.getQ())
                                                     .build();
             formatter.format();
 
@@ -352,7 +306,7 @@ class AppearanceGeneratorHelper
     {
         PDFont font;
         PDResources streamResources = appearanceStream.getResources();
-        PDResources formResources = acroForm.getDefaultResources();
+        PDResources formResources = field.getAcroForm().getDefaultResources();
         
         if (streamResources == null && formResources == null)
         {
@@ -445,7 +399,7 @@ class AppearanceGeneratorHelper
     
     private boolean isMultiLine()
     {
-        return parent instanceof PDTextField && ((PDTextField) parent).isMultiline();
+        return field instanceof PDTextField && ((PDTextField) field).isMultiline();
     }
 
     /**
@@ -534,7 +488,7 @@ class AppearanceGeneratorHelper
         float capHeight = getCapHeight(pdFont, fontSize);
         float fontHeight = pdFont.getBoundingBox().getHeight()  / GLYPH_TO_PDF_SCALE * fontSize;
         
-        if (parent instanceof PDTextField && ((PDTextField) parent).isMultiline())
+        if (field instanceof PDTextField && ((PDTextField) field).isMultiline())
         {
             verticalOffset = contentEdge.getUpperRightY() - fontHeight;
         }
@@ -576,7 +530,7 @@ class AppearanceGeneratorHelper
         float stringWidth = pdFont.getStringWidth(value) / GLYPH_TO_PDF_SCALE * fontSize;
         float leftOffset;
         
-        int q = parent.getQ();
+        int q = field.getQ();
         
         if (q == PDTextField.QUADDING_LEFT
                 || stringWidth > contentEdge.getWidth())

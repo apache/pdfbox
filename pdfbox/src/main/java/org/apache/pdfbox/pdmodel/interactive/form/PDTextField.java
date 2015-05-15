@@ -246,7 +246,7 @@ public final class PDTextField extends PDVariableText
     void constructAppearances() throws IOException
     {
         AppearanceGeneratorHelper apHelper;
-        apHelper = new AppearanceGeneratorHelper(this.getAcroForm(), this);
+        apHelper = new AppearanceGeneratorHelper(this);
         apHelper.setAppearanceValue(getValue());
     }
 }

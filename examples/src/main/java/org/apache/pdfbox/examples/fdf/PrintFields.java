@@ -18,12 +18,9 @@ package org.apache.pdfbox.examples.fdf;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
-import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDNonTerminalField;
@@ -50,24 +47,21 @@ public class PrintFields
         PDDocumentCatalog docCatalog = pdfDocument.getDocumentCatalog();
         PDAcroForm acroForm = docCatalog.getAcroForm();
         List<PDField> fields = acroForm.getFields();
-        Iterator<PDField> fieldsIter = fields.iterator();
 
         System.out.println(fields.size() + " top-level fields were found on the form");
 
-        while (fieldsIter.hasNext())
+        for (PDField field : fields)
         {
-            PDField field = fieldsIter.next();
             processField(field, "|--", field.getPartialName());
         }
     }
 
     private void processField(PDField field, String sLevel, String sParent) throws IOException
     {
-        String partialName = field != null ? field.getPartialName() : "";
-        List<COSObjectable> kids = field.getKids();
-        if (kids != null)
+        String partialName = field.getPartialName();
+        
+        if (field instanceof PDNonTerminalField)
         {
-            Iterator<COSObjectable> kidsIter = kids.iterator();
             if (!sParent.equals(field.getPartialName()))
             {
                 if (partialName != null)
@@ -76,14 +70,10 @@ public class PrintFields
                 }
             }
             System.out.println(sLevel + sParent);
-            while (kidsIter.hasNext())
+
+            for (PDField child : ((PDNonTerminalField)field).getChildren())
             {
-                Object pdfObj = kidsIter.next();
-                if (pdfObj instanceof PDField)
-                {
-                    PDField kid = (PDField) pdfObj;
-                    processField(kid, "|  " + sLevel, sParent);
-                }
+                processField(child, "|  " + sLevel, sParent);
             }
         }
         else
@@ -93,11 +83,6 @@ public class PrintFields
             {
                 // PDSignatureField doesn't have a value
                 fieldValue = "PDSignatureField";
-            }
-            else if(field instanceof PDNonTerminalField)
-            {
-                // Non terminal fields don't have a value
-                fieldValue = "node";
             }
             else
             {
