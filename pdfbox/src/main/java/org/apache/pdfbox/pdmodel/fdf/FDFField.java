@@ -285,6 +285,16 @@ public class FDFField implements COSObjectable
     }
 
     /**
+     * Sets the COS value of this field.
+     * 
+     * @param value COS value.
+     */
+    public void setValue( COSBase value )
+    {
+        field.setItem( COSName.V, value );
+    }
+
+    /**
      * This will get the Ff entry of the cos dictionary.  If it it not present then
      * this method will return null.
      *

@@ -126,9 +126,13 @@ public class PDSignatureField extends PDTerminalField
     {
         // Signature fields don't support the strings for value
         throw new IllegalArgumentException("Signature fields don't support a string for the value entry.");     
-    }    
-    
-    @Override
+    }
+
+    /**
+     * Returns the signature contained in this field.
+     * 
+     * @return A signature dictionary.
+     */
     public PDSignature getValue()
     {
         COSBase value = dictionary.getDictionaryObject(COSName.V);
@@ -137,6 +141,12 @@ public class PDSignatureField extends PDTerminalField
             return null;
         }
         return new PDSignature((COSDictionary)value);
+    }
+    
+    @Override
+    public String getValueAsString()
+    {
+        return getValue().toString();
     }
 
     /**
@@ -184,12 +194,6 @@ public class PDSignatureField extends PDTerminalField
     {
         // Signature fields don't support the "DV" entry.
         throw new IllegalArgumentException("Signature fields don't support the \"DV\" entry.");     
-    }
-
-    @Override
-    public String toString()
-    {
-        return "PDSignatureField";
     }
 
     @Override

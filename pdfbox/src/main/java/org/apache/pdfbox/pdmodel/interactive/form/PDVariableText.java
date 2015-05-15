@@ -166,12 +166,7 @@ public abstract class PDVariableText extends PDTerminalField
      */
     public String getRichTextValue() throws IOException
     {
-        String string = getStringOrStream(getInheritableAttribute(COSName.RV));
-        if (string != null)
-        {
-            return string;
-        }
-        return "";
+        return getStringOrStream(getInheritableAttribute(COSName.RV));
     }
     
     /**
@@ -208,13 +203,12 @@ public abstract class PDVariableText extends PDTerminalField
      *
      * @param base the potential text or text stream
      * @return the text stream
-     * @throws IOException if the field dictionary entry is not a text type
      */
-    protected final String getStringOrStream(COSBase base) throws IOException
+    protected final String getStringOrStream(COSBase base)
     {
         if (base == null)
         {
-            return null;
+            return "";
         }
         else if (base instanceof COSString)
         {
@@ -226,7 +220,7 @@ public abstract class PDVariableText extends PDTerminalField
         }
         else
         {
-            throw new IOException("Unexpected field value of type: " + base.getClass().getName());
+            return "";
         }
     }
 }

@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
@@ -163,10 +164,21 @@ public class PDNonTerminalField extends PDField
      * <p><b>Note:</b> while non-terminal fields <b>do</b> inherit field values, this method returns
      * the local value, without inheritance.
      */
-    @Override
-    public Object getValue()
+    public COSBase getValue()
     {
-        return dictionary.getNameAsString(COSName.V);
+        return dictionary.getDictionaryObject(COSName.V);
+    }
+
+    /**
+     * @inheritDoc
+     *
+     * <p><b>Note:</b> while non-terminal fields <b>do</b> inherit field values, this method returns
+     * the local value, without inheritance.
+     */
+    @Override
+    public String getValueAsString()
+    {
+        return dictionary.getDictionaryObject(COSName.V).toString();
     }
 
     /**

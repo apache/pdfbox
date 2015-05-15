@@ -145,7 +145,7 @@ public abstract class PDTerminalField extends PDField
     {
         FDFField fdfField = new FDFField();
         fdfField.setPartialFieldName(getPartialName());
-        fdfField.setValue(getValue());
+        fdfField.setValue(dictionary.getDictionaryObject(COSName.V));
 
         // fixme: the old code which was here assumed that Kids were PDField instances,
         //        which is never true. They're annotation widgets.

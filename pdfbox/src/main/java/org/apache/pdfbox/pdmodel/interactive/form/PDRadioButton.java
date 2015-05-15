@@ -112,7 +112,7 @@ public final class PDRadioButton extends PDButton
             for (COSObjectable kid : kids)
             {
                 // fixme: this is always false, because it's kids are always widgets, not fields.
-                if (kid instanceof PDCheckbox)
+                /*if (kid instanceof PDCheckbox)
                 {
                     PDCheckbox btn = (PDCheckbox) kid;
                     if (btn.getOnValue().equals(fieldValue))
@@ -120,7 +120,7 @@ public final class PDRadioButton extends PDButton
                         break;
                     }
                     idx++;
-                }
+                }*/
             }
             if (idx <= options.size())
             {
@@ -129,24 +129,30 @@ public final class PDRadioButton extends PDButton
         }
         return "";
     }
-    
-    @Override
-    public String getValue() throws IOException
+
+    /**
+     * Returns the selected value. May be empty if NoToggleToOff is set but there is no value
+     * selected.
+     * 
+     * @return A non-null string.
+     */
+    public String getValue()
     {
-        COSBase attribute = getInheritableAttribute(COSName.V);
-        
-        if (attribute == null)
+        COSBase value = getInheritableAttribute(COSName.V);
+        if (value instanceof COSName)
         {
-            return "";
-        }
-        else if (attribute instanceof COSName)
-        {
-            return ((COSName) attribute).getName();
+            return ((COSName)value).getName();
         }
         else
         {
-            throw new IOException("Expected a COSName entry but got " + attribute.getClass().getName());
+            return "";
         }
+    }
+
+    @Override
+    public String getValueAsString()
+    {
+        return getValue();
     }
     
     @Override

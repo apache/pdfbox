@@ -24,7 +24,6 @@ import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDNonTerminalField;
-import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
 
 /**
  * This example will take a PDF document and print all the fields from the file.
@@ -78,23 +77,7 @@ public class PrintFields
         }
         else
         {
-            String fieldValue;
-            if (field instanceof PDSignatureField)
-            {
-                // PDSignatureField doesn't have a value
-                fieldValue = "PDSignatureField";
-            }
-            else
-            {
-                if (field.getValue() != null)
-                {
-                    fieldValue = field.getValue().toString();
-                }
-                else
-                {
-                    fieldValue = "no value available";
-                }
-            }
+            String fieldValue = field.getValueAsString();
             StringBuilder outputString = new StringBuilder(sLevel);
             outputString.append(sParent);
             if (partialName != null)

@@ -54,34 +54,13 @@ public final class PDCheckbox extends PDButton
 
     /**
      * This will tell if this radio button is currently checked or not.
+     * This is equivalent to calling {@link #getValue()}.
      *
-     * @return true If the radio button is checked.
-     * @throws IOException 
+     * @return true If this field is checked.
      */
-    public boolean isChecked() throws IOException
+    public boolean isChecked()
     {
-        String onValue = getOnValue();
-        String fieldValue = null;
-        try
-        {
-            fieldValue = getValue();
-        }
-        catch (IOException e)
-        {
-            // getting there means that the field value
-            // doesn't have a supported type.
-            // Ignoring as that will also mean that the field is not checked.
-            // Setting the value explicitly as Code Analysis (Sonar) doesn't like
-            // empty catch blocks.
-            return false;
-        }
-        COSName radioValue = (COSName)dictionary.getDictionaryObject(COSName.AS);
-        if (radioValue != null && fieldValue != null && radioValue.getName().equals(onValue))
-        {
-            return true;
-        }
-
-        return false;
+        return getValue();
     }
 
     /**
@@ -89,9 +68,7 @@ public final class PDCheckbox extends PDButton
      */
     public void check() throws IOException
     {
-        String onValue = getOnValue();
-        setValue(onValue);
-        dictionary.setItem(COSName.AS, COSName.getPDFName(onValue));
+        setValue("Yes"); // todo: need type safety
     }
 
     /**
@@ -103,58 +80,22 @@ public final class PDCheckbox extends PDButton
     }
 
     /**
-     * This will get the value assigned to the OFF state.
-     *
-     * @return The value of the check box.
+     * Returns true if this field is checked.
+     * 
+     * @return True if checked
      */
-    public String getOffValue()
+    public boolean getValue()
     {
-        return COSName.OFF.getName();
-    }
-
-    /**
-     * This will get the value assigned to the ON state.
-     *
-     * @return The value of the check box.
-     */
-    public String getOnValue()
-    {
-        COSDictionary ap = (COSDictionary) dictionary.getDictionaryObject(COSName.AP);
-        COSBase n = ap.getDictionaryObject(COSName.N);
-
-        //N can be a COSDictionary or a COSStream
-        if (n instanceof COSDictionary)
-        {
-            for (COSName key :((COSDictionary)n).keySet())
-            {
-                if (!key.equals(COSName.OFF))
-                {
-                    return key.getName();
-                }
-            }
-        }
-        return "";
+        COSBase value = getInheritableAttribute(COSName.V);
+        return value instanceof COSName && value.equals(COSName.YES);
     }
 
     @Override
-    public String getValue() throws IOException
+    public String getValueAsString()
     {
-        COSBase attribute = getInheritableAttribute(COSName.V);
-
-        if (attribute == null)
-        {
-            return "";
-        }
-        else if (attribute instanceof COSName)
-        {
-            return ((COSName) attribute).getName();
-        }
-        else
-        {
-            throw new IOException("Expected a COSName entry but got " + attribute.getClass().getName());
-        }
+        return getValue() ? "Yes" : "Off";
     }
-
+    
     @Override
     public void setValue(String value) throws IOException
     {
