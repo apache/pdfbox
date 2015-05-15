@@ -140,7 +140,7 @@ public class TestListBox extends TestCase
             // without multiselect setting multiple items shall fail
             try
             {
-                choice.setValues(exportValues);
+                choice.setValue(exportValues);
                 fail( "Missing IllegalArgumentException" );
             }
             catch( IllegalArgumentException e )
@@ -151,7 +151,7 @@ public class TestListBox extends TestCase
             // ensure that the choice field does allow multiple selections
             choice.setMultiSelect(true);
             // now this call must suceed
-            choice.setValues(exportValues);
+            choice.setValue(exportValues);
             
             // assert that the option values have been correctly set
             COSArray valueItems = (COSArray) choice.getCOSObject().getItem(COSName.V);
