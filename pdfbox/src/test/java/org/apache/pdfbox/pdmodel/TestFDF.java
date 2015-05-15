@@ -20,23 +20,21 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
-import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceEntry;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDRadioButton;
+import org.apache.pdfbox.pdmodel.interactive.form.PDTerminalField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
 
 /**
@@ -214,10 +212,11 @@ public class TestFDF extends TestCase
                 fdf = FDFDocument.load( fileFDF );
                 PDAcroForm form = freedom.getDocumentCatalog().getAcroForm();
                 form.importFDF( fdf );
-                PDTextField feld2 = (PDTextField)form.getField( "eeFirstName" );
-                List<COSObjectable> kids = feld2.getKids();
-                PDField firstKid = (PDField)kids.get( 0 );
-                PDField secondKid = (PDField)kids.get( 1 );
+                
+                PDTextField field2 = (PDTextField)form.getField( "eeFirstName" );
+                List<PDAnnotationWidget> kids = field2.getWidgets();
+                PDAnnotationWidget firstKid = kids.get( 0 );
+                PDAnnotationWidget secondKid = kids.get( 1 );
                 testContentStreamContains( freedom, firstKid, "Steve" );
                 testContentStreamContains( freedom, secondKid, "Steve" );
     
@@ -241,9 +240,8 @@ public class TestFDF extends TestCase
         }
     }
 
-    private void testContentStreamContains( PDDocument doc, PDField field, String expected ) throws Exception
+    private void testContentStreamContains( PDDocument doc, PDAnnotationWidget widget, String expected ) throws Exception
     {
-        PDAnnotationWidget widget = field.getWidget();
         PDAppearanceEntry normalAppearance = widget.getAppearance().getNormalAppearance();
         PDAppearanceStream appearanceStream = normalAppearance.getAppearanceStream();
         COSStream actual = appearanceStream.getCOSStream();
@@ -252,9 +250,9 @@ public class TestFDF extends TestCase
         assertTrue( actualTokens.contains( new COSString( expected ) ) );
     }
 
-    private void testContentStreams( PDDocument doc, PDField field, String expected ) throws Exception
+    private void testContentStreams( PDDocument doc, PDTerminalField field, String expected ) throws Exception
     {
-        PDAnnotationWidget widget = field.getWidget();
+        PDAnnotationWidget widget = field.getWidgets().get(0);
         PDAppearanceEntry normalAppearance = widget.getAppearance().getNormalAppearance();
         PDAppearanceStream appearanceStream = normalAppearance.getAppearanceStream();
         COSStream actual = appearanceStream.getCOSStream();

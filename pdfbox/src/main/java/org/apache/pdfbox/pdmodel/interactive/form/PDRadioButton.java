@@ -18,7 +18,6 @@ package org.apache.pdfbox.pdmodel.interactive.form;
 
 import java.io.IOException;
 import java.util.List;
-
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -108,10 +107,11 @@ public final class PDRadioButton extends PDButton
         else
         {
             String fieldValue = getValue();
-            List<COSObjectable> kids = getKids();
+            List<PDAnnotationWidget> kids = getWidgets();
             int idx = 0;
             for (COSObjectable kid : kids)
             {
+                // fixme: this is always false, because it's kids are always widgets, not fields.
                 if (kid instanceof PDCheckbox)
                 {
                     PDCheckbox btn = (PDCheckbox) kid;
@@ -154,22 +154,17 @@ public final class PDRadioButton extends PDButton
     {
         COSName nameForValue = COSName.getPDFName(fieldValue);
         dictionary.setItem(COSName.V, nameForValue);
-        List<COSObjectable> kids = getKids();
-        for (COSObjectable kid : kids)
+        
+        for (PDAnnotationWidget widget : getWidgets())
         {
-            if (kid instanceof PDAnnotationWidget)
+            PDAppearanceEntry appearanceEntry = widget.getAppearance().getNormalAppearance();
+            if (((COSDictionary)appearanceEntry.getCOSObject()).containsKey(nameForValue))
             {
-                PDAppearanceEntry appearanceEntry = ((PDAnnotationWidget) kid).getAppearance()
-                        .getNormalAppearance();
-
-                if (((COSDictionary) appearanceEntry.getCOSObject()).containsKey(nameForValue))
-                {
-                    ((COSDictionary) kid.getCOSObject()).setName(COSName.AS, fieldValue);
-                }
-                else
-                {
-                    ((COSDictionary) kid.getCOSObject()).setItem(COSName.AS, COSName.OFF);
-                }
+                widget.getCOSObject().setName(COSName.AS, fieldValue);
+            }
+            else
+            {
+                widget.getCOSObject().setItem(COSName.AS, COSName.OFF);
             }
         }
     }

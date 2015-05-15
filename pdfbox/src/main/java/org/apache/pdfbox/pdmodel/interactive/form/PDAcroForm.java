@@ -134,39 +134,16 @@ public final class PDAcroForm implements COSObjectable
         List<PDField> fields = getFields();
         for (PDField field : fields)
         {
-            addFieldAndChildren(field, fdfFields);
+            fdfFields.add(field.exportFDF());
         }
+        
         fdfDict.setID(document.getDocument().getDocumentID());
+        
         if (!fdfFields.isEmpty())
         {
             fdfDict.setFields(fdfFields);
         }
         return fdf;
-    }
-
-    private void addFieldAndChildren(PDField docField, List<FDFField> fdfFields) throws IOException
-    {
-        Object fieldValue = docField.getValue();
-        FDFField fdfField = new FDFField();
-        fdfField.setPartialFieldName(docField.getPartialName());
-        fdfField.setValue(fieldValue);
-        List<COSObjectable> kids = docField.getKids();
-        List<FDFField> childFDFFields = new ArrayList<FDFField>();
-        if (kids != null)
-        {
-            for (COSObjectable kid : kids)
-            {
-                addFieldAndChildren((PDField) kid, childFDFFields);
-            }
-            if (!childFDFFields.isEmpty())
-            {
-                fdfField.setKids(childFDFFields);
-            }
-        }
-        if (fieldValue != null || !childFDFFields.isEmpty())
-        {
-            fdfFields.add(fdfField);
-        }
     }
 
     /**
@@ -177,7 +154,7 @@ public final class PDAcroForm implements COSObjectable
      * 
      * The fields within an AcroForm are organized in a tree structure. The documents root fields 
      * might either be terminal fields, non-terminal fields or a mixture of both. Non-terminal fields
-     * mark branches which contents can be retrieved using {@link PDField#getKids()}.
+     * mark branches which contents can be retrieved using {@link PDNonTerminalField#getChildren()}.
      * 
      * @return A list of the documents root fields.
      * 

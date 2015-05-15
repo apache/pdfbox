@@ -62,7 +62,7 @@ public class CreateFormField
         
         // specify the annotation associated with the field
         // and add it to the page
-        PDAnnotationWidget widget = textBox.getWidget();
+        PDAnnotationWidget widget = textBox.getWidgets().get(0);
         PDRectangle rect = new PDRectangle();
         rect.setLowerLeftX((float) 50);
         rect.setLowerLeftY((float) 750);

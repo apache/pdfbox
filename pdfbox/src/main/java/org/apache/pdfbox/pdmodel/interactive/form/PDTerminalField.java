@@ -17,11 +17,17 @@
 package org.apache.pdfbox.pdmodel.interactive.form;
 
 import java.io.IOException;
-
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.common.COSArrayList;
+import org.apache.pdfbox.pdmodel.fdf.FDFField;
 import org.apache.pdfbox.pdmodel.interactive.action.PDFormFieldAdditionalActions;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 
 /**
  * A field in an interactive form.
@@ -88,6 +94,118 @@ public abstract class PDTerminalField extends PDField
             fieldType = parent.getFieldType();
         }
         return fieldType;
+    }
+
+    @Override
+    public void importFDF(FDFField fdfField) throws IOException
+    {
+        super.importFDF(fdfField);
+        
+        PDAnnotationWidget widget = getWidgets().get(0); // fixme: ignores multiple widgets
+        if (widget != null)
+        {
+            int annotFlags = widget.getAnnotationFlags();
+            Integer f = fdfField.getWidgetFieldFlags();
+            if (f != null)
+            {
+                widget.setAnnotationFlags(f);
+            }
+            else
+            {
+                // these are suppose to be ignored if the F is set.
+                Integer setF = fdfField.getSetWidgetFieldFlags();
+                if (setF != null)
+                {
+                    annotFlags = annotFlags | setF;
+                    widget.setAnnotationFlags(annotFlags);
+                }
+
+                Integer clrF = fdfField.getClearWidgetFieldFlags();
+                if (clrF != null)
+                {
+                    // we have to clear the bits of the document fields for every bit that is
+                    // set in this field.
+                    //
+                    // Example:
+                    // docF = 1011
+                    // clrF = 1101
+                    // clrFValue = 0010;
+                    // newValue = 1011 & 0010 which is 0010
+                    int clrFValue = clrF;
+                    clrFValue ^= 0xFFFFFFFFL;
+                    annotFlags = annotFlags & clrFValue;
+                    widget.setAnnotationFlags(annotFlags);
+                }
+            }
+        }
+    }
+
+    @Override
+    FDFField exportFDF() throws IOException
+    {
+        FDFField fdfField = new FDFField();
+        fdfField.setPartialFieldName(getPartialName());
+        fdfField.setValue(getValue());
+
+        // fixme: the old code which was here assumed that Kids were PDField instances,
+        //        which is never true. They're annotation widgets.
+        
+        return fdfField;
+    }
+
+    /**
+     * Returns the widget annotations associated with this field.
+     * 
+     * @return The list of widget annotations.
+     */
+    public List<PDAnnotationWidget> getWidgets()
+    {
+        List<PDAnnotationWidget> widgets = new ArrayList<PDAnnotationWidget>();
+        COSArray kids = (COSArray)dictionary.getDictionaryObject(COSName.KIDS);
+        if (kids == null)
+        {
+            // the field itself is a widget
+            widgets.add(new PDAnnotationWidget(dictionary));
+        }
+        else if (kids.size() > 0)
+        {
+            // there are multiple widgets
+            for (int i = 0; i < kids.size(); i++)
+            {
+                COSBase kid = kids.get(i);
+                if (kid instanceof COSDictionary)
+                {
+                    widgets.add(new PDAnnotationWidget((COSDictionary)kid));
+                }
+            }
+        }
+        return widgets;
+    }
+
+    /**
+     * Sets the field's widget annotations.
+     *
+     * @param children The list of widget annotations.
+     */
+    public void setWidgets(List<PDAnnotationWidget> children)
+    {
+        COSArray kidsArray = COSArrayList.converterToCOSArray(children);
+        dictionary.setItem(COSName.KIDS, kidsArray);
+    }
+    
+    /**
+     * This will get the single associated widget that is part of this field. This occurs when the
+     * Widget is embedded in the fields dictionary. Sometimes there are multiple sub widgets
+     * associated with this field, in which case you want to use getWidgets(). If the kids entry is
+     * specified, then the first entry in that list will be returned.
+     * 
+     * @return The widget that is associated with this field.
+     * @deprecated Fields may have more than one widget, call {@link #getWidgets() instead}.
+     */
+    @Deprecated
+    public PDAnnotationWidget getWidget()
+    {
+        return getWidgets().get(0);
     }
 
     /**

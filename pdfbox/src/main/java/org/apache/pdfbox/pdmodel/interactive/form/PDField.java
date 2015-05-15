@@ -17,19 +17,15 @@
 package org.apache.pdfbox.pdmodel.interactive.form;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.fdf.FDFField;
 import org.apache.pdfbox.pdmodel.interactive.action.PDFormFieldAdditionalActions;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 
 /**
  * A field in an interactive form.
@@ -340,94 +336,13 @@ public abstract class PDField implements COSObjectable
                 setFieldFlags(fieldFlags);
             }
         }
-
-        PDAnnotationWidget widget = getWidget();
-        if (widget != null)
-        {
-            int annotFlags = widget.getAnnotationFlags();
-            Integer f = fdfField.getWidgetFieldFlags();
-            if (f != null)
-            {
-                widget.setAnnotationFlags(f);
-            }
-            else
-            {
-                // these are suppose to be ignored if the F is set.
-                Integer setF = fdfField.getSetWidgetFieldFlags();
-                if (setF != null)
-                {
-                    annotFlags = annotFlags | setF;
-                    widget.setAnnotationFlags(annotFlags);
-                }
-
-                Integer clrF = fdfField.getClearWidgetFieldFlags();
-                if (clrF != null)
-                {
-                    // we have to clear the bits of the document fields for every bit that is
-                    // set in this field.
-                    //
-                    // Example:
-                    // docF = 1011
-                    // clrF = 1101
-                    // clrFValue = 0010;
-                    // newValue = 1011 & 0010 which is 0010
-                    int clrFValue = clrF;
-                    clrFValue ^= 0xFFFFFFFFL;
-                    annotFlags = annotFlags & clrFValue;
-                    widget.setAnnotationFlags(annotFlags);
-                }
-            }
-        }
-        List<FDFField> fdfKids = fdfField.getKids();
-        List<COSObjectable> pdKids = getKids();
-        for (int i = 0; fdfKids != null && i < fdfKids.size(); i++)
-        {
-            FDFField fdfChild = fdfKids.get(i);
-            String fdfName = fdfChild.getPartialFieldName();
-            for (COSObjectable pdKid : pdKids)
-            {
-                if (pdKid instanceof PDField)
-                {
-                    PDField pdChild = (PDField) pdKid;
-                    if (fdfName != null && fdfName.equals(pdChild.getPartialName()))
-                    {
-                        pdChild.importFDF(fdfChild);
-                    }
-                }
-            }
-        }
     }
 
     /**
-     * This will get the single associated widget that is part of this field. This occurs when the Widget is embedded in
-     * the fields dictionary. Sometimes there are multiple sub widgets associated with this field, in which case you
-     * want to use getKids(). If the kids entry is specified, then the first entry in that list will be returned.
-     * 
-     * @return The widget that is associated with this field.
+     * Exports this field and its children as FDF.
      */
-    public PDAnnotationWidget getWidget()
-    {
-        PDAnnotationWidget retval = null;
-        List<COSObjectable> kids = getKids();
-        if (kids == null)
-        {
-            retval = new PDAnnotationWidget(dictionary);
-        }
-        else if (!kids.isEmpty())
-        {
-            Object firstKid = kids.get(0);
-            if (firstKid instanceof PDAnnotationWidget)
-            {
-                retval = (PDAnnotationWidget) firstKid;
-            }
-            else
-            {
-                retval = ((PDField) firstKid).getWidget();
-            }
-        }
-        return retval;
-    }
-
+    abstract FDFField exportFDF() throws IOException;
+    
     /**
      * Get the parent field to this field, or null if none exists.
      * 
@@ -468,58 +383,6 @@ public abstract class PDField implements COSObjectable
             }
         }
         return retval;
-    }
-
-    /**
-     * This will get all the kids of this field. The values in the list will either be PDWidget or PDField. Normally
-     * they will be PDWidget objects unless this is a non-terminal field and they will be child PDField objects.
-     *
-     * @return A list of either PDWidget or PDField objects.
-     */
-    public List<COSObjectable> getKids()
-    {
-        List<COSObjectable> retval = null;
-        COSArray kids = (COSArray) dictionary.getDictionaryObject(COSName.KIDS);
-        if (kids != null)
-        {
-            List<COSObjectable> kidsList = new ArrayList<COSObjectable>();
-            for (int i = 0; i < kids.size(); i++)
-            {
-                COSDictionary kidDictionary = (COSDictionary) kids.getObject(i);
-                
-                if (kidDictionary == null)
-                {
-                    continue;
-                }
-                
-                // Decide if the kid is field or a widget annotation.
-                // A field dictionary that does not have a partial field name (T entry)
-                // of its own shall not be considered a field but simply a Widget annotation. 
-                if (kidDictionary.getDictionaryObject(COSName.T) != null)
-                {
-                    PDField field = PDField.fromDictionary(acroForm, kidDictionary,
-                                                           (PDNonTerminalField)this);
-                    kidsList.add(field);
-                }
-                else
-                {
-                    kidsList.add(new PDAnnotationWidget(kidDictionary));
-                }
-            }
-            retval = new COSArrayList<COSObjectable>(kidsList, kids);
-        }
-        return retval;
-    }
-
-    /**
-     * This will set the list of kids.
-     * 
-     * @param kids The list of child widgets.
-     */
-    public void setKids(List<COSObjectable> kids)
-    {
-        COSArray kidsArray = COSArrayList.converterToCOSArray(kids);
-        dictionary.setItem(COSName.KIDS, kidsArray);
     }
 
     /**
