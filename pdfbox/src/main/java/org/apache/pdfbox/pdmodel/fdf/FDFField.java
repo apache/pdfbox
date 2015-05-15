@@ -226,7 +226,6 @@ public class FDFField implements COSObjectable
      * PDTextStream: Textfields
      *
      * @return The value of the field.
-     *
      * @throws IOException If there is an error getting the value.
      */
     public Object getValue() throws IOException
@@ -254,6 +253,37 @@ public class FDFField implements COSObjectable
         }
     }
 
+    /**
+     * Returns the COS value of this field.
+     * 
+     * @return The COS value of the field.
+     * @throws IOException If there is an error getting the value.
+     */
+    public COSBase getCOSValue() throws IOException
+    {
+        COSBase value = field.getDictionaryObject( COSName.V );
+        if( value instanceof COSName )
+        {
+            return value;
+        }
+        else if( value instanceof COSArray )
+        {
+            return value;
+        }
+        else if( value instanceof COSString || value instanceof COSStream )
+        {
+            return value;
+        }
+        else if( value != null )
+        {
+            throw new IOException( "Error:Unknown type for field import" + value );
+        }
+        else
+        {
+            return null;
+        }
+    }
+    
     /**
      * You should pass in a string, or a java.util.List of strings to set the
      * value.

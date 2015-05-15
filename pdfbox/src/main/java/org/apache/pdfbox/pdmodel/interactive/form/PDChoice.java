@@ -270,7 +270,7 @@ public abstract class PDChoice extends PDVariableText
     /**
      * This will set the indices of the selected options - the 'I' key.
      * <p>
-     * This method is preferred over {@link #setValues(List)} for choice fields which
+     * This method is preferred over {@link #setValue(List)} for choice fields which
      * <ul>
      *  <li>do support multiple selections</li>
      *  <li>have export values with the same value</li>
@@ -405,13 +405,29 @@ public abstract class PDChoice extends PDVariableText
     {
         dictionary.setFlag(COSName.FF, FLAG_COMBO, combo);
     }
+
+    /**
+     * Sets the selected value of this field.
+     *
+     * @param value The name of the selected item.
+     * @throws IOException if the value could not be set
+     */
+    public void setValue(String value) throws IOException
+    {
+        dictionary.setString(COSName.V, value);
+        
+        // remove I key for single valued choice field
+        setSelectedOptionsIndex(null);
+        
+        applyChange();
+    }
     
     /**
-     * setValues sets the entry "V" to the given values.
+     * Sets the entry "V" to the given values. Requires {@link #isMultiSelect()} to be true.
      * 
      * @param values the list of values
      */    
-    public void setValues(List<String> values) throws IOException
+    public void setValue(List<String> values) throws IOException
     {
         if (values != null && !values.isEmpty())
         {

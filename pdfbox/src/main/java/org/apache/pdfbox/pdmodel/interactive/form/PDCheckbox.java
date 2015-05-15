@@ -68,15 +68,15 @@ public final class PDCheckbox extends PDButton
      */
     public void check() throws IOException
     {
-        setValue("Yes"); // todo: need type safety
+        setValue(true);
     }
 
     /**
      * Unchecks the check box.
      */
-    public void unCheck()
+    public void unCheck() throws IOException
     {
-        dictionary.setItem(COSName.AS, COSName.OFF);
+        setValue(false);
     }
 
     /**
@@ -95,21 +95,20 @@ public final class PDCheckbox extends PDButton
     {
         return getValue() ? "Yes" : "Off";
     }
-    
-    @Override
-    public void setValue(String value) throws IOException
+
+    /**
+     * Sets the checked value of this field.
+     *
+     * @param value True if checked
+     * @throws IOException if the value could not be set
+     */
+    public void setValue(boolean value) throws IOException
     {
-        dictionary.setName(COSName.V, value);
+        COSName name = value ? COSName.YES : COSName.OFF;
+        dictionary.setItem(COSName.V, name);
         
         // update the appearance state (AS)
-        if (value == null)
-        {
-            dictionary.setItem(COSName.AS, COSName.OFF);
-        }
-        else
-        {
-            dictionary.setName(COSName.AS, value);
-        }
+        dictionary.setItem(COSName.AS, name);
         
         applyChange();
     }

@@ -182,15 +182,17 @@ public class PDNonTerminalField extends PDField
     }
 
     /**
-     * @inheritDoc
+     * Sets the value of this field. This may be of any kind which is valid for this field's
+     * children.
      *
      * <p><b>Note:</b> while non-terminal fields <b>do</b> inherit field values, this method returns
      * the local value, without inheritance.
      */
-    @Override
-    public void setValue(String value)
+    public void setValue(COSBase object) throws IOException
     {
-        dictionary.setString(COSName.V, value);
+        dictionary.setItem(COSName.V, object);
+        // todo: propagate change event to children?
+        // todo: construct appearances of children?
     }
 
     /**
