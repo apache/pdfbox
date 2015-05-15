@@ -18,12 +18,10 @@ package org.apache.pdfbox.examples.fdf;
 
 import java.io.File;
 import java.io.IOException;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDCheckbox;
-import org.apache.pdfbox.pdmodel.interactive.form.PDChoice;
 import org.apache.pdfbox.pdmodel.interactive.form.PDComboBox;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDListBox;
@@ -56,11 +54,7 @@ public class SetField
         {
             if (field instanceof PDCheckbox)
             {
-                ((PDCheckbox) field).setValue(value);
-            }
-            else if (field instanceof PDChoice)
-            {
-                ((PDChoice) field).setValue(value);
+                ((PDCheckbox) field).setValue(value.equals("Yes"));
             }
             else if (field instanceof PDComboBox)
             {
@@ -83,7 +77,6 @@ public class SetField
         {
             System.err.println("No field found with name:" + name);
         }
-
     }
 
     /**

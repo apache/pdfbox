@@ -111,7 +111,7 @@ public class PDSignatureField extends PDTerminalField
     }
 
     /**
-     * Add a signature dictionary to the signature field.
+     * Sets the value of this field to be the given signature.
      * 
      * @param value is the PDSignatureField
      */
@@ -119,13 +119,6 @@ public class PDSignatureField extends PDTerminalField
     {
         dictionary.setItem(COSName.V, value);
         applyChange();
-    }
-    
-    @Override
-    public void setValue(String value)
-    {
-        // Signature fields don't support the strings for value
-        throw new IllegalArgumentException("Signature fields don't support a string for the value entry.");     
     }
 
     /**

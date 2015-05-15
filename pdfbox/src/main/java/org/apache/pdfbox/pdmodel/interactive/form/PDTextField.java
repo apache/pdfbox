@@ -222,9 +222,14 @@ public final class PDTextField extends PDVariableText
             return ((COSString) fieldValue).getString();
         }
         return "";
-    }    
-    
-    @Override
+    }
+
+    /**
+     * Sets the plain text value of this field.
+     * 
+     * @param value Plain text
+     * @throws IOException if the value could not be set
+     */
     public void setValue(String value) throws IOException
     {
         dictionary.setString(COSName.V, value);

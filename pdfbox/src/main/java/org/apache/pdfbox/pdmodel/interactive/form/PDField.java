@@ -21,8 +21,6 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.fdf.FDFField;
 import org.apache.pdfbox.pdmodel.interactive.action.PDFormFieldAdditionalActions;
@@ -152,25 +150,6 @@ public abstract class PDField implements COSObjectable
     public abstract String getValueAsString();
     
     /**
-     * Set the value of the "V" entry. The "V" entry is an inheritable attribute.
-     * 
-     * The different field types do require specific object types for their value
-     * e.g. for RadioButtons the V entry needs to be a name object. This needs to be handled by the
-     * individual classes.
-     * 
-     * Trying to set the value for a {@link PDPushButton} field will lead to an
-     * {@link IllegalArgumentException} as PDPushButton fields do not support setting the
-     * entry although, common to all field types, the DV entry shall not be set.
-     * 
-     * As a result it might be necessary to check the type of the value before
-     * reusing it.
-     * 
-     * @param value The new field value.
-     * @throws IOException if there is an error setting the field value.
-     */    
-    public abstract void setValue(String value) throws IOException;
-    
-    /**
      * sets the field to be read-only.
      * 
      * @param readonly The new flag for readonly.
@@ -269,23 +248,10 @@ public abstract class PDField implements COSObjectable
      */
     public void importFDF(FDFField fdfField) throws IOException
     {
-        Object fieldValue = fdfField.getValue();
-        int fieldFlags = getFieldFlags();
-
+        COSBase fieldValue = fdfField.getCOSValue();
         if (fieldValue != null)
         {
-            if (fieldValue instanceof COSString)
-            {
-                setValue(((COSString) fieldValue).getString());
-            }
-            else if (fieldValue instanceof COSStream)
-            {
-                setValue(((COSStream) fieldValue).getString());
-            }
-            else
-            {
-                throw new IOException("Unknown field type:" + fieldValue.getClass().getName());
-            }
+            dictionary.setItem(COSName.V, fieldValue);
         }
         Integer ff = fdfField.getFieldFlags();
         if (ff != null)
@@ -296,7 +262,8 @@ public abstract class PDField implements COSObjectable
         {
             // these are suppose to be ignored if the Ff is set.
             Integer setFf = fdfField.getSetFieldFlags();
-
+            int fieldFlags = getFieldFlags();
+            
             if (setFf != null)
             {
                 int setFfInt = setFf;

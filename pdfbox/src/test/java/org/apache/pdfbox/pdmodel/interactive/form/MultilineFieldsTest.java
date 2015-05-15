@@ -19,11 +19,8 @@ package org.apache.pdfbox.pdmodel.interactive.form;
 
 import java.io.File;
 import java.io.IOException;
-import static junit.framework.TestCase.fail;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.TestPDFToImage;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,42 +48,41 @@ public class MultilineFieldsTest
     @Test
     public void fillFields() throws IOException
     {
-        PDField field = (PDField) acroForm.getField("AlignLeft");
+        PDTextField field = (PDTextField) acroForm.getField("AlignLeft");
         field.setValue(TEST_VALUE);
 
-        field = (PDField) acroForm.getField("AlignMiddle");
+        field = (PDTextField) acroForm.getField("AlignMiddle");
         field.setValue(TEST_VALUE);
 
-        field = (PDField) acroForm.getField("AlignRight");
+        field = (PDTextField) acroForm.getField("AlignRight");
         field.setValue(TEST_VALUE);
 
-        field = (PDField) acroForm.getField("AlignLeft-Border_Small");
+        field = (PDTextField) acroForm.getField("AlignLeft-Border_Small");
         field.setValue(TEST_VALUE);
 
-        field = (PDField) acroForm.getField("AlignMiddle-Border_Small");
+        field = (PDTextField) acroForm.getField("AlignMiddle-Border_Small");
         field.setValue(TEST_VALUE);
 
-        field = (PDField) acroForm.getField("AlignRight-Border_Small");
+        field = (PDTextField) acroForm.getField("AlignRight-Border_Small");
         field.setValue(TEST_VALUE);
 
-        field = (PDField) acroForm.getField("AlignLeft-Border_Medium");
+        field = (PDTextField) acroForm.getField("AlignLeft-Border_Medium");
         field.setValue(TEST_VALUE);
 
-        field = (PDField) acroForm.getField("AlignMiddle-Border_Medium");
+        field = (PDTextField) acroForm.getField("AlignMiddle-Border_Medium");
         field.setValue(TEST_VALUE);
 
-        field = (PDField) acroForm.getField("AlignRight-Border_Medium");
+        field = (PDTextField) acroForm.getField("AlignRight-Border_Medium");
         field.setValue(TEST_VALUE);
 
-        field = (PDField) acroForm.getField("AlignLeft-Border_Wide");
+        field = (PDTextField) acroForm.getField("AlignLeft-Border_Wide");
         field.setValue(TEST_VALUE);
 
-        field = (PDField) acroForm.getField("AlignMiddle-Border_Wide");
+        field = (PDTextField) acroForm.getField("AlignMiddle-Border_Wide");
         field.setValue(TEST_VALUE);
 
-        field = (PDField) acroForm.getField("AlignRight-Border_Wide");
+        field = (PDTextField) acroForm.getField("AlignRight-Border_Wide");
         field.setValue(TEST_VALUE);
-        
         
         // compare rendering
         File file = new File(OUT_DIR, NAME_OF_PDF);

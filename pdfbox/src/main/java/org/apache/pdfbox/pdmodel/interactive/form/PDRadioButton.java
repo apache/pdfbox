@@ -154,8 +154,13 @@ public final class PDRadioButton extends PDButton
     {
         return getValue();
     }
-    
-    @Override
+
+    /**
+     * Sets the selected radio button, given its name.
+     * 
+     * @param value Name of radio button to select
+     * @throws IOException if the value could not be set
+     */
     public void setValue(String value) throws IOException
     {
         dictionary.setName(COSName.V, value);
