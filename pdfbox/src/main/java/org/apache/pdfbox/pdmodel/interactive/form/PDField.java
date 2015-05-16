@@ -209,7 +209,7 @@ public abstract class PDField implements COSObjectable
      * @param fdfField The fdf field to import.
      * @throws IOException If there is an error importing the data for this field.
      */
-    public void importFDF(FDFField fdfField) throws IOException
+    void importFDF(FDFField fdfField) throws IOException
     {
         COSBase fieldValue = fdfField.getCOSValue();
         if (fieldValue != null)
