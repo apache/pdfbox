@@ -312,15 +312,8 @@ public abstract class PDField implements COSObjectable
     /**
      * This will get the dictionary associated with this field.
      * 
-     * @deprecated  use {@link #getCOSObject()} instead.
      * @return the dictionary that this class wraps.
      */
-    @Deprecated
-    public COSDictionary getDictionary()
-    {
-        return dictionary;
-    }
-    
     @Override
     public COSDictionary getCOSObject()
     {
