@@ -19,7 +19,6 @@ package org.apache.pdfbox.pdmodel.fdf;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
@@ -84,17 +83,8 @@ public class FDFCatalog implements COSObjectable
      *
      * @return The cos object that matches this Java object.
      */
-    public COSBase getCOSObject()
-    {
-        return catalog;
-    }
-
-    /**
-     * Convert this standard java object to a COS object.
-     *
-     * @return The cos object that matches this Java object.
-     */
-    public COSDictionary getCOSDictionary()
+    @Override
+    public COSDictionary getCOSObject()
     {
         return catalog;
     }
@@ -127,7 +117,7 @@ public class FDFCatalog implements COSObjectable
     public FDFDictionary getFDF()
     {
         COSDictionary fdf = (COSDictionary)catalog.getDictionaryObject( COSName.FDF );
-        FDFDictionary retval = null;
+        FDFDictionary retval;
         if( fdf != null )
         {
             retval = new FDFDictionary( fdf );
