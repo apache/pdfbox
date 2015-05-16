@@ -295,13 +295,12 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public PDAppearanceDictionary getAppearance()
     {
-        PDAppearanceDictionary ap = null;
         COSDictionary apDic = (COSDictionary) dictionary.getDictionaryObject(COSName.AP);
         if (apDic != null)
         {
-            ap = new PDAppearanceDictionary(apDic);
+            return new PDAppearanceDictionary(apDic);
         }
-        return ap;
+        return null;
     }
 
     /**

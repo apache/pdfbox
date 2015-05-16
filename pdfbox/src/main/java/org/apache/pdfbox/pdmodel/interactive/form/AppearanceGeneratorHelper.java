@@ -19,7 +19,6 @@ package org.apache.pdfbox.pdmodel.interactive.form;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,6 +49,7 @@ class AppearanceGeneratorHelper
 {
     private static final Log LOG = LogFactory.getLog(AppearanceGeneratorHelper.class);
     private static final float GLYPH_TO_PDF_SCALE = 1000f;
+    private static final Operator BMC = Operator.getOperator("BMC");
     
     private final PDVariableText field;
     private final DefaultAppearanceHandler defaultAppearanceHandler;
@@ -66,46 +66,7 @@ class AppearanceGeneratorHelper
         this.field = field;
         this.defaultAppearanceHandler = new DefaultAppearanceHandler(field.getDefaultAppearance());
     }
-
-    /**
-     * Extracts the original appearance stream into a list of tokens.
-     *
-     * @return The tokens in the original appearance stream
-     */
-    private List<Object> getStreamTokens(PDAppearanceStream appearanceStream) throws IOException
-    {
-        List<Object> tokens = new ArrayList<Object>();
-        if (appearanceStream != null)
-        {
-            tokens = getStreamTokens(appearanceStream.getCOSStream());
-        }
-        return tokens;
-    }
-
-    private List<Object> getStreamTokens(COSStream stream) throws IOException
-    {
-        List<Object> tokens = new ArrayList<Object>();
-        if (stream != null)
-        {
-            PDFStreamParser parser = new PDFStreamParser(stream);
-            parser.parse();
-            tokens = parser.getTokens();
-            parser.close();
-        }
-        return tokens;
-    }
-
-    /**
-     * Tests if the appearance stream already contains content.
-     * 
-     * @param streamTokens individual tokens within the appearance stream
-     * @return true if it contains any content
-     */
-    private boolean containsMarkedContent(List<Object> streamTokens)
-    {
-        return streamTokens.contains(Operator.getOperator("BMC"));
-    }
-
+    
     /**
      * This is the public method for setting the appearance stream.
      *
@@ -123,42 +84,158 @@ class AppearanceGeneratorHelper
             // in case all tests fail the field will be formatted by acrobat
             // when it is opened. See FreedomExpressions.pdf for an example of this.  
             if (actions == null || actions.getF() == null ||
-                    widget.getCOSObject().getDictionaryObject(COSName.AP) != null)
+                widget.getCOSObject().getDictionaryObject(COSName.AP) != null)
             {
-                PDAppearanceDictionary appearance = widget.getAppearance();
-                if (appearance == null)
+                PDAppearanceDictionary appearanceDict = widget.getAppearance();
+                if (appearanceDict == null)
                 {
-                    appearance = new PDAppearanceDictionary();
-                    widget.setAppearance(appearance);
+                    appearanceDict = new PDAppearanceDictionary();
+                    widget.setAppearance(appearanceDict);
                 }
 
-                PDAppearanceEntry normalAppearance = appearance.getNormalAppearance();
-                // TODO support more than one appearance stream
-                PDAppearanceStream appearanceStream =
-                        normalAppearance.isStream() ? normalAppearance.getAppearanceStream() : null;
-                if (appearanceStream == null)
+                PDAppearanceEntry appearance = appearanceDict.getNormalAppearance();
+                // TODO support appearances other than "normal"
+                
+                PDAppearanceStream appearanceStream;
+                if (appearance.isStream())
                 {
-                    COSStream cosStream = field.getAcroForm().getDocument().getDocument().createCOSStream();
-                    appearanceStream = new PDAppearanceStream(cosStream);
-                    appearanceStream.setBBox(widget.getRectangle()
-                            .createRetranslatedRectangle());
-                    appearance.setNormalAppearance(appearanceStream);
-                }
-
-                List<Object> tokens = getStreamTokens(appearanceStream);
-
-                PDFont pdFont = getFontAndUpdateResources(appearanceStream);
-
-                if (!containsMarkedContent(tokens))
-                {
-                    createAppearanceContent(tokens, widget, pdFont, appearanceStream);
+                    appearanceStream = appearance.getAppearanceStream();
                 }
                 else
                 {
-                    updateAppearanceContent(tokens, widget, pdFont, appearanceStream);
+                    appearanceStream = new PDAppearanceStream(field.getAcroForm().getDocument());
+                    appearanceStream.setBBox(widget.getRectangle().createRetranslatedRectangle());
+                    appearanceDict.setNormalAppearance(appearanceStream);
+                    // TODO support appearances other than "normal"
+                }
+
+                List<Object> tokens = tokenize(appearanceStream);
+                PDFont font = getFontAndUpdateResources(appearanceStream);
+
+                if (!tokens.contains(BMC))
+                {
+                    createAppearanceContent(tokens, widget, font, appearanceStream);
+                }
+                else
+                {
+                    updateAppearanceContent(tokens, widget, font, appearanceStream);
                 }
             }
         }
+    }
+    
+    /**
+     * Parses an appearance stream into tokens.
+     */
+    private List<Object> tokenize(PDAppearanceStream appearanceStream) throws IOException
+    {
+        COSStream stream = appearanceStream.getCOSStream();
+        PDFStreamParser parser = new PDFStreamParser(stream);
+        parser.parse();
+        List<Object> tokens = parser.getTokens();
+        parser.close();
+        return tokens;
+    }
+
+    /**
+     * To update an existing appearance stream first copy any needed resources from the
+     * document’s DR dictionary into the stream’s Resources dictionary.
+     * If the DR and Resources dictionaries contain resources with the same name,
+     * the one already in the Resources dictionary shall be left intact,
+     * not replaced with the corresponding value from the DR dictionary. 
+     */
+    private PDFont getFontAndUpdateResources(PDAppearanceStream appearanceStream) throws IOException
+    {
+        PDFont font;
+        PDResources streamResources = appearanceStream.getResources();
+        PDResources formResources = field.getAcroForm().getDefaultResources();
+
+        if (streamResources == null && formResources == null)
+        {
+            throw new IOException("Unable to generate field appearance - " +
+                    "missing required resources");
+        }
+
+        COSName cosFontName = defaultAppearanceHandler.getFontName();
+
+        if (streamResources != null)
+        {
+            font = streamResources.getFont(cosFontName);
+            if (font != null)
+            {
+                return font;
+            }
+        }
+        else
+        {
+            streamResources = new PDResources();
+            appearanceStream.setResources(streamResources);
+        }
+
+        if (formResources != null)
+        {
+            font = formResources.getFont(cosFontName);
+            if (font != null)
+            {
+                streamResources.put(cosFontName, font);
+                return font;
+            }
+        }
+
+        // if we get here the font might be there but under a different name
+        // which is incorrect but try to treat the resource name as the font name
+        font = resolveFont(streamResources, formResources, cosFontName);
+
+        if (font != null)
+        {
+            streamResources.put(cosFontName, font);
+            return font;
+        }
+        else
+        {
+            throw new IOException("Unable to generate field appearance - " +
+                    "missing required font resources: "  + cosFontName);
+        }
+    }
+
+    /**
+     * Get the font from the resources.
+     *
+     * @return the retrieved font
+     * @throws IOException
+     */
+    private PDFont resolveFont(PDResources streamResources, PDResources formResources,
+                               COSName cosFontName) throws IOException
+    {
+        // if the font couldn't be retrieved it might be because the font name
+        // in the DA string didn't point to the font resources dictionary entry but
+        // is the name of the font itself. So try to resolve that.
+
+        PDFont font;
+        if (streamResources != null)
+        {
+            for (COSName fontName : streamResources.getFontNames())
+            {
+                font = streamResources.getFont(fontName);
+                if (font.getName().equals(cosFontName.getName()))
+                {
+                    return font;
+                }
+            }
+        }
+
+        if (formResources != null)
+        {
+            for (COSName fontName : formResources.getFontNames())
+            {
+                font = formResources.getFont(fontName);
+                if (font.getName().equals(cosFontName.getName()))
+                {
+                    return font;
+                }
+            }
+        }
+        return null;
     }
     
     /**
@@ -294,108 +371,6 @@ class AppearanceGeneratorHelper
         contents.restoreGraphicsState();
         contents.close();
     }
-
-    /**
-     * To update an existing appearance stream first copy any needed resources from the
-     * document’s DR dictionary into the stream’s Resources dictionary.
-     * If the DR and Resources dictionaries contain resources with the same name,
-     * the one already in the Resources dictionary shall be left intact,
-     * not replaced with the corresponding value from the DR dictionary. 
-     */
-    private PDFont getFontAndUpdateResources(PDAppearanceStream appearanceStream) throws IOException
-    {
-        PDFont font;
-        PDResources streamResources = appearanceStream.getResources();
-        PDResources formResources = field.getAcroForm().getDefaultResources();
-        
-        if (streamResources == null && formResources == null)
-        {
-            throw new IOException("Unable to generate field appearance - " +
-                                  "missing required resources");
-        }
-        
-        COSName cosFontName = defaultAppearanceHandler.getFontName();
-        
-        if (streamResources != null)
-        {
-            font = streamResources.getFont(cosFontName);
-            if (font != null)
-            {
-                return font;
-            }
-        }
-        else
-        {
-            streamResources = new PDResources();
-            appearanceStream.setResources(streamResources);
-        }
-        
-        if (formResources != null)
-        {
-            font = formResources.getFont(cosFontName);
-            if (font != null)
-            {
-                streamResources.put(cosFontName, font);
-                return font;
-            }
-        }        
-        
-        // if we get here the font might be there but under a different name
-        // which is incorrect but try to treat the resource name as the font name
-        font = resolveFont(streamResources, formResources, cosFontName);
-            
-        if (font != null)
-        {
-            streamResources.put(cosFontName, font);
-            return font;
-        }
-        else
-        {
-            throw new IOException("Unable to generate field appearance - " +
-                                  "missing required font resources: "  + cosFontName);
-        }
-    }
-    
-    /**
-     * Get the font from the resources.
-     * 
-     * @return the retrieved font
-     * @throws IOException 
-     */
-    private PDFont resolveFont(PDResources streamResources, PDResources formResources,
-                               COSName cosFontName) throws IOException
-    {
-        // if the font couldn't be retrieved it might be because the font name
-        // in the DA string didn't point to the font resources dictionary entry but
-        // is the name of the font itself. So try to resolve that.
-        
-        PDFont font;
-        if (streamResources != null)
-        {
-            for (COSName fontName : streamResources.getFontNames()) 
-            {
-                font = streamResources.getFont(fontName);
-                if (font.getName().equals(cosFontName.getName()))
-                {
-                    return font;
-                }
-            }
-        }
-
-        if (formResources != null)
-        {
-            for (COSName fontName : formResources.getFontNames()) 
-            {
-                font = formResources.getFont(fontName);
-                if (font.getName().equals(cosFontName.getName()))
-                {
-                    return font;
-                }
-            }
-        }
-        return null;
-    }
-
     
     private boolean isMultiLine()
     {

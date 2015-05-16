@@ -195,12 +195,11 @@ public abstract class PDField implements COSObjectable
     public PDFormFieldAdditionalActions getActions()
     {
         COSDictionary aa = (COSDictionary) dictionary.getDictionaryObject(COSName.AA);
-        PDFormFieldAdditionalActions retval = null;
         if (aa != null)
         {
-            retval = new PDFormFieldAdditionalActions(aa);
+            return new PDFormFieldAdditionalActions(aa);
         }
-        return retval;
+        return null;
     }
 
    /**
