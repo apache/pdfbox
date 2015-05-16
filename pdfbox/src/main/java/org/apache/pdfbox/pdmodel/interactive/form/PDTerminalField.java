@@ -200,7 +200,7 @@ public abstract class PDTerminalField extends PDField
      * specified, then the first entry in that list will be returned.
      * 
      * @return The widget that is associated with this field.
-     * @deprecated Fields may have more than one widget, call {@link #getWidgets() instead}.
+     * @deprecated Fields may have more than one widget, call {@link #getWidgets()} instead.
      */
     @Deprecated
     public PDAnnotationWidget getWidget()
