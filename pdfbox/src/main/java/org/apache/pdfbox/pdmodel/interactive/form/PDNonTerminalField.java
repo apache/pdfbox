@@ -76,7 +76,7 @@ public class PDNonTerminalField extends PDField
     }
 
     @Override
-    public void importFDF(FDFField fdfField) throws IOException
+    void importFDF(FDFField fdfField) throws IOException
     {
         super.importFDF(fdfField);
         
