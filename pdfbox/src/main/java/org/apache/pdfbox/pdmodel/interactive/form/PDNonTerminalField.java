@@ -196,26 +196,26 @@ public class PDNonTerminalField extends PDField
     }
 
     /**
-     * @inheritDoc
+     * Returns the default value of this field. This may be of any kind which is valid for this field's
+     * children.
      *
      * <p><b>Note:</b> while non-terminal fields <b>do</b> inherit field values, this method returns
      * the local value, without inheritance.
      */
-    @Override
-    public Object getDefaultValue()
+    public COSBase getDefaultValue()
     {
-        return dictionary.getNameAsString(COSName.DV);
+        return dictionary.getDictionaryObject(COSName.DV);
     }
 
     /**
-     * @inheritDoc
+     * Sets the default of this field. This may be of any kind which is valid for this field's
+     * children.
      *
      * <p><b>Note:</b> while non-terminal fields <b>do</b> inherit field values, this method returns
      * the local value, without inheritance.
      */
-    @Override
-    public void setDefaultValue(String defaultValue)
+    public void setDefaultValue(COSBase value)
     {
-        dictionary.setString(COSName.V, defaultValue);
+        dictionary.setItem(COSName.V, value);
     }
 }

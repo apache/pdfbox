@@ -90,6 +90,21 @@ public final class PDCheckbox extends PDButton
         return value instanceof COSName && value.equals(COSName.YES);
     }
 
+    /**
+     * Returns the default value, if any.
+     *
+     * @return True if checked, false if not checked, null if missing.
+     */
+    public Boolean getDefaultValue()
+    {
+        COSBase value = getInheritableAttribute(COSName.DV);
+        if (value == null)
+        {
+            return null;
+        }
+        return value instanceof COSName && value.equals(COSName.YES);
+    }
+
     @Override
     public String getValueAsString()
     {
@@ -111,5 +126,17 @@ public final class PDCheckbox extends PDButton
         dictionary.setItem(COSName.AS, name);
         
         applyChange();
+    }
+
+    /**
+     * Sets the default value.
+     *
+     * @param value True if checked
+     * @throws IOException if the value could not be set
+     */
+    public void setDefaultValue(boolean value) throws IOException
+    {
+        COSName name = value ? COSName.YES : COSName.OFF;
+        dictionary.setItem(COSName.DV, name);
     }
 }

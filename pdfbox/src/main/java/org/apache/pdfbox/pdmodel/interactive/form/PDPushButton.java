@@ -53,22 +53,6 @@ public class PDPushButton extends PDButton
     }
     
     @Override
-    public String getDefaultValue()
-    {
-        // PushButton fields don't support the "DV" entry.
-        return "";
-    }    
-    
-    @Override
-    public void setDefaultValue(String defaultValue)
-    {
-        if (defaultValue != null && !defaultValue.isEmpty())
-        {
-            throw new IllegalArgumentException("A PDPushButton shall not use the DV entry in the field dictionary");
-        }
-    }
-    
-    @Override
     public List<String> getOptions()
     {
         return Collections.emptyList();

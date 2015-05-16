@@ -113,39 +113,6 @@ public abstract class PDButton extends PDTerminalField
     public void setRadioButton(boolean radiobutton)
     {
         dictionary.setFlag(COSName.FF, FLAG_RADIO, radiobutton);
-    }   
-    
-    
-    @Override
-    public String getDefaultValue() throws IOException
-    {
-        COSBase attribute = getInheritableAttribute(COSName.DV);
-        
-        if (attribute == null)
-        {
-            return "";
-        }
-        else if (attribute instanceof COSName)
-        {
-            return ((COSName) attribute).getName();
-        }
-        else
-        {
-            throw new IOException("Expected a COSName entry but got " + attribute.getClass().getName());
-        }
-    }
-    
-    @Override
-    public void setDefaultValue(String defaultValue)
-    {
-        if (defaultValue == null)
-        {
-            dictionary.removeItem(COSName.DV);
-        }
-        else
-        {
-            dictionary.setItem(COSName.DV, COSName.getPDFName(defaultValue));
-        }
     }
     
     /**
