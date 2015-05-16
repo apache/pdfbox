@@ -104,43 +104,6 @@ public abstract class PDField implements COSObjectable
      * 
      */
     public abstract String getFieldType();
-    
-    /**
-     * Get the value of the "DV" entry. The "DV" entry is an inheritable attribute.
-     * 
-     * This will return null if the "DV" entry doesn't exist or if it has no value assigned.
-     * 
-     * The different field types do require specific object types for their value
-     * e.g. for RadioButtons the DV entry needs to be a name object.
-     * If the value doesn't match the expected type an IOException is thrown. Such a wrong entry might
-     * have been set with a different library or by using PDFBox low level COS model.
-     * 
-     * To get the value in such cases the lower level COS model can be used.
-     * 
-     * @return The value of this field.
-     * @throws IOException If there is an error reading the data for this field
-     *      or the type is not in line with the fields required type.
-     * 
-     */
-    public abstract Object getDefaultValue() throws IOException;
-    
-    /**
-     * Set the value of the "DV" entry. The "DV" entry is an inheritable attribute.
-     * 
-     * The different field types do require specific object types for their value
-     * e.g. for RadioButtons the DV entry needs to be a name object. This needs to be handled by the
-     * individual classes.
-     * 
-     * Trying to set the default value for a {@link PDPushButton} field will lead to an 
-     * {@link IllegalArgumentException} as PDPushButton fields do not support setting the 
-     * entry although, common to all field types, the DV entry shall not be set.
-     * 
-     * As a result it might be necessary to check the type of the value before
-     * reusing it.
-     * 
-     * @param defaultValue The new default field value.
-     */    
-    public abstract void setDefaultValue(String defaultValue);
 
     /**
      * Returns a string representation of the "V" entry, or an empty string.

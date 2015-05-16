@@ -81,7 +81,6 @@ public class TestCheckBox extends TestCase
             
             // test that there are no nulls returned for an empty field
             // only specific methods are tested here
-            assertNotNull(checkBox.getDefaultValue());
             assertNotNull(checkBox.getOptions());
             assertNotNull(checkBox.getValue());
             

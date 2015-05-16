@@ -122,6 +122,16 @@ public class PDSignatureField extends PDTerminalField
     }
 
     /**
+     * Sets the default value of this field to be the given signature.
+     *
+     * @param value is the PDSignatureField
+     */
+    public void setDefaultValue(PDSignature value) throws IOException
+    {
+        dictionary.setItem(COSName.DV, value);
+    }
+
+    /**
      * Returns the signature contained in this field.
      * 
      * @return A signature dictionary.
@@ -129,6 +139,21 @@ public class PDSignatureField extends PDTerminalField
     public PDSignature getValue()
     {
         COSBase value = dictionary.getDictionaryObject(COSName.V);
+        if (value == null)
+        {
+            return null;
+        }
+        return new PDSignature((COSDictionary)value);
+    }
+
+    /**
+     * Returns the default value, if any.
+     *
+     * @return A signature dictionary.
+     */
+    public PDSignature getDefaultValue()
+    {
+        COSBase value = dictionary.getDictionaryObject(COSName.DV);
         if (value == null)
         {
             return null;
@@ -173,20 +198,6 @@ public class PDSignatureField extends PDTerminalField
         {
             dictionary.setItem(COSName.SV, sv);
         }
-    }
-    
-    @Override
-    public Object getDefaultValue()
-    {
-        // Signature fields don't support the "DV" entry.
-        return null;
-    }
-
-    @Override
-    public void setDefaultValue(String defaultValue)
-    {
-        // Signature fields don't support the "DV" entry.
-        throw new IllegalArgumentException("Signature fields don't support the \"DV\" entry.");     
     }
 
     @Override

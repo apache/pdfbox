@@ -164,9 +164,8 @@ public class TestFields extends TestCase
             // get the Checkbox with a DV entry
             PDCheckbox checkBox = (PDCheckbox)form.getField("Checkbox-DefaultValue");
             assertNotNull(checkBox);
-            assertEquals(checkBox.getDefaultValue(),"Yes");
-            assertEquals(checkBox.getDefaultValue(),
-                    ((COSName) checkBox.getCOSObject().getDictionaryObject(COSName.DV)).getName());
+            assertEquals(Boolean.TRUE, checkBox.getDefaultValue());
+            assertEquals(COSName.YES, checkBox.getCOSObject().getDictionaryObject(COSName.DV));
             
             // get the TextField with a DV entry
             textField = (PDTextField)form.getField("TextField-DefaultValue");

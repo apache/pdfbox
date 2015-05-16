@@ -17,10 +17,8 @@
 package org.apache.pdfbox.pdmodel.interactive.form;
 
 import java.io.IOException;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSString;
 
 /**
  * A text field is a box or space for text fill-in data typically entered from a keyboard.
@@ -206,23 +204,6 @@ public final class PDTextField extends PDVariableText
     {
         dictionary.setInt(COSName.MAX_LEN, maxLen);
     }
-    
-    @Override
-    public void setDefaultValue(String value)
-    {
-        dictionary.setString(COSName.DV, value);
-    }
-    
-    @Override
-    public String getDefaultValue()
-    {
-        COSBase fieldValue = getInheritableAttribute(COSName.DV);
-        if (fieldValue instanceof COSString)
-        {
-            return ((COSString) fieldValue).getString();
-        }
-        return "";
-    }
 
     /**
      * Sets the plain text value of this field.
@@ -237,6 +218,17 @@ public final class PDTextField extends PDVariableText
     }
 
     /**
+     * Sets the default value of this field.
+     *
+     * @param value Plain text
+     * @throws IOException if the value could not be set
+     */
+    public void setDefaultValue(String value) throws IOException
+    {
+        dictionary.setString(COSName.DV, value);
+    }
+
+    /**
      * Returns the value of this field, or an empty string.
      * 
      * @return A non-null string.
@@ -244,6 +236,16 @@ public final class PDTextField extends PDVariableText
     public String getValue()
     {
         return getStringOrStream(getInheritableAttribute(COSName.V));
+    }
+
+    /**
+     * Returns the default value of this field, or an empty string.
+     *
+     * @return A non-null string.
+     */
+    public String getDefaultValue()
+    {
+        return getStringOrStream(getInheritableAttribute(COSName.DV));
     }
 
     @Override

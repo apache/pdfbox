@@ -149,6 +149,24 @@ public final class PDRadioButton extends PDButton
         }
     }
 
+    /**
+     * Returns the default value, if any.
+     *
+     * @return A non-null string.
+     */
+    public String getDefaultValue()
+    {
+        COSBase value = getInheritableAttribute(COSName.DV);
+        if (value instanceof COSName)
+        {
+            return ((COSName)value).getName();
+        }
+        else
+        {
+            return "";
+        }
+    }
+
     @Override
     public String getValueAsString()
     {
@@ -178,5 +196,16 @@ public final class PDRadioButton extends PDButton
             }
         }
         applyChange();
+    }
+
+    /**
+     * Sets the default value.
+     *
+     * @param value Name of radio button to select
+     * @throws IOException if the value could not be set
+     */
+    public void setDefaultValue(String value) throws IOException
+    {
+        dictionary.setName(COSName.DV, value);
     }
 }

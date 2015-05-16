@@ -67,42 +67,6 @@ public abstract class PDChoice extends PDVariableText
     {
         super(acroForm, field, parent);
     }
-
-    /**
-     * Get the fields default value.
-     * 
-     * The value is stored in the field dictionaries "DV" entry.
-     * 
-     * @return The value of this entry.
-     */
-    public String getDefaultValue()
-    {
-        return ((COSString) getInheritableAttribute(COSName.DV)).getString();
-    }    
-    
-    /**
-     * Set the default value for the field.
-     * 
-     * @param value the value
-     */
-    public void setDefaultValue(String value)
-    {
-        if (value != null)
-        {
-            if (getOptions().indexOf(value) == -1)
-            {
-                throw new IllegalArgumentException("The list box does not contain the given value.");
-            }
-            else
-            {
-                dictionary.setString(COSName.DV, value);
-            }
-        }
-        else
-        {
-            dictionary.removeItem(COSName.DV);
-        }
-    }
     
     /**
      * This will get the option values "Opt".
@@ -421,6 +385,17 @@ public abstract class PDChoice extends PDVariableText
         
         applyChange();
     }
+
+    /**
+     * Sets the default value of this field.
+     *
+     * @param value The name of the selected item.
+     * @throws IOException if the value could not be set
+     */
+    public void setDefaultValue(String value) throws IOException
+    {
+        dictionary.setString(COSName.DV, value);
+    }
     
     /**
      * Sets the entry "V" to the given values. Requires {@link #isMultiSelect()} to be true.
@@ -457,7 +432,26 @@ public abstract class PDChoice extends PDVariableText
      */
     public List<String> getValue()
     {
-        COSBase value = dictionary.getDictionaryObject(COSName.V);
+        return getValueFor(COSName.V);
+    }
+
+    /**
+     * Returns the default values, or an empty string. This list always contains a single item
+     * unless {@link #isMultiSelect()} is true.
+     *
+     * @return A non-null string.
+     */
+    public List<String> getDefaultValue()
+    {
+        return getValueFor(COSName.DV);
+    }
+
+    /**
+     * Returns the selected values, or an empty string, for the given key.
+     */
+    private List<String> getValueFor(COSName name)
+    {
+        COSBase value = dictionary.getDictionaryObject(name);
         if (value instanceof COSString)
         {
             List<String> array = new ArrayList<String>();
