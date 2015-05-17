@@ -51,14 +51,14 @@ class Token
 
     private String text;
     private byte[] data;
-    private Kind kind;
+    private final Kind kind;
 
     /**
      * Constructs a new Token object given its text and kind.
      * @param text
      * @param type
      */
-    public Token(String text, Kind type)
+    Token(String text, Kind type)
     {
         this.text = text;
         this.kind = type;
@@ -69,7 +69,7 @@ class Token
      * @param character
      * @param type
      */
-    public Token(char character, Kind type)
+    Token(char character, Kind type)
     {
         this.text = Character.toString(character);
         this.kind = type;
@@ -81,7 +81,7 @@ class Token
      * @param data
      * @param type
      */
-    public Token(byte[] data, Kind type)
+    Token(byte[] data, Kind type)
     {
         this.data = data;
         this.kind = type;
@@ -121,6 +121,7 @@ class Token
     /**
      * {@inheritDoc}
      */
+    @Override
     public String toString()
     {
         if (kind == CHARSTRING)
