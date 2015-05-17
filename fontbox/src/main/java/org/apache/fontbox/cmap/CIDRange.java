@@ -29,7 +29,7 @@ class CIDRange
 
     private final int cid;
 
-    public CIDRange(char from, char to, int cid)
+    CIDRange(char from, char to, int cid)
     {
         this.from = from;
         this.to = to;
