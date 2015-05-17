@@ -31,9 +31,12 @@ import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.process.ValidationProcess;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 
-public class ContextHelper
+public final class ContextHelper
 {
-
+    private ContextHelper()
+    {
+    }
+    
     /**
      * Check that the element parameter isn't null before calling the
      * {@link #callValidation(PreflightContext, Object, String)} method.
