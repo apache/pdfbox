@@ -41,7 +41,7 @@ public class CmapSubtable
     private int platformEncodingId;
     private long subTableOffset;
     private int[] glyphIdToCharacterCode;
-    private Map<Integer, Integer> characterCodeToGlyphId = new HashMap<Integer, Integer>();
+    private final Map<Integer, Integer> characterCodeToGlyphId = new HashMap<Integer, Integer>();
 
     /**
      * This will read the required data from the stream.
