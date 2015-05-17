@@ -45,7 +45,7 @@ import java.util.regex.Pattern;
  * @author Christopher Oezbek
  * 
  */
-public class DateConverter
+public final class DateConverter
 {
 
     // The Date format is supposed to be the PDF_DATE_FORMAT, but not all PDF
@@ -64,7 +64,7 @@ public class DateConverter
     /**
      * According to check-style, Utility classes should not have a public or default constructor.
      */
-    protected DateConverter()
+    private DateConverter()
     {
     };
 
