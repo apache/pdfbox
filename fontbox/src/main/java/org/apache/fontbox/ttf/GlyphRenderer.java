@@ -42,7 +42,7 @@ class GlyphRenderer
 
     private GlyphDescription glyphDescription;
 
-    public GlyphRenderer(GlyphDescription glyphDescription)
+    GlyphRenderer(GlyphDescription glyphDescription)
     {
         this.glyphDescription = glyphDescription;
     }
