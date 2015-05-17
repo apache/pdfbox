@@ -23,8 +23,8 @@ import java.util.Arrays;
  */
 public class IndexData
 {
-    private int count;
-    private int[] offset;
+    private final int count;
+    private final int[] offset;
     private int[] data;
 
     /**
