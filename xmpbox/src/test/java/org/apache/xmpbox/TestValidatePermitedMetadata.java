@@ -70,11 +70,11 @@ public class TestValidatePermitedMetadata
         return params;
     }
 
-    private String namespace;
+    private final String namespace;
 
-    private String fieldname;
+    private final String fieldname;
 
-    private String preferred;
+    private final String preferred;
 
     public TestValidatePermitedMetadata(String ns, String prf, String fn)
     {
