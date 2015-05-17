@@ -18,10 +18,9 @@ package org.apache.pdfbox.pdfwriter;
 
 import java.io.IOException;
 import java.io.OutputStream;
-
 import java.util.List;
 import java.util.Map;
-
+import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSBoolean;
@@ -30,7 +29,6 @@ import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.util.Charsets;
 
 /**
@@ -62,23 +60,54 @@ public class ContentStreamWriter
     }
 
     /**
+     * Writes a single operand token.
+     *
+     * @param base The operand to write to the stream.
+     * @throws IOException If there is an error writing to the stream.
+     */
+    public void writeToken(COSBase base) throws IOException
+    {
+        writeObject(base);
+    }
+
+    /**
+     *  Writes a single operator token.
+     *
+     * @param op The operator to write to the stream.
+     * @throws IOException If there is an error writing to the stream.
+     */
+    public void writeToken(Operator op) throws IOException
+    {
+        writeObject(op);
+    }
+
+    /**
+     * Writes a series of tokens followed by a new line.
+     * 
+     * @param tokens The tokens to write to the stream.
+     * @throws IOException If there is an error writing to the stream.
+     */
+    public void writeTokens(Object... tokens) throws IOException
+    {
+        for (Object token : tokens)
+        {
+            writeObject(token);
+        }
+        output.write("\n".getBytes(Charsets.US_ASCII));
+    }
+
+    /**
      * This will write out the list of tokens to the stream.
      *
      * @param tokens The tokens to write to the stream.
-     * @param start The start index into the list of tokens.
-     * @param end The end index into the list of tokens.
      * @throws IOException If there is an error writing to the stream.
      */
-    public void writeTokens( List tokens, int start, int end ) throws IOException
+    public void writeTokens( List tokens ) throws IOException
     {
-        for( int i=start; i<end; i++ )
+        for (Object token : tokens)
         {
-            Object o = tokens.get( i );
-            writeObject( o );
-            //write a space between each object.
-            output.write( 32 );
+            writeObject(token);
         }
-        output.flush();
     }
 
     private void writeObject( Object o ) throws IOException
@@ -86,22 +115,27 @@ public class ContentStreamWriter
         if( o instanceof COSString )
         {
             COSWriter.writeString((COSString)o, output);
+            output.write( SPACE );
         }
         else if( o instanceof COSFloat )
         {
             ((COSFloat)o).writePDF( output );
+            output.write( SPACE );
         }
         else if( o instanceof COSInteger )
         {
             ((COSInteger)o).writePDF( output );
+            output.write( SPACE );
         }
         else if( o instanceof COSBoolean )
         {
             ((COSBoolean)o).writePDF( output );
+            output.write( SPACE );
         }
         else if( o instanceof COSName )
         {
             ((COSName)o).writePDF( output );
+            output.write( SPACE );
         }
         else if( o instanceof COSArray )
         {
@@ -164,16 +198,5 @@ public class ContentStreamWriter
         {
             throw new IOException( "Error:Unknown type in content stream:" + o );
         }
-    }
-
-    /**
-     * This will write out the list of tokens to the stream.
-     *
-     * @param tokens The tokens to write to the stream.
-     * @throws IOException If there is an error writing to the stream.
-     */
-    public void writeTokens( List tokens ) throws IOException
-    {
-        writeTokens( tokens, 0, tokens.size() );
     }
 }
