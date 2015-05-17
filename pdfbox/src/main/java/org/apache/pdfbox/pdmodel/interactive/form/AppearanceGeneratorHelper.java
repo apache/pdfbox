@@ -50,6 +50,7 @@ class AppearanceGeneratorHelper
     private static final Log LOG = LogFactory.getLog(AppearanceGeneratorHelper.class);
     private static final float GLYPH_TO_PDF_SCALE = 1000f;
     private static final Operator BMC = Operator.getOperator("BMC");
+    private static final Operator EMC = Operator.getOperator("EMC");
     
     private final PDVariableText field;
     private final DefaultAppearanceHandler defaultAppearanceHandler;
@@ -108,18 +109,9 @@ class AppearanceGeneratorHelper
                     appearanceDict.setNormalAppearance(appearanceStream);
                     // TODO support appearances other than "normal"
                 }
-
-                List<Object> tokens = tokenize(appearanceStream);
+                
                 PDFont font = getFontAndUpdateResources(appearanceStream);
-
-                if (!tokens.contains(BMC))
-                {
-                    createAppearanceContent(tokens, widget, font, appearanceStream);
-                }
-                else
-                {
-                    updateAppearanceContent(tokens, widget, font, appearanceStream);
-                }
+                setAppearanceContent(appearanceStream, widget, font);
             }
         }
     }
@@ -237,52 +229,46 @@ class AppearanceGeneratorHelper
         }
         return null;
     }
-    
-    /**
-     * Create new content. 
-     */
-    private void createAppearanceContent(List<Object> tokens, PDAnnotationWidget widget, 
-            PDFont pdFont, PDAppearanceStream appearanceStream)
-            throws IOException
-    {
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        // BJL 9/25/2004 Must prepend existing stream
-        // because it might have operators to draw things like
-        // rectangles and such
-        ContentStreamWriter writer = new ContentStreamWriter(output);
-        writer.writeTokens(tokens);
-        output.write("/Tx BMC\n".getBytes("ISO-8859-1"));
-        PDRectangle boundingBox = resolveBoundingBox(widget, appearanceStream);
-        insertGeneratedAppearance(boundingBox, output, pdFont, tokens, appearanceStream);
-        output.write("EMC".getBytes("ISO-8859-1"));
-        output.close();
-        writeToStream(output.toByteArray(), appearanceStream);
-    }
 
     /**
-     * Update existing content.
+     * Constructs and sets new contents for given appearance stream.
      */
-    private void updateAppearanceContent(List<Object> tokens, PDAnnotationWidget widget, 
-            PDFont pdFont, PDAppearanceStream appearanceStream)
-            throws IOException
+    private void setAppearanceContent(PDAppearanceStream appearanceStream,
+                                      PDAnnotationWidget widget, PDFont font) throws IOException
     {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         ContentStreamWriter writer = new ContentStreamWriter(output);
-        PDRectangle boundingBox = resolveBoundingBox(widget, appearanceStream);
 
+        List<Object> tokens = tokenize(appearanceStream);
         int bmcIndex = tokens.indexOf(Operator.getOperator("BMC"));
-        int emcIndex = tokens.indexOf(Operator.getOperator("EMC"));
-
-        writer.writeTokens(tokens, 0, bmcIndex + 1);
-
-        output.write("\n".getBytes("ISO-8859-1"));
-        
-        insertGeneratedAppearance(boundingBox, output, pdFont, tokens, appearanceStream);
-
-        if (emcIndex != -1)
+        if (bmcIndex == -1)
         {
-            writer.writeTokens(tokens, emcIndex, tokens.size());
+            // append to existing stream
+            writer.writeTokens(tokens);
+            writer.writeTokens(COSName.TX, BMC);
         }
+        else
+        {
+            // prepend content before BMC
+            writer.writeTokens(tokens.subList(0, bmcIndex + 1));
+        }
+        
+        // insert field contents
+        PDRectangle boundingBox = resolveBoundingBox(widget, appearanceStream);
+        insertGeneratedAppearance(boundingBox, output, font, tokens, appearanceStream);
+        
+        int emcIndex = tokens.indexOf(Operator.getOperator("EMC"));
+        if (emcIndex == -1)
+        {
+            // append EMC
+            writer.writeTokens(EMC);
+        }
+        else
+        {
+            // append contents after EMC
+            writer.writeTokens(tokens.subList(emcIndex, tokens.size()));
+        }
+
         output.close();
         writeToStream(output.toByteArray(), appearanceStream);
     }
