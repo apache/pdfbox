@@ -48,7 +48,7 @@ public class TestXMPWithDefinedSchemas
         return data;
     }
 
-    private String path;
+    private final String path;
 
     public TestXMPWithDefinedSchemas(String path)
     {
