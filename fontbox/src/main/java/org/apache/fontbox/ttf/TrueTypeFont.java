@@ -39,7 +39,7 @@ public class TrueTypeFont implements Type1Equivalent, Closeable
     private int numberOfGlyphs = -1;
     private int unitsPerEm = -1;
     protected Map<String,TTFTable> tables = new HashMap<String,TTFTable>();
-    private TTFDataStream data;
+    private final TTFDataStream data;
     private Map<String, Integer> postScriptNames;
     
     /**
@@ -290,6 +290,8 @@ public class TrueTypeFont implements Type1Equivalent, Closeable
      * Read the given table if necessary. Package-private, used by TTFParser only.
      * 
      * @param table the table to be initialized
+     * 
+     * @throws IOException if there was an error reading the table.
      */
     void readTable(TTFTable table) throws IOException
     {
