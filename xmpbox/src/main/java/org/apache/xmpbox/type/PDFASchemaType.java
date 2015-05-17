@@ -61,12 +61,12 @@ public class PDFASchemaType extends AbstractStructuredType
 
     public ArrayProperty getProperty()
     {
-        return (ArrayProperty) getArrayProperty(PROPERTY);
+        return getArrayProperty(PROPERTY);
     }
 
     public ArrayProperty getValueType()
     {
-        return (ArrayProperty) getArrayProperty(VALUE_TYPE);
+        return getArrayProperty(VALUE_TYPE);
     }
 
 }
