@@ -144,7 +144,7 @@ public class PDType0Font extends PDFont
     @Override
     public boolean willBeSubset()
     {
-        return embedder.needsSubset();
+        return embedder != null && embedder.needsSubset();
     }
 
     /**
