@@ -73,7 +73,7 @@ public class PDFATypeType extends AbstractStructuredType
 
     public ArrayProperty getFields()
     {
-        return (ArrayProperty) getArrayProperty(FIELD);
+        return getArrayProperty(FIELD);
     }
 
 }
