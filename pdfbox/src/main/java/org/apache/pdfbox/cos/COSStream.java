@@ -322,11 +322,12 @@ public class COSStream extends COSDictionary implements Closeable
         {
             copyBuffer(getFilteredBuffer(false),  filteredStream.getPosition() );
             COSArray filterArray = (COSArray)filters;
-            for( int i=0; i<filterArray.size(); i++ )
+            int filterArraysize = filterArray.size();
+            for( int i=0; i<filterArraysize; i++ )
             {
                 COSName filterName = (COSName)filterArray.get( i );
                 doDecode( filterName, i, getFilteredBuffer().length(), getUnfilteredBuffer(true) );
-                if (i < filterArray.size())
+                if (i < filterArraysize-1)
                 {
                     copyBuffer(getUnfilteredBuffer(false), 0);
                 }
@@ -440,7 +441,7 @@ public class COSStream extends COSDictionary implements Closeable
             {
                 COSName filterName = (COSName)filterArray.get( i );
                 doEncode( filterName, i, getFilteredBuffer(true) );
-                if ( i >= 0 )
+                if ( i > 0 )
                 {
                     copyBuffer(getFilteredBuffer(false), 0);
                 }
@@ -516,7 +517,7 @@ public class COSStream extends COSDictionary implements Closeable
         COSString string = new COSString(out.toByteArray());
         return string.getString();
     }
-    
+
     /**
      * This will create a new stream for which filtered byte should be
      * written to.  You probably don't want this but want to use the
