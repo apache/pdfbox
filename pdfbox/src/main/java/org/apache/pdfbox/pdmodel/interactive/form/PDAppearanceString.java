@@ -144,9 +144,14 @@ class PDAppearanceString
     /**
      * Writes the DA string to the given content stream.
      */
-    void writeTo(PDPageContentStream contents) throws IOException
+    void writeTo(PDPageContentStream contents, float zeroFontSize) throws IOException
     {
-        contents.setFont(getFont(), getFontSize());
+        float fontSize = getFontSize();
+        if (fontSize == 0)
+        {
+            fontSize = zeroFontSize;
+        }
+        contents.setFont(getFont(), fontSize);
         // todo: set more state...
     }
 

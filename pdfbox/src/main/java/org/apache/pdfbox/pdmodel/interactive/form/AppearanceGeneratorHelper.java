@@ -42,7 +42,6 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
  */
 class AppearanceGeneratorHelper
 {
-    private static final float GLYPH_TO_PDF_SCALE = 1000f;
     private static final Operator BMC = Operator.getOperator("BMC");
     private static final Operator EMC = Operator.getOperator("EMC");
     
@@ -204,9 +203,6 @@ class AppearanceGeneratorHelper
         
         // start the text output
         contents.beginText();
-        
-        // write the /DA string
-        field.getDefaultAppearanceString().writeTo(contents);
 
         // get the font
         PDFont font = field.getDefaultAppearanceString().getFont();
@@ -214,6 +210,9 @@ class AppearanceGeneratorHelper
         // calculate the fontSize (because 0 = autosize)
         float fontSize = calculateFontSize(font, contentRect);
         
+        // write the /DA string
+        field.getDefaultAppearanceString().writeTo(contents, fontSize);
+       
         // calculate the y-position of the baseline
         float y;
         if (field instanceof PDTextField && ((PDTextField) field).isMultiline())
@@ -228,7 +227,7 @@ class AppearanceGeneratorHelper
         }
 
         // show the text
-        float leftOffset = contentRect.getLowerLeftX();
+        float x = contentRect.getLowerLeftX();
         PlainText textContent = new PlainText(value);
         AppearanceStyle appearanceStyle = new AppearanceStyle();
         appearanceStyle.setFont(font);
@@ -243,7 +242,7 @@ class AppearanceGeneratorHelper
                                                 .text(textContent)
                                                 .width(contentRect.getWidth())
                                                 .wrapLines(true)
-                                                .initialOffset(leftOffset, y)
+                                                .initialOffset(x, y)
                                                 .textAlign(field.getQ())
                                                 .build();
         formatter.format();
@@ -277,26 +276,36 @@ class AppearanceGeneratorHelper
      * @return the calculated font-size
      * @throws IOException If there is an error getting the font information.
      */
-    private float calculateFontSize(PDFont pdFont, PDRectangle contentEdge) throws IOException
+    private float calculateFontSize(PDFont font, PDRectangle contentRect) throws IOException
     {
         float fontSize = defaultAppearance.getFontSize();
-
-        // if the font size is 0 the size depends on the content
-        if (fontSize == 0 && !isMultiLine())
-        {
-            float widthAtFontSize1 = pdFont.getStringWidth(value) / GLYPH_TO_PDF_SCALE;
-            float widthBasedFontSize = contentEdge.getWidth() / widthAtFontSize1;
-            float height = pdFont.getFontDescriptor()
-                                 .getFontBoundingBox().getHeight() / GLYPH_TO_PDF_SCALE;
-            fontSize = Math.min(contentEdge.getHeight() / height, widthBasedFontSize);
-        }
         
-        // restore to default size for multiline text
+        // zero is special, it means the text is auto-sized
         if (fontSize == 0)
         {
-            fontSize = 12f;
-        }
+            if (isMultiLine())
+            {
+                // Acrobat defaults to 12 for multiline text with size 0
+                return 12f;
+            }
+            else
+            {
+                // fit width
+                float width = font.getStringWidth(value) / 1000;
+                float widthBasedFontSize = contentRect.getWidth() / width;
 
+                // fit height
+                float height = (font.getFontDescriptor().getAscent() +
+                               -font.getFontDescriptor().getDescent()) / 1000;
+                if (height <= 0)
+                {
+                    height = font.getBoundingBox().getHeight() / 1000;
+                }
+                float heightBasedFontSize = contentRect.getHeight() / height;
+
+                return Math.min(heightBasedFontSize, widthBasedFontSize);
+            }
+        }
         return fontSize;
     }
     
