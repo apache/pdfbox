@@ -230,38 +230,27 @@ class AppearanceGeneratorHelper
         }
 
         // show the text
-        float leftOffset;
-        if (!isMultiLine())
-        {
-            // calculation of the horizontal offset from where the text will be printed
-            leftOffset = calculateHorizontalOffset(contentRect, font, fontSize);
-            contents.newLineAtOffset(leftOffset, y);
-            contents.showText(value);
-        }
-        else
-        {
-            leftOffset = contentRect.getLowerLeftX();
-            PlainText textContent = new PlainText(value);
-            AppearanceStyle appearanceStyle = new AppearanceStyle();
-            appearanceStyle.setFont(font);
-            appearanceStyle.setFontSize(fontSize);
-            
-            // Adobe Acrobat uses the font's bounding box for the leading between the lines
-            appearanceStyle.setLeading(font.getBoundingBox().getHeight() /
-                    GLYPH_TO_PDF_SCALE * fontSize);
-            
-            PlainTextFormatter formatter = new PlainTextFormatter
-                                                .Builder(contents)
-                                                    .style(appearanceStyle)
-                                                    .text(textContent)
-                                                    .width(contentRect.getWidth())
-                                                    .wrapLines(true)
-                                                    .initialOffset(leftOffset, y)
-                                                    .textAlign(field.getQ())
-                                                    .build();
-            formatter.format();
-
-        }
+        float leftOffset = contentRect.getLowerLeftX();
+        PlainText textContent = new PlainText(value);
+        AppearanceStyle appearanceStyle = new AppearanceStyle();
+        appearanceStyle.setFont(font);
+        appearanceStyle.setFontSize(fontSize);
+        
+        // Adobe Acrobat uses the font's bounding box for the leading between the lines
+        appearanceStyle.setLeading(font.getBoundingBox().getHeight() /
+                GLYPH_TO_PDF_SCALE * fontSize);
+        
+        PlainTextFormatter formatter = new PlainTextFormatter
+                                            .Builder(contents)
+                                                .style(appearanceStyle)
+                                                .text(textContent)
+                                                .width(contentRect.getWidth())
+                                                .wrapLines(true)
+                                                .initialOffset(leftOffset, y)
+                                                .textAlign(field.getQ())
+                                                .build();
+        formatter.format();
+    
         contents.endText();
         contents.restoreGraphicsState();
         contents.close();
@@ -312,50 +301,6 @@ class AppearanceGeneratorHelper
         }
 
         return fontSize;
-    }
-
-    /**
-     * Calculate the horizontal start position for the text.
-     * 
-     * @param contentEdge the content edge
-     * @param pdFont the font to use for formatting
-     * @param fontSize the font size to use for formating
-     *
-     * @return the horizontal start position of the text
-     *
-     * @throws IOException If there is an error calculating the text position.
-     */
-    private float calculateHorizontalOffset(PDRectangle contentEdge, PDFont pdFont, float fontSize)
-            throws IOException
-    {
-        // Acrobat aligns left regardless of the quadding if the text is wider than the remaining
-        // width
-        float stringWidth = pdFont.getStringWidth(value) / GLYPH_TO_PDF_SCALE * fontSize;
-        float leftOffset;
-        
-        int q = field.getQ();
-        
-        if (q == PDTextField.QUADDING_LEFT
-                || stringWidth > contentEdge.getWidth())
-        {
-            leftOffset = contentEdge.getLowerLeftX();
-        }
-        else if (q == PDTextField.QUADDING_CENTERED)
-        {
-            leftOffset = contentEdge.getLowerLeftX() + (contentEdge.getWidth() - stringWidth) / 2;
-        }
-        else if (q == PDTextField.QUADDING_RIGHT)
-        {
-            leftOffset = contentEdge.getLowerLeftX() + contentEdge.getWidth() - stringWidth;
-        }
-        else
-        {
-            // Unknown quadding value - default to left
-            leftOffset = contentEdge.getLowerLeftX();
-            LOG.debug("Unknown justification value, defaulting to left: " + q);
-        }
-        
-        return leftOffset;
     }
     
     /**
