@@ -20,8 +20,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
@@ -44,7 +42,6 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
  */
 class AppearanceGeneratorHelper
 {
-    private static final Log LOG = LogFactory.getLog(AppearanceGeneratorHelper.class);
     private static final float GLYPH_TO_PDF_SCALE = 1000f;
     private static final Operator BMC = Operator.getOperator("BMC");
     private static final Operator EMC = Operator.getOperator("EMC");
@@ -155,8 +152,7 @@ class AppearanceGeneratorHelper
         }
         
         // insert field contents
-        PDRectangle boundingBox = resolveBoundingBox(widget, appearanceStream);
-        insertGeneratedAppearance(widget, appearanceStream, boundingBox, output);
+        insertGeneratedAppearance(widget, appearanceStream, output);
         
         int emcIndex = tokens.indexOf(Operator.getOperator("EMC"));
         if (emcIndex == -1)
@@ -177,8 +173,9 @@ class AppearanceGeneratorHelper
     /**
      * Generate and insert text content and clipping around it.   
      */
-    private void insertGeneratedAppearance(PDAnnotationWidget widget, PDAppearanceStream appearanceStream,
-                                           PDRectangle bbox, OutputStream output) throws IOException
+    private void insertGeneratedAppearance(PDAnnotationWidget widget,
+                                           PDAppearanceStream appearanceStream,
+                                           OutputStream output) throws IOException
     {
         PDPageContentStream contents = new PDPageContentStream(field.getAcroForm().getDocument(),
                                                                appearanceStream, output);
@@ -191,6 +188,7 @@ class AppearanceGeneratorHelper
         {
             borderWidth = widget.getBorderStyle().getWidth();
         }
+        PDRectangle bbox = resolveBoundingBox(widget, appearanceStream);
         PDRectangle clipRect = applyPadding(bbox, Math.max(1f, borderWidth));
         PDRectangle contentRect = applyPadding(clipRect, Math.max(1f, borderWidth));
         
@@ -237,8 +235,7 @@ class AppearanceGeneratorHelper
         appearanceStyle.setFontSize(fontSize);
         
         // Adobe Acrobat uses the font's bounding box for the leading between the lines
-        appearanceStyle.setLeading(font.getBoundingBox().getHeight() /
-                GLYPH_TO_PDF_SCALE * fontSize);
+        appearanceStyle.setLeading(font.getBoundingBox().getHeight() / 1000  * fontSize);
         
         PlainTextFormatter formatter = new PlainTextFormatter
                                             .Builder(contents)
