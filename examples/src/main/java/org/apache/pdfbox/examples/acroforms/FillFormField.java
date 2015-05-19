@@ -33,7 +33,7 @@ public class FillFormField
     public static void main(String[] args) throws IOException
     {
         String formTemplate = "src/main/resources/org/apache/pdfbox/examples/acroforms/FillFormField.pdf";
-        String filledForm = "target/examples-output/FillFormField.pdf";
+        String filledForm = "FillFormField.pdf";
         
         // load the document
         PDDocument pdfDocument = PDDocument
