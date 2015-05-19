@@ -24,6 +24,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.pdmodel.PDResources;
 
 /**
  * Base class for fields which use "Variable Text".
@@ -73,6 +74,23 @@ public abstract class PDVariableText extends PDTerminalField
     {
         COSString defaultAppearance = (COSString) getInheritableAttribute(COSName.DA);
         return defaultAppearance.getString();
+    }
+
+    /**
+     * Get the default appearance.
+     *
+     * This is an inheritable attribute.
+     *
+     * The default appearance contains a set of default graphics and text operators
+     * to define the field’s text size and color.
+     *
+     * @return the DA element of the dictionary object
+     */
+    PDAppearanceString getDefaultAppearanceString() throws IOException
+    {
+        COSString da = (COSString) getInheritableAttribute(COSName.DA);
+        PDResources dr = getAcroForm().getDefaultResources();
+        return new PDAppearanceString(da, dr);
     }
 
     /**

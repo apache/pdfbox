@@ -24,12 +24,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdfwriter.ContentStreamWriter;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
@@ -53,7 +51,7 @@ class AppearanceGeneratorHelper
     private static final Operator EMC = Operator.getOperator("EMC");
     
     private final PDVariableText field;
-    private final DefaultAppearanceHandler defaultAppearanceHandler;
+    private final PDAppearanceString defaultAppearance;
     private String value;
     
     /**
@@ -65,7 +63,7 @@ class AppearanceGeneratorHelper
     AppearanceGeneratorHelper(PDVariableText field) throws IOException
     {
         this.field = field;
-        this.defaultAppearanceHandler = new DefaultAppearanceHandler(field.getDefaultAppearance());
+        this.defaultAppearance = field.getDefaultAppearanceString();
     }
     
     /**
@@ -110,8 +108,7 @@ class AppearanceGeneratorHelper
                     // TODO support appearances other than "normal"
                 }
                 
-                PDFont font = getFontAndUpdateResources(appearanceStream);
-                setAppearanceContent(appearanceStream, widget, font);
+                setAppearanceContent(widget, appearanceStream);
             }
         }
     }
@@ -130,112 +127,17 @@ class AppearanceGeneratorHelper
     }
 
     /**
-     * To update an existing appearance stream first copy any needed resources from the
-     * document’s DR dictionary into the stream’s Resources dictionary.
-     * If the DR and Resources dictionaries contain resources with the same name,
-     * the one already in the Resources dictionary shall be left intact,
-     * not replaced with the corresponding value from the DR dictionary. 
-     */
-    private PDFont getFontAndUpdateResources(PDAppearanceStream appearanceStream) throws IOException
-    {
-        PDFont font;
-        PDResources streamResources = appearanceStream.getResources();
-        PDResources formResources = field.getAcroForm().getDefaultResources();
-
-        if (streamResources == null && formResources == null)
-        {
-            throw new IOException("Unable to generate field appearance - " +
-                    "missing required resources");
-        }
-
-        COSName cosFontName = defaultAppearanceHandler.getFontName();
-
-        if (streamResources != null)
-        {
-            font = streamResources.getFont(cosFontName);
-            if (font != null)
-            {
-                return font;
-            }
-        }
-        else
-        {
-            streamResources = new PDResources();
-            appearanceStream.setResources(streamResources);
-        }
-
-        if (formResources != null)
-        {
-            font = formResources.getFont(cosFontName);
-            if (font != null)
-            {
-                streamResources.put(cosFontName, font);
-                return font;
-            }
-        }
-
-        // if we get here the font might be there but under a different name
-        // which is incorrect but try to treat the resource name as the font name
-        font = resolveFont(streamResources, formResources, cosFontName);
-
-        if (font != null)
-        {
-            streamResources.put(cosFontName, font);
-            return font;
-        }
-        else
-        {
-            throw new IOException("Unable to generate field appearance - " +
-                    "missing required font resources: "  + cosFontName);
-        }
-    }
-
-    /**
-     * Get the font from the resources.
-     *
-     * @return the retrieved font
-     * @throws IOException
-     */
-    private PDFont resolveFont(PDResources streamResources, PDResources formResources,
-                               COSName cosFontName) throws IOException
-    {
-        // if the font couldn't be retrieved it might be because the font name
-        // in the DA string didn't point to the font resources dictionary entry but
-        // is the name of the font itself. So try to resolve that.
-
-        PDFont font;
-        if (streamResources != null)
-        {
-            for (COSName fontName : streamResources.getFontNames())
-            {
-                font = streamResources.getFont(fontName);
-                if (font.getName().equals(cosFontName.getName()))
-                {
-                    return font;
-                }
-            }
-        }
-
-        if (formResources != null)
-        {
-            for (COSName fontName : formResources.getFontNames())
-            {
-                font = formResources.getFont(fontName);
-                if (font.getName().equals(cosFontName.getName()))
-                {
-                    return font;
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
      * Constructs and sets new contents for given appearance stream.
      */
-    private void setAppearanceContent(PDAppearanceStream appearanceStream,
-                                      PDAnnotationWidget widget, PDFont font) throws IOException
+    private void setAppearanceContent(PDAnnotationWidget widget,
+                                      PDAppearanceStream appearanceStream) throws IOException
     {
+        // first copy any needed resources from the document’s DR dictionary into
+        // the stream’s Resources dictionary
+        defaultAppearance.copyNeededResourcesTo(appearanceStream);
+        
+        // then replace the existing contents of the appearance stream from /Tx BMC
+        // to the matching EMC
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         ContentStreamWriter writer = new ContentStreamWriter(output);
 
@@ -255,7 +157,7 @@ class AppearanceGeneratorHelper
         
         // insert field contents
         PDRectangle boundingBox = resolveBoundingBox(widget, appearanceStream);
-        insertGeneratedAppearance(boundingBox, output, font, tokens, appearanceStream);
+        insertGeneratedAppearance(widget, appearanceStream, boundingBox, output);
         
         int emcIndex = tokens.indexOf(Operator.getOperator("EMC"));
         if (emcIndex == -1)
@@ -276,19 +178,22 @@ class AppearanceGeneratorHelper
     /**
      * Generate and insert text content and clipping around it.   
      */
-    private void insertGeneratedAppearance(PDRectangle boundingBox, OutputStream output,
-            PDFont font, List<Object> tokens, PDAppearanceStream appearanceStream)
-            throws IOException
+    private void insertGeneratedAppearance(PDAnnotationWidget widget, PDAppearanceStream appearanceStream,
+                                           PDRectangle bbox, OutputStream output) throws IOException
     {
         PDPageContentStream contents = new PDPageContentStream(field.getAcroForm().getDocument(),
                                                                appearanceStream, output);
-
+        
         // Acrobat calculates the left and right padding dependent on the offset of the border edge
         // This calculation works for forms having been generated by Acrobat.
         // The minimum distance is always 1f even if there is no rectangle being drawn around.
-        float lineWidth = getLineWidth(tokens);
-        PDRectangle paddingEdge = applyPadding(boundingBox,Math.max(1f, lineWidth));
-        PDRectangle contentEdge = applyPadding(paddingEdge,Math.max(1f, lineWidth));
+        float lineWidth = 0;
+        if (widget.getBorderStyle() != null)
+        {
+            lineWidth = widget.getBorderStyle().getWidth();
+        }
+        PDRectangle paddingEdge = applyPadding(bbox, Math.max(1f, lineWidth));
+        PDRectangle contentEdge = applyPadding(paddingEdge, Math.max(1f, lineWidth));
         
         contents.saveGraphicsState();
         
@@ -300,22 +205,15 @@ class AppearanceGeneratorHelper
         // start the text output
         contents.beginText();
         
-        // calculate the fontSize 
+        // write the /DA string
+        field.getDefaultAppearanceString().writeTo(contents);
+
+        // get the font
+        PDFont font = field.getDefaultAppearanceString().getFont();
+        
+        // calculate the fontSize (because 0 = autosize)
         float fontSize = calculateFontSize(font, contentEdge);
         
-        if (!defaultAppearanceHandler.getTokens().isEmpty())
-        {
-            defaultAppearanceHandler.setFontSize(fontSize);
-            ContentStreamWriter daWriter = new ContentStreamWriter(output);
-            contents.setFont(font, fontSize);
-            
-            // the font has already been set so only write the remaining parts of the DA string
-            daWriter.writeTokens(defaultAppearanceHandler.getTokens().subList(
-                    defaultAppearanceHandler.getTokens().indexOf(Operator.getOperator("Tf")) + 1,
-                    defaultAppearanceHandler.getTokens().size()
-            ));
-        }
-
         // calculation of the vertical offset from where the text will be printed 
         float verticalOffset = calculateVerticalOffset(paddingEdge, contentEdge, font, fontSize);
 
@@ -376,27 +274,6 @@ class AppearanceGeneratorHelper
     }
 
     /**
-     * w in an appearance stream represents the lineWidth.
-     * 
-     * @return the linewidth
-     */
-    private float getLineWidth(List<Object> tokens)
-    {
-        float retval = 0f;
-        if (tokens != null)
-        {
-            int btIndex = tokens.indexOf(Operator.getOperator("BT"));
-            int wIndex = tokens.indexOf(Operator.getOperator("w"));
-            // the w should only be used if it is before the first BT.
-            if (wIndex > 0 && (wIndex < btIndex || btIndex == -1))
-            {
-                retval = ((COSNumber) tokens.get(wIndex - 1)).floatValue();
-            }
-        }
-        return retval;
-    }
-
-    /**
      * My "not so great" method for calculating the fontsize. It does not work superb, but it
      * handles ok.
      * 
@@ -405,13 +282,7 @@ class AppearanceGeneratorHelper
      */
     private float calculateFontSize(PDFont pdFont, PDRectangle contentEdge) throws IOException
     {
-        // default font size is 12 in Acrobat
-        float fontSize = 12f;
-        
-        if (!defaultAppearanceHandler.getTokens().isEmpty())
-        {
-            fontSize = defaultAppearanceHandler.getFontSize();
-        }
+        float fontSize = defaultAppearance.getFontSize();
 
         // if the font size is 0 the size depends on the content
         if (fontSize == 0 && !isMultiLine())
