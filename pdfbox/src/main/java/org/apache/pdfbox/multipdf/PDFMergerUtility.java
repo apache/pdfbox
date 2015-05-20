@@ -350,11 +350,15 @@ public class PDFMergerUtility
             }
             else
             {
-                PDOutlineItem first = srcOutline.getFirstChild();
-                if (first != null)
+                for (PDOutlineItem item : srcOutline.children())
                 {
-                    PDOutlineItem clonedFirst = new PDOutlineItem((COSDictionary) cloner.cloneForNewDocument(first));
-                    destOutline.addLast(clonedFirst);
+                    // get each child, clone its dictionary, remove siblings info,
+                    // append outline item created from there
+                    COSDictionary clonedDict = (COSDictionary) cloner.cloneForNewDocument(item);
+                    clonedDict.removeItem(COSName.PREV);
+                    clonedDict.removeItem(COSName.NEXT);
+                    PDOutlineItem clonedItem = new PDOutlineItem(clonedDict);
+                    destOutline.addLast(clonedItem);
                 }
             }
         }
