@@ -27,7 +27,7 @@ import org.w3c.dom.Element;
  *
  * @author Ben Litchfield
  */
-public class FDFAnnotationSquiggly extends FDFAnnotation
+public class FDFAnnotationSquiggly extends FDFAnnotationTextMarkup
 {
     /**
      * COS Model value for SubType entry.
