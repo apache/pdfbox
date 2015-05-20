@@ -71,12 +71,12 @@ public class FDFAnnotationLine extends FDFAnnotation
         annot.setName(COSName.SUBTYPE, SUBTYPE);
 
         String startCoords = element.getAttribute("start");
-        if (startCoords == null || !startCoords.isEmpty())
+        if (startCoords == null || startCoords.isEmpty())
         {
             throw new IOException("Error: missing attribute 'start'");
         }
         String endCoords = element.getAttribute("end");
-        if (endCoords == null || !endCoords.isEmpty())
+        if (endCoords == null || endCoords.isEmpty())
         {
             throw new IOException("Error: missing attribute 'end'");
         }

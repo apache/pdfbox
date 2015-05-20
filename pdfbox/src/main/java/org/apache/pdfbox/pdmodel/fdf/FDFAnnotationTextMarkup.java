@@ -60,7 +60,7 @@ public abstract class FDFAnnotationTextMarkup extends FDFAnnotation
         super(element);
 
         String coords = element.getAttribute("coords");
-        if (coords == null || !coords.isEmpty())
+        if (coords == null || coords.isEmpty())
         {
             throw new IOException("Error: missing attribute 'coords'");
         }
