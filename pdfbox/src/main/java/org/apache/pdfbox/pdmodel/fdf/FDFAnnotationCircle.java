@@ -1,6 +1,6 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
+ * contributor license agreements. See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
@@ -16,10 +16,13 @@
  */
 package org.apache.pdfbox.pdmodel.fdf;
 
+import java.awt.Color;
 import java.io.IOException;
 
+import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.w3c.dom.Element;
 
 /**
@@ -62,7 +65,99 @@ public class FDFAnnotationCircle extends FDFAnnotation
      */
     public FDFAnnotationCircle( Element element ) throws IOException
     {
-        super( element );
-        annot.setName( COSName.SUBTYPE, SUBTYPE );
+        super(element);
+        annot.setName(COSName.SUBTYPE, SUBTYPE);
+
+        String color = element.getAttribute("interior-color");
+        if (color != null && color.length() == 7 && color.charAt(0) == '#')
+        {
+            int colorValue = Integer.parseInt(color.substring(1, 7), 16);
+            setInteriorColor(new Color(colorValue));
+        }
+
+        String fringe = element.getAttribute("fringe");
+        if (fringe != null && !fringe.isEmpty())
+        {
+            String[] fringeValues = fringe.split(",");
+            if (fringeValues.length != 4)
+            {
+                throw new IOException("Error: wrong amount of numbers in attribute 'fringe'");
+            }
+            float[] values = new float[4];
+            for (int i = 0; i < 4; i++)
+            {
+                values[i] = Float.parseFloat(fringeValues[i]);
+            }
+            COSArray array = new COSArray();
+            array.setFloatArray(values);
+            setFringe(new PDRectangle(array));
+        }
+    }
+    
+    /**
+     * This will set interior color of the drawn area.
+     *
+     * @param color The interior color of the circle.
+     */
+    public void setInteriorColor(Color color)
+    {
+        COSArray array = null;
+        if (color != null)
+        {
+            float[] colors = color.getRGBColorComponents(null);
+            array = new COSArray();
+            array.setFloatArray(colors);
+        }
+        annot.setItem(COSName.IC, array);
+    }
+
+    /**
+     * This will retrieve the interior color of the drawn area.
+     *
+     * @return object representing the color.
+     */
+    public Color getInteriorColor()
+    {
+        Color retval = null;
+        COSArray array = (COSArray) annot.getDictionaryObject(COSName.IC);
+        if (array != null)
+        {
+            float[] rgb = array.toFloatArray();
+            if (rgb.length >= 3)
+            {
+                retval = new Color(rgb[0], rgb[1], rgb[2]);
+            }
+        }
+        return retval;
+    }
+
+    /**
+     * This will set the fringe rectangle. Giving the difference between the annotations rectangle and where the drawing
+     * occurs. (To take account of any effects applied through the BE entry for example)
+     *
+     * @param fringe the fringe
+     */
+    public void setFringe(PDRectangle fringe)
+    {
+        annot.setItem(COSName.RD, fringe);
+    }
+
+    /**
+     * This will get the fringe. Giving the difference between the annotations rectangle and where the drawing occurs.
+     * (To take account of any effects applied through the BE entry for example)
+     *
+     * @return the rectangle difference
+     */
+    public PDRectangle getFringe()
+    {
+        COSArray rd = (COSArray) annot.getDictionaryObject(COSName.RD);
+        if (rd != null)
+        {
+            return new PDRectangle(rd);
+        }
+        else
+        {
+            return null;
+        }
     }
 }

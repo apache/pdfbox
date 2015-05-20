@@ -27,7 +27,7 @@ import org.w3c.dom.Element;
  *
  * @author Ben Litchfield
  */
-public class FDFAnnotationUnderline extends FDFAnnotation
+public class FDFAnnotationUnderline extends FDFAnnotationTextMarkup
 {
     /**
      * COS Model value for SubType entry.
