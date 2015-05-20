@@ -80,7 +80,7 @@ public class FDFAnnotationPolyline extends FDFAnnotation
         try
         {
             String vertices = xpath.evaluate("vertices[1]", element);
-            if (vertices == null || !vertices.isEmpty())
+            if (vertices == null || vertices.isEmpty())
             {
                 throw new IOException("Error: missing element 'vertices'");
             }

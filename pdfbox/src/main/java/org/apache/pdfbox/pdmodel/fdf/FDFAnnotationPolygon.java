@@ -79,7 +79,7 @@ public class FDFAnnotationPolygon extends FDFAnnotation
         try
         {
             String vertices = xpath.evaluate("vertices", element);
-            if (vertices == null || !vertices.isEmpty())
+            if (vertices == null || vertices.isEmpty())
             {
                 throw new IOException("Error: missing element 'vertices'");
             }
