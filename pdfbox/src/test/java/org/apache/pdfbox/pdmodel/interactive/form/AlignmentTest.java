@@ -30,7 +30,7 @@ public class AlignmentTest
     private static final File OUT_DIR = new File("target/test-output");
     private static final File IN_DIR = new File("src/test/resources/org/apache/pdfbox/pdmodel/interactive/form");
     private static final String NAME_OF_PDF = "AlignmentTests.pdf";
-    private static final String TEST_VALUE = "asdfASDF1234äöü";
+    private static final String TEST_VALUE = "sdfASDF1234äöü";
 
     
     private PDDocument document;
@@ -49,14 +49,8 @@ public class AlignmentTest
     {
         PDTextField field = (PDTextField) acroForm.getField("AlignLeft");
         field.setValue(TEST_VALUE);
-
-        field = (PDTextField) acroForm.getField("AlignLeft-Filled");
-        field.setValue(TEST_VALUE);     
         
         field = (PDTextField) acroForm.getField("AlignLeft-Border_Small");
-        field.setValue(TEST_VALUE);
-
-        field = (PDTextField) acroForm.getField("AlignLeft-Border_Small-Filled");
         field.setValue(TEST_VALUE);
         
         field = (PDTextField) acroForm.getField("AlignLeft-Border_Medium");
@@ -73,10 +67,6 @@ public class AlignmentTest
 
         field = (PDTextField) acroForm.getField("AlignMiddle");
         field.setValue(TEST_VALUE);
-
-        field = (PDTextField) acroForm.getField("AlignMiddle-Filled");
-        field.setValue(TEST_VALUE);
-        
         
         field = (PDTextField) acroForm.getField("AlignMiddle-Border_Small");
         field.setValue(TEST_VALUE);
