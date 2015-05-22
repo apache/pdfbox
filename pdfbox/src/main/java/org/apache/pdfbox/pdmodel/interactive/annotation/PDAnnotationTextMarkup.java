@@ -88,7 +88,7 @@ public class PDAnnotationTextMarkup extends PDAnnotationMarkup
     {
         COSArray newQuadPoints = new COSArray();
         newQuadPoints.setFloatArray( quadPoints );
-        getCOSObject().setItem( "QuadPoints", newQuadPoints );
+        getCOSObject().setItem(COSName.QUADPOINTS, newQuadPoints );
     }
 
     /**
@@ -99,7 +99,7 @@ public class PDAnnotationTextMarkup extends PDAnnotationMarkup
      */
     public float[] getQuadPoints()
     {
-        COSArray quadPoints = (COSArray) getCOSObject().getDictionaryObject( "QuadPoints" );
+        COSArray quadPoints = (COSArray) getCOSObject().getDictionaryObject(COSName.QUADPOINTS);
         if (quadPoints != null)
         {
             return quadPoints.toFloatArray();

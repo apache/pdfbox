@@ -395,7 +395,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public void setPage( int page )
     {
-        annot.setInt( "Page", page );
+        annot.setInt(COSName.PAGE, page );
     }
 
     /**
@@ -406,7 +406,7 @@ public abstract class FDFAnnotation implements COSObjectable
     public Color getColor()
     {
         Color retval = null;
-        COSArray array = (COSArray)annot.getDictionaryObject( "color" );
+        COSArray array = (COSArray)annot.getDictionaryObject(COSName.C);
         if( array != null )
         {
             float[] rgb = array.toFloatArray();
@@ -432,7 +432,7 @@ public abstract class FDFAnnotation implements COSObjectable
             color = new COSArray();
             color.setFloatArray( colors );
         }
-        annot.setItem( "color", color );
+        annot.setItem(COSName.C, color );
     }
 
     /**
@@ -442,7 +442,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public String getDate()
     {
-        return annot.getString( COSName.DATE );
+        return annot.getString(COSName.M);
     }
 
     /**
@@ -452,7 +452,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public void setDate( String date )
     {
-        annot.setString( COSName.DATE, date );
+        annot.setString(COSName.M, date );
     }
 
     /**
