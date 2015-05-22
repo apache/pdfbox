@@ -448,7 +448,7 @@ public abstract class SecurityHandler
     private void decryptDictionary(COSDictionary dictionary, long objNum, long genNum) throws IOException
     {
         // skip dictionary containing the signature
-        if (!COSName.SIG.equals(dictionary.getItem(COSName.TYPE)))
+        if (!COSName.SIG.equals(dictionary.getItem(COSName.FT)))
         {
             for (Map.Entry<COSName, COSBase> entry : dictionary.entrySet())
             {
