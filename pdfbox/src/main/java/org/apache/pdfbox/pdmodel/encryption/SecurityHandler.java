@@ -213,8 +213,9 @@ public abstract class SecurityHandler
             boolean isSignatureDictionary = false;
             if (nextCOSBase instanceof COSDictionary)
             {
-                isSignatureDictionary = COSName.SIG.equals(((COSDictionary) nextCOSBase)
-                        .getDictionaryObject(COSName.TYPE));
+                COSDictionary dict = (COSDictionary) nextCOSBase;
+                isSignatureDictionary = COSName.SIG.equals(dict.getDictionaryObject(COSName.FT))
+                        || COSName.SIG.equals(dict.getDictionaryObject(COSName.TYPE));
             }
             if (!isSignatureDictionary && nextCOSBase != encryptionDict)
             {
