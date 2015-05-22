@@ -29,7 +29,7 @@ import javax.swing.filechooser.FileFilter;
 public class ExtensionFileFilter extends FileFilter
 {
     private String[] extensions = null;
-    private String desc;
+    private final String desc;
 
     /**
      * Constructor.
@@ -46,6 +46,7 @@ public class ExtensionFileFilter extends FileFilter
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean accept(File pathname)
     {
         if (pathname.isDirectory())
@@ -67,6 +68,7 @@ public class ExtensionFileFilter extends FileFilter
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getDescription()
     {
         return desc;

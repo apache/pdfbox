@@ -18,7 +18,6 @@ package org.apache.pdfbox.tools;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -248,7 +247,7 @@ public class ExtractText
                                 {
                                     System.err.println("Processing embedded file " + ent.getKey() + ":");
                                 }
-                                PDComplexFileSpecification spec = (PDComplexFileSpecification) ent.getValue();
+                                PDComplexFileSpecification spec = ent.getValue();
                                 PDEmbeddedFile file = spec.getEmbeddedFile();
                                 if (file != null && "application/pdf".equals(file.getSubtype()))
                                 {

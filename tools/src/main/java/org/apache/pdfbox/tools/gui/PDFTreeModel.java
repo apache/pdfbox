@@ -85,6 +85,7 @@ public class PDFTreeModel implements TreeModel
      * @see     #removeTreeModelListener
      *
      */
+    @Override
     public void addTreeModelListener(TreeModelListener l)
     {
         //required for interface
@@ -104,6 +105,7 @@ public class PDFTreeModel implements TreeModel
      * @return  the child of <code>parent</code> at index <code>index</code>
      *
      */
+    @Override
     public Object getChild(Object parent, int index)
     {
         Object retval = null;
@@ -158,6 +160,7 @@ public class PDFTreeModel implements TreeModel
      * @return  the number of children of the node <code>parent</code>
      *
      */
+    @Override
     public int getChildCount(Object parent)
     {
         int retval = 0;
@@ -198,6 +201,7 @@ public class PDFTreeModel implements TreeModel
      *    <code>child</code> or <code>parent</code> are <code>null</code>
      *
      */
+    @Override
     public int getIndexOfChild(Object parent, Object child)
     {
         int retval = -1;
@@ -260,6 +264,7 @@ public class PDFTreeModel implements TreeModel
      * @return  the root of the tree
      *
      */
+    @Override
     public Object getRoot()
     {
         return document.getDocument().getTrailer();
@@ -276,6 +281,7 @@ public class PDFTreeModel implements TreeModel
      * @return  true if <code>node</code> is a leaf
      *
      */
+    @Override
     public boolean isLeaf(Object node)
     {
         boolean isLeaf = !(node instanceof COSDictionary ||
@@ -295,6 +301,7 @@ public class PDFTreeModel implements TreeModel
      *
      */
 
+    @Override
     public void removeTreeModelListener(TreeModelListener l)
     {
         //required for interface
@@ -309,6 +316,7 @@ public class PDFTreeModel implements TreeModel
      * @param newValue the new value from the TreeCellEditor
      *
      */
+    @Override
     public void valueForPathChanged(TreePath path, Object newValue)
     {
         //required for interface

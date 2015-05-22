@@ -260,6 +260,7 @@ public class TestImageIOUtils extends TestCase
 
         File[] testFiles = new File(inDir).listFiles(new FilenameFilter()
         {
+            @Override
             public boolean accept(File dir, String name)
             {
                 return (name.endsWith(".pdf") || name.endsWith(".ai"));

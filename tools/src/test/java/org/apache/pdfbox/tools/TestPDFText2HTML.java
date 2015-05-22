@@ -57,8 +57,7 @@ public class TestPDFText2HTML extends TestCase
         Matcher m = Pattern.compile("<title>(.*?)</title>").matcher(text);
         assertTrue(m.find());
         assertEquals("&lt;script&gt;&#12354;", m.group(1));
-
-        assertTrue(text.indexOf("&lt;foo&gt;") >= 0);
+        assertTrue(text.contains("&lt;foo&gt;"));
     }
 
     public void testStyle() throws IOException

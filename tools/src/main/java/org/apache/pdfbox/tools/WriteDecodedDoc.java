@@ -64,7 +64,7 @@ public class WriteDecodedDoc
             doc.setAllSecurityToBeRemoved(true);
             for (Iterator<COSObject> i = doc.getDocument().getObjects().iterator(); i.hasNext();)
             {
-                COSBase base = ((COSObject) i.next()).getObject();
+                COSBase base = i.next().getObject();
                 if (base instanceof COSStream)
                 {
                     // just kill the filters
@@ -91,6 +91,7 @@ public class WriteDecodedDoc
      * see usage() for commandline
      *
      * @param args command line arguments
+     * @throws java.io.IOException if the output could not be written
      */
     public static void main(String[] args) throws IOException
     {

@@ -186,7 +186,7 @@ public class PDFSplit
                 }
                 for( int i=0; documents != null && i<documents.size(); i++ )
                 {
-                    PDDocument doc = (PDDocument)documents.get( i );
+                    PDDocument doc = documents.get(i);
                     doc.close();
                 }
             }
