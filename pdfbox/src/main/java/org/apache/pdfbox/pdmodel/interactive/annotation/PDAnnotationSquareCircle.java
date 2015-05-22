@@ -97,7 +97,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
      */
     public void setBorderEffect( PDBorderEffectDictionary be )
     {
-        getCOSObject().setItem( "BE", be );
+        getCOSObject().setItem(COSName.BE, be );
     }
 
     /**
@@ -108,7 +108,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
      */
     public PDBorderEffectDictionary getBorderEffect()
     {
-        COSDictionary be = (COSDictionary) getCOSObject().getDictionaryObject( "BE" );
+        COSDictionary be = (COSDictionary) getCOSObject().getDictionaryObject(COSName.BE);
         if (be != null)
         {
             return new PDBorderEffectDictionary( be );
@@ -129,7 +129,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
      */
     public void setRectDifference( PDRectangle rd )
     {
-        getCOSObject().setItem( "RD", rd );
+        getCOSObject().setItem(COSName.RD, rd );
     }
 
     /**
@@ -141,7 +141,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
      */
     public PDRectangle getRectDifference()
     {
-        COSArray rd = (COSArray) getCOSObject().getDictionaryObject( "RD" );
+        COSArray rd = (COSArray) getCOSObject().getDictionaryObject(COSName.RD);
         if (rd != null)
         {
             return new PDRectangle( rd );
@@ -185,7 +185,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
      */
     public void setBorderStyle( PDBorderStyleDictionary bs )
     {
-        this.getCOSObject().setItem( "BS", bs);
+        this.getCOSObject().setItem(COSName.BS, bs);
     }
 
     /**
