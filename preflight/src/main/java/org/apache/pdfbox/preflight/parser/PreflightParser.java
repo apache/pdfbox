@@ -251,9 +251,9 @@ public class PreflightParser extends PDFParser
     }
 
     /**
-     * Check that the PDF header match rules of the PDF/A specification. First line (offset 0) must be a comment with
-     * the PDF version (version 1.0 isn't conform to the PDF/A specification) Second line is a comment with at least 4
-     * bytes greater than 0x80
+     * Check that the PDF header match rules of the PDF/A specification. First line (offset 0) must
+     * be a comment with the PDF version (version 1.0 isn't conform to the PDF/A specification)
+     * Second line is a comment with at least 4 bytes greater than 0x80
      */
     protected void checkPdfHeader()
     {
@@ -272,20 +272,22 @@ public class PreflightParser extends PDFParser
                 byte[] secondLineAsBytes = secondLine.getBytes(encoding.name());
                 if (secondLineAsBytes.length >= 5)
                 {
-                    for (int i = 0; i < secondLineAsBytes.length; ++i)
+                    if (secondLineAsBytes[0] != '%')
                     {
-                        byte b = secondLineAsBytes[i];
-                        if (i == 0 && ((char) b != '%'))
+                        addValidationError(new ValidationError(PreflightConstants.ERROR_SYNTAX_HEADER,
+                                "Second line must begin with '%' followed by at least 4 bytes greater than 127"));
+                    }
+                    else
+                    {
+                        for (int i = 1; i < 5; ++i)
                         {
-                            addValidationError(new ValidationError(PreflightConstants.ERROR_SYNTAX_HEADER,
-                                    "Second line must begin with '%' followed by at least 4 bytes greater than 127"));
-                            break;
-                        }
-                        else if (i > 0 && ((b & 0xFF) < 0x80))
-                        {
-                            addValidationError(new ValidationError(PreflightConstants.ERROR_SYNTAX_HEADER,
-                                    "Second line must begin with '%' followed by at least 4 bytes greater than 127"));
-                            break;
+                            byte b = secondLineAsBytes[i];
+                            if ((b & 0xFF) < 0x80)
+                            {
+                                addValidationError(new ValidationError(PreflightConstants.ERROR_SYNTAX_HEADER,
+                                        "Second line must begin with '%' followed by at least 4 bytes greater than 127"));
+                                break;
+                            }
                         }
                     }
                 }
@@ -305,8 +307,13 @@ public class PreflightParser extends PDFParser
     }
 
     /**
-     * Same method than the {@linkplain PDFParser#parseXrefTable(long)} with additional controls : - EOL mandatory after
-     * the 'xref' keyword - Cross reference subsection header uses single white space as separator - and so on
+     * Same method than the {@linkplain PDFParser#parseXrefTable(long)} with additional controls : -
+     * EOL mandatory after the 'xref' keyword - Cross reference subsection header uses single white
+     * space as separator - and so on
+     *
+     * @param startByteOffset the offset to start at
+     * @return false on parsing error
+     * @throws IOException If an IO error occurs.
      */
     @Override
     protected boolean parseXrefTable(long startByteOffset) throws IOException
@@ -352,7 +359,7 @@ public class PreflightParser extends PDFParser
             else
             {
                 addValidationError(new ValidationError(ERROR_SYNTAX_CROSS_REF,
-                        "Cross reference subsection header is invalid"));
+                        "Cross reference subsection header is invalid: '" + line + "' at position " + pdfSource.getOffset()));
                 // reset pdfSource cursor to read xref information
                 pdfSource.seek(offset);
                 // first obj id
@@ -408,8 +415,7 @@ public class PreflightParser extends PDFParser
                 skipSpaces();
             }
             skipSpaces();
-            char c = (char) pdfSource.peek();
-            if (c < '0' || c > '9')
+            if (!isDigit())
             {
                 break;
             }
@@ -418,8 +424,15 @@ public class PreflightParser extends PDFParser
     }
 
     /**
-     * Wraps the {@link PDFParser#parseCOSStream} to check rules on 'stream' and 'endstream' keywords.
-     * {@link #checkStreamKeyWord()} and {@link #checkEndstreamKeyWord()}
+     * Wraps the {@link PDFParser#parseCOSStream} to check rules on 'stream' and 'endstream'
+     * keywords. {@link #checkStreamKeyWord()} and {@link #checkEndstreamKeyWord()}
+     *
+     * @param dic dictionary that goes with this stream.
+     *
+     * @return parsed pdf stream.
+     *
+     * @throws IOException if an error occurred reading the stream, like problems with reading
+     * length attribute, stream does not end with 'endstream' after data read, stream too short etc.
      */
     @Override
     protected COSStream parseCOSStream(COSDictionary dic) throws IOException
@@ -431,7 +444,7 @@ public class PreflightParser extends PDFParser
     }
 
     /**
-     * 'stream' must be followed by <CR><LF> or only <LF>
+     * 'stream' must be followed by &lt;CR&gt;&lt;LF&gt; or only &lt;LF&gt;
      * 
      * @throws IOException
      */
@@ -519,8 +532,13 @@ public class PreflightParser extends PDFParser
     }
 
     /**
-     * Check that the hexa string contains only an even number of Hexadecimal characters. Once it is done, reset the
-     * offset at the beginning of the string and call {@link PDFParser#parseCOSString()}
+     * Check that the hexa string contains only an even number of
+     * Hexadecimal characters. Once it is done, reset the offset at the beginning of the string and
+     * call {@link PDFParser#parseCOSString()}
+     *
+     * @return The parsed PDF string.
+     *
+     * @throws IOException If there is an error reading from the stream.
      */
     @Override
     protected COSString parseCOSString() throws IOException
@@ -574,7 +592,11 @@ public class PreflightParser extends PDFParser
     }
 
     /**
-     * Call {@link PDFParser#parseDirObject()} check limit range for Float, Integer and number of Dictionary entries.
+     * Call {@link PDFParser#parseDirObject()} check limit range for Float, Integer and number of
+     * Dictionary entries.
+     *
+     * @return The parsed object.
+     * @throws java.io.IOException if there is an error during parsing.
      */
     @Override
     protected COSBase parseDirObject() throws IOException
