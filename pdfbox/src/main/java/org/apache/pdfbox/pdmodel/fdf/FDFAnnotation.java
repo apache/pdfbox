@@ -261,9 +261,9 @@ public abstract class FDFAnnotation implements COSObjectable
             {
                 String[] dashesValues = dashes.split(",");
                 COSArray dashPattern = new COSArray();
-                for (int i = 0; i < dashesValues.length; i++)
+                for (String dashesValue : dashesValues)
                 {
-                    dashPattern.add(COSNumber.get(dashesValues[i]));
+                    dashPattern.add(COSNumber.get(dashesValue));
                 }
                 borderStyle.setDashStyle(dashPattern);
             }
