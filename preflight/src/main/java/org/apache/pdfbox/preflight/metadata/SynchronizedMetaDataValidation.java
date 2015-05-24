@@ -26,6 +26,8 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSName;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
@@ -59,10 +61,14 @@ public class SynchronizedMetaDataValidation
     protected void analyzeTitleProperty(PDDocumentInformation dico, DublinCoreSchema dc, List<ValidationError> ve)
     {
         String title = dico.getTitle();
-        if (title != null)
+        COSBase item = dico.getCOSObject().getItem(COSName.TITLE);
+        if (item != null)
         {
             // automatically strip trailing Nul values
-            title = removeTrailingNul(title);
+            if (title != null)
+            {
+                title = removeTrailingNul(title);
+            }
             if (dc != null)
             {
                 // Check the x-default value, if not found, check with the first value found
@@ -116,22 +122,24 @@ public class SynchronizedMetaDataValidation
     }
 
     /**
-     * Analyze if Author(s) embedded in Document Information dictionary and in XMP properties are synchronized
-     * 
-     * @param dico
-     *            Document Information Dictionary
-     * @param dc
-     *            Dublin Core Schema
-     * @param ve
-     *            The list of validation errors
+     * Analyze if Author(s) embedded in Document Information dictionary and in XMP properties are
+     * synchronized
+     *
+     * @param dico Document Information Dictionary
+     * @param dc Dublin Core Schema
+     * @param ve The list of validation errors
      */
     protected void analyzeAuthorProperty(PDDocumentInformation dico, DublinCoreSchema dc, List<ValidationError> ve)
     {
         String author = dico.getAuthor();
-        if (author != null)
+        COSBase item = dico.getCOSObject().getItem(COSName.AUTHOR);
+        if (item != null)
         {
             // automatically strip trailing Nul values
-            author = removeTrailingNul(author);
+            if (author != null)
+            {
+                author = removeTrailingNul(author);
+            }
             if (dc != null)
             {
                 if (dc.getCreatorsProperty() != null)
@@ -169,22 +177,24 @@ public class SynchronizedMetaDataValidation
     }
 
     /**
-     * Analyze if Subject(s) embedded in Document Information dictionary and in XMP properties are synchronized
-     * 
-     * @param dico
-     *            Document Information Dictionary
-     * @param dc
-     *            Dublin Core Schema
-     * @param ve
-     *            The list of validation errors
+     * Analyze if Subject(s) embedded in Document Information dictionary and in XMP properties are
+     * synchronized
+     *
+     * @param dico Document Information Dictionary
+     * @param dc Dublin Core Schema
+     * @param ve The list of validation errors
      */
     protected void analyzeSubjectProperty(PDDocumentInformation dico, DublinCoreSchema dc, List<ValidationError> ve)
     {
         String subject = dico.getSubject();
-        if (subject != null)
+        COSBase item = dico.getCOSObject().getItem(COSName.SUBJECT);
+        if (item != null)
         {
             // automatically strip trailing Nul values
-            subject = removeTrailingNul(subject);
+            if (subject != null)
+            {
+                subject = removeTrailingNul(subject);
+            }
             if (dc != null)
             {
                 // PDF/A Conformance Erratum (2007) specifies XMP Subject
@@ -218,22 +228,24 @@ public class SynchronizedMetaDataValidation
     }
 
     /**
-     * Analyze if Keyword(s) embedded in Document Information dictionary and in XMP properties are synchronized
-     * 
-     * @param dico
-     *            Document Information Dictionary
-     * @param pdf
-     *            PDF Schema
-     * @param ve
-     *            The list of validation errors
+     * Analyze if Keyword(s) embedded in Document Information dictionary and in XMP properties are
+     * synchronized
+     *
+     * @param dico Document Information Dictionary
+     * @param pdf PDF Schema
+     * @param ve The list of validation errors
      */
     protected void analyzeKeywordsProperty(PDDocumentInformation dico, AdobePDFSchema pdf, List<ValidationError> ve)
     {
         String keyword = dico.getKeywords();
-        if (keyword != null)
+        COSBase item = dico.getCOSObject().getItem(COSName.KEYWORDS);
+        if (item != null)
         {
             // automatically strip trailing Nul values
-            keyword = removeTrailingNul(keyword);
+            if (keyword != null)
+            {
+                keyword = removeTrailingNul(keyword);
+            }
             if (pdf != null)
             {
                 if (pdf.getKeywordsProperty() == null)
@@ -256,22 +268,24 @@ public class SynchronizedMetaDataValidation
     }
 
     /**
-     * Analyze if Producer embedded in Document Information dictionary and in XMP properties are synchronized
-     * 
-     * @param dico
-     *            Document Information Dictionary
-     * @param pdf
-     *            PDF Schema
-     * @param ve
-     *            The list of validation errors
+     * Analyze if Producer embedded in Document Information dictionary and in XMP properties are
+     * synchronized
+     *
+     * @param dico Document Information Dictionary
+     * @param pdf PDF Schema
+     * @param ve The list of validation errors
      */
     protected void analyzeProducerProperty(PDDocumentInformation dico, AdobePDFSchema pdf, List<ValidationError> ve)
     {
         String producer = dico.getProducer();
-        if (producer != null)
+        COSBase item = dico.getCOSObject().getItem(COSName.PRODUCER);
+        if (item != null)
         {
             // automatically strip trailing Nul values
-            producer = removeTrailingNul(producer);
+            if (producer == null)
+            {
+                producer = removeTrailingNul(producer);
+            }
             if (pdf != null)
             {
                 if (pdf.getProducerProperty() == null)
@@ -295,23 +309,25 @@ public class SynchronizedMetaDataValidation
     }
 
     /**
-     * Analyze if the creator tool embedded in Document Information dictionary and in XMP properties are synchronized
-     * 
-     * @param dico
-     *            Document Information Dictionary
-     * @param xmp
-     *            XMP Basic Schema
-     * @param ve
-     *            The list of validation errors
-     * 
+     * Analyze if the creator tool embedded in Document Information dictionary and in XMP properties
+     * are synchronized
+     *
+     * @param dico Document Information Dictionary
+     * @param xmp XMP Basic Schema
+     * @param ve The list of validation errors
+     *
      */
     protected void analyzeCreatorToolProperty(PDDocumentInformation dico, XMPBasicSchema xmp, List<ValidationError> ve)
     {
         String creatorTool = dico.getCreator();
-        if (creatorTool != null)
+        COSBase item = dico.getCOSObject().getItem(COSName.CREATOR);
+        if (item != null)
         {
             // automatically strip trailing Nul values
-            creatorTool = removeTrailingNul(creatorTool);
+            if (creatorTool == null)
+            {
+                creatorTool = removeTrailingNul(creatorTool);
+            }
             if (xmp != null)
             {
                 if (xmp.getCreatorToolProperty() == null)
@@ -335,22 +351,20 @@ public class SynchronizedMetaDataValidation
     }
 
     /**
-     * Analyze if the CreationDate embedded in Document Information dictionary and in XMP properties are synchronized
-     * 
-     * @param dico
-     *            Document Information Dictionary
-     * @param xmp
-     *            XMP Basic Schema
-     * @param ve
-     *            The list of validation errors
+     * Analyze if the CreationDate embedded in Document Information dictionary and in XMP properties
+     * are synchronized
+     *
+     * @param dico Document Information Dictionary
+     * @param xmp XMP Basic Schema
+     * @param ve The list of validation errors
      * @throws ValidationException
      */
     protected void analyzeCreationDateProperty(PDDocumentInformation dico, XMPBasicSchema xmp, List<ValidationError> ve)
             throws ValidationException
     {
-        Calendar creationDate = null;
-        creationDate = dico.getCreationDate();
-        if (creationDate != null)
+        Calendar creationDate = dico.getCreationDate();
+        COSBase item = dico.getCOSObject().getItem(COSName.CREATION_DATE);
+        if (item != null)
         {
             if (xmp != null)
             {
@@ -362,7 +376,8 @@ public class SynchronizedMetaDataValidation
                 }
                 else
                 {
-                    if (!DateConverter.toISO8601(xmpCreationDate).equals(DateConverter.toISO8601(creationDate)))
+                    if (creationDate == null || 
+                            !DateConverter.toISO8601(xmpCreationDate).equals(DateConverter.toISO8601(creationDate)))
                     {
                         ve.add(unsynchronizedMetaDataError("CreationDate"));
                     }
@@ -372,7 +387,6 @@ public class SynchronizedMetaDataValidation
                         ve.add(unsynchronizedMetaDataError("CreationDate"));
                     }
                 }
-
             }
             else
             {
@@ -382,26 +396,23 @@ public class SynchronizedMetaDataValidation
     }
 
     /**
-     * Analyze if the ModifyDate embedded in Document Information dictionary and in XMP properties are synchronized
-     * 
-     * @param dico
-     *            Document Information Dictionary
-     * @param xmp
-     *            XMP Basic Schema
-     * @param ve
-     *            The list of validation errors
+     * Analyze if the ModifyDate embedded in Document Information dictionary and in XMP properties
+     * are synchronized
+     *
+     * @param dico Document Information Dictionary
+     * @param xmp XMP Basic Schema
+     * @param ve The list of validation errors
      * @throws ValidationException
      */
     protected void analyzeModifyDateProperty(PDDocumentInformation dico, XMPBasicSchema xmp, List<ValidationError> ve)
             throws ValidationException
     {
-        Calendar modifyDate;
-        modifyDate = dico.getModificationDate();
-        if (modifyDate != null)
+        Calendar modifyDate = dico.getModificationDate();
+        COSBase item = dico.getCOSObject().getItem(COSName.MOD_DATE);        
+        if (item != null)
         {
             if (xmp != null)
             {
-
                 Calendar xmpModifyDate = xmp.getModifyDate();
                 if (xmpModifyDate == null)
                 {
@@ -409,9 +420,9 @@ public class SynchronizedMetaDataValidation
                 }
                 else
                 {
-                    if (!DateConverter.toISO8601(xmpModifyDate).equals(DateConverter.toISO8601(modifyDate)))
+                    if (modifyDate == null ||
+                            !DateConverter.toISO8601(xmpModifyDate).equals(DateConverter.toISO8601(modifyDate)))
                     {
-
                         ve.add(unsynchronizedMetaDataError("ModificationDate"));
                     }
                     else if (hasTimeZone(xmp.getModifyDateProperty().getRawValue())
@@ -420,7 +431,6 @@ public class SynchronizedMetaDataValidation
                         ve.add(unsynchronizedMetaDataError("ModificationDate"));
                     }
                 }
-
             }
             else
             {
@@ -431,11 +441,9 @@ public class SynchronizedMetaDataValidation
 
     /**
      * Check if document information entries and XMP information are synchronized
-     * 
-     * @param document
-     *            the PDF Document
-     * @param metadata
-     *            the XMP MetaData
+     *
+     * @param document the PDF Document
+     * @param metadata the XMP MetaData
      * @return List of validation errors
      * @throws ValidationException
      */
@@ -509,11 +517,9 @@ public class SynchronizedMetaDataValidation
 
     /**
      * Return an exception formatted on IOException when accessing on metadata schema
-     * 
-     * @param target
-     *            the name of the schema
-     * @param cause
-     *            the raised IOException
+     *
+     * @param target the name of the schema
+     * @param cause the raised IOException
      * @return the generated exception
      */
     protected ValidationException schemaAccessException(String target, Throwable cause)
@@ -525,9 +531,8 @@ public class SynchronizedMetaDataValidation
 
     /**
      * Return a formatted validation error when metadata are not synchronized
-     * 
-     * @param target
-     *            the concerned property
+     *
+     * @param target the concerned property
      * @return the generated validation error
      */
     protected ValidationError unsynchronizedMetaDataError(String target)
@@ -539,11 +544,9 @@ public class SynchronizedMetaDataValidation
 
     /**
      * Return a formatted validation error when a specific metadata schema can't be found
-     * 
-     * @param target
-     *            the concerned property
-     * @param schema
-     *            the XMP schema which can't be found
+     *
+     * @param target the concerned property
+     * @param schema the XMP schema which can't be found
      * @return the generated validation error
      */
     protected ValidationError absentSchemaMetaDataError(String target, String schema)
@@ -556,11 +559,9 @@ public class SynchronizedMetaDataValidation
 
     /**
      * Return a formatted validation error when a specific XMP property can't be found
-     * 
-     * @param target
-     *            the concerned property
-     * @param details
-     *            comments about the XMP property
+     *
+     * @param target the concerned property
+     * @param details comments about the XMP property
      * @return the generated validation error
      */
     protected ValidationError absentXMPPropertyError(String target, String details)
@@ -572,9 +573,9 @@ public class SynchronizedMetaDataValidation
     }
     
     /**
-     * A given string from the DocumentInformation dictionary may have some trailing Nul values 
+     * A given string from the DocumentInformation dictionary may have some trailing Nul values
      * which have to be stripped.
-     *  
+     *
      * @param string to be stripped
      * @return the stripped string
      */
@@ -592,11 +593,11 @@ public class SynchronizedMetaDataValidation
     /**
      * Verify if the date string has time zone information.
      * <p>
-     * <strong>This method doesn't do a complete parsing as
-     * this is a helper AFTER a date has proven to be valid
+     * <strong>This method doesn't do a complete parsing as this is a helper AFTER a date has proven
+     * to be valid
      * </strong>
      * </p>
-     * 
+     *
      * @param date
      * @return the validation result
      */
