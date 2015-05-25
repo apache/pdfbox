@@ -53,6 +53,7 @@ import org.apache.pdfbox.util.TestLayerUtility;
 import org.apache.pdfbox.util.TestMatrix;
 import org.apache.pdfbox.util.TestPDFText2HTML;
 import org.apache.pdfbox.pdfparser.PDFStreamParserTest;
+import org.apache.pdfbox.pdmodel.graphics.color.PDICCBasedTest;
 
 /**
  * This is a holder for all test cases in the pdfbox system.
@@ -125,6 +126,7 @@ public class TestAll extends TestCase
         suite.addTestSuite(PDFCloneUtilityTest.class);
         suite.addTestSuite(PDFMergerUtilityTest.class);
         suite.addTestSuite(PDLabTest.class);
+        suite.addTestSuite(PDICCBasedTest.class);
         suite.addTestSuite(PDPixelMapTest.class);
         suite.addTestSuite(PDJpegTest.class);       
         suite.addTestSuite(PDCcittTest.class);        

@@ -17,16 +17,17 @@ package org.apache.pdfbox.pdmodel.graphics.color;
 
 import java.awt.color.ColorSpace;
 import java.io.IOException;
+import junit.framework.Assert;
+import static junit.framework.Assert.assertFalse;
+import junit.framework.TestCase;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.junit.Assert;
-import static org.junit.Assert.assertFalse;
-import org.junit.Test;
+
 
 /**
  *
  * @author Tilman Hausherr
  */
-public class PDICCBasedTest
+public class PDICCBasedTest extends TestCase
 {
 
     public PDICCBasedTest()
@@ -36,7 +37,6 @@ public class PDICCBasedTest
     /**
      * Test of Constructor for PDFBOX-2812.
      */
-    @Test
     public void testConstructor() throws IOException
     {
         PDDocument doc = new PDDocument();
