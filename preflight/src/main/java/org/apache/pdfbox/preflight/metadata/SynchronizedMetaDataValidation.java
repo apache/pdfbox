@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSString;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
@@ -347,7 +348,6 @@ public class SynchronizedMetaDataValidation
                 ve.add(absentSchemaMetaDataError("CreatorTool", "PDF"));
             }
         }
-
     }
 
     /**
@@ -364,6 +364,10 @@ public class SynchronizedMetaDataValidation
     {
         Calendar creationDate = dico.getCreationDate();
         COSBase item = dico.getCOSObject().getItem(COSName.CREATION_DATE);
+        if (!isValidPDFDateFormat(item))
+        {
+            creationDate = null;
+        }
         if (item != null)
         {
             if (xmp != null)
@@ -409,6 +413,10 @@ public class SynchronizedMetaDataValidation
     {
         Calendar modifyDate = dico.getModificationDate();
         COSBase item = dico.getCOSObject().getItem(COSName.MOD_DATE);        
+        if (!isValidPDFDateFormat(item))
+        {
+            modifyDate = null;
+        }
         if (item != null)
         {
             if (xmp != null)
@@ -615,4 +623,26 @@ public class SynchronizedMetaDataValidation
         }
         return false;
     }
+
+    /**
+     * Verifies that a date item is a COSString and has the format "D:YYYYMMDDHHmmSSOHH'mm'", where
+     * D:YYYY is mandatory and the next fields optional, but only if all of their preceding fields
+     * are also present. This needs to be done because the other date utilities are too lenient.
+     *
+     * @param item the date item that is to be checked.
+     * @return true if the date format is assumed to be valid, false if not.
+     */
+    private boolean isValidPDFDateFormat(COSBase item)
+    {
+        if (item instanceof COSString)
+        {
+            String date = ((COSString) item).getString();
+            if (date.matches("D:\\d{4}(\\d{2}(\\d{2}(\\d{2}(\\d{2}(\\d{2}([\\+\\-Z](\\d{2}'\\d{2}')?)?)?)?)?)?)?"))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
