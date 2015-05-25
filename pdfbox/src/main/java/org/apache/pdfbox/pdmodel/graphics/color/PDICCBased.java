@@ -83,7 +83,8 @@ public class PDICCBased extends PDColorSpace
     {
         array = new COSArray();
         array.add( COSName.ICCBASED );
-        array.add( new PDStream( doc ) );
+        stream = new PDStream(doc);
+        array.add(stream);
     }
 
     /**
