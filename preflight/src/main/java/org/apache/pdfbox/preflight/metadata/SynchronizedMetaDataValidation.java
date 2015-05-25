@@ -282,7 +282,7 @@ public class SynchronizedMetaDataValidation
         if (item != null)
         {
             // automatically strip trailing Nul values
-            if (producer == null)
+            if (producer != null)
             {
                 producer = removeTrailingNul(producer);
             }
@@ -324,7 +324,7 @@ public class SynchronizedMetaDataValidation
         if (item != null)
         {
             // automatically strip trailing Nul values
-            if (creatorTool == null)
+            if (creatorTool != null)
             {
                 creatorTool = removeTrailingNul(creatorTool);
             }
