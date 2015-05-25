@@ -156,10 +156,16 @@ public class RandomAccessBuffer implements RandomAccess, Closeable
         }
         int maxLength = (int) Math.min(length, this.size-pointer);
         long remainingBytes = BUFFER_SIZE - currentBufferPointer;
+        if (remainingBytes == 0)
+        {
+            nextBuffer();
+            remainingBytes = BUFFER_SIZE;
+        }
         if (maxLength >= remainingBytes)
         {
             // copy the first bytes from the current buffer
             System.arraycopy(currentBuffer, (int)currentBufferPointer, b, offset, (int)remainingBytes);
+            currentBufferPointer += remainingBytes;
             int newOffset = offset + (int)remainingBytes;
             long remainingBytes2Read = length - remainingBytes;
             // determine how many buffers are needed to get the remaining amount bytes
