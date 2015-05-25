@@ -49,6 +49,9 @@ import org.w3c.dom.NamedNodeMap;
 
 public final class PdfaExtensionHelper
 {
+    public static final String CLOSED_CHOICE = "closed Choice of ";
+
+    public static final String OPEN_CHOICE = "open Choice of ";
 
     private PdfaExtensionHelper()
     {
@@ -112,7 +115,7 @@ public final class PdfaExtensionHelper
                     if (af instanceof PDFASchemaType)
                     {
                         PDFASchemaType st = (PDFASchemaType) af;
-                        String namespaceUri = st.getNamespaceURI();
+                        String namespaceUri = st.getNamespaceURI().trim();
                         String prefix = st.getPrefixValue();
                         ArrayProperty properties = st.getProperty();
                         ArrayProperty valueTypes = st.getValueType();
@@ -245,6 +248,14 @@ public final class PdfaExtensionHelper
             return TypeMapping.createPropertyType(Types.LangAlt, Cardinality.Simple);
         }
         // else all other cases
+        if (valueType.startsWith(CLOSED_CHOICE))
+        {
+            valueType = valueType.substring(CLOSED_CHOICE.length());
+        }
+        else if (valueType.startsWith(OPEN_CHOICE))
+        {
+            valueType = valueType.substring(OPEN_CHOICE.length());
+        }
         int pos = valueType.indexOf(' ');
         Cardinality card = Cardinality.Simple;
         if (pos > 0)
