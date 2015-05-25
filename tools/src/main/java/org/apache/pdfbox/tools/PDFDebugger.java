@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.tools;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -31,6 +33,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.UIManager;
+import javax.swing.border.BevelBorder;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import org.apache.pdfbox.cos.COSBoolean;
@@ -45,6 +48,8 @@ import org.apache.pdfbox.tools.gui.ArrayEntry;
 import org.apache.pdfbox.tools.gui.MapEntry;
 import org.apache.pdfbox.tools.gui.PDFTreeCellRenderer;
 import org.apache.pdfbox.tools.gui.PDFTreeModel;
+import org.apache.pdfbox.tools.pdfdebugger.treestatus.TreeStatus;
+import org.apache.pdfbox.tools.pdfdebugger.treestatus.TreeStatusPane;
 import org.apache.pdfbox.tools.util.RecentFiles;
 
 /**
@@ -54,6 +59,8 @@ import org.apache.pdfbox.tools.util.RecentFiles;
  */
 public class PDFDebugger extends javax.swing.JFrame
 {
+    private TreeStatusPane statusPane;
+
     private File currentDir=new File(".");
     private PDDocument document = null;
     private String currentFilePath = null;
@@ -102,7 +109,7 @@ public class PDFDebugger extends javax.swing.JFrame
         jTree1.setCellRenderer( new PDFTreeCellRenderer() );
         jTree1.setModel( null );
 
-        setTitle("PDFBox - PDF Viewer");
+        setTitle("PDFBox - PDF Debugger");
         addWindowListener(new java.awt.event.WindowAdapter()
         {
             @Override
@@ -135,6 +142,11 @@ public class PDFDebugger extends javax.swing.JFrame
 
         JScrollPane documentScroller = new JScrollPane();
         documentScroller.setViewportView( documentPanel );
+
+        statusPane = new TreeStatusPane(jTree1);
+        statusPane.getPanel().setBorder(new BevelBorder(BevelBorder.RAISED));
+        statusPane.getPanel().setPreferredSize(new Dimension(300, 25));
+        getContentPane().add(statusPane.getPanel(), BorderLayout.PAGE_START);
 
         getContentPane().add( jSplitPane1, java.awt.BorderLayout.CENTER );
 
@@ -403,8 +415,10 @@ public class PDFDebugger extends javax.swing.JFrame
         currentFilePath = file.getPath();
         recentFiles.removeFile(file.getPath());
         parseDocument( file, password );
+        statusPane.updateTreeStatus(new TreeStatus(document.getDocument().getTrailer()));
         TreeModel model=new PDFTreeModel(document);
         jTree1.setModel(model);
+        jTree1.setSelectionRow(1);
         setTitle("PDFBox - " + file.getAbsolutePath());
         addRecentFileItems();
     }
