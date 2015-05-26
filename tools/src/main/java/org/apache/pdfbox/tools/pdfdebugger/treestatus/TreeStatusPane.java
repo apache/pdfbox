@@ -49,7 +49,7 @@ public class TreeStatusPane implements TreeSelectionListener
         public void actionPerformed(ActionEvent actionEvent)
         {
             TreePath path = statusObj.getPathForString(statusField.getText());
-            if (statusObj.isValid)
+            if (statusObj.isValid())
             {
                 tree.setSelectionPath(path);
             }
