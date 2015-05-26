@@ -18,6 +18,7 @@
 package org.apache.pdfbox.tools.pdfdebugger.treestatus;
 
 import java.util.ArrayList;
+import java.util.List;
 import javax.swing.tree.TreePath;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -31,15 +32,19 @@ import org.apache.pdfbox.tools.gui.MapEntry;
  */
 public final class TreeStatus
 {
-    private TreePath path;
+    private TreePath path = null;
     private String pathString;
     private Object rootNode;
-    public boolean isValid = false;
-
+   
     private TreeStatus()
     {
     }
 
+    public boolean isValid()
+    {
+        return path != null;
+    }
+    
     /**
      * Constructor.
      *
@@ -68,7 +73,6 @@ public final class TreeStatus
     {
         this.path = path;
         this.pathString = generatePathString(path);
-        this.isValid = true;
     }
 
     /**
@@ -81,7 +85,6 @@ public final class TreeStatus
     {
         this.pathString = pathString;
         path = generatePath(pathString);
-        isValid = this.path != null;
     }
 
     /**
@@ -96,7 +99,7 @@ public final class TreeStatus
     }
 
     /**
-     *Provides TreePath for a given status string. In case of invalid string returns null.
+     * Provides TreePath for a given status string. In case of invalid string returns null.
      * @param statusString
      * @return path.
      */
@@ -131,7 +134,7 @@ public final class TreeStatus
      */
     private TreePath generatePath(String pathString)
     {
-        ArrayList<String> nodes = parsePathString(pathString);
+        List<String> nodes = parsePathString(pathString);
         if (nodes == null)
         {
             return null;
@@ -176,9 +179,9 @@ public final class TreeStatus
      * @param path a tree path.
      * @return a list of nodes, or null if there is an empty node.
      */
-    private ArrayList<String> parsePathString(String path)
+    private List<String> parsePathString(String path)
     {
-        ArrayList<String> nodes = new ArrayList<String>();
+        List<String> nodes = new ArrayList<String>();
         for (String node : path.split("/"))
         {
             node = node.trim();
