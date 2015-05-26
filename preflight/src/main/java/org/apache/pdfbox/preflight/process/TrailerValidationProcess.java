@@ -57,6 +57,7 @@ import org.apache.pdfbox.preflight.utils.COSUtils;
 public class TrailerValidationProcess extends AbstractProcess
 {
 
+    @Override
     public void validate(PreflightContext ctx) throws ValidationException
     {
         PDDocument pdfDoc = ctx.getDocument();
@@ -178,6 +179,7 @@ public class TrailerValidationProcess extends AbstractProcess
      * 
      * @param first the first dictionary for comparison.
      * @param last the last dictionary for comparison.
+     * @param cosDocument the document.
      * @return true if the IDs of the first and last dictionary are the same.
      */
     protected boolean compareIds(COSDictionary first, COSDictionary last, COSDocument cosDocument)
