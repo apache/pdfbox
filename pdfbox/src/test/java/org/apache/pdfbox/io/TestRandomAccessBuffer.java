@@ -71,6 +71,7 @@ public class TestRandomAccessBuffer extends TestCase
         byte[] bytesRead = new byte[1348];
         buffer.read(bytesRead, 0, bytesRead.length);
         assertEquals(2, buffer.read());
+        buffer.close();
     }
 
     /**
