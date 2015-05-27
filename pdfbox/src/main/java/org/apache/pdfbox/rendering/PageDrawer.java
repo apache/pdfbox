@@ -39,6 +39,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
+import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDCIDFontType0;
@@ -280,9 +281,27 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     {
         setClip();
     }
+    
+    @Override
+    public void showTextString(byte[] string) throws IOException
+    {
+        beginTextClip();
+        super.showTextString(string);
+        endTextClip();
+    }
 
     @Override
-    protected void showText(byte[] string) throws IOException
+    public void showTextStrings(COSArray array) throws IOException
+    {
+        beginTextClip();
+        super.showTextStrings(array);
+        endTextClip();
+    }
+
+    /**
+     * Begin buffering the text clipping path, if any.
+     */
+    private void beginTextClip()
     {
         PDGraphicsState state = getGraphicsState();
         RenderingMode renderingMode = state.getTextState().getRenderingMode();
@@ -292,9 +311,16 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             textClippingArea = new Area();
         }
+    }
 
-        super.showText(string);
-
+    /**
+     * End buffering the text clipping path, if any.
+     */
+    private void endTextClip()
+    {
+        PDGraphicsState state = getGraphicsState();
+        RenderingMode renderingMode = state.getTextState().getRenderingMode();
+        
         // apply the buffered clip as one area
         if (renderingMode.isClip())
         {
