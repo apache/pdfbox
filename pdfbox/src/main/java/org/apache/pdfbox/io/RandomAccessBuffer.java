@@ -203,6 +203,7 @@ public class RandomAccessBuffer implements RandomAccess, Closeable, Cloneable
                 nextBuffer();
                 System.arraycopy(currentBuffer, 0, b, newOffset, CHUNK_SIZE);
                 newOffset += CHUNK_SIZE;
+                currentBufferPointer = CHUNK_SIZE;
             }
             remainingBytes2Read = remainingBytes2Read % CHUNK_SIZE;
             // are there still some bytes to be read?
@@ -210,7 +211,7 @@ public class RandomAccessBuffer implements RandomAccess, Closeable, Cloneable
             {
                 nextBuffer();
                 System.arraycopy(currentBuffer, 0, b, newOffset, (int)remainingBytes2Read);
-                currentBufferPointer += remainingBytes2Read;
+                currentBufferPointer = remainingBytes2Read;
             }
         }
         else
