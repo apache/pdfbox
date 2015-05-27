@@ -31,7 +31,7 @@ public class TestRandomAccessBuffer extends TestCase
     private static final int CHUNK_SIZE = 1024;
     
     /**
-     * This test checks a corner case where the last read ends
+     * This test checks two corner cases where the last read ends
      * exactly at the end of a chunck (remainingBytes == 0)
      * @throws IOException
      */
@@ -53,6 +53,24 @@ public class TestRandomAccessBuffer extends TestCase
         // check the values read from the second chunk
         assertEquals(2, byteArray[0]+byteArray[1]);
         buffer.close();
+
+        buffer = new RandomAccessBuffer();
+        byteArray = new byte[2*CHUNK_SIZE + 2];
+        // fill the second chunk with "1"
+        for (int i = 0; i < CHUNK_SIZE; i++)
+        {
+            byteArray[CHUNK_SIZE + i] = 1;
+        }
+        // fill the third chunk with "2"
+        for (int i = 0; i < 2; i++)
+        {
+            byteArray[2*CHUNK_SIZE + i] = 2;
+        }
+        buffer.write(byteArray, 0, byteArray.length);
+        buffer.seek(700);
+        byte[] bytesRead = new byte[1348];
+        buffer.read(bytesRead, 0, bytesRead.length);
+        assertEquals(2, buffer.read());
     }
 
     /**
