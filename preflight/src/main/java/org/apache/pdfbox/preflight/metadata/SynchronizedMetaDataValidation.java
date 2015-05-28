@@ -62,14 +62,10 @@ public class SynchronizedMetaDataValidation
     protected void analyzeTitleProperty(PDDocumentInformation dico, DublinCoreSchema dc, List<ValidationError> ve)
     {
         String title = dico.getTitle();
-        COSBase item = dico.getCOSObject().getItem(COSName.TITLE);
-        if (item != null)
+        if (title != null)
         {
             // automatically strip trailing Nul values
-            if (title != null)
-            {
-                title = removeTrailingNul(title);
-            }
+            title = removeTrailingNul(title);
             if (dc != null)
             {
                 // Check the x-default value, if not found, check with the first value found
@@ -133,14 +129,10 @@ public class SynchronizedMetaDataValidation
     protected void analyzeAuthorProperty(PDDocumentInformation dico, DublinCoreSchema dc, List<ValidationError> ve)
     {
         String author = dico.getAuthor();
-        COSBase item = dico.getCOSObject().getItem(COSName.AUTHOR);
-        if (item != null)
+        if (author != null)
         {
             // automatically strip trailing Nul values
-            if (author != null)
-            {
-                author = removeTrailingNul(author);
-            }
+            author = removeTrailingNul(author);
             if (dc != null)
             {
                 if (dc.getCreatorsProperty() != null)
@@ -188,14 +180,10 @@ public class SynchronizedMetaDataValidation
     protected void analyzeSubjectProperty(PDDocumentInformation dico, DublinCoreSchema dc, List<ValidationError> ve)
     {
         String subject = dico.getSubject();
-        COSBase item = dico.getCOSObject().getItem(COSName.SUBJECT);
-        if (item != null)
+        if (subject != null)
         {
             // automatically strip trailing Nul values
-            if (subject != null)
-            {
-                subject = removeTrailingNul(subject);
-            }
+            subject = removeTrailingNul(subject);
             if (dc != null)
             {
                 // PDF/A Conformance Erratum (2007) specifies XMP Subject
@@ -239,14 +227,10 @@ public class SynchronizedMetaDataValidation
     protected void analyzeKeywordsProperty(PDDocumentInformation dico, AdobePDFSchema pdf, List<ValidationError> ve)
     {
         String keyword = dico.getKeywords();
-        COSBase item = dico.getCOSObject().getItem(COSName.KEYWORDS);
-        if (item != null)
+        if (keyword != null)
         {
             // automatically strip trailing Nul values
-            if (keyword != null)
-            {
-                keyword = removeTrailingNul(keyword);
-            }
+            keyword = removeTrailingNul(keyword);
             if (pdf != null)
             {
                 if (pdf.getKeywordsProperty() == null)
@@ -279,14 +263,10 @@ public class SynchronizedMetaDataValidation
     protected void analyzeProducerProperty(PDDocumentInformation dico, AdobePDFSchema pdf, List<ValidationError> ve)
     {
         String producer = dico.getProducer();
-        COSBase item = dico.getCOSObject().getItem(COSName.PRODUCER);
-        if (item != null)
+        if (producer != null)
         {
             // automatically strip trailing Nul values
-            if (producer != null)
-            {
-                producer = removeTrailingNul(producer);
-            }
+            producer = removeTrailingNul(producer);
             if (pdf != null)
             {
                 if (pdf.getProducerProperty() == null)
@@ -321,14 +301,10 @@ public class SynchronizedMetaDataValidation
     protected void analyzeCreatorToolProperty(PDDocumentInformation dico, XMPBasicSchema xmp, List<ValidationError> ve)
     {
         String creatorTool = dico.getCreator();
-        COSBase item = dico.getCOSObject().getItem(COSName.CREATOR);
-        if (item != null)
+        if (creatorTool != null)
         {
             // automatically strip trailing Nul values
-            if (creatorTool != null)
-            {
-                creatorTool = removeTrailingNul(creatorTool);
-            }
+            creatorTool = removeTrailingNul(creatorTool);
             if (xmp != null)
             {
                 if (xmp.getCreatorToolProperty() == null)
@@ -364,11 +340,7 @@ public class SynchronizedMetaDataValidation
     {
         Calendar creationDate = dico.getCreationDate();
         COSBase item = dico.getCOSObject().getItem(COSName.CREATION_DATE);
-        if (!isValidPDFDateFormat(item))
-        {
-            creationDate = null;
-        }
-        if (item != null)
+        if (creationDate != null && isValidPDFDateFormat(item))
         {
             if (xmp != null)
             {
@@ -380,8 +352,7 @@ public class SynchronizedMetaDataValidation
                 }
                 else
                 {
-                    if (creationDate == null || 
-                            !DateConverter.toISO8601(xmpCreationDate).equals(DateConverter.toISO8601(creationDate)))
+                    if (!DateConverter.toISO8601(xmpCreationDate).equals(DateConverter.toISO8601(creationDate)))
                     {
                         ve.add(unsynchronizedMetaDataError("CreationDate"));
                     }
@@ -413,11 +384,7 @@ public class SynchronizedMetaDataValidation
     {
         Calendar modifyDate = dico.getModificationDate();
         COSBase item = dico.getCOSObject().getItem(COSName.MOD_DATE);        
-        if (!isValidPDFDateFormat(item))
-        {
-            modifyDate = null;
-        }
-        if (item != null)
+        if (modifyDate != null && isValidPDFDateFormat(item))
         {
             if (xmp != null)
             {
@@ -428,8 +395,7 @@ public class SynchronizedMetaDataValidation
                 }
                 else
                 {
-                    if (modifyDate == null ||
-                            !DateConverter.toISO8601(xmpModifyDate).equals(DateConverter.toISO8601(modifyDate)))
+                    if (!DateConverter.toISO8601(xmpModifyDate).equals(DateConverter.toISO8601(modifyDate)))
                     {
                         ve.add(unsynchronizedMetaDataError("ModificationDate"));
                     }
