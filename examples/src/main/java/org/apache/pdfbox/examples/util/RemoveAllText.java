@@ -74,9 +74,8 @@ public class RemoveAllText
                     parser.parse();
                     List<Object> tokens = parser.getTokens();
                     List<Object> newTokens = new ArrayList<Object>();
-                    for( int j=0; j<tokens.size(); j++)
+                    for (Object token : tokens)
                     {
-                        Object token = tokens.get( j );
                         if( token instanceof Operator)
                         {
                             Operator op = (Operator)token;
@@ -88,7 +87,6 @@ public class RemoveAllText
                             }
                         }
                         newTokens.add( token );
-
                     }
                     PDStream newContents = new PDStream( document );
                     ContentStreamWriter writer = new ContentStreamWriter( newContents.createOutputStream() );

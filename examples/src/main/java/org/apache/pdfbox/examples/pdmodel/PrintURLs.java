@@ -75,7 +75,7 @@ public class PrintURLs
                     //first setup text extraction regions
                     for( int j=0; j<annotations.size(); j++ )
                     {
-                        PDAnnotation annot = (PDAnnotation)annotations.get( j );
+                        PDAnnotation annot = annotations.get(j);
                         if( annot instanceof PDAnnotationLink )
                         {
                             PDAnnotationLink link = (PDAnnotationLink)annot;
@@ -105,7 +105,7 @@ public class PrintURLs
 
                     for( int j=0; j<annotations.size(); j++ )
                     {
-                        PDAnnotation annot = (PDAnnotation)annotations.get( j );
+                        PDAnnotation annot = annotations.get(j);
                         if( annot instanceof PDAnnotationLink )
                         {
                             PDAnnotationLink link = (PDAnnotationLink)annot;
