@@ -63,10 +63,10 @@ public class CreateFormField
         // and add it to the page
         PDAnnotationWidget widget = textBox.getWidgets().get(0);
         PDRectangle rect = new PDRectangle();
-        rect.setLowerLeftX((float) 50);
-        rect.setLowerLeftY((float) 750);
-        rect.setUpperRightX((float) 250);
-        rect.setUpperRightY((float) 800);
+        rect.setLowerLeftX(50);
+        rect.setLowerLeftY(750);
+        rect.setUpperRightX(250);
+        rect.setUpperRightY(800);
         widget.setRectangle(rect);
         page.getAnnotations().add(widget);
         

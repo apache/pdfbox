@@ -72,9 +72,9 @@ public class ReplaceURLs
                     pageNum++;
                     List<PDAnnotation> annotations = page.getAnnotations();
 
-                    for( int j=0; j<annotations.size(); j++ )
+                    for (PDAnnotation annotation : annotations)
                     {
-                        PDAnnotation annot = (PDAnnotation)annotations.get( j );
+                        PDAnnotation annot = annotation;
                         if( annot instanceof PDAnnotationLink )
                         {
                             PDAnnotationLink link = (PDAnnotationLink)annot;
