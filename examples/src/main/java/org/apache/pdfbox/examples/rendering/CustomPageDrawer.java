@@ -68,7 +68,7 @@ public class CustomPageDrawer
      */
     private static class MyPDFRenderer extends PDFRenderer
     {
-        public MyPDFRenderer(PDDocument document)
+        MyPDFRenderer(PDDocument document)
         {
             super(document);
         }
@@ -85,7 +85,7 @@ public class CustomPageDrawer
      */
     private static class MyPageDrawer extends PageDrawer
     {
-        public MyPageDrawer(PageDrawerParameters parameters) throws IOException
+        MyPageDrawer(PageDrawerParameters parameters) throws IOException
         {
             super(parameters);
         }

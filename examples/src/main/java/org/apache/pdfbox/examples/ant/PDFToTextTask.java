@@ -36,7 +36,7 @@ import org.apache.tools.ant.types.FileSet;
  */
 public class PDFToTextTask extends Task
 {
-    private List fileSets = new ArrayList();
+    private final List fileSets = new ArrayList();
 
     /**
      * Adds a set of files (nested fileset attribute).
