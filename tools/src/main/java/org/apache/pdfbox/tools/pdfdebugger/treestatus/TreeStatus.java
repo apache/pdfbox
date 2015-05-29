@@ -32,17 +32,10 @@ import org.apache.pdfbox.tools.gui.MapEntry;
  */
 public final class TreeStatus
 {
-    private TreePath path = null;
-    private String pathString;
     private Object rootNode;
    
     private TreeStatus()
     {
-    }
-
-    public boolean isValid()
-    {
-        return path != null;
     }
     
     /**
@@ -57,45 +50,13 @@ public final class TreeStatus
     }
 
     /**
-     * Return the treepath.
-     * @return the treepath.
-     */
-    public TreePath getPath()
-    {
-        return path;
-    }
-
-    /**
-     * Set the path and generate corresponding tree status string.
-     * @param path TreePath instance.
-     */
-    public void setPath(TreePath path)
-    {
-        this.path = path;
-        this.pathString = generatePathString(path);
-    }
-
-    /**
-     * Set the tree status string and try to generate TreePath. In case of success, the path will be
-     * available for further uses. In case of failure path will be set to null.
-     *
-     * @param pathString String instance.
-     */
-    public void setPathString(String pathString)
-    {
-        this.pathString = pathString;
-        path = generatePath(pathString);
-    }
-
-    /**
      * Provides status string for a TreePath instance.
      * @param path TreePath instance.
      * @return pathString.
      */
     public String getStringForPath(TreePath path)
     {
-        setPath(path);
-        return pathString;
+        return generatePathString(path);
     }
 
     /**
@@ -105,8 +66,7 @@ public final class TreeStatus
      */
     public TreePath getPathForString(String statusString)
     {
-        setPathString(statusString);
-        return path;
+        return generatePath(statusString);
     }
 
     /**
@@ -144,6 +104,10 @@ public final class TreeStatus
         for (String node : nodes)
         {
             obj = searchNode(obj, node);
+            if (obj == null)
+            {
+                return null;
+            }
             treePath = treePath.pathByAddingChild(obj);
         }
         return treePath;
