@@ -138,7 +138,7 @@ public class ICCProfileWrapper
                             document.getDocument()));
                     if (stream != null)
                     {
-                        ICC_Profile iccp = ICC_Profile.getInstance(stream.getByteArray());
+                        ICC_Profile iccp = ICC_Profile.getInstance(stream.createInputStream());
                         return new ICCProfileWrapper(iccp);
                     }
                 }
