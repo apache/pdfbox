@@ -415,10 +415,11 @@ public class PDFDebugger extends javax.swing.JFrame
         currentFilePath = file.getPath();
         recentFiles.removeFile(file.getPath());
         parseDocument( file, password );
-        statusPane.updateTreeStatus(new TreeStatus(document.getDocument().getTrailer()));
+        TreeStatus treeStatus = new TreeStatus(document.getDocument().getTrailer());
+        statusPane.updateTreeStatus(treeStatus);
         TreeModel model=new PDFTreeModel(document);
         jTree1.setModel(model);
-        jTree1.setSelectionRow(1);
+        jTree1.setSelectionPath(treeStatus.getPathForString("Root"));
         setTitle("PDFBox - " + file.getAbsolutePath());
         addRecentFileItems();
     }
