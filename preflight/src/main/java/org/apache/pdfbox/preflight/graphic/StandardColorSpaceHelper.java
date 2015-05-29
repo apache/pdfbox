@@ -234,7 +234,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
         PDICCBased iccBased = (PDICCBased) pdcs;
         try
         {
-            ICC_Profile iccp = ICC_Profile.getInstance(iccBased.getPDStream().getByteArray());
+            ICC_Profile iccp = ICC_Profile.getInstance(iccBased.getPDStream().createInputStream());
             if (iccp == null)
             {
                 context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_ICCBASED,

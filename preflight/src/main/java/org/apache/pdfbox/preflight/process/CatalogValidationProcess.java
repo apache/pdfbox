@@ -417,7 +417,7 @@ public class CatalogValidationProcess extends AbstractProcess
                 return;
             }
 
-            ICC_Profile iccp = ICC_Profile.getInstance(stream.getByteArray());
+            ICC_Profile iccp = ICC_Profile.getInstance(stream.createInputStream());
             PreflightConfiguration config = ctx.getConfig();
             // check the ICC Profile version (6.2.2)
             if (iccp.getMajorVersion() == 2)
