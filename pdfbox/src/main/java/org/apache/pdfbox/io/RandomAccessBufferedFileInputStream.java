@@ -79,17 +79,7 @@ extends InputStream implements RandomAccessRead
 
         seek(0);
     }
-    
-    /**
-     *  Returns offset in file at which next byte would be read.
-     *  
-     *  @deprecated  use {@link #getPosition()} instead
-     */
-    public long getFilePointer()
-    {
-        return fileOffset;
-    }
-    
+
     /** Returns offset in file at which next byte would be read. */
     @Override
     public long getPosition()
@@ -250,5 +240,37 @@ extends InputStream implements RandomAccessRead
     public boolean isClosed()
     {
         return isClosed;
+    }
+
+    @Override
+    public int peek() throws IOException
+    {
+        int result = read();
+        if (result != -1)
+        {
+            rewind(1);
+        }
+        return result;
+    }
+
+    @Override
+    public void rewind(int bytes) throws IOException
+    {
+        seek(getPosition() - bytes);
+    }
+
+    @Override
+    public byte[] readFully(int length) throws IOException
+    {
+        byte[] b = new byte[length];
+        read(b);
+        return b;
+    }
+
+    @Override
+    public boolean isEOF() throws IOException
+    {
+        int peek = peek();
+        return peek == -1;
     }
 }
