@@ -361,9 +361,75 @@ public class RandomAccessBuffer implements RandomAccess, Closeable, Cloneable
         
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isClosed()
     {
         return currentBuffer == null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isEOF() throws IOException
+    {
+        int peek = peek();
+        return peek == -1;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int available() throws IOException
+    {
+        return (int) Math.min(length() - getPosition(), Integer.MAX_VALUE);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int peek() throws IOException
+    {
+        int result = read();
+        if (result != -1)
+        {
+            rewind(1);
+        }
+        return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void rewind(int bytes) throws IOException
+    {
+        checkClosed();
+        seek(getPosition() - bytes);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public byte[] readFully(int length) throws IOException
+    {
+        byte[] b = new byte[length];
+        read(b, 0, length);
+        return b;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int read(byte[] b) throws IOException
+    {
+        return read(b, 0, b.length);
     }
 }

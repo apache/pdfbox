@@ -56,4 +56,46 @@ public interface RandomAccessRead extends SequentialRead
      * Returns true if this stream has been closed.
      */
     boolean isClosed();
+
+    /**
+     * This will peek at the next byte.
+     *
+     * @return The next byte on the stream, leaving it as available to read.
+     *
+     * @throws IOException If there is an error reading the next byte.
+     */
+    int peek() throws IOException;
+
+    /**
+     * Seek backwards the given number of bytes.
+     * 
+     * @param bytes the number of bytes to be seeked backwards
+     * @throws IOException If there is an error while seeking
+     */
+    void rewind(int bytes) throws IOException;
+
+    /**
+     * Reads a given number of bytes.
+     * @param length the number of bytes to be read
+     * @return a byte array containing the bytes just read
+     * @throws IOException if an I/O error occurs while reading data
+     */
+    byte[] readFully(int length) throws IOException;
+
+    /**
+     * A simple test to see if we are at the end of the data.
+     *
+     * @return true if we are at the end of the data.
+     *
+     * @throws IOException If there is an error reading the next byte.
+     */
+    boolean isEOF() throws IOException;
+
+    /**
+     * Returns an estimate of the number of bytes that can be read.
+     *
+     * @return the number of bytes that can be read
+     * @throws IOException if this random access has been closed
+     */
+    int available() throws IOException;
 }
