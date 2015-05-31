@@ -19,14 +19,14 @@ package org.apache.pdfbox.pdfparser;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PushbackInputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSBoolean;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -35,8 +35,8 @@ import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.contentstream.operator.Operator;
 
 /**
  * This will parse a PDF byte stream and extract operands and such.
@@ -209,7 +209,7 @@ public class PDFStreamParser extends BaseParser
                 c = (char) pdfSource.peek();
 
                 // put back first bracket
-                pdfSource.unread(leftBracket);
+                pdfSource.rewind(1);
 
                 if (c == '<')
                 {
@@ -408,7 +408,7 @@ public class PDFStreamParser extends BaseParser
      * @return <code>true</code> if next bytes are probably printable ASCII
      * characters starting with a PDF operator, otherwise <code>false</code>
      */
-    private boolean hasNoFollowingBinData(final PushbackInputStream pdfSource) 
+    private boolean hasNoFollowingBinData(final RandomAccessRead pdfSource)
             throws IOException
     {
         // as suggested in PDFBOX-1164
@@ -453,7 +453,7 @@ public class PDFStreamParser extends BaseParser
                     noBinData = false;
                 }
             }
-            pdfSource.unread(binCharTestArr, 0, readBytes);
+            pdfSource.rewind(readBytes);
         }
         if (!noBinData)
         {

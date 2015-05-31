@@ -27,17 +27,12 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.io.PushBackInputStream;
-import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
+import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 
 public class FDFParser extends COSParser
 {
     private static final Log LOG = LogFactory.getLog(FDFParser.class);
-
-    private final RandomAccessBufferedFileInputStream raStream;
-
-    private File tempPDFFile;
 
     /**
      * Constructs parser for given file using memory buffer.
@@ -62,7 +57,7 @@ public class FDFParser extends COSParser
     public FDFParser(File file) throws IOException
     {
         fileLen = file.length();
-        raStream = new RandomAccessBufferedFileInputStream(file);
+        pdfSource = new RandomAccessFile(file, "r");
         init();
     }
 
@@ -74,9 +69,8 @@ public class FDFParser extends COSParser
      */
     public FDFParser(InputStream input) throws IOException
     {
-        tempPDFFile = createTmpFile(input);
-        fileLen = tempPDFFile.length();
-        raStream = new RandomAccessBufferedFileInputStream(tempPDFFile);
+        pdfSource = copyInputStream(input);
+        fileLen = pdfSource.length();
         init();
     }
 
@@ -96,7 +90,6 @@ public class FDFParser extends COSParser
             }
         }
         document = new COSDocument(false);
-        pdfSource = new PushBackInputStream(raStream, 4096);
     }
 
     /**
@@ -154,8 +147,6 @@ public class FDFParser extends COSParser
         finally
         {
             IOUtils.closeQuietly(pdfSource);
-            deleteTempFile();
-    
             if (exceptionOccurred && document != null)
             {
                 IOUtils.closeQuietly(document);
@@ -175,27 +166,6 @@ public class FDFParser extends COSParser
     public FDFDocument getFDFDocument() throws IOException
     {
         return new FDFDocument( getDocument() );
-    }
-
-    /**
-     * Remove the temporary file. A temporary file is created if this class is instantiated with an InputStream
-     */
-    private void deleteTempFile()
-    {
-        if (tempPDFFile != null)
-        {
-            try
-            {
-                if (!tempPDFFile.delete())
-                {
-                    LOG.warn("Temporary file '" + tempPDFFile.getName() + "' can't be deleted");
-                }
-            }
-            catch (SecurityException e)
-            {
-                LOG.warn("Temporary file '" + tempPDFFile.getName() + "' can't be deleted", e);
-            }
-        }
     }
 
 }

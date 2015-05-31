@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdfparser;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
@@ -36,8 +35,10 @@ import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.io.PushBackInputStream;
+import org.apache.pdfbox.io.RandomAccessBuffer;
+import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.cos.COSObjectKey;
+
 import static org.apache.pdfbox.util.Charsets.ISO_8859_1;
 
 /**
@@ -137,7 +138,7 @@ public abstract class BaseParser implements Closeable
     /**
      * This is the stream that will be read from.
      */
-    protected PushBackInputStream pdfSource;
+    protected RandomAccessRead pdfSource;
 
     /**
      * This is the document that will be parsed.
@@ -159,19 +160,20 @@ public abstract class BaseParser implements Closeable
      */
     public BaseParser(InputStream input) throws IOException
     {
-        int pushbacksize = 65536;
-        try
+        pdfSource = copyInputStream(input);
+    }
+
+    protected RandomAccessRead copyInputStream(InputStream input) throws IOException
+    {
+        RandomAccessBuffer buffer = new RandomAccessBuffer();
+        byte[] byteBuffer = new byte[8192];
+        int bytesRead = 0;
+        while ((bytesRead = input.read(byteBuffer)) > -1)
         {
-            pushbacksize = Integer.getInteger(PROP_PUSHBACK_SIZE, 65536);
+            buffer.write(byteBuffer, 0, bytesRead);
         }
-        catch (SecurityException e) 
-        {
-            // PDFBOX-1946 getInteger calls System.getProperties, 
-            // which can get exception in an applet
-            // ignore and use default
-        }
-        this.pdfSource = new PushBackInputStream(
-                new BufferedInputStream(input, 16384), pushbacksize);
+        buffer.seek(0);
+        return buffer;    
     }
 
     private static boolean isHexDigit(char ch)
@@ -190,14 +192,14 @@ public abstract class BaseParser implements Closeable
      */
     private COSBase parseCOSDictionaryValue() throws IOException
     {
-        long numOffset = pdfSource.getOffset();
+        long numOffset = pdfSource.getPosition();
         COSBase number = parseDirObject();
         skipSpaces();
         if (!isDigit())
         {
             return number;
         }
-        long genOffset = pdfSource.getOffset();
+        long genOffset = pdfSource.getPosition();
         COSBase generationNumber = parseDirObject();
         skipSpaces();
         readExpectedChar('R');
@@ -218,7 +220,7 @@ public abstract class BaseParser implements Closeable
     {
         if (document == null)
         {
-            throw new IOException("object reference " + key + " at offset " + pdfSource.getOffset()
+            throw new IOException("object reference " + key + " at offset " + pdfSource.getPosition()
                     + " in content stream");
         }
         return document.getObjectFromPool(key);
@@ -308,7 +310,7 @@ public abstract class BaseParser implements Closeable
         {
             return true;
         }
-        pdfSource.unread(c);
+        pdfSource.rewind(1);
         return false;
     }
 
@@ -324,7 +326,7 @@ public abstract class BaseParser implements Closeable
             String potentialDEF = readString();
             if (!potentialDEF.equals(DEF))
             {
-                pdfSource.unread(potentialDEF.getBytes(ISO_8859_1));
+                pdfSource.rewind(potentialDEF.getBytes(ISO_8859_1).length);
             }
             else
             {
@@ -363,7 +365,7 @@ public abstract class BaseParser implements Closeable
             whitespace = pdfSource.read();
             if (ASCII_LF != whitespace)
             {
-                pdfSource.unread(whitespace);
+                pdfSource.rewind(1);
                 //The spec says this is invalid but it happens in the real
                 //world so we must support it.
             }
@@ -373,7 +375,7 @@ public abstract class BaseParser implements Closeable
             //we are in an error.
             //but again we will do a lenient parsing and just assume that everything
             //is fine
-            pdfSource.unread(whitespace);
+            pdfSource.rewind(1);
         }
     }
 
@@ -475,7 +477,7 @@ public abstract class BaseParser implements Closeable
             if ( charMatchCount == keyw.length ) 
             {
                 // keyword matched; unread matched keyword (endstream/endobj) and following buffered content
-                pdfSource.unread( strmBuf, contentBytes, bufSize - contentBytes );
+                pdfSource.rewind( bufSize - contentBytes );
                 break;
             } 
             else 
@@ -543,7 +545,7 @@ public abstract class BaseParser implements Closeable
             }
         if (amountRead > 0)
         {
-            pdfSource.unread( nextThreeBytes, 0, amountRead );
+            pdfSource.rewind( amountRead );
         }
         return braces;
     }
@@ -715,7 +717,7 @@ public abstract class BaseParser implements Closeable
         }
         if (c != -1)
         {
-            pdfSource.unread(c);
+            pdfSource.rewind(1);
         }
         return new COSString(out.toByteArray());
     }
@@ -834,12 +836,12 @@ public abstract class BaseParser implements Closeable
             else
             {
                 //it could be a bad object in the array which is just skipped
-                LOG.warn("Corrupt object reference at offset " + pdfSource.getOffset());
+                LOG.warn("Corrupt object reference at offset " + pdfSource.getPosition());
 
                 // This could also be an "endobj" or "endstream" which means we can assume that
                 // the array has ended.
                 String isThisTheEnd = readString();
-                pdfSource.unread(isThisTheEnd.getBytes(ISO_8859_1));
+                pdfSource.rewind(isThisTheEnd.getBytes(ISO_8859_1).length);
                 if(ENDOBJ_STRING.equals(isThisTheEnd) || ENDSTREAM_STRING.equals(isThisTheEnd))
                 {
                     return po;
@@ -909,7 +911,7 @@ public abstract class BaseParser implements Closeable
                 }
                 else
                 {
-                    pdfSource.unread(ch2);
+                    pdfSource.rewind(1);
                     c = ch1;
                     buffer.append( ch );
                 }
@@ -926,7 +928,7 @@ public abstract class BaseParser implements Closeable
         }
         if (c != -1)
         {
-            pdfSource.unread(c);
+            pdfSource.rewind(1);
         }
         return COSName.getPDFName( buffer.toString() );
     }
@@ -948,7 +950,7 @@ public abstract class BaseParser implements Closeable
             if( !trueString.equals( TRUE ) )
             {
                 throw new IOException( "Error parsing boolean: expected='true' actual='" + trueString 
-                        + "' at offset " + pdfSource.getOffset());
+                        + "' at offset " + pdfSource.getPosition());
             }
             else
             {
@@ -961,7 +963,7 @@ public abstract class BaseParser implements Closeable
             if( !falseString.equals( FALSE ) )
             {
                 throw new IOException( "Error parsing boolean: expected='true' actual='" + falseString 
-                        + "' at offset " + pdfSource.getOffset());
+                        + "' at offset " + pdfSource.getPosition());
             }
             else
             {
@@ -971,7 +973,7 @@ public abstract class BaseParser implements Closeable
         else
         {
             throw new IOException( "Error parsing boolean expected='t or f' actual='" + c 
-                    + "' at offset " + pdfSource.getOffset());
+                    + "' at offset " + pdfSource.getPosition());
         }
         return retval;
     }
@@ -998,7 +1000,7 @@ public abstract class BaseParser implements Closeable
             int leftBracket = pdfSource.read();
             // check for second left bracket
             c = (char)pdfSource.peek(); 
-            pdfSource.unread( leftBracket );
+            pdfSource.rewind(1);
             if(c == '<')
             {
 
@@ -1083,7 +1085,7 @@ public abstract class BaseParser implements Closeable
                 }
                 if( ic != -1 )
                 {
-                    pdfSource.unread( ic );
+                    pdfSource.rewind(1);
                 }
                 retval = COSNumber.get( buf.toString() );
             }
@@ -1099,13 +1101,13 @@ public abstract class BaseParser implements Closeable
                     // we can end up in an infinite loop otherwise
                     throw new IOException( "Unknown dir object c='" + c +
                             "' cInt=" + (int)c + " peek='" + (char)peek 
-                            + "' peekInt=" + peek + " " + pdfSource.getOffset() );
+                            + "' peekInt=" + peek + " " + pdfSource.getPosition() );
                 }
 
                 // if it's an endstream/endobj, we want to put it back so the caller will see it
                 if(ENDOBJ_STRING.equals(badString) || ENDSTREAM_STRING.equals(badString))
                 {
-                    pdfSource.unread(badString.getBytes(ISO_8859_1));
+                    pdfSource.rewind(badString.getBytes(ISO_8859_1).length);
                 }
             }
         }
@@ -1132,7 +1134,7 @@ public abstract class BaseParser implements Closeable
         }
         if (c != -1)
         {
-            pdfSource.unread(c);
+            pdfSource.rewind(1);
         }
         return buffer.toString();
     }
@@ -1165,7 +1167,7 @@ public abstract class BaseParser implements Closeable
             {
                 throw new IOException("Expected string '" + new String(expectedString)
                         + "' but missed at character '" + c + "' at offset "
-                        + pdfSource.getOffset());
+                        + pdfSource.getPosition());
             }
         }
         skipSpaces();
@@ -1183,7 +1185,7 @@ public abstract class BaseParser implements Closeable
         char c = (char) pdfSource.read();
         if (c != ec)
         {
-            throw new IOException("expected='" + ec + "' actual='" + c + "' at offset " + pdfSource.getOffset());
+            throw new IOException("expected='" + ec + "' actual='" + c + "' at offset " + pdfSource.getPosition());
         }
     }
     
@@ -1216,7 +1218,7 @@ public abstract class BaseParser implements Closeable
         }
         if (c != -1)
         {
-            pdfSource.unread(c);
+            pdfSource.rewind(1);
         }
         return buffer.toString();
     }
@@ -1410,7 +1412,7 @@ public abstract class BaseParser implements Closeable
         }
         if (c != -1)
         {
-            pdfSource.unread(c);
+            pdfSource.rewind(1);
         }
     }
 
@@ -1468,8 +1470,8 @@ public abstract class BaseParser implements Closeable
         }
         catch( NumberFormatException e )
         {
-            pdfSource.unread(intBuffer.toString().getBytes(ISO_8859_1));
-            throw new IOException( "Error: Expected an integer type at offset "+pdfSource.getOffset(), e);
+            pdfSource.rewind(intBuffer.toString().getBytes(ISO_8859_1).length);
+            throw new IOException( "Error: Expected an integer type at offset "+pdfSource.getPosition(), e);
         }
         return retval;
     }
@@ -1495,9 +1497,9 @@ public abstract class BaseParser implements Closeable
         }
         catch( NumberFormatException e )
         {
-            pdfSource.unread(longBuffer.toString().getBytes(ISO_8859_1));
+            pdfSource.rewind(longBuffer.toString().getBytes(ISO_8859_1).length);
             throw new IOException( "Error: Expected a long type at offset "
-                    + pdfSource.getOffset() + ", instead got '" + longBuffer + "'", e);
+                    + pdfSource.getPosition() + ", instead got '" + longBuffer + "'", e);
         }
         return retval;
     }
@@ -1526,7 +1528,7 @@ public abstract class BaseParser implements Closeable
         }
         if( lastByte != -1 )
         {
-            pdfSource.unread( lastByte );
+            pdfSource.rewind(1);
         }
         return buffer;
     }

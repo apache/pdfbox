@@ -30,8 +30,8 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.io.PushBackInputStream;
 import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
+import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.DecryptionMaterial;
@@ -43,7 +43,6 @@ public class PDFParser extends COSParser
 {
     private static final Log LOG = LogFactory.getLog(PDFParser.class);
 
-    private final RandomAccessBufferedFileInputStream raStream;
     private String password = "";
     private InputStream keyStoreInputStream = null;
     private String keyAlias = null;
@@ -163,7 +162,7 @@ public class PDFParser extends COSParser
             boolean useScratchFiles) throws IOException
     {
         fileLen = file.length();
-        raStream = new RandomAccessBufferedFileInputStream(file);
+        pdfSource = new RandomAccessBufferedFileInputStream(file);
         password = decryptionPassword;
         keyStoreInputStream = keyStore;
         keyAlias = alias;
@@ -251,9 +250,17 @@ public class PDFParser extends COSParser
     public PDFParser(InputStream input, String decryptionPassword, InputStream keyStore,
             String alias, boolean useScratchFiles) throws IOException
     {
-        tempPDFFile = createTmpFile(input);
-        fileLen = tempPDFFile.length();
-        raStream = new RandomAccessBufferedFileInputStream(tempPDFFile);
+        if (useScratchFiles)
+        {
+            tempPDFFile = createTmpFile(input);
+            fileLen = tempPDFFile.length();
+            pdfSource = new RandomAccessBufferedFileInputStream(tempPDFFile);
+        }
+        else
+        {
+            pdfSource = copyInputStream(input);
+            fileLen = pdfSource.length();
+        }
         password = decryptionPassword;
         keyStoreInputStream = keyStore;
         keyAlias = alias;
@@ -276,7 +283,6 @@ public class PDFParser extends COSParser
             }
         }
         document = new COSDocument(useScratchFiles);
-        pdfSource = new PushBackInputStream(raStream, 4096);
     }
 
     /**
@@ -355,7 +361,6 @@ public class PDFParser extends COSParser
         {
             IOUtils.closeQuietly(pdfSource);
             IOUtils.closeQuietly(keyStoreInputStream);
-    
             deleteTempFile();
     
             if (exceptionOccurred && document != null)
