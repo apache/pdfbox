@@ -273,6 +273,51 @@ public class TrueTypeFont implements Type1Equivalent, Closeable
     }
     
     /**
+     * Get the vhea table for this TTF.
+     * 
+     * @return The vhea table.
+     */
+    public synchronized VerticalHeaderTable getVerticalHeader() throws IOException
+    {
+        VerticalHeaderTable verticalHeader = (VerticalHeaderTable)tables.get( VerticalHeaderTable.TAG );
+        if (verticalHeader != null && !verticalHeader.getInitialized())
+        {
+            readTable(verticalHeader);
+        }
+        return verticalHeader;
+    }
+    
+    /**
+     * Get the vmtx table for this TTF.
+     * 
+     * @return The vmtx table.
+     */
+    public synchronized VerticalMetricsTable getVerticalMetrics() throws IOException
+    {
+        VerticalMetricsTable verticalMetrics = (VerticalMetricsTable)tables.get( VerticalMetricsTable.TAG );
+        if (verticalMetrics != null && !verticalMetrics.getInitialized())
+        {
+            readTable(verticalMetrics);
+        }
+        return verticalMetrics;
+    }
+    
+    /**
+     * Get the VORG table for this TTF.
+     * 
+     * @return The VORG table.
+     */
+    public synchronized VerticalOriginTable getVerticalOrigin() throws IOException
+    {
+        VerticalOriginTable verticalOrigin = (VerticalOriginTable)tables.get( VerticalOriginTable.TAG );
+        if (verticalOrigin != null && !verticalOrigin.getInitialized())
+        {
+            readTable(verticalOrigin);
+        }
+        return verticalOrigin;
+    }
+    
+    /**
      * This permit to get the data of the True Type Font
      * program representing the stream used to build this 
      * object (normally from the TTFParser object).
@@ -361,6 +406,26 @@ public class TrueTypeFont implements Type1Equivalent, Closeable
         if (hmtx != null)
         {
             return hmtx.getAdvanceWidth(gid);
+        }
+        else
+        {
+            // this should never happen
+            return 250;
+        }
+    }
+
+    /**
+     * Returns the height for the given GID.
+     * 
+     * @param gid the GID
+     * @return the height
+     */
+    public int getAdvanceHeight(int gid) throws IOException
+    {
+        VerticalMetricsTable vmtx = getVerticalMetrics();
+        if (vmtx != null)
+        {
+            return vmtx.getAdvanceHeight(gid);
         }
         else
         {
