@@ -46,13 +46,10 @@ public class FileOpenSaveDialog
                         "Do you want to overwrite?",
                         "File already exists",
                         JOptionPane.YES_NO_OPTION);
-                if (result == JOptionPane.YES_OPTION)
-                {
-                    super.approveSelection();
-                }
-                else
+                if (result != JOptionPane.YES_OPTION)
                 {
                     cancelSelection();
+                    return;
                 }
             }
             super.approveSelection();
