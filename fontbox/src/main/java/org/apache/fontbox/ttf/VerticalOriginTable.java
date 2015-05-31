@@ -59,7 +59,8 @@ public class VerticalOriginTable extends TTFTable
         version = data.read32Fixed();
         defaultVertOriginY = data.readSignedShort();
         int numVertOriginYMetrics = data.readUnsignedShort();
-        for (int i = 0; i < numVertOriginYMetrics; ++i) {
+        for (int i = 0; i < numVertOriginYMetrics; ++i) 
+        {
             int g = data.readUnsignedShort();
             int y = data.readSignedShort();
             origins.put(g, y);
@@ -85,8 +86,12 @@ public class VerticalOriginTable extends TTFTable
     public int getOriginY(int gid)
     {
         if (origins.containsKey(gid))
+        {
             return origins.get(gid);
+        }
         else
+        {
             return defaultVertOriginY;
+        }
     }
 }
