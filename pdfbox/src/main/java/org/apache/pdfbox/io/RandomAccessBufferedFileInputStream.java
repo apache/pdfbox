@@ -164,6 +164,12 @@ extends InputStream implements RandomAccessRead
     }
     
     @Override
+    public int read(byte[] b) throws IOException
+    {
+        return read(b, 0, b.length);
+    }
+    
+    @Override
     public int read( byte[] b, int off, int len ) throws IOException
     {
         if ( fileOffset >= fileLength )
@@ -263,7 +269,11 @@ extends InputStream implements RandomAccessRead
     public byte[] readFully(int length) throws IOException
     {
         byte[] b = new byte[length];
-        read(b);
+        int bytesRead = read(b);
+        while(bytesRead < length)
+        {
+            bytesRead += read(b, bytesRead, length-bytesRead);
+        }
         return b;
     }
 
