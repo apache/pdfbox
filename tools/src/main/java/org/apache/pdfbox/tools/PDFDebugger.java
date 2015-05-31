@@ -19,23 +19,27 @@ package org.apache.pdfbox.tools;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
-import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreePath;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import org.apache.pdfbox.tools.gui.PDFTreeModel;
+import org.apache.pdfbox.tools.gui.PDFTreeCellRenderer;
+import org.apache.pdfbox.tools.gui.ArrayEntry;
+import org.apache.pdfbox.tools.gui.MapEntry;
+
+import org.apache.pdfbox.pdmodel.PDDocument;
+
 import org.apache.pdfbox.cos.COSBoolean;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSInteger;
@@ -43,11 +47,16 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.tools.gui.ArrayEntry;
-import org.apache.pdfbox.tools.gui.MapEntry;
-import org.apache.pdfbox.tools.gui.PDFTreeCellRenderer;
-import org.apache.pdfbox.tools.gui.PDFTreeModel;
+
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.io.IOException;
+import org.apache.pdfbox.tools.util.FileOpenSaveDialog;
+import org.apache.pdfbox.tools.pdfdebugger.ui.Tree;
 import org.apache.pdfbox.tools.pdfdebugger.treestatus.TreeStatus;
 import org.apache.pdfbox.tools.pdfdebugger.treestatus.TreeStatusPane;
 import org.apache.pdfbox.tools.util.RecentFiles;
@@ -61,7 +70,6 @@ public class PDFDebugger extends javax.swing.JFrame
 {
     private TreeStatusPane statusPane;
 
-    private File currentDir=new File(".");
     private PDDocument document = null;
     private String currentFilePath = null;
 
@@ -87,7 +95,7 @@ public class PDFDebugger extends javax.swing.JFrame
     {
         jSplitPane1 = new javax.swing.JSplitPane();
         jScrollPane1 = new JScrollPane();
-        jTree1 = new javax.swing.JTree();
+        tree = new Tree(this);
         jScrollPane2 = new JScrollPane();
         jTextPane1 = new javax.swing.JTextPane();
         menuBar = new javax.swing.JMenuBar();
@@ -106,36 +114,47 @@ public class PDFDebugger extends javax.swing.JFrame
         contentsMenuItem = new JMenuItem();
         aboutMenuItem = new JMenuItem();
 
-        jTree1.setCellRenderer( new PDFTreeCellRenderer() );
-        jTree1.setModel( null );
+        tree.setCellRenderer( new PDFTreeCellRenderer() );
+        tree.setModel( null );
 
         setTitle("PDFBox - PDF Debugger");
+
+        addWindowFocusListener(new WindowAdapter()
+        {
+            @Override
+            public void windowGainedFocus(WindowEvent e)
+            {
+                jScrollPane1.requestFocusInWindow();
+                super.windowGainedFocus(e);
+            }
+        });
+
         addWindowListener(new java.awt.event.WindowAdapter()
         {
             @Override
-            public void windowClosing(java.awt.event.WindowEvent evt)
+            public void windowClosing(WindowEvent evt)
             {
                 exitForm(evt);
             }
         });
 
 
-        jScrollPane1.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.RAISED));
-        jScrollPane1.setPreferredSize(new java.awt.Dimension(300, 500));
-        jTree1.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener()
+        jScrollPane1.setBorder(new BevelBorder(BevelBorder.RAISED));
+        jScrollPane1.setPreferredSize(new Dimension(300, 500));
+        tree.addTreeSelectionListener(new TreeSelectionListener()
         {
             @Override
-            public void valueChanged(javax.swing.event.TreeSelectionEvent evt)
+            public void valueChanged(TreeSelectionEvent evt)
             {
                 jTree1ValueChanged(evt);
             }
         });
 
-        jScrollPane1.setViewportView(jTree1);
+        jScrollPane1.setViewportView(tree);
 
         jSplitPane1.setRightComponent(jScrollPane2);
 
-        jScrollPane2.setPreferredSize(new java.awt.Dimension(300, 500));
+        jScrollPane2.setPreferredSize(new Dimension(300, 500));
         jScrollPane2.setViewportView(jTextPane1);
 
         jSplitPane1.setLeftComponent(jScrollPane1);
@@ -143,12 +162,12 @@ public class PDFDebugger extends javax.swing.JFrame
         JScrollPane documentScroller = new JScrollPane();
         documentScroller.setViewportView( documentPanel );
 
-        statusPane = new TreeStatusPane(jTree1);
+        statusPane = new TreeStatusPane(tree);
         statusPane.getPanel().setBorder(new BevelBorder(BevelBorder.RAISED));
         statusPane.getPanel().setPreferredSize(new Dimension(300, 25));
         getContentPane().add(statusPane.getPanel(), BorderLayout.PAGE_START);
 
-        getContentPane().add( jSplitPane1, java.awt.BorderLayout.CENTER );
+        getContentPane().add( jSplitPane1, BorderLayout.CENTER );
 
         fileMenu.setText("File");
         openMenuItem.setText("Open");
@@ -218,46 +237,38 @@ public class PDFDebugger extends javax.swing.JFrame
 
         setJMenuBar(menuBar);
 
-
-        java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         setBounds((screenSize.width-700)/2, (screenSize.height-600)/2, 700, 600);
     }//GEN-END:initComponents
 
     private void openMenuItemActionPerformed(ActionEvent evt)
     {
-        JFileChooser chooser = new JFileChooser();
-        chooser.setCurrentDirectory(currentDir);
-
         ExtensionFileFilter pdfFilter = new ExtensionFileFilter(new String[] {"pdf", "PDF"}, "PDF Files");
-        chooser.setFileFilter(pdfFilter);
-        int result = chooser.showOpenDialog(PDFDebugger.this);
-        if (result == JFileChooser.APPROVE_OPTION)
+        FileOpenSaveDialog openDialog = new FileOpenSaveDialog(this, pdfFilter);
+        try
         {
-            String name = chooser.getSelectedFile().getPath();
-            currentDir = new File(name).getParentFile();
-            try
+            File file = openDialog.openFile();
+            if (file != null)
             {
+                String name = file.getPath();
                 readPDFFile(name, "");
             }
-            catch (Exception e)
-            {
-                throw new RuntimeException(e);
-            }
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
         }
     }//GEN-LAST:event_openMenuItemActionPerformed
 
-    private void jTree1ValueChanged(javax.swing.event.TreeSelectionEvent evt)
+    private void jTree1ValueChanged(TreeSelectionEvent evt)
     {
-        TreePath path = jTree1.getSelectionPath();
+        TreePath path = tree.getSelectionPath();
         if (path != null)
         {
             try
             {
                 Object selectedNode = path.getLastPathComponent();
                 String data=convertToString(selectedNode);
-
-
-
                 if (data != null)
                 {
                     jTextPane1.setText(data);
@@ -339,6 +350,8 @@ public class PDFDebugger extends javax.swing.JFrame
             try
             {
                 document.close();
+                recentFiles.addFile(currentFilePath);
+                recentFiles.close();
             }
             catch( IOException e )
             {
@@ -418,8 +431,8 @@ public class PDFDebugger extends javax.swing.JFrame
         TreeStatus treeStatus = new TreeStatus(document.getDocument().getTrailer());
         statusPane.updateTreeStatus(treeStatus);
         TreeModel model=new PDFTreeModel(document);
-        jTree1.setModel(model);
-        jTree1.setSelectionPath(treeStatus.getPathForString("Root"));
+        tree.setModel(model);
+        tree.setSelectionPath(treeStatus.getPathForString("Root"));
         setTitle("PDFBox - " + file.getAbsolutePath());
         addRecentFileItems();
     }
@@ -428,7 +441,7 @@ public class PDFDebugger extends javax.swing.JFrame
      *
      * @param file The file addressing the document.
      *
-     * @throws java.io.IOException If there is an error parsing the document.
+     * @throws IOException If there is an error parsing the document.
      */
     private void parseDocument( File file, String password )throws IOException
     {
@@ -499,7 +512,7 @@ public class PDFDebugger extends javax.swing.JFrame
     private JScrollPane jScrollPane2;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JTextPane jTextPane1;
-    private javax.swing.JTree jTree1;
+    private Tree tree;
     private javax.swing.JMenuBar menuBar;
     private JMenuItem openMenuItem;
     private JMenuItem pasteMenuItem;
