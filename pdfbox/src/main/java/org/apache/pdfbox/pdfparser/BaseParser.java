@@ -1042,7 +1042,8 @@ public abstract class BaseParser implements Closeable
             }
             else
             {
-                throw new IOException( "expected true actual='" + trueString + "' " + pdfSource );
+                throw new IOException( "expected true actual='" + trueString + "' " + pdfSource + 
+                        "' at offset " + pdfSource.getPosition());
             }
             break;
         }
@@ -1055,7 +1056,8 @@ public abstract class BaseParser implements Closeable
             }
             else
             {
-                throw new IOException( "expected false actual='" + falseString + "' " + pdfSource );
+                throw new IOException( "expected false actual='" + falseString + "' " + pdfSource + 
+                        "' at offset " + pdfSource.getPosition());
             }
             break;
         }
