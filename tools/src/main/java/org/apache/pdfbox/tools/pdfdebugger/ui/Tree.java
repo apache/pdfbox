@@ -89,10 +89,10 @@ public class Tree extends JTree
      * @param nodePath is instance of TreePath of the specified Node.
      * @return the JMenuItem list for the node
      */
-    private ArrayList<JMenuItem> getPopupMenuItems(TreePath nodePath)
+    private List<JMenuItem> getPopupMenuItems(TreePath nodePath)
     {
         Object obj = nodePath.getLastPathComponent();
-        ArrayList<JMenuItem> menuItems = new ArrayList<JMenuItem>();
+        List<JMenuItem> menuItems = new ArrayList<JMenuItem>();
 
         if (obj instanceof MapEntry)
         {
@@ -253,19 +253,13 @@ public class Tree extends JTree
     }
 
     /**
-     * save the stream
-     * @param bytes byte array of the stream
+     * Save the stream.
+     * @param bytes byte array of the stream.
+     * @throws IOException if there is an error in creation of the file.
      */
-    private void saveStream(byte[] bytes)
+    private void saveStream(byte[] bytes) throws IOException
     {
         FileOpenSaveDialog saveDialog = new FileOpenSaveDialog(parent, null);
-        try
-        {
-            saveDialog.saveFile(bytes);
-        }
-        catch (IOException e)
-        {
-            throw new RuntimeException(e);
-        }
+        saveDialog.saveFile(bytes);
     }
 }

@@ -32,7 +32,7 @@ import org.apache.pdfbox.tools.PDFDebugger;
  */
 public class FileOpenSaveDialog
 {
-    PDFDebugger mainUI;
+    private PDFDebugger mainUI;
 
     private static final JFileChooser fileChooser = new JFileChooser() 
     {
@@ -68,10 +68,11 @@ public class FileOpenSaveDialog
     }
 
     /**
-     * saves a file while user is prompted to chose the destination.
-     * @param bytes byte array of the saving file.
-     * @return true if file is saved successfully or false if failed.
-     * @throws IOException if there is error in creation of file.
+     * Saves data into a file after the user is prompted to choose the destination.
+     *
+     * @param bytes byte array to be saved in a file.
+     * @return true if the file is saved successfully or false if failed.
+     * @throws IOException if there is an error in creation of the file.
      */
     public boolean saveFile(byte[] bytes) throws IOException
     {
@@ -79,9 +80,19 @@ public class FileOpenSaveDialog
         if (result == JFileChooser.APPROVE_OPTION)
         {
             File selectedFile = fileChooser.getSelectedFile();
-            FileOutputStream outputStream = new FileOutputStream(selectedFile);
-            outputStream.write(bytes);
-            outputStream.close();
+            FileOutputStream outputStream = null;
+            try
+            {
+                outputStream = new FileOutputStream(selectedFile);
+                outputStream.write(bytes);
+            }
+            finally
+            {
+                if (outputStream != null)
+                {
+                    outputStream.close();
+                }
+            }
             return true;
         }
         return false;
