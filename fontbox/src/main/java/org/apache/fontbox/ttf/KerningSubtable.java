@@ -79,11 +79,27 @@ public class KerningSubtable extends TTFTable
         }
     }
 
+    /**
+     * Determine if subtable is designated for use in horizontal writing modes and
+     * contains inline progression kerning pairs (not block progression "cross stream")
+     * kerning pairs.
+     *
+     * @return true if subtable is for horizontal kerning
+     */
     public boolean isHorizontalKerning()
     {
         return isHorizontalKerning(false);
     }
 
+    /**
+     * Determine if subtable is designated for use in horizontal writing modes, contains
+     * kerning pairs (as opposed to minimum pairs), and, if CROSS is true, then return
+     * cross stream designator; otherwise, if CROSS is false, return true if cross stream
+     * designator is false.
+     *
+     * @param cross if true, then return cross stream designator in horizontal modes
+     * @return true if subtable is for horizontal kerning in horizontal modes
+     */
     public boolean isHorizontalKerning(boolean cross)
     {
         if (!horizontal)
@@ -104,6 +120,16 @@ public class KerningSubtable extends TTFTable
         }
     }
 
+    /**
+     * Obtain kerning adjustments for GLYPHS sequence, where the
+     * Nth returned adjustment is associated with the Nth glyph
+     * and the succeeding non-zero glyph in the GLYPHS sequence.
+     *
+     * Kerning adjustments are returned in font design coordinates.
+     *
+     * @param glyphs a (possibly empty) array of glyph identifiers
+     * @return a (possibly empty) array of kerning adjustments
+     */
     public int[] getKerning(int[] glyphs)
     {
         int ng = glyphs.length;
@@ -126,6 +152,13 @@ public class KerningSubtable extends TTFTable
         return kerning;
     }
 
+    /**
+     * Obtain kerning adjustment for glyph pair {L,R}.
+     *
+     * @param l left member of glyph pair
+     * @param r right member of glyph pair
+     * @return a (possibly zero) kerning adjustment
+     */
     public int getKerning(int l, int r)
     {
         return pairs.getKerning(l, r);
@@ -202,14 +235,14 @@ public class KerningSubtable extends TTFTable
         return (bits & mask) >> shift;
     }
 
-    abstract static class PairData
+    private abstract static class PairData
     {
         public abstract void read(TTFDataStream data) throws IOException;
 
         public abstract int getKerning(int l, int r);
     }
 
-    static class PairData0Format0 extends PairData implements Comparator<int[]>
+    private static class PairData0Format0 extends PairData implements Comparator<int[]>
     {
         private int searchRange;
         private int[][] pairs;
