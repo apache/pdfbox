@@ -57,21 +57,20 @@ public class KerningSubtable extends TTFTable
     /**
      * This will read the required data from the stream.
      * 
-     * @param ttf The font that is being read.
      * @param data The stream to read the data from.
      * @param version The version of the table to be read
      * @throws IOException If there is an error reading the data.
      */
-    public void read(TrueTypeFont ttf, TTFDataStream data, int version) throws IOException
+    public void read(TTFDataStream data, int version) throws IOException
     {
         if (version == 0)
         {
-            readSubtable0(ttf, data);
+            readSubtable0(data);
         }
         else if (version == 1)
         {
             
-            readSubtable1(ttf, data);
+            readSubtable1(data);
         }
         else
         {
@@ -164,7 +163,7 @@ public class KerningSubtable extends TTFTable
         return pairs.getKerning(l, r);
     }
 
-    private void readSubtable0(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    private void readSubtable0(TTFDataStream data) throws IOException
     {
         int version = data.readUnsignedShort();
         if (version != 0)
@@ -199,27 +198,27 @@ public class KerningSubtable extends TTFTable
         }
         if (format == 0)
         {
-            readSubtable0Format0(ttf, data);
+            readSubtable0Format0(data);
         }
         else if (format == 2)
         {
-            readSubtable0Format2(ttf, data);
+            readSubtable0Format2(data);
         }
     }
 
-    private void readSubtable0Format0(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    private void readSubtable0Format0(TTFDataStream data) throws IOException
     {
         pairs = new PairData0Format0();
         pairs.read(data);
     }
 
-    private void readSubtable0Format2(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    private void readSubtable0Format2(TTFDataStream data) throws IOException
     {
         throw new UnsupportedOperationException(
                 "Kerning table version 0 format 2 not yet supported.");
     }
 
-    private void readSubtable1(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    private void readSubtable1(TTFDataStream data) throws IOException
     {
         throw new UnsupportedOperationException(
                 "Kerning table version 1 formats not yet supported.");
