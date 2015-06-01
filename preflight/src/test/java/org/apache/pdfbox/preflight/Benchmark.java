@@ -29,8 +29,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import javax.activation.FileDataSource;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
@@ -77,7 +75,7 @@ public class Benchmark
         {
             File file = lfd.get(i % size);
             long startLTime = System.currentTimeMillis();
-            PreflightParser parser = new PreflightParser(new FileDataSource(file));
+            PreflightParser parser = new PreflightParser(file);
             parser.parse();
             PreflightDocument document = parser.getPreflightDocument();
             document.validate();

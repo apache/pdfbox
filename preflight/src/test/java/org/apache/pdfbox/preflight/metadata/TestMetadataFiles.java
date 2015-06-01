@@ -21,22 +21,18 @@
 
 package org.apache.pdfbox.preflight.metadata;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.apache.pdfbox.preflight.PreflightDocument;
 import org.apache.pdfbox.preflight.ValidationResult;
 import org.apache.pdfbox.preflight.exception.SyntaxValidationException;
 import org.apache.pdfbox.preflight.parser.PreflightParser;
-import org.apache.pdfbox.preflight.utils.ByteArrayDataSource;
 import org.junit.Test;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class TestMetadataFiles
 {
@@ -73,13 +69,12 @@ public class TestMetadataFiles
     {
         PreflightDocument document = null;
         boolean testResult = false;
-        try
+        if (pdf.exists())
         {
-            InputStream input = new FileInputStream(pdf);
             ValidationResult result = null;
             try
             {
-                PreflightParser parser = new PreflightParser(new ByteArrayDataSource(input));
+                PreflightParser parser = new PreflightParser(pdf);
                 parser.parse();
                 document = (PreflightDocument) parser.getPDDocument();
                 document.validate();
@@ -97,13 +92,6 @@ public class TestMetadataFiles
             {
                 testResult = result.isValid();
             }
-        }
-        catch (FileNotFoundException e1)
-        {
-            fail("Can't find the given file " + pdf);
-        }
-        finally
-        {
             if (document != null)
             {
                 try
@@ -115,6 +103,10 @@ public class TestMetadataFiles
                     // shouldn't happen;
                 }
             }
+        }
+        else
+        {
+            fail("Can't find the given file " + pdf);
         }
         return testResult;
     }
