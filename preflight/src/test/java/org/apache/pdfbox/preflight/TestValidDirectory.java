@@ -26,12 +26,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.activation.FileDataSource;
-
-import org.junit.Assert;
-
 import org.apache.pdfbox.preflight.exception.SyntaxValidationException;
 import org.apache.pdfbox.preflight.parser.PreflightParser;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -56,7 +53,7 @@ public class TestValidDirectory
         ValidationResult result = null;
         try
         {
-            PreflightParser parser = new PreflightParser(new FileDataSource(target));
+            PreflightParser parser = new PreflightParser(target);
             parser.parse();
             document = (PreflightDocument) parser.getPDDocument();
             document.validate();

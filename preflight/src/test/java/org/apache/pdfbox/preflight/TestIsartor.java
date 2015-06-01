@@ -21,6 +21,10 @@
 
 package org.apache.pdfbox.preflight;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -33,23 +37,18 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.SyntaxValidationException;
 import org.apache.pdfbox.preflight.parser.PreflightParser;
-import org.apache.pdfbox.preflight.utils.ByteArrayDataSource;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 @RunWith(Parameterized.class)
 public class TestIsartor
@@ -57,7 +56,6 @@ public class TestIsartor
     private static final String FILTER_FILE = "isartor.filter";
     private static final String SKIP_BAVARIA = "skip-bavaria";
     private static FileOutputStream isartorResultFile;
-    private static final Log LOG = LogFactory.getLog(TestIsartor.class);
 
     @Parameters(name = "{0}")
     public static Collection<Object[]> initializeParameters() throws Exception
@@ -180,11 +178,10 @@ public class TestIsartor
         PreflightDocument document = null;
         try
         {
-            InputStream input = new FileInputStream(file);
             ValidationResult result;
             try
             {
-                PreflightParser parser = new PreflightParser(new ByteArrayDataSource(input));
+                PreflightParser parser = new PreflightParser(file);
                 parser.parse();
                 document = (PreflightDocument) parser.getPDDocument();
                 // to speeds up tests, skip validation of page count is over the limit
