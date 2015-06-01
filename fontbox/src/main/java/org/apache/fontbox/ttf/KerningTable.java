@@ -64,7 +64,7 @@ public class KerningTable extends TTFTable
         for (int i = 0; i < numSubtables; ++i)
         {
             KerningSubtable subtable = new KerningSubtable();
-            subtable.read(ttf, data, version);
+            subtable.read(data, version);
             subtables[i] = subtable;
         }
         initialized = true;
