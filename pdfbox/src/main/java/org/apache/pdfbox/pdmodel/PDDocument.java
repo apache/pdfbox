@@ -109,7 +109,18 @@ public class PDDocument implements Closeable
      */
     public PDDocument()
     {
-        document = new COSDocument();
+        this(false);
+    }
+
+    /**
+     * Creates an empty PDF document.
+     * You need to add at least one page for the document to be valid.
+     *
+     * @param useScratchFiles enables the usage of a scratch file if set to true
+     */
+    public PDDocument(boolean useScratchFiles)
+    {
+        document = new COSDocument(useScratchFiles);
         parser = null;
 
         // First we need a trailer
