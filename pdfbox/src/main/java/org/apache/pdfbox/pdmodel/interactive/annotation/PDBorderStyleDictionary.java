@@ -32,8 +32,7 @@ public class PDBorderStyleDictionary implements COSObjectable
 {
 
     /*
-     * The various values of the style for the border as defined in the PDF 1.6
-     * reference Table 8.13
+     * The various values of the style for the border as defined in the PDF 1.6 reference Table 8.13
      */
 
     /**
@@ -74,10 +73,9 @@ public class PDBorderStyleDictionary implements COSObjectable
     /**
      * Constructor.
      *
-     * @param dict
-     *            a border style dictionary.
+     * @param dict a border style dictionary.
      */
-    public PDBorderStyleDictionary( COSDictionary dict )
+    public PDBorderStyleDictionary(COSDictionary dict)
     {
         dictionary = dict;
     }
@@ -96,12 +94,11 @@ public class PDBorderStyleDictionary implements COSObjectable
     /**
      * This will set the border width in points, 0 = no border.
      *
-     * @param w
-     *            float the width in points
+     * @param w float the width in points
      */
-    public void setWidth( float w )
+    public void setWidth(float w)
     {
-        getCOSObject().setFloat( "W", w );
+        getCOSObject().setFloat("W", w);
     }
 
     /**
@@ -111,45 +108,42 @@ public class PDBorderStyleDictionary implements COSObjectable
      */
     public float getWidth()
     {
-        return getCOSObject().getFloat( "W", 1 );
+        return getCOSObject().getFloat("W", 1);
     }
 
     /**
      * This will set the border style, see the STYLE_* constants for valid values.
      *
-     * @param s
-     *            the border style to use
+     * @param s the border style to use
      */
-    public void setStyle( String s )
+    public void setStyle(String s)
     {
-        getCOSObject().setName( "S", s );
+        getCOSObject().setName("S", s);
     }
 
     /**
-     * This will retrieve the border style, see the STYLE_* constants for valid
-     * values.
+     * This will retrieve the border style, see the STYLE_* constants for valid values.
      *
      * @return the style of the border
      */
     public String getStyle()
     {
-        return getCOSObject().getNameAsString( "S", STYLE_SOLID );
+        return getCOSObject().getNameAsString("S", STYLE_SOLID);
     }
 
     /**
      * This will set the dash style used for drawing the border.
      *
-     * @param dashArray
-     *            the dash style to use
+     * @param dashArray the dash style to use
      */
-    public void setDashStyle( COSArray dashArray )
+    public void setDashStyle(COSArray dashArray)
     {
         COSArray array = null;
-        if( dashArray != null )
+        if (dashArray != null)
         {
             array = dashArray;
         }
-        getCOSObject().setItem( "D", array );
+        getCOSObject().setItem("D", array);
     }
 
     /**
@@ -159,14 +153,14 @@ public class PDBorderStyleDictionary implements COSObjectable
      */
     public PDLineDashPattern getDashStyle()
     {
-        COSArray d = (COSArray) getCOSObject().getDictionaryObject( "D" );
+        COSArray d = (COSArray) getCOSObject().getDictionaryObject("D");
         if (d == null)
         {
             d = new COSArray();
-            d.add( COSInteger.THREE );
-            getCOSObject().setItem( "D", d );
+            d.add(COSInteger.THREE);
+            getCOSObject().setItem("D", d);
         }
-        return new PDLineDashPattern( d, 0 );
+        return new PDLineDashPattern(d, 0);
     }
 
 }

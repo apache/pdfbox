@@ -35,45 +35,40 @@ public class PDAnnotationWidget extends PDAnnotation
      */
     public static final String SUB_TYPE = "Widget";
 
-
     /**
      * Constructor.
      */
     public PDAnnotationWidget()
     {
         super();
-        getCOSObject().setName( COSName.SUBTYPE, SUB_TYPE);
+        getCOSObject().setName(COSName.SUBTYPE, SUB_TYPE);
     }
 
-
     /**
-     * Creates a PDWidget from a COSDictionary, expected to be
-     * a correct object definition for a field in PDF.
+     * Creates a PDWidget from a COSDictionary, expected to be a correct object definition for a field in PDF.
      *
      * @param field the PDF object to represent as a field.
      */
     public PDAnnotationWidget(COSDictionary field)
     {
-        super( field );
-        getCOSObject().setName( COSName.SUBTYPE, SUB_TYPE);
+        super(field);
+        getCOSObject().setName(COSName.SUBTYPE, SUB_TYPE);
     }
 
     /**
      * Returns the highlighting mode. Default value: <code>I</code>
      * <dl>
-     *   <dt><code>N</code></dt>
-     *     <dd>(None) No highlighting.</dd>
-     *   <dt><code>I</code></dt>
-     *     <dd>(Invert) Invert the contents of the annotation rectangle.</dd>
-     *   <dt><code>O</code></dt>
-     *     <dd>(Outline) Invert the annotation's border.</dd>
-     *   <dt><code>P</code></dt>
-     *     <dd>(Push) Display the annotation's down appearance, if any. If no
-     *      down appearance is defined, the contents of the annotation rectangle
-     *      shall be offset to appear as if it were pushed below the surface of
-     *      the page</dd>
-     *   <dt><code>T</code></dt>
-     *     <dd>(Toggle) Same as <code>P</code> (which is preferred).</dd>
+     * <dt><code>N</code></dt>
+     * <dd>(None) No highlighting.</dd>
+     * <dt><code>I</code></dt>
+     * <dd>(Invert) Invert the contents of the annotation rectangle.</dd>
+     * <dt><code>O</code></dt>
+     * <dd>(Outline) Invert the annotation's border.</dd>
+     * <dt><code>P</code></dt>
+     * <dd>(Push) Display the annotation's down appearance, if any. If no down appearance is defined, the contents of
+     * the annotation rectangle shall be offset to appear as if it were pushed below the surface of the page</dd>
+     * <dt><code>T</code></dt>
+     * <dd>(Toggle) Same as <code>P</code> (which is preferred).</dd>
      * </dl>
      * 
      * @return the highlighting mode
@@ -86,37 +81,33 @@ public class PDAnnotationWidget extends PDAnnotation
     /**
      * Sets the highlighting mode.
      * <dl>
-     *   <dt><code>N</code></dt>
-     *     <dd>(None) No highlighting.</dd>
-     *   <dt><code>I</code></dt>
-     *     <dd>(Invert) Invert the contents of the annotation rectangle.</dd>
-     *   <dt><code>O</code></dt>
-     *     <dd>(Outline) Invert the annotation's border.</dd>
-     *   <dt><code>P</code></dt>
-     *     <dd>(Push) Display the annotation's down appearance, if any. If no
-     *      down appearance is defined, the contents of the annotation rectangle
-     *      shall be offset to appear as if it were pushed below the surface of
-     *      the page</dd>
-     *   <dt><code>T</code></dt>
-     *     <dd>(Toggle) Same as <code>P</code> (which is preferred).</dd>
+     * <dt><code>N</code></dt>
+     * <dd>(None) No highlighting.</dd>
+     * <dt><code>I</code></dt>
+     * <dd>(Invert) Invert the contents of the annotation rectangle.</dd>
+     * <dt><code>O</code></dt>
+     * <dd>(Outline) Invert the annotation's border.</dd>
+     * <dt><code>P</code></dt>
+     * <dd>(Push) Display the annotation's down appearance, if any. If no down appearance is defined, the contents of
+     * the annotation rectangle shall be offset to appear as if it were pushed below the surface of the page</dd>
+     * <dt><code>T</code></dt>
+     * <dd>(Toggle) Same as <code>P</code> (which is preferred).</dd>
      * </dl>
      * 
-     * @param highlightingMode the highlighting mode
-     *  the defined values
+     * @param highlightingMode the highlighting mode the defined values
      */
     public void setHighlightingMode(String highlightingMode)
     {
-        if ((highlightingMode == null)
-            || "N".equals(highlightingMode) || "I".equals(highlightingMode)
-            || "O".equals(highlightingMode) || "P".equals(highlightingMode)
-            || "T".equals(highlightingMode))
+        if ((highlightingMode == null) || "N".equals(highlightingMode)
+                || "I".equals(highlightingMode) || "O".equals(highlightingMode)
+                || "P".equals(highlightingMode) || "T".equals(highlightingMode))
         {
             this.getCOSObject().setName(COSName.H, highlightingMode);
         }
         else
         {
-            throw new IllegalArgumentException( "Valid values for highlighting mode are " +
-                "'N', 'N', 'O', 'P' or 'T'" );
+            throw new IllegalArgumentException("Valid values for highlighting mode are "
+                    + "'N', 'N', 'O', 'P' or 'T'");
         }
     }
 
@@ -140,7 +131,8 @@ public class PDAnnotationWidget extends PDAnnotation
      * 
      * @param appearanceCharacteristics the appearance characteristics dictionary
      */
-    public void setAppearanceCharacteristics(PDAppearanceCharacteristicsDictionary appearanceCharacteristics)
+    public void setAppearanceCharacteristics(
+            PDAppearanceCharacteristicsDictionary appearanceCharacteristics)
     {
         this.getCOSObject().setItem(COSName.MK, appearanceCharacteristics);
     }
@@ -152,35 +144,33 @@ public class PDAnnotationWidget extends PDAnnotation
      */
     public PDAction getAction()
     {
-        COSDictionary action = (COSDictionary)
-            this.getCOSObject().getDictionaryObject( COSName.A );
-        return PDActionFactory.createAction( action );
+        COSDictionary action = (COSDictionary) this.getCOSObject().getDictionaryObject(COSName.A);
+        return PDActionFactory.createAction(action);
     }
 
     /**
-     * Set the annotation action.
-     * As of PDF 1.6 this is only used for Widget Annotations
+     * Set the annotation action. As of PDF 1.6 this is only used for Widget Annotations
+     * 
      * @param action The annotation action.
      */
-    public void setAction( PDAction action )
+    public void setAction(PDAction action)
     {
-        this.getCOSObject().setItem( COSName.A, action );
+        this.getCOSObject().setItem(COSName.A, action);
     }
 
     /**
-     * Get the additional actions for this field.  This will return null
-     * if there are no additional actions for this field.
-     * As of PDF 1.6 this is only used for Widget Annotations.
+     * Get the additional actions for this field. This will return null if there are no additional actions for this
+     * field. As of PDF 1.6 this is only used for Widget Annotations.
      *
      * @return The actions of the field.
      */
     public PDAnnotationAdditionalActions getActions()
     {
-        COSDictionary aa = (COSDictionary)this.getCOSObject().getDictionaryObject( "AA" );
+        COSDictionary aa = (COSDictionary) this.getCOSObject().getDictionaryObject("AA");
         PDAnnotationAdditionalActions retval = null;
-        if( aa != null )
+        if (aa != null)
         {
-            retval = new PDAnnotationAdditionalActions( aa );
+            retval = new PDAnnotationAdditionalActions(aa);
         }
         return retval;
     }
@@ -190,26 +180,24 @@ public class PDAnnotationWidget extends PDAnnotation
      *
      * @param actions The field actions.
      */
-    public void setActions( PDAnnotationAdditionalActions actions )
+    public void setActions(PDAnnotationAdditionalActions actions)
     {
-        this.getCOSObject().setItem( "AA", actions );
+        this.getCOSObject().setItem("AA", actions);
     }
 
     /**
-     * This will set the border style dictionary, specifying the width and dash
-     * pattern used in drawing the line.
+     * This will set the border style dictionary, specifying the width and dash pattern used in drawing the line.
      *
      * @param bs the border style dictionary to set.
      *
      */
-    public void setBorderStyle( PDBorderStyleDictionary bs )
+    public void setBorderStyle(PDBorderStyleDictionary bs)
     {
-        this.getCOSObject().setItem( "BS", bs);
+        this.getCOSObject().setItem("BS", bs);
     }
 
     /**
-     * This will retrieve the border style dictionary, specifying the width and
-     * dash pattern used in drawing the line.
+     * This will retrieve the border style dictionary, specifying the width and dash pattern used in drawing the line.
      *
      * @return the border style dictionary.
      */
@@ -218,7 +206,7 @@ public class PDAnnotationWidget extends PDAnnotation
         COSDictionary bs = (COSDictionary) this.getCOSObject().getItem(COSName.BS);
         if (bs != null)
         {
-            return new PDBorderStyleDictionary( bs );
+            return new PDBorderStyleDictionary(bs);
         }
         else
         {
@@ -227,14 +215,14 @@ public class PDAnnotationWidget extends PDAnnotation
     }
 
     // TODO where to get acroForm from?
-//    public PDField getParent() throws IOException
-//    {
-//        COSBase parent = this.getCOSObject().getDictionaryObject(COSName.PARENT);
-//        if (parent instanceof COSDictionary)
-//        {
-//            PDAcroForm acroForm = null;
-//            return PDFieldFactory.createField(acroForm, (COSDictionary) parent);
-//        }
-//        return null;
-//    }
+    // public PDField getParent() throws IOException
+    // {
+    // COSBase parent = this.getCOSObject().getDictionaryObject(COSName.PARENT);
+    // if (parent instanceof COSDictionary)
+    // {
+    // PDAcroForm acroForm = null;
+    // return PDFieldFactory.createField(acroForm, (COSDictionary) parent);
+    // }
+    // return null;
+    // }
 }

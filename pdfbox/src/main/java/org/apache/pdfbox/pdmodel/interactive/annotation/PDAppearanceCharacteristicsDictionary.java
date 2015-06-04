@@ -51,6 +51,7 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
 
     /**
      * returns the dictionary.
+     * 
      * @return the dictionary
      */
     @Override
@@ -60,8 +61,8 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
     }
 
     /**
-     * This will retrieve the rotation of the annotation widget.
-     * It must be a multiple of 90. Default is 0 
+     * This will retrieve the rotation of the annotation widget. It must be a multiple of 90. Default is 0
+     * 
      * @return the rotation
      */
     public int getRotation()
@@ -108,7 +109,7 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
     {
         return getColor(COSName.BG);
     }
-    
+
     /**
      * This will set the background color.
      * 
@@ -232,17 +233,17 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
             PDColorSpace colorSpace = null;
             switch (((COSArray) c).size())
             {
-                case 1:
-                    colorSpace = PDDeviceGray.INSTANCE;
-                    break;
-                case 3:
-                    colorSpace = PDDeviceRGB.INSTANCE;
-                    break;
-                case 4:
-                    colorSpace = PDDeviceCMYK.INSTANCE;
-                    break;
-                default:
-                    break;
+            case 1:
+                colorSpace = PDDeviceGray.INSTANCE;
+                break;
+            case 3:
+                colorSpace = PDDeviceRGB.INSTANCE;
+                break;
+            case 4:
+                colorSpace = PDDeviceCMYK.INSTANCE;
+                break;
+            default:
+                break;
             }
             return new PDColor((COSArray) c, colorSpace);
         }
