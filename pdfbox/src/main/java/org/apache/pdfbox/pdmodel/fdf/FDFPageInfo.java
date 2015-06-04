@@ -42,7 +42,7 @@ public class FDFPageInfo implements COSObjectable
      *
      * @param p The FDF page.
      */
-    public FDFPageInfo( COSDictionary p )
+    public FDFPageInfo(COSDictionary p)
     {
         pageInfo = p;
     }

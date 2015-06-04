@@ -42,7 +42,7 @@ public class FDFAnnotationPolygon extends FDFAnnotation
     /**
      * COS Model value for SubType entry.
      */
-    public static final String SUBTYPE ="Polygon";
+    public static final String SUBTYPE = "Polygon";
 
     /**
      * Default constructor.
@@ -50,7 +50,7 @@ public class FDFAnnotationPolygon extends FDFAnnotation
     public FDFAnnotationPolygon()
     {
         super();
-        annot.setName( COSName.SUBTYPE, SUBTYPE );
+        annot.setName(COSName.SUBTYPE, SUBTYPE);
     }
 
     /**
@@ -58,19 +58,19 @@ public class FDFAnnotationPolygon extends FDFAnnotation
      *
      * @param a An existing FDF Annotation.
      */
-    public FDFAnnotationPolygon( COSDictionary a )
+    public FDFAnnotationPolygon(COSDictionary a)
     {
-        super( a );
+        super(a);
     }
 
     /**
      * Constructor.
      *
-     *  @param element An XFDF element.
+     * @param element An XFDF element.
      *
-     *  @throws IOException If there is an error extracting information from the element.
+     * @throws IOException If there is an error extracting information from the element.
      */
-    public FDFAnnotationPolygon( Element element ) throws IOException
+    public FDFAnnotationPolygon(Element element) throws IOException
     {
         super(element);
         annot.setName(COSName.SUBTYPE, SUBTYPE);
@@ -102,7 +102,7 @@ public class FDFAnnotationPolygon extends FDFAnnotation
             setInteriorColor(new Color(colorValue));
         }
     }
-    
+
     /**
      * This will set the coordinates of the the vertices.
      *

@@ -32,7 +32,7 @@ public class FDFAnnotationFreeText extends FDFAnnotation
     /**
      * COS Model value for SubType entry.
      */
-    public static final String SUBTYPE ="FreeText";
+    public static final String SUBTYPE = "FreeText";
 
     /**
      * Default constructor.
@@ -40,7 +40,7 @@ public class FDFAnnotationFreeText extends FDFAnnotation
     public FDFAnnotationFreeText()
     {
         super();
-        annot.setName( COSName.SUBTYPE, SUBTYPE );
+        annot.setName(COSName.SUBTYPE, SUBTYPE);
     }
 
     /**
@@ -48,19 +48,19 @@ public class FDFAnnotationFreeText extends FDFAnnotation
      *
      * @param a An existing FDF Annotation.
      */
-    public FDFAnnotationFreeText( COSDictionary a )
+    public FDFAnnotationFreeText(COSDictionary a)
     {
-        super( a );
+        super(a);
     }
 
     /**
      * Constructor.
      *
-     *  @param element An XFDF element.
+     * @param element An XFDF element.
      *
-     *  @throws IOException If there is an error extracting information from the element.
+     * @throws IOException If there is an error extracting information from the element.
      */
-    public FDFAnnotationFreeText( Element element ) throws IOException
+    public FDFAnnotationFreeText(Element element) throws IOException
     {
         super(element);
         annot.setName(COSName.SUBTYPE, SUBTYPE);
@@ -72,7 +72,7 @@ public class FDFAnnotationFreeText extends FDFAnnotation
             setRotation(Integer.parseInt(rotation));
         }
     }
-    
+
     /**
      * This will set the form of quadding (justification) of the annotation text.
      * 

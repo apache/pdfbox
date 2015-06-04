@@ -34,7 +34,7 @@ public class FDFAnnotationCaret extends FDFAnnotation
     /**
      * COS Model value for SubType entry.
      */
-    public static final String SUBTYPE ="Caret";
+    public static final String SUBTYPE = "Caret";
 
     /**
      * Default constructor.
@@ -42,7 +42,7 @@ public class FDFAnnotationCaret extends FDFAnnotation
     public FDFAnnotationCaret()
     {
         super();
-        annot.setName( COSName.SUBTYPE, SUBTYPE );
+        annot.setName(COSName.SUBTYPE, SUBTYPE);
     }
 
     /**
@@ -50,9 +50,9 @@ public class FDFAnnotationCaret extends FDFAnnotation
      *
      * @param a An existing FDF Annotation.
      */
-    public FDFAnnotationCaret( COSDictionary a )
+    public FDFAnnotationCaret(COSDictionary a)
     {
-        super( a );
+        super(a);
     }
 
     /**
@@ -136,7 +136,7 @@ public class FDFAnnotationCaret extends FDFAnnotation
         }
         annot.setString(COSName.SY, newSymbol);
     }
-    
+
     /**
      * This will retrieve the symbol that shall be associated with the caret.
      * 

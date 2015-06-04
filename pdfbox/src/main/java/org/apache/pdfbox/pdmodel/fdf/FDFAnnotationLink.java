@@ -22,12 +22,15 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.w3c.dom.Element;
 
+/**
+ * This represents a Polygon FDF annotation.
+ */
 public class FDFAnnotationLink extends FDFAnnotation
 {
     /**
      * COS Model value for SubType entry.
      */
-    public static final String SUBTYPE ="Link";
+    public static final String SUBTYPE = "Link";
 
     /**
      * Default constructor.
@@ -35,7 +38,7 @@ public class FDFAnnotationLink extends FDFAnnotation
     public FDFAnnotationLink()
     {
         super();
-        annot.setName( COSName.SUBTYPE, SUBTYPE );
+        annot.setName(COSName.SUBTYPE, SUBTYPE);
     }
 
     /**
@@ -43,21 +46,21 @@ public class FDFAnnotationLink extends FDFAnnotation
      *
      * @param a An existing FDF Annotation.
      */
-    public FDFAnnotationLink( COSDictionary a )
+    public FDFAnnotationLink(COSDictionary a)
     {
-        super( a );
+        super(a);
     }
 
     /**
      * Constructor.
      *
-     *  @param element An XFDF element.
+     * @param element An XFDF element.
      *
-     *  @throws IOException If there is an error extracting information from the element.
+     * @throws IOException If there is an error extracting information from the element.
      */
-    public FDFAnnotationLink( Element element ) throws IOException
+    public FDFAnnotationLink(Element element) throws IOException
     {
-        super( element );
-        annot.setName( COSName.SUBTYPE, SUBTYPE );
+        super(element);
+        annot.setName(COSName.SUBTYPE, SUBTYPE);
     }
 }

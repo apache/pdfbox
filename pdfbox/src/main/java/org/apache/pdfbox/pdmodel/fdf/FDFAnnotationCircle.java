@@ -35,7 +35,7 @@ public class FDFAnnotationCircle extends FDFAnnotation
     /**
      * COS Model value for SubType entry.
      */
-    public static final String SUBTYPE ="Circle";
+    public static final String SUBTYPE = "Circle";
 
     /**
      * Default constructor.
@@ -43,7 +43,7 @@ public class FDFAnnotationCircle extends FDFAnnotation
     public FDFAnnotationCircle()
     {
         super();
-        annot.setName( COSName.SUBTYPE, SUBTYPE );
+        annot.setName(COSName.SUBTYPE, SUBTYPE);
     }
 
     /**
@@ -51,19 +51,19 @@ public class FDFAnnotationCircle extends FDFAnnotation
      *
      * @param a An existing FDF Annotation.
      */
-    public FDFAnnotationCircle( COSDictionary a )
+    public FDFAnnotationCircle(COSDictionary a)
     {
-        super( a );
+        super(a);
     }
 
     /**
      * Constructor.
      *
-     *  @param element An XFDF element.
+     * @param element An XFDF element.
      *
-     *  @throws IOException If there is an error extracting information from the element.
+     * @throws IOException If there is an error extracting information from the element.
      */
-    public FDFAnnotationCircle( Element element ) throws IOException
+    public FDFAnnotationCircle(Element element) throws IOException
     {
         super(element);
         annot.setName(COSName.SUBTYPE, SUBTYPE);
@@ -93,7 +93,7 @@ public class FDFAnnotationCircle extends FDFAnnotation
             setFringe(new PDRectangle(array));
         }
     }
-    
+
     /**
      * This will set interior color of the drawn area.
      *

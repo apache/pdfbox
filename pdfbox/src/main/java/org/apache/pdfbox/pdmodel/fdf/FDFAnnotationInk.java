@@ -46,7 +46,7 @@ public class FDFAnnotationInk extends FDFAnnotation
     /**
      * COS Model value for SubType entry.
      */
-    public static final String SUBTYPE ="Ink";
+    public static final String SUBTYPE = "Ink";
 
     /**
      * Default constructor.
@@ -54,7 +54,7 @@ public class FDFAnnotationInk extends FDFAnnotation
     public FDFAnnotationInk()
     {
         super();
-        annot.setName( COSName.SUBTYPE, SUBTYPE );
+        annot.setName(COSName.SUBTYPE, SUBTYPE);
     }
 
     /**
@@ -62,19 +62,19 @@ public class FDFAnnotationInk extends FDFAnnotation
      *
      * @param a An existing FDF Annotation.
      */
-    public FDFAnnotationInk( COSDictionary a )
+    public FDFAnnotationInk(COSDictionary a)
     {
-        super( a );
+        super(a);
     }
 
     /**
      * Constructor.
      *
-     *  @param element An XFDF element.
+     * @param element An XFDF element.
      *
-     *  @throws IOException If there is an error extracting information from the element.
+     * @throws IOException If there is an error extracting information from the element.
      */
-    public FDFAnnotationInk( Element element ) throws IOException
+    public FDFAnnotationInk(Element element) throws IOException
     {
         super(element);
         annot.setName(COSName.SUBTYPE, SUBTYPE);
@@ -110,13 +110,12 @@ public class FDFAnnotationInk extends FDFAnnotation
             LOG.debug("Error while evaluating XPath expression for inklist gestures");
         }
     }
-    
+
     /**
      * Set the paths making up the freehand "scribble".
      * 
-     * The ink annotation is made up of one ore more disjoint paths. Each array entry is an array 
-     * representing a stroked path, being a series of alternating horizontal and vertical coordinates
-     * in default user space.
+     * The ink annotation is made up of one ore more disjoint paths. Each array entry is an array representing a stroked
+     * path, being a series of alternating horizontal and vertical coordinates in default user space.
      * 
      * @param inklist the List of arrays representing the paths.
      */
