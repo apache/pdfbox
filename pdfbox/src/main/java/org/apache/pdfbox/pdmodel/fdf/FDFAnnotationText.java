@@ -34,7 +34,7 @@ public class FDFAnnotationText extends FDFAnnotation
     /**
      * COS Model value for SubType entry.
      */
-    public static final String SUBTYPE ="Text";
+    public static final String SUBTYPE = "Text";
 
     /**
      * Default constructor.
@@ -42,7 +42,7 @@ public class FDFAnnotationText extends FDFAnnotation
     public FDFAnnotationText()
     {
         super();
-        annot.setName( COSName.SUBTYPE, SUBTYPE );
+        annot.setName(COSName.SUBTYPE, SUBTYPE);
     }
 
     /**
@@ -50,19 +50,19 @@ public class FDFAnnotationText extends FDFAnnotation
      *
      * @param a An existing FDF Annotation.
      */
-    public FDFAnnotationText( COSDictionary a )
+    public FDFAnnotationText(COSDictionary a)
     {
-        super( a );
+        super(a);
     }
 
     /**
      * Constructor.
      *
-     *  @param element An XFDF element.
+     * @param element An XFDF element.
      *
-     *  @throws IOException If there is an error extracting information from the element.
+     * @throws IOException If there is an error extracting information from the element.
      */
-    public FDFAnnotationText( Element element ) throws IOException
+    public FDFAnnotationText(Element element) throws IOException
     {
         super(element);
         annot.setName(COSName.SUBTYPE, SUBTYPE);
@@ -82,7 +82,7 @@ public class FDFAnnotationText extends FDFAnnotation
             }
         }
     }
-    
+
     /**
      * This will set the icon (and hence appearance, AP taking precedence) For this annotation. See the
      * PDAnnotationText.NAME_XXX constants for valid values.

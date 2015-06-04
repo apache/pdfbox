@@ -32,7 +32,7 @@ public class FDFAnnotationUnderline extends FDFAnnotationTextMarkup
     /**
      * COS Model value for SubType entry.
      */
-    public static final String SUBTYPE ="Underline";
+    public static final String SUBTYPE = "Underline";
 
     /**
      * Default constructor.
@@ -40,7 +40,7 @@ public class FDFAnnotationUnderline extends FDFAnnotationTextMarkup
     public FDFAnnotationUnderline()
     {
         super();
-        annot.setName( COSName.SUBTYPE, SUBTYPE );
+        annot.setName(COSName.SUBTYPE, SUBTYPE);
     }
 
     /**
@@ -48,21 +48,21 @@ public class FDFAnnotationUnderline extends FDFAnnotationTextMarkup
      *
      * @param a An existing FDF Annotation.
      */
-    public FDFAnnotationUnderline( COSDictionary a )
+    public FDFAnnotationUnderline(COSDictionary a)
     {
-        super( a );
+        super(a);
     }
 
     /**
      * Constructor.
      *
-     *  @param element An XFDF element.
+     * @param element An XFDF element.
      *
-     *  @throws IOException If there is an error extracting information from the element.
+     * @throws IOException If there is an error extracting information from the element.
      */
-    public FDFAnnotationUnderline( Element element ) throws IOException
+    public FDFAnnotationUnderline(Element element) throws IOException
     {
-        super( element );
-        annot.setName( COSName.SUBTYPE, SUBTYPE );
+        super(element);
+        annot.setName(COSName.SUBTYPE, SUBTYPE);
     }
 }

@@ -43,7 +43,7 @@ public class FDFAnnotationPolyline extends FDFAnnotation
     /**
      * COS Model value for SubType entry.
      */
-    public static final String SUBTYPE ="Polyline";
+    public static final String SUBTYPE = "Polyline";
 
     /**
      * Default constructor.
@@ -51,7 +51,7 @@ public class FDFAnnotationPolyline extends FDFAnnotation
     public FDFAnnotationPolyline()
     {
         super();
-        annot.setName( COSName.SUBTYPE, SUBTYPE );
+        annot.setName(COSName.SUBTYPE, SUBTYPE);
     }
 
     /**
@@ -59,19 +59,19 @@ public class FDFAnnotationPolyline extends FDFAnnotation
      *
      * @param a An existing FDF Annotation.
      */
-    public FDFAnnotationPolyline( COSDictionary a )
+    public FDFAnnotationPolyline(COSDictionary a)
     {
-        super( a );
+        super(a);
     }
 
     /**
      * Constructor.
      *
-     *  @param element An XFDF element.
+     * @param element An XFDF element.
      *
-     *  @throws IOException If there is an error extracting information from the element.
+     * @throws IOException If there is an error extracting information from the element.
      */
-    public FDFAnnotationPolyline( Element element ) throws IOException
+    public FDFAnnotationPolyline(Element element) throws IOException
     {
         super(element);
         annot.setName(COSName.SUBTYPE, SUBTYPE);
@@ -115,7 +115,7 @@ public class FDFAnnotationPolyline extends FDFAnnotation
             setInteriorColor(new Color(colorValue));
         }
     }
-    
+
     /**
      * This will set the coordinates of the the vertices.
      *

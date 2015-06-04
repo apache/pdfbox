@@ -47,7 +47,7 @@ public class FDFTemplate implements COSObjectable
      *
      * @param t The FDF page template.
      */
-    public FDFTemplate( COSDictionary t )
+    public FDFTemplate(COSDictionary t)
     {
         template = t;
     }
@@ -71,10 +71,10 @@ public class FDFTemplate implements COSObjectable
     public FDFNamedPageReference getTemplateReference()
     {
         FDFNamedPageReference retval = null;
-        COSDictionary dict = (COSDictionary)template.getDictionaryObject( COSName.TREF );
-        if( dict != null )
+        COSDictionary dict = (COSDictionary) template.getDictionaryObject(COSName.TREF);
+        if (dict != null)
         {
-            retval = new FDFNamedPageReference( dict );
+            retval = new FDFNamedPageReference(dict);
         }
         return retval;
     }
@@ -84,9 +84,9 @@ public class FDFTemplate implements COSObjectable
      *
      * @param tRef The template reference.
      */
-    public void setTemplateReference( FDFNamedPageReference tRef )
+    public void setTemplateReference(FDFNamedPageReference tRef)
     {
-        template.setItem( COSName.TREF, tRef );
+        template.setItem(COSName.TREF, tRef);
     }
 
     /**
@@ -97,15 +97,15 @@ public class FDFTemplate implements COSObjectable
     public List<FDFField> getFields()
     {
         List<FDFField> retval = null;
-        COSArray array = (COSArray)template.getDictionaryObject( COSName.FIELDS );
-        if( array != null )
+        COSArray array = (COSArray) template.getDictionaryObject(COSName.FIELDS);
+        if (array != null)
         {
             List<FDFField> fields = new ArrayList<FDFField>();
-            for( int i=0; i<array.size(); i++ )
+            for (int i = 0; i < array.size(); i++)
             {
-                fields.add( new FDFField( (COSDictionary)array.getObject( i ) ) );
+                fields.add(new FDFField((COSDictionary) array.getObject(i)));
             }
-            retval = new COSArrayList<FDFField>( fields, array );
+            retval = new COSArrayList<FDFField>(fields, array);
         }
         return retval;
     }
@@ -115,9 +115,9 @@ public class FDFTemplate implements COSObjectable
      *
      * @param fields The list of fields to set for this template.
      */
-    public void setFields( List<FDFField> fields )
+    public void setFields(List<FDFField> fields)
     {
-        template.setItem( COSName.FIELDS, COSArrayList.converterToCOSArray( fields ) );
+        template.setItem(COSName.FIELDS, COSArrayList.converterToCOSArray(fields));
     }
 
     /**
@@ -127,7 +127,7 @@ public class FDFTemplate implements COSObjectable
      */
     public boolean shouldRename()
     {
-        return template.getBoolean( COSName.RENAME, false );
+        return template.getBoolean(COSName.RENAME, false);
     }
 
     /**
@@ -135,8 +135,8 @@ public class FDFTemplate implements COSObjectable
      *
      * @param value The flag value.
      */
-    public void setRename( boolean value )
+    public void setRename(boolean value)
     {
-        template.setBoolean( COSName.RENAME, value );
+        template.setBoolean(COSName.RENAME, value);
     }
 }

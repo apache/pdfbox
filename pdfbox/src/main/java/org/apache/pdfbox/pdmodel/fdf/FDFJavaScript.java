@@ -50,7 +50,7 @@ public class FDFJavaScript implements COSObjectable
      *
      * @param javaScript The FDF java script.
      */
-    public FDFJavaScript( COSDictionary javaScript )
+    public FDFJavaScript(COSDictionary javaScript)
     {
         dictionary = javaScript;
     }
@@ -73,14 +73,14 @@ public class FDFJavaScript implements COSObjectable
      */
     public String getBefore()
     {
-        COSBase base = dictionary.getDictionaryObject( COSName.BEFORE );
+        COSBase base = dictionary.getDictionaryObject(COSName.BEFORE);
         if (base instanceof COSString)
         {
-            return ((COSString)base).getString();
+            return ((COSString) base).getString();
         }
         else if (base instanceof COSStream)
         {
-            return ((COSStream)base).getString();
+            return ((COSStream) base).getString();
         }
         else
         {
@@ -93,7 +93,7 @@ public class FDFJavaScript implements COSObjectable
      *
      * @param before A reference to some javascript code.
      */
-    public void setBefore( String before )
+    public void setBefore(String before)
     {
         dictionary.setItem(COSName.BEFORE, new COSString(before));
     }
@@ -105,14 +105,14 @@ public class FDFJavaScript implements COSObjectable
      */
     public String getAfter()
     {
-        COSBase base = dictionary.getDictionaryObject( COSName.AFTER );
+        COSBase base = dictionary.getDictionaryObject(COSName.AFTER);
         if (base instanceof COSString)
         {
-            return ((COSString)base).getString();
+            return ((COSString) base).getString();
         }
         else if (base instanceof COSStream)
         {
-            return ((COSStream)base).getString();
+            return ((COSStream) base).getString();
         }
         else
         {
@@ -125,14 +125,14 @@ public class FDFJavaScript implements COSObjectable
      *
      * @param after A reference to some javascript code.
      */
-    public void setAfter( String after )
+    public void setAfter(String after)
     {
         dictionary.setItem(COSName.AFTER, new COSString(after));
     }
 
     /**
-     * Returns the dictionary's "Doc" entry, that is, a map of key value pairs to be added to
-     * the document's JavaScript name tree.
+     * Returns the dictionary's "Doc" entry, that is, a map of key value pairs to be added to the document's JavaScript
+     * name tree.
      * 
      * @return Map of named "JavaScript" dictionaries.
      */
@@ -146,7 +146,7 @@ public class FDFJavaScript implements COSObjectable
         }
         for (int i = 0; i < array.size(); i++)
         {
-            PDActionFactory.createAction((COSDictionary)array.getObject(i));
+            PDActionFactory.createAction((COSDictionary) array.getObject(i));
         }
         return map;
     }

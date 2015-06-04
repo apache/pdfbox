@@ -53,25 +53,25 @@ final class XMLUtil
      * @return The DOM document.
      * @throws IOException It there is an error creating the dom.
      */
-    public static Document parse( InputStream is ) throws IOException
+    public static Document parse(InputStream is) throws IOException
     {
         try
         {
             DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = builderFactory.newDocumentBuilder();
-            return builder.parse( is );
+            return builder.parse(is);
         }
-        catch (FactoryConfigurationError  e)
+        catch (FactoryConfigurationError e)
         {
-            throw new IOException( e.getMessage(), e );
+            throw new IOException(e.getMessage(), e);
         }
         catch (ParserConfigurationException e)
         {
-            throw new IOException( e.getMessage(), e );
+            throw new IOException(e.getMessage(), e);
         }
         catch (SAXException e)
         {
-            throw new IOException( e.getMessage(), e );
+            throw new IOException(e.getMessage(), e);
         }
     }
 
@@ -81,15 +81,15 @@ final class XMLUtil
      * @param node The node to get the text value for.
      * @return The text of the node.
      */
-    public static String getNodeValue( Element node )
+    public static String getNodeValue(Element node)
     {
         StringBuilder sb = new StringBuilder();
         NodeList children = node.getChildNodes();
         int numNodes = children.getLength();
-        for( int i=0; i<numNodes; i++ )
+        for (int i = 0; i < numNodes; i++)
         {
-            Node next = children.item( i );
-            if( next instanceof Text )
+            Node next = children.item(i);
+            if (next instanceof Text)
             {
                 sb.append(next.getNodeValue());
             }

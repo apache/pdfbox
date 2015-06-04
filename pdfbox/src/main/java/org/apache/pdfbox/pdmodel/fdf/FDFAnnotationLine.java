@@ -37,7 +37,7 @@ public class FDFAnnotationLine extends FDFAnnotation
     /**
      * COS Model value for SubType entry.
      */
-    public static final String SUBTYPE ="Line";
+    public static final String SUBTYPE = "Line";
 
     /**
      * Default constructor.
@@ -45,7 +45,7 @@ public class FDFAnnotationLine extends FDFAnnotation
     public FDFAnnotationLine()
     {
         super();
-        annot.setName( COSName.SUBTYPE, SUBTYPE );
+        annot.setName(COSName.SUBTYPE, SUBTYPE);
     }
 
     /**
@@ -53,19 +53,19 @@ public class FDFAnnotationLine extends FDFAnnotation
      *
      * @param a An existing FDF Annotation.
      */
-    public FDFAnnotationLine( COSDictionary a )
+    public FDFAnnotationLine(COSDictionary a)
     {
-        super( a );
+        super(a);
     }
 
     /**
      * Constructor.
      *
-     *  @param element An XFDF element.
+     * @param element An XFDF element.
      *
-     *  @throws IOException If there is an error extracting information from the element.
+     * @throws IOException If there is an error extracting information from the element.
      */
-    public FDFAnnotationLine( Element element ) throws IOException
+    public FDFAnnotationLine(Element element) throws IOException
     {
         super(element);
         annot.setName(COSName.SUBTYPE, SUBTYPE);
@@ -153,7 +153,7 @@ public class FDFAnnotationLine extends FDFAnnotation
             setCaptionStyle(captionStyle);
         }
     }
-    
+
     /**
      * This will set start and end coordinates of the line (or leader line if LL entry is set).
      *

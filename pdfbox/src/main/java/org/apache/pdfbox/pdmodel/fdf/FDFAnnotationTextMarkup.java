@@ -51,9 +51,9 @@ public abstract class FDFAnnotationTextMarkup extends FDFAnnotation
     /**
      * Constructor.
      *
-     *  @param element An XFDF element.
+     * @param element An XFDF element.
      *
-     *  @throws IOException If there is an error extracting information from the element.
+     * @throws IOException If there is an error extracting information from the element.
      */
     public FDFAnnotationTextMarkup(Element element) throws IOException
     {
@@ -77,12 +77,11 @@ public abstract class FDFAnnotationTextMarkup extends FDFAnnotation
         setCoords(values);
     }
 
-    
     /**
      * Set the coordinates of individual words or group of words.
      * 
-     * The quadliterals shall encompasses a word or group of contiguous words in the text underlying the annotation.
-     * The coordinates for each quadrilateral shall be given in the order x1 y1 x2 y2 x3 y3 x4 y4.
+     * The quadliterals shall encompasses a word or group of contiguous words in the text underlying the annotation. The
+     * coordinates for each quadrilateral shall be given in the order x1 y1 x2 y2 x3 y3 x4 y4.
      *
      * @param coords an array of 8 􏰍 n numbers specifying the coordinates of n quadrilaterals.
      */
@@ -95,6 +94,7 @@ public abstract class FDFAnnotationTextMarkup extends FDFAnnotation
 
     /**
      * Get the coordinates of individual words or group of words.
+     * 
      * @see #setCoords(float[])
      * @return the array of 8 􏰍 n numbers specifying the coordinates of n quadrilaterals.
      */

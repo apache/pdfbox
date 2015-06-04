@@ -47,7 +47,7 @@ public class FDFCatalog implements COSObjectable
      *
      * @param cat The FDF documents catalog.
      */
-    public FDFCatalog( COSDictionary cat )
+    public FDFCatalog(COSDictionary cat)
     {
         catalog = cat;
     }
@@ -58,11 +58,11 @@ public class FDFCatalog implements COSObjectable
      * @param element The XML document that contains the XFDF data.
      * @throws IOException If there is an error reading from the dom.
      */
-    public FDFCatalog( Element element )
+    public FDFCatalog(Element element)
     {
         this();
-        FDFDictionary fdfDict = new FDFDictionary( element );
-        setFDF( fdfDict );
+        FDFDictionary fdfDict = new FDFDictionary(element);
+        setFDF(fdfDict);
     }
 
     /**
@@ -72,10 +72,10 @@ public class FDFCatalog implements COSObjectable
      *
      * @throws IOException If there is an error writing the XML.
      */
-    public void writeXML( Writer output ) throws IOException
+    public void writeXML(Writer output) throws IOException
     {
         FDFDictionary fdf = getFDF();
-        fdf.writeXML( output );
+        fdf.writeXML(output);
     }
 
     /**
@@ -96,7 +96,7 @@ public class FDFCatalog implements COSObjectable
      */
     public String getVersion()
     {
-        return catalog.getNameAsString( COSName.VERSION );
+        return catalog.getNameAsString(COSName.VERSION);
     }
 
     /**
@@ -104,9 +104,9 @@ public class FDFCatalog implements COSObjectable
      *
      * @param version The new version for the FDF document.
      */
-    public void setVersion( String version )
+    public void setVersion(String version)
     {
-        catalog.setName( COSName.VERSION, version );
+        catalog.setName(COSName.VERSION, version);
     }
 
     /**
@@ -116,16 +116,16 @@ public class FDFCatalog implements COSObjectable
      */
     public FDFDictionary getFDF()
     {
-        COSDictionary fdf = (COSDictionary)catalog.getDictionaryObject( COSName.FDF );
+        COSDictionary fdf = (COSDictionary) catalog.getDictionaryObject(COSName.FDF);
         FDFDictionary retval;
-        if( fdf != null )
+        if (fdf != null)
         {
-            retval = new FDFDictionary( fdf );
+            retval = new FDFDictionary(fdf);
         }
         else
         {
             retval = new FDFDictionary();
-            setFDF( retval );
+            setFDF(retval);
         }
         return retval;
     }
@@ -135,9 +135,9 @@ public class FDFCatalog implements COSObjectable
      *
      * @param fdf The new FDF dictionary.
      */
-    public void setFDF( FDFDictionary fdf )
+    public void setFDF(FDFDictionary fdf)
     {
-        catalog.setItem( COSName.FDF, fdf );
+        catalog.setItem(COSName.FDF, fdf);
     }
 
     /**
@@ -148,10 +148,10 @@ public class FDFCatalog implements COSObjectable
     public PDSignature getSignature()
     {
         PDSignature signature = null;
-        COSDictionary sig = (COSDictionary)catalog.getDictionaryObject( COSName.SIG );
-        if( sig != null )
+        COSDictionary sig = (COSDictionary) catalog.getDictionaryObject(COSName.SIG);
+        if (sig != null)
         {
-            signature = new PDSignature( sig );
+            signature = new PDSignature(sig);
         }
         return signature;
     }
@@ -161,8 +161,8 @@ public class FDFCatalog implements COSObjectable
      *
      * @param sig The new signature.
      */
-    public void setSignature( PDSignature sig )
+    public void setSignature(PDSignature sig)
     {
-        catalog.setItem( COSName.SIG, sig );
+        catalog.setItem(COSName.SIG, sig);
     }
 }

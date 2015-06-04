@@ -36,7 +36,7 @@ public class FDFAnnotationSquare extends FDFAnnotation
     /**
      * COS Model value for SubType entry.
      */
-    public static final String SUBTYPE ="Square";
+    public static final String SUBTYPE = "Square";
 
     /**
      * Default constructor.
@@ -44,7 +44,7 @@ public class FDFAnnotationSquare extends FDFAnnotation
     public FDFAnnotationSquare()
     {
         super();
-        annot.setName( COSName.SUBTYPE, SUBTYPE );
+        annot.setName(COSName.SUBTYPE, SUBTYPE);
     }
 
     /**
@@ -52,19 +52,19 @@ public class FDFAnnotationSquare extends FDFAnnotation
      *
      * @param a An existing FDF Annotation.
      */
-    public FDFAnnotationSquare( COSDictionary a )
+    public FDFAnnotationSquare(COSDictionary a)
     {
-        super( a );
+        super(a);
     }
 
     /**
      * Constructor.
      *
-     *  @param element An XFDF element.
+     * @param element An XFDF element.
      *
-     *  @throws IOException If there is an error extracting information from the element.
+     * @throws IOException If there is an error extracting information from the element.
      */
-    public FDFAnnotationSquare( Element element ) throws IOException
+    public FDFAnnotationSquare(Element element) throws IOException
     {
         super(element);
         annot.setName(COSName.SUBTYPE, SUBTYPE);
@@ -94,7 +94,7 @@ public class FDFAnnotationSquare extends FDFAnnotation
             setFringe(new PDRectangle(array));
         }
     }
-    
+
     /**
      * This will set interior color of the drawn area.
      *
