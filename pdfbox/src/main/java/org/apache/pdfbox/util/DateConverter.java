@@ -673,6 +673,11 @@ public class DateConverter
             longestLen = whereLen;
             longestDate = retCal;
         }
+        
+        if (startPosition >= text.length())
+        {
+            return null;
+        }
 
         // try one of the sets of standard formats
         where.setIndex(startPosition);
@@ -780,7 +785,7 @@ public class DateConverter
         Calendar val = toCalendar(text, null);
         if (val != null && val.get(Calendar.YEAR) == INVALID_YEAR)  
         {
-            throw new IOException("Error converting date: " + text);
+            throw new IOException("Error converting date: '" + text + "'");
         }
         return val;
     }
