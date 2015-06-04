@@ -26,14 +26,14 @@ import org.apache.pdfbox.cos.COSDictionary;
 public class PDAnnotationUnknown extends PDAnnotation
 {
 
-   /**
-     * Creates an arbitary annotation from a COSDictionary, expected to be
-     * a correct object definition for some sort of annotation.
+    /**
+     * Creates an arbitary annotation from a COSDictionary, expected to be a correct object definition for some sort of
+     * annotation.
      *
      * @param dic The dictionary which represents this Annotation.
      */
     public PDAnnotationUnknown(COSDictionary dic)
     {
-        super( dic );
+        super(dic);
     }
 }

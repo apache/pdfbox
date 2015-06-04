@@ -20,8 +20,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 
 /**
- * This is the class that represents a rubber stamp annotation.
- * Introduced in PDF 1.3 specification
+ * This is the class that represents a rubber stamp annotation. Introduced in PDF 1.3 specification
  *
  * @author Paul King
  */
@@ -29,8 +28,7 @@ public class PDAnnotationRubberStamp extends PDAnnotationMarkup
 {
 
     /*
-     * The various values of the rubber stamp as defined in
-     * the PDF 1.6 reference Table 8.28
+     * The various values of the rubber stamp as defined in the PDF 1.6 reference Table 8.28
      */
 
     /**
@@ -101,34 +99,33 @@ public class PDAnnotationRubberStamp extends PDAnnotationMarkup
     public PDAnnotationRubberStamp()
     {
         super();
-        getCOSObject().setItem( COSName.SUBTYPE, COSName.getPDFName( SUB_TYPE ) );
+        getCOSObject().setItem(COSName.SUBTYPE, COSName.getPDFName(SUB_TYPE));
     }
 
     /**
-     * Creates a Rubber Stamp annotation from a COSDictionary, expected to be
-     * a correct object definition.
+     * Creates a Rubber Stamp annotation from a COSDictionary, expected to be a correct object definition.
      *
      * @param field the PDF objet to represent as a field.
      */
     public PDAnnotationRubberStamp(COSDictionary field)
     {
-        super( field );
+        super(field);
     }
 
     /**
-     * This will set the name (and hence appearance, AP taking precedence)
-     * For this annotation.   See the NAME_XXX constants for valid values.
+     * This will set the name (and hence appearance, AP taking precedence) For this annotation. See the NAME_XXX
+     * constants for valid values.
      *
      * @param name The name of the rubber stamp.
      */
-    public void setName( String name )
+    public void setName(String name)
     {
         getCOSObject().setName(COSName.NAME, name);
     }
 
     /**
-     * This will retrieve the name (and hence appearance, AP taking precedence)
-     * For this annotation.  The default is DRAFT.
+     * This will retrieve the name (and hence appearance, AP taking precedence) For this annotation. The default is
+     * DRAFT.
      *
      * @return The name of this rubber stamp, see the NAME_XXX constants.
      */

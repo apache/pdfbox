@@ -200,8 +200,7 @@ public abstract class PDAnnotation implements COSObjectable
         PDRectangle rectangle = null;
         if (rectArray != null)
         {
-            if (rectArray.size() == 4
-                    && rectArray.get(0) instanceof COSNumber
+            if (rectArray.size() == 4 && rectArray.get(0) instanceof COSNumber
                     && rectArray.get(1) instanceof COSNumber
                     && rectArray.get(2) instanceof COSNumber
                     && rectArray.get(3) instanceof COSNumber)
@@ -258,8 +257,8 @@ public abstract class PDAnnotation implements COSObjectable
     }
 
     /**
-     * Returns the annotations appearance state, which selects the applicable appearance stream
-     * from an appearance subdictionary.
+     * Returns the annotations appearance state, which selects the applicable appearance stream from an appearance
+     * subdictionary.
      */
     public COSName getAppearanceState()
     {
@@ -319,8 +318,8 @@ public abstract class PDAnnotation implements COSObjectable
     }
 
     /**
-     * Returns the appearance stream for this annotation, if any. The annotation state is taken
-     * into account, if present.
+     * Returns the appearance stream for this annotation, if any. The annotation state is taken into account, if
+     * present.
      */
     public PDAppearanceStream getNormalAppearanceStream()
     {
@@ -354,7 +353,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public boolean isInvisible()
     {
-        return getCOSObject().getFlag( COSName.F, FLAG_INVISIBLE);
+        return getCOSObject().getFlag(COSName.F, FLAG_INVISIBLE);
     }
 
     /**
@@ -364,7 +363,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public void setInvisible(boolean invisible)
     {
-        getCOSObject().setFlag( COSName.F, FLAG_INVISIBLE, invisible);
+        getCOSObject().setFlag(COSName.F, FLAG_INVISIBLE, invisible);
     }
 
     /**
@@ -374,7 +373,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public boolean isHidden()
     {
-        return getCOSObject().getFlag( COSName.F, FLAG_HIDDEN);
+        return getCOSObject().getFlag(COSName.F, FLAG_HIDDEN);
     }
 
     /**
@@ -384,7 +383,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public void setHidden(boolean hidden)
     {
-        getCOSObject().setFlag( COSName.F, FLAG_HIDDEN, hidden);
+        getCOSObject().setFlag(COSName.F, FLAG_HIDDEN, hidden);
     }
 
     /**
@@ -394,7 +393,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public boolean isPrinted()
     {
-        return getCOSObject().getFlag( COSName.F, FLAG_PRINTED);
+        return getCOSObject().getFlag(COSName.F, FLAG_PRINTED);
     }
 
     /**
@@ -404,7 +403,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public void setPrinted(boolean printed)
     {
-        getCOSObject().setFlag( COSName.F, FLAG_PRINTED, printed);
+        getCOSObject().setFlag(COSName.F, FLAG_PRINTED, printed);
     }
 
     /**
@@ -414,7 +413,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public boolean isNoZoom()
     {
-        return getCOSObject().getFlag( COSName.F, FLAG_NO_ZOOM);
+        return getCOSObject().getFlag(COSName.F, FLAG_NO_ZOOM);
     }
 
     /**
@@ -424,7 +423,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public void setNoZoom(boolean noZoom)
     {
-        getCOSObject().setFlag( COSName.F, FLAG_NO_ZOOM, noZoom);
+        getCOSObject().setFlag(COSName.F, FLAG_NO_ZOOM, noZoom);
     }
 
     /**
@@ -434,7 +433,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public boolean isNoRotate()
     {
-        return getCOSObject().getFlag( COSName.F, FLAG_NO_ROTATE);
+        return getCOSObject().getFlag(COSName.F, FLAG_NO_ROTATE);
     }
 
     /**
@@ -444,7 +443,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public void setNoRotate(boolean noRotate)
     {
-        getCOSObject().setFlag( COSName.F, FLAG_NO_ROTATE, noRotate);
+        getCOSObject().setFlag(COSName.F, FLAG_NO_ROTATE, noRotate);
     }
 
     /**
@@ -454,7 +453,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public boolean isNoView()
     {
-        return getCOSObject().getFlag( COSName.F, FLAG_NO_VIEW);
+        return getCOSObject().getFlag(COSName.F, FLAG_NO_VIEW);
     }
 
     /**
@@ -464,7 +463,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public void setNoView(boolean noView)
     {
-        getCOSObject().setFlag( COSName.F, FLAG_NO_VIEW, noView);
+        getCOSObject().setFlag(COSName.F, FLAG_NO_VIEW, noView);
     }
 
     /**
@@ -474,7 +473,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public boolean isReadOnly()
     {
-        return getCOSObject().getFlag( COSName.F, FLAG_READ_ONLY);
+        return getCOSObject().getFlag(COSName.F, FLAG_READ_ONLY);
     }
 
     /**
@@ -484,7 +483,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public void setReadOnly(boolean readOnly)
     {
-        getCOSObject().setFlag( COSName.F, FLAG_READ_ONLY, readOnly);
+        getCOSObject().setFlag(COSName.F, FLAG_READ_ONLY, readOnly);
     }
 
     /**
@@ -494,7 +493,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public boolean isLocked()
     {
-        return getCOSObject().getFlag( COSName.F, FLAG_LOCKED);
+        return getCOSObject().getFlag(COSName.F, FLAG_LOCKED);
     }
 
     /**
@@ -504,7 +503,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public void setLocked(boolean locked)
     {
-        getCOSObject().setFlag( COSName.F, FLAG_LOCKED, locked);
+        getCOSObject().setFlag(COSName.F, FLAG_LOCKED, locked);
     }
 
     /**
@@ -514,7 +513,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public boolean isToggleNoView()
     {
-        return getCOSObject().getFlag( COSName.F, FLAG_TOGGLE_NO_VIEW);
+        return getCOSObject().getFlag(COSName.F, FLAG_TOGGLE_NO_VIEW);
     }
 
     /**
@@ -524,7 +523,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public void setToggleNoView(boolean toggleNoView)
     {
-        getCOSObject().setFlag( COSName.F, FLAG_TOGGLE_NO_VIEW, toggleNoView);
+        getCOSObject().setFlag(COSName.F, FLAG_TOGGLE_NO_VIEW, toggleNoView);
     }
 
     /**
@@ -624,12 +623,12 @@ public abstract class PDAnnotation implements COSObjectable
     }
 
     /**
-     * This will retrieve the color used in drawing various elements. As of PDF
-     * 1.6 these are :
+     * This will retrieve the color used in drawing various elements. As of PDF 1.6 these are :
      * <ul>
      * <li>Background of icon when closed</li>
      * <li>Title bar of popup window</li>
-     * <li>Border of a link annotation</li></ul>
+     * <li>Border of a link annotation</li>
+     * </ul>
      *
      * @return Color object representing the colour
      * 
@@ -647,17 +646,17 @@ public abstract class PDAnnotation implements COSObjectable
             PDColorSpace colorSpace = null;
             switch (((COSArray) c).size())
             {
-                case 1:
-                    colorSpace = PDDeviceGray.INSTANCE;
-                    break;
-                case 3:
-                    colorSpace = PDDeviceRGB.INSTANCE;
-                    break;
-                case 4:
-                    colorSpace = PDDeviceCMYK.INSTANCE;
-                    break;
-                default:
-                    break;
+            case 1:
+                colorSpace = PDDeviceGray.INSTANCE;
+                break;
+            case 3:
+                colorSpace = PDDeviceRGB.INSTANCE;
+                break;
+            case 4:
+                colorSpace = PDDeviceCMYK.INSTANCE;
+                break;
+            default:
+                break;
             }
             return new PDColor((COSArray) c, colorSpace);
         }

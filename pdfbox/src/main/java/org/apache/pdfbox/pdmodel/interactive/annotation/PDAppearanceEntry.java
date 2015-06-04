@@ -27,8 +27,7 @@ import org.apache.pdfbox.pdmodel.common.COSDictionaryMap;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 /**
- * An entry in an appearance dictionary. May contain either a single appearance stream or an
- * appearance subdictionary.
+ * An entry in an appearance dictionary. May contain either a single appearance stream or an appearance subdictionary.
  *
  * @author John Hewson
  */
@@ -42,6 +41,7 @@ public class PDAppearanceEntry implements COSObjectable
 
     /**
      * Constructor for reading.
+     * 
      * @param entry
      */
     public PDAppearanceEntry(COSBase entry)
@@ -82,7 +82,7 @@ public class PDAppearanceEntry implements COSObjectable
         {
             throw new IllegalStateException();
         }
-        return new PDAppearanceStream((COSStream)entry);
+        return new PDAppearanceStream((COSStream) entry);
     }
 
     /**
@@ -97,7 +97,7 @@ public class PDAppearanceEntry implements COSObjectable
             throw new IllegalStateException();
         }
 
-        COSDictionary dict = (COSDictionary)entry;
+        COSDictionary dict = (COSDictionary) entry;
         Map<COSName, PDAppearanceStream> map = new HashMap<COSName, PDAppearanceStream>();
 
         for (COSName name : dict.keySet())
@@ -105,12 +105,12 @@ public class PDAppearanceEntry implements COSObjectable
             COSBase value = dict.getDictionaryObject(name);
 
             // the file from PDFBOX-1599 contains /null as its entry, so we skip non-stream entries
-            if(value instanceof COSStream)
+            if (value instanceof COSStream)
             {
-                map.put(name, new PDAppearanceStream((COSStream)value));
+                map.put(name, new PDAppearanceStream((COSStream) value));
             }
         }
 
-        return new COSDictionaryMap<COSName, PDAppearanceStream>( map, dict );
+        return new COSDictionaryMap<COSName, PDAppearanceStream>(map, dict);
     }
 }
