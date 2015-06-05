@@ -27,6 +27,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 
@@ -69,7 +70,7 @@ public class FDFParser extends COSParser
      */
     public FDFParser(InputStream input) throws IOException
     {
-        pdfSource = copyInputStream(input);
+        pdfSource = new RandomAccessBuffer(input);
         fileLen = pdfSource.length();
         init();
     }

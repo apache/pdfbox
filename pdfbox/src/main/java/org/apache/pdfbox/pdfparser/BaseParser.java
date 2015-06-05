@@ -160,20 +160,7 @@ public abstract class BaseParser implements Closeable
      */
     public BaseParser(InputStream input) throws IOException
     {
-        pdfSource = copyInputStream(input);
-    }
-
-    protected RandomAccessRead copyInputStream(InputStream input) throws IOException
-    {
-        RandomAccessBuffer buffer = new RandomAccessBuffer();
-        byte[] byteBuffer = new byte[8192];
-        int bytesRead = 0;
-        while ((bytesRead = input.read(byteBuffer)) > -1)
-        {
-            buffer.write(byteBuffer, 0, bytesRead);
-        }
-        buffer.seek(0);
-        return buffer;    
+        pdfSource = new RandomAccessBuffer(input);
     }
 
     private static boolean isHexDigit(char ch)
