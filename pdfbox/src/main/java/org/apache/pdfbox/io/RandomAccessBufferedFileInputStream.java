@@ -17,6 +17,8 @@
 package org.apache.pdfbox.io;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
@@ -36,11 +38,16 @@ import java.util.Map;
 public class RandomAccessBufferedFileInputStream
 extends InputStream implements RandomAccessRead
 {
+    /**
+     * The prefix for the temp file being used. 
+     */
+    private static final String TMP_FILE_PREFIX = "tmpPDFBox";
 
     private int pageSizeShift = 12;
     private int pageSize = 1 << pageSizeShift;
     private long pageOffsetMask = -1L << pageSizeShift;
     private int maxCachedPages = 1000;
+    private File tempFile;
 
     private byte[] lastRemovedCachePage = null;
 
@@ -71,13 +78,58 @@ extends InputStream implements RandomAccessRead
     private long fileOffset = 0;
     private boolean isClosed;
     
-    /** Create input stream instance for given file. */
-    public RandomAccessBufferedFileInputStream( File file ) throws IOException 
+    /** 
+     * Create a random access input stream instance for the given file.
+     *
+     * @param the file to be read
+     * @exception if the given file can't be found
+     */
+    public RandomAccessBufferedFileInputStream( File file ) throws FileNotFoundException 
     {
         raFile = new RandomAccessFile(file, "r");
         fileLength = file.length();
+    }
 
-        seek(0);
+    /** 
+     * Create a random access input stream for the given input stream 
+     * by copying the data to a temporary file.
+     * 
+     * @param the input stream to be read
+     * @exception if something went wrong while creating the temporary file
+     */
+    public RandomAccessBufferedFileInputStream( InputStream input ) throws IOException 
+    {
+        tempFile = createTmpFile(input);
+        fileLength = tempFile.length();
+        raFile = new RandomAccessFile(tempFile, "r");
+    }
+
+    private File createTmpFile(InputStream input) throws IOException
+    {
+        FileOutputStream fos = null;
+        try
+        {
+            File tmpFile = File.createTempFile(TMP_FILE_PREFIX, ".pdf");
+            fos = new FileOutputStream(tmpFile);
+            IOUtils.copy(input, fos);
+            return tmpFile;
+        }
+        finally
+        {
+            IOUtils.closeQuietly(input);
+            IOUtils.closeQuietly(fos);
+        }
+    }
+
+    /**
+     * Remove the temporary file. A temporary file is created if this class is instantiated with an InputStream
+     */
+    private void deleteTempFile()
+    {
+        if (tempFile != null)
+        {
+            tempFile.delete();
+        }
     }
 
     /** Returns offset in file at which next byte would be read. */
@@ -238,6 +290,7 @@ extends InputStream implements RandomAccessRead
     public void close() throws IOException
     {
         raFile.close();
+        deleteTempFile();
         pageCache.clear();
         isClosed = true;
     }
