@@ -18,6 +18,7 @@ package org.apache.pdfbox.io;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,6 +60,24 @@ public class RandomAccessBuffer implements RandomAccess, Closeable, Cloneable
         size = 0;
         bufferListIndex = 0;
         bufferListMaxIndex = 0;
+    }
+
+    /**
+     * Create a random access buffer of the given input stream by copying the data.
+     * 
+     * @param input the input stream to be read
+     * @throws IOException if something went wrong while copyint the data
+     */
+    public RandomAccessBuffer(InputStream input) throws IOException
+    {
+        this();
+        byte[] byteBuffer = new byte[8192];
+        int bytesRead = 0;
+        while ((bytesRead = input.read(byteBuffer)) > -1)
+        {
+            write(byteBuffer, 0, bytesRead);
+        }
+        seek(0);
     }
 
     @Override
