@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.pdfbox.cos.COSDocument;
+import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible.PDVisibleSigProperties;
 
@@ -70,7 +71,7 @@ public class SignatureOptions implements Closeable
      */
     public void setVisualSignature(File file) throws IOException
     { 
-        PDFParser parser = new PDFParser(file);
+        PDFParser parser = new PDFParser(new RandomAccessBufferedFileInputStream(file));
         parser.parse();
         visualSignature = parser.getDocument();
     }
@@ -83,7 +84,7 @@ public class SignatureOptions implements Closeable
      */
     public void setVisualSignature(InputStream is) throws IOException
     { 
-        PDFParser parser = new PDFParser(is);
+        PDFParser parser = new PDFParser(new RandomAccessBufferedFileInputStream(is));
         parser.parse();
         visualSignature = parser.getDocument();
     }
@@ -138,6 +139,7 @@ public class SignatureOptions implements Closeable
      *
      * @throws IOException if the document could not be closed
      */
+    @Override
     public void close() throws IOException
     {
         if (visualSignature != null)

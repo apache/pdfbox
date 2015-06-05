@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
@@ -37,7 +38,9 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
+import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdfparser.BaseParser;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdfwriter.COSWriter;
@@ -748,7 +751,7 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * Parses PDF with non sequential parser.
+     * Parses a PDF.
      * 
      * @param file file to be loaded
      * 
@@ -762,7 +765,7 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * Parses PDF with non sequential parser.
+     * Parses a PDF.
      * 
      * @param file file to be loaded
      * @param useScratchFiles enables the usage of a scratch file if set to true
@@ -777,7 +780,7 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * Parses PDF with non sequential parser.
+     * Parses a PDF.
      * 
      * @param file file to be loaded
      * @param password password to be used for decryption
@@ -792,7 +795,7 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * Parses PDF with non sequential parser.
+     * Parses a PDF.
      * 
      * @param file file to be loaded
      * @param password password to be used for decryption
@@ -808,7 +811,7 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * Parses PDF with non sequential parser.
+     * Parses a PDF.
      * 
      * @param file file to be loaded
      * @param password password to be used for decryption
@@ -826,7 +829,7 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * Parses PDF with non sequential parser.
+     * Parses a PDF.
      * 
      * @param file file to be loaded
      * @param password password to be used for decryption
@@ -841,7 +844,8 @@ public class PDDocument implements Closeable
     public static PDDocument load(File file, String password, InputStream keyStore, String alias,
             boolean useScratchFiles) throws IOException
     {
-        PDFParser parser = new PDFParser(file, password, keyStore, alias, useScratchFiles);
+        RandomAccessBufferedFileInputStream raFile = new RandomAccessBufferedFileInputStream(file);
+        PDFParser parser = new PDFParser(raFile, password, keyStore, alias, useScratchFiles);
         parser.parse();
         PDDocument doc = parser.getPDDocument();
         doc.incrementalFile = file;
@@ -849,7 +853,7 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * Parses PDF with non sequential parser.
+     * Parses a PDF. The given input stream is copied to the memory to enable random access to the pdf.
      * 
      * @param input stream that contains the document.
      * 
@@ -863,7 +867,9 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * Parses PDF with non sequential parser.
+     * Parses a PDF. Depending on the parameter useScratchFiles the given input
+     * stream is either copied to the memory or to a temporary file to enable
+     * random access to the pdf.
      * 
      * @param input stream that contains the document.
      * @param useScratchFiles enables the usage of a scratch file if set to true
@@ -878,7 +884,7 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * Parses PDF with non sequential parser.
+     * Parses a PDF. The given input stream is copied to the memory to enable random access to the pdf.
      * 
      * @param input stream that contains the document.
      * @param password password to be used for decryption
@@ -894,7 +900,7 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * Parses PDF with non sequential parser.
+     * Parses a PDF. The given input stream is copied to the memory to enable random access to the pdf.
      * 
      * @param input stream that contains the document.
      * @param password password to be used for decryption
@@ -912,7 +918,9 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * Parses PDF with non sequential parser.
+     * Parses a PDF. Depending on the parameter useScratchFiles the given input
+     * stream is either copied to the memory or to a temporary file to enable
+     * random access to the pdf.
      * 
      * @param input stream that contains the document.
      * @param password password to be used for decryption
@@ -924,13 +932,24 @@ public class PDDocument implements Closeable
      */
     public static PDDocument load(InputStream input, String password, boolean useScratchFiles) throws IOException
     {
-        PDFParser parser = new PDFParser(input, password, null, null, useScratchFiles);
+        RandomAccessRead source = null;
+        if (useScratchFiles)
+        {
+            source = new RandomAccessBufferedFileInputStream(input);
+        }
+        else
+        {
+            source = new RandomAccessBuffer(input);
+        }
+        PDFParser parser = new PDFParser(source, password, null, null, useScratchFiles);
         parser.parse();
         return parser.getPDDocument();
     }
     
     /**
-     * Parses PDF with non sequential parser.
+     * Parses a PDF. Depending on the parameter useScratchFiles the given input
+     * stream is either copied to the memory or to a temporary file to enable
+     * random access to the pdf.
      * 
      * @param input stream that contains the document.
      * @param password password to be used for decryption
@@ -945,7 +964,16 @@ public class PDDocument implements Closeable
     public static PDDocument load(InputStream input, String password, InputStream keyStore, 
             String alias, boolean useScratchFiles) throws IOException
     {
-        PDFParser parser = new PDFParser(input, password, keyStore, alias, useScratchFiles);
+        RandomAccessRead source = null;
+        if (useScratchFiles)
+        {
+            source = new RandomAccessBufferedFileInputStream(input);
+        }
+        else
+        {
+            source = new RandomAccessBuffer(input);
+        }
+        PDFParser parser = new PDFParser(source, password, keyStore, alias, useScratchFiles);
         parser.parse();
         return parser.getPDDocument();
     }

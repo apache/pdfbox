@@ -67,6 +67,7 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSObjectKey;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
 import org.apache.pdfbox.pdfparser.PDFObjectStreamParser;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdfparser.XrefTrailerResolver.XRefType;
@@ -98,7 +99,7 @@ public class PreflightParser extends PDFParser
 
     public PreflightParser(File file) throws IOException
     {
-        super(file);
+        super(new RandomAccessBufferedFileInputStream(file));
         this.setLenient(false);
         this.originalDocument = new FileDataSource(file);
     }
@@ -110,7 +111,7 @@ public class PreflightParser extends PDFParser
 
     public PreflightParser(DataSource input) throws IOException
     {
-        super(input.getInputStream());
+        super(new RandomAccessBufferedFileInputStream(input.getInputStream()));
         this.setLenient(false);
         this.originalDocument = input;
     }

@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdfparser;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
@@ -30,7 +29,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
+import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.DecryptionMaterial;
@@ -49,194 +48,76 @@ public class PDFParser extends COSParser
     private AccessPermission accessPermission;
 
     /**
-     * Constructs parser for given file using memory buffer.
+     * Constructor.
      * 
-     * @param filename the filename of the pdf to be parsed
-     * 
+     * @param input source representing the pdf.
      * @throws IOException If something went wrong.
      */
-    public PDFParser(String filename) throws IOException
+    public PDFParser(RandomAccessRead source) throws IOException
     {
-        this(new File(filename), null, false);
-    }
-
-    /**
-     * Constructs parser for given file using memory buffer.
-     * 
-     * @param filename the filename of the pdf to be parsed.
-     * @param useScratchFiles use a buffer for temporary storage.
-     * 
-     * @throws IOException If something went wrong.
-     */
-    public PDFParser(String filename, boolean useScratchFiles) throws IOException
-    {
-        this(new File(filename), null, useScratchFiles);
-    }
-
-    /**
-     * Constructs parser for given file using given buffer for temporary
-     * storage.
-     * 
-     * @param file the pdf to be parsed
-     * 
-     * @throws IOException If something went wrong.
-     */
-    public PDFParser(File file) throws IOException
-    {
-        this(file, "", false);
-    }
-
-    /**
-     * Constructs parser for given file using given buffer for temporary
-     * storage.
-     * 
-     * @param file the pdf to be parsed
-     * @param useScratchFiles use a buffer for temporary storage.
-     * 
-     * @throws IOException If something went wrong.
-     */
-    public PDFParser(File file, boolean useScratchFiles) throws IOException
-    {
-        this(file, "", useScratchFiles);
-    }
-
-    /**
-     * Constructs parser for given file using given buffer for temporary storage.
-     * 
-     * @param file the pdf to be parsed
-     * @param decryptionPassword password to be used for decryption
-     * 
-     * @throws IOException If something went wrong.
-     */
-    public PDFParser(File file, String decryptionPassword) throws IOException
-    {
-        this (file, decryptionPassword, false);
-    }
-
-    /**
-     * Constructs parser for given file using given buffer for temporary storage.
-     * 
-     * @param file the pdf to be parsed.
-     * @param decryptionPassword password to be used for decryption.
-     * @param useScratchFiles use a buffer for temporary storage.
-     * 
-     * @throws IOException If something went wrong.
-     */
-    public PDFParser(File file, String decryptionPassword, boolean useScratchFiles)
-            throws IOException
-    {
-        this(file, decryptionPassword, null, null, useScratchFiles);
-    }
-
-    /**
-     * Constructs parser for given file using given buffer for temporary storage.
-     * 
-     * @param file the pdf to be parsed.
-     * @param decryptionPassword password to be used for decryption.
-     * @param keyStore key store to be used for decryption when using public key security 
-     * @param alias alias to be used for decryption when using public key security
-     * 
-     * @throws IOException If something went wrong.
-     */
-    public PDFParser(File file, String decryptionPassword, InputStream keyStore, String alias)
-            throws IOException
-    {
-        this(file, decryptionPassword, keyStore, alias, false);
-    }
-
-    /**
-     * Constructs parser for given file using given buffer for temporary storage.
-     * 
-     * @param file the pdf to be parsed.
-     * @param decryptionPassword password to be used for decryption.
-     * @param keyStore key store to be used for decryption when using public key security 
-     * @param alias alias to be used for decryption when using public key security
-     * @param useScratchFiles use a buffer for temporary storage.
-     * 
-     * @throws IOException If something went wrong.
-     */
-    public PDFParser(File file, String decryptionPassword, InputStream keyStore, String alias,
-            boolean useScratchFiles) throws IOException
-    {
-        fileLen = file.length();
-        pdfSource = new RandomAccessBufferedFileInputStream(file);
-        password = decryptionPassword;
-        keyStoreInputStream = keyStore;
-        keyAlias = alias;
-        init(useScratchFiles);
+        this(source, "", false);
     }
 
     /**
      * Constructor.
      * 
-     * @param input input stream representing the pdf.
+     * @param source input representing the pdf.
+     * @param useScratchFiles use a file based buffer for temporary storage.
+     * 
      * @throws IOException If something went wrong.
      */
-    public PDFParser(InputStream input) throws IOException
+    public PDFParser(RandomAccessRead source, boolean useScratchFiles) throws IOException
     {
-        this(input, "", false);
+        this(source, "", useScratchFiles);
     }
 
     /**
      * Constructor.
      * 
-     * @param input input stream representing the pdf.
-     * @param useScratchFiles use a buffer for temporary storage.
-     * 
-     * @throws IOException If something went wrong.
-     */
-    public PDFParser(InputStream input, boolean useScratchFiles) throws IOException
-    {
-        this(input, "", useScratchFiles);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param input input stream representing the pdf.
+     * @param source input representing the pdf.
      * @param decryptionPassword password to be used for decryption.
      * @throws IOException If something went wrong.
      */
-    public PDFParser(InputStream input, String decryptionPassword) throws IOException
+    public PDFParser(RandomAccessRead source, String decryptionPassword) throws IOException
     {
-        this(input, decryptionPassword, false);
+        this(source, decryptionPassword, false);
     }
 
     /**
      * Constructor.
      * 
-     * @param input input stream representing the pdf.
+     * @param source input representing the pdf.
      * @param decryptionPassword password to be used for decryption.
-     * @param useScratchFiles use a buffer for temporary storage.
+     * @param useScratchFiles use a file based buffer for temporary storage.
      *
      * @throws IOException If something went wrong.
      */
-    public PDFParser(InputStream input, String decryptionPassword, boolean useScratchFiles)
+    public PDFParser(RandomAccessRead source, String decryptionPassword, boolean useScratchFiles)
             throws IOException
     {
-        this(input, decryptionPassword, null, null, useScratchFiles);
+        this(source, decryptionPassword, null, null, useScratchFiles);
     }
 
     /**
      * Constructor.
      * 
-     * @param input input stream representing the pdf.
+     * @param source input representing the pdf.
      * @param decryptionPassword password to be used for decryption.
      * @param keyStore key store to be used for decryption when using public key security 
      * @param alias alias to be used for decryption when using public key security
      *
      * @throws IOException If something went wrong.
      */
-    public PDFParser(InputStream input, String decryptionPassword, InputStream keyStore,
+    public PDFParser(RandomAccessRead source, String decryptionPassword, InputStream keyStore,
             String alias) throws IOException
     {
-        this(input, decryptionPassword, keyStore, alias, false);
+        this(source, decryptionPassword, keyStore, alias, false);
     }
 
     /**
      * Constructor.
      * 
-     * @param input input stream representing the pdf.
+     * @param source input representing the pdf.
      * @param decryptionPassword password to be used for decryption.
      * @param keyStore key store to be used for decryption when using public key security 
      * @param alias alias to be used for decryption when using public key security
@@ -244,18 +125,11 @@ public class PDFParser extends COSParser
      *
      * @throws IOException If something went wrong.
      */
-    public PDFParser(InputStream input, String decryptionPassword, InputStream keyStore,
+    public PDFParser(RandomAccessRead source, String decryptionPassword, InputStream keyStore,
             String alias, boolean useScratchFiles) throws IOException
     {
-        if (useScratchFiles)
-        {
-            pdfSource = new RandomAccessBufferedFileInputStream(input);
-        }
-        else
-        {
-            pdfSource = copyInputStream(input);
-            fileLen = pdfSource.length();
-        }
+        pdfSource = source;
+        fileLen = source.length();
         password = decryptionPassword;
         keyStoreInputStream = keyStore;
         keyAlias = alias;
