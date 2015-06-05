@@ -79,6 +79,19 @@ extends InputStream implements RandomAccessRead
     private boolean isClosed;
     
     /** 
+     * Create a random access input stream instance for the file with the given name.
+     *
+     * @param the filename of the file to be read
+     * @exception if the given file can't be found
+     */
+    public RandomAccessBufferedFileInputStream( String filename ) throws FileNotFoundException 
+    {
+        File file = new File(filename);
+        raFile = new RandomAccessFile(file, "r");
+        fileLength = file.length();
+    }
+
+    /** 
      * Create a random access input stream instance for the given file.
      *
      * @param the file to be read
