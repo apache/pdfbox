@@ -31,7 +31,6 @@ import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
-import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.DecryptionMaterial;
@@ -48,8 +47,6 @@ public class PDFParser extends COSParser
     private String keyAlias = null;
 
     private AccessPermission accessPermission;
-
-    private File tempPDFFile;
 
     /**
      * Constructs parser for given file using memory buffer.
@@ -252,9 +249,7 @@ public class PDFParser extends COSParser
     {
         if (useScratchFiles)
         {
-            tempPDFFile = createTmpFile(input);
-            fileLen = tempPDFFile.length();
-            pdfSource = new RandomAccessBufferedFileInputStream(tempPDFFile);
+            pdfSource = new RandomAccessBufferedFileInputStream(input);
         }
         else
         {
@@ -361,33 +356,11 @@ public class PDFParser extends COSParser
         {
             IOUtils.closeQuietly(pdfSource);
             IOUtils.closeQuietly(keyStoreInputStream);
-            deleteTempFile();
     
             if (exceptionOccurred && document != null)
             {
                 IOUtils.closeQuietly(document);
                 document = null;
-            }
-        }
-    }
-
-    /**
-     * Remove the temporary file. A temporary file is created if this class is instantiated with an InputStream
-     */
-    private void deleteTempFile()
-    {
-        if (tempPDFFile != null)
-        {
-            try
-            {
-                if (!tempPDFFile.delete())
-                {
-                    LOG.warn("Temporary file '" + tempPDFFile.getName() + "' can't be deleted");
-                }
-            }
-            catch (SecurityException e)
-            {
-                LOG.warn("Temporary file '" + tempPDFFile.getName() + "' can't be deleted", e);
             }
         }
     }
