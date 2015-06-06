@@ -98,17 +98,10 @@ public class PDFStreamParser extends BaseParser
      */
     public void parse() throws IOException
     {
-        try
+        Object token;
+        while( (token = parseNextToken()) != null )
         {
-            Object token;
-            while( (token = parseNextToken()) != null )
-            {
-                streamObjects.add( token );
-            }
-        }
-        finally
-        {
-            pdfSource.close();
+            streamObjects.add( token );
         }
     }
 

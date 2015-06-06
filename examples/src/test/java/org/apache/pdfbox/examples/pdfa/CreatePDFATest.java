@@ -62,7 +62,6 @@ public class CreatePDFATest extends TestCase
         }
         assertTrue("PDF file created with CreatePDFA is not valid PDF/A-1b", result.isValid());
         preflightDocument.close();
-        preflightParser.close();
     }
     
 }

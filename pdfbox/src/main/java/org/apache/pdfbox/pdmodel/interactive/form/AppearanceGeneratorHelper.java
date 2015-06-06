@@ -117,7 +117,6 @@ class AppearanceGeneratorHelper
         PDFStreamParser parser = new PDFStreamParser(stream);
         parser.parse();
         List<Object> tokens = parser.getTokens();
-        parser.close();
         return tokens;
     }
 

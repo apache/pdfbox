@@ -91,8 +91,8 @@ public class PDDocument implements Closeable
     // this ID doesn't represent the actual documentId from the trailer
     private Long documentId;
 
-    // the PDF parser
-    private final BaseParser parser;
+    // the pdf to be read
+    private final RandomAccessRead pdfSource;
 
     // the File to read incremental data from
     private File incrementalFile;
@@ -124,7 +124,7 @@ public class PDDocument implements Closeable
     public PDDocument(boolean useScratchFiles)
     {
         document = new COSDocument(useScratchFiles);
-        parser = null;
+        pdfSource = null;
 
         // First we need a trailer
         COSDictionary trailer = new COSDictionary();
@@ -555,25 +555,25 @@ public class PDDocument implements Closeable
      * Constructor that uses an existing document. The COSDocument that is passed in must be valid.
      * 
      * @param doc The COSDocument that this document wraps.
-     * @param usedParser the parser which is used to read the pdf
+     * @param source the parser which is used to read the pdf
      */
-    public PDDocument(COSDocument doc, BaseParser usedParser)
+    public PDDocument(COSDocument doc, RandomAccessRead source)
     {
-        this(doc, usedParser, null);
+        this(doc, source, null);
     }
 
     /**
      * Constructor that uses an existing document. The COSDocument that is passed in must be valid.
      * 
      * @param doc The COSDocument that this document wraps.
-     * @param usedParser the parser which is used to read the pdf
+     * @param source the parser which is used to read the pdf
      * @param permission he access permissions of the pdf
      * 
      */
-    public PDDocument(COSDocument doc, BaseParser usedParser, AccessPermission permission)
+    public PDDocument(COSDocument doc, RandomAccessRead source, AccessPermission permission)
     {
         document = doc;
-        parser = usedParser;
+        pdfSource = source;
         accessPermission = permission;
     }
 
@@ -1107,9 +1107,9 @@ public class PDDocument implements Closeable
             document.close();
             
             // close the source PDF stream, if we read from one
-            if (parser != null)
+            if (pdfSource != null)
             {
-                parser.close();
+                pdfSource.close();
             }
         }
     }
