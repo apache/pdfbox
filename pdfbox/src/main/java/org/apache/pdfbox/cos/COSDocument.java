@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdfparser.PDFObjectStreamParser;
 
 /**
@@ -74,10 +75,8 @@ public class COSDocument extends COSBase implements Closeable
     private boolean closed = false;
 
     private boolean isXRefStream;
-    
-    private final File scratchDirectory;
-    
-    private final boolean useScratchFile;
+
+    private ScratchFile scratchFile;
 
     /**
      * Constructor.
@@ -102,8 +101,17 @@ public class COSDocument extends COSBase implements Closeable
      */
     public COSDocument(File scratchDir, boolean useScratchFiles)
     {
-        scratchDirectory = scratchDir;
-        useScratchFile = useScratchFiles;
+        if (useScratchFiles)
+        {
+            try 
+            {
+                scratchFile = new ScratchFile(scratchDir);
+            }
+            catch (IOException e)
+            {
+                LOG.error("Can't create temp file, using memory buffer instead", e);
+            }
+        }
     }
 
     /**
@@ -121,7 +129,7 @@ public class COSDocument extends COSBase implements Closeable
      */
     public COSStream createCOSStream()
     {
-        return new COSStream( useScratchFile, scratchDirectory);
+        return new COSStream(scratchFile);
     }
 
     /**
@@ -133,7 +141,7 @@ public class COSDocument extends COSBase implements Closeable
      */
     public COSStream createCOSStream(COSDictionary dictionary)
     {
-        return new COSStream( dictionary, useScratchFile, scratchDirectory );
+        return new COSStream( dictionary, scratchFile );
     }
 
     /**
@@ -423,6 +431,11 @@ public class COSDocument extends COSBase implements Closeable
                         ((COSStream)cosObject).close();
                     }
                 }
+            }
+
+            if (scratchFile != null)
+            {
+                scratchFile.close();
             }
             closed = true;
         }
