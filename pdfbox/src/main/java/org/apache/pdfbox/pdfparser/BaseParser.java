@@ -47,7 +47,7 @@ import static org.apache.pdfbox.util.Charsets.ISO_8859_1;
  *
  * @author Ben Litchfield
  */
-public abstract class BaseParser implements Closeable
+public abstract class BaseParser
 {
 
     private static final long OBJECT_NUMBER_THRESHOLD = 10000000000L;
@@ -1522,12 +1522,4 @@ public abstract class BaseParser implements Closeable
         return buffer;
     }
     
-    @Override
-    public void close() throws IOException
-    {
-        if (pdfSource != null)
-        {
-            pdfSource.close();
-        }
-    }
 }

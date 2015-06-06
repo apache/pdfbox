@@ -147,7 +147,6 @@ public class FDFParser extends COSParser
         }
         finally
         {
-            IOUtils.closeQuietly(pdfSource);
             if (exceptionOccurred && document != null)
             {
                 IOUtils.closeQuietly(document);

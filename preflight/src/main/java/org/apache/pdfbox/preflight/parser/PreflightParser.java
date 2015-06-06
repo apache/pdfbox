@@ -99,6 +99,7 @@ public class PreflightParser extends PDFParser
 
     public PreflightParser(File file) throws IOException
     {
+        // TODO move file handling outside of the parser
         super(new RandomAccessBufferedFileInputStream(file));
         this.setLenient(false);
         this.originalDocument = new FileDataSource(file);
@@ -106,11 +107,13 @@ public class PreflightParser extends PDFParser
 
     public PreflightParser(String filename) throws IOException
     {
+        // TODO move file handling outside of the parser
         this(new File(filename));
     }
 
     public PreflightParser(DataSource input) throws IOException
     {
+        // TODO move file handling outside of the parser
         super(new RandomAccessBufferedFileInputStream(input.getInputStream()));
         this.setLenient(false);
         this.originalDocument = input;
@@ -803,7 +806,6 @@ public class PreflightParser extends PDFParser
                     // parse object stream
                     PDFObjectStreamParser parser = new PDFObjectStreamParser((COSStream) objstmBaseObj, document);
                     parser.parse();
-                    parser.close();
 
                     // get set of object numbers referenced for this object stream
                     final Set<Long> refObjNrs = xrefTrailerResolver.getContainedObjectNumbers(objstmObjNr);

@@ -800,7 +800,6 @@ public class COSParser extends BaseParser
             // parse object stream
             PDFObjectStreamParser parser = new PDFObjectStreamParser((COSStream) objstmBaseObj, document);
             parser.parse();
-            parser.close();
 
             // get set of object numbers referenced for this object stream
             final Set<Long> refObjNrs = xrefTrailerResolver.getContainedObjectNumbers(objstmObjNr);
@@ -1867,7 +1866,6 @@ public class COSParser extends BaseParser
         }        
         PDFXrefStreamParser parser = new PDFXrefStreamParser( stream, document, xrefTrailerResolver );
         parser.parse();
-        parser.close();
     }
 
     /**
