@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.cos.COSStream;
 
 /**
  * A temporary file which can hold multiple buffers of temporary data. A new temporary file is created for each new
@@ -36,7 +35,7 @@ import org.apache.pdfbox.cos.COSStream;
  */
 public class ScratchFile implements Closeable
 {
-    private static final Log LOG = LogFactory.getLog(COSStream.class);
+    private static final Log LOG = LogFactory.getLog(ScratchFile.class);
     private File file;
     private java.io.RandomAccessFile raf;
 
