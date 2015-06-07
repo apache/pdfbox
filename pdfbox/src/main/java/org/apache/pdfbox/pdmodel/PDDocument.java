@@ -978,6 +978,56 @@ public class PDDocument implements Closeable
     }
 
     /**
+     * Parses a PDF.
+     * 
+     * @param input byte array that contains the document.
+     * 
+     * @return loaded document
+     * 
+     * @throws IOException in case of a file reading or parsing error
+     */
+    public static PDDocument load(byte[] input) throws IOException
+    {
+        return load(input, "");
+    }
+
+    /**
+     * Parses a PDF.
+     * 
+     * @param input byte array that contains the document.
+     * @param password password to be used for decryption
+     * 
+     * @return loaded document
+     * 
+     * @throws IOException in case of a file reading or parsing error
+     */
+    public static PDDocument load(byte[] input, String password) throws IOException
+    {
+        return load(input, password, null, null);
+    }
+
+    /**
+     * Parses a PDF.
+     * 
+     * @param input byte array that contains the document.
+     * @param password password to be used for decryption
+     * @param keyStore key store to be used for decryption when using public key security 
+     * @param alias alias to be used for decryption when using public key security
+     * 
+     * @return loaded document
+     * 
+     * @throws IOException in case of a file reading or parsing error
+     */
+    public static PDDocument load(byte[] input, String password, InputStream keyStore, 
+            String alias) throws IOException
+    {
+        RandomAccessRead source = new RandomAccessBuffer(input);
+        PDFParser parser = new PDFParser(source, password, keyStore, alias, false);
+        parser.parse();
+        return parser.getPDDocument();
+    }
+
+    /**
      * Save the document to a file.
      * 
      * @param fileName The file to save as.
