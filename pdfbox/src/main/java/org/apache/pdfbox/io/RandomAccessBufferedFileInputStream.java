@@ -82,25 +82,24 @@ extends InputStream implements RandomAccessRead
      * Create a random access input stream instance for the file with the given name.
      *
      * @param filename the filename of the file to be read.
-     * @throws FileNotFoundException if the given file can't be found.
+     * @throws IOException if something went wrong while accessing the given file.
      */
-    public RandomAccessBufferedFileInputStream( String filename ) throws FileNotFoundException 
+    public RandomAccessBufferedFileInputStream( String filename ) throws IOException 
     {
-        File file = new File(filename);
-        raFile = new RandomAccessFile(file, "r");
-        fileLength = file.length();
+        this(new File(filename));
     }
 
     /** 
      * Create a random access input stream instance for the given file.
      *
      * @param file the file to be read.
-     * @throws FileNotFoundException if the given file can't be found.
+     * @throws IOException if something went wrong while accessing the given file.
      */
-    public RandomAccessBufferedFileInputStream( File file ) throws FileNotFoundException 
+    public RandomAccessBufferedFileInputStream( File file ) throws IOException 
     {
         raFile = new RandomAccessFile(file, "r");
         fileLength = file.length();
+        seek(0);
     }
 
     /**
@@ -115,6 +114,7 @@ extends InputStream implements RandomAccessRead
         tempFile = createTmpFile(input);
         fileLength = tempFile.length();
         raFile = new RandomAccessFile(tempFile, "r");
+        seek(0);
     }
 
     private File createTmpFile(InputStream input) throws IOException
