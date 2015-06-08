@@ -57,6 +57,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import org.apache.pdfbox.tools.pdfdebugger.colorpane.CSSeparation;
 import org.apache.pdfbox.tools.util.FileOpenSaveDialog;
 import org.apache.pdfbox.tools.pdfdebugger.ui.Tree;
@@ -77,8 +79,8 @@ public class PDFDebugger extends javax.swing.JFrame
     private PDDocument document = null;
     private String currentFilePath = null;
 
-    List<COSName> specialColorSpaces =
-            Arrays.asList(COSName.INDEXED, COSName.SEPARATION, COSName.DEVICEN);
+    private static final Set<COSName> SPECIALCOLORSPACES =
+            new HashSet(Arrays.asList(COSName.INDEXED, COSName.SEPARATION, COSName.DEVICEN));
 
     private static final String PASSWORD = "-password";
 
@@ -316,7 +318,7 @@ public class PDFDebugger extends javax.swing.JFrame
             if (arrayEntry instanceof COSName)
             {
                 COSName name = (COSName) arrayEntry;
-                return specialColorSpaces.contains(name);
+                return SPECIALCOLORSPACES.contains(name);
             }
         }
         return false;
