@@ -68,7 +68,8 @@ public class PDSeparation extends PDSpecialColorSpace
 
     /**
      * Creates a new Separation color space from a PDF color space array.
-     * @param separation an array containing all separation information
+     * @param separation an array containing all separation information.
+     * @throws IOException if the color space or the function could not be created.
      */
     public PDSeparation(COSArray separation) throws IOException
     {
