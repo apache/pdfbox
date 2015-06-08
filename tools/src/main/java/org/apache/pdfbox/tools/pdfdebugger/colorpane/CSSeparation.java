@@ -77,7 +77,7 @@ public class CSSeparation implements ChangeListener, ActionListener
      */
     private void initUI()
     {
-        Font boldFont = new Font("Monospaced", Font.BOLD, 20);
+        Font boldFont = new Font(Font.MONOSPACED, Font.BOLD, 20);
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(2, 2, 2, 2);
@@ -90,11 +90,11 @@ public class CSSeparation implements ChangeListener, ActionListener
 
         Dictionary labelTable = new Hashtable();
         JLabel lightest = new JLabel("lightest");
-        lightest.setFont(new Font("Monospaced", Font.BOLD, 10));
+        lightest.setFont(new Font(Font.MONOSPACED, Font.BOLD, 10));
         JLabel darkest = new JLabel("darkest");
-        darkest.setFont(new Font("Monospaced", Font.BOLD, 10));
+        darkest.setFont(new Font(Font.MONOSPACED, Font.BOLD, 10));
         JLabel midPoint = new JLabel("0.5");
-        midPoint.setFont(new Font("Monospaced", Font.BOLD, 10));
+        midPoint.setFont(new Font(Font.MONOSPACED, Font.BOLD, 10));
         labelTable.put(0, lightest);
         labelTable.put(50, midPoint);
         labelTable.put(100, darkest);
