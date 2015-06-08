@@ -50,7 +50,7 @@ public class PDFParser extends COSParser
     /**
      * Constructor.
      * 
-     * @param input source representing the pdf.
+     * @param source source representing the pdf.
      * @throws IOException If something went wrong.
      */
     public PDFParser(RandomAccessRead source) throws IOException
