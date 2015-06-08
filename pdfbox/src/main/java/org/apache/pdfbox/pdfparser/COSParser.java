@@ -18,10 +18,7 @@ package org.apache.pdfbox.pdfparser;
 
 import static org.apache.pdfbox.util.Charsets.ISO_8859_1;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,7 +48,6 @@ import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSObjectKey;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdfparser.XrefTrailerResolver.XRefType;
 import org.apache.pdfbox.pdmodel.encryption.SecurityHandler;
 
@@ -155,17 +151,6 @@ public class COSParser extends BaseParser
      */
     public COSParser()
     {
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param input inputStream of the pdf to be read
-     * @throws IOException if something went wrong
-     */
-    public COSParser(InputStream input) throws IOException
-    {
-        super(input);
     }
 
     /**
@@ -1884,31 +1869,6 @@ public class COSParser extends BaseParser
             throw new IOException( "You must call parse() before calling getDocument()" );
         }
         return document;
-    }
-
-    /**
-     * Create a temporary file with the input stream. The caller must take care
-     * to delete this file at end of the parse method.
-     *
-     * @param input
-     * @return the temporary file
-     * @throws IOException If something went wrong.
-     */
-    File createTmpFile(InputStream input) throws IOException
-    {
-        FileOutputStream fos = null;
-        try
-        {
-            File tmpFile = File.createTempFile(TMP_FILE_PREFIX, ".pdf");
-            fos = new FileOutputStream(tmpFile);
-            IOUtils.copy(input, fos);
-            return tmpFile;
-        }
-        finally
-        {
-            IOUtils.closeQuietly(input);
-            IOUtils.closeQuietly(fos);
-        }
     }
 
     /**
