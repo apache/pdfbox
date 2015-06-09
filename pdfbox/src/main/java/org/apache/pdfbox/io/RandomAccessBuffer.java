@@ -230,7 +230,14 @@ public class RandomAccessBuffer implements RandomAccess, Closeable, Cloneable
             nextBuffer();
             remainingBytes = chunkSize;
         }
-        if (maxLength >= remainingBytes)
+        if (maxLength == remainingBytes)
+        {
+            // copy the remaining bytes from the current buffer
+            System.arraycopy(currentBuffer, (int)currentBufferPointer, b, offset, (int)remainingBytes);
+            // end of file reached
+            currentBufferPointer += remainingBytes;
+        }
+        else if (maxLength > remainingBytes)
         {
             // copy the first bytes from the current buffer
             System.arraycopy(currentBuffer, (int)currentBufferPointer, b, offset, (int)remainingBytes);
