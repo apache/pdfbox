@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.tools.gui;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -40,8 +41,6 @@ public class PDFPagePanel extends JPanel
 
     private PDFRenderer renderer;
     private int pageNum;
-    private Dimension pageDimension = null;
-    private Dimension drawDimension = null;
 
     /**
      * This will set the page that should be displayed in this panel.
@@ -57,7 +56,8 @@ public class PDFPagePanel extends JPanel
         this.pageNum = pageNum;
 
         PDRectangle cropBox = page.getCropBox();
-        drawDimension = new Dimension((int)cropBox.getWidth(), (int)cropBox.getHeight());
+        Dimension drawDimension = new Dimension((int) cropBox.getWidth(), (int) cropBox.getHeight());
+        Dimension pageDimension;
         int rotationAngle = page.getRotation();
         if (rotationAngle == 90 || rotationAngle == 270)
         {
@@ -68,7 +68,7 @@ public class PDFPagePanel extends JPanel
             pageDimension = drawDimension;
         }
         setSize(pageDimension);
-        setBackground(java.awt.Color.white);
+        setBackground(Color.white);
     }
 
     /**
