@@ -92,18 +92,17 @@ public class PDFTreeModel implements TreeModel
     }
 
     /**
-     * Returns the child of <code>parent</code> at index <code>index</code>
-     * in the parent's
-     * child array.  <code>parent</code> must be a node previously obtained
-     * from this data source. This should not return <code>null</code>
-     * if <code>index</code>
-     * is a valid index for <code>parent</code> (that is <code>index &gt;= 0 &&
+     * Returns the child of <code>parent</code> at index <code>index</code> in the parent's child
+     * array. <code>parent</code> must be a node previously obtained from this data source. This
+     * should not return <code>null</code> if <code>index</code> is a valid index for
+     * <code>parent</code> (that is <code>index &gt;= 0 &&
      * index &lt; getChildCount(parent</code>)).
      *
-     * @param   parent  a node in the tree, obtained from this data source
+     * @param parent a node in the tree, obtained from this data source
      * @param index The index into the parent object to location the child object.
-     * @return  the child of <code>parent</code> at index <code>index</code>
-     *
+     * @return the child of <code>parent</code> at index <code>index</code>
+     * @throws IllegalArgumentException if an unknown unknown COS type is passed as parent
+     * parameter.
      */
     @Override
     public Object getChild(Object parent, int index)
@@ -146,7 +145,7 @@ public class PDFTreeModel implements TreeModel
         }
         else
         {
-            throw new RuntimeException( "Unknown COS type " + parent.getClass().getName() );
+            throw new IllegalArgumentException("Unknown COS type " + parent.getClass().getName());
         }
         return retval;
     }
@@ -191,15 +190,15 @@ public class PDFTreeModel implements TreeModel
         return retval;
     }
 
-    /** Returns the index of child in parent.  If <code>parent</code>
-     * is <code>null</code> or <code>child</code> is <code>null</code>,
-     * returns -1.
+    /**
+     * Returns the index of child in parent. If <code>parent</code> is <code>null</code> or
+     * <code>child</code> is <code>null</code>, returns -1.
      *
-     * @param parent a note in the tree, obtained from this data source
+     * @param parent a node in the tree, obtained from this data source
      * @param child the node we are interested in
-     * @return the index of the child in the parent, or -1 if either
-     *    <code>child</code> or <code>parent</code> are <code>null</code>
-     *
+     * @return the index of the child in the parent, or -1 if either <code>child</code> or
+     * <code>parent</code> are <code>null</code>
+     * @throws IllegalArgumentException if an unknown unknown COS type is passed as parent parameter.
      */
     @Override
     public int getIndexOfChild(Object parent, Object child)
@@ -252,7 +251,7 @@ public class PDFTreeModel implements TreeModel
             }
             else
             {
-                throw new RuntimeException( "Unknown COS type " + parent.getClass().getName() );
+                throw new IllegalArgumentException("Unknown COS type " + parent.getClass().getName());
             }
         }
         return retval;
