@@ -289,6 +289,7 @@ public final class ImageIOUtil
 
     // sets the DPI metadata
     private static void setDPI(IIOMetadata metadata, int dpi, String formatName)
+            throws IIOInvalidTreeException
     {
         IIOMetadataNode root = (IIOMetadataNode) metadata.getAsTree(MetaUtil.STANDARD_METADATA_FORMAT);
 
@@ -309,14 +310,6 @@ public final class ImageIOUtil
         child = getOrCreateChildNode(dimension, "VerticalPixelSize");
         child.setAttribute("value", Double.toString(res));
 
-        try
-        {
-            metadata.mergeTree(MetaUtil.STANDARD_METADATA_FORMAT, root);
-        }
-        catch (IIOInvalidTreeException e)
-        {
-            // should never happen
-            throw new RuntimeException(e);
-        }
+        metadata.mergeTree(MetaUtil.STANDARD_METADATA_FORMAT, root);
     }
 }
