@@ -32,7 +32,7 @@ import org.apache.pdfbox.tools.PDFDebugger;
  */
 public class FileOpenSaveDialog
 {
-    private PDFDebugger mainUI;
+    private final PDFDebugger mainUI;
 
     private static final JFileChooser fileChooser = new JFileChooser() 
     {
