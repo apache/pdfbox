@@ -563,7 +563,7 @@ public class PDFReader extends JFrame
 
     private void showPage(int pageNumber) throws IOException
     {
-        PageWrapper wrapper = new PageWrapper(this);
+        PageWrapper wrapper = new PageWrapper(getBottomStatusPanel().getStatusLabel());
         wrapper.displayPage(renderer, pages.get(pageNumber), pageNumber);
         if (documentPanel.getComponentCount() > 0)
         {
