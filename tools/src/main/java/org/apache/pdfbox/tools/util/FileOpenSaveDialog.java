@@ -22,7 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import org.apache.pdfbox.tools.ExtensionFileFilter;
+import javax.swing.filechooser.FileFilter;
 import org.apache.pdfbox.tools.PDFDebugger;
 
 /**
@@ -61,7 +61,7 @@ public class FileOpenSaveDialog
      * @param parentUI the main UI (JFrame) on top of which File open/save dialog should open.
      * @param fileFilter file Filter, null is allowed when no filter is applicable.
      */
-    public FileOpenSaveDialog(PDFDebugger parentUI, ExtensionFileFilter fileFilter)
+    public FileOpenSaveDialog(PDFDebugger parentUI, FileFilter fileFilter)
     {
         mainUI = parentUI;
         fileChooser.setFileFilter(fileFilter);

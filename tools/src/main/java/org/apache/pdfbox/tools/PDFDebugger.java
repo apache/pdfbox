@@ -59,6 +59,7 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+import javax.swing.filechooser.FileFilter;
 import org.apache.pdfbox.tools.pdfdebugger.colorpane.CSSeparation;
 import org.apache.pdfbox.tools.util.FileOpenSaveDialog;
 import org.apache.pdfbox.tools.pdfdebugger.ui.Tree;
@@ -250,7 +251,7 @@ public class PDFDebugger extends javax.swing.JFrame
 
     private void openMenuItemActionPerformed(ActionEvent evt)
     {
-        ExtensionFileFilter pdfFilter = new ExtensionFileFilter(new String[] {"pdf", "PDF"}, "PDF Files");
+        FileFilter pdfFilter = new ExtensionFileFilter(new String[] {"pdf", "PDF"}, "PDF Files");
         FileOpenSaveDialog openDialog = new FileOpenSaveDialog(this, pdfFilter);
         try
         {
