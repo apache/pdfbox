@@ -121,10 +121,6 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
         {
             result = "Array";
         }
-        else if (nodeValue instanceof COSString)
-        {
-            result = ((COSString) nodeValue).getString();
-        }
         return result;
 
     }
