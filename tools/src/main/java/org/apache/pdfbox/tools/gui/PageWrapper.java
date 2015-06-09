@@ -17,23 +17,24 @@
 
 package org.apache.pdfbox.tools.gui;
 
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.rendering.PDFRenderer;
-
-import javax.swing.JPanel;
-import javax.swing.border.LineBorder;
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.IOException;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.border.LineBorder;
+
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.rendering.PDFRenderer;
 
 
 /**
  * A class to handle some prettyness around a single PDF page.
  * @author Ben Litchfield
  */
-public class PageWrapper implements MouseMotionListener
+public class PageWrapper implements MouseMotionListener, MouseListener
 {
     private final JPanel pageWrapper = new JPanel();
     private PDFPagePanel pagePanel = null;
@@ -55,6 +56,7 @@ public class PageWrapper implements MouseMotionListener
         pagePanel.setLocation(SPACE_AROUND_DOCUMENT, SPACE_AROUND_DOCUMENT);
         pageWrapper.setBorder(LineBorder.createBlackLineBorder());
         pagePanel.addMouseMotionListener(this);
+        pagePanel.addMouseListener(this);
     }
 
     /**
@@ -97,4 +99,31 @@ public class PageWrapper implements MouseMotionListener
     {
         statusLabel.setText(e.getX() + "," + e.getY());
     }
+
+    @Override
+    public void mouseClicked(MouseEvent e)
+    {
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e)
+    {
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e)
+    {
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e)
+    {
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e)
+    {
+        statusLabel.setText("");
+    }
+
 }
