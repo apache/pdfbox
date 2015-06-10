@@ -32,13 +32,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.io.RandomAccessBuffer;
+import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
 
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
+
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.common.PDMemoryStream;
+import org.apache.pdfbox.pdmodel.common.PDStream;
 
 /**
  * Reads a sampled image from a PDF file.
@@ -236,28 +240,33 @@ final class SampledImageReader
     private static BufferedImage from8bit(PDImage pdImage, WritableRaster raster)
             throws IOException
     {
-        InputStream input = pdImage.getStream().createInputStream();
+        RandomAccessRead input;
+        PDStream stream = pdImage.getStream();
+        if (stream instanceof PDMemoryStream)
+        {
+            input = new RandomAccessBuffer(((PDMemoryStream)stream).getByteArray());
+        }
+        else
+        {
+            input = stream.getStream().getUnfilteredRandomAccess();
+        }
         try
         {
             // get the raster's underlying byte buffer
             byte[][] banks = ((DataBufferByte) raster.getDataBuffer()).getBankData();
-            byte[] source = IOUtils.toByteArray(input);
-
             final int width = pdImage.getWidth();
             final int height = pdImage.getHeight();
             final int numComponents = pdImage.getColorSpace().getNumberOfComponents();
             int max = width * height;
-
-            for (int c = 0; c < numComponents; c++)
+            byte[] tempBytes = new byte[numComponents];
+            for (int i = 0; i < max; i++)
             {
-                int sourceOffset = c;
-                for (int i = 0; i < max; i++)
+                input.read(tempBytes);
+                for (int c = 0; c < numComponents; c++)
                 {
-                    banks[c][i] = source[sourceOffset];
-                    sourceOffset += numComponents;
+                    banks[c][i] = tempBytes[0+c];
                 }
             }
-
             // use the color space to convert the image to RGB
             return pdImage.getColorSpace().toRGBImage(raster);
         }
