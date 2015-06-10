@@ -52,7 +52,7 @@ public class PDFObjectStreamParser extends BaseParser
      */
     public PDFObjectStreamParser(COSStream strm, COSDocument doc) throws IOException
     {
-        super(strm.getUnfilteredStream());
+        super(strm.getUnfilteredRandomAccess());
         document = doc;
         stream = strm;
     }

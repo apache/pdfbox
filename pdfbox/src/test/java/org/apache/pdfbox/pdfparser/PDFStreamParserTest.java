@@ -15,11 +15,14 @@
  */
 package org.apache.pdfbox.pdfparser;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
+
 import junit.framework.TestCase;
+
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.io.RandomAccessBuffer;
+
 import static org.junit.Assert.assertArrayEquals;
 
 /**
@@ -113,7 +116,7 @@ public class PDFStreamParserTest extends TestCase
     // parse string and return list of tokens
     private List<Object> parseTokenString(String s) throws IOException
     {
-        PDFStreamParser pdfStreamParser = new PDFStreamParser(new ByteArrayInputStream(s.getBytes()));
+        PDFStreamParser pdfStreamParser = new PDFStreamParser(new RandomAccessBuffer(s.getBytes()));
         pdfStreamParser.parse();
         return pdfStreamParser.getTokens();
     }
