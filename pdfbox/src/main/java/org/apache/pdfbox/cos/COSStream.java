@@ -33,6 +33,8 @@ import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.apache.pdfbox.io.RandomAccessFileInputStream;
 import org.apache.pdfbox.io.RandomAccessFileOutputStream;
+import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.io.RandomAccessReadWrapper;
 import org.apache.pdfbox.io.ScratchFile;
 
 /**
@@ -126,21 +128,12 @@ public class COSStream extends COSDictionary implements Closeable
      *
      * @return the bytes of the physical (encoded) stream
      *
-     * @throws IOException when encoding/decoding causes an exception
+     * @throws IOException when encoding causes an exception
      */
     public InputStream getFilteredStream() throws IOException
     {
+        checkFilteredBuffer();
         InputStream retval;
-        if (getFilteredBuffer() != null && getFilteredBuffer().isClosed())
-        {
-            throw new IOException("COSStream has been closed and cannot be read. " +
-                                  "Perhaps its enclosing PDDocument has been closed?");
-        }
-
-        if( filteredStream == null )
-        {
-            doEncode();
-        }
         if (filteredStream != null)
         {
             long position = filteredStream.getPosition();
@@ -153,6 +146,44 @@ public class COSStream extends COSDictionary implements Closeable
             retval = new ByteArrayInputStream( new byte[0] );
         }
         return retval;
+    }
+
+    /**
+     * This will get the data with all of the filters applied.
+     *
+     * @return the data of the physical (encoded) stream
+     *
+     * @throws IOException when encoding causes an exception
+     */
+    public RandomAccessRead getFilteredRandomAccess() throws IOException
+    {
+        checkFilteredBuffer();
+        RandomAccessRead retval;
+        if (filteredStream != null)
+        {
+            long position = filteredStream.getPosition();
+            long length = filteredStream.getLengthWritten();
+            retval = new RandomAccessReadWrapper(getFilteredBuffer(), position, length );
+        }
+        else
+        {
+            retval = new RandomAccessBuffer();
+        }
+        return retval;
+    }
+    
+    private void checkFilteredBuffer() throws IOException
+    {
+        if (getFilteredBuffer() != null && getFilteredBuffer().isClosed())
+        {
+            throw new IOException("COSStream has been closed and cannot be read. " +
+                                  "Perhaps its enclosing PDDocument has been closed?");
+        }
+
+        if( filteredStream == null )
+        {
+            doEncode();
+        }
     }
 
     /**
@@ -176,22 +207,12 @@ public class COSStream extends COSDictionary implements Closeable
      *
      * @return the bytes of the logical (decoded) stream
      *
-     * @throws IOException when encoding/decoding causes an exception
+     * @throws IOException when decoding causes an exception
      */
     public InputStream getUnfilteredStream() throws IOException
     {
-        if (getUnfilteredBuffer() != null && getUnfilteredBuffer().isClosed())
-        {
-            throw new IOException("COSStream has been closed and cannot be read. " +
-                                "Perhaps its enclosing PDDocument has been closed?");
-        }
-
+        checkUnfilteredBuffer();
         InputStream retval;
-        if( unFilteredStream == null )
-        {
-            doDecode();
-        }
-
         if( unFilteredStream != null )
         {
             long position = unFilteredStream.getPosition();
@@ -206,6 +227,44 @@ public class COSStream extends COSDictionary implements Closeable
         return retval;
     }
 
+    /**
+     * This will get the logical content with none of the filters.
+     *
+     * @return the bytes of the logical (decoded) stream
+     *
+     * @throws IOException when decoding causes an exception
+     */
+    public RandomAccessRead getUnfilteredRandomAccess() throws IOException
+    {
+        checkUnfilteredBuffer();
+        RandomAccessRead retval;
+
+        if( unFilteredStream != null )
+        {
+            long position = unFilteredStream.getPosition();
+            long length = unFilteredStream.getLengthWritten();
+            retval = new RandomAccessReadWrapper( getUnfilteredBuffer(), position, length );
+        }
+        else
+        {
+            retval = new RandomAccessBuffer();
+        }
+        return retval;
+    }
+    
+    private void checkUnfilteredBuffer() throws IOException
+    {
+        if (getUnfilteredBuffer() != null && getUnfilteredBuffer().isClosed())
+        {
+            throw new IOException("COSStream has been closed and cannot be read. " +
+                                "Perhaps its enclosing PDDocument has been closed?");
+        }
+
+        if( unFilteredStream == null )
+        {
+            doDecode();
+        }
+    }
     /**
      * Returns the repaired stream parameters dictionary.
      *

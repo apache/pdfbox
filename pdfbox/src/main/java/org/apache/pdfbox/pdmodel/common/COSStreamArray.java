@@ -21,7 +21,6 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.SequenceInputStream;
-
 import java.util.Vector;
 
 import org.apache.pdfbox.cos.COSArray;
@@ -30,6 +29,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.ICOSVisitor;
+import org.apache.pdfbox.io.RandomAccessRead;
 
 /**
  * This will take an array of streams and sequence them together.
@@ -83,11 +83,7 @@ public class COSStreamArray extends COSStream
     }
 
     /**
-     * This will get an object from this streams dictionary.
-     *
-     * @param key The key to the object.
-     *
-     * @return The dictionary object with the key or null if one does not exist.
+     * {@inheritDoc}
      */
     @Override
     public COSBase getItem( COSName key )
@@ -95,13 +91,8 @@ public class COSStreamArray extends COSStream
         return firstStream.getItem( key );
     }
 
-   /**
-     * This will get an object from this streams dictionary and dereference it
-     * if necessary.
-     *
-     * @param key The key to the object.
-     *
-     * @return The dictionary object with the key or null if one does not exist.
+    /**
+     * {@inheritDoc}
      */
     @Override
     public COSBase getDictionaryObject( COSName key )
@@ -129,11 +120,7 @@ public class COSStreamArray extends COSStream
     }
 
     /**
-     * This will get the stream with all of the filters applied.
-     *
-     * @return the bytes of the physical (endoced) stream
-     *
-     * @throws IOException when encoding/decoding causes an exception
+     * {@inheritDoc}
      */
     @Override
     public InputStream getFilteredStream() throws IOException
@@ -142,11 +129,16 @@ public class COSStreamArray extends COSStream
     }
 
     /**
-     * This will get the logical content stream with none of the filters.
-     *
-     * @return the bytes of the logical (decoded) stream
-     *
-     * @throws IOException when encoding/decoding causes an exception
+     * {@inheritDoc}
+     */
+    @Override
+    public RandomAccessRead getFilteredRandomAccess() throws IOException
+    {
+        throw new IOException( "Error: Not allowed to get filtered stream from array of streams." );
+    }
+
+    /**
+     * {@inheritDoc}
      */
     @Override
     public InputStream getUnfilteredStream() throws IOException
@@ -169,11 +161,17 @@ public class COSStreamArray extends COSStream
     }
 
     /**
-     * visitor pattern double dispatch method.
-     *
-     * @param visitor The object to notify when visiting this object.
-     * @return any object, depending on the visitor implementation, or null
-     * @throws IOException if the output could not be written
+     * {@inheritDoc}
+     */
+    @Override
+    public RandomAccessRead getUnfilteredRandomAccess() throws IOException
+    {
+        // TODO
+        throw new IOException("Not yet implemented.");
+    }
+    
+    /**
+     * {@inheritDoc}
      */
     @Override
     public Object accept(ICOSVisitor visitor) throws IOException
@@ -183,13 +181,7 @@ public class COSStreamArray extends COSStream
 
 
     /**
-     * This will return the filters to apply to the byte stream
-     * the method will return.
-     * - null if no filters are to be applied
-     * - a COSName if one filter is to be applied
-     * - a COSArray containing COSNames if multiple filters are to be applied
-     *
-     * @return the COSBase object representing the filters
+     * {@inheritDoc}
      */
     @Override
     public COSBase getFilters()
@@ -198,13 +190,7 @@ public class COSStreamArray extends COSStream
     }
 
     /**
-     * This will create a new stream for which filtered byte should be
-     * written to.  You probably don't want this but want to use the
-     * createUnfilteredStream, which is used to write raw bytes to.
-     *
-     * @return A stream that can be written to.
-     *
-     * @throws IOException If there is an error creating the stream.
+     * {@inheritDoc}
      */
     @Override
     public OutputStream createFilteredStream() throws IOException
@@ -213,15 +199,7 @@ public class COSStreamArray extends COSStream
     }
 
     /**
-     * This will create a new stream for which filtered byte should be
-     * written to.  You probably don't want this but want to use the
-     * createUnfilteredStream, which is used to write raw bytes to.
-     *
-     * @param expectedLength An entry where a length is expected.
-     *
-     * @return A stream that can be written to.
-     *
-     * @throws IOException If there is an error creating the stream.
+     * {@inheritDoc}
      */
     @Override
     public OutputStream createFilteredStream( COSBase expectedLength ) throws IOException
@@ -230,11 +208,7 @@ public class COSStreamArray extends COSStream
     }
 
     /**
-     * set the filters to be applied to the stream.
-     *
-     * @param filters The filters to set on this stream.
-     *
-     * @throws IOException If there is an error clearing the old filters.
+     * {@inheritDoc}
      */
     @Override
     public void setFilters(COSBase filters) throws IOException
@@ -245,11 +219,7 @@ public class COSStreamArray extends COSStream
     }
 
     /**
-     * This will create an output stream that can be written to.
-     *
-     * @return An output stream which raw data bytes should be written to.
-     *
-     * @throws IOException If there is an error creating the stream.
+     * {@inheritDoc}
      */
     @Override
     public OutputStream createUnfilteredStream() throws IOException
