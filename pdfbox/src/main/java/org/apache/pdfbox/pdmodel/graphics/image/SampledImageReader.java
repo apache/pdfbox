@@ -244,7 +244,7 @@ final class SampledImageReader
         PDStream stream = pdImage.getStream();
         if (stream instanceof PDMemoryStream)
         {
-            input = new RandomAccessBuffer(((PDMemoryStream)stream).getByteArray());
+            input = new RandomAccessBuffer(stream.getByteArray());
         }
         else
         {
