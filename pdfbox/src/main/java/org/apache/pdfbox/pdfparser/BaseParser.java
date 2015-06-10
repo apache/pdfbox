@@ -18,7 +18,6 @@ package org.apache.pdfbox.pdfparser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.commons.logging.Log;
@@ -33,9 +32,11 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
+import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.pdmodel.common.COSStreamArray;
 import org.apache.pdfbox.cos.COSObjectKey;
 
 import static org.apache.pdfbox.util.Charsets.ISO_8859_1;
@@ -154,12 +155,31 @@ public abstract class BaseParser
     /**
      * Constructor.
      *
-     * @param input The input stream to read the data from.
+     * @param stream The COS stream to read the data from.
      * @throws IOException If there is an error reading the input stream.
      */
-    public BaseParser(InputStream input) throws IOException
+    public BaseParser(COSStream stream) throws IOException
     {
-        pdfSource = new RandomAccessBuffer(input);
+        if (stream instanceof COSStreamArray)
+        {
+            // TODO don't copy input stream
+            pdfSource = new RandomAccessBuffer(stream.getUnfilteredStream());
+        }
+        else
+        {
+            pdfSource = stream.getUnfilteredRandomAccess();
+        }
+    }
+    
+    /**
+     * Constructor.
+     *
+     * @param input The random access read to read the data from.
+     * @throws IOException If there is an error reading the input stream.
+     */
+    public BaseParser(RandomAccessRead input) throws IOException
+    {
+        pdfSource = input;
     }
 
     private static boolean isHexDigit(char ch)

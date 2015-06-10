@@ -16,16 +16,18 @@
  */
 package org.apache.pdfbox.pdmodel;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
@@ -275,8 +277,7 @@ public class TestFDF extends TestCase
         List<Object> tokens = null;
         if( string != null )
         {
-            ByteArrayInputStream stream = new ByteArrayInputStream( string.getBytes() );
-            parser = new PDFStreamParser( stream );
+            parser = new PDFStreamParser( new RandomAccessBuffer( string.getBytes() ) );
             parser.parse();
             tokens = parser.getTokens();
         }
