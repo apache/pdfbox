@@ -17,6 +17,7 @@
 
 package org.apache.pdfbox.tools.pdfdebugger.ui;
 
+import java.awt.Component;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -37,7 +38,6 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.tools.PDFDebugger;
 import org.apache.pdfbox.tools.gui.ArrayEntry;
 import org.apache.pdfbox.tools.gui.MapEntry;
 import org.apache.pdfbox.tools.pdfdebugger.treestatus.TreeStatus;
@@ -51,16 +51,15 @@ import org.apache.pdfbox.tools.util.FileOpenSaveDialog;
 public class Tree extends JTree
 {
     private final JPopupMenu treePopupMenu;
-    private final PDFDebugger parent;
+    private final Component parent;
     private final Object rootNode;
 
     /**
      * Constructor.
      * @param parentComponent the main UI where the Tree resides.
      */
-    public Tree(PDFDebugger parentComponent)
+    public Tree(Component parentComponent)
     {
-        super();
         treePopupMenu = new JPopupMenu();
         setComponentPopupMenu(treePopupMenu);
         parent = parentComponent;
