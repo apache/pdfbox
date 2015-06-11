@@ -297,4 +297,10 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
         }
         return result;
     }
+
+    public static boolean isSubSet(String fontName)
+    {
+        return fontName != null && fontName.matches("^[A-Z]{6}\\+.*");
+    }
+
 }

@@ -33,24 +33,12 @@ public abstract class FontValidator<T extends FontContainer>
     protected PreflightContext context;
     protected FontDescriptorHelper<T> descriptorHelper;
 
-    private static final String SUB_SET_PATTERN = "^[A-Z]{6}\\+.*";
-
     public FontValidator(PreflightContext context, COSDictionary dict, T fContainer)
     {
         super();
         this.context = context;
         this.fontContainer = fContainer;
         this.context.addFontContainer(dict, fContainer);
-    }
-
-    public static boolean isSubSet(String fontName)
-    {
-        return fontName != null && fontName.matches(SUB_SET_PATTERN);
-    }
-
-    public static String getSubSetPatternDelimiter()
-    {
-        return "\\+";
     }
 
     public abstract void validate() throws ValidationException;

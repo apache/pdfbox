@@ -36,7 +36,6 @@ import org.apache.pdfbox.pdmodel.font.PDFontLike;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
-import org.apache.pdfbox.preflight.font.FontValidator;
 import org.apache.pdfbox.preflight.font.container.CIDType2Container;
 import org.apache.pdfbox.preflight.utils.COSUtils;
 
@@ -56,7 +55,7 @@ public class CIDType2DescriptorHelper extends FontDescriptorHelper<CIDType2Conta
      */
     protected void checkCIDSet(PDFontDescriptor pfDescriptor)
     {
-        if (FontValidator.isSubSet(pfDescriptor.getFontName()))
+        if (isSubSet(pfDescriptor.getFontName()))
         {
             COSDocument cosDocument = context.getDocument().getDocument();
             COSBase cidset = pfDescriptor.getCOSObject().getItem(COSName.getPDFName(FONT_DICTIONARY_KEY_CIDSET));
