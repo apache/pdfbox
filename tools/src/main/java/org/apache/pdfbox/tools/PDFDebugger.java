@@ -60,6 +60,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import javax.swing.filechooser.FileFilter;
+import org.apache.pdfbox.tools.pdfdebugger.colorpane.CSDeviceN;
 import org.apache.pdfbox.tools.pdfdebugger.colorpane.CSSeparation;
 import org.apache.pdfbox.tools.util.FileOpenSaveDialog;
 import org.apache.pdfbox.tools.pdfdebugger.ui.Tree;
@@ -330,7 +331,7 @@ public class PDFDebugger extends javax.swing.JFrame
      * For now only Separation Color space is shown.
      * @param csNode the special color space containing node.
      */
-    //TODO implement DeviceN and Indexed color spaces related features
+    //TODO implement Indexed color spaces related features
     private void showColorPane(Object csNode)
     {
         if (csNode instanceof MapEntry)
@@ -352,6 +353,10 @@ public class PDFDebugger extends javax.swing.JFrame
                 if (csName.equals(COSName.SEPARATION))
                 {
                     jSplitPane1.setRightComponent(new CSSeparation(array).getPanel());
+                }
+                else if (csName.equals(COSName.DEVICEN))
+                {
+                    jSplitPane1.setRightComponent(new CSDeviceN(array).getPanel());
                 }
                 else
                 {
@@ -571,9 +576,9 @@ public class PDFDebugger extends javax.swing.JFrame
     {
         System.err.println(
                 "usage: java -jar pdfbox-app-x.y.z.jar PDFDebugger [OPTIONS] <input-file>\n" +
-                "  -password <password>      Password to decrypt the document\n" +
-                "  <input-file>              The PDF document to be loaded\n"
-                );
+                        "  -password <password>      Password to decrypt the document\n" +
+                        "  <input-file>              The PDF document to be loaded\n"
+        );
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
