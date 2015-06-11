@@ -66,7 +66,8 @@ public class ExtGStateValidationProcess extends AbstractProcess
         {
             return;
         }
-        else if (!vPath.isExpectedType(COSDictionary.class)) 
+        
+        if (!vPath.isExpectedType(COSDictionary.class)) 
         {
             context.addValidationError(new ValidationError(PreflightConstants.ERROR_GRAPHIC_XOBJECT_INVALID_TYPE, "ExtGState validation required at least a Resource dictionary"));
         }
@@ -125,7 +126,8 @@ public class ExtGStateValidationProcess extends AbstractProcess
         for (COSDictionary egs : listOfExtGState)
         {
             checkSoftMask(context, egs);
-            checkCA(context, egs);
+            checkUpperCA(context, egs);
+            checkLowerCA(context, egs);
             checkBlendMode(context, egs);
             checkTRKey(context, egs);
             checkTR2Key(context, egs);
@@ -173,21 +175,19 @@ public class ExtGStateValidationProcess extends AbstractProcess
     }
 
     /**
-     * This method checks the "CA" and "ca" values of the ExtGState dictionary. They are optional but must be 1.0 if
-     * they are present.
-     * 
+     * This method checks the "CA" value of the ExtGState dictionary. It is optional but must be 1.0
+     * if present.
+     *
      * @param context the preflight context.
      * @param egs the graphic state to check
      */
-    private void checkCA(PreflightContext context, COSDictionary egs)
+    private void checkUpperCA(PreflightContext context, COSDictionary egs)
     {
         COSBase uCA = egs.getItem(TRANSPARENCY_DICTIONARY_KEY_UPPER_CA);
-        COSBase lCA = egs.getItem(TRANSPARENCY_DICTIONARY_KEY_LOWER_CA);
-        COSDocument cosDocument = context.getDocument().getDocument();
-
         if (uCA != null)
         {
             // ---- If CA is present only the value 1.0 is authorized
+            COSDocument cosDocument = context.getDocument().getDocument();
             Float fca = COSUtils.getAsFloat(uCA, cosDocument);
             Integer ica = COSUtils.getAsInteger(uCA, cosDocument);
             if (!(fca != null && fca == 1.0f) && !(ica != null && ica == 1))
@@ -196,10 +196,22 @@ public class ExtGStateValidationProcess extends AbstractProcess
                         "CA entry in a ExtGState is invalid"));
             }
         }
+    }
 
+    /**
+     * This method checks the "ca" value of the ExtGState dictionary. It is optional but must be 1.0
+     * if present.
+     *
+     * @param context the preflight context.
+     * @param egs the graphic state to check
+     */
+    private void checkLowerCA(PreflightContext context, COSDictionary egs)
+    {
+        COSBase lCA = egs.getItem(TRANSPARENCY_DICTIONARY_KEY_LOWER_CA);
         if (lCA != null)
         {
             // ---- If ca is present only the value 1.0 is authorized
+            COSDocument cosDocument = context.getDocument().getDocument();
             Float fca = COSUtils.getAsFloat(lCA, cosDocument);
             Integer ica = COSUtils.getAsInteger(lCA, cosDocument);
             if (!(fca != null && fca == 1.0f) && !(ica != null && ica == 1))
@@ -218,7 +230,7 @@ public class ExtGStateValidationProcess extends AbstractProcess
      */
     protected void checkTRKey(PreflightContext context, COSDictionary egs)
     {
-        if (egs.getItem("TR") != null)
+        if (egs.getItem(COSName.TR) != null)
         {
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_UNEXPECTED_KEY,
                     "No TR key expected in Extended graphics state"));
@@ -228,6 +240,7 @@ public class ExtGStateValidationProcess extends AbstractProcess
     /**
      * Check the TR2 entry. A valid ExtGState hasn't TR2 entry or a TR2 entry equals to "default".
      * 
+     * @param context the preflight context
      * @param egs the graphic state to check
      */
     protected void checkTR2Key(PreflightContext context, COSDictionary egs)
