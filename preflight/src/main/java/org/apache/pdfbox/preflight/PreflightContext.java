@@ -41,17 +41,17 @@ public class PreflightContext implements Closeable
     /**
      * Contains the list of font name embedded in the PDF document.
      */
-    protected Map<COSBase, FontContainer> fontContainers = new HashMap<COSBase, FontContainer>();
+    private final Map<COSBase, FontContainer> fontContainers = new HashMap<COSBase, FontContainer>();
 
     /**
      * The PDFbox object representation of the PDF source.
      */
-    protected PreflightDocument document = null;
+    private PreflightDocument document = null;
 
     /**
      * The datasource to load the document from
      */
-    protected DataSource source = null;
+    private DataSource source = null;
 
     /**
      * Contains all Xref/trailer objects and resolves them into single object using startxref reference.
@@ -61,23 +61,23 @@ public class PreflightContext implements Closeable
     /**
      * This wrapper contains the ICCProfile used by the PDF file.
      */
-    protected ICCProfileWrapper iccProfileWrapper = null;
+    private ICCProfileWrapper iccProfileWrapper = null;
 
     /**
      * 
      */
-    protected boolean iccProfileAlreadySearched = false;
+    private boolean iccProfileAlreadySearched = false;
 
     /**
      * MetaData of the current pdf file.
      */
-    protected XMPMetadata metadata = null;
+    private XMPMetadata metadata = null;
 
-    protected PreflightConfiguration config = null;
+    private PreflightConfiguration config = null;
 
-    protected PreflightPath validationPath = new PreflightPath();
+    private PreflightPath validationPath = new PreflightPath();
 
-    protected Integer currentPageNumber = null;
+    private Integer currentPageNumber = null;
     
     /**
      * Create the DocumentHandler using the DataSource which represent the PDF file to check.
