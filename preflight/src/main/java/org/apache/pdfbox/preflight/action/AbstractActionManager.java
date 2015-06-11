@@ -35,11 +35,11 @@ public abstract class AbstractActionManager
     /**
      * ActionManager factory used to create new ActionManager
      */
-    protected ActionManagerFactory actionFact = null;
+    private ActionManagerFactory actionFact = null;
     /**
      * Action name in a Additional Action dictionary
      */
-    protected String aaKey = null;
+    private String aaKey = null;
     /**
      * The action dictionary checked by this class
      */
