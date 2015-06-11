@@ -119,7 +119,7 @@ public class PDFText2HTML extends PDFTextStripper
             Iterator<List<TextPosition>> textIter = getCharactersByArticle().iterator();
             float lastFontSize = -1.0f;
 
-            StringBuffer titleText = new StringBuffer();
+            StringBuilder titleText = new StringBuilder();
             while (textIter.hasNext())
             {
                 Iterator<TextPosition> textByArticle = textIter.next().iterator();
@@ -218,7 +218,9 @@ public class PDFText2HTML extends PDFTextStripper
     @Override
     protected void writeParagraphEnd() throws IOException
     {
-        super.writeString(fontState.clear()); // do not escape HTML
+        // do not escape HTML
+        super.writeString(fontState.clear());
+        
         super.writeParagraphEnd();
     }
 
@@ -276,8 +278,8 @@ public class PDFText2HTML extends PDFTextStripper
      */
     private static class FontState
     {
-        protected List<String> stateList = new ArrayList<String>();
-        protected Set<String> stateSet = new HashSet<String>();
+        private final List<String> stateList = new ArrayList<String>();
+        private final Set<String> stateSet = new HashSet<String>();
 
         /**
          * Pushes new {@link TextPosition TextPositions} into the font state. The state is only
