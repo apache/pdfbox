@@ -33,13 +33,13 @@ import org.apache.pdfbox.preflight.utils.ContextHelper;
 public class PreflightDocument extends PDDocument
 {
 
-    protected ValidationResult result = new ValidationResult(true);
+    private ValidationResult result = new ValidationResult(true);
 
-    protected PreflightConfiguration config;
+    private PreflightConfiguration config;
 
-    protected PreflightContext context;
+    private PreflightContext context;
 
-    protected final Format specification;
+    private final Format specification;
 
     /**
      * Create an empty preflight document and load the default configuration for the given format.
@@ -82,14 +82,13 @@ public class PreflightDocument extends PDDocument
      * 
      * @param doc
      * @param format
-     * @param cfg
-     * @throws IOException
+     * @param config
      */
-    public PreflightDocument(COSDocument doc, Format format, PreflightConfiguration cfg)
+    public PreflightDocument(COSDocument doc, Format format, PreflightConfiguration config)
     {
         super(doc);
         this.specification = format;
-        this.config = cfg;
+        this.config = config;
         if (this.config == null)
         {
             initConfiguration(format);
@@ -112,15 +111,15 @@ public class PreflightDocument extends PDDocument
         return result;
     }
 
-    public void setResult(ValidationResult _result)
+    public void setResult(ValidationResult result)
     {
         if (this.result != null)
         {
-            this.result.mergeResult(_result);
+            this.result.mergeResult(result);
         }
-        else if (_result != null)
+        else if (result != null)
         {
-            this.result = _result;
+            this.result = result;
         }
         else
         {
