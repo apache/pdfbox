@@ -29,7 +29,7 @@ import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
-import org.apache.pdfbox.preflight.font.FontValidator;
+import org.apache.pdfbox.preflight.font.descriptor.FontDescriptorHelper;
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.schema.DublinCoreSchema;
 import org.apache.xmpbox.schema.XMPRightsManagementSchema;
@@ -69,9 +69,9 @@ public class FontMetaDataValidation
     {
         String fontName = fontDesc.getFontName();
         String noSubSetName = fontName;
-        if (FontValidator.isSubSet(fontName))
+        if (FontDescriptorHelper.isSubSet(fontName))
         {
-            noSubSetName = fontName.split(FontValidator.getSubSetPatternDelimiter())[1];
+            noSubSetName = fontName.split("\\+")[1];
         }
 
         DublinCoreSchema dc = metadata.getDublinCoreSchema();
@@ -145,6 +145,7 @@ public class FontMetaDataValidation
      *            The FontDescriptor dictionary
      * @param ve
      *            the list of validation error to update if the validation fails
+     * @return true if the analysis found no problems, false if it did.
      */
     public boolean analyseRights(XMPMetadata metadata, PDFontDescriptor fontDesc, List<ValidationError> ve)
     {

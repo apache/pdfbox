@@ -26,7 +26,6 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_FONT_FI
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_TYPE1_DAMAGED;
 import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_KEY_LENGTH2;
 import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_KEY_LENGTH3;
-import static org.apache.pdfbox.preflight.font.FontValidator.isSubSet;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
