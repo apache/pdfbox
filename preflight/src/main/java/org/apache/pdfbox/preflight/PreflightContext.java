@@ -92,6 +92,7 @@ public class PreflightContext implements Closeable
     public PreflightContext(DataSource source, PreflightConfiguration configuration)
     {
         this.source = source;
+        this.config = configuration;
     }
 
     /**
