@@ -38,7 +38,8 @@ import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VAL
 import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VALUE_TYPE_CMAP;
 
 import java.io.IOException;
-
+import java.io.InputStream;
+import org.apache.commons.io.IOUtils;
 import org.apache.fontbox.cmap.CMap;
 import org.apache.fontbox.cmap.CMapParser;
 import org.apache.pdfbox.cos.COSArray;
@@ -102,8 +103,11 @@ public class Type0FontValidator extends FontValidator<Type0Container>
     }
 
     /**
-     * Extract the single CIDFont from the Descendant array. Create a FontValidator for this CODFont and launch its
-     * validation.
+     * Extract the single CIDFont from the descendant array. Create a FontValidator for this CIDFont
+     * and launch its validation.
+     *
+     * @throws org.apache.pdfbox.preflight.exception.ValidationException if there is an error
+     * validating the CIDFont.
      */
     protected void processDescendantFont() throws ValidationException
     {
@@ -176,6 +180,9 @@ public class Type0FontValidator extends FontValidator<Type0Container>
 
     /**
      * Create the validation object for CIDType2 Font
+     *
+     * @param fDict a CIDType2 font dictionary.
+     * @return a CIDType2 tont font validator.
      */
     protected FontValidator<? extends FontContainer> createCIDType2FontValidator(COSDictionary fDict)
     {
@@ -235,12 +242,13 @@ public class Type0FontValidator extends FontValidator<Type0Container>
     }
 
     /**
-     * Standard information of a stream element will be checked by the StreamValidationProcess.
-     * 
-     * This method checks mandatory fields of the CMap stream. This method checks too if the CMap stream is damaged
-     * using the CMapParser of the fontbox api.
-     * 
-     * @param aCMap
+     *
+     *
+     * This method checks mandatory fields of the CMap stream. This method also checks if the CMap
+     * stream is damaged using the CMapParser of the fontbox api. The standard information of a
+     * stream element will be checked by the StreamValidationProcess.
+     *
+     * @param aCMap the cmap stream.
      */
     private void processCMapAsStream(COSStream aCMap)
     {
@@ -248,16 +256,18 @@ public class Type0FontValidator extends FontValidator<Type0Container>
         COSBase sysinfo = aCMap.getItem(COSName.CIDSYSTEMINFO);
         checkCIDSystemInfo(sysinfo);
 
+        InputStream cmapStream = null;
         try
         {
             // extract information from the CMap stream
-            CMap fontboxCMap = new CMapParser().parse(aCMap.getUnfilteredStream());
+            cmapStream = aCMap.getUnfilteredStream();
+            CMap fontboxCMap = new CMapParser().parse(cmapStream);
             int wmValue = fontboxCMap.getWMode();
             String cmnValue = fontboxCMap.getName();
 
             /*
-             * According to the getInt javadoc, -1 is returned if there are no result. In the PDF Reference v1.7 p449,
-             * we can read that Default value is 0.
+             * According to the getInt javadoc, -1 is returned if there is no result. In the PDF Reference v1.7 p449,
+             * we can read that the default value is 0.
              */
             int wmode = aCMap.getInt(COSName.getPDFName(FONT_DICTIONARY_KEY_CMAP_WMODE),
                     FONT_DICTIONARY_DEFAULT_CMAP_WMODE);
@@ -283,6 +293,10 @@ public class Type0FontValidator extends FontValidator<Type0Container>
         catch (IOException e)
         {
             this.fontContainer.push(new ValidationError(ERROR_FONTS_CID_CMAP_DAMAGED, font.getName() + ": The CMap type is damaged", e));
+        }
+        finally
+        {
+            IOUtils.closeQuietly(cmapStream);
         }
 
         COSDictionary cmapUsed = (COSDictionary) aCMap.getDictionaryObject(COSName
