@@ -75,6 +75,17 @@ public class FDFAnnotationPolygon extends FDFAnnotation
         super(element);
         annot.setName(COSName.SUBTYPE, SUBTYPE);
 
+        initVertices(element);
+        String color = element.getAttribute("interior-color");
+        if (color != null && color.length() == 7 && color.charAt(0) == '#')
+        {
+            int colorValue = Integer.parseInt(color.substring(1, 7), 16);
+            setInteriorColor(new Color(colorValue));
+        }
+    }
+
+    private void initVertices(Element element) throws IOException, NumberFormatException
+    {
         XPath xpath = XPathFactory.newInstance().newXPath();
         try
         {
@@ -94,12 +105,6 @@ public class FDFAnnotationPolygon extends FDFAnnotation
         catch (XPathExpressionException e)
         {
             LOG.debug("Error while evaluating XPath expression for polygon vertices");
-        }
-        String color = element.getAttribute("interior-color");
-        if (color != null && color.length() == 7 && color.charAt(0) == '#')
-        {
-            int colorValue = Integer.parseInt(color.substring(1, 7), 16);
-            setInteriorColor(new Color(colorValue));
         }
     }
 
