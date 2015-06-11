@@ -51,10 +51,10 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_DICT_I
 public abstract class AnnotationValidator
 {
 
-    protected AnnotationValidatorFactory annotFact = null;
+    private AnnotationValidatorFactory annotFact = null;
 
     protected PreflightContext ctx = null;
-    protected COSDocument cosDocument = null;
+    private COSDocument cosDocument = null;
     /**
      * COSDictionary of the annotation
      */
@@ -222,6 +222,7 @@ public abstract class AnnotationValidator
      * This method validates the Popup entry. This entry shall contain an other Annotation. This annotation is validated
      * with the right AnnotationValidator.
      *
+     * @return true if the popup entry is valid, false if not.
      * @throws ValidationException
      */
     protected boolean checkPopup() throws ValidationException
