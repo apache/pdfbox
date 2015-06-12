@@ -73,20 +73,20 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
 
     protected PDFontDescriptor fontDescriptor;
     
-    static private final Set<String> mandatoryFields;
+    private static final Set<String> MANDATORYFIELDS;
     
     static 
     {
-        mandatoryFields = new HashSet<String>();
-        mandatoryFields.add(FONT_DICTIONARY_KEY_FLAGS);
-        mandatoryFields.add(FONT_DICTIONARY_KEY_ITALICANGLE);
-        mandatoryFields.add(FONT_DICTIONARY_KEY_CAPHEIGHT);
-        mandatoryFields.add(FONT_DICTIONARY_KEY_FONTBBOX);
-        mandatoryFields.add(FONT_DICTIONARY_KEY_ASCENT);
-        mandatoryFields.add(FONT_DICTIONARY_KEY_DESCENT);
-        mandatoryFields.add(FONT_DICTIONARY_KEY_STEMV);
-        mandatoryFields.add(COSName.FONT_NAME.getName());
-        mandatoryFields.add(COSName.TYPE.getName());
+        MANDATORYFIELDS = new HashSet<String>();
+        MANDATORYFIELDS.add(FONT_DICTIONARY_KEY_FLAGS);
+        MANDATORYFIELDS.add(FONT_DICTIONARY_KEY_ITALICANGLE);
+        MANDATORYFIELDS.add(FONT_DICTIONARY_KEY_CAPHEIGHT);
+        MANDATORYFIELDS.add(FONT_DICTIONARY_KEY_FONTBBOX);
+        MANDATORYFIELDS.add(FONT_DICTIONARY_KEY_ASCENT);
+        MANDATORYFIELDS.add(FONT_DICTIONARY_KEY_DESCENT);
+        MANDATORYFIELDS.add(FONT_DICTIONARY_KEY_STEMV);
+        MANDATORYFIELDS.add(COSName.FONT_NAME.getName());
+        MANDATORYFIELDS.add(COSName.TYPE.getName());
     }
 
     public FontDescriptorHelper(PreflightContext context, PDFontLike font, T fontContainer)
@@ -151,7 +151,7 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
     {
         boolean result = true;
         StringBuilder missingFields = new StringBuilder();
-        for (String field : mandatoryFields)
+        for (String field : MANDATORYFIELDS)
         {
             if (!fDescriptor.containsKey(field))
             {
