@@ -38,7 +38,6 @@ public class GlyphTable extends TTFTable
     private TTFDataStream data;
     private IndexToLocationTable loca;
     private int numGlyphs;
-    protected Map<Integer, GlyphData> cache = new ConcurrentHashMap<Integer, GlyphData>();
 
     GlyphTable(TrueTypeFont font)
     {
@@ -141,11 +140,6 @@ public class GlyphTable extends TTFTable
         if (gid < 0 || gid >= numGlyphs)
         {
             return null;
-        }
-
-        if (cache.containsKey(gid))
-        {
-            return cache.get(gid);
         }
 
         synchronized (font)
