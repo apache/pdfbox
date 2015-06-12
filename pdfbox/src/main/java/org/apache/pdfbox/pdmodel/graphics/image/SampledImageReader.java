@@ -203,8 +203,8 @@ final class SampledImageReader
             for (int y = 0; y < height; y++)
             {
                 int x = 0;
-                iis.read(buff);
-                for (int r = 0; r < rowLen; r++)
+                int readLen = iis.read(buff);
+                for (int r = 0; r < rowLen && r < readLen; r++)
                 {
                     int value = buff[r];
                     int mask = 128;
@@ -219,6 +219,11 @@ final class SampledImageReader
                             break;
                         }
                     }
+                }
+                if (readLen != rowLen)
+                {
+                    LOG.warn("premature EOF, image will be incomplete");
+                    break;
                 }
             }
 
