@@ -23,4 +23,9 @@ package org.apache.fontbox.ttf;
 public class OTLTable extends TTFTable
 {
     // todo: this is a stub, a full implementation is needed
+    
+    OTLTable(TrueTypeFont font)
+    {
+        super(font);
+    }
 }

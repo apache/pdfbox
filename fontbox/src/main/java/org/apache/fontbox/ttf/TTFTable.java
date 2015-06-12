@@ -33,7 +33,22 @@ public class TTFTable
     /**
      * Indicates if the table is initialized or not.
      */
-    protected boolean initialized = false;
+    protected boolean initialized;
+
+    /**
+     * The font which contains this table.
+     */
+    protected final TrueTypeFont font;
+
+    /**
+     * Constructor.
+     * 
+     * @param font The font which contains this table.
+     */
+    TTFTable(TrueTypeFont font)
+    {
+        this.font = font;
+    }
     
     /**
      * @return Returns the checkSum.
@@ -42,13 +57,15 @@ public class TTFTable
     {
         return checkSum;
     }
+    
     /**
      * @param checkSumValue The checkSum to set.
      */
-    public void setCheckSum(long checkSumValue) 
+    void setCheckSum(long checkSumValue) 
     {
         this.checkSum = checkSumValue;
     }
+    
     /**
      * @return Returns the length.
      */
@@ -56,13 +73,15 @@ public class TTFTable
     {
         return length;
     }
+    
     /**
      * @param lengthValue The length to set.
      */
-    public void setLength(long lengthValue) 
+    void setLength(long lengthValue) 
     {
         this.length = lengthValue;
     }
+    
     /**
      * @return Returns the offset.
      */
@@ -70,13 +89,15 @@ public class TTFTable
     {
         return offset;
     }
+    
     /**
      * @param offsetValue The offset to set.
      */
-    public void setOffset(long offsetValue) 
+    void setOffset(long offsetValue) 
     {
         this.offset = offsetValue;
     }
+    
     /**
      * @return Returns the tag.
      */
@@ -84,10 +105,11 @@ public class TTFTable
     {
         return tag;
     }
+    
     /**
      * @param tagValue The tag to set.
      */
-    public void setTag(String tagValue) 
+    void setTag(String tagValue) 
     {
         this.tag = tagValue;
     }
@@ -101,6 +123,7 @@ public class TTFTable
     {
         return initialized;
     }
+    
     /**
      * This will read the required data from the stream.
      * 
@@ -108,7 +131,7 @@ public class TTFTable
      * @param data The stream to read the data from.
      * @throws IOException If there is an error reading the data.
      */
-    public void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
     {
     }
 }

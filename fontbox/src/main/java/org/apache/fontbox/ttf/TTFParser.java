@@ -126,7 +126,7 @@ public class TTFParser
         int rangeShift = raf.readUnsignedShort();
         for (int i = 0; i < numberOfTables; i++)
         {
-            TTFTable table = readTableDirectory(raf);
+            TTFTable table = readTableDirectory(font, raf);
             font.addTable(table);
         }
         // parse tables if wanted
@@ -211,73 +211,73 @@ public class TTFParser
         }
     }
 
-    private TTFTable readTableDirectory(TTFDataStream raf) throws IOException
+    private TTFTable readTableDirectory(TrueTypeFont font, TTFDataStream raf) throws IOException
     {
         TTFTable table = null;
         String tag = raf.readString(4);
         if (tag.equals(CmapTable.TAG))
         {
-            table = new CmapTable();
+            table = new CmapTable(font);
         }
         else if (tag.equals(GlyphTable.TAG))
         {
-            table = new GlyphTable();
+            table = new GlyphTable(font);
         }
         else if (tag.equals(HeaderTable.TAG))
         {
-            table = new HeaderTable();
+            table = new HeaderTable(font);
         }
         else if (tag.equals(HorizontalHeaderTable.TAG))
         {
-            table = new HorizontalHeaderTable();
+            table = new HorizontalHeaderTable(font);
         }
         else if (tag.equals(HorizontalMetricsTable.TAG))
         {
-            table = new HorizontalMetricsTable();
+            table = new HorizontalMetricsTable(font);
         }
         else if (tag.equals(IndexToLocationTable.TAG))
         {
-            table = new IndexToLocationTable();
+            table = new IndexToLocationTable(font);
         }
         else if (tag.equals(MaximumProfileTable.TAG))
         {
-            table = new MaximumProfileTable();
+            table = new MaximumProfileTable(font);
         }
         else if (tag.equals(NamingTable.TAG))
         {
-            table = new NamingTable();
+            table = new NamingTable(font);
         }
         else if (tag.equals(OS2WindowsMetricsTable.TAG))
         {
-            table = new OS2WindowsMetricsTable();
+            table = new OS2WindowsMetricsTable(font);
         }
         else if (tag.equals(PostScriptTable.TAG))
         {
-            table = new PostScriptTable();
+            table = new PostScriptTable(font);
         }
         else if (tag.equals(DigitalSignatureTable.TAG))
         {
-            table = new DigitalSignatureTable();
+            table = new DigitalSignatureTable(font);
         }
         else if (tag.equals(KerningTable.TAG))
         {
-            table = new KerningTable();
+            table = new KerningTable(font);
         }
         else if (tag.equals(VerticalHeaderTable.TAG))
         {
-            table = new VerticalHeaderTable();
+            table = new VerticalHeaderTable(font);
         }
         else if (tag.equals(VerticalMetricsTable.TAG))
         {
-            table = new VerticalMetricsTable();
+            table = new VerticalMetricsTable(font);
         }
         else if (tag.equals(VerticalOriginTable.TAG))
         {
-            table = new VerticalOriginTable();
+            table = new VerticalOriginTable(font);
         }
         else
         {
-            table = readTable(tag);
+            table = readTable(font, tag);
         }
         table.setTag(tag);
         table.setCheckSum(raf.readUnsignedInt());
@@ -286,9 +286,9 @@ public class TTFParser
         return table;
     }
 
-    protected TTFTable readTable(String tag)
+    protected TTFTable readTable(TrueTypeFont font, String tag)
     {
         // unknown table type but read it anyway.
-        return new TTFTable();
+        return new TTFTable(font);
     }
 }

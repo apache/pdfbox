@@ -41,6 +41,11 @@ public class PostScriptTable extends TTFTable
      */
     public static final String TAG = "post";
 
+    PostScriptTable(TrueTypeFont font)
+    {
+        super(font);
+    }
+
     /**
      * This will read the required data from the stream.
      * 

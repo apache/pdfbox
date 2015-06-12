@@ -25,7 +25,7 @@ import java.util.Comparator;
  * 
  * @author Glenn Adams
  */
-public class KerningSubtable extends TTFTable
+public class KerningSubtable
 {
     // coverage field bit masks and values
     private static final int COVERAGE_HORIZONTAL = 0x0001;
@@ -45,15 +45,12 @@ public class KerningSubtable extends TTFTable
     // true if cross-stream (block progression) kerning
     private boolean crossStream;
     // format specific pair data
-    private PairData pairs; 
+    private PairData pairs;
 
-    /**
-     * Constructor.
-     */
-    public KerningSubtable()
+    KerningSubtable()
     {
     }
-
+    
     /**
      * This will read the required data from the stream.
      * 
