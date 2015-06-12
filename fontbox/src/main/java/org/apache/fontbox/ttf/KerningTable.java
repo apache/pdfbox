@@ -32,6 +32,11 @@ public class KerningTable extends TTFTable
 
     private KerningSubtable[] subtables;
 
+    KerningTable(TrueTypeFont font)
+    {
+        super(font);
+    }
+
     /**
      * This will read the required data from the stream.
      * 

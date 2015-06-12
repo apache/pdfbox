@@ -57,7 +57,12 @@ public class VerticalHeaderTable extends TTFTable
     private short reserved4;
     private short metricDataFormat;
     private int numberOfVMetrics;
-    
+
+    VerticalHeaderTable(TrueTypeFont font)
+    {
+        super(font);
+    }
+
     /**
      * This will read the required data from the stream.
      * 

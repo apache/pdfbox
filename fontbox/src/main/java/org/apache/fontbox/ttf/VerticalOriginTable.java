@@ -46,6 +46,11 @@ public class VerticalOriginTable extends TTFTable
     private int defaultVertOriginY;
     private Map<Integer, Integer> origins = new ConcurrentHashMap<Integer, Integer>();
 
+    VerticalOriginTable(TrueTypeFont font)
+    {
+        super(font);
+    }
+
     /**
      * This will read the required data from the stream.
      * 

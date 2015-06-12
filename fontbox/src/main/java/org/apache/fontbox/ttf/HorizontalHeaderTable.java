@@ -47,7 +47,12 @@ public class HorizontalHeaderTable extends TTFTable
     private short reserved5;
     private short metricDataFormat;
     private int numberOfHMetrics;
-    
+
+    HorizontalHeaderTable(TrueTypeFont font)
+    {
+        super(font);
+    }
+
     /**
      * This will read the required data from the stream.
      * 

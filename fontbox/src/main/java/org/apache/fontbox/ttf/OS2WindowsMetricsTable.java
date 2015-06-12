@@ -177,6 +177,11 @@ public class OS2WindowsMetricsTable extends TTFTable
      */
     public static final short FSTYPE_BITMAP_ONLY = 0x0200;
 
+    OS2WindowsMetricsTable(TrueTypeFont font)
+    {
+        super(font);
+    }
+
     /**
      * @return Returns the achVendId.
      */

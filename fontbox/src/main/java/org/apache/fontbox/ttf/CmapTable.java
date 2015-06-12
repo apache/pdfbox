@@ -56,6 +56,11 @@ public class CmapTable extends TTFTable
 
     private CmapSubtable[] cmaps;
 
+    CmapTable(TrueTypeFont font)
+    {
+        super(font);
+    }
+
     /**
      * This will read the required data from the stream.
      * 

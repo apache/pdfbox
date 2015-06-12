@@ -48,7 +48,12 @@ public class HeaderTable extends TTFTable
     private short fontDirectionHint;
     private short indexToLocFormat;
     private short glyphDataFormat;
-    
+
+    HeaderTable(TrueTypeFont font)
+    {
+        super(font);
+    }
+
     /**
      * This will read the required data from the stream.
      * 

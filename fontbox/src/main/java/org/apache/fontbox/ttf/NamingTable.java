@@ -44,6 +44,11 @@ public class NamingTable extends TTFTable
     private String fontSubFamily = null;
     private String psName = null;
 
+    NamingTable(TrueTypeFont font)
+    {
+        super(font);
+    }
+
     /**
      * This will read the required data from the stream.
      * 
