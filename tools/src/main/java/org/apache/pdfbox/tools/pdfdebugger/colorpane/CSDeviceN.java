@@ -59,10 +59,11 @@ public class CSDeviceN
     }
 
     /**
-     * Parses the colorant data from the array and return.
-     * @return
+     * Parses the colorant data from the array.
+     * @return the parsed colorants.
+     * @throws IOException if the color conversion fails.
      */
-    private DeviceNColorant[] getColorantData()
+    private DeviceNColorant[] getColorantData() throws IOException
     {
         int componentCount = deviceN.getNumberOfComponents();
         DeviceNColorant[] colorants = new DeviceNColorant[componentCount];
@@ -77,15 +78,8 @@ public class CSDeviceN
             Arrays.fill(minimum,1);
             maximum[i] = 1;
             minimum[i] = 0;
-            try
-            {
-                colorant.setMaximum(getColorObj(deviceN.toRGB(maximum)));
-                colorant.setMinimum(getColorObj(deviceN.toRGB(minimum)));
-            }
-            catch (IOException e)
-            {
-                throw new RuntimeException();
-            }
+            colorant.setMaximum(getColorObj(deviceN.toRGB(maximum)));
+            colorant.setMinimum(getColorObj(deviceN.toRGB(minimum)));
             colorants[i] = colorant;
         }
         return colorants;
