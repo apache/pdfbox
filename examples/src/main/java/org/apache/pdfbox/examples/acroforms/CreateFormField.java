@@ -19,13 +19,17 @@ package org.apache.pdfbox.examples.acroforms;
 
 import java.io.File;
 import java.io.IOException;
+import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceCharacteristicsDictionary;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
 
@@ -68,6 +72,14 @@ public class CreateFormField
         rect.setUpperRightX(250);
         rect.setUpperRightY(800);
         widget.setRectangle(rect);
+        
+        // add a green border
+        PDAppearanceCharacteristicsDictionary fieldAppearance = 
+                new PDAppearanceCharacteristicsDictionary(new COSDictionary());
+        PDColor green = new PDColor(new float[] { 0, 1, 0 }, PDDeviceRGB.INSTANCE);
+        fieldAppearance.setBorderColour(green);
+        widget.setAppearanceCharacteristics(fieldAppearance);
+        
         page.getAnnotations().add(widget);
         
         // set the field value
