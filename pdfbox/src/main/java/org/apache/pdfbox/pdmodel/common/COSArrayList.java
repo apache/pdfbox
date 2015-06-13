@@ -384,12 +384,13 @@ public class COSArrayList<E> implements List<E>
     }
 
     /**
-     * This will convert a list of COSObjectables to an
-     * array list of COSBase objects.
+     * This will convert a list of COSObjectables to an array list of COSBase objects.
      *
      * @param cosObjectableList A list of COSObjectable.
      *
      * @return A list of COSBase.
+     * @throws IllegalArgumentException if an object type is not supported for conversion to a
+     * COSBase object.
      */
     public static COSArray converterToCOSArray( List<?> cosObjectableList )
     {
@@ -431,7 +432,7 @@ public class COSArrayList<E> implements List<E>
                     }
                     else
                     {
-                        throw new RuntimeException( "Error: Don't know how to convert type to COSBase '" +
+                        throw new IllegalArgumentException( "Error: Don't know how to convert type to COSBase '" +
                         next.getClass().getName() + "'" );
                     }
                 }
