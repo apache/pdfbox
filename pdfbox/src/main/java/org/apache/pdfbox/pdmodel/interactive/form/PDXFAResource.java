@@ -39,7 +39,7 @@ import org.xml.sax.SAXException;
  */
 public final class PDXFAResource implements COSObjectable
 {
-    private COSBase xfa;
+    private final COSBase xfa;
 
     /**
      * Constructor.
@@ -54,6 +54,7 @@ public final class PDXFAResource implements COSObjectable
     /**
      * {@inheritDoc}
      */
+    @Override
     public COSBase getCOSObject()
     {
         return xfa;
@@ -81,7 +82,7 @@ public final class PDXFAResource implements COSObjectable
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         InputStream is = null;
-        byte[] xfaBytes = null;
+        byte[] xfaBytes;
 
         try 
         {
@@ -96,7 +97,7 @@ public final class PDXFAResource implements COSObjectable
                     if (cosObj instanceof COSStream) 
                     {
                         is = ((COSStream) cosObj).getUnfilteredStream();
-                        int nRead = 0;
+                        int nRead;
                         while ((nRead = is.read(xfaBytes, 0, xfaBytes.length)) != -1) 
                         {
                           baos.write(xfaBytes, 0, nRead);
@@ -110,7 +111,7 @@ public final class PDXFAResource implements COSObjectable
             {
                 xfaBytes = new byte[1024];
                 is = ((COSStream) xfa.getCOSObject()).getUnfilteredStream();
-                int nRead = 0;
+                int nRead;
                 while ((nRead = is.read(xfaBytes, 0, xfaBytes.length)) != -1) 
                 {
                   baos.write(xfaBytes, 0, nRead);
@@ -123,10 +124,6 @@ public final class PDXFAResource implements COSObjectable
             if (is != null) 
             {
                 is.close();
-            }
-            if (baos != null) 
-            {
-                baos.close();
             }
         }
         return baos.toByteArray();
