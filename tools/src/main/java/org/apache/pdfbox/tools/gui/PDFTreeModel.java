@@ -65,18 +65,9 @@ public class PDFTreeModel implements TreeModel
      */
     public PDFTreeModel(PDDocument doc)
     {
-         setDocument(doc);
+         document = doc;
     }
 
-    /**
-     * Set the document to display in the tree.
-     *
-     * @param doc The document to display in the tree.
-     */
-    public void setDocument(PDDocument doc)
-    {
-        document = doc;
-    }
     /**
      * Adds a listener for the <code>TreeModelEvent</code>
      * posted after the tree changes.
