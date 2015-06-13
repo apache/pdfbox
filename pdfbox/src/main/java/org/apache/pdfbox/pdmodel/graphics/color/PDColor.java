@@ -47,7 +47,7 @@ public final class PDColor
     {
         if (array.size() > 0 && array.get(array.size() - 1) instanceof COSName)
         {
-            // color components (optional)
+            // color components (optional), for the color of an uncoloured tiling pattern
             components = new float[array.size() - 1];
             for (int i = 0; i < array.size() - 1; i++)
             {
@@ -153,14 +153,13 @@ public final class PDColor
     }
 
     /**
-     * Returns this color value as a COS array
-     * @return the color value as a COS array
+     * Returns the color component values as a COS array
+     * @return the color component values as a COS array
      */
     public COSArray toCOSArray()
     {
         COSArray array = new COSArray();
         array.setFloatArray(components);
-        array.add(patternName);
         return array;
     }
 
