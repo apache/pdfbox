@@ -104,7 +104,7 @@ public class PDFunctionType0 extends PDFunction
      * 
      * @return an array with all samples.
      */
-    public int[][] getSamples()
+    private int[][] getSamples()
     {
         if (samples == null)
         {
@@ -120,11 +120,10 @@ public class PDFunctionType0 extends PDFunction
             int bitsPerSample = getBitsPerSample();
             int index = 0;
             try
-                {
+            {
                 // PDF spec 1.7 p.171:
                 // Each sample value is represented as a sequence of BitsPerSample bits. 
-                // Successive values are adjacent in the bit stream; 
-                // there is no padding at byte boundaries.
+                // Successive values are adjacent in the bit stream; there is no padding at byte boundaries.
                 ImageInputStream mciis = new MemoryCacheImageInputStream(getPDStream().createInputStream());
                 for (int i = 0; i < arraySize; i++)
                 {
@@ -323,16 +322,16 @@ public class PDFunctionType0 extends PDFunction
      * href="https://en.wikipedia.org/wiki/Trilinear_interpolation">trilinear
      * interpolation</a> (external links).
      */
-    class Rinterpol
+    private class Rinterpol
     {
         // coordinate that is to be interpolated
-        final float[] in;
+        private final float[] in;
         // coordinate of the "ceil" point
-        final int[] inPrev;
+        private final int[] inPrev;
         // coordinate of the "floor" point
-        final int[] inNext;
-        final int numberOfInputValues;
-        final int numberOfOutputValues = getNumberOfOutputParameters();
+        private final int[] inNext;
+        private final int numberOfInputValues;
+        private final int numberOfOutputValues = getNumberOfOutputParameters();
 
         /**
          * Constructor.
@@ -355,7 +354,7 @@ public class PDFunctionType0 extends PDFunction
          *
          * @return interpolated result sample
          */
-        public float[] rinterpolate()
+        float[] rinterpolate()
         {
             return rinterpol(new int[numberOfInputValues], 0);
         }
@@ -376,7 +375,6 @@ public class PDFunctionType0 extends PDFunction
             if (step == in.length - 1)
             {
                 // leaf
-
                 if (inPrev[step] == inNext[step])
                 {
                     coord[step] = inPrev[step];
@@ -400,7 +398,6 @@ public class PDFunctionType0 extends PDFunction
             else
             {
                 // branch
-
                 if (inPrev[step] == inNext[step])
                 {
                     coord[step] = inPrev[step];
@@ -448,57 +445,7 @@ public class PDFunctionType0 extends PDFunction
             inputPrev[i] = (int) Math.floor(input[i]);
             inputNext[i] = (int) Math.ceil(input[i]);
         }
-
-        // old code for N=1 and N=2, don't delete in case one uses this for optimization
-//
-//        if (numberOfInputValues == 1)
-//        {
-//            int[] sample1 = getSamples()[calcSampleIndex(new int[]
-//            {
-//                inputPrev[0]
-//            })];
-//            int[] sample2 = getSamples()[calcSampleIndex(new int[]
-//            {
-//                inputNext[0]
-//            })];
-//            for (int i = 0; i < numberOfOutputValues; ++i)
-//            {
-//                outputValues[i] = inputPrev[0] == inputNext[0] ? sample1[i] : interpolate(input[0], inputPrev[0], inputNext[0], sample1[i], sample2[i]);
-//            }
-//            //TODO optimize so that sample is collected only when needed
-//        }
-//        if (numberOfInputValues == 2)
-//        {
-//            int[] sample1 = getSamples()[calcSampleIndex(new int[]
-//            {
-//                inputPrev[0], inputPrev[1]
-//            })];
-//            int[] sample2 = getSamples()[calcSampleIndex(new int[]
-//            {
-//                inputPrev[0], inputNext[1]
-//            })];
-//            int[] sample3 = getSamples()[calcSampleIndex(new int[]
-//            {
-//                inputNext[0], inputPrev[1]
-//            })];
-//            int[] sample4 = getSamples()[calcSampleIndex(new int[]
-//            {
-//                inputNext[0], inputNext[1]
-//            })];
-//
-//            for (int i = 0; i < numberOfOutputValues; ++i)
-//            {
-//                // bilinear color interpolation, see e.g.
-//                // http://harmoniccode.blogspot.de/2011/04/bilinear-color-interpolation.html
-//                // interpolate the color at top and bottom edges (x-axis)
-//                // then interpolate the color between these two results (y-axis)
-//                double lowerVal = inputPrev[0] == inputNext[0] ? sample1[i] : interpolate(input[0], inputPrev[0], inputNext[0], sample1[i], sample3[i]);
-//                double upperVal = inputPrev[0] == inputNext[0] ? sample2[i] : interpolate(input[0], inputPrev[0], inputNext[0], sample2[i], sample4[i]);
-//                outputValues[i] = (float) (inputPrev[1] == inputNext[1] ? lowerVal : interpolate(input[1], inputPrev[1], inputNext[1], (float) lowerVal, (float) upperVal));
-//                //TODO optimize so that sample is collected only when needed
-//            }
-//        }
-//        
+        
         float[] outputValues = new Rinterpol(input, inputPrev, inputNext).rinterpolate();
 
         for (int i = 0; i < numberOfOutputValues; i++)
@@ -511,4 +458,4 @@ public class PDFunctionType0 extends PDFunction
 
         return outputValues;
     }
-        }
+}
