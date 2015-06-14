@@ -168,11 +168,26 @@ public class RandomAccessBuffer implements RandomAccess, Closeable, Cloneable
     public void seek(long position) throws IOException
     {
         checkClosed();
+        if (position < 0)
+        {
+            throw new IOException("Invalid position "+position);
+        }
         pointer = position;
-        // calculate the chunk list index
-        bufferListIndex = (int)(position / chunkSize);
-        currentBufferPointer = (int)(position % chunkSize);
-        currentBuffer = bufferList.get(bufferListIndex);
+        if (pointer <= size)
+        {
+            // calculate the chunk list index
+            bufferListIndex = (int)(position / chunkSize);
+            currentBufferPointer = (int)(position % chunkSize);
+            currentBuffer = bufferList.get(bufferListIndex);
+        }
+        else
+        {
+            // it is allowed to jump beyond the end of the file
+            // jump to the end of the buffer
+            bufferListIndex = bufferListMaxIndex;
+            currentBuffer = bufferList.get(bufferListIndex);
+            currentBufferPointer = (int)(size - ((bufferListMaxIndex-1)*chunkSize));
+        }
     }
 
     /**
