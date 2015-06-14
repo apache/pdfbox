@@ -160,6 +160,10 @@ public final class PDColor
     {
         COSArray array = new COSArray();
         array.setFloatArray(components);
+        if (patternName != null)
+        {
+            array.add(patternName);
+        }
         return array;
     }
 
