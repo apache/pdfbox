@@ -241,7 +241,7 @@ public class RandomAccessBuffer implements RandomAccess, Closeable, Cloneable
         int bytesRead = readRemainingBytes(b, offset, length);
         while (bytesRead < length && available() > 0)
         {
-            bytesRead += readRemainingBytes(b, bytesRead, length - bytesRead);
+            bytesRead += readRemainingBytes(b, offset + bytesRead, length - bytesRead);
             if (currentBufferPointer == chunkSize)
             {
                 nextBuffer();
