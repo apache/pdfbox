@@ -118,7 +118,7 @@ public abstract class PDPageDestination extends PDDestination
      * @return page number, or -1 if the destination type is unknown. The page number is 0-based if
      * it was in the dictionary (for remote destinations), and 1-based if it was computed from a
      * page reference (for local destinations).
-     * @deprecated This method has inconsistent behavior (see returns), use {@link #retrieveDestPageNumber()} instead.
+     * @deprecated This method has inconsistent behavior (see returns), use {@link #retrievePageNumber()} instead.
      */
     @Deprecated
     public int findPageNumber()
@@ -165,6 +165,7 @@ public abstract class PDPageDestination extends PDDestination
             }
             else if (page instanceof COSDictionary)
             {
+                //TODO make this a static utility method of PDPageTree?
                 COSBase parent = page;
                 while (((COSDictionary) parent).getDictionaryObject(COSName.PARENT, COSName.P) != null)
                 {
