@@ -98,7 +98,7 @@ public class CSDeviceN
         panel.setPreferredSize(new Dimension(300, 500));
 
         JLabel colorSpaceLabel = new JLabel("DeviceN colorspace");
-        colorSpaceLabel.setAlignmentX((float) 0.5);
+        colorSpaceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         colorSpaceLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
 
         DeviceNTableModel tableModel = new DeviceNTableModel(colorants);
