@@ -81,7 +81,7 @@ public class CSDeviceN
             float[] maximum = new float[componentCount];
             Arrays.fill(maximum, 0);
             float[] minimum = new float[componentCount];
-            Arrays.fill(minimum, 1);
+            Arrays.fill(minimum, 0);
             maximum[i] = 1;
             minimum[i] = 0;
             colorant.setMaximum(getColorObj(deviceN.toRGB(maximum)));
