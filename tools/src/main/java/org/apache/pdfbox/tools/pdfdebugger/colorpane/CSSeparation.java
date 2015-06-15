@@ -17,6 +17,7 @@
 package org.apache.pdfbox.tools.pdfdebugger.colorpane;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -174,7 +175,7 @@ public class CSSeparation implements ChangeListener, ActionListener
         panel.setPreferredSize(new Dimension(300, 500));
 
         JLabel colorSpaceLabel = new JLabel("Separation colorspace");
-        colorSpaceLabel.setAlignmentX((float) 0.5);
+        colorSpaceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         colorSpaceLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
 
         panel.add(colorSpaceLabel);
