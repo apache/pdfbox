@@ -22,7 +22,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
@@ -34,6 +36,7 @@ import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import org.apache.pdfbox.cos.COSArray;
@@ -57,10 +60,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-import javax.swing.filechooser.FileFilter;
 import org.apache.pdfbox.tools.pdfdebugger.colorpane.CSDeviceN;
+import org.apache.pdfbox.tools.pdfdebugger.colorpane.CSIndexed;
 import org.apache.pdfbox.tools.pdfdebugger.colorpane.CSSeparation;
 import org.apache.pdfbox.tools.util.FileOpenSaveDialog;
 import org.apache.pdfbox.tools.pdfdebugger.ui.Tree;
@@ -331,7 +332,6 @@ public class PDFDebugger extends javax.swing.JFrame
      * For now only Separation Color space is shown.
      * @param csNode the special color space containing node.
      */
-    //TODO implement Indexed color spaces related features
     private void showColorPane(Object csNode)
     {
         if (csNode instanceof MapEntry)
@@ -358,12 +358,9 @@ public class PDFDebugger extends javax.swing.JFrame
                 {
                     jSplitPane1.setRightComponent(new CSDeviceN(array).getPanel());
                 }
-                else
+                else if (csName.equals(COSName.INDEXED))
                 {
-                    if (!jSplitPane1.getRightComponent().equals(jScrollPane2))
-                    {
-                        jSplitPane1.setRightComponent(jScrollPane2);
-                    }
+                    jSplitPane1.setRightComponent(new CSIndexed(array).getPanel());
                 }
             }
         }
