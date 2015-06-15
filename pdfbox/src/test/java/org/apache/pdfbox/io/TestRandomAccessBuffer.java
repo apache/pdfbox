@@ -75,7 +75,7 @@ public class TestRandomAccessBuffer extends TestCase
     }
 
     /**
-     * This will test the {@link RandomAccessBuffer#read()} 
+     * Test the {@link RandomAccessBuffer#read()} 
      * and {@link RandomAccessBuffer#write(int)} method.
      * 
      * @throws IOException is thrown if something went wrong.
@@ -101,7 +101,7 @@ public class TestRandomAccessBuffer extends TestCase
     }
 
     /**
-     * This will test the {@link RandomAccessBuffer#read(byte[], int, int)} 
+     * Test the {@link RandomAccessBuffer#read(byte[], int, int)} 
      * and {@link RandomAccessBuffer#write(byte[], int, int)} method.
      * 
      * @throws IOException is thrown if something went wrong.
@@ -142,7 +142,7 @@ public class TestRandomAccessBuffer extends TestCase
     }
 
     /**
-     * This will test the {@link RandomAccessBuffer#read(byte[], int, int)} 
+     * Test the {@link RandomAccessBuffer#read(byte[], int, int)} 
      * and {@link RandomAccessBuffer#write(byte[], int, int)} method using
      * a couple of data to create more than one chunk.
      * 
@@ -205,7 +205,7 @@ public class TestRandomAccessBuffer extends TestCase
     }
 
     /**
-     * This will test if overwriting works.
+     * Test if overwriting works.
      * 
      * @throws IOException is thrown if something went wrong.
      */
@@ -256,6 +256,28 @@ public class TestRandomAccessBuffer extends TestCase
             result += byteArray[i];
         }
         assertEquals(25, result);
+        buffer.close();
+    }
+    
+    /**
+     * Test if seeking beyond EOF works.
+     * 
+     * @throws IOException is thrown if something went wrong.
+     */
+    public void testSeekBeyondEOF() throws IOException
+    {
+        // create a buffer filled with 10 figures from 0 to 9
+        RandomAccessBuffer buffer = new RandomAccessBuffer();
+        for ( int i=0;i < 10;i++ )
+        {
+            buffer.write(i);
+        }
+        // jump back to the beginning of the buffer
+        buffer.seek(0);
+        // jump beyond EOF
+        buffer.seek(20);
+        // try to read
+        assertEquals(-1, buffer.read());
         buffer.close();
     }
     
