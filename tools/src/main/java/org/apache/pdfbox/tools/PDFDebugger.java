@@ -60,9 +60,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.tools.pdfdebugger.colorpane.CSDeviceN;
 import org.apache.pdfbox.tools.pdfdebugger.colorpane.CSIndexed;
+import org.apache.pdfbox.tools.pdfdebugger.colorpane.CSArrayBased;
 import org.apache.pdfbox.tools.pdfdebugger.colorpane.CSSeparation;
+import org.apache.pdfbox.tools.pdfdebugger.pagepane.PagePane;
 import org.apache.pdfbox.tools.util.FileOpenSaveDialog;
 import org.apache.pdfbox.tools.pdfdebugger.ui.Tree;
 import org.apache.pdfbox.tools.pdfdebugger.treestatus.TreeStatus;
@@ -84,6 +88,9 @@ public class PDFDebugger extends javax.swing.JFrame
 
     private static final Set<COSName> SPECIALCOLORSPACES =
             new HashSet(Arrays.asList(COSName.INDEXED, COSName.SEPARATION, COSName.DEVICEN));
+
+    private static final Set<COSName> OTHERCOLORSPACES =
+            new HashSet(Arrays.asList(COSName.ICCBASED, COSName.PATTERN, COSName.CALGRAY, COSName.CALRGB, COSName.LAB));
 
     private static final String PASSWORD = "-password";
 
@@ -278,9 +285,14 @@ public class PDFDebugger extends javax.swing.JFrame
             try
             {
                 Object selectedNode = path.getLastPathComponent();
-                if (isSpecialColorSpace(selectedNode))
+                if (isSpecialColorSpace(selectedNode) || isOtherColorSpace(selectedNode))
                 {
                     showColorPane(selectedNode);
+                    return;
+                }
+                if (isPage(selectedNode))
+                {
+                    showPage(selectedNode);
                     return;
                 }
                 if (!jSplitPane1.getRightComponent().equals(jScrollPane2))
@@ -314,6 +326,11 @@ public class PDFDebugger extends javax.swing.JFrame
         {
             selectedNode = ((ArrayEntry) selectedNode).getValue();
         }
+        
+        if (selectedNode instanceof COSObject)
+        {
+            selectedNode = ((COSObject)selectedNode).getObject();
+        }
 
         if (selectedNode instanceof COSArray)
         {
@@ -322,6 +339,62 @@ public class PDFDebugger extends javax.swing.JFrame
             {
                 COSName name = (COSName) arrayEntry;
                 return SPECIALCOLORSPACES.contains(name);
+            }
+        }
+        return false;
+    }
+
+    private boolean isOtherColorSpace(Object selectedNode)
+    {
+        if (selectedNode instanceof MapEntry)
+        {
+            selectedNode = ((MapEntry) selectedNode).getValue();
+        }
+        else if (selectedNode instanceof ArrayEntry)
+        {
+            selectedNode = ((ArrayEntry) selectedNode).getValue();
+        }
+
+        if (selectedNode instanceof COSObject)
+        {
+            selectedNode = ((COSObject) selectedNode).getObject();
+        }
+
+        if (selectedNode instanceof COSArray)
+        {
+            COSBase arrayEntry = ((COSArray)selectedNode).get(0);
+            if (arrayEntry instanceof COSName)
+            {
+                COSName name = (COSName) arrayEntry;
+                return OTHERCOLORSPACES.contains(name);
+            }
+        }
+        return false;
+    }
+
+    private boolean isPage(Object selectedNode)
+    {
+        if (selectedNode instanceof MapEntry)
+        {
+            selectedNode = ((MapEntry) selectedNode).getValue();
+        }
+        else if (selectedNode instanceof ArrayEntry)
+        {
+            selectedNode = ((ArrayEntry) selectedNode).getValue();
+        }
+
+        if (selectedNode instanceof COSObject)
+        {
+            selectedNode = ((COSObject) selectedNode).getObject();
+        }
+
+        if (selectedNode instanceof COSDictionary)
+        {
+            COSDictionary dict = (COSDictionary) selectedNode;
+            COSBase typeItem = dict.getItem(COSName.TYPE);
+            if (COSName.PAGE.equals(typeItem))
+            {
+                return true;
             }
         }
         return false;
@@ -341,6 +414,11 @@ public class PDFDebugger extends javax.swing.JFrame
         else if (csNode instanceof ArrayEntry)
         {
             csNode = ((ArrayEntry) csNode).getValue();
+        }
+        
+        if (csNode instanceof COSObject)
+        {
+            csNode = ((COSObject)csNode).getObject();
         }
 
         if (csNode instanceof COSArray)
@@ -362,6 +440,37 @@ public class PDFDebugger extends javax.swing.JFrame
                 {
                     jSplitPane1.setRightComponent(new CSIndexed(array).getPanel());
                 }
+                else if (OTHERCOLORSPACES.contains(csName))
+                {
+                    jSplitPane1.setRightComponent(new CSArrayBased(array).getPanel());
+                }
+            }
+        }
+    }
+
+    private void showPage(Object selectedNode)
+    {
+        if (selectedNode instanceof MapEntry)
+        {
+            selectedNode = ((MapEntry) selectedNode).getValue();
+        }
+        else if (selectedNode instanceof ArrayEntry)
+        {
+            selectedNode = ((ArrayEntry) selectedNode).getValue();
+        }
+     
+        if (selectedNode instanceof COSArray)
+        {
+            selectedNode = ((COSObject) selectedNode).getObject();
+        }
+        
+        if (selectedNode instanceof COSDictionary)
+        {
+            COSDictionary page = (COSDictionary) selectedNode;
+            COSBase typeItem = page.getItem(COSName.TYPE);
+            if (COSName.PAGE.equals(typeItem))
+            {
+                jSplitPane1.setRightComponent(new PagePane(page).getPanel());
             }
         }
     }
