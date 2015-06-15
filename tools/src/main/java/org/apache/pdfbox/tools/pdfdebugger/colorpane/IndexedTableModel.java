@@ -24,18 +24,19 @@ import javax.swing.table.AbstractTableModel;
  */
 
 /**
- * This the table model for showing DeviceN color space which extends AbstractTableModel.
+ * This the table model for showing Indexed color space which extends AbstractTableModel.
  */
-public class DeviceNTableModel extends AbstractTableModel
+public class IndexedTableModel extends AbstractTableModel
 {
-    private static final String[] COLUMNNAMES = new String[] { "Colorant", "Maximum", "Minimum"};
-    private final DeviceNColorant[] data;
+
+    private static final String[] COLUMNSNAMES = new String[] {"Index", "RGB value", "Color"};
+    private final IndexedColorant[] data;
 
     /**
      * Constructor
-     * @param colorants array of DeviceNColorant
+     * @param colorants array of IndexedColorant
      */
-    public DeviceNTableModel(DeviceNColorant[] colorants)
+    public IndexedTableModel(IndexedColorant[] colorants)
     {
         data = colorants;
     }
@@ -49,7 +50,7 @@ public class DeviceNTableModel extends AbstractTableModel
     @Override
     public int getColumnCount()
     {
-        return COLUMNNAMES.length;
+        return COLUMNSNAMES.length;
     }
 
     @Override
@@ -58,11 +59,11 @@ public class DeviceNTableModel extends AbstractTableModel
         switch (column)
         {
             case 0:
-                return data[row].getName();
+                return data[row].getIndex();
             case 1:
-                return data[row].getMaximum();
+                return data[row].getRGBValuesString();
             case 2:
-                return data[row].getMinimum();
+                return data[row].getColor();
             default:
                 return null;
         }
@@ -71,7 +72,7 @@ public class DeviceNTableModel extends AbstractTableModel
     @Override
     public String getColumnName(int column)
     {
-        return COLUMNNAMES[column];
+        return COLUMNSNAMES[column];
     }
 
     @Override
@@ -80,8 +81,9 @@ public class DeviceNTableModel extends AbstractTableModel
         switch (columnIndex)
         {
             case 0:
-                return String.class;
+                return Integer.class;
             case 1:
+                return String.class;
             case 2:
                 return Color.class;
             default:

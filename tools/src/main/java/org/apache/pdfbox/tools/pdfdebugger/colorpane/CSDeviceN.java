@@ -19,7 +19,11 @@ package org.apache.pdfbox.tools.pdfdebugger.colorpane;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.util.Arrays;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import java.io.IOException;
@@ -29,7 +33,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceN;
 
 
 /**
- *@author  Khyrul Bashar.
+ *@author Khyrul Bashar.
  */
 
 /**
@@ -38,10 +42,11 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceN;
 public class CSDeviceN
 {
     private PDDeviceN deviceN;
-    private JScrollPane panel;
+    private JPanel panel;
 
     /**
      * Constructor
+     *
      * @param array COSArray instance that holds DeviceN color space
      */
     public CSDeviceN(COSArray array)
@@ -60,14 +65,15 @@ public class CSDeviceN
 
     /**
      * Parses the colorant data from the array.
+     *
      * @return the parsed colorants.
-     * @throws IOException if the color conversion fails.
+     * @throws java.io.IOException if the color conversion fails.
      */
     private DeviceNColorant[] getColorantData() throws IOException
     {
         int componentCount = deviceN.getNumberOfComponents();
         DeviceNColorant[] colorants = new DeviceNColorant[componentCount];
-        for (int i=0; i<componentCount; i++)
+        for (int i = 0; i < componentCount; i++)
         {
             DeviceNColorant colorant = new DeviceNColorant();
 
@@ -75,7 +81,7 @@ public class CSDeviceN
             float[] maximum = new float[componentCount];
             Arrays.fill(maximum, 0);
             float[] minimum = new float[componentCount];
-            Arrays.fill(minimum,1);
+            Arrays.fill(minimum, 1);
             maximum[i] = 1;
             minimum[i] = 0;
             colorant.setMaximum(getColorObj(deviceN.toRGB(maximum)));
@@ -87,17 +93,28 @@ public class CSDeviceN
 
     private void initUI(DeviceNColorant[] colorants)
     {
+        panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setPreferredSize(new Dimension(300, 500));
+
+        JLabel colorSpaceLabel = new JLabel("DeviceN colorspace");
+        colorSpaceLabel.setAlignmentX((float) 0.5);
+        colorSpaceLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
+
         DeviceNTableModel tableModel = new DeviceNTableModel(colorants);
         JTable table = new JTable(tableModel);
         table.setDefaultRenderer(Color.class, new ColorBarCellRenderer());
         table.setRowHeight(60);
-        panel = new JScrollPane();
-        panel.setPreferredSize(new Dimension(300, 500));
-        panel.setViewportView(table);
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setViewportView(table);
+
+        panel.add(colorSpaceLabel);
+        panel.add(scrollPane);
     }
 
     /**
      * return the main panel that hold all the UI elements.
+     *
      * @return JPanel instance
      */
     public Component getPanel()

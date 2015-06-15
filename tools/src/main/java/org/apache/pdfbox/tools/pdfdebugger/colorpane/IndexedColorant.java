@@ -21,46 +21,49 @@ import java.awt.Color;
 /**
  * @author Khyrul Bashar.
  */
-public class DeviceNColorant
+
+/**
+ * Class to represent Colorant in Indexed color.
+ */
+public class IndexedColorant
 {
-    private String name;
-    private Color maximum;
-    private Color minimum;
+    private int index;
+    private float[] rgbValues;
 
     /**
-     * Constructor
+     * Constructor.
      */
-    public DeviceNColorant()
+    public IndexedColorant(){}
+
+    public int getIndex()
     {
+        return index;
     }
 
-    public String getName()
+    public void setIndex(int index)
     {
-        return name;
+        this.index = index;
     }
 
-    public void setName(String name)
+    public void setRgbValues(float[] rgbValues)
     {
-        this.name = name;
+        this.rgbValues = rgbValues;
     }
 
-    public Color getMaximum()
+    public Color getColor()
     {
-        return maximum;
+        return new Color(rgbValues[0], rgbValues[1], rgbValues[2]);
     }
 
-    public void setMaximum(Color maximum)
+    public String getRGBValuesString()
     {
-        this.maximum = maximum;
-    }
-
-    public Color getMinimum()
-    {
-        return minimum;
-    }
-
-    public void setMinimum(Color minimum)
-    {
-        this.minimum = minimum;
+        StringBuilder builder = new StringBuilder();
+        for (float i: rgbValues)
+        {
+            builder.append((int)(i*255));
+            builder.append(", ");
+        }
+        builder.deleteCharAt(builder.lastIndexOf(","));
+        return builder.toString();
     }
 }
