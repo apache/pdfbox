@@ -332,7 +332,7 @@ public class PDFDebugger extends javax.swing.JFrame
             selectedNode = ((COSObject)selectedNode).getObject();
         }
 
-        if (selectedNode instanceof COSArray)
+        if (selectedNode instanceof COSArray && ((COSArray) selectedNode).size() > 0)
         {
             COSBase arrayEntry = ((COSArray)selectedNode).get(0);
             if (arrayEntry instanceof COSName)
@@ -360,7 +360,7 @@ public class PDFDebugger extends javax.swing.JFrame
             selectedNode = ((COSObject) selectedNode).getObject();
         }
 
-        if (selectedNode instanceof COSArray)
+        if (selectedNode instanceof COSArray && ((COSArray) selectedNode).size() > 0)
         {
             COSBase arrayEntry = ((COSArray)selectedNode).get(0);
             if (arrayEntry instanceof COSName)
@@ -421,7 +421,7 @@ public class PDFDebugger extends javax.swing.JFrame
             csNode = ((COSObject)csNode).getObject();
         }
 
-        if (csNode instanceof COSArray)
+        if (csNode instanceof COSArray && ((COSArray) csNode).size() > 0)
         {
             COSArray array = (COSArray)csNode;
             COSBase arrayEntry = array.get(0);
