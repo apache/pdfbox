@@ -996,13 +996,11 @@ public class COSParser extends BaseParser
             {
                 // reduce compare operations by first test last character we would have to
                 // match if current one matches; if it is not a character from keywords
-                // we can move behind the test character;
-                // this shortcut is inspired by the Boyer-Moore string search algorithm
-                // and can reduce parsing time by approx. 20%
-                if ( ( charMatchCount == 0 ) &&
-                         ( ( quickTestIdx = bIdx + quickTestOffset ) < maxQuicktestIdx ) ) 
-                {
-                    
+                // we can move behind the test character; this shortcut is inspired by the 
+                // Boyer-Moore string search algorithm and can reduce parsing time by approx. 20%
+                quickTestIdx = bIdx + quickTestOffset;
+                if (charMatchCount == 0 && quickTestIdx < maxQuicktestIdx)
+                {                    
                     final byte ch = strmBuf[quickTestIdx];
                     if ( ( ch > 't' ) || ( ch < 'a' ) ) 
                     {
@@ -1035,18 +1033,17 @@ public class COSParser extends BaseParser
                     } 
                     else 
                     {
-                        // no match; incrementing match start by 1 would be dumb since we already know matched chars
-                        // depending on current char read we may already have beginning of a new match:
-                        // 'e': first char matched;
-                        // 'n': if we are at match position idx 7 we already read 'e' thus 2 chars matched
-                        // for each other char we have to start matching first keyword char beginning with next 
-                        // read position
+                        // no match; incrementing match start by 1 would be dumb since we already know 
+                        // matched chars depending on current char read we may already have beginning 
+                        // of a new match: 'e': first char matched; 'n': if we are at match position 
+                        // idx 7 we already read 'e' thus 2 chars matched for each other char we have 
+                        // to start matching first keyword char beginning with next read position
                         charMatchCount = ( ch == E ) ? 1 : ( ( ch == N ) && ( charMatchCount == 7 ) ) ? 2 : 0;
                         // search again for 'endstream'
                         keyw = ENDSTREAM;
                     }
                 } 
-            }  // for
+            }
             
             int contentBytes = Math.max( 0, bIdx - charMatchCount );
             
@@ -1065,8 +1062,7 @@ public class COSParser extends BaseParser
             {
                 // copy matched chars at start of buffer
                 System.arraycopy( keyw, 0, strmBuf, 0, charMatchCount );
-            }
-            
+            }            
         }
         // this writes a lonely CR or drops trailing CR LF and LF
         out.flush();
