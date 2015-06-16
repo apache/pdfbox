@@ -17,6 +17,8 @@
 package org.apache.pdfbox.tools.gui;
 
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -24,6 +26,7 @@ import java.awt.Graphics2D;
 import java.io.IOException;
 
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -41,6 +44,7 @@ public class PDFPagePanel extends JPanel
 
     private PDFRenderer renderer;
     private int pageNum;
+    private final Cursor waitCursor = new Cursor(Cursor.WAIT_CURSOR);
 
     /**
      * This will set the page that should be displayed in this panel.
@@ -81,7 +85,14 @@ public class PDFPagePanel extends JPanel
         {
             g.setColor(getBackground());
             g.fillRect(0, 0, getWidth(), getHeight());
+            
+            Component rootComponent = SwingUtilities.getRoot(this);
+            Cursor cursor = rootComponent.getCursor();
+            rootComponent.setCursor(waitCursor);
+            
             renderer.renderPageToGraphics(pageNum, (Graphics2D) g);
+            
+            rootComponent.setCursor(cursor);
         }
         catch (IOException e)
         {
