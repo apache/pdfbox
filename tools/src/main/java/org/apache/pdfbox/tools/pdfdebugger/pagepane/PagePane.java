@@ -19,25 +19,33 @@ package org.apache.pdfbox.tools.pdfdebugger.pagepane;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.io.IOException;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageTree;
+import org.apache.pdfbox.rendering.PDFRenderer;
+import org.apache.pdfbox.tools.gui.PDFPagePanel;
 
 /**
  *
  * @author Tilman Hausherr
+ * 
+ * Display the page number and a page rendering.
  */
 public class PagePane
 {
     private JPanel panel;
     private int pageIndex = -1;
+    private final PDPage pdPage;
+    private final PDDocument document;
 
-    public PagePane(COSDictionary page)
+    public PagePane(PDDocument document, COSDictionary page)
     {
         COSBase parent = page;
         
@@ -49,7 +57,9 @@ public class PagePane
         }
         // now parent is the pages node
         PDPageTree pages = new PDPageTree((COSDictionary) parent);
-        pageIndex = pages.indexOf(new PDPage(page));
+        pdPage = new PDPage(page);
+        pageIndex = pages.indexOf(pdPage);
+        this.document = document;
 
         initUI();
     }
@@ -66,6 +76,20 @@ public class PagePane
         pageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         pageLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
         panel.add(pageLabel);
+        
+        try
+        {
+            PDFPagePanel pdfPagePanel = new PDFPagePanel();
+            pdfPagePanel.setPage(new PDFRenderer(document), pdPage, pageIndex);
+            panel.add(pdfPagePanel);
+        }
+        catch (IOException ex)
+        {
+            JLabel error = new JLabel(ex.getMessage());
+            error.setAlignmentX(Component.CENTER_ALIGNMENT);
+            error.setFont(new Font(Font.MONOSPACED, Font.BOLD, 15));
+            panel.add(error);
+        }        
     }
 
     /**
