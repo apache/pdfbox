@@ -16,51 +16,39 @@
 
 package org.apache.pdfbox.tools.pdfdebugger.pagepane;
 
+import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Font;
-import java.io.IOException;
+import java.awt.image.BufferedImage;
+import java.util.concurrent.ExecutionException;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import org.apache.pdfbox.cos.COSBase;
+import javax.swing.SwingWorker;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.rendering.PDFRenderer;
-import org.apache.pdfbox.tools.gui.PDFPagePanel;
 
 /**
- *
- * @author Tilman Hausherr
- * 
  * Display the page number and a page rendering.
+ * 
+ * @author Tilman Hausherr
+ * @author John Hewson
  */
 public class PagePane
 {
     private JPanel panel;
     private int pageIndex = -1;
-    private final PDPage pdPage;
     private final PDDocument document;
+    private JLabel label;
 
     public PagePane(PDDocument document, COSDictionary page)
     {
-        COSBase parent = page;
-        
-        // copied from PDPageDestination.retrievePageNumber()
-        //TODO should this become a utility method of PDPageTree?
-        while (((COSDictionary) parent).getDictionaryObject(COSName.PARENT, COSName.P) != null)
-        {
-            parent = ((COSDictionary) parent).getDictionaryObject(COSName.PARENT, COSName.P);
-        }
-        // now parent is the pages node
-        PDPageTree pages = new PDPageTree((COSDictionary) parent);
-        pdPage = new PDPage(page);
-        pageIndex = pages.indexOf(pdPage);
+        PDPage pdPage = new PDPage(page);
+        pageIndex = document.getPages().indexOf(pdPage);
         this.document = document;
-
         initUI();
     }
 
@@ -68,32 +56,28 @@ public class PagePane
     {
         panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setPreferredSize(new Dimension(300, 500));
 
         String pageLabelText = pageIndex < 0 ? "Page number not found" : "Page " + (pageIndex + 1);
         
         JLabel pageLabel = new JLabel(pageLabelText);
         pageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         pageLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
+        pageLabel.setBackground(Color.GREEN);
         panel.add(pageLabel);
         
-        try
-        {
-            PDFPagePanel pdfPagePanel = new PDFPagePanel();
-            pdfPagePanel.setPage(new PDFRenderer(document), pdPage, pageIndex);
-            panel.add(pdfPagePanel);
-        }
-        catch (IOException ex)
-        {
-            JLabel error = new JLabel(ex.getMessage());
-            error.setAlignmentX(Component.CENTER_ALIGNMENT);
-            error.setFont(new Font(Font.MONOSPACED, Font.BOLD, 15));
-            panel.add(error);
-        }        
+        label = new JLabel();
+        label.setBackground(panel.getBackground());
+        label.setAlignmentX(Component.CENTER_ALIGNMENT);
+        label.setText("Loading...");
+        panel.add(label);
+
+        // render in a background thread: rendering is read-only, so this should be ok, despite
+        // the fact that PDDocument is not officially thread safe
+        new RenderWorker().execute();
     }
 
     /**
-     * return the main panel that hold all the UI elements.
+     * Returns the main panel that hold all the UI elements.
      *
      * @return JPanel instance
      */
@@ -102,4 +86,36 @@ public class PagePane
         return panel;
     }
 
+    /**
+     * Note that PDDocument is not officially thread safe, caution advised.
+     */
+    private class RenderWorker extends SwingWorker<BufferedImage, Integer>
+    {
+        @Override
+        protected BufferedImage doInBackground() throws Exception
+        {
+            PDFRenderer renderer = new PDFRenderer(document);
+            return renderer.renderImage(pageIndex);
+        }
+
+        @Override
+        protected void done()
+        {
+            try
+            {
+                label.setIcon(new ImageIcon(get()));
+                label.setText(null);
+            }
+            catch (InterruptedException e)
+            {
+                label.setText(e.getMessage());
+                throw new RuntimeException(e);
+            }
+            catch (ExecutionException e)
+            {
+                label.setText(e.getMessage());
+                throw new RuntimeException(e);
+            }
+        }
+    }
 }

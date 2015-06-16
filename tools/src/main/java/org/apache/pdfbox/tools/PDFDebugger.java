@@ -470,7 +470,8 @@ public class PDFDebugger extends javax.swing.JFrame
             COSBase typeItem = page.getItem(COSName.TYPE);
             if (COSName.PAGE.equals(typeItem))
             {
-                jSplitPane1.setRightComponent(new PagePane(document, page).getPanel());
+                PagePane pagePane = new PagePane(document, page);
+                jSplitPane1.setRightComponent(new JScrollPane(pagePane.getPanel()));
             }
         }
     }
