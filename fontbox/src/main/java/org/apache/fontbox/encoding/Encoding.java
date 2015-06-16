@@ -16,7 +16,6 @@
  */
 package org.apache.fontbox.encoding;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,10 +27,6 @@ import java.util.Map;
  */
 public abstract class Encoding
 {
-    private static final String NOTDEF = ".notdef";
-    private static final Map<String,String> NAME_TO_CHARACTER = new HashMap<String,String>();
-    private static final Map<String,String> CHARACTER_TO_NAME = new HashMap<String,String>();
-
     /**
      * This is a mapping from a character code to a character name.
      */
@@ -74,56 +69,11 @@ public abstract class Encoding
     public String getName( int code )
     {
         String name = codeToName.get( code );
-        if( name == null )
+        if (name != null)
         {
-            name = NOTDEF;
+            return name;
         }
-        return name;
-    }
-
-    /**
-     * This will take a character code and get the name from the code.
-     *
-     * @param c The character.
-     * @return The name of the character.
-     * @throws IOException If there is no name for the character.
-     */
-    public String getNameFromCharacter( char c ) throws IOException
-    {
-        String name = CHARACTER_TO_NAME.get( c );
-        if( name == null )
-        {
-            throw new IOException( "No name for character '" + c + "'" );
-        }
-        return name;
-    }
-
-    /**
-     * This will get the character from the code.
-     *
-     * @param code The character code.
-     * @return The printable character for the code.
-     * @throws IOException If there is not name for the character.
-     */
-    public String getCharacter( int code ) throws IOException
-    {
-        return getCharacter( getName( code ) );
-    }
-
-    /**
-     * This will get the character from the name.
-     *
-     * @param name The name of the character.
-     * @return The printable character for the code.
-     */
-    public static String getCharacter( String name )
-    {
-        String character = NAME_TO_CHARACTER.get( name );
-        if( character == null )
-        {
-            character = name;
-        }
-        return character;
+        return ".notdef";
     }
     
     /**
