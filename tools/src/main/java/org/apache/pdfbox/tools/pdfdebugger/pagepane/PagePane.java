@@ -92,7 +92,7 @@ public class PagePane
     private class RenderWorker extends SwingWorker<BufferedImage, Integer>
     {
         @Override
-        protected BufferedImage doInBackground() throws Exception
+        protected BufferedImage doInBackground() throws IOException
         {
             PDFRenderer renderer = new PDFRenderer(document);
             return renderer.renderImage(pageIndex);
