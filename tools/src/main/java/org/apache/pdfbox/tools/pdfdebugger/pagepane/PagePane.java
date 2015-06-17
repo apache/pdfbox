@@ -20,6 +20,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
