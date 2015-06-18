@@ -46,7 +46,7 @@ public final class FieldUtils
         private final String key;
         private final String value;
         
-        public KeyValue(final String theKey, final String theValue)
+        KeyValue(final String theKey, final String theValue)
         {
             this.key = theKey;
             this.value = theValue;
