@@ -34,7 +34,7 @@ import org.apache.fontbox.afm.FontMetrics;
  *
  * @author John Hewson
  */
-class Standard14Fonts
+final class Standard14Fonts
 {
     private Standard14Fonts()
     {
