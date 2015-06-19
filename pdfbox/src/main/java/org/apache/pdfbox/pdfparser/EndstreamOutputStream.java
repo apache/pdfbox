@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * This class is only for the readUntilEndStream methods, to prevent a
+ * This class is only for the readUntilEndStream method, to prevent a
  * final CR LF or LF (but not a final CR!) from being written to the output,
  * unless the beginning of the stream is assumed to be ASCII.
  * Only the 3-param write() method is implemented. This solves
@@ -77,16 +77,16 @@ class EndstreamOutputStream extends BufferedOutputStream
             // first write what we kept last time
             if (hasCR)
             {
+                // previous buffer ended with CR
+                hasCR = false;
                 if (!hasLF && len == 1 && b[off] == '\n')
                 {
-                    // previous buffer ended with CR
                     // actual buffer contains only LF so it will be the last one
                     // => we're done
-                    hasCR = false; // to avoid this getting written in the flush
+                    // reset hasCR done too to avoid CR getting written in the flush
                     return;
                 }
-                super.write('\r');
-                hasCR = false;
+                super.write('\r');               
             }
             if (hasLF)
             {
