@@ -40,33 +40,46 @@ public class PDDeviceCMYK extends PDDeviceColorSpace
     public static PDDeviceCMYK INSTANCE;
     static
     {
-        try
-        {
-            INSTANCE = new PDDeviceCMYK();
-        }
-        catch (IOException e)
-        {
-            throw new RuntimeException(e);
-        }
+        INSTANCE = new PDDeviceCMYK();
     }
 
     private final PDColor initialColor = new PDColor(new float[] { 0, 0, 0, 1 }, this);
-    private final ICC_ColorSpace awtColorSpace;
+    private volatile ICC_ColorSpace awtColorSpace;
 
-    protected PDDeviceCMYK() throws IOException
+    protected PDDeviceCMYK()
     {
-        // loads the ICC color profile for CMYK
-        ICC_Profile iccProfile = getICCProfile();
-        if (iccProfile == null)
-        {
-            throw new IOException("Default CMYK color profile could not be loaded");
-        }
-        awtColorSpace = new ICC_ColorSpace(iccProfile);
+    }
 
-        // there is a JVM bug which results in a CMMException which appears to be a race
-        // condition caused by lazy initialization of the color transform, so we perform
-        // an initial color conversion while we're still in a static context, see PDFBOX-2184
-        awtColorSpace.toRGB(new float[] { 0, 0, 0, 0 });
+    /**
+     * Lazy load the ICC profile, because it's slow.
+     */
+    protected void init() throws IOException
+    {
+        // no need to synchronize this check as it is atomic
+        if (awtColorSpace != null)
+        {
+            return;
+        }
+        synchronized (this)
+        {
+            // we might have been waiting for another thread, so check again
+            if (awtColorSpace != null)
+            {
+                return;
+            }
+            // loads the ICC color profile for CMYK
+            ICC_Profile iccProfile = getICCProfile();
+            if (iccProfile == null)
+            {
+                throw new IOException("Default CMYK color profile could not be loaded");
+            }
+            awtColorSpace = new ICC_ColorSpace(iccProfile);
+
+            // there is a JVM bug which results in a CMMException which appears to be a race
+            // condition caused by lazy initialization of the color transform, so we perform
+            // an initial color conversion while we're still in a static context, see PDFBOX-2184
+            awtColorSpace.toRGB(new float[] { 0, 0, 0, 0 });
+        }
     }
 
     protected ICC_Profile getICCProfile() throws IOException
@@ -116,14 +129,16 @@ public class PDDeviceCMYK extends PDDeviceColorSpace
     }
 
     @Override
-    public float[] toRGB(float[] value)
+    public float[] toRGB(float[] value) throws IOException
     {
+        init();
         return awtColorSpace.toRGB(value);
     }
 
     @Override
     public BufferedImage toRGBImage(WritableRaster raster) throws IOException
     {
+        init();
         return toRGBImageAWT(raster, awtColorSpace);
     }
 }
