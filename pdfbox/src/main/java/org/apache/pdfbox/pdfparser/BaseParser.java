@@ -18,7 +18,6 @@ package org.apache.pdfbox.pdfparser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
@@ -31,12 +30,14 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
+import org.apache.pdfbox.cos.COSObjectKey;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdmodel.common.COSStreamArray;
-import org.apache.pdfbox.cos.COSObjectKey;
+import org.apache.pdfbox.util.Charsets;
+
 
 import static org.apache.pdfbox.util.Charsets.ISO_8859_1;
 
@@ -737,32 +738,29 @@ public abstract class BaseParser
      * Determine if a character terminates a PDF name.
      *
      * @param ch The character
-     * @return <code>true</code> if the character terminates a PDF name, otherwise <code>false</code>.
+     * @return true if the character terminates a PDF name, otherwise false.
      */
-    protected boolean isEndOfName(char ch)
+    protected boolean isEndOfName(int ch)
     {
-        return (ch == ASCII_SPACE || ch == ASCII_CR || ch == ASCII_LF || ch == 9 || ch == '>' || ch == '<'
-            || ch == '[' || ch =='/' || ch ==']' || ch ==')' || ch =='('
-        );
+        return ch == ASCII_SPACE || ch == ASCII_CR || ch == ASCII_LF || ch == 9 || ch == '>' ||
+               ch == '<' || ch == '[' || ch =='/' || ch ==']' || ch ==')' || ch =='(';
     }
 
     /**
      * This will parse a PDF name from the stream.
      *
      * @return The parsed PDF name.
-     *
      * @throws IOException If there is an error reading from the stream.
      */
     protected COSName parseCOSName() throws IOException
     {
         readExpectedChar('/');
-        // costruisce il nome
-        StringBuilder buffer = new StringBuilder();
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         int c = pdfSource.read();
-        while( c != -1 )
+        while (c != -1)
         {
-            char ch = (char)c;
-            if(ch == '#')
+            int ch = c;
+            if (ch == '#')
             {
                 char ch1 = (char)pdfSource.read();
                 char ch2 = (char)pdfSource.read();
@@ -773,17 +771,16 @@ public abstract class BaseParser
                 // PDF versions of 1.2 or later.  The solution here is that we
                 // interpret the # as an escape only when it is followed by two
                 // valid hex digits.
-                //
                 if (isHexDigit(ch1) && isHexDigit(ch2))
                 {
                     String hex = "" + ch1 + ch2;
                     try
                     {
-                        buffer.append( (char) Integer.parseInt(hex, 16));
+                        buffer.write(Integer.parseInt(hex, 16));
                     }
                     catch (NumberFormatException e)
                     {
-                        throw new IOException("Error: expected hex number, actual='" + hex + "'", e);
+                        throw new IOException("Error: expected hex digit, actual='" + hex + "'", e);
                     }
                     c = pdfSource.read();
                 }
@@ -791,7 +788,7 @@ public abstract class BaseParser
                 {
                     pdfSource.rewind(1);
                     c = ch1;
-                    buffer.append( ch );
+                    buffer.write(ch);
                 }
             }
             else if (isEndOfName(ch))
@@ -800,7 +797,7 @@ public abstract class BaseParser
             }
             else
             {
-                buffer.append( ch );
+                buffer.write(ch);
                 c = pdfSource.read();
             }
         }
@@ -808,7 +805,8 @@ public abstract class BaseParser
         {
             pdfSource.rewind(1);
         }
-        return COSName.getPDFName( buffer.toString() );
+        String string = new String(buffer.toByteArray(), Charsets.UTF_8);
+        return COSName.getPDFName(string);
     }
 
     /**
