@@ -69,8 +69,10 @@ final class TIFFUtil
      * @param image buffered image which will be written
      * @param metadata ImageIO metadata
      * @param dpi image dots per inch
+     * @throws IIOInvalidTreeException if something goes wrong
      */
-    public static void updateMetadata(IIOMetadata metadata, BufferedImage image, int dpi)
+    static void updateMetadata(IIOMetadata metadata, BufferedImage image, int dpi)
+            throws IIOInvalidTreeException
     {
         debugLogMetadata(metadata, SUN_TIFF_FORMAT);
 
@@ -110,16 +112,8 @@ final class TIFFUtil
             ifd.appendChild(createShortField(262, "PhotometricInterpretation", 0));
         }
         
-        try
-        {
-            metadata.mergeTree(SUN_TIFF_FORMAT, root);
-        }
-        catch (IIOInvalidTreeException e)
-        {
-            // should never happen
-            throw new RuntimeException(e);
-        }
-
+        metadata.mergeTree(SUN_TIFF_FORMAT, root);
+        
         debugLogMetadata(metadata, SUN_TIFF_FORMAT);
     }
 
