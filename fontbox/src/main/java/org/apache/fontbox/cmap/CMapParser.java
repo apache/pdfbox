@@ -74,6 +74,7 @@ public class CMapParser
      * Parses a predefined CMap.
      *
      * @param name CMap name.
+     * @return The parsed predefined CMap as a java object.
      * @throws IOException If the CMap could not be parsed.
      */
     public CMap parsePredefined(String name) throws IOException
@@ -374,8 +375,6 @@ public class CMapParser
             }
             boolean done = false;
 
-            String value = null;
-
             int arrayIndex = 0;
             while (!done)
             {
@@ -383,7 +382,7 @@ public class CMapParser
                 {
                     done = true;
                 }
-                value = createStringFromBytes(tokenBytes);
+                String value = createStringFromBytes(tokenBytes);
                 result.addCharMapping(startCode, value);
                 increment(startCode);
 
@@ -473,7 +472,7 @@ public class CMapParser
             List<Object> list = new ArrayList<Object>();
 
             Object nextToken = parseNextToken(is);
-            while (nextToken != null && nextToken != MARK_END_OF_ARRAY)
+            while (nextToken != null && !MARK_END_OF_ARRAY.equals(nextToken))
             {
                 list.add(nextToken);
                 nextToken = parseNextToken(is);
@@ -489,7 +488,7 @@ public class CMapParser
                 Map<String, Object> result = new HashMap<String, Object>();
                 // we are reading a dictionary
                 Object key = parseNextToken(is);
-                while (key instanceof LiteralName && key != MARK_END_OF_DICTIONARY)
+                while (key instanceof LiteralName && !MARK_END_OF_DICTIONARY.equals(key))
                 {
                     Object value = parseNextToken(is);
                     result.put(((LiteralName) key).name, value);
@@ -601,7 +600,7 @@ public class CMapParser
             }
             else
             {
-                retval = new Integer(value);
+                retval = Integer.valueOf(value);
             }
             break;
         }
