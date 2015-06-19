@@ -142,8 +142,9 @@ public class PDFXrefStreamParser extends BaseParser
                     break;
                 case 2:
                     /*
-                     * object stored in object stream; 2nd argument is object number of object stream;
-                     * 3rd argument index of object within object stream
+                     * object stored in object stream: 
+                     * 2nd argument is object number of object stream
+                     * 3rd argument is index of object within object stream
                      * 
                      * For sequential PDFParser we do not need this information
                      * because
