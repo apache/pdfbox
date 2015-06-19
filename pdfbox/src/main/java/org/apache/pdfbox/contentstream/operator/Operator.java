@@ -39,13 +39,14 @@ public final class Operator
      * Constructor.
      *
      * @param aOperator The operator that this object will represent.
+     * @throws IllegalArgumentException if the operator starts with "/".
      */
     private Operator(String aOperator)
     {
         theOperator = aOperator;
         if( aOperator.startsWith( "/" ) )
         {
-            throw new RuntimeException( "Operators are not allowed to start with / '" + aOperator + "'" );
+            throw new IllegalArgumentException( "Operators are not allowed to start with / '" + aOperator + "'" );
         }
     }
 
