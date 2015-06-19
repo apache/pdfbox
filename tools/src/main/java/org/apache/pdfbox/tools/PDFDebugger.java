@@ -41,6 +41,8 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSObject;
+import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.tools.gui.PDFTreeModel;
 import org.apache.pdfbox.tools.gui.PDFTreeCellRenderer;
 import org.apache.pdfbox.tools.gui.ArrayEntry;
@@ -60,8 +62,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
-import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.tools.pdfdebugger.colorpane.CSDeviceN;
 import org.apache.pdfbox.tools.pdfdebugger.colorpane.CSIndexed;
 import org.apache.pdfbox.tools.pdfdebugger.colorpane.CSArrayBased;
@@ -318,21 +318,9 @@ public class PDFDebugger extends javax.swing.JFrame
 
     private boolean isSpecialColorSpace(Object selectedNode)
     {
-        if (selectedNode instanceof MapEntry)
-        {
-            selectedNode = ((MapEntry) selectedNode).getValue();
-        }
-        else if (selectedNode instanceof ArrayEntry)
-        {
-            selectedNode = ((ArrayEntry) selectedNode).getValue();
-        }
-        
-        if (selectedNode instanceof COSObject)
-        {
-            selectedNode = ((COSObject)selectedNode).getObject();
-        }
+        selectedNode = getUnderneathObject(selectedNode);
 
-        if (selectedNode instanceof COSArray && ((COSArray) selectedNode).size() > 0)
+        if (selectedNode instanceof COSArray)
         {
             COSBase arrayEntry = ((COSArray)selectedNode).get(0);
             if (arrayEntry instanceof COSName)
@@ -346,19 +334,7 @@ public class PDFDebugger extends javax.swing.JFrame
 
     private boolean isOtherColorSpace(Object selectedNode)
     {
-        if (selectedNode instanceof MapEntry)
-        {
-            selectedNode = ((MapEntry) selectedNode).getValue();
-        }
-        else if (selectedNode instanceof ArrayEntry)
-        {
-            selectedNode = ((ArrayEntry) selectedNode).getValue();
-        }
-
-        if (selectedNode instanceof COSObject)
-        {
-            selectedNode = ((COSObject) selectedNode).getObject();
-        }
+        selectedNode = getUnderneathObject(selectedNode);
 
         if (selectedNode instanceof COSArray && ((COSArray) selectedNode).size() > 0)
         {
@@ -374,19 +350,7 @@ public class PDFDebugger extends javax.swing.JFrame
 
     private boolean isPage(Object selectedNode)
     {
-        if (selectedNode instanceof MapEntry)
-        {
-            selectedNode = ((MapEntry) selectedNode).getValue();
-        }
-        else if (selectedNode instanceof ArrayEntry)
-        {
-            selectedNode = ((ArrayEntry) selectedNode).getValue();
-        }
-
-        if (selectedNode instanceof COSObject)
-        {
-            selectedNode = ((COSObject) selectedNode).getObject();
-        }
+        selectedNode = getUnderneathObject(selectedNode);
 
         if (selectedNode instanceof COSDictionary)
         {
@@ -406,19 +370,7 @@ public class PDFDebugger extends javax.swing.JFrame
      */
     private void showColorPane(Object csNode)
     {
-        if (csNode instanceof MapEntry)
-        {
-            csNode = ((MapEntry) csNode).getValue();
-        }
-        else if (csNode instanceof ArrayEntry)
-        {
-            csNode = ((ArrayEntry) csNode).getValue();
-        }
-        
-        if (csNode instanceof COSObject)
-        {
-            csNode = ((COSObject)csNode).getObject();
-        }
+        csNode = getUnderneathObject(csNode);
 
         if (csNode instanceof COSArray && ((COSArray) csNode).size() > 0)
         {
@@ -449,20 +401,8 @@ public class PDFDebugger extends javax.swing.JFrame
 
     private void showPage(Object selectedNode)
     {
-        if (selectedNode instanceof MapEntry)
-        {
-            selectedNode = ((MapEntry) selectedNode).getValue();
-        }
-        else if (selectedNode instanceof ArrayEntry)
-        {
-            selectedNode = ((ArrayEntry) selectedNode).getValue();
-        }
-     
-        if (selectedNode instanceof COSObject)
-        {
-            selectedNode = ((COSObject) selectedNode).getObject();
-        }
-        
+        selectedNode = getUnderneathObject(selectedNode);
+
         if (selectedNode instanceof COSDictionary)
         {
             COSDictionary page = (COSDictionary) selectedNode;
@@ -473,6 +413,24 @@ public class PDFDebugger extends javax.swing.JFrame
                 jSplitPane1.setRightComponent(new JScrollPane(pagePane.getPanel()));
             }
         }
+    }
+
+    private Object getUnderneathObject(Object selectedNode)
+    {
+        if (selectedNode instanceof MapEntry)
+        {
+            selectedNode = ((MapEntry) selectedNode).getValue();
+        }
+        else if (selectedNode instanceof ArrayEntry)
+        {
+            selectedNode = ((ArrayEntry) selectedNode).getValue();
+        }
+
+        if (selectedNode instanceof COSObject)
+        {
+            selectedNode = ((COSObject) selectedNode).getObject();
+        }
+        return selectedNode;
     }
 
     private String convertToString( Object selectedNode )
