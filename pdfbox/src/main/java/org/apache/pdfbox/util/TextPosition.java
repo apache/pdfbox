@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.util;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 
@@ -27,6 +29,8 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
  */
 public class TextPosition
 {
+    private static final Log LOG = LogFactory.getLog(TextPosition.class);
+
     /* TextMatrix for the start of the text object.  Coordinates
      * are in display units and have not been adjusted. */
     private Matrix textPos;
@@ -686,6 +690,13 @@ public class TextPosition
 
         for (int i = 0; i < strLen && !wasAdded; i++)
         {
+            if (i >= widths.length)
+            {
+                LOG.info("diacritic " + diacritic.getCharacter() + " on ligature " + getCharacter() + 
+                        " is not supported yet and is ignored (PDFBOX-2831)");
+                break;
+            }
+            
             float currCharXEnd = currCharXStart + widths[i];
 
             /*
