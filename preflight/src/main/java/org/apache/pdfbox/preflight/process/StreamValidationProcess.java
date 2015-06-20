@@ -263,7 +263,7 @@ public class StreamValidationProcess extends AbstractProcess
                         if (cr == -1)
                         {
                             addValidationError(context, new ValidationError(ERROR_SYNTAX_STREAM_LENGTH_INVALID,
-                                    "Stream length is invalide"));
+                                    "Stream length is invalid"));
                             org.apache.pdfbox.io.IOUtils.closeQuietly(ra);
                             return;
                         }
@@ -281,13 +281,13 @@ public class StreamValidationProcess extends AbstractProcess
                     }
 
                     // ---- check the content of 10 last characters
-                    String endStream = new String(buffer2);
+                    String endStream = new String(buffer2, "ISO-8859-1");
                     if (buffer2[0] == '\r' && buffer2[1] == '\n')
                     {
                         if (!endStream.contains("endstream"))
                         {
                             addValidationError(context, new ValidationError(ERROR_SYNTAX_STREAM_LENGTH_INVALID,
-                                    "Stream length is invalide"));
+                                    "Stream length is invalid"));
                         }
                     }
                     else if (buffer2[0] == '\r' && buffer2[1] == 'e')
@@ -295,7 +295,7 @@ public class StreamValidationProcess extends AbstractProcess
                         if (!endStream.contains("endstream"))
                         {
                             addValidationError(context, new ValidationError(ERROR_SYNTAX_STREAM_LENGTH_INVALID,
-                                    "Stream length is invalide"));
+                                    "Stream length is invalid"));
                         }
                     }
                     else if (buffer2[0] == '\n' && buffer2[1] == 'e')
@@ -303,20 +303,20 @@ public class StreamValidationProcess extends AbstractProcess
                         if (!endStream.contains("endstream"))
                         {
                             addValidationError(context, new ValidationError(ERROR_SYNTAX_STREAM_LENGTH_INVALID,
-                                    "Stream length is invalide"));
+                                    "Stream length is invalid"));
                         }
                     }
                     else
                     {
                         addValidationError(context, new ValidationError(ERROR_SYNTAX_STREAM_LENGTH_INVALID,
-                                "Stream length is invalide"));
+                                "Stream length is invalid"));
                     }
 
                 }
                 else
                 {
                     addValidationError(context, new ValidationError(ERROR_SYNTAX_STREAM_LENGTH_INVALID,
-                            "Stream length is invalide"));
+                            "Stream length is invalid"));
                 }
             }
         }
