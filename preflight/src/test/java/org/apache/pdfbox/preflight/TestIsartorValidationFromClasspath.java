@@ -189,7 +189,7 @@ public class TestIsartorValidationFromClasspath
         InputStream is = Class.class.getResourceAsStream("/Isartor testsuite.list");
         if (is != null)
         {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is, "ISO-8859-1"));
             String line = reader.readLine();
             while (line != null)
             {
