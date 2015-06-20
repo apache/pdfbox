@@ -221,10 +221,10 @@ public class TestCOSString extends TestCOSBase
             assertEquals(testStr, test1.getString());
 
             String appendedStr = "appended text";
-            test1.append(appendedStr.getBytes());
+            test1.append(appendedStr.getBytes("ISO-8859-1"));
             assertEquals(testStr + appendedStr, test1.getString());
 
-            test1.append(ESC_CHAR_STRING.getBytes());
+            test1.append(ESC_CHAR_STRING.getBytes("ISO-8859-1"));
             assertEquals(testStr + appendedStr + ESC_CHAR_STRING, test1.getString());
 
             COSString hexStr = COSString.createFromHexString(createHex(testStr));
@@ -308,10 +308,10 @@ public class TestCOSString extends TestCOSBase
     /**
      * Test getBytes() - again not much to test, just ensure the proper byte array is returned.
      */
-    public void testGetBytes()
+    public void testGetBytes() throws UnsupportedEncodingException
     {
         COSString str = new COSString(ESC_CHAR_STRING);
-        testByteArrays(ESC_CHAR_STRING.getBytes(), str.getBytes());
+        testByteArrays(ESC_CHAR_STRING.getBytes("ISO-8859-1"), str.getBytes());
     }
 
     /**
