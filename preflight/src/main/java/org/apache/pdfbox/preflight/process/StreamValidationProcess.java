@@ -46,6 +46,7 @@ import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.utils.COSUtils;
 import org.apache.pdfbox.preflight.utils.FilterHelper;
+import org.apache.pdfbox.util.Charsets;
 
 public class StreamValidationProcess extends AbstractProcess
 {
@@ -270,7 +271,7 @@ public class StreamValidationProcess extends AbstractProcess
                     }
 
                     // ---- check the content of 10 last characters
-                    String endStream = new String(buffer2);
+                    String endStream = new String(buffer2, Charsets.ISO_8859_1);
                     if (buffer2[0] == '\r' && buffer2[1] == '\n')
                     {
                         if (!endStream.contains("endstream"))
