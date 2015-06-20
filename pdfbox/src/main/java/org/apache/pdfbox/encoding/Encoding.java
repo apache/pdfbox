@@ -121,7 +121,7 @@ public abstract class Encoding implements COSObjectable
                 throw new MissingResourceException("Glyphlist not found: " + location,
                         Encoding.class.getName(), location);
             }
-            glyphStream = new BufferedReader( new InputStreamReader( resource ) );
+            glyphStream = new BufferedReader( new InputStreamReader( resource, "ISO-8859-1" ) );
             String line = null;
             while( (line = glyphStream.readLine()) != null )
             {
