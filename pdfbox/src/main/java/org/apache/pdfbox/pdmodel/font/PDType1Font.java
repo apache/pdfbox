@@ -300,7 +300,7 @@ public class PDType1Font extends PDSimpleFont
                 BufferedReader in = null;
                 try 
                 {
-                    in = new BufferedReader(new InputStreamReader(fontFile.createInputStream()));
+                    in = new BufferedReader(new InputStreamReader(fontFile.createInputStream(), "ISO-8859-1"));
                     
                     // this section parses the font program stream searching for a /Encoding entry
                     // if it contains an array of values a Type1Encoding will be returned
