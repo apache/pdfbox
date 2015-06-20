@@ -118,7 +118,7 @@ public final class GlyphList
 
     private void loadList(InputStream input) throws IOException
     {
-        BufferedReader in = new BufferedReader(new InputStreamReader(input));
+        BufferedReader in = new BufferedReader(new InputStreamReader(input, "ISO-8859-1"));
         try
         {
             while (in.ready())
