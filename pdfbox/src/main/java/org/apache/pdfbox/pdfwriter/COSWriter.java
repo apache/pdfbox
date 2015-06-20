@@ -751,7 +751,7 @@ public class COSWriter implements ICOSVisitor, Closeable
                 throw new IOException("Can't write new ByteRange, not enough space");
             }
             getStandardOutput().setPos(byterangePosition[0]);
-            getStandardOutput().write(newByteRange.getBytes());
+            getStandardOutput().write(newByteRange.getBytes("ISO-8859-1"));
             for(int i=0;i<leftByterange;++i)
             {
                 getStandardOutput().write(0x20);
@@ -773,7 +773,7 @@ public class COSWriter implements ICOSVisitor, Closeable
                     throw new IOException("Can't write signature, not enough space");
                 }
                 getStandardOutput().setPos(startPos);
-                getStandardOutput().write(signature.getBytes());
+                getStandardOutput().write(signature.getBytes("ISO-8859-1"));
             } 
             finally 
             {
@@ -787,9 +787,9 @@ public class COSWriter implements ICOSVisitor, Closeable
     
     private void writeXrefRange(long x, long y) throws IOException
     {
-        getStandardOutput().write(String.valueOf(x).getBytes());
+        getStandardOutput().write(String.valueOf(x).getBytes("ISO-8859-1"));
         getStandardOutput().write(SPACE);
-        getStandardOutput().write(String.valueOf(y).getBytes());
+        getStandardOutput().write(String.valueOf(y).getBytes("ISO-8859-1"));
         getStandardOutput().writeEOL();
     }
 
