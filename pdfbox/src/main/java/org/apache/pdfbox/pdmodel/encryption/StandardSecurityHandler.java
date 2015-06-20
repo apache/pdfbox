@@ -495,7 +495,7 @@ public final class StandardSecurityHandler extends SecurityHandler
             md.update(time.toByteArray());
             md.update(ownerPassword.getBytes(Charsets.ISO_8859_1));
             md.update(userPassword.getBytes(Charsets.ISO_8859_1));
-            md.update(document.getDocument().toString().getBytes());
+            md.update(document.getDocument().toString().getBytes(Charsets.ISO_8859_1));
 
             byte[] id = md.digest(this.toString().getBytes(Charsets.ISO_8859_1));
             COSString idString = new COSString(id);
