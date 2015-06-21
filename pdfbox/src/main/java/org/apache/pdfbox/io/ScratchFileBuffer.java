@@ -178,6 +178,15 @@ class ScratchFileBuffer implements RandomAccess
      * {@inheritDoc}
      */
     @Override
+    public void write(byte[] b) throws IOException
+    {
+        write(b, 0, b.length);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void write(byte[] b, int off, int len) throws IOException
     {
         checkClosed();
@@ -355,7 +364,7 @@ class ScratchFileBuffer implements RandomAccess
     public boolean isEOF() throws IOException
     {
         checkClosed();
-        return positionInBuffer == length;
+        return positionInBuffer >= length;
     }
 
     /**
