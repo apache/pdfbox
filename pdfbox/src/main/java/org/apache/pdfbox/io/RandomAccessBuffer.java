@@ -173,11 +173,11 @@ public class RandomAccessBuffer implements RandomAccess, Closeable, Cloneable
             throw new IOException("Invalid position "+position);
         }
         pointer = position;
-        if (pointer <= size)
+        if (pointer < size)
         {
             // calculate the chunk list index
-            bufferListIndex = (int)(position / chunkSize);
-            currentBufferPointer = (int)(position % chunkSize);
+            bufferListIndex = (int)(pointer / chunkSize);
+            currentBufferPointer = (int)(pointer % chunkSize);
             currentBuffer = bufferList.get(bufferListIndex);
         }
         else
@@ -186,7 +186,7 @@ public class RandomAccessBuffer implements RandomAccess, Closeable, Cloneable
             // jump to the end of the buffer
             bufferListIndex = bufferListMaxIndex;
             currentBuffer = bufferList.get(bufferListIndex);
-            currentBufferPointer = (int)(size - ((bufferListMaxIndex-1)*chunkSize));
+            currentBufferPointer = (int)(size % chunkSize);
         }
     }
 
