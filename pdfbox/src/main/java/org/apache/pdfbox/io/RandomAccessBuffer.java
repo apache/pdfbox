@@ -326,6 +326,16 @@ public class RandomAccessBuffer implements RandomAccess, Closeable, Cloneable
         }
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void write(byte[] b) throws IOException
+    {
+        write(b, 0, b.length);
+    }
+    
     /**
      * {@inheritDoc}
      */
@@ -440,8 +450,8 @@ public class RandomAccessBuffer implements RandomAccess, Closeable, Cloneable
     @Override
     public boolean isEOF() throws IOException
     {
-        int peek = peek();
-        return peek == -1;
+        checkClosed();
+        return pointer >= size;
     }
 
     /**

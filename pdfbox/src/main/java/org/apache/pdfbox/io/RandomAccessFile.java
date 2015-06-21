@@ -159,6 +159,15 @@ public class RandomAccessFile implements RandomAccess, Closeable
      * {@inheritDoc}
      */
     @Override
+    public void write(byte[] b) throws IOException
+    {
+        write(b, 0, b.length);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void write(int b) throws IOException
     {
         checkClosed();
@@ -198,8 +207,7 @@ public class RandomAccessFile implements RandomAccess, Closeable
     @Override
     public boolean isEOF() throws IOException
     {
-        int peek = peek();
-        return peek == -1;
+        return peek() == -1;
     }
 
     @Override
