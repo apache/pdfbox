@@ -77,7 +77,17 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
         }
         else if (nodeValue instanceof COSString)
         {
-            result = ((COSString) nodeValue).getString();
+            String text = ((COSString) nodeValue).getString();
+            // display unprintable strings as hex
+            for (char c : text.toCharArray())
+            {
+                if (Character.isISOControl(c))
+                {
+                    text = "<" + ((COSString) nodeValue).toHexString() + ">";
+                    break;
+                }
+            }
+            result = text;
         }
         else if (nodeValue instanceof COSName)
         {

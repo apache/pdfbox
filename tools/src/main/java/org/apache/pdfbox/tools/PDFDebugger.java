@@ -458,7 +458,17 @@ public class PDFDebugger extends javax.swing.JFrame
         }
         else if( selectedNode instanceof COSString )
         {
-            data = "" + ((COSString)selectedNode).getString();
+            String text = ((COSString) selectedNode).getString();
+            // display unprintable strings as hex
+            for (char c : text.toCharArray())
+            {
+                if (Character.isISOControl(c))
+                {
+                    text = "<" + ((COSString) selectedNode).toHexString() + ">";
+                    break;
+                }
+            }
+            data = "" + text;
         }
         else if( selectedNode instanceof COSStream )
         {
