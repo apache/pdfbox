@@ -538,6 +538,7 @@ public class PDFDebugger extends javax.swing.JFrame
     public static void main(String[] args) throws Exception
     {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        System.setProperty("apple.laf.useScreenMenuBar", "true");
         PDFDebugger viewer = new PDFDebugger();
         String filename = null;
         String password = "";
