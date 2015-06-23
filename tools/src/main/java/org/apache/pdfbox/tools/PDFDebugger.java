@@ -19,8 +19,11 @@ package org.apache.pdfbox.tools;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -41,36 +44,29 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSObject;
-import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.tools.gui.PDFTreeModel;
-import org.apache.pdfbox.tools.gui.PDFTreeCellRenderer;
-import org.apache.pdfbox.tools.gui.ArrayEntry;
-import org.apache.pdfbox.tools.gui.MapEntry;
-
-import org.apache.pdfbox.pdmodel.PDDocument;
-
 import org.apache.pdfbox.cos.COSBoolean;
+import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
+import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.io.IOException;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.tools.gui.ArrayEntry;
+import org.apache.pdfbox.tools.gui.MapEntry;
+import org.apache.pdfbox.tools.gui.PDFTreeCellRenderer;
+import org.apache.pdfbox.tools.gui.PDFTreeModel;
+import org.apache.pdfbox.tools.pdfdebugger.colorpane.CSArrayBased;
 import org.apache.pdfbox.tools.pdfdebugger.colorpane.CSDeviceN;
 import org.apache.pdfbox.tools.pdfdebugger.colorpane.CSIndexed;
-import org.apache.pdfbox.tools.pdfdebugger.colorpane.CSArrayBased;
 import org.apache.pdfbox.tools.pdfdebugger.colorpane.CSSeparation;
 import org.apache.pdfbox.tools.pdfdebugger.pagepane.PagePane;
-import org.apache.pdfbox.tools.util.FileOpenSaveDialog;
-import org.apache.pdfbox.tools.pdfdebugger.ui.Tree;
 import org.apache.pdfbox.tools.pdfdebugger.treestatus.TreeStatus;
 import org.apache.pdfbox.tools.pdfdebugger.treestatus.TreeStatusPane;
+import org.apache.pdfbox.tools.pdfdebugger.ui.Tree;
+import org.apache.pdfbox.tools.util.FileOpenSaveDialog;
 import org.apache.pdfbox.tools.util.RecentFiles;
 
 /**
@@ -136,26 +132,22 @@ public class PDFDebugger extends javax.swing.JFrame
 
         setTitle("PDFBox - PDF Debugger");
 
-        addWindowFocusListener(new WindowAdapter()
-        {
-            @Override
-            public void windowGainedFocus(WindowEvent e)
-            {
-                jScrollPane1.requestFocusInWindow();
-                super.windowGainedFocus(e);
-            }
-        });
-
         addWindowListener(new java.awt.event.WindowAdapter()
         {
+            @Override
+            public void windowOpened(WindowEvent windowEvent)
+            {
+                tree.requestFocusInWindow();
+                super.windowOpened(windowEvent);
+            }
+            
             @Override
             public void windowClosing(WindowEvent evt)
             {
                 exitForm(evt);
             }
         });
-
-
+        
         jScrollPane1.setBorder(new BevelBorder(BevelBorder.RAISED));
         jScrollPane1.setPreferredSize(new Dimension(300, 500));
         tree.addTreeSelectionListener(new TreeSelectionListener()
