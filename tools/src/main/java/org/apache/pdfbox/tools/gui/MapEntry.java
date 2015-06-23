@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.tools.gui;
 
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 
 
@@ -26,15 +27,16 @@ import org.apache.pdfbox.cos.COSName;
  */
 public class MapEntry
 {
-    private Object key;
-    private Object value;
+    private COSName key;
+    private COSBase value;
+    private COSBase item;
 
     /**
      * Get the key for this entry.
      *
      * @return The entry's key.
      */
-    public Object getKey()
+    public COSName getKey()
     {
         return key;
     }
@@ -44,7 +46,7 @@ public class MapEntry
      *
      * @param k the new key for this entry.
      */
-    public void setKey(Object k)
+    public void setKey(COSName k)
     {
         key = k;
     }
@@ -54,9 +56,19 @@ public class MapEntry
      *
      * @return The value for this entry.
      */
-    public Object getValue()
+    public COSBase getValue()
     {
         return value;
+    }
+
+    /**
+     * This will get the value for this entry.
+     *
+     * @return The value for this entry.
+     */
+    public COSBase getItem()
+    {
+        return item;
     }
 
     /**
@@ -64,9 +76,19 @@ public class MapEntry
      *
      * @param val the new value for this entry.
      */
-    public void setValue(Object val)
+    public void setValue(COSBase val)
     {
         this.value = val;
+    }
+
+    /**
+     * This will set the value for this entry.
+     *
+     * @param val the new value for this entry.
+     */
+    public void setItem(COSBase val)
+    {
+        this.item = val;
     }
 
     /**
