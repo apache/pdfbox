@@ -103,19 +103,21 @@ public class PDFTreeModel implements TreeModel
         {
             ArrayEntry entry = new ArrayEntry();
             entry.setIndex( index );
-            entry.setValue( ((COSArray)parent).getObject( index ) );
+            entry.setValue( ((COSArray)parent).getObject(index) );
+            entry.setItem( ((COSArray)parent).getObject( index ) );
             retval = entry;
         }
         else if( parent instanceof COSDictionary )
         {
-            COSDictionary dict = ((COSDictionary)parent);
+            COSDictionary dict = (COSDictionary)parent;
             List<COSName> keys = new ArrayList<COSName>(dict.keySet());
             Collections.sort( keys );
-            Object key = keys.get( index );
-            Object value = dict.getDictionaryObject( (COSName)key );
+            COSName key = keys.get( index );
+            COSBase value = dict.getDictionaryObject(key);
             MapEntry entry = new MapEntry();
             entry.setKey( key );
             entry.setValue( value );
+            entry.setItem(dict.getItem(key));
             retval = entry;
         }
         else if( parent instanceof MapEntry )

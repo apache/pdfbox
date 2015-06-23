@@ -190,6 +190,7 @@ public final class TreeStatus
             {
                 MapEntry entry = new MapEntry();
                 entry.setKey(COSName.getPDFName(searchStr));
+                entry.setValue(dic.getDictionaryObject(searchStr));
                 entry.setValue(dic.getItem(searchStr));
                 return entry;
             }
@@ -203,6 +204,7 @@ public final class TreeStatus
                 ArrayEntry entry = new ArrayEntry();
                 entry.setIndex(index);
                 entry.setValue(array.getObject(index));
+                entry.setItem(array.get(index));
                 return entry;
             }
         }
