@@ -61,7 +61,7 @@ public final class PDOutputIntent implements COSObjectable
 
     public COSStream getDestOutputIntent()
     {
-        return (COSStream) dictionary.getItem(COSName.DEST_OUTPUT_PROFILE);
+        return (COSStream) dictionary.getDictionaryObject(COSName.DEST_OUTPUT_PROFILE);
     }
 
     public String getInfo()
