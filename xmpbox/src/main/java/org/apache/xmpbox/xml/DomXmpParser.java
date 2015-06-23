@@ -228,38 +228,7 @@ public class DomXmpParser
                 }
                 else
                 {
-                    String namespace = attr.getNamespaceURI();
-                    XMPSchema schema = xmp.getSchema(namespace);
-                    if (schema == null && tm.getSchemaFactory(namespace) != null)
-                    {
-                        schema = tm.getSchemaFactory(namespace).createXMPSchema(xmp, attr.getPrefix());
-                        loadAttributes(schema, description);
-                    }
-                    // Only process when a schema was successfully found
-                    if( schema != null )
-                    {
-                        ComplexPropertyContainer container = schema.getContainer();
-                        PropertyType type = checkPropertyDefinition(xmp,
-                                new QName(attr.getNamespaceURI(), attr.getLocalName()));
-                        
-                        //Default to text if no type is found
-                        if( type == null) 
-                        {
-                            type = TypeMapping.createPropertyType(Types.Text, Cardinality.Simple);
-                        }
-                                           
-                        try
-                        {
-                            AbstractSimpleProperty sp = tm.instanciateSimpleProperty(namespace, schema.getPrefix(),
-                                    attr.getLocalName(), attr.getValue(), type.type());
-                            container.addProperty(sp);
-                        }
-                        catch (IllegalArgumentException e)
-                        {
-                            throw new XmpParsingException(ErrorType.Format, 
-                                    e.getMessage() + " in " + schema.getPrefix() + ":" + attr.getLocalName(), e);
-                        }
-                    }
+                    parseDescriptionRootAttr(xmp, description, attr, tm);
                 }
             }
             parseChildrenAsProperties(xmp, properties, tm, description);
@@ -271,6 +240,43 @@ public class DomXmpParser
         finally
         {
             nsFinder.pop();
+        }
+    }
+
+    private void parseDescriptionRootAttr(XMPMetadata xmp, Element description, Attr attr, TypeMapping tm)
+            throws XmpSchemaException, XmpParsingException
+    {
+        String namespace = attr.getNamespaceURI();
+        XMPSchema schema = xmp.getSchema(namespace);
+        if (schema == null && tm.getSchemaFactory(namespace) != null)
+        {
+            schema = tm.getSchemaFactory(namespace).createXMPSchema(xmp, attr.getPrefix());
+            loadAttributes(schema, description);
+        }
+        // Only process when a schema was successfully found
+        if( schema != null )
+        {
+            ComplexPropertyContainer container = schema.getContainer();
+            PropertyType type = checkPropertyDefinition(xmp,
+                    new QName(attr.getNamespaceURI(), attr.getLocalName()));
+            
+            //Default to text if no type is found
+            if( type == null)
+            {
+                type = TypeMapping.createPropertyType(Types.Text, Cardinality.Simple);
+            }
+            
+            try
+            {
+                AbstractSimpleProperty sp = tm.instanciateSimpleProperty(namespace, schema.getPrefix(),
+                        attr.getLocalName(), attr.getValue(), type.type());
+                container.addProperty(sp);
+            }
+            catch (IllegalArgumentException e)
+            {
+                throw new XmpParsingException(ErrorType.Format,
+                        e.getMessage() + " in " + schema.getPrefix() + ":" + attr.getLocalName(), e);
+            }
         }
     }
 
