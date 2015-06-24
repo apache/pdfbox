@@ -17,7 +17,10 @@
 package org.apache.pdfbox.tools.gui;
 
 import java.awt.Component;
+import java.awt.Graphics;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
@@ -31,7 +34,6 @@ import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.tools.pdfdebugger.ui.OverlayIcon;
 
 /**
  * A class to render tree cells for the pdfviewer.
@@ -253,6 +255,37 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
         else
         {
             return null;
+        }
+    }
+
+    /**
+     * An ImageIcon which allows other ImageIcon overlays.
+     */
+    private class OverlayIcon extends ImageIcon
+    {
+        private final ImageIcon base;
+        private final List<ImageIcon> overlays;
+
+        public OverlayIcon(ImageIcon base)
+        {
+            super(base.getImage());
+            this.base = base;
+            this.overlays = new ArrayList<ImageIcon>();
+        }
+
+        public void add(ImageIcon overlay)
+        {
+            overlays.add(overlay);
+        }
+
+        @Override
+        public synchronized void paintIcon(Component c, Graphics g, int x, int y)
+        {
+            base.paintIcon(c, g, x, y);
+            for (ImageIcon icon: overlays)
+            {
+                icon.paintIcon(c, g, x, y);
+            }
         }
     }
 }
