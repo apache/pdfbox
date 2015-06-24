@@ -16,12 +16,22 @@
  */
 package org.apache.pdfbox.tools;
 
+import com.apple.eawt.AppEvent;
+import com.apple.eawt.Application;
+import com.apple.eawt.OpenFilesHandler;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FileDialog;
+import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -35,6 +45,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
+import javax.swing.TransferHandler;
 import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.TreeSelectionEvent;
@@ -90,6 +102,12 @@ public class PDFDebugger extends javax.swing.JFrame
 
     private static final String PASSWORD = "-password";
 
+    private static final int SHORCUT_KEY_MASK =
+            Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+    
+    private static final String OS_NAME = System.getProperty("os.name").toLowerCase();
+    private static final boolean IS_MAC_OS = OS_NAME.startsWith("mac os x");
+    
     /**
      * Constructor.
      */
@@ -130,7 +148,7 @@ public class PDFDebugger extends javax.swing.JFrame
         tree.setCellRenderer( new PDFTreeCellRenderer() );
         tree.setModel( null );
 
-        setTitle("PDFBox - PDF Debugger");
+        setTitle("PDFBox Debugger");
 
         addWindowListener(new java.awt.event.WindowAdapter()
         {
@@ -162,7 +180,8 @@ public class PDFDebugger extends javax.swing.JFrame
         jScrollPane1.setViewportView(tree);
 
         jSplitPane1.setRightComponent(jScrollPane2);
-
+        jSplitPane1.setDividerSize(3);
+        
         jScrollPane2.setPreferredSize(new Dimension(300, 500));
         jScrollPane2.setViewportView(jTextPane1);
 
@@ -179,8 +198,8 @@ public class PDFDebugger extends javax.swing.JFrame
         getContentPane().add( jSplitPane1, BorderLayout.CENTER );
 
         fileMenu.setText("File");
-        openMenuItem.setText("Open");
-        openMenuItem.setToolTipText("Open PDF file");
+        openMenuItem.setText("Open...");
+        openMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, SHORCUT_KEY_MASK));
         openMenuItem.addActionListener(new java.awt.event.ActionListener()
         {
             @Override
@@ -205,12 +224,13 @@ public class PDFDebugger extends javax.swing.JFrame
             throw new RuntimeException(e);
         }
 
-        recentFilesMenu.setText("Open recent Files");
+        recentFilesMenu.setText("Open Recent");
         recentFilesMenu.setEnabled(false);
         addRecentFileItems();
         fileMenu.add(recentFilesMenu);
 
         exitMenuItem.setText("Exit");
+        exitMenuItem.setAccelerator(KeyStroke.getKeyStroke("alt F4"));
         exitMenuItem.addActionListener(new java.awt.event.ActionListener()
         {
             @Override
@@ -220,7 +240,10 @@ public class PDFDebugger extends javax.swing.JFrame
             }
         });
 
-        fileMenu.add(exitMenuItem);
+        if (!IS_MAC_OS)
+        {
+            fileMenu.add(exitMenuItem);
+        }
 
         menuBar.add(fileMenu);
 
@@ -248,22 +271,96 @@ public class PDFDebugger extends javax.swing.JFrame
 
         Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         setBounds((screenSize.width-700)/2, (screenSize.height-600)/2, 700, 600);
+
+        // drag and drop to open files
+        setTransferHandler(new TransferHandler()
+        {
+            @Override
+            public boolean canImport(TransferSupport transferSupport)
+            {
+                if (!transferSupport.isDataFlavorSupported(DataFlavor.javaFileListFlavor))
+                {
+                    return false;
+                }
+                return true;
+            }
+
+            @Override
+            @SuppressWarnings("unchecked")
+            public boolean importData(TransferSupport transferSupport)
+            {
+                try
+                {
+                    Transferable transferable = transferSupport.getTransferable();
+                    List<File> files = (List<File>) transferable.getTransferData(
+                            DataFlavor.javaFileListFlavor);
+                    readPDFFile(files.get(0), "");
+                    return true;
+                }
+                catch (IOException e)
+                {
+                    throw new RuntimeException(e);
+                }
+                catch (UnsupportedFlavorException e)
+                {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        
+        // Mac OS X file open handler
+        Application.getApplication().setOpenFileHandler(new OpenFilesHandler()
+        {
+            @Override
+            public void openFiles(AppEvent.OpenFilesEvent openFilesEvent)
+            {
+                try
+                {
+                    readPDFFile(openFilesEvent.getFiles().get(0), "");
+                }
+                catch (IOException e)
+                {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
     }//GEN-END:initComponents
 
     private void openMenuItemActionPerformed(ActionEvent evt)
     {
-        FileFilter pdfFilter = new ExtensionFileFilter(new String[] {"pdf", "PDF"}, "PDF Files");
-        FileOpenSaveDialog openDialog = new FileOpenSaveDialog(this, pdfFilter);
         try
         {
-            File file = openDialog.openFile();
-            if (file != null)
+            if (IS_MAC_OS)
             {
-                String name = file.getPath();
-                readPDFFile(name, "");
+                FileDialog openDialog = new FileDialog(this, "Open");
+                openDialog.setFilenameFilter(new FilenameFilter()
+                {
+                    @Override
+                    public boolean accept(File file, String s)
+                    {
+                        return file.getName().toLowerCase().endsWith(".pdf");
+                    }
+                });
+                openDialog.setVisible(true);
+                if (openDialog.getFile() != null)
+                {
+                    readPDFFile(openDialog.getFile(), "");
+                }
+            }
+            else
+            {
+                String[] extensions = new String[] {"pdf", "PDF"};
+                FileFilter pdfFilter = new ExtensionFileFilter(extensions, "PDF Files (*.pdf)");
+                FileOpenSaveDialog openDialog = new FileOpenSaveDialog(this, pdfFilter);
+
+                File file = openDialog.openFile();
+                if (file != null)
+                {
+                    readPDFFile(file, "");
+                }
             }
         }
-        catch (Exception e)
+        catch (IOException e)
         {
             throw new RuntimeException(e);
         }
@@ -533,17 +630,20 @@ public class PDFDebugger extends javax.swing.JFrame
     }
 
     /**
+     * Entry point.
+     * 
      * @param args the command line arguments
-     *
      * @throws Exception If anything goes wrong.
      */
     public static void main(String[] args) throws Exception
     {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         System.setProperty("apple.laf.useScreenMenuBar", "true");
+
         PDFDebugger viewer = new PDFDebugger();
         String filename = null;
         String password = "";
+        
         for( int i = 0; i < args.length; i++ )
         {
             if( args[i].equals( PASSWORD ) )
@@ -560,33 +660,53 @@ public class PDFDebugger extends javax.swing.JFrame
                 filename = args[i];
             }
         }
-
+        
         if (filename != null)
         {
-            viewer.readPDFFile( filename, password );
+            File file = new File(filename);
+            if (file.exists())
+            {
+                viewer.readPDFFile( filename, password );
+            }
         }
         viewer.setVisible(true);
     }
 
-    private void readPDFFile(String filePath, String password) throws Exception
+    private void readPDFFile(String filePath, String password) throws IOException
+    {
+        File file = new File(filePath);
+        readPDFFile(file, password);
+    }
+    
+    private void readPDFFile(File file, String password) throws IOException
     {
         if( document != null )
         {
             document.close();
             recentFiles.addFile(currentFilePath);
         }
-        File file = new File( filePath );
         currentFilePath = file.getPath();
         recentFiles.removeFile(file.getPath());
         parseDocument( file, password );
+        
         TreeStatus treeStatus = new TreeStatus(document.getDocument().getTrailer());
         statusPane.updateTreeStatus(treeStatus);
-        TreeModel model=new PDFTreeModel(document);
+        
+        TreeModel model = new PDFTreeModel(document);
         tree.setModel(model);
         tree.setSelectionPath(treeStatus.getPathForString("Root"));
-        setTitle("PDFBox - " + file.getAbsolutePath());
+        if (IS_MAC_OS)
+        {
+            setTitle(file.getName());
+            getRootPane().putClientProperty("Window.documentFile", file);
+        }
+        else
+        {
+            setTitle("PDF Debugger - " + file.getAbsolutePath());
+        }
         addRecentFileItems();
     }
+    
     /**
      * This will parse a document.
      *
