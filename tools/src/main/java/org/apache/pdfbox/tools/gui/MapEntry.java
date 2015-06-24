@@ -99,15 +99,10 @@ public class MapEntry
     @Override
     public String toString()
     {
-        String retval = null;
-        if( key instanceof COSName )
+        if (key != null)
         {
-            retval = ((COSName)key).getName();
+            return key.getName();
         }
-        else
-        {
-            retval = "" +key;
-        }
-        return retval;
+        return "(null)";
     }
 }
