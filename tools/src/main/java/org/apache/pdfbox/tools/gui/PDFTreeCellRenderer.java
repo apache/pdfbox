@@ -46,7 +46,7 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
     private final ImageIcon ICON_INDIRECT = new ImageIcon(getImageUrl("indirect"));
     private final ImageIcon ICON_INTEGER = new ImageIcon(getImageUrl("integer"));
     private final ImageIcon ICON_NAME = new ImageIcon(getImageUrl("name"));
-    private final ImageIcon ICON_NULL = new ImageIcon(getImageUrl("null"));
+    //private final ImageIcon ICON_NULL = new ImageIcon(getImageUrl("null"));
     private final ImageIcon ICON_REAL = new ImageIcon(getImageUrl("real"));
     private final ImageIcon ICON_STREAM_DICT = new ImageIcon(getImageUrl("stream-dict"));
     private final ImageIcon ICON_STRING = new ImageIcon(getImageUrl("string"));
@@ -237,7 +237,7 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
         }
         else if (nodeValue instanceof COSNull)
         {
-            return ICON_NULL;
+            return null; //ICON_NULL;
         }
         else if (nodeValue instanceof COSStream)
         {
