@@ -171,7 +171,7 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
         
         if (nodeValue instanceof MapEntry)
         {
-            MapEntry entry = (MapEntry)nodeValue;
+            MapEntry entry = (MapEntry) nodeValue;
             if (entry.getItem() instanceof COSObject)
             {
                 isIndirect = true;
@@ -202,8 +202,12 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
         if (nodeValue instanceof MapEntry)
         {
             MapEntry entry = (MapEntry) nodeValue;
-            COSBase value = entry.getValue();
-            return lookupIcon(value);
+            return lookupIcon(entry.getValue());
+        }
+        else if (nodeValue instanceof ArrayEntry)
+        {
+            ArrayEntry entry = (ArrayEntry) nodeValue;
+            return lookupIcon(entry.getValue());
         }
         else if (nodeValue instanceof COSFloat)
         {
@@ -229,11 +233,6 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
         else if (nodeValue instanceof COSName)
         {
             return ICON_NAME;
-        }
-        else if (nodeValue instanceof ArrayEntry)
-        {
-            ArrayEntry entry = (ArrayEntry) nodeValue;
-            return lookupIcon(entry.getValue());
         }
         else if (nodeValue instanceof COSNull)
         {
