@@ -40,16 +40,16 @@ import org.apache.pdfbox.tools.pdfdebugger.ui.OverlayIcon;
  */
 public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
 {
-    private final ImageIcon ICON_ARRAY = new ImageIcon(getImageUrl("array"));
-    private final ImageIcon ICON_DICT = new ImageIcon(getImageUrl("dict"));
-    private final ImageIcon ICON_HEX = new ImageIcon(getImageUrl("hex"));
-    private final ImageIcon ICON_INDIRECT = new ImageIcon(getImageUrl("indirect"));
-    private final ImageIcon ICON_INTEGER = new ImageIcon(getImageUrl("integer"));
-    private final ImageIcon ICON_NAME = new ImageIcon(getImageUrl("name"));
-    //private final ImageIcon ICON_NULL = new ImageIcon(getImageUrl("null"));
-    private final ImageIcon ICON_REAL = new ImageIcon(getImageUrl("real"));
-    private final ImageIcon ICON_STREAM_DICT = new ImageIcon(getImageUrl("stream-dict"));
-    private final ImageIcon ICON_STRING = new ImageIcon(getImageUrl("string"));
+    private static final ImageIcon ICON_ARRAY = new ImageIcon(getImageUrl("array"));
+    private static final ImageIcon ICON_DICT = new ImageIcon(getImageUrl("dict"));
+    private static final ImageIcon ICON_HEX = new ImageIcon(getImageUrl("hex"));
+    private static final ImageIcon ICON_INDIRECT = new ImageIcon(getImageUrl("indirect"));
+    private static final ImageIcon ICON_INTEGER = new ImageIcon(getImageUrl("integer"));
+    private static final ImageIcon ICON_NAME = new ImageIcon(getImageUrl("name"));
+    //private static final ImageIcon ICON_NULL = new ImageIcon(getImageUrl("null"));
+    private static final ImageIcon ICON_REAL = new ImageIcon(getImageUrl("real"));
+    private static final ImageIcon ICON_STREAM_DICT = new ImageIcon(getImageUrl("stream-dict"));
+    private static final ImageIcon ICON_STRING = new ImageIcon(getImageUrl("string"));
 
     private static URL getImageUrl(String name)
     {
