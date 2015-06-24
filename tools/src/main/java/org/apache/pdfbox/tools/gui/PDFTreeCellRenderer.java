@@ -26,6 +26,7 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSBoolean;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSInteger;
@@ -43,6 +44,7 @@ import org.apache.pdfbox.cos.COSString;
 public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
 {
     private static final ImageIcon ICON_ARRAY = new ImageIcon(getImageUrl("array"));
+    private static final ImageIcon ICON_BOOLEAN = new ImageIcon(getImageUrl("boolean"));
     private static final ImageIcon ICON_DICT = new ImageIcon(getImageUrl("dict"));
     private static final ImageIcon ICON_HEX = new ImageIcon(getImageUrl("hex"));
     private static final ImageIcon ICON_INDIRECT = new ImageIcon(getImageUrl("indirect"));
@@ -114,6 +116,10 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
                 
             }
             result = stringResult;
+        }
+        else if (nodeValue instanceof COSBoolean)
+        {
+            result = "" + ((COSBoolean) nodeValue).getValue();
         }
         else if (nodeValue instanceof COSFloat)
         {
@@ -210,6 +216,10 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
         {
             ArrayEntry entry = (ArrayEntry) nodeValue;
             return lookupIcon(entry.getValue());
+        }
+        else if (nodeValue instanceof COSBoolean)
+        {
+            return ICON_BOOLEAN;
         }
         else if (nodeValue instanceof COSFloat)
         {
