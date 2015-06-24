@@ -43,6 +43,7 @@ import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
@@ -639,8 +640,28 @@ public class PDFDebugger extends javax.swing.JFrame
     {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         System.setProperty("apple.laf.useScreenMenuBar", "true");
+        
+        final PDFDebugger viewer = new PDFDebugger();
 
-        PDFDebugger viewer = new PDFDebugger();
+        // handle uncaught exceptions
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler()
+        {
+            @Override
+            public void uncaughtException(Thread thread, Throwable throwable)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.append(throwable.toString());
+                for (StackTraceElement element : throwable.getStackTrace())
+                {
+                    sb.append('\n');
+                    sb.append(element);
+                }
+                JOptionPane.showMessageDialog(viewer, "Error: " + sb.toString(),"Error",
+                                              JOptionPane.ERROR_MESSAGE);
+            }
+        });
+        
+        // open file, if any
         String filename = null;
         String password = "";
         
