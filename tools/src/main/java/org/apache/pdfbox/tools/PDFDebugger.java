@@ -16,9 +16,9 @@
  */
 package org.apache.pdfbox.tools;
 
-import com.apple.eawt.AppEvent;
-import com.apple.eawt.Application;
-import com.apple.eawt.OpenFilesHandler;
+//import com.apple.eawt.AppEvent;
+//import com.apple.eawt.Application;
+//import com.apple.eawt.OpenFilesHandler;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FileDialog;
@@ -341,21 +341,21 @@ public class PDFDebugger extends javax.swing.JFrame
         });
         
         // Mac OS X file open handler
-        Application.getApplication().setOpenFileHandler(new OpenFilesHandler()
-        {
-            @Override
-            public void openFiles(AppEvent.OpenFilesEvent openFilesEvent)
-            {
-                try
-                {
-                    readPDFFile(openFilesEvent.getFiles().get(0), "");
-                }
-                catch (IOException e)
-                {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
+//        Application.getApplication().setOpenFileHandler(new OpenFilesHandler()
+//        {
+//            @Override
+//            public void openFiles(AppEvent.OpenFilesEvent openFilesEvent)
+//            {
+//                try
+//                {
+//                    readPDFFile(openFilesEvent.getFiles().get(0), "");
+//                }
+//                catch (IOException e)
+//                {
+//                    throw new RuntimeException(e);
+//                }
+//            }
+//        });
     }//GEN-END:initComponents
 
     private void openMenuItemActionPerformed(ActionEvent evt)
