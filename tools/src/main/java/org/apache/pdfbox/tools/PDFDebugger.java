@@ -27,6 +27,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.io.ByteArrayOutputStream;
@@ -53,7 +54,6 @@ import javax.swing.border.BevelBorder;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileFilter;
-import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -68,9 +68,11 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.tools.gui.ArrayEntry;
+import org.apache.pdfbox.tools.gui.DocumentEntry;
 import org.apache.pdfbox.tools.gui.MapEntry;
 import org.apache.pdfbox.tools.gui.PDFTreeCellRenderer;
 import org.apache.pdfbox.tools.gui.PDFTreeModel;
+import org.apache.pdfbox.tools.gui.PageEntry;
 import org.apache.pdfbox.tools.pdfdebugger.colorpane.CSArrayBased;
 import org.apache.pdfbox.tools.pdfdebugger.colorpane.CSDeviceN;
 import org.apache.pdfbox.tools.pdfdebugger.colorpane.CSIndexed;
@@ -91,9 +93,10 @@ public class PDFDebugger extends javax.swing.JFrame
 {
     private TreeStatusPane statusPane;
     private RecentFiles recentFiles;
+    private boolean isPageMode;
 
-    private PDDocument document = null;
-    private String currentFilePath = null;
+    private PDDocument document;
+    private String currentFilePath;
 
     private static final Set<COSName> SPECIALCOLORSPACES =
             new HashSet(Arrays.asList(COSName.INDEXED, COSName.SEPARATION, COSName.DEVICEN));
@@ -142,6 +145,8 @@ public class PDFDebugger extends javax.swing.JFrame
         copyMenuItem = new JMenuItem();
         pasteMenuItem = new JMenuItem();
         deleteMenuItem = new JMenuItem();
+        viewMenu = new JMenu();
+        viewModeItem = new JMenuItem();
         helpMenu = new JMenu();
         contentsMenuItem = new JMenuItem();
         aboutMenuItem = new JMenuItem();
@@ -261,6 +266,32 @@ public class PDFDebugger extends javax.swing.JFrame
         deleteMenuItem.setText("Delete");
         editMenu.add(deleteMenuItem);
 
+        viewMenu.setText("View");
+
+        viewModeItem.setText("Show Pages");
+        viewModeItem.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                if (isPageMode)
+                {
+                    viewModeItem.setText("Show Pages");
+                    isPageMode = false;
+                }
+                else
+                {
+                    viewModeItem.setText("Show Internal Structure");
+                    isPageMode = true;
+                }
+                initTree();
+            }
+        });
+        
+        viewMenu.add(viewModeItem);
+        
+        menuBar.add(viewMenu);
+        
         helpMenu.setText("Help");
         contentsMenuItem.setText("Contents");
         helpMenu.add(contentsMenuItem);
@@ -451,6 +482,10 @@ public class PDFDebugger extends javax.swing.JFrame
                 return true;
             }
         }
+        else if (selectedNode instanceof PageEntry)
+        {
+            return true;
+        }
         return false;
     }
 
@@ -493,15 +528,21 @@ public class PDFDebugger extends javax.swing.JFrame
     {
         selectedNode = getUnderneathObject(selectedNode);
 
+        COSDictionary page;
         if (selectedNode instanceof COSDictionary)
         {
-            COSDictionary page = (COSDictionary) selectedNode;
-            COSBase typeItem = page.getItem(COSName.TYPE);
-            if (COSName.PAGE.equals(typeItem))
-            {
-                PagePane pagePane = new PagePane(document, page);
-                jSplitPane1.setRightComponent(new JScrollPane(pagePane.getPanel()));
-            }
+            page = (COSDictionary) selectedNode;
+        }
+        else
+        {
+            page = ((PageEntry) selectedNode).getDict();
+        }
+        
+        COSBase typeItem = page.getItem(COSName.TYPE);
+        if (COSName.PAGE.equals(typeItem))
+        {
+            PagePane pagePane = new PagePane(document, page);
+            jSplitPane1.setRightComponent(new JScrollPane(pagePane.getPanel()));
         }
     }
 
@@ -710,12 +751,8 @@ public class PDFDebugger extends javax.swing.JFrame
         recentFiles.removeFile(file.getPath());
         parseDocument( file, password );
         
-        TreeStatus treeStatus = new TreeStatus(document.getDocument().getTrailer());
-        statusPane.updateTreeStatus(treeStatus);
+        initTree();
         
-        TreeModel model = new PDFTreeModel(document);
-        tree.setModel(model);
-        tree.setSelectionPath(treeStatus.getPathForString("Root"));
         if (IS_MAC_OS)
         {
             setTitle(file.getName());
@@ -726,6 +763,25 @@ public class PDFDebugger extends javax.swing.JFrame
             setTitle("PDF Debugger - " + file.getAbsolutePath());
         }
         addRecentFileItems();
+    }
+    
+    private void initTree()
+    {
+        TreeStatus treeStatus = new TreeStatus(document.getDocument().getTrailer());
+        statusPane.updateTreeStatus(treeStatus);
+        
+        if (isPageMode)
+        {
+            File file = new File(currentFilePath);
+            DocumentEntry documentEntry = new DocumentEntry(document, file.getName());
+            tree.setModel(new PDFTreeModel(documentEntry));
+            tree.setSelectionPath(treeStatus.getPathForString("Root/Pages/Kids/[0]"));
+        }
+        else
+        {
+            tree.setModel(new PDFTreeModel(document));
+            tree.setSelectionPath(treeStatus.getPathForString("Root"));
+        }
     }
     
     /**
@@ -800,6 +856,8 @@ public class PDFDebugger extends javax.swing.JFrame
     private JMenu fileMenu;
     private JMenu helpMenu;
     private JMenu recentFilesMenu;
+    private JMenu viewMenu;
+    private JMenuItem viewModeItem;
     private JScrollPane jScrollPane1;
     private JScrollPane jScrollPane2;
     private javax.swing.JSplitPane jSplitPane1;

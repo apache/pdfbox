@@ -54,6 +54,8 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
     private static final ImageIcon ICON_REAL = new ImageIcon(getImageUrl("real"));
     private static final ImageIcon ICON_STREAM_DICT = new ImageIcon(getImageUrl("stream-dict"));
     private static final ImageIcon ICON_STRING = new ImageIcon(getImageUrl("string"));
+    private static final ImageIcon ICON_PDF = new ImageIcon(getImageUrl("pdf"));
+    private static final ImageIcon ICON_PAGE = new ImageIcon(getImageUrl("page"));
 
     private static URL getImageUrl(String name)
     {
@@ -168,6 +170,10 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
             COSArray array = (COSArray) nodeValue;
             result = "(" + array.size() + ")";
         }
+        else if (nodeValue instanceof DocumentEntry)
+        {
+            result = nodeValue.toString();
+        }
         return result;
     }
 
@@ -261,6 +267,14 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
         else if (nodeValue instanceof COSArray)
         {
             return ICON_ARRAY;
+        }
+        else if (nodeValue instanceof DocumentEntry)
+        {
+            return ICON_PDF;
+        }
+        else if (nodeValue instanceof PageEntry)
+        {
+            return ICON_PAGE;
         }
         else
         {
