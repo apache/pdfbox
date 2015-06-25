@@ -23,23 +23,19 @@ package org.apache.pdfbox.tools.gui;
  * @author wurtz
  * @author Ben Litchfield
  */
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeModel;
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import javax.swing.event.TreeModelListener;
-
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * A class to model a PDF document as a tree structure.
@@ -48,7 +44,7 @@ import java.util.List;
  */
 public class PDFTreeModel implements TreeModel
 {
-    private PDDocument document;
+    private Object root;
 
     /**
      * constructor.
@@ -65,7 +61,17 @@ public class PDFTreeModel implements TreeModel
      */
     public PDFTreeModel(PDDocument doc)
     {
-         document = doc;
+        root = doc.getDocument().getTrailer();
+    }
+
+    /**
+     * Constructor to take a document.
+     *
+     * @param docEntry The document to display in the tree.
+     */
+    public PDFTreeModel(DocumentEntry docEntry)
+    {
+        root = docEntry;
     }
 
     /**
@@ -104,7 +110,7 @@ public class PDFTreeModel implements TreeModel
             ArrayEntry entry = new ArrayEntry();
             entry.setIndex( index );
             entry.setValue( ((COSArray)parent).getObject(index) );
-            entry.setItem( ((COSArray)parent).getObject( index ) );
+            entry.setItem(((COSArray) parent).getObject(index));
             retval = entry;
         }
         else if( parent instanceof COSDictionary )
@@ -131,6 +137,14 @@ public class PDFTreeModel implements TreeModel
         else if( parent instanceof COSDocument )
         {
             retval = ((COSDocument)parent).getObjects().get( index );
+        }
+        else if( parent instanceof DocumentEntry)
+        {
+            retval = ((DocumentEntry)parent).getPage(index);
+        }
+        else if( parent instanceof PageEntry)
+        {
+            retval = getChild(((PageEntry)parent).getDict(), index);
         }
         else if( parent instanceof COSObject )
         {
@@ -166,15 +180,23 @@ public class PDFTreeModel implements TreeModel
         }
         else if( parent instanceof MapEntry )
         {
-            retval = getChildCount( ((MapEntry)parent).getValue() );
+            retval = getChildCount(((MapEntry) parent).getValue());
         }
         else if( parent instanceof ArrayEntry )
         {
-            retval = getChildCount( ((ArrayEntry)parent).getValue() );
+            retval = getChildCount(((ArrayEntry) parent).getValue());
         }
         else if( parent instanceof COSDocument )
         {
             retval = ((COSDocument)parent).getObjects().size();
+        }
+        else if( parent instanceof DocumentEntry )
+        {
+            retval = ((DocumentEntry)parent).getPageCount();
+        }
+        else if( parent instanceof PageEntry)
+        {
+            retval = getChildCount(((PageEntry) parent).getDict());
         }
         else if( parent instanceof COSObject )
         {
@@ -238,6 +260,14 @@ public class PDFTreeModel implements TreeModel
             {
                 retval = ((COSDocument)parent).getObjects().indexOf( child );
             }
+            else if( parent instanceof DocumentEntry )
+            {
+                retval = ((DocumentEntry)parent).indexOf( (PageEntry)child );
+            }
+            else if( parent instanceof PageEntry)
+            {
+                retval = getIndexOfChild(((PageEntry)parent).getDict(), child);
+            }
             else if( parent instanceof COSObject )
             {
                 retval = 0;
@@ -259,7 +289,7 @@ public class PDFTreeModel implements TreeModel
     @Override
     public Object getRoot()
     {
-        return document.getDocument().getTrailer();
+        return root;
     }
 
     /** Returns <code>true</code> if <code>node</code> is a leaf.
@@ -279,6 +309,8 @@ public class PDFTreeModel implements TreeModel
         boolean isLeaf = !(node instanceof COSDictionary ||
                  node instanceof COSArray ||
                  node instanceof COSDocument ||
+                 node instanceof DocumentEntry ||
+                 node instanceof PageEntry ||
                  node instanceof COSObject ||
                  (node instanceof MapEntry && !isLeaf(((MapEntry)node).getValue()) ) ||
                  (node instanceof ArrayEntry && !isLeaf(((ArrayEntry)node).getValue()) ));

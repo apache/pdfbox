@@ -26,6 +26,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.tools.gui.ArrayEntry;
 import org.apache.pdfbox.tools.gui.MapEntry;
+import org.apache.pdfbox.tools.gui.PageEntry;
 
 /**
  * @author Khyrul Bashar
@@ -126,13 +127,18 @@ public final class TreeStatus
         if (treeNode instanceof MapEntry)
         {
             MapEntry entry = (MapEntry) treeNode;
-            COSName key = (COSName) entry.getKey();
+            COSName key = entry.getKey();
             return key.getName();
         }
-        if (treeNode instanceof ArrayEntry)
+        else if (treeNode instanceof ArrayEntry)
         {
             ArrayEntry entry = (ArrayEntry) treeNode;
             return "[" + entry.getIndex() + "]";
+        }
+        else if (treeNode instanceof PageEntry)
+        {
+            PageEntry entry = (PageEntry) treeNode;
+            return entry.getPath();
         }
         throw new IllegalArgumentException("Unknown treeNode type: " + treeNode.getClass().getName());
     }
