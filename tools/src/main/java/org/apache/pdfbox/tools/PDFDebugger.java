@@ -16,9 +16,6 @@
  */
 package org.apache.pdfbox.tools;
 
-//import com.apple.eawt.AppEvent;
-//import com.apple.eawt.Application;
-//import com.apple.eawt.OpenFilesHandler;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FileDialog;
@@ -35,6 +32,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -70,6 +68,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.tools.gui.ArrayEntry;
 import org.apache.pdfbox.tools.gui.DocumentEntry;
 import org.apache.pdfbox.tools.gui.MapEntry;
+import org.apache.pdfbox.tools.gui.OSXAdapter;
 import org.apache.pdfbox.tools.gui.PDFTreeCellRenderer;
 import org.apache.pdfbox.tools.gui.PDFTreeModel;
 import org.apache.pdfbox.tools.gui.PageEntry;
@@ -340,24 +339,49 @@ public class PDFDebugger extends javax.swing.JFrame
             }
         });
         
-        // Mac OS X file open handler
-//        Application.getApplication().setOpenFileHandler(new OpenFilesHandler()
-//        {
-//            @Override
-//            public void openFiles(AppEvent.OpenFilesEvent openFilesEvent)
-//            {
-//                try
-//                {
-//                    readPDFFile(openFilesEvent.getFiles().get(0), "");
-//                }
-//                catch (IOException e)
-//                {
-//                    throw new RuntimeException(e);
-//                }
-//            }
-//        });
+        // Mac OS X file open/quit handler
+        if (IS_MAC_OS)
+        {
+            try
+            {
+                Method osxOpenFiles = getClass().getDeclaredMethod("osxOpenFiles", String.class);
+                osxOpenFiles.setAccessible(true);
+                OSXAdapter.setFileHandler(this, osxOpenFiles);
+
+                Method osxQuit = getClass().getDeclaredMethod("osxQuit");
+                osxQuit.setAccessible(true);
+                OSXAdapter.setQuitHandler(this, osxQuit);
+            }
+            catch (NoSuchMethodException e)
+            {
+                throw new RuntimeException(e);
+            }
+        }
     }//GEN-END:initComponents
 
+    /**
+     * This method is called via reflection on Mac OS X.
+     */
+    private void osxOpenFiles(String filename)
+    {
+        try
+        {
+            readPDFFile(filename, "");
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * This method is called via reflection on Mac OS X.
+     */
+    private void osxQuit()
+    {
+        exitMenuItemActionPerformed(null);
+    }
+    
     private void openMenuItemActionPerformed(ActionEvent evt)
     {
         try
@@ -681,8 +705,6 @@ public class PDFDebugger extends javax.swing.JFrame
     {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         System.setProperty("apple.laf.useScreenMenuBar", "true");
-        
-        final PDFDebugger viewer = new PDFDebugger();
 
         // handle uncaught exceptions
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler()
@@ -697,10 +719,14 @@ public class PDFDebugger extends javax.swing.JFrame
                     sb.append('\n');
                     sb.append(element);
                 }
-                JOptionPane.showMessageDialog(viewer, "Error: " + sb.toString(),"Error",
-                                              JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Error: " + sb.toString(),"Error",
+                        JOptionPane.ERROR_MESSAGE);
             }
         });
+        
+        final PDFDebugger viewer = new PDFDebugger();
+
+        
         
         // open file, if any
         String filename = null;
