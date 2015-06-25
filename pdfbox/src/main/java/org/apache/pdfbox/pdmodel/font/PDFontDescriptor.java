@@ -819,4 +819,20 @@ public final class PDFontDescriptor implements COSObjectable
         dic.setItem( COSName.CID_SET, stream );
     }
 
+    /**
+     * Returns the Panose entry of the Style dictionary, if any.
+     *
+     * @return A Panose wrapper object.
+     */
+    public PDPanose getPanose()
+    {
+        COSDictionary style = (COSDictionary)dic.getDictionaryObject(COSName.STYLE);
+        if (style != null)
+        {
+            COSString panose = (COSString)style.getDictionaryObject(COSName.PANOSE);
+            byte[] bytes = panose.getBytes();
+            return new PDPanose(bytes);
+        }
+        return null;
+    }
 }
