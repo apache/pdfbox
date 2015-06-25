@@ -20,6 +20,9 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * A 'kern' table in a true type font.
  * 
@@ -27,6 +30,8 @@ import java.util.Comparator;
  */
 public class KerningSubtable
 {
+    private static final Log LOG = LogFactory.getLog(KerningSubtable.class);
+
     // coverage field bit masks and values
     private static final int COVERAGE_HORIZONTAL = 0x0001;
     private static final int COVERAGE_MINIMUMS = 0x0002;
@@ -128,22 +133,30 @@ public class KerningSubtable
      */
     public int[] getKerning(int[] glyphs)
     {
-        int ng = glyphs.length;
-        int[] kerning = new int[ng];
-        for (int i = 0; i < ng; ++i)
+        int[] kerning = null;
+        if (pairs != null)
         {
-            int l = glyphs[i];
-            int r = -1;
-            for (int k = i + 1; k < ng; ++k)
+            int ng = glyphs.length;
+            kerning = new int[ng];
+            for (int i = 0; i < ng; ++i)
             {
-                int g = glyphs[k];
-                if (g >= 0)
+                int l = glyphs[i];
+                int r = -1;
+                for (int k = i + 1; k < ng; ++k)
                 {
-                    r = g;
-                    break;
+                    int g = glyphs[k];
+                    if (g >= 0)
+                    {
+                        r = g;
+                        break;
+                    }
                 }
+                kerning[i] = getKerning(l, r);
             }
-            kerning[i] = getKerning(l, r);
+        }
+        else
+        {
+            LOG.warn("No kerning subtable data available due to an unsupported kerning subtable version");
         }
         return kerning;
     }
@@ -157,6 +170,11 @@ public class KerningSubtable
      */
     public int getKerning(int l, int r)
     {
+        if (pairs == null)
+        {
+            LOG.warn("No kerning subtable data available due to an unsupported kerning subtable version");
+            return 0;
+        }
         return pairs.getKerning(l, r);
     }
 
@@ -188,11 +206,6 @@ public class KerningSubtable
             this.crossStream = true;
         }
         int format = getBits(coverage, COVERAGE_FORMAT, COVERAGE_FORMAT_SHIFT);
-        if ((format != 0) && (format != 2))
-        {
-            throw new UnsupportedOperationException("Unsupported kerning sub-table format: "
-                    + format);
-        }
         if (format == 0)
         {
             readSubtable0Format0(data);
@@ -200,6 +213,10 @@ public class KerningSubtable
         else if (format == 2)
         {
             readSubtable0Format2(data);
+        }
+        else
+        {
+            LOG.debug("Skipped kerning subtable due to an unsupported kerning subtable version: " + format);
         }
     }
 
