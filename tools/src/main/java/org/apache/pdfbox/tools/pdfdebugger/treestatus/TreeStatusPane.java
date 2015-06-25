@@ -52,6 +52,7 @@ public class TreeStatusPane implements TreeSelectionListener
             if (path != null)
             {
                 tree.setSelectionPath(path);
+                tree.scrollPathToVisible(path);
                 tree.requestFocusInWindow();
             }
             else
