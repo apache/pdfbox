@@ -74,7 +74,7 @@ public class PDActionGoTo extends PDAction
      *
      * @param d The destination.
      * 
-     * @IllegalArgumentException if the destination is not a page dictionary object.
+     * @throws IllegalArgumentException if the destination is not a page dictionary object.
      */
     public void setDestination( PDDestination d )
     {

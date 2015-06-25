@@ -200,7 +200,7 @@ public abstract class SecurityHandler
     /**
      * Encrypt or decrypt data with RC4.
      *
-     * @param finalKey The final key obtained with via {@link #calcFinalKey()}.
+     * @param finalKey The final key obtained with via {@link #calcFinalKey(long, long)}.
      * @param input The data to encrypt.
      * @param output The output to write the encrypted data to.
      *
@@ -216,7 +216,7 @@ public abstract class SecurityHandler
     /**
      * Encrypt or decrypt data with RC4.
      *
-     * @param finalKey The final key obtained with via {@link #calcFinalKey()}.
+     * @param finalKey The final key obtained with via {@link #calcFinalKey(long, long)}.
      * @param input The data to encrypt.
      * @param output The output to write the encrypted data to.
      *
