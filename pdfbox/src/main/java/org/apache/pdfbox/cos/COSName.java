@@ -387,6 +387,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName PAGE_MODE = new COSName("PageMode");
     public static final COSName PAGES = new COSName("Pages");
     public static final COSName PAINT_TYPE = new COSName("PaintType");
+    public static final COSName PANOSE = new COSName("Panose");    
     public static final COSName PARAMS = new COSName("Params");
     public static final COSName PARENT = new COSName("Parent");
     public static final COSName PARENT_TREE = new COSName("ParentTree");
@@ -452,6 +453,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName SOFT_LIGHT = new COSName("SoftLight");
     public static final COSName SS = new COSName("SS");
     public static final COSName ST = new COSName("St");
+    public static final COSName STYLE = new COSName("Style");
     public static final COSName STANDARD_ENCODING = new COSName("StandardEncoding");
     public static final COSName STATE = new COSName("State");
     public static final COSName STATE_MODEL = new COSName("StateModel");
