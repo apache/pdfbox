@@ -33,9 +33,7 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSObjectKey;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.apache.pdfbox.io.RandomAccessRead;
-import org.apache.pdfbox.pdmodel.common.COSStreamArray;
 import org.apache.pdfbox.util.Charsets;
 
 
@@ -145,15 +143,7 @@ public abstract class BaseParser
      */
     public BaseParser(COSStream stream) throws IOException
     {
-        if (stream instanceof COSStreamArray)
-        {
-            // TODO don't copy input stream
-            pdfSource = new RandomAccessBuffer(stream.getUnfilteredStream());
-        }
-        else
-        {
-            pdfSource = stream.getUnfilteredRandomAccess();
-        }
+        pdfSource = stream.getUnfilteredRandomAccess();
     }
     
     /**
