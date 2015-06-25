@@ -287,11 +287,11 @@ public class TestRandomAccessBuffer extends TestCase
     public void testSequenceRandomAccessRead() throws IOException
     {
         RandomAccessBuffer buffer1 = new RandomAccessBuffer();
-        buffer1.write(new byte[] {1,1,1});
+        buffer1.write(new byte[] {1,2,3});
         RandomAccessBuffer buffer2 = new RandomAccessBuffer();
-        buffer2.write(new byte[] {2,2,2,2});
+        buffer2.write(new byte[] {4,5,6,7});
         RandomAccessBuffer buffer3 = new RandomAccessBuffer();
-        buffer3.write(new byte[] {3,3,3,3,3});
+        buffer3.write(new byte[] {8,9,10,11,12});
         Vector<RandomAccessRead> buffers = new Vector<RandomAccessRead>();
         buffers.add(buffer1);
         buffers.add(buffer2);
@@ -304,7 +304,7 @@ public class TestRandomAccessBuffer extends TestCase
         {
             sum += byteRead;
         }
-        assertEquals(26, sum);
+        assertEquals(78, sum);
         sequenceBuffer.close();
         buffers = new Vector<RandomAccessRead>();
         buffers.add(buffer1);
@@ -320,7 +320,7 @@ public class TestRandomAccessBuffer extends TestCase
         {
             sum += element;
         }
-        assertEquals(7, sum);
+        assertEquals(18, sum);
         // seek beyond EOF
         sequenceBuffer.seek(sequenceBuffer.length()+1);
         // check isEOF
