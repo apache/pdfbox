@@ -149,7 +149,7 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
         {
             result = ((COSName) nodeValue).getName();
         }
-        else if (nodeValue instanceof COSNull)
+        else if (nodeValue instanceof COSNull || nodeValue == null))
         {
             result = "";
         }
@@ -252,7 +252,7 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
         {
             return ICON_NAME;
         }
-        else if (nodeValue instanceof COSNull)
+        else if (nodeValue instanceof COSNull || nodeValue == null))
         {
             return ICON_NULL;
         }
