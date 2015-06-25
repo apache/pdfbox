@@ -24,16 +24,13 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
-
+import javax.imageio.ImageIO;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdmodel.PDDocument;
-
-import javax.imageio.ImageIO;
 
 /**
  * Test suite for rendering.
@@ -295,6 +292,8 @@ public class TestPDFToImage extends TestCase
                         failed = true;
                         LOG.warn("*** TEST FAILURE *** Input and output not identical for file: " + inFile.getName());
                         ImageIO.write(bim3, "png", new File(outFile.getAbsolutePath() + "-diff.png"));
+                        System.err.println("Files differ: "  + inFile.getAbsolutePath() + "\n" +
+                                           "              " + outFile.getAbsolutePath());
                     }
                     else
                     {
