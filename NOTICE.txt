@@ -17,3 +17,6 @@ Copyright 1997, 1998, 2002, 2007, 2010 Adobe Systems Incorporated.
 
 Includes the Zapf Dingbats Glyph List
 Copyright 2002, 2010 Adobe Systems Incorporated.
+
+Includes OSXAdapter
+Copyright (C) 2003-2007 Apple, Inc., All Rights Reserved
