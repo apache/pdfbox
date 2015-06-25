@@ -76,6 +76,7 @@ import org.apache.pdfbox.tools.pdfdebugger.colorpane.CSArrayBased;
 import org.apache.pdfbox.tools.pdfdebugger.colorpane.CSDeviceN;
 import org.apache.pdfbox.tools.pdfdebugger.colorpane.CSIndexed;
 import org.apache.pdfbox.tools.pdfdebugger.colorpane.CSSeparation;
+import org.apache.pdfbox.tools.pdfdebugger.flagbitspane.FlagBitsPane;
 import org.apache.pdfbox.tools.pdfdebugger.pagepane.PagePane;
 import org.apache.pdfbox.tools.pdfdebugger.treestatus.TreeStatus;
 import org.apache.pdfbox.tools.pdfdebugger.treestatus.TreeStatusPane;
@@ -440,6 +441,12 @@ public class PDFDebugger extends javax.swing.JFrame
                     showPage(selectedNode);
                     return;
                 }
+                if (isFlagNode(selectedNode))
+                {
+                    Object parentNode = path.getParentPath().getLastPathComponent();
+                    showFlagPane(parentNode, selectedNode);
+                    return;
+                }
                 if (!jSplitPane1.getRightComponent().equals(jScrollPane2))
                 {
                     jSplitPane1.setRightComponent(jScrollPane2);
@@ -513,6 +520,16 @@ public class PDFDebugger extends javax.swing.JFrame
         return false;
     }
 
+    private boolean isFlagNode(Object selectedNode)
+    {
+        if (selectedNode instanceof MapEntry)
+        {
+            Object key = ((MapEntry)selectedNode).getKey();
+            return COSName.FLAGS.equals(key) || COSName.F.equals(key) || COSName.FF.equals(key);
+        }
+        return false;
+    }
+
     /**
      * Show a Panel describing color spaces in more detail and interactive way.
      * @param csNode the special color space containing node.
@@ -567,6 +584,18 @@ public class PDFDebugger extends javax.swing.JFrame
         {
             PagePane pagePane = new PagePane(document, page);
             jSplitPane1.setRightComponent(new JScrollPane(pagePane.getPanel()));
+        }
+    }
+
+    private void showFlagPane(Object parentNode, Object selectedNode)
+    {
+        parentNode = getUnderneathObject(parentNode);
+        if (parentNode instanceof COSDictionary)
+        {
+            selectedNode = ((MapEntry)selectedNode).getKey();
+            selectedNode = getUnderneathObject(selectedNode);
+            FlagBitsPane flagBitsPane = new FlagBitsPane((COSDictionary) parentNode, (COSName) selectedNode);
+            jSplitPane1.setRightComponent(flagBitsPane.getPanel());
         }
     }
 
