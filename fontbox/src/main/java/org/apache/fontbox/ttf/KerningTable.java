@@ -18,13 +18,19 @@ package org.apache.fontbox.ttf;
 
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * A 'kern' table in a true type font.
- * 
+ *
  * @author Glenn Adams
  */
 public class KerningTable extends TTFTable
 {
+
+    private static final Log LOG = LogFactory.getLog(KerningTable.class);
+
     /**
      * Tag to identify this table.
      */
@@ -39,7 +45,7 @@ public class KerningTable extends TTFTable
 
     /**
      * This will read the required data from the stream.
-     * 
+     *
      * @param ttf The font that is being read.
      * @param data The stream to read the data from.
      * @throws IOException If there is an error reading the data.
@@ -52,32 +58,35 @@ public class KerningTable extends TTFTable
         {
             version = (version << 16) | data.readUnsignedShort();
         }
-        if (version > 1)
-        {
-            throw new UnsupportedOperationException("Unsupported kerning table version: " + version);
-        }
-        int numSubtables;
+        int numSubtables = 0;
         if (version == 0)
         {
             numSubtables = data.readUnsignedShort();
         }
-        else
+        else if (version == 1)
         {
             numSubtables = (int) data.readUnsignedInt();
         }
-        subtables = new KerningSubtable[numSubtables];
-        for (int i = 0; i < numSubtables; ++i)
+        else
         {
-            KerningSubtable subtable = new KerningSubtable();
-            subtable.read(data, version);
-            subtables[i] = subtable;
+            LOG.debug("Skipped kerning table due to an unsupported kerning table version: " + version);
+        }
+        if (numSubtables > 0)
+        {
+            subtables = new KerningSubtable[numSubtables];
+            for (int i = 0; i < numSubtables; ++i)
+            {
+                KerningSubtable subtable = new KerningSubtable();
+                subtable.read(data, version);
+                subtables[i] = subtable;
+            }
         }
         initialized = true;
     }
 
     /**
      * Obtain first subtable that supports non-cross-stream horizontal kerning.
-     * 
+     *
      * @return first matching subtable or null if none found
      */
     public KerningSubtable getHorizontalKerningSubtable()
@@ -87,17 +96,20 @@ public class KerningTable extends TTFTable
 
     /**
      * Obtain first subtable that supports horizontal kerning with specificed cross stream.
-     * 
+     *
      * @param cross true if requesting cross stream horizontal kerning
      * @return first matching subtable or null if none found
      */
     public KerningSubtable getHorizontalKerningSubtable(boolean cross)
     {
-        for (KerningSubtable s : subtables)
+        if (subtables != null)
         {
-            if (s.isHorizontalKerning(cross))
+            for (KerningSubtable s : subtables)
             {
-                return s;
+                if (s.isHorizontalKerning(cross))
+                {
+                    return s;
+                }
             }
         }
         return null;
