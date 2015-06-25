@@ -17,8 +17,8 @@
 package org.apache.pdfbox.pdmodel.common;
 
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.SequenceInputStream;
 import java.util.Vector;
@@ -29,7 +29,9 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.ICOSVisitor;
+import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.io.SequenceRandomAccessRead;
 
 /**
  * This will take an array of streams and sequence them together.
@@ -156,7 +158,6 @@ public class COSStreamArray extends COSStream
             //together
             inputStreams.add( new ByteArrayInputStream( inbetweenStreamBytes ) );
         }
-
         return new SequenceInputStream( inputStreams.elements() );
     }
 
@@ -166,8 +167,20 @@ public class COSStreamArray extends COSStream
     @Override
     public RandomAccessRead getUnfilteredRandomAccess() throws IOException
     {
-        // TODO
-        throw new IOException("Not yet implemented.");
+        Vector<RandomAccessRead> input = new Vector<RandomAccessRead>();
+        byte[] inbetweenStreamBytes = "\n".getBytes("ISO-8859-1");
+
+        for( int i=0;i<streams.size(); i++ )
+        {
+            COSStream stream = (COSStream)streams.getObject( i );
+            input.add( stream.getUnfilteredRandomAccess() );
+            //handle the case where there is no whitespace in the
+            //between streams in the contents array, without this
+            //it is possible that two operators will get concatenated
+            //together
+            input.add( new RandomAccessBuffer( inbetweenStreamBytes ) );
+        }
+        return new SequenceRandomAccessRead(input);
     }
     
     /**
