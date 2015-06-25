@@ -49,7 +49,7 @@ public class SequenceRandomAccessRead implements RandomAccessRead
     public SequenceRandomAccessRead(List<? extends RandomAccessRead> list) throws IOException
     {
         source = list;
-        maxIndex = list.size();
+        maxIndex = list.size() - 1;
         sourceLength = new ArrayList<Long>(maxIndex);
         long sumLength = 0;
         for (RandomAccessRead input : list)
@@ -109,8 +109,9 @@ public class SequenceRandomAccessRead implements RandomAccessRead
     private void switchBuffer(int index, boolean calculatePosition) throws IOException
     {
         currentBuffer = source.get(index);
-        currentBufferLength = sourceLength.get(index);
         currentBufferPosition = 0;
+        currentBuffer.seek(currentBufferPosition);
+        currentBufferLength = sourceLength.get(index);
         if (calculatePosition)
         {
             currentPosition = 0;
@@ -143,23 +144,30 @@ public class SequenceRandomAccessRead implements RandomAccessRead
         // new position beyond EOF
         if (newPosition >= bufferLength)
         {
-            currentIndex = maxIndex - 1;
-            switchBuffer(currentIndex, false);
+            switchBuffer(maxIndex, false);
             currentBufferPosition = sourceLength.get(currentIndex);
-            currentPosition = bufferLength;
+            currentPosition = newPosition;
+            currentBuffer.seek(currentBufferPosition);
         }
         else
         {
             int index = 0;
             long position = sourceLength.get(index);
-            while (newPosition > position)
+            while (newPosition >= position)
             {
-                position += sourceLength.get(index++);
+                position += sourceLength.get(++index);
             }
-            switchBuffer(index, true);
-            currentBufferPosition = newPosition - currentPosition;
-            currentPosition = newPosition;
+            if (currentIndex != index)
+            {
+                switchBuffer(index, true);
+                currentBufferPosition = newPosition - currentPosition;
+            }
+            else
+            {
+                currentBufferPosition += newPosition - currentPosition;
+            }
             currentBuffer.seek(currentBufferPosition);
+            currentPosition = newPosition;
         }
     }
 
@@ -212,7 +220,7 @@ public class SequenceRandomAccessRead implements RandomAccessRead
     private int readBytes(byte[] b, int off, int len) throws IOException
     {
         // end of current buffer reached?
-        if (currentBufferLength - currentBufferPosition == 0)
+        if (currentBufferPosition == currentBufferLength)
         {
             nextBuffer();
         }
