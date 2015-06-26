@@ -748,13 +748,13 @@ public class CFFParser
         return encoding;
     }
 
-    private void readSupplement(CFFDataInput dataInput, EmbeddedEncoding encoding) throws IOException
+    private void readSupplement(CFFDataInput dataInput, CFFBuiltInEncoding encoding) throws IOException
     {
         encoding.nSups = dataInput.readCard8();
-        encoding.supplement = new EmbeddedEncoding.Supplement[encoding.nSups];
+        encoding.supplement = new CFFBuiltInEncoding.Supplement[encoding.nSups];
         for (int i = 0; i < encoding.supplement.length; i++)
         {
-            EmbeddedEncoding.Supplement supplement = new EmbeddedEncoding.Supplement();
+            CFFBuiltInEncoding.Supplement supplement = new CFFBuiltInEncoding.Supplement();
             supplement.code = dataInput.readCard8();
             supplement.sid = dataInput.readSID();
             supplement.name = readString(supplement.sid);
@@ -1195,9 +1195,9 @@ public class CFFParser
     }
 
     /**
-     * Inner class representing an embedded CFF encoding. 
+     * Inner class representing a font's built-in CFF encoding. 
      */
-    abstract static class EmbeddedEncoding extends CFFEncoding
+    abstract static class CFFBuiltInEncoding extends CFFEncoding
     {
         private int nSups;
         private Supplement[] supplement;
@@ -1237,7 +1237,7 @@ public class CFFParser
     /**
      * Inner class representing a Format0 encoding. 
      */
-    private static class Format0Encoding extends EmbeddedEncoding
+    private static class Format0Encoding extends CFFBuiltInEncoding
     {
         private int format;
         private int nCodes;
@@ -1254,7 +1254,7 @@ public class CFFParser
     /**
      * Inner class representing a Format1 encoding. 
      */
-    private static class Format1Encoding extends EmbeddedEncoding
+    private static class Format1Encoding extends CFFBuiltInEncoding
     {
         private int format;
         private int nRanges;
