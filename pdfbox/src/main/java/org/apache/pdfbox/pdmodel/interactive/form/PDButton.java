@@ -163,6 +163,61 @@ public abstract class PDButton extends PDTerminalField
         dictionary.setItem(COSName.OPT, cosValues);
     }
 
+    
+    /**
+     * This will get the export values.
+     * 
+     * <p>The export values are defined in the field dictionaries /Opt key.</p>
+     * 
+     * <p>The option values are used to define the export values
+     * for the field to 
+     * <ul>
+     *  <li>hold values in non-Latin writing systems as name objects, which represent the field value, are limited
+     *      to PDFDocEncoding
+     *  </li>
+     *  <li>allow radio buttons having the same export value to be handled independently
+     *  </li>
+     * </ul>
+     * </p>
+     * 
+     * @return List containing all possible export values. If there is no Opt entry an empty list will be returned.
+     */
+    public List<String> getExportValues()
+    {
+        COSBase value = getInheritableAttribute(COSName.OPT);
+        if (value instanceof COSString)
+        {
+            List<String> array = new ArrayList<String>();
+            array.add(((COSString) value).getString());
+            return array;
+        }
+        else if (value instanceof COSArray)
+        {
+            return COSArrayList.convertCOSStringCOSArrayToList((COSArray)value);
+        }
+        return Collections.emptyList();
+    }
+    
+    /**
+     * This will set the export values.
+     * 
+     * @see #getExportValues()
+     * @param values List containing all possible export values. Supplying null or an empty list will remove the Opt entry.
+     */
+    public void setExportValues(List<String> values)
+    {
+        COSArray cosValues = null;
+        if (values != null && !values.isEmpty())
+        {
+            cosValues = COSArrayList.convertStringListToCOSStringCOSArray(values);
+            dictionary.setItem(COSName.OPT, cosValues);
+        }
+        else
+        {
+            dictionary.removeItem(COSName.OPT);
+        }
+    }
+    
     @Override
     void constructAppearances() throws IOException
     {
