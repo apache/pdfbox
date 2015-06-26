@@ -19,18 +19,18 @@ package org.apache.fontbox.encoding;
 import java.util.Map;
 
 /**
- * A font-specific encoding.
+ * A font's built-in encoding. This is a custom encoding embedded in a font.
  *
  * @author John Hewson
  */
-public class CustomEncoding extends Encoding
+public class BuiltInEncoding extends Encoding
 {
     /**
      * Constructor.
      * 
      * @param codeToName the given code to name mapping
      */
-    public CustomEncoding(Map<Integer, String> codeToName)
+    public BuiltInEncoding(Map<Integer, String> codeToName)
     {
         for (Map.Entry<Integer, String> entry : codeToName.entrySet())
         {

@@ -17,7 +17,7 @@
 
 package org.apache.fontbox.type1;
 
-import org.apache.fontbox.encoding.CustomEncoding;
+import org.apache.fontbox.encoding.BuiltInEncoding;
 import org.apache.fontbox.encoding.StandardEncoding;
 
 import java.io.IOException;
@@ -221,7 +221,7 @@ final class Type1Parser
                 read(Token.NAME, "put");
                 codeToName.put(code, name);
             }
-            font.encoding = new CustomEncoding(codeToName);
+            font.encoding = new BuiltInEncoding(codeToName);
             readMaybe(Token.NAME, "readonly");
             read(Token.NAME, "def");
         }
