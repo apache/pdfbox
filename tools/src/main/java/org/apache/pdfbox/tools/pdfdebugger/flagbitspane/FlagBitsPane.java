@@ -42,7 +42,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
  */
 public class FlagBitsPane
 {
-    private final static String[] columnNames = {"Bit\nPosition", "Name", "Status"};
+    private static final String[] COLUMNNAMES = {"Bit\nPosition", "Name", "Status"};
     private JPanel panel;
 
     /**
@@ -74,7 +74,7 @@ public class FlagBitsPane
         flagValueLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         flagValueLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 20));
 
-        JTable table = new JTable(flagBits, columnNames);
+        JTable table = new JTable(flagBits, COLUMNNAMES);
         JScrollPane scrollPane = new JScrollPane(table);
         table.setFillsViewportHeight(true);
         scrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
