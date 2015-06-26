@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.SequenceInputStream;
+import java.util.List;
 import java.util.Vector;
 
 import org.apache.pdfbox.cos.COSArray;
@@ -167,7 +168,7 @@ public class COSStreamArray extends COSStream
     @Override
     public RandomAccessRead getUnfilteredRandomAccess() throws IOException
     {
-        Vector<RandomAccessRead> input = new Vector<RandomAccessRead>();
+        List<RandomAccessRead> input = new Vector<RandomAccessRead>();
         byte[] inbetweenStreamBytes = "\n".getBytes("ISO-8859-1");
 
         for( int i=0;i<streams.size(); i++ )
