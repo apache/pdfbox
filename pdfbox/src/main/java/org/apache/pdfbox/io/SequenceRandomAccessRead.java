@@ -91,8 +91,7 @@ public class SequenceRandomAccessRead implements RandomAccessRead
     {
         if (currentIndex < maxIndex)
         {
-            currentIndex++;
-            switchBuffer(currentIndex, false);
+            switchBuffer(currentIndex + 1);
             return true;
         }
         return false;
@@ -102,24 +101,16 @@ public class SequenceRandomAccessRead implements RandomAccessRead
      * Switch to buffer with the given index.
      * 
      * @param index the index of the buffer to be switched to
-     * @param calculatePosition calculate the new position if set to true
      * 
      * @throws IOException if the given index exceeds the available number of buffers
      */
-    private void switchBuffer(int index, boolean calculatePosition) throws IOException
+    private void switchBuffer(int index) throws IOException
     {
+        currentIndex = index;
         currentBuffer = source.get(index);
         currentBufferPosition = 0;
-        currentBuffer.seek(currentBufferPosition);
         currentBufferLength = sourceLength.get(index);
-        if (calculatePosition)
-        {
-            currentPosition = 0;
-            for (int i = 0; i < index; i++)
-            {
-                currentPosition += sourceLength.get(i);
-            }
-        }
+        currentBuffer.seek(currentBufferPosition);
     }
 
     /** Returns offset in file at which next byte would be read. */
@@ -144,7 +135,7 @@ public class SequenceRandomAccessRead implements RandomAccessRead
         // new position beyond EOF
         if (newPosition >= bufferLength)
         {
-            switchBuffer(maxIndex, false);
+            switchBuffer(maxIndex);
             currentBufferPosition = sourceLength.get(currentIndex);
             currentPosition = newPosition;
             currentBuffer.seek(currentBufferPosition);
@@ -159,8 +150,13 @@ public class SequenceRandomAccessRead implements RandomAccessRead
             }
             if (currentIndex != index)
             {
-                switchBuffer(index, true);
-                currentBufferPosition = newPosition - currentPosition;
+                switchBuffer(index);
+                long startPostion = 0;
+                for (int i = 0; i < index; i++)
+                {
+                    startPostion += sourceLength.get(i);
+                }
+                currentBufferPosition = newPosition - startPostion;
             }
             else
             {
@@ -211,7 +207,7 @@ public class SequenceRandomAccessRead implements RandomAccessRead
         int bytesRead = bytesReadTotal;
         while (bytesReadTotal < len && bytesRead > 0)
         {
-            bytesRead = read(b, bytesRead, len - bytesRead);
+            bytesRead = read(b, off + bytesRead, len - bytesRead);
             bytesReadTotal += bytesRead;
         }
         return bytesReadTotal;
