@@ -425,7 +425,7 @@ public abstract class PDChoice extends PDVariableText
     }
 
     /**
-     * Returns the selected values, or an empty string. This list always contains a single item
+     * Returns the selected values, or an empty List. This list always contains a single item
      * unless {@link #isMultiSelect()} is true.
      *
      * @return A non-null string.
@@ -436,7 +436,7 @@ public abstract class PDChoice extends PDVariableText
     }
 
     /**
-     * Returns the default values, or an empty string. This list always contains a single item
+     * Returns the default values, or an empty List. This list always contains a single item
      * unless {@link #isMultiSelect()} is true.
      *
      * @return A non-null string.
@@ -447,7 +447,7 @@ public abstract class PDChoice extends PDVariableText
     }
 
     /**
-     * Returns the selected values, or an empty string, for the given key.
+     * Returns the selected values, or an empty List, for the given key.
      */
     private List<String> getValueFor(COSName name)
     {
