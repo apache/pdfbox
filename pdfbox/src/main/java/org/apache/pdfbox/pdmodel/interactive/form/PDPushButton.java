@@ -68,6 +68,21 @@ public class PDPushButton extends PDButton
     }
 
     @Override
+    public List<String> getExportValues()
+    {
+        return Collections.emptyList();
+    }
+    
+    @Override
+    public void setExportValues(List<String> values)
+    {
+        if (values != null && !values.isEmpty())
+        {
+            throw new IllegalArgumentException("A PDPushButton shall not use the Opt entry in the field dictionary");
+        }
+    }
+
+    @Override
     public String getValueAsString()
     {
         return "";
