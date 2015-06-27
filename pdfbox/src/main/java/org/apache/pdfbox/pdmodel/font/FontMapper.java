@@ -41,7 +41,7 @@ import org.apache.fontbox.type1.Type1Font;
  *
  * @author John Hewson
  */
-public final class FontMapper
+final class FontMapper
 {
     private FontMapper() {}
 
