@@ -174,17 +174,12 @@ public class COSStreamArray extends COSStream
         for( int i=0;i<streams.size(); i++ )
         {
             COSStream stream = (COSStream)streams.getObject( i );
-            RandomAccessRead randomAccess = stream.getUnfilteredRandomAccess();
-            // omit empty streams
-            if (randomAccess.length() > 0)
-            {
-                input.add( randomAccess );
-                //handle the case where there is no whitespace in the
-                //between streams in the contents array, without this
-                //it is possible that two operators will get concatenated
-                //together
-                input.add( new RandomAccessBuffer( inbetweenStreamBytes ) );
-            }
+            input.add( stream.getUnfilteredRandomAccess() );
+            //handle the case where there is no whitespace in the
+            //between streams in the contents array, without this
+            //it is possible that two operators will get concatenated
+            //together
+            input.add( new RandomAccessBuffer( inbetweenStreamBytes ) );
         }
         return new SequenceRandomAccessRead(input);
     }
