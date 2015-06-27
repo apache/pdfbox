@@ -206,7 +206,7 @@ public class PDFDebugger extends javax.swing.JFrame
         fileMenu.setText("File");
         openMenuItem.setText("Open...");
         openMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, SHORCUT_KEY_MASK));
-        openMenuItem.addActionListener(new java.awt.event.ActionListener()
+        openMenuItem.addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent evt)
@@ -237,7 +237,7 @@ public class PDFDebugger extends javax.swing.JFrame
 
         exitMenuItem.setText("Exit");
         exitMenuItem.setAccelerator(KeyStroke.getKeyStroke("alt F4"));
-        exitMenuItem.addActionListener(new java.awt.event.ActionListener()
+        exitMenuItem.addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent evt)
@@ -287,11 +287,11 @@ public class PDFDebugger extends javax.swing.JFrame
                 initTree();
             }
         });
-        
+
         viewMenu.add(viewModeItem);
-        
+
         menuBar.add(viewMenu);
-        
+
         helpMenu.setText("Help");
         contentsMenuItem.setText("Contents");
         helpMenu.add(contentsMenuItem);
@@ -301,7 +301,7 @@ public class PDFDebugger extends javax.swing.JFrame
 
         setJMenuBar(menuBar);
 
-        Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setBounds((screenSize.width-700)/2, (screenSize.height-600)/2, 700, 600);
 
         // drag and drop to open files
@@ -339,7 +339,7 @@ public class PDFDebugger extends javax.swing.JFrame
                 }
             }
         });
-        
+
         // Mac OS X file open/quit handler
         if (IS_MAC_OS)
         {
@@ -382,7 +382,7 @@ public class PDFDebugger extends javax.swing.JFrame
     {
         exitMenuItemActionPerformed(null);
     }
-    
+
     private void openMenuItemActionPerformed(ActionEvent evt)
     {
         try
@@ -463,6 +463,7 @@ public class PDFDebugger extends javax.swing.JFrame
             }
             catch (Exception e)
             {
+                e.printStackTrace();
                 throw new RuntimeException(e);
             }
         }
@@ -525,7 +526,8 @@ public class PDFDebugger extends javax.swing.JFrame
         if (selectedNode instanceof MapEntry)
         {
             Object key = ((MapEntry)selectedNode).getKey();
-            return COSName.FLAGS.equals(key) || COSName.F.equals(key) || COSName.FF.equals(key);
+            return COSName.FLAGS.equals(key) || COSName.F.equals(key) || COSName.FF.equals(key)
+                    || COSName.PANOSE.equals(key);
         }
         return false;
     }
@@ -578,7 +580,7 @@ public class PDFDebugger extends javax.swing.JFrame
         {
             page = ((PageEntry) selectedNode).getDict();
         }
-        
+
         COSBase typeItem = page.getItem(COSName.TYPE);
         if (COSName.PAGE.equals(typeItem))
         {
@@ -595,7 +597,7 @@ public class PDFDebugger extends javax.swing.JFrame
             selectedNode = ((MapEntry)selectedNode).getKey();
             selectedNode = getUnderneathObject(selectedNode);
             FlagBitsPane flagBitsPane = new FlagBitsPane((COSDictionary) parentNode, (COSName) selectedNode);
-            jSplitPane1.setRightComponent(flagBitsPane.getPanel());
+            jSplitPane1.setRightComponent(flagBitsPane.getPane());
         }
     }
 
@@ -706,7 +708,7 @@ public class PDFDebugger extends javax.swing.JFrame
     /**
      * Exit the Application.
      */
-    private void exitForm(java.awt.event.WindowEvent evt)
+    private void exitForm(WindowEvent evt)
     {
         if( document != null )
         {

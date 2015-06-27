@@ -29,7 +29,7 @@ public class PDPanose
 {
     private final byte[] bytes;
 
-    PDPanose(byte[] bytes)
+    public PDPanose(byte[] bytes)
     {
         this.bytes = bytes;
     }
