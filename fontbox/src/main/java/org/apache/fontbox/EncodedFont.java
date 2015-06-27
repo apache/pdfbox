@@ -14,25 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.pdmodel.font;
 
-import java.util.List;
+package org.apache.fontbox;
+
+import java.io.IOException;
+import org.apache.fontbox.encoding.Encoding;
 
 /**
- * External font service provider interface.
+ * A PostScript font which uses an encoding vector.
  *
  * @author John Hewson
  */
-public abstract class FontProvider
+public interface EncodedFont
 {
     /**
-     * Returns a string containing debugging information. This will be written to the log if no
-     * suitable fonts are found and no fallback fonts are available. May be null.
+     * Returns the PostScript Encoding vector for the font.
      */
-    public abstract String toDebugString();
-
-    /**
-     * Returns a list of information about fonts on the system.
-     */
-    public abstract List<? extends FontInfo> getFontInfo();
+    Encoding getEncoding() throws IOException;
 }

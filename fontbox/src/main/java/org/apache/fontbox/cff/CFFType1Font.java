@@ -16,15 +16,14 @@
  */
 package org.apache.fontbox.cff;
 
-import org.apache.fontbox.ttf.Type1Equivalent;
-import org.apache.fontbox.type1.Type1CharStringReader;
-
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.fontbox.EncodedFont;
+import org.apache.fontbox.type1.Type1CharStringReader;
 
 /**
  * A Type 1-equivalent font program represented in a CFF file. Thread safe.
@@ -32,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Villu Ruusmann
  * @author John Hewson
  */
-public class CFFType1Font extends CFFFont implements Type1Equivalent
+public class CFFType1Font extends CFFFont implements EncodedFont
 {
     private final Map<String, Object> privateDict = new LinkedHashMap<String, Object>();
     private CFFEncoding encoding;

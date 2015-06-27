@@ -21,6 +21,17 @@
 
 package org.apache.pdfbox.preflight.font;
 
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSDocument;
+import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
+import org.apache.pdfbox.preflight.PreflightContext;
+import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
+import org.apache.pdfbox.preflight.font.container.Type1Container;
+import org.apache.pdfbox.preflight.font.descriptor.Type1DescriptorHelper;
+import org.apache.pdfbox.preflight.utils.COSUtils;
+
+
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_ENCODING;
 import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VALUE_ENCODING_MAC;
 import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VALUE_ENCODING_MAC_EXP;
@@ -28,28 +39,17 @@ import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VAL
 import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VALUE_ENCODING_STD;
 import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VALUE_ENCODING_WIN;
 
-import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSDocument;
-import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
-import org.apache.pdfbox.pdmodel.font.PDType1Equivalent;
-import org.apache.pdfbox.preflight.PreflightContext;
-import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
-import org.apache.pdfbox.preflight.font.container.Type1Container;
-import org.apache.pdfbox.preflight.font.descriptor.Type1DescriptorHelper;
-import org.apache.pdfbox.preflight.utils.COSUtils;
-
 public class Type1FontValidator extends SimpleFontValidator<Type1Container>
 {
     public Type1FontValidator(PreflightContext context, PDSimpleFont font)
     {
-        super(context, font, font.getCOSObject(), new Type1Container((PDType1Equivalent)font));
+        super(context, font, font.getCOSObject(), new Type1Container((PDSimpleFont)font));
     }
 
     @Override
     protected void createFontDescriptorHelper()
     {
-        this.descriptorHelper = new Type1DescriptorHelper(context, (PDType1Equivalent)font, fontContainer);
+        this.descriptorHelper = new Type1DescriptorHelper(context, (PDSimpleFont)font, fontContainer);
     }
 
     @Override

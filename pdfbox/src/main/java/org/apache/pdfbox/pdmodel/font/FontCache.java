@@ -14,25 +14,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.pdfbox.pdmodel.font;
 
-import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import org.apache.fontbox.FontBoxFont;
 
 /**
- * External font service provider interface.
+ * A cache for system fonts. This allows PDFBox to manage caching for a {@link FontProvider}.
+ * PDFBox is free to purge this cache at will.
  *
  * @author John Hewson
  */
-public abstract class FontProvider
+public final class FontCache
 {
-    /**
-     * Returns a string containing debugging information. This will be written to the log if no
-     * suitable fonts are found and no fallback fonts are available. May be null.
-     */
-    public abstract String toDebugString();
+    private final Map<FontInfo, FontBoxFont> cache = new ConcurrentHashMap<FontInfo, FontBoxFont>();
 
     /**
-     * Returns a list of information about fonts on the system.
+     * Adds the given FontBox font to the cache.
      */
-    public abstract List<? extends FontInfo> getFontInfo();
+    public void addFont(FontInfo info, FontBoxFont font)
+    {
+        cache.put(info, font);
+    }
+
+    /**
+     * Returns the FontBox font associated with the given FontInfo.
+     */
+    public FontBoxFont getFont(FontInfo info)
+    {
+        return cache.get(info);
+    }
 }

@@ -14,29 +14,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.fontbox.ttf;
 
-import org.apache.fontbox.encoding.Encoding;
-import org.apache.fontbox.util.BoundingBox;
+package org.apache.fontbox;
 
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
+import java.util.List;
+import org.apache.fontbox.util.BoundingBox;
 
 /**
- * A Type 1-equivalent font, i.e. a font which can access glyphs by their PostScript name.
- * This is currently a minimal interface and could be expanded if needed.
+ * Common interface for all FontBox fonts.
  *
  * @author John Hewson
  */
-public interface Type1Equivalent
+public interface FontBoxFont
 {
     /**
      * The PostScript name of the font.
      */
     String getName() throws IOException;
+    
+    /**
+     * Returns the font's bounding box in PostScript units.
+     */
+    BoundingBox getFontBBox() throws IOException;
 
     /**
-     * Returns the Type 1 CharString for the character with the given name.
+     * Returns the FontMatrix in PostScript units.
+     */
+    List<Number> getFontMatrix() throws IOException;
+
+    /**
+     * Returns the path for the character with the given name.
      *
      * @return glyph path
      * @throws IOException if the path could not be read
@@ -53,17 +62,8 @@ public interface Type1Equivalent
 
     /**
      * Returns true if the font contains the given glyph.
+     * 
      * @param name PostScript glyph name
      */
     boolean hasGlyph(String name) throws IOException;
-
-    /**
-     * Returns the PostScript Encoding vector for the font.
-     */
-    Encoding getEncoding() throws IOException;
-
-    /**
-     * Returns the font's bounding box in PostScript units.
-     */
-    BoundingBox getFontBBox() throws IOException;
 }

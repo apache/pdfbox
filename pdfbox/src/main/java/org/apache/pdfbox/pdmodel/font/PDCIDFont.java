@@ -38,7 +38,7 @@ import org.apache.pdfbox.util.Vector;
  *
  * @author Ben Litchfield
  */
-public abstract class PDCIDFont implements COSObjectable, PDFontLike
+public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFont
 {
     protected final PDType0Font parent;
 

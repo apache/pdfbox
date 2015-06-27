@@ -14,25 +14,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.pdfbox.pdmodel.font;
 
-import java.util.List;
+import org.apache.fontbox.FontBoxFont;
 
 /**
- * External font service provider interface.
+ * A font mapping from a PDF font to a FontBox font.
  *
  * @author John Hewson
  */
-public abstract class FontProvider
+public class FontMapping<T extends FontBoxFont>
 {
-    /**
-     * Returns a string containing debugging information. This will be written to the log if no
-     * suitable fonts are found and no fallback fonts are available. May be null.
-     */
-    public abstract String toDebugString();
+    private final T font;
+    private final boolean isFallback;
+    
+    FontMapping(T font, boolean isFallback)
+    {
+        this.font = font;
+        this.isFallback = isFallback;
+    }
 
     /**
-     * Returns a list of information about fonts on the system.
+     * Returns the mapped, FontBox font. This is never null.
      */
-    public abstract List<? extends FontInfo> getFontInfo();
+    public T getFont()
+    {
+        return font;
+    }
+
+    /**
+     * Returns true if the mapped font is a fallback, i.e. a substitute based on basic font style,
+     * such as bold/italic, rather than font name.
+     */
+    public boolean isFallback()
+    {
+        return isFallback;
+    }
 }

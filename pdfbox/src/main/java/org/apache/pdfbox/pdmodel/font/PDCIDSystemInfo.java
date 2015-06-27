@@ -30,6 +30,14 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 public final class PDCIDSystemInfo implements COSObjectable
 {
     private final COSDictionary dictionary;
+
+    PDCIDSystemInfo(String registry, String ordering, int supplement)
+    {
+        dictionary = new COSDictionary();
+        dictionary.setString(COSName.REGISTRY, registry);
+        dictionary.setString(COSName.ORDERING, ordering);
+        dictionary.setInt(COSName.SUPPLEMENT, supplement);
+    }
     
     PDCIDSystemInfo(COSDictionary dictionary)
     {

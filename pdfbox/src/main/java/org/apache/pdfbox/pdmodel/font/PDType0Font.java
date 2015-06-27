@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
+import java.awt.geom.GeneralPath;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -37,7 +38,7 @@ import org.apache.pdfbox.util.Vector;
  *
  * @author Ben Litchfield
  */
-public class PDType0Font extends PDFont
+public class PDType0Font extends PDFont implements PDVectorFont
 {
     private static final Log LOG = LogFactory.getLog(PDType0Font.class);
 
@@ -477,5 +478,17 @@ public class PDType0Font extends PDFont
             descendant = getDescendantFont().getClass().getSimpleName();
         }
         return getClass().getSimpleName() + "/" + descendant + " " + getBaseFont();
+    }
+
+    @Override
+    public GeneralPath getPath(int code) throws IOException
+    {
+        return descendantFont.getPath(code);
+    }
+
+    @Override
+    public boolean hasGlyph(int code) throws IOException
+    {
+        return descendantFont.hasGlyph(code);
     }
 }

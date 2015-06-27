@@ -14,45 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.pdfbox.pdmodel.font;
 
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
-import org.apache.fontbox.ttf.Type1Equivalent;
 
 /**
- * A Type 1-equivalent font in a PDF, i.e. a font which can access glyphs by their PostScript name.
- * May be a PFB, CFF, or TTF.
+ * A vector outline font, e.g. not Type 3.
  *
  * @author John Hewson
  */
-public interface PDType1Equivalent extends PDFontLike
+public interface PDVectorFont
 {
     /**
-     * Returns the name of this font.
-     */
-    @Override
-    String getName();
-
-    /**
-     * Returns the glyph name for the given character code.
+     * Returns the glyph path for the given character code.
      *
      * @param code character code
-     * @return PostScript glyph name
-     */
-    String codeToName(int code) throws IOException;
-
-    /**
-     * Returns the glyph path for the given character code.
-     * @param name PostScript glyph name
      * @throws java.io.IOException if the font could not be read
      */
-    GeneralPath getPath(String name) throws IOException;
-
+    GeneralPath getPath(int code) throws IOException;
+    
     /**
-     * Returns the embedded or system font for rendering. This font is a Type 1-equivalent, but
-     * may not be a Type 1 font, it could be a CFF font or TTF font. If there is no suitable font
-     * then the fallback font will be returned: this method never returns null.
+     * Returns true if this font contains a glyph for the given character code.
+     *
+     * @param code character code
      */
-    Type1Equivalent getType1Equivalent();
+    boolean hasGlyph(int code) throws IOException;
 }

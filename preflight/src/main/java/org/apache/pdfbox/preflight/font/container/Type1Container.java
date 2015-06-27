@@ -22,11 +22,11 @@
 package org.apache.pdfbox.preflight.font.container;
 
 import java.io.IOException;
-import org.apache.pdfbox.pdmodel.font.PDType1Equivalent;
+import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
 
-public class Type1Container extends FontContainer<PDType1Equivalent>
+public class Type1Container extends FontContainer<PDSimpleFont>
 {
-    public Type1Container(PDType1Equivalent font)
+    public Type1Container(PDSimpleFont font)
     {
         super(font);
     }
@@ -36,8 +36,8 @@ public class Type1Container extends FontContainer<PDType1Equivalent>
     {
         if (font.isEmbedded())
         {
-            String name = font.codeToName(code);
-            return font.getType1Equivalent().hasGlyph(name);
+            String name = font.getEncoding().getName(code);
+            return font.getFontBoxFont().hasGlyph(name);
         }
         return false;
     }
