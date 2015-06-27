@@ -14,25 +14,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.pdmodel.font;
 
-import java.util.List;
+package org.apache.pdfbox.pdmodel.font.encoding;
+
+import java.util.Map;
+import org.apache.pdfbox.cos.COSBase;
 
 /**
- * External font service provider interface.
+ * A font's built-in encoding.
  *
  * @author John Hewson
  */
-public abstract class FontProvider
+public class BuiltInEncoding extends Encoding
 {
     /**
-     * Returns a string containing debugging information. This will be written to the log if no
-     * suitable fonts are found and no fallback fonts are available. May be null.
+     * Constructor.
+     *
+     * @param codeToName the given code to name mapping
      */
-    public abstract String toDebugString();
-
-    /**
-     * Returns a list of information about fonts on the system.
-     */
-    public abstract List<? extends FontInfo> getFontInfo();
+    public BuiltInEncoding(Map<Integer, String> codeToName)
+    {
+        for (Map.Entry<Integer, String> entry : codeToName.entrySet())
+        {
+            add(entry.getKey(), entry.getValue());
+        }
+    }
+    
+    @Override
+    public COSBase getCOSObject()
+    {
+        throw new UnsupportedOperationException("Built-in encodings cannot be serialized");
+    }
 }

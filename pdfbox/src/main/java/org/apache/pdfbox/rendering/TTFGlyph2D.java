@@ -23,19 +23,18 @@ import java.awt.geom.GeneralPath;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.fontbox.ttf.GlyphData;
 import org.apache.fontbox.ttf.HeaderTable;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.pdmodel.font.PDCIDFontType2;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import org.apache.pdfbox.pdmodel.font.PDVectorFont;
 
 /**
- * This class provides a glyph to GeneralPath conversion for TrueType fonts.
+ * This class provides a glyph to GeneralPath conversion for TrueType and OpenType fonts.
  */
 final class TTFGlyph2D implements Glyph2D
 {
@@ -43,6 +42,7 @@ final class TTFGlyph2D implements Glyph2D
 
     private final PDFont font;
     private final TrueTypeFont ttf;
+    private PDVectorFont vectorFont;
     private float scale = 1.0f;
     private boolean hasScaling;
     private final Map<Integer, GeneralPath> glyphs = new HashMap<Integer, GeneralPath>();
@@ -56,6 +56,7 @@ final class TTFGlyph2D implements Glyph2D
     public TTFGlyph2D(PDTrueTypeFont ttfFont) throws IOException
     {
         this(ttfFont.getTrueTypeFont(), ttfFont, false);
+        vectorFont = ttfFont;
     }
 
     /**
@@ -66,10 +67,10 @@ final class TTFGlyph2D implements Glyph2D
     public TTFGlyph2D(PDType0Font type0Font) throws IOException
     {
         this(((PDCIDFontType2)type0Font.getDescendantFont()).getTrueTypeFont(), type0Font, true);
+        vectorFont = type0Font;
     }
 
-    public TTFGlyph2D(TrueTypeFont ttf, PDFont font, boolean isCIDFont)
-            throws IOException
+    private TTFGlyph2D(TrueTypeFont ttf, PDFont font, boolean isCIDFont) throws IOException
     {
         this.font = font;
         this.ttf = ttf;
@@ -136,8 +137,8 @@ final class TTFGlyph2D implements Glyph2D
                     LOG.warn("No glyph for " + code + " in font " + font.getName());
                 }
             }
-
-            GlyphData glyph = ttf.getGlyph().getGlyph(gid);
+            
+            GeneralPath glyph = vectorFont.getPath(code);
 
             // Acrobat only draws GID 0 for embedded or "Standard 14" fonts, see PDFBOX-2372
             if (gid == 0 && !font.isEmbedded() && !font.isStandard14())
@@ -153,7 +154,7 @@ final class TTFGlyph2D implements Glyph2D
             }
             else
             {
-                glyphPath = glyph.getPath();
+                glyphPath = glyph;
                 if (hasScaling)
                 {
                     AffineTransform atScale = AffineTransform.getScaleInstance(scale, scale);

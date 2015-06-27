@@ -14,25 +14,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.pdfbox.pdmodel.font;
 
-import java.util.List;
+import org.apache.fontbox.FontBoxFont;
+import org.apache.fontbox.ttf.OpenTypeFont;
 
 /**
- * External font service provider interface.
+ * A CIDFontMapping is a kind of FontMapping which allows for an additional TrueTypeFont substitute
+ * to be provided if a CID font is not available.
  *
  * @author John Hewson
  */
-public abstract class FontProvider
+public final class CIDFontMapping extends FontMapping<OpenTypeFont>
 {
-    /**
-     * Returns a string containing debugging information. This will be written to the log if no
-     * suitable fonts are found and no fallback fonts are available. May be null.
-     */
-    public abstract String toDebugString();
+    private final FontBoxFont ttf;
+    
+    CIDFontMapping(OpenTypeFont font, FontBoxFont fontBoxFont, boolean isFallback)
+    {
+        super(font, isFallback);
+        this.ttf = fontBoxFont;
+    }
 
     /**
-     * Returns a list of information about fonts on the system.
+     * Returns a TrueType font when isCIDFont() is true, otherwise null.
      */
-    public abstract List<? extends FontInfo> getFontInfo();
+    public FontBoxFont getTrueTypeFont()
+    {
+        return ttf;
+    }
+
+    /**
+     * Returns true if this is a CID font.
+     */
+    public boolean isCIDFont()
+    {
+        return getFont() != null;
+    }
 }

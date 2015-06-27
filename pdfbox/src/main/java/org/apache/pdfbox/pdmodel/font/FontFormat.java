@@ -14,25 +14,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.pdfbox.pdmodel.font;
 
-import java.util.List;
-
 /**
- * External font service provider interface.
+ * Font file format.
  *
  * @author John Hewson
  */
-public abstract class FontProvider
+public enum FontFormat
 {
     /**
-     * Returns a string containing debugging information. This will be written to the log if no
-     * suitable fonts are found and no fallback fonts are available. May be null.
+     * TrueType font.
      */
-    public abstract String toDebugString();
+    TTF,
 
     /**
-     * Returns a list of information about fonts on the system.
+     * OpenType font.
      */
-    public abstract List<? extends FontInfo> getFontInfo();
+    OTF,
+
+    /**
+     * Type 1 (binary) font.
+     */
+    PFB
 }

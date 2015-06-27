@@ -23,68 +23,48 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.fontbox.cff.CFFCIDFont;
+import org.apache.fontbox.FontBoxFont;
 import org.apache.fontbox.cff.CFFFont;
-import org.apache.fontbox.cff.CFFParser;
 import org.apache.fontbox.cff.CFFType1Font;
+import org.apache.fontbox.ttf.OpenTypeFont;
 import org.apache.fontbox.ttf.TTFParser;
-import org.apache.fontbox.ttf.Type1Equivalent;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.type1.Type1Font;
-import org.apache.pdfbox.io.IOUtils;
 
 /**
- * External font service, locates non-embedded fonts via a pluggable FontProvider.
+ * Font mapper, locates non-embedded fonts via a pluggable FontProvider.
  *
  * @author John Hewson
  */
-public final class ExternalFonts
+public final class FontMapper
 {
-    private ExternalFonts() {}
+    private FontMapper() {}
 
-    // lazy thread safe singleton
-    private static class DefaultFontProvider
-    {
-        private static final FontProvider INSTANCE = new FileSystemFontProvider();
-    }
-
-    private static final Log log = LogFactory.getLog(ExternalFonts.class);
+    private static final FontCache fontCache = new FontCache(); // todo: static cache isn't ideal
+    private static final Log log = LogFactory.getLog(FontMapper.class);
     private static FontProvider fontProvider;
+    private static Map<String, FontInfo> fontInfoByName;
 
     /** fallback fonts, used as as a last resort */
-    private static final TrueTypeFont ttfFallbackFont;
-    private static final CFFCIDFont cidFallbackFont;
+    private static final TrueTypeFont lastResortFont;
     static
     {
         try
         {
-            // ttf
             String ttfName = "org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf";
-            URL url = ExternalFonts.class.getClassLoader().getResource(ttfName);
+            URL url = FontMapper.class.getClassLoader().getResource(ttfName);
             if (url == null)
             {
                 throw new IOException("Error loading resource: " + ttfName);
             }
             InputStream ttfStream = url.openStream();
             TTFParser ttfParser = new TTFParser();
-            ttfFallbackFont = ttfParser.parse(ttfStream);
-
-            // cff
-            String cffName = "org/apache/pdfbox/resources/otf/AdobeBlank.otf";
-            url = ExternalFonts.class.getClassLoader().getResource(cffName);
-            if (url == null)
-            {
-                throw new IOException("Error loading resource: " + ttfName);
-            }
-            InputStream cffStream = url.openStream();
-            byte[] bytes = IOUtils.toByteArray(cffStream);
-            CFFParser cffParser = new CFFParser();
-            cidFallbackFont = (CFFCIDFont)cffParser.parse(bytes).get(0);
+            lastResortFont = ttfParser.parse(ttfStream);
         }
         catch (IOException e)
         {
@@ -92,24 +72,50 @@ public final class ExternalFonts
         }
     }
 
+    // lazy thread safe singleton
+    private static class DefaultFontProvider
+    {
+        private static final FontProvider INSTANCE = new FileSystemFontProvider(fontCache);
+    }
+
     /**
      * Sets the font service provider.
      */
-    public static void setProvider(FontProvider fontProvider)
+    public synchronized static void setProvider(FontProvider fontProvider)
     {
-        ExternalFonts.fontProvider = fontProvider;
+        FontMapper.fontProvider = fontProvider;
+        fontInfoByName = createFontInfoByName(fontProvider.getFontInfo());
     }
 
     /**
      * Returns the font service provider. Defaults to using FileSystemFontProvider.
      */
-    public static FontProvider getProvider()
+    public synchronized static FontProvider getProvider()
     {
         if (fontProvider == null)
         {
-            fontProvider = DefaultFontProvider.INSTANCE;
+            setProvider(DefaultFontProvider.INSTANCE);
         }
         return fontProvider;
+    }
+
+    /**
+     * Returns the font cache associated with this FontMapper. This method is needed by
+     * FontProvider subclasses.
+     */
+    public static FontCache getFontCache()
+    {
+        return fontCache;
+    }
+    
+    private static Map<String, FontInfo> createFontInfoByName(List<? extends FontInfo> fontInfoList)
+    {
+        Map<String, FontInfo> map = new LinkedHashMap<String, FontInfo>();
+        for (FontInfo info : fontInfoList)
+        {
+            map.put(info.getPostScriptName(), info);
+        }
+        return map;
     }
 
     /** Map of PostScript name substitutes, in priority order. */
@@ -156,13 +162,7 @@ public final class ExternalFonts
                              "NimbusRomNo9L-MediItal"));
         substitutes.put("Symbol", Arrays.asList("Symbol", "SymbolMT", "StandardSymL"));
         substitutes.put("ZapfDingbats", Arrays.asList("ZapfDingbatsITC", "Dingbats", "MS-Gothic"));
-
-        // extra substitute mechanism for CJK CIDFonts when all we know is the ROS
-        substitutes.put("$Adobe-CNS1", Arrays.asList("AdobeMingStd-Light"));
-        substitutes.put("$Adobe-Japan1", Arrays.asList("KozMinPr6N-Regular"));
-        substitutes.put("$Adobe-Korea1", Arrays.asList("AdobeGothicStd-Bold"));
-        substitutes.put("$Adobe-GB1", Arrays.asList("AdobeHeitiStd-Regular"));
-
+        
         // Acrobat also uses alternative names for Standard 14 fonts, which we map to those above
         // these include names such as "Arial" and "TimesNewRoman"
         for (String baseName : Standard14Fonts.getNames())
@@ -212,73 +212,6 @@ public final class ExternalFonts
         {
             return Collections.emptyList();
         }
-    }
-
-    /**
-     * Windows name (ArialNarrow,Bold) to PostScript name (ArialNarrow-Bold)
-     */
-    private static String windowsToPs(String windowsName)
-    {
-        return windowsName.replaceAll(",", "-");
-    }
-
-    /**
-     * Finds a CFF CID-Keyed font with the given PostScript name, or a suitable substitute, or null.
-     *
-     * @param registryOrdering the CID system registry and ordering e.g. "Adobe-Japan1", if any
-     * @param fontDescriptor the font descriptor, if any
-     */
-    public static CFFCIDFont getCFFCIDFontFallback(String registryOrdering,
-                                                   PDFontDescriptor fontDescriptor)
-    {
-        // try ROS substitutes
-        // todo: this is a fairly primitive mechanism and could be improved
-        if (registryOrdering != null)
-        {
-            for (String substituteName : getSubstitutes("$" + registryOrdering))
-            {
-                CFFFont cff = getProvider().getCFFFont(substituteName);
-                if (cff instanceof CFFCIDFont)
-                {
-                    return (CFFCIDFont) cff;
-                }
-            }
-        }
-        return cidFallbackFont;
-    }
-
-    /**
-     * Returns the fallback font, used for rendering when no other fonts are available,
-     * we attempt to find a good fallback based on the font descriptor.
-     */
-    public static Type1Equivalent getType1FallbackFont(PDFontDescriptor fontDescriptor)
-    {
-        String fontName = getFallbackFontName(fontDescriptor);
-        Type1Equivalent type1Equivalent = getType1EquivalentFont(fontName);
-        if (type1Equivalent == null)
-        {
-            // only systems with no fonts should reach this point, so we return a basic fallback
-            log.error("No fallback font for '" + fontName + "'");
-            return ttfFallbackFont;
-        }
-        return type1Equivalent;
-    }
-
-    /**
-     * Returns the fallback font, used for rendering when no other fonts are available,
-     * we attempt to find a good fallback based on the font descriptor.
-     */
-    public static TrueTypeFont getTrueTypeFallbackFont(PDFontDescriptor fontDescriptor)
-    {
-        String fontName = getFallbackFontName(fontDescriptor);
-        TrueTypeFont ttf = getTrueTypeFont(fontName);
-        if (ttf == null)
-        {
-            // we have to return something here as TTFs aren't strictly required on the system
-            log.error("No TTF fallback font for '" + fontName + "'");
-            return ttfFallbackFont;
-        }
-        return ttf;
     }
 
     /**
@@ -365,138 +298,203 @@ public final class ExternalFonts
     /**
      * Finds a TrueType font with the given PostScript name, or a suitable substitute, or null.
      *
-     * @param postScriptName PostScript font name
+     * @param fontDescriptor FontDescriptor
      */
-    public static TrueTypeFont getTrueTypeFont(String postScriptName)
+    public static FontMapping<TrueTypeFont> getTrueTypeFont(PDFontDescriptor fontDescriptor)
     {
-        // first ask the font provider for the font
-        TrueTypeFont ttf = getProvider().getTrueTypeFont(postScriptName);
-        if (ttf == null)
+        TrueTypeFont ttf = (TrueTypeFont)findFont(FontFormat.TTF, fontDescriptor.getFontName());
+        if (ttf != null)
         {
-            // then try substitutes
-            for (String substituteName : getSubstitutes(postScriptName))
+            return new FontMapping<TrueTypeFont>(ttf, false);
+        }
+        else
+        {
+            // fallback - todo: i.e. fuzzy match
+            String fontName = getFallbackFontName(fontDescriptor);
+            ttf = (TrueTypeFont) findFont(FontFormat.TTF, fontName);
+            if (ttf == null)
             {
-                ttf = getProvider().getTrueTypeFont(substituteName);
-                if (ttf != null)
-                {
-                    return ttf;
-                }
+                // we have to return something here as TTFs aren't strictly required on the system
+                log.error("Using last-resort fallback for TTF font '" + fontName + "'");
+                ttf = lastResortFont;
             }
-            // then Windows name
-            ttf = getProvider().getTrueTypeFont(windowsToPs(postScriptName));
+            return new FontMapping<TrueTypeFont>(ttf, true);
         }
-        return ttf;
     }
 
     /**
-     * Finds a TrueType font with the given PostScript name, or a suitable substitute, or null.
+     * Finds a font with the given PostScript name, or a suitable substitute, or null. This allows
+     * any font to be substituted with a PFB, TTF or OTF.
      *
-     * @param postScriptName PostScript font name
+     * @param fontDescriptor the FontDescriptor of the font to find
      */
-    public static Type1Font getType1Font(String postScriptName)
+    public static FontMapping<FontBoxFont> getFontBoxFont(PDFontDescriptor fontDescriptor)
     {
-        // first ask the font provider for the font
-        Type1Font t1 = getProvider().getType1Font(postScriptName);
-        if (t1 == null)
+        FontBoxFont font = findFontBoxFont(fontDescriptor.getFontName());
+        if (font != null)
         {
-            // then try substitutes
-            for (String substituteName : getSubstitutes(postScriptName))
+            return new FontMapping<FontBoxFont>(font, false);
+        }
+        else
+        {
+            // fallback - todo: i.e. fuzzy match
+            String fontName = getFallbackFontName(fontDescriptor);
+            font = findFontBoxFont(fontName);
+            if (font == null)
             {
-                t1 = getProvider().getType1Font(substituteName);
-                if (t1 != null)
-                {
-                    return t1;
-                }
+                // we have to return something here as TTFs aren't strictly required on the system
+                log.error("Using last-resort fallback for font '" + fontName + "'");
+                font = lastResortFont;
             }
-            // then Windows name
-            t1 = getProvider().getType1Font(windowsToPs(postScriptName));
+            return new FontMapping<FontBoxFont>(font, true);
         }
-        return t1;
     }
 
     /**
-     * Finds a CFF Type 1 font with the given PostScript name, or a suitable substitute, or null.
+     * Finds a font with the given PostScript name, or a suitable substitute, or null.
      *
      * @param postScriptName PostScript font name
      */
-    public static CFFType1Font getCFFType1Font(String postScriptName)
+    private static FontBoxFont findFontBoxFont(String postScriptName)
     {
-        CFFFont cff = getCFFFont(postScriptName);
-        if (cff instanceof CFFType1Font)
-        {
-            return (CFFType1Font)cff;
-        }
-        return null;
-    }
-
-    /**
-     * Finds a CFF CID-Keyed font with the given PostScript name, or a suitable substitute, or null.
-     *
-     * @param postScriptName PostScript font name
-     */
-    public static CFFCIDFont getCFFCIDFont(String postScriptName)
-    {
-        CFFFont cff = getCFFFont(postScriptName);
-        if (cff instanceof CFFCIDFont)
-        {
-            return (CFFCIDFont)cff;
-        }
-        return null;
-    }
-
-    /**
-     * Finds a CFF font with the given PostScript name, or a suitable substitute, or null.
-     *
-     * @param postScriptName PostScript font name
-     */
-    private static CFFFont getCFFFont(String postScriptName)
-    {
-        // first ask the font provider for the font
-        CFFFont cff = getProvider().getCFFFont(postScriptName);
-        if (cff == null)
-        {
-            // then try substitutes
-            for (String substituteName : getSubstitutes(postScriptName))
-            {
-                cff = getProvider().getCFFFont(substituteName);
-                if (cff != null)
-                {
-                    return cff;
-                }
-            }
-
-            // then Windows name
-            cff = getProvider().getCFFFont(windowsToPs(postScriptName));
-        }
-        return cff;
-    }
-
-    /**
-     * Finds a Type 1-equivalent font with the given PostScript name, or a suitable substitute,
-     * or null. This allows a Type 1 font to be substituted with a PFB, TTF or OTF.
-     *
-     * @param postScriptName PostScript font name
-     */
-    public static Type1Equivalent getType1EquivalentFont(String postScriptName)
-    {
-        Type1Font t1 = getType1Font(postScriptName);
+        Type1Font t1 = (Type1Font)findFont(FontFormat.PFB, postScriptName);
         if (t1 != null)
         {
             return t1;
         }
 
-        CFFType1Font cff = getCFFType1Font(postScriptName);
-        if (cff != null)
+        CFFFont cff = (CFFFont)findFont(FontFormat.OTF, postScriptName);
+        if (cff instanceof CFFType1Font)
         {
             return cff;
         }
 
-        TrueTypeFont ttf = getTrueTypeFont(postScriptName);
+        TrueTypeFont ttf = (TrueTypeFont)findFont(FontFormat.TTF, postScriptName);
         if (ttf != null)
         {
             return ttf;
         }
 
         return null;
+    }
+
+    /**
+     * Finds a font with the given PostScript name, or a suitable substitute, or null.
+     *
+     * @param postScriptName PostScript font name
+     */
+    private static FontBoxFont findFont(FontFormat format, String postScriptName)
+    {
+        // make sure the font provider is initialized
+        if (fontProvider == null)
+        {
+            getProvider();
+        }
+
+        // first try to match the PostScript name
+        FontInfo info = getFont(format, postScriptName);
+        if (info != null)
+        {
+            return info.getFont();
+        }
+
+        // remove hyphens (e.g. Arial-Black -> ArialBlack)
+        info = getFont(format, postScriptName.replaceAll("-", ""));
+        if (info != null)
+        {
+            return info.getFont();
+        }
+
+        // then try named substitutes
+        for (String substituteName : getSubstitutes(postScriptName))
+        {
+            info = getFont(format, substituteName);
+            if (info != null)
+            {
+                return info.getFont();
+            }
+        }
+
+        // then try converting Windows names e.g. (ArialNarrow,Bold) -> (ArialNarrow-Bold)
+        info = getFont(format, postScriptName.replaceAll(",", "-"));
+        if (info != null)
+        {
+            return info.getFont();
+        }
+
+        // no matches
+        return null;
+    }
+
+    /**
+     * Finds the named font with the given format.
+     */
+    private static FontInfo getFont(FontFormat format, String postScriptName)
+    {
+        // strip subset tag (happens when we substitute a corrupt embedded font, see PDFBOX-2642)
+        if (postScriptName.contains("+"))
+        {
+            postScriptName = postScriptName.substring(postScriptName.indexOf("+") + 1);
+        }
+        
+        // look up the PostScript name
+        FontInfo info = fontInfoByName.get(postScriptName);
+        if (info != null && info.getFormat() == format)
+        {
+            return info;
+        }
+        return null;
+    }
+    
+    /**
+     * Finds a CFF CID-Keyed font with the given PostScript name, or a suitable substitute, or null.
+     * This method can also map CJK fonts via their CIDSystemInfo (ROS).
+     * 
+     * @param fontDescriptor FontDescriptor
+     * @param cidSystemInfo the CID system info, e.g. "Adobe-Japan1", if any.
+     */
+    public static CIDFontMapping getCIDFont(PDFontDescriptor fontDescriptor,
+                                            PDCIDSystemInfo cidSystemInfo)
+    {
+        // try name match or substitute with OTF
+        OpenTypeFont otf1 = (OpenTypeFont)findFont(FontFormat.OTF, fontDescriptor.getFontName());
+        if (otf1 != null)
+        {
+            return new CIDFontMapping(otf1, null, false);
+        }
+
+        // try name match or substitute with TTF
+        TrueTypeFont ttf = (TrueTypeFont)findFont(FontFormat.TTF, fontDescriptor.getFontName());
+        if (ttf != null)
+        {
+            return new CIDFontMapping(null, ttf, false);
+        }
+
+        if (cidSystemInfo != null)
+        {
+            // "In Acrobat 3.0.1 and later, Type 0 fonts that use a CMap whose CIDSystemInfo
+            // dictionary defines the Adobe-GB1, Adobe-CNS1 Adobe-Japan1, or Adobe-Korea1 character
+            // collection can also be substituted." - Adobe Supplement to the ISO 32000
+
+            String collection = cidSystemInfo.getRegistry() + "-" + cidSystemInfo.getOrdering();
+            
+            if (collection.equals("Adobe-GB1") || collection.equals("Adobe-CNS1") ||
+                collection.equals("Adobe-Japan1") ||  collection.equals("Adobe-Korea1"))
+            {
+                // try automatic substitutes via character collection
+                for (FontInfo info : fontInfoByName.values())
+                {
+                    if (info.getCIDSystemInfo() != null &&
+                        info.getCIDSystemInfo().getRegistry().equals(cidSystemInfo.getRegistry()) &&
+                        info.getCIDSystemInfo().getOrdering().equals(cidSystemInfo.getOrdering()))
+                    {
+                        return new CIDFontMapping((OpenTypeFont)info.getFont(), null, true);
+                    }
+                }
+            }
+        }
+
+        // last-resort fallback
+        return new CIDFontMapping(null, lastResortFont, true);
     }
 }

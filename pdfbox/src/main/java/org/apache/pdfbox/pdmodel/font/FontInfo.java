@@ -14,25 +14,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.pdfbox.pdmodel.font;
 
-import java.util.List;
+import org.apache.fontbox.FontBoxFont;
 
 /**
- * External font service provider interface.
+ * Information about a font on the system.
  *
  * @author John Hewson
  */
-public abstract class FontProvider
+public abstract class FontInfo
 {
     /**
-     * Returns a string containing debugging information. This will be written to the log if no
-     * suitable fonts are found and no fallback fonts are available. May be null.
+     * Returns the PostScript name of the font.
      */
-    public abstract String toDebugString();
+    public abstract String getPostScriptName();
 
     /**
-     * Returns a list of information about fonts on the system.
+     * Returns the font's format.
      */
-    public abstract List<? extends FontInfo> getFontInfo();
+    public abstract FontFormat getFormat();
+
+    /**
+     * Returns the CIDSystemInfo associated with the font, if any.
+     */
+    public abstract PDCIDSystemInfo getCIDSystemInfo();
+
+    /**
+     * Returns a new FontBox font instance for the font. Implementors of this method must not
+     * cache the return value of this method unless doing so via the current {@link FontCache}.
+     */
+    public abstract FontBoxFont getFont();
+    
+    @Override
+    public String toString()
+    {
+        return getPostScriptName() + " (" + getFormat() + ")";
+    }
 }

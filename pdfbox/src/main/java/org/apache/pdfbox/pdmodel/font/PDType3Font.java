@@ -16,10 +16,12 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
+import java.awt.geom.GeneralPath;
 import java.io.IOException;
 import java.io.InputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.FontBoxFont;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -82,6 +84,20 @@ public class PDType3Font extends PDSimpleFont
     protected Boolean isFontSymbolic()
     {
         return false;
+    }
+
+    @Override
+    public GeneralPath getPath(String name) throws IOException
+    {
+        // Type 3 fonts do not use vector paths
+        throw new UnsupportedOperationException("not supported for Type 3 fonts");
+    }
+
+    @Override
+    public FontBoxFont getFontBoxFont()
+    {
+        // Type 3 fonts do not use FontBox fonts
+        throw new UnsupportedOperationException("not supported for Type 3 fonts");
     }
 
     @Override

@@ -21,25 +21,26 @@
 
 package org.apache.pdfbox.preflight.font.descriptor;
 
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
+import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
+import org.apache.pdfbox.preflight.PreflightContext;
+import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
+import org.apache.pdfbox.preflight.font.container.Type1Container;
+
+
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_CHARSET_MISSING_FOR_SUBSET;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_FONT_FILEX_INVALID;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_TYPE1_DAMAGED;
 import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_KEY_LENGTH2;
 import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_KEY_LENGTH3;
 
-import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
-import org.apache.pdfbox.pdmodel.font.PDType1Equivalent;
-import org.apache.pdfbox.preflight.PreflightContext;
-import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
-import org.apache.pdfbox.preflight.font.container.Type1Container;
-
 public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container>
 {
-    public Type1DescriptorHelper(PreflightContext context, PDType1Equivalent font, Type1Container fontContainer)
+    public Type1DescriptorHelper(PreflightContext context, PDSimpleFont font, Type1Container fontContainer)
     {
         super(context, font, fontContainer);
     }
