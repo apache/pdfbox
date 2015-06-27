@@ -92,6 +92,11 @@ public class SequenceRandomAccessRead implements RandomAccessRead
         if (currentIndex < maxIndex)
         {
             switchBuffer(currentIndex + 1);
+            // skip empty buffers
+            if (currentBufferLength == 0)
+            {
+                return nextBuffer();
+            }
             return true;
         }
         return false;

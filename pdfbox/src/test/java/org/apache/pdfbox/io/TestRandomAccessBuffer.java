@@ -18,6 +18,7 @@
 package org.apache.pdfbox.io;
 
 import java.io.IOException;
+import java.nio.Buffer;
 import java.util.Vector;
 
 import junit.framework.TestCase;
@@ -294,8 +295,10 @@ public class TestRandomAccessBuffer extends TestCase
         buffer3.write(new byte[] {5,6,7});
         RandomAccessBuffer buffer4 = new RandomAccessBuffer();
         buffer4.write(new byte[] {8,9,10,11,12});
+        RandomAccessBuffer bufferEmpty = new RandomAccessBuffer();
         Vector<RandomAccessRead> buffers = new Vector<RandomAccessRead>();
         buffers.add(buffer1);
+        buffers.add(bufferEmpty);
         buffers.add(buffer2);
         buffers.add(buffer3);
         buffers.add(buffer4);
@@ -311,6 +314,7 @@ public class TestRandomAccessBuffer extends TestCase
         sequenceBuffer.close();
         buffers = new Vector<RandomAccessRead>();
         buffers.add(buffer1);
+        buffers.add(bufferEmpty);
         buffers.add(buffer2);
         buffers.add(buffer3);
         buffers.add(buffer4);
@@ -348,6 +352,7 @@ public class TestRandomAccessBuffer extends TestCase
         buffer2.close();
         buffer3.close();
         buffer4.close();
+        bufferEmpty.close();
     }
     
     public void testPDFBOX1490() throws Exception
