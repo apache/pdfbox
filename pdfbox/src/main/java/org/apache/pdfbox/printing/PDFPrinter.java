@@ -56,6 +56,7 @@ public class PDFPrinter
     /**
      * Creates a new PDFPrinter using the system's default printer.
      * @param document the document to print
+     * @throws PrinterException if the document permissions don't allow printing
      */
     public PDFPrinter(PDDocument document) throws PrinterException
     {
@@ -66,6 +67,7 @@ public class PDFPrinter
      * Creates a new PDFPrinter using the given printer.
      * @param document the document to print
      * @param printerJob the printer job to use
+     * @throws PrinterException if the document permissions don't allow printing
      */
     public PDFPrinter(PDDocument document, PrinterJob printerJob) throws PrinterException
     {
@@ -79,6 +81,7 @@ public class PDFPrinter
      * @param document the document to print
      * @param scaling page scaling policy
      * @param orientation page orientation policy
+     * @throws PrinterException if the document permissions don't allow printing
      */
     public PDFPrinter(PDDocument document, Scaling scaling, Orientation orientation)
             throws PrinterException
@@ -93,6 +96,8 @@ public class PDFPrinter
      * @param document the document to print
      * @param scaling page scaling policy
      * @param orientation page orientation policy
+     * @param paper the physical characteristics of a piece of paper
+     * @throws PrinterException  if the document permissions don't allow printing
      */
     public PDFPrinter(PDDocument document, Scaling scaling, Orientation orientation, Paper paper)
             throws PrinterException
@@ -107,7 +112,9 @@ public class PDFPrinter
      * @param document the document to print
      * @param scaling page scaling policy
      * @param orientation page orientation policy
+     * @param paper the physical characteristics of a piece of paper
      * @param dpi if non-zero then the image will be rasterized at the given DPI
+     * @throws PrinterException if the document permissions don't allow printing
      */
     public PDFPrinter(PDDocument document, Scaling scaling, Orientation orientation, Paper paper,
                       float dpi) throws PrinterException
@@ -123,9 +130,10 @@ public class PDFPrinter
      * @param printerJob the printer job to use
      * @param scaling page scaling policy
      * @param orientation page orientation policy
+     * @param paper the physical characteristics of a piece of paper
      * @param showPageBorder true if page borders are to be printed
      * @param dpi if non-zero then the image will be rasterized at the given DPI
-     * @throws PrinterException
+     * @throws PrinterException if the document permissions don't allow printing
      */
     public PDFPrinter(PDDocument document, PrinterJob printerJob, Scaling scaling,
                       Orientation orientation, Paper paper, boolean showPageBorder, float dpi)
@@ -155,7 +163,7 @@ public class PDFPrinter
 
     /**
      * Prints the given document using the default printer without prompting the user.
-     * @throws java.awt.print.PrinterException if the document cannot be printed
+     * @throws PrinterException if the document cannot be printed
      */
     public void silentPrint() throws PrinterException
     {
@@ -165,6 +173,7 @@ public class PDFPrinter
     /**
      * Prints the given document using the default printer without prompting the user.
      * @param attributes application supplied attributes
+     * @return true if the user does not cancel the dialog
      * @throws PrinterException if the document cannot be printed
      */
     public boolean silentPrint(PrintRequestAttributeSet attributes) throws PrinterException
