@@ -26,7 +26,7 @@ import org.apache.pdfbox.cos.COSName;
  */
 class FieldFlag extends Flag
 {
-    final COSDictionary dictionary;
+    private final COSDictionary dictionary;
 
     /**
      * Constructor

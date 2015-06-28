@@ -30,7 +30,7 @@ import org.apache.pdfbox.pdmodel.font.PDPanoseClassification;
 public class PanoseFlag extends Flag
 {
 
-    final private byte[] bytes;
+    private final byte[] bytes;
     private final COSString byteValue;
 
     /**
@@ -255,7 +255,7 @@ public class PanoseFlag extends Flag
         }[index];
     }
 
-    final public byte[] getPanoseBytes(COSDictionary style)
+    public final byte[] getPanoseBytes(COSDictionary style)
     {
         if (style != null)
         {
