@@ -41,7 +41,7 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
-import org.apache.pdfbox.io.RandomAccessFileInputStream;
+import org.apache.pdfbox.io.RandomAccessReadInputStream;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdfwriter.COSWriter;
@@ -1093,7 +1093,7 @@ public class PDDocument implements Closeable
     public void saveIncremental(OutputStream output) throws IOException
     {
         InputStream input = new BufferedInputStream(
-                new RandomAccessFileInputStream(pdfSource, 0, pdfSource.length()));
+                new RandomAccessReadInputStream(pdfSource, 0, pdfSource.length()));
         COSWriter writer = null;
         try
         {
