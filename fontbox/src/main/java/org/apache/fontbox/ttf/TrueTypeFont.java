@@ -16,7 +16,6 @@
  */
 package org.apache.fontbox.ttf;
 
-import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.io.Closeable;
 import java.io.IOException;
@@ -613,14 +612,8 @@ public class TrueTypeFont implements FontBoxFont, Closeable
         }
         else
         {
-            GeneralPath path = glyph.getPath();
-
-            // scale to 1000upem, per PostScript convention
-            float scale = 1000f / getUnitsPerEm();
-            AffineTransform atScale = AffineTransform.getScaleInstance(scale, scale);
-            path.transform(atScale);
-
-            return path;
+            // must scaled by caller using FontMatrix
+            return glyph.getPath();
         }
     }
 

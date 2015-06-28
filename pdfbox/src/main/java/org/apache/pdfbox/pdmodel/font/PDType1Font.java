@@ -287,6 +287,7 @@ public class PDType1Font extends PDSimpleFont
         }
         else
         {
+            // todo: should be scaled by font matrix
             return (float) genericFont.getPath(name).getBounds().getHeight();
         }
     }
