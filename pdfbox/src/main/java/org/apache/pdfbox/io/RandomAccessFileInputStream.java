@@ -20,27 +20,27 @@ import java.io.InputStream;
 import java.io.IOException;
 
 /**
- * This class allows a section of a RandomAccessFile to be accessed as an
+ * This class allows a section of a RandomAccessRead to be accessed as an
  * input stream.
  *
  * @author Ben Litchfield
  */
 public class RandomAccessFileInputStream extends InputStream
 {
-    private final RandomAccess file;
+    private final RandomAccessRead input;
     private long currentPosition;
     private final long endPosition;
 
     /**
      * Constructor.
      *
-     * @param raFile The file to read the data from.
+     * @param randomAccessRead The file to read the data from.
      * @param startPosition The position in the file that this stream starts.
      * @param length The length of the input stream.
      */
-    public RandomAccessFileInputStream( RandomAccess raFile, long startPosition, long length )
+    public RandomAccessFileInputStream( RandomAccessRead randomAccessRead, long startPosition, long length )
     {
-        file = raFile;
+        input = randomAccessRead;
         currentPosition = startPosition;
         endPosition = currentPosition+length;
     }
@@ -66,14 +66,14 @@ public class RandomAccessFileInputStream extends InputStream
     @Override
     public int read() throws IOException
     {
-        synchronized(file)
+        synchronized(input)
         {
             int retval = -1;
             if( currentPosition < endPosition )
             {
-                file.seek( currentPosition );
+                input.seek( currentPosition );
                 currentPosition++;
-                retval = file.read();
+                retval = input.read();
             }
             return retval;
         }
@@ -94,10 +94,10 @@ public class RandomAccessFileInputStream extends InputStream
         //return -1 if the EOF has been reached.
         if( available() > 0 )
         {
-            synchronized(file)
+            synchronized(input)
             {
-                file.seek( currentPosition );
-                amountRead = file.read( b, offset, length );
+                input.seek( currentPosition );
+                amountRead = input.read( b, offset, length );
             }
         }
         //update the current cursor position.

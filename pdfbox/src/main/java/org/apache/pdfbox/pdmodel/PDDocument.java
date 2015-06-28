@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel;
 
+import java.io.BufferedInputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -40,6 +41,7 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
+import org.apache.pdfbox.io.RandomAccessFileInputStream;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdfwriter.COSWriter;
@@ -92,9 +94,6 @@ public class PDDocument implements Closeable
 
     // the pdf to be read
     private final RandomAccessRead pdfSource;
-
-    // the File to read incremental data from
-    private File incrementalFile;
 
     // the access permissions of the document
     private AccessPermission accessPermission;
@@ -847,7 +846,6 @@ public class PDDocument implements Closeable
         PDFParser parser = new PDFParser(raFile, password, keyStore, alias, useScratchFiles);
         parser.parse();
         PDDocument doc = parser.getPDDocument();
-        doc.incrementalFile = file;
         return doc;
     }
 
@@ -1094,11 +1092,8 @@ public class PDDocument implements Closeable
      */
     public void saveIncremental(OutputStream output) throws IOException
     {
-        if (incrementalFile == null)
-        {
-            throw new IllegalStateException("Incremental save is only possible if the document was loaded from a file");
-        }
-        InputStream input = new RandomAccessBufferedFileInputStream(incrementalFile);
+        InputStream input = new BufferedInputStream(
+                new RandomAccessFileInputStream(pdfSource, 0, pdfSource.length()));
         COSWriter writer = null;
         try
         {
