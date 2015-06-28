@@ -25,7 +25,7 @@ import java.io.IOException;
  *
  * @author Ben Litchfield
  */
-public class RandomAccessFileInputStream extends InputStream
+public class RandomAccessReadInputStream extends InputStream
 {
     private final RandomAccessRead input;
     private long currentPosition;
@@ -38,7 +38,7 @@ public class RandomAccessFileInputStream extends InputStream
      * @param startPosition The position in the file that this stream starts.
      * @param length The length of the input stream.
      */
-    public RandomAccessFileInputStream( RandomAccessRead randomAccessRead, long startPosition, long length )
+    public RandomAccessReadInputStream( RandomAccessRead randomAccessRead, long startPosition, long length )
     {
         input = randomAccessRead;
         currentPosition = startPosition;
