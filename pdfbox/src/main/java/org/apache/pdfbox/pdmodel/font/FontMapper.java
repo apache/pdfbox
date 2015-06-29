@@ -23,9 +23,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.FontBoxFont;
@@ -113,9 +115,28 @@ final class FontMapper
         Map<String, FontInfo> map = new LinkedHashMap<String, FontInfo>();
         for (FontInfo info : fontInfoList)
         {
-            map.put(info.getPostScriptName(), info);
+            for (String name : getPostScriptNames(info.getPostScriptName()))
+            {
+                map.put(name, info);
+            }
         }
         return map;
+    }
+
+    /**
+     * Gets alternative names, as seen in some PDFs, e.g. PDFBOX-142.
+     */
+    private static Set<String> getPostScriptNames(String postScriptName)
+    {
+        Set<String> names = new HashSet<String>();
+    
+        // built-in PostScript name
+        names.add(postScriptName);
+     
+        // remove hyphens (e.g. Arial-Black -> ArialBlack)
+        names.add(postScriptName.replaceAll("-", ""));
+     
+        return names;
     }
 
     /** Map of PostScript name substitutes, in priority order. */
