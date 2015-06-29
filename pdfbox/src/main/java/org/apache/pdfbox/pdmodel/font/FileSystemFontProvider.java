@@ -254,7 +254,7 @@ final class FileSystemFontProvider extends FontProvider
                 if (ttf.getName() != null)
                 {
                     String format;
-                    if (ttf instanceof OpenTypeFont)
+                    if (ttf instanceof OpenTypeFont && ((OpenTypeFont)ttf).isPostScript())
                     {
                         format = "OTF";
                         CFFFont cff = ((OpenTypeFont)ttf).getCFF().getFont();
