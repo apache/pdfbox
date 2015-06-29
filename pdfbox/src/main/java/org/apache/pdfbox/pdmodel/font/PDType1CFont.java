@@ -208,18 +208,27 @@ public class PDType1CFont extends PDSimpleFont
     {
         if (fontMatrix == null)
         {
-            if (cffFont != null)
+            List<Number> numbers = null;
+            try
             {
-                List<Number> numbers = cffFont.getFontMatrix();
-                if (numbers != null && numbers.size() == 6)
-                {
-                    fontMatrix = new Matrix(numbers.get(0).floatValue(), numbers.get(1).floatValue(),
-                            numbers.get(2).floatValue(), numbers.get(3).floatValue(),
-                            numbers.get(4).floatValue(), numbers.get(5).floatValue());
-                    return fontMatrix;
-                }
+                numbers = genericFont.getFontMatrix();
             }
-            fontMatrix = super.getFontMatrix();
+            catch (IOException e)
+            {
+                fontMatrix = DEFAULT_FONT_MATRIX;
+            }
+
+            if (numbers != null && numbers.size() == 6)
+            {
+                fontMatrix = new Matrix(
+                        numbers.get(0).floatValue(), numbers.get(1).floatValue(),
+                        numbers.get(2).floatValue(), numbers.get(3).floatValue(),
+                        numbers.get(4).floatValue(), numbers.get(5).floatValue());
+            }
+            else
+            {
+                return super.getFontMatrix();
+            }
         }
         return fontMatrix;
     }
