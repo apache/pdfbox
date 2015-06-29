@@ -119,7 +119,8 @@ public class PDCIDFontType0 extends PDCIDFont
         else
         {
             // find font or substitute
-            CIDFontMapping mapping = FontMapper.getCIDFont(getFontDescriptor(), getCIDSystemInfo());
+            CIDFontMapping mapping = FontMapper.getCIDFont(getBaseFont(), getFontDescriptor(),
+                                                           getCIDSystemInfo());
 
             if (mapping.isCIDFont())
             {

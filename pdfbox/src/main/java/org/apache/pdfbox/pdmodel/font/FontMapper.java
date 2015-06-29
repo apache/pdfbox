@@ -321,9 +321,10 @@ final class FontMapper
      *
      * @param fontDescriptor FontDescriptor
      */
-    public static FontMapping<TrueTypeFont> getTrueTypeFont(PDFontDescriptor fontDescriptor)
+    public static FontMapping<TrueTypeFont> getTrueTypeFont(String baseFont,
+                                                            PDFontDescriptor fontDescriptor)
     {
-        TrueTypeFont ttf = (TrueTypeFont)findFont(FontFormat.TTF, fontDescriptor.getFontName());
+        TrueTypeFont ttf = (TrueTypeFont)findFont(FontFormat.TTF, baseFont);
         if (ttf != null)
         {
             return new FontMapping<TrueTypeFont>(ttf, false);
@@ -352,22 +353,7 @@ final class FontMapper
     public static FontMapping<FontBoxFont> getFontBoxFont(String baseFont,
                                                           PDFontDescriptor fontDescriptor)
     {
-        // FontDescriptor is sometimes missing, see PDFBOX-2573
-        String fontName;
-        if (fontDescriptor != null)
-        {
-            fontName = fontDescriptor.getFontName();
-            // FontName is sometimes missing, see PDFBOX-15
-            if (fontName == null)
-            {
-                fontName = baseFont;
-            }
-        }
-        else
-        {
-            fontName = baseFont;
-        }
-        FontBoxFont font = findFontBoxFont(fontName);
+        FontBoxFont font = findFontBoxFont(baseFont);
         if (font != null)
         {
             return new FontMapping<FontBoxFont>(font, false);
@@ -490,18 +476,18 @@ final class FontMapper
      * @param fontDescriptor FontDescriptor
      * @param cidSystemInfo the CID system info, e.g. "Adobe-Japan1", if any.
      */
-    public static CIDFontMapping getCIDFont(PDFontDescriptor fontDescriptor,
+    public static CIDFontMapping getCIDFont(String baseFont, PDFontDescriptor fontDescriptor,
                                             PDCIDSystemInfo cidSystemInfo)
     {
         // try name match or substitute with OTF
-        OpenTypeFont otf1 = (OpenTypeFont)findFont(FontFormat.OTF, fontDescriptor.getFontName());
+        OpenTypeFont otf1 = (OpenTypeFont)findFont(FontFormat.OTF, baseFont);
         if (otf1 != null)
         {
             return new CIDFontMapping(otf1, null, false);
         }
 
         // try name match or substitute with TTF
-        TrueTypeFont ttf = (TrueTypeFont)findFont(FontFormat.TTF, fontDescriptor.getFontName());
+        TrueTypeFont ttf = (TrueTypeFont)findFont(FontFormat.TTF, baseFont);
         if (ttf != null)
         {
             return new CIDFontMapping(null, ttf, false);
