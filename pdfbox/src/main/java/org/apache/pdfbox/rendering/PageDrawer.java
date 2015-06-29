@@ -367,7 +367,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                         Math.abs(fontWidth - displacement.getX() * 1000) > 0.0001)
                 {
                     float pdfWidth = displacement.getX() * 1000;
-                    pdfWidth *= font.getFontMatrix().getScalingFactorX() * 1000;
                     at.scale(pdfWidth / fontWidth, 1);
                 }
             }

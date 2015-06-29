@@ -16,7 +16,9 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
+import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
+import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -87,6 +89,7 @@ public class PDType1Font extends PDSimpleFont
     private final boolean isEmbedded;
     private final boolean isDamaged;
     private Matrix fontMatrix;
+    private final AffineTransform fontMatrixTransform;
 
     /**
      * Creates a Type 1 standard 14 font for embedding.
@@ -123,6 +126,7 @@ public class PDType1Font extends PDSimpleFont
         }
         isEmbedded = false;
         isDamaged = false;
+        fontMatrixTransform = new AffineTransform();
     }
 
     /**
@@ -141,6 +145,7 @@ public class PDType1Font extends PDSimpleFont
         genericFont = embedder.getType1Font();
         isEmbedded = true;
         isDamaged = false;
+        fontMatrixTransform = new AffineTransform();
     }
 
     /**
@@ -228,6 +233,8 @@ public class PDType1Font extends PDSimpleFont
             }
         }
         readEncoding();
+        fontMatrixTransform = getFontMatrix().createAffineTransform();
+        fontMatrixTransform.scale(1000, 1000);
     }
 
     /**
@@ -325,8 +332,11 @@ public class PDType1Font extends PDSimpleFont
         {
             return 250;
         }
+        float width = genericFont.getWidth(name);
 
-        return genericFont.getWidth(name);
+        Point2D p = new Point2D.Float(width, 0);
+        fontMatrixTransform.transform(p, p);
+        return (float)p.getX();
     }
 
     @Override

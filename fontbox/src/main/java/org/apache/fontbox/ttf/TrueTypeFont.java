@@ -621,14 +621,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     public float getWidth(String name) throws IOException
     {
         Integer gid = nameToGID(name);
-
-        int width = getAdvanceWidth(gid);
-        int unitsPerEM = getUnitsPerEm();
-        if (unitsPerEM != 1000)
-        {
-            width *= 1000f / unitsPerEM;
-        }
-        return width;
+        return getAdvanceWidth(gid);
     }
 
     @Override
