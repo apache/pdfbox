@@ -152,7 +152,8 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
         // substitute
         if (ttfFont == null)
         {
-            FontMapping<TrueTypeFont> mapping = FontMapper.getTrueTypeFont(getFontDescriptor());
+            FontMapping<TrueTypeFont> mapping = FontMapper.getTrueTypeFont(getBaseFont(),
+                                                                           getFontDescriptor());
             ttfFont = mapping.getFont();
 
             if (mapping.isFallback())
