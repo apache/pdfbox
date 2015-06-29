@@ -331,13 +331,21 @@ final class FontMapper
     public static FontMapping<FontBoxFont> getFontBoxFont(String baseFont,
                                                           PDFontDescriptor fontDescriptor)
     {
-        // FontName is sometimes missing, see PDFBOX-15
-        String fontName = fontDescriptor.getFontName();
-        if (fontName == null)
+        // FontDescriptor is sometimes missing, see PDFBOX-2573
+        String fontName;
+        if (fontDescriptor != null)
+        {
+            fontName = fontDescriptor.getFontName();
+            // FontName is sometimes missing, see PDFBOX-15
+            if (fontName == null)
+            {
+                fontName = baseFont;
+            }
+        }
+        else
         {
             fontName = baseFont;
         }
-        
         FontBoxFont font = findFontBoxFont(fontName);
         if (font != null)
         {
