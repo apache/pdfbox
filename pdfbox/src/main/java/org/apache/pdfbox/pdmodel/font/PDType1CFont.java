@@ -157,6 +157,12 @@ public class PDType1CFont extends PDSimpleFont
     }
 
     @Override
+    public boolean hasGlyph(String name) throws IOException
+    {
+        return genericFont.hasGlyph(name);
+    }
+
+    @Override
     public String getName()
     {
         return getBaseFont();

@@ -432,6 +432,13 @@ public abstract class PDSimpleFont extends PDFont
     public abstract GeneralPath getPath(String name) throws IOException;
 
     /**
+     * Returns true if the font contains the character with the given name.
+     *
+     * @throws IOException if the path could not be read
+     */
+    public abstract boolean hasGlyph(String name) throws IOException;
+
+    /**
      * Returns the embedded or system font used for rendering. This is never null.
      */
     public abstract FontBoxFont getFontBoxFont();

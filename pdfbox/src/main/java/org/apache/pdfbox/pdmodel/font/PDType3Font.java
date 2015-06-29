@@ -94,6 +94,13 @@ public class PDType3Font extends PDSimpleFont
     }
 
     @Override
+    public boolean hasGlyph(String name) throws IOException
+    {
+        COSStream stream = (COSStream) getCharProcs().getDictionaryObject(COSName.getPDFName(name));
+        return stream != null;
+    }
+
+    @Override
     public FontBoxFont getFontBoxFont()
     {
         // Type 3 fonts do not use FontBox fonts

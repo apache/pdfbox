@@ -57,7 +57,7 @@ final class Type1Glyph2D implements Glyph2D
         try
         {
             String name = font.getEncoding().getName(code);
-            if (name.equals(".notdef"))
+            if (!font.hasGlyph(name))
             {
                 LOG.warn("No glyph for " + code + " (" + name + ") in font " + font.getName());
             }
