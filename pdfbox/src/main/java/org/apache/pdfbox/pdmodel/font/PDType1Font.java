@@ -104,7 +104,8 @@ public class PDType1Font extends PDSimpleFont
 
         // todo: could load the PFB font here if we wanted to support Standard 14 embedding
         type1font = null;
-        FontMapping<FontBoxFont> mapping = FontMapper.getFontBoxFont(getFontDescriptor());
+        FontMapping<FontBoxFont> mapping = FontMapper.getFontBoxFont(getBaseFont(),
+                                                                     getFontDescriptor());
         genericFont = mapping.getFont();
         
         if (mapping.isFallback())
@@ -218,7 +219,7 @@ public class PDType1Font extends PDSimpleFont
         }
         else
         {
-            FontMapping<FontBoxFont> mapping = FontMapper.getFontBoxFont(fd);
+            FontMapping<FontBoxFont> mapping = FontMapper.getFontBoxFont(getBaseFont(), fd);
             genericFont = mapping.getFont();
             
             if (mapping.isFallback())
