@@ -405,7 +405,7 @@ public class PDCIDFontType2 extends PDCIDFont
     @Override
     public GeneralPath getPath(int code) throws IOException
     {
-        if (ttf instanceof OpenTypeFont)
+        if (ttf instanceof OpenTypeFont && ((OpenTypeFont)ttf).isPostScript())
         {
             int cid = codeToCID(code);
             Type2CharString charstring = ((OpenTypeFont)ttf).getCFF().getFont().getType2CharString(cid);
