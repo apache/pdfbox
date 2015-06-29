@@ -466,8 +466,14 @@ public class PDType1Font extends PDSimpleFont
         }
         else
         {
-            return genericFont.getPath(name);
+            return genericFont.getPath(getNameInFont(name));
         }
+    }
+
+    @Override
+    public boolean hasGlyph(String name) throws IOException
+    {
+        return genericFont.hasGlyph(getNameInFont(name));
     }
 
     @Override

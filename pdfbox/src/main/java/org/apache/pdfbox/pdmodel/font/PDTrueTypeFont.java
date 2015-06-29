@@ -409,6 +409,13 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
     }
 
     @Override
+    public boolean hasGlyph(String name) throws IOException
+    {
+        int gid = ttf.nameToGID(name);
+        return gid != 0;
+    }
+
+    @Override
     public FontBoxFont getFontBoxFont()
     {
         return ttf;
