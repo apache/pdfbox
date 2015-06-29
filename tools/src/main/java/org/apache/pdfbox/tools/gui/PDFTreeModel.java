@@ -110,7 +110,7 @@ public class PDFTreeModel implements TreeModel
             ArrayEntry entry = new ArrayEntry();
             entry.setIndex( index );
             entry.setValue( ((COSArray)parent).getObject(index) );
-            entry.setItem(((COSArray) parent).getObject(index));
+            entry.setItem(((COSArray) parent).get(index));
             retval = entry;
         }
         else if( parent instanceof COSDictionary )
