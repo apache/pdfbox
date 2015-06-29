@@ -46,7 +46,7 @@ final class FontMapper
     private FontMapper() {}
 
     private static final FontCache fontCache = new FontCache(); // todo: static cache isn't ideal
-    private static final Log LOG = LogFactory.getLog(FontMapper.class);
+    private static final Log log = LogFactory.getLog(FontMapper.class);
     private static FontProvider fontProvider;
     private static Map<String, FontInfo> fontInfoByName;
 
@@ -81,7 +81,7 @@ final class FontMapper
     /**
      * Sets the font service provider.
      */
-    public static synchronized void setProvider(FontProvider fontProvider)
+    public synchronized static void setProvider(FontProvider fontProvider)
     {
         FontMapper.fontProvider = fontProvider;
         fontInfoByName = createFontInfoByName(fontProvider.getFontInfo());
@@ -90,7 +90,7 @@ final class FontMapper
     /**
      * Returns the font service provider. Defaults to using FileSystemFontProvider.
      */
-    public static synchronized FontProvider getProvider()
+    public synchronized static FontProvider getProvider()
     {
         if (fontProvider == null)
         {
@@ -315,7 +315,7 @@ final class FontMapper
             if (ttf == null)
             {
                 // we have to return something here as TTFs aren't strictly required on the system
-                LOG.error("Using last-resort fallback for TTF font '" + fontName + "'");
+                log.error("Using last-resort fallback for TTF font '" + fontName + "'");
                 ttf = lastResortFont;
             }
             return new FontMapping<TrueTypeFont>(ttf, true);
@@ -328,9 +328,17 @@ final class FontMapper
      *
      * @param fontDescriptor the FontDescriptor of the font to find
      */
-    public static FontMapping<FontBoxFont> getFontBoxFont(PDFontDescriptor fontDescriptor)
+    public static FontMapping<FontBoxFont> getFontBoxFont(String baseFont,
+                                                          PDFontDescriptor fontDescriptor)
     {
-        FontBoxFont font = findFontBoxFont(fontDescriptor.getFontName());
+        // FontName is sometimes missing, see PDFBOX-15
+        String fontName = fontDescriptor.getFontName();
+        if (fontName == null)
+        {
+            fontName = baseFont;
+        }
+        
+        FontBoxFont font = findFontBoxFont(fontName);
         if (font != null)
         {
             return new FontMapping<FontBoxFont>(font, false);
@@ -338,12 +346,12 @@ final class FontMapper
         else
         {
             // fallback - todo: i.e. fuzzy match
-            String fontName = getFallbackFontName(fontDescriptor);
-            font = findFontBoxFont(fontName);
+            String fallbackName = getFallbackFontName(fontDescriptor);
+            font = findFontBoxFont(fallbackName);
             if (font == null)
             {
                 // we have to return something here as TTFs aren't strictly required on the system
-                LOG.error("Using last-resort fallback for font '" + fontName + "'");
+                log.error("Using last-resort fallback for font '" + fallbackName + "'");
                 font = lastResortFont;
             }
             return new FontMapping<FontBoxFont>(font, true);
@@ -434,7 +442,7 @@ final class FontMapper
         // strip subset tag (happens when we substitute a corrupt embedded font, see PDFBOX-2642)
         if (postScriptName.contains("+"))
         {
-            postScriptName = postScriptName.substring(postScriptName.indexOf('+') + 1);
+            postScriptName = postScriptName.substring(postScriptName.indexOf("+") + 1);
         }
         
         // look up the PostScript name

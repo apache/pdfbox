@@ -114,7 +114,7 @@ public class PDType1CFont extends PDSimpleFont
         }
         else
         {
-            FontMapping<FontBoxFont> mapping = FontMapper.getFontBoxFont(fd);
+            FontMapping<FontBoxFont> mapping = FontMapper.getFontBoxFont(getBaseFont(), fd);
             genericFont = mapping.getFont();
             
             if (mapping.isFallback())
