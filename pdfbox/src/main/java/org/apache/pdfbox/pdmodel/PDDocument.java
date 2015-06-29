@@ -845,8 +845,7 @@ public class PDDocument implements Closeable
         RandomAccessBufferedFileInputStream raFile = new RandomAccessBufferedFileInputStream(file);
         PDFParser parser = new PDFParser(raFile, password, keyStore, alias, useScratchFiles);
         parser.parse();
-        PDDocument doc = parser.getPDDocument();
-        return doc;
+        return parser.getPDDocument();
     }
 
     /**
