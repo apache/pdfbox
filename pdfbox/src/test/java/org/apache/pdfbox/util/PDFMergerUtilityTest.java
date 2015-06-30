@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.List;
 import junit.framework.TestCase;
 import org.apache.pdfbox.exceptions.COSVisitorException;
+import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 
@@ -64,12 +65,21 @@ public class PDFMergerUtilityTest extends TestCase
     {
         checkMergeIdentical("PDFBox.GlobalResourceMergeTest.Doc01.decoded.pdf",
                 "PDFBox.GlobalResourceMergeTest.Doc02.decoded.pdf",
-                "GlobalResourceMergeTestResult.pdf");
+                "GlobalResourceMergeTestResult.pdf", null);
+        
+        // once again, with scratch file
+        File scratchFile = new File(TARGETTESTDIR, "mergeDocumentsNonSeqScratch.bin");
+        RandomAccessFile randomAccessFile = new RandomAccessFile(scratchFile, "rw");
+        checkMergeIdentical("PDFBox.GlobalResourceMergeTest.Doc01.decoded.pdf",
+                "PDFBox.GlobalResourceMergeTest.Doc02.decoded.pdf",
+                "GlobalResourceMergeTestResult2.pdf", randomAccessFile);
+        scratchFile.delete();
     }
 
     // checks that the result file of a merge has the same rendering as the two
     // source files
-    private void checkMergeIdentical(String filename1, String filename2, String mergeFilename)
+    private void checkMergeIdentical(String filename1, String filename2, String mergeFilename, 
+            RandomAccessFile scratchFile)
             throws IOException, COSVisitorException
     {
         PDDocument srcDoc1 = PDDocument.loadNonSeq(new File(SRCDIR, filename1), null);
@@ -98,7 +108,7 @@ public class PDFMergerUtilityTest extends TestCase
         pdfMergerUtility.addSource(new File(SRCDIR, filename1));
         pdfMergerUtility.addSource(new File(SRCDIR, filename2));
         pdfMergerUtility.setDestinationFileName(TARGETTESTDIR + mergeFilename);
-        pdfMergerUtility.mergeDocumentsNonSeq(null);
+        pdfMergerUtility.mergeDocumentsNonSeq(scratchFile);
 
         PDDocument mergedDoc
                 = PDDocument.loadNonSeq(new File(TARGETTESTDIR, mergeFilename), null);
