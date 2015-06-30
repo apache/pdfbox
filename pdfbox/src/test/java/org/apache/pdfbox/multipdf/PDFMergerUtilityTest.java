@@ -60,12 +60,20 @@ public class PDFMergerUtilityTest extends TestCase
     {
         checkMergeIdentical("PDFBox.GlobalResourceMergeTest.Doc01.decoded.pdf",
                 "PDFBox.GlobalResourceMergeTest.Doc02.decoded.pdf",
-                "GlobalResourceMergeTestResult.pdf");
+                "GlobalResourceMergeTestResult.pdf", 
+                false);
+        
+        // once again, with scratch file
+        checkMergeIdentical("PDFBox.GlobalResourceMergeTest.Doc01.decoded.pdf",
+                "PDFBox.GlobalResourceMergeTest.Doc02.decoded.pdf",
+                "GlobalResourceMergeTestResult2.pdf", 
+                true);
     }
 
     // checks that the result file of a merge has the same rendering as the two
     // source files
-    private void checkMergeIdentical(String filename1, String filename2, String mergeFilename)
+    private void checkMergeIdentical(String filename1, String filename2, String mergeFilename, 
+            boolean useScratchFiles)
             throws IOException
     {
         PDDocument srcDoc1 = PDDocument.load(new File(SRCDIR, filename1), null);
@@ -92,7 +100,7 @@ public class PDFMergerUtilityTest extends TestCase
         pdfMergerUtility.addSource(new File(SRCDIR, filename1));
         pdfMergerUtility.addSource(new File(SRCDIR, filename2));
         pdfMergerUtility.setDestinationFileName(TARGETTESTDIR + mergeFilename);
-        pdfMergerUtility.mergeDocuments();
+        pdfMergerUtility.mergeDocuments(useScratchFiles);
 
         PDDocument mergedDoc
                 = PDDocument.load(new File(TARGETTESTDIR, mergeFilename), null);
