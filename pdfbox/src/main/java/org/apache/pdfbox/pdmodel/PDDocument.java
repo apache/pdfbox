@@ -37,6 +37,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -88,6 +90,11 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
  */
 public class PDDocument implements Pageable, Closeable
 {
+
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(PDDocument.class);
 
     private COSDocument document;
 
@@ -1625,6 +1632,10 @@ public class PDDocument implements Pageable, Closeable
     {
         if(this.securityHandler == null)
         {
+            if (isEncrypted())
+            {
+                LOG.info("the document has not yet been decrypted, returning access permission for a document owner");
+            }            
             return AccessPermission.getOwnerAccessPermission();
         }
         return securityHandler.getCurrentAccessPermission();
