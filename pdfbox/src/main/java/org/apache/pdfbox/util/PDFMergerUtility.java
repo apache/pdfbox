@@ -231,7 +231,7 @@ public class PDFMergerUtility
                     sourceFile = sit.next();
                     if (isNonSeq)
                     {
-                        source = PDDocument.loadNonSeq(sourceFile, null);
+                        source = PDDocument.loadNonSeq(sourceFile, scratchFile);
                     }
                     else
                     {
