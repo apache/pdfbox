@@ -64,7 +64,7 @@ public class PDFMerger
 
         String destinationFileName = args[args.length-1];
         merger.setDestinationFileName(destinationFileName);
-        merger.mergeDocuments();
+        merger.mergeDocuments(false);
     }
 
     /**
