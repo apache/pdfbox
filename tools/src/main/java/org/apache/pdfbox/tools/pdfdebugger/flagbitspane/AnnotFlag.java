@@ -48,7 +48,7 @@ class AnnotFlag extends Flag
     @Override
     String getFlagValue()
     {
-        return "Flag vlaue: " + annotDictionary.getInt(COSName.F);
+        return "Flag value: " + annotDictionary.getInt(COSName.F);
     }
 
     @Override
