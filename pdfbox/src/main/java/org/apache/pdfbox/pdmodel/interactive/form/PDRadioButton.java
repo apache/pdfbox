@@ -17,12 +17,16 @@
 package org.apache.pdfbox.pdmodel.interactive.form;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceEntry;
 
 /**
@@ -208,4 +212,46 @@ public final class PDRadioButton extends PDButton
     {
         dictionary.setName(COSName.DV, value);
     }
+    
+    
+    /**
+     * Get the List of values to set individual radio buttons to the on state.
+     * 
+     * <p>The On value could be an arbitrary string as long as it is within the limitations of
+     * a PDF name object. The Off value shall always be 'Off'. If not set or not part of the normal
+     * appearance keys 'Off' is the default</p>
+     *
+     * @returns the value setting the check box to the On state. 
+     *          If an empty string is returned there is no appearance definition.
+     * @throws IOException if the value could not be set
+     */
+    public List<String> getOnValues()
+    {
+        List<PDAnnotationWidget> widgets = this.getWidgets();
+        ArrayList<String> onValues = new ArrayList<String>();
+        
+        for (PDAnnotationWidget widget : widgets)
+        {
+            PDAppearanceDictionary apDictionary = widget.getAppearance();
+            
+            if (apDictionary != null) 
+            {
+                PDAppearanceEntry normalAppearance = apDictionary.getNormalAppearance();
+                if (normalAppearance != null)
+                {
+                    Set<COSName> entries = normalAppearance.getSubDictionary().keySet();
+                    for (COSName entry : entries)
+                    {
+                        if (COSName.Off.compareTo(entry) != 0)
+                        {
+                            onValues.add(entry.getName());
+                        }
+                    }
+                }
+            }
+        }
+        return onValues;
+    }
+    
+    
 }
