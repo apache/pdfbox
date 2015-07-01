@@ -192,7 +192,7 @@ public final class PDRadioButton extends PDButton
             }
             else
             {
-                widget.getCOSObject().setItem(COSName.AS, COSName.OFF);
+                widget.getCOSObject().setItem(COSName.AS, COSName.Off);
             }
         }
         applyChange();
