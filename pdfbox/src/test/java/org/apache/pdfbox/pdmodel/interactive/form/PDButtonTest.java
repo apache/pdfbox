@@ -128,6 +128,17 @@ public class PDButtonTest
     
     }
     
+    
+    @Test
+    public void testAcrobatradioButtonProperties() throws IOException
+    {
+        PDRadioButton radioButton = (PDRadioButton) acrobatAcroForm.getField("RadioButtonGroup");
+        assertEquals(radioButton.getOnValues().size(),2);
+        assertEquals(radioButton.getOnValues().get(0),"RadioButton01");
+        assertEquals(radioButton.getOnValues().get(1),"RadioButton02");
+    }
+    
+    
     @After
     public void tearDown() throws IOException
     {
