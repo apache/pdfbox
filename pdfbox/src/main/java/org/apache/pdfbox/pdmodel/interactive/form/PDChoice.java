@@ -401,6 +401,7 @@ public abstract class PDChoice extends PDVariableText
      * Sets the entry "V" to the given values. Requires {@link #isMultiSelect()} to be true.
      * 
      * @param values the list of values
+     * @throws IOException if the appearance couldn't be generated.
      */    
     public void setValue(List<String> values) throws IOException
     {
