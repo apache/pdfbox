@@ -221,7 +221,22 @@ public abstract class PDButton extends PDTerminalField
     @Override
     void constructAppearances() throws IOException
     {
-        // TODO: implement appearance generation for buttons
-        throw new UnsupportedOperationException("not implemented");
+        boolean hasAppearance = false;
+        COSBase apBase = dictionary.getDictionaryObject(COSName.AP);
+        if (apBase instanceof COSDictionary)
+        {
+            COSDictionary apDict = (COSDictionary) apBase;
+            COSBase nBase = apDict.getDictionaryObject(COSName.N);
+            if (nBase instanceof COSDictionary)
+            {
+                COSDictionary nDict = (COSDictionary) apBase;
+                hasAppearance = nDict.size() > 0;
+            }            
+        }
+        if (!hasAppearance)
+        {
+            // TODO: implement appearance generation for buttons
+            throw new UnsupportedOperationException("Appearance generation is not implemented yet, see PDFBOX-2849");
+        }
     }
 }
