@@ -17,10 +17,17 @@
 package org.apache.pdfbox.pdmodel.interactive.form;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceEntry;
 
 /**
  * A check box toggles between two states, on and off.
@@ -139,4 +146,71 @@ public final class PDCheckbox extends PDButton
         COSName name = value ? COSName.YES : COSName.OFF;
         dictionary.setItem(COSName.DV, name);
     }
+
+    /**
+     * Get the value which sets the check box to the On state.
+     * 
+     * <p>The On value should be 'Yes' but other values are possible
+     * so we need to look for that. On the other hand the Off value shall
+     * always be 'Off'. If not set or not part of the normal appearance keys
+     * 'Off' is the default</p>
+     *
+     * @returns the value setting the check box to the On state. 
+     *          If an empty string is returned there is no appearance definition.
+     * @throws IOException if the value could not be set
+     */
+    public String getOnValue()
+    {
+        PDAnnotationWidget widget = this.getWidgets().get(0);
+        PDAppearanceDictionary apDictionary = widget.getAppearance();
+        
+        String onValue = "";
+        if (apDictionary != null) 
+        {
+            PDAppearanceEntry normalAppearance = apDictionary.getNormalAppearance();
+            if (normalAppearance != null)
+            {
+                Set<COSName> entries = normalAppearance.getSubDictionary().keySet();
+                for (COSName entry : entries)
+                {
+                    // Specifically looking for the string 'Off' as the off value
+                    // Can't use COSName.OFF here as this will be 'OFF' in uppercase
+                    // but for form fields the correct value is 'Off' in mixed case
+                    if ("Off".compareTo(entry.getName()) != 0)
+                    {
+                        onValue = entry.getName();
+                    }
+                }
+            }
+        }
+        return onValue;
+    }
+    
+    /**
+     * Get the values which sets the check box to the On state.
+     * 
+     * <p>This is a convenience function to provide a similar method to 
+     * {@link PDRadioButton} </p>
+     *
+     * @see #getOnValue()
+     * @returns the value setting the check box to the On state. 
+     *          If an empty List is returned there is no appearance definition.
+     * @throws IOException if the value could not be set
+     */
+    public List<String> getOnValues()
+    {
+        String onValue = getOnValue();
+        
+        if (onValue.isEmpty())
+        {
+            return Collections.emptyList();
+        }
+        else
+        {
+            ArrayList<String> onValues = new ArrayList<String>();
+            onValues.add(onValue);
+            return onValues;
+        }
+    }
+    
 }
