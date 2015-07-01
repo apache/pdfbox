@@ -151,7 +151,7 @@ public class PDCIDFontType2 extends PDCIDFont
 
             if (mapping.isFallback())
             {
-                LOG.warn("Using fallback for CID-keyed TrueType font " + getBaseFont());
+                LOG.warn("Using fallback font " + ttfFont.getName() + " for CID-keyed TrueType font " + getBaseFont());
             }
         }
         ttf = ttfFont;
