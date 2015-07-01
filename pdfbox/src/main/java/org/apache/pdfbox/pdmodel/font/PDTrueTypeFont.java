@@ -168,7 +168,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
     /**
      * Returns the PostScript name of the font.
      */
-    public String getBaseFont()
+    public final String getBaseFont()
     {
         return dict.getNameAsString(COSName.BASE_FONT);
     }
