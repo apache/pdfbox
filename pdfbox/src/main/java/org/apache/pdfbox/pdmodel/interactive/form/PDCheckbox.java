@@ -67,7 +67,7 @@ public final class PDCheckbox extends PDButton
      */
     public boolean isChecked()
     {
-        return getValue();
+        return getValue().compareTo(getOnValue()) == 0;
     }
 
     /**
@@ -75,7 +75,7 @@ public final class PDCheckbox extends PDButton
      */
     public void check() throws IOException
     {
-        setValue(true);
+        setValue(getOnValue());
     }
 
     /**
@@ -83,54 +83,58 @@ public final class PDCheckbox extends PDButton
      */
     public void unCheck() throws IOException
     {
-        setValue(false);
+        setValue(COSName.Off.getName());
     }
 
     /**
-     * Returns true if this field is checked.
+     * Returns the fields value entry.
      * 
-     * @return True if checked
+     * @return the fields value entry.
      */
-    public boolean getValue()
+    public String getValue()
     {
-        COSBase value = getInheritableAttribute(COSName.V);
-        return value instanceof COSName && value.equals(COSName.YES);
+        COSName value = (COSName) getInheritableAttribute(COSName.V);
+        return value == null ? "" : value.getName();
     }
 
     /**
      * Returns the default value, if any.
      *
-     * @return True if checked, false if not checked, null if missing.
+     * @return the fields default value.
      */
-    public Boolean getDefaultValue()
+    public String getDefaultValue()
     {
-        COSBase value = getInheritableAttribute(COSName.DV);
-        if (value == null)
-        {
-            return null;
-        }
-        return value instanceof COSName && value.equals(COSName.YES);
+        COSName value = (COSName) getInheritableAttribute(COSName.DV);
+        return value == null ? "" : value.getName();
     }
 
     @Override
     public String getValueAsString()
     {
-        return getValue() ? "Yes" : "Off";
+        return getValue();
     }
 
     /**
      * Sets the checked value of this field.
      *
-     * @param value True if checked
+     * @param value matching the On or Off state of the checkbox.
      * @throws IOException if the value could not be set
      */
-    public void setValue(boolean value) throws IOException
+    public void setValue(String value) throws IOException
     {
-        COSName name = value ? COSName.YES : COSName.Off;
-        dictionary.setItem(COSName.V, name);
         
-        // update the appearance state (AS)
-        dictionary.setItem(COSName.AS, name);
+        if (value.compareTo(getOnValue()) != 0 && value.compareTo(COSName.Off.getName()) != 0)
+        {
+            throw new IllegalArgumentException(value + " is not a valid option for the checkbox " + getFullyQualifiedName());
+        }
+        else
+        {
+            // Update the field value and the appearance state.
+            // Both are necessary to work properly with different viewers.
+            COSName name = COSName.getPDFName(value);
+            dictionary.setItem(COSName.V, name);
+            dictionary.setItem(COSName.AS, name);
+        }
         
         applyChange();
     }
@@ -139,12 +143,17 @@ public final class PDCheckbox extends PDButton
      * Sets the default value.
      *
      * @param value True if checked
-     * @throws IOException if the value could not be set
      */
-    public void setDefaultValue(boolean value) throws IOException
+    public void setDefaultValue(String value)
     {
-        COSName name = value ? COSName.YES : COSName.Off;
-        dictionary.setItem(COSName.DV, name);
+        if (value.compareTo(getOnValue()) != 0 && value.compareTo(COSName.Off.getName()) != 0)
+        {
+            throw new IllegalArgumentException(value + " is not a valid option for the checkbox " + getFullyQualifiedName());
+        }
+        else
+        {
+            dictionary.setItem(COSName.DV, COSName.getPDFName(value));
+        }
     }
 
     /**
