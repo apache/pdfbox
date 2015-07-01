@@ -20,8 +20,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,14 +35,26 @@ import org.junit.Test;
  */
 public class PDButtonTest
 {
+    
+    
+    private static final File IN_DIR = new File("src/test/resources/org/apache/pdfbox/pdmodel/interactive/form");
+    private static final String NAME_OF_PDF = "AcroFormsBasicFields.pdf";
+    
     private PDDocument document;
     private PDAcroForm acroForm;
 
+    private PDDocument acrobatDocument;
+    private PDAcroForm acrobatAcroForm;
+    
+    
     @Before
-    public void setUp()
+    public void setUp() throws IOException
     {
         document = new PDDocument();
         acroForm = new PDAcroForm(document);
+        
+        acrobatDocument = PDDocument.load(new File(IN_DIR, NAME_OF_PDF));
+        acrobatAcroForm = acrobatDocument.getDocumentCatalog().getAcroForm();
     }
 
     @Test
@@ -73,5 +89,23 @@ public class PDButtonTest
         assertTrue(buttonField.isRadioButton());
         assertFalse(buttonField.isPushButton());
     }
+    
+    @Test
+    public void retrieveAcrobatCheckBoxProperties() throws IOException
+    {
+        PDCheckbox checkbox = (PDCheckbox) acrobatAcroForm.getField("Checkbox");
+        assertEquals(checkbox.getOnValue(), "Yes");
+        assertEquals(checkbox.getOnValues().size(),1);
+        assertEquals(checkbox.getOnValues().get(0), "Yes");
+    }
+    
+    
+    @After
+    public void tearDown() throws IOException
+    {
+        document.close();
+        acrobatDocument.close();
+    }
+    
 }
 
