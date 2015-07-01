@@ -173,10 +173,7 @@ public final class PDCheckbox extends PDButton
                 Set<COSName> entries = normalAppearance.getSubDictionary().keySet();
                 for (COSName entry : entries)
                 {
-                    // Specifically looking for the string 'Off' as the off value
-                    // Can't use COSName.OFF here as this will be 'OFF' in uppercase
-                    // but for form fields the correct value is 'Off' in mixed case
-                    if ("Off".compareTo(entry.getName()) != 0)
+                    if (COSName.Off.compareTo(entry) != 0)
                     {
                         onValue = entry.getName();
                     }
