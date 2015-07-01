@@ -115,6 +115,9 @@ public final class PDCheckbox extends PDButton
 
     /**
      * Sets the checked value of this field.
+     * 
+     * <p>To retrive the potential On value use {@link #getOnValue()} or
+     * {@link #getOnValues()}. The Off value shall always be 'Off'</p>
      *
      * @param value matching the On or Off state of the checkbox.
      * @throws IOException if the value could not be set
@@ -141,7 +144,8 @@ public final class PDCheckbox extends PDButton
     /**
      * Sets the default value.
      *
-     * @param value True if checked
+     * @see #setValue(String)
+     * @param value matching the On or Off state of the checkbox.
      */
     public void setDefaultValue(String value)
     {
