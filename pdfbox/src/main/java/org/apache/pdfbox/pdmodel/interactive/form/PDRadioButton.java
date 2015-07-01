@@ -185,21 +185,29 @@ public final class PDRadioButton extends PDButton
      */
     public void setValue(String value) throws IOException
     {
-        dictionary.setName(COSName.V, value);
-        // update the appearance state (AS)
-        for (PDAnnotationWidget widget : getWidgets())
+        List<String> onValues = getOnValues();
+        if (COSName.Off.getName().compareTo(value) != 0 && !onValues.contains(value))
         {
-            PDAppearanceEntry appearanceEntry = widget.getAppearance().getNormalAppearance();
-            if (((COSDictionary)appearanceEntry.getCOSObject()).containsKey(value))
-            {
-                widget.getCOSObject().setName(COSName.AS, value);
-            }
-            else
-            {
-                widget.getCOSObject().setItem(COSName.AS, COSName.Off);
-            }
+            throw new IllegalArgumentException(value + " is not a valid option for the radio button " + getFullyQualifiedName());
         }
-        applyChange();
+        else
+        {
+            dictionary.setName(COSName.V, value);
+            // update the appearance state (AS)
+            for (PDAnnotationWidget widget : getWidgets())
+            {
+                PDAppearanceEntry appearanceEntry = widget.getAppearance().getNormalAppearance();
+                if (((COSDictionary)appearanceEntry.getCOSObject()).containsKey(value))
+                {
+                    widget.getCOSObject().setName(COSName.AS, value);
+                }
+                else
+                {
+                    widget.getCOSObject().setItem(COSName.AS, COSName.Off);
+                }
+            }
+            applyChange();
+        }
     }
     
     /**
@@ -210,7 +218,15 @@ public final class PDRadioButton extends PDButton
      */
     public void setDefaultValue(String value) throws IOException
     {
-        dictionary.setName(COSName.DV, value);
+        List<String> onValues = getOnValues();
+        if (COSName.Off.getName().compareTo(value) != 0 && !onValues.contains(value))
+        {
+            throw new IllegalArgumentException(value + " is not a valid option for the radio button " + getFullyQualifiedName());
+        }
+        else
+        {
+            dictionary.setName(COSName.DV, value);
+        }
     }
     
     
