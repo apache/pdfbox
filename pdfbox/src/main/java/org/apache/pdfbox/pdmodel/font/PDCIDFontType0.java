@@ -135,7 +135,7 @@ public class PDCIDFontType0 extends PDCIDFont
 
             if (mapping.isFallback())
             {
-                LOG.warn("Using fallback for CID-keyed font " + getBaseFont());
+                LOG.warn("Using fallback " + t1Font.getName() + " for CID-keyed font " + getBaseFont());
             }
             isEmbedded = false;
             isDamaged = fontIsDamaged;
