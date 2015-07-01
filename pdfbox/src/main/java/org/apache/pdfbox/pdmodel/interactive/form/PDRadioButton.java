@@ -23,6 +23,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceEntry;
 
 /**
@@ -197,6 +198,20 @@ public final class PDRadioButton extends PDButton
         }
         applyChange();
     }
+    
+    @Override
+    void constructAppearances() throws IOException
+    {
+        for (PDAnnotationWidget widget : getWidgets())
+        {
+            PDAppearanceDictionary appearance = widget.getAppearance();
+            if (appearance == null || appearance.getNormalAppearance() == null)
+            {
+                // TODO: implement appearance generation for radio buttons
+                throw new UnsupportedOperationException("Appearance generation is not implemented yet, see PDFBOX-2849");
+            }
+        }
+    }  
 
     /**
      * Sets the default value.
