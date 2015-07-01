@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
@@ -92,8 +93,17 @@ public final class PDCheckbox extends PDButton
      */
     public String getValue()
     {
-        COSName value = (COSName) getInheritableAttribute(COSName.V);
-        return value == null ? "" : value.getName();
+        // the dictionary shall be a name object but it might not be
+        // so don't assume it is.
+        COSBase value = getInheritableAttribute(COSName.V);
+        if (value instanceof COSName)
+        {
+            return ((COSName)value).getName();
+        }
+        else
+        {
+            return "";
+        }
     }
 
     /**
@@ -103,8 +113,17 @@ public final class PDCheckbox extends PDButton
      */
     public String getDefaultValue()
     {
-        COSName value = (COSName) getInheritableAttribute(COSName.DV);
-        return value == null ? "" : value.getName();
+        // the dictionary shall be a name object but it might not be
+        // so don't assume it is.
+        COSBase value = getInheritableAttribute(COSName.DV);
+        if (value instanceof COSName)
+        {
+            return ((COSName)value).getName();
+        }
+        else
+        {
+            return "";
+        }
     }
 
     @Override
