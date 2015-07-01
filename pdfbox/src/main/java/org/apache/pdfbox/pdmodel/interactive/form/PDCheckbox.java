@@ -126,7 +126,7 @@ public final class PDCheckbox extends PDButton
      */
     public void setValue(boolean value) throws IOException
     {
-        COSName name = value ? COSName.YES : COSName.OFF;
+        COSName name = value ? COSName.YES : COSName.Off;
         dictionary.setItem(COSName.V, name);
         
         // update the appearance state (AS)
@@ -143,7 +143,7 @@ public final class PDCheckbox extends PDButton
      */
     public void setDefaultValue(boolean value) throws IOException
     {
-        COSName name = value ? COSName.YES : COSName.OFF;
+        COSName name = value ? COSName.YES : COSName.Off;
         dictionary.setItem(COSName.DV, name);
     }
 
