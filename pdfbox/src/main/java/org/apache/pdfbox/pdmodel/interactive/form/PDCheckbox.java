@@ -155,7 +155,7 @@ public final class PDCheckbox extends PDButton
         }
         else
         {
-            dictionary.setItem(COSName.DV, COSName.getPDFName(value));
+            dictionary.setName(COSName.DV, value);
         }
     }
 
