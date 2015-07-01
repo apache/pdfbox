@@ -154,19 +154,6 @@ public class TestFields extends TestCase
             textField.setValue(null);
             assertNull(textField.getCOSObject().getItem(COSName.V));
             
-            // get the RadioButton with a DV entry
-            PDRadioButton radio = (PDRadioButton)form.getField("RadioButtonGroup-DefaultValue");
-            assertNotNull(radio);
-            assertEquals(radio.getDefaultValue(),"RadioButton01");
-            assertEquals(COSName.getPDFName(radio.getDefaultValue()),
-                    radio.getCOSObject().getDictionaryObject(COSName.DV));
-
-            // get the Checkbox with a DV entry
-            PDCheckbox checkBox = (PDCheckbox)form.getField("Checkbox-DefaultValue");
-            assertNotNull(checkBox);
-            assertEquals(Boolean.TRUE, checkBox.getDefaultValue());
-            assertEquals(COSName.YES, checkBox.getCOSObject().getDictionaryObject(COSName.DV));
-            
             // get the TextField with a DV entry
             textField = (PDTextField)form.getField("TextField-DefaultValue");
             assertNotNull(textField);

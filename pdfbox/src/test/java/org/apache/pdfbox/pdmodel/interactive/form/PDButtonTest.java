@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.interactive.form;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -94,8 +95,9 @@ public class PDButtonTest
     public void retrieveAcrobatCheckBoxProperties() throws IOException
     {
         PDCheckbox checkbox = (PDCheckbox) acrobatAcroForm.getField("Checkbox");
+        assertNotNull(checkbox);
         assertEquals(checkbox.getOnValue(), "Yes");
-        assertEquals(checkbox.getOnValues().size(),1);
+        assertEquals(checkbox.getOnValues().size(), 1);
         assertEquals(checkbox.getOnValues().get(0), "Yes");
     }
     
@@ -133,9 +135,10 @@ public class PDButtonTest
     public void testAcrobatradioButtonProperties() throws IOException
     {
         PDRadioButton radioButton = (PDRadioButton) acrobatAcroForm.getField("RadioButtonGroup");
-        assertEquals(radioButton.getOnValues().size(),2);
-        assertEquals(radioButton.getOnValues().get(0),"RadioButton01");
-        assertEquals(radioButton.getOnValues().get(1),"RadioButton02");
+        assertNotNull(radioButton);
+        assertEquals(radioButton.getOnValues().size(), 2);
+        assertEquals(radioButton.getOnValues().get(0), "RadioButton01");
+        assertEquals(radioButton.getOnValues().get(1), "RadioButton02");
     }
     
     
