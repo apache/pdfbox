@@ -54,7 +54,7 @@ public class SetField
         {
             if (field instanceof PDCheckbox)
             {
-                ((PDCheckbox) field).setValue(value.equals("Yes"));
+                ((PDCheckbox) field).setValue("Yes");
             }
             else if (field instanceof PDComboBox)
             {
