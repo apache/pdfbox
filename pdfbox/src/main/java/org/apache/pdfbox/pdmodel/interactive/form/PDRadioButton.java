@@ -24,7 +24,6 @@ import java.util.Set;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceEntry;
@@ -92,7 +91,7 @@ public final class PDRadioButton extends PDButton
      * A RadioButton might have an export value to allow field values
      * which can not be encoded as PDFDocEncoding or for the same export value 
      * being assigned to multiple RadioButtons in a group.<br/>
-     * To define an export value the RadioButton must define options {@link #setOptions(List)}
+     * To define an export value the RadioButton must define options {@link #setExportValues(List)}
      * which correspond to the individual items within the RadioButton.</p>
      * <p>
      * The method will either return the value from the options entry or in case there
@@ -103,32 +102,20 @@ public final class PDRadioButton extends PDButton
      */
     public String getExportValue() throws IOException
     {
-        List<String> options = getOptions();
-        if (options.isEmpty())
+        List<String> exportValues = getExportValues();
+        if (exportValues.isEmpty())
         {
             return getValue();
         }
         else
         {
             String fieldValue = getValue();
-            List<PDAnnotationWidget> kids = getWidgets();
-            int idx = 0;
-            for (COSObjectable kid : kids)
+            List<String> onValues = getOnValues();
+            int idx = onValues.indexOf(fieldValue);
+            
+            if (idx != -1 && idx < exportValues.size())
             {
-                // fixme: this is always false, because it's kids are always widgets, not fields.
-                /*if (kid instanceof PDCheckbox)
-                {
-                    PDCheckbox btn = (PDCheckbox) kid;
-                    if (btn.getOnValue().equals(fieldValue))
-                    {
-                        break;
-                    }
-                    idx++;
-                }*/
-            }
-            if (idx <= options.size())
-            {
-                return options.get(idx);
+                return exportValues.get(idx);
             }
         }
         return "";
@@ -227,8 +214,7 @@ public final class PDRadioButton extends PDButton
         {
             dictionary.setName(COSName.DV, value);
         }
-    }
-    
+    }    
     
     /**
      * Get the List of values to set individual radio buttons to the on state.
@@ -267,7 +253,6 @@ public final class PDRadioButton extends PDButton
             }
         }
         return onValues;
-    }
-    
+    }  
     
 }
