@@ -62,6 +62,7 @@ public class PDCIDFontType0 extends PDCIDFont
      * Constructor.
      * 
      * @param fontDictionary The font dictionary according to the PDF specification.
+     * @param parent The parent font.
      */
     public PDCIDFontType0(COSDictionary fontDictionary, PDType0Font parent) throws IOException
     {
@@ -145,7 +146,7 @@ public class PDCIDFontType0 extends PDCIDFont
     }
     
     @Override
-    public Matrix getFontMatrix()
+    public final Matrix getFontMatrix()
     {
         if (fontMatrix == null)
         {
