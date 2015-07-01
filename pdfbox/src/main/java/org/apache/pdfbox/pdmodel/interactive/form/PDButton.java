@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 
 /**
  * A button field represents an interactive control on the screen
@@ -221,22 +223,16 @@ public abstract class PDButton extends PDTerminalField
     @Override
     void constructAppearances() throws IOException
     {
-        boolean hasAppearance = false;
-        COSBase apBase = dictionary.getDictionaryObject(COSName.AP);
-        if (apBase instanceof COSDictionary)
+        for (PDAnnotationWidget widget : getWidgets())
         {
-            COSDictionary apDict = (COSDictionary) apBase;
-            COSBase nBase = apDict.getDictionaryObject(COSName.N);
-            if (nBase instanceof COSDictionary)
+            PDAppearanceDictionary appearance = widget.getAppearance();
+            if (appearance == null || appearance.getNormalAppearance() == null)
             {
-                COSDictionary nDict = (COSDictionary) apBase;
-                hasAppearance = nDict.size() > 0;
-            }            
+                // TODO: implement appearance generation for radio buttons
+                throw new UnsupportedOperationException("Appearance generation is not implemented yet, see PDFBOX-2849");
+            }
         }
-        if (!hasAppearance)
-        {
-            // TODO: implement appearance generation for buttons
-            throw new UnsupportedOperationException("Appearance generation is not implemented yet, see PDFBOX-2849");
-        }
-    }
+    }  
+
+    
 }
