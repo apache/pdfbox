@@ -72,6 +72,8 @@ public final class PDCheckbox extends PDButton
 
     /**
      * Checks the check box.
+     * 
+     * @throws IOException if the appearance couldn't be generated.
      */
     public void check() throws IOException
     {
@@ -80,6 +82,8 @@ public final class PDCheckbox extends PDButton
 
     /**
      * Unchecks the check box.
+     * 
+     * @throws IOException if the appearance couldn't be generated.
      */
     public void unCheck() throws IOException
     {
@@ -135,15 +139,15 @@ public final class PDCheckbox extends PDButton
     /**
      * Sets the checked value of this field.
      * 
-     * <p>To retrive the potential On value use {@link #getOnValue()} or
-     * {@link #getOnValues()}. The Off value shall always be 'Off'</p>
+     * <p>To retrieve the potential On value use {@link #getOnValue()} or
+     * {@link #getOnValues()}. The Off value shall always be 'Off'.</p>
      *
      * @param value matching the On or Off state of the checkbox.
-     * @throws IOException if the value could not be set
+     * @throws IOException if the appearance couldn't be generated.
+     * @throws IllegalArgumentException if the value is not a valid option for the checkbox.
      */
     public void setValue(String value) throws IOException
     {
-        
         if (value.compareTo(getOnValue()) != 0 && value.compareTo(COSName.Off.getName()) != 0)
         {
             throw new IllegalArgumentException(value + " is not a valid option for the checkbox " + getFullyQualifiedName());
@@ -186,9 +190,8 @@ public final class PDCheckbox extends PDButton
      * always be 'Off'. If not set or not part of the normal appearance keys
      * 'Off' is the default</p>
      *
-     * @returns the value setting the check box to the On state. 
+     * @return the value setting the check box to the On state. 
      *          If an empty string is returned there is no appearance definition.
-     * @throws IOException if the value could not be set
      */
     public String getOnValue()
     {
@@ -221,9 +224,8 @@ public final class PDCheckbox extends PDButton
      * {@link PDRadioButton} </p>
      *
      * @see #getOnValue()
-     * @returns the value setting the check box to the On state. 
+     * @return the value setting the check box to the On state. 
      *          If an empty List is returned there is no appearance definition.
-     * @throws IOException if the value could not be set
      */
     public List<String> getOnValues()
     {

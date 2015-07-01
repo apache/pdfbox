@@ -223,9 +223,8 @@ public final class PDRadioButton extends PDButton
      * a PDF name object. The Off value shall always be 'Off'. If not set or not part of the normal
      * appearance keys 'Off' is the default</p>
      *
-     * @returns the value setting the check box to the On state. 
+     * @return the value setting the check box to the On state. 
      *          If an empty string is returned there is no appearance definition.
-     * @throws IOException if the value could not be set
      */
     public List<String> getOnValues()
     {
