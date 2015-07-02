@@ -126,13 +126,19 @@ public class PDButtonTest
         assertEquals(checkbox.getDefaultValue(), checkbox.getOnValue());
         
         checkbox.setDefaultValue("Off");
-        assertEquals(checkbox.getDefaultValue(), COSName.Off.getName());
-    
+        assertEquals(checkbox.getDefaultValue(), COSName.Off.getName());   
     }
     
+    @Test(expected=IllegalArgumentException.class)
+    public void setCheckboxInvalidValue() throws IOException
+    {
+        PDCheckbox checkbox = (PDCheckbox) acrobatAcroForm.getField("Checkbox");
+        // Set a value which doesn't match the radio button list 
+        checkbox.setValue("InvalidValue");
+    }    
     
     @Test
-    public void testAcrobatradioButtonProperties() throws IOException
+    public void retrieveAcrobatRadioButtonProperties() throws IOException
     {
         PDRadioButton radioButton = (PDRadioButton) acrobatAcroForm.getField("RadioButtonGroup");
         assertNotNull(radioButton);
@@ -141,7 +147,39 @@ public class PDButtonTest
         assertEquals(radioButton.getOnValues().get(1), "RadioButton02");
     }
     
+    @Test
+    public void testAcrobatRadioButtonProperties() throws IOException
+    {
+        PDRadioButton radioButton = (PDRadioButton) acrobatAcroForm.getField("RadioButtonGroup");
+
+        // Set value so that first radio button option is selected
+        radioButton.setValue("RadioButton01");
+        assertEquals(radioButton.getValue(), "RadioButton01");
+        // First option shall have /RadioButton01, second shall have /Off
+        assertEquals(radioButton.getWidgets().get(0).getCOSObject().getDictionaryObject(COSName.AS),
+                COSName.getPDFName("RadioButton01"));
+        assertEquals(radioButton.getWidgets().get(1).getCOSObject().getDictionaryObject(COSName.AS),
+                COSName.Off);
+
+        // Set value so that second radio button option is selected
+        radioButton.setValue("RadioButton02");
+        assertEquals(radioButton.getValue(), "RadioButton02");
+        // First option shall have /Off, second shall have /RadioButton02
+        assertEquals(radioButton.getWidgets().get(0).getCOSObject().getDictionaryObject(COSName.AS),
+                COSName.Off);
+        assertEquals(radioButton.getWidgets().get(1).getCOSObject().getDictionaryObject(COSName.AS),
+                COSName.getPDFName("RadioButton02"));
+    }
+
     
+    @Test(expected=IllegalArgumentException.class)
+    public void setRadioButtonInvalidValue() throws IOException
+    {
+        PDRadioButton radioButton = (PDRadioButton) acrobatAcroForm.getField("RadioButtonGroup");
+        // Set a value which doesn't match the radio button list 
+        radioButton.setValue("InvalidValue");
+    }
+        
     @After
     public void tearDown() throws IOException
     {
