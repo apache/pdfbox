@@ -40,15 +40,16 @@ class FieldFlag extends Flag
     @Override
     String getFlagType()
     {
-        if (dictionary.getCOSName(COSName.FT).equals(COSName.TX))
+        COSName fieldType = dictionary.getCOSName(COSName.FT);
+        if (COSName.TX.equals(fieldType))
         {
             return "Text field flag";
         }
-        else if (dictionary.getCOSName(COSName.FT).equals(COSName.BTN))
+        else if (COSName.BTN.equals(fieldType))
         {
             return "Button field flag";
         }
-        else if (dictionary.getCOSName(COSName.FT).equals(COSName.CH))
+        else if (COSName.CH.equals(fieldType))
         {
             return "Choice field flag";
         }
@@ -65,16 +66,17 @@ class FieldFlag extends Flag
     Object[][] getFlagBits()
     {
         int flagValue = dictionary.getInt(COSName.FF);
+        COSName fieldType = dictionary.getCOSName(COSName.FT);
 
-        if (dictionary.getCOSName(COSName.FT).equals(COSName.TX))
+        if (COSName.TX.equals(fieldType))
         {
             return getTextFieldFlagBits(flagValue);
         }
-        else if (dictionary.getCOSName(COSName.FT).equals(COSName.BTN))
+        else if (COSName.BTN.equals(fieldType))
         {
             return getButtonFieldFlagBits(flagValue);
         }
-        else if (dictionary.getCOSName(COSName.FT).equals(COSName.CH))
+        else if (COSName.CH.equals(fieldType))
         {
             return getChoiceFieldFlagBits(flagValue);
         }
