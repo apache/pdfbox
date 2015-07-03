@@ -56,7 +56,10 @@ class FlagBitsPaneView
         this.columnNames = columnNames;
         panel = new JPanel();
 
-        createView();
+        if (flagValue != null && tableData != null)
+        {
+            createView();
+        }
     }
 
     private void createView()

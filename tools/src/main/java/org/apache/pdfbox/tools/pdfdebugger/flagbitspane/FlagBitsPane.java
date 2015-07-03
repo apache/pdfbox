@@ -43,28 +43,28 @@ public class FlagBitsPane
     private void createPane(final COSDictionary dictionary, final COSName flagType)
     {
         Flag flag;
-        if (flagType.equals(COSName.FLAGS))
+        if (COSName.FLAGS.equals(flagType))
         {
             flag = new FontFlag(dictionary);
             view = new FlagBitsPaneView(
                     flag.getFlagType(), flag.getFlagValue(), flag.getFlagBits(), flag.getColumnNames());
         }
 
-        if (flagType.equals(COSName.F))
+        if (COSName.F.equals(flagType))
         {
             flag = new AnnotFlag(dictionary);
             view = new FlagBitsPaneView(
                     flag.getFlagType(), flag.getFlagValue(), flag.getFlagBits(), flag.getColumnNames());
         }
 
-        if (flagType.equals(COSName.FF))
+        if (COSName.FF.equals(flagType))
         {
             flag = new FieldFlag(dictionary);
             view = new FlagBitsPaneView(
                     flag.getFlagType(), flag.getFlagValue(), flag.getFlagBits(), flag.getColumnNames());
         }
 
-        if (flagType.equals(COSName.PANOSE))
+        if (COSName.PANOSE.equals(flagType))
         {
             flag = new PanoseFlag(dictionary);
             view = new FlagBitsPaneView(
