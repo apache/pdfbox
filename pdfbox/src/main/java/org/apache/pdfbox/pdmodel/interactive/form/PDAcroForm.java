@@ -107,7 +107,7 @@ public final class PDAcroForm implements COSObjectable
         {
             for (FDFField field : fields)
             {
-                FDFField fdfField = (FDFField) field;
+                FDFField fdfField = field;
                 PDField docField = getField(fdfField.getPartialFieldName());
                 if (docField != null)
                 {
