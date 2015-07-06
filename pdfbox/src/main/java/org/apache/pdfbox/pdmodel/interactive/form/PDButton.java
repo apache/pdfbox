@@ -159,7 +159,7 @@ public abstract class PDButton extends PDTerminalField
      */
     public void setExportValues(List<String> values)
     {
-        COSArray cosValues = null;
+        COSArray cosValues;
         if (values != null && !values.isEmpty())
         {
             cosValues = COSArrayList.convertStringListToCOSStringCOSArray(values);
