@@ -53,7 +53,7 @@ final class TTFGlyph2D implements Glyph2D
      *
      * @param ttfFont TrueType font
      */
-    public TTFGlyph2D(PDTrueTypeFont ttfFont) throws IOException
+    TTFGlyph2D(PDTrueTypeFont ttfFont) throws IOException
     {
         this(ttfFont.getTrueTypeFont(), ttfFont, false);
         vectorFont = ttfFont;
@@ -64,7 +64,7 @@ final class TTFGlyph2D implements Glyph2D
      *
      * @param type0Font Type0 font, with CIDFontType2 descendant
      */
-    public TTFGlyph2D(PDType0Font type0Font) throws IOException
+    TTFGlyph2D(PDType0Font type0Font) throws IOException
     {
         this(((PDCIDFontType2)type0Font.getDescendantFont()).getTrueTypeFont(), type0Font, true);
         vectorFont = type0Font;
