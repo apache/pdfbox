@@ -913,9 +913,15 @@ public final class TTFSubsetter
      *
      * @param os the stream used for writing
      * @throws IOException if something went wrong.
+     * @throws IllegalStateException if the subset is empty.
      */
     public void writeToStream(OutputStream os) throws IOException
     {
+        if (glyphIds.isEmpty() || uniToGID.isEmpty())
+        {
+            throw new IllegalStateException("subset is empty");
+        }
+        
         addCompoundReferences();
 
         DataOutputStream out = new DataOutputStream(os);
