@@ -169,32 +169,26 @@ public final class PDRadioButton extends PDButton
      * 
      * @param value Name of radio button to select
      * @throws IOException if the value could not be set
+     * @throws IllegalArgumentException if the value is not a valid option.
      */
     public void setValue(String value) throws IOException
     {
-        List<String> onValues = getOnValues();
-        if (COSName.Off.getName().compareTo(value) != 0 && !onValues.contains(value))
+        checkValue(value);        
+        dictionary.setName(COSName.V, value);
+        // update the appearance state (AS)
+        for (PDAnnotationWidget widget : getWidgets())
         {
-            throw new IllegalArgumentException(value + " is not a valid option for the radio button " + getFullyQualifiedName());
-        }
-        else
-        {
-            dictionary.setName(COSName.V, value);
-            // update the appearance state (AS)
-            for (PDAnnotationWidget widget : getWidgets())
+            PDAppearanceEntry appearanceEntry = widget.getAppearance().getNormalAppearance();
+            if (((COSDictionary) appearanceEntry.getCOSObject()).containsKey(value))
             {
-                PDAppearanceEntry appearanceEntry = widget.getAppearance().getNormalAppearance();
-                if (((COSDictionary)appearanceEntry.getCOSObject()).containsKey(value))
-                {
-                    widget.getCOSObject().setName(COSName.AS, value);
-                }
-                else
-                {
-                    widget.getCOSObject().setItem(COSName.AS, COSName.Off);
-                }
+                widget.getCOSObject().setName(COSName.AS, value);
             }
-            applyChange();
+            else
+            {
+                widget.getCOSObject().setItem(COSName.AS, COSName.Off);
+            }
         }
+        applyChange();
     }
     
     /**
@@ -202,19 +196,30 @@ public final class PDRadioButton extends PDButton
      *
      * @param value Name of radio button to select
      * @throws IOException if the value could not be set
+     * @throws IllegalArgumentException if the value is not a valid option.
      */
     public void setDefaultValue(String value) throws IOException
+    {
+        checkValue(value);        
+        dictionary.setName(COSName.DV, value);
+    }    
+
+    /**
+     * Checks value.
+     *
+     * @param value Name of radio button to select
+     * @throws IllegalArgumentException if the value is not a valid option.
+     */
+    private void checkValue(String value) throws IllegalArgumentException
     {
         List<String> onValues = getOnValues();
         if (COSName.Off.getName().compareTo(value) != 0 && !onValues.contains(value))
         {
-            throw new IllegalArgumentException(value + " is not a valid option for the radio button " + getFullyQualifiedName());
+            throw new IllegalArgumentException("value '" + value
+                    + "' is not a valid option for the radio button " + getFullyQualifiedName()
+                    + ", valid values are: " + onValues + " and " + COSName.Off.getName());
         }
-        else
-        {
-            dictionary.setName(COSName.DV, value);
-        }
-    }    
+    }
     
     /**
      * Get the List of values to set individual radio buttons to the on state.
