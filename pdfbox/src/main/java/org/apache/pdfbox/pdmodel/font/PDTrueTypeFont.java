@@ -511,11 +511,6 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
             }
         }
 
-        if (gid == 0)
-        {
-            LOG.warn("Can't map code " + code + " in font " + getBaseFont());
-        }
-
         return gid;
     }
 
