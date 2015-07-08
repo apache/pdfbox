@@ -441,7 +441,7 @@ public class PDFDebugger extends javax.swing.JFrame
                     showPage(selectedNode);
                     return;
                 }
-                if (isFlagNode(selectedNode))
+                if (isFlagNode(selectedNode, path.getParentPath().getLastPathComponent()))
                 {
                     Object parentNode = path.getParentPath().getLastPathComponent();
                     showFlagPane(parentNode, selectedNode);
@@ -521,13 +521,36 @@ public class PDFDebugger extends javax.swing.JFrame
         return false;
     }
 
-    private boolean isFlagNode(Object selectedNode)
+    private boolean isFlagNode(Object selectedNode, Object parentNode)
     {
         if (selectedNode instanceof MapEntry)
         {
-            Object key = ((MapEntry)selectedNode).getKey();
-            return COSName.FLAGS.equals(key) || COSName.F.equals(key) || COSName.FF.equals(key)
+            Object key = ((MapEntry) selectedNode).getKey();
+            return (COSName.FLAGS.equals(key) && isFontDescriptor(parentNode))
+                    || (COSName.F.equals(key) && isAnnot(parentNode)) || COSName.FF.equals(key)
                     || COSName.PANOSE.equals(key);
+        }
+        return false;
+    }
+
+    private boolean isFontDescriptor(Object obj)
+    {
+        Object underneathObject = getUnderneathObject(obj);
+        if (underneathObject instanceof COSDictionary)
+        {
+            return ((COSDictionary) underneathObject).containsKey(COSName.TYPE)
+                && ((COSDictionary) underneathObject).getCOSName(COSName.TYPE).equals(COSName.FONT_DESC);
+        }
+        return false;
+    }
+
+    private boolean isAnnot(Object obj)
+    {
+        Object underneathObject = getUnderneathObject(obj);
+        if (underneathObject instanceof COSDictionary)
+        {
+            return ((COSDictionary) underneathObject).containsKey(COSName.TYPE)
+                && ((COSDictionary) underneathObject).getCOSName(COSName.TYPE).equals(COSName.ANNOT);
         }
         return false;
     }
