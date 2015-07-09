@@ -197,7 +197,7 @@ public abstract class AnnotationValidator
 
                 // Appearance stream is a XObjectForm, check it.
                 ContextHelper.validateElement(ctx, new PDFormXObject(
-                        new PDStream(COSUtils.getAsStream(apn, cosDocument)), "N"),
+                        new PDStream(COSUtils.getAsStream(apn, cosDocument))),
                         GRAPHIC_PROCESS);
             }
         } // else ok, nothing to check,this field is optional

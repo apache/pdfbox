@@ -88,7 +88,7 @@ public class PDObjectReference implements COSObjectable
         }
         try
         {
-            PDXObject xobject = PDXObject.createXObject(obj, null, null); // <-- TODO: valid?
+            PDXObject xobject = PDXObject.createXObject(obj, null); // <-- TODO: valid?
             if (xobject != null)
             {
                 return xobject;
