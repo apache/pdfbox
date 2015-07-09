@@ -105,7 +105,7 @@ public final class PDResources implements COSObjectable
     public PDFont getFont(COSName name) throws IOException
     {
         COSObject indirect = getIndirect(COSName.FONT, name);
-        if (cache != null)
+        if (cache != null && indirect != null)
         {
             PDFont cached = cache.getFont(indirect);
             if (cached != null)
@@ -137,7 +137,7 @@ public final class PDResources implements COSObjectable
     public PDColorSpace getColorSpace(COSName name) throws IOException
     {
         COSObject indirect = getIndirect(COSName.FONT, name);
-        if (cache != null)
+        if (cache != null && indirect != null)
         {
             PDColorSpace cached = cache.getColorSpace(indirect);
             if (cached != null)
@@ -184,7 +184,7 @@ public final class PDResources implements COSObjectable
     public PDExtendedGraphicsState getExtGState(COSName name)
     {
         COSObject indirect = getIndirect(COSName.FONT, name);
-        if (cache != null)
+        if (cache != null && indirect != null)
         {
             PDExtendedGraphicsState cached = cache.getExtGState(indirect);
             if (cached != null)
@@ -217,7 +217,7 @@ public final class PDResources implements COSObjectable
     public PDShading getShading(COSName name) throws IOException
     {
         COSObject indirect = getIndirect(COSName.FONT, name);
-        if (cache != null)
+        if (cache != null && indirect != null)
         {
             PDShading cached = cache.getShading(indirect);
             if (cached != null)
@@ -250,7 +250,7 @@ public final class PDResources implements COSObjectable
     public PDAbstractPattern getPattern(COSName name) throws IOException
     {
         COSObject indirect = getIndirect(COSName.FONT, name);
-        if (cache != null)
+        if (cache != null && indirect != null)
         {
             PDAbstractPattern cached = cache.getPattern(indirect);
             if (cached != null)
@@ -282,7 +282,7 @@ public final class PDResources implements COSObjectable
     public PDPropertyList getProperties(COSName name)
     {
         COSObject indirect = getIndirect(COSName.FONT, name);
-        if (cache != null)
+        if (cache != null && indirect != null)
         {
             PDPropertyList cached = cache.getProperties(indirect);
             if (cached != null)
@@ -315,7 +315,7 @@ public final class PDResources implements COSObjectable
     public PDXObject getXObject(COSName name) throws IOException
     {
         COSObject indirect = getIndirect(COSName.FONT, name);
-        if (cache != null)
+        if (cache != null && indirect != null)
         {
             PDXObject cached = cache.getXObject(indirect);
             if (cached != null)
@@ -357,7 +357,12 @@ public final class PDResources implements COSObjectable
         {
             return null;
         }
-        return (COSObject)dict.getItem(name);
+        COSBase base = dict.getItem(name);
+        if (base instanceof COSObject)
+        {
+            return (COSObject)base;
+        }
+        return null;
     }
     
     /**
