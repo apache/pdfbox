@@ -59,10 +59,8 @@ public class DateType extends AbstractSimpleProperty
 
     /**
      * Set property value
-     * 
-     * @param value
-     *            the new Calendar element value
-     * @throws InappropriateTypeException
+     *
+     * @param value the new Calendar element value
      */
     private void setValueFromCalendar(Calendar value)
     {
