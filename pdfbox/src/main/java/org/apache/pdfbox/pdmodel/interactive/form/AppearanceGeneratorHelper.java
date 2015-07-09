@@ -226,24 +226,33 @@ class AppearanceGeneratorHelper
 
         // show the text
         float x = contentRect.getLowerLeftX();
-        PlainText textContent = new PlainText(value);
-        AppearanceStyle appearanceStyle = new AppearanceStyle();
-        appearanceStyle.setFont(font);
-        appearanceStyle.setFontSize(fontSize);
         
-        // Adobe Acrobat uses the font's bounding box for the leading between the lines
-        appearanceStyle.setLeading(font.getBoundingBox().getHeight() / 1000  * fontSize);
-        
-        PlainTextFormatter formatter = new PlainTextFormatter
-                                            .Builder(contents)
-                                                .style(appearanceStyle)
-                                                .text(textContent)
-                                                .width(contentRect.getWidth())
-                                                .wrapLines(true)
-                                                .initialOffset(x, y)
-                                                .textAlign(field.getQ())
-                                                .build();
-        formatter.format();
+        // special handling for comb boxes as these are like table cells with individual
+        // chars
+        if (shallComb()) {
+            insertGeneratedCombAppearance(contents, appearanceStream, font, fontSize);
+        }
+        else
+        {         
+            PlainText textContent = new PlainText(value);
+            AppearanceStyle appearanceStyle = new AppearanceStyle();
+            appearanceStyle.setFont(font);
+            appearanceStyle.setFontSize(fontSize);
+            
+            // Adobe Acrobat uses the font's bounding box for the leading between the lines
+            appearanceStyle.setLeading(font.getBoundingBox().getHeight() / 1000  * fontSize);
+            
+            PlainTextFormatter formatter = new PlainTextFormatter
+                                                .Builder(contents)
+                                                    .style(appearanceStyle)
+                                                    .text(textContent)
+                                                    .width(contentRect.getWidth())
+                                                    .wrapLines(true)
+                                                    .initialOffset(x, y)
+                                                    .textAlign(field.getQ())
+                                                    .build();
+            formatter.format();
+        }
     
         contents.endText();
         contents.restoreGraphicsState();
@@ -254,7 +263,77 @@ class AppearanceGeneratorHelper
     {
         return field instanceof PDTextField && ((PDTextField) field).isMultiline();
     }
+    
+    /**
+     * Determine if the appearance shall provide a comb output.
+     * 
+     * <p>
+     * May be set only if the MaxLen entry is present in the text field dictionary
+     * and if the Multiline, Password, and FileSelect flags are clear.
+     * If set, the field shall be automatically divided into as many equally spaced positions,
+     * or combs, as the value of MaxLen, and the text is laid out into those combs.
+     * </p>
+     * 
+     * @return the comb state
+     */
+    private boolean shallComb()
+    {
+        return field instanceof PDTextField &&
+                ((PDTextField) field).isComb() &&
+                !((PDTextField) field).isMultiline() &&
+                !((PDTextField) field).isPassword() &&
+                !((PDTextField) field).isFileSelect();           
+    }
+    
+    /**
+     * Generate the appearance for comb fields.
+     * 
+     * @param contents the content stream to write to
+     * @param appearanceStream the appearance stream used
+     * @param font the font to be used
+     * @param fontSize the font size to be used
+     * @throws IOException
+     */
+    private void insertGeneratedCombAppearance(PDPageContentStream contents, PDAppearanceStream appearanceStream,
+            PDFont font, float fontSize) throws IOException
+    {
+        
+        // TODO:    Currently the quadding is not taken into account
+        //          so the comb is always filled from left to right.
+        
+        int maxLen = ((PDTextField) field).getMaxLen();
+        int numChars = Math.min(value.length(), maxLen);
+        
+        PDRectangle paddingEdge = applyPadding(appearanceStream.getBBox(), 1);
+        
+        float combWidth = appearanceStream.getBBox().getWidth() / maxLen;
+        float ascentAtFontSize = font.getFontDescriptor().getAscent() / 1000 * fontSize;
+        float baselineOffset = paddingEdge.getLowerLeftY() +  
+                (appearanceStream.getBBox().getHeight() - ascentAtFontSize)/2;
+        
+        float prevCharWidth = 0f;
+        float currCharWidth = 0f;
+        
+        float xOffset =  combWidth/2;
 
+        String combString = "";
+        
+        for (int i = 0; i < numChars; i++) 
+        {
+            combString = value.substring(i, i+1);
+            currCharWidth = font.getStringWidth(combString) / 1000 * fontSize/2;
+            
+            xOffset = xOffset + prevCharWidth/2 - currCharWidth/2;
+            
+            contents.newLineAtOffset(xOffset, baselineOffset);
+            contents.showText(combString);
+            
+            baselineOffset = 0;
+            prevCharWidth = currCharWidth;
+            xOffset = combWidth;
+        }
+    }
+    
     /**
      * Writes the stream to the actual stream in the COSStream.
      *
