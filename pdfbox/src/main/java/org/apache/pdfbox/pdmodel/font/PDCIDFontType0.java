@@ -122,21 +122,24 @@ public class PDCIDFontType0 extends PDCIDFont
             // find font or substitute
             CIDFontMapping mapping = FontMapper.getCIDFont(getBaseFont(), getFontDescriptor(),
                                                            getCIDSystemInfo());
-
+            FontBoxFont font;
             if (mapping.isCIDFont())
             {
                 cidFont = (CFFCIDFont)mapping.getFont().getCFF().getFont();
                 t1Font = null;
+                font = cidFont;
             }
             else
             {
                 cidFont = null;
                 t1Font = mapping.getTrueTypeFont();
+                font = t1Font;
             }
 
             if (mapping.isFallback())
             {
-                LOG.warn("Using fallback " + t1Font.getName() + " for CID-keyed font " + getBaseFont());
+                LOG.warn("Using fallback " + font.getName() + " for CID-keyed font " +
+                         getBaseFont());
             }
             isEmbedded = false;
             isDamaged = fontIsDamaged;
