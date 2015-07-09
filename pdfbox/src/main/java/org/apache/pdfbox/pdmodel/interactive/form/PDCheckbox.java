@@ -17,9 +17,8 @@
 package org.apache.pdfbox.pdmodel.interactive.form;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.pdfbox.cos.COSBase;
@@ -227,17 +226,17 @@ public final class PDCheckbox extends PDButton
      * @return the value setting the check box to the On state. 
      *          If an empty List is returned there is no appearance definition.
      */
-    public List<String> getOnValues()
+    public Set<String> getOnValues()
     {
         String onValue = getOnValue();
         
         if (onValue.isEmpty())
         {
-            return Collections.emptyList();
+            return Collections.emptySet();
         }
         else
         {
-            ArrayList<String> onValues = new ArrayList<String>();
+            Set<String> onValues = new HashSet<String>();
             onValues.add(onValue);
             return onValues;
         }

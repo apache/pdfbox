@@ -82,7 +82,7 @@ public class TestRadioButtons extends TestCase
             // test that there are no nulls returned for an empty field
             // only specific methods are tested here
             assertNotNull(radioButton.getDefaultValue());
-            assertNotNull(radioButton.getExportValue());
+            assertNotNull(radioButton.getSelectedExportValues());
             assertNotNull(radioButton.getExportValues());
             assertNotNull(radioButton.getValue());
             

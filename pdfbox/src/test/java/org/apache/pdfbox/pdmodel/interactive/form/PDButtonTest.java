@@ -98,7 +98,7 @@ public class PDButtonTest
         assertNotNull(checkbox);
         assertEquals(checkbox.getOnValue(), "Yes");
         assertEquals(checkbox.getOnValues().size(), 1);
-        assertEquals(checkbox.getOnValues().get(0), "Yes");
+        assertTrue(checkbox.getOnValues().contains("Yes"));
     }
     
     @Test
@@ -143,8 +143,8 @@ public class PDButtonTest
         PDRadioButton radioButton = (PDRadioButton) acrobatAcroForm.getField("RadioButtonGroup");
         assertNotNull(radioButton);
         assertEquals(radioButton.getOnValues().size(), 2);
-        assertEquals(radioButton.getOnValues().get(0), "RadioButton01");
-        assertEquals(radioButton.getOnValues().get(1), "RadioButton02");
+        assertTrue(radioButton.getOnValues().contains("RadioButton01"));
+        assertTrue(radioButton.getOnValues().contains("RadioButton02"));
     }
     
     @Test
