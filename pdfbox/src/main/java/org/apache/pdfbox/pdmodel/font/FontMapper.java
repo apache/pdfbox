@@ -28,8 +28,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.FontBoxFont;
 import org.apache.fontbox.cff.CFFFont;
 import org.apache.fontbox.cff.CFFType1Font;
@@ -48,7 +46,6 @@ final class FontMapper
     private FontMapper() {}
 
     private static final FontCache fontCache = new FontCache(); // todo: static cache isn't ideal
-    private static final Log LOG = LogFactory.getLog(FontMapper.class);
     private static FontProvider fontProvider;
     private static Map<String, FontInfo> fontInfoByName;
 
@@ -337,7 +334,6 @@ final class FontMapper
             if (ttf == null)
             {
                 // we have to return something here as TTFs aren't strictly required on the system
-                LOG.error("Using last-resort fallback for TTF font '" + fontName + "'");
                 ttf = lastResortFont;
             }
             return new FontMapping<TrueTypeFont>(ttf, true);
@@ -366,7 +362,6 @@ final class FontMapper
             if (font == null)
             {
                 // we have to return something here as TTFs aren't strictly required on the system
-                LOG.error("Using last-resort fallback for font '" + fallbackName + "'");
                 font = lastResortFont;
             }
             return new FontMapping<FontBoxFont>(font, true);
