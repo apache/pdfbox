@@ -152,10 +152,8 @@ public class DublinCoreSchema extends XMPSchema
 
     /**
      * set the autor(s) of the resource
-     * 
-     * @param properName
-     *            Value to add
-     * @throws InappropriateTypeException
+     *
+     * @param properName Value to add
      */
     public void addCreator(String properName)
     {
@@ -366,7 +364,7 @@ public class DublinCoreSchema extends XMPSchema
     /**
      * set default title
      * 
-     * @param value
+     * @param value Value to set
      */
     public void setTitle(String value)
     {
@@ -376,6 +374,8 @@ public class DublinCoreSchema extends XMPSchema
     /**
      * set the title of the document, or the name given to the resource (by language)
      * 
+     * @param lang Language concerned
+     * @param value Value to set
      * @see DublinCoreSchema#setTitle(String)
      * 
      */
@@ -657,6 +657,7 @@ public class DublinCoreSchema extends XMPSchema
      * Return the default value for Right property
      * 
      * @see DublinCoreSchema#getRights(String)
+     * @return the default rights value
      */
     public String getRights()
     {
