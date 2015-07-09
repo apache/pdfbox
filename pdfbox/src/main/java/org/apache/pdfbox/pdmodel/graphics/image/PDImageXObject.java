@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.graphics.image;
 
 import java.awt.RenderingHints;
+import java.lang.ref.SoftReference;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
@@ -56,7 +57,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
      */
     private static final Log LOG = LogFactory.getLog(PDImageXObject.class);
 
-    private BufferedImage cachedImage;
+    private SoftReference<BufferedImage> cachedImage;
     private PDColorSpace colorSpace;
     private PDResources resources; // current resource dictionary (has color spaces)
 
@@ -232,14 +233,18 @@ public final class PDImageXObject extends PDXObject implements PDImage
 
     /**
      * {@inheritDoc}
-     * The returned images are cached for the lifetime of this XObject.
+     * The returned images are cached via a SoftReference.
      */
     @Override
     public BufferedImage getImage() throws IOException
     {
         if (cachedImage != null)
         {
-            return cachedImage;
+            BufferedImage cached = cachedImage.get();
+            if (cached != null)
+            {
+                return cached;
+            }
         }
 
         // get image as RGB
@@ -261,7 +266,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
             }
         }
 
-        cachedImage = image;
+        cachedImage = new SoftReference<BufferedImage>(image);
         return image;
     }
 
