@@ -115,7 +115,7 @@ public final class PDSoftMask implements COSObjectable
             if (cosGroup != null)
             {
                 group = (PDFormXObject) PDXObject
-                        .createXObject(cosGroup, COSName.G.getName(), null);
+                        .createXObject(cosGroup, null);
             }
         }
         return group;

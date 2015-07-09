@@ -104,6 +104,9 @@ public class PDDocument implements Closeable
     // Signature interface
     private SignatureInterface signInterface;
     
+    // document-wide cached resources
+    private ResourceCache resourceCache = new DefaultResourceCache();
+    
     /**
      * Creates an empty PDF document.
      * You need to add at least one page for the document to be valid.
@@ -508,7 +511,7 @@ public class PDDocument implements Closeable
      */
     public PDPage importPage(PDPage page) throws IOException
     {
-        PDPage importedPage = new PDPage(new COSDictionary(page.getCOSObject()));
+        PDPage importedPage = new PDPage(new COSDictionary(page.getCOSObject()), resourceCache);
         InputStream is = null;
         OutputStream os = null;
         try
@@ -1304,5 +1307,23 @@ public class PDDocument implements Closeable
             // versions < 1.4f have a version header only
             getDocument().setVersion(newVersion);
         }
+    }
+
+    /**
+     * Returns the resource cache associated with this document, or null if there is none.
+     */
+    public ResourceCache getResourceCache()
+    {
+        return resourceCache;
+    }
+
+    /**
+     * Sets the resource cache associated with this document.
+     * 
+     * @param resourceCache A resource cache, or null.
+     */
+    public void setResourceCache(ResourceCache resourceCache)
+    {
+        this.resourceCache = resourceCache;
     }
 }

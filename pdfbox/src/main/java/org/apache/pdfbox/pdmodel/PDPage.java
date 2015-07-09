@@ -56,6 +56,7 @@ public class PDPage implements COSObjectable, PDContentStream
     
     private final COSDictionary page;
     private PDResources pageResources;
+    private ResourceCache resourceCache;
     private PDRectangle mediaBox;
 
     /**
@@ -86,6 +87,17 @@ public class PDPage implements COSObjectable, PDContentStream
     public PDPage(COSDictionary pageDictionary)
     {
         page = pageDictionary;
+    }
+
+    /**
+     * Creates a new instance of PDPage for reading.
+     *
+     * @param pageDictionary A page dictionary in a PDF document.
+     */
+    PDPage(COSDictionary pageDictionary, ResourceCache resourceCache)
+    {
+        page = pageDictionary;
+        this.resourceCache = resourceCache;
     }
 
     /**
@@ -128,7 +140,7 @@ public class PDPage implements COSObjectable, PDContentStream
             // note: it's an error for resources to not be present
             if (resources != null)
             {
-                pageResources = new PDResources(resources);
+                pageResources = new PDResources(resources, resourceCache);
             }
         }
         return pageResources;
@@ -619,5 +631,13 @@ public class PDPage implements COSObjectable, PDContentStream
     public int hashCode()
     {
         return page.hashCode();
+    }
+
+    /**
+     * Returns the resource cache associated with this page, or null if there is none.
+     */
+    public ResourceCache getResourceCache()
+    {
+        return resourceCache;
     }
 }

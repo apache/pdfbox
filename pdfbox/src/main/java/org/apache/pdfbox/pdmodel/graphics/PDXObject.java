@@ -45,8 +45,7 @@ public class PDXObject implements COSObjectable
      * @return A new XObject instance.
      * @throws java.io.IOException if there is an error creating the XObject.
      */
-    public static PDXObject createXObject(COSBase base, String name, PDResources resources)
-            throws IOException
+    public static PDXObject createXObject(COSBase base, PDResources resources) throws IOException
     {
         if (base == null)
         {
@@ -68,7 +67,7 @@ public class PDXObject implements COSObjectable
         }
         else if (COSName.FORM.getName().equals(subtype))
         {
-            return new PDFormXObject(new PDStream(stream), name);
+            return new PDFormXObject(new PDStream(stream), resources.getResourceCache());
         }
         else if (COSName.PS.getName().equals(subtype))
         {

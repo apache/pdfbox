@@ -59,7 +59,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
 
     private SoftReference<BufferedImage> cachedImage;
     private PDColorSpace colorSpace;
-    private PDResources resources; // current resource dictionary (has color spaces)
+    private final PDResources resources; // current resource dictionary (has color spaces)
 
     /**
      * Creates a thumbnail Image XObject from the given COSBase and name.
