@@ -46,6 +46,7 @@ public final class FontCache
      */
     public FontBoxFont getFont(FontInfo info)
     {
-        return cache.get(info).get();
+        SoftReference<FontBoxFont> reference = cache.get(info);
+        return reference != null ? reference.get() : null;
     }
 }
