@@ -432,21 +432,21 @@ class ScratchFileBuffer implements RandomAccess
             return -1;
         }
 
-        seekToCurrentPositionInFile();
-
-        if (positionInPage == PAGE_SIZE - 8)
-        {
-            currentPage = raFile.readLong();
-            positionInPage = 8;
-            seekToCurrentPositionInFile();
-        }
-
         len = (int) Math.min(len, length - positionInBuffer);
+
+        seekToCurrentPositionInFile();
 
         int totalBytesRead = 0;
 
         while (len > 0)
         {
+            if (positionInPage == PAGE_SIZE - 8)
+            {
+                currentPage = raFile.readLong();
+                positionInPage = 8;
+                seekToCurrentPositionInFile();
+            }
+
             int availableInThisPage = (PAGE_SIZE - 8) - positionInPage;
 
             int rdbytes = raFile.read(b, off, Math.min(len, availableInThisPage));
@@ -456,17 +456,7 @@ class ScratchFileBuffer implements RandomAccess
                 throw new IOException("EOF reached before end of scratch file stream");
             }
 
-            if (rdbytes == availableInThisPage)
-            {
-                currentPage = raFile.readLong();
-                positionInPage = 8;
-                seekToCurrentPositionInFile();
-            }
-            else
-            {
-                positionInPage += rdbytes;
-            }
-
+            positionInPage += rdbytes;
             totalBytesRead += rdbytes;
             positionInBuffer += rdbytes;
             off += rdbytes;
