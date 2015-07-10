@@ -46,7 +46,7 @@ import javax.swing.JScrollBar;
 import javax.swing.AbstractAction;
 
 import org.apache.pdfbox.pdmodel.PDPageTree;
-import org.apache.pdfbox.printing.PDFPrinter;
+import org.apache.pdfbox.printing.PDFPageable;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.tools.util.RecentFiles;
 import org.apache.pdfbox.tools.gui.PageWrapper;
@@ -179,9 +179,8 @@ public class PDFReader extends JFrame
                 {
                     if (document != null)
                     {
-                        PDFPrinter printer = new PDFPrinter(document);
                         PrinterJob job = PrinterJob.getPrinterJob();
-                        job.setPageable(printer.getPageable());
+                        job.setPageable(new PDFPageable(document));
                         if (job.printDialog())
                         {
                             job.print();
