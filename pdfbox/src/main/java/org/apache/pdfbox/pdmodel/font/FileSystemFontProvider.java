@@ -37,6 +37,7 @@ import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.type1.Type1Font;
 import org.apache.fontbox.util.autodetect.FontFileFinder;
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.util.Charsets;
 
 /**
  * A FontProvider which searches for fonts on the local filesystem.
@@ -55,15 +56,28 @@ final class FileSystemFontProvider extends FontProvider
         private final String postScriptName;
         private final FontFormat format;
         private final PDCIDSystemInfo cidSystemInfo;
+        private final int usWeightClass;
+        private final int sFamilyClass;
+        private final int ulCodePageRange1;
+        private final int ulCodePageRange2;
+        private final int macStyle;
+        private final PDPanoseClassification panose;
         private final File file;
 
         private FSFontInfo(File file, FontFormat format, String postScriptName,
-                           PDCIDSystemInfo cidSystemInfo)
+                           PDCIDSystemInfo cidSystemInfo, int usWeightClass, int sFamilyClass,
+                           int ulCodePageRange1, int ulCodePageRange2, int macStyle, byte[] panose)
         {
             this.file = file;
             this.format = format;
             this.postScriptName = postScriptName;
             this.cidSystemInfo = cidSystemInfo;
+            this.usWeightClass = usWeightClass;
+            this.sFamilyClass = sFamilyClass;
+            this.ulCodePageRange1 = ulCodePageRange1;
+            this.ulCodePageRange2 = ulCodePageRange2;
+            this.macStyle = macStyle;
+            this.panose = panose != null ? new PDPanoseClassification(panose) : null;
         }
 
         @Override
@@ -105,6 +119,42 @@ final class FileSystemFontProvider extends FontProvider
                 cache.addFont(this, font);
                 return font;
             }
+        }
+
+        @Override
+        public int getFamilyClass()
+        {
+            return sFamilyClass;
+        }
+
+        @Override
+        public int getWeightClass()
+        {
+            return usWeightClass;
+        }
+
+        @Override
+        public int getCodePageRange1()
+        {
+            return ulCodePageRange1;
+        }
+
+        @Override
+        public int getCodePageRange2()
+        {
+            return ulCodePageRange2;
+        }
+
+        @Override
+        public int getMacStyle()
+        {
+            return macStyle;
+        }
+
+        @Override
+        public PDPanoseClassification getPanose()
+        {
+            return panose;
         }
 
         @Override
@@ -253,6 +303,29 @@ final class FileSystemFontProvider extends FontProvider
                 // read PostScript name, if any
                 if (ttf.getName() != null)
                 {
+                    int sFamilyClass = -1;
+                    int usWeightClass = -1;
+                    int ulCodePageRange1 = 0;
+                    int ulCodePageRange2 = 0;
+                    byte[] panose = null;
+                    
+                    // Apple's AAT fonts don't have an OS/2 table
+                    if (ttf.getOS2Windows() != null)
+                    {
+                        sFamilyClass = ttf.getOS2Windows().getFamilyClass();
+                        usWeightClass = ttf.getOS2Windows().getWeightClass();
+                        ulCodePageRange1 = (int)ttf.getOS2Windows().getCodePageRange1();
+                        ulCodePageRange2 = (int)ttf.getOS2Windows().getCodePageRange2();
+                        panose = ttf.getOS2Windows().getPanose();
+                    }
+
+                    // ignore bitmap fonts
+                    if (ttf.getHeader() == null)
+                    {
+                        return;
+                    }
+                    int macStyle = ttf.getHeader().getMacStyle();
+                    
                     String format;
                     if (ttf instanceof OpenTypeFont && ((OpenTypeFont)ttf).isPostScript())
                     {
@@ -267,12 +340,27 @@ final class FileSystemFontProvider extends FontProvider
                             int supplement = cidFont.getSupplement();
                             ros = new PDCIDSystemInfo(registry, ordering, supplement);
                         }
-                        fontInfoList.add(new FSFontInfo(file, FontFormat.OTF, ttf.getName(), ros));
+                        fontInfoList.add(new FSFontInfo(file, FontFormat.OTF, ttf.getName(), ros,
+                                usWeightClass, sFamilyClass, ulCodePageRange1, ulCodePageRange2,
+                                macStyle, panose));
                     }
                     else
                     {
+                        PDCIDSystemInfo ros = null;
+                        if (ttf.getTableMap().containsKey("gcid"))
+                        {
+                            // Apple's AAT fonts have a "gcid" table with CID info
+                            byte[] bytes = ttf.getTableBytes(ttf.getTableMap().get("gcid"));
+                            String registryName = new String(bytes, 10, 64, Charsets.US_ASCII).trim();
+                            String orderName = new String(bytes, 76, 64, Charsets.US_ASCII).trim();
+                            int supplementVersion = bytes[140] << 8 & bytes[141];
+                            ros = new PDCIDSystemInfo(registryName, orderName, supplementVersion);
+                        }
+                        
                         format = "TTF";
-                        fontInfoList.add(new FSFontInfo(file, FontFormat.TTF, ttf.getName(), null));
+                        fontInfoList.add(new FSFontInfo(file, FontFormat.TTF, ttf.getName(), ros,
+                                usWeightClass, sFamilyClass, ulCodePageRange1, ulCodePageRange2,
+                                macStyle, panose));
                     }
 
                     if (LOG.isTraceEnabled())
@@ -310,7 +398,8 @@ final class FileSystemFontProvider extends FontProvider
         try
         {
             Type1Font type1 = Type1Font.createWithPFB(input);
-            fontInfoList.add(new FSFontInfo(pfbFile, FontFormat.PFB, type1.getName(), null));
+            fontInfoList.add(new FSFontInfo(pfbFile, FontFormat.PFB, type1.getName(),
+                                            null, -1, -1, 0, 0, -1, null));
 
             if (LOG.isTraceEnabled())
             {

@@ -37,6 +37,8 @@ public class PDPanose
     /**
      * The font family class and subclass ID bytes, given in the sFamilyClass field of the
      * “OS/2” table in a TrueType font.
+     * 
+     * {@see http://www.microsoft.com/typography/otspec/ibmfc.htm}
      */
     public int getFamilyClass()
     {
@@ -45,6 +47,8 @@ public class PDPanose
 
     /**
      * Ten bytes for the PANOSE classification number for the font.
+     * 
+     * {@see http://www.monotype.com/services/pan1}
      */
     public PDPanoseClassification getPanose()
     {
