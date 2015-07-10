@@ -501,15 +501,17 @@ final class FontMapper
                 // try automatic substitutes via character collection
                 PriorityQueue<FontMatch> queue = getFontMatches(fontDescriptor, cidSystemInfo);
                 FontMatch bestMatch = queue.poll();
-                FontBoxFont font = bestMatch.info.getFont();
-                
-                if (font instanceof OpenTypeFont)
+                if (bestMatch != null)
                 {
-                    return new CIDFontMapping((OpenTypeFont)font, null, true);
-                }
-                else
-                {
-                    return new CIDFontMapping(null, font, true);
+                    FontBoxFont font = bestMatch.info.getFont();
+                    if (font instanceof OpenTypeFont)
+                    {
+                        return new CIDFontMapping((OpenTypeFont)font, null, true);
+                    }
+                    else
+                    {
+                        return new CIDFontMapping(null, font, true);
+                    }  
                 }
             }
         }
