@@ -178,7 +178,8 @@ public class PDNonTerminalField extends PDField
     @Override
     public String getValueAsString()
     {
-        return dictionary.getDictionaryObject(COSName.V).toString();
+        COSBase fieldValue = dictionary.getDictionaryObject(COSName.V);
+        return fieldValue != null ? fieldValue.toString() : "";
     }
 
     /**
