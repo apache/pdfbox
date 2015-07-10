@@ -44,12 +44,14 @@ public class PagePane
     private int pageIndex = -1;
     private final PDDocument document;
     private JLabel label;
+    private final float scale;
 
-    public PagePane(PDDocument document, COSDictionary page)
+    public PagePane(PDDocument document, COSDictionary page, float scale)
     {
         PDPage pdPage = new PDPage(page);
         pageIndex = document.getPages().indexOf(pdPage);
         this.document = document;
+        this.scale = scale;
         initUI();
     }
 
@@ -96,7 +98,7 @@ public class PagePane
         protected BufferedImage doInBackground() throws IOException
         {
             PDFRenderer renderer = new PDFRenderer(document);
-            return renderer.renderImage(pageIndex);
+            return renderer.renderImage(pageIndex, scale);
         }
 
         @Override
