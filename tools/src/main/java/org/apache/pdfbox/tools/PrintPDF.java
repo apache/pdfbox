@@ -18,11 +18,9 @@ package org.apache.pdfbox.tools;
 
 import java.awt.print.PrinterJob;
 import java.io.File;
-
 import javax.print.PrintService;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.printing.PDFPrinter;
+import org.apache.pdfbox.printing.PDFPageable;
 
 /**
  * This is a command line program that will print a PDF document.
@@ -115,15 +113,11 @@ public class PrintPDF
                     }
                 }
             }
-
-            PDFPrinter printer = new PDFPrinter(document);
-            if (silentPrint)
+            printJob.setPageable(new PDFPageable(document));
+            
+            if (silentPrint || printJob.printDialog())
             {
-                printer.silentPrint(printJob);
-            }
-            else
-            {
-                printer.print(printJob);
+                printJob.print();
             }
         }
         finally
