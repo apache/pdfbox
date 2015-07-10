@@ -49,8 +49,6 @@ final class FontMapper
     private static final FontCache fontCache = new FontCache(); // todo: static cache isn't ideal
     private static FontProvider fontProvider;
     private static Map<String, FontInfo> fontInfoByName;
-
-    /** fallback fonts, used as as a last resort */
     private static final TrueTypeFont lastResortFont;
     static
     {
