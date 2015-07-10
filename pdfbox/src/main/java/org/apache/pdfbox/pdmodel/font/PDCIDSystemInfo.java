@@ -64,4 +64,10 @@ public final class PDCIDSystemInfo implements COSObjectable
     {
         return dictionary;
     }
+
+    @Override
+    public String toString()
+    {
+        return getRegistry() + "-" + getOrdering() + "-" + getSupplement();
+    }
 }
