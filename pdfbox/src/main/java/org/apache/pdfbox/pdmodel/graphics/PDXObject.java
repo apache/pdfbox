@@ -21,6 +21,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.ResourceCache;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
@@ -67,7 +68,8 @@ public class PDXObject implements COSObjectable
         }
         else if (COSName.FORM.getName().equals(subtype))
         {
-            return new PDFormXObject(new PDStream(stream), resources.getResourceCache());
+            ResourceCache cache = resources != null ? resources.getResourceCache() : null;
+            return new PDFormXObject(new PDStream(stream), cache);
         }
         else if (COSName.PS.getName().equals(subtype))
         {
