@@ -17,7 +17,6 @@
 package org.apache.pdfbox.pdmodel.graphics.xobject;
 
 import java.awt.Color;
-import java.awt.Transparency;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
 import java.awt.image.BufferedImage;
@@ -348,7 +347,7 @@ public class PDPixelMap extends PDXObjectImage
                 {
                     map = new byte[] {(byte)0x00, (byte)0xff};
                 }
-                cm = new IndexColorModel(bpc, map.length, map, map, map, Transparency.OPAQUE);
+                cm = new IndexColorModel(bpc, map.length, map, map, map, 1);
             }
             else
             {
