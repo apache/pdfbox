@@ -188,9 +188,10 @@ public class CMap
      */
     public int toCID(int code)
     {
-        if (codeToCid.containsKey(code))
+        Integer cid = codeToCid.get(code);
+        if (cid != null)
         {
-            return codeToCid.get(code);
+            return cid;
         }
         for (CIDRange range : codeToCidRanges)
         {
