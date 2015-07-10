@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.xobject;
 
-import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DataBufferByte;
@@ -193,7 +192,7 @@ public class PDCcitt extends PDXObjectImage
         else
         {
             byte[] map = new byte[] { (byte) 0x00, (byte) 0xFF };
-            colorModel = new IndexColorModel(1, map.length, map, map, map, Transparency.OPAQUE);
+            colorModel = new IndexColorModel(1, map.length, map, map, map);
         }
         WritableRaster raster = colorModel.createCompatibleWritableRaster(cols, rows);
         DataBufferByte buffer = (DataBufferByte) raster.getDataBuffer();
@@ -215,7 +214,7 @@ public class PDCcitt extends PDXObjectImage
         if (hasMask())
         {
             byte[] map = new byte[] { (byte) 0x00, (byte) 0xff };
-            IndexColorModel cm = new IndexColorModel(1, map.length, map, map, map, Transparency.OPAQUE);
+            IndexColorModel cm = new IndexColorModel(1, map.length, map, map, map, 1);
             raster = cm.createCompatibleWritableRaster(cols, rows);
             bufferData = ((DataBufferByte) raster.getDataBuffer()).getData();
 
