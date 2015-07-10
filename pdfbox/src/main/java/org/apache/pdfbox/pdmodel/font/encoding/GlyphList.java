@@ -33,9 +33,48 @@ import java.util.Map;
 public final class GlyphList
 {
     private static final Log LOG = LogFactory.getLog(GlyphList.class);
-    private static final GlyphList DEFAULT;
-    private static final GlyphList ZAPF_DINGBATS;
 
+    // Adobe Glyph List (AGL)
+    private static final GlyphList DEFAULT = load("glyphlist.txt");
+    
+    // Zapf Dingbats has its own glyph list
+    private static final GlyphList ZAPF_DINGBATS = load("zapfdingbats.txt");
+    
+    /**
+     * Loads a glyph list from disk.
+     */
+    private static GlyphList load(String filename)
+    {
+        ClassLoader loader = GlyphList.class.getClassLoader();
+        String path = "org/apache/pdfbox/resources/glyphlist/";
+        try
+        {
+            return new GlyphList(loader.getResourceAsStream(path + filename));
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    static
+    {
+        // not supported in PDFBox 2.0, but we issue a warning, see PDFBOX-2379
+        try
+        {
+            String location = System.getProperty("glyphlist_ext");
+            if (location != null)
+            {
+                throw new UnsupportedOperationException("glyphlist_ext is no longer supported, "
+                        + "use GlyphList.DEFAULT.addGlyphs(Properties) instead");
+            }
+        }
+        catch (SecurityException e)  // can occur on System.getProperty
+        {
+            // PDFBOX-1946 ignore and continue
+        }
+    }
+    
     /**
      * Returns the Adobe Glyph List (AGL).
      */
@@ -50,40 +89,6 @@ public final class GlyphList
     public static GlyphList getZapfDingbats()
     {
         return ZAPF_DINGBATS;
-    }
-
-    static
-    {
-        try
-        {
-            ClassLoader loader = GlyphList.class.getClassLoader();
-            String path = "org/apache/pdfbox/resources/glyphlist/";
-
-            // Adobe Glyph List (AGL)
-            DEFAULT = new GlyphList(loader.getResourceAsStream(path + "glyphlist.txt"));
-
-            // Zapf Dingbats has its own glyph list
-            ZAPF_DINGBATS = new GlyphList(loader.getResourceAsStream(path + "zapfdingbats.txt"));
-
-            // not supported in PDFBox 2.0, but we issue a warning, see PDFBOX-2379
-            try
-            {
-                String location = System.getProperty("glyphlist_ext");
-                if (location != null)
-                {
-                    throw new UnsupportedOperationException("glyphlist_ext is no longer supported, "
-                            + "use GlyphList.DEFAULT.addGlyphs(Properties) instead");
-                }
-            }
-            catch (SecurityException e)  // can occur on System.getProperty
-            {
-                // PDFBOX-1946 ignore and continue
-            }
-        }
-        catch (IOException e)
-        {
-            throw new RuntimeException(e);
-        }
     }
 
     private final Map<String, String> nameToUnicode;
