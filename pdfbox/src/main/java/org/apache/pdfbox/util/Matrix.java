@@ -37,7 +37,7 @@ public final class Matrix implements Cloneable
         0,0,1   //  tx ty 1     tx ty 1
     };
 
-    private float[] single;
+    private final float[] single;
 
     /**
      * Constructor.
@@ -654,12 +654,12 @@ public final class Matrix implements Cloneable
     public COSArray toCOSArray()
     {
         COSArray array = new COSArray();
-        array.add(new COSFloat(0));
-        array.add(new COSFloat(1));
-        array.add(new COSFloat(3));
-        array.add(new COSFloat(4));
-        array.add(new COSFloat(6));
-        array.add(new COSFloat(7));
+        array.add(new COSFloat(single[0]));
+        array.add(new COSFloat(single[1]));
+        array.add(new COSFloat(single[3]));
+        array.add(new COSFloat(single[4]));
+        array.add(new COSFloat(single[6]));
+        array.add(new COSFloat(single[7]));
         return array;
     }
 
