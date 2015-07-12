@@ -322,15 +322,15 @@ public class PDFDebugger extends javax.swing.JFrame
             public void actionPerformed(ActionEvent actionEvent)
             {
                 Object source = actionEvent.getSource();
-                if (source == zoom50Item)
+                if (zoom50Item.equals(source))
                 {
                     scale = 0.5f;
                 }
-                if (source == zoom100Item)
+                if (zoom100Item.equals(source))
                 {
                     scale = 1;
                 }
-                if (source == zoom200Item)
+                if (zoom200Item.equals(source))
                 {
                     scale = 2;
                 }
