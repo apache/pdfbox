@@ -201,7 +201,7 @@ public class PDStream implements COSObjectable
      * @return The cos object that matches this Java object.
      */
     @Override
-    public COSBase getCOSObject()
+    public COSStream getCOSObject()
     {
         return stream;
     }
