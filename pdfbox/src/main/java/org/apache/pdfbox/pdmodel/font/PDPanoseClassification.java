@@ -17,13 +17,15 @@
 
 package org.apache.pdfbox.pdmodel.font;
 
+import java.io.Serializable;
+
 /**
  * Represents a 10-byte PANOSE classification.
  *
  * @link http://www.monotype.com/services/pan2
  * @author John Hewson
  */
-public class PDPanoseClassification
+public class PDPanoseClassification implements Serializable
 {
     private final byte[] bytes;
 

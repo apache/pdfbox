@@ -276,7 +276,7 @@ public class PDCIDFontType2 extends PDCIDFont
                     LOG.warn("Trying to map multi-byte character using 'cmap', result will be poor");
                 }
                 
-                // a non-embedded font always has a cmap (otherwise ExternalFonts won't load it)
+                // a non-embedded font always has a cmap (otherwise FontMapper won't load it)
                 return cmap.getGlyphId(unicode.codePointAt(0));
             }
         }
