@@ -104,8 +104,8 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     {
         PDSignature pdSignature = new PDSignature();
         pdSignatureField.setValue(pdSignature);
-        pdSignatureField.getWidget().setPage(page);
-        page.getAnnotations().add(pdSignatureField.getWidget());
+        pdSignatureField.getWidgets().get(0).setPage(page);
+        page.getAnnotations().add(pdSignatureField.getWidgets().get(0));
         pdSignature.setName(signatureName);
         pdSignature.setByteRange(new int[] { 0, 0, 0, 0 });
         pdSignature.setContents(new byte[4096]);
@@ -141,7 +141,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
         rect.setLowerLeftY(properties.getTemplateHeight() - properties.getyAxis() -
                            properties.getHeight());
         rect.setLowerLeftX(properties.getxAxis());
-        signatureField.getWidget().setRectangle(rect);
+        signatureField.getWidgets().get(0).setRectangle(rect);
         pdfStructure.setSignatureRectangle(rect);
         log.info("rectangle of signature has been created");
     }
@@ -228,7 +228,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
         PDAppearanceStream appearanceStream = new PDAppearanceStream(holderForml.getCOSStream());
 
         appearance.setNormalAppearance(appearanceStream);
-        signatureField.getWidget().setAppearance(appearance);
+        signatureField.getWidgets().get(0).setAppearance(appearance);
 
         pdfStructure.setAppearanceDictionary(appearance);
         log.info("PDF appereance Dictionary has been created");
@@ -363,7 +363,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     public void createWidgetDictionary(PDSignatureField signatureField,
                                        PDResources holderFormResources) throws IOException
     {
-        COSDictionary widgetDict = signatureField.getWidget().getCOSObject();
+        COSDictionary widgetDict = signatureField.getWidgets().get(0).getCOSObject();
         widgetDict.setNeedToBeUpdated(true);
         widgetDict.setItem(COSName.DR, holderFormResources.getCOSObject());
 

@@ -249,12 +249,12 @@ public class PDDocument implements Closeable
             // set visibility flags
             if (options.getVisualSignature() == null)
             {
-                signatureField.getWidget().setAnnotationFlags(PDAnnotationWidget.FLAG_NO_VIEW);
+                signatureField.getWidgets().get(0).setAnnotationFlags(PDAnnotationWidget.FLAG_NO_VIEW);
             }
             // append the signature object
             signatureField.setValue(sigObject);
             // backward linking
-            signatureField.getWidget().setPage(page);
+            signatureField.getWidgets().get(0).setPage(page);
         }
 
         // Set the AcroForm Fields
@@ -285,7 +285,7 @@ public class PDDocument implements Closeable
               ((COSArrayList) annotations).toList().equals(((COSArrayList) acroFormFields).toList()) &&
               checkFields))
         {
-            annotations.add(signatureField.getWidget());
+            annotations.add(signatureField.getWidgets().get(0));
         }
         page.getCOSObject().setNeedToBeUpdated(true);
     }
@@ -379,7 +379,7 @@ public class PDDocument implements Closeable
         // Read and set the Rectangle for visual signature
         COSArray rectAry = (COSArray) cosBaseDict.getDictionaryObject(COSName.RECT);
         PDRectangle rect = new PDRectangle(rectAry);
-        signatureField.getWidget().setRectangle(rect);
+        signatureField.getWidgets().get(0).setRectangle(rect);
     }
 
     private void assignAppearanceDictionary(PDSignatureField signatureField, COSDictionary dict)
@@ -388,7 +388,7 @@ public class PDDocument implements Closeable
         PDAppearanceDictionary ap
                 = new PDAppearanceDictionary((COSDictionary) dict.getDictionaryObject(COSName.AP));
         ap.getCOSObject().setDirect(true);
-        signatureField.getWidget().setAppearance(ap);
+        signatureField.getWidgets().get(0).setAppearance(ap);
     }
 
     private void assignAcroFormDefaultResource(PDAcroForm acroForm, COSDictionary dict)
@@ -408,7 +408,7 @@ public class PDDocument implements Closeable
             throws IOException
     {
         // Set rectangle for non-visual signature to rectangle array [ 0 0 0 0 ]
-        signatureField.getWidget().setRectangle(new PDRectangle());
+        signatureField.getWidgets().get(0).setRectangle(new PDRectangle());
         // Clear AcroForm / Set DefaultRessource
         acroForm.setDefaultResources(null);
         // Set empty Appearance-Dictionary
@@ -424,7 +424,7 @@ public class PDDocument implements Closeable
         
         ap.setNormalAppearance(aps);
         ap.getCOSObject().setDirect(true);
-        signatureField.getWidget().setAppearance(ap);
+        signatureField.getWidgets().get(0).setAppearance(ap);
     }
 
     /**
