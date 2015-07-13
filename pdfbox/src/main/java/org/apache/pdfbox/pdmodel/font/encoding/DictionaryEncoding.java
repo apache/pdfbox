@@ -58,6 +58,10 @@ public class DictionaryEncoding extends Encoding
         {
             throw new IllegalArgumentException("Invalid encoding: " + baseEncoding);
         }
+        
+        codeToName.putAll( this.baseEncoding.codeToName );
+        names.addAll( this.baseEncoding.names );
+        applyDifferences();
     }
 
     /**
