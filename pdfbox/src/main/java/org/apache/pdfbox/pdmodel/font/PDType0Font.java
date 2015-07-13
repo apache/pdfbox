@@ -49,7 +49,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     private PDCIDFontType2Embedder embedder;
     
     /**
-    * Loads a TTF to be embedded into a document.
+    * Loads a TTF to be embedded into a document as a Type 0 font.
     *
     * @param doc The PDF document that will hold the embedded font.
     * @param file A TrueType font.
@@ -62,7 +62,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     }
 
     /**
-    * Loads a TTF to be embedded into a document.
+    * Loads a TTF to be embedded into a document as a Type 0 font.
     *
     * @param doc The PDF document that will hold the embedded font.
     * @param input A TrueType font.
@@ -75,7 +75,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     }
 
     /**
-     * Loads a TTF to be embedded into a document.
+     * Loads a TTF to be embedded into a document as a Type 0 font.
      *
      * @param doc The PDF document that will hold the embedded font.
      * @param input A TrueType font.
