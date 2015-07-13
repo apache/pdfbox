@@ -200,10 +200,9 @@ public final class PDRadioButton extends PDButton
      * Sets the default value.
      *
      * @param value Name of radio button to select
-     * @throws IOException if the value could not be set
      * @throws IllegalArgumentException if the value is not a valid option.
      */
-    public void setDefaultValue(String value) throws IOException
+    public void setDefaultValue(String value)
     {
         checkValue(value);        
         dictionary.setName(COSName.DV, value);
