@@ -117,7 +117,7 @@ public abstract class PDField implements COSObjectable
      * 
      * @param readonly The new flag for readonly.
      */
-    public void setReadonly(boolean readonly)
+    public void setReadOnly(boolean readonly)
     {
         dictionary.setFlag(COSName.FF, FLAG_READ_ONLY, readonly);
     }
@@ -126,7 +126,7 @@ public abstract class PDField implements COSObjectable
      * 
      * @return true if the field is readonly
      */
-    public boolean isReadonly()
+    public boolean isReadOnly()
     {
         return dictionary.getFlag(COSName.FF, FLAG_READ_ONLY);
     }
