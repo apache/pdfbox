@@ -52,6 +52,8 @@ import org.apache.pdfbox.util.Charsets;
  */
 final class FileSystemFontProvider extends FontProvider
 {
+    private static final long serialVersionUID = 1;
+    
     private static final Log LOG = LogFactory.getLog(FileSystemFontProvider.class);
     
     private final List<FSFontInfo> fontInfoList = new ArrayList<FSFontInfo>();
@@ -176,7 +178,7 @@ final class FileSystemFontProvider extends FontProvider
     /**
      * Represents ignored fonts (i.e. bitmap fonts).
      */
-    private static class FSIgnored extends FSFontInfo implements Serializable
+    private static final class FSIgnored extends FSFontInfo implements Serializable
     {
         private FSIgnored(File file, FontFormat format, String postScriptName)
         {
@@ -264,7 +266,8 @@ final class FileSystemFontProvider extends FontProvider
             {
                 ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
                 ObjectOutputStream objectOut = new ObjectOutputStream(byteOut);
-                objectOut.writeObject(fontInfo); // write it to the stream
+                // write it to the stream
+                objectOut.writeObject(fontInfo);
                 prefs.putByteArray(fontInfo.file.getAbsolutePath(), byteOut.toByteArray());
             }
         }
