@@ -16,8 +16,12 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.fontbox.afm.AFMParser;
-import org.apache.fontbox.afm.CharMetric;
 import org.apache.fontbox.afm.FontMetrics;
 import org.apache.fontbox.pfb.PfbParser;
 import org.apache.fontbox.type1.Type1Font;
@@ -25,21 +29,15 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.font.encoding.DictionaryEncoding;
-import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
-import org.apache.pdfbox.pdmodel.font.encoding.Type1Encoding;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import org.apache.pdfbox.pdmodel.font.encoding.DictionaryEncoding;
+import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
+import org.apache.pdfbox.pdmodel.font.encoding.GlyphList;
+import org.apache.pdfbox.pdmodel.font.encoding.Type1Encoding;
 
 /**
  * Embedded PDType1Font builder. Helper class to populate a PDType1Font from a PFB and AFM.
@@ -51,7 +49,7 @@ class PDType1FontEmbedder
     private final Encoding fontEncoding;
     private final FontMetrics metrics;
     private final Type1Font type1;
-
+    
     /**
      * This will load a afm and pfb to be embedding into a document.
      *
@@ -62,14 +60,21 @@ class PDType1FontEmbedder
      * @throws IOException If there is an error loading the data.
      */
     PDType1FontEmbedder(PDDocument doc, COSDictionary dict, InputStream afmStream,
-                               InputStream pfbStream) throws IOException
+                               InputStream pfbStream, Encoding encoding) throws IOException
     {
         dict.setItem(COSName.SUBTYPE, COSName.TYPE1);
 
         // read the afm
         AFMParser afmParser = new AFMParser(afmStream);
         metrics = afmParser.parse();
-        this.fontEncoding = encodingFromAFM(metrics);
+        if (encoding == null)
+        {
+            this.fontEncoding = encodingFromAFM(metrics);
+        }
+        else
+        {
+            this.fontEncoding = encoding;
+        }
 
         // build font descriptor
         PDFontDescriptor fd = buildFontDescriptor(metrics);
@@ -92,37 +97,15 @@ class PDType1FontEmbedder
         dict.setItem(COSName.FONT_DESC, fd);
         dict.setName(COSName.BASE_FONT, metrics.getFontName());
 
-        // get firstchar, lastchar
-        int firstchar = 255;
-        int lastchar = 0;
-
         // widths
-        List<CharMetric> listmetric = metrics.getCharMetrics();
-        int maxWidths = 256;
-        List<Integer> widths = new ArrayList<Integer>(maxWidths);
-        int zero = 250;
-
-        Iterator<CharMetric> iter = listmetric.iterator();
-        for (int i = 0; i < maxWidths; i++)
+        List<Integer> widths = new ArrayList<Integer>(256);
+        for (int code = 0; code <= 255; code++)
         {
-            widths.add(zero);
+            String name = fontEncoding.getName(code);
+            int width = Math.round(metrics.getCharacterWidth(name));
+            widths.add(width);
         }
-
-        while (iter.hasNext())
-        {
-            CharMetric m = iter.next();
-            int n = m.getCharacterCode();
-            if (n > 0)
-            {
-                firstchar = Math.min(firstchar, n);
-                lastchar = Math.max(lastchar, n);
-                if (m.getWx() > 0)
-                {
-                    int width = Math.round(m.getWx());
-                    widths.set(n, width);
-                }
-            }
-        }
+        
         dict.setInt(COSName.FIRST_CHAR, 0);
         dict.setInt(COSName.LAST_CHAR, 255);
         dict.setItem(COSName.WIDTHS, COSArrayList.converterToCOSArray(widths));
@@ -187,6 +170,14 @@ class PDType1FontEmbedder
     public Encoding getFontEncoding()
     {
         return fontEncoding;
+    }
+
+    /**
+     * Returns the font's glyph list.
+     */
+    public GlyphList getGlyphList()
+    {
+        return GlyphList.getAdobeGlyphList();
     }
 
     /**

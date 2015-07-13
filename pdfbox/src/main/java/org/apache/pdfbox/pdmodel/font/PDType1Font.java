@@ -139,8 +139,30 @@ public class PDType1Font extends PDSimpleFont
      */
     public PDType1Font(PDDocument doc, InputStream afmIn, InputStream pfbIn) throws IOException
     {
-        PDType1FontEmbedder embedder = new PDType1FontEmbedder(doc, dict, afmIn, pfbIn);
+        PDType1FontEmbedder embedder = new PDType1FontEmbedder(doc, dict, afmIn, pfbIn, null);
         encoding = embedder.getFontEncoding();
+        glyphList = embedder.getGlyphList();
+        type1font = embedder.getType1Font();
+        genericFont = embedder.getType1Font();
+        isEmbedded = true;
+        isDamaged = false;
+        fontMatrixTransform = new AffineTransform();
+    }
+
+    /**
+     * Creates a new Type 1 font for embedding.
+     *
+     * @param doc PDF document to write to
+     * @param afmIn AFM file stream
+     * @param pfbIn PFB file stream
+     * @throws IOException
+     */
+    public PDType1Font(PDDocument doc, InputStream afmIn, InputStream pfbIn, Encoding encoding)
+            throws IOException
+    {
+        PDType1FontEmbedder embedder = new PDType1FontEmbedder(doc, dict, afmIn, pfbIn, encoding);
+        this.encoding = encoding;
+        glyphList = embedder.getGlyphList();
         type1font = embedder.getType1Font();
         genericFont = embedder.getType1Font();
         isEmbedded = true;
