@@ -166,7 +166,7 @@ public class PDAnnotationWidget extends PDAnnotation
      */
     public PDAnnotationAdditionalActions getActions()
     {
-        COSDictionary aa = (COSDictionary) this.getCOSObject().getDictionaryObject("AA");
+        COSDictionary aa = (COSDictionary) this.getCOSObject().getDictionaryObject(COSName.AA);
         PDAnnotationAdditionalActions retval = null;
         if (aa != null)
         {
@@ -182,7 +182,7 @@ public class PDAnnotationWidget extends PDAnnotation
      */
     public void setActions(PDAnnotationAdditionalActions actions)
     {
-        this.getCOSObject().setItem("AA", actions);
+        this.getCOSObject().setItem(COSName.AA, actions);
     }
 
     /**
@@ -193,7 +193,7 @@ public class PDAnnotationWidget extends PDAnnotation
      */
     public void setBorderStyle(PDBorderStyleDictionary bs)
     {
-        this.getCOSObject().setItem("BS", bs);
+        this.getCOSObject().setItem(COSName.BS, bs);
     }
 
     /**
