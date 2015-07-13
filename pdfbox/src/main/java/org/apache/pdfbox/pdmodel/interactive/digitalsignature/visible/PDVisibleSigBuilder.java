@@ -35,6 +35,7 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.JPEGFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
@@ -103,9 +104,10 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
                                 String signatureName) throws IOException
     {
         PDSignature pdSignature = new PDSignature();
+        PDAnnotationWidget widget = pdSignatureField.getWidgets().get(0);
         pdSignatureField.setValue(pdSignature);
-        pdSignatureField.getWidgets().get(0).setPage(page);
-        page.getAnnotations().add(pdSignatureField.getWidgets().get(0));
+        widget.setPage(page);
+        page.getAnnotations().add(widget);
         pdSignature.setName(signatureName);
         pdSignature.setByteRange(new int[] { 0, 0, 0, 0 });
         pdSignature.setContents(new byte[4096]);
