@@ -66,7 +66,7 @@ public class PDWindowsLaunchParams implements COSObjectable
      * @return The cos object that matches this Java object.
      */
     @Override
-    public COSBase getCOSObject()
+    public COSDictionary getCOSObject()
     {
         return params;
     }
