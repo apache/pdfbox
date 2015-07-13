@@ -39,7 +39,7 @@ public abstract class FontInfo
     /**
      * Returns the CIDSystemInfo associated with the font, if any.
      */
-    public abstract PDCIDSystemInfo getCIDSystemInfo();
+    public abstract CIDSystemInfo getCIDSystemInfo();
 
     /**
      * Returns a new FontBox font instance for the font. Implementors of this method must not
