@@ -30,7 +30,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
 import org.apache.pdfbox.pdmodel.font.encoding.GlyphList;
-import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
 
 /**
  * Embedded PDTrueTypeFont builder. Helper class to populate a PDTrueTypeFont from a TTF.
@@ -45,19 +44,18 @@ final class PDTrueTypeFontEmbedder extends TrueTypeEmbedder
     /**
      * Creates a new TrueType font embedder for the given TTF as a PDTrueTypeFont.
      *
-     * @param document parent document
-     * @param dict font dictionary
+     * @param document The parent document
+     * @param dict Font dictionary
      * @param ttfStream TTF stream
+     * @param encoding The PostScript encoding vector to be used for embedding.
      * @throws IOException if the TTF could not be read
      */
-    PDTrueTypeFontEmbedder(PDDocument document, COSDictionary dict, InputStream ttfStream)
-            throws IOException
+    PDTrueTypeFontEmbedder(PDDocument document, COSDictionary dict, InputStream ttfStream,
+                           Encoding encoding) throws IOException
     {
         super(document, dict, ttfStream, false);
         dict.setItem(COSName.SUBTYPE, COSName.TRUE_TYPE);
-
-        // only support WinAnsiEncoding encoding right now
-        Encoding encoding = new WinAnsiEncoding();
+        
         GlyphList glyphList = GlyphList.getAdobeGlyphList();
         this.fontEncoding = encoding;
         dict.setItem(COSName.ENCODING, encoding.getCOSObject());
