@@ -81,6 +81,7 @@ import org.apache.pdfbox.tools.pdfdebugger.colorpane.CSIndexed;
 import org.apache.pdfbox.tools.pdfdebugger.colorpane.CSSeparation;
 import org.apache.pdfbox.tools.pdfdebugger.flagbitspane.FlagBitsPane;
 import org.apache.pdfbox.tools.pdfdebugger.pagepane.PagePane;
+import org.apache.pdfbox.tools.pdfdebugger.streampane.StreamPane;
 import org.apache.pdfbox.tools.pdfdebugger.treestatus.TreeStatus;
 import org.apache.pdfbox.tools.pdfdebugger.treestatus.TreeStatusPane;
 import org.apache.pdfbox.tools.pdfdebugger.ui.Tree;
@@ -355,11 +356,7 @@ public class PDFDebugger extends javax.swing.JFrame
             @Override
             public boolean canImport(TransferSupport transferSupport)
             {
-                if (!transferSupport.isDataFlavorSupported(DataFlavor.javaFileListFlavor))
-                {
-                    return false;
-                }
-                return true;
+                return transferSupport.isDataFlavorSupported(DataFlavor.javaFileListFlavor);
             }
 
             @Override
@@ -499,6 +496,11 @@ public class PDFDebugger extends javax.swing.JFrame
                     showFlagPane(parentNode, selectedNode);
                     return;
                 }
+                if (isStream(selectedNode))
+                {
+                    showStream(selectedNode, path);
+                    return;
+                }
                 if (!jSplitPane1.getRightComponent().equals(jScrollPane2))
                 {
                     jSplitPane1.setRightComponent(jScrollPane2);
@@ -607,6 +609,11 @@ public class PDFDebugger extends javax.swing.JFrame
         return false;
     }
 
+    private boolean isStream(Object selectedNode)
+    {
+        return getUnderneathObject(selectedNode) instanceof COSStream;
+    }
+
     /**
      * Show a Panel describing color spaces in more detail and interactive way.
      * @param csNode the special color space containing node.
@@ -674,6 +681,36 @@ public class PDFDebugger extends javax.swing.JFrame
             FlagBitsPane flagBitsPane = new FlagBitsPane((COSDictionary) parentNode, (COSName) selectedNode);
             jSplitPane1.setRightComponent(flagBitsPane.getPane());
         }
+    }
+
+    private void showStream(Object selectedNode, TreePath path)
+    {
+        COSName key = getNodeKey(selectedNode);
+        selectedNode = getUnderneathObject(selectedNode);
+        COSDictionary resourcesDic = null;
+        if (selectedNode instanceof COSStream && COSName.CONTENTS.equals(key))
+        {
+            Object pageObj = path.getParentPath().getLastPathComponent();
+            COSDictionary page = (COSDictionary) getUnderneathObject(pageObj);
+            resourcesDic = (COSDictionary) page.getDictionaryObject(COSName.RESOURCES);
+        }
+        else if (selectedNode instanceof COSStream &&
+                COSName.IMAGE.equals(((COSStream) selectedNode).getCOSName(COSName.SUBTYPE)))
+        {
+            Object resourcesObj = path.getParentPath().getParentPath().getLastPathComponent();
+            resourcesDic = (COSDictionary) getUnderneathObject(resourcesObj);
+        }
+        StreamPane streamPane = new StreamPane((COSStream)selectedNode, key, resourcesDic);
+        jSplitPane1.setRightComponent(streamPane.getPanel());
+    }
+
+    private COSName getNodeKey(Object selectedNode)
+    {
+        if (selectedNode instanceof MapEntry)
+        {
+            return ((MapEntry) selectedNode).getKey();
+        }
+        return null;
     }
 
     private Object getUnderneathObject(Object selectedNode)
