@@ -88,33 +88,37 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
         if (nodeValue instanceof MapEntry || nodeValue instanceof ArrayEntry)
         {
             String key;
+            Object object;
             Object value;
             COSBase item;
             if (nodeValue instanceof MapEntry)
             {
                 MapEntry entry = (MapEntry) nodeValue;
                 key = entry.getKey().getName();
-                value = toTreeObject(entry.getValue());
+                object = toTreeObject(entry.getValue());
+                value = entry.getValue();
                 item = entry.getItem();
             }
             else
             {
                 ArrayEntry entry = (ArrayEntry) nodeValue;
                 key = "" + entry.getIndex();
-                value = toTreeObject(entry.getValue());
+                object = toTreeObject(entry.getValue());
+                value = entry.getValue();
                 item = entry.getItem();
             }
             
             String stringResult = key;
-            if (value instanceof String && ((String)value).length() > 0)
+            if (object instanceof String && ((String)object).length() > 0)
             {
-                stringResult += ":  " + value;
+                stringResult += ":  " + object;
                 if (item instanceof COSObject)
                 {
                     COSObject indirect = (COSObject)item;
                     stringResult += " [" + indirect.getObjectNumber() + " " +
                                            indirect.getGenerationNumber() + " R]";
                 }
+                stringResult += toTreePostfix(value);
                 
             }
             result = stringResult;
@@ -175,6 +179,32 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
             result = nodeValue.toString();
         }
         return result;
+    }
+
+    private String toTreePostfix(Object nodeValue)
+    {
+        if (nodeValue instanceof COSDictionary)
+        {
+            StringBuilder sb = new StringBuilder();
+            
+            COSDictionary dict = (COSDictionary)nodeValue;
+            if (dict.containsKey(COSName.TYPE))
+            {
+                COSName type = dict.getCOSName(COSName.TYPE);
+                sb.append("   /T:").append(type.getName());
+            }
+            
+            if (dict.containsKey(COSName.SUBTYPE))
+            {
+                COSName subtype = dict.getCOSName(COSName.SUBTYPE);
+                sb.append("  /S:").append(subtype.getName());
+            }
+            return sb.toString();
+        }
+        else
+        {
+            return "";
+        }
     }
 
     private ImageIcon lookupIconWithOverlay(Object nodeValue)
