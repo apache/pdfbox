@@ -133,13 +133,12 @@ public class PDType1Font extends PDSimpleFont
      * Creates a new Type 1 font for embedding.
      *
      * @param doc PDF document to write to
-     * @param afmIn AFM file stream
      * @param pfbIn PFB file stream
      * @throws IOException
      */
-    public PDType1Font(PDDocument doc, InputStream afmIn, InputStream pfbIn) throws IOException
+    public PDType1Font(PDDocument doc, InputStream pfbIn) throws IOException
     {
-        PDType1FontEmbedder embedder = new PDType1FontEmbedder(doc, dict, afmIn, pfbIn, null);
+        PDType1FontEmbedder embedder = new PDType1FontEmbedder(doc, dict, pfbIn, null);
         encoding = embedder.getFontEncoding();
         glyphList = embedder.getGlyphList();
         type1font = embedder.getType1Font();
@@ -153,14 +152,12 @@ public class PDType1Font extends PDSimpleFont
      * Creates a new Type 1 font for embedding.
      *
      * @param doc PDF document to write to
-     * @param afmIn AFM file stream
      * @param pfbIn PFB file stream
      * @throws IOException
      */
-    public PDType1Font(PDDocument doc, InputStream afmIn, InputStream pfbIn, Encoding encoding)
-            throws IOException
+    public PDType1Font(PDDocument doc, InputStream pfbIn, Encoding encoding) throws IOException
     {
-        PDType1FontEmbedder embedder = new PDType1FontEmbedder(doc, dict, afmIn, pfbIn, encoding);
+        PDType1FontEmbedder embedder = new PDType1FontEmbedder(doc, dict, pfbIn, encoding);
         this.encoding = encoding;
         glyphList = embedder.getGlyphList();
         type1font = embedder.getType1Font();
