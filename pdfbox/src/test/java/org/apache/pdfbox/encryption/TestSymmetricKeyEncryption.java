@@ -25,6 +25,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import javax.crypto.Cipher;
 import junit.framework.TestCase;
@@ -239,8 +240,8 @@ public class TestSymmetricKeyEncryption extends TestCase
         String prefix = "Simple-";
         int numSrcPages = document.getNumberOfPages();
         PDFRenderer pdfRenderer = new PDFRenderer(document);
-        ArrayList<BufferedImage> srcImgTab = new ArrayList<BufferedImage>();
-        ArrayList<ByteArrayOutputStream> srcContentStreamTab = new ArrayList<ByteArrayOutputStream>();
+        List<BufferedImage> srcImgTab = new ArrayList<BufferedImage>();
+        List<ByteArrayOutputStream> srcContentStreamTab = new ArrayList<ByteArrayOutputStream>();
         for (int i = 0; i < numSrcPages; ++i)
         {
             srcImgTab.add(pdfRenderer.renderImage(i));
