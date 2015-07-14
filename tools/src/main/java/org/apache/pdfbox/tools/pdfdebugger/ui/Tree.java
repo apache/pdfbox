@@ -34,6 +34,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.IOUtils;
@@ -93,6 +94,8 @@ public class Tree extends JTree
         Object obj = nodePath.getLastPathComponent();
         List<JMenuItem> menuItems = new ArrayList<JMenuItem>();
 
+        menuItems.add(getTreePathMenuItem(nodePath));
+
         if (obj instanceof MapEntry)
         {
             obj = ((MapEntry) obj).getValue();
@@ -118,8 +121,7 @@ public class Tree extends JTree
                 menuItems.add(getFilteredStreamSaveMenu(stream));
             }
         }
-
-        menuItems.add(getTreePathMenuItem(nodePath));
+        
         return menuItems;
     }
 
@@ -130,7 +132,7 @@ public class Tree extends JTree
      */
     private JMenuItem getTreePathMenuItem(final TreePath path)
     {
-        JMenuItem copyPathMenuItem = new JMenuItem("Copy tree path");
+        JMenuItem copyPathMenuItem = new JMenuItem("Copy Tree Path");
         copyPathMenuItem.addActionListener(new ActionListener()
         {
             @Override
@@ -150,7 +152,7 @@ public class Tree extends JTree
      */
     private JMenuItem getFilteredStreamSaveMenu(final COSStream cosStream)
     {
-        JMenuItem saveMenuItem = new JMenuItem("Save filtered stream ...");
+        JMenuItem saveMenuItem = new JMenuItem("Save Filtered Stream (" + getFilters(cosStream) + ")...");
         saveMenuItem.addActionListener(new ActionListener()
         {
             @Override
@@ -170,6 +172,35 @@ public class Tree extends JTree
         return saveMenuItem;
     }
 
+    /**
+     * Returns the filters used by the given stream.
+     */
+    private String getFilters(COSStream cosStream)
+    {
+        StringBuilder sb = new StringBuilder();
+        COSBase filters = cosStream.getFilters();
+        if (filters != null)
+        {
+            if (sb.length() > 0)
+            {
+                sb.append(", ");
+            }
+            if (filters instanceof COSName)
+            {
+                sb.append(((COSName) filters).getName());
+            }
+            else if (filters instanceof COSArray)
+            {
+                COSArray filterArray = (COSArray) filters;
+                for (int i = 0; i < filterArray.size(); i++)
+                {
+                    sb.append(((COSName) filterArray.get(i)).getName());
+                }
+            }
+        }
+        return sb.toString();
+    }
+    
 
     /**
      * Produce JMenuItem that saves unfiltered stream
@@ -178,7 +209,7 @@ public class Tree extends JTree
      */
     private JMenuItem getUnFilteredStreamSaveMenu(final COSStream cosStream)
     {
-        JMenuItem saveMenuItem = new JMenuItem("Save unfiltered stream ...");
+        JMenuItem saveMenuItem = new JMenuItem("Save Unfiltered Stream...");
         saveMenuItem.addActionListener(new ActionListener()
         {
             @Override

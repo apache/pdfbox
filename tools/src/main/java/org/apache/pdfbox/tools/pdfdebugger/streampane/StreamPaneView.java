@@ -21,6 +21,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.util.List;
 import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
@@ -41,7 +42,7 @@ class StreamPaneView extends JPanel
      * @param initialChoice String instance. Initial choice for showing in the pane.
      * @param listener ActionListener that listens for stream version choice changing.
      */
-    StreamPaneView(String[] filterTypes, String initialChoice, ActionListener listener)
+    StreamPaneView(List<String> filterTypes, String initialChoice, ActionListener listener)
     {
         headerPanel = createHeaderPanel(filterTypes, initialChoice, listener);
         contentPanel = new JPanel(new BorderLayout());
@@ -74,9 +75,9 @@ class StreamPaneView extends JPanel
         this.validate();
     }
 
-    private JPanel createHeaderPanel(String[] availableFilters, String i, ActionListener actionListener)
+    private JPanel createHeaderPanel(List<String> availableFilters, String i, ActionListener actionListener)
     {
-        JComboBox filters = new JComboBox(availableFilters);
+        JComboBox filters = new JComboBox(availableFilters.toArray());
         filters.setSelectedItem(i);
         filters.addActionListener(actionListener);
 
