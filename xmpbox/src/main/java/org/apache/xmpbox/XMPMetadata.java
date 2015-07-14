@@ -175,7 +175,7 @@ public class XMPMetadata
      */
     public List<XMPSchema> getAllSchemas()
     {
-        ArrayList<XMPSchema> schem = new ArrayList<XMPSchema>();
+        List<XMPSchema> schem = new ArrayList<XMPSchema>();
         Iterator<XMPSchema> it = schemas.iterator();
         while (it.hasNext())
         {
