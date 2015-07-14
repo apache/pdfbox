@@ -18,6 +18,7 @@
 package org.apache.pdfbox.tools.pdfdebugger.ui.textsearcher;
 
 import java.util.ArrayList;
+import java.util.List;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Highlighter;
@@ -51,9 +52,9 @@ class SearchEngine
      * @param isCaseSensitive boolean. If search is case sensitive.
      * @return ArrayList<Highlighter.Highlight>.
      */
-    public ArrayList<Highlighter.Highlight> search(String searchKey, boolean isCaseSensitive)
+    public List<Highlighter.Highlight> search(String searchKey, boolean isCaseSensitive)
     {
-        ArrayList<Highlighter.Highlight> highlights = new ArrayList<Highlighter.Highlight>();
+        List<Highlighter.Highlight> highlights = new ArrayList<Highlighter.Highlight>();
 
         if (searchKey != null)
         {

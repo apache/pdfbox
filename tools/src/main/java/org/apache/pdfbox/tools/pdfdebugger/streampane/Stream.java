@@ -129,9 +129,9 @@ class Stream
         return null;
     }
 
-    private HashMap<String, List<String>> createFilterList(COSStream stream)
+    private Map<String, List<String>> createFilterList(COSStream stream)
     {
-        HashMap<String, List<String>> filterList = new HashMap<String, List<String>>();
+        Map<String, List<String>> filterList = new HashMap<String, List<String>>();
 
         filterList.put(UNFILTERED, null);
         PDStream pdStream = new PDStream(stream);
