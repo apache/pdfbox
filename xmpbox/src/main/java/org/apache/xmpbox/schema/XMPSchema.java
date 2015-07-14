@@ -631,7 +631,7 @@ public class XMPSchema extends AbstractStructuredType
         ArrayProperty array = (ArrayProperty) getAbstractProperty(arrayName);
         if (array != null)
         {
-            ArrayList<AbstractField> toDelete = new ArrayList<AbstractField>();
+            List<AbstractField> toDelete = new ArrayList<AbstractField>();
             Iterator<AbstractField> it = array.getContainer().getAllProperties().iterator();
             while (it.hasNext())
             {
@@ -750,7 +750,7 @@ public class XMPSchema extends AbstractStructuredType
         ArrayProperty array = (ArrayProperty) getAbstractProperty(qualifiedArrayName);
         if (array != null)
         {
-            ArrayList<AbstractField> toDelete = new ArrayList<AbstractField>();
+            List<AbstractField> toDelete = new ArrayList<AbstractField>();
             Iterator<AbstractField> it = array.getContainer().getAllProperties().iterator();
             while (it.hasNext())
             {
@@ -888,7 +888,7 @@ public class XMPSchema extends AbstractStructuredType
         ArrayProperty seq = (ArrayProperty) getAbstractProperty(qualifiedSeqName);
         if (seq != null)
         {
-            ArrayList<AbstractField> toDelete = new ArrayList<AbstractField>();
+            List<AbstractField> toDelete = new ArrayList<AbstractField>();
             Iterator<AbstractField> it = seq.getContainer().getAllProperties().iterator();
             while (it.hasNext())
             {
@@ -992,8 +992,8 @@ public class XMPSchema extends AbstractStructuredType
         if (xdefaultFound)
         {
             it = alt.getAllProperties().iterator();
-            ArrayList<AbstractField> reordered = new ArrayList<AbstractField>();
-            ArrayList<AbstractField> toDelete = new ArrayList<AbstractField>();
+            List<AbstractField> reordered = new ArrayList<AbstractField>();
+            List<AbstractField> toDelete = new ArrayList<AbstractField>();
             reordered.add(xdefault);
             while (it.hasNext())
             {
