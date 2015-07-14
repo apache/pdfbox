@@ -177,7 +177,7 @@ public class PDFMergerUtility
         PDDocument source;
         if (sources != null && sources.size() > 0)
         {
-            ArrayList<PDDocument> tobeclosed = new ArrayList<PDDocument>();
+            List<PDDocument> tobeclosed = new ArrayList<PDDocument>();
 
             try
             {
