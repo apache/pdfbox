@@ -789,7 +789,7 @@ public class COSWriter implements ICOSVisitor, Closeable
         long last = -2;
         long count = 1;
 
-        ArrayList<Long> list = new ArrayList<Long>();
+        List<Long> list = new ArrayList<Long>();
         for( Object object : xRefEntriesList )
         {
             long nr = (int) ((COSWriterXRefEntry) object).getKey().getNumber();
