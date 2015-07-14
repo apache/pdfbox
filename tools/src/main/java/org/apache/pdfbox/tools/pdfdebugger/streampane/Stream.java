@@ -21,10 +21,11 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
@@ -39,8 +40,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
  */
 class Stream
 {
-    public static final String UNFILTERED = "unfiltered";
-    public static final String FILTERED = "Filtered";
+    public static final String UNFILTERED = "Unfiltered";
     public static final String IMAGE = "Image";
 
     private final COSStream stream;
@@ -73,11 +73,42 @@ class Stream
      * XObject image type stream "Image" is also included in the list.
      * @return An array of String.
      */
-    public String[] getFilterList ()
+    public List<String> getFilterList()
     {
-        Set<String> set = filters.keySet();
-        String[] filterArray = new String[set.size()];
-        return set.toArray(filterArray);
+        List<String> list = new ArrayList<String>();
+        for (Map.Entry<String, List<String>> entry : filters.entrySet()) {
+            list.add(entry.getKey());
+        }
+        return list;
+    }
+
+    /**
+     * Returns the label for the "Unfiltered" menu item.
+     */
+    private String getFilteredLabel()
+    {
+        StringBuilder sb = new StringBuilder();
+        COSBase filters = stream.getFilters();
+        if (filters != null)
+        {
+            if (sb.length() > 0)
+            {
+                sb.append(", ");
+            }
+            if (filters instanceof COSName)
+            {
+                sb.append(((COSName) filters).getName());
+            }
+            else if (filters instanceof COSArray)
+            {
+                COSArray filterArray = (COSArray) filters;
+                for (int i = 0; i < filterArray.size(); i++)
+                {
+                    sb.append(((COSName) filterArray.get(i)).getName());
+                }
+            }
+        }
+        return "Filtered (" + sb.toString() + ")" ;
     }
 
     /**
@@ -94,7 +125,7 @@ class Stream
             {
                 return stream.getUnfilteredStream();
             }
-            else if (FILTERED.equals(key))
+            else if (getFilteredLabel().equals(key))
             {
                 return stream.getFilteredStream();
             }
@@ -131,8 +162,13 @@ class Stream
 
     private Map<String, List<String>> createFilterList(COSStream stream)
     {
-        Map<String, List<String>> filterList = new HashMap<String, List<String>>();
+        Map<String, List<String>> filterList = new LinkedHashMap<String, List<String>>();
 
+        if (isImage)
+        {
+            filterList.put(IMAGE, null);
+        }
+        
         filterList.put(UNFILTERED, null);
         PDStream pdStream = new PDStream(stream);
 
@@ -144,11 +180,7 @@ class Stream
             {
                 filterList.put(getPartialStreamCommand(i), getStopFilterList(i));
             }
-            filterList.put(FILTERED, null);
-        }
-        if (isImage)
-        {
-            filterList.put(IMAGE, null);
+            filterList.put(getFilteredLabel(), null);
         }
         return filterList;
     }
