@@ -181,10 +181,6 @@ public class Tree extends JTree
         COSBase filters = cosStream.getFilters();
         if (filters != null)
         {
-            if (sb.length() > 0)
-            {
-                sb.append(", ");
-            }
             if (filters instanceof COSName)
             {
                 sb.append(((COSName) filters).getName());
@@ -194,13 +190,16 @@ public class Tree extends JTree
                 COSArray filterArray = (COSArray) filters;
                 for (int i = 0; i < filterArray.size(); i++)
                 {
+                    if (i > 0)
+                    {
+                        sb.append(", ");
+                    }
                     sb.append(((COSName) filterArray.get(i)).getName());
                 }
             }
         }
         return sb.toString();
     }
-    
 
     /**
      * Produce JMenuItem that saves unfiltered stream

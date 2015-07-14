@@ -91,10 +91,6 @@ class Stream
         COSBase filters = stream.getFilters();
         if (filters != null)
         {
-            if (sb.length() > 0)
-            {
-                sb.append(", ");
-            }
             if (filters instanceof COSName)
             {
                 sb.append(((COSName) filters).getName());
@@ -104,6 +100,10 @@ class Stream
                 COSArray filterArray = (COSArray) filters;
                 for (int i = 0; i < filterArray.size(); i++)
                 {
+                    if (i > 0)
+                    {
+                        sb.append(", ");
+                    }
                     sb.append(((COSName) filterArray.get(i)).getName());
                 }
             }
