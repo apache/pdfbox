@@ -505,15 +505,7 @@ public class PDFDebugger extends javax.swing.JFrame
                 {
                     jSplitPane1.setRightComponent(jScrollPane2);
                 }
-                String data = convertToString(selectedNode);
-                if (data != null)
-                {
-                    jTextPane1.setText(data);
-                }
-                else
-                {
-                    jTextPane1.setText("");
-                }
+                jTextPane1.setText(convertToString(selectedNode));
             }
             catch (Exception e)
             {
