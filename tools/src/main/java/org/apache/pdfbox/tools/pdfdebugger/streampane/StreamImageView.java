@@ -16,12 +16,18 @@
  */
 package org.apache.pdfbox.tools.pdfdebugger.streampane;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.border.LineBorder;
 
 /**
  * @author Khyrul Bashar
@@ -45,9 +51,20 @@ class StreamImageView
 
     private void initUI()
     {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        JLabel label = new JLabel();
+        label.setBorder(new LineBorder(Color.BLACK));
+        label.setAlignmentX(Component.CENTER_ALIGNMENT);
+        label.setIcon(new ImageIcon(image));
+        
+        panel.add(Box.createVerticalGlue());
+        panel.add(label);
+        panel.add(Box.createVerticalGlue());
+        
         scrollPane = new JScrollPane();
-        JLabel imageLabel = new JLabel(new ImageIcon(image));
-        scrollPane.setViewportView(imageLabel);
+        scrollPane.setViewportView(panel);
         scrollPane.setPreferredSize(new Dimension(300, 400));
     }
 
