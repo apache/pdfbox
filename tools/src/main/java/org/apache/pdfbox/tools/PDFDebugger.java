@@ -715,6 +715,10 @@ public class PDFDebugger extends javax.swing.JFrame
         {
             selectedNode = ((ArrayEntry) selectedNode).getValue();
         }
+        else if (selectedNode instanceof PageEntry)
+        {
+            selectedNode = ((PageEntry) selectedNode).getDict();
+        }
 
         if (selectedNode instanceof COSObject)
         {
