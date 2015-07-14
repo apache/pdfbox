@@ -550,7 +550,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>
      */
     public List<?> toList()
     {
-        ArrayList<COSBase> retList = new ArrayList<COSBase>(size());
+        List<COSBase> retList = new ArrayList<COSBase>(size());
         for (int i = 0; i < size(); i++)
         {
             retList.add(get(i));
