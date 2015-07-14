@@ -36,7 +36,7 @@ public class NextLine extends OperatorProcessor
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
         //move to start of next text line
-        ArrayList<COSBase> args = new ArrayList<COSBase>();
+        List<COSBase> args = new ArrayList<COSBase>();
         args.add(new COSFloat(0f));
         // this must be -leading instead of just leading as written in the
         // specification (p.369) the acrobat reader seems to implement it the same way
