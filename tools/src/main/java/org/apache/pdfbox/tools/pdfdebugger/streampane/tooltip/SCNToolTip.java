@@ -35,12 +35,11 @@ final class SCNToolTip extends ColorToolTip
      */
     SCNToolTip(PDResources resources, String colorSpaceName, String rowText)
     {
-        createMarkUp(resources, colorSpaceName, rowText);
+        createMarkUp(resources, colorSpaceName.substring(1).trim(), rowText);
     }
 
     private void createMarkUp(PDResources resources, String colorSpaceName, String rowText)
     {
-        colorSpaceName = colorSpaceName.substring(1).trim();
         PDColorSpace colorSpace = null;
         for (COSName name : resources.getColorSpaceNames())
         {
@@ -64,7 +63,7 @@ final class SCNToolTip extends ColorToolTip
                 if (rgbValues != null)
                 {
                     Color color = new Color(rgbValues[0], rgbValues[1], rgbValues[2]);
-                    markup = getMarkUp(colorHexValue(color));
+                    setToolTipText(getMarkUp(colorHexValue(color)));
                 }
             }
             catch (IOException e)

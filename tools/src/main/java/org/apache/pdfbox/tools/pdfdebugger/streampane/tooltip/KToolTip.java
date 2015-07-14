@@ -49,7 +49,7 @@ final class KToolTip extends ColorToolTip
             try
             {
                 float[] rgbValues = getICCColorSpace().toRGB(colorValues);
-                markup = getMarkUp(colorHexValue(new Color(rgbValues[0], rgbValues[1], rgbValues[2])));
+                setToolTipText(getMarkUp(colorHexValue(new Color(rgbValues[0], rgbValues[1], rgbValues[2]))));
             }
             catch (IOException e)
             {

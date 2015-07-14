@@ -40,7 +40,7 @@ final class RGToolTip extends ColorToolTip
             if (rgbValues != null)
             {
                 Color color = new Color(rgbValues[0], rgbValues[1], rgbValues[2]);
-                markup = getMarkUp(colorHexValue(color));
+                setToolTipText(getMarkUp(colorHexValue(color)));
             }
     }
 }

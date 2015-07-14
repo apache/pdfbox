@@ -22,6 +22,7 @@ import java.awt.event.ActionListener;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.concurrent.ExecutionException;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
@@ -120,7 +121,7 @@ public class StreamPane implements ActionListener
     /**
      * A SwingWorker extended class that convert the stream to text loads in a document.
      */
-    private class DocumentCreator extends SwingWorker<StyledDocument, Integer>
+    private final class DocumentCreator extends SwingWorker<StyledDocument, Integer>
     {
 
         private final String filterKey;
@@ -133,7 +134,7 @@ public class StreamPane implements ActionListener
         }
 
         @Override
-        protected StyledDocument doInBackground() throws Exception
+        protected StyledDocument doInBackground()
         {
             if (isContentStream && Stream.UNFILTERED.equals(filterKey))
             {
@@ -176,7 +177,15 @@ public class StreamPane implements ActionListener
             {
                 e.printStackTrace();
             }
-            return byteArray.toString();
+            try
+            {
+                return byteArray.toString("ISO-8859-1");
+            }
+            catch (UnsupportedEncodingException e)
+            {
+                e.printStackTrace();
+                return null;
+            }
         }
 
 

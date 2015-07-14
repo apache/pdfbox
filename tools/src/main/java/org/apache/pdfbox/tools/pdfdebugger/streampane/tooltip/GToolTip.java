@@ -40,7 +40,7 @@ final class GToolTip extends ColorToolTip
         if (colorValues != null)
         {
             Color color = new Color(colorValues[0], colorValues[0], colorValues[0]);
-            markup = getMarkUp(colorHexValue(color));
+            setToolTipText(getMarkUp(colorHexValue(color)));
         }
     }
 }

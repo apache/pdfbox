@@ -18,7 +18,7 @@
 package org.apache.pdfbox.tools.pdfdebugger.streampane.tooltip;
 
 import java.awt.Color;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Khyrul Bashar
@@ -26,8 +26,7 @@ import java.util.ArrayList;
  */
 abstract class ColorToolTip implements ToolTip
 {
-    String markup;
-
+    private String toolTipText;
     /**
      * provides the Hex value for a Color instance.
      * @param color
@@ -46,7 +45,7 @@ abstract class ColorToolTip implements ToolTip
      */
     float[] extractColorValues(String rowtext)
     {
-        ArrayList<String> words = ToolTipController.getWords(rowtext);
+        List<String> words = ToolTipController.getWords(rowtext);
         words.remove(words.size()-1);
         float[] values = new float[words.size()];
         int index = 0;
@@ -77,9 +76,14 @@ abstract class ColorToolTip implements ToolTip
                 "</html>";
     }
 
+    public void setToolTipText(String toolTip)
+    {
+        this.toolTipText = toolTip;
+    }
+
     @Override
     public String getToolTipText()
     {
-        return markup;
+        return toolTipText;
     }
 }

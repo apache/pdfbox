@@ -18,6 +18,7 @@
 package org.apache.pdfbox.tools.pdfdebugger.streampane.tooltip;
 
 import java.util.ArrayList;
+import java.util.List;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.Utilities;
@@ -34,17 +35,17 @@ interface ToolTip
  */
 public class ToolTipController
 {
-    private final static String FONT_OPERATOR = "Tf";
-    private final static String STROKING_COLOR = "SCN";
-    private final static String STROKING_COLOR_SPACE = "CS";
-    private final static String NON_STROKING_COLOR_SPACE = "cs";
-    private final static String NON_STROKING_COLOR = "scn";
-    private final static String RGB_STROKING_COLOR = "RG";
-    private final static String RGB_NON_STROKING_COLOR = "rg";
-    private final static String CMYK_STROKING_COLOR = "K";
-    private final static String CMYK_NON_STROKING_COLOR = "k";
-    private final static String GRAY_STROKING_COLOR = "G";
-    private final static String GRAY_NON_STROKING_COLOR = "g";
+    private static final  String FONT_OPERATOR = "Tf";
+    private static final String STROKING_COLOR = "SCN";
+    private static final String STROKING_COLOR_SPACE = "CS";
+    private static final String NON_STROKING_COLOR_SPACE = "cs";
+    private static final String NON_STROKING_COLOR = "scn";
+    private static final String RGB_STROKING_COLOR = "RG";
+    private static final String RGB_NON_STROKING_COLOR = "rg";
+    private static final String CMYK_STROKING_COLOR = "K";
+    private static final String CMYK_NON_STROKING_COLOR = "k";
+    private static final String GRAY_STROKING_COLOR = "G";
+    private static final String GRAY_NON_STROKING_COLOR = "g";
 
     private final PDResources resources;
     private JTextComponent textComponent;
@@ -58,13 +59,13 @@ public class ToolTipController
         this.resources = resources;
     }
 
-    static ArrayList<String> getWords(String str)
+    static List<String> getWords(String str)
     {
-        ArrayList<String> words = new ArrayList<String>();
+        List<String> words = new ArrayList<String>();
         for (String string : str.trim().split(" "))
         {
             string = string.trim();
-            if (!string.equals("") && !string.equals("\n"))
+            if (!string.isEmpty() && !string.equals("\n"))
             {
                 words.add(string);
             }
@@ -95,7 +96,7 @@ public class ToolTipController
             }
             else if (word.equals(STROKING_COLOR))
             {
-                String colorSpaceName = findColorSapce(offset, STROKING_COLOR_SPACE);
+                String colorSpaceName = findColorSpace(offset, STROKING_COLOR_SPACE);
                 if (colorSpaceName != null)
                 {
                     toolTip = new SCNToolTip(resources, colorSpaceName, rowText);
@@ -104,7 +105,7 @@ public class ToolTipController
             }
             else if (word.equals(NON_STROKING_COLOR))
             {
-                String colorSpaceName = findColorSapce(offset, NON_STROKING_COLOR_SPACE);
+                String colorSpaceName = findColorSpace(offset, NON_STROKING_COLOR_SPACE);
                 if (colorSpaceName != null)
                 {
                     toolTip = new SCNToolTip(resources, colorSpaceName, rowText);
@@ -130,7 +131,7 @@ public class ToolTipController
         return null;
     }
 
-    private String findColorSapce(int offset, String colorSpaceType)
+    private String findColorSpace(int offset, String colorSpaceType)
     {
         try
         {
@@ -138,12 +139,9 @@ public class ToolTipController
             {
                 offset = Utilities.getPositionAbove(textComponent, offset, 0);
                 String previousRowText = getRowText(offset);
-                if (isColorSpace(colorSpaceType, previousRowText))
+                if (isColorSpace(colorSpaceType, previousRowText) && previousRowText != null)
                 {
-                    if (previousRowText != null)
-                    {
-                        return previousRowText.split(" ")[0];
-                    }
+                    return previousRowText.split(" ")[0];
                 }
             }
         }
@@ -157,15 +155,8 @@ public class ToolTipController
 
     private boolean isColorSpace(String colorSpaceType, String rowText)
     {
-        ArrayList<String> words = getWords(rowText);
-        if (words.size() == 2)
-        {
-            if (words.get(1).equals(colorSpaceType))
-            {
-                return true;
-            }
-        }
-        return false;
+        List<String> words = getWords(rowText);
+        return words.size() == 2 && words.get(1).equals(colorSpaceType);
     }
 
     private String getWord(int offset)

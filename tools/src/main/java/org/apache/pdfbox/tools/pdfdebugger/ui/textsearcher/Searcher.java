@@ -21,7 +21,7 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.util.ArrayList;
+import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JCheckBox;
@@ -43,16 +43,16 @@ import javax.swing.text.JTextComponent;
  */
 public class Searcher implements DocumentListener, ChangeListener, ComponentListener
 {
-    private final static Highlighter.HighlightPainter painter =
+    private static final Highlighter.HighlightPainter PAINTER =
             new DefaultHighlighter.DefaultHighlightPainter(Color.yellow);
-    private final Highlighter.HighlightPainter selectionPainter =
+    private static final Highlighter.HighlightPainter SELECTION_PAINTER =
             new DefaultHighlighter.DefaultHighlightPainter(new Color(109, 216, 26));
     private final SearchEngine searchEngine;
     private final SearchPanel searchPanel;
     private final JTextComponent textComponent;
     private int totalMatch = 0;
     private int currentMatch = -1;
-    private ArrayList<Highlighter.Highlight> highlights;
+    private List<Highlighter.Highlight> highlights;
     private final Action previousAction = new AbstractAction()
     {
         @Override
@@ -94,7 +94,7 @@ public class Searcher implements DocumentListener, ChangeListener, ComponentList
     {
         this.textComponent = textComponent;
         searchPanel = new SearchPanel(this, this, this, nextAction, previousAction);
-        searchEngine = new SearchEngine(textComponent, painter);
+        searchEngine = new SearchEngine(textComponent, PAINTER);
 
         nextAction.setEnabled(false);
         previousAction.setEnabled(false);
@@ -201,9 +201,9 @@ public class Searcher implements DocumentListener, ChangeListener, ComponentList
     {
         if (previousIndex != -1)
         {
-            changeHighlighter(previousIndex, painter);
+            changeHighlighter(previousIndex, PAINTER);
         }
-        changeHighlighter(presentIndex, selectionPainter);
+        changeHighlighter(presentIndex, SELECTION_PAINTER);
     }
 
     private void changeHighlighter(int index, Highlighter.HighlightPainter newPainter)
