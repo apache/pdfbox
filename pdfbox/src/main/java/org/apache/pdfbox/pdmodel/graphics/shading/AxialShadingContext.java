@@ -17,9 +17,9 @@
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
 import java.awt.PaintContext;
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
-import java.awt.geom.Point2D;
 import java.awt.image.ColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
@@ -50,7 +50,7 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
     private final double x1x0;
     private final double y1y0;
     private final float d1d0;
-    private double denom;
+    private final double denom;
 
     private final int factor;
     private final int[] colorTable;
@@ -64,10 +64,11 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
      * @param colorModel the color model to be used
      * @param xform transformation for user to device space
      * @param matrix the pattern matrix concatenated with that of the parent content stream
-     * @throws java.io.IOException if there is an error getting the color space or doing color conversion.
+     * @param deviceBounds the bounds of the area to paint, in device units
+     * @throws IOException if there is an error getting the color space or doing color conversion.
      */
     public AxialShadingContext(PDShadingType2 shading, ColorModel colorModel, AffineTransform xform,
-                               Matrix matrix) throws IOException
+                               Matrix matrix, Rectangle deviceBounds) throws IOException
     {
         super(shading, colorModel, xform, matrix);
         this.axialShadingType = shading;
@@ -101,7 +102,6 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
         y1y0 = coords[3] - coords[1];
         d1d0 = domain[1] - domain[0];
         denom = Math.pow(x1x0, 2) + Math.pow(y1y0, 2);
-        double longestDistance = Math.sqrt(denom);
 
         try
         {
@@ -115,12 +115,11 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
             LOG.error(ex, ex);
         }
 
-        // transform the distance to actual pixel space
-        // use transform, because xform.getScaleX() does not return correct scaling on 90° rotated matrix
-        Point2D point = new Point2D.Double(longestDistance, longestDistance);
-        matrix.transform(point);
-        xform.transform(point, point);
-        factor = (int) Math.max(Math.abs(point.getX()), Math.abs(point.getY()));
+        // get the number of steps
+        factor = (int) Math.max(Math.abs(deviceBounds.getWidth()),
+                                Math.abs(deviceBounds.getHeight()));
+        
+        // build the color table for the given number of steps
         colorTable = calcColorTable();
     }
 
