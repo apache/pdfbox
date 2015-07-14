@@ -214,7 +214,7 @@ final class FileSystemFontProvider extends FontProvider
         
         // load cached FontInfo objects
         List<FSFontInfo> cachedInfos = loadCache(files);
-        if (cachedInfos.size() > 0)
+        if (cachedInfos != null && cachedInfos.size() > 0)
         {
             fontInfoList.addAll(cachedInfos);
         }
@@ -304,19 +304,19 @@ final class FileSystemFontProvider extends FontProvider
                 catch (ClassNotFoundException e)
                 {
                     LOG.error("Error loading font cache, will be re-built", e);
-                    break;
+                    return null;
                 }
                 catch (IOException e)
                 {
                     LOG.error("Error loading font cache, will be re-built", e);
-                    break;
+                    return null;
                 }
             }
             else
             {
                 // re-build the entire cache if we encounter un-cached fonts (could be optimised)
                 LOG.warn("New fonts found, font cache will be re-built");
-                return new ArrayList<FSFontInfo>();
+                return null;
             }
         }
         return results;
