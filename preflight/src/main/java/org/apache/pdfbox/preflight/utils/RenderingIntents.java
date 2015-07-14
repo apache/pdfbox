@@ -46,7 +46,7 @@ public final class RenderingIntents
 
     static
     {
-        ArrayList<String> al = new ArrayList<String>(4);
+        List<String> al = new ArrayList<String>(4);
         al.add(RENDERING_INTENT_REL_COLOR);
         al.add(RENDERING_INTENT_ABS_COLOR);
         al.add(RENDERING_INTENT_PERCEPTUAL);
