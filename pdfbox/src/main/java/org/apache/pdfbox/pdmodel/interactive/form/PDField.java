@@ -289,7 +289,7 @@ public abstract class PDField implements COSObjectable
                 {
                     retval = PDField.fromDictionary(acroForm, kidDictionary,
                                                     (PDNonTerminalField)this);
-                    if (name.length > nameIndex + 1)
+                    if (retval != null && name.length > nameIndex + 1)
                     {
                         retval = retval.findKid(name, nameIndex + 1);
                     }

@@ -173,7 +173,10 @@ public final class PDAcroForm implements COSObjectable
             if (element != null)
             {
                 PDField field = PDField.fromDictionary(this, element, null);
-                pdFields.add(field);
+                if (field != null)
+                {
+                    pdFields.add(field);
+                }
             }
         }
         return new COSArrayList<PDField>(pdFields, cosFields);
@@ -256,22 +259,24 @@ public final class PDAcroForm implements COSObjectable
                         fieldName.getString().equals(nameSubSection[0]))
                     {
                         PDField root = PDField.fromDictionary(this, element, null);
-
-                        if (nameSubSection.length > 1)
+                        if (root != null)
                         {
-                            PDField kid = root.findKid(nameSubSection, 1);
-                            if (kid != null)
+                            if (nameSubSection.length > 1)
                             {
-                                retval = kid;
+                                PDField kid = root.findKid(nameSubSection, 1);
+                                if (kid != null)
+                                {
+                                    retval = kid;
+                                }
+                                else
+                                {
+                                    retval = root;
+                                }
                             }
                             else
                             {
                                 retval = root;
                             }
-                        }
-                        else
-                        {
-                            retval = root;
                         }
                     }
                 }
