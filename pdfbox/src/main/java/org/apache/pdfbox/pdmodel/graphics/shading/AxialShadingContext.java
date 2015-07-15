@@ -20,6 +20,7 @@ import java.awt.PaintContext;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
 import java.awt.image.ColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
@@ -115,14 +116,23 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
             LOG.error(ex, ex);
         }
 
-        // get the number of steps
-        factor = (int) Math.max(Math.abs(deviceBounds.getWidth()),
-                                Math.abs(deviceBounds.getHeight()));
+        // shading space -> device space
+        AffineTransform shadingToDevice = (AffineTransform)xform.clone();
+        shadingToDevice.concatenate(matrix.createAffineTransform());
+        
+        // convert the start and end coordinates to device space
+        Point2D p0 = new Point2D.Double(coords[0], coords[1]);
+        Point2D p1 = new Point2D.Double(coords[2], coords[3]);
+        shadingToDevice.transform(p0, p0);
+        shadingToDevice.transform(p1, p1);
+        
+        // the distance between them is number of steps
+        factor = (int)Math.round(p0.distance(p1));
         
         // build the color table for the given number of steps
         colorTable = calcColorTable();
     }
-
+    
     /**
      * Calculate the color on the axial line and store them in an array.
      *
