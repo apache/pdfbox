@@ -402,6 +402,12 @@ final class FontMapper
      */
     private static FontBoxFont findFont(FontFormat format, String postScriptName)
     {
+        // handle damaged PDFs, see PDFBOX-2884
+        if (postScriptName == null)
+        {
+            return null;
+        }
+        
         // make sure the font provider is initialized
         if (fontProvider == null)
         {

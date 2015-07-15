@@ -21,16 +21,11 @@
 
 package org.apache.pdfbox.preflight.content;
 
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_ENCODING_ERROR;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_UNKNOWN_FONT_REF;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_CONTENT_STREAM_INVALID_ARGUMENT;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_CONTENT_STREAM_UNSUPPORTED_OP;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-
+import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSFloat;
@@ -48,7 +43,12 @@ import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.font.container.FontContainer;
 import org.apache.pdfbox.preflight.font.util.GlyphException;
-import org.apache.pdfbox.contentstream.operator.Operator;
+
+
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_ENCODING_ERROR;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_UNKNOWN_FONT_REF;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_CONTENT_STREAM_INVALID_ARGUMENT;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_CONTENT_STREAM_UNSUPPORTED_OP;
 
 public class PreflightContentStream extends PreflightStreamEngine
 {
@@ -297,7 +297,7 @@ public class PreflightContentStream extends PreflightStreamEngine
         if (font == null)
         {
             // Unable to decode the Text without Font
-            registerError("Text operator can't be process without Font", ERROR_FONTS_UNKNOWN_FONT_REF);
+            registerError("Text operator can't be processed without a Font", ERROR_FONTS_UNKNOWN_FONT_REF);
             return;
         }
 
@@ -310,8 +310,14 @@ public class PreflightContentStream extends PreflightStreamEngine
         else if (fontContainer == null)
         {
             // Font Must be embedded if the RenderingMode isn't 3
-            registerError(font.getName() + " is unknown wasn't found by the FontHelperValidator",
-                    ERROR_FONTS_UNKNOWN_FONT_REF);
+            if (font.getName() == null)
+            {
+                registerError("invalid font dictionary", ERROR_FONTS_UNKNOWN_FONT_REF);
+            }
+            else
+            {
+                registerError("font '" + font.getName() + "' is missing", ERROR_FONTS_UNKNOWN_FONT_REF);
+            }
             return;
         }
         else if (!fontContainer.isValid() && !fontContainer.errorsAleadyMerged())
