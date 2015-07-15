@@ -61,9 +61,14 @@ final class PDFieldFactory
         {
             return createButtonSubType(form, field, parent);
         }
-        else
+        else if (field.containsKey(COSName.KIDS))
         {
             return new PDNonTerminalField(form, field, parent);
+        }
+        else
+        {
+            // an erroneous non-field object, see PDFBOX-2885
+            return null;
         }
     }
 
