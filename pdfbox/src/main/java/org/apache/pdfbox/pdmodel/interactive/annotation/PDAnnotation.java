@@ -48,39 +48,39 @@ public abstract class PDAnnotation implements COSObjectable
     /**
      * An annotation flag.
      */
-    public static final int FLAG_INVISIBLE = 1 << 0;
+    private static final int FLAG_INVISIBLE = 1 << 0;
     /**
      * An annotation flag.
      */
-    public static final int FLAG_HIDDEN = 1 << 1;
+    private static final int FLAG_HIDDEN = 1 << 1;
     /**
      * An annotation flag.
      */
-    public static final int FLAG_PRINTED = 1 << 2;
+    private static final int FLAG_PRINTED = 1 << 2;
     /**
      * An annotation flag.
      */
-    public static final int FLAG_NO_ZOOM = 1 << 3;
+    private static final int FLAG_NO_ZOOM = 1 << 3;
     /**
      * An annotation flag.
      */
-    public static final int FLAG_NO_ROTATE = 1 << 4;
+    private static final int FLAG_NO_ROTATE = 1 << 4;
     /**
      * An annotation flag.
      */
-    public static final int FLAG_NO_VIEW = 1 << 5;
+    private static final int FLAG_NO_VIEW = 1 << 5;
     /**
      * An annotation flag.
      */
-    public static final int FLAG_READ_ONLY = 1 << 6;
+    private static final int FLAG_READ_ONLY = 1 << 6;
     /**
      * An annotation flag.
      */
-    public static final int FLAG_LOCKED = 1 << 7;
+    private static final int FLAG_LOCKED = 1 << 7;
     /**
      * An annotation flag.
      */
-    public static final int FLAG_TOGGLE_NO_VIEW = 1 << 8;
+    private static final int FLAG_TOGGLE_NO_VIEW = 1 << 8;
 
     private final COSDictionary dictionary;
 
