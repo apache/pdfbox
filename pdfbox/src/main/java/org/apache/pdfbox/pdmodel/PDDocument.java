@@ -249,7 +249,7 @@ public class PDDocument implements Closeable
             // set visibility flags
             if (options.getVisualSignature() == null)
             {
-                signatureField.getWidgets().get(0).setAnnotationFlags(PDAnnotationWidget.FLAG_NO_VIEW);
+                signatureField.getWidgets().get(0).setNoView(true);
             }
             // append the signature object
             signatureField.setValue(sigObject);

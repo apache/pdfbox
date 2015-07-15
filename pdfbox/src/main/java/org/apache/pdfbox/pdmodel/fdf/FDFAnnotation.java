@@ -19,12 +19,10 @@ package org.apache.pdfbox.pdmodel.fdf;
 import java.awt.Color;
 import java.io.IOException;
 import java.util.Calendar;
-
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
@@ -36,7 +34,6 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderEffectDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 import org.apache.pdfbox.util.DateConverter;
@@ -55,6 +52,44 @@ import org.w3c.dom.NodeList;
 public abstract class FDFAnnotation implements COSObjectable
 {
     private static final Log LOG = LogFactory.getLog(FDFAnnotation.class);
+
+    /**
+     * An annotation flag.
+     */
+    private static final int FLAG_INVISIBLE = 1 << 0;
+    /**
+     * An annotation flag.
+     */
+    private static final int FLAG_HIDDEN = 1 << 1;
+    /**
+     * An annotation flag.
+     */
+    private static final int FLAG_PRINTED = 1 << 2;
+    /**
+     * An annotation flag.
+     */
+    private static final int FLAG_NO_ZOOM = 1 << 3;
+    /**
+     * An annotation flag.
+     */
+    private static final int FLAG_NO_ROTATE = 1 << 4;
+    /**
+     * An annotation flag.
+     */
+    private static final int FLAG_NO_VIEW = 1 << 5;
+    /**
+     * An annotation flag.
+     */
+    private static final int FLAG_READ_ONLY = 1 << 6;
+    /**
+     * An annotation flag.
+     */
+    private static final int FLAG_LOCKED = 1 << 7;
+    /**
+     * An annotation flag.
+     */
+    private static final int FLAG_TOGGLE_NO_VIEW = 1 << 8;
+    
     /**
      * Annotation dictionary.
      */
@@ -464,7 +499,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public boolean isInvisible()
     {
-        return annot.getFlag(COSName.F, PDAnnotation.FLAG_INVISIBLE);
+        return annot.getFlag(COSName.F, FLAG_INVISIBLE);
     }
 
     /**
@@ -474,7 +509,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public void setInvisible(boolean invisible)
     {
-        annot.setFlag(COSName.F, PDAnnotation.FLAG_INVISIBLE, invisible);
+        annot.setFlag(COSName.F, FLAG_INVISIBLE, invisible);
     }
 
     /**
@@ -484,7 +519,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public boolean isHidden()
     {
-        return annot.getFlag(COSName.F, PDAnnotation.FLAG_HIDDEN);
+        return annot.getFlag(COSName.F, FLAG_HIDDEN);
     }
 
     /**
@@ -494,7 +529,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public void setHidden(boolean hidden)
     {
-        annot.setFlag(COSName.F, PDAnnotation.FLAG_HIDDEN, hidden);
+        annot.setFlag(COSName.F, FLAG_HIDDEN, hidden);
     }
 
     /**
@@ -504,7 +539,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public boolean isPrinted()
     {
-        return annot.getFlag(COSName.F, PDAnnotation.FLAG_PRINTED);
+        return annot.getFlag(COSName.F, FLAG_PRINTED);
     }
 
     /**
@@ -514,7 +549,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public void setPrinted(boolean printed)
     {
-        annot.setFlag(COSName.F, PDAnnotation.FLAG_PRINTED, printed);
+        annot.setFlag(COSName.F, FLAG_PRINTED, printed);
     }
 
     /**
@@ -524,7 +559,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public boolean isNoZoom()
     {
-        return annot.getFlag(COSName.F, PDAnnotation.FLAG_NO_ZOOM);
+        return annot.getFlag(COSName.F, FLAG_NO_ZOOM);
     }
 
     /**
@@ -534,7 +569,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public void setNoZoom(boolean noZoom)
     {
-        annot.setFlag(COSName.F, PDAnnotation.FLAG_NO_ZOOM, noZoom);
+        annot.setFlag(COSName.F, FLAG_NO_ZOOM, noZoom);
     }
 
     /**
@@ -544,7 +579,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public boolean isNoRotate()
     {
-        return annot.getFlag(COSName.F, PDAnnotation.FLAG_NO_ROTATE);
+        return annot.getFlag(COSName.F, FLAG_NO_ROTATE);
     }
 
     /**
@@ -554,7 +589,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public void setNoRotate(boolean noRotate)
     {
-        annot.setFlag(COSName.F, PDAnnotation.FLAG_NO_ROTATE, noRotate);
+        annot.setFlag(COSName.F, FLAG_NO_ROTATE, noRotate);
     }
 
     /**
@@ -564,7 +599,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public boolean isNoView()
     {
-        return annot.getFlag(COSName.F, PDAnnotation.FLAG_NO_VIEW);
+        return annot.getFlag(COSName.F, FLAG_NO_VIEW);
     }
 
     /**
@@ -574,7 +609,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public void setNoView(boolean noView)
     {
-        annot.setFlag(COSName.F, PDAnnotation.FLAG_NO_VIEW, noView);
+        annot.setFlag(COSName.F, FLAG_NO_VIEW, noView);
     }
 
     /**
@@ -584,7 +619,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public boolean isReadOnly()
     {
-        return annot.getFlag(COSName.F, PDAnnotation.FLAG_READ_ONLY);
+        return annot.getFlag(COSName.F, FLAG_READ_ONLY);
     }
 
     /**
@@ -594,7 +629,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public void setReadOnly(boolean readOnly)
     {
-        annot.setFlag(COSName.F, PDAnnotation.FLAG_READ_ONLY, readOnly);
+        annot.setFlag(COSName.F, FLAG_READ_ONLY, readOnly);
     }
 
     /**
@@ -604,7 +639,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public boolean isLocked()
     {
-        return annot.getFlag(COSName.F, PDAnnotation.FLAG_LOCKED);
+        return annot.getFlag(COSName.F, FLAG_LOCKED);
     }
 
     /**
@@ -614,7 +649,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public void setLocked(boolean locked)
     {
-        annot.setFlag(COSName.F, PDAnnotation.FLAG_LOCKED, locked);
+        annot.setFlag(COSName.F, FLAG_LOCKED, locked);
     }
 
     /**
@@ -624,7 +659,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public boolean isToggleNoView()
     {
-        return annot.getFlag(COSName.F, PDAnnotation.FLAG_TOGGLE_NO_VIEW);
+        return annot.getFlag(COSName.F, FLAG_TOGGLE_NO_VIEW);
     }
 
     /**
@@ -634,7 +669,7 @@ public abstract class FDFAnnotation implements COSObjectable
      */
     public void setToggleNoView(boolean toggleNoView)
     {
-        annot.setFlag(COSName.F, PDAnnotation.FLAG_TOGGLE_NO_VIEW, toggleNoView);
+        annot.setFlag(COSName.F, FLAG_TOGGLE_NO_VIEW, toggleNoView);
     }
 
     /**
