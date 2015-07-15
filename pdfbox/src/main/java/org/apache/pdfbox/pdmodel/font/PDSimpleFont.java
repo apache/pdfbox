@@ -28,7 +28,6 @@ import org.apache.fontbox.FontBoxFont;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.font.encoding.BuiltInEncoding;
 import org.apache.pdfbox.pdmodel.font.encoding.DictionaryEncoding;
 import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
 import org.apache.pdfbox.pdmodel.font.encoding.GlyphList;
@@ -133,25 +132,8 @@ public abstract class PDSimpleFont extends PDFont
             this.encoding = readEncodingFromFont();
         }
 
-        // TTFs have a built-in encoding, but if the font is non-symbolic then we instead
-        // have Standard Encoding
-        if (this.encoding instanceof BuiltInEncoding &&
-            getSymbolicFlag() != null &&!getSymbolicFlag())
-        {
-            this.encoding = StandardEncoding.INSTANCE;
-        }
-
         // normalise the standard 14 name, e.g "Symbol,Italic" -> "Symbol"
         String standard14Name = Standard14Fonts.getMappedFontName(getName());
-        
-        // TTFs may have a built-in encoding, but if the font is standard 14 then we know
-        // it's Standard Encoding
-        if (this.encoding instanceof BuiltInEncoding && isStandard14() &&
-                !standard14Name.equals("Symbol") &&
-                !standard14Name.equals("ZapfDingbats"))
-        {
-            this.encoding = StandardEncoding.INSTANCE;
-        }
 
         // assign the glyph list based on the font
         if ("ZapfDingbats".equals(standard14Name))
