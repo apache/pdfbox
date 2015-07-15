@@ -41,6 +41,7 @@ import org.apache.pdfbox.pdmodel.font.encoding.BuiltInEncoding;
 import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
 import org.apache.pdfbox.pdmodel.font.encoding.GlyphList;
 import org.apache.pdfbox.pdmodel.font.encoding.MacOSRomanEncoding;
+import org.apache.pdfbox.pdmodel.font.encoding.StandardEncoding;
 import org.apache.pdfbox.pdmodel.font.encoding.Type1Encoding;
 import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
 
@@ -220,6 +221,25 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
         }
         else
         {
+            // non-symbolic fonts don't have a built-in encoding per se, but there encoding is
+            // assumed to be StandardEncoding by the PDF spec unless an explicit Encoding is present
+            // which will override this anyway
+            if (getSymbolicFlag() != null &&!getSymbolicFlag())
+            {
+                return StandardEncoding.INSTANCE;
+            }
+            
+            // normalise the standard 14 name, e.g "Symbol,Italic" -> "Symbol"
+            String standard14Name = Standard14Fonts.getMappedFontName(getName());
+            
+            // likewise, if the font is standard 14 then we know it's Standard Encoding
+            if (isStandard14() &&
+                !standard14Name.equals("Symbol") &&
+                !standard14Name.equals("ZapfDingbats"))
+            {
+                return StandardEncoding.INSTANCE;
+            }
+            
             // synthesize an encoding, so that getEncoding() is always usable
             PostScriptTable post = ttf.getPostScript();
             Map<Integer, String> codeToName = new HashMap<Integer, String>();
