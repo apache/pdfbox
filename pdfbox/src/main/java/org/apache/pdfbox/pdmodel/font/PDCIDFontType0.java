@@ -224,6 +224,21 @@ public class PDCIDFontType0 extends PDCIDFont
     }
 
     /**
+     * Returns the embedded or substituted font.
+     */
+    public FontBoxFont getFontBoxFont()
+    {
+        if (cidFont != null)
+        {
+            return cidFont;
+        }
+        else
+        {
+            return t1Font;
+        }
+    }
+
+    /**
      * Returns the Type 2 charstring for the given CID, or null if the substituted font does not
      * contain Type 2 charstrings.
      *
