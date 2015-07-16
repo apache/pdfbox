@@ -338,6 +338,10 @@ public class ValidationResult
             {
                 this.details = "Error on MetaData";
             }
+            else if (errorCode.startsWith(PreflightConstants.ERROR_PDF_PROCESSING_MISSING))
+            {
+                this.details = "A Mandatory element is missing";
+            }
             else
             {
                 // default Unkown error
