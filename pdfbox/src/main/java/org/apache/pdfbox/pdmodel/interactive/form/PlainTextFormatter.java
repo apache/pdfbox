@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.interactive.form.PlainText.Line;
 import org.apache.pdfbox.pdmodel.interactive.form.PlainText.Paragraph;
 import org.apache.pdfbox.pdmodel.interactive.form.PlainText.TextAttribute;
@@ -183,6 +182,29 @@ class PlainTextFormatter
                 }
                 else
                 {
+                    float startOffset = 0f;
+                    
+                    
+                    float lineWidth = appearanceStyle.getFont().getStringWidth(paragraph.getText()) *
+                            appearanceStyle.getFontSize() / 1000f;
+                    
+                    if (lineWidth < width) 
+                    {
+                        switch (textAlignment)
+                        {
+                        case CENTER:
+                            startOffset = (width - lineWidth)/2;
+                            break;
+                        case RIGHT:
+                            startOffset = width - lineWidth;
+                            break;
+                        case JUSTIFY:
+                        default:
+                            startOffset = 0f;
+                        }
+                    }
+                    
+                    contents.newLineAtOffset(horizontalOffset + startOffset, verticalOffset);
                     contents.showText(paragraph.getText());
                 }
             }
@@ -200,7 +222,6 @@ class PlainTextFormatter
      */
     private void processLines(List<Line> lines) throws IOException
     {
-        PDFont font = appearanceStyle.getFont();
         float wordWidth = 0f;
 
         float lastPos = 0f;
