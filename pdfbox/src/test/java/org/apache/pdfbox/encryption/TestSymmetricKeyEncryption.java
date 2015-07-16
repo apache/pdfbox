@@ -291,6 +291,10 @@ public class TestSymmetricKeyEncryption extends TestCase
         StandardProtectionPolicy spp = new StandardProtectionPolicy(ownerpassword, userpassword, ap);
         spp.setEncryptionKeyLength(keyLength);
         spp.setPermissions(permission);
+        
+        // This must have no effect and should only log a warning.
+        doc.setAllSecurityToBeRemoved(true);
+        
         doc.protect(spp);
 
         File pdfFile = new File(testResultsDir, prefix + keyLength + "-bit-encrypted.pdf");
