@@ -127,7 +127,7 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
 
         // worst case for the number of steps is opposite diagonal corners, so use that
         double dist = Math.sqrt(Math.pow(deviceBounds.getMaxX() - deviceBounds.getMinX(), 2) +
-                                Math.pow(deviceBounds.getMaxY() - deviceBounds.getMinX(), 2));
+                                Math.pow(deviceBounds.getMaxY() - deviceBounds.getMinY(), 2));
         factor = (int) Math.ceil(dist);
 
         // build the color table for the given number of steps
