@@ -344,6 +344,7 @@ public class PDFDebugger extends javax.swing.JFrame
         zoomMenu.add(zoom50Item);
         zoomMenu.add(zoom100Item);
         zoomMenu.add(zoom200Item);
+        viewMenu.add(zoomMenu);
 
         setJMenuBar(menuBar);
 
@@ -476,12 +477,12 @@ public class PDFDebugger extends javax.swing.JFrame
                 
                 if (isPage(selectedNode))
                 {
-                    menuBar.add(zoomMenu);
+                    zoomMenu.setEnabled(true);
                     SwingUtilities.updateComponentTreeUI(menuBar);
                     showPage(selectedNode);
                     return;
                 }
-                menuBar.remove(zoomMenu);
+                zoomMenu.setEnabled(false);
                 SwingUtilities.updateComponentTreeUI(menuBar);
                 
                 if (isSpecialColorSpace(selectedNode) || isOtherColorSpace(selectedNode))
