@@ -91,8 +91,12 @@ public final class GlyphList
         return ZAPF_DINGBATS;
     }
 
+    // read-only mappings, never modified outside GlyphList's constructor
     private final Map<String, String> nameToUnicode;
     private final Map<String, String> unicodeToName;
+    
+    // additional read/write cache for uniXXXX names
+    private final Map<String, String> uniNameToUnicodeCache = new HashMap<String, String>();
 
     /**
      * Creates a new GlyphList from a glyph list file.
@@ -217,6 +221,13 @@ public final class GlyphList
         }
 
         String unicode = nameToUnicode.get(name);
+        if (unicode != null)
+        {
+            return unicode;
+        }
+        
+        // separate read/write cache for thread safety
+        unicode = uniNameToUnicodeCache.get(name);
         if (unicode == null)
         {
             // test if we have a suffix and if so remove it
@@ -270,7 +281,7 @@ public final class GlyphList
                     LOG.warn("Not a number in Unicode character name: " + name);
                 }
             }
-            nameToUnicode.put(name, unicode);
+            uniNameToUnicodeCache.put(name, unicode);
         }
         return unicode;
     }
