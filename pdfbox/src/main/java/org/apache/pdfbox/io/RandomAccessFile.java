@@ -16,18 +16,17 @@
  */
 package org.apache.pdfbox.io;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
- * An interface to allow temp PDF data to be stored in a scratch
- * file on the disk to reduce memory consumption.
+ * A RandomAccess implementation whcih allows data to be stored in a scratch file on the disk to
+ * reduce memory consumption.
  *
  * @author Ben Litchfield
  */
-public class RandomAccessFile implements RandomAccess, Closeable
+public class RandomAccessFile implements RandomAccess
 {
     private final java.io.RandomAccessFile ras;
     private boolean isClosed;
