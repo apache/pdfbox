@@ -153,7 +153,7 @@ class ScratchFileBuffer implements RandomAccess
      * 
      * @throws IOException
      */
-    private final boolean ensureAvailableBytesInPage(boolean addNewPageIfNeeded) throws IOException
+    private boolean ensureAvailableBytesInPage(boolean addNewPageIfNeeded) throws IOException
     {
         if (positionInPage >= pageSize)
         {

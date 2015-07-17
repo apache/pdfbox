@@ -154,7 +154,7 @@ public class ScratchFile implements Closeable
      * 
      * <p>Only to be called under synchronization on {@link #freePages}.</p>
      */
-    private final void enlarge() throws IOException
+    private void enlarge() throws IOException
     {
         synchronized (ioLock)
         {
