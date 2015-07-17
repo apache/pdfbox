@@ -51,6 +51,15 @@ class AppearanceGeneratorHelper
     private String value;
     
     /**
+     * The highlight color
+     *
+     * The color setting is used by Adobe to display the highlight box for selected entries in a list box.
+     *
+     * Regardless of other settings in an existing appearance stream Adobe will always use this value.
+     */
+    private static final int[] HIGHLIGHT_COLOR = {153,193,215};
+    
+    /**
      * Constructs a COSAppearance from the given field.
      *
      * @param field the field which you wish to control the appearance of
@@ -200,15 +209,22 @@ class AppearanceGeneratorHelper
                 clipRect.getWidth(), clipRect.getHeight());
         contents.clip();
         
-        // start the text output
-        contents.beginText();
-
         // get the font
         PDFont font = field.getDefaultAppearanceString().getFont();
         
         // calculate the fontSize (because 0 = autosize)
         float fontSize = calculateFontSize(font, contentRect);
         
+        // for a listbox generate the highlight rectangle for the selected
+        // options
+        if (field instanceof PDListBox)
+        {
+            insertGeneratedSelectionHighlight(contents, appearanceStream, font, fontSize);
+        }
+        
+        // start the text output
+        contents.beginText();
+
         // write the /DA string
         field.getDefaultAppearanceString().writeTo(contents, fontSize);
        
@@ -237,6 +253,10 @@ class AppearanceGeneratorHelper
         // chars
         if (shallComb()) {
             insertGeneratedCombAppearance(contents, appearanceStream, font, fontSize);
+        }
+        else if (field instanceof PDListBox)
+        {
+            insertGeneratedListboxAppearance(contents, appearanceStream, contentRect, font, fontSize);
         }
         else
         {         
@@ -337,6 +357,107 @@ class AppearanceGeneratorHelper
             baselineOffset = 0;
             prevCharWidth = currCharWidth;
             xOffset = combWidth;
+        }
+    }
+    
+    private void insertGeneratedSelectionHighlight(PDPageContentStream contents, PDAppearanceStream appearanceStream,
+            PDFont font, float fontSize) throws IOException
+    {
+        List<Integer> indexEntries = ((PDListBox) field).getSelectedOptionsIndex();
+        List<String> values = ((PDListBox) field).getValue();
+        List<String> options = ((PDListBox) field).getOptionsExportValues();
+        
+        // TODO: support highlighting multiple items if multiselect is set
+        
+        int selectedIndex = 0;
+        
+        if (!values.isEmpty() && !options.isEmpty())
+        {
+            if (!indexEntries.isEmpty())
+            {
+                selectedIndex = indexEntries.get(0);
+            }
+            else
+            {
+                selectedIndex = options.indexOf(values.get(0));
+            }
+        }
+        
+        // The first entry which shall be presented might be adjusted by the optional TI key
+        // If this entry is present the first entry to be displayed is the keys value otherwise
+        // display starts with the first entry in Opt.
+        int topIndex = ((PDListBox) field).getTopIndex();
+        
+        float highlightBoxHeight = font.getBoundingBox().getHeight() * fontSize / 1000 - 2f;
+        
+        // the padding area 
+        PDRectangle paddingEdge = applyPadding(appearanceStream.getBBox(), 1);
+        
+        contents.setNonStrokingColor(HIGHLIGHT_COLOR[0],HIGHLIGHT_COLOR[1],HIGHLIGHT_COLOR[2]);
+        
+        contents.addRect(paddingEdge.getLowerLeftX(), 
+                paddingEdge.getUpperRightY() - highlightBoxHeight * (selectedIndex - topIndex + 1),
+                paddingEdge.getWidth(),
+                highlightBoxHeight);
+        contents.fill();
+        contents.setNonStrokingColor(0);
+    }
+    
+    
+    private void insertGeneratedListboxAppearance(PDPageContentStream contents, PDAppearanceStream appearanceStream,
+            PDRectangle contentRect, PDFont font, float fontSize) throws IOException
+    {
+        contents.setNonStrokingColor(0);
+        
+        int q = field.getQ();
+        if (q == PDVariableText.QUADDING_LEFT)
+        {
+            // do nothing because left is default
+        }
+        else if (q == PDVariableText.QUADDING_CENTERED || q == PDVariableText.QUADDING_RIGHT)
+        {
+            float fieldWidth = appearanceStream.getBBox().getWidth();
+            float stringWidth = (font.getStringWidth(value) / 1000) * fontSize;
+            float adjustAmount = fieldWidth - stringWidth - 4;
+
+            if (q == PDVariableText.QUADDING_CENTERED)
+            {
+                adjustAmount = adjustAmount / 2.0f;
+            }
+
+            contents.newLineAtOffset(adjustAmount, 0);
+        }
+        else
+        {
+            throw new IOException("Error: Unknown justification value:" + q);
+        }
+
+        List<String> options = ((PDListBox) field).getOptionsDisplayValues();
+
+        float yTextPos = contentRect.getUpperRightY();
+
+        int topIndex = ((PDListBox) field).getTopIndex();
+        
+        for (int i = topIndex; i < options.size(); i++)
+        {
+           
+            if (i == topIndex)
+            {
+                yTextPos = yTextPos - font.getFontDescriptor().getAscent() / 1000 * fontSize;
+            }
+            else
+            {
+                yTextPos = yTextPos - font.getBoundingBox().getHeight() / 1000 * fontSize;
+                contents.beginText();
+            }
+
+            contents.newLineAtOffset(contentRect.getLowerLeftX(), yTextPos);
+            contents.showText(options.get(i));
+
+            if (i - topIndex != (options.size() - 1))
+            {
+                contents.endText();
+            }
         }
     }
     

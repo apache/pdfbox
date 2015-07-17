@@ -491,9 +491,5 @@ public abstract class PDChoice extends PDVariableText
     }
 
     @Override
-    void constructAppearances() throws IOException
-    {
-        // TODO: implement appearance generation for choices
-        throw new UnsupportedOperationException("not implemented");
-    }
+    abstract void constructAppearances() throws IOException;
 }
