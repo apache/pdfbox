@@ -125,22 +125,25 @@ public class StreamPane implements ActionListener
     {
 
         private final String filterKey;
-        private final InputStream inputStream;
 
         private DocumentCreator(String filterKey)
         {
             this.filterKey = filterKey;
-            this.inputStream = stream.getStream(filterKey);
         }
 
         @Override
         protected StyledDocument doInBackground()
         {
+            InputStream inputStream = stream.getStream(filterKey);
             if (isContentStream && Stream.UNFILTERED.equals(filterKey))
             {
-                return getContentStreamDocument(inputStream);
+                StyledDocument document = getContentStreamDocument(inputStream);
+                if (document != null)
+                {
+                    return document;
+                }
+                return getDocument(stream.getStream(filterKey));
             }
-
             return getDocument(inputStream);
         }
 
@@ -213,6 +216,14 @@ public class StreamPane implements ActionListener
             {
                 parser = new PDFStreamParser(new RandomAccessBuffer(inputStream));
                 parser.parse();
+            }
+            catch (IOException e)
+            {
+                return null;
+            }
+
+            try
+            {
                 for (Object obj : parser.getTokens())
                 {
                     if (obj instanceof Operator)
@@ -249,10 +260,6 @@ public class StreamPane implements ActionListener
                     }
                 }
             }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
             catch (BadLocationException e1)
             {
                 e1.printStackTrace();
@@ -271,5 +278,5 @@ public class StreamPane implements ActionListener
             return str;
         }
 
-        }
     }
+}
