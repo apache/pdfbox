@@ -20,7 +20,6 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.util.BitSet;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -56,6 +55,7 @@ public class ScratchFile implements Closeable
     private static final int ENLARGE_PAGE_COUNT = 16;
     private static final int PAGE_SIZE = 4096;
     
+    private final Object ioLock = new Object();
     private final File scratchFileDirectory;
     private volatile File file;
     private volatile java.io.RandomAccessFile raf;
@@ -66,7 +66,7 @@ public class ScratchFile implements Closeable
     private final byte[][] inMemoryPages;
     private final int inMemoryMaxPageCount;
 
-    private final AtomicBoolean isClosed = new AtomicBoolean( false );
+    private volatile boolean isClosed = false;
     
     /**
      * Initializes page handler. If a <code>scratchFileDirectory</code> is supplied,
@@ -115,37 +115,6 @@ public class ScratchFile implements Closeable
     }
 
     /**
-     * Will create scratch file if it does not exist already.
-     * 
-     * @throws IOException if {@link #close()} was called or creating scratch file failed
-     */
-    private final void ensureFileExists() throws IOException {
-        
-        if ( raf != null ) {
-            return;
-        }
-        
-        synchronized (isClosed)
-        {
-            checkClosed();
-            
-            file = File.createTempFile("PDFBox", ".tmp", scratchFileDirectory);
-            try
-            {
-                raf = new java.io.RandomAccessFile(file, "rw");
-            }
-            catch (IOException e)
-            {
-                if (!file.delete())
-                {
-                    LOG.warn("Error deleting scratch file: " + file.getAbsolutePath());
-                }
-                throw e;
-            }
-        }
-    }
-    
-    /**
      * Returns a new free page, either from free page pool
      * or by enlarging scratch file (may be created).
      * 
@@ -181,22 +150,35 @@ public class ScratchFile implements Closeable
     /**
      * Enlarges the scratch file by a number of pages defined by
      * {@link #ENLARGE_PAGE_COUNT}. This will create the scratch
-     * file via {@link #ensureFileExists()} if it does not exist already.
+     * file if it does not exist already.
      * 
      * <p>Only to be called under synchronization on {@link #freePages}.</p>
      */
     private final void enlarge() throws IOException
     {
-        ensureFileExists();
-        
-        // handle corner case when close is called by another thread
-        java.io.RandomAccessFile localRAF = raf;
-        
-        checkClosed();
-        
-        synchronized ( localRAF )
+        synchronized (ioLock)
         {
-            long fileLen = localRAF.length();
+            checkClosed();
+            
+            // create scratch file is needed
+            if ( raf == null )
+            {
+                file = File.createTempFile("PDFBox", ".tmp", scratchFileDirectory);
+                try
+                {
+                    raf = new java.io.RandomAccessFile(file, "rw");
+                }
+                catch (IOException e)
+                {
+                    if (!file.delete())
+                    {
+                        LOG.warn("Error deleting scratch file: " + file.getAbsolutePath());
+                    }
+                    throw e;
+                }
+            }
+            
+            long fileLen = raf.length();
             long expectedFileLen = ((long)pageCount - inMemoryMaxPageCount) * PAGE_SIZE;
             
             if (expectedFileLen != fileLen)
@@ -206,7 +188,7 @@ public class ScratchFile implements Closeable
                 
             fileLen += ENLARGE_PAGE_COUNT * PAGE_SIZE;
 
-            localRAF.setLength(fileLen);
+            raf.setLength(fileLen);
 
             freePages.set(pageCount, pageCount + ENLARGE_PAGE_COUNT);
             freePageCount += ENLARGE_PAGE_COUNT;
@@ -234,28 +216,37 @@ public class ScratchFile implements Closeable
      */
     byte[] readPage(int pageIdx) throws IOException
     {
-        checkClosed();
-        
         if ((pageIdx < 0) || (pageIdx >= pageCount))
         {
             throw new IOException("Page index out of range: " + pageIdx + ". Max value: " + (pageCount - 1) );
         }
         
+        // check if we have the page in memory
         if (pageIdx < inMemoryMaxPageCount)
         {
+            byte[] page = inMemoryPages[pageIdx];
+            
+            // handle case that we are closed
+            if (page == null)
+            {
+                checkClosed();
+                throw new IOException("Requested page with index " + pageIdx + " was not written before.");
+            }
+            
             return inMemoryPages[pageIdx];
         }
         
-        // handle corner case when close is called by another thread
-        java.io.RandomAccessFile localRAF = raf;
-        
-        checkClosed();
-        
-        synchronized ( localRAF )
+        synchronized (ioLock)
         {
+            if (raf == null)
+            {
+                checkClosed();
+                throw new IOException("Missing scratch file to read page with index " + pageIdx + " from.");
+            }
+            
             byte[] page = new byte[PAGE_SIZE];
-            localRAF.seek(((long)pageIdx - inMemoryMaxPageCount) * PAGE_SIZE);
-            localRAF.readFully(page);
+            raf.seek(((long)pageIdx - inMemoryMaxPageCount) * PAGE_SIZE);
+            raf.readFully(page);
             
             return page;
         }
@@ -276,8 +267,6 @@ public class ScratchFile implements Closeable
      */
     void writePage(int pageIdx, byte[] page) throws IOException
     {
-        checkClosed();
-        
         if ((pageIdx<0) || (pageIdx>=pageCount))
         {
             throw new IOException("Page index out of range: " + pageIdx + ". Max value: " + (pageCount - 1) );
@@ -291,18 +280,21 @@ public class ScratchFile implements Closeable
         if (pageIdx < inMemoryMaxPageCount)
         {
             inMemoryPages[pageIdx] = page;
+            
+            // in case we were closed in between remove page and throw exception
+            if (isClosed)
+            {
+                inMemoryPages[pageIdx] = null;
+                checkClosed();
+            }
         }
         else
         {
-            // handle corner case when close is called by another thread
-            java.io.RandomAccessFile localRAF = raf;
-            
-            checkClosed();
-            
-            synchronized ( localRAF )
+            synchronized (ioLock)
             {
-                localRAF.seek(((long)pageIdx - inMemoryMaxPageCount) * PAGE_SIZE);
-                localRAF.write(page);
+                checkClosed();
+                raf.seek(((long)pageIdx - inMemoryMaxPageCount) * PAGE_SIZE);
+                raf.write(page);
             }
         }
     }
@@ -315,7 +307,7 @@ public class ScratchFile implements Closeable
      */
     void checkClosed() throws IOException
     {
-        if (isClosed.get())
+        if (isClosed)
         {
             throw new IOException("Scratch file already closed");
         }
@@ -340,6 +332,7 @@ public class ScratchFile implements Closeable
      * @param count number of page indexes contained in provided array 
      */
     void markPagesAsFree(int[] pageIndexes, int off, int count) {
+        
         synchronized (freePages)
         {
             for (int aIdx = off; aIdx < count; aIdx++)
@@ -369,41 +362,39 @@ public class ScratchFile implements Closeable
     @Override
     public void close() throws IOException
     {
-        if (isClosed.compareAndSet(false, true))
+        isClosed = true;
+        
+        synchronized (ioLock)
         {
-            synchronized (isClosed)
+            if (raf != null)
             {
-                java.io.RandomAccessFile localRAF = raf;
-                
-                if (localRAF != null)
+                raf.close();
+                raf = null;
+            }
+            
+            if (file != null)
+            {
+                if (file.delete())
                 {
-                    raf = null;
-                    
-                    synchronized ( localRAF )
-                    {
-                        localRAF.close();
-                    }
+                    file = null;
                 }
-                
-                if (file != null)
+                else
                 {
-                    if (file.delete())
-                    {
-                        file = null;
-                    }
-                    else
-                    {
-                        throw new IOException("Error deleting scratch file: " + file.getAbsolutePath());
-                    }
-                }
-
-                freePages.clear();
-                
-                for (int pIdx = 0; pIdx < inMemoryMaxPageCount; pIdx++)
-                {
-                    inMemoryPages[pIdx] = null;
+                    throw new IOException("Error deleting scratch file: " + file.getAbsolutePath());
                 }
             }
+        }
+        
+        synchronized (freePages)
+        {
+            freePages.clear();
+            freePageCount = 0;
+            pageCount = 0;
+        }
+        
+        for (int pIdx = 0; pIdx < inMemoryMaxPageCount; pIdx++)
+        {
+            inMemoryPages[pIdx] = null;
         }
     }
 }
