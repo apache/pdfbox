@@ -20,7 +20,6 @@ import java.awt.PaintContext;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
-import java.awt.geom.Point2D;
 import java.awt.image.ColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
@@ -119,15 +118,11 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
         // shading space -> device space
         AffineTransform shadingToDevice = (AffineTransform)xform.clone();
         shadingToDevice.concatenate(matrix.createAffineTransform());
-        
-        // convert the start and end coordinates to device space
-        Point2D p0 = new Point2D.Double(coords[0], coords[1]);
-        Point2D p1 = new Point2D.Double(coords[2], coords[3]);
-        shadingToDevice.transform(p0, p0);
-        shadingToDevice.transform(p1, p1);
-        
-        // the distance between them is number of steps
-        factor = (int)Math.round(p0.distance(p1));
+
+        // worst case for the number of steps is opposite diagonal corners, so use that
+        double dist = Math.sqrt(Math.pow(deviceBounds.getMaxX() - deviceBounds.getMinX(), 2) +
+                                Math.pow(deviceBounds.getMaxY() - deviceBounds.getMinX(), 2));
+        factor = (int) Math.ceil(dist);
         
         // build the color table for the given number of steps
         colorTable = calcColorTable();
