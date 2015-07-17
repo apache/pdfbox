@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import java.io.IOException;
+
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 
@@ -74,5 +76,13 @@ public final class PDListBox extends PDChoice
         {
             dictionary.removeItem(COSName.TI);
         }
+    }
+    
+    @Override
+    void constructAppearances() throws IOException
+    {
+        AppearanceGeneratorHelper apHelper;
+        apHelper = new AppearanceGeneratorHelper(this);
+        apHelper.setAppearanceValue("");
     }
 }
