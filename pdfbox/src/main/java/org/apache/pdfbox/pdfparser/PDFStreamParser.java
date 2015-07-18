@@ -19,9 +19,7 @@ package org.apache.pdfbox.pdfparser;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -63,7 +61,7 @@ public class PDFStreamParser extends BaseParser
      */
     public PDFStreamParser( PDStream stream ) throws IOException
     {
-       this( (COSStream)stream.getCOSObject() );
+       this(stream.getCOSObject());
     }
 
     /**
@@ -116,71 +114,13 @@ public class PDFStreamParser extends BaseParser
     }
 
     /**
-     * This will get an iterator which can be used to parse the stream
-     * one token after the other.
-     *
-     * @return an iterator to get one token after the other
-     */
-    public Iterator<Object> getTokenIterator()
-    {
-        return new Iterator<Object>()
-        {
-            private Object token;
-
-            private void tryNext()
-            {
-                try
-                {
-                    if (token == null)
-                    {
-                        token = parseNextToken();
-                    }
-                }
-                catch (IOException e)
-                {
-                    throw new RuntimeException(e);
-                }
-            }
-
-            /** {@inheritDoc} */
-            @Override
-            public boolean hasNext()
-            {
-                tryNext();
-                return token != null;
-            }
-
-            /** {@inheritDoc} */
-            @Override
-            public Object next() 
-            {
-                tryNext();
-                Object tmp = token;
-                if (tmp == null)
-                {
-                    throw new NoSuchElementException();
-                }
-                token = null;
-                return tmp;
-            }
-
-            /** {@inheritDoc} */
-            @Override
-            public void remove()
-            {
-                throw new UnsupportedOperationException();
-            }
-        };
-    }
-
-    /**
      * This will parse the next token in the stream.
      *
      * @return The next token in the stream or null if there are no more tokens in the stream.
      *
      * @throws IOException If an io error occurs while parsing the stream.
      */
-    private Object parseNextToken() throws IOException
+    public Object parseNextToken() throws IOException
     {
         Object retval;
 
