@@ -17,7 +17,9 @@
 package org.apache.pdfbox.util;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.interactive.action.type.PDAction;
 import org.apache.pdfbox.pdmodel.interactive.action.type.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
@@ -228,8 +230,11 @@ public class Splitter
     {
         currentDocument = new PDDocument();
         currentDocument.setDocumentInformation(pdfDocument.getDocumentInformation());
-        currentDocument.getDocumentCatalog().setViewerPreferences(
-        pdfDocument.getDocumentCatalog().getViewerPreferences());
+        PDDocumentCatalog catalog = pdfDocument.getDocumentCatalog();
+        PDDocumentCatalog currentCatalog = currentDocument.getDocumentCatalog();
+        currentCatalog.setViewerPreferences(catalog.getViewerPreferences());
+        // copy global resources to the new pdf document
+        currentCatalog.getPages().setResources(catalog.getPages().getResources());
         newDocuments.add(currentDocument);
     }
 
