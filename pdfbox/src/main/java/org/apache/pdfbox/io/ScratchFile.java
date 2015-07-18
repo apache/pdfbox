@@ -218,6 +218,7 @@ public class ScratchFile implements Closeable
     {
         if ((pageIdx < 0) || (pageIdx >= pageCount))
         {
+            checkClosed();
             throw new IOException("Page index out of range: " + pageIdx + ". Max value: " + (pageCount - 1) );
         }
         
@@ -269,6 +270,7 @@ public class ScratchFile implements Closeable
     {
         if ((pageIdx<0) || (pageIdx>=pageCount))
         {
+            checkClosed();
             throw new IOException("Page index out of range: " + pageIdx + ". Max value: " + (pageCount - 1) );
         }
         
@@ -363,24 +365,31 @@ public class ScratchFile implements Closeable
     public void close() throws IOException
     {
         isClosed = true;
+
+        IOException ioexc = null;
         
         synchronized (ioLock)
         {
             if (raf != null)
             {
-                raf.close();
-                raf = null;
+                try
+                {
+                    raf.close();
+                }
+                catch (IOException ioe)
+                {
+                    ioexc = ioe;
+                }
             }
             
             if (file != null)
             {
-                if (file.delete())
+                if (!file.delete())
                 {
-                    file = null;
-                }
-                else
-                {
-                    throw new IOException("Error deleting scratch file: " + file.getAbsolutePath());
+                    if (file.exists() && (ioexc == null))
+                    {
+                        ioexc = new IOException("Error deleting scratch file: " + file.getAbsolutePath());
+                    }
                 }
             }
         }
@@ -392,9 +401,9 @@ public class ScratchFile implements Closeable
             pageCount = 0;
         }
         
-        for (int pIdx = 0; pIdx < inMemoryMaxPageCount; pIdx++)
+        if (ioexc != null)
         {
-            inMemoryPages[pIdx] = null;
+            throw ioexc;
         }
     }
 }
