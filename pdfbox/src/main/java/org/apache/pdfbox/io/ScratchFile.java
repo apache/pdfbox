@@ -57,12 +57,12 @@ public class ScratchFile implements Closeable
     
     private final Object ioLock = new Object();
     private final File scratchFileDirectory;
-    private volatile File file;
-    private volatile java.io.RandomAccessFile raf;
+    /** scratch file; only to be accessed under synchronization of {@link #ioLock} */
+    private File file;
+    /** random access to scratch file; only to be accessed under synchronization of {@link #ioLock} */
+    private java.io.RandomAccessFile raf;
     private volatile int pageCount = 0;
     private final BitSet freePages = new BitSet();
-    /** number of free pages; only to be accessed under synchronization on {@link #freePages} */
-    private int freePageCount = 0;
     private final byte[][] inMemoryPages;
     private final int inMemoryMaxPageCount;
 
@@ -111,7 +111,6 @@ public class ScratchFile implements Closeable
         inMemoryPages = new byte[inMemoryMaxPageCount][];
         
         freePages.set(0, inMemoryMaxPageCount);
-        freePageCount = inMemoryMaxPageCount;
     }
 
     /**
@@ -124,19 +123,20 @@ public class ScratchFile implements Closeable
     {
         synchronized (freePages)
         {
-            
-            if (freePageCount <= 0)
-            {
-                enlarge();
-            }
-            
             int idx = freePages.nextSetBit( 0 );
+            
             if (idx < 0)
             {
-                throw new IOException("Expected free page but did not found one.");
+                enlarge();
+                
+                idx = freePages.nextSetBit( 0 );
+                if (idx < 0)
+                {
+                    throw new IOException("Expected free page but did not found one.");
+                }
             }
+            
             freePages.clear(idx);
-            freePageCount--;
             
             if (idx >= pageCount)
             {
@@ -191,7 +191,6 @@ public class ScratchFile implements Closeable
             raf.setLength(fileLen);
 
             freePages.set(pageCount, pageCount + ENLARGE_PAGE_COUNT);
-            freePageCount += ENLARGE_PAGE_COUNT;
         }
     }
     
@@ -343,7 +342,6 @@ public class ScratchFile implements Closeable
                 if ((pageIdx>=0) && (pageIdx<pageCount) && (!freePages.get(pageIdx)))
                 {
                     freePages.set(pageIdx);
-                    freePageCount++;
                     if (pageIdx < inMemoryMaxPageCount)
                     {
                         inMemoryPages[pageIdx] = null;
@@ -397,7 +395,6 @@ public class ScratchFile implements Closeable
         synchronized (freePages)
         {
             freePages.clear();
-            freePageCount = 0;
             pageCount = 0;
         }
         
