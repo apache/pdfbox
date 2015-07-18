@@ -1,11 +1,11 @@
-Release Notes -- Apache PDFBox -- Version 1.8.9
+Release Notes -- Apache PDFBox -- Version 1.8.10
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is an incremental bugfix release based on the earlier 1.8.8 release. It 
+This is an incremental bugfix release based on the earlier 1.8.10 release. It 
 contains a couple of fixes and small improvements.
 
 For more details on all fixes included in this release, please refer to the following
@@ -13,53 +13,42 @@ issues on the PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFB
 
 Bug
 
-[PDFBOX-159] - Field renaming character set problem
-[PDFBOX-785] - Spliting a PDF creates unnecessarily large files
-[PDFBOX-1002] - Form field not rendered after being processed by pdfbox-1.1.0, wrong
- position of same field in pdfbox-1.5.0
-[PDFBOX-1618] - Split PDF file to single page files, some files are inflated in size
-[PDFBOX-1651] - PDFBox doesn't read the permission bits correct. 
- PDDocument.getCurrentAccessPermission().canPrint() is allways returning true 
- irrespective of the document print permissions
-[PDFBOX-1750] - PDTextbox and PDAnnotationWidget are not correct initialized from
- it's own constructor .
-[PDFBOX-1859] - ClassCastException for unknown destination type
-[PDFBOX-1874] - PDFTextStripper.isParagraphSeparation(...)
-[PDFBOX-1965] - NPE in NonSequentialPDFParser when parseMinimal property is set to true
-[PDFBOX-2525] - Overlay: data black & white after import
-[PDFBOX-2549] - TIFF-Predictor with 16 bits per component not supported
-[PDFBOX-2550] - ClassCastException in PDAnnotation.getColour
-[PDFBOX-2552] - Blank rendering when negative page rotation
-[PDFBOX-2559] - TTF font cannot be loaded
-[PDFBOX-2579] - Exception in thread "main" java.io.IOException: Error: Expected a long
- type at offset 1029, instead got '12688(Deleted'
-[PDFBOX-2582] - Form fields missing entirely or incorrect in PDField list
-[PDFBOX-2583] - Error when rendering a PDF with annotations
-[PDFBOX-2595] - Pdfbox always sets the second part of documentID to the same value
-[PDFBOX-2615] - IllegalArgumentException in PDPageTree constructor: root cannot be null
-[PDFBOX-2617] - Group of Button fields treated as a Radio Button group
-[PDFBOX-2620] - Support named actions
-[PDFBOX-2622] - PDAnnotationLink::getBorderStyle() don't understand external border style
-[PDFBOX-2644] - Load FDF document creates Temp file when called with file parameter
-[PDFBOX-2653] - Image extraction fails with attached PDF
-[PDFBOX-2654] - NullPointerException when reading a GIF file with a transparent color
-[PDFBOX-2676] - PDPageLabelRange.setLabelItem() should not allow negative startPage
-[PDFBOX-2678] - possible NPE in ExtractText tool of trunk
-[PDFBOX-2687] - ClassCastException when trying to get OutputIntents or add to it
-[PDFBOX-2698] - PDFToImage IndexOutOfBoundsException
-[PDFBOX-2702] - Merging PDFs created using "Nuance PDF Create" not possible
-[PDFBOX-2710] - Form fields missing in 1.8.9 version
-[PDFBOX-2726] - org.apache.pdfbox.cos.COSArray cannot be cast to 
- org.apache.pdfbox.cos.COSDictionary
+[PDFBOX-1453] - NPE saving modified encrypted document
+[PDFBOX-1642] - NPE when parsing XMP schema definition with "closed Choice" value type
+[PDFBOX-2501] - Page render without barcode
+[PDFBOX-2730] - PDFSplit slow and keeps unused pages
+[PDFBOX-2733] - Nullpointer exception in PDFXrefStreamParser.parse
+[PDFBOX-2734] - Can't create PDF with DeviceN colorspace
+[PDFBOX-2737] - PDF not converted to Image
+[PDFBOX-2741] - IndexOutOfBoundsException when calling PDSeparation.setAlternateColorSpace
+[PDFBOX-2742] - PDFSplit ignores global resources
+[PDFBOX-2743] - Can't create PDF with PDIndexed colorspace
+[PDFBOX-2745] - PDPageXYZDestination zoom property can't be set lower than 100%
+[PDFBOX-2767] - ClassCastException in PDDocument.addSignature
+[PDFBOX-2769] - NPE when saving encrypted file
+[PDFBOX-2772] - EI token lost for rewrite
+[PDFBOX-2773] - ClassCastException in PDDocumentCatalog.java:339
+[PDFBOX-2778] - PDF to Image conversion fails with "Invalid code word encountered"
+[PDFBOX-2781] - Opening pdf document after encrypting it with PDFBox throws IllegalBlockSizeException
+[PDFBOX-2786] - PDPageDestination page index off by one
+[PDFBOX-2788] - Seemingly good document gets semi-corrupted
+[PDFBOX-2792] - Text extraction ignores bookmarks
+[PDFBOX-2793] - /Dests dictionary isn't supported
+[PDFBOX-2797] - PDJavascriptNameTreeNode does not support dictionaries
+[PDFBOX-2799] - PDOptionalContentProperties.setGroupEnabled not working
+[PDFBOX-2801] - SecurityHandler does not tolerate plain-text COSString
+[PDFBOX-2811] - Infinite loop within RandomAccessBuffer
+[PDFBOX-2812] - NPE in PDColorSpaceFactory.createColorSpace with PDICCBased
+[PDFBOX-2819] - invalid ICC Profile when reading from a byte array
+[PDFBOX-2823] - StringIndexOutOfBoundsException when doing DateConverter.parseDate()
+[PDFBOX-2837] - PDFBox creates files with EBCDIC code on z/OS
+[PDFBOX-2847] - mergeDocumentsNonSeq does not utilize scratchFile
+[PDFBOX-2853] - CCITT: Background is rendered as transparent color
+[PDFBOX-2867] - Correct use of Float.NaN
 
 Improvement
 
-[PDFBOX-1523] - Manifest should support Specification entries
-[PDFBOX-2594] - Set default params in JBIG2Filter
-[PDFBOX-2619] - XMP dates contain time zone, while document info dates do not, 
- and this isn't detected by preflight
-[PDFBOX-2673] - Add output path prefix param in PDFSplit/Splitter
-
+[PDFBOX-2744] - Add validation check for setNonStrokingColor and setStrokingColor
 
 Release Contents
 ----------------
