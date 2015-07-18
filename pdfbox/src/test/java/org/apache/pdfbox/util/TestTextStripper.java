@@ -435,7 +435,7 @@ public class TestTextStripper extends TestCase
         assertEquals(4, findOutlineItemDestPageNum(doc, oi4));
 
         String textFull = stripper.getText(doc);
-        assertFalse(textFull.isEmpty());
+        assertFalse(textFull.length() == 0);
         
         String expectedTextFull = 
                 "First level 1\n"
@@ -460,7 +460,7 @@ public class TestTextStripper extends TestCase
         stripper.setStartBookmark(oi2);
         stripper.setEndBookmark(oi3);
         String textoi23 = stripper.getText(doc);
-        assertFalse(textoi23.isEmpty());
+        assertFalse(textoi23.length() == 0);
         assertFalse(textoi23.equals(textFull));
         
         String expectedTextoi23 = 
@@ -480,7 +480,7 @@ public class TestTextStripper extends TestCase
         stripper.setStartPage(3);
         stripper.setEndPage(4);
         String textp34 = stripper.getText(doc);
-        assertFalse(textp34.isEmpty());
+        assertFalse(textp34.length() == 0);
         assertFalse(textoi23.equals(textFull));
         assertTrue(textoi23.equals(textp34));
         
@@ -490,7 +490,7 @@ public class TestTextStripper extends TestCase
         stripper.setStartBookmark(oi2);
         stripper.setEndBookmark(oi2);
         String textoi2 = stripper.getText(doc);
-        assertFalse(textoi2.isEmpty());
+        assertFalse(textoi2.length() == 0);
         assertFalse(textoi2.equals(textoi23));
         assertFalse(textoi23.equals(textFull));
         
@@ -508,7 +508,7 @@ public class TestTextStripper extends TestCase
         stripper.setStartPage(3);
         stripper.setEndPage(3);
         String textp3 = stripper.getText(doc);
-        assertFalse(textp3.isEmpty());
+        assertFalse(textp3.length() == 0);
         assertFalse(textp3.equals(textp34));
         assertFalse(textoi23.equals(textFull));
         assertTrue(textoi2.equals(textp3));
@@ -518,7 +518,7 @@ public class TestTextStripper extends TestCase
         stripper.setStartBookmark(oiOrphan);
         stripper.setEndBookmark(oiOrphan);
         String textOiOrphan = stripper.getText(doc);
-        assertTrue(textOiOrphan.isEmpty());
+        assertTrue(textOiOrphan.length() == 0);
     }
 
     
