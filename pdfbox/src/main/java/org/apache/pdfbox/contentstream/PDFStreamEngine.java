@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -61,6 +60,8 @@ import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 
 /**
  * Processes a PDF content stream and executes certain operations.
@@ -449,10 +450,9 @@ public abstract class PDFStreamEngine
     {
         List<COSBase> arguments = new ArrayList<COSBase>();
         PDFStreamParser parser = new PDFStreamParser(contentStream.getContentStream());
-        Iterator<Object> iter = parser.getTokenIterator();
-        while (iter.hasNext())
+        Object token = parser.parseNextToken();
+        while (token != null)
         {
-            Object token = iter.next();
             if (token instanceof COSObject)
             {
                 arguments.add(((COSObject) token).getObject());
@@ -466,6 +466,7 @@ public abstract class PDFStreamEngine
             {
                 arguments.add((COSBase) token);
             }
+            token = parser.parseNextToken();
         }
     }
 
