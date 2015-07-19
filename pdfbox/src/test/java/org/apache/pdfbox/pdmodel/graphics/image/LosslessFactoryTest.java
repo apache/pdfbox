@@ -105,7 +105,7 @@ public class LosslessFactoryTest extends TestCase
         document.save(pdfFile);
         document.close();
         
-        document = PDDocument.load(pdfFile, null);
+        document = PDDocument.load(pdfFile, (String)null);
         new PDFRenderer(document).renderImage(0);
         document.close();
     }
@@ -370,7 +370,7 @@ public class LosslessFactoryTest extends TestCase
         File pdfFile = new File(testResultsDir, pdfFilename);
         document.save(pdfFile);
         document.close();
-        document = PDDocument.load(pdfFile, null);
+        document = PDDocument.load(pdfFile, (String)null);
         new PDFRenderer(document).renderImage(0);
         document.close();
     }

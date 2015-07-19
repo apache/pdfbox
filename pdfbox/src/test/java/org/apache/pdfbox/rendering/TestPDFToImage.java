@@ -200,7 +200,7 @@ public class TestPDFToImage extends TestCase
         try
         {
             new FileOutputStream(new File(outDir, file.getName() + ".parseerror")).close();
-            document = PDDocument.load(file, null);
+            document = PDDocument.load(file, (String)null);
             String outputPrefix = outDir + '/' + file.getName() + "-";
             int numPages = document.getNumberOfPages();
             if (numPages < 1)
@@ -234,7 +234,7 @@ public class TestPDFToImage extends TestCase
             document.save(tmpFile);
             new File(outDir, file.getName() + ".saveerror").delete();
             new FileOutputStream(new File(outDir, file.getName() + ".reloaderror")).close();
-            PDDocument.load(tmpFile, null).close();
+            PDDocument.load(tmpFile, (String)null).close();
             new File(outDir, file.getName() + ".reloaderror").delete();
             tmpFile.delete();
         }
