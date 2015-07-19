@@ -76,7 +76,7 @@ public class PDFMergerUtilityTest extends TestCase
             boolean useScratchFiles)
             throws IOException
     {
-        PDDocument srcDoc1 = PDDocument.load(new File(SRCDIR, filename1), null);
+        PDDocument srcDoc1 = PDDocument.load(new File(SRCDIR, filename1), (String)null);
         int src1PageCount = srcDoc1.getNumberOfPages();
         PDFRenderer src1PdfRenderer = new PDFRenderer(srcDoc1);
         BufferedImage[] src1ImageTab = new BufferedImage[src1PageCount];
@@ -86,7 +86,7 @@ public class PDFMergerUtilityTest extends TestCase
         }
         srcDoc1.close();
 
-        PDDocument srcDoc2 = PDDocument.load(new File(SRCDIR, filename2), null);
+        PDDocument srcDoc2 = PDDocument.load(new File(SRCDIR, filename2), (String)null);
         int src2PageCount = srcDoc2.getNumberOfPages();
         PDFRenderer src2PdfRenderer = new PDFRenderer(srcDoc2);
         BufferedImage[] src2ImageTab = new BufferedImage[src2PageCount];
@@ -103,7 +103,7 @@ public class PDFMergerUtilityTest extends TestCase
         pdfMergerUtility.mergeDocuments(useScratchFiles);
 
         PDDocument mergedDoc
-                = PDDocument.load(new File(TARGETTESTDIR, mergeFilename), null);
+                = PDDocument.load(new File(TARGETTESTDIR, mergeFilename), (String)null);
         PDFRenderer mergePdfRenderer = new PDFRenderer(mergedDoc);
         int mergePageCount = mergedDoc.getNumberOfPages();
         assertEquals(src1PageCount + src2PageCount, mergePageCount);

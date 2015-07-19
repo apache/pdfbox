@@ -81,7 +81,7 @@ public class CCITTFactoryTest extends TestCase
         document.save(testResultsDir + "/singletiff.pdf");
         document.close();
         
-        document = PDDocument.load(new File(testResultsDir, "singletiff.pdf"), null);
+        document = PDDocument.load(new File(testResultsDir, "singletiff.pdf"), (String)null);
         assertEquals(2, document.getNumberOfPages());
         
         document.close();  
@@ -130,7 +130,7 @@ public class CCITTFactoryTest extends TestCase
         document.save(testResultsDir + "/multitiff.pdf");
         document.close();
         
-        document = PDDocument.load(new File(testResultsDir, "multitiff.pdf"), null);
+        document = PDDocument.load(new File(testResultsDir, "multitiff.pdf"), (String)null);
         assertEquals(countTiffImages, document.getNumberOfPages());
         
         document.close();  
