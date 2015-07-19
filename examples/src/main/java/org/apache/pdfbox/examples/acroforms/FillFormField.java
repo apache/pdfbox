@@ -37,7 +37,7 @@ public class FillFormField
         
         // load the document
         PDDocument pdfDocument = PDDocument
-                .load(new File(formTemplate),null);
+                .load(new File(formTemplate),(String)null);
 
         // get the document catalog
         PDAcroForm acroForm = pdfDocument.getDocumentCatalog().getAcroForm();
