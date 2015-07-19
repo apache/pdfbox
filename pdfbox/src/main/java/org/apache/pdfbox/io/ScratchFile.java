@@ -19,6 +19,7 @@ package org.apache.pdfbox.io;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.BitSet;
 
 import org.apache.commons.logging.Log;
@@ -53,6 +54,9 @@ public class ScratchFile implements Closeable
 
     /** number of pages by which we enlarge the scratch file (reduce I/O-operations) */
     private static final int ENLARGE_PAGE_COUNT = 16;
+    /** in case of unrestricted main memory usage this is the initial number of pages
+     *  {@link #inMemoryPages} is setup for */
+    private static final int INIT_UNRESTRICTED_MAINMEM_PAGECOUNT = 100000;
     private static final int PAGE_SIZE = 4096;
     
     private final Object ioLock = new Object();
@@ -63,8 +67,14 @@ public class ScratchFile implements Closeable
     private java.io.RandomAccessFile raf;
     private volatile int pageCount = 0;
     private final BitSet freePages = new BitSet();
-    private final byte[][] inMemoryPages;
+    /** holds pointers to in-memory page content; will be initialized once in case of restricted
+     *  main memory, otherwise it is enlarged as needed and first initialized to a size of
+     *  {@link #INIT_UNRESTRICTED_MAINMEM_PAGECOUNT} */
+    private volatile byte[][] inMemoryPages;
     private final int inMemoryMaxPageCount;
+    private final int maxPageCount;
+    private final boolean useScratchFile;
+    private final boolean maxMainMemoryIsRestricted;
 
     private volatile boolean isClosed = false;
     
@@ -81,7 +91,7 @@ public class ScratchFile implements Closeable
      */
     public ScratchFile(File scratchFileDirectory) throws IOException
     {
-        this(scratchFileDirectory, 0);
+        this(MemoryUsageSetting.setupTempFileOnly().setTempDir(scratchFileDirectory));
     }
     
     /**
@@ -98,19 +108,29 @@ public class ScratchFile implements Closeable
      * 
      * @throws IOException If scratch file directory was given but don't exist.
      */
-    public ScratchFile(File scratchFileDirectory, long maxInMemoryByteSize) throws IOException
+    public ScratchFile(MemoryUsageSetting memUsageSetting) throws IOException
     {
-        this.scratchFileDirectory = scratchFileDirectory;
+        maxMainMemoryIsRestricted = (!memUsageSetting.useMainMemory()) || memUsageSetting.isMainMemoryRestricted();
+        useScratchFile = maxMainMemoryIsRestricted ? memUsageSetting.useTempFile() : false;
+        scratchFileDirectory = useScratchFile ? memUsageSetting.getTempDir() : null;
 
-        if ((this.scratchFileDirectory != null) && (!this.scratchFileDirectory.isDirectory()))
+        if ((scratchFileDirectory != null) && (!scratchFileDirectory.isDirectory()))
         {
             throw new IOException("Scratch file directory does not exist: " + this.scratchFileDirectory);
         }
         
-        inMemoryMaxPageCount = (int) Math.min(Integer.MAX_VALUE, Math.max(0, maxInMemoryByteSize) / PAGE_SIZE);
-        inMemoryPages = new byte[inMemoryMaxPageCount][];
+        maxPageCount = memUsageSetting.isStorageRestricted() ?
+                           (int) Math.min(Integer.MAX_VALUE, memUsageSetting.getMaxStorageBytes() / PAGE_SIZE) :
+                           Integer.MAX_VALUE;
+                
+        inMemoryMaxPageCount = memUsageSetting.useMainMemory() ? 
+                                   (memUsageSetting.isMainMemoryRestricted() ?
+                                       (int) Math.min(Integer.MAX_VALUE, memUsageSetting.getMaxMainMemoryBytes() / PAGE_SIZE) :
+                                       Integer.MAX_VALUE) :
+                                   0;
+        inMemoryPages = new byte[maxMainMemoryIsRestricted ? inMemoryMaxPageCount : INIT_UNRESTRICTED_MAINMEM_PAGECOUNT][];
         
-        freePages.set(0, inMemoryMaxPageCount);
+        freePages.set(0, inMemoryPages.length);
     }
 
     /**
@@ -132,7 +152,7 @@ public class ScratchFile implements Closeable
                 idx = freePages.nextSetBit( 0 );
                 if (idx < 0)
                 {
-                    throw new IOException("Expected free page but did not found one.");
+                    throw new IOException("Maximum allowed scratch file memory exceeded.");
                 }
             }
             
@@ -148,9 +168,16 @@ public class ScratchFile implements Closeable
     }
 
     /**
-     * Enlarges the scratch file by a number of pages defined by
-     * {@link #ENLARGE_PAGE_COUNT}. This will create the scratch
-     * file if it does not exist already.
+     * This will provide new free pages by either enlarging the scratch file 
+     * by a number of pages defined by {@link #ENLARGE_PAGE_COUNT} - in case
+     * scratch file usage is allowed - or increase the {@link #inMemoryPages}
+     * array in case main memory was not restricted. If neither of both is
+     * allowed/the case than free pages count won't be changed. The same is true
+     * if no new pages could be added because we reached the maximum of
+     * {@link Integer#MAX_VALUE} pages.
+     * 
+     * <p>If scratch file uage is allowed and scratch file does not exist already
+     * it will be created.</p>
      * 
      * <p>Only to be called under synchronization on {@link #freePages}.</p>
      */
@@ -159,38 +186,64 @@ public class ScratchFile implements Closeable
         synchronized (ioLock)
         {
             checkClosed();
-            
-            // create scratch file is needed
-            if ( raf == null )
+     
+            if (pageCount >= maxPageCount)
             {
-                file = File.createTempFile("PDFBox", ".tmp", scratchFileDirectory);
-                try
+                return;
+            }
+
+            if (useScratchFile)
+            {
+                // create scratch file is needed
+                if ( raf == null )
                 {
-                    raf = new java.io.RandomAccessFile(file, "rw");
-                }
-                catch (IOException e)
-                {
-                    if (!file.delete())
+                    file = File.createTempFile("PDFBox", ".tmp", scratchFileDirectory);
+                    try
                     {
-                        LOG.warn("Error deleting scratch file: " + file.getAbsolutePath());
+                        raf = new java.io.RandomAccessFile(file, "rw");
                     }
-                    throw e;
+                    catch (IOException e)
+                    {
+                        if (!file.delete())
+                        {
+                            LOG.warn("Error deleting scratch file: " + file.getAbsolutePath());
+                        }
+                        throw e;
+                    }
+                }
+                
+                long fileLen = raf.length();
+                long expectedFileLen = ((long)pageCount - inMemoryMaxPageCount) * PAGE_SIZE;
+                
+                if (expectedFileLen != fileLen)
+                {
+                    throw new IOException("Expected scratch file size of " + expectedFileLen + " but found " + fileLen);
+                }
+                    
+                // enlarge if we do not overflow
+                if (pageCount + ENLARGE_PAGE_COUNT > pageCount)
+                {
+                    fileLen += ENLARGE_PAGE_COUNT * PAGE_SIZE;
+        
+                    raf.setLength(fileLen);
+        
+                    freePages.set(pageCount, pageCount + ENLARGE_PAGE_COUNT);
                 }
             }
-            
-            long fileLen = raf.length();
-            long expectedFileLen = ((long)pageCount - inMemoryMaxPageCount) * PAGE_SIZE;
-            
-            if (expectedFileLen != fileLen)
+            else if (!maxMainMemoryIsRestricted)
             {
-                throw new IOException("Expected scratch file size of " + expectedFileLen + " but found " + fileLen);
+                // increase number of in-memory pages
+                int oldSize = inMemoryPages.length;
+                int newSize = (int) Math.min( ((long)oldSize) * 2, Integer.MAX_VALUE);  // this handles integer overflow
+                if (newSize > oldSize)
+                {
+                    byte[][] newInMemoryPages = new byte[newSize][];
+                    System.arraycopy(inMemoryPages, 0, newInMemoryPages, 0, oldSize);
+                    inMemoryPages = newInMemoryPages;
+                    
+                    freePages.set(oldSize, newSize);
+                }
             }
-                
-            fileLen += ENLARGE_PAGE_COUNT * PAGE_SIZE;
-
-            raf.setLength(fileLen);
-
-            freePages.set(pageCount, pageCount + ENLARGE_PAGE_COUNT);
         }
     }
     
@@ -233,7 +286,7 @@ public class ScratchFile implements Closeable
                 throw new IOException("Requested page with index " + pageIdx + " was not written before.");
             }
             
-            return inMemoryPages[pageIdx];
+            return page;
         }
         
         synchronized (ioLock)
@@ -280,14 +333,21 @@ public class ScratchFile implements Closeable
         
         if (pageIdx < inMemoryMaxPageCount)
         {
-            inMemoryPages[pageIdx] = page;
-            
-            // in case we were closed in between remove page and throw exception
-            if (isClosed)
+            if (maxMainMemoryIsRestricted)
             {
-                inMemoryPages[pageIdx] = null;
-                checkClosed();
+                inMemoryPages[pageIdx] = page;
             }
+            else
+            {
+                // need synchronization since inMemoryPages may change
+                synchronized (ioLock)
+                {
+                    inMemoryPages[pageIdx] = page;
+                }
+            }
+            
+            // in case we were closed in between throw exception
+            checkClosed();
         }
         else
         {
@@ -327,6 +387,30 @@ public class ScratchFile implements Closeable
     }
 
     /**
+     * Creates a new buffer using this page handler and initializes it with the
+     * data read from provided input stream (input stream is copied to buffer).
+     * The buffer data pointer is reset to point to first byte.
+     * 
+     * @return A new buffer containing data read from input stream.
+     * 
+     * @throws IOException If an error occurred.
+     */
+    public RandomAccess createBuffer(InputStream input) throws IOException
+    {
+        ScratchFileBuffer buf = new ScratchFileBuffer(this);
+        
+        byte[] byteBuffer = new byte[8192];
+        int bytesRead = 0;
+        while ((bytesRead = input.read(byteBuffer)) > -1)
+        {
+            buf.write(byteBuffer, 0, bytesRead);
+        }
+        buf.seek(0);
+
+        return buf;
+    }
+
+    /**
      * Allows a buffer which is cleared/closed to release its pages to be re-used.
      * 
      * @param pageIndexes pages indexes of pages to release
@@ -344,7 +428,8 @@ public class ScratchFile implements Closeable
                     freePages.set(pageIdx);
                     if (pageIdx < inMemoryMaxPageCount)
                     {
-                        inMemoryPages[pageIdx] = null;
+                        inMemoryPages[pageIdx] = null;  // remark: not in ioLock synchronization since behavior won't
+                                                        // change even in case of parallel called 'enlarge' method
                     }
                 }
                     
@@ -362,6 +447,11 @@ public class ScratchFile implements Closeable
     @Override
     public void close() throws IOException
     {
+        if (isClosed)
+        {
+            return;
+        }
+        
         isClosed = true;
 
         IOException ioexc = null;

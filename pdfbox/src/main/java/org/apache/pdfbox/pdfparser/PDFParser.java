@@ -30,6 +30,7 @@ import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.DecryptionMaterial;
@@ -136,6 +137,47 @@ public class PDFParser extends COSParser
         init(useScratchFiles);
     }
 
+    /**
+     * Constructor.
+     * 
+     * @param source input representing the pdf.
+     * @param decryptionPassword password to be used for decryption.
+     * @param keyStore key store to be used for decryption when using public key security 
+     * @param alias alias to be used for decryption when using public key security
+     * @param scratchFile buffer handler for temporary storage; it will be closed on
+     *        {@link COSDocument#close()}
+     *
+     * @throws IOException If something went wrong.
+     */
+    public PDFParser(RandomAccessRead source, String decryptionPassword, InputStream keyStore,
+                     String alias, ScratchFile scratchFile) throws IOException
+    {
+        pdfSource = source;
+        fileLen = source.length();
+        password = decryptionPassword;
+        keyStoreInputStream = keyStore;
+        keyAlias = alias;
+        init(scratchFile);
+    }
+    
+    private void init(ScratchFile scratchFile) throws IOException
+    {
+        String eofLookupRangeStr = System.getProperty(SYSPROP_EOFLOOKUPRANGE);
+        if (eofLookupRangeStr != null)
+        {
+            try
+            {
+                setEOFLookupRange(Integer.parseInt(eofLookupRangeStr));
+            }
+            catch (NumberFormatException nfe)
+            {
+                LOG.warn("System property " + SYSPROP_EOFLOOKUPRANGE
+                        + " does not contain an integer value, but: '" + eofLookupRangeStr + "'");
+            }
+        }
+        document = new COSDocument(scratchFile);
+    }
+    
     private void init(boolean useScratchFiles) throws IOException
     {
         String eofLookupRangeStr = System.getProperty(SYSPROP_EOFLOOKUPRANGE);
