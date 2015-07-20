@@ -324,7 +324,7 @@ public class PDVisibleSignDesigner
 
         if (sigImgHeight == null || sigImgWidth == null)
         {
-            calcualteImageSize(inputForBufferedImage);
+            calculateImageSize(inputForBufferedImage);
         }
 
         this.imgageStream = revertInputStream;
@@ -333,21 +333,19 @@ public class PDVisibleSignDesigner
     }
 
     /**
-     * calculates image width and height. sported formats: all
+     * calculates image width and height. supported formats: all
      * 
      * @param fis - input stream of image
      * @throws IOException - if can't read input stream
      */
-    private void calcualteImageSize(InputStream fis) throws IOException 
+    private void calculateImageSize(InputStream fis) throws IOException 
     {
-
         BufferedImage bimg = ImageIO.read(fis);
         int width = bimg.getWidth();
         int height = bimg.getHeight();
 
         sigImgHeight = (float) height;
         sigImgWidth = (float) width;
-
     }
 
     /**
