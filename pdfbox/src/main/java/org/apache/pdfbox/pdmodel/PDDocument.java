@@ -292,16 +292,14 @@ public class PDDocument implements Closeable
         if (signatureField == null)
         {
             signatureField = new PDSignatureField(acroForm);
-            // set visibility flags
-            if (options.getVisualSignature() == null)
-            {
-                signatureField.getWidgets().get(0).setNoView(true);
-            }
             // append the signature object
             signatureField.setValue(sigObject);
             // backward linking
             signatureField.getWidgets().get(0).setPage(page);
         }
+        // to conform PDF/A-1 requirement:
+        // The /F key's Print flag bit shall be set to 1 and its Hidden, Invisible and NoView flag bits shall be set to 0
+        signatureField.getWidgets().get(0).setPrinted(true);
 
         // Set the AcroForm Fields
         List<PDField> acroFormFields = acroForm.getFields();
