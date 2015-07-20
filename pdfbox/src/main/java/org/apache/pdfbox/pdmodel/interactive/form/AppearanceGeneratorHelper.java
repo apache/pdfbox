@@ -62,7 +62,12 @@ class AppearanceGeneratorHelper
     /**
      * The scaling factor for font units to PDF units
      */
-    private static final int FONTSCALE = 1000;    
+    private static final int FONTSCALE = 1000;
+    
+    /**
+     * The default font size used for multiline text
+     */
+    private static final float DEFAULT_FONT_SIZE = 12;    
     
     
     /**
@@ -434,11 +439,8 @@ class AppearanceGeneratorHelper
         contents.setNonStrokingColor(0);
         
         int q = field.getQ();
-        if (q == PDVariableText.QUADDING_LEFT)
-        {
-            // do nothing because left is default
-        }
-        else if (q == PDVariableText.QUADDING_CENTERED || q == PDVariableText.QUADDING_RIGHT)
+
+        if (q == PDVariableText.QUADDING_CENTERED || q == PDVariableText.QUADDING_RIGHT)
         {
             float fieldWidth = appearanceStream.getBBox().getWidth();
             float stringWidth = (font.getStringWidth(value) / FONTSCALE) * fontSize;
@@ -451,18 +453,19 @@ class AppearanceGeneratorHelper
 
             contents.newLineAtOffset(adjustAmount, 0);
         }
-        else
+        else if (q != PDVariableText.QUADDING_LEFT)
         {
             throw new IOException("Error: Unknown justification value:" + q);
         }
 
         List<String> options = ((PDListBox) field).getOptionsDisplayValues();
+        int numOptions = options.size();
 
         float yTextPos = contentRect.getUpperRightY();
 
         int topIndex = ((PDListBox) field).getTopIndex();
         
-        for (int i = topIndex; i < options.size(); i++)
+        for (int i = topIndex; i < numOptions; i++)
         {
            
             if (i == topIndex)
@@ -478,7 +481,7 @@ class AppearanceGeneratorHelper
             contents.newLineAtOffset(contentRect.getLowerLeftX(), yTextPos);
             contents.showText(options.get(i));
 
-            if (i - topIndex != (options.size() - 1))
+            if (i - topIndex != (numOptions - 1))
             {
                 contents.endText();
             }
@@ -514,7 +517,7 @@ class AppearanceGeneratorHelper
             if (isMultiLine())
             {
                 // Acrobat defaults to 12 for multiline text with size 0
-                return 12f;
+                return DEFAULT_FONT_SIZE;
             }
             else
             {
