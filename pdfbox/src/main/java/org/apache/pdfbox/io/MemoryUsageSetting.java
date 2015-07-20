@@ -22,7 +22,7 @@ import java.io.File;
  * Controls how memory/temporary files are used for
  * buffering streams etc.
  */
-public class MemoryUsageSetting
+public final class MemoryUsageSetting
 {
     private final boolean useMainMemory;
     private final boolean useTempFile;
