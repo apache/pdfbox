@@ -231,21 +231,32 @@ class AppearanceGeneratorHelper
         // calculate the y-position of the baseline
         float y;
         
-        // calculate the Y fontScale at fontSize
-        float fontScaleY = font.getFontMatrix().getScaleY() * fontSize;
-        
+        // calculate font metrics at font size
+        float fontScaleY = fontSize / 1000f;
+        float fontBoundingBoxAtSize = font.getBoundingBox().getHeight() * fontScaleY;
+        float fontCapAtSize = font.getFontDescriptor().getCapHeight() * fontScaleY;
+        float fontDescentAtSize = font.getFontDescriptor().getDescent() * fontScaleY;
         
         if (field instanceof PDTextField && ((PDTextField) field).isMultiline())
         {
-            float height = font.getBoundingBox().getHeight() * fontScaleY;
-            y = contentRect.getUpperRightY() - height;
+            y = contentRect.getUpperRightY() - fontBoundingBoxAtSize;
         }
         else
         {
-            float capHeigth = font.getFontDescriptor().getCapHeight() * fontScaleY;
-            y = Math.max((bbox.getHeight() - capHeigth) / 2f, 0);
-        }
+            // calculate the position based on the content rectangle
+            y = clipRect.getLowerLeftY() + (clipRect.getHeight() - fontCapAtSize) / 2;
 
+            // check to ensure that ascents and descents fit
+            if (y - clipRect.getLowerLeftY() < -fontDescentAtSize) {
+
+                float fontDescentBased = -fontDescentAtSize + contentRect.getLowerLeftY();
+                float fontCapBased = contentRect.getHeight() - contentRect.getLowerLeftY() - fontCapAtSize;
+
+                y = Math.min(fontDescentBased, Math.max(y, fontCapBased));
+            }
+            
+        }
+        
         // show the text
         float x = contentRect.getLowerLeftX();
         
