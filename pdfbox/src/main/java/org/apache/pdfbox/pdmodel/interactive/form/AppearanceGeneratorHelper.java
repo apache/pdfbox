@@ -58,6 +58,12 @@ class AppearanceGeneratorHelper
      * Regardless of other settings in an existing appearance stream Adobe will always use this value.
      */
     private static final int[] HIGHLIGHT_COLOR = {153,193,215};
+ 
+    /**
+     * The scaling factor for font units to PDF units
+     */
+    private static final int FONTSCALE = 1000;    
+    
     
     /**
      * Constructs a COSAppearance from the given field.
@@ -145,7 +151,7 @@ class AppearanceGeneratorHelper
         ContentStreamWriter writer = new ContentStreamWriter(output);
 
         List<Object> tokens = tokenize(appearanceStream);
-        int bmcIndex = tokens.indexOf(Operator.getOperator("BMC"));
+        int bmcIndex = tokens.indexOf(BMC);
         if (bmcIndex == -1)
         {
             // append to existing stream
@@ -161,7 +167,7 @@ class AppearanceGeneratorHelper
         // insert field contents
         insertGeneratedAppearance(widget, appearanceStream, output);
         
-        int emcIndex = tokens.indexOf(Operator.getOperator("EMC"));
+        int emcIndex = tokens.indexOf(EMC);
         if (emcIndex == -1)
         {
             // append EMC
@@ -232,7 +238,7 @@ class AppearanceGeneratorHelper
         float y;
         
         // calculate font metrics at font size
-        float fontScaleY = fontSize / 1000f;
+        float fontScaleY = fontSize / FONTSCALE;
         float fontBoundingBoxAtSize = font.getBoundingBox().getHeight() * fontScaleY;
         float fontCapAtSize = font.getFontDescriptor().getCapHeight() * fontScaleY;
         float fontDescentAtSize = font.getFontDescriptor().getDescent() * fontScaleY;
@@ -262,7 +268,6 @@ class AppearanceGeneratorHelper
                     y = Math.min(fontDescentBased, Math.max(y, fontCapBased));
                 }
             }
-            
         }
         
         // show the text
@@ -352,7 +357,7 @@ class AppearanceGeneratorHelper
         PDRectangle paddingEdge = applyPadding(appearanceStream.getBBox(), 1);
         
         float combWidth = appearanceStream.getBBox().getWidth() / maxLen;
-        float ascentAtFontSize = font.getFontDescriptor().getAscent() / 1000 * fontSize;
+        float ascentAtFontSize = font.getFontDescriptor().getAscent() / FONTSCALE * fontSize;
         float baselineOffset = paddingEdge.getLowerLeftY() +  
                 (appearanceStream.getBBox().getHeight() - ascentAtFontSize)/2;
         
@@ -366,7 +371,7 @@ class AppearanceGeneratorHelper
         for (int i = 0; i < numChars; i++) 
         {
             combString = value.substring(i, i+1);
-            currCharWidth = font.getStringWidth(combString) / 1000 * fontSize/2;
+            currCharWidth = font.getStringWidth(combString) / FONTSCALE * fontSize/2;
             
             xOffset = xOffset + prevCharWidth/2 - currCharWidth/2;
             
@@ -407,7 +412,7 @@ class AppearanceGeneratorHelper
         // display starts with the first entry in Opt.
         int topIndex = ((PDListBox) field).getTopIndex();
         
-        float highlightBoxHeight = font.getBoundingBox().getHeight() * fontSize / 1000 - 2f;
+        float highlightBoxHeight = font.getBoundingBox().getHeight() * fontSize / FONTSCALE - 2f;
         
         // the padding area 
         PDRectangle paddingEdge = applyPadding(appearanceStream.getBBox(), 1);
@@ -436,7 +441,7 @@ class AppearanceGeneratorHelper
         else if (q == PDVariableText.QUADDING_CENTERED || q == PDVariableText.QUADDING_RIGHT)
         {
             float fieldWidth = appearanceStream.getBBox().getWidth();
-            float stringWidth = (font.getStringWidth(value) / 1000) * fontSize;
+            float stringWidth = (font.getStringWidth(value) / FONTSCALE) * fontSize;
             float adjustAmount = fieldWidth - stringWidth - 4;
 
             if (q == PDVariableText.QUADDING_CENTERED)
@@ -462,11 +467,11 @@ class AppearanceGeneratorHelper
            
             if (i == topIndex)
             {
-                yTextPos = yTextPos - font.getFontDescriptor().getAscent() / 1000 * fontSize;
+                yTextPos = yTextPos - font.getFontDescriptor().getAscent() / FONTSCALE * fontSize;
             }
             else
             {
-                yTextPos = yTextPos - font.getBoundingBox().getHeight() / 1000 * fontSize;
+                yTextPos = yTextPos - font.getBoundingBox().getHeight() / FONTSCALE * fontSize;
                 contents.beginText();
             }
 
@@ -513,8 +518,8 @@ class AppearanceGeneratorHelper
             }
             else
             {
-                float yScalingFactor = 1000 * font.getFontMatrix().getScaleY();
-                float xScalingFactor = 1000 * font.getFontMatrix().getScaleX();
+                float yScalingFactor = FONTSCALE * font.getFontMatrix().getScaleY();
+                float xScalingFactor = FONTSCALE * font.getFontMatrix().getScaleX();
                 
                 // fit width
                 float width = font.getStringWidth(value) * font.getFontMatrix().getScaleX();
