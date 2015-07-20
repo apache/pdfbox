@@ -16,9 +16,11 @@
  */
 package org.apache.pdfbox.pdfparser;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,8 +34,6 @@ import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.io.RandomAccessBuffer;
-import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 
 /**
@@ -52,6 +52,34 @@ public class PDFStreamParser extends BaseParser
     
     private static final int MAX_BIN_CHAR_TEST_LENGTH = 10;
     private final byte[] binCharTestArr = new byte[MAX_BIN_CHAR_TEST_LENGTH];
+    
+    /**
+     * Constructor.
+     *
+     * @param stream The stream to parse.
+     * @throws IOException If there is an error initializing the stream.
+     * 
+     * @deprecated Use {@link PDFStreamParser(PDContentStream)} instead.
+     */
+    @Deprecated
+    public PDFStreamParser(PDStream stream) throws IOException
+    {
+        super(new InputStreamSource(stream.createInputStream()));
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param stream The stream to parse.
+     * @throws IOException If there is an error initializing the stream.
+     * 
+     * @deprecated Use {@link PDFStreamParser(PDContentStream)} instead.
+     */
+    @Deprecated
+    public PDFStreamParser(COSStream stream) throws IOException
+    {
+        super(new InputStreamSource(stream.getUnfilteredStream()));
+    }
 
     /**
      * Constructor.
@@ -61,40 +89,18 @@ public class PDFStreamParser extends BaseParser
      */
     public PDFStreamParser(PDContentStream contentStream) throws IOException
     {
-        this(new RandomAccessBuffer(contentStream.getContents()));
+        super(new InputStreamSource(contentStream.getContents()));
     }
     
     /**
      * Constructor.
      *
-     * @param stream The stream to parse.
+     * @param bytes the bytes to parse.
      * @throws IOException If there is an error initializing the stream.
      */
-    public PDFStreamParser( PDStream stream ) throws IOException
+    public PDFStreamParser(byte[] bytes) throws IOException
     {
-       this(stream.getCOSObject());
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param stream The stream to parse.
-     * @throws IOException If there is an error initializing the stream.
-     */
-    public PDFStreamParser( COSStream stream ) throws IOException
-    {
-        super(stream);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param input The random access read to parse.
-     * @throws IOException If there is an error initializing the stream.
-     */
-    public PDFStreamParser( RandomAccessRead input ) throws IOException
-    {
-        super( input );
+        super(new InputStreamSource(new ByteArrayInputStream(bytes)));
     }
 
     /**
@@ -134,24 +140,24 @@ public class PDFStreamParser extends BaseParser
         Object retval;
 
         skipSpaces();
-        int nextByte = pdfSource.peek();
+        int nextByte = seqSource.peek();
         if( ((byte)nextByte) == -1 )
         {
             return null;
         }
         char c = (char)nextByte;
-        switch(c)
+        switch (c)
         {
             case '<':
             {
                 // pull off first left bracket
-                int leftBracket = pdfSource.read();
+                int leftBracket = seqSource.read();
 
                 // check for second left bracket
-                c = (char) pdfSource.peek();
+                c = (char) seqSource.peek();
 
                 // put back first bracket
-                pdfSource.rewind(1);
+                seqSource.unread(leftBracket);
 
                 if (c == '<')
                 {
@@ -241,13 +247,13 @@ public class PDFStreamParser extends BaseParser
                  * allow 1 "." and "-" and "+" at start of number. */
                 StringBuffer buf = new StringBuffer();
                 buf.append( c );
-                pdfSource.read();
+                seqSource.read();
 
                 boolean dotNotRead = c != '.';
-                while( Character.isDigit(c = (char)pdfSource.peek()) || dotNotRead && c == '.')
+                while( Character.isDigit(c = (char) seqSource.peek()) || dotNotRead && c == '.')
                 {
                     buf.append( c );
-                    pdfSource.read();
+                    seqSource.read();
 
                     if (dotNotRead && c == '.')
                     {
@@ -281,7 +287,7 @@ public class PDFStreamParser extends BaseParser
             case 'I':
             {
                 //Special case for ID operator
-                String id = "" + (char)pdfSource.read() + (char)pdfSource.read();
+                String id = "" + (char) seqSource.read() + (char) seqSource.read();
                 if( !id.equals( "ID" ) )
                 {
                     throw new IOException( "Error: Expected operator 'ID' actual='" + id + "'" );
@@ -290,10 +296,10 @@ public class PDFStreamParser extends BaseParser
                 if( isWhitespace() )
                 {
                     //pull off the whitespace character
-                    pdfSource.read();
+                    seqSource.read();
                 }
-                int lastByte = pdfSource.read();
-                int currentByte = pdfSource.read();
+                int lastByte = seqSource.read();
+                int currentByte = seqSource.read();
                 // PDF spec is kinda unclear about this. Should a whitespace
                 // always appear before EI? Not sure, so that we just read
                 // until EI<whitespace>.
@@ -301,12 +307,12 @@ public class PDFStreamParser extends BaseParser
                 while( !(lastByte == 'E' &&
                          currentByte == 'I' &&
                          hasNextSpaceOrReturn() &&
-                         hasNoFollowingBinData( pdfSource )) &&
-                       !pdfSource.isEOF() )
+                         hasNoFollowingBinData(seqSource)) &&
+                       !seqSource.isEOF() )
                 {
                     imageData.write( lastByte );
                     lastByte = currentByte;
-                    currentByte = pdfSource.read();
+                    currentByte = seqSource.read();
                 }
                 // the EI operator isn't unread, as it won't be processed anyway
                 retval = Operator.getOperator("ID");
@@ -318,7 +324,7 @@ public class PDFStreamParser extends BaseParser
             {
                 // some ']' around without its previous '['
                 // this means a PDF is somewhat corrupt but we will continue to parse.
-                pdfSource.read();
+                seqSource.read();
                 
                 // must be a better solution than null...
                 retval = COSNull.NULL;  
@@ -350,8 +356,7 @@ public class PDFStreamParser extends BaseParser
      * @return <code>true</code> if next bytes are probably printable ASCII
      * characters starting with a PDF operator, otherwise <code>false</code>
      */
-    private boolean hasNoFollowingBinData(final RandomAccessRead pdfSource)
-            throws IOException
+    private boolean hasNoFollowingBinData(SequentialSource pdfSource) throws IOException
     {
         // as suggested in PDFBOX-1164
         final int readBytes = pdfSource.read(binCharTestArr, 0, MAX_BIN_CHAR_TEST_LENGTH);
@@ -395,7 +400,7 @@ public class PDFStreamParser extends BaseParser
                     noBinData = false;
                 }
             }
-            pdfSource.rewind(readBytes);
+            pdfSource.unread(Arrays.copyOfRange(binCharTestArr, 0, readBytes));
         }
         if (!noBinData)
         {
@@ -418,7 +423,7 @@ public class PDFStreamParser extends BaseParser
         //average string size is around 2 and the normal string buffer size is
         //about 16 so lets save some space.
         StringBuffer buffer = new StringBuffer(4);
-        int nextChar = pdfSource.peek();
+        int nextChar = seqSource.peek();
         while(
             nextChar != -1 && // EOF
             !isWhitespace(nextChar) &&
@@ -430,14 +435,14 @@ public class PDFStreamParser extends BaseParser
             (nextChar < '0' ||
              nextChar > '9' ) )
         {
-            char currentChar = (char)pdfSource.read();
-            nextChar = pdfSource.peek();
+            char currentChar = (char) seqSource.read();
+            nextChar = seqSource.peek();
             buffer.append( currentChar );
             // Type3 Glyph description has operators with a number in the name
             if (currentChar == 'd' && (nextChar == '0' || nextChar == '1') ) 
             {
-                buffer.append( (char)pdfSource.read() );
-                nextChar = pdfSource.peek();
+                buffer.append( (char) seqSource.read() );
+                nextChar = seqSource.peek();
             }
         }
         return buffer.toString();
@@ -457,6 +462,6 @@ public class PDFStreamParser extends BaseParser
      */
     private boolean hasNextSpaceOrReturn() throws IOException
     {
-        return isSpaceOrReturn( pdfSource.peek() );
+        return isSpaceOrReturn( seqSource.peek() );
     }
 }

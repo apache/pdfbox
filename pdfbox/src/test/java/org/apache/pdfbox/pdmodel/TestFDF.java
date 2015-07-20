@@ -19,15 +19,12 @@ package org.apache.pdfbox.pdmodel;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
+import org.apache.pdfbox.contentstream.PDContentStream;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
@@ -246,9 +243,8 @@ public class TestFDF extends TestCase
     {
         PDAppearanceEntry normalAppearance = widget.getAppearance().getNormalAppearance();
         PDAppearanceStream appearanceStream = normalAppearance.getAppearanceStream();
-        COSStream actual = appearanceStream.getCOSStream();
 
-        List<Object> actualTokens = getStreamTokens( doc, actual );
+        List<Object> actualTokens = getStreamTokens( doc, appearanceStream );
         assertTrue( actualTokens.contains( new COSString( expected ) ) );
     }
 
@@ -257,9 +253,8 @@ public class TestFDF extends TestCase
         PDAnnotationWidget widget = field.getWidgets().get(0);
         PDAppearanceEntry normalAppearance = widget.getAppearance().getNormalAppearance();
         PDAppearanceStream appearanceStream = normalAppearance.getAppearanceStream();
-        COSStream actual = appearanceStream.getCOSStream();
 
-        List<Object> actualTokens = getStreamTokens( doc, actual );
+        List<Object> actualTokens = getStreamTokens( doc, appearanceStream );
         List<Object> expectedTokens = getStreamTokens( doc, expected );
         assertEquals( actualTokens.size(), expectedTokens.size() );
         for( int i=0; i<actualTokens.size(); i++ )
@@ -277,14 +272,14 @@ public class TestFDF extends TestCase
         List<Object> tokens = null;
         if( string != null )
         {
-            parser = new PDFStreamParser( new RandomAccessBuffer( string.getBytes() ) );
+            parser = new PDFStreamParser( string.getBytes() );
             parser.parse();
             tokens = parser.getTokens();
         }
         return tokens;
     }
 
-    private List<Object> getStreamTokens( PDDocument doc, COSStream stream ) throws IOException
+    private List<Object> getStreamTokens( PDDocument doc, PDContentStream stream ) throws IOException
     {
         PDFStreamParser parser;
 

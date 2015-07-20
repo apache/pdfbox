@@ -129,7 +129,7 @@ public class PDFParser extends COSParser
     public PDFParser(RandomAccessRead source, String decryptionPassword, InputStream keyStore,
             String alias, boolean useScratchFiles) throws IOException
     {
-        pdfSource = source;
+        super(source);
         fileLen = source.length();
         password = decryptionPassword;
         keyStoreInputStream = keyStore;
@@ -152,7 +152,7 @@ public class PDFParser extends COSParser
     public PDFParser(RandomAccessRead source, String decryptionPassword, InputStream keyStore,
                      String alias, ScratchFile scratchFile) throws IOException
     {
-        pdfSource = source;
+        super(source);
         fileLen = source.length();
         password = decryptionPassword;
         keyStoreInputStream = keyStore;
@@ -206,7 +206,7 @@ public class PDFParser extends COSParser
      */
     public PDDocument getPDDocument() throws IOException
     {
-        return new PDDocument( getDocument(), pdfSource, accessPermission );
+        return new PDDocument( getDocument(), source, accessPermission );
     }
 
     /**

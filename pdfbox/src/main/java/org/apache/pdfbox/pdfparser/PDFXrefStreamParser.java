@@ -44,18 +44,18 @@ public class PDFXrefStreamParser extends BaseParser
     /**
      * Constructor.
      *
-     * @param strm The stream to parse.
-     * @param doc The document for the current parsing.
+     * @param stream The stream to parse.
+     * @param document The document for the current parsing.
      * @param resolver resolver to read the xref/trailer information
      *
      * @throws IOException If there is an error initializing the stream.
      */
-    public PDFXrefStreamParser(COSStream strm, COSDocument doc, XrefTrailerResolver resolver )
+    public PDFXrefStreamParser(COSStream stream, COSDocument document, XrefTrailerResolver resolver)
             throws IOException
     {
-        super(strm.getUnfilteredRandomAccess());
-        document = doc;
-        stream = strm;
+        super(new InputStreamSource(stream.getUnfilteredStream()));
+        this.stream = stream;
+        this.document = document;
         this.xrefTrailerResolver = resolver;
     }
 
@@ -107,10 +107,10 @@ public class PDFXrefStreamParser extends BaseParser
         int w2 = xrefFormat.getInt(2);
         int lineSize = w0 + w1 + w2;
 
-        while(pdfSource.available() > 0 && objIter.hasNext())
+        while(!seqSource.isEOF() && objIter.hasNext())
         {
             byte[] currLine = new byte[lineSize];
-            pdfSource.read(currLine);
+            seqSource.read(currLine);
 
             int type = 0;
             /*
