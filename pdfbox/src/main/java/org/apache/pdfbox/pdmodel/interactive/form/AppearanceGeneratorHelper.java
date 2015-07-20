@@ -243,16 +243,24 @@ class AppearanceGeneratorHelper
         }
         else
         {
-            // calculate the position based on the content rectangle
-            y = clipRect.getLowerLeftY() + (clipRect.getHeight() - fontCapAtSize) / 2;
-
-            // check to ensure that ascents and descents fit
-            if (y - clipRect.getLowerLeftY() < -fontDescentAtSize) {
-
-                float fontDescentBased = -fontDescentAtSize + contentRect.getLowerLeftY();
-                float fontCapBased = contentRect.getHeight() - contentRect.getLowerLeftY() - fontCapAtSize;
-
-                y = Math.min(fontDescentBased, Math.max(y, fontCapBased));
+            // Adobe shows the text 'shiftet up' in case the caps don't fit into the clipping area
+            if (fontCapAtSize > clipRect.getHeight())
+            {
+                y = clipRect.getLowerLeftY() + -fontDescentAtSize;
+            }
+            else
+            {
+                // calculate the position based on the content rectangle
+                y = clipRect.getLowerLeftY() + (clipRect.getHeight() - fontCapAtSize) / 2;
+    
+                // check to ensure that ascents and descents fit
+                if (y - clipRect.getLowerLeftY() < -fontDescentAtSize) {
+    
+                    float fontDescentBased = -fontDescentAtSize + contentRect.getLowerLeftY();
+                    float fontCapBased = contentRect.getHeight() - contentRect.getLowerLeftY() - fontCapAtSize;
+    
+                    y = Math.min(fontDescentBased, Math.max(y, fontCapBased));
+                }
             }
             
         }
