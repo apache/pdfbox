@@ -23,7 +23,6 @@ import java.io.OutputStream;
 import java.util.List;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdfwriter.ContentStreamWriter;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -134,8 +133,7 @@ class AppearanceGeneratorHelper
      */
     private List<Object> tokenize(PDAppearanceStream appearanceStream) throws IOException
     {
-        COSStream stream = appearanceStream.getCOSStream();
-        PDFStreamParser parser = new PDFStreamParser(stream);
+        PDFStreamParser parser = new PDFStreamParser(appearanceStream);
         parser.parse();
         return parser.getTokens();
     }

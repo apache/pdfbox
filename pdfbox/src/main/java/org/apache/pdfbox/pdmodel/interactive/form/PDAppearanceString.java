@@ -18,12 +18,10 @@ package org.apache.pdfbox.pdmodel.interactive.form;
 
 import java.io.IOException;
 import java.util.List;
-
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -64,7 +62,7 @@ class PDAppearanceString
             throw new IllegalArgumentException("/DR is a required entry");
         }
         
-        PDFStreamParser parser = new PDFStreamParser(new RandomAccessBuffer(defaultAppearance.getBytes()));
+        PDFStreamParser parser = new PDFStreamParser(defaultAppearance.getBytes());
         parser.parse();
         tokens = parser.getTokens();
         

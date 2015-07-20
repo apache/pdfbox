@@ -27,22 +27,16 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-
+import javax.imageio.stream.ImageInputStream;
+import javax.imageio.stream.MemoryCacheImageInputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.io.RandomAccessBuffer;
-import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.pdmodel.common.PDMemoryStream;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
-
-import javax.imageio.stream.ImageInputStream;
-import javax.imageio.stream.MemoryCacheImageInputStream;
-
-import org.apache.pdfbox.cos.COSNumber;
-import org.apache.pdfbox.pdmodel.common.PDMemoryStream;
-import org.apache.pdfbox.pdmodel.common.PDStream;
 
 /**
  * Reads a sampled image from a PDF file.
@@ -245,16 +239,7 @@ final class SampledImageReader
     private static BufferedImage from8bit(PDImage pdImage, WritableRaster raster)
             throws IOException
     {
-        RandomAccessRead input;
-        PDStream stream = pdImage.getStream();
-        if (stream instanceof PDMemoryStream)
-        {
-            input = new RandomAccessBuffer(stream.getByteArray());
-        }
-        else
-        {
-            input = stream.getStream().getUnfilteredRandomAccess();
-        }
+        InputStream input = pdImage.getStream().createInputStream();
         try
         {
             // get the raster's underlying byte buffer

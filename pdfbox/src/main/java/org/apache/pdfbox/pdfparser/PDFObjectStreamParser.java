@@ -46,15 +46,15 @@ public class PDFObjectStreamParser extends BaseParser
     /**
      * Constructor.
      *
-     * @param strm The stream to parse.
-     * @param doc The document for the current parsing.
+     * @param stream The stream to parse.
+     * @param document The document for the current parsing.
      * @throws IOException If there is an error initializing the stream.
      */
-    public PDFObjectStreamParser(COSStream strm, COSDocument doc) throws IOException
+    public PDFObjectStreamParser(COSStream stream, COSDocument document) throws IOException
     {
-        super(strm.getUnfilteredRandomAccess());
-        document = doc;
-        stream = strm;
+        super(new InputStreamSource(stream.getUnfilteredStream()));
+        this.stream = stream;
+        this.document = document;
     }
 
     /**
@@ -99,7 +99,7 @@ public class PDFObjectStreamParser extends BaseParser
                 // According to the spec objects within an object stream shall not be enclosed 
                 // by obj/endobj tags, but there are some pdfs in the wild using those tags 
                 // skip endobject marker if present
-                if (!pdfSource.isEOF() && pdfSource.peek() == 'e')
+                if (!seqSource.isEOF() && seqSource.peek() == 'e')
                 {
                     readLine();
                 }
@@ -108,7 +108,7 @@ public class PDFObjectStreamParser extends BaseParser
         }
         finally
         {
-            pdfSource.close();
+            seqSource.close();
         }
     }
 

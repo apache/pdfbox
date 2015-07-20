@@ -56,8 +56,8 @@ public class FDFParser extends COSParser
      */
     public FDFParser(File file) throws IOException
     {
+        super(new RandomAccessFile(file, "r"));
         fileLen = file.length();
-        pdfSource = new RandomAccessFile(file, "r");
         init();
     }
 
@@ -69,8 +69,8 @@ public class FDFParser extends COSParser
      */
     public FDFParser(InputStream input) throws IOException
     {
-        pdfSource = new RandomAccessBuffer(input);
-        fileLen = pdfSource.length();
+        super(new RandomAccessBuffer(input));
+        fileLen = source.length();
         init();
     }
 

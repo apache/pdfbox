@@ -37,7 +37,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.io.RandomAccessBuffer;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.tools.pdfdebugger.streampane.tooltip.ToolTipController;
@@ -214,7 +214,7 @@ public class StreamPane implements ActionListener
             PDFStreamParser parser;
             try
             {
-                parser = new PDFStreamParser(new RandomAccessBuffer(inputStream));
+                parser = new PDFStreamParser(IOUtils.toByteArray(inputStream));
                 parser.parse();
             }
             catch (IOException e)
