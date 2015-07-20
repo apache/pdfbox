@@ -29,6 +29,7 @@ import java.util.Map;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSStream;
@@ -71,6 +72,17 @@ public class PDStream implements COSObjectable
     }
 
     /**
+     * This will create a new PDStream object.
+     *
+     * @param document
+     *            The document that the stream will be part of.
+     */
+    public PDStream(COSDocument document)
+    {
+        stream = document.createCOSStream();
+    }
+
+    /**
      * Constructor.
      * 
      * @param str
@@ -87,14 +99,48 @@ public class PDStream implements COSObjectable
      * 
      * @param doc
      *            The document that will hold the stream.
-     * @param str
+     * @param input
      *            The stream parameter.
      * @throws IOException
      *             If there is an error creating the stream in the document.
      */
-    public PDStream(PDDocument doc, InputStream str) throws IOException
+    public PDStream(PDDocument doc, InputStream input) throws IOException
     {
-        this(doc, str, false);
+        this(doc, input, false);
+    }
+
+    /**
+     * Constructor. Reads all data from the input stream and embeds it into the
+     * document, this will close the InputStream.
+     *
+     * @param doc
+     *            The document that will hold the stream.
+     * @param input
+     *            The stream parameter.
+     * @throws IOException
+     *             If there is an error creating the stream in the document.
+     */
+    public PDStream(COSDocument doc, InputStream input) throws IOException
+    {
+        this(doc, input, false);
+    }
+
+    /**
+     * Constructor. Reads all data from the input stream and embeds it into the
+     * document, this will close the InputStream.
+     *
+     * @param doc
+     *            The document that will hold the stream.
+     * @param input
+     *            The stream parameter.
+     * @param filtered
+     *            True if the stream already has a filter applied.
+     * @throws IOException
+     *             If there is an error creating the stream in the document.
+     */
+    public PDStream(PDDocument doc, InputStream input, boolean filtered) throws IOException
+    {
+        this(doc.getDocument(), input, filtered);
     }
 
     /**
@@ -103,20 +149,19 @@ public class PDStream implements COSObjectable
      * 
      * @param doc
      *            The document that will hold the stream.
-     * @param str
+     * @param input
      *            The stream parameter.
      * @param filtered
      *            True if the stream already has a filter applied.
      * @throws IOException
      *             If there is an error creating the stream in the document.
      */
-    public PDStream(PDDocument doc, InputStream str, boolean filtered)
-            throws IOException
+    public PDStream(COSDocument doc, InputStream input, boolean filtered) throws IOException
     {
         OutputStream output = null;
         try
         {
-            stream = doc.getDocument().createCOSStream();
+            stream = doc.createCOSStream();
             if (filtered)
             {
                 output = stream.createFilteredStream();
@@ -125,12 +170,7 @@ public class PDStream implements COSObjectable
             {
                 output = stream.createUnfilteredStream();
             }
-            byte[] buffer = new byte[1024];
-            int amountRead;
-            while ((amountRead = str.read(buffer)) != -1)
-            {
-                output.write(buffer, 0, amountRead);
-            }
+            IOUtils.copy(input, output);
         } 
         finally
         {
@@ -138,9 +178,9 @@ public class PDStream implements COSObjectable
             {
                 output.close();
             }
-            if (str != null)
+            if (input != null)
             {
-                str.close();
+                input.close();
             }
         }
     }
@@ -158,41 +198,6 @@ public class PDStream implements COSObjectable
             filters.add(COSName.FLATE_DECODE);
             setFilters(filters);
         }
-    }
-
-    /**
-     * Create a pd stream from either a regular COSStream on a COSArray of cos
-     * streams.
-     * 
-     * @param base
-     *            Either a COSStream or COSArray.
-     * @return A PDStream or null if base is null.
-     * @throws IOException
-     *             If there is an error creating the PDStream.
-     */
-    public static PDStream createFromCOS(COSBase base) throws IOException
-    {
-        PDStream retval = null;
-        if (base instanceof COSStream)
-        {
-            retval = new PDStream((COSStream) base);
-        } 
-        else if (base instanceof COSArray)
-        {
-            if (((COSArray) base).size() > 0)
-            {
-                retval = new PDStream(new COSStreamArray((COSArray) base));
-            }
-        } 
-        else
-        {
-            if (base != null)
-            {
-                throw new IOException("Contents are unknown type:"
-                        + base.getClass().getName());
-            }
-        }
-        return retval;
     }
 
     /**
@@ -271,7 +276,7 @@ public class PDStream implements COSObjectable
 
     /**
      * Get the cos stream associated with this object.
-     * 
+     *
      * @return The cos object that matches this Java object.
      */
     public COSStream getStream()
@@ -607,5 +612,4 @@ public class PDStream implements COSObjectable
     {
         this.stream.setInt(COSName.DL, decodedStreamLength);
     }
-
 }

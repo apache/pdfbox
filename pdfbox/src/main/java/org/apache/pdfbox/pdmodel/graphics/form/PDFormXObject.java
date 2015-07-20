@@ -17,13 +17,13 @@
 package org.apache.pdfbox.pdmodel.graphics.form;
 
 import java.awt.geom.AffineTransform;
-
+import java.io.IOException;
+import java.io.InputStream;
 import org.apache.pdfbox.contentstream.PDContentStream;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.ResourceCache;
@@ -121,11 +121,16 @@ public class PDFormXObject extends PDXObject implements PDContentStream
         }
         return group;
     }
+    
+    public PDStream getContentStream()
+    {
+        return new PDStream(getCOSStream());
+    }
 
     @Override
-    public COSStream getContentStream()
+    public InputStream getContents() throws IOException
     {
-        return getCOSStream();
+        return getCOSStream().getUnfilteredStream();
     }
 
     /**

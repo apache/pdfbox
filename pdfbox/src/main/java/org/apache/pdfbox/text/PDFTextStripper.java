@@ -298,9 +298,8 @@ public class PDFTextStripper extends PDFTextStreamEngine
 
         for (PDPage page : pages)
         {
-            PDStream contentStream = page.getStream();
             currentPageNo++;
-            if (contentStream != null)
+            if (page.hasContents())
             {
                 processPage(page);
             }

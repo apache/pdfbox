@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.pattern;
 
+import java.io.IOException;
+import java.io.InputStream;
 import org.apache.pdfbox.contentstream.PDContentStream;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -23,6 +25,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.common.PDStream;
 
 /**
  * A tiling pattern dictionary.
@@ -165,11 +168,16 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
         float yStep = getCOSObject().getFloat( COSName.Y_STEP, 0 );
         return yStep == Short.MAX_VALUE ? 0 : yStep;
     }
+    
+    public PDStream getContentStream()
+    {
+        return new PDStream((COSStream)getCOSObject());
+    }
 
     @Override
-    public COSStream getContentStream()
+    public InputStream getContents() throws IOException
     {
-        return (COSStream)getCOSObject();
+        return ((COSStream)getCOSObject()).getUnfilteredStream();
     }
 
     /**
