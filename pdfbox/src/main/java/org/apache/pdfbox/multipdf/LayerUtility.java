@@ -147,9 +147,7 @@ public class LayerUtility
      */
     public PDFormXObject importPageAsForm(PDDocument sourceDoc, PDPage page) throws IOException
     {
-        COSStream pageStream = (COSStream)page.getStream().getCOSObject();
-        PDStream newStream = new PDStream(targetDoc,
-                pageStream.getUnfilteredStream(), false);
+        PDStream newStream = new PDStream(targetDoc, page.getContents(), false);
         PDFormXObject form = new PDFormXObject(newStream);
 
         //Copy resources

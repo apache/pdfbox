@@ -31,7 +31,6 @@ import javax.crypto.Cipher;
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
@@ -241,16 +240,14 @@ public class TestSymmetricKeyEncryption extends TestCase
         int numSrcPages = document.getNumberOfPages();
         PDFRenderer pdfRenderer = new PDFRenderer(document);
         List<BufferedImage> srcImgTab = new ArrayList<BufferedImage>();
-        List<ByteArrayOutputStream> srcContentStreamTab = new ArrayList<ByteArrayOutputStream>();
+        List<byte[]> srcContentStreamTab = new ArrayList<byte[]>();
         for (int i = 0; i < numSrcPages; ++i)
         {
             srcImgTab.add(pdfRenderer.renderImage(i));
-            COSStream contentStream = document.getPage(i).getContentStream();
-            InputStream unfilteredStream = contentStream.getUnfilteredStream();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            IOUtils.copy(unfilteredStream, baos);
+            InputStream unfilteredStream = document.getPage(i).getContents();
+            byte[] bytes = IOUtils.toByteArray(unfilteredStream);
             unfilteredStream.close();
-            srcContentStreamTab.add(baos);
+            srcContentStreamTab.add(bytes);
         }
 
         PDDocument encryptedDoc = encrypt(keyLength, sizePriorToEncr, document,
@@ -265,14 +262,12 @@ public class TestSymmetricKeyEncryption extends TestCase
             ValidateXImage.checkIdent(bim, srcImgTab.get(i));
 
             // compare content streams
-            COSStream contentStreamDecr = encryptedDoc.getPage(i).getContentStream();
-            InputStream unfilteredStream = contentStreamDecr.getUnfilteredStream();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            IOUtils.copy(unfilteredStream, baos);
+            InputStream unfilteredStream = encryptedDoc.getPage(i).getContents();
+            byte[] bytes = IOUtils.toByteArray(unfilteredStream);
             unfilteredStream.close();
             Assert.assertArrayEquals("content stream of page " + i + " not identical",
-                    srcContentStreamTab.get(i).toByteArray(),
-                    baos.toByteArray());
+                    srcContentStreamTab.get(i),
+                    bytes);
         }
 
         File pdfFile = new File(testResultsDir, prefix + keyLength + "-bit-decrypted.pdf");

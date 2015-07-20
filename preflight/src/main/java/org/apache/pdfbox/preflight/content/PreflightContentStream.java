@@ -32,7 +32,6 @@ import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
@@ -66,8 +65,7 @@ public class PreflightContentStream extends PreflightStreamEngine
     {
         try
         {
-            PDStream pstream = this.processeedPage.getStream();
-            if (pstream != null)
+            if (this.processeedPage.hasContents())
             {
                 processPage(this.processeedPage);
             }

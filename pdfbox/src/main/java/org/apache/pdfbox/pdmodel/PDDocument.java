@@ -556,33 +556,23 @@ public class PDDocument implements Closeable
     public PDPage importPage(PDPage page) throws IOException
     {
         PDPage importedPage = new PDPage(new COSDictionary(page.getCOSObject()), resourceCache);
-        InputStream is = null;
-        OutputStream os = null;
+        InputStream in = null;
         try
         {
-            PDStream src = page.getStream();
-            if (src != null)
+            in = page.getContents();
+            if (in != null)
             {
-                PDStream dest = new PDStream(document.createCOSStream());
+                PDStream dest = new PDStream(document, page.getContents());
                 dest.addCompression();
                 importedPage.setContents(dest);
-                is = src.createInputStream();
-                os = dest.createOutputStream();
-                IOUtils.copy(is, os);
             }
             addPage(importedPage);
         }
-        finally
+        catch (IOException e)
         {
-            if (is != null)
-            {
-                is.close();
-            }
-            if (os != null)
-            {
-                os.close();
-            }
+            IOUtils.closeQuietly(in);
         }
+
         return importedPage;
     }
 

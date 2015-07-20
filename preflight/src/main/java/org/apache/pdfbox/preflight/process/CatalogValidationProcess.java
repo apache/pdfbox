@@ -21,84 +21,12 @@
 
 package org.apache.pdfbox.preflight.process;
 
-import static org.apache.pdfbox.preflight.PreflightConfiguration.ACTIONS_PROCESS;
-import static org.apache.pdfbox.preflight.PreflightConstants.DICTIONARY_KEY_ADDITIONAL_ACTION;
-import static org.apache.pdfbox.preflight.PreflightConstants.DOCUMENT_DICTIONARY_KEY_OUTPUT_INTENTS;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ACTION_FORBIDDEN_ADDITIONAL_ACTION;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ACTION_FORBIDDEN_ACTIONS_NAMED;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_INVALID;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_MULTIPLE;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_TOO_RECENT;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_OUTPUT_INTENT_S_VALUE_INVALID;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_LANG_NOT_RFC1766;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_NOCATALOG;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_TRAILER_CATALOG_EMBEDDEDFILES;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_TRAILER_CATALOG_OCPROPERTIES;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_Adobe;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_CGATS_TR001;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_CGATS_TR002;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_CGATS_TR003;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_CGATS_TR005;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_CGATS_TR006;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_CGATS_TR_001;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_CGATS_TR_002;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_CGATS_TR_003;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_CGATS_TR_005;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_CGATS_TR_006;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_ERIMM;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_EUROSB104;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_EUROSB204;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA27;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA28;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA29;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA30;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA31;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA32;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA33;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA34;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA35;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA36;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA37;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA38;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA39;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA40;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA41;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA42;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA43;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA44;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA45;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA46;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA47;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_IFRA26;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_JC200103;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_JC200104;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_JCN2002;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_JCW2003;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_RIMM;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_ROMM;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_bg_sRGB;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_eciRGB;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_opRGB;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_sRGB;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_sRGB_IEC;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_sYCC;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_scRGB;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_scRGB_nl;
-import static org.apache.pdfbox.preflight.PreflightConstants.ICC_CHARACTERIZATION_DATA_REGISTRY_scYCC_nl;
-import static org.apache.pdfbox.preflight.PreflightConstants.OUTPUT_INTENT_DICTIONARY_KEY_DEST_OUTPUT_PROFILE;
-import static org.apache.pdfbox.preflight.PreflightConstants.OUTPUT_INTENT_DICTIONARY_KEY_INFO;
-import static org.apache.pdfbox.preflight.PreflightConstants.OUTPUT_INTENT_DICTIONARY_KEY_OUTPUT_CONDITION_IDENTIFIER;
-import static org.apache.pdfbox.preflight.PreflightConstants.OUTPUT_INTENT_DICTIONARY_KEY_S;
-import static org.apache.pdfbox.preflight.PreflightConstants.OUTPUT_INTENT_DICTIONARY_VALUE_GTS_PDFA1;
-
 import java.awt.color.ICC_Profile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -106,12 +34,12 @@ import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
+import org.apache.pdfbox.cos.COSObjectKey;
+import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDEmbeddedFilesNameTreeNode;
-import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.cos.COSObjectKey;
 import org.apache.pdfbox.preflight.PreflightConfiguration;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
@@ -119,6 +47,10 @@ import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.graphic.ICCProfileWrapper;
 import org.apache.pdfbox.preflight.utils.COSUtils;
 import org.apache.pdfbox.preflight.utils.ContextHelper;
+
+
+import static org.apache.pdfbox.preflight.PreflightConfiguration.ACTIONS_PROCESS;
+import static org.apache.pdfbox.preflight.PreflightConstants.*;
 
 /**
  * This ValidationProcess check if the Catalog entries are confirming with the PDF/A-1b specification.
@@ -417,7 +349,7 @@ public class CatalogValidationProcess extends AbstractProcess
             // keep reference to avoid multiple profile definition
             mapDestOutputProfile.put(new COSObjectKey((COSObject) destOutputProfile), true);
             COSDocument cosDocument = ctx.getDocument().getDocument();
-            PDStream stream = PDStream.createFromCOS(COSUtils.getAsStream(destOutputProfile, cosDocument));
+            COSStream stream = COSUtils.getAsStream(destOutputProfile, cosDocument);
             if (stream == null)
             {
                 addValidationError(ctx, new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
@@ -425,7 +357,7 @@ public class CatalogValidationProcess extends AbstractProcess
                 return;
             }
 
-            ICC_Profile iccp = ICC_Profile.getInstance(stream.createInputStream());
+            ICC_Profile iccp = ICC_Profile.getInstance(stream.getUnfilteredStream());
             
             if (!validateICCProfileNEntry(stream, ctx, iccp))
             {
@@ -487,7 +419,7 @@ public class CatalogValidationProcess extends AbstractProcess
         return true;
     }
 
-    private boolean validateICCProfileNEntry(PDStream stream, PreflightContext ctx, ICC_Profile iccp)
+    private boolean validateICCProfileNEntry(COSStream stream, PreflightContext ctx, ICC_Profile iccp)
     {
         COSDictionary streamDict = (COSDictionary) stream.getCOSObject();
         if (!streamDict.containsKey(COSName.N))

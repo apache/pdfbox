@@ -20,9 +20,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.contentstream.PDContentStream;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSBoolean;
@@ -32,6 +32,7 @@ import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 
@@ -55,8 +56,18 @@ public class PDFStreamParser extends BaseParser
     /**
      * Constructor.
      *
-     * @param stream The stream to parse.
+     * @param contentStream The content stream to parse.
+     * @throws IOException If there is an error initializing the stream.
+     */
+    public PDFStreamParser(PDContentStream contentStream) throws IOException
+    {
+        this(new RandomAccessBuffer(contentStream.getContents()));
+    }
+    
+    /**
+     * Constructor.
      *
+     * @param stream The stream to parse.
      * @throws IOException If there is an error initializing the stream.
      */
     public PDFStreamParser( PDStream stream ) throws IOException
@@ -68,7 +79,6 @@ public class PDFStreamParser extends BaseParser
      * Constructor.
      *
      * @param stream The stream to parse.
-     *
      * @throws IOException If there is an error initializing the stream.
      */
     public PDFStreamParser( COSStream stream ) throws IOException
@@ -80,7 +90,6 @@ public class PDFStreamParser extends BaseParser
      * Constructor.
      *
      * @param input The random access read to parse.
-     *
      * @throws IOException If there is an error initializing the stream.
      */
     public PDFStreamParser( RandomAccessRead input ) throws IOException

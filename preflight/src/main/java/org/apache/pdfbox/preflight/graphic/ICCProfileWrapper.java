@@ -24,21 +24,22 @@ package org.apache.pdfbox.preflight.graphic;
 import java.awt.color.ICC_ColorSpace;
 import java.awt.color.ICC_Profile;
 import java.io.IOException;
-
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
-import org.apache.pdfbox.pdmodel.common.PDStream;
-import static org.apache.pdfbox.preflight.PreflightConstants.DOCUMENT_DICTIONARY_KEY_OUTPUT_INTENTS;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_INVALID;
-import static org.apache.pdfbox.preflight.PreflightConstants.OUTPUT_INTENT_DICTIONARY_KEY_DEST_OUTPUT_PROFILE;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.PreflightDocument;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.utils.COSUtils;
+
+
+import static org.apache.pdfbox.preflight.PreflightConstants.DOCUMENT_DICTIONARY_KEY_OUTPUT_INTENTS;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_INVALID;
+import static org.apache.pdfbox.preflight.PreflightConstants.OUTPUT_INTENT_DICTIONARY_KEY_DEST_OUTPUT_PROFILE;
 
 /**
  * This class embeds an instance of java.awt.color.ICC_Profile which represent the ICCProfile defined by the
@@ -134,11 +135,10 @@ public class ICCProfileWrapper
             {
                 try
                 {
-                    PDStream stream = PDStream.createFromCOS(COSUtils.getAsStream(destOutputProfile,
-                            document.getDocument()));
+                    COSStream stream = COSUtils.getAsStream(destOutputProfile, document.getDocument());
                     if (stream != null)
                     {
-                        ICC_Profile iccp = ICC_Profile.getInstance(stream.createInputStream());
+                        ICC_Profile iccp = ICC_Profile.getInstance(stream.getUnfilteredStream());
                         return new ICCProfileWrapper(iccp);
                     }
                 }

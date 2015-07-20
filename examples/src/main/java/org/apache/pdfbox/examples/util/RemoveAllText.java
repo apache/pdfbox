@@ -70,7 +70,7 @@ public class RemoveAllText
                 }
                 for( PDPage page : document.getPages() )
                 {
-                    PDFStreamParser parser = new PDFStreamParser(page.getStream());
+                    PDFStreamParser parser = new PDFStreamParser(page);
                     parser.parse();
                     List<Object> tokens = parser.getTokens();
                     List<Object> newTokens = new ArrayList<Object>();

@@ -17,7 +17,8 @@
 
 package org.apache.pdfbox.contentstream;
 
-import org.apache.pdfbox.cos.COSStream;
+import java.io.IOException;
+import java.io.InputStream;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.util.Matrix;
@@ -30,9 +31,12 @@ import org.apache.pdfbox.util.Matrix;
 public interface PDContentStream
 {
     /**
-     * Returns the underlying COS stream.
+     * Returns this stream's content, if any.
+     * 
+     * @return An InputStream or null.
+     * @throws IOException If the stream could not be read
      */
-    COSStream getContentStream();
+    InputStream getContents() throws IOException;
 
     /**
      * Returns this stream's resources, if any.

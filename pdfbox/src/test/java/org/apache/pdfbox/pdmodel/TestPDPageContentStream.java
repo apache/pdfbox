@@ -20,7 +20,6 @@ import java.io.IOException;
 import junit.framework.TestCase;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.cos.COSFloat;
-import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 
 /**
@@ -41,8 +40,7 @@ public class TestPDPageContentStream extends TestCase
         contentStream.close();
 
         // now read the PDF stream and verify that the CMYK values are correct
-        COSStream stream = page.getStream().getStream();
-        PDFStreamParser parser = new PDFStreamParser(stream);
+        PDFStreamParser parser = new PDFStreamParser(page);
         parser.parse();
         java.util.List<Object>  pageTokens = parser.getTokens();
         // expected five tokens :
@@ -67,8 +65,7 @@ public class TestPDPageContentStream extends TestCase
         contentStream.close();
 
         // now read the PDF stream and verify that the CMYK values are correct
-        stream = page.getStream().getStream();
-        parser = new PDFStreamParser(stream);
+        parser = new PDFStreamParser(page);
         parser.parse();
         pageTokens = parser.getTokens();
         // expected five tokens  :
