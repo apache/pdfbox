@@ -1027,6 +1027,10 @@ public class XMPSchema extends AbstractStructuredType
     public void setUnqualifiedLanguagePropertyValue(String name, String language, String value)
     {
         String qualifiedName = name;
+        if (language == null || language.isEmpty())
+        {
+            language = XmpConstants.X_DEFAULT;
+        }
         AbstractField property = getAbstractProperty(qualifiedName);
         ArrayProperty arrayProp;
         if (property != null)
