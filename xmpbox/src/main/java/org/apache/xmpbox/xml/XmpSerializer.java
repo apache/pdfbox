@@ -110,6 +110,11 @@ public class XmpSerializer
                 AbstractSimpleProperty simple = (AbstractSimpleProperty) field;
                 Element esimple = doc.createElement(simple.getPrefix() + ":" + simple.getPropertyName());
                 esimple.setTextContent(simple.getStringValue());
+                List<Attribute> attributes = simple.getAllAttributes();
+                for (Attribute attribute : attributes)
+                {
+                    esimple.setAttributeNS(attribute.getNamespace(), attribute.getName(), attribute.getValue());
+                }
                 parent.appendChild(esimple);
             }
             else if (field instanceof ArrayProperty)
