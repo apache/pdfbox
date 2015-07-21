@@ -70,7 +70,7 @@ public final class PDGroup implements COSObjectable
     {
         if (colorSpace == null)
         {
-            colorSpace = PDColorSpace.create(getCOSObject().getDictionaryObject(COSName.COLORSPACE));
+            colorSpace = PDColorSpace.create(getCOSObject().getDictionaryObject(COSName.CS));
         }
         return colorSpace;
     }
