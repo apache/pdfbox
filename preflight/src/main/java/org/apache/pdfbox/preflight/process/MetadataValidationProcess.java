@@ -66,11 +66,10 @@ public class MetadataValidationProcess extends AbstractProcess
         {
             PDDocument document = ctx.getDocument();
 
-            byte[] tmp = getXpacket(document.getDocument());
-            DomXmpParser builder;
-            builder = new DomXmpParser();
-            XMPMetadata metadata;
-            metadata = builder.parse(tmp);
+            InputStream is = getXpacket(document.getDocument());
+            DomXmpParser builder = new DomXmpParser();
+            XMPMetadata metadata = builder.parse(is);
+            is.close();
             ctx.setMetadata(metadata);
 
             // 6.7.5 no deprecated attribute in xpacket processing instruction
@@ -254,7 +253,7 @@ public class MetadataValidationProcess extends AbstractProcess
     /**
      * Return the xpacket from the dictionary's stream
      */
-    public static byte[] getXpacket(COSDocument cdocument) throws IOException, XpacketParsingException
+    static InputStream getXpacket(COSDocument cdocument) throws IOException, XpacketParsingException
     {
         COSObject catalog = cdocument.getCatalog();
         COSBase cb = catalog.getDictionaryObject(COSName.METADATA);
@@ -284,12 +283,7 @@ public class MetadataValidationProcess extends AbstractProcess
         }
 
         COSStream stream = (COSStream)metadataDictionnary;
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        InputStream is = stream.getUnfilteredStream();
-        IOUtils.copy(is, bos);
-        is.close();
-        bos.close();
-        return bos.toByteArray();
+        return stream.getUnfilteredStream();
     }
 
     /**
