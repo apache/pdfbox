@@ -274,6 +274,14 @@ public class MetadataValidationProcess extends AbstractProcess
                     "Filter specified in metadata dictionnary");
             throw new XpacketParsingException("Failed while retrieving xpacket", error);
         }
+        
+        if (!(metadataDictionnary instanceof COSStream))
+        {
+            // missing Metadata Key in catalog
+            ValidationError error = new ValidationError(PreflightConstants.ERROR_METADATA_FORMAT,
+                    "Metadata is not a stream");
+            throw new XpacketParsingException("Failed while retrieving xpacket", error);
+        }
 
         COSStream stream = (COSStream)metadataDictionnary;
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
