@@ -598,7 +598,18 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                                       RenderingHints.VALUE_ANTIALIAS_OFF);
         }
 
-        graphics.fill(linePath);
+        if (!(graphics.getPaint() instanceof Color))
+        {
+            // apply clip to path to avoid oversized device bounds in shading contexts (PDFBOX-2901)
+            Area area = new Area(linePath);
+            area.intersect(new Area(graphics.getClip()));
+            graphics.fill(area);
+        }
+        else
+        {
+            graphics.fill(linePath);
+        }
+        
         linePath.reset();
 
         if (noAntiAlias)
