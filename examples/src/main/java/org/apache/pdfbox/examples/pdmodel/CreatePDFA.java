@@ -73,6 +73,7 @@ public class CreatePDFA
 
             // add XMP metadata
             XMPMetadata xmp = XMPMetadata.createXMPMetadata();
+            
             try
             {
                 DublinCoreSchema dc = xmp.createAndAddDublinCoreSchema();
@@ -81,7 +82,6 @@ public class CreatePDFA
                 PDFAIdentificationSchema id = xmp.createAndAddPFAIdentificationSchema();
                 id.setPart(1);
                 id.setConformance("B");
-                id.setAboutAsSimple("PDFBox PDF/A sample");
                 
                 XmpSerializer serializer = new XmpSerializer();
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
