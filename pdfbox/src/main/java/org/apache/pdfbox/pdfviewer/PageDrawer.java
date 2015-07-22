@@ -359,7 +359,17 @@ public class PageDrawer extends PDFStreamEngine
         getLinePath().setWindingRule(windingRule);
         graphics.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
         graphics.setClip(getGraphicsState().getCurrentClippingPath());
-        graphics.fill( getLinePath() );
+        if (!(graphics.getPaint() instanceof Color))
+        {
+            // apply clip to path to avoid oversized device bounds in shading contexts (PDFBOX-XXXX)
+            Area area = new Area(getLinePath());
+            area.intersect(new Area(graphics.getClip()));
+            graphics.fill(area);
+        }
+        else
+        {
+            graphics.fill( getLinePath() );
+        }
         getLinePath().reset();
     }
 
