@@ -58,7 +58,7 @@ public class PDVisibleSignDesigner
      *
      * @param originalDocumenStream
      * @param imageStream
-     * @param page the page number the visible signature is added to.
+     * @param page the 1-based page number for which the page size should be calculated.
      * @throws IOException
      */
     public PDVisibleSignDesigner(InputStream originalDocumenStream, InputStream imageStream, int page) throws IOException
@@ -72,7 +72,7 @@ public class PDVisibleSignDesigner
      * 
      * @param documentPath - path of your pdf document
      * @param imageStream - stream of image
-     * @param page the page number the visible signature is added to.
+     * @param page the 1-based page number for which the page size should be calculated.
      * @throws IOException
      */
     public PDVisibleSignDesigner(String documentPath, InputStream imageStream, int page) throws IOException
@@ -93,7 +93,7 @@ public class PDVisibleSignDesigner
      * 
      * @param doc - Already created PDDocument of your PDF document
      * @param imageStream
-     * @param page the page number the visible signature is added to.
+     * @param page the 1-based page number for which the page size should be calculated.
      * @throws IOException - If we can't read, flush, or can't close stream
      */
     public PDVisibleSignDesigner(PDDocument doc, InputStream imageStream, int page) throws IOException 
@@ -103,10 +103,11 @@ public class PDVisibleSignDesigner
     }
 
     /**
-     * Each page of document can be different sizes.
+     * Each page of document can be different sizes. This method calculates the page size based on
+     * the page media box.
      * 
      * @param document
-     * @param page the page number for which the size should be calculated
+     * @param page the 1-based page number for which the page size should be calculated.
      */
     private void calculatePageSize(PDDocument document, int page)
     {
