@@ -23,7 +23,6 @@ package org.apache.pdfbox.preflight.process;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -36,7 +35,6 @@ import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.PreflightContext;
@@ -253,7 +251,7 @@ public class MetadataValidationProcess extends AbstractProcess
     /**
      * Return the xpacket from the dictionary's stream
      */
-    static InputStream getXpacket(COSDocument cdocument) throws IOException, XpacketParsingException
+    private static InputStream getXpacket(COSDocument cdocument) throws IOException, XpacketParsingException
     {
         COSObject catalog = cdocument.getCatalog();
         COSBase cb = catalog.getDictionaryObject(COSName.METADATA);
@@ -282,7 +280,7 @@ public class MetadataValidationProcess extends AbstractProcess
             throw new XpacketParsingException("Failed while retrieving xpacket", error);
         }
 
-        COSStream stream = (COSStream)metadataDictionnary;
+        COSStream stream = (COSStream) metadataDictionnary;
         return stream.getUnfilteredStream();
     }
 
