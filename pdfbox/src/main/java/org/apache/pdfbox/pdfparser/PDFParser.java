@@ -664,8 +664,7 @@ public class PDFParser extends BaseParser
                         streamLengthCheckSet.add(strmObj);
                     }
                     
-                    final COSName objectType = (COSName)strmObj.getItem( COSName.TYPE );
-                    if( objectType != null && objectType.equals( COSName.XREF ) )
+                    if (COSName.XREF.equals(strmObj.getItem(COSName.TYPE)))
                     {
                         // XRef stream
                         parseXrefStream( strmObj, currentObjByteOffset );
