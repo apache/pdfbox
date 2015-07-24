@@ -128,8 +128,6 @@ public class StreamPane implements ActionListener
     {
 
         private final String filterKey;
-        private StyledDocument docu;
-        OperatorMarker marker;
 
         private DocumentCreator(String filterKey)
         {
@@ -200,7 +198,7 @@ public class StreamPane implements ActionListener
         private StyledDocument getDocument(InputStream inputStream)
         {
             String data = getStringOfStream(inputStream);
-            docu = new DefaultStyledDocument();
+            StyledDocument docu = new DefaultStyledDocument();
             try
             {
                 docu.insertString(0, data, null);
@@ -214,8 +212,7 @@ public class StreamPane implements ActionListener
 
         private StyledDocument getContentStreamDocument(InputStream inputStream)
         {
-            docu = new DefaultStyledDocument();
-            marker = new OperatorMarker();
+            StyledDocument docu = new DefaultStyledDocument();
 
             PDFStreamParser parser;
             try
@@ -230,12 +227,12 @@ public class StreamPane implements ActionListener
 
             for (Object obj : parser.getTokens())
             {
-                writeObject(obj);
+                writeObject(obj, docu);
             }
             return docu;
         }
 
-        private void writeObject(Object obj)
+        private void writeObject(Object obj, StyledDocument docu)
         {
             try
             {
@@ -244,24 +241,27 @@ public class StreamPane implements ActionListener
                     Operator op = (Operator) obj;
                     if (op.getName().equals("BI"))
                     {
-                        docu.insertString(docu.getLength(), "BI" + "\n", marker.getStyle("BI"));
+                        docu.insertString(docu.getLength(), OperatorMarker.INLINE_IMAGE_BEGIN + "\n",
+                                OperatorMarker.getStyle(OperatorMarker.INLINE_IMAGE_BEGIN));
                         COSDictionary dic = op.getImageParameters();
                         for (COSName key : dic.keySet())
                         {
                             Object value = dic.getDictionaryObject(key);
                             docu.insertString(docu.getLength(), "/" + key.getName() + " ", null);
-                            writeObject(value);
+                            writeObject(value, docu);
                             docu.insertString(docu.getLength(), "\n", null);
                         }
-                        docu.insertString(docu.getLength(), "ID\n", marker.getStyle("ID"));
-                        docu.insertString(docu.getLength(), new String(op.getImageData()), null);
+                        docu.insertString(docu.getLength(), OperatorMarker.IMAGE_DATA +"\n",
+                                OperatorMarker.getStyle(OperatorMarker.IMAGE_DATA));
+                        docu.insertString(docu.getLength(), new String(op.getImageData(), "ISO-8859-1"), null);
                         docu.insertString(docu.getLength(), "\n", null);
-                        docu.insertString(docu.getLength(), "EI\n", marker.getStyle("EI"));
+                        docu.insertString(docu.getLength(), OperatorMarker.INLINE_IMAGE_END +"\n",
+                                OperatorMarker.getStyle(OperatorMarker.INLINE_IMAGE_END));
                     }
                     else
                     {
                         String operator = ((Operator) obj).getName();
-                        docu.insertString(docu.getLength(), operator + "\n", marker.getStyle(operator));
+                        docu.insertString(docu.getLength(), operator + "\n", OperatorMarker.getStyle(operator));
                     }
                 }
                 else
@@ -298,6 +298,10 @@ public class StreamPane implements ActionListener
                 }
             }
             catch (BadLocationException e)
+            {
+                e.printStackTrace();
+            }
+            catch (UnsupportedEncodingException e)
             {
                 e.printStackTrace();
             }
