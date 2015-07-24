@@ -29,15 +29,18 @@ import javax.swing.text.StyleContext;
  */
 final class OperatorMarker
 {
-    private Map<String, Style> operatorStyleMap;
+    public static final String BEGIN_TEXT_OBJECT = "BT";
+    public static final String END_TEXT_OBJECT = "ET";
+    public static final String SAVE_GRAPHICS_STATE = "q";
+    public static final String RESTORE_GRAPHICS_STATE = "Q";
+    public static final String CONCAT = "cm";
+    public static final String INLINE_IMAGE_BEGIN = "BI";
+    public static final String IMAGE_DATA = "ID";
+    public static final String INLINE_IMAGE_END = "EI";
 
-    OperatorMarker()
-    {
-        operatorStyleMap = new HashMap<String, Style>();
-        initOperatorStyles();
-    }
+    private static final Map<String, Style> operatorStyleMap;
 
-    private void initOperatorStyles()
+    static
     {
         StyleContext styleContext = StyleContext.getDefaultStyleContext();
 
@@ -59,27 +62,25 @@ final class OperatorMarker
         Style imageData = styleContext.addStyle("ID", common);
         StyleConstants.setForeground(imageData, new Color(255, 165, 0));
 
-        final String BEGIN_TEXT_OBJECT = "BT";
-        final String END_TEXT_OBJECT = "ET";
-        final String SAVE_GRAPHICS_STATE = "q";
-        final String RESTORE_GRAPHICS_STATE = "Q";
-        final String CONCAT = "cm";
-        final String INLINE_IMAGE_BEGIN = "BI";
-        final String IMAGE_DATA = "ID";
-        final String INLINE_IMAGE_END = "EI";
+        Map<String, Style> styleMap = new HashMap<String, Style>();
 
+        styleMap.put(BEGIN_TEXT_OBJECT, textObjectStyle);
+        styleMap.put(END_TEXT_OBJECT, textObjectStyle);
+        styleMap.put(SAVE_GRAPHICS_STATE, graphicsStyle);
+        styleMap.put(RESTORE_GRAPHICS_STATE, graphicsStyle);
+        styleMap.put(CONCAT, concatStyle);
+        styleMap.put(INLINE_IMAGE_BEGIN, inlineImage);
+        styleMap.put(IMAGE_DATA, imageData);
+        styleMap.put(INLINE_IMAGE_END, inlineImage);
 
-        operatorStyleMap.put(BEGIN_TEXT_OBJECT, textObjectStyle);
-        operatorStyleMap.put(END_TEXT_OBJECT, textObjectStyle);
-        operatorStyleMap.put(SAVE_GRAPHICS_STATE, graphicsStyle);
-        operatorStyleMap.put(RESTORE_GRAPHICS_STATE, graphicsStyle);
-        operatorStyleMap.put(CONCAT, concatStyle);
-        operatorStyleMap.put(INLINE_IMAGE_BEGIN, inlineImage);
-        operatorStyleMap.put(IMAGE_DATA, imageData);
-        operatorStyleMap.put(INLINE_IMAGE_END, inlineImage);
+        operatorStyleMap = styleMap;
     }
 
-    Style getStyle(String operator)
+    private OperatorMarker()
+    {
+    }
+
+    public static Style getStyle(String operator)
     {
         if (operatorStyleMap.containsKey(operator))
         {
