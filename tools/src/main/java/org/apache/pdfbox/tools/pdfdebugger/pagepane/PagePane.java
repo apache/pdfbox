@@ -98,17 +98,9 @@ public class PagePane implements ActionListener, AncestorListener
     public void actionPerformed(ActionEvent actionEvent)
     {
         String actionCommand = actionEvent.getActionCommand();
-        if (actionCommand.equals(ZoomMenu.ZOOM_50_PERCENT))
+        if (ZoomMenu.isZoomMenu(actionCommand))
         {
-            new RenderWorker(0.5f).execute();
-        }
-        else if (actionCommand.equals(ZoomMenu.ZOOM_100_PERCENT))
-        {
-            new RenderWorker(1).execute();
-        }
-        else if (actionCommand.equals(ZoomMenu.ZOOM_200_PERCENT))
-        {
-            new RenderWorker(2).execute();
+            new RenderWorker(ZoomMenu.getZoomScale(actionCommand)).execute();
         }
     }
 
