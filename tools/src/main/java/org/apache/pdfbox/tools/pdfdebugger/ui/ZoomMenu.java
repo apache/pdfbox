@@ -26,6 +26,10 @@ import javax.swing.JRadioButtonMenuItem;
 
 /**
  * @author Khyrul Bashar
+ *
+ * A singleton class that provides zoom menu which can be used to show zoom menu in the menubar.
+ * To act upon the menu item selection user of the class must add ActionListener which will check for
+ * the action command and act accordingly.
  */
 public class ZoomMenu
 {
@@ -39,11 +43,18 @@ public class ZoomMenu
     private JRadioButtonMenuItem zoom100Item;
     private JRadioButtonMenuItem zoom200Item;
 
+    /**
+     * Constructor.
+     */
     private ZoomMenu()
     {
         menu = createZoomMenu();
     }
 
+    /**
+     * Provides the ZoomMenu instance.
+     * @return ZoomMenu instance.
+     */
     public static ZoomMenu getInstance()
     {
         if (instance == null)
@@ -53,16 +64,29 @@ public class ZoomMenu
         return instance;
     }
 
+    /**
+     * Provide the JMenu instance of the ZoomMenu.
+     * @return JMenu instance.
+     */
     public JMenu getMenu()
     {
         return this.menu;
     }
 
+    /**
+     * Set if the menu should be enabled or disabled.
+     * @param isEnable boolean instance.
+     */
     public void setEnableMenu(boolean isEnable)
     {
         menu.setEnabled(isEnable);
     }
 
+    /**
+     * Add the ActionListener for the menuitems.
+     * @param listener ActionListener.
+     * @return the ZoomMenu instance.
+     */
     public ZoomMenu menuListeners(ActionListener listener)
     {
         for (Component comp: menu.getMenuComponents())
@@ -74,6 +98,10 @@ public class ZoomMenu
         return instance;
     }
 
+    /**
+     * Set the zoom selection.
+     * @param selection String instance.
+     */
     public void setZoomSelection(String selection)
     {
         if (ZOOM_50_PERCENT.equals(selection))
