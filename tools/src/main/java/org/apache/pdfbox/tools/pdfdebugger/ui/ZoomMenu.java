@@ -122,6 +122,32 @@ public class ZoomMenu
         }
     }
 
+    public static boolean isZoomMenu(String actionCommand)
+    {
+        return ZOOM_50_PERCENT.equals(actionCommand) || ZOOM_100_PERCENT.equals(actionCommand) ||
+                ZOOM_200_PERCENT.equals(actionCommand);
+    }
+
+    public static float getZoomScale(String actionCommand)
+    {
+        if (ZOOM_50_PERCENT.equals(actionCommand))
+        {
+            return 0.5f;
+        }
+        else if (ZOOM_100_PERCENT.equals(actionCommand))
+        {
+            return 1;
+        }
+        else if (ZOOM_200_PERCENT.equals(actionCommand))
+        {
+            return 2;
+        }
+        else
+        {
+            throw new IllegalArgumentException();
+        }
+    }
+
     private void removeActionListeners(JMenuItem menuItem)
     {
         for (ActionListener listener: menuItem.getActionListeners())

@@ -97,17 +97,9 @@ class StreamImageView implements ActionListener, AncestorListener
     public void actionPerformed(ActionEvent actionEvent)
     {
         String actionCommand = actionEvent.getActionCommand();
-        if (actionCommand.equals(ZoomMenu.ZOOM_50_PERCENT))
+        if (ZoomMenu.isZoomMenu(actionCommand))
         {
-            addImage(zoomImage(image, 0.5f));
-        }
-        else if (actionCommand.equals(ZoomMenu.ZOOM_100_PERCENT))
-        {
-            addImage(zoomImage(image, 1));
-        }
-        else if (actionCommand.equals(ZoomMenu.ZOOM_200_PERCENT))
-        {
-            addImage(zoomImage(image, 2));
+            addImage(zoomImage(image, ZoomMenu.getZoomScale(actionCommand)));
         }
     }
 
