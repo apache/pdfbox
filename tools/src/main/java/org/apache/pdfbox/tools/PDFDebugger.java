@@ -39,16 +39,13 @@ import java.util.List;
 import java.util.Set;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
 import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
@@ -85,6 +82,7 @@ import org.apache.pdfbox.tools.pdfdebugger.streampane.StreamPane;
 import org.apache.pdfbox.tools.pdfdebugger.treestatus.TreeStatus;
 import org.apache.pdfbox.tools.pdfdebugger.treestatus.TreeStatusPane;
 import org.apache.pdfbox.tools.pdfdebugger.ui.Tree;
+import org.apache.pdfbox.tools.pdfdebugger.ui.ZoomMenu;
 import org.apache.pdfbox.tools.util.FileOpenSaveDialog;
 import org.apache.pdfbox.tools.util.RecentFiles;
 
@@ -98,7 +96,6 @@ public class PDFDebugger extends javax.swing.JFrame
     private TreeStatusPane statusPane;
     private RecentFiles recentFiles;
     private boolean isPageMode;
-    private float scale = 1;
 
     private PDDocument document;
     private String currentFilePath;
@@ -155,15 +152,6 @@ public class PDFDebugger extends javax.swing.JFrame
         helpMenu = new JMenu();
         contentsMenuItem = new JMenuItem();
         aboutMenuItem = new JMenuItem();
-        zoomMenu = new JMenu();
-        zoom50Item = new JRadioButtonMenuItem();
-        zoom100Item = new JRadioButtonMenuItem();
-        zoom200Item = new JRadioButtonMenuItem();
-        zoom100Item.setSelected(true);
-        ButtonGroup bg = new ButtonGroup();
-        bg.add(zoom50Item);
-        bg.add(zoom100Item);
-        bg.add(zoom200Item);
 
         tree.setCellRenderer( new PDFTreeCellRenderer() );
         tree.setModel( null );
@@ -313,38 +301,9 @@ public class PDFDebugger extends javax.swing.JFrame
         aboutMenuItem.setText("About");
         helpMenu.add(aboutMenuItem);
         
-        zoomMenu.setText("Zoom");
-        zoom50Item.setText("50%");
-        zoom100Item.setText("100%");
-        zoom200Item.setText("200%");
-        Action zoomAction = new AbstractAction()
-        {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent)
-            {
-                Object source = actionEvent.getSource();
-                if (zoom50Item.equals(source))
-                {
-                    scale = 0.5f;
-                }
-                if (zoom100Item.equals(source))
-                {
-                    scale = 1;
-                }
-                if (zoom200Item.equals(source))
-                {
-                    scale = 2;
-                }
-                jTree1ValueChanged(null);
-            }
-        };
-        zoom50Item.addActionListener(zoomAction);
-        zoom100Item.addActionListener(zoomAction);
-        zoom200Item.addActionListener(zoomAction);        
-        zoomMenu.add(zoom50Item);
-        zoomMenu.add(zoom100Item);
-        zoomMenu.add(zoom200Item);
-        viewMenu.add(zoomMenu);
+        ZoomMenu zoomMenu = ZoomMenu.getInstance();
+        zoomMenu.setEnableMenu(false);
+        viewMenu.add(zoomMenu.getMenu());
 
         setJMenuBar(menuBar);
 
@@ -477,13 +436,9 @@ public class PDFDebugger extends javax.swing.JFrame
                 
                 if (isPage(selectedNode))
                 {
-                    zoomMenu.setEnabled(true);
-                    SwingUtilities.updateComponentTreeUI(menuBar);
                     showPage(selectedNode);
                     return;
                 }
-                zoomMenu.setEnabled(false);
-                SwingUtilities.updateComponentTreeUI(menuBar);
                 
                 if (isSpecialColorSpace(selectedNode) || isOtherColorSpace(selectedNode))
                 {
@@ -601,26 +556,6 @@ public class PDFDebugger extends javax.swing.JFrame
         return getUnderneathObject(selectedNode) instanceof COSStream;
     }
 
-    private boolean isFont(Object selectedNode)
-    {
-        selectedNode = getUnderneathObject(selectedNode);
-        if (selectedNode instanceof COSDictionary)
-        {
-            COSDictionary dic = (COSDictionary)selectedNode;
-            return  dic.containsKey(COSName.TYPE) &&
-                    dic.getCOSName(COSName.TYPE).equals(COSName.FONT) &&
-                    !isCIDFont(dic);
-        }
-        return false;
-    }
-
-    private boolean isCIDFont(COSDictionary dic)
-    {
-        return dic.containsKey(COSName.SUBTYPE) &&
-                (dic.getCOSName(COSName.SUBTYPE).equals(COSName.CID_FONT_TYPE0)
-                || dic.getCOSName(COSName.SUBTYPE).equals(COSName.CID_FONT_TYPE2));
-    }
-
     /**
      * Show a Panel describing color spaces in more detail and interactive way.
      * @param csNode the special color space containing node.
@@ -673,7 +608,7 @@ public class PDFDebugger extends javax.swing.JFrame
         COSBase typeItem = page.getItem(COSName.TYPE);
         if (COSName.PAGE.equals(typeItem))
         {
-            PagePane pagePane = new PagePane(document, page, scale);
+            PagePane pagePane = new PagePane(document, page);
             jSplitPane1.setRightComponent(new JScrollPane(pagePane.getPanel()));
         }
     }
@@ -1057,10 +992,6 @@ public class PDFDebugger extends javax.swing.JFrame
     private JMenu recentFilesMenu;
     private JMenu viewMenu;
     private JMenuItem viewModeItem;
-    private JMenu zoomMenu;
-    private JRadioButtonMenuItem zoom50Item;
-    private JRadioButtonMenuItem zoom100Item;
-    private JRadioButtonMenuItem zoom200Item;
     private JScrollPane jScrollPane1;
     private JScrollPane jScrollPane2;
     private javax.swing.JSplitPane jSplitPane1;
