@@ -238,31 +238,7 @@ public class StreamPane implements ActionListener
             {
                 if (obj instanceof Operator)
                 {
-                    Operator op = (Operator) obj;
-                    if (op.getName().equals("BI"))
-                    {
-                        docu.insertString(docu.getLength(), OperatorMarker.INLINE_IMAGE_BEGIN + "\n",
-                                OperatorMarker.getStyle(OperatorMarker.INLINE_IMAGE_BEGIN));
-                        COSDictionary dic = op.getImageParameters();
-                        for (COSName key : dic.keySet())
-                        {
-                            Object value = dic.getDictionaryObject(key);
-                            docu.insertString(docu.getLength(), "/" + key.getName() + " ", null);
-                            writeObject(value, docu);
-                            docu.insertString(docu.getLength(), "\n", null);
-                        }
-                        docu.insertString(docu.getLength(), OperatorMarker.IMAGE_DATA +"\n",
-                                OperatorMarker.getStyle(OperatorMarker.IMAGE_DATA));
-                        docu.insertString(docu.getLength(), new String(op.getImageData(), "ISO-8859-1"), null);
-                        docu.insertString(docu.getLength(), "\n", null);
-                        docu.insertString(docu.getLength(), OperatorMarker.INLINE_IMAGE_END +"\n",
-                                OperatorMarker.getStyle(OperatorMarker.INLINE_IMAGE_END));
-                    }
-                    else
-                    {
-                        String operator = ((Operator) obj).getName();
-                        docu.insertString(docu.getLength(), operator + "\n", OperatorMarker.getStyle(operator));
-                    }
+                    addOperators(obj, docu);
                 }
                 else
                 {
@@ -301,9 +277,45 @@ public class StreamPane implements ActionListener
             {
                 e.printStackTrace();
             }
-            catch (UnsupportedEncodingException e)
+        }
+
+        private void addOperators(Object obj, StyledDocument docu)
+        {
+            Operator op = (Operator) obj;
+            try
             {
-                e.printStackTrace();
+                if (op.getName().equals("BI"))
+                {
+                    docu.insertString(docu.getLength(), OperatorMarker.INLINE_IMAGE_BEGIN + "\n",
+                            OperatorMarker.getStyle(OperatorMarker.INLINE_IMAGE_BEGIN));
+                    COSDictionary dic = op.getImageParameters();
+                    for (COSName key : dic.keySet())
+                    {
+                        Object value = dic.getDictionaryObject(key);
+                        docu.insertString(docu.getLength(), "/" + key.getName() + " ", null);
+                        writeObject(value, docu);
+                        docu.insertString(docu.getLength(), "\n", null);
+                    }
+                    docu.insertString(docu.getLength(), OperatorMarker.IMAGE_DATA + "\n",
+                            OperatorMarker.getStyle(OperatorMarker.IMAGE_DATA));
+                    docu.insertString(docu.getLength(), new String(op.getImageData(), "ISO-8859-1"), null);
+                    docu.insertString(docu.getLength(), "\n", null);
+                    docu.insertString(docu.getLength(), OperatorMarker.INLINE_IMAGE_END + "\n",
+                            OperatorMarker.getStyle(OperatorMarker.INLINE_IMAGE_END));
+                }
+                else
+                {
+                    String operator = ((Operator) obj).getName();
+                    docu.insertString(docu.getLength(), operator + "\n", OperatorMarker.getStyle(operator));
+                }
+            }
+            catch (BadLocationException ex)
+            {
+                ex.printStackTrace();
+            }
+            catch (UnsupportedEncodingException ex)
+            {
+                ex.printStackTrace();
             }
         }
 
