@@ -814,8 +814,6 @@ public class COSParser extends BaseParser
         }
     }
     
-    private boolean inGetLength = false;
-
     /** 
      * Returns length value referred to or defined in given object. 
      */
@@ -826,53 +824,40 @@ public class COSParser extends BaseParser
             return null;
         }
 
-        if (inGetLength)
-        {
-            throw new IOException("Loop while reading length from " + lengthBaseObj);
-        }
-
         COSNumber retVal = null;
-        try
+        boolean isObjectStream = COSName.OBJ_STM.equals(streamType);
+        // maybe length was given directly
+        if (lengthBaseObj instanceof COSNumber)
         {
-            boolean isObjectStream = COSName.OBJ_STM.equals(streamType);
-            inGetLength = true;
-            // maybe length was given directly
-            if (lengthBaseObj instanceof COSNumber)
+            retVal = (COSNumber) lengthBaseObj;
+        }
+        // length in referenced object
+        else if (lengthBaseObj instanceof COSObject)
+        {
+            COSObject lengthObj = (COSObject) lengthBaseObj;
+            if (lengthObj.getObject() == null)
             {
-                retVal = (COSNumber) lengthBaseObj;
-            }
-            // length in referenced object
-            else if (lengthBaseObj instanceof COSObject)
-            {
-                COSObject lengthObj = (COSObject) lengthBaseObj;
+                // not read so far, keep current stream position
+                final long curFileOffset = source.getPosition();
+                parseObjectDynamically(lengthObj, isObjectStream);
+                // reset current stream position
+                source.seek(curFileOffset);
                 if (lengthObj.getObject() == null)
                 {
-                    // not read so far, keep current stream position
-                    final long curFileOffset = source.getPosition();
-                    parseObjectDynamically(lengthObj, isObjectStream);
-                    // reset current stream position
-                    source.seek(curFileOffset);
-                    if (lengthObj.getObject() == null)
-                    {
-                        throw new IOException("Length object content was not read.");
-                    }
+                    throw new IOException("Length object content was not read.");
                 }
-                if (!(lengthObj.getObject() instanceof COSNumber))
-                {
-                    throw new IOException("Wrong type of referenced length object " + lengthObj
-                            + ": " + lengthObj.getObject().getClass().getSimpleName());
-                }
-                retVal = (COSNumber) lengthObj.getObject();
             }
-            else
+            if (!(lengthObj.getObject() instanceof COSNumber))
             {
-                throw new IOException("Wrong type of length object: "
-                        + lengthBaseObj.getClass().getSimpleName());
+                throw new IOException("Wrong type of referenced length object " + lengthObj
+                        + ": " + lengthObj.getObject().getClass().getSimpleName());
             }
+            retVal = (COSNumber) lengthObj.getObject();
         }
-        finally
+        else
         {
-            inGetLength = false;
+            throw new IOException("Wrong type of length object: "
+                    + lengthBaseObj.getClass().getSimpleName());
         }
         return retVal;
     }
