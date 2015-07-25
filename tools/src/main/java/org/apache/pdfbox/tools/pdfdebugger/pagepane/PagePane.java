@@ -19,6 +19,8 @@ package org.apache.pdfbox.tools.pdfdebugger.pagepane;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -27,10 +29,13 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.apache.pdfbox.tools.pdfdebugger.ui.ZoomMenu;
 
 /**
  * Display the page number and a page rendering.
@@ -38,20 +43,19 @@ import org.apache.pdfbox.rendering.PDFRenderer;
  * @author Tilman Hausherr
  * @author John Hewson
  */
-public class PagePane
+public class PagePane implements ActionListener, AncestorListener
 {
     private JPanel panel;
     private int pageIndex = -1;
     private final PDDocument document;
     private JLabel label;
-    private final float scale;
+    private ZoomMenu zoomMenu;
 
-    public PagePane(PDDocument document, COSDictionary page, float scale)
+    public PagePane(PDDocument document, COSDictionary page)
     {
         PDPage pdPage = new PDPage(page);
         pageIndex = document.getPages().indexOf(pdPage);
         this.document = document;
-        this.scale = scale;
         initUI();
     }
 
@@ -73,10 +77,11 @@ public class PagePane
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
         label.setText("Loading...");
         panel.add(label);
+        panel.addAncestorListener(this);
 
         // render in a background thread: rendering is read-only, so this should be ok, despite
         // the fact that PDDocument is not officially thread safe
-        new RenderWorker().execute();
+        new RenderWorker(1).execute();
     }
 
     /**
@@ -89,11 +94,55 @@ public class PagePane
         return panel;
     }
 
+    @Override
+    public void actionPerformed(ActionEvent actionEvent)
+    {
+        String actionCommand = actionEvent.getActionCommand();
+        if (actionCommand.equals(ZoomMenu.ZOOM_50_PERCENT))
+        {
+            new RenderWorker(0.5f).execute();
+        }
+        else if (actionCommand.equals(ZoomMenu.ZOOM_100_PERCENT))
+        {
+            new RenderWorker(1).execute();
+        }
+        else if (actionCommand.equals(ZoomMenu.ZOOM_200_PERCENT))
+        {
+            new RenderWorker(2).execute();
+        }
+    }
+
+    @Override
+    public void ancestorAdded(AncestorEvent ancestorEvent)
+    {
+        zoomMenu = ZoomMenu.getInstance().menuListeners(this);
+        zoomMenu.setZoomSelection(ZoomMenu.ZOOM_100_PERCENT);
+        zoomMenu.setEnableMenu(true);
+    }
+
+    @Override
+    public void ancestorRemoved(AncestorEvent ancestorEvent)
+    {
+        zoomMenu.setEnableMenu(false);
+    }
+
+    @Override
+    public void ancestorMoved(AncestorEvent ancestorEvent)
+    {
+
+    }
+
     /**
      * Note that PDDocument is not officially thread safe, caution advised.
      */
     private class RenderWorker extends SwingWorker<BufferedImage, Integer>
     {
+        private final float scale;
+
+        private RenderWorker(float scale)
+        {
+            this.scale = scale;
+        }
         @Override
         protected BufferedImage doInBackground() throws IOException
         {
