@@ -823,9 +823,7 @@ public class COSParser extends BaseParser
         {
             return null;
         }
-
         COSNumber retVal = null;
-        boolean isObjectStream = COSName.OBJ_STM.equals(streamType);
         // maybe length was given directly
         if (lengthBaseObj instanceof COSNumber)
         {
@@ -839,6 +837,7 @@ public class COSParser extends BaseParser
             {
                 // not read so far, keep current stream position
                 final long curFileOffset = source.getPosition();
+                boolean isObjectStream = COSName.OBJ_STM.equals(streamType);
                 parseObjectDynamically(lengthObj, isObjectStream);
                 // reset current stream position
                 source.seek(curFileOffset);
