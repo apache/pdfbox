@@ -1605,74 +1605,55 @@ public class NonSequentialPDFParser extends PDFParser
         }
     }
 
-    // ------------------------------------------------------------------------
-    private boolean inGetLength = false;
-
     /** Returns length value referred to or defined in given object. */
-    private COSNumber getLength(final COSBase lengthBaseObj) throws IOException
+    private COSNumber getLength(final COSBase lengthBaseObj, final COSBase streamType) throws IOException
     {
         if (lengthBaseObj == null)
         {
             return null;
         }
-
-        if (inGetLength)
-        {
-            throw new IOException("Loop while reading length from " + lengthBaseObj);
-        }
-
         COSNumber retVal = null;
-
-        try
+        // ---- maybe length was given directly
+        if (lengthBaseObj instanceof COSNumber)
         {
-            inGetLength = true;
+            retVal = (COSNumber) lengthBaseObj;
+        }
+        // ---- length in referenced object
+        else if (lengthBaseObj instanceof COSObject)
+        {
+            COSObject lengthObj = (COSObject) lengthBaseObj;
 
-            // ---- maybe length was given directly
-            if (lengthBaseObj instanceof COSNumber)
+            if (lengthObj.getObject() == null)
             {
-                retVal = (COSNumber) lengthBaseObj;
-            }
-            // ---- length in referenced object
-            else if (lengthBaseObj instanceof COSObject)
-            {
-                COSObject lengthObj = (COSObject) lengthBaseObj;
+                // not read so far
+
+                // keep current stream position
+                final long curFileOffset = getPdfSourceOffset();
+                releasePdfSourceInputStream();
+                boolean isObjectStream = COSName.OBJ_STM.equals(streamType);
+                parseObjectDynamically(lengthObj, isObjectStream);
+
+                // reset current stream position
+                setPdfSource(curFileOffset);
 
                 if (lengthObj.getObject() == null)
                 {
-                    // not read so far
-
-                    // keep current stream position
-                    final long curFileOffset = getPdfSourceOffset();
-                    releasePdfSourceInputStream();
-
-                    parseObjectDynamically(lengthObj, true);
-
-                    // reset current stream position
-                    setPdfSource(curFileOffset);
-
-                    if (lengthObj.getObject() == null)
-                    {
-                        throw new IOException("Length object content was not read.");
-                    }
+                    throw new IOException("Length object content was not read.");
                 }
-
-                if (!(lengthObj.getObject() instanceof COSNumber))
-                {
-                    throw new IOException("Wrong type of referenced length object " + lengthObj + ": "
-                            + lengthObj.getObject().getClass().getSimpleName());
-                }
-
-                retVal = (COSNumber) lengthObj.getObject();
-
             }
-            else
+
+            if (!(lengthObj.getObject() instanceof COSNumber))
             {
-                throw new IOException("Wrong type of length object: " + lengthBaseObj.getClass().getSimpleName());
+                throw new IOException("Wrong type of referenced length object " + lengthObj + ": "
+                        + lengthObj.getObject().getClass().getSimpleName());
             }
+
+            retVal = (COSNumber) lengthObj.getObject();
+
         }
-        finally
+        else
         {
-            inGetLength = false;
+            throw new IOException("Wrong type of length object: " + lengthBaseObj.getClass().getSimpleName());
         }
         return retVal;
     }
@@ -1742,7 +1723,7 @@ public class NonSequentialPDFParser extends PDFParser
             /*
              * This needs to be dic.getItem because when we are parsing, the underlying object might still be null.
              */
-            COSNumber streamLengthObj = getLength(dic.getItem(COSName.LENGTH));
+            COSNumber streamLengthObj = getLength(dic.getItem(COSName.LENGTH), dic.getItem(COSName.TYPE));
             if (streamLengthObj == null)
             {
                 if (isLenient)
