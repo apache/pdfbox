@@ -127,7 +127,7 @@ public class PagePane implements ActionListener, AncestorListener
     /**
      * Note that PDDocument is not officially thread safe, caution advised.
      */
-    private class RenderWorker extends SwingWorker<BufferedImage, Integer>
+    private final class RenderWorker extends SwingWorker<BufferedImage, Integer>
     {
         private final float scale;
 
