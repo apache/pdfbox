@@ -77,6 +77,7 @@ import org.apache.pdfbox.tools.pdfdebugger.colorpane.CSDeviceN;
 import org.apache.pdfbox.tools.pdfdebugger.colorpane.CSIndexed;
 import org.apache.pdfbox.tools.pdfdebugger.colorpane.CSSeparation;
 import org.apache.pdfbox.tools.pdfdebugger.flagbitspane.FlagBitsPane;
+import org.apache.pdfbox.tools.pdfdebugger.fontencodingpane.FontEncodingPaneController;
 import org.apache.pdfbox.tools.pdfdebugger.pagepane.PagePane;
 import org.apache.pdfbox.tools.pdfdebugger.streampane.StreamPane;
 import org.apache.pdfbox.tools.pdfdebugger.treestatus.TreeStatus;
@@ -457,6 +458,11 @@ public class PDFDebugger extends javax.swing.JFrame
                     showStream((COSStream)getUnderneathObject(selectedNode), path);
                     return;
                 }
+                if (isFont(selectedNode))
+                {
+                    showFont(selectedNode, path);
+                    return;
+                }
                 if (!jSplitPane1.getRightComponent().equals(jScrollPane2))
                 {
                     jSplitPane1.setRightComponent(jScrollPane2);
@@ -554,6 +560,26 @@ public class PDFDebugger extends javax.swing.JFrame
     private boolean isStream(Object selectedNode)
     {
         return getUnderneathObject(selectedNode) instanceof COSStream;
+    }
+
+    private boolean isFont(Object selectedNode)
+    {
+        selectedNode = getUnderneathObject(selectedNode);
+        if (selectedNode instanceof COSDictionary)
+        {
+            COSDictionary dic = (COSDictionary)selectedNode;
+            return  dic.containsKey(COSName.TYPE) &&
+                    dic.getCOSName(COSName.TYPE).equals(COSName.FONT) &&
+                    !isCIDFont(dic);
+        }
+        return false;
+    }
+
+    private boolean isCIDFont(COSDictionary dic)
+    {
+        return dic.containsKey(COSName.SUBTYPE) &&
+                (dic.getCOSName(COSName.SUBTYPE).equals(COSName.CID_FONT_TYPE0)
+                || dic.getCOSName(COSName.SUBTYPE).equals(COSName.CID_FONT_TYPE2));
     }
 
     /**
@@ -663,6 +689,15 @@ public class PDFDebugger extends javax.swing.JFrame
         }
         StreamPane streamPane = new StreamPane(stream, isContentStream, resourcesDic);
         jSplitPane1.setRightComponent(streamPane.getPanel());
+    }
+
+    private void showFont(Object selectedNode, TreePath path)
+    {
+        COSName fontName = getNodeKey(selectedNode);
+        COSDictionary resourceDic = (COSDictionary) getUnderneathObject(path.getParentPath().getParentPath().getLastPathComponent());
+
+        FontEncodingPaneController fontEncodingPaneController = new FontEncodingPaneController(fontName, resourceDic);
+        jSplitPane1.setRightComponent(fontEncodingPaneController.getPane());
     }
 
     private COSName getNodeKey(Object selectedNode)
