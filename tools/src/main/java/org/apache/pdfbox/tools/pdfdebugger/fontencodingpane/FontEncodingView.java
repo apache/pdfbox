@@ -119,7 +119,7 @@ class FontEncodingView
         return panel;
     }
 
-    private final class GlyphCellRenderer implements TableCellRenderer
+    private static final class GlyphCellRenderer implements TableCellRenderer
     {
 
         @Override

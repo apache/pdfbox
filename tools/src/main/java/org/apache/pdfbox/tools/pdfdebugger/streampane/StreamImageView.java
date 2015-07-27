@@ -42,7 +42,7 @@ import org.apache.pdfbox.tools.pdfdebugger.ui.ZoomMenu;
  */
 class StreamImageView implements ActionListener, AncestorListener
 {
-    private BufferedImage image;
+    private final BufferedImage image;
     private JScrollPane scrollPane;
     private JLabel label;
     private ZoomMenu zoomMenu;

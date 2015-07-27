@@ -37,7 +37,7 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
  */
 class Type0Font implements FontPane
 {
-    FontEncodingView view;
+    private FontEncodingView view;
 
     /**
      * Constructor.
