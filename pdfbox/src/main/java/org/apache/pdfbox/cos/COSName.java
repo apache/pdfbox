@@ -489,6 +489,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName TARGET = new COSName("Target");
     public static final COSName TEMPLATES = new COSName("Templates");
     public static final COSName THREADS = new COSName("Threads");
+    public static final COSName THUMB = new COSName("Thumb");
     public static final COSName TI = new COSName("TI");
     public static final COSName TILING_TYPE = new COSName("TilingType");
     public static final COSName TIME_STAMP = new COSName("TimeStamp");

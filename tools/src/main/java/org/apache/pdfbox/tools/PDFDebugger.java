@@ -654,6 +654,7 @@ public class PDFDebugger extends javax.swing.JFrame
     private void showStream(COSStream stream, TreePath path)
     {
         boolean isContentStream = false;
+        boolean isThumb = false;
 
         COSName key = getNodeKey(path.getLastPathComponent());
         COSName parentKey = getNodeKey(path.getParentPath().getLastPathComponent());
@@ -687,7 +688,12 @@ public class PDFDebugger extends javax.swing.JFrame
             Object resourcesObj = path.getParentPath().getParentPath().getLastPathComponent();
             resourcesDic = (COSDictionary) getUnderneathObject(resourcesObj);
         }
-        StreamPane streamPane = new StreamPane(stream, isContentStream, resourcesDic);
+        else if (COSName.THUMB.equals(key))
+        {
+            resourcesDic = null;
+            isThumb = true;
+        }
+        StreamPane streamPane = new StreamPane(stream, isContentStream, isThumb, resourcesDic);
         jSplitPane1.setRightComponent(streamPane.getPanel());
     }
 

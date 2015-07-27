@@ -61,13 +61,14 @@ public class StreamPane implements ActionListener
      *
      * @param cosStream       COSStream instance.
      * @param isContentStream boolean instance. This says if a stream is content stream or not.
+     * @param isThumb boolean instance. This says if a stream is an thumbnail image or not.
      * @param resourcesDic    COSDictionary instance that holds the resource dictionary for the stream.
      */
-    public StreamPane(COSStream cosStream, boolean isContentStream, COSDictionary resourcesDic)
+    public StreamPane(COSStream cosStream, boolean isContentStream, boolean isThumb, COSDictionary resourcesDic)
     {
         this.isContentStream = isContentStream;
 
-        this.stream = new Stream(cosStream);
+        this.stream = new Stream(cosStream, isThumb);
         if (resourcesDic != null)
         {
             resources = new PDResources(resourcesDic);
@@ -110,7 +111,7 @@ public class StreamPane implements ActionListener
 
     private void requestImageShowing()
     {
-        if (stream.isImage() && resources != null)
+        if (stream.isImage())
         {
             view.showStreamImage(stream.getImage(resources));
         }
