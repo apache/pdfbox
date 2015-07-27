@@ -44,17 +44,20 @@ class Stream
     public static final String IMAGE = "Image";
 
     private final COSStream stream;
+    private final boolean isThumb;
     private final boolean isImage;
     private final Map<String, List<String>> filters;
 
     /**
      * Constructor.
      * @param cosStream COSStream instance.
+     * @param isThumb boolean instance says if the stream is thumbnail image.
      */
-    Stream(COSStream cosStream)
+    Stream(COSStream cosStream, boolean isThumb)
     {
         this.stream = cosStream;
-        this.isImage = isImageStream(cosStream);
+        this.isThumb = isThumb;
+        this.isImage = isImageStream(cosStream, isThumb);
 
         filters = createFilterList(cosStream);
     }
@@ -150,7 +153,15 @@ class Stream
     {
         try
         {
-            PDImageXObject imageXObject = new PDImageXObject(new PDStream(stream), resources);
+            PDImageXObject imageXObject;
+            if (isThumb)
+            {
+                imageXObject = PDImageXObject.createThumbnail(stream);
+            }
+            else
+            {
+                imageXObject = new PDImageXObject(new PDStream(stream), resources);
+            }
             return imageXObject.getImage();
         }
         catch (IOException e)
@@ -209,8 +220,12 @@ class Stream
         return stopFilters;
     }
 
-    private boolean isImageStream(COSDictionary dic)
+    private boolean isImageStream(COSDictionary dic, boolean isThumb)
     {
+        if (isThumb)
+        {
+            return true;
+        }
         return dic.containsKey(COSName.SUBTYPE) && dic.getCOSName(COSName.SUBTYPE).equals(COSName.IMAGE);
     }
 }
