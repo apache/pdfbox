@@ -280,22 +280,25 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     public void beginText() throws IOException
     {
         setClip();
+        beginTextClip();
+    }
+
+    @Override
+    public void endText() throws IOException
+    {
+        endTextClip();
     }
     
     @Override
     public void showTextString(byte[] string) throws IOException
     {
-        beginTextClip();
         super.showTextString(string);
-        endTextClip();
     }
 
     @Override
     public void showTextStrings(COSArray array) throws IOException
     {
-        beginTextClip();
         super.showTextStrings(array);
-        endTextClip();
     }
 
     /**
@@ -303,14 +306,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
      */
     private void beginTextClip()
     {
-        PDGraphicsState state = getGraphicsState();
-        RenderingMode renderingMode = state.getTextState().getRenderingMode();
-
         // buffer the text clip because it represents a single clipping area
-        if (renderingMode.isClip())
-        {
-            textClippingArea = new Area();
-        }
+        textClippingArea = new Area();        
     }
 
     /**
@@ -322,7 +319,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         RenderingMode renderingMode = state.getTextState().getRenderingMode();
         
         // apply the buffered clip as one area
-        if (renderingMode.isClip())
+        if (renderingMode.isClip() && !textClippingArea.isEmpty())
         {
             state.intersectClippingPath(textClippingArea);
             textClippingArea = null;
