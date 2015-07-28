@@ -120,16 +120,21 @@ public class CFFType1Font extends CFFFont implements EncodedFont
         return getType2CharString(gid, name);
     }
 
-    // Returns the Type 1 charstring for the given GID, with name for debugging
+    // Returns the Type 2 charstring for the given GID, with name for debugging
     private Type2CharString getType2CharString(int gid, String name) throws IOException
     {
         Type2CharString type2 = charStringCache.get(gid);
         if (type2 == null)
         {
-            byte[] bytes = charStrings.get(gid);
+            byte[] bytes = null;
+            if (gid < charStrings.size())
+            {
+                bytes = charStrings.get(gid);
+            }
             if (bytes == null)
             {
-                bytes = charStrings.get(0); // .notdef
+                // .notdef
+                bytes = charStrings.get(0);
             }
             Type2CharStringParser parser = new Type2CharStringParser(fontName, name);
             List<Object> type2seq = parser.parse(bytes, globalSubrIndex, getLocalSubrIndex());
