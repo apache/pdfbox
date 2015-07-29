@@ -289,18 +289,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         endTextClip();
     }
     
-    @Override
-    public void showTextString(byte[] string) throws IOException
-    {
-        super.showTextString(string);
-    }
-
-    @Override
-    public void showTextStrings(COSArray array) throws IOException
-    {
-        super.showTextStrings(array);
-    }
-
     /**
      * Begin buffering the text clipping path, if any.
      */
