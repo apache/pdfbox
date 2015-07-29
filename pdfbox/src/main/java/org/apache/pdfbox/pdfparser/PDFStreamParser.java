@@ -59,7 +59,7 @@ public class PDFStreamParser extends BaseParser
      * @param stream The stream to parse.
      * @throws IOException If there is an error initializing the stream.
      * 
-     * @deprecated Use {@link PDFStreamParser(PDContentStream)} instead.
+     * @deprecated Use {@link PDFStreamParser#PDFStreamParser(PDContentStream)} instead.
      */
     @Deprecated
     public PDFStreamParser(PDStream stream) throws IOException
@@ -73,7 +73,7 @@ public class PDFStreamParser extends BaseParser
      * @param stream The stream to parse.
      * @throws IOException If there is an error initializing the stream.
      * 
-     * @deprecated Use {@link PDFStreamParser(PDContentStream)} instead.
+     * @deprecated Use {@link PDFStreamParser#PDFStreamParser(PDContentStream)} instead.
      */
     @Deprecated
     public PDFStreamParser(COSStream stream) throws IOException

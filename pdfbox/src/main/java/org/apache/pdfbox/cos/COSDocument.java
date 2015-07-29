@@ -118,7 +118,7 @@ public class COSDocument extends COSBase implements Closeable
      * Constructor that will use the provide memory handler for storage of the
      * PDF streams.
      *
-     * @param scratchFiles memory handler for storage of PDF streams
+     * @param scratchFile memory handler for storage of PDF streams
      * 
      */
     public COSDocument(ScratchFile scratchFile)

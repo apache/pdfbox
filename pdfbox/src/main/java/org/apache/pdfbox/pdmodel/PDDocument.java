@@ -1299,7 +1299,7 @@ public class PDDocument implements Closeable
     /**
      * Protects the document with a protection policy. The document content will be really
      * encrypted when it will be saved. This method only marks the document for encryption. It also
-     * calls {@link setAllSecurityToBeRemoved(false)} if it was set to true previously and logs a
+     * sets {@link #setAllSecurityToBeRemoved(boolean)} to false if it was set to true previously and logs a
      * warning.
      *
      * @see org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy
