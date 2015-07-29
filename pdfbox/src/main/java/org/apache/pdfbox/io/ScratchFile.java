@@ -101,10 +101,7 @@ public class ScratchFile implements Closeable
      * <p>Depending on the size of allowed memory usage a number of pages (memorySize/{@link #PAGE_SIZE})
      * will be stored in-memory and only additional pages will be written to/read from scratch file.</p>
      * 
-     * @param scratchFileDirectory The directory in which to create the scratch file
-     *                             or <code>null</code> to created it in the default temporary directory.
-     * @param maxInMemoryByteSize maximum in-memory bytes to use for pages which don't have to be
-     *                            handled by scratch file
+     * @param memUsageSetting set how memory/temporary files are used for buffering streams etc. 
      * 
      * @throws IOException If scratch file directory was given but don't exist.
      */
