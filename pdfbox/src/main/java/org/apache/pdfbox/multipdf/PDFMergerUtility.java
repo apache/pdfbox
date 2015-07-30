@@ -66,6 +66,7 @@ public class PDFMergerUtility
     private static final String STRUCTURETYPE_DOCUMENT = "Document";
 
     private final List<InputStream> sources;
+    private final List<FileInputStream> fileInpuStreams;
     private String destinationFileName;
     private OutputStream destinationStream;
     private boolean ignoreAcroFormErrors = false;
@@ -76,6 +77,7 @@ public class PDFMergerUtility
     public PDFMergerUtility()
     {
         sources = new ArrayList<InputStream>();
+        fileInpuStreams = new ArrayList<FileInputStream>();
     }
 
     /**
@@ -95,7 +97,7 @@ public class PDFMergerUtility
      */
     public void setDestinationFileName(String destination)
     {
-        this.destinationFileName = destination;
+        destinationFileName = destination;
     }
 
     /**
@@ -127,7 +129,7 @@ public class PDFMergerUtility
      */
     public void addSource(String source) throws FileNotFoundException
     {
-        sources.add(new FileInputStream(new File(source)));
+        addSource(new File(source));
     }
 
     /**
@@ -139,7 +141,9 @@ public class PDFMergerUtility
      */
     public void addSource(File source) throws FileNotFoundException
     {
-        sources.add(new FileInputStream(source));
+        FileInputStream stream = new FileInputStream(source);
+        sources.add(stream);
+        fileInpuStreams.add(stream);
     }
 
     /**
@@ -209,6 +213,10 @@ public class PDFMergerUtility
                 for (PDDocument doc : tobeclosed)
                 {
                     doc.close();
+                }
+                for (FileInputStream stream : fileInpuStreams)
+                {
+                    stream.close();
                 }
             }
         }
