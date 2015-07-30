@@ -680,9 +680,7 @@ public abstract class PDFStreamEngine
             // process the decoded glyph
             saveGraphicsState();
             Matrix textMatrixOld = textMatrix;
-            textMatrix = new Matrix();
             Matrix textLineMatrixOld = textLineMatrix;
-            textLineMatrix = new Matrix();
             showGlyph(textRenderingMatrix, font, code, unicode, w);
             textMatrix = textMatrixOld;
             textLineMatrix = textLineMatrixOld;
