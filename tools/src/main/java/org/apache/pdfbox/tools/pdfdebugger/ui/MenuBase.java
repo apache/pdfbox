@@ -31,14 +31,6 @@ abstract class MenuBase
 {
     private JMenu menu = null;
 
-//    /**
-//     * Constructor.
-//     */
-//    protected MenuBase()
-//    {
-//        menu = createMenu();
-//    }
-    
     protected void setMenu(JMenu menu)
     {
         this.menu = menu;
