@@ -110,11 +110,13 @@ public class PagePane implements ActionListener, AncestorListener
     @Override
     public void ancestorAdded(AncestorEvent ancestorEvent)
     {
-        zoomMenu = ZoomMenu.getInstance().menuListeners(this);
+        zoomMenu = ZoomMenu.getInstance();
+        zoomMenu.addMenuListeners(this);
         zoomMenu.setZoomSelection(ZoomMenu.ZOOM_100_PERCENT);
         zoomMenu.setEnableMenu(true);
         
-        rotationMenu = RotationMenu.getInstance().menuListeners(this);
+        rotationMenu = RotationMenu.getInstance();
+        rotationMenu.addMenuListeners(this);
         rotationMenu.setRotationSelection(RotationMenu.ROTATE_0_DEGREES);
         rotationMenu.setEnableMenu(true);
     }
