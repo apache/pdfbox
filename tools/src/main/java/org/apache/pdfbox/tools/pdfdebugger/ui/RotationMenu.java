@@ -17,11 +17,8 @@
 
 package org.apache.pdfbox.tools.pdfdebugger.ui;
 
-import java.awt.Component;
-import java.awt.event.ActionListener;
 import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 
 /**
@@ -32,7 +29,7 @@ import javax.swing.JRadioButtonMenuItem;
  * To act upon the menu item selection user of the class must add ActionListener which will check for
  * the action command and act accordingly.
  */
-public class RotationMenu
+public class RotationMenu extends MenuBase
 {
     public static final String ROTATE_0_DEGREES = "0°";
     public static final String ROTATE_90_DEGREES = "90°";
@@ -40,20 +37,19 @@ public class RotationMenu
     public static final String ROTATE_270_DEGREES = "270°";
     
     private static RotationMenu instance;
-    private JMenu menu = null;
     private JRadioButtonMenuItem rotate0Item;
     private JRadioButtonMenuItem rotate90Item;
     private JRadioButtonMenuItem rotate180Item;
     private JRadioButtonMenuItem rotate270Item;
-  
+
     /**
      * Constructor.
      */
     private RotationMenu()
     {
-        menu = createRotationMenu();
+        setMenu(createRotationMenu());
     }
-
+  
     /**
      * Provides the RotationMenu instance.
      * @return RotationMenu instance.
@@ -67,41 +63,6 @@ public class RotationMenu
         return instance;
     }
 
-    /**
-     * Provide the JMenu instance of the RotationMenu.
-     * @return JMenu instance.
-     */
-    public JMenu getMenu()
-    {
-        return this.menu;
-    }
-
-    /**
-     * Set if the menu should be enabled or disabled.
-     * @param isEnable boolean instance.
-     */
-    public void setEnableMenu(boolean isEnable)
-    {
-        menu.setEnabled(isEnable);
-    }
-
-    /**
-     * Add the ActionListener for the menuitems.
-     * @param listener ActionListener.
-     * @return the RotationMenu instance.
-     */
-    public RotationMenu menuListeners(ActionListener listener)
-    {
-        for (Component comp: menu.getMenuComponents())
-        {
-            JMenuItem menuItem = (JMenuItem) comp;
-            removeActionListeners(menuItem);
-            menuItem.addActionListener(listener);
-        }
-        return instance;
-    }
-
-    
     /**
      * Set the rotation selection.
      * @param selection String instance.
@@ -177,17 +138,9 @@ public class RotationMenu
         }
     }
 
-    private void removeActionListeners(JMenuItem menuItem)
-    {
-        for (ActionListener listener: menuItem.getActionListeners())
-        {
-            menuItem.removeActionListener(listener);
-        }
-    }
-
     private JMenu createRotationMenu()
     {
-        menu = new JMenu();
+        JMenu menu = new JMenu();
         menu.setText("Rotation");
 
         rotate0Item = new JRadioButtonMenuItem();

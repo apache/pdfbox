@@ -19,9 +19,10 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 /**
- * Utility class for images.
- * 
+ *
  * @author Tilman Hausherr
+ *
+ * Utility class for images.
  */
 public final class ImageUtil
 {
