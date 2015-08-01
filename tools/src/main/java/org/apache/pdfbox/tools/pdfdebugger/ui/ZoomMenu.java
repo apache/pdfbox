@@ -128,6 +128,23 @@ public class ZoomMenu
                 ZOOM_200_PERCENT.equals(actionCommand);
     }
 
+    public static float getZoomScale()
+    {
+        if (instance.zoom50Item.isSelected())
+        {
+            return 0.5f;
+        }
+        if (instance.zoom100Item.isSelected())
+        {
+            return 1;
+        }
+        if (instance.zoom200Item.isSelected())
+        {
+            return 2;
+        }
+        throw new IllegalArgumentException();
+    }
+
     public static float getZoomScale(String actionCommand)
     {
         if (ZOOM_50_PERCENT.equals(actionCommand))

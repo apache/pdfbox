@@ -35,7 +35,9 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.apache.pdfbox.tools.pdfdebugger.ui.RotationMenu;
 import org.apache.pdfbox.tools.pdfdebugger.ui.ZoomMenu;
+import org.apache.pdfbox.tools.util.ImageUtil;
 
 /**
  * Display the page number and a page rendering.
@@ -50,6 +52,7 @@ public class PagePane implements ActionListener, AncestorListener
     private final PDDocument document;
     private JLabel label;
     private ZoomMenu zoomMenu;
+    private RotationMenu rotationMenu;
 
     public PagePane(PDDocument document, COSDictionary page)
     {
@@ -81,7 +84,7 @@ public class PagePane implements ActionListener, AncestorListener
 
         // render in a background thread: rendering is read-only, so this should be ok, despite
         // the fact that PDDocument is not officially thread safe
-        new RenderWorker(1).execute();
+        new RenderWorker(1, 0).execute();
     }
 
     /**
@@ -98,9 +101,9 @@ public class PagePane implements ActionListener, AncestorListener
     public void actionPerformed(ActionEvent actionEvent)
     {
         String actionCommand = actionEvent.getActionCommand();
-        if (ZoomMenu.isZoomMenu(actionCommand))
+        if (ZoomMenu.isZoomMenu(actionCommand) || RotationMenu.isRotationMenu(actionCommand))
         {
-            new RenderWorker(ZoomMenu.getZoomScale(actionCommand)).execute();
+            new RenderWorker(ZoomMenu.getZoomScale(), RotationMenu.getRotationDegrees()).execute();
         }
     }
 
@@ -110,18 +113,22 @@ public class PagePane implements ActionListener, AncestorListener
         zoomMenu = ZoomMenu.getInstance().menuListeners(this);
         zoomMenu.setZoomSelection(ZoomMenu.ZOOM_100_PERCENT);
         zoomMenu.setEnableMenu(true);
+        
+        rotationMenu = RotationMenu.getInstance().menuListeners(this);
+        rotationMenu.setRotationSelection(RotationMenu.ROTATE_0_DEGREES);
+        rotationMenu.setEnableMenu(true);
     }
 
     @Override
     public void ancestorRemoved(AncestorEvent ancestorEvent)
     {
         zoomMenu.setEnableMenu(false);
+        rotationMenu.setEnableMenu(false);
     }
 
     @Override
     public void ancestorMoved(AncestorEvent ancestorEvent)
     {
-
     }
 
     /**
@@ -130,16 +137,20 @@ public class PagePane implements ActionListener, AncestorListener
     private final class RenderWorker extends SwingWorker<BufferedImage, Integer>
     {
         private final float scale;
+        private final int rotation;
 
-        private RenderWorker(float scale)
+        private RenderWorker(float scale, int rotation)
         {
             this.scale = scale;
+            this.rotation = rotation;
         }
+
         @Override
         protected BufferedImage doInBackground() throws IOException
         {
             PDFRenderer renderer = new PDFRenderer(document);
-            return renderer.renderImage(pageIndex, scale);
+            BufferedImage bim = renderer.renderImage(pageIndex, scale);
+            return ImageUtil.getRotatedImage(bim, rotation);
         }
 
         @Override
