@@ -687,6 +687,26 @@ public class COSParser extends BaseParser
                         + objKey.getNumber() + ":" + objKey.getGeneration());
             }
 
+            // maybe something is wrong with the xref table -> perform brute force search for all objects
+            if (offsetOrObjstmObNr == null && isLenient && bfSearchCOSObjectKeyOffsets == null)
+            {
+                bfSearchForObjects();
+                if (bfSearchCOSObjectKeyOffsets != null && !bfSearchCOSObjectKeyOffsets.isEmpty())
+                {
+                    LOG.debug("Add all new read objects from brute force search to the xref table");
+                    Map<COSObjectKey, Long> xrefOffset = xrefTrailerResolver.getXrefTable();
+                    for (COSObjectKey key : bfSearchCOSObjectKeyOffsets.keySet())
+                    {
+                        // add all missing objects to the xref table
+                        if (!xrefOffset.containsKey(key))
+                        {
+                            xrefOffset.put(key, bfSearchCOSObjectKeyOffsets.get(key));
+                        }
+                    }
+                    offsetOrObjstmObNr = xrefOffset.get(objKey);
+                }
+            }
+
             if (offsetOrObjstmObNr == null)
             {
                 // not defined object -> NULL object (Spec. 1.7, chap. 3.2.9)
