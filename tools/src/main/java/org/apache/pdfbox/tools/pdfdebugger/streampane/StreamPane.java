@@ -228,12 +228,12 @@ public class StreamPane implements ActionListener
 
             for (Object obj : parser.getTokens())
             {
-                writeObject(obj, docu);
+                writeToken(obj, docu);
             }
             return docu;
         }
 
-        private void writeObject(Object obj, StyledDocument docu)
+        private void writeToken(Object obj, StyledDocument docu)
         {
             try
             {
@@ -243,40 +243,72 @@ public class StreamPane implements ActionListener
                 }
                 else
                 {
-                    String str;
-                    if (obj instanceof COSName)
-                    {
-                        str = "/" + ((COSName) obj).getName();
-                    }
-                    else if (obj instanceof COSBoolean)
-                    {
-                        str = obj.toString();
-                    }
-                    else if (obj instanceof COSArray)
-                    {
-                        StringBuilder builder = new StringBuilder("[ ");
-                        for (COSBase base : (COSArray) obj)
-                        {
-                            builder.append(getCOSValue(base));
-                            builder.append(", ");
-                        }
-                        if (((COSArray) obj).size() > 0)
-                        {
-                            builder.delete(builder.lastIndexOf(","), builder.length());
-                        }
-                        builder.append("]");
-                        str = builder.toString();
-                    }
-                    else
-                    {
-                        str = getCOSValue(obj);
-                    }
-                    docu.insertString(docu.getLength(), str + " ", null);
+                    docu.insertString(docu.getLength(), operandToString(obj) + " ", null);
                 }
             }
             catch (BadLocationException e)
             {
                 e.printStackTrace();
+            }
+        }
+        
+        private String operandToString(Object obj)
+        {
+            if (obj instanceof COSName)
+            {
+                return "/" + ((COSName) obj).getName();
+            }
+            else if (obj instanceof COSBoolean)
+            {
+                return obj.toString();
+            }
+            else if (obj instanceof COSArray)
+            {
+                StringBuilder sb = new StringBuilder("[ ");
+                for (COSBase elem : (COSArray) obj)
+                {
+                    sb.append(operandToString(elem));
+                    sb.append(", ");
+                }
+                if (((COSArray) obj).size() > 0)
+                {
+                    sb.delete(sb.lastIndexOf(","), sb.length());
+                }
+                sb.append("]");
+                return sb.toString();
+            }
+            else if (obj instanceof COSString)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.append("(");
+                byte[] bytes = ((COSString) obj).getBytes();
+                for (byte b : bytes)
+                {
+                    int chr = b & 0xff;
+                    if (chr < 0x20 || chr > 0x7e)
+                    {
+                        // non-printable ASCII is shown as an octal escape
+                        sb.append(String.format("\\%03o", chr));
+                    }
+                    else if (chr == '(' || chr == ')' || chr == '\n' || chr == '\r'|| chr == '\t' ||
+                            chr == '\b' || chr == '\f' || chr == '\\')
+                    {
+                        // PDF reserved characters must be escaped
+                        sb.append('\\');
+                        sb.append((char)chr);
+                    }
+                    else
+                    {
+                        sb.append((char)chr);
+                    }
+                }
+                return sb.append(")").toString();
+            }
+            else
+            {
+                String str = obj.toString();
+                str = str.substring(str.indexOf('{') + 1, str.length() - 1);
+                return str;
             }
         }
 
@@ -294,7 +326,7 @@ public class StreamPane implements ActionListener
                     {
                         Object value = dic.getDictionaryObject(key);
                         docu.insertString(docu.getLength(), "/" + key.getName() + " ", null);
-                        writeObject(value, docu);
+                        writeToken(value, docu);
                         docu.insertString(docu.getLength(), "\n", null);
                     }
                     docu.insertString(docu.getLength(), OperatorMarker.IMAGE_DATA + "\n",
@@ -318,17 +350,6 @@ public class StreamPane implements ActionListener
             {
                 ex.printStackTrace();
             }
-        }
-
-        private String getCOSValue(Object obj)
-        {
-            String str = obj.toString();
-            str = str.substring(str.indexOf('{')+1, str.length()-1);
-            if (obj instanceof COSString)
-            {
-                str = "(" + str + ")";
-            }
-            return str;
         }
     }
 }
