@@ -33,7 +33,9 @@ import javax.swing.JScrollPane;
 import javax.swing.border.LineBorder;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
+import org.apache.pdfbox.tools.pdfdebugger.ui.RotationMenu;
 import org.apache.pdfbox.tools.pdfdebugger.ui.ZoomMenu;
+import org.apache.pdfbox.tools.util.ImageUtil;
 
 /**
  * @author Khyrul Bashar
@@ -46,6 +48,7 @@ class StreamImageView implements ActionListener, AncestorListener
     private JScrollPane scrollPane;
     private JLabel label;
     private ZoomMenu zoomMenu;
+    private RotationMenu rotationMenu;
 
     /**
      * constructor.
@@ -86,20 +89,21 @@ class StreamImageView implements ActionListener, AncestorListener
         return scrollPane;
     }
 
-    private Image zoomImage(BufferedImage origin, float scale)
+    private Image zoomImage(BufferedImage origin, float scale, int rotation)
     {
-        int resizedWidth = (int) (origin.getWidth()*scale);
-        int resizedHeight = (int) (origin.getHeight()*scale);
-        return origin.getScaledInstance(resizedWidth, resizedHeight, BufferedImage.SCALE_SMOOTH);
+        BufferedImage rotatedImage = ImageUtil.getRotatedImage(origin, rotation);
+        int resizedWidth = (int) (rotatedImage.getWidth() * scale);
+        int resizedHeight = (int) (rotatedImage.getHeight() * scale);
+        return rotatedImage.getScaledInstance(resizedWidth, resizedHeight, BufferedImage.SCALE_SMOOTH);
     }
 
     @Override
     public void actionPerformed(ActionEvent actionEvent)
     {
         String actionCommand = actionEvent.getActionCommand();
-        if (ZoomMenu.isZoomMenu(actionCommand))
+        if (ZoomMenu.isZoomMenu(actionCommand) || RotationMenu.isRotationMenu(actionCommand))
         {
-            addImage(zoomImage(image, ZoomMenu.getZoomScale(actionCommand)));
+            addImage(zoomImage(image, ZoomMenu.getZoomScale(), RotationMenu.getRotationDegrees()));
         }
     }
 
@@ -115,17 +119,21 @@ class StreamImageView implements ActionListener, AncestorListener
         zoomMenu = ZoomMenu.getInstance().menuListeners(this);
         zoomMenu.setZoomSelection(ZoomMenu.ZOOM_100_PERCENT);
         zoomMenu.setEnableMenu(true);
+        
+        rotationMenu = RotationMenu.getInstance().menuListeners(this);
+        rotationMenu.setRotationSelection(RotationMenu.ROTATE_0_DEGREES);
+        rotationMenu.setEnableMenu(true);
     }
 
     @Override
     public void ancestorRemoved(AncestorEvent ancestorEvent)
     {
         zoomMenu.setEnableMenu(false);
+        rotationMenu.setEnableMenu(false);
     }
 
     @Override
     public void ancestorMoved(AncestorEvent ancestorEvent)
     {
-
     }
 }

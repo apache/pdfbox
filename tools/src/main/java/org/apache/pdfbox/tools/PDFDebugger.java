@@ -82,6 +82,7 @@ import org.apache.pdfbox.tools.pdfdebugger.pagepane.PagePane;
 import org.apache.pdfbox.tools.pdfdebugger.streampane.StreamPane;
 import org.apache.pdfbox.tools.pdfdebugger.treestatus.TreeStatus;
 import org.apache.pdfbox.tools.pdfdebugger.treestatus.TreeStatusPane;
+import org.apache.pdfbox.tools.pdfdebugger.ui.RotationMenu;
 import org.apache.pdfbox.tools.pdfdebugger.ui.Tree;
 import org.apache.pdfbox.tools.pdfdebugger.ui.ZoomMenu;
 import org.apache.pdfbox.tools.util.FileOpenSaveDialog;
@@ -305,6 +306,10 @@ public class PDFDebugger extends javax.swing.JFrame
         ZoomMenu zoomMenu = ZoomMenu.getInstance();
         zoomMenu.setEnableMenu(false);
         viewMenu.add(zoomMenu.getMenu());
+
+        RotationMenu rotationMenu = RotationMenu.getInstance();
+        rotationMenu.setEnableMenu(false);
+        viewMenu.add(rotationMenu.getMenu());
 
         setJMenuBar(menuBar);
 
