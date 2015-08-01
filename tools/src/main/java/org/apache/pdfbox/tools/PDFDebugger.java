@@ -955,7 +955,8 @@ public class PDFDebugger extends javax.swing.JFrame
             File file = new File(currentFilePath);
             DocumentEntry documentEntry = new DocumentEntry(document, file.getName());
             tree.setModel(new PDFTreeModel(documentEntry));
-            tree.setSelectionPath(treeStatus.getPathForString("Root/Pages/Kids/[0]"));
+            // Root/Pages/Kids/[0] is not always the first page, so use the first row instead:
+            tree.setSelectionPath(tree.getPathForRow(1));
         }
         else
         {
