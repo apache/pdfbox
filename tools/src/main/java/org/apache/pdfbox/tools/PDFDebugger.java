@@ -33,6 +33,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -140,6 +141,7 @@ public class PDFDebugger extends javax.swing.JFrame
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new JMenu();
         openMenuItem = new JMenuItem();
+        openUrlMenuItem = new JMenuItem();
         saveMenuItem = new JMenuItem();
         saveAsMenuItem = new JMenuItem();
         recentFilesMenu = new JMenu();
@@ -220,6 +222,26 @@ public class PDFDebugger extends javax.swing.JFrame
         });
 
         fileMenu.add(openMenuItem);
+        
+        openUrlMenuItem.setText("Open URL...");
+        openUrlMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, SHORCUT_KEY_MASK));
+        openUrlMenuItem.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent evt)
+            {
+                String urlString = JOptionPane.showInputDialog("Enter an URL");
+                try
+                {
+                    readPDFurl(urlString, "");
+                }
+                catch (IOException e)
+                {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        fileMenu.add(openUrlMenuItem);
 
         saveMenuItem.setText("Save");
 
@@ -817,7 +839,10 @@ public class PDFDebugger extends javax.swing.JFrame
             try
             {
                 document.close();
-                recentFiles.addFile(currentFilePath);
+                if (!currentFilePath.startsWith("http"))
+                {
+                    recentFiles.addFile(currentFilePath);
+                }
                 recentFiles.close();
             }
             catch( IOException e )
@@ -838,7 +863,10 @@ public class PDFDebugger extends javax.swing.JFrame
             try
             {
                 document.close();
-                recentFiles.addFile(currentFilePath);
+                if (!currentFilePath.startsWith("http"))
+                {
+                    recentFiles.addFile(currentFilePath);
+                }
                 recentFiles.close();
             }
             catch( IOException e )
@@ -925,7 +953,10 @@ public class PDFDebugger extends javax.swing.JFrame
         if( document != null )
         {
             document.close();
-            recentFiles.addFile(currentFilePath);
+            if (!currentFilePath.startsWith("http"))
+            {
+                recentFiles.addFile(currentFilePath);
+            }
         }
         currentFilePath = file.getPath();
         recentFiles.removeFile(file.getPath());
@@ -941,6 +972,33 @@ public class PDFDebugger extends javax.swing.JFrame
         else
         {
             setTitle("PDF Debugger - " + file.getAbsolutePath());
+        }
+        addRecentFileItems();
+    }
+    
+    private void readPDFurl(String urlString, String password) throws IOException
+    {
+        if (document != null)
+        {
+            document.close();
+            if (!currentFilePath.startsWith("http"))
+            {
+                recentFiles.addFile(currentFilePath);
+            }
+        }
+        currentFilePath = urlString;
+        URL url = new URL(urlString);
+        document = PDDocument.load(url.openStream(), password);
+
+        initTree();
+
+        if (IS_MAC_OS)
+        {
+            setTitle(urlString);
+        }
+        else
+        {
+            setTitle("PDF Debugger - " + urlString);
         }
         addRecentFileItems();
     }
@@ -1046,6 +1104,7 @@ public class PDFDebugger extends javax.swing.JFrame
     private Tree tree;
     private javax.swing.JMenuBar menuBar;
     private JMenuItem openMenuItem;
+    private JMenuItem openUrlMenuItem;
     private JMenuItem pasteMenuItem;
     private JMenuItem saveAsMenuItem;
     private JMenuItem saveMenuItem;
