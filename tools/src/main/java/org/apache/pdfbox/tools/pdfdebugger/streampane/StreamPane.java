@@ -17,6 +17,7 @@
 
 package org.apache.pdfbox.tools.pdfdebugger.streampane;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.ByteArrayOutputStream;
@@ -29,19 +30,25 @@ import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSBoolean;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.tools.pdfdebugger.streampane.tooltip.ToolTipController;
+import org.apache.pdfbox.util.Charsets;
 
 /**
  * @author Khyrul Bashar
@@ -50,6 +57,32 @@ import org.apache.pdfbox.tools.pdfdebugger.streampane.tooltip.ToolTipController;
  */
 public class StreamPane implements ActionListener
 {
+    public static final String BEGIN_TEXT_OBJECT = "BT";
+    public static final String END_TEXT_OBJECT = "ET";
+    public static final String SAVE_GRAPHICS_STATE = "q";
+    public static final String RESTORE_GRAPHICS_STATE = "Q";
+    public static final String INLINE_IMAGE_BEGIN = "BI";
+    public static final String IMAGE_DATA = "ID";
+    public static final String INLINE_IMAGE_END = "EI";
+    
+    private static final StyleContext CONTEXT = StyleContext.getDefaultStyleContext();
+    private static final Style OPERATOR_STYLE = CONTEXT.addStyle("operator", null);
+    private static final Style NUMBER_STYLE = CONTEXT.addStyle("number", null);
+    private static final Style STRING_STYLE = CONTEXT.addStyle("string", null);
+    private static final Style ESCAPE_STYLE = CONTEXT.addStyle("escape", null);
+    private static final Style NAME_STYLE = CONTEXT.addStyle("name", null);
+    private static final Style INLINE_IMAGE_STYLE = CONTEXT.addStyle("inline_image", null);
+    
+    static
+    {
+        StyleConstants.setForeground(OPERATOR_STYLE, new Color(25, 55, 156));
+        StyleConstants.setForeground(NUMBER_STYLE, new Color(51, 86, 18));
+        StyleConstants.setForeground(STRING_STYLE, new Color(128, 35, 32));
+        StyleConstants.setForeground(ESCAPE_STYLE, new Color(179, 49, 36));
+        StyleConstants.setForeground(NAME_STYLE, new Color(140, 38, 145));
+        StyleConstants.setForeground(INLINE_IMAGE_STYLE, new Color(116, 113, 39));
+    }
+    
     private final StreamPaneView view;
     private final Stream stream;
     private ToolTipController tTController;
@@ -59,12 +92,13 @@ public class StreamPane implements ActionListener
     /**
      * Constructor.
      *
-     * @param cosStream       COSStream instance.
+     * @param cosStream COSStream instance.
      * @param isContentStream boolean instance. This says if a stream is content stream or not.
-     * @param isThumb boolean instance. This says if a stream is an thumbnail image or not.
-     * @param resourcesDic    COSDictionary instance that holds the resource dictionary for the stream.
+     * @param isThumb This says if a stream is an thumbnail image or not.
+     * @param resourcesDic COSDictionary instance that holds the resource dictionary for the stream.
      */
-    public StreamPane(COSStream cosStream, boolean isContentStream, boolean isThumb, COSDictionary resourcesDic)
+    public StreamPane(COSStream cosStream, boolean isContentStream, boolean isThumb,
+                      COSDictionary resourcesDic)
     {
         this.isContentStream = isContentStream;
 
@@ -127,8 +161,9 @@ public class StreamPane implements ActionListener
      */
     private final class DocumentCreator extends SwingWorker<StyledDocument, Integer>
     {
-
         private final String filterKey;
+        private int indent;
+        private boolean needIndent;
 
         private DocumentCreator(String filterKey)
         {
@@ -195,7 +230,6 @@ public class StreamPane implements ActionListener
             }
         }
 
-
         private StyledDocument getDocument(InputStream inputStream)
         {
             String data = getStringOfStream(inputStream);
@@ -243,7 +277,7 @@ public class StreamPane implements ActionListener
                 }
                 else
                 {
-                    docu.insertString(docu.getLength(), operandToString(obj) + " ", null);
+                    writeOperand(obj, docu);
                 }
             }
             catch (BadLocationException e)
@@ -252,35 +286,32 @@ public class StreamPane implements ActionListener
             }
         }
         
-        private String operandToString(Object obj)
+        private void writeOperand(Object obj, StyledDocument docu) throws BadLocationException
         {
+            writeIndent(docu);
+            
             if (obj instanceof COSName)
             {
-                return "/" + ((COSName) obj).getName();
+                String str = "/" + ((COSName) obj).getName();
+                docu.insertString(docu.getLength(), str + " ", NAME_STYLE);
             }
             else if (obj instanceof COSBoolean)
             {
-                return obj.toString();
+                String str = obj.toString();
+                docu.insertString(docu.getLength(), str + " ", null);
             }
             else if (obj instanceof COSArray)
             {
-                StringBuilder sb = new StringBuilder("[ ");
+                docu.insertString(docu.getLength(), "[ ", null);
                 for (COSBase elem : (COSArray) obj)
                 {
-                    sb.append(operandToString(elem));
-                    sb.append(", ");
+                    writeOperand(elem, docu);
                 }
-                if (((COSArray) obj).size() > 0)
-                {
-                    sb.delete(sb.lastIndexOf(","), sb.length());
-                }
-                sb.append("]");
-                return sb.toString();
+                docu.insertString(docu.getLength(), "] ", null);
             }
             else if (obj instanceof COSString)
             {
-                StringBuilder sb = new StringBuilder();
-                sb.append("(");
+                docu.insertString(docu.getLength(), "(", null);
                 byte[] bytes = ((COSString) obj).getBytes();
                 for (byte b : bytes)
                 {
@@ -288,67 +319,102 @@ public class StreamPane implements ActionListener
                     if (chr < 0x20 || chr > 0x7e)
                     {
                         // non-printable ASCII is shown as an octal escape
-                        sb.append(String.format("\\%03o", chr));
+                        String str = String.format("\\%03o", chr);
+                        docu.insertString(docu.getLength(), str, ESCAPE_STYLE);
                     }
-                    else if (chr == '(' || chr == ')' || chr == '\n' || chr == '\r'|| chr == '\t' ||
-                            chr == '\b' || chr == '\f' || chr == '\\')
+                    else if (chr == '(' || chr == ')' || chr == '\n' || chr == '\r' ||
+                             chr == '\t' || chr == '\b' || chr == '\f' || chr == '\\')
                     {
                         // PDF reserved characters must be escaped
-                        sb.append('\\');
-                        sb.append((char)chr);
+                        String str = "\\" + (char)chr;
+                        docu.insertString(docu.getLength(), str, ESCAPE_STYLE);
                     }
                     else
                     {
-                        sb.append((char)chr);
+                        String str = "" + (char)chr;
+                        docu.insertString(docu.getLength(), str, STRING_STYLE);
                     }
                 }
-                return sb.append(")").toString();
+                docu.insertString(docu.getLength(), ") ", null);
+            }
+            else if (obj instanceof COSNumber)
+            {
+                String str;
+                if (obj instanceof COSFloat)
+                {
+                    str = Float.toString(((COSFloat) obj).floatValue());
+                }
+                else
+                {
+                    str = Integer.toString(((COSNumber) obj).intValue());
+                }
+                docu.insertString(docu.getLength(), str + " ", NUMBER_STYLE);
             }
             else
             {
                 String str = obj.toString();
                 str = str.substring(str.indexOf('{') + 1, str.length() - 1);
-                return str;
+                docu.insertString(docu.getLength(), str + " ", null);
             }
         }
 
-        private void addOperators(Object obj, StyledDocument docu)
+        private void addOperators(Object obj, StyledDocument docu) throws BadLocationException
         {
             Operator op = (Operator) obj;
-            try
+            
+            if (!op.getName().equals(END_TEXT_OBJECT) &&
+                !op.getName().equals(RESTORE_GRAPHICS_STATE))
             {
-                if (op.getName().equals("BI"))
+                writeIndent(docu);
+            }
+            
+            if (op.getName().equals("BI"))
+            {
+                docu.insertString(docu.getLength(), INLINE_IMAGE_BEGIN + "\n", OPERATOR_STYLE);
+                COSDictionary dic = op.getImageParameters();
+                for (COSName key : dic.keySet())
                 {
-                    docu.insertString(docu.getLength(), OperatorMarker.INLINE_IMAGE_BEGIN + "\n",
-                            OperatorMarker.getStyle(OperatorMarker.INLINE_IMAGE_BEGIN));
-                    COSDictionary dic = op.getImageParameters();
-                    for (COSName key : dic.keySet())
-                    {
-                        Object value = dic.getDictionaryObject(key);
-                        docu.insertString(docu.getLength(), "/" + key.getName() + " ", null);
-                        writeToken(value, docu);
-                        docu.insertString(docu.getLength(), "\n", null);
-                    }
-                    docu.insertString(docu.getLength(), OperatorMarker.IMAGE_DATA + "\n",
-                            OperatorMarker.getStyle(OperatorMarker.IMAGE_DATA));
-                    docu.insertString(docu.getLength(), new String(op.getImageData(), "ISO-8859-1"), null);
+                    Object value = dic.getDictionaryObject(key);
+                    docu.insertString(docu.getLength(), "/" + key.getName() + " ", null);
+                    writeToken(value, docu);
                     docu.insertString(docu.getLength(), "\n", null);
-                    docu.insertString(docu.getLength(), OperatorMarker.INLINE_IMAGE_END + "\n",
-                            OperatorMarker.getStyle(OperatorMarker.INLINE_IMAGE_END));
                 }
-                else
+                String imageString = new String(op.getImageData(), Charsets.ISO_8859_1);
+                docu.insertString(docu.getLength(), IMAGE_DATA + "\n", INLINE_IMAGE_STYLE);
+                docu.insertString(docu.getLength(), imageString, null);
+                docu.insertString(docu.getLength(), "\n", null);
+                docu.insertString(docu.getLength(), INLINE_IMAGE_END + "\n", OPERATOR_STYLE);
+            }
+            else
+            {
+                String operator = ((Operator) obj).getName();
+                docu.insertString(docu.getLength(), operator + "\n", OPERATOR_STYLE);
+                
+                // nested operators
+                if (op.getName().equals(BEGIN_TEXT_OBJECT) ||
+                    op.getName().equals(SAVE_GRAPHICS_STATE))
                 {
-                    String operator = ((Operator) obj).getName();
-                    docu.insertString(docu.getLength(), operator + "\n", OperatorMarker.getStyle(operator));
+                    indent++;
+                    
+                }
+                else if (op.getName().equals(END_TEXT_OBJECT) ||
+                         op.getName().equals(RESTORE_GRAPHICS_STATE))
+                {
+                    indent--;
                 }
             }
-            catch (BadLocationException ex)
+            needIndent = true;
+        }
+
+        void writeIndent(StyledDocument docu) throws BadLocationException
+        {
+            if (needIndent)
             {
-                ex.printStackTrace();
-            }
-            catch (UnsupportedEncodingException ex)
-            {
-                ex.printStackTrace();
+                for (int i = 0; i < indent; i++)
+                {
+                    docu.insertString(docu.getLength(), "  ", null);
+                }
+                needIndent = false;
             }
         }
     }
