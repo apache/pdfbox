@@ -29,7 +29,7 @@ import javax.swing.JRadioButtonMenuItem;
  * To act upon the menu item selection user of the class must add ActionListener which will check for
  * the action command and act accordingly.
  */
-public class RotationMenu extends MenuBase
+public final class RotationMenu extends MenuBase
 {
     public static final String ROTATE_0_DEGREES = "0°";
     public static final String ROTATE_90_DEGREES = "90°";

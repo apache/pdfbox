@@ -28,7 +28,7 @@ import javax.swing.JRadioButtonMenuItem;
  * To act upon the menu item selection user of the class must add ActionListener which will check for
  * the action command and act accordingly.
  */
-public class ZoomMenu extends MenuBase
+public final class ZoomMenu extends MenuBase
 {
     public static final String ZOOM_50_PERCENT = "50%";
     public static final String ZOOM_100_PERCENT = "100%";
