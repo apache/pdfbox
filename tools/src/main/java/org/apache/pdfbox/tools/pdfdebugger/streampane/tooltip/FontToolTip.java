@@ -66,7 +66,7 @@ final class FontToolTip implements ToolTip
 
     private String extractFontReference(String rowText)
     {
-        return rowText.split(" ")[0].substring(1);
+        return rowText.trim().split(" ")[0].substring(1);
     }
 
     @Override

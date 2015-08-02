@@ -17,6 +17,7 @@
 
 package org.apache.pdfbox.tools.pdfdebugger.streampane;
 
+import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
@@ -30,7 +31,6 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
-import javax.swing.text.JTextComponent;
 import javax.swing.text.StyledDocument;
 import org.apache.pdfbox.tools.pdfdebugger.streampane.tooltip.ToolTipController;
 import org.apache.pdfbox.tools.pdfdebugger.ui.textsearcher.Searcher;
@@ -44,7 +44,7 @@ class StreamTextView implements MouseMotionListener, AncestorListener
     private final ToolTipController tTController;
 
     private JPanel mainPanel;
-    private JTextComponent textComponent;
+    private JTextPane textPane;
     private Searcher searcher;
 
     /**
@@ -62,11 +62,12 @@ class StreamTextView implements MouseMotionListener, AncestorListener
     {
         mainPanel = new JPanel();
 
-        textComponent = new JTextPane(document);
-        textComponent.addMouseMotionListener(this);
-        searcher = new Searcher(textComponent);
+        textPane = new JTextPane(document);
+        textPane.addMouseMotionListener(this);
+        textPane.setFont(new Font("monospaced", Font.PLAIN, 13));
+        searcher = new Searcher(textPane);
 
-        JScrollPane scrollPane = new JScrollPane(textComponent);
+        JScrollPane scrollPane = new JScrollPane(textPane);
 
         BoxLayout boxLayout = new BoxLayout(mainPanel, BoxLayout.Y_AXIS);
 
@@ -98,8 +99,8 @@ class StreamTextView implements MouseMotionListener, AncestorListener
     {
         if (tTController != null)
         {
-            int offset = textComponent.viewToModel(mouseEvent.getPoint());
-            textComponent.setToolTipText(tTController.getToolTip(offset, textComponent));
+            int offset = textPane.viewToModel(mouseEvent.getPoint());
+            textPane.setToolTipText(tTController.getToolTip(offset, textPane));
         }
     }
 
