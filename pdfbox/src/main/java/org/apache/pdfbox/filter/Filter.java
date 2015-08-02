@@ -41,6 +41,9 @@ public abstract class Filter
 {
     private static final Log LOG = LogFactory.getLog(Filter.class);
 
+    /**
+     * Constructor.
+     */
     protected Filter()
     {
     }
