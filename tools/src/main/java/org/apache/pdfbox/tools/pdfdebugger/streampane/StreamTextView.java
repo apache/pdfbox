@@ -18,20 +18,18 @@
 package org.apache.pdfbox.tools.pdfdebugger.streampane;
 
 import java.awt.Font;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
-import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 import javax.swing.text.StyledDocument;
+import org.apache.pdfbox.tools.PDFDebugger;
 import org.apache.pdfbox.tools.pdfdebugger.streampane.tooltip.ToolTipController;
 import org.apache.pdfbox.tools.pdfdebugger.ui.textsearcher.Searcher;
 
@@ -77,8 +75,6 @@ class StreamTextView implements MouseMotionListener, AncestorListener
         mainPanel.add(scrollPane);
 
         searcher.getSearchPanel().setVisible(false);
-        searcher.setFindStroke(mainPanel, KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_DOWN_MASK));
-        searcher.setCloseStroke(mainPanel, KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK));
 
         mainPanel.addAncestorListener(this);
 
@@ -109,9 +105,9 @@ class StreamTextView implements MouseMotionListener, AncestorListener
     {
         if (ancestorEvent.getAncestor().equals(mainPanel))
         {
-            JFrame frame = (JFrame) SwingUtilities.getRoot(mainPanel);
-            frame.getJMenuBar().add(searcher.getMenu());
-            SwingUtilities.updateComponentTreeUI(frame.getJMenuBar());
+            PDFDebugger debugger = (PDFDebugger) SwingUtilities.getRoot(mainPanel);
+            debugger.getFindMenu().setEnabled(true);
+            searcher.addMenuListeners(debugger);
         }
     }
 
@@ -120,15 +116,14 @@ class StreamTextView implements MouseMotionListener, AncestorListener
     {
         if (ancestorEvent.getAncestor().equals(mainPanel))
         {
-            JFrame frame = (JFrame) SwingUtilities.getRoot(mainPanel);
-            frame.getJMenuBar().remove(searcher.getMenu());
-            SwingUtilities.updateComponentTreeUI(frame.getJMenuBar());
+            PDFDebugger debugger = (PDFDebugger) SwingUtilities.getRoot(mainPanel);
+            debugger.getFindMenu().setEnabled(false);
+            searcher.removeMenuListeners(debugger);
         }
     }
 
     @Override
     public void ancestorMoved(AncestorEvent ancestorEvent)
     {
-
     }
 }
