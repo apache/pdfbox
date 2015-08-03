@@ -25,10 +25,7 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JMenu;
 import javax.swing.JPanel;
-import javax.swing.KeyStroke;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
@@ -37,6 +34,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
 import javax.swing.text.JTextComponent;
+import org.apache.pdfbox.tools.PDFDebugger;
 
 /**
  * @author Khyrul Bashar
@@ -256,18 +254,13 @@ public class Searcher implements DocumentListener, ChangeListener, ComponentList
         textComponent.getHighlighter().removeAllHighlights();
     }
 
-    public JMenu getMenu()
+    public void addMenuListeners(PDFDebugger frame)
     {
-        return searchPanel.getSearchMenu();
+        searchPanel.addMenuListeners(frame);
     }
 
-    public void setFindStroke(JComponent parent, KeyStroke keyStroke)
+    public void removeMenuListeners(PDFDebugger frame)
     {
-        searchPanel.setFindStroke(parent, keyStroke);
-    }
-
-    public void setCloseStroke(JComponent parent, KeyStroke keyStroke)
-    {
-        searchPanel.setCloseStroke(parent, keyStroke);
+        searchPanel.removeMenuListeners(frame);
     }
 }

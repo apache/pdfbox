@@ -17,25 +17,26 @@
 
 package org.apache.pdfbox.tools.pdfdebugger.ui.textsearcher;
 
-import java.awt.Font;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentListener;
-import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentListener;
+import org.apache.pdfbox.tools.PDFDebugger;
 
 /**
  * @author Khyrul Bashar
@@ -49,11 +50,7 @@ class SearchPanel
     private JTextField searchField;
     private JLabel counterLabel;
     private JPanel panel;
-    private JMenu searchMenu;
-    private KeyStroke findStroke;
-    private KeyStroke closeStroke;
-    private KeyStroke nextStroke;
-    private KeyStroke previousStroke;
+    
     private Action closeAction = new AbstractAction()
     {
         @Override
@@ -61,8 +58,10 @@ class SearchPanel
         {
             panel.setVisible(false);
             closeAction.setEnabled(false);
+            panel.getParent().transferFocus();
         }
     };
+    
     private final Action findAction = new AbstractAction()
     {
         @Override
@@ -77,7 +76,6 @@ class SearchPanel
             reFocus();
         }
     };
-
 
     /**
      * Constructor.
@@ -103,17 +101,14 @@ class SearchPanel
 
         counterLabel = new JLabel();
         counterLabel.setVisible(false);
-        counterLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 13));
 
         JButton nextButton = new JButton();
         nextButton.setAction(nextAction);
         nextButton.setText("Next");
-        nextButton.setToolTipText("Find next");
 
         JButton previousButton = new JButton();
         previousButton.setAction(previousAction);
         previousButton.setText("Previous");
-        previousButton.setToolTipText("Find previous");
 
         caseSensitive = new JCheckBox("Match case");
         caseSensitive.setSelected(false);
@@ -122,26 +117,27 @@ class SearchPanel
 
         JButton crossButton = new JButton();
         crossButton.setAction(closeAction);
+        crossButton.setText("Done");
         closeAction.setEnabled(false);
-        crossButton.setHideActionText(true);
-        crossButton.setText("X");
-        crossButton.setToolTipText("Close");
-
-
+        
         panel = new JPanel();
+        panel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.LIGHT_GRAY));
+        panel.setBackground(new Color(230, 230, 230));
         panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 
+        panel.add(Box.createHorizontalGlue());
         panel.add(searchField);
         panel.add(counterLabel);
-        panel.add(nextButton);
         panel.add(previousButton);
+        panel.add(nextButton);
         panel.add(caseSensitive);
+        panel.add(Box.createRigidArea(new Dimension(5, 0)));
         panel.add(crossButton);
 
         panel.addComponentListener(compListener);
 
-        setNextFindStroke(KeyStroke.getKeyStroke("F3"));
-        setPreviousStroke(KeyStroke.getKeyStroke(KeyEvent.VK_F3, InputEvent.SHIFT_DOWN_MASK));
+        searchField.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
+                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), closeAction);
     }
 
     boolean isCaseSensitive()
@@ -190,92 +186,19 @@ class SearchPanel
         closeAction.setEnabled(true);
     }
 
-    private JMenu createSearchMenu()
+    public void addMenuListeners(PDFDebugger frame)
     {
-        JMenuItem findMenuItem = new JMenuItem();
-        findMenuItem.setAction(findAction);
-        findMenuItem.setText("Find");
-        findMenuItem.setAccelerator(findStroke);
-
-        JMenuItem closeMenuItem = new JMenuItem();
-        closeMenuItem.setAction(closeAction);
-        closeMenuItem.setText("Close");
-        closeMenuItem.setAccelerator(closeStroke);
-
-        JMenuItem nextFindMenuItem = new JMenuItem();
-        nextFindMenuItem.setAction(nextAction);
-        nextFindMenuItem.setText("Find next");
-        nextFindMenuItem.setAccelerator(nextStroke);
-
-        JMenuItem previousMenuItem = new JMenuItem();
-        previousMenuItem.setAction(previousAction);
-        previousMenuItem.setText("Find previous");
-        previousMenuItem.setAccelerator(previousStroke);
-
-        JMenu menu = new JMenu("Search");
-
-        menu.add(findMenuItem);
-        menu.addSeparator();
-        menu.add(nextFindMenuItem);
-        menu.add(previousMenuItem);
-        menu.addSeparator();
-        menu.add(closeMenuItem);
-
-        return menu;
+        frame.getFindMenu().setEnabled(true);
+        frame.getFindMenuItem().addActionListener(findAction);
+        frame.getFindNextMenuItem().addActionListener(nextAction);
+        frame.getFindPreviousMenuItem().addActionListener(previousAction);
     }
 
-    JMenu getSearchMenu()
+    public void removeMenuListeners(PDFDebugger frame)
     {
-        if (searchMenu == null)
-        {
-            searchMenu = createSearchMenu();
-        }
-        return searchMenu;
-    }
-
-    void setFindStroke(JComponent parent, KeyStroke keyStroke)
-    {
-        if (findStroke != null)
-        {
-            parent.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).remove(findStroke);
-        }
-        findStroke = keyStroke;
-        addActionToInput(parent, "showPanle", JComponent.WHEN_IN_FOCUSED_WINDOW, findStroke, findAction);
-    }
-
-    void setCloseStroke(JComponent parent, KeyStroke keyStroke)
-    {
-        if (closeStroke != null)
-        {
-            parent.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).remove(closeStroke);
-        }
-        closeStroke = keyStroke;
-        addActionToInput(parent, "closePanel", JComponent.WHEN_IN_FOCUSED_WINDOW, closeStroke, closeAction);
-    }
-
-    void setNextFindStroke(KeyStroke keyStroke)
-    {
-        if (nextStroke != null)
-        {
-            panel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).remove(nextStroke);
-        }
-        nextStroke = keyStroke;
-        addActionToInput(panel, "nextFind", JComponent.WHEN_IN_FOCUSED_WINDOW, nextStroke, nextAction);
-    }
-
-    void setPreviousStroke(KeyStroke keyStroke)
-    {
-        if (previousStroke != null)
-        {
-            panel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).remove(previousStroke);
-        }
-        previousStroke = keyStroke;
-        addActionToInput(panel, "previousFind", JComponent.WHEN_IN_FOCUSED_WINDOW, previousStroke, previousAction);
-    }
-
-    private void addActionToInput(JComponent component, Object key, int state, KeyStroke keyStroke, Action action)
-    {
-        component.getInputMap(state).put(keyStroke, key);
-        component.getActionMap().put(key, action);
+        frame.getFindMenu().setEnabled(false);
+        frame.getFindMenuItem().removeActionListener(findAction);
+        frame.getFindNextMenuItem().removeActionListener(nextAction);
+        frame.getFindPreviousMenuItem().removeActionListener(previousAction);
     }
 }

@@ -25,6 +25,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.io.ByteArrayOutputStream;
@@ -41,6 +42,7 @@ import java.util.Set;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -90,32 +92,68 @@ import org.apache.pdfbox.tools.util.FileOpenSaveDialog;
 import org.apache.pdfbox.tools.util.RecentFiles;
 
 /**
- *
+ * PDF Debugger.
+ * 
  * @author wurtz
  * @author Ben Litchfield
  */
-public class PDFDebugger extends javax.swing.JFrame
+public class PDFDebugger extends JFrame
 {
-    private TreeStatusPane statusPane;
-    private RecentFiles recentFiles;
-    private boolean isPageMode;
-
-    private PDDocument document;
-    private String currentFilePath;
-
     private static final Set<COSName> SPECIALCOLORSPACES =
-            new HashSet(Arrays.asList(COSName.INDEXED, COSName.SEPARATION, COSName.DEVICEN));
+            new HashSet<COSName>(Arrays.asList(COSName.INDEXED, COSName.SEPARATION, COSName.DEVICEN));
 
     private static final Set<COSName> OTHERCOLORSPACES =
-            new HashSet(Arrays.asList(COSName.ICCBASED, COSName.PATTERN, COSName.CALGRAY, COSName.CALRGB, COSName.LAB));
+            new HashSet<COSName>(Arrays.asList(COSName.ICCBASED, COSName.PATTERN, COSName.CALGRAY,
+                                 COSName.CALRGB, COSName.LAB));
 
     private static final String PASSWORD = "-password";
 
     private static final int SHORCUT_KEY_MASK =
             Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
     
+    private TreeStatusPane statusPane;
+    private RecentFiles recentFiles;
+    private boolean isPageMode;
+
+    private PDDocument document;
+    private String currentFilePath;
+    
     private static final String OS_NAME = System.getProperty("os.name").toLowerCase();
     private static final boolean IS_MAC_OS = OS_NAME.startsWith("mac os x");
+    
+    private JScrollPane jScrollPane1;
+    private JScrollPane jScrollPane2;
+    private javax.swing.JSplitPane jSplitPane1;
+    private javax.swing.JTextPane jTextPane1;
+    private Tree tree;
+    private final JPanel documentPanel = new JPanel();
+    private javax.swing.JMenuBar menuBar;
+    
+    // file menu
+    private JMenu fileMenu;
+    private JMenuItem openMenuItem;
+    private JMenuItem openUrlMenuItem;
+    private JMenuItem saveAsMenuItem;
+    private JMenuItem saveMenuItem;
+    private JMenu recentFilesMenu;
+    private JMenuItem exitMenuItem;
+
+    // edit menu
+    private JMenu editMenu;
+    private JMenuItem copyMenuItem;
+    private JMenuItem pasteMenuItem;
+    private JMenuItem cutMenuItem;
+    private JMenuItem deleteMenuItem;
+
+    // edit > find meu
+    private JMenu findMenu;
+    private JMenuItem findMenuItem;
+    private JMenuItem findNextMenuItem;
+    private JMenuItem findPreviousMenuItem;
+
+    // view menu
+    private JMenu viewMenu;
+    private JMenuItem viewModeItem;
     
     /**
      * Constructor.
@@ -139,26 +177,9 @@ public class PDFDebugger extends javax.swing.JFrame
         jScrollPane2 = new JScrollPane();
         jTextPane1 = new javax.swing.JTextPane();
         menuBar = new javax.swing.JMenuBar();
-        fileMenu = new JMenu();
-        openMenuItem = new JMenuItem();
-        openUrlMenuItem = new JMenuItem();
-        saveMenuItem = new JMenuItem();
-        saveAsMenuItem = new JMenuItem();
-        recentFilesMenu = new JMenu();
-        exitMenuItem = new JMenuItem();
-        editMenu = new JMenu();
-        cutMenuItem = new JMenuItem();
-        copyMenuItem = new JMenuItem();
-        pasteMenuItem = new JMenuItem();
-        deleteMenuItem = new JMenuItem();
-        viewMenu = new JMenu();
-        viewModeItem = new JMenuItem();
-        helpMenu = new JMenu();
-        contentsMenuItem = new JMenuItem();
-        aboutMenuItem = new JMenuItem();
-
-        tree.setCellRenderer( new PDFTreeCellRenderer() );
-        tree.setModel( null );
+        
+        tree.setCellRenderer(new PDFTreeCellRenderer());
+        tree.setModel(null);
 
         setTitle("PDFBox Debugger");
 
@@ -170,7 +191,7 @@ public class PDFDebugger extends javax.swing.JFrame
                 tree.requestFocusInWindow();
                 super.windowOpened(windowEvent);
             }
-            
+
             @Override
             public void windowClosing(WindowEvent evt)
             {
@@ -200,139 +221,19 @@ public class PDFDebugger extends javax.swing.JFrame
         jSplitPane1.setLeftComponent(jScrollPane1);
 
         JScrollPane documentScroller = new JScrollPane();
-        documentScroller.setViewportView( documentPanel );
+        documentScroller.setViewportView(documentPanel);
 
         statusPane = new TreeStatusPane(tree);
         statusPane.getPanel().setBorder(new BevelBorder(BevelBorder.RAISED));
         statusPane.getPanel().setPreferredSize(new Dimension(300, 25));
         getContentPane().add(statusPane.getPanel(), BorderLayout.PAGE_START);
 
-        getContentPane().add( jSplitPane1, BorderLayout.CENTER );
+        getContentPane().add(jSplitPane1, BorderLayout.CENTER);
 
-        fileMenu.setText("File");
-        openMenuItem.setText("Open...");
-        openMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, SHORCUT_KEY_MASK));
-        openMenuItem.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent evt)
-            {
-                openMenuItemActionPerformed(evt);
-            }
-        });
-
-        fileMenu.add(openMenuItem);
-        
-        openUrlMenuItem.setText("Open URL...");
-        openUrlMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, SHORCUT_KEY_MASK));
-        openUrlMenuItem.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent evt)
-            {
-                String urlString = JOptionPane.showInputDialog("Enter an URL");
-                try
-                {
-                    readPDFurl(urlString, "");
-                }
-                catch (IOException e)
-                {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
-        fileMenu.add(openUrlMenuItem);
-
-        saveMenuItem.setText("Save");
-
-        saveAsMenuItem.setText("Save As ...");
-
-        try
-        {
-            recentFiles = new RecentFiles(this.getClass(), 5);
-        }
-        catch (Exception e)
-        {
-            throw new RuntimeException(e);
-        }
-
-        recentFilesMenu.setText("Open Recent");
-        recentFilesMenu.setEnabled(false);
-        addRecentFileItems();
-        fileMenu.add(recentFilesMenu);
-
-        exitMenuItem.setText("Exit");
-        exitMenuItem.setAccelerator(KeyStroke.getKeyStroke("alt F4"));
-        exitMenuItem.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent evt)
-            {
-                exitMenuItemActionPerformed(evt);
-            }
-        });
-
-        if (!IS_MAC_OS)
-        {
-            fileMenu.add(exitMenuItem);
-        }
-
-        menuBar.add(fileMenu);
-
-        editMenu.setText("Edit");
-        cutMenuItem.setText("Cut");
-        editMenu.add(cutMenuItem);
-
-        copyMenuItem.setText("Copy");
-        editMenu.add(copyMenuItem);
-
-        pasteMenuItem.setText("Paste");
-        editMenu.add(pasteMenuItem);
-
-        deleteMenuItem.setText("Delete");
-        editMenu.add(deleteMenuItem);
-
-        viewMenu.setText("View");
-
-        viewModeItem.setText("Show Pages");
-        viewModeItem.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent)
-            {
-                if (isPageMode)
-                {
-                    viewModeItem.setText("Show Pages");
-                    isPageMode = false;
-                }
-                else
-                {
-                    viewModeItem.setText("Show Internal Structure");
-                    isPageMode = true;
-                }
-                initTree();
-            }
-        });
-
-        viewMenu.add(viewModeItem);
-
-        menuBar.add(viewMenu);
-
-        helpMenu.setText("Help");
-        contentsMenuItem.setText("Contents");
-        helpMenu.add(contentsMenuItem);
-
-        aboutMenuItem.setText("About");
-        helpMenu.add(aboutMenuItem);
-        
-        ZoomMenu zoomMenu = ZoomMenu.getInstance();
-        zoomMenu.setEnableMenu(false);
-        viewMenu.add(zoomMenu.getMenu());
-
-        RotationMenu rotationMenu = RotationMenu.getInstance();
-        rotationMenu.setEnableMenu(false);
-        viewMenu.add(rotationMenu.getMenu());
-
+        // create menus
+        menuBar.add(createFileMenu());
+        menuBar.add(createEditMenu());
+        menuBar.add(createViewMenu());
         setJMenuBar(menuBar);
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -388,8 +289,225 @@ public class PDFDebugger extends javax.swing.JFrame
                 throw new RuntimeException(e);
             }
         }
-    }//GEN-END:initComponents
+    }
+    
+    private JMenu createFileMenu()
+    {
+        fileMenu = new JMenu();
+        fileMenu.setText("File");
+        
+        openMenuItem = new JMenuItem();
+        openMenuItem.setText("Open...");
+        openMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, SHORCUT_KEY_MASK));
+        openMenuItem.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent evt)
+            {
+                openMenuItemActionPerformed(evt);
+            }
+        });
 
+        fileMenu.add(openMenuItem);
+
+        openUrlMenuItem = new JMenuItem();
+        openUrlMenuItem.setText("Open URL...");
+        openUrlMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, SHORCUT_KEY_MASK));
+        openUrlMenuItem.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent evt)
+            {
+                String urlString = JOptionPane.showInputDialog("Enter an URL");
+                try
+                {
+                    readPDFurl(urlString, "");
+                }
+                catch (IOException e)
+                {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        fileMenu.add(openUrlMenuItem);
+
+        try
+        {
+            recentFiles = new RecentFiles(this.getClass(), 5);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
+
+        recentFilesMenu = new JMenu();
+        recentFilesMenu.setText("Open Recent");
+        recentFilesMenu.setEnabled(false);
+        addRecentFileItems();
+        fileMenu.add(recentFilesMenu);
+
+        exitMenuItem = new JMenuItem();
+        exitMenuItem.setText("Exit");
+        exitMenuItem.setAccelerator(KeyStroke.getKeyStroke("alt F4"));
+        exitMenuItem.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent evt)
+            {
+                exitMenuItemActionPerformed(evt);
+            }
+        });
+
+        if (!IS_MAC_OS)
+        {
+            fileMenu.addSeparator();
+            fileMenu.add(exitMenuItem);
+        }
+        
+        return fileMenu;
+    }
+    
+    private JMenu createEditMenu()
+    {
+        editMenu = new JMenu();
+        editMenu.setText("Edit");
+        
+        cutMenuItem = new JMenuItem();
+        cutMenuItem.setText("Cut");
+        cutMenuItem.setEnabled(false);
+        editMenu.add(cutMenuItem);
+
+        copyMenuItem = new JMenuItem();
+        copyMenuItem.setText("Copy");
+        copyMenuItem.setEnabled(false);
+        editMenu.add(copyMenuItem);
+
+        pasteMenuItem = new JMenuItem();
+        pasteMenuItem.setText("Paste");
+        pasteMenuItem.setEnabled(false);
+        editMenu.add(pasteMenuItem);
+
+        deleteMenuItem = new JMenuItem();
+        deleteMenuItem.setText("Delete");
+        deleteMenuItem.setEnabled(false);
+        editMenu.add(deleteMenuItem);
+        editMenu.addSeparator();
+        editMenu.add(createFindMenu());
+        
+        return editMenu;
+    }
+    
+    private JMenu createViewMenu()
+    {
+        viewMenu = new JMenu();
+        viewMenu.setText("View");
+
+        viewModeItem = new JMenuItem();
+        viewModeItem.setText("Show Pages");
+        viewModeItem.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                if (isPageMode)
+                {
+                    viewModeItem.setText("Show Pages");
+                    isPageMode = false;
+                }
+                else
+                {
+                    viewModeItem.setText("Show Internal Structure");
+                    isPageMode = true;
+                }
+                initTree();
+            }
+        });
+        viewMenu.add(viewModeItem);
+
+        ZoomMenu zoomMenu = ZoomMenu.getInstance();
+        zoomMenu.setEnableMenu(false);
+        viewMenu.add(zoomMenu.getMenu());
+
+        RotationMenu rotationMenu = RotationMenu.getInstance();
+        rotationMenu.setEnableMenu(false);
+        viewMenu.add(rotationMenu.getMenu());
+        
+        return viewMenu;
+    }
+    
+    private JMenu createFindMenu()
+    {
+        findMenu = new JMenu("Find");
+        findMenu.setEnabled(false);
+        
+        findMenuItem = new JMenuItem();
+        findMenuItem.setActionCommand("find");
+        findMenuItem.setText("Find...");
+        findMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, SHORCUT_KEY_MASK));
+        
+        findNextMenuItem = new JMenuItem();
+        findNextMenuItem.setText("Find Next");
+        if (IS_MAC_OS)
+        {
+            findNextMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, SHORCUT_KEY_MASK));
+        }
+        else
+        {
+            findNextMenuItem.setAccelerator(KeyStroke.getKeyStroke("F3"));
+        }
+
+        findPreviousMenuItem = new JMenuItem();
+        findPreviousMenuItem.setText("Find Previous");
+        if (IS_MAC_OS)
+        {
+            findPreviousMenuItem.setAccelerator(KeyStroke.getKeyStroke(
+                    KeyEvent.VK_G, SHORCUT_KEY_MASK | InputEvent.SHIFT_DOWN_MASK));
+        }
+        else
+        {
+            findPreviousMenuItem.setAccelerator(KeyStroke.getKeyStroke(
+                    KeyEvent.VK_F3, InputEvent.SHIFT_DOWN_MASK));
+        }
+        
+        findMenu.add(findMenuItem);
+        findMenu.add(findNextMenuItem);
+        findMenu.add(findPreviousMenuItem);
+        
+        return findMenu;
+    }
+
+    /**
+     * Returns the File menu.
+     */
+    public JMenu getFindMenu()
+    {
+        return findMenu;
+    }
+
+    /**
+     * Returns the Edit > Find > Find menu item.
+     */
+    public JMenuItem getFindMenuItem()
+    {
+        return findMenuItem;
+    }
+
+    /**
+     * Returns the Edit > Find > Find Next menu item.
+     */
+    public JMenuItem getFindNextMenuItem()
+    {
+        return findNextMenuItem;
+    }
+
+    /**
+     * Returns the Edit > Find > Find Previous menu item.
+     */
+    public JMenuItem getFindPreviousMenuItem()
+    {
+        return findPreviousMenuItem;
+    }
+    
     /**
      * This method is called via reflection on Mac OS X.
      */
@@ -451,7 +569,7 @@ public class PDFDebugger extends javax.swing.JFrame
         {
             throw new RuntimeException(e);
         }
-    }//GEN-LAST:event_openMenuItemActionPerformed
+    }
 
     private void jTree1ValueChanged(TreeSelectionEvent evt)
     {
@@ -502,7 +620,7 @@ public class PDFDebugger extends javax.swing.JFrame
                 throw new RuntimeException(e);
             }
         }
-    }//GEN-LAST:event_jTree1ValueChanged
+    }
 
     private boolean isSpecialColorSpace(Object selectedNode)
     {
@@ -901,14 +1019,12 @@ public class PDFDebugger extends javax.swing.JFrame
                     sb.append('\n');
                     sb.append(element);
                 }
-                JOptionPane.showMessageDialog(null, "Error: " + sb.toString(),"Error",
+                JOptionPane.showMessageDialog(null, "Error: " + sb.toString(), "Error",
                         JOptionPane.ERROR_MESSAGE);
             }
         });
         
         final PDFDebugger viewer = new PDFDebugger();
-
-        
         
         // open file, if any
         String filename = null;
@@ -1071,7 +1187,6 @@ public class PDFDebugger extends javax.swing.JFrame
         }
     }
 
-
     /**
      * This will print out a message telling how to use this utility.
      */
@@ -1083,32 +1198,4 @@ public class PDFDebugger extends javax.swing.JFrame
                         "  <input-file>              The PDF document to be loaded\n"
         );
     }
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private JMenuItem aboutMenuItem;
-    private JMenuItem contentsMenuItem;
-    private JMenuItem copyMenuItem;
-    private JMenuItem cutMenuItem;
-    private JMenuItem deleteMenuItem;
-    private JMenu editMenu;
-    private JMenuItem exitMenuItem;
-    private JMenu fileMenu;
-    private JMenu helpMenu;
-    private JMenu recentFilesMenu;
-    private JMenu viewMenu;
-    private JMenuItem viewModeItem;
-    private JScrollPane jScrollPane1;
-    private JScrollPane jScrollPane2;
-    private javax.swing.JSplitPane jSplitPane1;
-    private javax.swing.JTextPane jTextPane1;
-    private Tree tree;
-    private javax.swing.JMenuBar menuBar;
-    private JMenuItem openMenuItem;
-    private JMenuItem openUrlMenuItem;
-    private JMenuItem pasteMenuItem;
-    private JMenuItem saveAsMenuItem;
-    private JMenuItem saveMenuItem;
-    private final JPanel documentPanel = new JPanel();
-    // End of variables declaration//GEN-END:variables
-
 }
