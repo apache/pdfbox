@@ -18,13 +18,13 @@ package org.apache.pdfbox.tools;
 
 import java.io.File;
 import java.io.IOException;
-
+import java.io.OutputStream;
 import java.util.Iterator;
-
 import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
-
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
@@ -67,10 +67,11 @@ public class WriteDecodedDoc
                 COSBase base = i.next().getObject();
                 if (base instanceof COSStream)
                 {
-                    // just kill the filters
-                    COSStream cosStream = (COSStream)base;
-                    cosStream.getUnfilteredStream();
-                    cosStream.setFilters(null);
+                    COSStream stream = (COSStream)base;
+                    stream.removeItem(COSName.FILTER);
+                    OutputStream streamOut = stream.createOutputStream();
+                    IOUtils.copy(stream.createInputStream(), streamOut);
+                    streamOut.close();
                 }
             }
             doc.getDocumentCatalog();

@@ -47,11 +47,11 @@ public class PDFunctionType4 extends PDFunction
     public PDFunctionType4(COSBase functionStream) throws IOException
     {
         super( functionStream );
-        this.instructions = InstructionSequenceBuilder.parse(
-                getPDStream().getInputStreamAsString());
+        byte[] bytes = getPDStream().toByteArray();
+        String string =  new String(bytes, "ISO-8859-1");
+        this.instructions = InstructionSequenceBuilder.parse(string);
     }
-
-
+    
     /**
      * {@inheritDoc}
      */

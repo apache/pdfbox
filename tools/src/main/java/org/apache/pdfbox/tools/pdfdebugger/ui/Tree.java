@@ -269,7 +269,7 @@ public class Tree extends JTree
             {
                 try
                 {
-                    InputStream data = stream.getPartiallyFilteredStream(stopFilters);
+                    InputStream data = stream.createInputStream(stopFilters);
                     saveStream(IOUtils.toByteArray(data));
                 }
                 catch (IOException e)

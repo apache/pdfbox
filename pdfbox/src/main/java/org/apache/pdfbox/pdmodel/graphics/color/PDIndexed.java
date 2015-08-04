@@ -214,7 +214,7 @@ public final class PDIndexed extends PDSpecialColorSpace
             }
             else if (lookupTable instanceof COSStream)
             {
-                lookupData = new PDStream((COSStream)lookupTable).getByteArray();
+                lookupData = new PDStream((COSStream)lookupTable).toByteArray();
             }
             else if (lookupTable == null)
             {

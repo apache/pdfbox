@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel;
 
-import java.io.BufferedInputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -27,7 +26,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
@@ -42,7 +40,7 @@ import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
-import org.apache.pdfbox.io.RandomAccessReadInputStream;
+import org.apache.pdfbox.io.RandomAccessInputStream;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdfparser.PDFParser;
@@ -562,8 +560,7 @@ public class PDDocument implements Closeable
             in = page.getContents();
             if (in != null)
             {
-                PDStream dest = new PDStream(document, page.getContents());
-                dest.addCompression();
+                PDStream dest = new PDStream(this, page.getContents(), COSName.FLATE_DECODE);
                 importedPage.setContents(dest);
             }
             addPage(importedPage);
@@ -1230,8 +1227,7 @@ public class PDDocument implements Closeable
      */
     public void saveIncremental(OutputStream output) throws IOException
     {
-        InputStream input = new BufferedInputStream(
-                new RandomAccessReadInputStream(pdfSource, 0, pdfSource.length()));
+        InputStream input = new RandomAccessInputStream(pdfSource);
         COSWriter writer = null;
         try
         {
@@ -1299,14 +1295,13 @@ public class PDDocument implements Closeable
     /**
      * Protects the document with a protection policy. The document content will be really
      * encrypted when it will be saved. This method only marks the document for encryption. It also
-     * sets {@link #setAllSecurityToBeRemoved(boolean)} to false if it was set to true previously and logs a
-     * warning.
+     * calls {@link #setAllSecurityToBeRemoved(boolean)} with a false argument if it was set to true
+     * previously and logs a warning.
      *
      * @see org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy
      * @see org.apache.pdfbox.pdmodel.encryption.PublicKeyProtectionPolicy
      *
      * @param policy The protection policy.
-     *
      * @throws IOException if there isn't any suitable security handler.
      */
     public void protect(ProtectionPolicy policy) throws IOException

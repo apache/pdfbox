@@ -48,8 +48,7 @@ public class TestEmbeddedFiles extends TestCase
             assertEquals("expected two files", 2, names.getEmbeddedFiles().getNames().size());
             PDEmbeddedFilesNameTreeNode embeddedFiles = names.getEmbeddedFiles();
 
-            PDComplexFileSpecification spec = (PDComplexFileSpecification)
-                                            embeddedFiles.getNames().get("non-existent-file.docx");
+            PDComplexFileSpecification spec = embeddedFiles.getNames().get("non-existent-file.docx");
 
             if (spec != null)
             {
@@ -57,11 +56,10 @@ public class TestEmbeddedFiles extends TestCase
                 ok = true;
             }
             //now test for actual attachment
-            spec = (PDComplexFileSpecification)embeddedFiles.getNames().get("My first attachment");
+            spec = embeddedFiles.getNames().get("My first attachment");
             assertNotNull("one attachment actually exists", spec);
             assertEquals("existing file length", 17660, spec.getEmbeddedFile().getLength());
-            spec = (PDComplexFileSpecification)embeddedFiles
-                                                    .getNames().get("non-existent-file.docx");
+            spec = embeddedFiles.getNames().get("non-existent-file.docx");
         }
         catch (NullPointerException e)
         {
@@ -99,14 +97,14 @@ public class TestEmbeddedFiles extends TestCase
         }
 
         assertTrue("non os specific",
-                byteArrayContainsLC("non os specific", nonOSFile.getByteArray(), "ISO-8859-1"));
+                byteArrayContainsLC("non os specific", nonOSFile.toByteArray(), "ISO-8859-1"));
 
-        assertTrue("mac", byteArrayContainsLC("mac embedded", macFile.getByteArray(), "ISO-8859-1"));
+        assertTrue("mac", byteArrayContainsLC("mac embedded", macFile.toByteArray(), "ISO-8859-1"));
 
-        assertTrue("dos", byteArrayContainsLC("dos embedded", dosFile.getByteArray(), "ISO-8859-1"));
+        assertTrue("dos", byteArrayContainsLC("dos embedded", dosFile.toByteArray(), "ISO-8859-1"));
 
         assertTrue("unix",
-                byteArrayContainsLC("unix embedded", unixFile.getByteArray(), "ISO-8859-1"));
+                byteArrayContainsLC("unix embedded", unixFile.toByteArray(), "ISO-8859-1"));
 
     }
 

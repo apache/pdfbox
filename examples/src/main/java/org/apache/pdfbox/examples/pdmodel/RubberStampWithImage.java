@@ -28,7 +28,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
@@ -101,14 +100,13 @@ public class RubberStampWithImage
                     rect.setUpperRightY(lowerLeftY + formHeight);
 
                     // Create a PDFormXObject
-                    PDStream stream = new PDStream(document);
-                    OutputStream os = stream.createOutputStream();
-                    PDFormXObject form = new PDFormXObject(stream);
+                    PDFormXObject form = new PDFormXObject(document);
                     form.setResources(new PDResources());
                     form.setBBox(rect);
                     form.setFormType(1);
 
                     // adjust the image to the target rectangle and add it to the stream
+                    OutputStream os = form.getStream().createOutputStream();
                     drawXObject(ximage, form.getResources(), os, lowerLeftX, lowerLeftY, imgWidth, imgHeight);
                     os.close();
 

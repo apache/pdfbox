@@ -136,7 +136,7 @@ public class ExtractEmbeddedFiles
         try
         {
             fos = new FileOutputStream(file);
-            fos.write(embeddedFile.getByteArray());
+            fos.write(embeddedFile.toByteArray());
         }
         finally
         {

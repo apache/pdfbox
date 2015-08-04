@@ -19,7 +19,8 @@ package org.apache.pdfbox.pdmodel.graphics.image;
 import java.awt.Paint;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-
+import java.io.InputStream;
+import java.util.List;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDStream;
@@ -50,10 +51,31 @@ public interface PDImage extends COSObjectable
     BufferedImage getStencilImage(Paint paint) throws IOException;
 
     /**
-     * Returns a stream containing this image's data.
-     * @throws IOException if the
+     * Returns a stream containing this image's data. Null for inline images.
+     * @throws IOException if the stream could not be read.
      */
     PDStream getStream() throws IOException;
+
+    /**
+     * Returns an InputStream containing the image data, irrespective of whether this is an
+     * inline image or an image XObject.
+     * @return Decoded stream
+     * @throws IOException if the data could not be read.
+     */
+    InputStream createInputStream() throws IOException;
+
+    /**
+     * Returns an InputStream containing the image data, irrespective of whether this is an
+     * inline image or an image XObject. The given filters will not be decoded.
+     * @return Decoded stream
+     * @throws IOException if the data could not be read.
+     */
+    InputStream createInputStream(List<String> stopFilters) throws IOException;
+
+    /**
+     * Returns true if the image has no data.
+     */
+    boolean isEmpty();
 
     /**
      * Returns true if the image is a stencil mask.

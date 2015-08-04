@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -37,7 +36,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 
 /**
@@ -279,7 +277,7 @@ public class Overlay
         List<COSStream> contentStreams = createContentStreamList(contents);
         // concatenate streams
         COSStream concatStream = new COSStream();
-        OutputStream out = concatStream.createUnfilteredStream();
+        OutputStream out = concatStream.createOutputStream(COSName.FLATE_DECODE);
         for (COSStream contentStream : contentStreams)
         {
             InputStream in = contentStream.getUnfilteredStream();
@@ -292,7 +290,6 @@ public class Overlay
             out.flush();
         }
         out.close();
-        concatStream.setFilters(COSName.FLATE_DECODE);
         return concatStream;
     }
 
@@ -418,7 +415,7 @@ public class Overlay
 
     private COSName createOverlayXObject(PDPage page, LayoutPage layoutPage, COSStream contentStream)
     {
-        PDFormXObject xobjForm = new PDFormXObject(new PDStream(contentStream));
+        PDFormXObject xobjForm = new PDFormXObject(contentStream);
         xobjForm.setResources(new PDResources(layoutPage.overlayResources));
         xobjForm.setFormType(1);
         xobjForm.setBBox( layoutPage.overlayMediaBox.createRetranslatedRectangle());
@@ -461,15 +458,13 @@ public class Overlay
         }
         return stringValue;
     }
-
     
     private COSStream createStream(String content) throws IOException
     {
         COSStream stream = new COSStream();
-        OutputStream out = stream.createUnfilteredStream();
+        OutputStream out = stream.createOutputStream(COSName.FLATE_DECODE);
         out.write(content.getBytes("ISO-8859-1"));
         out.close();
-        stream.setFilters(COSName.FLATE_DECODE);
         return stream;
     }
 

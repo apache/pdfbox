@@ -900,72 +900,88 @@ public class COSParser extends BaseParser
      */
     protected COSStream parseCOSStream(COSDictionary dic) throws IOException
     {
-        final COSStream stream = document.createCOSStream(dic);
-        OutputStream out = null;
-        try
+        COSStream stream = document.createCOSStream(dic);
+       
+        // read 'stream'; this was already tested in parseObjectsDynamically()
+        readString(); 
+        
+        skipWhiteSpaces();
+
+        /*
+         * This needs to be dic.getItem because when we are parsing, the underlying object might still be null.
+         */
+        COSNumber streamLengthObj = getLength(dic.getItem(COSName.LENGTH), dic.getCOSName(COSName.TYPE));
+        if (streamLengthObj == null)
         {
-            // read 'stream'; this was already tested in parseObjectsDynamically()
-            readString(); 
-            
-            skipWhiteSpaces();
-
-            /*
-             * This needs to be dic.getItem because when we are parsing, the underlying object might still be null.
-             */
-            COSNumber streamLengthObj = getLength(dic.getItem(COSName.LENGTH), dic.getCOSName(COSName.TYPE));
-            if (streamLengthObj == null)
+            if (isLenient)
             {
-                if (isLenient)
-                {
-                   LOG.warn("The stream doesn't provide any stream length, using fallback readUntilEnd, at offset "
-                        + source.getPosition());
-                }
-                else
-                {
-                    throw new IOException("Missing length for stream.");
-                }
-            }
-
-            // get output stream to copy data to
-            if (streamLengthObj != null && validateStreamLength(streamLengthObj.longValue()))
-            {
-                out = stream.createFilteredStream(streamLengthObj);
-                readValidStream(out, streamLengthObj);
+               LOG.warn("The stream doesn't provide any stream length, using fallback readUntilEnd, at offset "
+                    + source.getPosition());
             }
             else
             {
-                out = stream.createFilteredStream();
-                readUntilEndStream(new EndstreamOutputStream(out));
-            }
-            String endStream = readString();
-            if (endStream.equals("endobj") && isLenient)
-            {
-                LOG.warn("stream ends with 'endobj' instead of 'endstream' at offset "
-                        + source.getPosition());
-                // avoid follow-up warning about missing endobj
-                source.rewind(ENDOBJ.length);
-            }
-            else if (endStream.length() > 9 && isLenient && endStream.substring(0,9).equals(ENDSTREAM_STRING))
-            {
-                LOG.warn("stream ends with '" + endStream + "' instead of 'endstream' at offset "
-                        + source.getPosition());
-                // unread the "extra" bytes
-                source.rewind(endStream.substring(9).getBytes(ISO_8859_1).length);
-            }
-            else if (!endStream.equals(ENDSTREAM_STRING))
-            {
-                throw new IOException(
-                        "Error reading stream, expected='endstream' actual='"
-                        + endStream + "' at offset " + source.getPosition());
+                throw new IOException("Missing length for stream.");
             }
         }
-        finally
+
+        // get output stream to copy data to
+        if (streamLengthObj != null && validateStreamLength(streamLengthObj.longValue()))
         {
-            if (out != null)
+            OutputStream out = stream.createRawOutputStream();
+            try
+            {
+                readValidStream(out, streamLengthObj);
+            }
+            finally
             {
                 out.close();
+                // restore original (possibly incorrect) length
+                stream.setItem(COSName.LENGTH, streamLengthObj);
             }
         }
+        else
+        {
+            OutputStream out = stream.createRawOutputStream();
+            try
+            {
+                readUntilEndStream(new EndstreamOutputStream(out));
+            }
+            finally
+            {
+                out.close();
+                // restore original (possibly incorrect) length
+                if (streamLengthObj != null)
+                {
+                    stream.setItem(COSName.LENGTH, streamLengthObj);
+                }
+                else
+                {
+                    stream.removeItem(COSName.LENGTH);
+                }
+            }
+        }
+        String endStream = readString();
+        if (endStream.equals("endobj") && isLenient)
+        {
+            LOG.warn("stream ends with 'endobj' instead of 'endstream' at offset "
+                    + source.getPosition());
+            // avoid follow-up warning about missing endobj
+            source.rewind(ENDOBJ.length);
+        }
+        else if (endStream.length() > 9 && isLenient && endStream.substring(0,9).equals(ENDSTREAM_STRING))
+        {
+            LOG.warn("stream ends with '" + endStream + "' instead of 'endstream' at offset "
+                    + source.getPosition());
+            // unread the "extra" bytes
+            source.rewind(endStream.substring(9).getBytes(ISO_8859_1).length);
+        }
+        else if (!endStream.equals(ENDSTREAM_STRING))
+        {
+            throw new IOException(
+                    "Error reading stream, expected='endstream' actual='"
+                    + endStream + "' at offset " + source.getPosition());
+        }
+
         return stream;
     }
 

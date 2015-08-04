@@ -92,42 +92,6 @@ public abstract class PDAbstractPattern implements COSObjectable
     }
 
     /**
-     * Sets the filter entry of the encryption dictionary.
-     * @param filter The filter name.
-     */
-    public void setFilter(String filter)
-    {
-        patternDictionary.setItem(COSName.FILTER, COSName.getPDFName(filter));
-    }
-
-    /**
-     * Get the name of the filter.
-     * @return The filter name contained in this encryption dictionary.
-     */
-    public String getFilter()
-    {
-        return patternDictionary.getNameAsString(COSName.FILTER);
-    }
-
-    /**
-     * This will set the length of the content stream.
-     * @param length The new stream length.
-     */
-    public void setLength(int length)
-    {
-        patternDictionary.setInt(COSName.LENGTH, length);
-    }
-
-    /**
-     * This will return the length of the content stream.
-     * @return The length of the content stream
-     */
-    public int getLength()
-    {
-        return patternDictionary.getInt(COSName.LENGTH, 0);
-    }
-
-    /**
      * This will set the paint type.
      * @param paintType The new paint type.
      */

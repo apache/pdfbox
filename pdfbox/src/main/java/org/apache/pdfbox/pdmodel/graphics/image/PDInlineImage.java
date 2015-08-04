@@ -21,8 +21,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
-
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -32,7 +32,6 @@ import org.apache.pdfbox.filter.Filter;
 import org.apache.pdfbox.filter.FilterFactory;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
-import org.apache.pdfbox.pdmodel.common.PDMemoryStream;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
@@ -53,7 +52,8 @@ public final class PDInlineImage implements PDImage
     private final PDResources resources;
 
     // image data
-    private final PDStream stream;
+    private final byte[] rawData;
+    private final byte[] decodedData;
 
     /**
      * Creates an inline image from the given parameters and data.
@@ -67,12 +67,13 @@ public final class PDInlineImage implements PDImage
     {
         this.parameters = parameters;
         this.resources = resources;
+        this.rawData = data;
 
         DecodeResult decodeResult = null;
         List<String> filters = getFilters();
         if (filters == null || filters.isEmpty())
         {
-            this.stream = new PDMemoryStream(data);
+            this.decodedData = data;
         }
         else
         {
@@ -86,8 +87,7 @@ public final class PDInlineImage implements PDImage
                 decodeResult = filter.decode(in, out, parameters, i);
                 in = new ByteArrayInputStream(out.toByteArray());
             }
-            byte[] finalData = out.toByteArray();
-            this.stream = new PDMemoryStream(finalData);
+            this.decodedData = out.toByteArray();
         }
 
         // repair parameters
@@ -196,8 +196,7 @@ public final class PDInlineImage implements PDImage
     }
 
     /**
-     * Returns a list of filters applied to this stream, or null if there are
-     * none.
+     * Returns a list of filters applied to this stream, or null if there are none.
      *
      * @return a list of filters applied to this stream
      */
@@ -253,12 +252,59 @@ public final class PDInlineImage implements PDImage
         parameters.setBoolean(COSName.IM, isStencil);
     }
 
+    /**
+     * Always null, use {@link #createInputStream()} instead.
+     */
     @Override
     public PDStream getStream() throws IOException
     {
-        return stream;
+        return null;
     }
 
+    @Override
+    public InputStream createInputStream() throws IOException
+    {
+        return new ByteArrayInputStream(decodedData);
+    }
+
+    @Override
+    public InputStream createInputStream(List<String> stopFilters) throws IOException
+    {
+        List<String> filters = getFilters();
+        ByteArrayInputStream in = new ByteArrayInputStream(rawData);
+        ByteArrayOutputStream out = new ByteArrayOutputStream(rawData.length);
+        for (int i = 0; i < filters.size(); i++)
+        {
+            // TODO handling of abbreviated names belongs here, rather than in other classes
+            out.reset();
+            if (stopFilters.contains(filters.get(i)))
+            {
+                break;
+            }
+            else
+            {
+                Filter filter = FilterFactory.INSTANCE.getFilter(filters.get(i));
+                filter.decode(in, out, parameters, i);
+                in = new ByteArrayInputStream(out.toByteArray());
+            }
+        }
+        return new ByteArrayInputStream(out.toByteArray());
+    }
+
+    @Override
+    public boolean isEmpty()
+    {
+        return decodedData.length == 0;
+    }
+
+    /**
+     * Returns the inline image data.
+     */
+    public byte[] getData()
+    {
+        return decodedData;
+    }
+    
     @Override
     public BufferedImage getImage() throws IOException
     {

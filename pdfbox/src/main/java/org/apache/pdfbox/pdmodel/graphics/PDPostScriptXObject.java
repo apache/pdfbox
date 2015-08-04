@@ -17,7 +17,7 @@
 package org.apache.pdfbox.pdmodel.graphics;
 
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.cos.COSStream;
 
 /**
  * A PostScript XObject.
@@ -31,7 +31,7 @@ public class PDPostScriptXObject extends PDXObject
      * Creates a PostScript XObject.
      * @param stream The XObject stream
      */
-    public PDPostScriptXObject(PDStream stream)
+    public PDPostScriptXObject(COSStream stream)
     {
         super(stream, COSName.PS);
     }

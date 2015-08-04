@@ -25,7 +25,6 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
@@ -197,7 +196,7 @@ public abstract class AnnotationValidator
 
                 // Appearance stream is a XObjectForm, check it.
                 ContextHelper.validateElement(ctx, new PDFormXObject(
-                        new PDStream(COSUtils.getAsStream(apn, cosDocument))),
+                        COSUtils.getAsStream(apn, cosDocument)),
                         GRAPHIC_PROCESS);
             }
         } // else ok, nothing to check,this field is optional

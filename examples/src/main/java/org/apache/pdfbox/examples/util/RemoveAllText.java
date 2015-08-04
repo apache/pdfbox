@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.examples.util;
 
+import java.io.OutputStream;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdfwriter.ContentStreamWriter;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -89,9 +91,10 @@ public class RemoveAllText
                         newTokens.add( token );
                     }
                     PDStream newContents = new PDStream( document );
-                    ContentStreamWriter writer = new ContentStreamWriter( newContents.createOutputStream() );
+                    OutputStream out = newContents.createOutputStream(COSName.FLATE_DECODE);
+                    ContentStreamWriter writer = new ContentStreamWriter( out );
                     writer.writeTokens( newTokens );
-                    newContents.addCompression();
+                    out.close();
                     page.setContents( newContents );
                 }
                 document.save( args[1] );

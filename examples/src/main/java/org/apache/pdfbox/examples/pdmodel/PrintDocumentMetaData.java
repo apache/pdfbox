@@ -100,7 +100,8 @@ public class PrintDocumentMetaData
         System.out.println( "Trapped=" + info.getTrapped() );
         if( metadata != null )
         {
-            System.out.println( "Metadata=" + metadata.getInputStreamAsString() );
+            String string =  new String( metadata.toByteArray(), "ISO-8859-1" );
+            System.out.println( "Metadata=" + string );
         }
     }
 

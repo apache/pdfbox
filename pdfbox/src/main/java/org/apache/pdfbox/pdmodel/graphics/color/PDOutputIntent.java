@@ -107,11 +107,8 @@ public final class PDOutputIntent implements COSObjectable
     private PDStream configureOutputProfile(PDDocument doc, InputStream colorProfile)
             throws IOException
     {
-        PDStream stream = new PDStream(doc, colorProfile, false);
-        stream.getStream().setFilters(COSName.FLATE_DECODE);
-        stream.getStream().setInt(COSName.LENGTH, stream.getByteArray().length);
+        PDStream stream = new PDStream(doc, colorProfile, COSName.FLATE_DECODE);
         stream.getStream().setInt(COSName.N, 3);
-        stream.addCompression();
         return stream;
     }
 }  

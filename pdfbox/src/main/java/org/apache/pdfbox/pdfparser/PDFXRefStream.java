@@ -60,7 +60,7 @@ public class PDFXRefStream implements PDFXRef
      */
     public PDFXRefStream()
     {
-        this.stream = new COSStream(new COSDictionary());
+        this.stream = new COSStream();
         streamData = new TreeMap<Long, Object>();
         objectNumbers = new TreeSet<Long>();
     }
@@ -78,36 +78,34 @@ public class PDFXRefStream implements PDFXRef
             throw new IllegalArgumentException("size is not set in xrefstream");
         }
         stream.setLong(COSName.SIZE, getSizeEntry());
-        stream.setFilters(COSName.FLATE_DECODE);
+    
+        List<Long> indexEntry = getIndexEntry();
+        COSArray indexAsArray = new COSArray();
+        for ( Long i : indexEntry )
+        {
+            indexAsArray.add(COSInteger.get(i));
+        }
+        stream.setItem(COSName.INDEX, indexAsArray);
 
+        int[] wEntry = getWEntry();
+        COSArray wAsArray = new COSArray();
+        for ( int i = 0; i < wEntry.length; i++ )
         {
-            List<Long> indexEntry = getIndexEntry();
-            COSArray indexAsArray = new COSArray();
-            for ( Long i : indexEntry )
-            {
-                indexAsArray.add(COSInteger.get(i));
-            }
-            stream.setItem(COSName.INDEX, indexAsArray);
+            int j = wEntry[i];
+            wAsArray.add(COSInteger.get(j));
         }
-        {
-            int[] wEntry = getWEntry();
-            COSArray wAsArray = new COSArray();
-            for ( int i = 0; i < wEntry.length; i++ )
-            {
-                int j = wEntry[i];
-                wAsArray.add(COSInteger.get(j));
-            }
-            stream.setItem(COSName.W, wAsArray);
-            OutputStream unfilteredStream = stream.createUnfilteredStream();
-            writeStreamData(unfilteredStream, wEntry);
-        }
-        Set<COSName> keySet = stream.keySet();
+        stream.setItem(COSName.W, wAsArray);
+        
+        OutputStream stream = this.stream.createOutputStream(COSName.FLATE_DECODE);
+        writeStreamData(stream, wEntry);
+    
+        Set<COSName> keySet = this.stream.keySet();
         for ( COSName cosName : keySet )
         {
-            COSBase dictionaryObject = stream.getDictionaryObject(cosName);
+            COSBase dictionaryObject = this.stream.getDictionaryObject(cosName);
             dictionaryObject.setDirect(true);
         }
-        return stream;
+        return this.stream;
     }
 
     /**
