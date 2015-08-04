@@ -96,8 +96,10 @@ public class PDFXRefStream implements PDFXRef
         }
         stream.setItem(COSName.W, wAsArray);
         
-        OutputStream stream = this.stream.createOutputStream(COSName.FLATE_DECODE);
-        writeStreamData(stream, wEntry);
+        OutputStream outputStream = this.stream.createOutputStream(COSName.FLATE_DECODE);
+        writeStreamData(outputStream, wEntry);
+        outputStream.flush();
+        outputStream.close();
     
         Set<COSName> keySet = this.stream.keySet();
         for ( COSName cosName : keySet )
@@ -297,8 +299,6 @@ public class PDFXRefStream implements PDFXRef
                 throw new RuntimeException("unexpected reference type");
             }
         }
-        os.flush();
-        os.close();
     }
 
     /**
