@@ -319,7 +319,7 @@ public class ExtractImages
                                       PDDeviceRGB.INSTANCE.getName().equals(colorSpaceName))
                     {
                         // RGB or Gray colorspace: get and write the unmodifiedJPEG stream
-                        InputStream data = pdImage.getStream().getPartiallyFilteredStream(JPEG);
+                        InputStream data = pdImage.getStream().createInputStream(JPEG);
                         IOUtils.copy(data, out);
                         IOUtils.closeQuietly(data);
                     }

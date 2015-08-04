@@ -238,10 +238,11 @@ public class TestPDFToImage extends TestCase
             new File(outDir, file.getName() + ".reloaderror").delete();
             tmpFile.delete();
         }
-        catch (Exception e)
+        catch (IOException e)
         {
             failed = true;
-            LOG.error("Error converting file " + file.getName(), e);
+            LOG.error("Error converting file " + file.getName());
+            throw e;
         }
         finally
         {

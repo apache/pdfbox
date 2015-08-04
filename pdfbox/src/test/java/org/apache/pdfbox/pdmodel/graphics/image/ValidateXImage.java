@@ -49,7 +49,7 @@ public class ValidateXImage
         assertNotNull(cosStream);
         assertEquals(COSName.XOBJECT, cosStream.getItem(COSName.TYPE));
         assertEquals(COSName.IMAGE, cosStream.getItem(COSName.SUBTYPE));
-        assertTrue(ximage.getCOSStream().getFilteredLength() > 0);
+        assertTrue(ximage.getCOSStream().getLength() > 0);
         assertEquals(bpc, ximage.getBitsPerComponent());
         assertEquals(width, ximage.getWidth());
         assertEquals(height, ximage.getHeight());

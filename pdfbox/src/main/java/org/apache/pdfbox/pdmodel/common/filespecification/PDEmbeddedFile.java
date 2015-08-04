@@ -53,7 +53,7 @@ public class PDEmbeddedFile extends PDStream
      */
     public PDEmbeddedFile( COSStream str )
     {
-        super( str );
+        super(str);
     }
 
     /**
@@ -66,23 +66,8 @@ public class PDEmbeddedFile extends PDStream
      */
     public PDEmbeddedFile( PDDocument doc, InputStream str  ) throws IOException
     {
-        super( doc, str );
+        super(doc, str);
         getStream().setName(COSName.TYPE, "EmbeddedFile");
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param doc {@inheritDoc}
-     * @param str {@inheritDoc}
-     * @param filtered {@inheritDoc}
-     *
-     * @throws IOException {@inheritDoc}
-     */
-    public PDEmbeddedFile( PDDocument doc, InputStream str, boolean filtered ) throws IOException
-    {
-        super( doc, str, filtered );
-        getStream().setName(COSName.TYPE, "EmbeddedFile" );
     }
 
     /**
@@ -92,7 +77,7 @@ public class PDEmbeddedFile extends PDStream
      */
     public void setSubtype( String mimeType )
     {
-        getStream().setName(COSName.SUBTYPE, mimeType );
+        getStream().setName(COSName.SUBTYPE, mimeType);
     }
 
     /**

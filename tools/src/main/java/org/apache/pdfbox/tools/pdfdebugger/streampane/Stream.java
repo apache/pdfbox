@@ -134,7 +134,7 @@ class Stream
             }
             else
             {
-                return new PDStream(stream).getPartiallyFilteredStream(filters.get(key));
+                return new PDStream(stream).createInputStream(filters.get(key));
             }
         }
         catch (IOException e)

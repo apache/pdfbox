@@ -199,7 +199,7 @@ public class PDType1Font extends PDSimpleFont
                     int length2 = stream.getInt(COSName.LENGTH2);
 
                     // repair Length1 if necessary
-                    byte[] bytes = fontFile.getByteArray();
+                    byte[] bytes = fontFile.toByteArray();
                     length1 = repairLength1(bytes, length1);
                     
                     if (bytes.length > 0 && (bytes[0] & 0xff) == PFB_START_MARKER)

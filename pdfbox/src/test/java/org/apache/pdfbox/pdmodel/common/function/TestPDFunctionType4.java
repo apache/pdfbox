@@ -18,12 +18,9 @@ package org.apache.pdfbox.pdmodel.common.function;
 
 import java.io.IOException;
 import java.io.OutputStream;
-
-import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSStream;
-
 import junit.framework.TestCase;
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSStream;
 
 /**
  * Tests the {@link PDFunctionType4} class.
@@ -34,22 +31,21 @@ public class TestPDFunctionType4 extends TestCase
     private PDFunctionType4 createFunction(String function, float[] domain, float[] range)
             throws IOException
     {
-        COSDictionary dict = new COSDictionary();
-        dict.setInt("FunctionType", 4);
+        COSStream stream = new COSStream();
+        stream.setInt("FunctionType", 4);
         COSArray domainArray = new COSArray();
         domainArray.setFloatArray(domain);
-        dict.setItem("Domain", domainArray);
+        stream.setItem("Domain", domainArray);
         COSArray rangeArray = new COSArray();
         rangeArray.setFloatArray(range);
-        dict.setItem("Range", rangeArray);
-
-        COSStream functionStream = new COSStream(dict);
-        OutputStream out = functionStream.createUnfilteredStream();
+        stream.setItem("Range", rangeArray);
+        
+        OutputStream out = stream.createOutputStream();
         byte[] data = function.getBytes("US-ASCII");
         out.write(data, 0, data.length);
-        out.flush();
+        out.close();
 
-        return new PDFunctionType4(functionStream);
+        return new PDFunctionType4(stream);
     }
 
     /**

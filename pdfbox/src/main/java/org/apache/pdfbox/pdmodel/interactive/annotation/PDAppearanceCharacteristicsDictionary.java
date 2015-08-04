@@ -22,7 +22,6 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
-import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
@@ -190,7 +189,7 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
         COSBase i = this.getCOSObject().getDictionaryObject("I");
         if (i instanceof COSStream)
         {
-            return new PDFormXObject(new PDStream((COSStream) i));
+            return new PDFormXObject((COSStream)i);
         }
         return null;
     }
@@ -205,7 +204,7 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
         COSBase i = this.getCOSObject().getDictionaryObject("RI");
         if (i instanceof COSStream)
         {
-            return new PDFormXObject(new PDStream((COSStream) i));
+            return new PDFormXObject((COSStream)i);
         }
         return null;
     }
@@ -220,7 +219,7 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
         COSBase i = this.getCOSObject().getDictionaryObject("IX");
         if (i instanceof COSStream)
         {
-            return new PDFormXObject(new PDStream((COSStream) i));
+            return new PDFormXObject((COSStream)i);
         }
         return null;
     }

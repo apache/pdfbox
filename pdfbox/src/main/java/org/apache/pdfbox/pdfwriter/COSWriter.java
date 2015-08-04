@@ -1124,53 +1124,20 @@ public class COSWriter implements ICOSVisitor, Closeable
         if (willEncrypt)
         {
             pdDocument.getEncryption().getSecurityHandler()
-                    .encryptStream(obj, currentObjectKey.getNumber(),
-                            currentObjectKey.getGeneration());
-        }
-
-        COSObject lengthObject = null;
-        // check if the length object is required to be direct, like in
-        // a cross reference stream dictionary
-        COSBase lengthEntry = obj.getDictionaryObject(COSName.LENGTH);
-        String type = obj.getNameAsString(COSName.TYPE);
-        if (lengthEntry != null && lengthEntry.isDirect() || "XRef".equals(type))
-        {
-            // the length might be the non encoded length,
-            // set the real one as direct object
-            COSInteger cosInteger = COSInteger.get(obj.getFilteredLength());
-            cosInteger.setDirect(true);
-            obj.setItem(COSName.LENGTH, cosInteger);
-        }
-        else
-        {
-            // make the length an implicit indirect object
-            // set the length of the stream and write stream dictionary
-            lengthObject = new COSObject(null);
-            obj.setItem(COSName.LENGTH, lengthObject);
+                .encryptStream(obj, currentObjectKey.getNumber(), currentObjectKey.getGeneration());
         }
 
         InputStream input = null;
         try
         {
-            input = obj.getFilteredStream();
-            //obj.accept(this);
             // write the stream content
             visitFromDictionary(obj);
             getStandardOutput().write(STREAM);
             getStandardOutput().writeCRLF();
-            byte[] buffer = new byte[1024];
-            int amountRead;
-            int totalAmountWritten = 0;
-            while ((amountRead = input.read(buffer, 0, 1024)) != -1)
-            {
-                getStandardOutput().write(buffer, 0, amountRead);
-                totalAmountWritten += amountRead;
-            }
-            // set the length as an indirect object
-            if (lengthObject != null)
-            {
-                lengthObject.setObject(COSInteger.get(totalAmountWritten));
-            }
+
+            input = obj.createRawInputStream();
+            IOUtils.copy(input, getStandardOutput());
+         
             getStandardOutput().writeCRLF();
             getStandardOutput().write(ENDSTREAM);
             getStandardOutput().writeEOL();

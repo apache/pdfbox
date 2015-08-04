@@ -81,16 +81,15 @@ public class LayerUtility
      */
     public void wrapInSaveRestore(PDPage page) throws IOException
     {
-        COSDictionary saveGraphicsStateDic = new COSDictionary();
-        COSStream saveGraphicsStateStream = getDocument().getDocument().createCOSStream(saveGraphicsStateDic);
-        OutputStream saveStream = saveGraphicsStateStream.createUnfilteredStream();
+        COSStream saveGraphicsStateStream = getDocument().getDocument().createCOSStream();
+        OutputStream saveStream = saveGraphicsStateStream.createOutputStream();
         saveStream.write("q\n".getBytes("ISO-8859-1"));
-        saveStream.flush();
+        saveStream.close();
 
-        COSStream restoreGraphicsStateStream = getDocument().getDocument().createCOSStream(saveGraphicsStateDic);
-        OutputStream restoreStream = restoreGraphicsStateStream.createUnfilteredStream();
+        COSStream restoreGraphicsStateStream = getDocument().getDocument().createCOSStream();
+        OutputStream restoreStream = restoreGraphicsStateStream.createOutputStream();
         restoreStream.write("Q\n".getBytes("ISO-8859-1"));
-        restoreStream.flush();
+        restoreStream.close();
 
         //Wrap the existing page's content in a save/restore pair (q/Q) to have a controlled
         //environment to add additional content.
@@ -147,7 +146,7 @@ public class LayerUtility
      */
     public PDFormXObject importPageAsForm(PDDocument sourceDoc, PDPage page) throws IOException
     {
-        PDStream newStream = new PDStream(targetDoc, page.getContents(), false);
+        PDStream newStream = new PDStream(targetDoc, page.getContents(), COSName.FLATE_DECODE);
         PDFormXObject form = new PDFormXObject(newStream);
 
         //Copy resources

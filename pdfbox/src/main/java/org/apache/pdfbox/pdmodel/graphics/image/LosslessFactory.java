@@ -253,8 +253,8 @@ public final class LosslessFactory
         Filter filter = FilterFactory.INSTANCE.getFilter(COSName.FLATE_DECODE);
         filter.encode(new ByteArrayInputStream(byteArray), baos, new COSDictionary(), 0);
 
-        ByteArrayInputStream filteredByteStream = new ByteArrayInputStream(baos.toByteArray());
-        return new PDImageXObject(document, filteredByteStream, COSName.FLATE_DECODE, 
+        ByteArrayInputStream encodedByteStream = new ByteArrayInputStream(baos.toByteArray());
+        return new PDImageXObject(document, encodedByteStream, COSName.FLATE_DECODE, 
                 width, height, bitsPerComponent, initColorSpace);
     }
 

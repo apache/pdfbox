@@ -83,7 +83,6 @@ public class PDInlineImageTest extends TestCase
         assertEquals(width, inlineImage1.getWidth());
         assertEquals(height, inlineImage1.getHeight());
         assertEquals(1, inlineImage1.getBitsPerComponent());
-        assertEquals(data.length, inlineImage1.getStream().getLength());
         
         COSDictionary dict2 = new COSDictionary();
         dict2.addAll(dict);

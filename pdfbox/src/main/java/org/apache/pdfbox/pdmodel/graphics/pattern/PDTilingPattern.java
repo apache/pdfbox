@@ -73,26 +73,6 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
     }
 
     /**
-     * This will set the length of the content stream.
-     * @param length The new stream length.
-     */
-    @Override
-    public void setLength(int length)
-    {
-        getCOSObject().setInt(COSName.LENGTH, length);
-    }
-
-    /**
-     * This will return the length of the content stream.
-     * @return The length of the content stream
-     */
-    @Override
-    public int getLength()
-    {
-        return getCOSObject().getInt( COSName.LENGTH, 0 );
-    }
-
-    /**
      * This will set the paint type.
      * @param paintType The new paint type.
      */

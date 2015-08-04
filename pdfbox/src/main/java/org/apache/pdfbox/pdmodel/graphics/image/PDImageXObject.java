@@ -16,33 +16,34 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.image;
 
-import java.awt.RenderingHints;
-import java.lang.ref.SoftReference;
-import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.filter.DecodeResult;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDResources;
-import org.apache.pdfbox.pdmodel.common.PDMetadata;
-import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
-import org.apache.pdfbox.pdmodel.graphics.PDXObject;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
-
 import java.awt.Graphics2D;
 import java.awt.Paint;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.ref.SoftReference;
 import java.util.List;
 import javax.imageio.ImageIO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSInputStream;
+import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.common.PDMetadata;
+import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.graphics.PDXObject;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 
 /**
  * An Image XObject.
@@ -87,7 +88,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
     /**
      * Creates an Image XObject in the given document using the given filtered stream.
      * @param document the current document
-     * @param filteredStream a filtered stream of image data
+     * @param encodedStream an encoded stream of image data
      * @param cosFilter the filter or a COSArray of filters
      * @param width the image width
      * @param height the image height
@@ -95,11 +96,11 @@ public final class PDImageXObject extends PDXObject implements PDImage
      * @param initColorSpace the color space
      * @throws IOException if there is an error creating the XObject.
      */
-    public PDImageXObject(PDDocument document, InputStream filteredStream, 
+    public PDImageXObject(PDDocument document, InputStream encodedStream, 
             COSBase cosFilter, int width, int height, int bitsPerComponent, 
             PDColorSpace initColorSpace) throws IOException
     {
-        super(new PDStream(document, filteredStream, true), COSName.IMAGE);
+        super(createRawStream(document, encodedStream), COSName.IMAGE);
         getCOSStream().setItem(COSName.FILTER, cosFilter);
         resources = null;
         colorSpace = null;
@@ -110,6 +111,29 @@ public final class PDImageXObject extends PDXObject implements PDImage
     }
 
     /**
+     * Creates a COS stream from raw (encoded) data.
+     */
+    private static COSStream createRawStream(PDDocument document, InputStream rawInput)
+            throws IOException
+    {
+        COSStream stream = document.getDocument().createCOSStream();
+        OutputStream output = null;
+        try
+        {
+            output = stream.createRawOutputStream();
+            IOUtils.copy(rawInput, output);
+        }
+        finally
+        {
+            if (output != null)
+            {
+                output.close();
+            }
+        }
+        return stream;
+    }
+
+    /**
      * Creates an Image XObject with the given stream as its contents and current color spaces.
      * @param stream the XObject stream to read
      * @param resources the current resources
@@ -117,7 +141,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
      */
     public PDImageXObject(PDStream stream, PDResources resources) throws IOException
     {
-        this(stream, resources, stream.getStream().getDecodeResult());
+        this(stream, resources, stream.createInputStream());
     }
     
     /**
@@ -176,17 +200,17 @@ public final class PDImageXObject extends PDXObject implements PDImage
     }
 
     // repairs parameters using decode result
-    private PDImageXObject(PDStream stream, PDResources resources, DecodeResult decodeResult)
+    private PDImageXObject(PDStream stream, PDResources resources, COSInputStream input)
     {
-        super(repair(stream, decodeResult), COSName.IMAGE);
+        super(repair(stream, input), COSName.IMAGE);
         this.resources = resources;
-        this.colorSpace = decodeResult.getJPXColorSpace();
+        this.colorSpace = input.getDecodeResult().getJPXColorSpace();
     }
 
     // repairs parameters using decode result
-    private static PDStream repair(PDStream stream, DecodeResult decodeResult)
+    private static PDStream repair(PDStream stream, COSInputStream input)
     {
-        stream.getStream().addAll(decodeResult.getParameters());
+        stream.getStream().addAll(input.getDecodeResult().getParameters());
         return stream;
     }
 
@@ -469,9 +493,21 @@ public final class PDImageXObject extends PDXObject implements PDImage
     }
 
     @Override
-    public PDStream getStream() throws IOException
+    public InputStream createInputStream() throws IOException
     {
-        return getPDStream();
+        return getStream().createInputStream();
+    }
+
+    @Override
+    public InputStream createInputStream(List<String> stopFilters) throws IOException
+    {
+        return createInputStream();
+    }
+
+    @Override
+    public boolean isEmpty()
+    {
+        return getStream().getStream().getLength() == 0;
     }
 
     @Override
@@ -552,7 +588,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
     @Override
     public String getSuffix()
     {
-        List<COSName> filters = getPDStream().getFilters();
+        List<COSName> filters = getStream().getFilters();
 
         if (filters == null)
         {

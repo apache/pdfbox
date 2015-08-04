@@ -415,7 +415,15 @@ public abstract class SecurityHandler
         decryptDictionary(stream, objNum, genNum);
         byte[] encrypted = IOUtils.toByteArray(stream.getFilteredStream());
         ByteArrayInputStream encryptedStream = new ByteArrayInputStream(encrypted);
-        encryptData(objNum, genNum, encryptedStream, stream.createFilteredStream(), true /* decrypt */);
+        OutputStream output = stream.createRawOutputStream();
+        try
+        {
+           encryptData(objNum, genNum, encryptedStream, output, true /* decrypt */);
+        }
+        finally
+        {
+            output.close();
+        }
     }
 
     /**
@@ -431,9 +439,17 @@ public abstract class SecurityHandler
      */
     public void encryptStream(COSStream stream, long objNum, int genNum) throws IOException
     {
-        byte[] rawData = IOUtils.toByteArray(stream.getFilteredStream());
+        byte[] rawData = IOUtils.toByteArray(stream.createRawInputStream());
         ByteArrayInputStream encryptedStream = new ByteArrayInputStream(rawData);
-        encryptData(objNum, genNum, encryptedStream, stream.createFilteredStream(), false /* encrypt */);
+        OutputStream output = stream.createRawOutputStream();
+        try
+        {
+            encryptData(objNum, genNum, encryptedStream, output, false /* encrypt */);
+        }
+        finally
+        {
+            output.close();
+        }
     }
 
     /**
