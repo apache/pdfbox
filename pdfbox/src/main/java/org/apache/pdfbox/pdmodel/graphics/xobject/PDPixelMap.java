@@ -261,7 +261,11 @@ public class PDPixelMap extends PDXObjectImage
             int width = getWidth();
             int height = getHeight();
             int bpc = getBitsPerComponent();
-
+            if (getImageMask() && bpc == -1)
+            {
+                // "If ImageMask is true, this entry is optional, but if specified, its value shall be 1"
+                bpc = 1;
+            }                
             PDColorSpace colorspace = getColorSpace();
             if (colorspace == null)
             {
