@@ -24,8 +24,8 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.common.PDStream;
 
 /**
  * load document and write with all streams decoded.
@@ -68,9 +68,10 @@ public class WriteDecodedDoc
                 if (base instanceof COSStream)
                 {
                     COSStream stream = (COSStream)base;
+                    byte[] bytes = new PDStream(stream).toByteArray();
                     stream.removeItem(COSName.FILTER);
                     OutputStream streamOut = stream.createOutputStream();
-                    IOUtils.copy(stream.createInputStream(), streamOut);
+                    streamOut.write(bytes);
                     streamOut.close();
                 }
             }
