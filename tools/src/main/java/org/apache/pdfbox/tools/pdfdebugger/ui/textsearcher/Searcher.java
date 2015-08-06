@@ -56,7 +56,7 @@ public class Searcher implements DocumentListener, ChangeListener, ComponentList
         @Override
         public void actionPerformed(ActionEvent actionEvent)
         {
-            if (totalMatch != 0)
+            if (totalMatch != 0 && currentMatch != 0)
             {
                 currentMatch = currentMatch - 1;
                 int offset = highlights.get(currentMatch).getStartOffset();
@@ -72,7 +72,7 @@ public class Searcher implements DocumentListener, ChangeListener, ComponentList
         @Override
         public void actionPerformed(ActionEvent actionEvent)
         {
-            if (totalMatch != 0)
+            if (totalMatch != 0 && currentMatch != totalMatch - 1)
             {
                 currentMatch = currentMatch + 1;
                 int offset = highlights.get(currentMatch).getStartOffset();
