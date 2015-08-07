@@ -222,14 +222,8 @@ public class PDDocumentCatalog implements COSObjectable
      */
     public PDViewerPreferences getViewerPreferences()
     {
-        PDViewerPreferences retval = null;
-        COSDictionary dict = (COSDictionary)root.getDictionaryObject( COSName.VIEWER_PREFERENCES );
-        if( dict != null )
-        {
-            retval = new PDViewerPreferences( dict );
-        }
-
-        return retval;
+        COSBase base = root.getDictionaryObject(COSName.VIEWER_PREFERENCES);
+        return base instanceof COSDictionary ? new PDViewerPreferences((COSDictionary) base) : null;
     }
 
     /**
