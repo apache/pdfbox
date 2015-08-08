@@ -406,7 +406,7 @@ public class CFFParser
         else
         {
             input.setPosition(charsetId);
-            charset = readCharset(input, charStringsIndex.getCount());
+            charset = readCharset(input, charStringsIndex.getCount(), rosEntry != null);
         }
         font.setCharset(charset);
         font.getCharStringsDict().put(".notdef", charStringsIndex.getBytes(0));
@@ -902,20 +902,20 @@ public class CFFParser
         }
     }
 
-    private CFFCharset readCharset(CFFDataInput dataInput, int nGlyphs) throws IOException
+    private CFFCharset readCharset(CFFDataInput dataInput, int nGlyphs, boolean isCID) throws IOException
     {
         int format = dataInput.readCard8();
         if (format == 0)
         {
-            return readFormat0Charset(dataInput, format, nGlyphs);
+            return readFormat0Charset(dataInput, format, nGlyphs, isCID);
         }
         else if (format == 1)
         {
-            return readFormat1Charset(dataInput, format, nGlyphs);
+            return readFormat1Charset(dataInput, format, nGlyphs, isCID);
         }
         else if (format == 2)
         {
-            return readFormat2Charset(dataInput, format, nGlyphs);
+            return readFormat2Charset(dataInput, format, nGlyphs, isCID);
         }
         else
         {
@@ -923,7 +923,7 @@ public class CFFParser
         }
     }
 
-    private Format0Charset readFormat0Charset(CFFDataInput dataInput, int format, int nGlyphs) throws IOException
+    private Format0Charset readFormat0Charset(CFFDataInput dataInput, int format, int nGlyphs, boolean isCID) throws IOException
     {
         Format0Charset charset = new Format0Charset();
         charset.format = format;
@@ -931,12 +931,12 @@ public class CFFParser
         for (int i = 0; i < charset.glyph.length; i++)
         {
             charset.glyph[i] = dataInput.readSID();
-            charset.register(charset.glyph[i], readString(charset.glyph[i]));
+            registerCharset(charset, charset.glyph[i], isCID);
         }
         return charset;
     }
 
-    private Format1Charset readFormat1Charset(CFFDataInput dataInput, int format, int nGlyphs) throws IOException
+    private Format1Charset readFormat1Charset(CFFDataInput dataInput, int format, int nGlyphs, boolean isCID) throws IOException
     {
         Format1Charset charset = new Format1Charset();
         charset.format = format;
@@ -949,7 +949,7 @@ public class CFFParser
             ranges.add(range);
             for (int j = 0; j < 1 + range.nLeft; j++)
             {
-                charset.register(range.first + j, readString(range.first + j));
+                registerCharset(charset, range.first + j, isCID);
             }
             i += 1 + range.nLeft;
         }
@@ -957,7 +957,8 @@ public class CFFParser
         return charset;
     }
 
-    private Format2Charset readFormat2Charset(CFFDataInput dataInput, int format, int nGlyphs) throws IOException
+    private Format2Charset readFormat2Charset(CFFDataInput dataInput, int format, int nGlyphs, boolean isCID)
+            throws IOException
     {
         Format2Charset charset = new Format2Charset();
         charset.format = format;
@@ -973,11 +974,19 @@ public class CFFParser
             charset.range[charset.range.length - 1] = range;
             for (int j = 0; j < 1 + range.nLeft; j++)
             {
-                charset.register(range.first + j, readString(range.first + j));
+                registerCharset(charset, range.first + j, isCID);
             }
             i += 1 + range.nLeft;
         }
         return charset;
+    }
+
+    private void registerCharset(EmbeddedCharset charset, int sid, boolean isCID) throws IOException
+    {
+        // The charset data, although in the same format as non-CIDFonts,
+        // will represent CIDs rather than SIDs, i.e. charstrings are "named" by CIDs in a CIDFont.
+        String name = isCID ? String.valueOf(sid) : readString(sid);
+        charset.register(sid, name);
     }
 
     /**
