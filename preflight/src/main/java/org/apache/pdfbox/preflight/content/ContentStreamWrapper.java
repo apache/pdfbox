@@ -97,7 +97,12 @@ public class ContentStreamWrapper extends ContentStreamEngine
         try
         {
             resetEnginContext();
-            processSubStream(this.processeedPage, xobj.getResources(), xobj.getCOSStream());
+            PDResources resources = xobj.getResources();
+            if (resources == null)
+            {
+                resources = new PDResources();
+            }
+            processSubStream(this.processeedPage, resources, xobj.getCOSStream());
         }
         catch (ContentStreamException e)
         {
