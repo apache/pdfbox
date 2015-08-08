@@ -419,7 +419,10 @@ public class PDFDebugger extends JFrame
                     viewModeItem.setText("Show Internal Structure");
                     isPageMode = true;
                 }
-                initTree();
+                if (document != null)
+                {
+                    initTree();
+                }
             }
         });
         viewMenu.add(viewModeItem);
