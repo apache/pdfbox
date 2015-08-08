@@ -41,19 +41,13 @@ final class SCNToolTip extends ColorToolTip
     private void createMarkUp(PDResources resources, String colorSpaceName, String rowText)
     {
         PDColorSpace colorSpace = null;
-        for (COSName name : resources.getColorSpaceNames())
+        try
         {
-            if (name.getName().equals(colorSpaceName))
-            {
-                try
-                {
-                    colorSpace = resources.getColorSpace(name);
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
-            }
+            colorSpace = resources.getColorSpace(COSName.getPDFName(colorSpaceName));
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
         }
         if (colorSpace != null)
         {
