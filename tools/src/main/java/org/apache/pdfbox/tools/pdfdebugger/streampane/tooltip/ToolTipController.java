@@ -138,8 +138,13 @@ public class ToolTipController
             while (offset != -1)
             {
                 offset = Utilities.getPositionAbove(textComponent, offset, 0);
-                String previousRowText = getRowText(offset).trim();
-                if (isColorSpace(colorSpaceType, previousRowText) && previousRowText != null)
+                String previousRowText = getRowText(offset);
+                if (previousRowText == null)
+                {
+                    return null;
+                }
+                previousRowText = previousRowText.trim();
+                if (isColorSpace(colorSpaceType, previousRowText))
                 {
                     return previousRowText.split(" ")[0];
                 }
