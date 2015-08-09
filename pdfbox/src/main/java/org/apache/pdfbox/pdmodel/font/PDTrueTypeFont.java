@@ -354,8 +354,13 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
 
             if (!ttf.hasGlyph(name))
             {
-                throw new IllegalArgumentException(
-                    String.format("No glyph for U+%04X in font %s", unicode, getName()));
+                // try unicode name
+                String uniName = String.format("uni%04X", unicode);
+                if (!ttf.hasGlyph(uniName))
+                {
+                    throw new IllegalArgumentException(
+                            String.format("No glyph for U+%04X in font %s", unicode, getName()));
+                }
             }
 
             int code = inverted.get(name);
