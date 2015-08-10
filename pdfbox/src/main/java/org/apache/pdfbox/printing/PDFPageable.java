@@ -17,8 +17,8 @@
 
 package org.apache.pdfbox.printing;
 
+import java.awt.print.Book;
 import java.awt.print.PageFormat;
-import java.awt.print.Pageable;
 import java.awt.print.Paper;
 import java.awt.print.Printable;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -30,7 +30,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
  *
  * @author John Hewson
  */
-public final class PDFPageable implements Pageable
+public final class PDFPageable extends Book
 {
     private final PDDocument document;
     private final boolean showPageBorder;
@@ -107,10 +107,31 @@ public final class PDFPageable implements Pageable
         PDRectangle mediaBox = page.getMediaBox();
         PDRectangle cropBox = PDFPrintable.getRotatedCropBox(page);
         
-        Paper paper = new Paper();
-        paper.setSize(mediaBox.getWidth(), mediaBox.getHeight());
-        paper.setImageableArea(cropBox.getLowerLeftX(), cropBox.getLowerLeftY(),
-                               cropBox.getWidth(), cropBox.getHeight());
+        // Java does not seem to understand landscape paper sizes, i.e. where width > height, it
+        // always crops the imageable area as if the page were in portrait. I suspect that this is
+        // a JDK bug but it might be by design, see PDFBOX-2922.
+        //
+        // As a workaround, we normalise all Page(s) to be portrait, then flag them as landscape in
+        // the PageFormat.
+        Paper paper;
+        boolean isLandscape;
+        if (mediaBox.getWidth() > mediaBox.getHeight())
+        {
+            // rotate
+            paper = new Paper();
+            paper.setSize(mediaBox.getHeight(), mediaBox.getWidth());
+            paper.setImageableArea(cropBox.getLowerLeftY(), cropBox.getLowerLeftX(),
+                    cropBox.getHeight(), cropBox.getWidth());
+            isLandscape = true;
+        }
+        else
+        {
+            paper = new Paper();
+            paper.setSize(mediaBox.getWidth(), mediaBox.getHeight());
+            paper.setImageableArea(cropBox.getLowerLeftX(), cropBox.getLowerLeftY(),
+                    cropBox.getWidth(), cropBox.getHeight());
+            isLandscape = false;
+        }
 
         PageFormat format = new PageFormat();
         format.setPaper(paper);
@@ -118,7 +139,7 @@ public final class PDFPageable implements Pageable
         // auto portrait/landscape
         if (orientation == Orientation.AUTO)
         {
-            if (cropBox.getWidth() > cropBox.getHeight())
+            if (isLandscape)
             {
                 format.setOrientation(PageFormat.LANDSCAPE);
             }
