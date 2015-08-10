@@ -31,14 +31,14 @@ import java.util.concurrent.TimeUnit;
  */
 public class ParallelParameterized extends Parameterized
 {
-    static final long TIMEOUT_SECS = 120;
-
     private static class FixedThreadPoolScheduler implements RunnerScheduler
     {
-        private ExecutorService executorService;
+        private final ExecutorService executorService;
+        private final long timeoutSeconds;
 
-        FixedThreadPoolScheduler()
+        FixedThreadPoolScheduler(long timeoutSeconds)
         {
+            this.timeoutSeconds = timeoutSeconds;
             int cores = Runtime.getRuntime().availableProcessors();
 
             // for debugging
@@ -55,12 +55,13 @@ public class ParallelParameterized extends Parameterized
             executorService = Executors.newFixedThreadPool(cores);
         }
 
-        @Override public void finished()
+        @Override 
+        public void finished()
         {
             executorService.shutdown();
             try
             {
-                executorService.awaitTermination(TIMEOUT_SECS, TimeUnit.SECONDS);
+                executorService.awaitTermination(timeoutSeconds, TimeUnit.SECONDS);
             }
             catch (InterruptedException exc)
             {
@@ -77,6 +78,11 @@ public class ParallelParameterized extends Parameterized
     public ParallelParameterized(Class c) throws Throwable
     {
         super(c);
-        setScheduler(new FixedThreadPoolScheduler());
+        long timeoutSeconds = Long.MAX_VALUE;
+        if (c.getSimpleName().equals("TestRendering"))
+        {
+            timeoutSeconds = 30;
+        }
+        setScheduler(new FixedThreadPoolScheduler(timeoutSeconds));
     }
 }

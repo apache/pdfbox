@@ -24,21 +24,26 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import javax.imageio.ImageIO;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.ParallelParameterized;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import static org.junit.Assert.fail;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 /**
  * Test suite for rendering.
  *
  * FILE SET VALIDATION
  *
- * This test suite is designed to test PDFToImage using a set of PDF files and known good output for
- * each. The default mode of testAll() is to process each *.pdf file in
+ * This test is designed to test PDFToImage using a set of PDF files and known good output for
+ * each. The default mode is to process all *.pdf and *.ai files in
  * "src/test/resources/input/rendering". An output file is created in "target/test-output/rendering"
  * with the same name as the PDF file, plus an additional page number and ".png" suffix.
  *
@@ -56,7 +61,8 @@ import org.apache.pdfbox.pdmodel.PDDocument;
  * @author Ben Litchfield
  * @author Tilman Hausherr
  */
-public class TestPDFToImage extends TestCase
+@RunWith(ParallelParameterized.class)
+public class TestPDFToImage
 {
 
     /**
@@ -64,39 +70,57 @@ public class TestPDFToImage extends TestCase
      */
     private static final Log LOG = LogFactory.getLog(TestPDFToImage.class);
 
-    String inDir = "src/test/resources/input/rendering";
-    String outDir = "target/test-output/rendering/";
-    String inDirExt = "target/test-input-ext/rendering";
-    String outDirExt = "target/test-output-ext/rendering";
+    static String inDir = "src/test/resources/input/rendering";
+    static String outDir = "target/test-output/rendering/";
+    
+    String filename;
+    
+    @Parameterized.Parameters(name = "{0}")
+    public static Collection<Object[]> data()
+    {
+        File[] testFiles = new File(inDir).listFiles(new FilenameFilter()
+        {
+            @Override
+            public boolean accept(File dir, String name)
+            {
+                return (name.toLowerCase().endsWith(".pdf") || name.toLowerCase().endsWith(".ai"));
+            }
+        });
+
+        List<Object[]> params = new ArrayList<Object[]>();
+        for (File file : testFiles)
+        {
+            params.add(new Object[] { file.getName() });
+        }
+        return params;
+    }
 
     /**
      * Test class constructor.
      *
-     * @param name The name of the test class.
+     * @param filename The name of the test class.
      *
      * @throws IOException If there is an error creating the test.
      */
-    public TestPDFToImage(String name) throws IOException
+    public TestPDFToImage(String filename) throws IOException
     {
-        super(name);
+        this.filename = filename;
     }
-
-    /**
-     * Test suite setup.
+    
+   /**
+     * Test to validate image rendering of file.
+     *
+     * @throws IOException when there is an exception
      */
-    @Override
-    public void setUp()
+    @Test
+    public void testRenderImage() throws IOException
     {
-    }
+        new File(outDir).mkdirs();
 
-    public void setInDir(String inDir)
-    {
-        this.inDir = inDir;
-    }
-
-    public void setOutDir(String outDir)
-    {
-        this.outDir = outDir;
+        if (!doTestFile(new File(inDir, filename), inDir, outDir))
+        {
+            fail("failure, see test log for details");
+        }
     }
 
     /**
@@ -137,7 +161,7 @@ public class TestPDFToImage extends TestCase
      *
      * @throws IOException
      */
-    BufferedImage diffImages(BufferedImage bim1, BufferedImage bim2) throws IOException
+    private BufferedImage diffImages(BufferedImage bim1, BufferedImage bim2) throws IOException
     {
         int minWidth = Math.min(bim1.getWidth(), bim2.getWidth());
         int minHeight = Math.min(bim1.getHeight(), bim2.getHeight());
@@ -319,100 +343,6 @@ public class TestPDFToImage extends TestCase
         }
 
         return !failed;
-    }
-
-    /**
-     * Test to validate image rendering of file set.
-     *
-     * @throws Exception when there is an exception
-     */
-    public void testRenderImages()
-            throws Exception
-    {
-        boolean failed = false;
-
-        new File(outDir).mkdirs();
-
-        File[] testFiles = new File(inDir).listFiles(new FilenameFilter()
-        {
-            @Override
-            public boolean accept(File dir, String name)
-            {
-                return (name.endsWith(".pdf") || name.endsWith(".ai"));
-            }
-        });
-        for (File testFile : testFiles)
-        {
-            if (!doTestFile(testFile, inDir, outDir))
-            {
-                failed = true;
-            }
-        }
-        testFiles = new File(inDirExt).listFiles(new FilenameFilter()
-        {
-            @Override
-            public boolean accept(File dir, String name)
-            {
-                return (name.endsWith(".pdf") || name.endsWith(".ai"));
-            }
-        });
-        if (testFiles != null)
-        {
-            for (File testFile : testFiles)
-            {
-                if (!doTestFile(testFile, inDirExt, outDirExt))
-                {
-                    failed = true;
-                }
-            }
-        }
-
-        if (failed)
-        {
-            fail("One or more failures, see test log for details");
-        }
-    }
-
-    /**
-     * Test to validate image rendering of file.
-     *
-     * @param filename the file name to validate.
-     * 
-     * @throws Exception when there is an exception
-     */
-    public void testRenderImage(String filename)
-            throws Exception
-    {
-        new File(outDir).mkdirs();
-
-        if (!doTestFile(new File(inDir, filename), inDir, outDir))
-        {
-            fail("One or more failures, see test log for details");
-        }
-    }
-
-    /**
-     * Set the tests in the suite for this test class.
-     *
-     * @return the Suite.
-     */
-    public static Test suite()
-    {
-        return new TestSuite(TestPDFToImage.class);
-    }
-
-    /**
-     * Command line execution.
-     *
-     * @param args Command line arguments.
-     */
-    public static void main(String[] args)
-    {
-        String[] arg =
-        {
-            TestPDFToImage.class.getName()
-        };
-        junit.textui.TestRunner.main(arg);
     }
 
     private boolean filesAreIdentical(File left, File right) throws IOException
