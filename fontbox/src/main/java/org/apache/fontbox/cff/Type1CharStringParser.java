@@ -83,7 +83,7 @@ public class Type1CharStringParser
                 // callsubr command
                 Integer operand=(Integer)sequence.remove(sequence.size()-1);
 
-                if (operand < subrs.size())
+                if (operand >= 0 && operand < subrs.size())
                 {
                     byte[] subrBytes = subrs.get(operand);
                     parse(subrBytes, subrs, sequence);
