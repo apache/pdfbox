@@ -24,6 +24,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
@@ -349,6 +350,17 @@ public class StreamPane implements ActionListener
                     str = Integer.toString(((COSNumber) obj).intValue());
                 }
                 docu.insertString(docu.getLength(), str + " ", NUMBER_STYLE);
+            }
+            else if (obj instanceof COSDictionary)
+            {
+                docu.insertString(docu.getLength(), "<< ", null);
+                COSDictionary dict = (COSDictionary) obj;
+                for (Map.Entry<COSName, COSBase> entry : dict.entrySet())
+                {
+                    writeOperand(entry.getKey(), docu);
+                    writeOperand(entry.getValue(), docu);
+                }
+                docu.insertString(docu.getLength(), ">> ", null);                
             }
             else
             {
