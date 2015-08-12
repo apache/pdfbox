@@ -17,11 +17,6 @@ The default build will compile the Java sources and package the binary
 classes into jar packages. See the Maven documentation for all the
 other available build options.
 
-There is also an Ant build that you can use to build the same binaries.
-The Ant build can also produce .NET DLLs if you have IKVM.NET
-<http://www.ikvm.net/> installed. See the build.xml file in the pdfbox
-subdirectory for details.
-
 PDFBox is a project of the Apache Software Foundation <http://www.apache.org/>.
 
 Known Limitations and Problems
