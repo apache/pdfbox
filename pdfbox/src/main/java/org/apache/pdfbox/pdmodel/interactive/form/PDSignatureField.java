@@ -164,7 +164,8 @@ public class PDSignatureField extends PDTerminalField
     @Override
     public String getValueAsString()
     {
-        return getValue().toString();
+        PDSignature signature = getValue();
+        return signature != null ? signature.toString() : "";
     }
 
     /**
