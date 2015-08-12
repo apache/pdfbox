@@ -81,10 +81,7 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlin
  * To further research individual failures, the org.apache.pdfbox.util.TextStripper.file
  * system property may be set with the name of a single file in the "test/input"
  * directory.  In this mode, testAll() will evaluate only that file, and will
- * do so with DEBUG level logging.  You can set this property from ant by
- * defining "file", as in:
- *
- *    ant testextract -Dfile=hello.pdf
+ * do so with DEBUG level logging.
  *
  * @author Robert Dickinson
  * @author Ben Litchfield
