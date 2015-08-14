@@ -113,7 +113,7 @@ class PDFCloneUtility
           {
               COSStream originalStream = (COSStream)base;
               COSStream stream = destination.getDocument().createCOSStream();
-              OutputStream output = stream.createOutputStream();
+              OutputStream output = stream.createOutputStream(originalStream.getFilters());
               IOUtils.copy( originalStream.createInputStream(), output );
               output.close();
               clonedVersion.put( base, stream );
@@ -195,7 +195,7 @@ class PDFCloneUtility
             // does that make sense???
               COSStream originalStream = (COSStream)base;
               COSStream stream = destination.getDocument().createCOSStream();
-              OutputStream output = stream.createOutputStream();
+              OutputStream output = stream.createOutputStream(originalStream.getFilters());
               IOUtils.copy( originalStream.createInputStream(), output );
               output.close();
               clonedVersion.put( base, stream );
