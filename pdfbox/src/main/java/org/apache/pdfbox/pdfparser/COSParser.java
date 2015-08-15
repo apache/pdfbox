@@ -695,12 +695,14 @@ public class COSParser extends BaseParser
                 {
                     LOG.debug("Add all new read objects from brute force search to the xref table");
                     Map<COSObjectKey, Long> xrefOffset = xrefTrailerResolver.getXrefTable();
-                    for (COSObjectKey key : bfSearchCOSObjectKeyOffsets.keySet())
+                    final Set<Map.Entry<COSObjectKey, Long>> entries = bfSearchCOSObjectKeyOffsets.entrySet();
+                    for (Entry<COSObjectKey, Long> entry : entries)
                     {
+                        COSObjectKey key = entry.getKey();
                         // add all missing objects to the xref table
                         if (!xrefOffset.containsKey(key))
                         {
-                            xrefOffset.put(key, bfSearchCOSObjectKeyOffsets.get(key));
+                            xrefOffset.put(key, entry.getValue());
                         }
                     }
                     offsetOrObjstmObNr = xrefOffset.get(objKey);
