@@ -115,9 +115,9 @@ public class COSStream extends COSDictionary implements Closeable
     }
     
     /**
-     * Returns a new InputStream which reads the decoded stream data.
+     * Returns a new InputStream which reads the encoded PDF stream data. Experts only!
      * 
-     * @return InputStream containing decoded stream data.
+     * @return InputStream containing raw, encoded PDF stream data.
      * @throws IOException If the stream could not be read.
      */
     public InputStream createRawInputStream() throws IOException
@@ -144,9 +144,9 @@ public class COSStream extends COSDictionary implements Closeable
     }
 
     /**
-     * Returns a new InputStream which reads the encoded PDF stream data. Experts only!
+     * Returns a new InputStream which reads the decoded stream data.
      * 
-     * @return InputStream containing raw, encoded PDF stream data.
+     * @return InputStream containing decoded stream data.
      * @throws IOException If the stream could not be read.
      */
     public COSInputStream createInputStream() throws IOException
