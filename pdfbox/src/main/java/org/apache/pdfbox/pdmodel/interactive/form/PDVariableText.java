@@ -86,11 +86,11 @@ public abstract class PDVariableText extends PDTerminalField
      *
      * @return the DA element of the dictionary object
      */
-    PDAppearanceString getDefaultAppearanceString() throws IOException
+    PDDefaultAppearanceString getDefaultAppearanceString() throws IOException
     {
         COSString da = (COSString) getInheritableAttribute(COSName.DA);
         PDResources dr = getAcroForm().getDefaultResources();
-        return new PDAppearanceString(da, dr);
+        return new PDDefaultAppearanceString(da, dr);
     }
 
     /**

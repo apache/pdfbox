@@ -38,7 +38,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
  * 
  * Note: This class is not yet public, as its API is still unstable.
  */
-class PDAppearanceString
+class PDDefaultAppearanceString
 {
     private final List<Object> tokens;
     private final PDResources defaultResources;
@@ -50,7 +50,7 @@ class PDAppearanceString
      * @param defaultAppearance DA entry
      * @throws IOException If the DA could not be parsed
      */
-    PDAppearanceString(COSString defaultAppearance, PDResources defaultResources) throws IOException
+    PDDefaultAppearanceString(COSString defaultAppearance, PDResources defaultResources) throws IOException
     {
         if (defaultAppearance == null)
         {
