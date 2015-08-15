@@ -28,11 +28,15 @@ import org.apache.pdfbox.pdfwriter.ContentStreamWriter;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.interactive.action.PDFormFieldAdditionalActions;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceCharacteristicsDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceEntry;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 
 /**
  * Create the AcroForms field appearance helper.
@@ -123,9 +127,68 @@ class AppearanceGeneratorHelper
                     // TODO support appearances other than "normal"
                 }
                 
+                /*
+                 * Adobe Acrobat always recreates the complete appearance stream if there is an appearance characteristics
+                 * entry (the widget dictionaries MK entry). In addition if there is no content yet also create the apperance
+                 * stream from the entries.
+                 * 
+                 */
+                if (widget.getAppearanceCharacteristics() != null || appearanceStream.getContentStream().getLength() == 0)
+                {
+                    initializeAppearanceContent(widget, appearanceStream);
+                }
+                
                 setAppearanceContent(widget, appearanceStream);
             }
         }
+    }
+    
+    /**
+     * Initialize the content of the appearance stream.
+     * 
+     * Get settings like border style, border width and colors to be used to draw a rectangle and background color 
+     * around the widget
+     * 
+     * @param widget the field widget
+     * @param appearanceStream the appearance stream to be used
+     * @throws IOException in case we can't write to the appearance stream
+     */
+    private void initializeAppearanceContent(PDAnnotationWidget widget, PDAppearanceStream appearanceStream) throws IOException
+    {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        PDPageContentStream contents = new PDPageContentStream(field.getAcroForm().getDocument(),
+                appearanceStream, output);
+        PDAppearanceCharacteristicsDictionary appearanceCharacteristics = widget.getAppearanceCharacteristics();
+        
+        // TODO: support more entries like patterns, background color etc.
+        if (appearanceCharacteristics != null)
+        {
+            float lineWidth = 0f;
+            PDColor borderColour = appearanceCharacteristics.getBorderColour();
+            if (borderColour != null)
+            {
+                contents.setNonStrokingColor(borderColour);
+                lineWidth = 1f;
+            }
+            PDBorderStyleDictionary borderStyle = widget.getBorderStyle();
+            if (borderStyle != null && borderStyle.getWidth() > 0)
+            {
+                lineWidth = borderStyle.getWidth();
+            }
+
+            if (lineWidth > 0)
+            {
+                contents.setLineWidth(lineWidth);
+                PDRectangle bbox = resolveBoundingBox(widget, appearanceStream);
+                PDRectangle clipRect = applyPadding(bbox, Math.max(0.5f, lineWidth/2)); 
+                contents.addRect(clipRect.getLowerLeftX(),clipRect.getLowerLeftY(),clipRect.getWidth(), clipRect.getHeight());
+                contents.closeAndStroke();
+            }
+        }
+        
+        contents.close();
+        output.close();
+        writeToStream(output.toByteArray(), appearanceStream);
     }
     
     /**
@@ -152,7 +215,7 @@ class AppearanceGeneratorHelper
         // to the matching EMC
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         ContentStreamWriter writer = new ContentStreamWriter(output);
-
+        
         List<Object> tokens = tokenize(appearanceStream);
         int bmcIndex = tokens.indexOf(BMC);
         if (bmcIndex == -1)
