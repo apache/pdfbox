@@ -46,7 +46,7 @@ class AppearanceGeneratorHelper
     private static final Operator EMC = Operator.getOperator("EMC");
     
     private final PDVariableText field;
-    private final PDAppearanceString defaultAppearance;
+    private final PDDefaultAppearanceString defaultAppearance;
     private String value;
     
     /**
