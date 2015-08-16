@@ -106,7 +106,7 @@ public class COSStream extends COSDictionary implements Closeable
      *
      * @return the bytes of the physical (encoded) stream
      * @throws IOException when encoding causes an exception
-     * @deprecated Use {@link #createInputStream()} instead.
+     * @deprecated Use {@link #createRawInputStream()} instead.
      */
     @Deprecated
     public InputStream getFilteredStream() throws IOException
@@ -135,7 +135,7 @@ public class COSStream extends COSDictionary implements Closeable
      *
      * @return the bytes of the logical (decoded) stream
      * @throws IOException when decoding causes an exception
-     * @deprecated Use {@link #createRawInputStream()} instead.
+     * @deprecated Use {@link #createInputStream()} instead.
      */
     @Deprecated
     public InputStream getUnfilteredStream() throws IOException
