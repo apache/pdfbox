@@ -40,6 +40,11 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
  */
 class PDDefaultAppearanceString
 {
+    /**
+     * The default font size used by Acrobat.
+     */
+    private static final float DEFAULT_FONT_SIZE = 12;
+    
     private final List<Object> tokens;
     private final PDResources defaultResources;
     
@@ -84,9 +89,8 @@ class PDDefaultAppearanceString
                 return ((COSNumber) tokens.get(fontIndex - 1)).floatValue();
             }
         }
-
-        // default font size is 12 in Acrobat
-        return 12;
+        
+        return DEFAULT_FONT_SIZE;
     }
     
     /**
