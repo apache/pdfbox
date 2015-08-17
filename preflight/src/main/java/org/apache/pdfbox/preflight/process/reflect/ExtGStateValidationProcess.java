@@ -216,8 +216,7 @@ public class ExtGStateValidationProcess extends AbstractProcess
             }
             catch (IOException e)
             {
-                //TODO find way to use addFontError from ResourcesValidationProcess
-                //addFontError((COSDictionary)fontDict, context);
+                addFontError((COSDictionary) fontDict, context, e);
             }
         }
 
