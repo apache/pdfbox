@@ -43,6 +43,7 @@ import org.apache.pdfbox.pdmodel.PDResources;
 
 import org.apache.pdfbox.pdmodel.common.PDMatrix;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDFontFactory;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
 
 import org.apache.pdfbox.pdmodel.graphics.PDExtendedGraphicsState;
@@ -332,7 +333,13 @@ public class PDFStreamEngine
         //it won't ever be more than string.length*2(there are some cases
         //were a single byte will result in two output characters "fi"
         
-        final PDFont font = graphicsState.getTextState().getFont();
+        PDFont font = graphicsState.getTextState().getFont();
+        if (font == null)
+        {
+            LOG.warn("No current font, will use default");
+            font = PDFontFactory.createDefaultFont();
+        }
+        
         // all fonts are providing the width/height of a character in thousandths of a unit of text space
         float fontMatrixXScaling = 1/1000f;
         float fontMatrixYScaling = 1/1000f;
