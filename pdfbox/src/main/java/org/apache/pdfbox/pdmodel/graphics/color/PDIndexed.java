@@ -43,7 +43,6 @@ public final class PDIndexed extends PDSpecialColorSpace
 {
     private final PDColor initialColor = new PDColor(new float[] { 0 }, this);
 
-    private COSArray array;
     private PDColorSpace baseColorSpace = null;
 
     // cached lookup data
