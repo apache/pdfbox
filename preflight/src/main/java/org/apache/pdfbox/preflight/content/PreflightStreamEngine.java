@@ -83,6 +83,7 @@ import org.apache.pdfbox.contentstream.operator.color.SetStrokingDeviceCMYKColor
 import org.apache.pdfbox.contentstream.operator.color.SetStrokingColor;
 import org.apache.pdfbox.contentstream.operator.color.SetStrokingColorSpace;
 import org.apache.pdfbox.contentstream.operator.color.SetStrokingDeviceRGBColor;
+import org.apache.pdfbox.contentstream.operator.state.SetGraphicsStateParameters;
 import org.apache.pdfbox.contentstream.operator.text.SetTextLeading;
 import org.apache.pdfbox.contentstream.operator.text.SetTextRenderingMode;
 import org.apache.pdfbox.contentstream.operator.text.SetTextRise;
@@ -139,6 +140,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
         // Text operators
         addOperator(new BeginText());
         addOperator(new EndText());
+        addOperator(new SetGraphicsStateParameters());
         addOperator(new SetFontAndSize());
         addOperator(new SetTextRenderingMode());
         addOperator(new SetMatrix());
@@ -199,7 +201,6 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
         addOperator(new StubOperator("M"));
         addOperator(new StubOperator("MP"));
 
-        addOperator(new StubOperator("gs"));
         addOperator(new StubOperator("i"));
 
         addOperator(new StubOperator("ri"));
