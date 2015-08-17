@@ -129,7 +129,7 @@ public class ResourcesValidationProcess extends AbstractProcess
                 }
                 catch (IOException e)
                 {
-                    addFontError((COSDictionary)font, context);
+                    addFontError((COSDictionary) font, context, e);
                 }
                 if (newFont != null)
                 {
@@ -144,7 +144,7 @@ public class ResourcesValidationProcess extends AbstractProcess
      * PDFont loads embedded fonts in its constructor so we have to handle IOExceptions
      * from PDFont and translate them into validation errors.
      */
-    private void addFontError(COSDictionary dictionary, PreflightContext context)
+    private void addFontError(COSDictionary dictionary, PreflightContext context, IOException e)
     {
         COSName type = dictionary.getCOSName(COSName.TYPE, COSName.FONT);
         if (!COSName.FONT.equals(type))
@@ -163,37 +163,37 @@ public class ResourcesValidationProcess extends AbstractProcess
         if (COSName.TYPE1.equals(subType))
         {
             addValidationError(context, new ValidationError(PreflightConstants.ERROR_FONTS_TYPE1_DAMAGED,
-                    "The FontFile can't be read for " + fontName));
+                    "The FontFile can't be read for " + fontName + ": " + e.getMessage()));
         }
         else if (COSName.MM_TYPE1.equals(subType))
         {
             addValidationError(context, new ValidationError(PreflightConstants.ERROR_FONTS_TYPE1_DAMAGED,
-                    "The FontFile can't be read for " + fontName));
+                    "The FontFile can't be read for " + fontName + ": " + e.getMessage()));
         }
         else if (COSName.TRUE_TYPE.equals(subType))
         {
             addValidationError(context, new ValidationError(PreflightConstants.ERROR_FONTS_TRUETYPE_DAMAGED,
-                                        "The FontFile can't be read for " + fontName));
+                                        "The FontFile can't be read for " + fontName + ": " + e.getMessage()));
         }
         else if (COSName.TYPE3.equals(subType))
         {
             addValidationError(context, new ValidationError(PreflightConstants.ERROR_FONTS_TYPE3_DAMAGED,
-                    "The FontFile can't be read for " + fontName));
+                    "The FontFile can't be read for " + fontName + ": " + e.getMessage()));
         }
         else if (COSName.TYPE0.equals(subType))
         {
             addValidationError(context, new ValidationError(PreflightConstants.ERROR_FONTS_CID_DAMAGED,
-                    "The FontFile can't be read for " + fontName));
+                    "The FontFile can't be read for " + fontName + ": " + e.getMessage()));
         }
         else if (COSName.CID_FONT_TYPE0.equals(subType))
         {
             addValidationError(context, new ValidationError(PreflightConstants.ERROR_FONTS_UNKNOWN_FONT_TYPE,
-                    "Unexpected CIDFontType0 descendant font for " + fontName));
+                    "Unexpected CIDFontType0 descendant font for " + fontName + ": " + e.getMessage()));
         }
         else if (COSName.CID_FONT_TYPE2.equals(subType))
         {
             addValidationError(context, new ValidationError(PreflightConstants.ERROR_FONTS_UNKNOWN_FONT_TYPE,
-                    "Unexpected CIDFontType2 descendant font for " + fontName));
+                    "Unexpected CIDFontType2 descendant font for " + fontName + ": " + e.getMessage()));
         }
         else
         {
