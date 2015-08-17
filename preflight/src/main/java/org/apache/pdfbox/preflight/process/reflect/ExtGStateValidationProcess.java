@@ -175,6 +175,10 @@ public class ExtGStateValidationProcess extends AbstractProcess
     private void checkFont(PreflightContext context, COSDictionary egs) throws ValidationException
     {
         COSBase base = egs.getItem(COSName.FONT);
+        if (base == null)
+        {
+            return;
+        }
         if (!(base instanceof COSArray) || ((COSArray) base).size() != 2)
         {
             context.addValidationError(new ValidationError(ERROR_SYNTAX_COMMON,
