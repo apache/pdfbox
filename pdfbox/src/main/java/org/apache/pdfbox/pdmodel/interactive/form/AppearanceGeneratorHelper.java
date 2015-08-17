@@ -47,7 +47,7 @@ class AppearanceGeneratorHelper
 {
     private static final Operator BMC = Operator.getOperator("BMC");
     private static final Operator EMC = Operator.getOperator("EMC");
-    
+ 
     private final PDVariableText field;
     private final PDDefaultAppearanceString defaultAppearance;
     private String value;
@@ -71,6 +71,10 @@ class AppearanceGeneratorHelper
      */
     private static final float DEFAULT_FONT_SIZE = 12;    
     
+    /**
+     * The default padding applied by Acrobat to the fields bbox.
+     */
+    private static final float DEFAULT_PADDING = 0.5f;
     
     /**
      * Constructs a COSAppearance from the given field.
@@ -179,7 +183,7 @@ class AppearanceGeneratorHelper
             {
                 contents.setLineWidth(lineWidth);
                 PDRectangle bbox = resolveBoundingBox(widget, appearanceStream);
-                PDRectangle clipRect = applyPadding(bbox, Math.max(0.5f, lineWidth/2)); 
+                PDRectangle clipRect = applyPadding(bbox, Math.max(DEFAULT_PADDING, lineWidth/2)); 
                 contents.addRect(clipRect.getLowerLeftX(),clipRect.getLowerLeftY(),clipRect.getWidth(), clipRect.getHeight());
                 contents.closeAndStroke();
             }
