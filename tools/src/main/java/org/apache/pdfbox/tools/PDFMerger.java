@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.tools;
 
+import java.io.IOException;
+
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 
 /**
@@ -35,9 +37,9 @@ public class PDFMerger
      *
      * @param args Command line arguments, should be at least 3.
      *
-     * @throws Exception If there is an error parsing the document.
+     * @throws IOException If there is an error parsing the document.
      */
-    public static void main( String[] args ) throws Exception
+    public static void main( String[] args ) throws IOException
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
@@ -46,7 +48,7 @@ public class PDFMerger
         merge.merge( args );
     }
 
-    private void merge( String[] args ) throws Exception
+    private void merge( String[] args ) throws IOException
     {
         int firstFileArgPos = 0;
 

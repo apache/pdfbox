@@ -16,8 +16,11 @@
  */
 package org.apache.pdfbox.tools;
 
+import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.File;
+import java.io.IOException;
+
 import javax.print.PrintService;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.printing.PDFPageable;
@@ -45,10 +48,12 @@ public class PrintPDF
      * Infamous main method.
      * 
      * @param args Command line arguments, should be one and a reference to a file.
+     * @throws PrinterException if the specified service cannot support the Pageable and Printable interfaces.
+     * @throws IOException if there is an error parsing the file.
      * 
      * @throws Exception If there is an error parsing the document.
      */
-    public static void main(String[] args) throws Exception
+    public static void main(String[] args) throws PrinterException, IOException
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
