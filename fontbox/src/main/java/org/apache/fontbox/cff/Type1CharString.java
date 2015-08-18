@@ -265,7 +265,7 @@ public class Type1CharString
         }
         else if ("seac".equals(name))
         {
-            if (numbers.size() >= 6)
+            if (numbers.size() >= 5)
             {
                 seac(numbers.get(0), numbers.get(1), numbers.get(2), numbers.get(3), numbers.get(4));
             }
