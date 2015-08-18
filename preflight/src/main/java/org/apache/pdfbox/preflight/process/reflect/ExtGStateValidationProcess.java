@@ -216,7 +216,7 @@ public class ExtGStateValidationProcess extends AbstractProcess
             }
             catch (IOException e)
             {
-                addFontError((COSDictionary) fontDict, context, e);
+                addFontError(fontDict, context, e);
             }
         }
 
