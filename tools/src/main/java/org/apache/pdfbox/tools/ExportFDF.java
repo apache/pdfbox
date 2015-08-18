@@ -45,9 +45,9 @@ public class ExportFDF
      *
      * @param args command line arguments
      *
-     * @throws Exception If there is an error importing the FDF document.
+     * @throws IOException in case the file can not be read or the data can not be exported.
      */
-    public static void main(String[] args) throws Exception
+    public static void main(String[] args) throws IOException
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
@@ -56,7 +56,7 @@ public class ExportFDF
         exporter.exportFDF( args );
     }
 
-    private void exportFDF( String[] args ) throws Exception
+    private void exportFDF( String[] args ) throws IOException
     {
         PDDocument pdf = null;
         FDFDocument fdf = null;

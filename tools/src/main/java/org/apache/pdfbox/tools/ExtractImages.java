@@ -71,9 +71,9 @@ public class ExtractImages
      * Entry point for the application.
      *
      * @param args The command-line arguments.
-     * @throws Exception If there is an error decrypting the document.
+     * @throws IOException if there is an error reading the file or extracting the images.
      */
-    public static void main(String[] args) throws Exception
+    public static void main(String[] args) throws IOException
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
@@ -82,7 +82,7 @@ public class ExtractImages
         extractor.run(args);
     }
 
-    private void run(String[] args) throws Exception
+    private void run(String[] args) throws IOException
     {
         if (args.length < 1 || args.length > 4)
         {

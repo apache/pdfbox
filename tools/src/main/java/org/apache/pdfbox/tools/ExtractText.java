@@ -70,7 +70,7 @@ public class ExtractText
      *
      * @param args Command line arguments, should be one and a reference to a file.
      *
-     * @throws Exception If there is an error parsing the document.
+     * @throws IOException if there is an error reading the document or extracting the text.
      */
     public static void main( String[] args ) throws Exception
     {
@@ -84,10 +84,9 @@ public class ExtractText
      * Starts the text extraction.
      *  
      * @param args the commandline arguments.
-     * 
-     * @throws Exception if something went wrong.
+     * @throws IOException if there is an error reading the document or extracting the text.
      */
-    public void startExtraction( String[] args ) throws Exception
+    public void startExtraction( String[] args ) throws IOException
     {
         boolean toConsole = false;
         boolean toHTML = false;

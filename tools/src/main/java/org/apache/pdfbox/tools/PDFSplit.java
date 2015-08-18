@@ -48,7 +48,7 @@ public class PDFSplit
      *
      * @param args Command line arguments, should be one and a reference to a file.
      *
-     * @throws Exception If there is an error parsing the document.
+     * @throws IOException If there is an error parsing the document.
      */
     public static void main( String[] args ) throws Exception
     {
@@ -59,7 +59,7 @@ public class PDFSplit
         split.split( args );
     }
 
-    private void split( String[] args ) throws Exception
+    private void split( String[] args ) throws IOException
     {
         String password = "";
         String split = null;
