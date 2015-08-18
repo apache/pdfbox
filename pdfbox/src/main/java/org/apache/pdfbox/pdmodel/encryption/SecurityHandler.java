@@ -463,6 +463,11 @@ public abstract class SecurityHandler
      */
     private void decryptDictionary(COSDictionary dictionary, long objNum, long genNum) throws IOException
     {
+        if (dictionary.getItem(COSName.CF) != null)
+        {
+            // PDFBOX-2936: avoid orphan /CF dictionaries found in US govt "I-" files
+            return;
+        }
         // skip dictionary containing the signature
         if (!COSName.SIG.equals(dictionary.getItem(COSName.TYPE)) && !COSName.SIG.equals(dictionary.getItem(COSName.FT)))
         {
