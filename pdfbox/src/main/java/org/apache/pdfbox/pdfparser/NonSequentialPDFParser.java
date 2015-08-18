@@ -1519,12 +1519,17 @@ public class NonSequentialPDFParser extends PDFParser
     /**
      * 
      * @param dict the dictionary to be decrypted
-     * @param the object number
+     * @param objNr the object number
      * @param objGenNr the object generation number
      * @throws IOException ff something went wrong
      */
     protected final void decryptDictionary(COSDictionary dict, long objNr, long objGenNr) throws IOException
     {
+        if (dict.getItem(COSName.CF) != null)
+        {
+            // PDFBOX-2936: avoid orphan /CF dictionaries found in US govt "I-" files
+            return;
+        }
         // skip dictionary containing the signature
         if (!COSName.SIG.equals(dict.getItem(COSName.TYPE)))
         {
