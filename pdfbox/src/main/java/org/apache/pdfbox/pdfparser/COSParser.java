@@ -1616,17 +1616,17 @@ public class COSParser extends BaseParser
         if (bfSearchCOSObjectKeyOffsets != null)
         {
             xrefTrailerResolver.nextXrefObj( 0, XRefType.TABLE );
-            for (COSObjectKey objectKey : bfSearchCOSObjectKeyOffsets.keySet())
+            for (Entry<COSObjectKey, Long> entry : bfSearchCOSObjectKeyOffsets.entrySet())
             {
-                xrefTrailerResolver.setXRef(objectKey, bfSearchCOSObjectKeyOffsets.get(objectKey));
+                xrefTrailerResolver.setXRef(entry.getKey(), entry.getValue());
             }
             xrefTrailerResolver.setStartxref(0);
             trailer = xrefTrailerResolver.getTrailer();
             getDocument().setTrailer(trailer);
             // search for the different parts of the trailer dictionary 
-            for(COSObjectKey key : bfSearchCOSObjectKeyOffsets.keySet())
+            for(Entry<COSObjectKey, Long> entry : bfSearchCOSObjectKeyOffsets.entrySet())
             {
-                Long offset = bfSearchCOSObjectKeyOffsets.get(key);
+                Long offset = entry.getValue();
                 source.seek(offset);
                 readObjectNumber();
                 readGenerationNumber();
@@ -1639,7 +1639,7 @@ public class COSParser extends BaseParser
                         // document catalog
                         if (COSName.CATALOG.equals(dictionary.getCOSName(COSName.TYPE)))
                         {
-                            trailer.setItem(COSName.ROOT, document.getObjectFromPool(key));
+                            trailer.setItem(COSName.ROOT, document.getObjectFromPool(entry.getKey()));
                         }
                         // info dictionary
                         else if (dictionary.containsKey(COSName.TITLE)
@@ -1650,14 +1650,14 @@ public class COSParser extends BaseParser
                                 || dictionary.containsKey(COSName.PRODUCER)
                                 || dictionary.containsKey(COSName.CREATION_DATE))
                         {
-                            trailer.setItem(COSName.INFO, document.getObjectFromPool(key));
+                            trailer.setItem(COSName.INFO, document.getObjectFromPool(entry.getKey()));
                         }
                         // TODO encryption dictionary
                     }
                 }
                 catch(IOException exception)
                 {
-                    LOG.debug("Skipped object "+key+", either it's corrupt or not a dictionary");
+                    LOG.debug("Skipped object " + entry.getKey() + ", either it's corrupt or not a dictionary");
                 }
             }
         }
