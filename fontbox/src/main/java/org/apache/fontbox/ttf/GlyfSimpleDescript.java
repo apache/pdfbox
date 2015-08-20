@@ -65,8 +65,15 @@ public class GlyfSimpleDescript extends GlyfDescript
         // Simple glyph description
         endPtsOfContours = bais.readUnsignedShortArray(numberOfContours);
 
+        int lastEndPt = endPtsOfContours[numberOfContours - 1];
+        if (numberOfContours == 1 && lastEndPt == 65535)
+        {
+            // PDFBOX-2939: assume an empty glyph
+            pointCount = 0;
+            return;
+        }
         // The last end point index reveals the total number of points
-        pointCount = endPtsOfContours[numberOfContours - 1] + 1;
+        pointCount = lastEndPt + 1;
 
         flags = new byte[pointCount];
         xCoordinates = new short[pointCount];
