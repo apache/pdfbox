@@ -160,12 +160,15 @@ public class PDAcroForm implements COSObjectable
         fdfField.setValue( fieldValue );
         List kids = docField.getKids();
         List childFDFFields = new ArrayList();
+        
         if( kids != null )
         {
-
             for( int i=0; i<kids.size(); i++ )
             {
-                addFieldAndChildren( (PDField)kids.get( i ), childFDFFields );
+                if (kids.get(i) instanceof PDField)
+                {
+                    addFieldAndChildren( (PDField)kids.get( i ), childFDFFields );
+                }
             }
             if( childFDFFields.size() > 0 )
             {
