@@ -38,7 +38,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
  *
  * A class that provides the COSStream in different version and related informations.
  */
-class Stream
+public class Stream
 {
     public static final String UNFILTERED = "Unfiltered";
     public static final String IMAGE = "Image";
