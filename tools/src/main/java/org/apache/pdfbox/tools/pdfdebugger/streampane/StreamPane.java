@@ -18,6 +18,7 @@
 package org.apache.pdfbox.tools.pdfdebugger.streampane;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.ByteArrayOutputStream;
@@ -27,7 +28,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import javax.swing.JComboBox;
-import javax.swing.JPanel;
+import javax.swing.JComponent;
+import javax.swing.JTabbedPane;
 import javax.swing.SwingWorker;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
@@ -48,12 +50,13 @@ import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.tools.pdfdebugger.hexviewer.HexView;
 import org.apache.pdfbox.tools.pdfdebugger.streampane.tooltip.ToolTipController;
 import org.apache.pdfbox.util.Charsets;
 
 /**
  * @author Khyrul Bashar
- * 
+ *
  * A class that shows the COSStream.
  */
 public class StreamPane implements ActionListener
@@ -68,7 +71,7 @@ public class StreamPane implements ActionListener
     public static final String BEGIN_MARKED_CONTENT1 = "BMC";
     public static final String BEGIN_MARKED_CONTENT2 = "BDC";
     public static final String END_MARKED_CONTENT = "EMC";
-    
+
     private static final StyleContext CONTEXT = StyleContext.getDefaultStyleContext();
     private static final Style OPERATOR_STYLE = CONTEXT.addStyle("operator", null);
     private static final Style NUMBER_STYLE = CONTEXT.addStyle("number", null);
@@ -76,7 +79,7 @@ public class StreamPane implements ActionListener
     private static final Style ESCAPE_STYLE = CONTEXT.addStyle("escape", null);
     private static final Style NAME_STYLE = CONTEXT.addStyle("name", null);
     private static final Style INLINE_IMAGE_STYLE = CONTEXT.addStyle("inline_image", null);
-    
+
     static
     {
         StyleConstants.setForeground(OPERATOR_STYLE, new Color(25, 55, 156));
@@ -86,7 +89,8 @@ public class StreamPane implements ActionListener
         StyleConstants.setForeground(NAME_STYLE, new Color(140, 38, 145));
         StyleConstants.setForeground(INLINE_IMAGE_STYLE, new Color(116, 113, 39));
     }
-    
+
+    private final JTabbedPane tabbedPane;
     private final StreamPaneView view;
     private final Stream stream;
     private ToolTipController tTController;
@@ -102,7 +106,7 @@ public class StreamPane implements ActionListener
      * @param resourcesDic COSDictionary instance that holds the resource dictionary for the stream.
      */
     public StreamPane(COSStream cosStream, boolean isContentStream, boolean isThumb,
-                      COSDictionary resourcesDic)
+                      COSDictionary resourcesDic) throws IOException
     {
         this.isContentStream = isContentStream;
 
@@ -123,11 +127,15 @@ public class StreamPane implements ActionListener
             view = new StreamPaneView(stream.getFilterList(), Stream.UNFILTERED, this);
             requestStreamText(Stream.UNFILTERED);
         }
+        tabbedPane = new JTabbedPane();
+        tabbedPane.setPreferredSize(new Dimension(300, 500));
+        tabbedPane.add("Text view", view.getStreamPanel());
+        tabbedPane.add("Hex view", new HexView(stream).getPane());
     }
 
-    public JPanel getPanel()
+    public JComponent getPanel()
     {
-        return view.getStreamPanel();
+        return tabbedPane;
     }
 
     @Override
@@ -289,11 +297,11 @@ public class StreamPane implements ActionListener
                 e.printStackTrace();
             }
         }
-        
+
         private void writeOperand(Object obj, StyledDocument docu) throws BadLocationException
         {
             writeIndent(docu);
-            
+
             if (obj instanceof COSName)
             {
                 String str = "/" + ((COSName) obj).getName();
@@ -363,7 +371,7 @@ public class StreamPane implements ActionListener
                     writeOperand(entry.getKey(), docu);
                     writeOperand(entry.getValue(), docu);
                 }
-                docu.insertString(docu.getLength(), ">> ", null);                
+                docu.insertString(docu.getLength(), ">> ", null);
             }
             else
             {
@@ -376,7 +384,7 @@ public class StreamPane implements ActionListener
         private void addOperators(Object obj, StyledDocument docu) throws BadLocationException
         {
             Operator op = (Operator) obj;
-            
+
             if (op.getName().equals(END_TEXT_OBJECT)
                     || op.getName().equals(RESTORE_GRAPHICS_STATE)
                     || op.getName().equals(END_MARKED_CONTENT))
@@ -406,7 +414,7 @@ public class StreamPane implements ActionListener
             {
                 String operator = ((Operator) obj).getName();
                 docu.insertString(docu.getLength(), operator + "\n", OPERATOR_STYLE);
-                
+
                 // nested opening operators
                 if (op.getName().equals(BEGIN_TEXT_OBJECT) ||
                     op.getName().equals(SAVE_GRAPHICS_STATE) ||

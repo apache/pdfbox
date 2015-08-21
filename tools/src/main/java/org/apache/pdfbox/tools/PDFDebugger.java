@@ -83,6 +83,7 @@ import org.apache.pdfbox.tools.pdfdebugger.flagbitspane.FlagBitsPane;
 import org.apache.pdfbox.tools.pdfdebugger.fontencodingpane.FontEncodingPaneController;
 import org.apache.pdfbox.tools.pdfdebugger.pagepane.PagePane;
 import org.apache.pdfbox.tools.pdfdebugger.streampane.StreamPane;
+import org.apache.pdfbox.tools.pdfdebugger.stringpane.StringPane;
 import org.apache.pdfbox.tools.pdfdebugger.treestatus.TreeStatus;
 import org.apache.pdfbox.tools.pdfdebugger.treestatus.TreeStatusPane;
 import org.apache.pdfbox.tools.pdfdebugger.ui.RotationMenu;
@@ -603,12 +604,17 @@ public class PDFDebugger extends JFrame
                 }
                 if (isStream(selectedNode))
                 {
-                    showStream((COSStream)getUnderneathObject(selectedNode), path);
+                    showStream((COSStream) getUnderneathObject(selectedNode), path);
                     return;
                 }
                 if (isFont(selectedNode))
                 {
                     showFont(selectedNode, path);
+                    return;
+                }
+                if (isString(selectedNode))
+                {
+                    showString(selectedNode);
                     return;
                 }
                 if (!jSplitPane1.getRightComponent().equals(jScrollPane2))
@@ -710,6 +716,11 @@ public class PDFDebugger extends JFrame
         return getUnderneathObject(selectedNode) instanceof COSStream;
     }
 
+    private boolean isString(Object selectedNode)
+    {
+        return getUnderneathObject(selectedNode) instanceof COSString;
+    }
+
     private boolean isFont(Object selectedNode)
     {
         selectedNode = getUnderneathObject(selectedNode);
@@ -799,7 +810,7 @@ public class PDFDebugger extends JFrame
         }
     }
 
-    private void showStream(COSStream stream, TreePath path)
+    private void showStream(COSStream stream, TreePath path) throws IOException
     {
         boolean isContentStream = false;
         boolean isThumb = false;
@@ -852,6 +863,12 @@ public class PDFDebugger extends JFrame
 
         FontEncodingPaneController fontEncodingPaneController = new FontEncodingPaneController(fontName, resourceDic);
         jSplitPane1.setRightComponent(fontEncodingPaneController.getPane());
+    }
+
+    private void showString(Object selectedNode)
+    {
+        COSString string = (COSString)getUnderneathObject(selectedNode);
+        jSplitPane1.setRightComponent(new StringPane(string).getPane());
     }
 
     private COSName getNodeKey(Object selectedNode)
