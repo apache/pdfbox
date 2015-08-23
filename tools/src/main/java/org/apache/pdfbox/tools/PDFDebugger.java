@@ -1212,10 +1212,12 @@ public class PDFDebugger extends JFrame
      */
     private static void usage()
     {
-        System.err.println(
-                "usage: java -jar pdfbox-app-x.y.z.jar PDFDebugger [OPTIONS] <input-file>\n" +
-                        "  -password <password>      Password to decrypt the document\n" +
-                        "  <input-file>              The PDF document to be loaded\n"
-        );
+        String message = "Usage: java -jar pdfbox-app-x.y.z.jar PDFDebugger [options] <inputfile>\n"
+                + "\nOptons:\n"
+                + "  -password <password> : Password to decrypt the document\n"
+                + "  <inputfile>          : The PDF document to be loaded\n";
+        
+        System.err.println(message);
+        System.exit(1);
     }
 }

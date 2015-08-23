@@ -312,19 +312,21 @@ public final class ExtractText
      */
     private static void usage()
     {
-        System.err.println( "Usage: java -jar pdfbox-app-x.y.z.jar ExtractText [OPTIONS] <PDF file> [Text File]\n" +
-            "  -password  <password>        Password to decrypt document\n" +
-            "  -encoding  <output encoding> UTF-8 (default) or ISO-8859-1, UTF-16BE, UTF-16LE, etc.\n" +
-            "  -console                     Send text to console instead of file\n" +
-            "  -html                        Output in HTML format instead of raw text\n" +
-            "  -sort                        Sort the text before writing\n" +
-            "  -ignoreBeads                 Disables the separation by beads\n" +
-            "  -debug                       Enables debug output about the time consumption of every stage\n" +
-            "  -startPage <number>          The first page to start extraction(1 based)\n" +
-            "  -endPage <number>            The last page to extract(inclusive)\n" +
-            "  <PDF file>                   The PDF document to use\n" +
-            "  [Text File]                  The file to write the text to\n"
-            );
+        String message = "Usage: java -jar pdfbox-app-x.y.z.jar ExtractText [options] <inputfile> [output-text-file]\n"
+            + "\nOptions:\n"
+            + "  -password  <password>        : Password to decrypt document\n"
+            + "  -encoding  <output encoding> : UTF-8 (default) or ISO-8859-1, UTF-16BE, UTF-16LE, etc.\n"
+            + "  -console                     : Send text to console instead of file\n"
+            + "  -html                        : Output in HTML format instead of raw text\n"
+            + "  -sort                        : Sort the text before writing\n"
+            + "  -ignoreBeads                 : Disables the separation by beads\n"
+            + "  -debug                       : Enables debug output about the time consumption of every stage\n"
+            + "  -startPage <number>          : The first page to start extraction(1 based)\n"
+            + "  -endPage <number>            : The last page to extract(inclusive)\n"
+            + "  <inputfile>                  : The PDF document to use\n"
+            + "  [output-text-file]           : The file to write the text to";
+        
+        System.err.println(message);
         System.exit( 1 );
     }
 }

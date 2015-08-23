@@ -139,9 +139,12 @@ public final class PrintPDF
      */
     private static void usage()
     {
-        System.err.println("Usage: java -jar pdfbox-app-x.y.z.jar PrintPDF [OPTIONS] <PDF file>\n"
-                + "  -password  <password>        Password to decrypt document\n"
-                + "  -silentPrint                 Print without prompting for printer info\n");
+        String message = "Usage: java -jar pdfbox-app-x.y.z.jar PrintPDF [options] <inputfile>\n"
+                + "\nOptions:\n"
+                + "  -password  <password> : Password to decrypt document\n"
+                + "  -silentPrint          : Print without prompting for printer info\n";
+        
+        System.err.println(message);
         System.exit(1);
     }
 }

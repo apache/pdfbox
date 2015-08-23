@@ -106,8 +106,12 @@ public class ExportFDF
      */
     private static void usage()
     {
-        System.err.println( "usage: org.apache.pdfbox.ExortFDF <pdf-file> [output-fdf-file]" );
-        System.err.println( "    [output-fdf-file] - Default is pdf name, test.pdf->test.fdf" );
+        String message = "Usage: org.apache.pdfbox.ExportFDF <inputfile> [output-fdf-file]\n"
+                + "\nOptions:\n"
+                + "  [output-fdf-file] : Default is pdf name, test.pdf->test.fdf";
+        
+        System.err.println(message);
+        System.exit(1);
     }
 
     /**

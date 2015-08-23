@@ -74,11 +74,13 @@ public final class PDFMerger
      */
     private static void usage()
     {
-        System.err.println( "Usage: java -jar pdfbox-app-x.y.z.jar PDFMerger "
-                + "<Source PDF File 2..n> <Destination PDF File>\n" +
-            "  <Source PDF File 2..n>       2 or more source PDF documents to merge\n" +
-            "  <Destination PDF File>       The PDF document to save the merged documents to\n"
-            );
-        System.exit( 1 );
+        String message = "Usage: java -jar pdfbox-app-x.y.z.jar PDFMerger "
+                + "<inputfiles 2..n> <outputfile>\n"
+                + "\nOptions:\n"
+                + "  <inputfiles 2..n> : 2 or more source PDF documents to merge\n"
+                + "  <outputfile>      : The PDF document to save the merged documents to\n";
+        
+        System.err.println(message);
+        System.exit(1);
     }
 }

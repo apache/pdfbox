@@ -168,13 +168,15 @@ public final class Decrypt
      */
     private static void usage()
     {
-        System.err.println( "usage: java -jar pdfbox-app-x.y.z.jar Decrypt " +
-                            "[options] <inputfile> [outputfile]" );
-        System.err.println( "-alias      The alias of the key in the certificate file " +
-                                         "(mandatory if several keys are available)");
-        System.err.println( "-password   The password to open the certificate and extract the private key from it." );
-        System.err.println( "-keyStore   The KeyStore that holds the certificate." );
-        System.exit( -1 );
+        
+        String message = "Usage: java -jar pdfbox-app-x.y.z.jar Decrypt [options] <inputfile> [outputfile]\n"
+                + "\nOptions:\n"
+                + "  -alias    : The alias of the key in the certificate file (mandatory if several keys are available\n"
+                + "  -password : The password to open the certificate and extract the private key from it.\n"
+                + "  -keyStore : The KeyStore that holds the certificate.";
+        
+        System.err.println(message);
+        System.exit(1);
     }
 
 }

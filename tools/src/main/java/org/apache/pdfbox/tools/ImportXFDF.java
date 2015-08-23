@@ -110,6 +110,7 @@ public class ImportXFDF
     private static void usage()
     {
         System.err.println( "usage: org.apache.pdfbox.tools.ImportXFDF <pdf-file> <fdf-file> <output-file>" );
+        System.exit(1);
     }
 
     /**
