@@ -35,6 +35,13 @@ public final class Decrypt
     private static final String ALIAS = "-alias";
     private static final String PASSWORD = "-password";
     private static final String KEYSTORE = "-keyStore";
+    
+    private String password;
+    private String infile;
+    private String outfile;
+    private String alias;
+    private String keyStore;
+
 
     private Decrypt()
     {
@@ -52,22 +59,18 @@ public final class Decrypt
         System.setProperty("apple.awt.UIElement", "true");
 
         Decrypt decrypt = new Decrypt();
-        decrypt.decrypt( args );
+        decrypt.parseCommandLineArgs(args);
+        decrypt.decrypt();
     }
-
-    private void decrypt( String[] args ) throws Exception
+    
+    private void parseCommandLineArgs(String[] args)
     {
-        if( args.length < 2 || args.length > 5 )
+        if( args.length < 1 || args.length > 5 )
         {
             usage();
         }
         else
         {
-            String password = null;
-            String infile = null;
-            String outfile = null;
-            String alias = null;
-            String keyStore = null;
             for( int i=0; i<args.length; i++ )
             {
                 if( args[i].equals( ALIAS ) )
@@ -122,43 +125,45 @@ public final class Decrypt
             {
                 password = "";
             }
+        }
+    }
 
-
-            PDDocument document = null;
-            try
+    private void decrypt() throws Exception
+    {
+        PDDocument document = null;
+        try
+        {
+            InputStream keyStoreStream = null;
+            if( keyStore != null )
             {
-                InputStream keyStoreStream = null;
-                if( keyStore != null )
+                keyStoreStream = new FileInputStream(keyStore);
+            }
+            document = PDDocument.load(new File(infile), password, keyStoreStream, alias);
+            
+            if (document.isEncrypted())
+            {
+                AccessPermission ap = document.getCurrentAccessPermission();
+                if(ap.isOwnerPermission())
                 {
-                    keyStoreStream = new FileInputStream(keyStore);
-                }
-                document = PDDocument.load(new File(infile), password, keyStoreStream, alias);
-                
-                if (document.isEncrypted())
-                {
-                    AccessPermission ap = document.getCurrentAccessPermission();
-                    if(ap.isOwnerPermission())
-                    {
-                        document.setAllSecurityToBeRemoved(true);
-                        document.save( outfile );
-                    }
-                    else
-                    {
-                        throw new IOException(
-                                "Error: You are only allowed to decrypt a document with the owner password." );
-                    }
+                    document.setAllSecurityToBeRemoved(true);
+                    document.save( outfile );
                 }
                 else
                 {
-                    System.err.println( "Error: Document is not encrypted." );
+                    throw new IOException(
+                            "Error: You are only allowed to decrypt a document with the owner password." );
                 }
             }
-            finally
+            else
             {
-                if( document != null )
-                {
-                    document.close();
-                }
+                System.err.println( "Error: Document is not encrypted." );
+            }
+        }
+        finally
+        {
+            if( document != null )
+            {
+                document.close();
             }
         }
     }
