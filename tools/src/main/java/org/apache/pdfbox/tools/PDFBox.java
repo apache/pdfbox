@@ -23,9 +23,13 @@ package org.apache.pdfbox.tools;
  *
  * @see <a href="https://issues.apache.org/jira/browse/PDFBOX-687">PDFBOX-687</a>
  */
-public class PDFBox 
+public final class PDFBox 
 {
 
+    private PDFBox()
+    {
+    }
+    
     /**
      * Main method.
      * 

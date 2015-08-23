@@ -34,7 +34,7 @@ import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
  *
  * @author  Ben Litchfield
  */
-public class Encrypt
+public final class Encrypt
 {
     private Encrypt()
     {

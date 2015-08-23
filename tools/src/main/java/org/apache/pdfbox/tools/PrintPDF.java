@@ -30,7 +30,7 @@ import org.apache.pdfbox.printing.PDFPageable;
  * 
  * @author Ben Litchfield
  */
-public class PrintPDF
+public final class PrintPDF
 {
     private static final String PASSWORD = "-password";
     private static final String SILENT = "-silentPrint";

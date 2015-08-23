@@ -32,7 +32,7 @@ import org.apache.pdfbox.multipdf.Splitter;
  *
  * @author Ben Litchfield
  */
-public class PDFSplit
+public final class PDFSplit
 {
     private static final String PASSWORD = "-password";
     private static final String SPLIT = "-split";

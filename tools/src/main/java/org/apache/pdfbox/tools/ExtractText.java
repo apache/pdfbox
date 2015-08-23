@@ -39,7 +39,7 @@ import org.apache.pdfbox.text.PDFTextStripper;
  *
  * @author Ben Litchfield
  */
-public class ExtractText
+public final class ExtractText
 {
     private static final String PASSWORD = "-password";
     private static final String ENCODING = "-encoding";

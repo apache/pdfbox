@@ -21,7 +21,7 @@ package org.apache.pdfbox.tools;
  *
  * @author Ben Litchfield
  */
-class Version
+final class Version
 {
     private Version()
     {

@@ -31,7 +31,7 @@ import org.apache.pdfbox.multipdf.Overlay.Position;
  * Based on code contributed by Balazs Jerk. 
  * 
  */
-public class OverlayPDF 
+public final class OverlayPDF 
 {
     private static final Log LOG = LogFactory.getLog(OverlayPDF.class);
 
@@ -44,6 +44,10 @@ public class OverlayPDF
     private static final String PAGE = "-page";
     private static final String USEALLPAGES = "-useAllPages";
 
+    private OverlayPDF()
+    {
+    }    
+    
     /**
      * This will overlay a document and write out the results.
      *

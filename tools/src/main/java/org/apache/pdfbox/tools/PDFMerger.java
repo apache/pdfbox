@@ -26,7 +26,7 @@ import org.apache.pdfbox.multipdf.PDFMergerUtility;
  *
  * @author Ben Litchfield
  */
-public class PDFMerger
+public final class PDFMerger
 {
     
     private PDFMerger()

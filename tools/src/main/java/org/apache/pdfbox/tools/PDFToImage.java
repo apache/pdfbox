@@ -36,7 +36,7 @@ import org.apache.pdfbox.tools.imageio.ImageIOUtil;
  *
  * @author Ben Litchfield
  */
-public class PDFToImage
+public final class PDFToImage
 {
     private static final String PASSWORD = "-password";
     private static final String START_PAGE = "-startPage";
