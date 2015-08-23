@@ -35,8 +35,15 @@ import org.apache.pdfbox.cos.COSObjectKey;
  * objects.
  * @author Adam Nichols
  */
-public class DecompressObjectstreams 
+public final class DecompressObjectstreams 
 {
+    
+    /**
+     * private constructor.
+     */
+    private DecompressObjectstreams()
+    {
+    }
 
     /**
      * This is a very simple program, so everything is in the main method.

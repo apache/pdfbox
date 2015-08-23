@@ -47,7 +47,7 @@ import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
  *
  * @author Ben Litchfield
  */
-public class ExtractImages
+public final class ExtractImages
 {
     private static final String PASSWORD = "-password";
     private static final String PREFIX = "-prefix";
