@@ -221,14 +221,16 @@ public final class PDFSplit
      */
     private static void usage()
     {
-        System.err.println( "Usage: java -jar pdfbox-app-x.y.z.jar PDFSplit [OPTIONS] <PDF file>\n" +
-            "  -password  <password>  Password to decrypt document\n" +
-            "  -split     <integer>   split after this many pages (default 1, if startPage and endPage are unset)\n"+
-            "  -startPage <integer>   start page\n" +
-            "  -endPage   <integer>   end page\n" +
-            "  -outputPrefix <output prefix>  Filename prefix for image files\n" +    
-            "  <PDF file>             The PDF document to use\n"
-            );
+        String message = "Usage: java -jar pdfbox-app-x.y.z.jar PDFSplit [options] <inputfile>\n"
+                + "\nOptions:\n"
+                + "  -password  <password>  : Password to decrypt document\n"
+                + "  -split     <integer>   : split after this many pages (default 1, if startPage and endPage are unset)\n"
+                + "  -startPage <integer>   : start page\n"
+                + "  -endPage   <integer>   : end page\n"
+                + "  -outputPrefix <prefix> : Filename prefix for splitted files\n"
+                + "  <inputfile>            : The PDF document to use\n";
+        
+        System.err.println(message);
         System.exit( 1 );
     }
 }

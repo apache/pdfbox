@@ -147,22 +147,23 @@ public final class OverlayPDF
 
     private static void usage()
     {
-        StringBuilder message = new StringBuilder();
-        message.append("usage: java -jar pdfbox-app-x.y.z.jar OverlayPDF <input.pdf> [OPTIONS] <output.pdf>\n");
-        message.append("  <input.pdf>                                        input file\n");
-        message.append("  <defaultOverlay.pdf>                               default overlay file\n");
-        message.append("  -odd <oddPageOverlay.pdf>                          overlay file used for odd pages\n");
-        message.append("  -even <evenPageOverlay.pdf>                        overlay file used for even pages\n");
-        message.append("  -first <firstPageOverlay.pdf>                      overlay file used for the first page\n");
-        message.append("  -last <lastPageOverlay.pdf>                        overlay file used for the last page\n");
-        message.append("  -useAllPages <allPagesOverlay.pdf>                 overlay file used for overlay, all pages"
-                + " are used by simply repeating them\n");
-        message.append("  -page <pageNumber> <specificPageOverlay.pdf>       overlay file used for " +
-                "the given page number, may occur more than once\n");
-        message.append("  -position foreground|background                    where to put the overlay " +
-                "file: foreground or background\n");
-        message.append("  <output.pdf>                                       output file\n");
-        System.err.println(message.toString());
+        String message = "Usage: java -jar pdfbox-app-x.y.z.jar OverlayPDF <inputfile> [options] <outputfile>\n"
+                + "\nOptions:\n"
+                + "  <inputfile>                                  : input file\n"
+                + "  <defaultOverlay.pdf>                         : default overlay file\n"
+                + "  -odd <oddPageOverlay.pdf>                    : overlay file used for odd pages\n"
+                + "  -even <evenPageOverlay.pdf>                  : overlay file used for even pages\n"
+                + "  -first <firstPageOverlay.pdf>                : overlay file used for the first page\n"
+                + "  -last <lastPageOverlay.pdf>                  : overlay file used for the last page\n"
+                + "  -useAllPages <allPagesOverlay.pdf>           : overlay file used for overlay, all pages"
+                + " are used by simply repeating them\n"
+                + "  -page <pageNumber> <specificPageOverlay.pdf> : overlay file used for "
+                + "the given page number, may occur more than once\n"
+                + "  -position foreground|background              : where to put the overlay "
+                + "file: foreground or background\n"
+                + "  <outputfile>                                 : output file";
+
+        System.err.println(message);
         System.exit( 1 );
     }
 

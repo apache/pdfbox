@@ -161,11 +161,13 @@ public class WriteDecodedDoc
      */
     private static void usage()
     {
-        System.err.println(
-                "usage: java -jar pdfbox-app-x.y.z.jar WriteDecodedDoc [OPTIONS] <input-file> [output-file]\n" +
-                "  -password <password>      Password to decrypt the document\n" +
-                "  <input-file>              The PDF document to be decompressed\n" +
-                "  [output-file]             The filename for the decompressed pdf\n"
-                );
+        String message = "Usage: java -jar pdfbox-app-x.y.z.jar WriteDecodedDoc [options] <inputfile> [outputfile]\n"
+                + "\nOptions:\n"
+                + "  -password <password> : Password to decrypt the document\n"
+                + "  <inputfile>          : The PDF document to be decompressed\n"
+                + "  [outputfile]         : The filename for the decompressed pdf\n";
+       
+        System.err.println(message);
+        System.exit(1);
     }
 }

@@ -270,19 +270,21 @@ public final class PDFToImage
      */
     private static void usage()
     {
-        System.err.println( "Usage: java -jar pdfbox-app-x.y.z.jar PDFToImage [OPTIONS] <PDF file>\n" +
-            "  -password  <password>          Password to decrypt document\n" +
-            "  -format <string>               Image format: " + getImageFormats() + "\n" +
-            "  -prefix <string>               Filename prefix for image files\n" +
-            "  -page <number>                 The only page to extract (1-based)\n" +
-            "  -startPage <number>            The first page to start extraction (1-based)\n" +
-            "  -endPage <number>              The last page to extract(inclusive)\n" +
-            "  -color <string>                The color depth (valid: bilevel, indexed, gray, rgb, rgba)\n" +
-            "  -dpi <number>                  The DPI of the output image\n" +
-            "  -cropbox <number> <number> <number> <number> The page area to export\n" +
-            "  -time                          Prints timing information to stdout\n" +
-            "  <PDF file>                     The PDF document to use\n"
-            );
+        String message = "Usage: java -jar pdfbox-app-x.y.z.jar PDFToImage [options] <inputfile>\n"
+            + "\nOptions:\n"
+            + "  -password  <password>            : Password to decrypt document\n"
+            + "  -format <string>                 : Image format: " + getImageFormats() + "\n"
+            + "  -prefix <string>                 : Filename prefix for image files\n"
+            + "  -page <number>                   : The only page to extract (1-based)\n"
+            + "  -startPage <int>                 : The first page to start extraction (1-based)\n"
+            + "  -endPage <int>                   : The last page to extract(inclusive)\n"
+            + "  -color <int>                     : The color depth (valid: bilevel, indexed, gray, rgb, rgba)\n"
+            + "  -dpi <int>                       : The DPI of the output image\n"
+            + "  -cropbox <int> <int> <int> <int> : The page area to export\n"
+            + "  -time                            : Prints timing information to stdout\n"
+            + "  <inputfile>                      : The PDF document to use\n";
+        
+        System.err.println(message);
         System.exit( 1 );
     }
 

@@ -145,12 +145,15 @@ public final class ExtractImages
      */
     private static void usage()
     {
-        System.err.println("Usage: java org.apache.pdfbox.tools.ExtractImages [OPTIONS] <PDF file>\n" +
-                "  -password  <password>        Password to decrypt document\n" +
-                "  -prefix  <image-prefix>      Image prefix(default to pdf name)\n" +
-                "  -directJPEG                  Forces the direct extraction of JPEG images "
-                + "regardless of colorspace\n" +
-                "  <PDF file>                   The PDF document to use\n");
+        String message = "Usage: java org.apache.pdfbox.tools.ExtractImages [options] <inputfile>\n"
+                + "\nOptions:\n"
+                + "  -password <password>   : Password to decrypt document\n"
+                + "  -prefix <image-prefix> : Image prefix(default to pdf name)\n"
+                + "  -directJPEG            : Forces the direct extraction of JPEG images "
+                + "regardless of colorspace\n"
+                + "  <inputfile>            : The PDF document to use\n";
+        
+        System.err.println(message);
         System.exit(1);
     }
 

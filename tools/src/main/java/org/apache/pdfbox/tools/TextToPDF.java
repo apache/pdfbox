@@ -251,14 +251,20 @@ public class TextToPDF
     private void usage()
     {
         String[] std14 = getStandard14Names();
-        System.err.println( "usage: jar -jar pdfbox-app-x.y.z.jar TextToPDF [options] <output-file> <text-file>" );
-        System.err.println( "    -standardFont <name>    default:" + PDType1Font.HELVETICA.getBaseFont() );
+        
+        String message = "Usage: jar -jar pdfbox-app-x.y.z.jar TextToPDF [options] <outputfile> <textfile>\n"
+                + "\nOptions:\n"
+                + "  -standardFont <name> : " + PDType1Font.HELVETICA.getBaseFont() + " (default)\n";
+                
         for (String std14String : std14)
         {
-            System.err.println("                                    " + std14String);
+            message = message +  "                         " + std14String + "\n";
         }
-        System.err.println( "    -ttf <ttf file>         The TTF font to use.");
-        System.err.println( "    -fontSize <fontSize>    default:10" );
+        message = message + "  -ttf <ttf file>      : The TTF font to use.\n"
+                + "  -fontSize <fontSize> : default:10";
+        
+        System.err.println(message);
+        System.exit(1);
     }
 
 

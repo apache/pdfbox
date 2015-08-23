@@ -69,6 +69,7 @@ final class Version
      */
     private static void usage()
     {
-        System.err.println( "usage: " + Version.class.getName() );
+        System.err.println("Usage: " + Version.class.getName());
+        System.exit(1);
     }
 }

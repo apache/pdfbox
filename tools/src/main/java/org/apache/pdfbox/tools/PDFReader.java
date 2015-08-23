@@ -627,9 +627,13 @@ public class PDFReader extends JFrame
 
     private static void usage()
     {
-        System.err.println(
-                "usage: java -jar pdfbox-app-" + VERSION + ".jar PDFReader [OPTIONS] <input-file>\n"
-                + "  -password <password>      Password to decrypt the document\n"
-                + "  <input-file>              The PDF document to be loaded\n");
+        String message = "Usage: java -jar pdfbox-app-" + VERSION + ".jar PDFReader [options] <inputfile>\n"
+                + "\nOptions:\n"
+                + "  -password <password> : Password to decrypt the document\n"
+                + "  <inputfile>          : The PDF document to be loaded\n";
+        
+        System.err.println(message);
+        System.exit(1);
+        
     }
 }
