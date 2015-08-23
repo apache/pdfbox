@@ -98,7 +98,7 @@ public final class DecompressObjectstreams
         }
         catch(Exception e) 
         {
-            System.out.println("Error processing file: " + e.getMessage());
+            System.err.println("Error processing file: " + e.getMessage());
         }
         finally
         {
