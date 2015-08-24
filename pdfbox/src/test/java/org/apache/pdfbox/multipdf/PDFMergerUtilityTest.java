@@ -70,6 +70,21 @@ public class PDFMergerUtilityTest extends TestCase
                 true);
     }
 
+    // see PDFBOX-2893
+    public void testPDFMergerUtility2() throws IOException
+    {
+        checkMergeIdentical("PDFBox.GlobalResourceMergeTest.Doc01.pdf",
+                "PDFBox.GlobalResourceMergeTest.Doc02.pdf",
+                "GlobalResourceMergeTestResult.pdf",
+                false);
+
+        // once again, with scratch file
+        checkMergeIdentical("PDFBox.GlobalResourceMergeTest.Doc01.pdf",
+                "PDFBox.GlobalResourceMergeTest.Doc02.pdf",
+                "GlobalResourceMergeTestResult2.pdf",
+                true);
+    }
+
     // checks that the result file of a merge has the same rendering as the two
     // source files
     private void checkMergeIdentical(String filename1, String filename2, String mergeFilename, 

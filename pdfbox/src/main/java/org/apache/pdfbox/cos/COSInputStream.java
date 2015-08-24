@@ -65,11 +65,17 @@ public final class COSInputStream extends FilterInputStream
                 if (scratchFile != null)
                 {
                     // scratch file
-                    RandomAccess buffer = scratchFile.createBuffer();
+                    final RandomAccess buffer = scratchFile.createBuffer();
                     DecodeResult result = filters.get(i).decode(input, new RandomAccessOutputStream(buffer), parameters, i);
                     results.add(result);
-                    input = new RandomAccessInputStream(buffer);
-                    buffer.close();
+                    input = new RandomAccessInputStream(buffer)
+                    {
+                        @Override
+                        public void close() throws IOException
+                        {
+                            buffer.close();
+                        }
+                    };
                 }
                 else
                 {
