@@ -64,6 +64,6 @@ class UpperPane extends JPanel
         }
 
         x+=HexView.LINE_INSET*2;
-        g.drawString("Dump", x, y);
+        g.drawString("Text", x, y);
     }
 }
