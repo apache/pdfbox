@@ -136,7 +136,7 @@ public class TextToPDF
                 int lineIndex = 0;
                 while( lineIndex < lineWords.length )
                 {
-                    StringBuffer nextLineToDraw = new StringBuffer();
+                    StringBuilder nextLineToDraw = new StringBuilder();
                     float lengthIfUsingNextWord = 0;
                     do
                     {
