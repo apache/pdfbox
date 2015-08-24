@@ -17,6 +17,7 @@
 
 package org.apache.pdfbox.tools.pdfdebugger.hexviewer;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
@@ -37,6 +38,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.border.LineBorder;
 
 /**
  * @author Khyrul Bashar
@@ -97,6 +99,7 @@ class HexEditor extends JPanel implements SelectionChangeListener
         panel.add(asciiPane);
 
         JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setBorder(new LineBorder(Color.LIGHT_GRAY));
         scrollPane.setViewportView(panel);
 
         Action blankAction = new AbstractAction()
