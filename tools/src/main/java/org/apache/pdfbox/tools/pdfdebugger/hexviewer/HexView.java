@@ -30,6 +30,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.tools.pdfdebugger.streampane.Stream;
 
@@ -43,12 +44,12 @@ public class HexView implements ActionListener
     private JComponent mainPane;
     private Stream stream;
 
-    static final Font FONT = new Font("monospaced", Font.PLAIN, 15);
+    static final Font FONT = new Font("monospaced", Font.PLAIN, 13);
     static final int CHAR_HEIGHT = 20;
     static final int CHAR_WIDTH = 35;
     static final int LINE_INSET = 20;
-    static final Color SELECTED_COLOR = new Color(98, 134, 198);
-    static final Font BOLD_FONT = new Font(Font.MONOSPACED, Font.BOLD, 15);
+    static final Color SELECTED_COLOR = UIManager.getColor("textHighlight");
+    static final Font BOLD_FONT = new Font("monospaced", Font.BOLD, 13);
     static final int HEX_PANE_WIDTH = 600;
     static final int ADDRESS_PANE_WIDTH = 120;
     static final int ASCII_PANE_WIDTH = 270;

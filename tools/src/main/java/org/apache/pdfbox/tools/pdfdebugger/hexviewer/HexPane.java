@@ -20,8 +20,10 @@ package org.apache.pdfbox.tools.pdfdebugger.hexviewer;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -73,6 +75,13 @@ class HexPane extends JPanel implements KeyListener, MouseListener, MouseMotionL
     protected void paintComponent(Graphics g)
     {
         super.paintComponent(g);
+        
+        Graphics2D g2d = (Graphics2D)g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        
         Rectangle bound = getVisibleRect();
         g.clearRect(bound.x, bound.y, bound.width, bound.height);
         g.setColor(Color.WHITE);
@@ -127,7 +136,7 @@ class HexPane extends JPanel implements KeyListener, MouseListener, MouseMotionL
 
         if (selectedChar == 0)
         {
-            g.setColor(new Color(98, 134, 198));
+            g.setColor(HexView.SELECTED_COLOR);
             g.drawChars(chars, 0, 1, x, y);
 
             g.setColor(Color.black);
@@ -138,7 +147,7 @@ class HexPane extends JPanel implements KeyListener, MouseListener, MouseMotionL
             g.setColor(Color.black);
             g.drawChars(chars, 0, 1, x, y);
 
-            g.setColor(new Color(98, 134, 198));
+            g.setColor(HexView.SELECTED_COLOR);
             g.drawChars(chars, 1, 1,x + g.getFontMetrics().charWidth(chars[0]), y);
         }
         setDefault(g);
@@ -148,7 +157,7 @@ class HexPane extends JPanel implements KeyListener, MouseListener, MouseMotionL
     {
         AttributedString string = new AttributedString(str);
         string.addAttribute(TextAttribute.FONT, HexView.BOLD_FONT);
-        string.addAttribute(TextAttribute.FOREGROUND, new Color(98, 134, 198));
+        string.addAttribute(TextAttribute.FOREGROUND, HexView.SELECTED_COLOR);
         return string;
     }
 
