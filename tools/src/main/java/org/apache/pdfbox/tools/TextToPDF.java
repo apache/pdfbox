@@ -39,8 +39,28 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
  */
 public class TextToPDF
 {
-    private int fontSize = 10;
-    private PDFont font = PDType1Font.HELVETICA;
+    /**
+     * The scaling factor for font units to PDF units
+     */
+    private static final int FONTSCALE = 1000;
+    
+    /**
+     * The default font
+     */
+    private static final PDType1Font DEFAULT_FONT = PDType1Font.HELVETICA;
+
+    /**
+     * The default font size
+     */
+    private static final int DEFAULT_FONT_SIZE = 10;
+    
+    /**
+     * The line height as a factor of the font size
+     */
+    private static final float LINE_HEIGHT_FACTOR = 1.05f;
+
+    private int fontSize = DEFAULT_FONT_SIZE;
+    private PDFont font = DEFAULT_FONT;
 
     private static final Map<String, PDType1Font> STANDARD_14 = new HashMap<String, PDType1Font>();
     static
@@ -90,10 +110,10 @@ public class TextToPDF
         {
 
             final int margin = 40;
-            float height = font.getBoundingBox().getHeight() / 1000;
+            float height = font.getBoundingBox().getHeight() / FONTSCALE;
 
-            //calculate font height and increase by 5 percent.
-            height = height*fontSize*1.05f;
+            //calculate font height and increase by a factor.
+            height = height*fontSize*LINE_HEIGHT_FACTOR;
             BufferedReader data = new BufferedReader( text );
             String nextLine = null;
             PDPage page = new PDPage();
@@ -127,7 +147,7 @@ public class TextToPDF
                         {
                             String lineWithNextWord = nextLineToDraw.toString() + lineWords[lineIndex];
                             lengthIfUsingNextWord =
-                                (font.getStringWidth( lineWithNextWord )/1000) * fontSize;
+                                (font.getStringWidth( lineWithNextWord )/FONTSCALE) * fontSize;
                         }
                     }
                     while( lineIndex < lineWords.length &&
@@ -203,6 +223,7 @@ public class TextToPDF
         System.setProperty("apple.awt.UIElement", "true");
 
         TextToPDF app = new TextToPDF();
+                
         PDDocument doc = new PDDocument();
         try
         {
@@ -235,6 +256,7 @@ public class TextToPDF
                         throw new IOException( "Unknown argument:" + args[i] );
                     }
                 }
+                
                 app.createPDFFromText( doc, new FileReader( args[args.length-1] ) );
                 doc.save( args[args.length-2] );
             }
@@ -252,18 +274,19 @@ public class TextToPDF
     {
         String[] std14 = getStandard14Names();
         
-        String message = "Usage: jar -jar pdfbox-app-x.y.z.jar TextToPDF [options] <outputfile> <textfile>\n"
-                + "\nOptions:\n"
-                + "  -standardFont <name> : " + PDType1Font.HELVETICA.getBaseFont() + " (default)\n";
+        StringBuilder message = new StringBuilder();       
+        message.append("Usage: jar -jar pdfbox-app-x.y.z.jar TextToPDF [options] <outputfile> <textfile>\n");
+        message.append("\nOptions:\n");
+        message.append("  -standardFont <name> : " + DEFAULT_FONT.getBaseFont() + " (default)\n");
                 
         for (String std14String : std14)
         {
-            message = message +  "                         " + std14String + "\n";
+            message.append("                         " + std14String + "\n");
         }
-        message = message + "  -ttf <ttf file>      : The TTF font to use.\n"
-                + "  -fontSize <fontSize> : default:10";
+        message.append("  -ttf <ttf file>      : The TTF font to use.\n");
+        message.append("  -fontSize <fontSize> : default: " + DEFAULT_FONT_SIZE );
         
-        System.err.println(message);
+        System.err.println(message.toString());
         System.exit(1);
     }
 
