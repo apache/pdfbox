@@ -44,7 +44,7 @@ import javax.swing.JPanel;
 class HexPane extends JPanel implements KeyListener, MouseListener, MouseMotionListener, HexModelChangeListener
 {
     private final HexModel model;
-    private static int selectedIndex = -1;
+    private int selectedIndex = -1;
     private static final byte EDIT = 2;
     private static final byte SELECTED = 1;
     private static final byte NORMAL = 0;
@@ -63,7 +63,7 @@ class HexPane extends JPanel implements KeyListener, MouseListener, MouseMotionL
     {
         this.model = model;
         model.addHexModelChangeListener(this);
-        setPreferredSize(new Dimension(HexView.HEX_PANE_WIDTH, HexView.TOTAL_HEIGHT));
+        setPreferredSize(new Dimension(HexView.HEX_PANE_WIDTH, HexView.CHAR_HEIGHT * (model.totalLine()+1)));
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
         this.addKeyListener(this);
@@ -89,14 +89,14 @@ class HexPane extends JPanel implements KeyListener, MouseListener, MouseMotionL
 
         int x = HexView.LINE_INSET;
         int y = bound.y;
-        if (y == 0 || y%HexView.CHAR_HEIGHT != 0)
+        if (y == 0 || y% HexView.CHAR_HEIGHT != 0)
         {
-            y += HexView.CHAR_HEIGHT - y%HexView.CHAR_HEIGHT;
+            y += HexView.CHAR_HEIGHT - y% HexView.CHAR_HEIGHT;
         }
-        int firstLine = y/HexView.CHAR_HEIGHT;
+        int firstLine = y/ HexView.CHAR_HEIGHT;
 
         g.setColor(Color.BLACK);
-        for (int i = firstLine; i <= firstLine + bound.height/HexView.CHAR_HEIGHT; i++)
+        for (int i = firstLine; i <= firstLine + bound.height/ HexView.CHAR_HEIGHT; i++)
         {
             if (i > model.totalLine())
             {
@@ -179,11 +179,10 @@ class HexPane extends JPanel implements KeyListener, MouseListener, MouseMotionL
             return -1;
         }
         int y = point.y;
-        int lineNumber = (y+ (HexView.CHAR_HEIGHT -(y % HexView.CHAR_HEIGHT)))/HexView.CHAR_HEIGHT;
+        int lineNumber = (y+ (HexView.CHAR_HEIGHT -(y % HexView.CHAR_HEIGHT)))/ HexView.CHAR_HEIGHT;
         int x = point.x - 20;
         int elementNumber = (x / HexView.CHAR_WIDTH);
-        int index = (lineNumber-1) * 16 + elementNumber;
-        return index;
+        return  (lineNumber-1) * 16 + elementNumber;
     }
 
     /**
@@ -193,7 +192,7 @@ class HexPane extends JPanel implements KeyListener, MouseListener, MouseMotionL
      */
     private Point getPointForIndex(int index)
     {
-        int x = HexView.LINE_INSET + HexModel.elementIndexInLine(index)*HexView.CHAR_WIDTH;
+        int x = HexView.LINE_INSET + HexModel.elementIndexInLine(index)* HexView.CHAR_WIDTH;
         int y = HexModel.lineNumber(index) * HexView.CHAR_HEIGHT;
         return new Point(x, y);
     }
@@ -233,7 +232,7 @@ class HexPane extends JPanel implements KeyListener, MouseListener, MouseMotionL
     {
         for (HexChangeListener listener:hexChangeListeners)
         {
-            listener.hexChanged(new HexChangedEvent(value, selectedIndex));
+            listener.hexChanged(new HexChangedEvent(value, index));
         }
     }
 

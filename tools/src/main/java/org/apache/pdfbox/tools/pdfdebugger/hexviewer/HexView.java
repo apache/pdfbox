@@ -54,7 +54,6 @@ public class HexView implements ActionListener
     static final int ADDRESS_PANE_WIDTH = 120;
     static final int ASCII_PANE_WIDTH = 270;
     static final int TOTAL_WIDTH = HEX_PANE_WIDTH + ADDRESS_PANE_WIDTH +ASCII_PANE_WIDTH;
-    static int TOTAL_HEIGHT;
 
     /**
      * Constructor.
@@ -91,7 +90,6 @@ public class HexView implements ActionListener
     private HexEditor createHexEditor(byte[] bytes)
     {
         HexModel model = new HexModel(bytes);
-        TOTAL_HEIGHT = CHAR_HEIGHT * (model.totalLine()+1);
         return new HexEditor(model);
     }
 

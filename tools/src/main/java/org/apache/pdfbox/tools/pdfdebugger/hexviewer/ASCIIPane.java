@@ -44,7 +44,7 @@ class ASCIIPane extends JComponent implements HexModelChangeListener
     ASCIIPane(HexModel model)
     {
         this.model = model;
-        setPreferredSize(new Dimension(HexView.ASCII_PANE_WIDTH, HexView.TOTAL_HEIGHT));
+        setPreferredSize(new Dimension(HexView.ASCII_PANE_WIDTH, HexView.CHAR_HEIGHT * (model.totalLine()+1)));
         model.addHexModelChangeListener(this);
         setFont(HexView.FONT);
     }
@@ -109,7 +109,7 @@ class ASCIIPane extends JComponent implements HexModelChangeListener
         g.drawChars(content, selectedIndexInLine, 1, x, y);
 
         g.setColor(Color.black);
-        x+= g.getFontMetrics().charWidth(content[selectedIndexInLine]);
+        x += g.getFontMetrics().charWidth(content[selectedIndexInLine]);
         g.drawChars(content, selectedIndexInLine+1, (content.length-1)-selectedIndexInLine, x, y);
         g.setFont(HexView.FONT);
     }
