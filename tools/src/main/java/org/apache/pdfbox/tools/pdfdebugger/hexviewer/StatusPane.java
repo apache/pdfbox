@@ -29,7 +29,7 @@ import javax.swing.JPanel;
  */
 class StatusPane extends JPanel
 {
-    private final int height = 20;
+    private static final int HEIGHT = 20;
     private JLabel lineLabel;
     private JLabel colLabel;
     private JLabel indexLabel;
@@ -45,9 +45,9 @@ class StatusPane extends JPanel
         JLabel line = new JLabel("Line:");
         JLabel column = new JLabel("Column:");
         lineLabel = new JLabel("");
-        lineLabel.setPreferredSize(new Dimension(100, height));
+        lineLabel.setPreferredSize(new Dimension(100, HEIGHT));
         colLabel = new JLabel("");
-        colLabel.setPreferredSize(new Dimension(100, height));
+        colLabel.setPreferredSize(new Dimension(100, HEIGHT));
         JLabel index = new JLabel("Index:");
         indexLabel = new JLabel("");
 

@@ -52,12 +52,9 @@ class HexEditor extends JPanel implements SelectionChangeListener
     private ASCIIPane asciiPane;
     private AddressPane addressPane;
     private StatusPane statusPane;
-
-    private JScrollBar verticalScrollBar;
-
     private final Action jumpToIndex;
 
-    public static int selectedIndex = -1;
+    private int selectedIndex = -1;
 
     /**
      * Constructor.
@@ -93,34 +90,12 @@ class HexEditor extends JPanel implements SelectionChangeListener
         model.addHexModelChangeListener(asciiPane);
 
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        panel.setPreferredSize(new Dimension(HexView.TOTAL_WIDTH, HexView.TOTAL_HEIGHT));
+        panel.setPreferredSize(new Dimension(HexView.TOTAL_WIDTH, HexView.CHAR_HEIGHT * (model.totalLine() + 1)));
         panel.add(addressPane);
         panel.add(hexPane);
         panel.add(asciiPane);
 
-        JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setBorder(new LineBorder(Color.LIGHT_GRAY));
-        scrollPane.setViewportView(panel);
-
-        Action blankAction = new AbstractAction()
-        {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent)
-            {
-            }
-        };
-
-        scrollPane.getActionMap().put("unitScrollDown", blankAction);
-        scrollPane.getActionMap().put("unitScrollLeft", blankAction);
-        scrollPane.getActionMap().put("unitScrollRight", blankAction);
-        scrollPane.getActionMap().put("unitScrollUp", blankAction);
-
-        verticalScrollBar = scrollPane.createVerticalScrollBar();
-        verticalScrollBar.setUnitIncrement(HexView.CHAR_HEIGHT);
-        verticalScrollBar.setBlockIncrement(HexView.CHAR_HEIGHT * 20);
-        verticalScrollBar.setValues(0, 1, 0, HexView.TOTAL_HEIGHT);
-        scrollPane.setVerticalScrollBar(verticalScrollBar);
-
+        JScrollPane scrollPane = getScrollPane();
         scrollPane.setViewportView(panel);
 
         GridBagConstraints gbc = new GridBagConstraints();
@@ -148,6 +123,33 @@ class HexEditor extends JPanel implements SelectionChangeListener
         KeyStroke jumpKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_DOWN_MASK);
         this.getInputMap(WHEN_IN_FOCUSED_WINDOW).put(jumpKeyStroke, "jump");
         this.getActionMap().put("jump", jumpToIndex);
+    }
+
+    private JScrollPane getScrollPane()
+    {
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setBorder(new LineBorder(Color.LIGHT_GRAY));
+
+        Action blankAction = new AbstractAction()
+        {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+            }
+        };
+
+        scrollPane.getActionMap().put("unitScrollDown", blankAction);
+        scrollPane.getActionMap().put("unitScrollLeft", blankAction);
+        scrollPane.getActionMap().put("unitScrollRight", blankAction);
+        scrollPane.getActionMap().put("unitScrollUp", blankAction);
+
+        JScrollBar verticalScrollBar = scrollPane.createVerticalScrollBar();
+        verticalScrollBar.setUnitIncrement(HexView.CHAR_HEIGHT);
+        verticalScrollBar.setBlockIncrement(HexView.CHAR_HEIGHT * 20);
+        verticalScrollBar.setValues(0, 1, 0, HexView.CHAR_HEIGHT * (model.totalLine()+1));
+        scrollPane.setVerticalScrollBar(verticalScrollBar);
+
+        return scrollPane;
     }
 
     @Override

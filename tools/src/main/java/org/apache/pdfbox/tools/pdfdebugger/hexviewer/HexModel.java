@@ -18,6 +18,7 @@
 package org.apache.pdfbox.tools.pdfdebugger.hexviewer;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Khyrul Bashar
@@ -27,8 +28,8 @@ import java.util.ArrayList;
  */
 class HexModel implements HexChangeListener
 {
-    private final ArrayList<Byte> data;
-    private final ArrayList<HexModelChangeListener> modelChangeListeners;
+    private final List<Byte> data;
+    private final List<HexModelChangeListener> modelChangeListeners;
 
     /**
      * Constructor
@@ -36,8 +37,7 @@ class HexModel implements HexChangeListener
      */
     public HexModel(byte[] bytes)
     {
-        data = new ArrayList<Byte>();
-        data.ensureCapacity(bytes.length);
+        data = new ArrayList<Byte>(bytes.length);
 
         for (byte b: bytes)
         {
@@ -115,15 +115,8 @@ class HexModel implements HexChangeListener
 
     public static int lineNumber(int index)
     {
-        index += 1;
-        if (index == 0)
-        {
-            return 0;
-        }
-        else
-        {
-            return index % 16 != 0 ? index/16 + 1 : index/16;
-        }
+        int elementNo = index + 1;
+        return elementNo % 16 != 0 ? elementNo/16 + 1 : elementNo/16;
     }
 
     public static int elementIndexInLine(int index)

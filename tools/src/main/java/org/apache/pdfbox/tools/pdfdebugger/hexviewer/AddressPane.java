@@ -43,7 +43,7 @@ class AddressPane extends JComponent
     AddressPane(int total)
     {
         totalLine = total;
-        setPreferredSize(new Dimension(HexView.ADDRESS_PANE_WIDTH, HexView.TOTAL_HEIGHT));
+        setPreferredSize(new Dimension(HexView.ADDRESS_PANE_WIDTH, HexView.CHAR_HEIGHT * totalLine));
         setFont(HexView.FONT);
     }
 
