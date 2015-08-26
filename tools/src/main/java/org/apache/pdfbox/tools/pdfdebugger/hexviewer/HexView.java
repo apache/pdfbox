@@ -21,11 +21,14 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -54,6 +57,12 @@ public class HexView implements ActionListener
     static final int ADDRESS_PANE_WIDTH = 120;
     static final int ASCII_PANE_WIDTH = 270;
     static final int TOTAL_WIDTH = HEX_PANE_WIDTH + ADDRESS_PANE_WIDTH +ASCII_PANE_WIDTH;
+    static final Map<RenderingHints.Key, Object> RENDERING_HINTS = new HashMap<RenderingHints.Key, Object>();
+    static
+    {
+        RENDERING_HINTS.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        RENDERING_HINTS.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
+    }
 
     /**
      * Constructor.
