@@ -46,13 +46,14 @@ public class HexView implements ActionListener
 {
     private JComponent mainPane;
     private Stream stream;
-
-    static final Font FONT = new Font("monospaced", Font.PLAIN, 13);
+    
+    static final int FONT_SIZE = ((Font)UIManager.get("Label.font")).getSize();
+    static final Font FONT = new Font("monospaced", Font.PLAIN, FONT_SIZE);
     static final int CHAR_HEIGHT = 20;
     static final int CHAR_WIDTH = 35;
     static final int LINE_INSET = 20;
     static final Color SELECTED_COLOR = UIManager.getColor("textHighlight");
-    static final Font BOLD_FONT = new Font("monospaced", Font.BOLD, 13);
+    static final Font BOLD_FONT = new Font("monospaced", Font.BOLD, FONT_SIZE);
     static final int HEX_PANE_WIDTH = 600;
     static final int ADDRESS_PANE_WIDTH = 120;
     static final int ASCII_PANE_WIDTH = 270;
