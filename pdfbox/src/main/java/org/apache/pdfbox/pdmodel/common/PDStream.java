@@ -247,20 +247,23 @@ public class PDStream implements COSObjectable
         InputStream is = stream.createRawInputStream();
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         List<COSName> filters = getFilters();
-        for (int i = 0; i < filters.size(); i++)
+        if (filters != null)
         {
-            COSName nextFilter = filters.get(i);
-            if (stopFilters.contains(nextFilter.getName()))
+            for (int i = 0; i < filters.size(); i++)
             {
-                break;
-            }
-            else
-            {
-                Filter filter = FilterFactory.INSTANCE.getFilter(nextFilter);
-                filter.decode(is, os, stream, i);
-                IOUtils.closeQuietly(is);
-                is = new ByteArrayInputStream(os.toByteArray());
-                os.reset();
+                COSName nextFilter = filters.get(i);
+                if ((stopFilters != null) && stopFilters.contains(nextFilter.getName()))
+                {
+                    break;
+                }
+                else
+                {
+                    Filter filter = FilterFactory.INSTANCE.getFilter(nextFilter);
+                    filter.decode(is, os, stream, i);
+                    IOUtils.closeQuietly(is);
+                    is = new ByteArrayInputStream(os.toByteArray());
+                    os.reset();
+                }
             }
         }
         return is;
