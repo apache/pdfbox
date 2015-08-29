@@ -17,35 +17,24 @@
 
 package org.apache.pdfbox.tools.pdfdebugger.hexviewer;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.RenderingHints;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import javax.swing.BoxLayout;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
-import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.tools.pdfdebugger.streampane.Stream;
 
 /**
  * @author Khyrul Bashar
  *
  * HexView takes a byte array or Stream instance and shows them in Hex viewer.
  */
-public class HexView implements ActionListener
+public class HexView
 {
-    private JComponent mainPane;
-    private Stream stream;
+    private final JComponent mainPane;
     
     static final int FONT_SIZE = ((Font)UIManager.get("Label.font")).getSize();
     static final Font FONT = new Font("monospaced", Font.PLAIN, FONT_SIZE);
@@ -65,91 +54,34 @@ public class HexView implements ActionListener
         RENDERING_HINTS.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
     }
 
+    public HexView()
+    {
+        mainPane = new JPanel(new BorderLayout());
+    }
+
     /**
      * Constructor.
      * @param bytes takes a byte array.
      */
     public HexView(byte[] bytes)
     {
-        createView();
-        mainPane.add(createHexEditor(bytes));
+        mainPane = new JPanel(new BorderLayout());
+        mainPane.add(new HexEditor(new HexModel(bytes)));
     }
 
-    /**
-     * Constructor.
-     * @param stream Stream instance.
-     * @throws IOException
-     */
-    public HexView(Stream stream) throws IOException
+    public void changeData(byte[] bytes)
     {
-        this.stream = stream;
-        createView();
-        JPanel panel = createHeaderPanel(stream.getFilterList());
-        InputStream is = stream.getStream(stream.getFilterList().get(0));
-        mainPane.add(panel);
-        mainPane.add(createHexEditor(IOUtils.toByteArray(is)));
-    }
-
-
-    private void createView()
-    {
-        mainPane = new JPanel();
-        mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.PAGE_AXIS));
-    }
-
-    private HexEditor createHexEditor(byte[] bytes)
-    {
+        if (mainPane.getComponentCount() > 0)
+        {
+            mainPane.removeAll();
+        }
         HexModel model = new HexModel(bytes);
-        return new HexEditor(model);
+        mainPane.add(new HexEditor(model));
+        mainPane.validate();
     }
 
     public JComponent getPane()
     {
         return mainPane;
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent actionEvent)
-    {
-        if (actionEvent.getActionCommand().equals("comboBoxChanged"))
-        {
-            JComboBox comboBox = (JComboBox) actionEvent.getSource();
-            String currentFilter = (String) comboBox.getSelectedItem();
-            try
-            {
-                HexEditor editor = createHexEditor(IOUtils.toByteArray(stream.getStream(currentFilter)));
-                mainPane.remove(1);
-                mainPane.add(editor);
-                mainPane.revalidate();
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private JPanel createHeaderPanel(List<String> availableFilters)
-    {
-        if (availableFilters.contains("Image"))
-        {
-            availableFilters.remove("Image");
-        }
-        JComboBox filters = new JComboBox(availableFilters.toArray());
-        filters.setSelectedItem(0);
-        filters.addActionListener(this);
-
-        JPanel panel = new JPanel()
-        {
-            @Override
-            public Dimension getMaximumSize()
-            {
-                return new Dimension(HexView.TOTAL_WIDTH, 45);
-            }
-        };
-        panel.setLayout(new FlowLayout());
-        panel.add(filters);
-        panel.setPreferredSize(new Dimension(HexView.TOTAL_WIDTH, 45));
-        return panel;
     }
 }

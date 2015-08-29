@@ -19,16 +19,22 @@ package org.apache.pdfbox.tools.pdfdebugger.streampane;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import javax.imageio.ImageIO;
+import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingWorker;
 import javax.swing.text.BadLocationException;
@@ -90,7 +96,9 @@ public class StreamPane implements ActionListener
         StyleConstants.setForeground(INLINE_IMAGE_STYLE, new Color(116, 113, 39));
     }
 
-    private final JTabbedPane tabbedPane;
+    private final JPanel panel;
+    private final HexView hexView;
+    private JTabbedPane tabbedPane;
     private final StreamPaneView view;
     private final Stream stream;
     private ToolTipController tTController;
@@ -117,25 +125,46 @@ public class StreamPane implements ActionListener
             tTController = new ToolTipController(resources);
         }
 
+        panel = new JPanel();
+        panel.setPreferredSize(new Dimension(300, 500));
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        view = new StreamPaneView();
+        hexView = new HexView();
+
         if (stream.isImage())
         {
-            view = new StreamPaneView(stream.getFilterList(), Stream.IMAGE, this);
+            panel.add(createHeaderPanel(stream.getFilterList(), Stream.IMAGE, this));
             requestImageShowing();
         }
         else
         {
-            view = new StreamPaneView(stream.getFilterList(), Stream.UNFILTERED, this);
+            panel.add(createHeaderPanel(stream.getFilterList(), Stream.UNFILTERED, this));
             requestStreamText(Stream.UNFILTERED);
         }
+
         tabbedPane = new JTabbedPane();
-        tabbedPane.setPreferredSize(new Dimension(300, 500));
         tabbedPane.add("Text view", view.getStreamPanel());
-        tabbedPane.add("Hex view", new HexView(stream).getPane());
+        tabbedPane.add("Hex view", hexView.getPane());
+
+        panel.add(tabbedPane);
     }
 
     public JComponent getPanel()
     {
-        return tabbedPane;
+        return panel;
+    }
+
+    private JPanel createHeaderPanel(List<String> availableFilters, String i, ActionListener actionListener)
+    {
+        JComboBox filters = new JComboBox(availableFilters.toArray());
+        filters.setSelectedItem(i);
+        filters.addActionListener(actionListener);
+
+        JPanel panel = new JPanel(new FlowLayout());
+        panel.add(filters);
+
+        return panel;
     }
 
     @Override
@@ -146,26 +175,42 @@ public class StreamPane implements ActionListener
             JComboBox comboBox = (JComboBox) actionEvent.getSource();
             String currentFilter = (String) comboBox.getSelectedItem();
 
-            if (currentFilter.equals(Stream.IMAGE))
+            try
             {
-                requestImageShowing();
-                return;
+                if (currentFilter.equals(Stream.IMAGE))
+                {
+                    requestImageShowing();
+                    return;
+                }
+                requestStreamText(currentFilter);
             }
-            requestStreamText(currentFilter);
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 
-    private void requestImageShowing()
+    private void requestImageShowing() throws IOException
     {
         if (stream.isImage())
         {
-            view.showStreamImage(stream.getImage(resources));
+            BufferedImage image = stream.getImage(resources);
+            view.showStreamImage(image);
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(image, "jpg", baos);
+            baos.flush();
+            byte[] bytes = baos.toByteArray();
+            baos.close();
+            hexView.changeData(bytes);
         }
     }
 
-    private void requestStreamText(String command)
+    private void requestStreamText(String command) throws IOException
     {
         new DocumentCreator(command).execute();
+        hexView.changeData(IOUtils.toByteArray(stream.getStream(command)));
     }
 
     /**
