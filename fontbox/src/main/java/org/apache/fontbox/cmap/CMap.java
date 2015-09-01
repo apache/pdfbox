@@ -238,7 +238,7 @@ public class CMap
         else
         {
             // Just log the invalid entry instead of throwing an exception
-            LOG.error("Mapping code should be 1 or two bytes and not " + src.length);
+            LOG.warn("Mapping code should be 1 or two bytes and not " + src.length);
         }
     }
 
