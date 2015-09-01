@@ -20,7 +20,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -128,7 +127,11 @@ public class PDFRenderer
 
         // use a transparent background if the imageType supports alpha
         Graphics2D g = image.createGraphics();
-        if (imageType != ImageType.ARGB)
+        if (imageType == ImageType.ARGB)
+        {
+            g.setBackground(new Color(0, 0, 0, 0));
+        }
+        else
         {
             g.setBackground(Color.WHITE);
         }
