@@ -325,7 +325,7 @@ public class PDType1Font extends PDSimpleFont
         if (unicode > 0xff)
         {
             throw new IllegalArgumentException(String.format("Can't encode U+%04X in font %s. " +
-                    "Type 1 fonts only supports 8-bit code points", unicode, getName()));
+                    "Type 1 fonts only support 8-bit code points", unicode, getName()));
         }
 
         String name = getGlyphList().codePointToName(unicode);
