@@ -817,7 +817,7 @@ public final class PDFontDescriptor implements COSObjectable
     public PDStream getCIDSet()
     {
         COSObjectable cidSet = dic.getDictionaryObject(COSName.CID_SET);
-        if (cidSet != null && cidSet instanceof COSStream)
+        if (cidSet instanceof COSStream)
         {
             return new PDStream((COSStream) cidSet);
         }
