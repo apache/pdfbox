@@ -90,7 +90,11 @@ public class GlyphTable extends TTFTable
             }
             glyphs[i] = new GlyphData();
             data.seek(offset + offsets[i]);
-            glyphs[i].initData(this, data);
+            
+            HorizontalMetricsTable hmt = font.getHorizontalMetrics();
+            int leftSideBearing = hmt == null ? 0 : hmt.getLeftSideBearing(i);
+            
+            glyphs[i].initData(this, data, leftSideBearing);
         }
         for (int i = 0; i < numGlyphs; i++)
         {
@@ -158,7 +162,11 @@ public class GlyphTable extends TTFTable
             {
                 data.seek(getOffset() + offsets[gid]);
                 glyph = new GlyphData();
-                glyph.initData(this, data);
+                
+                HorizontalMetricsTable hmt = font.getHorizontalMetrics();
+                int leftSideBearing = hmt == null ? 0 : hmt.getLeftSideBearing(gid);
+
+                glyph.initData(this, data, leftSideBearing);
 
                 // resolve composite glyph
                 if (glyph.getDescription().isComposite())
