@@ -95,6 +95,55 @@ public final class Predictor
                             }
                             break;
                         }
+                        if (bitsPerComponent == 1)
+                        {
+                            if (colors != 1)
+                            {
+                                // possible, but unlikely 
+                                throw new IOException("TIFF-Predictor with 1 bit per component and " + 
+                                        colors + " is not supported; please open JIRA issue with sample PDF");
+                            }
+                            // bytesPerPixel cannot be used:
+                            // "A row shall occupy a whole number of bytes, rounded up if necessary.
+                            // Samples and their components shall be packed into bytes 
+                            // from high-order to low-order bits."
+                            for (int p = 0; p < rowlength; p++)
+                            {
+                                for (int bit = 7; bit >= 0; --bit)
+                                {
+                                    int sub = (actline[p] >> bit) & 1;
+                                    int left;
+                                    if (p == 0 && bit == 7)
+                                    {
+                                        left = 0;
+                                    }
+                                    else
+                                    {
+                                        if (bit == 7)
+                                        {
+                                            // use bit #0 from previous byte
+                                            left = actline[p - 1] & 1;
+                                        }
+                                        else
+                                        {
+                                            // use "previous" bit
+                                            left = (actline[p] >> (bit + 1)) & 1;
+                                        }
+                                    }
+                                    if (((sub + left) & 1) == 0)
+                                    {
+                                        // reset bit
+                                        actline[p] = (byte) (actline[p] & ~(1 << bit));
+                                    }
+                                    else
+                                    {
+                                        // set bit
+                                        actline[p] = (byte) (actline[p] | (1 << bit));
+                                    }
+                                }
+                            }
+                            break;
+                        }
                         if (bitsPerComponent != 8)
                         {
                             throw new IOException("TIFF-Predictor with " + bitsPerComponent
