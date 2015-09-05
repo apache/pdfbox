@@ -22,8 +22,8 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
 
 /**
- * This encapsulates the "dictionary of names and corresponding destinations" for the /Dest entry in
- * the document catalog.
+ * This encapsulates the "dictionary of names and corresponding destinations" for the /Dests entry
+ * in the document catalog.
  *
  * @author Tilman Hausherr
  */
@@ -64,7 +64,6 @@ public class PDDocumentNameDestinationDictionary implements COSObjectable
     {
         COSBase item = nameDictionary.getDictionaryObject(name);
         return PDDestination.create(item);
-    }
-    
+    }    
 
 }
