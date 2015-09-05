@@ -23,10 +23,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.PDDestinationNameTreeNode;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDDocumentNameDestinationDictionary;
-import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureElement;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
@@ -247,7 +244,7 @@ public final class PDOutlineItem extends PDOutlineNode
         PDPageDestination pageDestination = null;
         if (dest instanceof PDNamedDestination)
         {
-            pageDestination = findNamedDestinationPage((PDNamedDestination) dest, doc);
+            pageDestination = doc.getDocumentCatalog().findNamedDestinationPage((PDNamedDestination) dest);
             if (pageDestination == null)
             {
                 return null;
@@ -274,39 +271,6 @@ public final class PDOutlineItem extends PDOutlineNode
             }
         }
         return page;
-    }
-
-    /**
-     * Find the page destination from a named destination.
-     * @param namedDest the named destination.
-     * @param doc the document.
-     * @return a PDPageDestination object or null if not found.
-     * @throws IOException if there is an error creating the PDPageDestination object.
-     */
-    public PDPageDestination findNamedDestinationPage(PDNamedDestination namedDest, PDDocument doc)
-            throws IOException
-    {
-        PDPageDestination pageDestination = null;
-        PDDocumentNameDictionary namesDict = doc.getDocumentCatalog().getNames();
-        if (namesDict != null)
-        {
-            PDDestinationNameTreeNode destsTree = namesDict.getDests();
-            if (destsTree != null)
-            {
-                pageDestination = destsTree.getValue(namedDest.getNamedDestination());
-            }
-        }
-        if (pageDestination == null)
-        {
-            // Look up /Dests dictionary from catalog
-            PDDocumentNameDestinationDictionary nameDestDict = doc.getDocumentCatalog().getDests();
-            if (nameDestDict != null)
-            {
-                String name = namedDest.getNamedDestination();
-                pageDestination = (PDPageDestination) nameDestDict.getDestination(name);
-            }
-        }
-        return pageDestination;
     }
 
     /**
