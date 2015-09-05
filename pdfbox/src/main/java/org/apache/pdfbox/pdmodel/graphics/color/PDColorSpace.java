@@ -131,7 +131,7 @@ public abstract class PDColorSpace implements COSObjectable
         else if (colorSpace instanceof COSArray)
         {
             COSArray array = (COSArray)colorSpace;
-            COSName name = (COSName)array.get(0);
+            COSName name = (COSName)array.getObject(0);
 
             // TODO cache these returned color spaces?
 
@@ -209,6 +209,7 @@ public abstract class PDColorSpace implements COSObjectable
 
     /**
      * Returns the default decode array for this color space.
+     * @param bitsPerComponent the number of bits per component.
      * @return the default decode array
      */
     public abstract float[] getDefaultDecode(int bitsPerComponent);
