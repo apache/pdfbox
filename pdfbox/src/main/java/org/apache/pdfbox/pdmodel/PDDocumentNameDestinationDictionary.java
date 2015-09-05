@@ -16,8 +16,10 @@
 package org.apache.pdfbox.pdmodel;
 
 import java.io.IOException;
+import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
 
@@ -63,7 +65,23 @@ public class PDDocumentNameDestinationDictionary implements COSObjectable
     public PDDestination getDestination(String name) throws IOException
     {
         COSBase item = nameDictionary.getDictionaryObject(name);
-        return PDDestination.create(item);
-    }    
+
+        // "The value of this entry shall be a dictionary in which each key is a destination name
+        // and the corresponding value is either an array defining the destination (...) 
+        // or a dictionary with a D entry whose value is such an array."                
+        if (item instanceof COSArray)
+        {
+            return PDDestination.create(item);
+        }
+        else if (item instanceof COSDictionary)
+        {
+            COSDictionary dict = (COSDictionary) item;
+            if (dict.containsKey(COSName.D))
+            {
+                return PDDestination.create(dict.getDictionaryObject(COSName.D));
+            }
+        }
+        return null;
+    }
 
 }
