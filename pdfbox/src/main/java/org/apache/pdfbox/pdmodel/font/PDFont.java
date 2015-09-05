@@ -55,7 +55,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     private final FontMetrics afmStandard14; // AFM for standard 14 fonts
 
     private PDFontDescriptor fontDescriptor;
-    private List<Integer> widths;
+    private List<Float> widths;
     private float avgFontWidth;
     private float fontWidthOfSpace = -1f;
 
@@ -446,14 +446,14 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      *
      * @return The widths of the characters.
      */
-    protected final List<Integer> getWidths()
+    protected final List<Float> getWidths()
     {
         if (widths == null)
         {
             COSArray array = (COSArray) dict.getDictionaryObject(COSName.WIDTHS);
             if (array != null)
             {
-                widths = COSArrayList.convertIntegerCOSArrayToList(array);
+                widths = COSArrayList.convertFloatCOSArrayToList(array);              
             }
             else
             {
