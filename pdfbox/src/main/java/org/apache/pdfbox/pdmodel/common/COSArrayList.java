@@ -294,7 +294,7 @@ public class COSArrayList<E> implements List<E>
             List<Float> numbers = new ArrayList<Float>();
             for( int i=0; i<floatArray.size(); i++ )
             {
-                numbers.add( ((COSNumber)floatArray.get( i )).floatValue());
+                numbers.add(((COSNumber) floatArray.getObject(i)).floatValue());
             }
             retval = new COSArrayList<Float>( numbers, floatArray );
         }
