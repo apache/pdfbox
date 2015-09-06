@@ -416,9 +416,10 @@ public abstract class PDField implements COSObjectable
     }
 
     /**
-     * This will get the single associated widget that is part of this field. This occurs when the Widget is embedded in
-     * the fields dictionary. Sometimes there are multiple sub widgets associated with this field, in which case you
-     * want to use getKids(). If the kids entry is specified, then the first entry in that list will be returned.
+     * This will get the single associated widget that is part of this field. This occurs when the Widget is
+     * embedded in the fields dictionary. Sometimes there are multiple sub widgets associated with this field,
+     * in which case you want to use {@link #getWidgets()}. If the kids entry is specified, then only first
+     * entry in that list will be returned.
      * 
      * @return The widget that is associated with this field.
      * @throws IOException If there is an error getting the widget object.
@@ -450,6 +451,50 @@ public abstract class PDField implements COSObjectable
         return retval;
     }
 
+    /**
+     * Returns the widget annotations associated with this field.
+     * 
+     * The widget annotations are returned for terminal fields (fields which
+     * do not have other fields as kids). In case of non terminal fields an 
+     * empty List is returned. 
+     * 
+     * @return The list of widget annotations.
+     * @throws IOException 
+     */
+    public List<PDAnnotationWidget> getWidgets() throws IOException
+    {
+        List<PDAnnotationWidget> widgets = new ArrayList<PDAnnotationWidget>();
+        List<COSObjectable> kids = getKids();
+        if (kids == null)
+        {
+            // the field itself is a widget
+            widgets.add(new PDAnnotationWidget(getDictionary()));
+        }
+        else if (kids.size() > 0)
+        {
+            Object firstKid = kids.get(0);
+
+            /*
+             * If this happens the current field is not a terminal field.
+             * Return an empty list as there are no widgets associated to non
+             * terminal fields.
+             */
+            if (firstKid instanceof PDField)
+            {
+                return widgets;
+            }
+            else
+            {
+                // there are multiple widgets
+                for (COSObjectable kid : kids)
+                {
+                    widgets.add((PDAnnotationWidget) kid);
+                }
+            }
+        }
+        return widgets;
+    }
+    
     /**
      * Get the parent field to this field, or null if none exists.
      * 
