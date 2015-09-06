@@ -157,7 +157,7 @@ public final class PDCheckbox extends PDButton
             // Both are necessary to work properly with different viewers.
             COSName name = COSName.getPDFName(value);
             dictionary.setItem(COSName.V, name);
-            for (PDAnnotationWidget widget : this.getWidgets())
+            for (PDAnnotationWidget widget : getWidgets())
             {
                 widget.setAppearanceState(value);
             }
