@@ -79,30 +79,31 @@ public final class Predictor
                 {
                     case 2:
                         // PRED TIFF SUB
-                        // TODO decode tiff with bpc smaller 8
-                        // e.g. for 4 bpc each nibble must be subtracted separately
+                        if (bitsPerComponent == 8)
+                        {
+                            // for 8 bits per component it is the same algorithm as PRED SUB of PNG format
+                            for (int p = bytesPerPixel; p < rowlength; p++)
+                            {
+                                int sub = actline[p] & 0xff;
+                                int left = actline[p - bytesPerPixel] & 0xff;
+                                actline[p] = (byte) (sub + left);
+                            }
+                            break;
+                        }
                         if (bitsPerComponent == 16)
                         {
-                            for (int p = 0; p < rowlength; p += 2)
+                            for (int p = bytesPerPixel; p < rowlength; p += 2)
                             {
                                 int sub = ((actline[p] & 0xff) << 8) + (actline[p + 1] & 0xff);
-                                int left = p - bytesPerPixel >= 0
-                                        ? (((actline[p - bytesPerPixel] & 0xff) << 8)
-                                        + (actline[p - bytesPerPixel + 1] & 0xff))
-                                        : 0;
+                                int left = (((actline[p - bytesPerPixel] & 0xff) << 8)
+                                        + (actline[p - bytesPerPixel + 1] & 0xff));
                                 actline[p] = (byte) (((sub + left) >> 8) & 0xff);
                                 actline[p + 1] = (byte) ((sub + left) & 0xff);
                             }
                             break;
                         }
-                        if (bitsPerComponent == 1)
+                        if (bitsPerComponent == 1 && colors == 1)
                         {
-                            if (colors != 1)
-                            {
-                                // possible, but unlikely 
-                                throw new IOException("TIFF-Predictor with 1 bit per component and " + 
-                                        colors + " is not supported; please open JIRA issue with sample PDF");
-                            }
                             // bytesPerPixel cannot be used:
                             // "A row shall occupy a whole number of bytes, rounded up if necessary.
                             // Samples and their components shall be packed into bytes 
@@ -112,23 +113,20 @@ public final class Predictor
                                 for (int bit = 7; bit >= 0; --bit)
                                 {
                                     int sub = (actline[p] >> bit) & 1;
-                                    int left;
                                     if (p == 0 && bit == 7)
                                     {
-                                        left = 0;
+                                        continue;
+                                    }
+                                    int left;
+                                    if (bit == 7)
+                                    {
+                                        // use bit #0 from previous byte
+                                        left = actline[p - 1] & 1;
                                     }
                                     else
                                     {
-                                        if (bit == 7)
-                                        {
-                                            // use bit #0 from previous byte
-                                            left = actline[p - 1] & 1;
-                                        }
-                                        else
-                                        {
-                                            // use "previous" bit
-                                            left = (actline[p] >> (bit + 1)) & 1;
-                                        }
+                                        // use "previous" bit
+                                        left = (actline[p] >> (bit + 1)) & 1;
                                     }
                                     if (((sub + left) & 1) == 0)
                                     {
@@ -144,17 +142,18 @@ public final class Predictor
                             }
                             break;
                         }
-                        if (bitsPerComponent != 8)
+                        // everything else, i.e. bpc 2 and 4, but has been tested for bpc 1 and 8 too
+                        int elements = columns * colors;
+                        for (int p = colors; p < elements; ++p)
                         {
-                            throw new IOException("TIFF-Predictor with " + bitsPerComponent
-                                    + " bits per component not supported; please open JIRA issue with sample PDF");
-                        }
-                        // for 8 bits per component it is the same algorithm as PRED SUB of PNG format
-                        for (int p = 0; p < rowlength; p++)
-                        {
-                            int sub = actline[p] & 0xff;
-                            int left = p - bytesPerPixel >= 0 ? actline[p - bytesPerPixel] & 0xff : 0;
-                            actline[p] = (byte) (sub + left);
+                            int bytePosSub = p * bitsPerComponent / 8;
+                            int bitPosSub = 8 - p * bitsPerComponent % 8 - bitsPerComponent;
+                            int bytePosLeft = (p - colors) * bitsPerComponent / 8;
+                            int bitPosLeft = 8 - (p - colors) * bitsPerComponent % 8 - bitsPerComponent;
+
+                            int sub = getBitSeq(actline[bytePosSub], bitPosSub, bitsPerComponent);
+                            int left = getBitSeq(actline[bytePosLeft], bitPosLeft, bitsPerComponent);
+                            actline[bytePosSub] = (byte) calcSetBitSeq(actline[bytePosSub], bitPosSub, bitsPerComponent, sub + left);
                         }
                         break;
                     case 10:
@@ -163,10 +162,10 @@ public final class Predictor
                         break;
                     case 11:
                         // PRED SUB
-                        for (int p = 0; p < rowlength; p++)
+                        for (int p = bytesPerPixel; p < rowlength; p++)
                         {
                             int sub = actline[p];
-                            int left = p - bytesPerPixel >= 0 ? actline[p - bytesPerPixel] : 0;
+                            int left = actline[p - bytesPerPixel];
                             actline[p] = (byte) (sub + left);
                         }
                         break;
@@ -223,6 +222,22 @@ public final class Predictor
                 out.write(actline);
             }
         }
+    }
+    
+    // get value from bit interval from a byte
+    static int getBitSeq(int by, int startBit, int bitSize)
+    {
+        int mask = ((1 << bitSize) - 1);
+        return (by >>> startBit) & mask;
+    }
+
+    // set value in a bit interval and return that value
+    static int calcSetBitSeq(int by, int startBit, int bitSize, int val)
+    {
+        int mask = ((1 << bitSize) - 1);
+        int truncatedVal = val & mask;
+        mask = ~(mask << startBit);
+        return (by & mask) | (truncatedVal << startBit);
     }
 
 }
