@@ -459,36 +459,31 @@ public abstract class PDField implements COSObjectable
      * empty List is returned. 
      * 
      * @return The list of widget annotations.
-     * @throws IOException 
      */
-    public List<PDAnnotationWidget> getWidgets() throws IOException
+    public List<PDAnnotationWidget> getWidgets()
     {
         List<PDAnnotationWidget> widgets = new ArrayList<PDAnnotationWidget>();
-        List<COSObjectable> kids = getKids();
+        
+        COSArray kids = (COSArray) getDictionary().getDictionaryObject(COSName.KIDS);
         if (kids == null)
         {
             // the field itself is a widget
             widgets.add(new PDAnnotationWidget(getDictionary()));
         }
-        else if (kids.size() > 0)
+        else
         {
-            Object firstKid = kids.get(0);
-
-            /*
-             * If this happens the current field is not a terminal field.
-             * Return an empty list as there are no widgets associated to non
-             * terminal fields.
-             */
-            if (firstKid instanceof PDField)
+            for (int i = 0; i < kids.size(); i++)
             {
-                return widgets;
-            }
-            else
-            {
-                // there are multiple widgets
-                for (COSObjectable kid : kids)
+                COSDictionary kidDictionary = (COSDictionary) kids.getObject(i);
+                
+                if (kidDictionary == null)
                 {
-                    widgets.add((PDAnnotationWidget) kid);
+                   continue;
+                }
+                
+                if ("Widget".equals(kidDictionary.getNameAsString(COSName.SUBTYPE)))
+                {
+                    widgets.add(new PDAnnotationWidget(kidDictionary));
                 }
             }
         }
