@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.pdfbox</groupId>
     <artifactId>pdfbox-parent</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>2.0.1</version>
     <relativePath>parent/pom.xml</relativePath>
   </parent>
 
@@ -44,9 +44,9 @@
 
   <modules>
     <module>parent</module>
-    <module>fontbox</module>
+    <module>fontbox-ai2</module>
     <module>xmpbox</module>
-    <module>pdfbox</module>
+    <module>pdfbox-ai2</module>
     <module>preflight</module>
     <module>preflight-app</module>
     <module>tools</module>
