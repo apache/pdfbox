@@ -19,8 +19,10 @@ package org.apache.pdfbox.pdmodel.interactive.form;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * A class for handling the PDF field as a checkbox.
@@ -34,8 +36,6 @@ public class PDCheckbox extends PDChoiceButton
     private static final COSName KEY = COSName.getPDFName("AS");
     private static final COSName OFF_VALUE = COSName.getPDFName("Off");
 
-    private COSName value;
-
     /**
      * @see PDField#PDField(PDAcroForm,COSDictionary)
      *
@@ -45,27 +45,6 @@ public class PDCheckbox extends PDChoiceButton
     public PDCheckbox( PDAcroForm theAcroForm, COSDictionary field)
     {
         super( theAcroForm, field);
-        COSDictionary ap = (COSDictionary) field.getDictionaryObject(COSName.getPDFName("AP"));
-        if( ap != null )
-        {
-            COSBase n = ap.getDictionaryObject(COSName.getPDFName("N"));
-
-            if( n instanceof COSDictionary )
-            {
-                for( COSName name : ((COSDictionary)n).keySet() )
-                {
-                    if( !name.equals( OFF_VALUE ))
-                    {
-                        value = name;
-                    }
-                }
-
-            }
-        }
-        else
-        {
-            value = (COSName)getDictionary().getDictionaryObject( "V" );
-        }
     }
 
     /**
@@ -75,15 +54,7 @@ public class PDCheckbox extends PDChoiceButton
      */
     public boolean isChecked()
     {
-        boolean retval = false;
-        String onValue = getOnValue();
-        COSName radioValue = (COSName)getDictionary().getDictionaryObject( KEY );
-        if( radioValue != null && value != null && radioValue.getName().equals( onValue ) )
-        {
-            retval = true;
-        }
-
-        return retval;
+        return getDictionary().getNameAsString("V").compareTo(getOnValue()) == 0;
     }
 
     /**
@@ -91,7 +62,7 @@ public class PDCheckbox extends PDChoiceButton
      */
     public void check()
     {
-        getDictionary().setItem(KEY, value);
+        setValue(getOnValue());
     }
 
     /**
@@ -99,7 +70,7 @@ public class PDCheckbox extends PDChoiceButton
      */
     public void unCheck()
     {
-        getDictionary().setItem(KEY, OFF_VALUE);
+        setValue(OFF_VALUE.getName());
     }
 
     /**
@@ -108,13 +79,18 @@ public class PDCheckbox extends PDChoiceButton
     public void setValue(String newValue)
     {
         getDictionary().setName( "V", newValue );
-        if( newValue == null )
+        
+        List<PDAnnotationWidget> widgets = getWidgets();
+        for (PDAnnotationWidget widget : widgets)
         {
-            getDictionary().setItem( KEY, OFF_VALUE );
-        }
-        else
-        {
-            getDictionary().setName( KEY, newValue );
+            if( newValue == null )
+            {
+                widget.getDictionary().setItem( KEY, OFF_VALUE );
+            }
+            else
+            {
+                widget.getDictionary().setName( KEY, newValue );
+            }
         }
     }
 
@@ -135,22 +111,28 @@ public class PDCheckbox extends PDChoiceButton
      */
     public String getOnValue()
     {
-        String retval = null;
-        COSDictionary ap = (COSDictionary) getDictionary().getDictionaryObject(COSName.getPDFName("AP"));
-        COSBase n = ap.getDictionaryObject(COSName.getPDFName("N"));
-
-        //N can be a COSDictionary or a COSStream
-        if( n instanceof COSDictionary )
+        List<PDAnnotationWidget> widgets = getWidgets();
+        for (PDAnnotationWidget widget : widgets)
         {
-            for( COSName key :((COSDictionary)n).keySet() )
+            COSDictionary ap = (COSDictionary) widget.getDictionary().getDictionaryObject(COSName.getPDFName("AP"));
+            widget.getDictionary().setItem(KEY, COSName.getPDFName("Yes"));
+            COSBase n = ap.getDictionaryObject(COSName.getPDFName("N"));
+
+            //N can be a COSDictionary or a COSStream
+            if( n instanceof COSDictionary )
             {
-                if( !key.equals( OFF_VALUE) )
+                for( COSName key :((COSDictionary)n).keySet() )
                 {
-                    retval = key.getName();
+                    if( !key.equals( OFF_VALUE) )
+                    {
+                        return key.getName();
+                    }
                 }
             }
         }
-        return retval;
+        // normally you would expect to get an empty string but as the
+        // prior implementation returned null keep the behavior.
+        return null;
     }
 
     /**
