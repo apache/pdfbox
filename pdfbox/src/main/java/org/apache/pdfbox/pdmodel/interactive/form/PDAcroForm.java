@@ -291,33 +291,36 @@ public class PDAcroForm implements COSObjectable
                 (COSArray) acroForm.getDictionaryObject(
                     COSName.getPDFName("Fields"));
 
-            for (int i = 0; i < fields.size() && retval == null; i++)
+            if (fields != null)
             {
-                COSDictionary element = (COSDictionary) fields.getObject(i);
-                if( element != null )
+                for (int i = 0; i < fields.size() && retval == null; i++)
                 {
-                    COSString fieldName =
-                        (COSString)element.getDictionaryObject( COSName.getPDFName( "T" ) );
-                    if( fieldName.getString().equals( name ) ||
-                        fieldName.getString().equals( nameSubSection[0] ) )
+                    COSDictionary element = (COSDictionary) fields.getObject(i);
+                    if( element != null )
                     {
-                        PDField root = PDFieldFactory.createField( this, element );
-
-                        if( nameSubSection.length > 1 )
+                        COSString fieldName =
+                            (COSString)element.getDictionaryObject( COSName.getPDFName( "T" ) );
+                        if( fieldName.getString().equals( name ) ||
+                            fieldName.getString().equals( nameSubSection[0] ) )
                         {
-                            PDField kid = root.findKid( nameSubSection, 1 );
-                            if( kid != null )
+                            PDField root = PDFieldFactory.createField( this, element );
+    
+                            if( nameSubSection.length > 1 )
                             {
-                                retval = kid;
+                                PDField kid = root.findKid( nameSubSection, 1 );
+                                if( kid != null )
+                                {
+                                    retval = kid;
+                                }
+                                else
+                                {
+                                    retval = root;
+                                }
                             }
                             else
                             {
                                 retval = root;
                             }
-                        }
-                        else
-                        {
-                            retval = root;
                         }
                     }
                 }

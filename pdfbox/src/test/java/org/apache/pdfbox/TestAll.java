@@ -45,6 +45,7 @@ import org.apache.pdfbox.pdmodel.graphics.optionalcontent.TestOptionalContentGro
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDCcittTest;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDJpegTest;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDPixelMapTest;
+import org.apache.pdfbox.pdmodel.interactive.form.PDAcroFormTest;
 import org.apache.pdfbox.pdmodel.interactive.form.TestFields;
 import org.apache.pdfbox.util.PDFCloneUtilityTest;
 import org.apache.pdfbox.util.PDFMergerUtilityTest;
@@ -98,6 +99,7 @@ public class TestAll extends TestCase
         suite.addTestSuite( TestFilters.class );
         suite.addTest( TestFDF.suite() );
         suite.addTest( TestFields.suite() );
+        suite.addTest( PDAcroFormTest.suite() );
         suite.addTest( TestCOSString.suite() );
         suite.addTest( TestCOSInteger.suite() );
         suite.addTest( TestCOSFloat.suite() );
