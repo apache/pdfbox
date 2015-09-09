@@ -260,7 +260,7 @@ public class Type0FontValidator extends FontValidator<Type0Container>
         try
         {
             // extract information from the CMap stream
-            cmapStream = aCMap.getUnfilteredStream();
+            cmapStream = aCMap.createInputStream();
             CMap fontboxCMap = new CMapParser().parse(cmapStream);
             int wmValue = fontboxCMap.getWMode();
             String cmnValue = fontboxCMap.getName();
