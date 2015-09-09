@@ -37,6 +37,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import static org.apache.pdfbox.pdmodel.font.UniUtil.getUniNameOfCodePoint;
 import org.apache.pdfbox.pdmodel.font.encoding.BuiltInEncoding;
 import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
 import org.apache.pdfbox.pdmodel.font.encoding.GlyphList;
@@ -355,7 +356,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
             if (!ttf.hasGlyph(name))
             {
                 // try unicode name
-                String uniName = String.format("uni%04X", unicode);
+                String uniName = getUniNameOfCodePoint(unicode);
                 if (!ttf.hasGlyph(uniName))
                 {
                     throw new IllegalArgumentException(

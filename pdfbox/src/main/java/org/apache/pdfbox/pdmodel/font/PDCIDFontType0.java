@@ -35,6 +35,7 @@ import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import static org.apache.pdfbox.pdmodel.font.UniUtil.getUniNameOfCodePoint;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -272,7 +273,7 @@ public class PDCIDFontType0 extends PDCIDFont
         {
             return ".notdef";
         }
-        return String.format("uni%04X", unicodes.codePointAt(0));
+        return getUniNameOfCodePoint(unicodes.codePointAt(0));
     }
 
     @Override
