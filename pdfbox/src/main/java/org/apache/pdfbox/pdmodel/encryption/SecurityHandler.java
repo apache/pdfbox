@@ -413,7 +413,7 @@ public abstract class SecurityHandler
             return;
         }
         decryptDictionary(stream, objNum, genNum);
-        byte[] encrypted = IOUtils.toByteArray(stream.getFilteredStream());
+        byte[] encrypted = IOUtils.toByteArray(stream.createRawInputStream());
         ByteArrayInputStream encryptedStream = new ByteArrayInputStream(encrypted);
         OutputStream output = stream.createRawOutputStream();
         try
