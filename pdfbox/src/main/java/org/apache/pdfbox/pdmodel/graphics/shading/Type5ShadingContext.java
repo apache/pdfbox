@@ -80,7 +80,7 @@ class Type5ShadingContext extends GouraudShadingContext
         long maxSrcColor = (long) Math.pow(2, bitsPerColorComponent) - 1;
         COSStream cosStream = (COSStream) cosDictionary;
 
-        ImageInputStream mciis = new MemoryCacheImageInputStream(cosStream.getUnfilteredStream());
+        ImageInputStream mciis = new MemoryCacheImageInputStream(cosStream.createInputStream());
         try
         {
             while (true)
