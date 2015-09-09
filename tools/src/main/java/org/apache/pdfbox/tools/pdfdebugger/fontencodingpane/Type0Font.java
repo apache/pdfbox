@@ -67,7 +67,7 @@ class Type0Font implements FontPane
         {
             COSStream stream = (COSStream) map;
 
-            InputStream is = stream.getUnfilteredStream();
+            InputStream is = stream.createInputStream();
             byte[] mapAsBytes = IOUtils.toByteArray(is);
             IOUtils.closeQuietly(is);
             int numberOfInts = mapAsBytes.length / 2;
