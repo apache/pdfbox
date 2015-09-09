@@ -30,7 +30,7 @@ class SimpleFont implements FontPane
 {
     public static final String NO_GLYPH = "No glyph";
     private int totalAvailableGlyph = 0;
-    private FontEncodingView view;
+    private final FontEncodingView view;
 
     /**
      * Constructor.
@@ -77,6 +77,7 @@ class SimpleFont implements FontPane
         return font.getEncoding().getClass().getSimpleName();
     }
 
+    @Override
     public JPanel getPanel()
     {
         return view.getPanel();
