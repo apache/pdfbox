@@ -507,9 +507,9 @@ public class PDFReader extends JFrame
     /**
      * Entry point.
      * @param args the command line arguments
-     * @throws Exception If anything goes wrong.
+     * @throws IOException If anything goes wrong.
      */
-    public static void main(String[] args) throws Exception
+    public static void main(String[] args) throws IOException
     {
         PDFReader viewer = new PDFReader();
         String password = "";
