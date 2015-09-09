@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.pdfbox.tools.pdfdebugger.streampane;
 
 import java.awt.image.BufferedImage;
@@ -50,6 +49,7 @@ public class Stream
 
     /**
      * Constructor.
+     *
      * @param cosStream COSStream instance.
      * @param isThumb boolean instance says if the stream is thumbnail image.
      */
@@ -64,6 +64,7 @@ public class Stream
 
     /**
      * Return if this is stream is an Image XObject.
+     *
      * @return true if this an image and false otherwise.
      */
     public boolean isImage()
@@ -93,14 +94,14 @@ public class Stream
     private String getFilteredLabel()
     {
         StringBuilder sb = new StringBuilder();
-        COSBase filters = stream.getFilters();
-        if (filters instanceof COSName)
+        COSBase base = stream.getFilters();
+        if (base instanceof COSName)
         {
-            sb.append(((COSName) filters).getName());
+            sb.append(((COSName) base).getName());
         }
-        else if (filters instanceof COSArray)
+        else if (base instanceof COSArray)
         {
-            COSArray filterArray = (COSArray) filters;
+            COSArray filterArray = (COSArray) base;
             for (int i = 0; i < filterArray.size(); i++)
             {
                 if (i > 0)
@@ -110,7 +111,7 @@ public class Stream
                 sb.append(((COSName) filterArray.get(i)).getName());
             }
         }
-        return "Filtered (" + sb.toString() + ")" ;
+        return "Filtered (" + sb.toString() + ")";
     }
 
     /**
@@ -145,6 +146,7 @@ public class Stream
 
     /**
      * Provide the image for stream. The stream must be image XObject.
+     *
      * @param resources PDResources for the XObject.
      * @return A BufferedImage.
      */
@@ -178,7 +180,7 @@ public class Stream
         {
             filterList.put(IMAGE, null);
         }
-        
+
         filterList.put(UNFILTERED, null);
         PDStream pdStream = new PDStream(stream);
 
