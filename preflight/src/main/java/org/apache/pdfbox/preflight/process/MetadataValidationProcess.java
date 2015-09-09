@@ -281,7 +281,7 @@ public class MetadataValidationProcess extends AbstractProcess
         }
 
         COSStream stream = (COSStream) metadataDictionnary;
-        return stream.getUnfilteredStream();
+        return stream.createInputStream();
     }
 
     /**

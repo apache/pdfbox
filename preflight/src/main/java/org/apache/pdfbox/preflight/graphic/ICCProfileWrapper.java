@@ -138,7 +138,7 @@ public class ICCProfileWrapper
                     COSStream stream = COSUtils.getAsStream(destOutputProfile, document.getDocument());
                     if (stream != null)
                     {
-                        ICC_Profile iccp = ICC_Profile.getInstance(stream.getUnfilteredStream());
+                        ICC_Profile iccp = ICC_Profile.getInstance(stream.createInputStream());
                         return new ICCProfileWrapper(iccp);
                     }
                 }

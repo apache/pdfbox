@@ -141,7 +141,7 @@ public abstract class DescendantFontValidator<T extends FontContainer> extends S
                 COSStream stream = COSUtils.getAsStream(ctog, cosDocument);
 
                 // todo: check the map's content? (won't pdfbox do this?)
-                InputStream is = stream.getUnfilteredStream();
+                InputStream is = stream.createInputStream();
                 is.close();
             }
             catch (IOException e)
