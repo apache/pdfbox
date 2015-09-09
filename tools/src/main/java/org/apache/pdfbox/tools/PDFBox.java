@@ -16,10 +16,6 @@
  */
 package org.apache.pdfbox.tools;
 
-import java.awt.print.PrinterException;
-import java.io.IOException;
-import java.security.cert.CertificateException;
-
 
 /**
  * Simple wrapper around all the command line utilities included in PDFBox.
