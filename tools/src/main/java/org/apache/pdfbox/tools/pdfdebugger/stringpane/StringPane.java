@@ -32,7 +32,7 @@ public class StringPane
     private static final String TEXT_TAB = "Text View";
     private static final String HEX_TAB = "Hex view";
 
-    private JTabbedPane tabbedPane;
+    private final JTabbedPane tabbedPane;
 
     public StringPane(COSString cosString)
     {
