@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.tools;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,9 +53,9 @@ public final class OverlayPDF
      * This will overlay a document and write out the results.
      *
      * @param args command line arguments
-     * @throws Exception if something went wrong
+     * @throws IOException if something went wrong
      */
-    public static void main(final String[] args) throws Exception 
+    public static void main(final String[] args) throws IOException
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
@@ -138,7 +139,7 @@ public final class OverlayPDF
         {
             overlayer.overlay(specificPageOverlayFile);
         } 
-        catch (Exception e) 
+        catch (IOException e) 
         {
             LOG.error("Overlay failed: " + e.getMessage(), e);
             throw e;

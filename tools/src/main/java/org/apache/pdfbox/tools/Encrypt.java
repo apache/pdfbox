@@ -18,7 +18,9 @@ package org.apache.pdfbox.tools;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
@@ -45,9 +47,10 @@ public final class Encrypt
      *
      * @param args The command-line arguments.
      *
-     * @throws Exception If there is an error decrypting the document.
+     * @throws IOException If there is an error decrypting the document.
+     * @throws CertificateException If there is an error with a certificate.
      */
-    public static void main( String[] args ) throws Exception
+    public static void main( String[] args ) throws IOException, CertificateException
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
@@ -56,7 +59,7 @@ public final class Encrypt
         encrypt.encrypt( args );
     }
 
-    private void encrypt( String[] args ) throws Exception
+    private void encrypt( String[] args ) throws IOException, CertificateException
     {
         if( args.length < 1 )
         {
