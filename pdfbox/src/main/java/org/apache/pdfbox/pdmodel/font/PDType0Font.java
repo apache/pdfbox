@@ -93,6 +93,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
      * Constructor for reading a Type0 font from a PDF file.
      * 
      * @param fontDictionary The font dictionary according to the PDF specification.
+     * @throws IOException if the descendant font is missing.
      */
     public PDType0Font(COSDictionary fontDictionary) throws IOException
     {
