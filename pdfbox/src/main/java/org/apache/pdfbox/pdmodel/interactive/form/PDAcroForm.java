@@ -199,9 +199,8 @@ public final class PDAcroForm implements COSObjectable
      * otherwise setting this to true is acceptable.
      *
      * @param cache A boolean telling if we should cache the fields.
-     * @throws IOException If there is an error while caching the fields.
      */
-    public void setCacheFields(boolean cache) throws IOException
+    public void setCacheFields(boolean cache)
     {
         if (cache)
         {
