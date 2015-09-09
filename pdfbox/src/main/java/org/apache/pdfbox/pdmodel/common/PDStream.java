@@ -214,6 +214,7 @@ public class PDStream implements COSObjectable
     /**
      * This will get a stream that can be written to, with the given filter.
      *
+     * @param filter the filter to be used.
      * @return An output stream to write data to.
      * @throws IOException If an IO error occurs during writing.
      */
@@ -482,8 +483,8 @@ public class PDStream implements COSObjectable
     /**
      * This will copy the stream into a byte array.
      * 
-     * @return The byte array of the filteredStream
-     * @throws IOException When getFilteredStream did not work
+     * @return The byte array of the filteredStream.
+     * @throws IOException if an I/O error occurs.
      */
     public byte[] toByteArray() throws IOException
     {
