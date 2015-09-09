@@ -94,23 +94,20 @@ public class Stream
     {
         StringBuilder sb = new StringBuilder();
         COSBase filters = stream.getFilters();
-        if (filters != null)
+        if (filters instanceof COSName)
         {
-            if (filters instanceof COSName)
+            sb.append(((COSName) filters).getName());
+        }
+        else if (filters instanceof COSArray)
+        {
+            COSArray filterArray = (COSArray) filters;
+            for (int i = 0; i < filterArray.size(); i++)
             {
-                sb.append(((COSName) filters).getName());
-            }
-            else if (filters instanceof COSArray)
-            {
-                COSArray filterArray = (COSArray) filters;
-                for (int i = 0; i < filterArray.size(); i++)
+                if (i > 0)
                 {
-                    if (i > 0)
-                    {
-                        sb.append(", ");
-                    }
-                    sb.append(((COSName) filterArray.get(i)).getName());
+                    sb.append(", ");
                 }
+                sb.append(((COSName) filterArray.get(i)).getName());
             }
         }
         return "Filtered (" + sb.toString() + ")" ;
