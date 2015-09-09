@@ -51,9 +51,9 @@ public final class Decrypt
      *
      * @param args The command-line arguments.
      *
-     * @throws Exception If there is an error decrypting the document.
+     * @throws IOException If there is an error decrypting the document.
      */
-    public static void main( String[] args ) throws Exception
+    public static void main(String[] args) throws IOException
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
@@ -128,7 +128,7 @@ public final class Decrypt
         }
     }
 
-    private void decrypt() throws Exception
+    private void decrypt() throws IOException
     {
         PDDocument document = null;
         try

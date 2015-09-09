@@ -46,7 +46,7 @@ public class ExportXFDF
      * @param args command line arguments
      * @throws IOException in case the file can not be read or the data can not be exported.
      *
-     * @throws Exception If there is an error importing the FDF document.
+     * @throws IOException If there is an error importing the FDF document.
      */
     public static void main(String[] args) throws IOException
     {
