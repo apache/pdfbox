@@ -72,7 +72,7 @@ public final class ExtractText
      *
      * @throws IOException if there is an error reading the document or extracting the text.
      */
-    public static void main( String[] args ) throws Exception
+    public static void main( String[] args ) throws IOException
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
