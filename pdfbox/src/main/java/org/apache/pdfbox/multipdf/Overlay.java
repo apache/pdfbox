@@ -280,7 +280,7 @@ public class Overlay
         OutputStream out = concatStream.createOutputStream(COSName.FLATE_DECODE);
         for (COSStream contentStream : contentStreams)
         {
-            InputStream in = contentStream.getUnfilteredStream();
+            InputStream in = contentStream.createInputStream();
             byte[] buf = new byte[2048];
             int n;
             while ((n = in.read(buf)) > 0)
