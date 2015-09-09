@@ -157,7 +157,7 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
     @Override
     public InputStream getContents() throws IOException
     {
-        return ((COSStream)getCOSObject()).getUnfilteredStream();
+        return ((COSStream)getCOSObject()).createInputStream();
     }
 
     /**
