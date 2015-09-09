@@ -944,7 +944,7 @@ public class PDFDebugger extends JFrame
             try
             {
                 COSStream stream = (COSStream)selectedNode;
-                InputStream ioStream = stream.getUnfilteredStream();
+                InputStream ioStream = stream.createInputStream();
                 ByteArrayOutputStream byteArray = new ByteArrayOutputStream();
                 byte[] buffer = new byte[1024];
                 int amountRead;
