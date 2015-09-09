@@ -173,7 +173,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
             InputStream input = null;
             try
             {
-                input = ((COSStream)base).getUnfilteredStream();
+                input = ((COSStream)base).createInputStream();
                 return CMapManager.parseCMap(input);
             }
             finally

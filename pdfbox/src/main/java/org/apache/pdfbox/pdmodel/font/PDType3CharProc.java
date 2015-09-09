@@ -62,7 +62,7 @@ public final class PDType3CharProc implements COSObjectable, PDContentStream
     @Override
     public InputStream getContents() throws IOException
     {
-        return charStream.getUnfilteredStream();
+        return charStream.createInputStream();
     }
 
     @Override
