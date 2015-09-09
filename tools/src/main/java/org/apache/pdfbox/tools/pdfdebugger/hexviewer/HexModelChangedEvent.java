@@ -24,17 +24,18 @@ package org.apache.pdfbox.tools.pdfdebugger.hexviewer;
  */
 class HexModelChangedEvent
 {
-    public static int BULK_CHANGE = 1;
-    public static int SINGLE_CHANGE = 2;
+    static final int BULK_CHANGE = 1;
+    static final int SINGLE_CHANGE = 2;
 
     private final int startIndex;
     private final int changeType;
 
     /**
      * Constructor.
+     *
      * @param startIndex int. From where changes start.
-     * @param changeType int. Change type if it is only a single change or a bulk change
-     *                   by pasting or deleting.Though later features are not yet implemented.
+     * @param changeType int. Change type if it is only a single change or a bulk change by pasting
+     * or deleting. Though later features are not yet implemented.
      */
     HexModelChangedEvent(int startIndex, int changeType)
     {
@@ -42,12 +43,12 @@ class HexModelChangedEvent
         this.changeType = changeType;
     }
 
-    public int getStartIndex()
+    int getStartIndex()
     {
         return startIndex;
     }
 
-    public int getChangeType()
+    int getChangeType()
     {
         return changeType;
     }
