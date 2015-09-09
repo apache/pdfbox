@@ -96,7 +96,7 @@ public final class PDXFAResource implements COSObjectable
                     COSBase cosObj = cosArray.getObject(i);
                     if (cosObj instanceof COSStream) 
                     {
-                        is = ((COSStream) cosObj).getUnfilteredStream();
+                        is = ((COSStream) cosObj).createInputStream();
                         int nRead;
                         while ((nRead = is.read(xfaBytes, 0, xfaBytes.length)) != -1) 
                         {
@@ -110,7 +110,7 @@ public final class PDXFAResource implements COSObjectable
             else if (xfa.getCOSObject() instanceof COSStream) 
             {
                 xfaBytes = new byte[1024];
-                is = ((COSStream) xfa.getCOSObject()).getUnfilteredStream();
+                is = ((COSStream) xfa.getCOSObject()).createInputStream();
                 int nRead;
                 while ((nRead = is.read(xfaBytes, 0, xfaBytes.length)) != -1) 
                 {
