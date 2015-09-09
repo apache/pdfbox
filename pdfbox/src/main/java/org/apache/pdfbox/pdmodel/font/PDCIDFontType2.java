@@ -62,6 +62,8 @@ public class PDCIDFontType2 extends PDCIDFont
      * Constructor.
      * 
      * @param fontDictionary The font dictionary according to the PDF specification.
+     * @param parent The parent font.
+     * @throws IOException
      */
     public PDCIDFontType2(COSDictionary fontDictionary, PDType0Font parent) throws IOException
     {
@@ -237,7 +239,9 @@ public class PDCIDFontType2 extends PDCIDFont
      *
      * @param code character code
      * @return GID
+     * @throws IOException
      */
+    @Override
     public int codeToGID(int code) throws IOException
     {
         if (!isEmbedded)

@@ -37,6 +37,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import static org.apache.pdfbox.pdmodel.font.UniUtil.getUniNameOfCodePoint;
 import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
 import org.apache.pdfbox.pdmodel.font.encoding.StandardEncoding;
 import org.apache.pdfbox.pdmodel.font.encoding.Type1Encoding;
@@ -464,7 +465,7 @@ public class PDType1Font extends PDSimpleFont
                 String unicodes = getGlyphList().toUnicode(name);
                 if (unicodes != null && unicodes.length() == 1)
                 {
-                    String uniName = String.format("uni%04X", unicodes.codePointAt(0));
+                    String uniName = getUniNameOfCodePoint(unicodes.codePointAt(0));
                     if (genericFont.hasGlyph(uniName))
                     {
                         return uniName;
