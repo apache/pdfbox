@@ -126,11 +126,11 @@ public class Stream
         {
             if (UNFILTERED.equals(key))
             {
-                return stream.getUnfilteredStream();
+                return stream.createInputStream();
             }
             else if (getFilteredLabel().equals(key))
             {
-                return stream.getFilteredStream();
+                return stream.createRawInputStream();
             }
             else
             {
