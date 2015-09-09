@@ -146,7 +146,7 @@ public class PDFDebugger extends JFrame
     private JMenuItem cutMenuItem;
     private JMenuItem deleteMenuItem;
 
-    // edit > find meu
+    // edit > find menu
     private JMenu findMenu;
     private JMenuItem findMenuItem;
     private JMenuItem findNextMenuItem;
@@ -1187,7 +1187,6 @@ public class PDFDebugger extends JFrame
                 {
                     throw new RuntimeException(e);
                 }
-
             }
         };
         if (!recentFiles.isEmpty())
