@@ -78,7 +78,7 @@ public class PDFStreamParser extends BaseParser
     @Deprecated
     public PDFStreamParser(COSStream stream) throws IOException
     {
-        super(new InputStreamSource(stream.getUnfilteredStream()));
+        super(new InputStreamSource(stream.createInputStream()));
     }
 
     /**
