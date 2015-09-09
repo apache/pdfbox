@@ -29,7 +29,7 @@ final class RGToolTip extends ColorToolTip
      * Constructor.
      * @param rowText String instance.
      */
-    public RGToolTip(String rowText)
+    RGToolTip(String rowText)
     {
         createMarkUp(rowText);
     }

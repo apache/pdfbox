@@ -58,7 +58,7 @@ final class KToolTip extends ColorToolTip
         }
     }
 
-    protected ICC_ColorSpace getICCColorSpace() throws IOException
+    ICC_ColorSpace getICCColorSpace() throws IOException
     {
         // loads the ICC color profile for CMYK
         ICC_Profile iccProfile = getICCProfile();
@@ -70,7 +70,7 @@ final class KToolTip extends ColorToolTip
         return new ICC_ColorSpace(iccProfile);
     }
 
-    protected ICC_Profile getICCProfile() throws IOException
+    ICC_Profile getICCProfile() throws IOException
     {
         // Adobe Acrobat uses "U.S. Web Coated (SWOP) v2" as the default
         // CMYK profile, however it is not available under an open license.
