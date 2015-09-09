@@ -160,7 +160,7 @@ public class Tree extends JTree
             {
                 try
                 {
-                    byte[] bytes = IOUtils.toByteArray(cosStream.getFilteredStream());
+                    byte[] bytes = IOUtils.toByteArray(cosStream.createRawInputStream());
                     saveStream(bytes);
                 }
                 catch (IOException e)
@@ -216,7 +216,7 @@ public class Tree extends JTree
             {
                 try
                 {
-                    byte[] bytes = IOUtils.toByteArray(cosStream.getUnfilteredStream());
+                    byte[] bytes = IOUtils.toByteArray(cosStream.createInputStream());
                     saveStream(bytes);
                 }
                 catch (IOException e)
