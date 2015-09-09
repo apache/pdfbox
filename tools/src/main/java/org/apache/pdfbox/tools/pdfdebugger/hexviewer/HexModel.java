@@ -35,7 +35,7 @@ class HexModel implements HexChangeListener
      * Constructor
      * @param bytes Byte array.
      */
-    public HexModel(byte[] bytes)
+    HexModel(byte[] bytes)
     {
         data = new ArrayList<Byte>(bytes.length);
 
