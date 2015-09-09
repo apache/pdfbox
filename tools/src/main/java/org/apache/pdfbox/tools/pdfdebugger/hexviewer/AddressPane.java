@@ -31,7 +31,7 @@ import javax.swing.JComponent;
  */
 class AddressPane extends JComponent
 {
-    private int totalLine;
+    private final int totalLine;
     private int selectedLine = -1;
     private int selectedIndex = -1;
 
