@@ -141,7 +141,7 @@ public class PDFormXObject extends PDXObject implements PDContentStream
     @Override
     public InputStream getContents() throws IOException
     {
-        return getCOSStream().getUnfilteredStream();
+        return getCOSStream().createInputStream();
     }
 
     /**

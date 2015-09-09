@@ -145,7 +145,7 @@ public class PDPage implements COSObjectable, PDContentStream
         COSBase base = page.getDictionaryObject(COSName.CONTENTS);
         if (base instanceof COSStream)
         {
-            return ((COSStream)base).getUnfilteredStream();
+            return ((COSStream)base).createInputStream();
         }
         else if (base instanceof COSArray && ((COSArray) base).size() > 0)
         {
@@ -155,7 +155,7 @@ public class PDPage implements COSObjectable, PDContentStream
             for (int i = 0; i < streams.size(); i++)
             {
                 COSStream stream = (COSStream)streams.getObject(i);
-                inputStreams.add(stream.getUnfilteredStream());
+                inputStreams.add(stream.createInputStream());
                 inputStreams.add(new ByteArrayInputStream(delimiter));
             }
             return new SequenceInputStream(Collections.enumeration(inputStreams));
