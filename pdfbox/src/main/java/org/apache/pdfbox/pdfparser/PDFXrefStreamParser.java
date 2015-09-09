@@ -53,7 +53,7 @@ public class PDFXrefStreamParser extends BaseParser
     public PDFXrefStreamParser(COSStream stream, COSDocument document, XrefTrailerResolver resolver)
             throws IOException
     {
-        super(new InputStreamSource(stream.getUnfilteredStream()));
+        super(new InputStreamSource(stream.createInputStream()));
         this.stream = stream;
         this.document = document;
         this.xrefTrailerResolver = resolver;
