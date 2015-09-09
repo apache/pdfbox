@@ -98,7 +98,7 @@ public class StreamPane implements ActionListener
 
     private final JPanel panel;
     private final HexView hexView;
-    private JTabbedPane tabbedPane;
+    private final JTabbedPane tabbedPane;
     private final StreamPaneView view;
     private final Stream stream;
     private ToolTipController tTController;
@@ -161,10 +161,10 @@ public class StreamPane implements ActionListener
         filters.setSelectedItem(i);
         filters.addActionListener(actionListener);
 
-        JPanel panel = new JPanel(new FlowLayout());
-        panel.add(filters);
+        JPanel headerPanel = new JPanel(new FlowLayout());
+        headerPanel.add(filters);
 
-        return panel;
+        return headerPanel;
     }
 
     @Override
