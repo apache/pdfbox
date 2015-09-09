@@ -72,14 +72,16 @@ public class Stream
     }
 
     /**
-     * Return the available filter list. Only "Unfiltered" is returned if there is no filter and in case of
-     * XObject image type stream "Image" is also included in the list.
+     * Return the available filter list. Only "Unfiltered" is returned if there is no filter and in
+     * case of XObject image type stream "Image" is also included in the list.
+     *
      * @return An array of String.
      */
     public List<String> getFilterList()
     {
         List<String> list = new ArrayList<String>();
-        for (Map.Entry<String, List<String>> entry : filters.entrySet()) {
+        for (Map.Entry<String, List<String>> entry : filters.entrySet())
+        {
             list.add(entry.getKey());
         }
         return list;
