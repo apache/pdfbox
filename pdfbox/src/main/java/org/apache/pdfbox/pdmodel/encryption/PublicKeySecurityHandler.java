@@ -28,7 +28,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
-import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.util.Iterator;
 
@@ -57,7 +56,6 @@ import org.bouncycastle.asn1.x509.TBSCertificateStructure;
 import org.bouncycastle.cms.CMSEnvelopedData;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.RecipientInformation;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.exceptions.CryptographyException;
@@ -263,8 +261,6 @@ public class PublicKeySecurityHandler extends SecurityHandler
 
         try
         {
-            Security.addProvider(new BouncyCastleProvider());
-
             PDEncryptionDictionary dictionary = doc.getEncryptionDictionary();
             if (dictionary == null) 
             {
