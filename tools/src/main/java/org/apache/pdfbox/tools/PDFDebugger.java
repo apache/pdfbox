@@ -617,7 +617,8 @@ public class PDFDebugger extends JFrame
                     showString(selectedNode);
                     return;
                 }
-                if (!jSplitPane1.getRightComponent().equals(jScrollPane2))
+                if (jSplitPane1.getRightComponent() == null
+                        || !jSplitPane1.getRightComponent().equals(jScrollPane2))
                 {
                     jSplitPane1.setRightComponent(jScrollPane2);
                 }
@@ -727,7 +728,7 @@ public class PDFDebugger extends JFrame
         if (selectedNode instanceof COSDictionary)
         {
             COSDictionary dic = (COSDictionary)selectedNode;
-            return  dic.containsKey(COSName.TYPE) &&
+            return dic.containsKey(COSName.TYPE) &&
                     dic.getCOSName(COSName.TYPE).equals(COSName.FONT) &&
                     !isCIDFont(dic);
         }
@@ -862,7 +863,14 @@ public class PDFDebugger extends JFrame
         COSDictionary resourceDic = (COSDictionary) getUnderneathObject(path.getParentPath().getParentPath().getLastPathComponent());
 
         FontEncodingPaneController fontEncodingPaneController = new FontEncodingPaneController(fontName, resourceDic);
-        jSplitPane1.setRightComponent(fontEncodingPaneController.getPane());
+        JPanel pane = fontEncodingPaneController.getPane();
+        if (pane == null)
+        {
+            // unsupported font type
+            jSplitPane1.setRightComponent(jScrollPane2);
+            return;
+        }
+        jSplitPane1.setRightComponent(pane);
     }
 
     private void showString(Object selectedNode)
