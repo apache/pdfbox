@@ -1966,6 +1966,16 @@ public class PDFTextStripper extends PDFTextStreamEngine
         private TextPosition position = null;
 
         /**
+         * Constructs a PositionWrapper around the specified TextPosition object.
+         *
+         * @param position the text position.
+         */
+        PositionWrapper(TextPosition position)
+        {
+            this.position = position;
+        }
+
+        /**
          * Returns the underlying TextPosition object.
          * @return the text position
          */
@@ -2040,15 +2050,6 @@ public class PDFTextStripper extends PDFTextStreamEngine
         public void setHangingIndent()
         {
             this.isHangingIndent = true;
-        }
-
-        /**
-         * Constructs a PositionWrapper around the specified TextPosition object.
-         * @param position the text position
-         */
-        public PositionWrapper(TextPosition position)
-        {
-            this.position = position;
         }
     }
 }
