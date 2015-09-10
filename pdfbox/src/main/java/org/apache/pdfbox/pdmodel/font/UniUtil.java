@@ -22,7 +22,7 @@ import java.util.Locale;
  *
  * @author Philip Helger
  */
-class UniUtil
+final class UniUtil
 {
     private UniUtil()
     {
