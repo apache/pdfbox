@@ -33,6 +33,7 @@ interface FontPane
 
 /**
  * @author Khyrul Bashar
+ *
  * A class that shows the glyph table or CIDToGID map depending on the font type. PDSimple and
  * PDType0Font are supported.
  */
@@ -53,9 +54,10 @@ public class FontEncodingPaneController
             PDFont font = resources.getFont(fontName);
             if (font instanceof PDSimpleFont)
             {
-                fontPane = new SimpleFont((PDSimpleFont)font);
+                fontPane = new SimpleFont((PDSimpleFont) font);
             }
-            else if (font instanceof PDType0Font && ((PDType0Font) font).getDescendantFont() instanceof PDCIDFontType2)
+            else if (font instanceof PDType0Font
+                    && ((PDType0Font) font).getDescendantFont() instanceof PDCIDFontType2)
             {
                 fontPane = new Type0Font((PDCIDFontType2) ((PDType0Font) font).getDescendantFont(), font);
             }
@@ -66,7 +68,11 @@ public class FontEncodingPaneController
         }
     }
 
-
+    /**
+     * Return a pane to display details of a font.
+     * 
+     * @return a pane for font information, or null if that font type is not supported.
+     */
     public JPanel getPane()
     {
         if (fontPane != null)
