@@ -17,6 +17,7 @@
 package org.apache.pdfbox.tools;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Toolkit;
@@ -620,7 +621,7 @@ public class PDFDebugger extends JFrame
                 if (jSplitPane1.getRightComponent() == null
                         || !jSplitPane1.getRightComponent().equals(jScrollPane2))
                 {
-                    jSplitPane1.setRightComponent(jScrollPane2);
+                    replaceRightComponent(jScrollPane2);
                 }
                 jTextPane1.setText(convertToString(selectedNode));
             }
@@ -759,19 +760,19 @@ public class PDFDebugger extends JFrame
                 COSName csName = (COSName) arrayEntry;
                 if (csName.equals(COSName.SEPARATION))
                 {
-                    jSplitPane1.setRightComponent(new CSSeparation(array).getPanel());
+                    replaceRightComponent(new CSSeparation(array).getPanel());
                 }
                 else if (csName.equals(COSName.DEVICEN))
                 {
-                    jSplitPane1.setRightComponent(new CSDeviceN(array).getPanel());
+                    replaceRightComponent(new CSDeviceN(array).getPanel());
                 }
                 else if (csName.equals(COSName.INDEXED))
                 {
-                    jSplitPane1.setRightComponent(new CSIndexed(array).getPanel());
+                    replaceRightComponent(new CSIndexed(array).getPanel());
                 }
                 else if (OTHERCOLORSPACES.contains(csName))
                 {
-                    jSplitPane1.setRightComponent(new CSArrayBased(array).getPanel());
+                    replaceRightComponent(new CSArrayBased(array).getPanel());
                 }
             }
         }
@@ -795,7 +796,7 @@ public class PDFDebugger extends JFrame
         if (COSName.PAGE.equals(typeItem))
         {
             PagePane pagePane = new PagePane(document, page);
-            jSplitPane1.setRightComponent(new JScrollPane(pagePane.getPanel()));
+            replaceRightComponent(new JScrollPane(pagePane.getPanel()));
         }
     }
 
@@ -807,7 +808,7 @@ public class PDFDebugger extends JFrame
             selectedNode = ((MapEntry)selectedNode).getKey();
             selectedNode = getUnderneathObject(selectedNode);
             FlagBitsPane flagBitsPane = new FlagBitsPane((COSDictionary) parentNode, (COSName) selectedNode);
-            jSplitPane1.setRightComponent(flagBitsPane.getPane());
+            replaceRightComponent(flagBitsPane.getPane());
         }
     }
 
@@ -854,7 +855,7 @@ public class PDFDebugger extends JFrame
             isThumb = true;
         }
         StreamPane streamPane = new StreamPane(stream, isContentStream, isThumb, resourcesDic);
-        jSplitPane1.setRightComponent(streamPane.getPanel());
+        replaceRightComponent(streamPane.getPanel());
     }
 
     private void showFont(Object selectedNode, TreePath path)
@@ -867,16 +868,24 @@ public class PDFDebugger extends JFrame
         if (pane == null)
         {
             // unsupported font type
-            jSplitPane1.setRightComponent(jScrollPane2);
+            replaceRightComponent(jScrollPane2);
             return;
         }
+        replaceRightComponent(pane);
+    }
+
+    // replace the right component while keeping divider position
+    private void replaceRightComponent(Component pane)
+    {
+        int div = jSplitPane1.getDividerLocation();
         jSplitPane1.setRightComponent(pane);
+        jSplitPane1.setDividerLocation(div);
     }
 
     private void showString(Object selectedNode)
     {
         COSString string = (COSString)getUnderneathObject(selectedNode);
-        jSplitPane1.setRightComponent(new StringPane(string).getPane());
+        replaceRightComponent(new StringPane(string).getPane());
     }
 
     private COSName getNodeKey(Object selectedNode)
