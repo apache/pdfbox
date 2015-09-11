@@ -32,7 +32,7 @@ public class PDFieldTree implements Iterable<PDField>
     /**
      * Constructor for reading.
      *
-     * @param root A page tree root.
+     * @param acroForm the AcroForm containing the fields.
      */
     public PDFieldTree(PDAcroForm acroForm)
     {
@@ -44,7 +44,7 @@ public class PDFieldTree implements Iterable<PDField>
     }
 
     /**
-     * Returns an iterator which walks all pages in the tree, in order.
+     * Returns an iterator which walks all fields in the tree, in order.
      */
     @Override
     public Iterator<PDField> iterator()
@@ -53,7 +53,7 @@ public class PDFieldTree implements Iterable<PDField>
     }
 
     /**
-     * Iterator which walks all pages in the tree, in order.
+     * Iterator which walks all fields in the tree, in order.
      */
     private final class FieldIterator implements Iterator<PDField>
     {
