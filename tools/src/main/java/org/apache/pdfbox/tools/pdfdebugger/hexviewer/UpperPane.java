@@ -51,7 +51,7 @@ class UpperPane extends JPanel
 
         g.drawString("Offset", x, y);
 
-        x += HexView.ADDRESS_PANE_WIDTH;
+        x += HexView.ADDRESS_PANE_WIDTH + 2;
 
         for (int i = 0; i <= 15; i++)
         {
