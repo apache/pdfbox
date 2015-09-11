@@ -17,14 +17,12 @@
 package org.apache.pdfbox.pdmodel.interactive.form;
 
 import java.io.IOException;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -201,9 +199,17 @@ public final class PDAcroForm implements COSObjectable
      */
     public Iterator<PDField> getFieldIterator()
     {
-        return new FieldIterator(this);
+        return new PDFieldTree(this).iterator();
     }
 
+    /**
+     * Return the field tree representing all form fields
+     */
+    public PDFieldTree getFieldTree()
+    {
+        return new PDFieldTree(this);
+    }    
+    
     /**
      * This will tell this form to cache the fields into a Map structure
      * for fast access via the getField method.  The default is false.  You would
@@ -481,53 +487,5 @@ public final class PDAcroForm implements COSObjectable
     public void setAppendOnly(boolean appendOnly)
     {
         dictionary.setFlag(COSName.SIG_FLAGS, FLAG_APPEND_ONLY, appendOnly);
-    }    
-    
-    /**
-     * Iterator which walks all pages in the tree, in order.
-     */
-    private final class FieldIterator implements Iterator<PDField>
-    {
-        private final Queue<PDField> queue = new ArrayDeque<PDField>();
-        private FieldIterator(PDAcroForm form)
-        {
-            List<PDField> fields = form.getFields();
-            for (PDField field : fields)
-            {
-                enqueueKids(field);
-            }
-        }
-
-        private void enqueueKids(PDField node)
-        {
-            queue.add(node);
-            if (node instanceof PDNonTerminalField)
-            {
-                List<PDField> kids = ((PDNonTerminalField) node).getChildren();
-                for (PDField kid : kids)
-                {
-                    enqueueKids(kid);
-                }
-            }
-        }
-
-        @Override
-        public boolean hasNext()
-        {
-            return !queue.isEmpty();
-        }
-
-        @Override
-        public PDField next()
-        {
-            return queue.poll();
-        }
-
-        @Override
-        public void remove()
-        {
-            throw new UnsupportedOperationException();
-        }
-    }    
-    
+    }
 }
