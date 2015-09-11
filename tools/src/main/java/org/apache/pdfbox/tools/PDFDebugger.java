@@ -844,15 +844,16 @@ public class PDFDebugger extends JFrame
             }
             isContentStream = true;
         }
-        else if (COSName.IMAGE.equals((stream).getCOSName(COSName.SUBTYPE)))
-        {
-            Object resourcesObj = path.getParentPath().getParentPath().getLastPathComponent();
-            resourcesDic = (COSDictionary) getUnderneathObject(resourcesObj);
-        }
         else if (COSName.THUMB.equals(key))
         {
             resourcesDic = null;
             isThumb = true;
+        }
+        else if (COSName.IMAGE.equals((stream).getCOSName(COSName.SUBTYPE)))
+        {
+            // not to be used for /Thumb, even if it contains /Subtype /Image
+            Object resourcesObj = path.getParentPath().getParentPath().getLastPathComponent();
+            resourcesDic = (COSDictionary) getUnderneathObject(resourcesObj);
         }
         StreamPane streamPane = new StreamPane(stream, isContentStream, isThumb, resourcesDic);
         replaceRightComponent(streamPane.getPanel());
