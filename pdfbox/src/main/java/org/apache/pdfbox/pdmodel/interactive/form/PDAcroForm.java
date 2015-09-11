@@ -223,9 +223,8 @@ public final class PDAcroForm implements COSObjectable
         if (cache)
         {
             fieldCache = new HashMap<String, PDField>();
-            // fixme: this code does not cache non-terminal fields or their kids
-            List<PDField> fields = getFields();
-            for (PDField field : fields)
+
+            for (PDField field : getFieldTree())
             {
                 fieldCache.put(field.getFullyQualifiedName(), field);
             }
