@@ -36,8 +36,12 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
 /**
  * An example of creating an AcroForm and a form field from scratch.
  */
-public class CreateFormField
+public final class CreateFormField
 {
+    private CreateFormField()
+    {
+    }
+    
     public static void main(String[] args) throws IOException
     {
         PDDocument document = new PDDocument();
