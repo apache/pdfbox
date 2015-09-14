@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.examples.pdmodel;
 
+import java.io.IOException;
 import java.util.List;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -40,7 +41,7 @@ public class AddAnnotations
 {
     static final float INCH = 72;
     
-    public static void main(String[] args) throws Exception
+    public static void main(String[] args) throws IOException
     {
         if (args.length != 1)
         {
