@@ -36,7 +36,7 @@ import org.apache.pdfbox.text.PDFTextStripperByArea;
  *
  * @author Ben Litchfield
  */
-public class PrintURLs
+public final class PrintURLs
 {
     /**
      * Constructor.

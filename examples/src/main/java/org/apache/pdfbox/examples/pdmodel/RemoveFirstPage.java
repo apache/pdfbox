@@ -26,7 +26,7 @@ import java.io.IOException;
  *
  * @author Ben Litchfield
  */
-public class RemoveFirstPage
+public final class RemoveFirstPage
 {
     private RemoveFirstPage()
     {

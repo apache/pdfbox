@@ -28,8 +28,13 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 /**
  * Creates a simple document with a Type 1 font (.pfb).
  */
-public class HelloWorldType1
+public final class HelloWorldType1
 {
+
+    private HelloWorldType1()
+    {
+    }
+    
     public static void main(String[] args) throws IOException
     {
         if (args.length != 3)

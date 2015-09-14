@@ -27,8 +27,12 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
  *
  * The example is taken from the pdf file format specification.
  */
-public class ImageToPDF
+public final class ImageToPDF
 {
+    private ImageToPDF()
+    {
+    }
+    
     public static void main(String[] args) throws IOException
     {
         if (args.length != 2)

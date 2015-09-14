@@ -31,7 +31,7 @@ import java.util.List;
  *
  * @author Paul King
  */
-public class RubberStamp
+public final class RubberStamp
 {
     private RubberStamp()
     {

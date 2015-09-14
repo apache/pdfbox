@@ -35,7 +35,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
  *
  * @author Ben Litchfield
  */
-public class ReplaceURLs
+public final class ReplaceURLs
 {
     /**
      * Constructor.
