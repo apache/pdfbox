@@ -196,7 +196,11 @@ public class StreamPane implements ActionListener
     {
         if (stream.isImage())
         {
-            BufferedImage image = stream.getImage(resources);
+            BufferedImage image;
+            synchronized (stream)
+            {
+                image = stream.getImage(resources);
+            }
             view.showStreamImage(image);
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -211,7 +215,10 @@ public class StreamPane implements ActionListener
     private void requestStreamText(String command) throws IOException
     {
         new DocumentCreator(command).execute();
-        hexView.changeData(IOUtils.toByteArray(stream.getStream(command)));
+        synchronized (stream)
+        {
+            hexView.changeData(IOUtils.toByteArray(stream.getStream(command)));
+        }
     }
 
     /**
@@ -231,17 +238,20 @@ public class StreamPane implements ActionListener
         @Override
         protected StyledDocument doInBackground()
         {
-            InputStream inputStream = stream.getStream(filterKey);
-            if (isContentStream && Stream.UNFILTERED.equals(filterKey))
+            synchronized (stream)
             {
-                StyledDocument document = getContentStreamDocument(inputStream);
-                if (document != null)
+                InputStream inputStream = stream.getStream(filterKey);
+                if (isContentStream && Stream.UNFILTERED.equals(filterKey))
                 {
-                    return document;
+                    StyledDocument document = getContentStreamDocument(inputStream);
+                    if (document != null)
+                    {
+                        return document;
+                    }
+                    return getDocument(stream.getStream(filterKey));
                 }
-                return getDocument(stream.getStream(filterKey));
+                return getDocument(inputStream);
             }
-            return getDocument(inputStream);
         }
 
         @Override
@@ -290,15 +300,18 @@ public class StreamPane implements ActionListener
 
         private StyledDocument getDocument(InputStream inputStream)
         {
-            String data = getStringOfStream(inputStream);
             StyledDocument docu = new DefaultStyledDocument();
-            try
+            if (inputStream != null)
             {
-                docu.insertString(0, data, null);
-            }
-            catch (BadLocationException e)
-            {
-                e.printStackTrace();
+                String data = getStringOfStream(inputStream);
+                try
+                {
+                    docu.insertString(0, data, null);
+                }
+                catch (BadLocationException e)
+                {
+                    e.printStackTrace();
+                }
             }
             return docu;
         }
