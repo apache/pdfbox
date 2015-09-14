@@ -47,7 +47,8 @@ public class ShowSignature
      *
      * @param args The command-line arguments.
      *
-     * @throws Exception If there is an error reading the file.
+     * @throws IOException If there is an error reading the file.
+     * @throws CertificateException
      */
     public static void main( String[] args ) throws IOException, CertificateException
     {
