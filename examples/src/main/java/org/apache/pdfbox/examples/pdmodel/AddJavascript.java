@@ -27,7 +27,7 @@ import java.io.IOException;
  *
  * @author Ben Litchfield
  */
-public class AddJavascript
+public final class AddJavascript
 {
     private AddJavascript()
     {

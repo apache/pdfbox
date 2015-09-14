@@ -37,8 +37,12 @@ import org.apache.xmpbox.xml.XmpSerializer;
 /**
  * Creates a simple PDF/A document.
  */
-public class CreatePDFA
+public final class CreatePDFA
 {
+    private CreatePDFA()
+    {
+    }
+    
     public static void main(String[] args) throws IOException, TransformerException
     {
         if (args.length != 3)

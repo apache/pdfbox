@@ -39,7 +39,7 @@ import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
  * This will extract all true type-fonts of a pdf.
  * 
  */
-public class ExtractTTFFonts
+public final class ExtractTTFFonts
 {
     private int fontCounter = 1;
 

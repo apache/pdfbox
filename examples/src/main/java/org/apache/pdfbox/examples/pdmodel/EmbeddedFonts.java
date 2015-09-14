@@ -31,8 +31,13 @@ import org.apache.pdfbox.pdmodel.font.PDType0Font;
  * @author Keiji Suzuki
  * @author John Hewson
  */
-public class EmbeddedFonts
+public final class EmbeddedFonts
 {
+
+    private EmbeddedFonts()
+    {
+    }
+    
     public static void main(String[] args) throws IOException
     {
         PDDocument document = new PDDocument();
