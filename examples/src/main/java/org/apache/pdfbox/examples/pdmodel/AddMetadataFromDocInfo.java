@@ -40,7 +40,7 @@ import javax.xml.transform.TransformerException;
  * @author Ben Litchfield
  * 
  */
-public class AddMetadataFromDocInfo
+public final class AddMetadataFromDocInfo
 {
     private AddMetadataFromDocInfo()
     {

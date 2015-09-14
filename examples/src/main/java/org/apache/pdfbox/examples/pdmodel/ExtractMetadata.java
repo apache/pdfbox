@@ -41,7 +41,7 @@ import org.apache.xmpbox.xml.XmpParsingException;
  * Usage: java org.apache.pdfbox.examples.pdmodel.ExtractDocument &lt;input-pdf&gt;
  *
  */
-public class ExtractMetadata
+public final class ExtractMetadata
 {
     private ExtractMetadata()
     {

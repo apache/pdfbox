@@ -24,8 +24,12 @@ import org.apache.pdfbox.pdmodel.PDPage;
 /**
  * Create a blank PDF and write the contents to a file.
  */
-public class CreateBlankPDF
+public final class CreateBlankPDF
 {
+    private CreateBlankPDF()
+    {        
+    }
+    
     public static void main(String[] args) throws IOException
     {
         if (args.length != 1)

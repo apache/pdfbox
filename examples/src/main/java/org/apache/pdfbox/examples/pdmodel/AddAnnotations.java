@@ -37,9 +37,13 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 /**
  * Add annotations to pages of a PDF document.
  */
-public class AddAnnotations
+public final class AddAnnotations
 {
     static final float INCH = 72;
+
+    private AddAnnotations()
+    {
+    }
     
     public static void main(String[] args) throws IOException
     {

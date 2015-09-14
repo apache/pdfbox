@@ -33,7 +33,7 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlin
  *
  * @author Ben Litchfield
  */
-public class CreateBookmarks
+public final class CreateBookmarks
 {
     private CreateBookmarks()
     {

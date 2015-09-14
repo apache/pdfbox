@@ -39,7 +39,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationFileAttachme
  * Usage: java org.apache.pdfbox.examples.pdmodel.ExtractEmbeddedFiles &lt;input-pdf&gt;
  *
  */
-public class ExtractEmbeddedFiles
+public final class ExtractEmbeddedFiles
 {
     private ExtractEmbeddedFiles()
     {
