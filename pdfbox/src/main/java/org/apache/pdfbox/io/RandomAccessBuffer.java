@@ -51,8 +51,17 @@ public class RandomAccessBuffer implements RandomAccess, Cloneable
      */
     public RandomAccessBuffer()
     {
+        this(DEFAULT_CHUNK_SIZE);
+    }
+
+    /**
+     * Default constructor.
+     */
+    private RandomAccessBuffer(int definedChunkSize)
+    {
         // starting with one chunk
         bufferList = new ArrayList<byte[]>();
+        chunkSize = definedChunkSize;
         currentBuffer = new byte[chunkSize];
         bufferList.add(currentBuffer);
         pointer = 0;
@@ -103,7 +112,7 @@ public class RandomAccessBuffer implements RandomAccess, Cloneable
     @Override
     public RandomAccessBuffer clone()
     {
-        RandomAccessBuffer copy = new RandomAccessBuffer();
+        RandomAccessBuffer copy = new RandomAccessBuffer(chunkSize);
 
         copy.bufferList = new ArrayList<byte[]>(bufferList.size());
         for (byte [] buffer : bufferList)
