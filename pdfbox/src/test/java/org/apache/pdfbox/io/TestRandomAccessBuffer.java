@@ -297,4 +297,36 @@ public class TestRandomAccessBuffer extends TestCase
         buffer.seek(buffer.getPosition());
         buffer.close();
     }
+    
+    public void testPDFBOX2969() throws Exception
+    {
+        // create buffer with non-default chunk size
+        // by providing an array with unusual size
+        // (larger than RandomAccessBuffer.DEFAULT_CHUNK_SIZE)
+        int chunkSize = (CHUNK_SIZE << 4) + 3; 
+        byte[] byteArray = new byte[chunkSize];
+        
+        RandomAccessBuffer buffer = new RandomAccessBuffer(byteArray);
+
+        // fill completely
+        for (int i = 0; i < chunkSize; i++)
+        {
+            buffer.write(1);
+        }
+        
+        // create clone
+        RandomAccessBuffer bufferClone = buffer.clone(); 
+        
+        // read all from both
+        buffer.seek(0);
+        int bufRead = buffer.read(new byte[(int)buffer.length()]);
+        
+        bufferClone.seek(0);
+        int bufCloneRead = bufferClone.read(new byte[(int)bufferClone.length()]);
+        
+        assertEquals(bufRead, bufCloneRead);
+        
+        buffer.close();
+        bufferClone.close();
+    }
 }
