@@ -27,8 +27,11 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
  * Example to show filling form fields.
  * 
  */
-public class FillFormField
+public final class FillFormField
 {
+    private FillFormField()
+    {
+    }
 
     public static void main(String[] args) throws IOException
     {
