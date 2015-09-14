@@ -18,6 +18,7 @@ package org.apache.pdfbox.examples.pdmodel;
 
 import java.awt.geom.Rectangle2D;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -52,9 +53,9 @@ public class PrintURLs
      *
      * @param args Command line arguments.
      *
-     * @throws Exception If there is an error extracting the URLs.
+     * @throws IOException If there is an error extracting the URLs.
      */
-    public static void main(String[] args) throws Exception
+    public static void main(String[] args) throws IOException
     {
         PDDocument doc = null;
         try
