@@ -31,6 +31,8 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
@@ -38,6 +40,10 @@ import org.apache.pdfbox.pdmodel.fdf.FDFCatalog;
 import org.apache.pdfbox.pdmodel.fdf.FDFDictionary;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 import org.apache.pdfbox.pdmodel.fdf.FDFField;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
+import org.apache.pdfbox.util.Matrix;
 
 /**
  * An interactive form, also known as an AcroForm.
@@ -147,6 +153,74 @@ public final class PDAcroForm implements COSObjectable
         }
         return fdf;
     }
+    
+    
+    /**
+     * This will flatten all form fields.
+     * 
+     * <p>Flattening a form field will take the current appearance and make that part
+     * of the pages content stream. All form fields and annotations associated are removed.</p>
+     *  
+     * @throws IOException 
+     */
+    public void flatten() throws IOException
+    {
+        // indicates if the original content stream
+        // has been wrapped in a q...Q pair.
+        boolean isContentStreamWrapped = false;
+        
+        // the content stream to write to
+        PDPageContentStream contentStream;
+        
+        // Iterate over all form fields and their widgets and create a
+        // FormXObject at the page content level from that
+        for (PDField field : getFieldTree())
+        {
+            for (PDAnnotationWidget widget : ((PDTerminalField)field).getWidgets())
+            {
+                if (widget.getNormalAppearanceStream() != null)
+                {
+                    PDPage page = widget.getPage();
+                    if (!isContentStreamWrapped)
+                    {
+                        contentStream = new PDPageContentStream(document, page, true, true, true);
+                        isContentStreamWrapped = true;
+                    }
+                    else
+                    {
+                        contentStream = new PDPageContentStream(document, page, true, true);
+                    }
+                    
+                    PDFormXObject fieldObject = new PDFormXObject(widget.getNormalAppearanceStream().getCOSStream());
+                    
+                    Matrix translationMatrix = Matrix.getTranslateInstance(widget.getRectangle().getLowerLeftX(), widget.getRectangle().getLowerLeftY());
+                    contentStream.saveGraphicsState();
+                    contentStream.transform(translationMatrix);
+                    contentStream.drawForm(fieldObject);
+                    contentStream.restoreGraphicsState();
+                    contentStream.close();
+                }
+            }
+        }
+
+        // preserve all non widget annotations
+        for (PDPage page : document.getPages())
+        {
+            List<PDAnnotation> annotations = new ArrayList<PDAnnotation>();
+            
+            for (PDAnnotation annotation: page.getAnnotations())
+            {
+                if (!(annotation instanceof PDAnnotationWidget))
+                {
+                    annotations.add(annotation);                 
+                }
+            }
+            page.setAnnotations(annotations);
+        }
+        
+        // remove the fields
+        setFields(Collections.<PDField>emptyList());
+    }    
 
     /**
      * This will return all of the documents root fields.
