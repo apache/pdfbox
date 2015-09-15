@@ -36,7 +36,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
  *
  * @author Ben Litchfield
  */
-public class ShowSignature
+public final class ShowSignature
 {
     private ShowSignature()
     {
