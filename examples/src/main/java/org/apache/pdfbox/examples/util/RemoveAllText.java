@@ -37,7 +37,7 @@ import java.util.List;
  *
  * @author Ben Litchfield
  */
-public class RemoveAllText
+public final class RemoveAllText
 {
     /**
      * Default constructor.
