@@ -149,7 +149,7 @@ public class PDStream implements COSObjectable
      * add a compression filter, flate compression for example.
      * 
      * @deprecated This method is inefficient. To copying an existing InputStream, use
-     *             {@link PDStream(PDDocument, InputStream, COSName)} instead, with
+     *             {@link #PDStream(PDDocument, InputStream, COSName)} instead, with
      *             COSName.FLATE_DECODE as the final argument.
      *             
      *             Otherwise, to write new compressed data, use {@link #createOutputStream(COSName)},
