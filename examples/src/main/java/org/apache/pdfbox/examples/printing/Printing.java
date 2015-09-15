@@ -34,8 +34,12 @@ import org.apache.pdfbox.printing.PDFPrintable;
 /**
  * Examples of various different ways to print PDFs using PDFBox.
  */
-public class Printing
+public final class Printing
 {
+    private Printing()
+    {
+    }   
+
     /**
      * Entry point.
      */
