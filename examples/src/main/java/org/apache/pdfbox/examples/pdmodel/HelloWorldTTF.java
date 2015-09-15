@@ -28,8 +28,12 @@ import org.apache.pdfbox.pdmodel.font.PDType0Font;
 /**
  * Creates a simple document with a TrueType font.
  */
-public class HelloWorldTTF
+public final class HelloWorldTTF
 {
+    private HelloWorldTTF()
+    {
+    }
+
     public static void main(String[] args) throws IOException
     {
         if (args.length != 3)

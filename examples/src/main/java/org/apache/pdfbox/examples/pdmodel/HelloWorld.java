@@ -31,8 +31,12 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
  *
  * The example is taken from the PDF file format specification.
  */
-public class HelloWorld
+public final class HelloWorld
 {
+    private HelloWorld()
+    {
+    }
+    
     public static void main(String[] args) throws IOException
     {
         if( args.length != 2 )
