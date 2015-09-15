@@ -31,7 +31,7 @@ import java.io.IOException;
  *
  * @author Ben Litchfield
  */
-public class ExtractTextByArea
+public final class ExtractTextByArea
 {
     private ExtractTextByArea()
     {
