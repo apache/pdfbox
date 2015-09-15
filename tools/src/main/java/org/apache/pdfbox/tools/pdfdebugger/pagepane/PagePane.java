@@ -78,7 +78,6 @@ public class PagePane implements ActionListener, AncestorListener
         label = new JLabel();
         label.setBackground(panel.getBackground());
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
-        label.setText("Loading...");
         panel.add(label);
         panel.addAncestorListener(this);
 
@@ -150,6 +149,8 @@ public class PagePane implements ActionListener, AncestorListener
         @Override
         protected BufferedImage doInBackground() throws IOException
         {
+            label.setIcon(null);
+            label.setText("Loading...");
             PDFRenderer renderer = new PDFRenderer(document);
             BufferedImage bim = renderer.renderImage(pageIndex, scale);
             return ImageUtil.getRotatedImage(bim, rotation);
