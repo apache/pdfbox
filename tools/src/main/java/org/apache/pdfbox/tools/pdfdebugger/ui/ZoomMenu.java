@@ -14,9 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.pdfbox.tools.pdfdebugger.ui;
 
+import java.awt.Component;
+import java.util.Arrays;
 import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
 import javax.swing.JRadioButtonMenuItem;
@@ -24,27 +25,43 @@ import javax.swing.JRadioButtonMenuItem;
 /**
  * @author Khyrul Bashar
  *
- * A singleton class that provides zoom menu which can be used to show zoom menu in the menubar.
- * To act upon the menu item selection user of the class must add ActionListener which will check for
+ * A singleton class that provides zoom menu which can be used to show zoom menu in the menubar. To
+ * act upon the menu item selection user of the class must add ActionListener which will check for
  * the action command and act accordingly.
  */
 public final class ZoomMenu extends MenuBase
 {
-    public static final String ZOOM_50_PERCENT = "50%";
+    private static class ZoomMenuItem extends JRadioButtonMenuItem
+    {
+        private final int zoom;
+
+        ZoomMenuItem(String text, int zoom)
+        {
+            super(text);
+            this.zoom = zoom;
+        }
+    }
+
     public static final String ZOOM_100_PERCENT = "100%";
-    public static final String ZOOM_200_PERCENT = "200%";
+    private static final int[] ZOOMS = new int[] { 25, 50, 100, 200, 400 };
 
     private static ZoomMenu instance;
-    private JRadioButtonMenuItem zoom50Item;
-    private JRadioButtonMenuItem zoom100Item;
-    private JRadioButtonMenuItem zoom200Item;
-    
+    private final JMenu menu;
+
     /**
      * Constructor.
      */
     private ZoomMenu()
     {
-        setMenu(createZoomMenu());
+        menu = new JMenu("Zoom");
+        ButtonGroup bg = new ButtonGroup();
+        for (int zoom : ZOOMS)
+        {
+            ZoomMenuItem zoomItem = new ZoomMenuItem(zoom + "%", zoom);
+            bg.add(zoomItem);
+            menu.add(zoomItem);
+        }
+        setMenu(menu);
     }
 
     /**
@@ -63,94 +80,56 @@ public final class ZoomMenu extends MenuBase
 
     /**
      * Set the zoom selection.
-     * @param selection String instance.
+     *
+     * @param selection zoom menu string, e.g. "100%".
+     * @throws IllegalArgumentException if the parameter doesn't belong to a zoom menu item.
      */
     public void setZoomSelection(String selection)
     {
-        if (ZOOM_50_PERCENT.equals(selection))
+        for (Component comp : menu.getMenuComponents())
         {
-            zoom50Item.setSelected(true);
+            JRadioButtonMenuItem menuItem = (JRadioButtonMenuItem) comp;
+            if (menuItem.getText().equals(selection))
+            {
+                menuItem.setSelected(true);
+                return;
+            }
         }
-        else if (ZOOM_100_PERCENT.equals(selection))
-        {
-            zoom100Item.setSelected(true);
-        }
-        else if (ZOOM_200_PERCENT.equals(selection))
-        {
-            zoom200Item.setSelected(true);
-        }
-        else
-        {
-            throw new IllegalArgumentException();
-        }
+        throw new IllegalArgumentException("no zoom menu item found for: " + selection);
     }
 
+    /**
+     * Tell whether the command belongs to the zoom menu.
+     *
+     * @param actionCommand a menu command string.
+     * @return true if the command is a zoom menu command, e.g. "100%", false if not.
+     */
     public static boolean isZoomMenu(String actionCommand)
     {
-        return ZOOM_50_PERCENT.equals(actionCommand) || ZOOM_100_PERCENT.equals(actionCommand) ||
-                ZOOM_200_PERCENT.equals(actionCommand);
+        if (!actionCommand.matches("^\\d+%$"))
+        {
+            return false;
+        }
+        int zoom = Integer.parseInt(actionCommand.substring(0, actionCommand.length() - 1));
+        return Arrays.binarySearch(ZOOMS, zoom) >= 0;
     }
 
+    /**
+     * Tell the current zoom scale.
+     *
+     * @return the current zoom scale.
+     * @throws IllegalStateException if no zoom menu item is selected.
+     */
     public static float getZoomScale()
     {
-        if (instance.zoom50Item.isSelected())
+        for (Component comp : instance.menu.getMenuComponents())
         {
-            return 0.5f;
+            ZoomMenuItem menuItem = (ZoomMenuItem) comp;
+            if (menuItem.isSelected())
+            {
+                return menuItem.zoom / 100f;
+            }
         }
-        if (instance.zoom100Item.isSelected())
-        {
-            return 1;
-        }
-        if (instance.zoom200Item.isSelected())
-        {
-            return 2;
-        }
-        throw new IllegalArgumentException();
-    }
-
-    public static float getZoomScale(String actionCommand)
-    {
-        if (ZOOM_50_PERCENT.equals(actionCommand))
-        {
-            return 0.5f;
-        }
-        else if (ZOOM_100_PERCENT.equals(actionCommand))
-        {
-            return 1;
-        }
-        else if (ZOOM_200_PERCENT.equals(actionCommand))
-        {
-            return 2;
-        }
-        else
-        {
-            throw new IllegalArgumentException();
-        }
-    }
-
-    private JMenu createZoomMenu()
-    {
-        JMenu menu = new JMenu();
-        menu.setText("Zoom");
-
-        zoom50Item = new JRadioButtonMenuItem();
-        zoom100Item = new JRadioButtonMenuItem();
-        zoom200Item = new JRadioButtonMenuItem();
-        zoom100Item.setSelected(true);
-
-        ButtonGroup bg = new ButtonGroup();
-        bg.add(zoom50Item);
-        bg.add(zoom100Item);
-        bg.add(zoom200Item);
-
-        zoom50Item.setText(ZOOM_50_PERCENT);
-        zoom100Item.setText(ZOOM_100_PERCENT);
-        zoom200Item.setText(ZOOM_200_PERCENT);
-
-        menu.add(zoom50Item);
-        menu.add(zoom100Item);
-        menu.add(zoom200Item);
-
-        return menu;
+        throw new IllegalStateException("no zoom menu item is selected");
     }
 }
