@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 
 import org.apache.pdfbox.pdmodel.common.filespecification.PDFileSpecification;
 
@@ -63,7 +64,7 @@ public class PDActionRemoteGoTo extends PDAction
      */
     public String getS()
     {
-       return action.getNameAsString( "S" );
+       return action.getNameAsString( COSName.S );
     }
 
     /**
@@ -74,7 +75,7 @@ public class PDActionRemoteGoTo extends PDAction
      */
     public void setS( String s )
     {
-       action.setName( "S", s );
+       action.setName( COSName.S, s );
     }
 
     /**
@@ -86,7 +87,7 @@ public class PDActionRemoteGoTo extends PDAction
      */
     public PDFileSpecification getFile() throws IOException
     {
-        return PDFileSpecification.createFS( action.getDictionaryObject( "F" ) );
+        return PDFileSpecification.createFS( action.getDictionaryObject( COSName.F ) );
     }
 
     /**
@@ -96,7 +97,7 @@ public class PDActionRemoteGoTo extends PDAction
      */
     public void setFile( PDFileSpecification fs )
     {
-        action.setItem( "F", fs );
+        action.setItem( COSName.F, fs );
     }
 
     /**
@@ -112,7 +113,7 @@ public class PDActionRemoteGoTo extends PDAction
     // Array or String.
     public COSBase getD()
     {
-        return action.getDictionaryObject( "D" );
+        return action.getDictionaryObject( COSName.D );
     }
 
     /**
@@ -128,7 +129,7 @@ public class PDActionRemoteGoTo extends PDAction
     // In case the value is an array.
     public void setD( COSBase d )
     {
-        action.setItem( "D", d );
+        action.setItem( COSName.D, d );
     }
 
     /**

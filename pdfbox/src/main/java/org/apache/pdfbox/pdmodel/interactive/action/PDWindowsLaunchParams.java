@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.interactive.action;
 
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
@@ -77,7 +78,7 @@ public class PDWindowsLaunchParams implements COSObjectable
      */
     public String getFilename()
     {
-        return params.getString( "F" );
+        return params.getString( COSName.F );
     }
 
     /**
@@ -87,7 +88,7 @@ public class PDWindowsLaunchParams implements COSObjectable
      */
     public void setFilename( String file )
     {
-        params.setString( "F", file );
+        params.setString( COSName.F, file );
     }
 
     /**
@@ -97,7 +98,7 @@ public class PDWindowsLaunchParams implements COSObjectable
      */
     public String getDirectory()
     {
-        return params.getString( "D" );
+        return params.getString( COSName.D );
     }
 
     /**
@@ -107,7 +108,7 @@ public class PDWindowsLaunchParams implements COSObjectable
      */
     public void setDirectory( String dir )
     {
-        params.setString( "D", dir );
+        params.setString( COSName.D, dir );
     }
 
     /**
@@ -120,7 +121,7 @@ public class PDWindowsLaunchParams implements COSObjectable
      */
     public String getOperation()
     {
-        return params.getString( "O", OPERATION_OPEN );
+        return params.getString(COSName.O, OPERATION_OPEN);
     }
 
     /**
@@ -130,7 +131,7 @@ public class PDWindowsLaunchParams implements COSObjectable
      */
     public void setOperation( String op )
     {
-        params.setString( "D", op );
+        params.setString( COSName.D, op );
     }
 
     /**
@@ -140,7 +141,7 @@ public class PDWindowsLaunchParams implements COSObjectable
      */
     public String getExecuteParam()
     {
-        return params.getString( "P" );
+        return params.getString( COSName.P );
     }
 
     /**
@@ -150,6 +151,6 @@ public class PDWindowsLaunchParams implements COSObjectable
      */
     public void setExecuteParam( String param )
     {
-        params.setString( "P", param );
+        params.setString( COSName.P, param );
     }
 }
