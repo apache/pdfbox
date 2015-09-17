@@ -142,7 +142,8 @@ public final class PDResources implements COSObjectable
             PDColorSpace cached = cache.getColorSpace(indirect);
             if (cached != null)
             {
-                return cached;
+                // cache disabled due to resource dependency, see PDFBOX-2370
+                //return cached
             }
         }
 
@@ -320,7 +321,8 @@ public final class PDResources implements COSObjectable
             PDXObject cached = cache.getXObject(indirect);
             if (cached != null)
             {
-                return cached;
+                // cache disabled due to resource dependency, see PDFBOX-2370
+                //return cached
             }
         }
 
