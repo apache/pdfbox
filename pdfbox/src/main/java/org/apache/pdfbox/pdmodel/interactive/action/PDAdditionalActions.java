@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.interactive.action;
 
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 /**
@@ -64,7 +65,7 @@ public class PDAdditionalActions implements COSObjectable
      */
     public PDAction getF()
     {
-        return PDActionFactory.createAction( (COSDictionary)actions.getDictionaryObject("F" ) );
+        return PDActionFactory.createAction( (COSDictionary)actions.getDictionaryObject(COSName.F ) );
     }
 
     /**
@@ -74,6 +75,6 @@ public class PDAdditionalActions implements COSObjectable
      */
     public void setF( PDAction action )
     {
-        actions.setItem( "F", action );
+        actions.setItem( COSName.F, action );
     }
 }
