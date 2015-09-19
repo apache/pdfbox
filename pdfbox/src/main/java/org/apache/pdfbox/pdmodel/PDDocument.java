@@ -458,7 +458,7 @@ public class PDDocument implements Closeable
         
         // Create empty visual appearance stream
         COSStream apsStream = getDocument().createCOSStream();
-        apsStream.createUnfilteredStream().close();
+        apsStream.createOutputStream().close();
         PDAppearanceStream aps = new PDAppearanceStream(apsStream);
         COSDictionary cosObject = (COSDictionary) aps.getCOSObject();
         cosObject.setItem(COSName.SUBTYPE, COSName.FORM);
