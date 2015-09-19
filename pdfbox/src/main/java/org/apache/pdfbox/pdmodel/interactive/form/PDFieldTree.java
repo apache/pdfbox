@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.Queue;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * The field tree.
@@ -55,7 +56,7 @@ public class PDFieldTree implements Iterable<PDField>
     /**
      * Iterator which walks all fields in the tree, in order.
      */
-    private final class FieldIterator implements Iterator<PDField>
+    private static final class FieldIterator implements Iterator<PDField>
     {
         private final Queue<PDField> queue = new ArrayDeque<PDField>();
         
@@ -77,6 +78,10 @@ public class PDFieldTree implements Iterable<PDField>
         @Override
         public PDField next()
         {
+            if(!hasNext()){
+                throw new NoSuchElementException();
+            }
+            
             return queue.poll();
         }
 
