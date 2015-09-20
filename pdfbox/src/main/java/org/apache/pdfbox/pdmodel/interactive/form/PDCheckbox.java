@@ -17,8 +17,6 @@
 package org.apache.pdfbox.pdmodel.interactive.form;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.pdfbox.cos.COSDictionary;
@@ -89,54 +87,6 @@ public final class PDCheckbox extends PDButton
     }
 
     /**
-     * Sets the checked value of this field.
-     * 
-     * <p>To retrieve the potential On value use {@link #getOnValue()} or
-     * {@link #getOnValues()}. The Off value shall always be 'Off'.</p>
-     *
-     * @param value matching the On or Off state of the checkbox.
-     * @throws IOException if the appearance couldn't be generated.
-     * @throws IllegalArgumentException if the value is not a valid option for the checkbox.
-     */
-    public void setValue(String value) throws IOException
-    {
-        if (value.compareTo(getOnValue()) != 0 && value.compareTo(COSName.Off.getName()) != 0)
-        {
-            throw new IllegalArgumentException(value + " is not a valid option for the checkbox " + getFullyQualifiedName());
-        }
-        else
-        {
-            // Update the field value and the appearance state.
-            // Both are necessary to work properly with different viewers.
-            COSName name = COSName.getPDFName(value);
-            getCOSObject().setItem(COSName.V, name);
-            for (PDAnnotationWidget widget : getWidgets())
-            {
-                widget.setAppearanceState(value);
-            }
-        }
-        applyChange();
-    }
-
-    /**
-     * Sets the default value.
-     *
-     * @see #setValue(String)
-     * @param value matching the On or Off state of the checkbox.
-     */
-    public void setDefaultValue(String value)
-    {
-        if (value.compareTo(getOnValue()) != 0 && value.compareTo(COSName.Off.getName()) != 0)
-        {
-            throw new IllegalArgumentException(value + " is not a valid option for the checkbox " + getFullyQualifiedName());
-        }
-        else
-        {
-            getCOSObject().setName(COSName.DV, value);
-        }
-    }
-
-    /**
      * Get the value which sets the check box to the On state.
      * 
      * <p>The On value should be 'Yes' but other values are possible
@@ -170,31 +120,4 @@ public final class PDCheckbox extends PDButton
         }
         return onValue;
     }
-    
-    /**
-     * Get the values which sets the check box to the On state.
-     * 
-     * <p>This is a convenience function to provide a similar method to 
-     * {@link PDRadioButton} </p>
-     *
-     * @see #getOnValue()
-     * @return the value setting the check box to the On state. 
-     *          If an empty List is returned there is no appearance definition.
-     */
-    public Set<String> getOnValues()
-    {
-        String onValue = getOnValue();
-        
-        if (onValue.isEmpty())
-        {
-            return Collections.emptySet();
-        }
-        else
-        {
-            Set<String> onValues = new HashSet<String>();
-            onValues.add(onValue);
-            return onValues;
-        }
-    }
-    
 }
