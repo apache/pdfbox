@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
@@ -87,52 +86,6 @@ public final class PDCheckbox extends PDButton
     public void unCheck() throws IOException
     {
         setValue(COSName.Off.getName());
-    }
-
-    /**
-     * Returns the fields value entry.
-     * 
-     * @return the fields value entry.
-     */
-    public String getValue()
-    {
-        // the dictionary shall be a name object but it might not be
-        // so don't assume it is.
-        COSBase value = getInheritableAttribute(COSName.V);
-        if (value instanceof COSName)
-        {
-            return ((COSName)value).getName();
-        }
-        else
-        {
-            return "";
-        }
-    }
-
-    /**
-     * Returns the default value, if any.
-     *
-     * @return the fields default value.
-     */
-    public String getDefaultValue()
-    {
-        // the dictionary shall be a name object but it might not be
-        // so don't assume it is.
-        COSBase value = getInheritableAttribute(COSName.DV);
-        if (value instanceof COSName)
-        {
-            return ((COSName)value).getName();
-        }
-        else
-        {
-            return "";
-        }
-    }
-
-    @Override
-    public String getValueAsString()
-    {
-        return getValue();
     }
 
     /**

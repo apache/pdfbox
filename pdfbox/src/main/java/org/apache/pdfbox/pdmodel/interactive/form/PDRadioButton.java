@@ -22,7 +22,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
@@ -124,49 +123,6 @@ public final class PDRadioButton extends PDButton
             }
             return selectedExportValues;
         }
-    }
-
-    /**
-     * Returns the selected value. May be empty if NoToggleToOff is set but there is no value
-     * selected.
-     * 
-     * @return A non-null string.
-     */
-    public String getValue()
-    {
-        COSBase value = getInheritableAttribute(COSName.V);
-        if (value instanceof COSName)
-        {
-            return ((COSName)value).getName();
-        }
-        else
-        {
-            return "";
-        }
-    }
-
-    /**
-     * Returns the default value, if any.
-     *
-     * @return A non-null string.
-     */
-    public String getDefaultValue()
-    {
-        COSBase value = getInheritableAttribute(COSName.DV);
-        if (value instanceof COSName)
-        {
-            return ((COSName)value).getName();
-        }
-        else
-        {
-            return "";
-        }
-    }
-
-    @Override
-    public String getValueAsString()
-    {
-        return getValue();
     }
 
     /**
