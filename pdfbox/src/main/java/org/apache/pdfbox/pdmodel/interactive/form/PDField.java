@@ -33,24 +33,11 @@ public abstract class PDField implements COSObjectable
     private static final int FLAG_READ_ONLY = 1;
     private static final int FLAG_REQUIRED = 1 << 1;
     private static final int FLAG_NO_EXPORT = 1 << 2;
-    
-    /**
-     * Creates a COSField subclass from the given COS field. This is for reading fields from PDFs.
-     *
-     * @param form the form that the field is part of
-     * @param field the dictionary representing a field element
-     * @param parent the parent node of the node to be created, or null if root.
-     * @return a new PDField instance
-     */
-    static PDField fromDictionary(PDAcroForm form, COSDictionary field, PDNonTerminalField parent)
-    {
-        return PDFieldFactory.createField(form, field, parent);
-    }
 
     private final PDAcroForm acroForm;
     private final PDNonTerminalField parent;
     private final COSDictionary dictionary;
-
+   
     /**
      * Constructor.
      * 
@@ -74,6 +61,19 @@ public abstract class PDField implements COSObjectable
         this.parent = parent;
     }
     
+    /**
+     * Creates a COSField subclass from the given COS field. This is for reading fields from PDFs.
+     *
+     * @param form the form that the field is part of
+     * @param field the dictionary representing a field element
+     * @param parent the parent node of the node to be created, or null if root.
+     * @return a new PDField instance
+     */
+    static PDField fromDictionary(PDAcroForm form, COSDictionary field, PDNonTerminalField parent)
+    {
+        return PDFieldFactory.createField(form, field, parent);
+    }
+
     /**
      * Returns the given attribute, inheriting from parent nodes if necessary.
      *
