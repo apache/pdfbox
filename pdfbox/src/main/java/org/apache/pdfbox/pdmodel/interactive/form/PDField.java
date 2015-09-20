@@ -47,9 +47,9 @@ public abstract class PDField implements COSObjectable
         return PDFieldFactory.createField(form, field, parent);
     }
 
-    protected final PDAcroForm acroForm;
-    protected final PDNonTerminalField parent;
-    protected final COSDictionary dictionary;
+    private final PDAcroForm acroForm;
+    private final PDNonTerminalField parent;
+    private final COSDictionary dictionary;
 
     /**
      * Constructor.

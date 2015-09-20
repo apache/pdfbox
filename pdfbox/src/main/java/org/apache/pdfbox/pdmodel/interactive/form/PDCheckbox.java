@@ -156,7 +156,7 @@ public final class PDCheckbox extends PDButton
             // Update the field value and the appearance state.
             // Both are necessary to work properly with different viewers.
             COSName name = COSName.getPDFName(value);
-            dictionary.setItem(COSName.V, name);
+            getCOSObject().setItem(COSName.V, name);
             for (PDAnnotationWidget widget : getWidgets())
             {
                 widget.setAppearanceState(value);
@@ -179,7 +179,7 @@ public final class PDCheckbox extends PDButton
         }
         else
         {
-            dictionary.setName(COSName.DV, value);
+            getCOSObject().setName(COSName.DV, value);
         }
     }
 

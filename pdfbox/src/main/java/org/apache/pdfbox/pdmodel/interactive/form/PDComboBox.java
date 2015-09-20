@@ -62,7 +62,7 @@ public final class PDComboBox extends PDChoice
      */
     public boolean isEdit()
     {
-        return dictionary.getFlag(COSName.FF, FLAG_EDIT);
+        return getCOSObject().getFlag(COSName.FF, FLAG_EDIT);
     }
 
     /**
@@ -72,7 +72,7 @@ public final class PDComboBox extends PDChoice
      */
     public void setEdit(boolean edit)
     {
-        dictionary.setFlag(COSName.FF, FLAG_EDIT, edit);
+        getCOSObject().setFlag(COSName.FF, FLAG_EDIT, edit);
     }
     
     @Override
