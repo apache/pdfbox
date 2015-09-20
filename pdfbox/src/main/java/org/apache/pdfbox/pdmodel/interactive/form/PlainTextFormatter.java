@@ -63,6 +63,11 @@ class PlainTextFormatter
             return TextAlign.LEFT;
         }
     }
+
+    /**
+     * The scaling factor for font units to PDF units
+     */
+    private static final int FONTSCALE = 1000;
     
     private final AppearanceStyle appearanceStyle;
     private final boolean wrapLines;
@@ -186,7 +191,7 @@ class PlainTextFormatter
                     
                     
                     float lineWidth = appearanceStyle.getFont().getStringWidth(paragraph.getText()) *
-                            appearanceStyle.getFontSize() / 1000f;
+                            appearanceStyle.getFontSize() / FONTSCALE;
                     
                     if (lineWidth < width) 
                     {
