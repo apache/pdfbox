@@ -327,54 +327,22 @@ public final class PDAcroForm implements COSObjectable
      */
     public PDField getField(String fullyQualifiedName)
     {
-        PDField retval = null;
+        // get the field from the cache if there is one.
         if (fieldCache != null)
         {
-            retval = fieldCache.get(fullyQualifiedName);
+            return fieldCache.get(fullyQualifiedName);
         }
-        else
-        {
-            String[] nameSubSection = fullyQualifiedName.split("\\.");
-            COSArray fields = (COSArray) dictionary.getDictionaryObject(COSName.FIELDS);
 
-            if (fields != null)
+        // get the field from the field tree
+        for (PDField field : getFieldTree())
+        {
+            if (field.getFullyQualifiedName().compareTo(fullyQualifiedName) == 0)
             {
-                for (int i = 0; i < fields.size() && retval == null; i++)
-                {
-                    COSDictionary element = (COSDictionary) fields.getObject(i);
-                    if (element != null)
-                    {
-                        COSString fieldName =
-                            (COSString)element.getDictionaryObject(COSName.T);
-                        if (fieldName.getString().equals(fullyQualifiedName) ||
-                            fieldName.getString().equals(nameSubSection[0]))
-                        {
-                            PDField root = PDField.fromDictionary(this, element, null);
-                            if (root != null)
-                            {
-                                if (nameSubSection.length > 1)
-                                {
-                                    PDField kid = root.findKid(nameSubSection, 1);
-                                    if (kid != null)
-                                    {
-                                        retval = kid;
-                                    }
-                                    else
-                                    {
-                                        retval = root;
-                                    }
-                                }
-                                else
-                                {
-                                    retval = root;
-                                }
-                            }
-                        }
-                    }
-                }
+                return field;
             }
         }
-        return retval;
+        
+        return null;
     }
 
     /**
