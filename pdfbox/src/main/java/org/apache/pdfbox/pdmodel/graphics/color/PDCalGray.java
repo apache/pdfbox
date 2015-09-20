@@ -77,13 +77,18 @@ public final class PDCalGray extends PDCIEDictionaryBasedColorSpace
     @Override
     public float[] toRGB(float[] value)
     {
-        float a = value[0];
-        float gamma = getGamma();
-        double powAG = Math.pow(a, gamma);
-        float x = (float) (wpX * powAG);
-        float y = (float) (wpY * powAG);
-        float z = (float) (wpZ * powAG);
-        return convXYZtoRGB(x, y, z);
+        // see implementation of toRGB in PDCabRGB, and PDFBOX-2971
+        if (wpX == 1 && wpY == 1 && wpZ == 1)
+        {
+            float a = value[0];
+            float gamma = getGamma();
+            float powAG = (float) Math.pow(a, gamma);
+            return convXYZtoRGB(powAG, powAG, powAG);
+        }
+        else
+        {
+            return new float[] { value[0], value[0], value[0] };
+        }
     }
 
     /**
