@@ -74,7 +74,7 @@ public final class PDRadioButton extends PDButton
      */
     public void setRadiosInUnison(boolean radiosInUnison)
     {
-        dictionary.setFlag(COSName.FF, FLAG_RADIOS_IN_UNISON, radiosInUnison);
+        getCOSObject().setFlag(COSName.FF, FLAG_RADIOS_IN_UNISON, radiosInUnison);
     }
 
     /**
@@ -83,7 +83,7 @@ public final class PDRadioButton extends PDButton
      */
     public boolean isRadiosInUnison()
     {
-        return dictionary.getFlag(COSName.FF, FLAG_RADIOS_IN_UNISON);
+        return getCOSObject().getFlag(COSName.FF, FLAG_RADIOS_IN_UNISON);
     }
 
     /**
@@ -179,7 +179,7 @@ public final class PDRadioButton extends PDButton
     public void setValue(String value) throws IOException
     {
         checkValue(value);        
-        dictionary.setName(COSName.V, value);
+        getCOSObject().setName(COSName.V, value);
         // update the appearance state (AS)
         for (PDAnnotationWidget widget : getWidgets())
         {
@@ -205,7 +205,7 @@ public final class PDRadioButton extends PDButton
     public void setDefaultValue(String value)
     {
         checkValue(value);        
-        dictionary.setName(COSName.DV, value);
+        getCOSObject().setName(COSName.DV, value);
     }    
 
     /**

@@ -105,7 +105,7 @@ public abstract class PDVariableText extends PDTerminalField
      */
     public void setDefaultAppearance(String daValue)
     {
-        dictionary.setString(COSName.DA, daValue);
+        getCOSObject().setString(COSName.DA, daValue);
     }
 
     /**
@@ -118,7 +118,7 @@ public abstract class PDVariableText extends PDTerminalField
      */
     public String getDefaultStyleString()
     {
-        COSString defaultStyleString = (COSString) dictionary.getDictionaryObject(COSName.DS);
+        COSString defaultStyleString = (COSString) getCOSObject().getDictionaryObject(COSName.DS);
         return defaultStyleString.getString();
     }
 
@@ -133,11 +133,11 @@ public abstract class PDVariableText extends PDTerminalField
     {
         if (defaultStyleString != null)
         {
-            dictionary.setItem(COSName.DS, new COSString(defaultStyleString));
+            getCOSObject().setItem(COSName.DS, new COSString(defaultStyleString));
         }
         else
         {
-            dictionary.removeItem(COSName.DS);
+            getCOSObject().removeItem(COSName.DS);
         }
     }    
 
@@ -173,7 +173,7 @@ public abstract class PDVariableText extends PDTerminalField
      */
     public void setQ(int q)
     {
-        dictionary.setInt(COSName.Q, q);
+        getCOSObject().setInt(COSName.Q, q);
     }
     
     /**
@@ -206,11 +206,11 @@ public abstract class PDVariableText extends PDTerminalField
     {
         if (richTextValue != null)
         {
-            dictionary.setItem(COSName.RV, new COSString(richTextValue));
+            getCOSObject().setItem(COSName.RV, new COSString(richTextValue));
         }
         else
         {
-            dictionary.removeItem(COSName.RV);
+            getCOSObject().removeItem(COSName.RV);
         }        
     }
 
