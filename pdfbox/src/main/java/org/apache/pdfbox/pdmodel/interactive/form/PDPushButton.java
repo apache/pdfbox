@@ -66,10 +66,22 @@ public class PDPushButton extends PDButton
             throw new IllegalArgumentException("A PDPushButton shall not use the Opt entry in the field dictionary");
         }
     }
+    
+    @Override
+    public String getValue()
+    {
+        return "";
+    }
+
+    @Override
+    public String getDefaultValue()
+    {
+        return "";
+    }
 
     @Override
     public String getValueAsString()
     {
-        return "";
+        return getValue();
     }
 }

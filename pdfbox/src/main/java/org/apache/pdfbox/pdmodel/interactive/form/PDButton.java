@@ -118,6 +118,50 @@ public abstract class PDButton extends PDTerminalField
     }
     
     /**
+     * Returns the selected value. May be empty if NoToggleToOff is set but there is no value
+     * selected.
+     * 
+     * @return A non-null string.
+     */
+    public String getValue()
+    {
+        COSBase value = getInheritableAttribute(COSName.V);
+        if (value instanceof COSName)
+        {
+            return ((COSName)value).getName();
+        }
+        else
+        {
+            return "";
+        }
+    }
+
+    /**
+     * Returns the default value, if any.
+     *
+     * @return A non-null string.
+     */
+    public String getDefaultValue()
+    {
+        COSBase value = getInheritableAttribute(COSName.DV);
+        if (value instanceof COSName)
+        {
+            return ((COSName)value).getName();
+        }
+        else
+        {
+            return "";
+        }
+    }
+
+    @Override
+    public String getValueAsString()
+    {
+        return getValue();
+    }    
+    
+    
+    /**
      * This will get the export values.
      * 
      * <p>The export values are defined in the field dictionaries /Opt key.</p>
