@@ -25,6 +25,7 @@ import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 
 import java.io.IOException;
+import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 
 /**
  * Tr: Set text rendering mode.
@@ -36,7 +37,16 @@ public class SetTextRenderingMode extends OperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
-        COSNumber mode = (COSNumber)arguments.get(0);
+        if (arguments.size() < 1)
+        {
+            throw new MissingOperandException(operator, arguments);
+        }
+        COSBase base0 = arguments.get(0);
+        if (!(base0 instanceof COSNumber))
+        {
+            return;
+        }
+        COSNumber mode = (COSNumber) base0;
         RenderingMode renderingMode = RenderingMode.fromInt(mode.intValue());
         context.getGraphicsState().getTextState().setRenderingMode(renderingMode);
     }
