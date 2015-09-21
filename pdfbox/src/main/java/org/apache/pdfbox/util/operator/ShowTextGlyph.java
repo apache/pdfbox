@@ -41,7 +41,12 @@ public class ShowTextGlyph extends OperatorProcessor
      */
     public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
-        COSArray array = (COSArray)arguments.get( 0 );
+        COSBase base = arguments.get(0);
+        if (!(base instanceof COSArray))
+        {
+            return;
+        }
+        COSArray array = (COSArray) base;
         int arraySize = array.size();
         float fontsize = context.getGraphicsState().getTextState().getFontSize();
         float horizontalScaling = context.getGraphicsState().getTextState().getHorizontalScalingPercent()/100;
