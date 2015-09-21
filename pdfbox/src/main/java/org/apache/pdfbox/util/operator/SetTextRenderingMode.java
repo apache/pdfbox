@@ -43,7 +43,16 @@ public class SetTextRenderingMode extends OperatorProcessor
      */
     public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
-        COSNumber mode = (COSNumber)arguments.get( 0 );
+        if (arguments.size() < 1)
+        {
+            return;
+        }
+        COSBase base0 = arguments.get(0);
+        if (!(base0 instanceof COSNumber))
+        {
+            return;
+        }
+        COSNumber mode = (COSNumber) base0;
         context.getGraphicsState().getTextState().setRenderingMode( mode.intValue() );
     }
 }
