@@ -38,8 +38,22 @@ public class MoveText extends OperatorProcessor
      */
     public void process(PDFOperator operator, List<COSBase> arguments)
     {
-        COSNumber x = (COSNumber)arguments.get( 0 );
-        COSNumber y = (COSNumber)arguments.get( 1 );
+        if (arguments.size() < 2)
+        {
+            return;
+        }
+        COSBase base0 = arguments.get(0);
+        COSBase base1 = arguments.get(1);
+        if (!(base0 instanceof COSNumber))
+        {
+            return;
+        }
+        if (!(base1 instanceof COSNumber))
+        {
+            return;
+        }
+        COSNumber x = (COSNumber) base0;
+        COSNumber y = (COSNumber) base1;
         Matrix td = new Matrix();
         td.setValue( 2, 0, x.floatValue() );
         td.setValue( 2, 1, y.floatValue() );
