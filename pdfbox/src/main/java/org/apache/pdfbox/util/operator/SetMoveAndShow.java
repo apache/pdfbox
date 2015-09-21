@@ -40,6 +40,10 @@ public class SetMoveAndShow extends OperatorProcessor
     {
         //Set word and character spacing, move to next line, and show text
         //
+        if (arguments.size() < 3)
+        {
+            return;
+        }
         context.processOperator("Tw", arguments.subList(0,1));
         context.processOperator("Tc", arguments.subList(1,2));
         context.processOperator("'", arguments.subList(2,3));
