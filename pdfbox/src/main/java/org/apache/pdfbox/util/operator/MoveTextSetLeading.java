@@ -43,7 +43,16 @@ public class MoveTextSetLeading extends OperatorProcessor
     public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
         //move text position and set leading
-        COSNumber y = (COSNumber)arguments.get( 1 );
+        if (arguments.size() < 2)
+        {
+            return;
+        }
+        COSBase base1 = arguments.get(1);
+        if (!(base1 instanceof COSNumber))
+        {
+            return;
+        }
+        COSNumber y = (COSNumber) base1;
 
         ArrayList<COSBase> args = new ArrayList<COSBase>();
         args.add(new COSFloat(-1*y.floatValue()));
