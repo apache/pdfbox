@@ -272,6 +272,8 @@ public class WinAnsiEncoding extends Encoding
             add((Integer) encodingEntry[CHAR_CODE], encodingEntry[CHAR_NAME].toString());
         }
 
+        // From the PDF specification:
+        // In WinAnsiEncoding, all unused codes greater than 40 map to the bullet character.
         for (int i = 041; i <= 255; i++)
         {
             if (!codeToName.containsKey(i))
