@@ -129,10 +129,60 @@ public class PDButtonTest
         assertEquals(checkbox.getDefaultValue(), COSName.Off.getName());   
     }
     
+    @Test
+    public void testAcrobatCheckBoxGroupProperties() throws IOException
+    {
+        PDCheckbox checkbox = (PDCheckbox) acrobatAcroForm.getField("CheckboxGroup");
+        assertEquals(checkbox.getValue(), "");
+        assertEquals(checkbox.isChecked(), false);
+
+        checkbox.check();
+        assertEquals(checkbox.getValue(), checkbox.getOnValue());
+        assertEquals(checkbox.isChecked(), true);
+        
+        assertEquals(checkbox.getOnValues().size(), 3);
+        assertTrue(checkbox.getOnValues().contains("Option1"));
+        assertTrue(checkbox.getOnValues().contains("Option2"));
+        assertTrue(checkbox.getOnValues().contains("Option3"));
+        
+        // test a value which sets one of the individual checkboxes within the group
+        checkbox.setValue("Option1");
+        assertEquals("Option1",checkbox.getValue());
+        assertEquals("Option1",checkbox.getValueAsString());
+
+        // ensure that for the widgets representing the individual checkboxes
+        // the AS entry has been set
+        assertEquals("Option1",checkbox.getWidgets().get(0).getAppearanceState().getName());
+        assertEquals("Off",checkbox.getWidgets().get(1).getAppearanceState().getName());
+        assertEquals("Off",checkbox.getWidgets().get(2).getAppearanceState().getName());
+        assertEquals("Off",checkbox.getWidgets().get(3).getAppearanceState().getName());
+        
+        // test a value which sets two of the individual chekboxes within the group
+        // as the have the same name entry for being checked
+        checkbox.setValue("Option3");
+        assertEquals("Option3",checkbox.getValue());
+        assertEquals("Option3",checkbox.getValueAsString());
+        
+        // ensure that for both widgets representing the individual checkboxes
+        // the AS entry has been set
+        assertEquals("Off",checkbox.getWidgets().get(0).getAppearanceState().getName());
+        assertEquals("Off",checkbox.getWidgets().get(1).getAppearanceState().getName());
+        assertEquals("Option3",checkbox.getWidgets().get(2).getAppearanceState().getName());
+        assertEquals("Option3",checkbox.getWidgets().get(3).getAppearanceState().getName());
+    }
+    
     @Test(expected=IllegalArgumentException.class)
     public void setCheckboxInvalidValue() throws IOException
     {
         PDCheckbox checkbox = (PDCheckbox) acrobatAcroForm.getField("Checkbox");
+        // Set a value which doesn't match the radio button list 
+        checkbox.setValue("InvalidValue");
+    }    
+
+    @Test(expected=IllegalArgumentException.class)
+    public void setCheckboxGroupInvalidValue() throws IOException
+    {
+        PDCheckbox checkbox = (PDCheckbox) acrobatAcroForm.getField("CheckboxGroup");
         // Set a value which doesn't match the radio button list 
         checkbox.setValue("InvalidValue");
     }    
