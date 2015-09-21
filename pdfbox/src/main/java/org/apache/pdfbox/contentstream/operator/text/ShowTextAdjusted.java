@@ -34,6 +34,10 @@ public class ShowTextAdjusted extends OperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
+        if (arguments.size() < 1)
+        {
+            return;
+        }
         COSBase base = arguments.get(0);
         if (!(base instanceof COSArray))
         {
