@@ -17,3 +17,4 @@ Afterwards, manually upload the artifacts into nexus:
 - Hit "Select Artifact(s) to Upload" and select .jar (and -sources.jar) from local .m2
 - Hit "Add Artifact" for each jar file selected
 - Hit "Upload Artifact(s)" to complete the upload
+- Repeat for all three projects: parent, fontbox-ai2, pdfbox-ai2
