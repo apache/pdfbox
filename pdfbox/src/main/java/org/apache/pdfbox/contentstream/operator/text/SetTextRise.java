@@ -24,6 +24,7 @@ import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 
 import java.io.IOException;
+import org.apache.pdfbox.cos.COSArray;
 
 /**
  * Ts: Set text rise.
@@ -35,7 +36,16 @@ public class SetTextRise extends OperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
-        COSNumber rise = (COSNumber)arguments.get(0);
+        if (arguments.size() < 1)
+        {
+            return;
+        }
+        COSBase base = arguments.get(0);
+        if (!(base instanceof COSNumber))
+        {
+            return;
+        }
+        COSNumber rise = (COSNumber) base;
         context.getGraphicsState().getTextState().setRise( rise.floatValue() );
     }
 
