@@ -333,7 +333,14 @@ public class FontManager
             {
                 throw new IOException("Can't load external font: " + ttffontname);
             }
-            ttfFont = ttfParser.parseTTF(fontStream);
+            try
+            {
+                ttfFont = ttfParser.parseTTF(fontStream);
+            }
+            finally
+            {
+                fontStream.close();
+            }
         }
         return ttfFont;
     }
