@@ -35,7 +35,7 @@ public class MemoryTTFDataStream extends TTFDataStream
     
     /**
      * Constructor from a stream. 
-     * @param is The stream of read from.
+     * @param is The stream to read from. It will be closed by this method.
      * @throws IOException If an error occurs while reading from the stream.
      */
     public MemoryTTFDataStream( InputStream is ) throws IOException
