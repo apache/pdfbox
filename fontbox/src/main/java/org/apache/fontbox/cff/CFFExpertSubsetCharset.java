@@ -25,6 +25,102 @@ package org.apache.fontbox.cff;
 public final class CFFExpertSubsetCharset extends CFFCharset
 {
 
+    private static final int CHAR_CODE = 0;
+    private static final int CHAR_NAME = 1;
+    
+    /**
+     * Table of character codes and their corresponding names.
+     */
+    public static final Object[][] CFF_EXPERT_SUBSET_CHARSET_TABLE = {
+            {0, ".notdef"},
+            {1, "space"},
+            {231, "dollaroldstyle"},
+            {232, "dollarsuperior"},
+            {235, "parenleftsuperior"},
+            {236, "parenrightsuperior"},
+            {237, "twodotenleader"},
+            {238, "onedotenleader"},
+            {13, "comma"},
+            {14, "hyphen"},
+            {15, "period"},
+            {99, "fraction"},
+            {239, "zerooldstyle"},
+            {240, "oneoldstyle"},
+            {241, "twooldstyle"},
+            {242, "threeoldstyle"},
+            {243, "fouroldstyle"},
+            {244, "fiveoldstyle"},
+            {245, "sixoldstyle"},
+            {246, "sevenoldstyle"},
+            {247, "eightoldstyle"},
+            {248, "nineoldstyle"},
+            {27, "colon"},
+            {28, "semicolon"},
+            {249, "commasuperior"},
+            {250, "threequartersemdash"},
+            {251, "periodsuperior"},
+            {253, "asuperior"},
+            {254, "bsuperior"},
+            {255, "centsuperior"},
+            {256, "dsuperior"},
+            {257, "esuperior"},
+            {258, "isuperior"},
+            {259, "lsuperior"},
+            {260, "msuperior"},
+            {261, "nsuperior"},
+            {262, "osuperior"},
+            {263, "rsuperior"},
+            {264, "ssuperior"},
+            {265, "tsuperior"},
+            {266, "ff"},
+            {109, "fi"},
+            {110, "fl"},
+            {267, "ffi"},
+            {268, "ffl"},
+            {269, "parenleftinferior"},
+            {270, "parenrightinferior"},
+            {272, "hyphensuperior"},
+            {300, "colonmonetary"},
+            {301, "onefitted"},
+            {302, "rupiah"},
+            {305, "centoldstyle"},
+            {314, "figuredash"},
+            {315, "hypheninferior"},
+            {158, "onequarter"},
+            {155, "onehalf"},
+            {163, "threequarters"},
+            {320, "oneeighth"},
+            {321, "threeeighths"},
+            {322, "fiveeighths"},
+            {323, "seveneighths"},
+            {324, "onethird"},
+            {325, "twothirds"},
+            {326, "zerosuperior"},
+            {150, "onesuperior"},
+            {164, "twosuperior"},
+            {169, "threesuperior"},
+            {327, "foursuperior"},
+            {328, "fivesuperior"},
+            {329, "sixsuperior"},
+            {330, "sevensuperior"},
+            {331, "eightsuperior"},
+            {332, "ninesuperior"},
+            {333, "zeroinferior"},
+            {334, "oneinferior"},
+            {335, "twoinferior"},
+            {336, "threeinferior"},
+            {337, "fourinferior"},
+            {338, "fiveinferior"},
+            {339, "sixinferior"},
+            {340, "seveninferior"},
+            {341, "eightinferior"},
+            {342, "nineinferior"},
+            {343, "centinferior"},
+            {344, "dollarinferior"},
+            {345, "periodinferior"},
+            {346, "commainferior"}
+    };
+    
     private CFFExpertSubsetCharset()
     {
         super(false);
@@ -44,92 +140,9 @@ public final class CFFExpertSubsetCharset extends CFFCharset
     static
     {
         int gid = 0;
-        INSTANCE.addSID(gid++, 0, ".notdef");
-        INSTANCE.addSID(gid++, 1, "space");
-        INSTANCE.addSID(gid++, 231, "dollaroldstyle");
-        INSTANCE.addSID(gid++, 232, "dollarsuperior");
-        INSTANCE.addSID(gid++, 235, "parenleftsuperior");
-        INSTANCE.addSID(gid++, 236, "parenrightsuperior");
-        INSTANCE.addSID(gid++, 237, "twodotenleader");
-        INSTANCE.addSID(gid++, 238, "onedotenleader");
-        INSTANCE.addSID(gid++, 13, "comma");
-        INSTANCE.addSID(gid++, 14, "hyphen");
-        INSTANCE.addSID(gid++, 15, "period");
-        INSTANCE.addSID(gid++, 99, "fraction");
-        INSTANCE.addSID(gid++, 239, "zerooldstyle");
-        INSTANCE.addSID(gid++, 240, "oneoldstyle");
-        INSTANCE.addSID(gid++, 241, "twooldstyle");
-        INSTANCE.addSID(gid++, 242, "threeoldstyle");
-        INSTANCE.addSID(gid++, 243, "fouroldstyle");
-        INSTANCE.addSID(gid++, 244, "fiveoldstyle");
-        INSTANCE.addSID(gid++, 245, "sixoldstyle");
-        INSTANCE.addSID(gid++, 246, "sevenoldstyle");
-        INSTANCE.addSID(gid++, 247, "eightoldstyle");
-        INSTANCE.addSID(gid++, 248, "nineoldstyle");
-        INSTANCE.addSID(gid++, 27, "colon");
-        INSTANCE.addSID(gid++, 28, "semicolon");
-        INSTANCE.addSID(gid++, 249, "commasuperior");
-        INSTANCE.addSID(gid++, 250, "threequartersemdash");
-        INSTANCE.addSID(gid++, 251, "periodsuperior");
-        INSTANCE.addSID(gid++, 253, "asuperior");
-        INSTANCE.addSID(gid++, 254, "bsuperior");
-        INSTANCE.addSID(gid++, 255, "centsuperior");
-        INSTANCE.addSID(gid++, 256, "dsuperior");
-        INSTANCE.addSID(gid++, 257, "esuperior");
-        INSTANCE.addSID(gid++, 258, "isuperior");
-        INSTANCE.addSID(gid++, 259, "lsuperior");
-        INSTANCE.addSID(gid++, 260, "msuperior");
-        INSTANCE.addSID(gid++, 261, "nsuperior");
-        INSTANCE.addSID(gid++, 262, "osuperior");
-        INSTANCE.addSID(gid++, 263, "rsuperior");
-        INSTANCE.addSID(gid++, 264, "ssuperior");
-        INSTANCE.addSID(gid++, 265, "tsuperior");
-        INSTANCE.addSID(gid++, 266, "ff");
-        INSTANCE.addSID(gid++, 109, "fi");
-        INSTANCE.addSID(gid++, 110, "fl");
-        INSTANCE.addSID(gid++, 267, "ffi");
-        INSTANCE.addSID(gid++, 268, "ffl");
-        INSTANCE.addSID(gid++, 269, "parenleftinferior");
-        INSTANCE.addSID(gid++, 270, "parenrightinferior");
-        INSTANCE.addSID(gid++, 272, "hyphensuperior");
-        INSTANCE.addSID(gid++, 300, "colonmonetary");
-        INSTANCE.addSID(gid++, 301, "onefitted");
-        INSTANCE.addSID(gid++, 302, "rupiah");
-        INSTANCE.addSID(gid++, 305, "centoldstyle");
-        INSTANCE.addSID(gid++, 314, "figuredash");
-        INSTANCE.addSID(gid++, 315, "hypheninferior");
-        INSTANCE.addSID(gid++, 158, "onequarter");
-        INSTANCE.addSID(gid++, 155, "onehalf");
-        INSTANCE.addSID(gid++, 163, "threequarters");
-        INSTANCE.addSID(gid++, 320, "oneeighth");
-        INSTANCE.addSID(gid++, 321, "threeeighths");
-        INSTANCE.addSID(gid++, 322, "fiveeighths");
-        INSTANCE.addSID(gid++, 323, "seveneighths");
-        INSTANCE.addSID(gid++, 324, "onethird");
-        INSTANCE.addSID(gid++, 325, "twothirds");
-        INSTANCE.addSID(gid++, 326, "zerosuperior");
-        INSTANCE.addSID(gid++, 150, "onesuperior");
-        INSTANCE.addSID(gid++, 164, "twosuperior");
-        INSTANCE.addSID(gid++, 169, "threesuperior");
-        INSTANCE.addSID(gid++, 327, "foursuperior");
-        INSTANCE.addSID(gid++, 328, "fivesuperior");
-        INSTANCE.addSID(gid++, 329, "sixsuperior");
-        INSTANCE.addSID(gid++, 330, "sevensuperior");
-        INSTANCE.addSID(gid++, 331, "eightsuperior");
-        INSTANCE.addSID(gid++, 332, "ninesuperior");
-        INSTANCE.addSID(gid++, 333, "zeroinferior");
-        INSTANCE.addSID(gid++, 334, "oneinferior");
-        INSTANCE.addSID(gid++, 335, "twoinferior");
-        INSTANCE.addSID(gid++, 336, "threeinferior");
-        INSTANCE.addSID(gid++, 337, "fourinferior");
-        INSTANCE.addSID(gid++, 338, "fiveinferior");
-        INSTANCE.addSID(gid++, 339, "sixinferior");
-        INSTANCE.addSID(gid++, 340, "seveninferior");
-        INSTANCE.addSID(gid++, 341, "eightinferior");
-        INSTANCE.addSID(gid++, 342, "nineinferior");
-        INSTANCE.addSID(gid++, 343, "centinferior");
-        INSTANCE.addSID(gid++, 344, "dollarinferior");
-        INSTANCE.addSID(gid++, 345, "periodinferior");
-        INSTANCE.addSID(gid++, 346, "commainferior");
+        for (Object[] encodingEntry : CFF_EXPERT_SUBSET_CHARSET_TABLE)
+        {
+            INSTANCE.addSID(gid++, (Integer) encodingEntry[CHAR_CODE], encodingEntry[CHAR_NAME].toString());
+        }
     }
 }
