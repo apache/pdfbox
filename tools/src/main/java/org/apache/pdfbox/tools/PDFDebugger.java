@@ -1020,12 +1020,22 @@ public class PDFDebugger extends JFrame
             public void uncaughtException(Thread thread, Throwable throwable)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.append(throwable.toString());
-                for (StackTraceElement element : throwable.getStackTrace())
+                Throwable t = throwable;
+                do
                 {
-                    sb.append('\n');
-                    sb.append(element);
+                    sb.append(t.toString());
+                    for (StackTraceElement element : t.getStackTrace())
+                    {
+                        sb.append("\n    at ");
+                        sb.append(element);
+                    }
+                    t = t.getCause();
+                    if (t != null)
+                    {
+                        sb.append("\nCaused by: ");
+                    }
                 }
+                while (t != null);
                 JOptionPane.showMessageDialog(null, "Error: " + sb.toString(), "Error",
                         JOptionPane.ERROR_MESSAGE);
             }
