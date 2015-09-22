@@ -21,7 +21,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 
-abstract class AbstractTTFParser {
+abstract class AbstractTTFParser
+{
 	
     protected boolean isEmbedded = false;
     protected boolean parseOnDemandOnly = false;
@@ -32,7 +33,7 @@ abstract class AbstractTTFParser {
      * @param fontIsEmbedded indicates whether the font is embedded or not.
      * 
      */
-    public AbstractTTFParser(boolean fontIsEmbedded)
+    AbstractTTFParser(boolean fontIsEmbedded)
     {
         this(fontIsEmbedded, false);
     }
@@ -43,7 +44,7 @@ abstract class AbstractTTFParser {
      * @param fontIsEmbedded indicates whether the font is embedded or not.
      * @param parseOnDemand indicates whether the tables of the font should be parsed on demand only or not.
      */
-    public AbstractTTFParser(boolean fontIsEmbedded, boolean parseOnDemand)
+    AbstractTTFParser(boolean fontIsEmbedded, boolean parseOnDemand)
     {
         isEmbedded = fontIsEmbedded;
         parseOnDemandOnly = parseOnDemand;
@@ -57,8 +58,7 @@ abstract class AbstractTTFParser {
      */
     public TrueTypeFont parseTTF( String ttfFile ) throws IOException
     {
-        RAFDataStream raf = new RAFDataStream( ttfFile, "r" );
-        return parseTTF( raf );
+        return parseTTF(new File(ttfFile));
     }
     
     /**
@@ -69,8 +69,17 @@ abstract class AbstractTTFParser {
      */
     public TrueTypeFont parseTTF( File ttfFile ) throws IOException
     {
-        RAFDataStream raf = new RAFDataStream( ttfFile, "r" );
-        return parseTTF( raf );
+        TrueTypeFont ttf = null;
+        RAFDataStream raf = new RAFDataStream(ttfFile, "r");
+        try
+        {
+            ttf = parseTTF(raf);
+        }
+        finally
+        {
+            raf.close();
+        }
+        return ttf;
     }
     
     /**
