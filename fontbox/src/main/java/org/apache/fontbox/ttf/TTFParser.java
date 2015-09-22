@@ -95,15 +95,15 @@ public class TTFParser
     }
 
     /**
-     * Parse a file and get a true type font.
+     * Parse an input stream and return a TrueType font.
      *
-     * @param ttfData The TTF data to parse.
-     * @return A true type font.
-     * @throws IOException If there is an error parsing the true type font.
+     * @param inputStream The TTF data stream to parse from. It will be closed before returning.
+     * @return A TrueType font.
+     * @throws IOException If there is an error parsing the TrueType font.
      */
-    public TrueTypeFont parse(InputStream ttfData) throws IOException
+    public TrueTypeFont parse(InputStream inputStream) throws IOException
     {
-        return parse(new MemoryTTFDataStream(ttfData));
+        return parse(new MemoryTTFDataStream(inputStream));
     }
 
     /**
