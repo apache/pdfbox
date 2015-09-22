@@ -27,7 +27,7 @@ public final class CFFExpertCharset extends CFFCharset
     private static final int CHAR_NAME = 1;
     
     /**
-     * Table of octal character codes and their corresponding names.
+     * Table of character codes and their corresponding names.
      */
     public static final Object[][] CFF_EXPERT_CHARSET_TABLE = {
             {0, ".notdef"},
