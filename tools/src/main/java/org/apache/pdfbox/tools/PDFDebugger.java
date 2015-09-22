@@ -72,6 +72,7 @@ import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.tools.gui.ArrayEntry;
 import org.apache.pdfbox.tools.gui.DocumentEntry;
+import org.apache.pdfbox.tools.gui.ErrorDialog;
 import org.apache.pdfbox.tools.gui.MapEntry;
 import org.apache.pdfbox.tools.gui.OSXAdapter;
 import org.apache.pdfbox.tools.gui.PDFTreeCellRenderer;
@@ -1020,24 +1021,7 @@ public class PDFDebugger extends JFrame
             public void uncaughtException(Thread thread, Throwable throwable)
             {
                 StringBuilder sb = new StringBuilder();
-                Throwable t = throwable;
-                do
-                {
-                    sb.append(t.toString());
-                    for (StackTraceElement element : t.getStackTrace())
-                    {
-                        sb.append("\n    at ");
-                        sb.append(element);
-                    }
-                    t = t.getCause();
-                    if (t != null)
-                    {
-                        sb.append("\nCaused by: ");
-                    }
-                }
-                while (t != null);
-                JOptionPane.showMessageDialog(null, "Error: " + sb.toString(), "Error",
-                        JOptionPane.ERROR_MESSAGE);
+                new ErrorDialog(throwable).setVisible(true);
             }
         });
         
