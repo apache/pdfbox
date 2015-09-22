@@ -86,8 +86,8 @@ abstract class AbstractTTFParser
      * Parse an input stream and return a TrueType font.
      *
      * @param inputStream The TTF data stream to parse from. It will be closed before returning.
-     * @return A true type font.
-     * @throws IOException If there is an error parsing the true type font.
+     * @return A TrueType font.
+     * @throws IOException If there is an error parsing the TrueType font.
      */
     public TrueTypeFont parseTTF(InputStream inputStream) throws IOException
     {
