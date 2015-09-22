@@ -51,10 +51,10 @@ abstract class AbstractTTFParser
     }
 
     /**
-     * Parse a file and get a true type font.
-     * @param ttfFile The TTF file.
-     * @return A true type font.
-     * @throws IOException If there is an error parsing the true type font.
+     * Parse a file and get a TrueType font.
+     * @param ttfFile The TrueType file name.
+     * @return A TrueType font.
+     * @throws IOException If there is an error parsing the TrueType font.
      */
     public TrueTypeFont parseTTF( String ttfFile ) throws IOException
     {
@@ -62,10 +62,10 @@ abstract class AbstractTTFParser
     }
     
     /**
-     * Parse a file and get a true type font.
-     * @param ttfFile The TTF file.
-     * @return A true type font.
-     * @throws IOException If there is an error parsing the true type font.
+     * Parse a file and get a TrueType font.
+     * @param ttfFile The TrueType file.
+     * @return A TrueType font.
+     * @throws IOException If there is an error parsing the TrueType font.
      */
     public TrueTypeFont parseTTF( File ttfFile ) throws IOException
     {
@@ -95,10 +95,10 @@ abstract class AbstractTTFParser
     }
     
     /**
-     * Parse a file and get a true type font.
-     * @param raf The TTF file.
-     * @return A true type font.
-     * @throws IOException If there is an error parsing the true type font.
+     * Parse a TrueType data stream and get a TrueType font.
+     * @param raf The TrueType file.
+     * @return A TrueType font.
+     * @throws IOException If there is an error parsing the TrueType font.
      */
     public TrueTypeFont parseTTF( TTFDataStream raf ) throws IOException
     {
@@ -125,7 +125,7 @@ abstract class AbstractTTFParser
      * Parse all tables and check if all needed tables are present.
      * @param font the TrueTypeFont instance holding the parsed data.
      * @param raf the data stream of the to be parsed ttf font
-     * @throws IOException If there is an error parsing the true type font.
+     * @throws IOException If there is an error parsing the TrueType font.
      */
     protected void parseTables(TrueTypeFont font, TTFDataStream raf)
     throws IOException {
