@@ -797,12 +797,12 @@ public class PDTrueTypeFont extends PDSimpleFont
                 CMAPEncodingEntry[] cmaps = cmapTable.getCmaps();
                 for (int i = 0; i < cmaps.length; i++)
                 {
+                    if (cmaps[i] == null)
+                    {
+                        continue;
+                    }
                     if (CMAPTable.PLATFORM_WINDOWS == cmaps[i].getPlatformId())
                     {
-                        if (cmaps[i] == null)
-                        {
-                            continue;
-                        }
                         if (CMAPTable.ENCODING_UNICODE == cmaps[i].getPlatformEncodingId())
                         {
                             cmapWinUnicode = cmaps[i];
