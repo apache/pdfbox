@@ -140,9 +140,9 @@ public final class CFFExpertSubsetCharset extends CFFCharset
     static
     {
         int gid = 0;
-        for (Object[] encodingEntry : CFF_EXPERT_SUBSET_CHARSET_TABLE)
+        for (Object[] charsetEntry : CFF_EXPERT_SUBSET_CHARSET_TABLE)
         {
-            INSTANCE.addSID(gid++, (Integer) encodingEntry[CHAR_CODE], encodingEntry[CHAR_NAME].toString());
+            INSTANCE.addSID(gid++, (Integer) charsetEntry[CHAR_CODE], charsetEntry[CHAR_NAME].toString());
         }
     }
 }
