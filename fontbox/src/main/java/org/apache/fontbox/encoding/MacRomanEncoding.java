@@ -25,6 +25,224 @@ package org.apache.fontbox.encoding;
  */
 public class MacRomanEncoding extends Encoding
 {
+
+    private static final int CHAR_CODE = 0;
+    private static final int CHAR_NAME = 1;
+    
+    /**
+     * Table of octal character codes and their corresponding names.
+     */
+    public static final Object[][] MAC_ROMAN_ENCODING_TABLE = {
+            {0101, "A"},
+            {0256, "AE"},
+            {0347, "Aacute"},
+            {0345, "Acircumflex"},
+            {0200, "Adieresis"},
+            {0313, "Agrave"},
+            {0201, "Aring"},
+            {0314, "Atilde"},
+            {0102, "B"},
+            {0103, "C"},
+            {0202, "Ccedilla"},
+            {0104, "D"},
+            {0105, "E"},
+            {0203, "Eacute"},
+            {0346, "Ecircumflex"},
+            {0350, "Edieresis"},
+            {0351, "Egrave"},
+            {0106, "F"},
+            {0107, "G"},
+            {0110, "H"},
+            {0111, "I"},
+            {0352, "Iacute"},
+            {0353, "Icircumflex"},
+            {0354, "Idieresis"},
+            {0355, "Igrave"},
+            {0112, "J"},
+            {0113, "K"},
+            {0114, "L"},
+            {0115, "M"},
+            {0116, "N"},
+            {0204, "Ntilde"},
+            {0117, "O"},
+            {0316, "OE"},
+            {0356, "Oacute"},
+            {0357, "Ocircumflex"},
+            {0205, "Odieresis"},
+            {0361, "Ograve"},
+            {0257, "Oslash"},
+            {0315, "Otilde"},
+            {0120, "P"},
+            {0121, "Q"},
+            {0122, "R"},
+            {0123, "S"},
+            {0124, "T"},
+            {0125, "U"},
+            {0362, "Uacute"},
+            {0363, "Ucircumflex"},
+            {0206, "Udieresis"},
+            {0364, "Ugrave"},
+            {0126, "V"},
+            {0127, "W"},
+            {0130, "X"},
+            {0131, "Y"},
+            {0331, "Ydieresis"},
+            {0132, "Z"},
+            {0141, "a"},
+            {0207, "aacute"},
+            {0211, "acircumflex"},
+            {0253, "acute"},
+            {0212, "adieresis"},
+            {0276, "ae"},
+            {0210, "agrave"},
+            {046, "ampersand"},
+            {0214, "aring"},
+            {0136, "asciicircum"},
+            {0176, "asciitilde"},
+            {052, "asterisk"},
+            {0100, "at"},
+            {0213, "atilde"},
+            {0142, "b"},
+            {0134, "backslash"},
+            {0174, "bar"},
+            {0173, "braceleft"},
+            {0175, "braceright"},
+            {0133, "bracketleft"},
+            {0135, "bracketright"},
+            {0371, "breve"},
+            {0245, "bullet"},
+            {0143, "c"},
+            {0377, "caron"},
+            {0215, "ccedilla"},
+            {0374, "cedilla"},
+            {0242, "cent"},
+            {0366, "circumflex"},
+            {072, "colon"},
+            {054, "comma"},
+            {0251, "copyright"},
+            {0333, "currency"},
+            {0144, "d"},
+            {0240, "dagger"},
+            {0340, "daggerdbl"},
+            {0241, "degree"},
+            {0254, "dieresis"},
+            {0326, "divide"},
+            {044, "dollar"},
+            {0372, "dotaccent"},
+            {0365, "dotlessi"},
+            {0145, "e"},
+            {0216, "eacute"},
+            {0220, "ecircumflex"},
+            {0221, "edieresis"},
+            {0217, "egrave"},
+            {070, "eight"},
+            {0311, "ellipsis"},
+            {0321, "emdash"},
+            {0320, "endash"},
+            {075, "equal"},
+            {041, "exclam"},
+            {0301, "exclamdown"},
+            {0146, "f"},
+            {0336, "fi"},
+            {065, "five"},
+            {0337, "fl"},
+            {0304, "florin"},
+            {064, "four"},
+            {0332, "fraction"},
+            {0147, "g"},
+            {0247, "germandbls"},
+            {0140, "grave"},
+            {076, "greater"},
+            {0307, "guillemotleft"},
+            {0310, "guillemotright"},
+            {0334, "guilsinglleft"},
+            {0335, "guilsinglright"},
+            {0150, "h"},
+            {0375, "hungarumlaut"},
+            {055, "hyphen"},
+            {0151, "i"},
+            {0222, "iacute"},
+            {0224, "icircumflex"},
+            {0225, "idieresis"},
+            {0223, "igrave"},
+            {0152, "j"},
+            {0153, "k"},
+            {0154, "l"},
+            {074, "less"},
+            {0302, "logicalnot"},
+            {0155, "m"},
+            {0370, "macron"},
+            {0265, "mu"},
+            {0156, "n"},
+            {071, "nine"},
+            {0226, "ntilde"},
+            {043, "numbersign"},
+            {0157, "o"},
+            {0227, "oacute"},
+            {0231, "ocircumflex"},
+            {0232, "odieresis"},
+            {0317, "oe"},
+            {0376, "ogonek"},
+            {0230, "ograve"},
+            {061, "one"},
+            {0273, "ordfeminine"},
+            {0274, "ordmasculine"},
+            {0277, "oslash"},
+            {0233, "otilde"},
+            {0160, "p"},
+            {0246, "paragraph"},
+            {050, "parenleft"},
+            {051, "parenright"},
+            {045, "percent"},
+            {056, "period"},
+            {0341, "periodcentered"},
+            {0344, "perthousand"},
+            {053, "plus"},
+            {0261, "plusminus"},
+            {0161, "q"},
+            {077, "question"},
+            {0300, "questiondown"},
+            {042, "quotedbl"},
+            {0343, "quotedblbase"},
+            {0322, "quotedblleft"},
+            {0323, "quotedblright"},
+            {0324, "quoteleft"},
+            {0325, "quoteright"},
+            {0342, "quotesinglbase"},
+            {047, "quotesingle"},
+            {0162, "r"},
+            {0250, "registered"},
+            {0373, "ring"},
+            {0163, "s"},
+            {0244, "section"},
+            {073, "semicolon"},
+            {067, "seven"},
+            {066, "six"},
+            {057, "slash"},
+            {040, "space"},
+            {0243, "sterling"},
+            {0164, "t"},
+            {063, "three"},
+            {0367, "tilde"},
+            {0252, "trademark"},
+            {062, "two"},
+            {0165, "u"},
+            {0234, "uacute"},
+            {0236, "ucircumflex"},
+            {0237, "udieresis"},
+            {0235, "ugrave"},
+            {0137, "underscore"},
+            {0166, "v"},
+            {0167, "w"},
+            {0170, "x"},
+            {0171, "y"},
+            {0330, "ydieresis"},
+            {0264, "yen"},
+            {0172, "z"},
+            {060, "zero"}
+            
+    };
+    
     /**
      * Singleton instance of this class.
      *
@@ -36,212 +254,9 @@ public class MacRomanEncoding extends Encoding
      */
     public MacRomanEncoding()
     {
-        addCharacterEncoding( 0101, "A" );
-        addCharacterEncoding( 0256, "AE" );
-        addCharacterEncoding( 0347, "Aacute" );
-        addCharacterEncoding( 0345, "Acircumflex" );
-        addCharacterEncoding( 0200, "Adieresis" );
-        addCharacterEncoding( 0313, "Agrave" );
-        addCharacterEncoding( 0201, "Aring" );
-        addCharacterEncoding( 0314, "Atilde" );
-        addCharacterEncoding( 0102, "B" );
-        addCharacterEncoding( 0103, "C" );
-        addCharacterEncoding( 0202, "Ccedilla" );
-        addCharacterEncoding( 0104, "D" );
-        addCharacterEncoding( 0105, "E" );
-        addCharacterEncoding( 0203, "Eacute" );
-        addCharacterEncoding( 0346, "Ecircumflex" );
-        addCharacterEncoding( 0350, "Edieresis" );
-        addCharacterEncoding( 0351, "Egrave" );
-        addCharacterEncoding( 0106, "F" );
-        addCharacterEncoding( 0107, "G" );
-        addCharacterEncoding( 0110, "H" );
-        addCharacterEncoding( 0111, "I" );
-        addCharacterEncoding( 0352, "Iacute" );
-        addCharacterEncoding( 0353, "Icircumflex" );
-        addCharacterEncoding( 0354, "Idieresis" );
-        addCharacterEncoding( 0355, "Igrave" );
-        addCharacterEncoding( 0112, "J" );
-        addCharacterEncoding( 0113, "K" );
-        addCharacterEncoding( 0114, "L" );
-        addCharacterEncoding( 0115, "M" );
-        addCharacterEncoding( 0116, "N" );
-        addCharacterEncoding( 0204, "Ntilde" );
-        addCharacterEncoding( 0117, "O" );
-        addCharacterEncoding( 0316, "OE" );
-        addCharacterEncoding( 0356, "Oacute" );
-        addCharacterEncoding( 0357, "Ocircumflex" );
-        addCharacterEncoding( 0205, "Odieresis" );
-        addCharacterEncoding( 0361, "Ograve" );
-        addCharacterEncoding( 0257, "Oslash" );
-        addCharacterEncoding( 0315, "Otilde" );
-        addCharacterEncoding( 0120, "P" );
-        addCharacterEncoding( 0121, "Q" );
-        addCharacterEncoding( 0122, "R" );
-        addCharacterEncoding( 0123, "S" );
-        addCharacterEncoding( 0124, "T" );
-        addCharacterEncoding( 0125, "U" );
-        addCharacterEncoding( 0362, "Uacute" );
-        addCharacterEncoding( 0363, "Ucircumflex" );
-        addCharacterEncoding( 0206, "Udieresis" );
-        addCharacterEncoding( 0364, "Ugrave" );
-        addCharacterEncoding( 0126, "V" );
-        addCharacterEncoding( 0127, "W" );
-        addCharacterEncoding( 0130, "X" );
-        addCharacterEncoding( 0131, "Y" );
-        addCharacterEncoding( 0331, "Ydieresis" );
-        addCharacterEncoding( 0132, "Z" );
-        addCharacterEncoding( 0141, "a" );
-        addCharacterEncoding( 0207, "aacute" );
-        addCharacterEncoding( 0211, "acircumflex" );
-        addCharacterEncoding( 0253, "acute" );
-        addCharacterEncoding( 0212, "adieresis" );
-        addCharacterEncoding( 0276, "ae" );
-        addCharacterEncoding( 0210, "agrave" );
-        addCharacterEncoding( 046, "ampersand" );
-        addCharacterEncoding( 0214, "aring" );
-        addCharacterEncoding( 0136, "asciicircum" );
-        addCharacterEncoding( 0176, "asciitilde" );
-        addCharacterEncoding( 052, "asterisk" );
-        addCharacterEncoding( 0100, "at" );
-        addCharacterEncoding( 0213, "atilde" );
-        addCharacterEncoding( 0142, "b" );
-        addCharacterEncoding( 0134, "backslash" );
-        addCharacterEncoding( 0174, "bar" );
-        addCharacterEncoding( 0173, "braceleft" );
-        addCharacterEncoding( 0175, "braceright" );
-        addCharacterEncoding( 0133, "bracketleft" );
-        addCharacterEncoding( 0135, "bracketright" );
-        addCharacterEncoding( 0371, "breve" );
-        addCharacterEncoding( 0245, "bullet" );
-        addCharacterEncoding( 0143, "c" );
-        addCharacterEncoding( 0377, "caron" );
-        addCharacterEncoding( 0215, "ccedilla" );
-        addCharacterEncoding( 0374, "cedilla" );
-        addCharacterEncoding( 0242, "cent" );
-        addCharacterEncoding( 0366, "circumflex" );
-        addCharacterEncoding( 072, "colon" );
-        addCharacterEncoding( 054, "comma" );
-        addCharacterEncoding( 0251, "copyright" );
-        addCharacterEncoding( 0333, "currency" );
-        addCharacterEncoding( 0144, "d" );
-        addCharacterEncoding( 0240, "dagger" );
-        addCharacterEncoding( 0340, "daggerdbl" );
-        addCharacterEncoding( 0241, "degree" );
-        addCharacterEncoding( 0254, "dieresis" );
-        addCharacterEncoding( 0326, "divide" );
-        addCharacterEncoding( 044, "dollar" );
-        addCharacterEncoding( 0372, "dotaccent" );
-        addCharacterEncoding( 0365, "dotlessi" );
-        addCharacterEncoding( 0145, "e" );
-        addCharacterEncoding( 0216, "eacute" );
-        addCharacterEncoding( 0220, "ecircumflex" );
-        addCharacterEncoding( 0221, "edieresis" );
-        addCharacterEncoding( 0217, "egrave" );
-        addCharacterEncoding( 070, "eight" );
-        addCharacterEncoding( 0311, "ellipsis" );
-        addCharacterEncoding( 0321, "emdash" );
-        addCharacterEncoding( 0320, "endash" );
-        addCharacterEncoding( 075, "equal" );
-        addCharacterEncoding( 041, "exclam" );
-        addCharacterEncoding( 0301, "exclamdown" );
-        addCharacterEncoding( 0146, "f" );
-        addCharacterEncoding( 0336, "fi" );
-        addCharacterEncoding( 065, "five" );
-        addCharacterEncoding( 0337, "fl" );
-        addCharacterEncoding( 0304, "florin" );
-        addCharacterEncoding( 064, "four" );
-        addCharacterEncoding( 0332, "fraction" );
-        addCharacterEncoding( 0147, "g" );
-        addCharacterEncoding( 0247, "germandbls" );
-        addCharacterEncoding( 0140, "grave" );
-        addCharacterEncoding( 076, "greater" );
-        addCharacterEncoding( 0307, "guillemotleft" );
-        addCharacterEncoding( 0310, "guillemotright" );
-        addCharacterEncoding( 0334, "guilsinglleft" );
-        addCharacterEncoding( 0335, "guilsinglright" );
-        addCharacterEncoding( 0150, "h" );
-        addCharacterEncoding( 0375, "hungarumlaut" );
-        addCharacterEncoding( 055, "hyphen" );
-        addCharacterEncoding( 0151, "i" );
-        addCharacterEncoding( 0222, "iacute" );
-        addCharacterEncoding( 0224, "icircumflex" );
-        addCharacterEncoding( 0225, "idieresis" );
-        addCharacterEncoding( 0223, "igrave" );
-        addCharacterEncoding( 0152, "j" );
-        addCharacterEncoding( 0153, "k" );
-        addCharacterEncoding( 0154, "l" );
-        addCharacterEncoding( 074, "less" );
-        addCharacterEncoding( 0302, "logicalnot" );
-        addCharacterEncoding( 0155, "m" );
-        addCharacterEncoding( 0370, "macron" );
-        addCharacterEncoding( 0265, "mu" );
-        addCharacterEncoding( 0156, "n" );
-        addCharacterEncoding( 071, "nine" );
-        addCharacterEncoding( 0226, "ntilde" );
-        addCharacterEncoding( 043, "numbersign" );
-        addCharacterEncoding( 0157, "o" );
-        addCharacterEncoding( 0227, "oacute" );
-        addCharacterEncoding( 0231, "ocircumflex" );
-        addCharacterEncoding( 0232, "odieresis" );
-        addCharacterEncoding( 0317, "oe" );
-        addCharacterEncoding( 0376, "ogonek" );
-        addCharacterEncoding( 0230, "ograve" );
-        addCharacterEncoding( 061, "one" );
-        addCharacterEncoding( 0273, "ordfeminine" );
-        addCharacterEncoding( 0274, "ordmasculine" );
-        addCharacterEncoding( 0277, "oslash" );
-        addCharacterEncoding( 0233, "otilde" );
-        addCharacterEncoding( 0160, "p" );
-        addCharacterEncoding( 0246, "paragraph" );
-        addCharacterEncoding( 050, "parenleft" );
-        addCharacterEncoding( 051, "parenright" );
-        addCharacterEncoding( 045, "percent" );
-        addCharacterEncoding( 056, "period" );
-        addCharacterEncoding( 0341, "periodcentered" );
-        addCharacterEncoding( 0344, "perthousand" );
-        addCharacterEncoding( 053, "plus" );
-        addCharacterEncoding( 0261, "plusminus" );
-        addCharacterEncoding( 0161, "q" );
-        addCharacterEncoding( 077, "question" );
-        addCharacterEncoding( 0300, "questiondown" );
-        addCharacterEncoding( 042, "quotedbl" );
-        addCharacterEncoding( 0343, "quotedblbase" );
-        addCharacterEncoding( 0322, "quotedblleft" );
-        addCharacterEncoding( 0323, "quotedblright" );
-        addCharacterEncoding( 0324, "quoteleft" );
-        addCharacterEncoding( 0325, "quoteright" );
-        addCharacterEncoding( 0342, "quotesinglbase" );
-        addCharacterEncoding( 047, "quotesingle" );
-        addCharacterEncoding( 0162, "r" );
-        addCharacterEncoding( 0250, "registered" );
-        addCharacterEncoding( 0373, "ring" );
-        addCharacterEncoding( 0163, "s" );
-        addCharacterEncoding( 0244, "section" );
-        addCharacterEncoding( 073, "semicolon" );
-        addCharacterEncoding( 067, "seven" );
-        addCharacterEncoding( 066, "six" );
-        addCharacterEncoding( 057, "slash" );
-        addCharacterEncoding( 040, "space" );
-        addCharacterEncoding( 0243, "sterling" );
-        addCharacterEncoding( 0164, "t" );
-        addCharacterEncoding( 063, "three" );
-        addCharacterEncoding( 0367, "tilde" );
-        addCharacterEncoding( 0252, "trademark" );
-        addCharacterEncoding( 062, "two" );
-        addCharacterEncoding( 0165, "u" );
-        addCharacterEncoding( 0234, "uacute" );
-        addCharacterEncoding( 0236, "ucircumflex" );
-        addCharacterEncoding( 0237, "udieresis" );
-        addCharacterEncoding( 0235, "ugrave" );
-        addCharacterEncoding( 0137, "underscore" );
-        addCharacterEncoding( 0166, "v" );
-        addCharacterEncoding( 0167, "w" );
-        addCharacterEncoding( 0170, "x" );
-        addCharacterEncoding( 0171, "y" );
-        addCharacterEncoding( 0330, "ydieresis" );
-        addCharacterEncoding( 0264, "yen" );
-        addCharacterEncoding( 0172, "z" );
-        addCharacterEncoding( 060, "zero" );
+        for (Object[] encodingEntry : MAC_ROMAN_ENCODING_TABLE)
+        {
+            addCharacterEncoding((Integer) encodingEntry[CHAR_CODE], encodingEntry[CHAR_NAME].toString());
+        }
     }
 }
