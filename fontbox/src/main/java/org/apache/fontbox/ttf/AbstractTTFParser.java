@@ -69,8 +69,17 @@ abstract class AbstractTTFParser
      */
     public TrueTypeFont parseTTF( File ttfFile ) throws IOException
     {
-        RAFDataStream raf = new RAFDataStream( ttfFile, "r" );
-        return parseTTF( raf );
+        RAFDataStream raf = new RAFDataStream(ttfFile, "r");
+        try
+        {
+            return parseTTF(raf);
+        }
+        catch (IOException ex)
+        {
+            // close only on error (file is still being accessed later)
+            raf.close();
+            throw ex;
+        }
     }
     
     /**
