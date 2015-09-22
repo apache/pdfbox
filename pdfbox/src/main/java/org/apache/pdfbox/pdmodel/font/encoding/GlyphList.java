@@ -133,7 +133,7 @@ public final class GlyphList
             while (in.ready())
             {
                 String line = in.readLine();
-                if (!line.startsWith("#"))
+                if (line != null && !line.startsWith("#"))
                 {
                     String[] parts = line.split(";");
                     if (parts.length < 2)
