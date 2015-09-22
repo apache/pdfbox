@@ -53,6 +53,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.encoding.MacOSRomanEncoding;
 import org.apache.pdfbox.encoding.WinAnsiEncoding;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
@@ -453,6 +454,7 @@ public class PDTrueTypeFont extends PDSimpleFont
     /**
      * {@inheritDoc}
      */
+    @Override
     public Font getawtFont() throws IOException
     {
          PDFontDescriptorDictionary fd = (PDFontDescriptorDictionary)getFontDescriptor();
@@ -461,10 +463,12 @@ public class PDTrueTypeFont extends PDSimpleFont
             PDStream ff2Stream = fd.getFontFile2();
             if( ff2Stream != null )
             {
+                InputStream is = null;
                 try
                 {
                     // create a font with the embedded data
-                    awtFont = Font.createFont( Font.TRUETYPE_FONT, ff2Stream.createInputStream() );
+                    is = ff2Stream.createInputStream();
+                    awtFont = Font.createFont(Font.TRUETYPE_FONT, is);
                 }
                 catch( FontFormatException f )
                 {
@@ -482,6 +486,10 @@ public class PDTrueTypeFont extends PDSimpleFont
                     {
                         log.info("Can't read the embedded font " + fd.getFontName() );
                     }
+                }
+                finally
+                {
+                    IOUtils.closeQuietly(is);
                 }
                 if (awtFont == null)
                 {
