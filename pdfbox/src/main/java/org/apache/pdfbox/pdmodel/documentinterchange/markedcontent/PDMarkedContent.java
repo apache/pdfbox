@@ -93,7 +93,7 @@ public class PDMarkedContent
     /**
      * Gets the marked-content identifier.
      * 
-     * @return the marked-content identifier
+     * @return the marked-content identifier, or -1 if it doesn't exist.
      */
     public int getMCID()
     {
