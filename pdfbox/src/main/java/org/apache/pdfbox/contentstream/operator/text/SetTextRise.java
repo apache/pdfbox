@@ -24,7 +24,6 @@ import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 
 import java.io.IOException;
-import org.apache.pdfbox.cos.COSArray;
 
 /**
  * Ts: Set text rise.
