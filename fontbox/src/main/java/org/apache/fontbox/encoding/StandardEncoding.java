@@ -25,6 +25,163 @@ package org.apache.fontbox.encoding;
  */
 public class StandardEncoding extends Encoding
 {
+    private static final int CHAR_CODE = 0;
+    private static final int CHAR_NAME = 1;
+    
+    /**
+     * Table of octal character codes and their corresponding names.
+     */
+    public static final Object[][] STANDARD_ENCODING_TABLE = {
+            {0101, "A"},
+            {0341, "AE"},
+            {0102, "B"},
+            {0103, "C"},
+            {0104, "D"},
+            {0105, "E"},
+            {0106, "F"},
+            {0107, "G"},
+            {0110, "H"},
+            {0111, "I"},
+            {0112, "J"},
+            {0113, "K"},
+            {0114, "L"},
+            {0350, "Lslash"},
+            {0115, "M"},
+            {0116, "N"},
+            {0117, "O"},
+            {0352, "OE"},
+            {0351, "Oslash"},
+            {0120, "P"},
+            {0121, "Q"},
+            {0122, "R"},
+            {0123, "S"},
+            {0124, "T"},
+            {0125, "U"},
+            {0126, "V"},
+            {0127, "W"},
+            {0130, "X"},
+            {0131, "Y"},
+            {0132, "Z"},
+            {0141, "a"},
+            {0302, "acute"},
+            {0361, "ae"},
+            {0046, "ampersand"},
+            {0136, "asciicircum"},
+            {0176, "asciitilde"},
+            {0052, "asterisk"},
+            {0100, "at"},
+            {0142, "b"},
+            {0134, "backslash"},
+            {0174, "bar"},
+            {0173, "braceleft"},
+            {0175, "braceright"},
+            {0133, "bracketleft"},
+            {0135, "bracketright"},
+            {0306, "breve"},
+            {0267, "bullet"},
+            {0143, "c"},
+            {0317, "caron"},
+            {0313, "cedilla"},
+            {0242, "cent"},
+            {0303, "circumflex"},
+            {0072, "colon"},
+            {0054, "comma"},
+            {0250, "currency"},
+            {0144, "d"},
+            {0262, "dagger"},
+            {0263, "daggerdbl"},
+            {0310, "dieresis"},
+            {0044, "dollar"},
+            {0307, "dotaccent"},
+            {0365, "dotlessi"},
+            {0145, "e"},
+            {0070, "eight"},
+            {0274, "ellipsis"},
+            {0320, "emdash"},
+            {0261, "endash"},
+            {0075, "equal"},
+            {0041, "exclam"},
+            {0241, "exclamdown"},
+            {0146, "f"},
+            {0256, "fi"},
+            {0065, "five"},
+            {0257, "fl"},
+            {0246, "florin"},
+            {0064, "four"},
+            {0244, "fraction"},
+            {0147, "g"},
+            {0373, "germandbls"},
+            {0301, "grave"},
+            {0076, "greater"},
+            {0253, "guillemotleft"},
+            {0273, "guillemotright"},
+            {0254, "guilsinglleft"},
+            {0255, "guilsinglright"},
+            {0150, "h"},
+            {0315, "hungarumlaut"},
+            {0055, "hyphen"},
+            {0151, "i"},
+            {0152, "j"},
+            {0153, "k"},
+            {0154, "l"},
+            {0074, "less"},
+            {0370, "lslash"},
+            {0155, "m"},
+            {0305, "macron"},
+            {0156, "n"},
+            {0071, "nine"},
+            {0043, "numbersign"},
+            {0157, "o"},
+            {0372, "oe"},
+            {0316, "ogonek"},
+            {0061, "one"},
+            {0343, "ordfeminine"},
+            {0353, "ordmasculine"},
+            {0371, "oslash"},
+            {0160, "p"},
+            {0266, "paragraph"},
+            {0050, "parenleft"},
+            {0051, "parenright"},
+            {0045, "percent"},
+            {0056, "period"},
+            {0264, "periodcentered"},
+            {0275, "perthousand"},
+            {0053, "plus"},
+            {0161, "q"},
+            {0077, "question"},
+            {0277, "questiondown"},
+            {0042, "quotedbl"},
+            {0271, "quotedblbase"},
+            {0252, "quotedblleft"},
+            {0272, "quotedblright"},
+            {0140, "quoteleft"},
+            {0047, "quoteright"},
+            {0270, "quotesinglbase"},
+            {0251, "quotesingle"},
+            {0162, "r"},
+            {0312, "ring"},
+            {0163, "s"},
+            {0247, "section"},
+            {0073, "semicolon"},
+            {0067, "seven"},
+            {0066, "six"},
+            {0057, "slash"},
+            {0040, "space"},
+            {0243, "sterling"},
+            {0164, "t"},
+            {0063, "three"},
+            {0304, "tilde"},
+            {0062, "two"},
+            {0165, "u"},
+            {0137, "underscore"},
+            {0166, "v"},
+            {0167, "w"},
+            {0170, "x"},
+            {0171, "y"},
+            {0245, "yen"},
+            {0172, "z"},
+            {0060, "zero"}
+    };
     /**
      * Singleton instance of this class.
      */
@@ -35,154 +192,9 @@ public class StandardEncoding extends Encoding
      */
     public StandardEncoding()
     {
-        addCharacterEncoding( 0101, "A" );
-        addCharacterEncoding( 0341, "AE" );
-        addCharacterEncoding( 0102, "B" );
-        addCharacterEncoding( 0103, "C" );
-        addCharacterEncoding( 0104, "D" );
-        addCharacterEncoding( 0105, "E" );
-        addCharacterEncoding( 0106, "F" );
-        addCharacterEncoding( 0107, "G" );
-        addCharacterEncoding( 0110, "H" );
-        addCharacterEncoding( 0111, "I" );
-        addCharacterEncoding( 0112, "J" );
-        addCharacterEncoding( 0113, "K" );
-        addCharacterEncoding( 0114, "L" );
-        addCharacterEncoding( 0350, "Lslash" );
-        addCharacterEncoding( 0115, "M" );
-        addCharacterEncoding( 0116, "N" );
-        addCharacterEncoding( 0117, "O" );
-        addCharacterEncoding( 0352, "OE" );
-        addCharacterEncoding( 0351, "Oslash" );
-        addCharacterEncoding( 0120, "P" );
-        addCharacterEncoding( 0121, "Q" );
-        addCharacterEncoding( 0122, "R" );
-        addCharacterEncoding( 0123, "S" );
-        addCharacterEncoding( 0124, "T" );
-        addCharacterEncoding( 0125, "U" );
-        addCharacterEncoding( 0126, "V" );
-        addCharacterEncoding( 0127, "W" );
-        addCharacterEncoding( 0130, "X" );
-        addCharacterEncoding( 0131, "Y" );
-        addCharacterEncoding( 0132, "Z" );
-        addCharacterEncoding( 0141, "a" );
-        addCharacterEncoding( 0302, "acute" );
-        addCharacterEncoding( 0361, "ae" );
-        addCharacterEncoding( 0046, "ampersand" );
-        addCharacterEncoding( 0136, "asciicircum" );
-        addCharacterEncoding( 0176, "asciitilde" );
-        addCharacterEncoding( 0052, "asterisk" );
-        addCharacterEncoding( 0100, "at" );
-        addCharacterEncoding( 0142, "b" );
-        addCharacterEncoding( 0134, "backslash" );
-        addCharacterEncoding( 0174, "bar" );
-        addCharacterEncoding( 0173, "braceleft" );
-        addCharacterEncoding( 0175, "braceright" );
-        addCharacterEncoding( 0133, "bracketleft" );
-        addCharacterEncoding( 0135, "bracketright" );
-        addCharacterEncoding( 0306, "breve" );
-        addCharacterEncoding( 0267, "bullet" );
-        addCharacterEncoding( 0143, "c" );
-        addCharacterEncoding( 0317, "caron" );
-        addCharacterEncoding( 0313, "cedilla" );
-        addCharacterEncoding( 0242, "cent" );
-        addCharacterEncoding( 0303, "circumflex" );
-        addCharacterEncoding( 0072, "colon" );
-        addCharacterEncoding( 0054, "comma" );
-        addCharacterEncoding( 0250, "currency" );
-        addCharacterEncoding( 0144, "d" );
-        addCharacterEncoding( 0262, "dagger" );
-        addCharacterEncoding( 0263, "daggerdbl" );
-        addCharacterEncoding( 0310, "dieresis" );
-        addCharacterEncoding( 0044, "dollar" );
-        addCharacterEncoding( 0307, "dotaccent" );
-        addCharacterEncoding( 0365, "dotlessi" );
-        addCharacterEncoding( 0145, "e" );
-        addCharacterEncoding( 0070, "eight" );
-        addCharacterEncoding( 0274, "ellipsis" );
-        addCharacterEncoding( 0320, "emdash" );
-        addCharacterEncoding( 0261, "endash" );
-        addCharacterEncoding( 0075, "equal" );
-        addCharacterEncoding( 0041, "exclam" );
-        addCharacterEncoding( 0241, "exclamdown" );
-        addCharacterEncoding( 0146, "f" );
-        addCharacterEncoding( 0256, "fi" );
-        addCharacterEncoding( 0065, "five" );
-        addCharacterEncoding( 0257, "fl" );
-        addCharacterEncoding( 0246, "florin" );
-        addCharacterEncoding( 0064, "four" );
-        addCharacterEncoding( 0244, "fraction" );
-        addCharacterEncoding( 0147, "g" );
-        addCharacterEncoding( 0373, "germandbls" );
-        addCharacterEncoding( 0301, "grave" );
-        addCharacterEncoding( 0076, "greater" );
-        addCharacterEncoding( 0253, "guillemotleft" );
-        addCharacterEncoding( 0273, "guillemotright" );
-        addCharacterEncoding( 0254, "guilsinglleft" );
-        addCharacterEncoding( 0255, "guilsinglright" );
-        addCharacterEncoding( 0150, "h" );
-        addCharacterEncoding( 0315, "hungarumlaut" );
-        addCharacterEncoding( 0055, "hyphen" );
-        addCharacterEncoding( 0151, "i" );
-        addCharacterEncoding( 0152, "j" );
-        addCharacterEncoding( 0153, "k" );
-        addCharacterEncoding( 0154, "l" );
-        addCharacterEncoding( 0074, "less" );
-        addCharacterEncoding( 0370, "lslash" );
-        addCharacterEncoding( 0155, "m" );
-        addCharacterEncoding( 0305, "macron" );
-        addCharacterEncoding( 0156, "n" );
-        addCharacterEncoding( 0071, "nine" );
-        addCharacterEncoding( 0043, "numbersign" );
-        addCharacterEncoding( 0157, "o" );
-        addCharacterEncoding( 0372, "oe" );
-        addCharacterEncoding( 0316, "ogonek" );
-        addCharacterEncoding( 0061, "one" );
-        addCharacterEncoding( 0343, "ordfeminine" );
-        addCharacterEncoding( 0353, "ordmasculine" );
-        addCharacterEncoding( 0371, "oslash" );
-        addCharacterEncoding( 0160, "p" );
-        addCharacterEncoding( 0266, "paragraph" );
-        addCharacterEncoding( 0050, "parenleft" );
-        addCharacterEncoding( 0051, "parenright" );
-        addCharacterEncoding( 0045, "percent" );
-        addCharacterEncoding( 0056, "period" );
-        addCharacterEncoding( 0264, "periodcentered" );
-        addCharacterEncoding( 0275, "perthousand" );
-        addCharacterEncoding( 0053, "plus" );
-        addCharacterEncoding( 0161, "q" );
-        addCharacterEncoding( 0077, "question" );
-        addCharacterEncoding( 0277, "questiondown" );
-        addCharacterEncoding( 0042, "quotedbl" );
-        addCharacterEncoding( 0271, "quotedblbase" );
-        addCharacterEncoding( 0252, "quotedblleft" );
-        addCharacterEncoding( 0272, "quotedblright" );
-        addCharacterEncoding( 0140, "quoteleft" );
-        addCharacterEncoding( 0047, "quoteright" );
-        addCharacterEncoding( 0270, "quotesinglbase" );
-        addCharacterEncoding( 0251, "quotesingle" );
-        addCharacterEncoding( 0162, "r" );
-        addCharacterEncoding( 0312, "ring" );
-        addCharacterEncoding( 0163, "s" );
-        addCharacterEncoding( 0247, "section" );
-        addCharacterEncoding( 0073, "semicolon" );
-        addCharacterEncoding( 0067, "seven" );
-        addCharacterEncoding( 0066, "six" );
-        addCharacterEncoding( 0057, "slash" );
-        addCharacterEncoding( 0040, "space" );
-        addCharacterEncoding( 0243, "sterling" );
-        addCharacterEncoding( 0164, "t" );
-        addCharacterEncoding( 0063, "three" );
-        addCharacterEncoding( 0304, "tilde" );
-        addCharacterEncoding( 0062, "two" );
-        addCharacterEncoding( 0165, "u" );
-        addCharacterEncoding( 0137, "underscore" );
-        addCharacterEncoding( 0166, "v" );
-        addCharacterEncoding( 0167, "w" );
-        addCharacterEncoding( 0170, "x" );
-        addCharacterEncoding( 0171, "y" );
-        addCharacterEncoding( 0245, "yen" );
-        addCharacterEncoding( 0172, "z" );
-        addCharacterEncoding( 0060, "zero" );
+        for (Object[] encodingEntry : STANDARD_ENCODING_TABLE)
+        {
+            addCharacterEncoding((Integer) encodingEntry[CHAR_CODE], encodingEntry[CHAR_NAME].toString());
+        }
     }
 }
