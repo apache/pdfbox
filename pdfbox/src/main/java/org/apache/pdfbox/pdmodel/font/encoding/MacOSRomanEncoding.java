@@ -25,6 +25,32 @@ import org.apache.pdfbox.cos.COSBase;
 public class MacOSRomanEncoding extends MacRomanEncoding
 {
 
+    private static final int CHAR_CODE = 0;
+    private static final int CHAR_NAME = 1;
+    
+    /**
+     * Table of octal character codes and their corresponding names
+     * on top of {@link MacRomanEncoding}.
+     */
+    public static final Object[][] MAC_OS_ROMAN_ENCODING_TABLE = {
+            {255, "notequal"},
+            {260, "infinity"},
+            {262, "lessequal"},
+            {263, "greaterequal"},
+            {266, "partialdiff"},
+            {267, "summation"},
+            {270, "product"},
+            {271, "pi"},
+            {272, "integral"},
+            {275, "Omega"},
+            {303, "radical"},
+            {305, "approxequal"},
+            {306, "Delta"},
+            {327, "lozenge"},
+            {333, "Euro"},
+            {360, "apple"}    
+    };
+    
     /**
      * Singleton instance of this class.
      *
@@ -38,22 +64,13 @@ public class MacOSRomanEncoding extends MacRomanEncoding
     public MacOSRomanEncoding()
     {
         super();
-        add(255, "notequal");
-        add(260, "infinity");
-        add(262, "lessequal");
-        add(263, "greaterequal");
-        add(266, "partialdiff");
-        add(267, "summation");
-        add(270, "product");
-        add(271, "pi");
-        add(272, "integral");
-        add(275, "Omega");
-        add(303, "radical");
-        add(305, "approxequal");
-        add(306, "Delta");
-        add(327, "lozenge");
-        add(333, "Euro");
-        add(360, "apple");
+
+        // differences and additions to MacRomanEncoding
+        for (Object[] encodingEntry : MAC_OS_ROMAN_ENCODING_TABLE)
+        {
+            add((Integer) encodingEntry[CHAR_CODE], encodingEntry[CHAR_NAME].toString());
+        }
+
     }
 
     /**
