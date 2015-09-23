@@ -21,9 +21,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import org.apache.pdfbox.cos.COSBase;
 
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -177,7 +180,7 @@ public class ExtractImages
                         PDPage page = (PDPage)iter.next();
                         PDResources resources = page.getResources();
                         // extract all XObjectImages which are part of the page resources
-                        processResources(resources, prefix, addKey, directJPEG);
+                        processResources(resources, prefix, addKey, directJPEG, new HashSet<COSBase>());
                     }
                 }
                 finally
@@ -218,7 +221,7 @@ public class ExtractImages
     }
 
     private void processResources(PDResources resources, String prefix, 
-            boolean addKey, boolean directJPEG) throws IOException
+            boolean addKey, boolean directJPEG, Set<COSBase> seen) throws IOException
     {
         if (resources == null)
         {
@@ -232,6 +235,13 @@ public class ExtractImages
             {
                 String key = xobjectIter.next();
                 PDXObject xobject = xobjects.get( key );
+                COSBase cosObject = xobject.getCOSObject();
+                if (seen.contains(cosObject))
+                {
+                    // avoid infinite recursion
+                    continue;
+                }
+                seen.add(cosObject);
                 // write the images
                 if (xobject instanceof PDXObjectImage)
                 {
@@ -261,7 +271,7 @@ public class ExtractImages
                 {
                     PDXObjectForm xObjectForm = (PDXObjectForm)xobject;
                     PDResources formResources = xObjectForm.getResources();
-                    processResources(formResources, prefix, addKey, directJPEG);
+                    processResources(formResources, prefix, addKey, directJPEG, seen);
                 }
             }
         }
