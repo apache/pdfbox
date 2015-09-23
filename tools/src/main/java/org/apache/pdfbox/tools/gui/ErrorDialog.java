@@ -59,6 +59,7 @@ public class ErrorDialog extends JDialog
     private static final Dimension MESSAGE_SIZE = new Dimension(800, 200);
     private static final Dimension STACKTRACE_SIZE = new Dimension(800, 300);
     private static final Dimension TOTAL_SIZE = new Dimension(800, 500);
+    private static final int BORDER_SIZE = 20;
 
     private static final String NEWLINE = "\r\n";
     private static final String INDENT = "    ";
@@ -104,7 +105,7 @@ public class ErrorDialog extends JDialog
         super();
         setTitle(t.getClass().getName());
         setModal(true);
-        if (icon != null && icon instanceof ImageIcon)
+        if (icon instanceof ImageIcon)
         {
             setIconImage(((ImageIcon) icon).getImage());
         }
@@ -201,12 +202,12 @@ public class ErrorDialog extends JDialog
         });
         message.setBackground(messagePanel.getBackground());
         JPanel buttonPanel = new JPanel();
-        buttonPanel.add(Box.createHorizontalStrut(20));
+        buttonPanel.add(Box.createHorizontalStrut(BORDER_SIZE));
         buttonPanel.add(showDetails);
         buttonPanel.add(filter);
         buttonPanel.add(Box.createHorizontalGlue());
         messagePanel.setLayout(new BorderLayout());
-        messagePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        messagePanel.setBorder(BorderFactory.createEmptyBorder(BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BORDER_SIZE));
         messagePanel.add(message, BorderLayout.CENTER);
         messagePanel.add(buttonPanel, BorderLayout.SOUTH);
         messagePanel.setPreferredSize(MESSAGE_SIZE);
@@ -252,7 +253,7 @@ public class ErrorDialog extends JDialog
         buffer.append(t.getClass().getName()).append(": ").append(t.getMessage()).append(NEWLINE);
         buffer.append(toString(t.getStackTrace()));
         Throwable cause = t.getCause();
-        if (cause != null && cause != t)
+        if (cause != null && !cause.equals(t))
         {
             buffer.append("Caused by: ");
             generateStackTrace(cause, buffer);
