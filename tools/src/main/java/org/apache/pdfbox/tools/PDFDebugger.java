@@ -1020,7 +1020,6 @@ public class PDFDebugger extends JFrame
             @Override
             public void uncaughtException(Thread thread, Throwable throwable)
             {
-                StringBuilder sb = new StringBuilder();
                 new ErrorDialog(throwable).setVisible(true);
             }
         });
