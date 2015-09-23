@@ -17,7 +17,6 @@ package org.apache.pdfbox.multipdf;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import junit.framework.TestCase;
 import org.apache.pdfbox.pdmodel.PDDocument;
