@@ -17,6 +17,7 @@
 package org.apache.pdfbox.multipdf;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -113,8 +114,10 @@ class PDFCloneUtility
           {
               COSStream originalStream = (COSStream)base;
               COSStream stream = destination.getDocument().createCOSStream();
-              OutputStream output = stream.createOutputStream(originalStream.getFilters());
-              IOUtils.copy( originalStream.createInputStream(), output );
+              OutputStream output = stream.createRawOutputStream();
+              InputStream input = originalStream.createRawInputStream();
+              IOUtils.copy(input, output );
+              input.close();
               output.close();
               clonedVersion.put( base, stream );
               for( Map.Entry<COSName, COSBase> entry :  originalStream.entrySet() )
