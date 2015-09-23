@@ -17,6 +17,7 @@ package org.apache.pdfbox.multipdf;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import junit.framework.TestCase;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -45,6 +46,8 @@ public class PDFMergerUtilityTest extends TestCase
             throw new IOException("could not create output directory");
         }
     }
+    
+    
 
     /**
      * Tests whether the merge of two PDF files with identically named but
@@ -67,6 +70,27 @@ public class PDFMergerUtilityTest extends TestCase
         checkMergeIdentical("PDFBox.GlobalResourceMergeTest.Doc01.decoded.pdf",
                 "PDFBox.GlobalResourceMergeTest.Doc02.decoded.pdf",
                 "GlobalResourceMergeTestResult2.pdf", 
+                true);
+    }
+
+    /**
+     * Tests whether the merge of two PDF files with JPEG and CCITT works. A few revisions before
+     * 1704911 this test failed because the clone utility attempted to decode and re-encode the
+     * streams, see PDFBOX-2893 on 23.9.2015.
+     *
+     * @throws IOException if something goes wrong.
+     */
+    public void testJpegCcitt() throws IOException
+    {
+        checkMergeIdentical("jpegrgb.pdf",
+                "multitiff.pdf",
+                "JpegMultiMergeTestResult.pdf",
+                false);
+
+        // once again, with scratch file
+        checkMergeIdentical("jpegrgb.pdf",
+                "multitiff.pdf",
+                "JpegMultiMergeTestResult.pdf",
                 true);
     }
 
