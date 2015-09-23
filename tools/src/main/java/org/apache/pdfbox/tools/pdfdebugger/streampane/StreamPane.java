@@ -34,6 +34,7 @@ import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingWorker;
@@ -201,6 +202,11 @@ public class StreamPane implements ActionListener
             {
                 image = stream.getImage(resources);
             }
+            if (image == null)
+            {
+                JOptionPane.showMessageDialog(panel, "image not available (filter missing?)");
+                return;
+            }
             view.showStreamImage(image);
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -217,7 +223,13 @@ public class StreamPane implements ActionListener
         new DocumentCreator(command).execute();
         synchronized (stream)
         {
-            hexView.changeData(IOUtils.toByteArray(stream.getStream(command)));
+            InputStream is = stream.getStream(command);
+            if (is == null)
+            {
+                JOptionPane.showMessageDialog(panel, command + " text not available (filter missing?)");
+                return;
+            }
+            hexView.changeData(IOUtils.toByteArray(is));
         }
     }
 
