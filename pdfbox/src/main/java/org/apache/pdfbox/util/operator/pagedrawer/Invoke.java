@@ -66,7 +66,16 @@ public class Invoke extends OperatorProcessor
     {
         PageDrawer drawer = (PageDrawer)context;
         PDPage page = drawer.getPage();
-        COSName objectName = (COSName)arguments.get( 0 );
+        if (arguments.size() < 1)
+        {
+            return;
+        }
+        COSBase base0 = arguments.get(0);
+        if (!(base0 instanceof COSName))
+        {
+            return;
+        }
+        COSName objectName = (COSName) base0;
         Map<String, PDXObject> xobjects = drawer.getResources().getXObjects();
         PDXObject xobject = (PDXObject)xobjects.get( objectName.getName() );
         if ( xobject == null )
