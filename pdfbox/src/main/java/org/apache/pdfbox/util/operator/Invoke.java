@@ -50,7 +50,16 @@ public class Invoke extends OperatorProcessor
      */
     public void process(PDFOperator operator, List<COSBase> arguments) throws IOException
     {
-        COSName name = (COSName) arguments.get( 0 );
+        if (arguments.size() < 1)
+        {
+            return;
+        }
+        COSBase base0 = arguments.get(0);
+        if (!(base0 instanceof COSName))
+        {
+            return;
+        }
+        COSName name = (COSName) base0;
 
         Map<String,PDXObject> xobjects = context.getXObjects();
         PDXObject xobject = (PDXObject) xobjects.get(name.getName());
