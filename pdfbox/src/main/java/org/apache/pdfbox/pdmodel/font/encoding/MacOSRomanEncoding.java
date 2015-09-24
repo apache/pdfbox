@@ -32,7 +32,7 @@ public class MacOSRomanEncoding extends MacRomanEncoding
      * Table of octal character codes and their corresponding names
      * on top of {@link MacRomanEncoding}.
      */
-    public static final Object[][] MAC_OS_ROMAN_ENCODING_TABLE = {
+    private static final Object[][] MAC_OS_ROMAN_ENCODING_TABLE = {
             {255, "notequal"},
             {260, "infinity"},
             {262, "lessequal"},
