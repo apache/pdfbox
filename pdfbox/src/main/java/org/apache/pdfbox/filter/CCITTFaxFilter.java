@@ -128,6 +128,6 @@ final class CCITTFaxFilter extends Filter
     protected void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
             throws IOException
     {
-        LOG.warn("CCITTFaxDecode.encode is not implemented yet, skipping this stream.");
+        throw new UnsupportedOperationException("CCITTFaxFilter encoding not implemented, use the CCITTFactory methods instead");
     }
 }
