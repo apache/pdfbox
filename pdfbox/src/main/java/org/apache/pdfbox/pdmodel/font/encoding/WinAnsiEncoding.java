@@ -33,7 +33,7 @@ public class WinAnsiEncoding extends Encoding
     /**
      * Table of octal character codes and their corresponding names.
      */
-    public static final Object[][] WIN_ANSI_ENCODING_TABLE = {
+    private static final Object[][] WIN_ANSI_ENCODING_TABLE = {
             {0101, "A"},
             {0306, "AE"},
             {0301, "Aacute"},
