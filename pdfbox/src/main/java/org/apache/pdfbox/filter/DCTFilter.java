@@ -297,6 +297,6 @@ final class DCTFilter extends Filter
     protected void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
             throws IOException
     {
-        LOG.warn("DCTFilter#encode is not implemented yet, skipping this stream.");
+        throw new UnsupportedOperationException("DCTFilter encoding not implemented, use the JPEGFactory methods instead");
     }
 }
