@@ -18,6 +18,7 @@ package org.apache.pdfbox.contentstream.operator.graphics;
 
 import java.io.IOException;
 import java.util.List;
+import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
@@ -38,7 +39,16 @@ public final class DrawObject extends GraphicsOperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> operands) throws IOException
     {
-        COSName objectName = (COSName)operands.get(0);
+        if (operands.size() < 1)
+        {
+            throw new MissingOperandException(operator, operands);
+        }
+        COSBase base0 = operands.get(0);
+        if (!(base0 instanceof COSName))
+        {
+            return;
+        }
+        COSName objectName = (COSName) base0;
         PDXObject xobject = context.getResources().getXObject(objectName);
 
         if (xobject == null)

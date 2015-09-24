@@ -36,7 +36,16 @@ public class DrawObject extends OperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
-        COSName name = (COSName) arguments.get(0);
+        if (arguments.size() < 1)
+        {
+            throw new MissingOperandException(operator, arguments);
+        }
+        COSBase base0 = arguments.get(0);
+        if (!(base0 instanceof COSName))
+        {
+            return;
+        }
+        COSName name = (COSName) base0;
         PDXObject xobject =  context.getResources().getXObject(name);
         if (context instanceof PDFMarkedContentExtractor)
         {
