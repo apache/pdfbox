@@ -30,7 +30,7 @@ public final class CFFISOAdobeCharset extends CFFCharset
     /**
      * Table of character codes and their corresponding names.
      */
-    public static final Object[][] CFF_ISO_ADOBE_CHARSET_TABLE = {
+    private static final Object[][] CFF_ISO_ADOBE_CHARSET_TABLE = {
             {0, ".notdef"},
             {1, "space"},
             {2, "exclam"},
