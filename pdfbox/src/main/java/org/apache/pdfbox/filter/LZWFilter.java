@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import javax.imageio.stream.MemoryCacheImageInputStream;
 import javax.imageio.stream.MemoryCacheImageOutputStream;
 import org.apache.commons.logging.Log;
@@ -142,6 +143,7 @@ public class LZWFilter implements Filter
                         result.write(data);
                         if (prevCommand != -1)
                         {
+                            checkIndexBounds(codeTable, prevCommand, in);
                             data = codeTable.get((int) prevCommand);
                             byte[] newData = new byte[data.length + 1];
                             for (int i = 0; i < data.length; ++i)
@@ -154,6 +156,7 @@ public class LZWFilter implements Filter
                     }
                     else
                     {
+                        checkIndexBounds(codeTable, prevCommand, in);
                         byte[] data = codeTable.get((int) prevCommand);
                         byte[] newData = new byte[data.length + 1];
                         for (int i = 0; i < data.length; ++i)
@@ -175,6 +178,22 @@ public class LZWFilter implements Filter
             LOG.warn("Premature EOF in LZW stream, EOD code missing");
         }
         result.flush();
+    }
+
+    private void checkIndexBounds(List codeTable, long index, MemoryCacheImageInputStream in)
+            throws IOException
+    {
+        if (index < 0)
+        {
+            throw new IOException("negative array index: " + index + " near offset "
+                    + in.getStreamPosition());
+        }
+        if (index >= codeTable.size())
+        {
+            throw new IOException("array index overflow: " + index +
+                    " >= " + codeTable.size() + " near offset "
+                    + in.getStreamPosition());
+        }
     }
 
     /**
