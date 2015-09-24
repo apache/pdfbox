@@ -29,7 +29,7 @@ public final class CFFStandardEncoding extends CFFEncoding
     /**
      * Table of character codes and their corresponding sid.
      */
-    public static final int[][] CFF_STANDARD_ENCODING_TABLE = {
+    private static final int[][] CFF_STANDARD_ENCODING_TABLE = {
             {0, 0},
             {1, 0},
             {2, 0},

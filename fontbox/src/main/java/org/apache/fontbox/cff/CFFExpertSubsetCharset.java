@@ -31,7 +31,7 @@ public final class CFFExpertSubsetCharset extends CFFCharset
     /**
      * Table of character codes and their corresponding names.
      */
-    public static final Object[][] CFF_EXPERT_SUBSET_CHARSET_TABLE = {
+    private static final Object[][] CFF_EXPERT_SUBSET_CHARSET_TABLE = {
             {0, ".notdef"},
             {1, "space"},
             {231, "dollaroldstyle"},

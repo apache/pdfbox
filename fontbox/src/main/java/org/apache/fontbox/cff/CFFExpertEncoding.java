@@ -30,7 +30,7 @@ public final class CFFExpertEncoding extends CFFEncoding
     /**
      * Table of character codes and their corresponding sid.
      */
-    public static final int[][] CFF_EXPERT_ENCODING_TABLE = {
+    private static final int[][] CFF_EXPERT_ENCODING_TABLE = {
             {0, 0},
             {1, 0},
             {2, 0},

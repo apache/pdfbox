@@ -32,7 +32,7 @@ public class MacRomanEncoding extends Encoding
     /**
      * Table of octal character codes and their corresponding names.
      */
-    public static final Object[][] MAC_ROMAN_ENCODING_TABLE = {
+    private static final Object[][] MAC_ROMAN_ENCODING_TABLE = {
             {0101, "A"},
             {0256, "AE"},
             {0347, "Aacute"},
