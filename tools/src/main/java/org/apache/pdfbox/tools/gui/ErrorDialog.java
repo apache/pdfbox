@@ -22,6 +22,7 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.util.Arrays;
 import java.util.List;
 
@@ -37,9 +38,10 @@ import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
+import javax.swing.KeyStroke;
 
 /**
- * A dialog to display runtime error.
+ * A dialog to display a runtime exception stack trace.
  *
  * @author Pinaki Poddar
  *
@@ -102,7 +104,6 @@ public class ErrorDialog extends JDialog
      */
     public ErrorDialog(JComponent owner, Icon icon, Throwable t)
     {
-        super();
         setTitle(t.getClass().getName());
         setModal(true);
         if (icon instanceof ImageIcon)
@@ -215,6 +216,19 @@ public class ErrorDialog extends JDialog
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
         panel.add(messagePanel, BorderLayout.NORTH);
+        
+        // allow closing with ESC
+        ActionListener actionListener = new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                dispose();
+            }
+        };
+        KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+        panel.registerKeyboardAction(actionListener, stroke, JComponent.WHEN_IN_FOCUSED_WINDOW);        
+        
         return panel;
     }
 
