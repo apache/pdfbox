@@ -38,8 +38,6 @@ import org.apache.pdfbox.io.IOUtils;
  */
 final class CCITTFaxFilter extends Filter
 {
-    private static final Log LOG = LogFactory.getLog(CCITTFaxFilter.class);
-
     @Override
     public DecodeResult decode(InputStream encoded, OutputStream decoded,
                                          COSDictionary parameters, int index) throws IOException
