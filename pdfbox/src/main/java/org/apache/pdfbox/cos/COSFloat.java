@@ -60,7 +60,24 @@ public class COSFloat extends COSNumber
         }
         catch( NumberFormatException e )
         {
-            throw new IOException( "Error expected floating point number actual='" +aFloat + "'", e );
+            if (aFloat.startsWith("0.00000-"))
+            {
+                // PDFBOX-2990 has 0.00000-33917698
+                // Let's wait what other floats will be coming before doing a more general workaround.
+                try
+                {
+                    valueAsString = "-0.00000" + aFloat.substring(8);
+                    value = new BigDecimal(valueAsString);
+                }
+                catch (NumberFormatException e2)
+                {
+                    throw new IOException("Error expected floating point number actual='" + aFloat + "'", e2);
+                }
+            }
+            else
+            {
+                throw new IOException("Error expected floating point number actual='" + aFloat + "'", e);
+            }
         }
     }
 
