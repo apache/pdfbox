@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.graphics;
 
 import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -25,6 +26,7 @@ import org.apache.pdfbox.pdmodel.ResourceCache;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
+import org.apache.pdfbox.pdmodel.graphics.form.PDTransparencyGroup;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
 import java.io.IOException;
@@ -69,6 +71,11 @@ public class PDXObject implements COSObjectable
         else if (COSName.FORM.getName().equals(subtype))
         {
             ResourceCache cache = resources != null ? resources.getResourceCache() : null;
+            COSDictionary group = (COSDictionary)stream.getDictionaryObject(COSName.GROUP);
+            if (group != null && COSName.TRANSPARENCY.equals(group.getCOSName(COSName.S)))
+            {
+                return new PDTransparencyGroup(stream, cache);
+            }
             return new PDFormXObject(stream, cache);
         }
         else if (COSName.PS.getName().equals(subtype))
