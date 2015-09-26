@@ -20,6 +20,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
+import org.apache.pdfbox.pdmodel.graphics.form.PDTransparencyGroup;
 import org.apache.pdfbox.text.PDFMarkedContentExtractor;
 
 import java.io.IOException;
@@ -52,9 +53,13 @@ public class DrawObject extends OperatorProcessor
             ((PDFMarkedContentExtractor) context).xobject(xobject);
         }
 
-        if(xobject instanceof PDFormXObject)
+        if (xobject instanceof PDTransparencyGroup)
         {
-            PDFormXObject form = (PDFormXObject)xobject;
+            context.showTransparencyGroup((PDTransparencyGroup) xobject);
+        }
+        else if (xobject instanceof PDFormXObject)
+        {
+            PDFormXObject form = (PDFormXObject) xobject;
             context.showForm(form);
         }
     }
