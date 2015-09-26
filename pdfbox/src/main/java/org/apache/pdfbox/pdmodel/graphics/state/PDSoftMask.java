@@ -28,6 +28,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
+import org.apache.pdfbox.pdmodel.graphics.form.PDTransparencyGroup;
 
 /**
  * Soft mask.
@@ -70,7 +71,7 @@ public final class PDSoftMask implements COSObjectable
 
     private final COSDictionary dictionary;
     private COSName subType = null;
-    private PDFormXObject group = null;
+    private PDTransparencyGroup group = null;
     private COSArray backdropColor = null;
     private PDFunction transferFunction = null;
 
@@ -114,8 +115,7 @@ public final class PDSoftMask implements COSObjectable
             COSBase cosGroup = getCOSObject().getDictionaryObject(COSName.G);
             if (cosGroup != null)
             {
-                group = (PDFormXObject) PDXObject
-                        .createXObject(cosGroup, null);
+                group = (PDTransparencyGroup) PDXObject.createXObject(cosGroup, null);
             }
         }
         return group;

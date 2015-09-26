@@ -24,6 +24,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.MissingResourceException;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
+import org.apache.pdfbox.pdmodel.graphics.form.PDTransparencyGroup;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.contentstream.operator.Operator;
@@ -60,18 +61,13 @@ public final class DrawObject extends GraphicsOperatorProcessor
             PDImageXObject image = (PDImageXObject)xobject;
             context.drawImage(image);
         }
+        else if (xobject instanceof PDTransparencyGroup)
+        {
+            getContext().showTransparencyGroup((PDTransparencyGroup)xobject);
+        }
         else if (xobject instanceof PDFormXObject)
         {
-            PDFormXObject form = (PDFormXObject) xobject;
-            if (form.getGroup() != null &&
-                COSName.TRANSPARENCY.equals(form.getGroup().getSubType()))
-            {
-                getContext().showTransparencyGroup(form);
-            }
-            else
-            {
-                getContext().showForm(form);
-            }
+          getContext().showForm((PDFormXObject)xobject);
         }
     }
 
