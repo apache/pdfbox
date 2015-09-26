@@ -74,6 +74,8 @@ public class PDAcroFormTest
     public void testAcroFormProperties()
     {
         assertTrue(acroForm.getDefaultAppearance().isEmpty());
+        acroForm.setDefaultAppearance("/Helv 0 Tf 0 g");
+        assertEquals(acroForm.getDefaultAppearance(),"/Helv 0 Tf 0 g");
     }
 
     @After
