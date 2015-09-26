@@ -54,7 +54,7 @@ final and all fields private.
  */
 public class PDFormXObject extends PDXObject implements PDContentStream
 {
-    private PDGroup group;
+    private PDTransparencyGroupAttributes group;
     private final ResourceCache cache;
 
     /**
@@ -116,18 +116,18 @@ public class PDFormXObject extends PDXObject implements PDContentStream
     }
 
     /**
-     * Returns the group attributes dictionary (Group XObject).
+     * Returns the group attributes dictionary.
      *
      * @return the group attributes dictionary
      */
-    public PDGroup getGroup()
+    public PDTransparencyGroupAttributes getGroup()
     {
-        if( group == null ) 
+        if( group == null )
         {
             COSDictionary dic = (COSDictionary) getCOSStream().getDictionaryObject(COSName.GROUP);
             if( dic != null ) 
             {
-                group = new PDGroup(dic);
+                group = new PDTransparencyGroupAttributes(dic);
             }
         }
         return group;
