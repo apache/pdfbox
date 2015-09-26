@@ -24,21 +24,20 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 
 /**
- * Transparency group.
+ * Transparency group attributes.
  * 
  * @author Kühn & Weyh Software, GmbH
  */
-public final class PDGroup implements COSObjectable
+public final class PDTransparencyGroupAttributes implements COSObjectable
 {
     private final COSDictionary dictionary;
-    private COSName subType;
     private PDColorSpace colorSpace;
 
     /**
      * Creates a group object from a given dictionary
      * @param dic {@link COSDictionary} object
      */
-    public PDGroup(COSDictionary dic)
+    public PDTransparencyGroupAttributes(COSDictionary dic)
     {
         dictionary = dic;
     }
@@ -47,18 +46,6 @@ public final class PDGroup implements COSObjectable
     public COSDictionary getCOSObject()
     {
         return dictionary;
-    }
-
-    /**
-     * Returns the groups's subtype, should be "Transparency".
-     */
-    public COSName getSubType()
-    {
-        if (subType == null)
-        {
-            subType = (COSName) getCOSObject().getDictionaryObject(COSName.S);
-        }
-        return subType;
     }
 
     /**
