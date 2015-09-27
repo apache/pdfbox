@@ -27,13 +27,13 @@
     <relativePath>../parent/pom.xml</relativePath>
   </parent>
 
-  <artifactId>pdfbox-tools</artifactId>
+  <artifactId>pdfbox-debugger</artifactId>
 
   <packaging>jar</packaging>
-  <name>Apache PDFBox tools</name>
+  <name>Apache PDFBox Debugger</name>
   <description>
     The Apache PDFBox library is an open source Java tool for working with PDF documents. 
-    This artefact contains commandline tools using Apache PDFBox.
+    This artefact contains the PDFDebugger.
   </description>
   <inceptionYear>2002</inceptionYear>
 
@@ -45,13 +45,8 @@
     </dependency>
     <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>pdfbox-debugger</artifactId>
+        <artifactId>pdfbox</artifactId>
         <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
     </dependency>
     <!-- For legal reasons (incompatible license), these two dependencies 
         are to be used only in the tests and may not be distributed. 
@@ -75,16 +70,6 @@
         <filtering>true</filtering>
       </resource>
     </resources>
-    <plugins>
-        <plugin>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-                <systemPropertyVariables>
-                    <java.util.logging.config.file>src/test/resources/logging.properties</java.util.logging.config.file>
-                </systemPropertyVariables>
-            </configuration>
-        </plugin>
-    </plugins>
   </build>
 
 </project>

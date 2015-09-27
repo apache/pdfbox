@@ -92,6 +92,7 @@ import org.apache.pdfbox.tools.pdfdebugger.treestatus.TreeStatusPane;
 import org.apache.pdfbox.tools.pdfdebugger.ui.RotationMenu;
 import org.apache.pdfbox.tools.pdfdebugger.ui.Tree;
 import org.apache.pdfbox.tools.pdfdebugger.ui.ZoomMenu;
+import org.apache.pdfbox.tools.util.ExtensionFileFilter;
 import org.apache.pdfbox.tools.util.FileOpenSaveDialog;
 import org.apache.pdfbox.tools.util.RecentFiles;
 

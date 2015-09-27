@@ -48,6 +48,7 @@ import javax.swing.AbstractAction;
 import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.printing.PDFPageable;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.apache.pdfbox.tools.util.ExtensionFileFilter;
 import org.apache.pdfbox.tools.util.RecentFiles;
 import org.apache.pdfbox.tools.gui.PageWrapper;
 import org.apache.pdfbox.tools.gui.ReaderBottomPanel;
