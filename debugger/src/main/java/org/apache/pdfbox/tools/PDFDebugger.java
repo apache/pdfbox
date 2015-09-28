@@ -29,6 +29,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -40,6 +42,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
@@ -70,6 +73,7 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.printing.PDFPageable;
 import org.apache.pdfbox.tools.gui.ArrayEntry;
 import org.apache.pdfbox.tools.gui.DocumentEntry;
 import org.apache.pdfbox.tools.gui.ErrorDialog;
@@ -139,6 +143,7 @@ public class PDFDebugger extends JFrame
     private JMenuItem saveAsMenuItem;
     private JMenuItem saveMenuItem;
     private JMenu recentFilesMenu;
+    private JMenuItem printMenuItem;
     
     // edit > find menu
     private JMenu findMenu;
@@ -340,6 +345,23 @@ public class PDFDebugger extends JFrame
         recentFilesMenu.setEnabled(false);
         addRecentFileItems();
         fileMenu.add(recentFilesMenu);
+
+        printMenuItem = new JMenuItem("Print");
+        printMenuItem.setEnabled(false);
+        printMenuItem.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent evt)
+            {
+                printMenuItemActionPerformed(evt);
+            }
+        });
+
+        if (!IS_MAC_OS)
+        {
+            fileMenu.addSeparator();
+            fileMenu.add(printMenuItem);
+        }
 
         JMenuItem exitMenuItem = new JMenuItem("Exit");
         exitMenuItem.setAccelerator(KeyStroke.getKeyStroke("alt F4"));
@@ -997,6 +1019,26 @@ public class PDFDebugger extends JFrame
         System.exit(0);
     }
 
+    private void printMenuItemActionPerformed(ActionEvent evt)
+    {
+        if( document != null )
+        {
+            try
+            {
+                PrinterJob job = PrinterJob.getPrinterJob();
+                job.setPageable(new PDFPageable(document));
+                if (job.printDialog())
+                {
+                    job.print();
+                }
+            }
+            catch (PrinterException e)
+            {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+    
     /**
      * Exit the Application.
      */
@@ -1172,6 +1214,7 @@ public class PDFDebugger extends JFrame
     private void parseDocument( File file, String password )throws IOException
     {
         document = PDDocument.load(file, password);
+        printMenuItem.setEnabled(true);
     }
 
     private void addRecentFileItems()
