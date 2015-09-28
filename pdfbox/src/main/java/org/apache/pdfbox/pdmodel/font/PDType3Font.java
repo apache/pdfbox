@@ -19,22 +19,12 @@ package org.apache.pdfbox.pdmodel.font;
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.FontBoxFont;
 import org.apache.fontbox.util.BoundingBox;
-import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSNumber;
-import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.encoding.DictionaryEncoding;
@@ -50,11 +40,6 @@ import org.apache.pdfbox.util.Vector;
  */
 public class PDType3Font extends PDSimpleFont
 {
-    private static final Log LOG = LogFactory.getLog(PDType3Font.class);
-
-    private static final String D0_OPERATOR = "d0";
-    private static final String D1_OPERATOR = "d1";
-
     private PDResources resources;
     private COSDictionary charProcs;
     private Matrix fontMatrix;
@@ -142,9 +127,7 @@ public class PDType3Font extends PDSimpleFont
             }
             else
             {
-                // todo: call getWidthFromFont?
-                LOG.error("No width for glyph " + code + " in font " + getName());
-                return 0;
+                return getWidthFromFont(code);
             }
         }
     }
@@ -152,64 +135,7 @@ public class PDType3Font extends PDSimpleFont
     @Override
     public float getWidthFromFont(int code) throws IOException
     {
-        try
-        {
-            PDType3CharProc charProc = getCharProc(code);
-            if (charProc == null)
-            {
-                throw new IOException("No CharProc for glyph " + code + " found");
-            }
-            List<COSBase> arguments = new ArrayList<COSBase>();
-            PDFStreamParser parser = new PDFStreamParser(charProc);
-            Object token = parser.parseNextToken();
-            while (token != null)
-            {
-                if (token instanceof COSObject)
-                {
-                    arguments.add(((COSObject) token).getObject());
-                }
-                else if (token instanceof Operator)
-                {
-                    return parseType3WidthOperator((Operator) token, arguments);
-                }
-                else
-                {
-                    arguments.add((COSBase) token);
-                }
-                token = parser.parseNextToken();
-            }
-        }
-        catch (IOException e)
-        {
-            LOG.error("Error processing CharProc for glyph " + code);
-            LOG.error(e);
-        }
-        return -1;
-    }
-
-    private float parseType3WidthOperator(Operator operator, List arguments) throws IOException
-    {
-        if (operator.getName().equals(D0_OPERATOR) || operator.getName().equals(D1_OPERATOR))
-        {
-            Object obj = arguments.get(0);
-            if (obj instanceof Number)
-            {
-                return ((Number) obj).floatValue();
-            }
-            else if (obj instanceof COSNumber)
-            {
-                return ((COSNumber) obj).floatValue();
-            }
-            else
-            {
-                throw new IOException("Unexpected argument type. Expected : COSInteger or Number / Received : "
-                        + obj.getClass().getName());
-            }
-        }
-        else
-        {
-            throw new IOException("Type3 CharProc : First operator must be d0 or d1");
-        }
+        return getCharProc(code).getWidth();
     }
 
     @Override
