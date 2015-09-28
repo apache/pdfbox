@@ -17,12 +17,12 @@
 package org.apache.pdfbox.cos;
 
 import java.io.Closeable;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.io.ScratchFile;
@@ -79,59 +79,23 @@ public class COSDocument extends COSBase implements Closeable
     private ScratchFile scratchFile;
 
     /**
-     * Constructor.
-     *
-     * @param useScratchFiles enables the usage of a scratch file if set to true
-     *                     
+     * Constructor. Uses main memory to buffer PDF streams.
      */
-    public COSDocument(boolean useScratchFiles)
+    public COSDocument()
     {
-        this((File)null, useScratchFiles);
-    }
-
-    /**
-     * Constructor that will use a temporary file in the given directory
-     * for storage of the PDF streams. The temporary file is automatically
-     * removed when this document gets closed.
-     *
-     * @param scratchDir directory for the temporary file,
-     *                   or <code>null</code> to use the system default
-     * @param useScratchFiles enables the usage of a scratch file if set to true
-     * 
-     */
-    public COSDocument(File scratchDir, boolean useScratchFiles)
-    {
-        if (useScratchFiles)
-        {
-            try 
-            {
-                scratchFile = new ScratchFile(scratchDir);
-            }
-            catch (IOException e)
-            {
-                LOG.error("Can't create temp file, using memory buffer instead", e);
-            }
-        }
+        this(ScratchFile.getMainMemoryOnlyInstance());
     }
 
     /**
      * Constructor that will use the provide memory handler for storage of the
      * PDF streams.
      *
-     * @param scratchFile memory handler for storage of PDF streams
+     * @param scratchFile memory handler for buffering of PDF streams
      * 
      */
     public COSDocument(ScratchFile scratchFile)
     {
         this.scratchFile = scratchFile;
-    }
-
-    /**
-     * Constructor. Uses memory to store stream.
-     */
-    public COSDocument()
-    {
-        this(false);
     }
 
     /**
@@ -169,7 +133,7 @@ public class COSDocument extends COSBase implements Closeable
      * @return This will return an object with the specified type.
      * @throws IOException If there is an error getting the object
      */
-    public COSObject getObjectByType( COSName type ) throws IOException
+    public COSObject getObjectByType(COSName type) throws IOException
     {
         for( COSObject object : objectPool.values() )
         {

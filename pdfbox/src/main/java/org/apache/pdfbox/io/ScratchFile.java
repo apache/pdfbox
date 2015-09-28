@@ -135,12 +135,19 @@ public class ScratchFile implements Closeable
      * (same as <code>new ScratchFile(MemoryUsageSetting.setupMainMemoryOnly())</code>).
      * 
      * @return instance configured to only use main memory with no size restriction
-     * 
-     * @throws IOException
      */
-    public static ScratchFile getMainMemoryOnlyInstance() throws IOException
+    public static ScratchFile getMainMemoryOnlyInstance()
     {
-        return new ScratchFile(MemoryUsageSetting.setupMainMemoryOnly());
+        try
+        {
+            return new ScratchFile(MemoryUsageSetting.setupMainMemoryOnly());
+        }
+        catch (IOException ioe)
+        {
+            // cannot happen for main memory setup
+            LOG.error("Unexpected exception occurred creating main memory scratch file instance: " + ioe.getMessage() );
+            return null;
+        }
     }
     
     /**
