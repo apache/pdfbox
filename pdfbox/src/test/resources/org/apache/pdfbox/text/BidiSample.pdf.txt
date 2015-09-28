@@ -1,0 +1,8 @@
+العربية
+العربية
+test الختبار
+14 april 1434 ١٤  إبريل ١٤٣٤
+14-april-1434 ١٤-إبريل-١٤٣٤
+(january) (يناير)
+«self test» «إختبار ذاتي»
+A line with an Arabic العربية word embedded.
