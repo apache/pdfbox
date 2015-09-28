@@ -21,8 +21,10 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.junit.After;
@@ -39,6 +41,8 @@ public class BidiTest
     private static final String NAME_OF_PDF = "BidiSample.pdf";
     private static final String NAME_OF_TXT = "BidiSample.pdf.txt";
     private static final String NAME_OF_TXT_SORTED = "BidiSample.pdf-sorted.txt";
+    
+    private static final String ENCODING = "UTF-8";
 
     private PDDocument document;
     private PDFTextStripper stripper;
@@ -57,7 +61,7 @@ public class BidiTest
         stripper.setSortByPosition(true);
         String extractedText = stripper.getText(document);
 
-        FileReader compareTextReader = new FileReader(new File(IN_DIR, NAME_OF_TXT_SORTED));
+        Reader compareTextReader = new InputStreamReader(new FileInputStream(new File(IN_DIR, NAME_OF_TXT_SORTED)), ENCODING);;
         BufferedReader bufferedCompareTextReader = new BufferedReader(compareTextReader);
 
         StringBuilder compareTextBuilder = new StringBuilder();
@@ -83,7 +87,7 @@ public class BidiTest
         stripper.setSortByPosition(false);
         String extractedText = stripper.getText(document);
 
-        FileReader compareTextReader = new FileReader(new File(IN_DIR, NAME_OF_TXT));
+        Reader compareTextReader = new InputStreamReader(new FileInputStream(new File(IN_DIR, NAME_OF_TXT)), ENCODING);;
         BufferedReader bufferedCompareTextReader = new BufferedReader(compareTextReader);
 
         StringBuilder compareTextBuilder = new StringBuilder();
