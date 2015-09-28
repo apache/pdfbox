@@ -30,8 +30,10 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSDocument;
+import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
 import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.io.ScratchFile;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -83,30 +85,31 @@ public class TestPDFParser
     @Test
     public void testPDFParserFile() throws IOException
     {
-        executeParserTest(new RandomAccessBufferedFileInputStream(new File(PATH_OF_PDF)), false);
+        executeParserTest(new RandomAccessBufferedFileInputStream(new File(PATH_OF_PDF)), MemoryUsageSetting.setupMainMemoryOnly());
     }
 
     @Test
     public void testPDFParserInputStream() throws IOException
     {
-        executeParserTest(new RandomAccessBufferedFileInputStream(new FileInputStream(PATH_OF_PDF)), false);
+        executeParserTest(new RandomAccessBufferedFileInputStream(new FileInputStream(PATH_OF_PDF)), MemoryUsageSetting.setupMainMemoryOnly());
     }
 
     @Test
     public void testPDFParserFileScratchFile() throws IOException
     {
-        executeParserTest(new RandomAccessBufferedFileInputStream(new File(PATH_OF_PDF)), true);
+        executeParserTest(new RandomAccessBufferedFileInputStream(new File(PATH_OF_PDF)), MemoryUsageSetting.setupTempFileOnly());
     }
 
     @Test
     public void testPDFParserInputStreamScratchFile() throws IOException
     {
-        executeParserTest(new RandomAccessBufferedFileInputStream(new FileInputStream(PATH_OF_PDF)), true);
+        executeParserTest(new RandomAccessBufferedFileInputStream(new FileInputStream(PATH_OF_PDF)), MemoryUsageSetting.setupTempFileOnly());
     }
 
-    private void executeParserTest(RandomAccessRead source, boolean useScratchFile) throws IOException
+    private void executeParserTest(RandomAccessRead source, MemoryUsageSetting memUsageSetting) throws IOException
     {
-        PDFParser pdfParser = new PDFParser(source, useScratchFile);
+        ScratchFile scratchFile = new ScratchFile(memUsageSetting);
+        PDFParser pdfParser = new PDFParser(source, scratchFile);
         pdfParser.parse();
         COSDocument doc = pdfParser.getDocument();
         assertNotNull(doc);

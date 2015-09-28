@@ -131,6 +131,19 @@ public class ScratchFile implements Closeable
     }
 
     /**
+     * Getter for an instance using only unrestricted main memory for buffering
+     * (same as <code>new ScratchFile(MemoryUsageSetting.setupMainMemoryOnly())</code>).
+     * 
+     * @return instance configured to only use main memory with no size restriction
+     * 
+     * @throws IOException
+     */
+    public static ScratchFile getMainMemoryOnlyInstance() throws IOException
+    {
+        return new ScratchFile(MemoryUsageSetting.setupMainMemoryOnly());
+    }
+    
+    /**
      * Returns a new free page, either from free page pool
      * or by enlarging scratch file (may be created).
      * 

@@ -18,6 +18,7 @@ package org.apache.pdfbox.tools;
 
 import java.io.IOException;
 
+import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 
 /**
@@ -66,7 +67,7 @@ public final class PDFMerger
 
         String destinationFileName = args[args.length-1];
         merger.setDestinationFileName(destinationFileName);
-        merger.mergeDocuments(false);
+        merger.mergeDocuments(MemoryUsageSetting.setupMainMemoryOnly());
     }
 
     /**

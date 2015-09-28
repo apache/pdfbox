@@ -36,6 +36,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
@@ -171,10 +172,12 @@ public class PDFMergerUtility
      * Merge the list of source documents, saving the result in the destination
      * file.
      *
-     * @param useScratchFiles enables the usage of a scratch file if set to true
+     * @param memUsageSetting defines how memory is used for buffering PDF streams;
+     *                        in case of <code>null</code> unrestricted main memory is used 
+     * 
      * @throws IOException If there is an error saving the document.
      */
-    public void mergeDocuments(boolean useScratchFiles) throws IOException
+    public void mergeDocuments(MemoryUsageSetting memUsageSetting) throws IOException
     {
         PDDocument destination = null;
         InputStream sourceFile;
@@ -185,13 +188,16 @@ public class PDFMergerUtility
 
             try
             {
+                MemoryUsageSetting partitionedMemSetting = memUsageSetting != null ? 
+                        memUsageSetting.getPartitionedCopy(sources.size()+1) :
+                        MemoryUsageSetting.setupMainMemoryOnly();
                 Iterator<InputStream> sit = sources.iterator();
-                destination = new PDDocument(useScratchFiles);
+                destination = new PDDocument(partitionedMemSetting);
 
                 while (sit.hasNext())
                 {
                     sourceFile = sit.next();
-                    source = PDDocument.load(sourceFile, useScratchFiles);
+                    source = PDDocument.load(sourceFile, partitionedMemSetting);
                     tobeclosed.add(source);
                     appendDocument(destination, source);
                 }

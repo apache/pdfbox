@@ -26,6 +26,7 @@ import java.security.cert.X509Certificate;
 
 import javax.crypto.Cipher;
 
+import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.PublicKeyProtectionPolicy;
@@ -262,7 +263,7 @@ public class TestPublicKeyEncryption extends TestCase
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         doc.save(buffer);
         return PDDocument.load(new ByteArrayInputStream(buffer.toByteArray()), decryptionPassword,
-                keyStore, null, false);
+                keyStore, null, MemoryUsageSetting.setupMainMemoryOnly());
     }
 
     /**

@@ -50,13 +50,14 @@ public class PDFParser extends COSParser
 
     /**
      * Constructor.
+     * Unrestricted main memory will be used for buffering PDF streams.
      * 
      * @param source source representing the pdf.
      * @throws IOException If something went wrong.
      */
     public PDFParser(RandomAccessRead source) throws IOException
     {
-        this(source, "", false);
+        this(source, "", ScratchFile.getMainMemoryOnlyInstance());
     }
 
     /**
@@ -67,13 +68,14 @@ public class PDFParser extends COSParser
      * 
      * @throws IOException If something went wrong.
      */
-    public PDFParser(RandomAccessRead source, boolean useScratchFiles) throws IOException
+    public PDFParser(RandomAccessRead source, ScratchFile scratchFile) throws IOException
     {
-        this(source, "", useScratchFiles);
+        this(source, "", scratchFile);
     }
 
     /**
      * Constructor.
+     * Unrestricted main memory will be used for buffering PDF streams.
      * 
      * @param source input representing the pdf.
      * @param decryptionPassword password to be used for decryption.
@@ -81,7 +83,7 @@ public class PDFParser extends COSParser
      */
     public PDFParser(RandomAccessRead source, String decryptionPassword) throws IOException
     {
-        this(source, decryptionPassword, false);
+        this(source, decryptionPassword, ScratchFile.getMainMemoryOnlyInstance());
     }
 
     /**
@@ -93,14 +95,15 @@ public class PDFParser extends COSParser
      *
      * @throws IOException If something went wrong.
      */
-    public PDFParser(RandomAccessRead source, String decryptionPassword, boolean useScratchFiles)
+    public PDFParser(RandomAccessRead source, String decryptionPassword, ScratchFile scratchFile)
             throws IOException
     {
-        this(source, decryptionPassword, null, null, useScratchFiles);
+        this(source, decryptionPassword, null, null, scratchFile);
     }
 
     /**
      * Constructor.
+     * Unrestricted main memory will be used for buffering PDF streams.
      * 
      * @param source input representing the pdf.
      * @param decryptionPassword password to be used for decryption.
@@ -112,29 +115,7 @@ public class PDFParser extends COSParser
     public PDFParser(RandomAccessRead source, String decryptionPassword, InputStream keyStore,
             String alias) throws IOException
     {
-        this(source, decryptionPassword, keyStore, alias, false);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param source input representing the pdf.
-     * @param decryptionPassword password to be used for decryption.
-     * @param keyStore key store to be used for decryption when using public key security 
-     * @param alias alias to be used for decryption when using public key security
-     * @param useScratchFiles use a buffer for temporary storage.
-     *
-     * @throws IOException If something went wrong.
-     */
-    public PDFParser(RandomAccessRead source, String decryptionPassword, InputStream keyStore,
-            String alias, boolean useScratchFiles) throws IOException
-    {
-        super(source);
-        fileLen = source.length();
-        password = decryptionPassword;
-        keyStoreInputStream = keyStore;
-        keyAlias = alias;
-        init(useScratchFiles);
+        this(source, decryptionPassword, keyStore, alias, ScratchFile.getMainMemoryOnlyInstance());
     }
 
     /**
@@ -178,24 +159,6 @@ public class PDFParser extends COSParser
         document = new COSDocument(scratchFile);
     }
     
-    private void init(boolean useScratchFiles) throws IOException
-    {
-        String eofLookupRangeStr = System.getProperty(SYSPROP_EOFLOOKUPRANGE);
-        if (eofLookupRangeStr != null)
-        {
-            try
-            {
-                setEOFLookupRange(Integer.parseInt(eofLookupRangeStr));
-            }
-            catch (NumberFormatException nfe)
-            {
-                LOG.warn("System property " + SYSPROP_EOFLOOKUPRANGE
-                        + " does not contain an integer value, but: '" + eofLookupRangeStr + "'");
-            }
-        }
-        document = new COSDocument(useScratchFiles);
-    }
-
     /**
      * This will get the PD document that was parsed.  When you are done with
      * this document you must call close() on it to release resources.
