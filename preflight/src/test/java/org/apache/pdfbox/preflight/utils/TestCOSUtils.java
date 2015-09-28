@@ -39,6 +39,7 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.cos.COSObjectKey;
+import org.apache.pdfbox.io.ScratchFile;
 import org.junit.Test;
 
 public class TestCOSUtils
@@ -221,7 +222,7 @@ public class TestCOSUtils
 
         IOCOSDocument(File scratchDir) throws IOException
         {
-            super(scratchDir, true);
+            super(new ScratchFile(scratchDir));
         }
 
         @Override
