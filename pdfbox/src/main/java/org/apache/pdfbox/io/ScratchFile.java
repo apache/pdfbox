@@ -457,17 +457,17 @@ public class ScratchFile implements Closeable
     @Override
     public void close() throws IOException
     {
-        if (isClosed)
-        {
-            return;
-        }
-        
-        isClosed = true;
-
         IOException ioexc = null;
         
         synchronized (ioLock)
         {
+            if (isClosed)
+            {
+                return;
+            }
+        
+            isClosed = true;
+
             if (raf != null)
             {
                 try
