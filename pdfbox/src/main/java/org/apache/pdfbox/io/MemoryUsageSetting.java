@@ -162,6 +162,30 @@ public final class MemoryUsageSetting
     {
         return new MemoryUsageSetting(true, true, maxMainMemoryBytes, maxStorageBytes);
     }
+
+    /**
+     * Returns a copy of this instance with the maximum memory/storage restriction
+     * divided by the provided number of parallel uses.
+     * 
+     * @param parallelUseCount specifies the number of parallel usages for the setting to
+     *                         be returned
+     *                         
+     * @return a copy from this instance with the maximum memory/storage restrictions
+     *         adjusted to the multiple usage
+     */
+    public MemoryUsageSetting getPartitionedCopy(int parallelUseCount)
+    {
+        long newMaxMainMemoryBytes = maxMainMemoryBytes <= 0 ? maxMainMemoryBytes : 
+                                                               maxMainMemoryBytes / parallelUseCount;
+        long newMaxStorageBytes = maxStorageBytes <= 0 ? maxStorageBytes :
+                                                         maxStorageBytes / parallelUseCount;
+                
+        MemoryUsageSetting copy = new MemoryUsageSetting( useMainMemory, useTempFile,
+                                                          newMaxMainMemoryBytes, newMaxStorageBytes );
+        copy.tempDir = tempDir;
+        
+        return copy;
+    }
     
     /**
      * Sets directory to be used for temporary files.
