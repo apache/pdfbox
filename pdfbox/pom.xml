@@ -129,6 +129,7 @@
                         <exclude>src/main/resources/org/apache/pdfbox/resources/icc/*</exclude>
                         <exclude>src/main/resources/org/apache/pdfbox/resources/glyphlist/glyphlist.txt</exclude>
                         <exclude>src/main/resources/org/apache/pdfbox/resources/glyphlist/zapfdingbats.txt</exclude>
+                        <exclude>src/main/resources/org/apache/pdfbox/resources/text/BidiMirroring.txt</exclude>
                         <exclude>src/main/resources/META-INF/services/*</exclude>
                         <exclude>src/test/resources/input/rendering/*.ai</exclude>
                         <exclude>src/test/resources/output/*</exclude>
