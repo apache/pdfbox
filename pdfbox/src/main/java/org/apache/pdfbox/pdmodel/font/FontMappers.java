@@ -22,7 +22,7 @@ package org.apache.pdfbox.pdmodel.font;
  *
  * @author John Hewson
  */
-public class FontMappers
+public final class FontMappers
 {
     private static FontMapper instance;
 
