@@ -26,6 +26,10 @@ public final class FontMappers
 {
     private static FontMapper instance;
 
+    private FontMappers()
+    {
+    }
+    
     // lazy thread safe singleton
     private static class DefaultFontMapper
     {
