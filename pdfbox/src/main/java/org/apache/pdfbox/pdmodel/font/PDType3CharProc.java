@@ -19,8 +19,15 @@ package org.apache.pdfbox.pdmodel.font;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.pdfbox.contentstream.PDContentStream;
+import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -83,5 +90,57 @@ public final class PDType3CharProc implements COSObjectable, PDContentStream
         return font.getFontMatrix();
     }
 
-    // todo: add methods for getting the character's width from the stream
+    /**
+     * todo.
+     * 
+     * @return
+     * @throws IOException
+     */
+    public float getWidth() throws IOException
+    {
+        List<COSBase> arguments = new ArrayList<COSBase>();
+        PDFStreamParser parser = new PDFStreamParser(this);
+        Object token = parser.parseNextToken();
+        while (token != null)
+        {
+            if (token instanceof COSObject)
+            {
+                arguments.add(((COSObject) token).getObject());
+            }
+            else if (token instanceof Operator)
+            {
+                return parseWidth((Operator) token, arguments);
+            }
+            else
+            {
+                arguments.add((COSBase) token);
+            }
+            token = parser.parseNextToken();
+        }
+        throw new IOException("Unexpected end of stream");
+    }
+
+    private float parseWidth(Operator operator, List arguments) throws IOException
+    {
+        if (operator.getName().equals("d0") || operator.getName().equals("d1"))
+        {
+            Object obj = arguments.get(0);
+            if (obj instanceof Number)
+            {
+                return ((Number) obj).floatValue();
+            }
+            else if (obj instanceof COSNumber)
+            {
+                return ((COSNumber) obj).floatValue();
+            }
+            else
+            {
+                throw new IOException("Unexpected argument type: " + obj.getClass().getName());
+            }
+        }
+        else
+        {
+            throw new IOException("First operator must be d0 or d1");
+        }
+    }
 }
