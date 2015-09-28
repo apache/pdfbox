@@ -35,8 +35,10 @@ import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-import static org.apache.pdfbox.pdmodel.font.UniUtil.getUniNameOfCodePoint;
 import org.apache.pdfbox.util.Matrix;
+
+
+import static org.apache.pdfbox.pdmodel.font.UniUtil.getUniNameOfCodePoint;
 
 /**
  * Type 0 CIDFont (CFF).
@@ -121,8 +123,9 @@ public class PDCIDFontType0 extends PDCIDFont
         else
         {
             // find font or substitute
-            CIDFontMapping mapping = FontMapper.getCIDFont(getBaseFont(), getFontDescriptor(),
-                                                           getCIDSystemInfo());
+            CIDFontMapping mapping = FontMappers.instance()
+                                                .getCIDFont(getBaseFont(), getFontDescriptor(),
+                                                            getCIDSystemInfo());
             FontBoxFont font;
             if (mapping.isCIDFont())
             {
