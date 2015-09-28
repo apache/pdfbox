@@ -24,11 +24,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.pdfbox.filter.Filter;
 import org.apache.pdfbox.filter.FilterFactory;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccess;
-import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.apache.pdfbox.io.RandomAccessInputStream;
 import org.apache.pdfbox.io.RandomAccessOutputStream;
 import org.apache.pdfbox.io.ScratchFile;
@@ -49,8 +49,7 @@ public class COSStream extends COSDictionary implements Closeable
      */
     public COSStream()
     {
-        this.randomAccess = new RandomAccessBuffer();
-        this.scratchFile = null;
+        this(ScratchFile.getMainMemoryOnlyInstance());
     }
     
     /**
@@ -62,7 +61,7 @@ public class COSStream extends COSDictionary implements Closeable
     {
         super();
         this.randomAccess = createRandomAccess(scratchFile);
-        this.scratchFile = scratchFile;
+        this.scratchFile = scratchFile != null ? scratchFile : ScratchFile.getMainMemoryOnlyInstance();
     }
     
     /**
@@ -70,21 +69,14 @@ public class COSStream extends COSDictionary implements Closeable
      */
     private RandomAccess createRandomAccess(ScratchFile scratchFile)
     {
-        if (scratchFile != null)
+        try
         {
-            try
-            {
-                return scratchFile.createBuffer();
-            }
-            catch (IOException e)
-            {
-                // user can't recover from this exception anyway
-                throw new RuntimeException(e);
-            }
+            return scratchFile.createBuffer();
         }
-        else
+        catch (IOException e)
         {
-            return new RandomAccessBuffer();
+            // user can't recover from this exception anyway
+            throw new RuntimeException(e);
         }
     }
 
