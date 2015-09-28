@@ -1260,6 +1260,7 @@ public class PDFDebugger extends JFrame
         String message = "Usage: java -jar pdfbox-app-x.y.z.jar PDFDebugger [options] <inputfile>\n"
                 + "\nOptons:\n"
                 + "  -password <password> : Password to decrypt the document\n"
+                + "  -viewpages           : activate the page mode on startup\n"
                 + "  <inputfile>          : The PDF document to be loaded\n";
         
         System.err.println(message);
