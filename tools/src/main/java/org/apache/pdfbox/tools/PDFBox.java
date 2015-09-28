@@ -43,62 +43,60 @@ public final class PDFBox
         if (args.length > 0) 
         {
             String command = args[0];
-            String[] arguments = new String[args.length - 1];
-            System.arraycopy(args, 1, arguments, 0, arguments.length);
             boolean exitAfterCallingMain = true;
             if (command.equals("Decrypt"))
             {
-                Decrypt.main(arguments);
+                Decrypt.main(copyCommandlineArgs(args));
             }
             else if (command.equals("Encrypt"))
             {
-                Encrypt.main(arguments);
+                Encrypt.main(copyCommandlineArgs(args));
             }
             else if (command.equals("ExtractText"))
             {
-                ExtractText.main(arguments);
+                ExtractText.main(copyCommandlineArgs(args));
             }
             else if (command.equals("ExtractImages"))
             {
-                ExtractImages.main(arguments);
+                ExtractImages.main(copyCommandlineArgs(args));
             }
             else if (command.equals("OverlayPDF"))
             {
-                OverlayPDF.main(arguments);
+                OverlayPDF.main(copyCommandlineArgs(args));
             }
             else if (command.equals("PrintPDF"))
             {
-                PrintPDF.main(arguments);
+                PrintPDF.main(copyCommandlineArgs(args));
             }
             else if (command.equals("PDFDebugger"))
             {
-                PDFDebugger.main(arguments);
+                PDFDebugger.main(copyCommandlineArgs(args));
                 exitAfterCallingMain = false;
             }
             else if (command.equals("PDFMerger"))
             {
-                PDFMerger.main(arguments);
+                PDFMerger.main(copyCommandlineArgs(args));
             }
             else if (command.equals("PDFReader"))
             {
-                PDFReader.main(arguments);
+                PDFDebugger.main(copyCommandlineArgs(args, "-viewpages"));
                 exitAfterCallingMain = false;
             }
             else if (command.equals("PDFSplit"))
             {
-                PDFSplit.main(arguments);
+                PDFSplit.main(copyCommandlineArgs(args));
             }
             else if (command.equals("PDFToImage"))
             {
-                PDFToImage.main(arguments);
+                PDFToImage.main(copyCommandlineArgs(args));
             }
             else if (command.equals("TextToPDF"))
             {
-                TextToPDF.main(arguments);
+                TextToPDF.main(copyCommandlineArgs(args));
             }
             else if (command.equals("WriteDecodedDoc"))
             {
-                WriteDecodedDoc.main(arguments);
+                WriteDecodedDoc.main(copyCommandlineArgs(args));
             }
             else
             {
@@ -113,6 +111,23 @@ public final class PDFBox
         {
             showMessageAndExit();
         }
+    }
+
+    private static String[] copyCommandlineArgs(String[] args)
+    {
+        // copy all arguments but the first
+        String[] arguments = new String[args.length - 1];
+        System.arraycopy(args, 1, arguments, 0, arguments.length);
+        return arguments;
+    }
+    
+    private static String[] copyCommandlineArgs(String[] args, String arg0)
+    {
+        // copy all arguments, replace the first with the given new one
+        String[] arguments = new String[args.length];
+        System.arraycopy(args, 0, arguments, 0, arguments.length);
+        arguments[0] = arg0;
+        return arguments;
     }
 
     private static void showMessageAndExit() 
