@@ -32,7 +32,6 @@ import org.apache.pdfbox.filter.Filter;
 import org.apache.pdfbox.filter.FilterFactory;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
-import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 
@@ -250,15 +249,6 @@ public final class PDInlineImage implements PDImage
     public void setStencil(boolean isStencil)
     {
         parameters.setBoolean(COSName.IM, isStencil);
-    }
-
-    /**
-     * Always null, use {@link #createInputStream()} instead.
-     */
-    @Override
-    public PDStream getStream() throws IOException
-    {
-        return null;
     }
 
     @Override
