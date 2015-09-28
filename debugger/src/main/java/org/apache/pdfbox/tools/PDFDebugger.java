@@ -113,6 +113,7 @@ public class PDFDebugger extends JFrame
                                  COSName.CALRGB, COSName.LAB));
 
     private static final String PASSWORD = "-password";
+    private static final String VIEWPAGES = "-viewpages";
 
     private static final int SHORCUT_KEY_MASK =
             Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
@@ -153,6 +154,15 @@ public class PDFDebugger extends JFrame
      */
     public PDFDebugger()
     {
+        this(false);
+    }
+
+    /**
+     * Constructor.
+     */
+    public PDFDebugger(boolean viewPages)
+    {
+        isPageMode = viewPages;
         initComponents();
     }
 
@@ -379,7 +389,14 @@ public class PDFDebugger extends JFrame
     private JMenu createViewMenu()
     {
         JMenu viewMenu = new JMenu("View");
-        viewModeItem = new JMenuItem("Show Pages");
+        if (isPageMode)
+        {
+            viewModeItem = new JMenuItem("Show Internal Structure");
+        }
+        else
+        {
+            viewModeItem = new JMenuItem("Show Pages");
+        }
         viewModeItem.addActionListener(new ActionListener()
         {
             @Override
@@ -1025,11 +1042,10 @@ public class PDFDebugger extends JFrame
             }
         });
         
-        final PDFDebugger viewer = new PDFDebugger();
-        
         // open file, if any
         String filename = null;
         String password = "";
+        boolean viewPages = false;
         
         for( int i = 0; i < args.length; i++ )
         {
@@ -1042,11 +1058,17 @@ public class PDFDebugger extends JFrame
                 }
                 password = args[i];
             }
+            else if( args[i].equals( VIEWPAGES ) )
+            {
+                viewPages = true;
+            }
             else
             {
                 filename = args[i];
             }
         }
+        final PDFDebugger viewer = new PDFDebugger(viewPages);
+        
         
         if (filename != null)
         {
