@@ -17,8 +17,12 @@
 package org.apache.pdfbox.text;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.text.Bidi;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,10 +33,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 import java.util.regex.Pattern;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageTree;
@@ -56,6 +64,8 @@ public class PDFTextStripper extends PDFTextStreamEngine
     private static float defaultIndentThreshold = 2.0f;
     private static float defaultDropThreshold = 2.5f;
     private static final boolean useCustomQuickSort;
+
+    private static final Log LOG = LogFactory.getLog(PDFTextStripper.class);
 
     // enable the ability to set the default indent/drop thresholds
     // with -D system properties:
@@ -1729,27 +1739,156 @@ public class PDFTextStripper extends PDFTextStreamEngine
         List<WordWithTextPositions> normalized = new LinkedList<WordWithTextPositions>();
         StringBuilder lineBuilder = new StringBuilder();
         List<TextPosition> wordPositions = new ArrayList<TextPosition>();
-        // concatenate the pieces of text in opposite order if RTL is dominant
-        if (isRtlDominant)
+
+        for (LineItem item : line)
         {
-            int numberOfPositions = line.size();
-            for (int i = numberOfPositions - 1; i >= 0; i--)
-            {
-                lineBuilder = normalizeAdd(normalized, lineBuilder, wordPositions, line.get(i));
-            }
+            lineBuilder = normalizeAdd(normalized, lineBuilder, wordPositions, item);
         }
-        else
-        {
-            for (LineItem item : line)
-            {
-                lineBuilder = normalizeAdd(normalized, lineBuilder, wordPositions, item);
-            }
-        }
+
         if (lineBuilder.length() > 0)
         {
             normalized.add(createWord(lineBuilder.toString(), wordPositions));
         }
         return normalized;
+    }
+
+    /**
+     * Handles the LTR and RTL direction of the given words. The whole implementation stands and falls with the given
+     * word. If the word is a full line, the results will be the best. If the word contains of single words or
+     * characters, the order of the characters in a word or words in a line may wrong, due to RTL and LTR marks and
+     * characters!
+     * 
+     * Based on http://www.nesterovsky-bros.com/weblog/2013/07/28/VisualToLogicalConversionInJava.aspx
+     * 
+     * @param word The word that shall be processed
+     * @return new word with the correct direction of the containing characters
+     */
+    private String handleDirection(String word)
+    {
+        Bidi bidi = new Bidi(word, Bidi.DIRECTION_DEFAULT_LEFT_TO_RIGHT);
+
+        // if there is pure LTR text no need to process further
+        if (!bidi.isMixed() && bidi.getBaseLevel() == Bidi.DIRECTION_LEFT_TO_RIGHT)
+        {
+            return word;
+        }
+        
+        // collect individual bidi information
+        int runCount = bidi.getRunCount();
+        byte[] levels = new byte[runCount];
+        Integer[] runs = new Integer[runCount];
+      
+        for (int i = 0; i < runCount; i++)
+        {
+           levels[i] = (byte)bidi.getRunLevel(i);
+           runs[i] = i;
+        }
+
+        // reorder individual parts based on their levels
+        Bidi.reorderVisually(levels, 0, runs, 0, runCount);
+        
+        // collect the parts based on the direction within the run
+        StringBuilder result = new StringBuilder();
+
+        for (int i = 0; i < runCount; i++)
+        {
+           int index = runs[i];
+           int start = bidi.getRunStart(index);
+           int end = bidi.getRunLimit(index);
+
+            int level = levels[index];
+
+            if ((level & 1) != 0)
+            {
+                for (; --end >= start;)
+                {
+                    if (Character.isMirrored(word.codePointAt(end)))
+                    {
+                        if (MIRRORING_CHAR_MAP.containsKey(word.charAt(end) + ""))
+                        {
+                            result.append(MIRRORING_CHAR_MAP.get(word.charAt(end) + "").charAt(0));
+                        }
+                        else
+                        {
+                            result.append(word.charAt(end));
+                        }
+                    }
+                    else
+                    {
+                        result.append(word.charAt(end));
+                    }
+                }
+            }
+            else
+            {
+                result.append(word, start, end);
+            }
+        }
+        
+        return result.toString();
+    }
+
+    private static HashMap<String, String> MIRRORING_CHAR_MAP = new HashMap<String, String>();
+
+    static
+    {
+        String path = "org/apache/pdfbox/resources/text/BidiMirroring.txt";
+        InputStream input = PDFTextStripper.class.getClassLoader().getResourceAsStream(path);
+        try
+        {
+            parseBidiFile(input);
+        }
+        catch (IOException e)
+        {
+            LOG.warn("Could not parse BidiMirroring.txt, mirroring char map will be empty: "
+                    + e.getMessage());
+        }
+    };
+
+    /**
+     * This method parses the bidi file provided as inputstream.
+     * 
+     * @param inputStream - The bidi file as inputstream
+     * @throws IOException if any line could not be read by the LineNumberReader
+     */
+    private static void parseBidiFile(InputStream inputStream) throws IOException
+    {
+        LineNumberReader rd = new LineNumberReader(new InputStreamReader(inputStream));
+
+        do
+        {
+            String s = rd.readLine();
+            if (s == null)
+            {
+                break;
+            }
+
+            int comment = s.indexOf('#'); // ignore comments
+            if (comment != -1)
+            {
+                s = s.substring(0, comment);
+            }
+
+            if (s.length() < 2)
+            {
+                continue;
+            }
+
+            StringTokenizer st = new StringTokenizer(s, ";");
+            int nFields = st.countTokens();
+            String[] fields = new String[nFields];
+            for (int i = 0; i < nFields; i++)
+            {
+                fields[i] = "" + (char) Integer.parseInt(st.nextToken().trim(), 16); //
+            }
+
+            if (fields.length == 2)
+            {
+                // initialize the MIRRORING_CHAR_MAP
+                MIRRORING_CHAR_MAP.put(fields[0], fields[1]);
+            }
+
+        } while (true);
     }
 
     /**
@@ -1807,12 +1946,12 @@ public class PDFTextStripper extends PDFTextStreamEngine
         }
         if (builder == null)
         {
-            return word;
+            return handleDirection(word);
         }
         else
         {
             builder.append(word.substring(p, q));
-            return builder.toString();
+            return handleDirection(builder.toString());
         }
     }
 
