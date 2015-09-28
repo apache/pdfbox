@@ -117,7 +117,7 @@ public class PDFDebugger extends JFrame
                                  COSName.CALRGB, COSName.LAB));
 
     private static final String PASSWORD = "-password";
-    private static final String VIEWPAGES = "-viewpages";
+    private static final String VIEW_STRUCTURE = "-viewstructure";
 
     private static final int SHORCUT_KEY_MASK =
             Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
@@ -1087,7 +1087,7 @@ public class PDFDebugger extends JFrame
         // open file, if any
         String filename = null;
         String password = "";
-        boolean viewPages = false;
+        boolean viewPages = true;
         
         for( int i = 0; i < args.length; i++ )
         {
@@ -1100,9 +1100,9 @@ public class PDFDebugger extends JFrame
                 }
                 password = args[i];
             }
-            else if( args[i].equals( VIEWPAGES ) )
+            else if( args[i].equals(VIEW_STRUCTURE) )
             {
-                viewPages = true;
+                viewPages = false;
             }
             else
             {
@@ -1260,7 +1260,7 @@ public class PDFDebugger extends JFrame
         String message = "Usage: java -jar pdfbox-app-x.y.z.jar PDFDebugger [options] <inputfile>\n"
                 + "\nOptions:\n"
                 + "  -password <password> : Password to decrypt the document\n"
-                + "  -viewpages           : activate the page mode on startup\n"
+                + "  -viewstructure       : activate structure mode on startup\n"
                 + "  <inputfile>          : The PDF document to be loaded\n";
         
         System.err.println(message);
