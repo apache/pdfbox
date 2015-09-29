@@ -20,8 +20,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.io.IOUtils;
@@ -116,7 +118,7 @@ public class TestPDDocument extends TestCase
      * @throws IOException if something went wrong
      * @throws COSVisitorException  if something went wrong
      */
-public void testSaveLoadNonSeqStream() throws IOException, COSVisitorException
+    public void testSaveLoadNonSeqStream() throws IOException, COSVisitorException
     {
         // Create PDF with one blank page
         PDDocument document = new PDDocument();
@@ -168,5 +170,71 @@ public void testSaveLoadNonSeqStream() throws IOException, COSVisitorException
         PDDocument loadDoc = PDDocument.loadNonSeq(targetFile, new RandomAccessBuffer());
         assertEquals(1, loadDoc.getNumberOfPages());
         loadDoc.close();
+    }
+    
+    /**
+     * Test whether a bad file can be deleted after load() fails.
+     * 
+     * @throws java.io.FileNotFoundException
+     */
+    public void testDeleteBadFileTest() throws IOException
+    {
+        File f = new File("test.pdf");
+        PrintWriter pw = new PrintWriter(new FileOutputStream(f));
+        pw.write("<script language='JavaScript'>");
+        pw.close();
+
+        PDDocument doc = null;
+        try
+        {
+            doc = PDDocument.load(f);
+            fail("parsing should fail");
+        }
+        catch (IOException ex)
+        {
+            // expected
+        }
+        finally
+        {
+            assertNull(doc);
+        }
+
+        try
+        {
+            doc = PDDocument.loadNonSeq(f, null);
+            fail("parsing should fail");
+        }
+        catch (IOException ex)
+        {
+            // expected
+        }
+        finally
+        {
+            assertNull(doc);
+        }
+
+        boolean deleted = f.delete();
+        assertTrue("delete bad file failed after failed load()", deleted);
+    }
+
+    /**
+     * Test whether a good file can be deleted after load() and close() succeed.
+     * 
+     * @throws java.io.FileNotFoundException
+     * @throws org.apache.pdfbox.exceptions.COSVisitorException
+     */
+    public void testDeleteGoodFileTest() throws IOException, COSVisitorException
+    {
+        File f = new File("test.pdf");
+        PDDocument doc = new PDDocument();
+        doc.addPage(new PDPage());
+        doc.save(f);
+        doc.close();
+
+        PDDocument.load(f).close();
+        PDDocument.loadNonSeq(f, null).close();
+
+        boolean deleted = f.delete();
+        assertTrue("delete good file failed after successful load() and close()", deleted);
     }
 }
