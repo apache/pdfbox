@@ -27,6 +27,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDPropertyList;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontFactory;
+import org.apache.pdfbox.pdmodel.graphics.color.PDPattern;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentGroup;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
@@ -142,8 +143,7 @@ public final class PDResources implements COSObjectable
             PDColorSpace cached = cache.getColorSpace(indirect);
             if (cached != null)
             {
-                // cache disabled due to resource dependency, see PDFBOX-2370
-                //return cached
+                return cached;
             }
         }
 
@@ -159,7 +159,8 @@ public final class PDResources implements COSObjectable
             colorSpace = PDColorSpace.create(name, this);
         }
 
-        if (cache != null)
+        // we can't cache PDPattern, because it holds page resources, see PDFBOX-2370
+        if (cache != null && !(colorSpace instanceof PDPattern))
         {
             cache.put(indirect, colorSpace);
         }
@@ -321,8 +322,7 @@ public final class PDResources implements COSObjectable
             PDXObject cached = cache.getXObject(indirect);
             if (cached != null)
             {
-                // cache disabled due to resource dependency, see PDFBOX-2370
-                //return cached
+                return cached;
             }
         }
 
@@ -342,7 +342,8 @@ public final class PDResources implements COSObjectable
             xobject = PDXObject.createXObject(value, this);
         }
 
-        if (cache != null)
+        // we can't cache PDImageXObject, because it holds page resources, see PDFBOX-2370
+        if (cache != null && !(xobject instanceof PDImageXObject))
         {
             cache.put(indirect, xobject);
         }
