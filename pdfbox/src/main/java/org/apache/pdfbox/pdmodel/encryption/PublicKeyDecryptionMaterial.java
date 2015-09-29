@@ -36,21 +36,6 @@ import java.util.Enumeration;
  * <li>the password to decrypt the private key if necessary</li>
  * </ul>
  *
- * Objects of this class can be used with the <code>openProtection</code> method of <code>PDDocument</code>.
- *
- * The following example shows how to decrypt a document using a PKCS#12 certificate
- * (typically files with a pfx extension).
- *
- * <pre>
- * PDDocument doc = PDDocument.load(document_path);
- * KeyStore ks = KeyStore.getInstance("PKCS12");
- * ks.load(new FileInputStream(certificate_path), password.toCharArray());
- * PublicKeyDecryptionMaterial dm = new PublicKeyDecryptionMaterial(ks, null, password);
- * doc.openProtection(dm);
- * </pre>
- *
- * In this code sample certificate_path contains the path to the PKCS#12 certificate.
- *
  * @author Benoit Guillon
  * 
  */
