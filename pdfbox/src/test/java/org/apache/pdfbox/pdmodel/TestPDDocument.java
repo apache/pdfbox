@@ -20,13 +20,19 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.Arrays;
 
 import org.apache.pdfbox.io.IOUtils;
 
 import junit.framework.TestCase;
+import static junit.framework.TestCase.assertNull;
+import static junit.framework.TestCase.assertTrue;
+import static junit.framework.TestCase.fail;
 
 /**
  * Testcase introduced with PDFBOX-1581.
@@ -34,7 +40,7 @@ import junit.framework.TestCase;
  */
 public class TestPDDocument extends TestCase
 {
-    private File testResultsDir = new File("target/test-output");
+    private final File testResultsDir = new File("target/test-output");
 
     @Override
     protected void setUp() throws Exception
@@ -194,5 +200,56 @@ public class TestPDDocument extends TestCase
         // catalog version version has to be 1.5
         assertEquals("1.5", document.getDocumentCatalog().getVersion());
         document.close();
+    }
+
+    /**
+     * Test whether a bad file can be deleted after load() failed.
+     *
+     * @throws java.io.FileNotFoundException
+     */
+    public void testDeleteBadFile() throws FileNotFoundException
+    {
+        File f = new File("test.pdf");
+        PrintWriter pw = new PrintWriter(new FileOutputStream(f));
+        pw.write("<script language='JavaScript'>");
+        pw.close();
+        PDDocument doc = null;
+        try
+        {
+            doc = PDDocument.load(f);
+            fail("parsing should fail");
+        }
+        catch (IOException ex)
+        {
+            // expected
+        }
+        finally
+        {
+            assertNull(doc);
+        }
+
+        boolean deleted = f.delete();
+        
+        //TODO uncomment after bug is fixed!
+        //assertTrue("delete bad file failed after failed load()", deleted);
+    }
+
+    /**
+     * Test whether a good file can be deleted after load() and close() succeed.
+     *
+     * @throws java.io.FileNotFoundException
+     */
+    public void testDeleteGoodFile() throws IOException
+    {
+        File f = new File("test.pdf");
+        PDDocument doc = new PDDocument();
+        doc.addPage(new PDPage());
+        doc.save(f);
+        doc.close();
+
+        PDDocument.load(f).close();
+
+        boolean deleted = f.delete();
+        assertTrue("delete good file failed after successful load() and close()", deleted);
     }
 }
