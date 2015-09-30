@@ -849,8 +849,16 @@ public class PDDocument implements Closeable
     {
         RandomAccessBufferedFileInputStream raFile = new RandomAccessBufferedFileInputStream(file);
         PDFParser parser = new PDFParser(raFile, password, keyStore, alias, new ScratchFile(memUsageSetting));
-        parser.parse();
-        return parser.getPDDocument();
+        try
+        {
+            parser.parse();
+            return parser.getPDDocument();
+        }
+        catch (IOException ioe)
+        {
+            IOUtils.closeQuietly(raFile);
+            throw ioe;
+        }
     }
 
     /**
