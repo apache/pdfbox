@@ -59,7 +59,7 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
 
     private static URL getImageUrl(String name)
     {
-        String fullName = "/org/apache/pdfbox/tools/pdfdebugger/" + name + ".png";
+        String fullName = "/org/apache/pdfbox/debugger/" + name + ".png";
         return PDFTreeCellRenderer.class.getResource(fullName);
     }
     
