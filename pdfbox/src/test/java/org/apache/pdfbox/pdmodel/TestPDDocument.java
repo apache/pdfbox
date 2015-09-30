@@ -229,9 +229,7 @@ public class TestPDDocument extends TestCase
         }
 
         boolean deleted = f.delete();
-        
-        //TODO uncomment after bug is fixed!
-        //assertTrue("delete bad file failed after failed load()", deleted);
+        assertTrue("delete bad file failed after failed load()", deleted);
     }
 
     /**
