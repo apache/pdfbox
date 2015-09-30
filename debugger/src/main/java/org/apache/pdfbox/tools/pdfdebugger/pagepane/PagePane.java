@@ -35,9 +35,9 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.apache.pdfbox.tools.pdfdebugger.ui.ImageUtil;
 import org.apache.pdfbox.tools.pdfdebugger.ui.RotationMenu;
 import org.apache.pdfbox.tools.pdfdebugger.ui.ZoomMenu;
-import org.apache.pdfbox.tools.util.ImageUtil;
 
 /**
  * Display the page number and a page rendering.

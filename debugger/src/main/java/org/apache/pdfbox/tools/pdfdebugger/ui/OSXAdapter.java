@@ -62,7 +62,7 @@
  *  Copyright (C) 2003-2007 Apple, Inc., All Rights Reserved
  */
 
-package org.apache.pdfbox.tools.gui;
+package org.apache.pdfbox.tools.pdfdebugger.ui;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;

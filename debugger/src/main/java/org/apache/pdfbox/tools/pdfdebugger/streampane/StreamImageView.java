@@ -33,9 +33,10 @@ import javax.swing.JScrollPane;
 import javax.swing.border.LineBorder;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
+
+import org.apache.pdfbox.tools.pdfdebugger.ui.ImageUtil;
 import org.apache.pdfbox.tools.pdfdebugger.ui.RotationMenu;
 import org.apache.pdfbox.tools.pdfdebugger.ui.ZoomMenu;
-import org.apache.pdfbox.tools.util.ImageUtil;
 
 /**
  * @author Khyrul Bashar

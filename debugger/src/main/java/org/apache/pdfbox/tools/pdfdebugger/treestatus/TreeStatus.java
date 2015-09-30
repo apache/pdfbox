@@ -24,9 +24,9 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
-import org.apache.pdfbox.tools.gui.ArrayEntry;
-import org.apache.pdfbox.tools.gui.MapEntry;
-import org.apache.pdfbox.tools.gui.PageEntry;
+import org.apache.pdfbox.tools.pdfdebugger.ui.ArrayEntry;
+import org.apache.pdfbox.tools.pdfdebugger.ui.MapEntry;
+import org.apache.pdfbox.tools.pdfdebugger.ui.PageEntry;
 
 /**
  * @author Khyrul Bashar
