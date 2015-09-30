@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.tools;
 
+import org.apache.pdfbox.debugger.PDFDebugger;
 
 /**
  * Simple wrapper around all the command line utilities included in PDFBox.
@@ -43,60 +44,62 @@ public final class PDFBox
         if (args.length > 0) 
         {
             String command = args[0];
+            String[] arguments = new String[args.length - 1];
+            System.arraycopy(args, 1, arguments, 0, arguments.length);
             boolean exitAfterCallingMain = true;
             if (command.equals("Decrypt"))
             {
-                Decrypt.main(copyCommandlineArgs(args));
+                Decrypt.main(arguments);
             }
             else if (command.equals("Encrypt"))
             {
-                Encrypt.main(copyCommandlineArgs(args));
+                Encrypt.main(arguments);
             }
             else if (command.equals("ExtractText"))
             {
-                ExtractText.main(copyCommandlineArgs(args));
+                ExtractText.main(arguments);
             }
             else if (command.equals("ExtractImages"))
             {
-                ExtractImages.main(copyCommandlineArgs(args));
+                ExtractImages.main(arguments);
             }
             else if (command.equals("OverlayPDF"))
             {
-                OverlayPDF.main(copyCommandlineArgs(args));
+                OverlayPDF.main(arguments);
             }
             else if (command.equals("PrintPDF"))
             {
-                PrintPDF.main(copyCommandlineArgs(args));
+                PrintPDF.main(arguments);
             }
             else if (command.equals("PDFDebugger"))
             {
-                PDFDebugger.main(copyCommandlineArgs(args));
+                PDFDebugger.main(arguments);
                 exitAfterCallingMain = false;
             }
             else if (command.equals("PDFMerger"))
             {
-                PDFMerger.main(copyCommandlineArgs(args));
+                PDFMerger.main(arguments);
             }
             else if (command.equals("PDFReader"))
             {
-                PDFDebugger.main(copyCommandlineArgs(args, "-viewpages"));
+                PDFDebugger.main(arguments);
                 exitAfterCallingMain = false;
             }
             else if (command.equals("PDFSplit"))
             {
-                PDFSplit.main(copyCommandlineArgs(args));
+                PDFSplit.main(arguments);
             }
             else if (command.equals("PDFToImage"))
             {
-                PDFToImage.main(copyCommandlineArgs(args));
+                PDFToImage.main(arguments);
             }
             else if (command.equals("TextToPDF"))
             {
-                TextToPDF.main(copyCommandlineArgs(args));
+                TextToPDF.main(arguments);
             }
             else if (command.equals("WriteDecodedDoc"))
             {
-                WriteDecodedDoc.main(copyCommandlineArgs(args));
+                WriteDecodedDoc.main(arguments);
             }
             else
             {
@@ -113,27 +116,10 @@ public final class PDFBox
         }
     }
 
-    private static String[] copyCommandlineArgs(String[] args)
-    {
-        // copy all arguments but the first
-        String[] arguments = new String[args.length - 1];
-        System.arraycopy(args, 1, arguments, 0, arguments.length);
-        return arguments;
-    }
-    
-    private static String[] copyCommandlineArgs(String[] args, String arg0)
-    {
-        // copy all arguments, replace the first with the given new one
-        String[] arguments = new String[args.length];
-        System.arraycopy(args, 0, arguments, 0, arguments.length);
-        arguments[0] = arg0;
-        return arguments;
-    }
-
     private static void showMessageAndExit() 
     {
         String message = "PDFBox version: \""+ Version.getVersion()+ "\""
-                + "\nUsage: java pdfbox-app-x.y.z.jar <command> <args..>\n"
+                + "\nUsage: java -jar pdfbox-app-x.y.z.jar <command> <args..>\n"
                 + "\nPossible commands are:\n"
                 + "  ConvertColorspace\n"
                 + "  Decrypt\n"
