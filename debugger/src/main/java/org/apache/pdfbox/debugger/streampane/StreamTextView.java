@@ -32,7 +32,7 @@ import javax.swing.text.StyledDocument;
 
 import org.apache.pdfbox.debugger.PDFDebugger;
 import org.apache.pdfbox.debugger.streampane.tooltip.ToolTipController;
-import org.apache.pdfbox.tools.pdfdebugger.ui.textsearcher.Searcher;
+import org.apache.pdfbox.debugger.ui.textsearcher.Searcher;
 
 /**
  * @author Khyrul Bashar

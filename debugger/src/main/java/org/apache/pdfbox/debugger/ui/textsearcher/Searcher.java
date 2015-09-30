@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.pdfbox.tools.pdfdebugger.ui.textsearcher;
+package org.apache.pdfbox.debugger.ui.textsearcher;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
