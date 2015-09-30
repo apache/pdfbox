@@ -29,7 +29,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 import javax.swing.text.StyledDocument;
-import org.apache.pdfbox.tools.PDFDebugger;
+
+import org.apache.pdfbox.tools.pdfdebugger.PDFDebugger;
 import org.apache.pdfbox.tools.pdfdebugger.streampane.tooltip.ToolTipController;
 import org.apache.pdfbox.tools.pdfdebugger.ui.textsearcher.Searcher;
 

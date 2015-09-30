@@ -36,7 +36,8 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentListener;
-import org.apache.pdfbox.tools.PDFDebugger;
+
+import org.apache.pdfbox.tools.pdfdebugger.PDFDebugger;
 
 /**
  * @author Khyrul Bashar
