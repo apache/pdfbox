@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.pdfbox.tools.util;
+package org.apache.pdfbox.tools.pdfdebugger.ui;
 
 import java.awt.Component;
 import java.io.File;

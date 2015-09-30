@@ -39,10 +39,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.tools.gui.ArrayEntry;
-import org.apache.pdfbox.tools.gui.MapEntry;
 import org.apache.pdfbox.tools.pdfdebugger.treestatus.TreeStatus;
-import org.apache.pdfbox.tools.util.FileOpenSaveDialog;
 
 /**
  * @author Khyrul Bashar

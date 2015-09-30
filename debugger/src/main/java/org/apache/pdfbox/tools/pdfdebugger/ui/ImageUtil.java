@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.tools.util;
+package org.apache.pdfbox.tools.pdfdebugger.ui;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;

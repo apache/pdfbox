@@ -74,14 +74,6 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.printing.PDFPageable;
-import org.apache.pdfbox.tools.gui.ArrayEntry;
-import org.apache.pdfbox.tools.gui.DocumentEntry;
-import org.apache.pdfbox.tools.gui.ErrorDialog;
-import org.apache.pdfbox.tools.gui.MapEntry;
-import org.apache.pdfbox.tools.gui.OSXAdapter;
-import org.apache.pdfbox.tools.gui.PDFTreeCellRenderer;
-import org.apache.pdfbox.tools.gui.PDFTreeModel;
-import org.apache.pdfbox.tools.gui.PageEntry;
 import org.apache.pdfbox.tools.pdfdebugger.colorpane.CSArrayBased;
 import org.apache.pdfbox.tools.pdfdebugger.colorpane.CSDeviceN;
 import org.apache.pdfbox.tools.pdfdebugger.colorpane.CSIndexed;
@@ -93,12 +85,20 @@ import org.apache.pdfbox.tools.pdfdebugger.streampane.StreamPane;
 import org.apache.pdfbox.tools.pdfdebugger.stringpane.StringPane;
 import org.apache.pdfbox.tools.pdfdebugger.treestatus.TreeStatus;
 import org.apache.pdfbox.tools.pdfdebugger.treestatus.TreeStatusPane;
+import org.apache.pdfbox.tools.pdfdebugger.ui.ArrayEntry;
+import org.apache.pdfbox.tools.pdfdebugger.ui.DocumentEntry;
+import org.apache.pdfbox.tools.pdfdebugger.ui.ErrorDialog;
+import org.apache.pdfbox.tools.pdfdebugger.ui.ExtensionFileFilter;
+import org.apache.pdfbox.tools.pdfdebugger.ui.FileOpenSaveDialog;
+import org.apache.pdfbox.tools.pdfdebugger.ui.MapEntry;
+import org.apache.pdfbox.tools.pdfdebugger.ui.OSXAdapter;
+import org.apache.pdfbox.tools.pdfdebugger.ui.PDFTreeCellRenderer;
+import org.apache.pdfbox.tools.pdfdebugger.ui.PDFTreeModel;
+import org.apache.pdfbox.tools.pdfdebugger.ui.PageEntry;
+import org.apache.pdfbox.tools.pdfdebugger.ui.RecentFiles;
 import org.apache.pdfbox.tools.pdfdebugger.ui.RotationMenu;
 import org.apache.pdfbox.tools.pdfdebugger.ui.Tree;
 import org.apache.pdfbox.tools.pdfdebugger.ui.ZoomMenu;
-import org.apache.pdfbox.tools.util.ExtensionFileFilter;
-import org.apache.pdfbox.tools.util.FileOpenSaveDialog;
-import org.apache.pdfbox.tools.util.RecentFiles;
 
 /**
  * PDF Debugger.
