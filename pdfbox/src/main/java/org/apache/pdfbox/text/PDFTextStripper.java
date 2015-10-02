@@ -480,53 +480,11 @@ public class PDFTextStripper extends PDFTextStreamEngine
                     Collections.sort(textList, comparator);
                 }
             }
+            
             Iterator<TextPosition> textIter = textList.iterator();
-            // Before we can display the text, we need to do some normalizing.
-            // Arabic and Hebrew text is right to left and is typically stored
-            // in its logical format, which means that the rightmost character is
-            // stored first, followed by the second character from the right etc.
-            // However, PDF stores the text in presentation form, which is left to
-            // right. We need to do some normalization to convert the PDF data to
-            // the proper logical output format.
-            //
-            // Note that if we did not sort the text, then the output of reversing the
-            // text is undefined and can sometimes produce worse output then not trying
-            // to reverse the order. Sorting should be done for these languages.
 
-            // First step is to determine if we have any right to left text, and
-            // if so, is it dominant.
-            int ltrCount = 0;
-            int rtlCount = 0;
-
-            while (textIter.hasNext())
-            {
-                TextPosition position = textIter.next();
-                String stringValue = position.getUnicode();
-                for (int a = 0; a < stringValue.length(); a++)
-                {
-                    byte dir = Character.getDirectionality(stringValue.charAt(a));
-                    if (dir == Character.DIRECTIONALITY_LEFT_TO_RIGHT
-                            || dir == Character.DIRECTIONALITY_LEFT_TO_RIGHT_EMBEDDING
-                            || dir == Character.DIRECTIONALITY_LEFT_TO_RIGHT_OVERRIDE)
-                    {
-                        ltrCount++;
-                    }
-                    else if (dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT
-                            || dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC
-                            || dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_EMBEDDING
-                            || dir == Character.DIRECTIONALITY_RIGHT_TO_LEFT_OVERRIDE)
-                    {
-                        rtlCount++;
-                    }
-                }
-            }
-            // choose the dominant direction
-            boolean isRtlDominant = rtlCount > ltrCount;
-
-            startArticle(!isRtlDominant);
+            startArticle();
             startOfArticle = true;
-            // we will later use this to skip reordering
-            boolean hasRtl = rtlCount > 0;
 
             // Now cycle through to print the text.
             // We queue up a line at a time before we print so that we can convert
@@ -653,7 +611,7 @@ public class PDFTextStripper extends PDFTextStreamEngine
                     // now
                     if (!overlap(positionY, positionHeight, maxYForLine, maxHeightForLine))
                     {
-                        writeLine(normalize(line, isRtlDominant, hasRtl), isRtlDominant);
+                        writeLine(normalize(line));
                         line.clear();
                         lastLineStartPosition = handleLineSeparation(current, lastPosition,
                                 lastLineStartPosition, maxHeightForLine);
@@ -705,7 +663,7 @@ public class PDFTextStripper extends PDFTextStreamEngine
             // print the final line
             if (line.size() > 0)
             {
-                writeLine(normalize(line, isRtlDominant, hasRtl), isRtlDominant);
+                writeLine(normalize(line));
                 writeParagraphEnd();
             }
             endArticle();
@@ -1707,10 +1665,9 @@ public class PDFTextStripper extends PDFTextStreamEngine
      * Write a list of string containing a whole line of a document.
      * 
      * @param line a list with the words of the given line
-     * @param isRtlDominant determines if rtl or ltl is dominant
      * @throws IOException if something went wrong
      */
-    private void writeLine(List<WordWithTextPositions> line, boolean isRtlDominant)
+    private void writeLine(List<WordWithTextPositions> line)
             throws IOException
     {
         int numberOfStrings = line.size();
@@ -1729,12 +1686,9 @@ public class PDFTextStripper extends PDFTextStreamEngine
      * Normalize the given list of TextPositions.
      * 
      * @param line list of TextPositions
-     * @param isRtlDominant determines if rtl or ltl is dominant
-     * @param hasRtl determines if lines contains rtl formatted text(parts)
      * @return a list of strings, one string for every word
      */
-    private List<WordWithTextPositions> normalize(List<LineItem> line, boolean isRtlDominant,
-            boolean hasRtl)
+    private List<WordWithTextPositions> normalize(List<LineItem> line)
     {
         List<WordWithTextPositions> normalized = new LinkedList<WordWithTextPositions>();
         StringBuilder lineBuilder = new StringBuilder();
