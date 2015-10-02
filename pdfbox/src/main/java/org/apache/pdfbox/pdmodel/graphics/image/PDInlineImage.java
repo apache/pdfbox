@@ -132,8 +132,7 @@ public final class PDInlineImage implements PDImage
 
         if (cs != null)
         {
-            // TODO: handling of abbreviated color space names belongs here, not in the factory
-            return PDColorSpace.create(cs, resources);
+            return create(cs);
         }
         else if (isStencil())
         {
@@ -144,6 +143,61 @@ public final class PDInlineImage implements PDImage
         {
             // an image without a color space is always broken
             throw new IOException("could not determine color space");
+        }
+    }
+    
+    private PDColorSpace create(COSBase cs) throws IOException
+    {
+        if (cs instanceof COSName)
+        {
+            if (COSName.RGB.equals(cs))
+            {
+                return PDColorSpace.create(COSName.DEVICERGB, resources);
+            }
+            else if (COSName.CMYK.equals(cs))
+            {
+                return PDColorSpace.create(COSName.DEVICECMYK, resources);
+            }
+            else if (COSName.G.equals(cs))
+            {
+                return PDColorSpace.create(COSName.DEVICEGRAY, resources);
+            }
+            else
+            {
+                return PDColorSpace.create(cs, resources);
+            }
+        }
+        else if (cs instanceof COSArray && ((COSArray) cs).size() > 1)
+        {
+            COSBase csType = ((COSArray) cs).get(0);
+            if (COSName.I.equals(csType) || COSName.INDEXED.equals(csType))
+            {
+                COSArray array = new COSArray();
+                array.addAll((COSArray) cs);
+                array.set(0, COSName.INDEXED);
+                COSBase cs1 = ((COSArray) cs).get(1);
+                if (COSName.RGB.equals(cs1))
+                {
+                    array.set(1, COSName.DEVICERGB);
+                }
+                else if (COSName.CMYK.equals(cs1))
+                {
+                    array.set(1, COSName.DEVICECMYK);
+                }
+                else if (COSName.G.equals(cs1))
+                {
+                    array.set(1, COSName.DEVICEGRAY);
+                }
+                return PDColorSpace.create(array, resources);
+            }
+            else
+            {
+                throw new IOException("Illegal type of color space in inline image: " + csType);
+            }
+        }
+        else
+        {
+            throw new IOException("Illegal type of object for color space: " + cs);
         }
     }
 

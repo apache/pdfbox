@@ -99,15 +99,15 @@ public abstract class PDColorSpace implements COSObjectable
             }
 
             // built-in color spaces
-            if (name == COSName.DEVICECMYK || name == COSName.CMYK)
+            if (name == COSName.DEVICECMYK)
             {
                 return PDDeviceCMYK.INSTANCE;
             }
-            else if (name == COSName.DEVICERGB || name == COSName.RGB)
+            else if (name == COSName.DEVICERGB)
             {
                 return PDDeviceRGB.INSTANCE;
             }
-            else if (name == COSName.DEVICEGRAY || name == COSName.G)
+            else if (name == COSName.DEVICEGRAY)
             {
                 return PDDeviceGray.INSTANCE;
             }
