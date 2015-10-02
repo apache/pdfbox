@@ -60,6 +60,7 @@ public final class PDInlineImage implements PDImage
      * @param parameters the image parameters
      * @param data the image data
      * @param resources the current resources
+     * @throws IOException if the stream cannot be decoded
      */
     public PDInlineImage(COSDictionary parameters, byte[] data, PDResources resources)
             throws IOException
@@ -132,7 +133,7 @@ public final class PDInlineImage implements PDImage
 
         if (cs != null)
         {
-            return create(cs);
+            return createColorSpace(cs);
         }
         else if (isStencil())
         {
@@ -142,63 +143,52 @@ public final class PDInlineImage implements PDImage
         else
         {
             // an image without a color space is always broken
-            throw new IOException("could not determine color space");
+            throw new IOException("could not determine inline image color space");
         }
     }
     
-    private PDColorSpace create(COSBase cs) throws IOException
+    // deliver the long name of a device colorspace, or the parameter
+    private COSBase toLongName(COSBase cs)
+    {
+        if (COSName.RGB.equals(cs))
+        {
+            return COSName.DEVICERGB;
+        }
+        if (COSName.CMYK.equals(cs))
+        {
+            return COSName.DEVICECMYK;
+        }
+        if (COSName.G.equals(cs))
+        {
+            return COSName.DEVICEGRAY;
+        }
+        return cs;
+    }
+    
+    private PDColorSpace createColorSpace(COSBase cs) throws IOException
     {
         if (cs instanceof COSName)
         {
-            if (COSName.RGB.equals(cs))
-            {
-                return PDColorSpace.create(COSName.DEVICERGB, resources);
-            }
-            else if (COSName.CMYK.equals(cs))
-            {
-                return PDColorSpace.create(COSName.DEVICECMYK, resources);
-            }
-            else if (COSName.G.equals(cs))
-            {
-                return PDColorSpace.create(COSName.DEVICEGRAY, resources);
-            }
-            else
-            {
-                return PDColorSpace.create(cs, resources);
-            }
+            return PDColorSpace.create(toLongName(cs), resources);
         }
-        else if (cs instanceof COSArray && ((COSArray) cs).size() > 1)
+
+        if (cs instanceof COSArray && ((COSArray) cs).size() > 1)
         {
-            COSBase csType = ((COSArray) cs).get(0);
+            COSArray srcArray = (COSArray) cs;
+            COSBase csType = srcArray.get(0);
             if (COSName.I.equals(csType) || COSName.INDEXED.equals(csType))
             {
-                COSArray array = new COSArray();
-                array.addAll((COSArray) cs);
-                array.set(0, COSName.INDEXED);
-                COSBase cs1 = ((COSArray) cs).get(1);
-                if (COSName.RGB.equals(cs1))
-                {
-                    array.set(1, COSName.DEVICERGB);
-                }
-                else if (COSName.CMYK.equals(cs1))
-                {
-                    array.set(1, COSName.DEVICECMYK);
-                }
-                else if (COSName.G.equals(cs1))
-                {
-                    array.set(1, COSName.DEVICEGRAY);
-                }
-                return PDColorSpace.create(array, resources);
+                COSArray dstArray = new COSArray();
+                dstArray.addAll(srcArray);
+                dstArray.set(0, COSName.INDEXED);
+                dstArray.set(1, toLongName(srcArray.get(1)));
+                return PDColorSpace.create(dstArray, resources);
             }
-            else
-            {
-                throw new IOException("Illegal type of color space in inline image: " + csType);
-            }
+
+            throw new IOException("Illegal type of inline image color space: " + csType);
         }
-        else
-        {
-            throw new IOException("Illegal type of object for color space: " + cs);
-        }
+
+        throw new IOException("Illegal type of object for inline image color space: " + cs);
     }
 
     @Override
@@ -386,6 +376,7 @@ public final class PDInlineImage implements PDImage
      *
      * @return The image suffix.
      */
+    @Override
     public String getSuffix()
     {
         // TODO implement me
