@@ -455,8 +455,7 @@ public class DomXmpParser
 
         for (Element element : lis)
         {
-            QName propertyQName = new QName(XmpConstants.LIST_NAME);
-
+            QName propertyQName = new QName(element.getLocalName());
             AbstractField ast = parseLiElement(xmp, propertyQName, element);
             if (ast != null)
             {
