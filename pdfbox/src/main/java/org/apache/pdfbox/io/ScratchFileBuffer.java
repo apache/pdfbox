@@ -509,10 +509,17 @@ class ScratchFileBuffer implements RandomAccess
     @Override
     protected void finalize() throws Throwable
     {
-        if ((pageHandler != null) && LOG.isDebugEnabled())
+        try
         {
-            LOG.debug("ScratchFileBuffer not closed!");
+            if ((pageHandler != null) && LOG.isDebugEnabled())
+            {
+                LOG.debug("ScratchFileBuffer not closed!");
+            }
+            close();
         }
-        close();
+        finally
+        {
+            super.finalize();
+        }
     }
 }
