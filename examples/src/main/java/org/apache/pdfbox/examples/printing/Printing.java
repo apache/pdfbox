@@ -139,7 +139,8 @@ public final class Printing
         
         // override the page format
         Book book = new Book();
-        book.append(new PDFPrintable(document), pageFormat);
+        // append all pages
+        book.append(new PDFPrintable(document), pageFormat, document.getNumberOfPages());
         job.setPageable(book);
         
         job.print();
