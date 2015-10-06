@@ -49,7 +49,7 @@ public class PreflightContext implements Closeable
     private PreflightDocument document = null;
 
     /**
-     * The datasource to load the document from
+     * The datasource to load the document from. Needed by StreamValidationProcess.
      */
     private DataSource source = null;
 
