@@ -35,7 +35,11 @@
         The Apache PDFBox library is an open source Java tool for working with PDF documents.
     </description>
     <inceptionYear>2002</inceptionYear>
-
+    
+    <properties>
+        <svn.scmJavadocUrl>https://svn.apache.org/repos/asf/pdfbox/cmssite/trunk/content/docs/${project.version}/javadocs</svn.scmJavadocUrl>
+    </properties>
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
@@ -138,6 +142,22 @@
                         <exclude>src/test/resources/org/apache/pdfbox/encryption/*.pfx</exclude>
                         <exclude>src/test/resources/org/apache/pdfbox/filter/*.bin</exclude>
                     </excludes>
+                </configuration>
+            </plugin>
+            <!-- 
+            	Publish Javadoc to Apache CMS
+            	After completion log in to https://cms.apache.org/pdfbox/publish 
+            	and click on the Submit button to commit to production.
+             -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-scm-publish-plugin</artifactId>
+                <configuration>
+                    <content>${project.reporting.outputDirectory}/apidocs</content>
+                    <pubScmUrl>scm:svn:${svn.scmJavadocUrl}</pubScmUrl>
+                    <tryUpdate>true</tryUpdate>
+                    <checkoutDirectory>${svn.scmJavadocCheckoutDirectory}</checkoutDirectory>
+                    <serverId>pdfbox-site</serverId>
                 </configuration>
             </plugin>
         </plugins>
