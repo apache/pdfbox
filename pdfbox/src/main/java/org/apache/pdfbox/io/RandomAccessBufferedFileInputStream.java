@@ -105,7 +105,7 @@ extends InputStream implements RandomAccessRead
      * Create a random access input stream for the given input stream by copying the data to a
      * temporary file.
      *
-     * @param input the input stream to be read.
+     * @param input the input stream to be read. It will be closed by this method.
      * @throws IOException if something went wrong while creating the temporary file.
      */
     public RandomAccessBufferedFileInputStream( InputStream input ) throws IOException 
