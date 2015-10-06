@@ -96,6 +96,12 @@ public class PreflightParser extends PDFParser
 
     protected PreflightContext ctx;
 
+    /**
+     * Constructor.
+     *
+     * @param file
+     * @throws IOException if there is a reading error.
+     */
     public PreflightParser(File file) throws IOException
     {
         // TODO move file handling outside of the parser
@@ -104,18 +110,31 @@ public class PreflightParser extends PDFParser
         this.originalDocument = new FileDataSource(file);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param filename
+     * @throws IOException if there is a reading error.
+     */
     public PreflightParser(String filename) throws IOException
     {
         // TODO move file handling outside of the parser
         this(new File(filename));
     }
 
-    public PreflightParser(DataSource input) throws IOException
+    /**
+     * Constructor. This one is slower than the file and the filename constructors, because
+     * a temporary file will be created.
+     *
+     * @param dataSource the datasource
+     * @throws IOException if there is a reading error.
+     */
+    public PreflightParser(DataSource dataSource) throws IOException
     {
         // TODO move file handling outside of the parser
-        super(new RandomAccessBufferedFileInputStream(input.getInputStream()));
+        super(new RandomAccessBufferedFileInputStream(dataSource.getInputStream()));
         this.setLenient(false);
-        this.originalDocument = input;
+        this.originalDocument = dataSource;
     }
 
     /**
@@ -126,8 +145,7 @@ public class PreflightParser extends PDFParser
     protected static ValidationResult createUnknownErrorResult()
     {
         ValidationError error = new ValidationError(PreflightConstants.ERROR_UNKOWN_ERROR);
-        ValidationResult result = new ValidationResult(error);
-        return result;
+        return new ValidationResult(error);
     }
 
     /**
@@ -841,7 +859,7 @@ public class PreflightParser extends PDFParser
                         || (buf.length - tmpOffset == 2 && (buf[tmpOffset] != 13 || buf[tmpOffset + 1] != 10))
                         || (buf.length - tmpOffset == 1 && (buf[tmpOffset] != 13 && buf[tmpOffset] != 10)))
                 {
-                    long position = 0;
+                    long position;
                     try
                     {
                         position = source.getPosition();
