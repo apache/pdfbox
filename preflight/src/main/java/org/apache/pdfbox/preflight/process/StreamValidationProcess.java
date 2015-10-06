@@ -32,7 +32,6 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import static org.apache.commons.io.IOUtils.closeQuietly;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDocument;
@@ -61,9 +60,8 @@ public class StreamValidationProcess extends AbstractProcess
         for (Object o : lCOSObj)
         {
             COSObject cObj = (COSObject) o;
-            /*
-             * If this object represents a Stream, the Dictionary must contain the Length key
-             */
+            
+            // If this object represents a Stream, the Dictionary must contain the Length key
             COSBase cBase = cObj.getObject();
             if (cBase instanceof COSStream)
             {
@@ -218,7 +216,6 @@ public class StreamValidationProcess extends AbstractProcess
                     long curSkip = ra.skip(offset - skipped);
                     if (curSkip < 0)
                     {
-                        closeQuietly(ra);
                         addValidationError(context, new ValidationError(ERROR_SYNTAX_STREAM_DAMAGED, "Unable to skip bytes in the PDFFile to check stream length"));
                         return;
                     }
@@ -232,7 +229,8 @@ public class StreamValidationProcess extends AbstractProcess
                     if (c == '\r')
                     {
                         ra.read();
-                    } // else c is '\n' no more character to read
+                    }
+                    // else c is '\n' no more character to read
 
                     // ---- Here is the true beginning of the Stream Content.
                     // ---- Read the given length of bytes and check the 10 next bytes
@@ -254,14 +252,14 @@ public class StreamValidationProcess extends AbstractProcess
                         if (cr == -1)
                         {
                             addStreamLengthValidationError(context, cObj, length, "");
-                            closeQuietly(ra);
                             return;
                         }
                         else
                         {
-                            nbBytesToRead = nbBytesToRead - cr;
+                            nbBytesToRead -= cr;
                         }
-                    } while (nbBytesToRead > 0);
+                    }
+                    while (nbBytesToRead > 0);
 
                     int len = "endstream".length() + 2;
                     byte[] buffer2 = new byte[len];
@@ -300,7 +298,6 @@ public class StreamValidationProcess extends AbstractProcess
                              addStreamLengthValidationError(context, cObj, length, endStream);
                         }
                     }
-
                 }
                 else
                 {
@@ -314,10 +311,7 @@ public class StreamValidationProcess extends AbstractProcess
         }
         finally
         {
-            if (ra != null)
-            {
-                IOUtils.closeQuietly(ra);
-            }
+            IOUtils.closeQuietly(ra);
         }
     }
 
