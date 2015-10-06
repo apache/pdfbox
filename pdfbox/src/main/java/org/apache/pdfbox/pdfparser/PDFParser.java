@@ -64,7 +64,7 @@ public class PDFParser extends COSParser
      * Constructor.
      * 
      * @param source input representing the pdf.
-     * @param useScratchFiles use a file based buffer for temporary storage.
+     * @param scratchFile use a {@link ScratchFile} for temporary storage.
      * 
      * @throws IOException If something went wrong.
      */
@@ -91,7 +91,7 @@ public class PDFParser extends COSParser
      * 
      * @param source input representing the pdf.
      * @param decryptionPassword password to be used for decryption.
-     * @param useScratchFiles use a file based buffer for temporary storage.
+     * @param scratchFile use a {@link ScratchFile} for temporary storage.
      *
      * @throws IOException If something went wrong.
      */
