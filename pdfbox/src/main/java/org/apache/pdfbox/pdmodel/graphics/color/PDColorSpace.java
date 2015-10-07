@@ -53,7 +53,9 @@ public abstract class PDColorSpace implements COSObjectable
     }
 
     /**
-     * Creates a color space given a name or array.
+     * Creates a color space given a name or array. Abbreviated device color names are not supported
+     * here, please replace them first.
+     *
      * @param colorSpace the color space COS object
      * @param resources the current resources.
      * @return a new color space
@@ -147,7 +149,7 @@ public abstract class PDColorSpace implements COSObjectable
             {
                 return new PDDeviceN(array);
             }
-            else if (name == COSName.INDEXED || name == COSName.I)
+            else if (name == COSName.INDEXED)
             {
                 return new PDIndexed(array);
             }
