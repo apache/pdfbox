@@ -144,8 +144,8 @@ public class PreflightContentStream extends PreflightStreamEngine
          */
         if ("BI".equals(operator.getName()))
         {
-            validateImageFilter(operator);
-            validateImageColorSpace(operator);
+            validateInlineImageFilter(operator);
+            validateInlineImageColorSpace(operator);
         }
 
         checkShowTextOperators(operator, operands);

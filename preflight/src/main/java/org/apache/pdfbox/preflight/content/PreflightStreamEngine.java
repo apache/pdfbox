@@ -266,7 +266,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
      * @param operator the InlinedImage object (BI to EI)
      * @throws ContentStreamException
      */
-    protected void validateImageFilter(Operator operator) throws ContentStreamException
+    protected void validateInlineImageFilter(Operator operator) throws ContentStreamException
     {
         COSDictionary dict = operator.getImageParameters();
         /*
@@ -284,7 +284,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
      * @param operator the InlinedImage object (BI to EI)
      * @throws ContentStreamException
      */
-    protected void validateImageColorSpace(Operator operator) throws IOException
+    protected void validateInlineImageColorSpace(Operator operator) throws IOException
     {
         COSDictionary dict = operator.getImageParameters();
 
