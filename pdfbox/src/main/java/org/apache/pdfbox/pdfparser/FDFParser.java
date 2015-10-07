@@ -125,8 +125,7 @@ public class FDFParser extends COSParser
     }
 
     /**
-     * This will parse the stream and populate the COSDocument object.  This will close
-     * the stream when it is done parsing.
+     * This will parse the stream and populate the COSDocument object.
      *
      * @throws IOException If there is an error reading from the stream or corrupt data
      * is found.
