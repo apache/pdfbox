@@ -33,6 +33,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
+import org.apache.commons.io.IOUtils;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -210,6 +211,11 @@ public class PreflightParser extends PDFParser
         {
             addValidationError(new ValidationError(PreflightConstants.ERROR_SYNTAX_COMMON, e.getMessage()));
             throw new SyntaxValidationException(e, this.validationResult);
+        }
+        finally
+        {
+            // TODO move file handling outside of the parser
+            IOUtils.closeQuietly(source);
         }
         Format formatToUse = (format == null ? Format.PDF_A1B : format);
         createPdfADocument(formatToUse, config);
