@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.contentstream.operator.state;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSBase;
@@ -23,8 +24,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
-
-import java.io.IOException;
+import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 
 /**
  * gs: Set parameters from graphics state parameter dictionary.
@@ -36,9 +36,23 @@ public class SetGraphicsStateParameters extends OperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
+        if (arguments.size() < 1)
+        {
+            throw new MissingOperandException(operator, arguments);
+        }
+        COSBase base0 = arguments.get(0);
+        if (!(base0 instanceof COSName))
+        {
+            return;
+        }
+        
         // set parameters from graphics state parameter dictionary
-        COSName graphicsName = (COSName)arguments.get( 0 );
+        COSName graphicsName = (COSName) base0;
         PDExtendedGraphicsState gs = context.getResources().getExtGState(graphicsName);
+        if (gs == null)
+        {
+            throw new IOException("name for 'gs' operator not found in resources: /" + graphicsName.getName());
+        }
         gs.copyIntoGraphicsState( context.getGraphicsState() );
     }
 
