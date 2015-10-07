@@ -89,7 +89,7 @@ public class PreflightParser extends PDFParser
      */
     public static final Charset encoding = Charset.forName("ISO-8859-1");
 
-    protected DataSource originalDocument;
+    protected DataSource dataSource;
 
     protected ValidationResult validationResult;
 
@@ -108,7 +108,7 @@ public class PreflightParser extends PDFParser
         // TODO move file handling outside of the parser
         super(new RandomAccessBufferedFileInputStream(file));
         this.setLenient(false);
-        this.originalDocument = new FileDataSource(file);
+        this.dataSource = new FileDataSource(file);
     }
 
     /**
@@ -135,7 +135,7 @@ public class PreflightParser extends PDFParser
         // TODO move file handling outside of the parser
         super(new RandomAccessBufferedFileInputStream(dataSource.getInputStream()));
         this.setLenient(false);
-        this.originalDocument = dataSource;
+        this.dataSource = dataSource;
     }
 
     /**
@@ -233,7 +233,7 @@ public class PreflightParser extends PDFParser
      */
     protected void createContext()
     {
-        this.ctx = new PreflightContext(this.originalDocument);
+        this.ctx = new PreflightContext(this.dataSource);
         ctx.setDocument(preflightDocument);
         preflightDocument.setContext(ctx);
         ctx.setXrefTrailerResolver(xrefTrailerResolver);
