@@ -88,6 +88,7 @@ import org.apache.pdfbox.contentstream.operator.text.SetTextLeading;
 import org.apache.pdfbox.contentstream.operator.text.SetTextRenderingMode;
 import org.apache.pdfbox.contentstream.operator.text.SetTextRise;
 import org.apache.pdfbox.contentstream.operator.text.SetWordSpacing;
+import org.apache.pdfbox.cos.COSArray;
 
 /**
  * This class inherits from org.apache.pdfbox.util.PDFStreamEngine to allow the validation of specific rules in
@@ -288,7 +289,11 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
     {
         COSDictionary dict = operator.getImageParameters();
 
-        COSBase csInlinedBase = dict.getItem(COSName.CS);
+        COSBase csInlinedBase = dict.getItem(COSName.COLORSPACE);
+        if (csInlinedBase == null)
+        {
+            csInlinedBase = dict.getItem(COSName.CS);
+        }
         ColorSpaceHelper csHelper = null;
         if (csInlinedBase != null)
         {
@@ -326,16 +331,48 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
 
             if (csHelper == null)
             {
+                // convert to long names first
+                csInlinedBase = toLongName(csInlinedBase);
+                if (csInlinedBase instanceof COSArray && ((COSArray) csInlinedBase).size() > 1)
+                {
+                    COSArray srcArray = (COSArray) csInlinedBase;
+                    COSBase csType = srcArray.get(0);
+                    if (COSName.I.equals(csType) || COSName.INDEXED.equals(csType))
+                    {
+                        COSArray dstArray = new COSArray();
+                        dstArray.addAll(srcArray);
+                        dstArray.set(0, COSName.INDEXED);
+                        dstArray.set(1, toLongName(srcArray.get(1)));
+                        csInlinedBase = dstArray;
+                    }
+                }                
                 PDColorSpace pdCS = PDColorSpace.create(csInlinedBase);
                 PreflightConfiguration cfg = context.getConfig();
                 ColorSpaceHelperFactory csFact = cfg.getColorSpaceHelperFact();
                 csHelper = csFact.getColorSpaceHelper(context, pdCS, ColorSpaceRestriction.ONLY_DEVICE);
             }
-
             csHelper.validate();
         }
     }
-
+    
+    // deliver the long name of a device colorspace, or the parameter
+    private COSBase toLongName(COSBase cs)
+    {
+        if (COSName.RGB.equals(cs))
+        {
+            return COSName.DEVICERGB;
+        }
+        if (COSName.CMYK.equals(cs))
+        {
+            return COSName.DEVICECMYK;
+        }
+        if (COSName.G.equals(cs))
+        {
+            return COSName.DEVICEGRAY;
+        }
+        return cs;
+    }
+    
     /**
      * This method validates if the ColorOperator can be used with the color space
      * defined in OutputIntent dictionaries.
