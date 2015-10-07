@@ -125,7 +125,7 @@ public final class PDInlineImage implements PDImage
     @Override
     public PDColorSpace getColorSpace() throws IOException
     {
-        COSBase cs = parameters.getDictionaryObject(COSName.CS);
+        COSBase cs = parameters.getDictionaryObject(COSName.CS, COSName.COLORSPACE);
         if (cs == null)
         {
             cs = parameters.getDictionaryObject(COSName.COLORSPACE);
