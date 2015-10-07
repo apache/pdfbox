@@ -84,6 +84,7 @@ public class PreflightType3Stream extends PreflightStreamEngine
      * @throws IOException
      *             If there is an error processing the operation.
      */
+    @Override
     protected void processOperator(Operator operator, List operands) throws IOException
     {
         super.processOperator(operator, operands);
@@ -95,8 +96,8 @@ public class PreflightType3Stream extends PreflightStreamEngine
                                       operator.getImageData(),
                                       getResources());
 
-            validateImageFilter(operator);
-            validateImageColorSpace(operator);
+            validateInlineImageFilter(operator);
+            validateInlineImageColorSpace(operator);
         }
 
         if (operation.equals("d0"))
