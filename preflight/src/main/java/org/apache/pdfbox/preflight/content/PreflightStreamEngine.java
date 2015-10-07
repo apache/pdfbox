@@ -289,11 +289,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
     {
         COSDictionary dict = operator.getImageParameters();
 
-        COSBase csInlinedBase = dict.getItem(COSName.COLORSPACE);
-        if (csInlinedBase == null)
-        {
-            csInlinedBase = dict.getItem(COSName.CS);
-        }
+        COSBase csInlinedBase = dict.getDictionaryObject(COSName.CS, COSName.COLORSPACE);
         ColorSpaceHelper csHelper = null;
         if (csInlinedBase != null)
         {
