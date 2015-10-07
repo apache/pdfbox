@@ -106,11 +106,11 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
         switch (cs)
         {
         case DeviceRGB:
-        case DeviceRGB_SHORT:
+        case RGB:
             processRGBColorSpace(colorSpace);
             break;
         case DeviceCMYK:
-        case DeviceCMYK_SHORT:
+        case CMYK:
             processCYMKColorSpace(colorSpace);
             break;
         case CalRGB:
@@ -119,7 +119,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
             processCalibratedColorSpace(colorSpace);
             break;
         case DeviceGray:
-        case DeviceGray_SHORT:
+        case G:
             processGrayColorSpace(colorSpace);
             break;
         case ICCBased:
@@ -129,7 +129,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
             processDeviceNColorSpace(colorSpace);
             break;
         case Indexed:
-        case Indexed_SHORT:
+        case I:
             processIndexedColorSpace(colorSpace);
             break;
         case Separation:
@@ -342,7 +342,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
         PDIndexed indexed = (PDIndexed) colorSpace;
         PDColorSpace based = indexed.getBaseColorSpace();
         ColorSpaces cs = ColorSpaces.valueOf(based.getName());
-        if (cs == ColorSpaces.Indexed || cs == ColorSpaces.Indexed_SHORT)
+        if (cs == ColorSpaces.Indexed || cs == ColorSpaces.I)
         {
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_INDEXED,
                     "Indexed color space can't be used as Base color space"));
@@ -380,7 +380,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
                 case DeviceN:
                 case Pattern:
                 case Indexed:
-                case Indexed_SHORT:
+                case I:
                     context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_ALTERNATE, acs
                             .getLabel() + " color space can't be used as alternate color space"));
                     break;
