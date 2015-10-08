@@ -175,29 +175,31 @@ public final class PDAcroForm implements COSObjectable
         // FormXObject at the page content level from that
         for (PDField field : getFieldTree())
         {
-            for (PDAnnotationWidget widget : ((PDTerminalField)field).getWidgets())
-            {
-                if (widget.getNormalAppearanceStream() != null)
+            if(field instanceof PDTerminalField){
+                for (PDAnnotationWidget widget : ((PDTerminalField)field).getWidgets())
                 {
-                    PDPage page = widget.getPage();
-                    if (!isContentStreamWrapped)
+                    if (widget.getNormalAppearanceStream() != null)
                     {
-                        contentStream = new PDPageContentStream(document, page, true, true, true);
-                        isContentStreamWrapped = true;
+                        PDPage page = widget.getPage();
+                        if (!isContentStreamWrapped)
+                        {
+                            contentStream = new PDPageContentStream(document, page, true, true, true);
+                            isContentStreamWrapped = true;
+                        }
+                        else
+                        {
+                            contentStream = new PDPageContentStream(document, page, true, true);
+                        }
+                        
+                        PDFormXObject fieldObject = new PDFormXObject(widget.getNormalAppearanceStream().getCOSStream());
+                        
+                        Matrix translationMatrix = Matrix.getTranslateInstance(widget.getRectangle().getLowerLeftX(), widget.getRectangle().getLowerLeftY());
+                        contentStream.saveGraphicsState();
+                        contentStream.transform(translationMatrix);
+                        contentStream.drawForm(fieldObject);
+                        contentStream.restoreGraphicsState();
+                        contentStream.close();
                     }
-                    else
-                    {
-                        contentStream = new PDPageContentStream(document, page, true, true);
-                    }
-                    
-                    PDFormXObject fieldObject = new PDFormXObject(widget.getNormalAppearanceStream().getCOSStream());
-                    
-                    Matrix translationMatrix = Matrix.getTranslateInstance(widget.getRectangle().getLowerLeftX(), widget.getRectangle().getLowerLeftY());
-                    contentStream.saveGraphicsState();
-                    contentStream.transform(translationMatrix);
-                    contentStream.drawForm(fieldObject);
-                    contentStream.restoreGraphicsState();
-                    contentStream.close();
                 }
             }
         }
