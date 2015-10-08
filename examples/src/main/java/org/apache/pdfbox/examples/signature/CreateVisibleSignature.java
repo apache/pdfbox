@@ -32,6 +32,7 @@ import java.security.cert.CertificateException;
 import java.security.interfaces.RSAPrivateKey;
 import java.util.Calendar;
 import java.util.Enumeration;
+import org.apache.pdfbox.io.IOUtils;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
@@ -97,38 +98,29 @@ public class CreateVisibleSignature implements SignatureInterface
     }
 
     /**
-     * Signs the given pdf file.
+     * Sign pdf file and create new file that ends with "_signed.pdf".
      *
-     * @param document is the pdf document
-     * @param signatureProperties
-     * @return the signed pdf document
+     * @param documentFile The source pdf document file.
+     * @param signatureProperties The signature properties.
+     * @return the signed pdf document file.
      * @throws IOException
      */
-    public File signPDF(File document, PDVisibleSigProperties signatureProperties) throws IOException
+    public File signPDF(File documentFile, PDVisibleSigProperties signatureProperties) throws IOException
     {
-        byte[] buffer = new byte[8 * 1024];
-        if (document == null || !document.exists())
+        if (documentFile == null || !documentFile.exists())
         {
             throw new IOException("Document for signing does not exist");
         }
 
         // creating output document and prepare the IO streams.
-        String name = document.getName();
+        String name = documentFile.getName();
         String substring = name.substring(0, name.lastIndexOf('.'));
 
-        File outputDocument = new File(document.getParent(), substring + "_signed.pdf");
-        FileInputStream fis = new FileInputStream(document);
-        FileOutputStream fos = new FileOutputStream(outputDocument);
-
-        int c;
-        while ((c = fis.read(buffer)) != -1)
-        {
-            fos.write(buffer, 0, c);
-        }
-        fis.close();
+        File outputDocumentFile = new File(documentFile.getParent(), substring + "_signed.pdf");
+        FileOutputStream fos = new FileOutputStream(outputDocumentFile);
 
         // load document
-        PDDocument doc = PDDocument.load(document);
+        PDDocument doc = PDDocument.load(documentFile);
 
         // create signature dictionary
         PDSignature signature = new PDSignature();
@@ -143,22 +135,11 @@ public class CreateVisibleSignature implements SignatureInterface
         signature.setSignDate(Calendar.getInstance());
 
         // register signature dictionary and sign interface
-
         if (signatureProperties != null && signatureProperties.isVisualSignEnabled())
         {
-            try
-            {
-                options = new SignatureOptions();
-                options.setVisualSignature(signatureProperties);
-                doc.addSignature(signature, this, options);
-            }
-            finally
-            {
-                if (options != null)
-                {
-                    options.close();
-                }
-            }
+            options = new SignatureOptions();
+            options.setVisualSignature(signatureProperties);
+            doc.addSignature(signature, this, options);
         }
         else
         {
@@ -167,8 +148,13 @@ public class CreateVisibleSignature implements SignatureInterface
 
         // write incremental (only for signing purpose)
         doc.saveIncremental(fos);
+        doc.close();
+        
+        // do not close options before saving, because some COSStream objects within options 
+        // are transferred to the signed document.
+        IOUtils.closeQuietly(options);
 
-        return outputDocument;
+        return outputDocumentFile;
     }
 
     /**
