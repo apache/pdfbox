@@ -17,6 +17,8 @@
 
 package org.apache.pdfbox.pdmodel.font;
 
+import static org.apache.pdfbox.pdmodel.font.UniUtil.getUniNameOfCodePoint;
+
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
@@ -280,9 +282,21 @@ public class PDType1CFont extends PDSimpleFont
     @Override
     protected byte[] encode(int unicode) throws IOException
     {
-        throw new UnsupportedOperationException("Not implemented: Type1C");
-    }
+        String name = getGlyphList().codePointToName(unicode);
+        String nameInFont = getNameInFont(name);
+        
+        Map<String, Integer> inverted = getInvertedEncoding();
 
+        if (nameInFont.equals(".notdef") || !genericFont.hasGlyph(nameInFont))
+        {
+            throw new IllegalArgumentException(
+                    String.format("No glyph for U+%04X in font %s", unicode, getName()));
+        }
+
+        int code = inverted.get(name);
+        return new byte[] { (byte)code };
+    }
+    
     @Override
     public float getStringWidth(String string) throws IOException
     {
@@ -321,5 +335,31 @@ public class PDType1CFont extends PDSimpleFont
     {
         // todo: not implemented, highly suspect
         return 500;
+    }
+    
+    /**
+     * Maps a PostScript glyph name to the name in the underlying font, for example when
+     * using a TTF font we might map "W" to "uni0057".
+     */
+    private String getNameInFont(String name) throws IOException
+    {
+        if (isEmbedded() || genericFont.hasGlyph(name))
+        {
+            return name;
+        }
+        else
+        {
+            // try unicode name
+            String unicodes = getGlyphList().toUnicode(name);
+            if (unicodes != null && unicodes.length() == 1)
+            {
+                String uniName = getUniNameOfCodePoint(unicodes.codePointAt(0));
+                if (genericFont.hasGlyph(uniName))
+                {
+                    return uniName;
+                }
+            }
+        }
+        return ".notdef";
     }
 }
