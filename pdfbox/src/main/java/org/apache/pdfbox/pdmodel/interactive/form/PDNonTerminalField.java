@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.interactive.form;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -27,6 +28,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.fdf.FDFField;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 
 /**
  * A non terminal field in an interactive form.
@@ -221,5 +223,11 @@ public class PDNonTerminalField extends PDField
     public void setDefaultValue(COSBase value)
     {
         getCOSObject().setItem(COSName.V, value);
+    }
+    
+    @Override
+    public List<PDAnnotationWidget> getWidgets()
+    {
+        return Collections.emptyList();
     }
 }

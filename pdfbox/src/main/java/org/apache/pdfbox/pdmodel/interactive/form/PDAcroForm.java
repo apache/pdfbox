@@ -175,7 +175,7 @@ public final class PDAcroForm implements COSObjectable
         // FormXObject at the page content level from that
         for (PDField field : getFieldTree())
         {
-            for (PDAnnotationWidget widget : ((PDTerminalField)field).getWidgets())
+            for (PDAnnotationWidget widget : field.getWidgets())
             {
                 if (widget.getNormalAppearanceStream() != null)
                 {

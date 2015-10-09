@@ -17,6 +17,8 @@
 package org.apache.pdfbox.pdmodel.interactive.form;
 
 import java.io.IOException;
+import java.util.List;
+
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -24,6 +26,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.fdf.FDFField;
 import org.apache.pdfbox.pdmodel.interactive.action.PDFormFieldAdditionalActions;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 
 /**
  * A field in an interactive form.
@@ -108,9 +111,19 @@ public abstract class PDField implements COSObjectable
     /**
      * Returns a string representation of the "V" entry, or an empty string.
      * 
-     * @return A non-null string.
+     * @return The list of widget annotations.
      */
     public abstract String getValueAsString();
+    
+    /**
+     * Returns the widget annotations associated with this field.
+     * 
+     * For {@link PDNonTerminalField} the list will be empty as non terminal fields
+     * have no visual representation in the form.
+     * 
+     * @return A non-null string.
+     */
+    public abstract List<PDAnnotationWidget> getWidgets();
     
     /**
      * sets the field to be read-only.
