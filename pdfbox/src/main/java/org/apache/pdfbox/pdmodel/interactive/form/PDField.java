@@ -114,6 +114,16 @@ public abstract class PDField implements COSObjectable
      * @return The list of widget annotations.
      */
     public abstract String getValueAsString();
+
+    /**
+     * Sets the value of the field.
+     *
+     * @param value the new field value.
+     * 
+     * @throws IOException if the value could not be set
+     */
+    public abstract void setValue(String value) throws IOException;
+    
     
     /**
      * Returns the widget annotations associated with this field.

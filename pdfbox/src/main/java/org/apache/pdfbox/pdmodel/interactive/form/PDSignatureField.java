@@ -120,6 +120,24 @@ public class PDSignatureField extends PDTerminalField
         getCOSObject().setItem(COSName.V, value);
         applyChange();
     }
+    
+    /**
+     * Sets the value of this field.
+     * 
+     * <b>This will throw an UnsupportedOperationException if used as the signature fields
+     * value can't be set using a String</>
+     * 
+     * @param value the plain text value.
+     * 
+     * @throws UnsupportedOperationException in all cases!
+     */
+    @Override
+    public void setValue(String value) throws UnsupportedOperationException
+    {
+        throw new UnsupportedOperationException("Signature fields don't support setting the value as String "
+                + "- use setValue(PDSignature value) instead");
+    }
+    
 
     /**
      * Sets the default value of this field to be the given signature.

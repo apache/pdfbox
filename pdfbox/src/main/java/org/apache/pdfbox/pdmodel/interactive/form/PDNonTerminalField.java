@@ -200,6 +200,19 @@ public class PDNonTerminalField extends PDField
         // todo: propagate change event to children?
         // todo: construct appearances of children?
     }
+    
+   /**
+     * Sets the plain text value of this field.
+     * 
+     * @param value Plain text
+     * @throws IOException if the value could not be set
+     */
+    public void setValue(String value) throws IOException
+    {
+        getCOSObject().setString(COSName.V, value);
+        // todo: propagate change event to children?
+        // todo: construct appearances of children?
+    }
 
     /**
      * Returns the default value of this field. This may be of any kind which is valid for this field's
