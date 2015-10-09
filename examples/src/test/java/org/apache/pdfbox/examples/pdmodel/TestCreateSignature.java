@@ -17,11 +17,6 @@
 package org.apache.pdfbox.examples.pdmodel;
 
 import junit.framework.TestCase;
-import org.apache.pdfbox.examples.signature.CreateSignature;
-import org.apache.pdfbox.examples.signature.TSAClient;
-import org.apache.pdfbox.io.IOUtils;
-import org.apache.wink.client.MockHttpServer;
-import org.bouncycastle.tsp.TSPValidationException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,6 +27,13 @@ import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.MessageDigest;
 
+import org.apache.pdfbox.examples.signature.CreateSignature;
+import org.apache.pdfbox.examples.signature.CreateVisibleSignature;
+import org.apache.pdfbox.examples.signature.TSAClient;
+import org.apache.pdfbox.io.IOUtils;
+import org.apache.wink.client.MockHttpServer;
+import org.bouncycastle.tsp.TSPValidationException;
+
 /**
  * Test for CreateSignature
  */
@@ -40,6 +42,7 @@ public class TestCreateSignature extends TestCase
     private final String inDir = "src/test/resources/org/apache/pdfbox/examples/signature/";
     private final String outDir = "target/test-output/";
     private final String keystorePath = inDir + "keystore.p12";
+    private final String jpegPath = inDir + "stamp.jpg";
     private final String password = "123456";
 
     @Override
@@ -116,6 +119,29 @@ public class TestCreateSignature extends TestCase
         {
             assertTrue(e.getCause() instanceof TSPValidationException);
         }
+
+        // TODO verify the signed PDF file
+    }
+    
+    /**
+     * Test creating visual signature.
+     *
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
+    public void testCreateVisibleSignature() throws IOException, GeneralSecurityException
+    {
+        // load the keystore
+        KeyStore keystore = KeyStore.getInstance("PKCS12");
+        keystore.load(new FileInputStream(keystorePath), password.toCharArray());
+
+        // sign PDF
+        String inPath = inDir + "sign_me.pdf";
+        FileInputStream fis = new FileInputStream(jpegPath);
+        CreateVisibleSignature signing = new CreateVisibleSignature(keystore, password.toCharArray());
+        signing.setVisibleSignatureProperties (inPath, 0, 0, -50, fis, 1);
+        signing.setSignatureProperties ("name", "location", "Security", 0, 1, true);
+        signing.signPDF(new File(inPath), new File(outDir + "signed_visible.pdf"));
 
         // TODO verify the signed PDF file
     }

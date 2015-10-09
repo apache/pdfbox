@@ -20,40 +20,23 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Enumeration;
-import java.util.List;
 import org.apache.pdfbox.io.IOUtils;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
-import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureOptions;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible.PDVisibleSigProperties;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible.PDVisibleSignDesigner;
-import org.bouncycastle.asn1.ASN1Primitive;
-import org.bouncycastle.cert.X509CertificateHolder;
-import org.bouncycastle.cert.jcajce.JcaCertStore;
-import org.bouncycastle.cms.CMSException;
-import org.bouncycastle.cms.CMSSignedData;
-import org.bouncycastle.cms.CMSSignedDataGenerator;
-import org.bouncycastle.cms.jcajce.JcaSignerInfoGeneratorBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.operator.ContentSigner;
-import org.bouncycastle.operator.OperatorCreationException;
-import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
-import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
-import org.bouncycastle.util.Store;
 
 /**
  * This is an example for visual signing a pdf with bouncy castle.
@@ -61,12 +44,10 @@ import org.bouncycastle.util.Store;
  * @see CreateSignature
  * @author Vakhtang Koroghlishvili
  */
-public class CreateVisibleSignature implements SignatureInterface
+public class CreateVisibleSignature extends CreateSignatureBase
 {
     private static final BouncyCastleProvider BCPROVIDER = new BouncyCastleProvider();
 
-    private final PrivateKey privKey;
-    private final Certificate[] cert;
     private SignatureOptions options;
 
     /**
@@ -92,34 +73,29 @@ public class CreateVisibleSignature implements SignatureInterface
         {
             throw new IOException("Could not find alias");
         }
-        privKey = (PrivateKey) keystore.getKey(alias, pin);
-        cert = keystore.getCertificateChain(alias);
+        privateKey = (PrivateKey) keystore.getKey(alias, pin);
+        certificate = keystore.getCertificateChain(alias)[0];
     }
 
     /**
      * Sign pdf file and create new file that ends with "_signed.pdf".
      *
-     * @param documentFile The source pdf document file.
-     * @param signatureProperties The signature properties.
-     * @return the signed pdf document file.
+     * @param inputFile The source pdf document file.
+     * @param signedFile The file to be signed.
      * @throws IOException
      */
-    public File signPDF(File documentFile, PDVisibleSigProperties signatureProperties) throws IOException
+    public void signPDF(File inputFile, File signedFile) throws IOException
     {
-        if (documentFile == null || !documentFile.exists())
+        if (inputFile == null || !inputFile.exists())
         {
             throw new IOException("Document for signing does not exist");
         }
 
         // creating output document and prepare the IO streams.
-        String name = documentFile.getName();
-        String substring = name.substring(0, name.lastIndexOf('.'));
-
-        File outputDocumentFile = new File(documentFile.getParent(), substring + "_signed.pdf");
-        FileOutputStream fos = new FileOutputStream(outputDocumentFile);
+        FileOutputStream fos = new FileOutputStream(signedFile);
 
         // load document
-        PDDocument doc = PDDocument.load(documentFile);
+        PDDocument doc = PDDocument.load(inputFile);
 
         // create signature dictionary
         PDSignature signature = new PDSignature();
@@ -152,51 +128,25 @@ public class CreateVisibleSignature implements SignatureInterface
         // do not close options before saving, because some COSStream objects within options 
         // are transferred to the signed document.
         IOUtils.closeQuietly(options);
-
-        return outputDocumentFile;
     }
 
-    /**
-     * SignatureInterface implementation.
-     *
-     * This method will be called from inside of the pdfbox and create the pkcs7 signature.
-     * The given InputStream contains the bytes that are given by the byte range.
-     *
-     * This method is for internal use only. <-- TODO this method should be private
-     *
-     * Use your favorite cryptographic library to implement pkcs7 signature creation.
-     */
-    @Override
-    public byte[] sign(InputStream content) throws IOException
+    PDVisibleSignDesigner visibleSignDesigner;
+    PDVisibleSigProperties signatureProperties = new PDVisibleSigProperties();
+
+    public void setVisibleSignatureProperties(String filename, int x, int y, int zoomPercent, 
+            FileInputStream image, int page) 
+            throws IOException
     {
-        try
-        {
-            List<Certificate> certList = new ArrayList<Certificate>();
-            certList.add(cert[0]);
-            Store certs = new JcaCertStore(certList);
-            CMSSignedDataGenerator gen = new CMSSignedDataGenerator();
-            org.bouncycastle.asn1.x509.Certificate certificate =
-                    org.bouncycastle.asn1.x509.Certificate.getInstance(ASN1Primitive.fromByteArray(cert[0].getEncoded()));
-            ContentSigner sha1Signer = new JcaContentSignerBuilder("SHA256WithRSA").build(privKey);
-            gen.addSignerInfoGenerator(new JcaSignerInfoGeneratorBuilder(
-                    new JcaDigestCalculatorProviderBuilder().build()).build(sha1Signer, new X509CertificateHolder(certificate)));
-            gen.addCertificates(certs);
-            CMSProcessableInputStream msg = new CMSProcessableInputStream(content);
-            CMSSignedData signedData = gen.generate(msg, false);
-            return signedData.getEncoded();
-        }
-        catch (CertificateEncodingException e)
-        {
-            throw new IOException(e);
-        }
-        catch (CMSException e)
-        {
-            throw new IOException(e);
-        }
-        catch (OperatorCreationException e)
-        {
-            throw new IOException(e);
-        }
+        visibleSignDesigner = new PDVisibleSignDesigner(filename, image, page);
+        visibleSignDesigner.xAxis(x).yAxis(y).zoom(zoomPercent).signatureFieldName("signature");
+    }
+    
+    public void setSignatureProperties(String name, String location, String reason, int preferredSize, 
+            int page, boolean visualSignEnabled) throws IOException
+    {
+        signatureProperties.signerName(name).signerLocation(location).signatureReason(reason).
+                preferredSize(preferredSize).page(page).visualSignEnabled(visualSignEnabled).
+                setPdVisibleSignature(visibleSignDesigner).buildSignature();
     }
 
     /**
@@ -222,21 +172,19 @@ public class CreateVisibleSignature implements SignatureInterface
             char[] pin = args[1].toCharArray();
             keystore.load(new FileInputStream(ksFile), pin);
 
-            File document = new File(args[2]);
+            File documentFile = new File(args[2]);
 
             CreateVisibleSignature signing = new CreateVisibleSignature(keystore, pin.clone());
 
             FileInputStream image = new FileInputStream(args[3]);
+            
+            String name = documentFile.getName();
+            String substring = name.substring(0, name.lastIndexOf('.'));
+            File signedDocumentFile = new File(documentFile.getParent(), substring + "_signed.pdf");
 
-            PDVisibleSignDesigner visibleSig = new PDVisibleSignDesigner(args[2], image, 1);
-            visibleSig.xAxis(0).yAxis(0).zoom(-50).signatureFieldName("signature");
-
-            PDVisibleSigProperties signatureProperties = new PDVisibleSigProperties();
-
-            signatureProperties.signerName("name").signerLocation("location").signatureReason("Security").preferredSize(0)
-                    .page(1).visualSignEnabled(true).setPdVisibleSignature(visibleSig).buildSignature();
-
-            signing.signPDF(document, signatureProperties);
+            signing.setVisibleSignatureProperties (args[2], 0, 0, -50, image, 1);
+            signing.setSignatureProperties ("name", "location", "Security", 0, 1, true);
+            signing.signPDF(documentFile, signedDocumentFile);
         }
     }
 
