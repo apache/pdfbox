@@ -147,6 +147,7 @@ public abstract class PDButton extends PDTerminalField
      * @throws IOException if the value could not be set
      * @throws IllegalArgumentException if the value is not a valid option.
      */
+    @Override
     public void setValue(String value) throws IOException
     {
         checkValue(value);        
