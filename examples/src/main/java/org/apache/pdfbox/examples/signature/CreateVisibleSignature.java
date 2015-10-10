@@ -48,6 +48,24 @@ public class CreateVisibleSignature extends CreateSignatureBase
     private static final BouncyCastleProvider BCPROVIDER = new BouncyCastleProvider();
 
     private SignatureOptions options;
+    private PDVisibleSignDesigner visibleSignDesigner;
+    private PDVisibleSigProperties signatureProperties = new PDVisibleSigProperties();
+
+    public void setVisibleSignatureProperties(String filename, int x, int y, int zoomPercent, 
+            FileInputStream image, int page) 
+            throws IOException
+    {
+        visibleSignDesigner = new PDVisibleSignDesigner(filename, image, page);
+        visibleSignDesigner.xAxis(x).yAxis(y).zoom(zoomPercent).signatureFieldName("signature");
+    }
+    
+    public void setSignatureProperties(String name, String location, String reason, int preferredSize, 
+            int page, boolean visualSignEnabled) throws IOException
+    {
+        signatureProperties.signerName(name).signerLocation(location).signatureReason(reason).
+                preferredSize(preferredSize).page(page).visualSignEnabled(visualSignEnabled).
+                setPdVisibleSignature(visibleSignDesigner).buildSignature();
+    }
 
     /**
      * Initialize the signature creator with a keystore (pkcs12) and pin that
@@ -127,25 +145,6 @@ public class CreateVisibleSignature extends CreateSignatureBase
         // do not close options before saving, because some COSStream objects within options 
         // are transferred to the signed document.
         IOUtils.closeQuietly(options);
-    }
-
-    PDVisibleSignDesigner visibleSignDesigner;
-    PDVisibleSigProperties signatureProperties = new PDVisibleSigProperties();
-
-    public void setVisibleSignatureProperties(String filename, int x, int y, int zoomPercent, 
-            FileInputStream image, int page) 
-            throws IOException
-    {
-        visibleSignDesigner = new PDVisibleSignDesigner(filename, image, page);
-        visibleSignDesigner.xAxis(x).yAxis(y).zoom(zoomPercent).signatureFieldName("signature");
-    }
-    
-    public void setSignatureProperties(String name, String location, String reason, int preferredSize, 
-            int page, boolean visualSignEnabled) throws IOException
-    {
-        signatureProperties.signerName(name).signerLocation(location).signatureReason(reason).
-                preferredSize(preferredSize).page(page).visualSignEnabled(visualSignEnabled).
-                setPdVisibleSignature(visibleSignDesigner).buildSignature();
     }
 
     /**
