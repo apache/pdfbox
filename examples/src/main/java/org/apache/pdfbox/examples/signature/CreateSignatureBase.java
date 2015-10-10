@@ -40,9 +40,29 @@ import org.bouncycastle.util.Store;
 
 public abstract class CreateSignatureBase implements SignatureInterface
 {
-    protected PrivateKey privateKey;
-    protected Certificate certificate;
-    protected TSAClient tsaClient;
+    private PrivateKey privateKey;
+    private Certificate certificate;
+    private TSAClient tsaClient;
+
+    public void setPrivateKey(PrivateKey privateKey)
+    {
+        this.privateKey = privateKey;
+    }
+
+    public void setCertificate(Certificate certificate)
+    {
+        this.certificate = certificate;
+    }
+
+    public void setTsaClient(TSAClient tsaClient)
+    {
+        this.tsaClient = tsaClient;
+    }
+
+    public TSAClient getTsaClient()
+    {
+        return tsaClient;
+    }
 
     /**
      * Does nothing. Override this if needed.
