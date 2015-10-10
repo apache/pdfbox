@@ -21,6 +21,7 @@
 package org.apache.xmpbox.xml;
 
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -187,8 +188,10 @@ public class XmpSerializer
 
     private void fillElementWithAttributes(Element target, AbstractComplexProperty property)
     {
-        List<Attribute> attributes = property.getAllAttributes();
-        for (Attribute attribute : attributes)
+        // normalize the attributes list
+        List<Attribute> toSerialize = normalizeAttributes(property);        
+        
+        for (Attribute attribute : toSerialize)
         {
             if (XmpConstants.RDF_NAMESPACE.equals(attribute.getNamespace()))
             {
@@ -199,10 +202,47 @@ public class XmpSerializer
                 target.setAttribute(attribute.getName(), attribute.getValue());
             }
         }
+        
         for (Map.Entry<String, String> ns : property.getAllNamespacesWithPrefix().entrySet())
         {
             target.setAttribute(XMLConstants.XMLNS_ATTRIBUTE + ":" + ns.getValue(), ns.getKey());
         }
+    }
+
+    /** Normalize the list of attributes.
+     * 
+     * Attributes which match a schema property are serialized as child elements
+     * so only return the ones which do not match a schema property
+     * 
+     * @param property the property that needs to be inspected
+     * @return the list of attributed for serializing
+     */
+    private List<Attribute> normalizeAttributes(AbstractComplexProperty property)
+    {
+        List<Attribute> attributes = property.getAllAttributes();
+        
+
+        List<Attribute> toSerialize = new ArrayList<Attribute>();
+        List<AbstractField> fields = property.getAllProperties();
+                
+        for (Attribute attribute : attributes)
+        {
+            boolean matchesField = false;
+            for (AbstractField field : fields)
+            {
+                if (attribute.getName().compareTo(field.getPropertyName()) == 0)
+                {
+                    matchesField = true;
+                    break;
+                }
+            }
+            if (!matchesField)
+            {
+                toSerialize.add(attribute);
+            }
+        }
+        return toSerialize;
+        
     }
 
     protected Element createRdfElement(Document doc, XMPMetadata metadata, boolean withXpacket)
