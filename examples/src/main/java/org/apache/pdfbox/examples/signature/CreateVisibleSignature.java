@@ -90,8 +90,8 @@ public class CreateVisibleSignature extends CreateSignatureBase
         {
             throw new IOException("Could not find alias");
         }
-        privateKey = (PrivateKey) keystore.getKey(alias, pin);
-        certificate = keystore.getCertificateChain(alias)[0];
+        setPrivateKey((PrivateKey) keystore.getKey(alias, pin));
+        setCertificate(keystore.getCertificateChain(alias)[0]);
     }
 
     /**

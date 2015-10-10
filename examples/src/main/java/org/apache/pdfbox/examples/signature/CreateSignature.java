@@ -91,9 +91,9 @@ public class CreateSignature extends CreateSignatureBase
         {
             throw new KeyStoreException("Keystore is empty");
         }
-        privateKey = (PrivateKey) keystore.getKey(alias, password);
+        setPrivateKey((PrivateKey) keystore.getKey(alias, password));
         Certificate[] certificateChain = keystore.getCertificateChain(alias);
-        certificate = certificateChain[0];
+        setCertificate(certificateChain[0]);
     }
 
     /**
@@ -142,7 +142,7 @@ public class CreateSignature extends CreateSignatureBase
     public void signDetached(PDDocument document, OutputStream output, TSAClient tsaClient)
             throws IOException
     {
-        this.tsaClient = tsaClient;
+        setTsaClient(tsaClient);
 
         // create signature dictionary
         PDSignature signature = new PDSignature();
@@ -202,7 +202,7 @@ public class CreateSignature extends CreateSignatureBase
             vector = unsignedAttributes.toASN1EncodableVector();
         }
 
-        byte[] token = tsaClient.getTimeStampToken(signer.getSignature());
+        byte[] token = getTsaClient().getTimeStampToken(signer.getSignature());
         ASN1ObjectIdentifier oid = PKCSObjectIdentifiers.id_aa_signatureTimeStampToken;
         ASN1Encodable signatureTimeStamp = new Attribute(oid, new DERSet(ASN1Primitive.fromByteArray(token)));
 
