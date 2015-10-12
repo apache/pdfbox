@@ -176,7 +176,7 @@ public class CreateSignature extends CreateSignatureBase
         SignerInformationStore signerStore = signedData.getSignerInfos();
         List<SignerInformation> newSigners = new ArrayList<SignerInformation>();
 
-        for (SignerInformation signer : (Collection<SignerInformation>)signerStore.getSigners())
+        for (SignerInformation signer : signerStore.getSigners())
         {
             newSigners.add(signTimeStamp(signer));
         }
