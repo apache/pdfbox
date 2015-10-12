@@ -49,7 +49,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
 
     private SignatureOptions options;
     private PDVisibleSignDesigner visibleSignDesigner;
-    private PDVisibleSigProperties signatureProperties = new PDVisibleSigProperties();
+    private final PDVisibleSigProperties visibleSignatureProperties = new PDVisibleSigProperties();
 
     public void setVisibleSignatureProperties(String filename, int x, int y, int zoomPercent, 
             FileInputStream image, int page) 
@@ -62,7 +62,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
     public void setSignatureProperties(String name, String location, String reason, int preferredSize, 
             int page, boolean visualSignEnabled) throws IOException
     {
-        signatureProperties.signerName(name).signerLocation(location).signatureReason(reason).
+        visibleSignatureProperties.signerName(name).signerLocation(location).signatureReason(reason).
                 preferredSize(preferredSize).page(page).visualSignEnabled(visualSignEnabled).
                 setPdVisibleSignature(visibleSignDesigner).buildSignature();
     }
@@ -127,10 +127,10 @@ public class CreateVisibleSignature extends CreateSignatureBase
         signature.setSignDate(Calendar.getInstance());
 
         // register signature dictionary and sign interface
-        if (signatureProperties != null && signatureProperties.isVisualSignEnabled())
+        if (visibleSignatureProperties != null && visibleSignatureProperties.isVisualSignEnabled())
         {
             options = new SignatureOptions();
-            options.setVisualSignature(signatureProperties);
+            options.setVisualSignature(visibleSignatureProperties);
             doc.addSignature(signature, this, options);
         }
         else
