@@ -38,10 +38,10 @@ import org.apache.pdfbox.contentstream.operator.markedcontent.EndMarkedContentSe
  */
 public class PDFMarkedContentExtractor extends PDFTextStreamEngine
 {
-    private boolean suppressDuplicateOverlappingText = true;
-    private List<PDMarkedContent> markedContents = new ArrayList<PDMarkedContent>();
-    private Stack<PDMarkedContent> currentMarkedContents = new Stack<PDMarkedContent>();
-    private Map<String, List<TextPosition>> characterListMapping = new HashMap<String, List<TextPosition>>();
+    private final boolean suppressDuplicateOverlappingText = true;
+    private final List<PDMarkedContent> markedContents = new ArrayList<PDMarkedContent>();
+    private final Stack<PDMarkedContent> currentMarkedContents = new Stack<PDMarkedContent>();
+    private final Map<String, List<TextPosition>> characterListMapping = new HashMap<String, List<TextPosition>>();
 
     /**
      * Instantiate a new PDFTextStripper object.
@@ -151,7 +151,7 @@ public class PDFMarkedContentExtractor extends PDFTextStreamEngine
             float tolerance = (text.getWidth()/textCharacter.length())/3.0f;
             for (TextPosition sameTextCharacter : sameTextCharacters)
             {
-                TextPosition character = (TextPosition) sameTextCharacter;
+                TextPosition character = sameTextCharacter;
                 String charCharacter = character.getUnicode();
                 float charX = character.getX();
                 float charY = character.getY();
@@ -194,7 +194,7 @@ public class PDFMarkedContentExtractor extends PDFTextStreamEngine
                  * Note that we are making an assumption that we need to only look back
                  * one TextPosition to find what we are overlapping.  
                  * This may not always be true. */
-                TextPosition previousTextPosition = (TextPosition)textList.get(textList.size()-1);
+                TextPosition previousTextPosition = textList.get(textList.size()-1);
                 if(text.isDiacritic() && previousTextPosition.contains(text))
                 {
                     previousTextPosition.mergeDiacritic(text);
