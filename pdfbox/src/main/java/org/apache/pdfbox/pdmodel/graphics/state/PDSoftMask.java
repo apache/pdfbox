@@ -108,7 +108,7 @@ public final class PDSoftMask implements COSObjectable
      * @return form containing the transparency group
      * @throws IOException
      */
-    public PDFormXObject getGroup() throws IOException
+    public PDTransparencyGroup getGroup() throws IOException
     {
         if (group == null)
         {
@@ -135,6 +135,7 @@ public final class PDSoftMask implements COSObjectable
 
     /**
      * Returns the transfer function.
+     * @throws IOException If we are unable to create the PDFunction object.
      */
     public PDFunction getTransferFunction() throws IOException
     {
