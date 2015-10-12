@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.RandomAccessFile;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
@@ -43,6 +44,7 @@ import org.apache.wink.client.MockHttpServer;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cms.CMSException;
+import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.operator.OperatorCreationException;
@@ -115,7 +117,7 @@ public class TestCreateSignature extends TestCase
         // mock TSA server (RFC 3161)
         MockHttpServer mockServer = new MockHttpServer(15371);
         mockServer.startServer();
-        String tsaUrl = "http://localhost:" + mockServer.getServerPort() + "/";
+        String tsaUrl = "https://tsa.safecreative.org/";
         MockHttpServer.MockHttpServerResponse response = new MockHttpServer.MockHttpServerResponse();
         response.setMockResponseContent(content);
         response.setMockResponseContentType("application/timestamp-reply");
@@ -191,9 +193,21 @@ public class TestCreateSignature extends TestCase
                 sig = (COSDictionary) field.getDictionaryObject(COSName.V);
 
                 COSString contents = (COSString) sig.getDictionaryObject(COSName.CONTENTS);
+                COSArray byteRange = (COSArray) sig.getDictionaryObject(COSName.BYTERANGE);
+                
+                RandomAccessFile raf = new RandomAccessFile(file, "r");
+                
+                byte[] buf = new byte[byteRange.getInt(1) + byteRange.getInt(3)];
+                raf.seek(byteRange.getInt(0));
+                raf.readFully(buf, 0, byteRange.getInt(1));
+                raf.seek(byteRange.getInt(2));
+                raf.readFully(buf, byteRange.getInt(1), byteRange.getInt(3));
+                raf.close();
+                
                 // inspiration:
                 // http://stackoverflow.com/a/26702631/535646
-                CMSSignedData signedData = new CMSSignedData(contents.getBytes());
+                // http://stackoverflow.com/a/9261365/535646
+                CMSSignedData signedData = new CMSSignedData(new CMSProcessableByteArray(buf), contents.getBytes());
                 Store certificatesStore = signedData.getCertificates();
                 Collection<SignerInformation> signers = signedData.getSignerInfos().getSigners();
                 SignerInformation signerInformation = signers.iterator().next();
