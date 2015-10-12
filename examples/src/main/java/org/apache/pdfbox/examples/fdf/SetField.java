@@ -54,23 +54,23 @@ public class SetField
         {
             if (field instanceof PDCheckbox)
             {
-                ((PDCheckbox) field).setValue("Yes");
+                field.setValue("Yes");
             }
             else if (field instanceof PDComboBox)
             {
-                ((PDComboBox) field).setValue(value);
+                field.setValue(value);
             }
             else if (field instanceof PDListBox)
             {
-                ((PDListBox) field).setValue(value);
+                field.setValue(value);
             }
             else if (field instanceof PDRadioButton)
             {
-                ((PDRadioButton) field).setValue(value);
+                field.setValue(value);
             }
             else if (field instanceof PDTextField)
             {
-                ((PDTextField) field).setValue(value);
+                field.setValue(value);
             } 
         }
         else
