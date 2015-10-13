@@ -221,6 +221,7 @@ public abstract class PDFStreamEngine
      *
      * @param charProc Type 3 character procedure
      * @param textRenderingMatrix the Text Rendering Matrix
+     * @throws IOException if there is an error reading or parsing the character content stream.
      */
     protected void processType3Stream(PDType3CharProc charProc, Matrix textRenderingMatrix)
             throws IOException
@@ -263,6 +264,7 @@ public abstract class PDFStreamEngine
      *
      * @param annotation The annotation containing the appearance stream to process.
      * @param appearance The appearance stream to process.
+     * @throws IOException If there is an error reading or parsing the appearance content stream.
      */
     protected void processAnnotation(PDAnnotation annotation, PDAppearanceStream appearance)
             throws IOException
@@ -311,6 +313,7 @@ public abstract class PDFStreamEngine
      * @param tilingPattern the tiling pattern
      * @param color color to use, if this is an uncoloured pattern, otherwise null.
      * @param colorSpace color space to use, if this is an uncoloured pattern, otherwise null.
+     * @throws IOException if there is an error reading or parsing the tiling pattern content stream.
      */
     protected final void processTilingPattern(PDTilingPattern tilingPattern, PDColor color,
                                               PDColorSpace colorSpace) throws IOException
@@ -326,6 +329,7 @@ public abstract class PDFStreamEngine
      * @param color color to use, if this is an uncoloured pattern, otherwise null.
      * @param colorSpace color space to use, if this is an uncoloured pattern, otherwise null.
      * @param patternMatrix the pattern matrix, may be overridden for custom rendering.
+     * @throws IOException if there is an error reading or parsing the tiling pattern content stream.
      */
     protected final void processTilingPattern(PDTilingPattern tilingPattern, PDColor color,
                                               PDColorSpace colorSpace, Matrix patternMatrix)
@@ -444,6 +448,9 @@ public abstract class PDFStreamEngine
 
     /**
      * Processes the operators of the given content stream.
+     *
+     * @param contentStream to content stream to parse.
+     * @throws IOException if there is an error reading or parsing the content stream.
      */
     private void processStreamOperators(PDContentStream contentStream) throws IOException
     {
