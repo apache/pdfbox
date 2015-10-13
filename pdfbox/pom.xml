@@ -98,7 +98,7 @@
         <repository>
             <id>jbig2.googlecode</id>
             <name>JBIG2 ImageIO-Plugin repository at googlecode.com</name>
-            <url>http://jbig2-imageio.googlecode.com/svn/maven-repository/</url>
+            <url>https://jbig2-imageio.googlecode.com/svn/maven-repository/</url>
         </repository>
         <repository>
             <id>mygrid-repository</id>
