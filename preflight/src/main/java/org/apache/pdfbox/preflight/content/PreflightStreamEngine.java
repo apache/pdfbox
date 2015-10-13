@@ -283,7 +283,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
      * the color space defined in OutputIntent dictionaries.
      * 
      * @param operator the InlinedImage object (BI to EI)
-     * @throws ContentStreamException
+     * @throws IOException
      */
     protected void validateInlineImageColorSpace(Operator operator) throws IOException
     {
@@ -312,9 +312,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
                     if (pdCS != null)
                     {
                         cs = ColorSpaces.valueOf(pdCS.getName());
-                        PreflightConfiguration cfg = context.getConfig();
-                        ColorSpaceHelperFactory csFact = cfg.getColorSpaceHelperFact();
-                        csHelper = csFact.getColorSpaceHelper(context, pdCS, ColorSpaceRestriction.ONLY_DEVICE);
+                        csHelper = getColorSpaceHelper(pdCS);
                     }
                 }
 
@@ -343,12 +341,17 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
                     }
                 }                
                 PDColorSpace pdCS = PDColorSpace.create(csInlinedBase);
-                PreflightConfiguration cfg = context.getConfig();
-                ColorSpaceHelperFactory csFact = cfg.getColorSpaceHelperFact();
-                csHelper = csFact.getColorSpaceHelper(context, pdCS, ColorSpaceRestriction.ONLY_DEVICE);
+                csHelper = getColorSpaceHelper(pdCS);
             }
             csHelper.validate();
         }
+    }
+
+    private ColorSpaceHelper getColorSpaceHelper(PDColorSpace pdCS)
+    {
+        PreflightConfiguration cfg = context.getConfig();
+        ColorSpaceHelperFactory csFact = cfg.getColorSpaceHelperFact();
+        return csFact.getColorSpaceHelper(context, pdCS, ColorSpaceRestriction.ONLY_DEVICE);
     }
     
     // deliver the long name of a device colorspace, or the parameter
