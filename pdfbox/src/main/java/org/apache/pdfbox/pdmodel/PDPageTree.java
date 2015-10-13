@@ -435,4 +435,84 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
         }
         while (node != null);
     }
+    
+    /**
+     * Insert a page before another page within a page tree.
+     *
+     * @param newPage the page to be inserted.
+     * @param nextPage the page that is to be after the new page.
+     * @throws IllegalArgumentException if one attempts to insert a page that isn't part of a page
+     * tree.
+     */
+    public void insertBefore(PDPage newPage, PDPage nextPage)
+    {
+        COSDictionary nextPageDict = nextPage.getCOSObject();
+        COSDictionary parentDict = (COSDictionary) nextPageDict.getDictionaryObject(COSName.PARENT);
+        COSArray kids = (COSArray) parentDict.getDictionaryObject(COSName.KIDS);
+        boolean found = false;
+        for (int i = 0; i < kids.size(); ++i)
+        {
+            COSDictionary pageDict = (COSDictionary) kids.getObject(i);
+            if (pageDict.equals(nextPage.getCOSObject()))
+            {
+                kids.add(i, newPage.getCOSObject());
+                newPage.getCOSObject().setItem(COSName.PARENT, parentDict);
+                found = true;
+                break;
+            }
+        }
+        if (!found)
+        {
+            throw new IllegalArgumentException("attempted to insert before orphan page");
+        }
+
+        // now increase every parent
+        do
+        {
+            int cnt = parentDict.getInt(COSName.COUNT);
+            parentDict.setInt(COSName.COUNT, cnt + 1);
+            parentDict = (COSDictionary) parentDict.getDictionaryObject(COSName.PARENT);
+        }
+        while (parentDict != null);
+    }
+
+    /**
+     * Insert a page after another page within a page tree.
+     *
+     * @param newPage the page to be inserted.
+     * @param prevPage the page that is to be before the new page.
+     * @throws IllegalArgumentException if one attempts to insert a page that isn't part of a page
+     * tree.
+     */
+    public void insertAfter(PDPage newPage, PDPage prevPage)
+    {
+        COSDictionary prevPageDict = prevPage.getCOSObject();
+        COSDictionary parentDict = (COSDictionary) prevPageDict.getDictionaryObject(COSName.PARENT);
+        COSArray kids = (COSArray) parentDict.getDictionaryObject(COSName.KIDS);
+        boolean found = false;
+        for (int i = 0; i < kids.size(); ++i)
+        {
+            COSDictionary pageDict = (COSDictionary) kids.getObject(i);
+            if (pageDict.equals(prevPage.getCOSObject()))
+            {
+                kids.add(i + 1, newPage.getCOSObject());
+                newPage.getCOSObject().setItem(COSName.PARENT, parentDict);
+                found = true;
+                break;
+            }
+        }
+        if (!found)
+        {
+            throw new IllegalArgumentException("attempted to insert before orphan page");
+        }
+
+        // now increase every parent
+        do
+        {
+            int cnt = parentDict.getInt(COSName.COUNT);
+            parentDict.setInt(COSName.COUNT, cnt + 1);
+            parentDict = (COSDictionary) parentDict.getDictionaryObject(COSName.PARENT);
+        }
+        while (parentDict != null);
+    }
 }
