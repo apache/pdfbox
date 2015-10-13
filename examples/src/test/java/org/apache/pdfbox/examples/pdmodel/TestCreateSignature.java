@@ -117,7 +117,7 @@ public class TestCreateSignature extends TestCase
         // mock TSA server (RFC 3161)
         MockHttpServer mockServer = new MockHttpServer(15371);
         mockServer.startServer();
-        String tsaUrl = "https://tsa.safecreative.org/";
+        String tsaUrl = "http://localhost:" + mockServer.getServerPort() + "/";
         MockHttpServer.MockHttpServerResponse response = new MockHttpServer.MockHttpServerResponse();
         response.setMockResponseContent(content);
         response.setMockResponseContentType("application/timestamp-reply");
