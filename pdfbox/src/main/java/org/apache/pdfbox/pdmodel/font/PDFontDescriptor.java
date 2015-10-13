@@ -286,10 +286,10 @@ public final class PDFontDescriptor implements COSObjectable
     public String getFontName()
     {
         String retval = null;
-        COSName name = (COSName)dic.getDictionaryObject( COSName.FONT_NAME );
-        if( name != null )
+        COSBase base = dic.getDictionaryObject(COSName.FONT_NAME);
+        if (base instanceof COSName)
         {
-            retval = name.getName();
+            retval = ((COSName) base).getName();
         }
         return retval;
     }
