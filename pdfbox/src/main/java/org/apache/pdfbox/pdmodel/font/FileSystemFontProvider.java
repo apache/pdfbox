@@ -264,11 +264,19 @@ final class FileSystemFontProvider extends FontProvider
         {
             for (FSFontInfo fontInfo : fontInfoList)
             {
+                String path = fontInfo.file.getAbsolutePath();
+                // PDFBOX-3014: do not cache ttc files because file:font is a 1:N relationship
+                if (path.endsWith(".ttc"))
+                {
+                    // remove .ttc files from older versions
+                    prefs.remove(path);
+                    continue;
+                }
                 ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
                 ObjectOutputStream objectOut = new ObjectOutputStream(byteOut);
                 // write it to the stream
                 objectOut.writeObject(fontInfo);
-                prefs.putByteArray(fontInfo.file.getAbsolutePath(), byteOut.toByteArray());
+                prefs.putByteArray(path, byteOut.toByteArray());
             }
         }
         catch (IOException e)
