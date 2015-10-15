@@ -19,8 +19,6 @@ package org.apache.pdfbox.pdmodel.font;
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
 import java.io.InputStream;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.FontBoxFont;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSArray;
@@ -42,8 +40,6 @@ import org.apache.pdfbox.util.Vector;
  */
 public class PDType3Font extends PDSimpleFont
 {
-    private static final Log LOG = LogFactory.getLog(PDType3Font.class);
-
     private PDResources resources;
     private COSDictionary charProcs;
     private Matrix fontMatrix;
@@ -131,7 +127,6 @@ public class PDType3Font extends PDSimpleFont
             }
             else
             {
-                LOG.warn("No width for glyph " + code + " in font " + getName() + ", using width from font");
                 return getWidthFromFont(code);
             }
         }
@@ -143,7 +138,6 @@ public class PDType3Font extends PDSimpleFont
         PDType3CharProc charProc = getCharProc(code);
         if (charProc == null)
         {
-            LOG.warn("No CharProc for glyph " + code + " found, returning 0");
             return 0;
         }
         return charProc.getWidth();
