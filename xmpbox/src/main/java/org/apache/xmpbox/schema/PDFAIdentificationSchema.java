@@ -148,11 +148,11 @@ public class PDFAIdentificationSchema extends XMPSchema
      * @param value
      *            The conformance level value to set
      * @throws BadFieldValueException
-     *             If Conformance Value not 'A' or 'B'
+     *             If Conformance Value not 'A', 'B' or 'U' (PDF/A-2 and PDF/A-3)
      */
     public void setConformance(String value) throws BadFieldValueException
     {
-        if (value.equals("A") || value.equals("B"))
+        if (value.equals("A") || value.equals("B") || value.equals("U"))
         {
             TextType conf = createTextType(CONFORMANCE, value);
             addProperty(conf);
@@ -161,7 +161,7 @@ public class PDFAIdentificationSchema extends XMPSchema
         else
         {
             throw new BadFieldValueException(
-                    "The property given not seems to be a PDF/A conformance level (must be A or B)");
+                    "The property given not seems to be a PDF/A conformance level (must be A, B or U)");
         }
     }
 
@@ -171,19 +171,19 @@ public class PDFAIdentificationSchema extends XMPSchema
      * @param conf
      *            The conformance level property to set
      * @throws BadFieldValueException
-     *             If Conformance Value not 'A' or 'B'
+     *             If Conformance Value not 'A', 'B' or 'U' (PDF/A-2 and PDF/A-3)
      */
     public void setConformanceProperty(TextType conf) throws BadFieldValueException
     {
         String value = conf.getStringValue();
-        if (value.equals("A") || value.equals("B"))
+        if (value.equals("A") || value.equals("B") || value.equals("U"))
         {
             addProperty(conf);
         }
         else
         {
             throw new BadFieldValueException(
-                    "The property given not seems to be a PDF/A conformance level (must be A or B)");
+                    "The property given not seems to be a PDF/A conformance level (must be A, B or U)");
         }
     }
 
