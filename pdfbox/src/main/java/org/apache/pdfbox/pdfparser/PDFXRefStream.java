@@ -106,6 +106,12 @@ public class PDFXRefStream implements PDFXRef
         Set<COSName> keySet = stream.keySet();
         for ( COSName cosName : keySet )
         {
+            // "Other cross-reference stream entries not listed in Table 17 may be indirect; 
+            // in fact, some (such as Root in Table 15) shall be indirect."
+            if (COSName.ROOT.equals(cosName) || COSName.INFO.equals(cosName) || COSName.PREV.equals(cosName))
+            {
+                continue;
+            }
             COSBase dictionaryObject = stream.getDictionaryObject(cosName);
             dictionaryObject.setDirect(true);
         }
