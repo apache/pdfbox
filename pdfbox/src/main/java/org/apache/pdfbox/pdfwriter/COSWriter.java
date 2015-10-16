@@ -512,15 +512,10 @@ public class COSWriter implements ICOSVisitor, Closeable
         writtenObjects.add( obj );
         if(obj instanceof COSDictionary)
         {
-            COSDictionary dict = (COSDictionary)obj;
-            COSBase itemType = dict.getItem(COSName.TYPE);
-            if (itemType instanceof COSName)
+            COSBase itemType = ((COSDictionary) obj).getItem(COSName.TYPE);
+            if (COSName.SIG.equals(itemType) || COSName.DOC_TIME_STAMP.equals(itemType))
             {
-                COSName item = (COSName) itemType;
-                if (COSName.SIG.equals(item) || COSName.DOC_TIME_STAMP.equals(item))
-                {
-                    reachedSignature = true;
-                }
+                reachedSignature = true;
             }
         }
 
