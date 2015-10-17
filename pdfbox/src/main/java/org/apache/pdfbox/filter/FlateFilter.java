@@ -57,7 +57,6 @@ final class FlateFilter extends Filter
         {
             if (predictor > 1)
             {
-                @SuppressWarnings("null")
                 int colors = Math.min(decodeParams.getInt(COSName.COLORS, 1), 32);
                 int bitsPerPixel = decodeParams.getInt(COSName.BITS_PER_COMPONENT, 8);
                 int columns = decodeParams.getInt(COSName.COLUMNS, 1);
@@ -94,14 +93,34 @@ final class FlateFilter extends Filter
         if (read > 0) 
         { 
             Inflater inflater = new Inflater(); 
-            inflater.setInput(buf,0,read); 
-            byte[] res = new byte[2048]; 
+            inflater.setInput(buf,0,read);
+            byte[] res = new byte[32]; 
+            boolean dataWritten = false;
             while (true) 
             { 
-                int resRead = inflater.inflate(res); 
+                int resRead = 0;
+                try
+                {
+                    resRead = inflater.inflate(res);
+                }
+                catch(DataFormatException exception)
+                {
+                    if (dataWritten)
+                    {
+                        // some data could be read -> don't throw an exception
+                        LOG.warn("FlateFilter: premature end of stream due to a DataFormatException");
+                        break;
+                    }
+                    else
+                    {
+                        // nothing could be read -> re-throw exception
+                        throw exception;
+                    }
+                }
                 if (resRead != 0) 
                 { 
-                    out.write(res,0,resRead); 
+                    out.write(res,0,resRead);
+                    dataWritten = true;
                     continue; 
                 } 
                 if (inflater.finished() || inflater.needsDictionary() || in.available() == 0) 
@@ -109,7 +128,7 @@ final class FlateFilter extends Filter
                     break;
                 } 
                 read = in.read(buf); 
-                inflater.setInput(buf,0,read); 
+                inflater.setInput(buf,0,read);
             }
         }
         out.flush();
