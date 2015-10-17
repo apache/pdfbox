@@ -103,6 +103,6 @@ public class PrintTextLocations extends PDFTextStripper
      */
     private static void usage()
     {
-        System.err.println( "Usage: java org.apache.pdfbox.examples.pdmodel.PrintTextLocations <input-pdf>" );
+        System.err.println( "Usage: java " + PrintTextLocations.class.getName() + " <input-pdf>" );
     }
 }

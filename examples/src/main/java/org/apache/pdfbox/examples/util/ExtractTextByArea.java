@@ -27,8 +27,6 @@ import java.io.IOException;
 /**
  * This is an example on how to extract text from a specific area on the PDF document.
  *
- * Usage: java org.apache.pdfbox.examples.util.ExtractTextByArea &lt;input-pdf&gt;
- *
  * @author Ben Litchfield
  */
 public final class ExtractTextByArea
@@ -82,7 +80,7 @@ public final class ExtractTextByArea
      */
     private static void usage()
     {
-        System.err.println( "Usage: java org.apache.pdfbox.examples.util.ExtractTextByArea <input-pdf>" );
+        System.err.println( "Usage: java " + ExtractTextByArea.class.getName() + " <input-pdf>" );
     }
 
 }
