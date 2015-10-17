@@ -239,7 +239,7 @@ public final class ExtractTTFFonts
      */
     private static void usage()
     {
-        System.err.println("Usage: java org.apache.pdfbox.ExtractTTFFonts [OPTIONS] <PDF file>\n"
+        System.err.println("Usage: java " + ExtractTTFFonts.class.getName() + " [OPTIONS] <PDF file>\n"
                 + "  -password  <password>        Password to decrypt document\n"
                 + "  -prefix  <font-prefix>       Font prefix(default to pdf name)\n"
                 + "  -addkey                      add the internal font key to the file name\n"
