@@ -77,6 +77,6 @@ public final class AddJavascript
      */
     private static void usage()
     {
-        System.err.println( "Usage: java org.apache.pdfbox.examples.pdmodel.AddJavascript <input-pdf> <output-pdf>" );
+        System.err.println( "Usage: java " + AddJavascript.class.getName() + " <input-pdf> <output-pdf>" );
     }
 }
