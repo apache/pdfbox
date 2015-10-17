@@ -24,6 +24,8 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
@@ -51,14 +53,14 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
      *
      * @param document parent document
      * @param dict font dictionary
-     * @param ttfStream TTF stream
+     * @param ttf True Type Font
      * @param parent parent Type 0 font
      * @throws IOException if the TTF could not be read
      */
-    PDCIDFontType2Embedder(PDDocument document, COSDictionary dict, InputStream ttfStream,
+    PDCIDFontType2Embedder(PDDocument document, COSDictionary dict, TrueTypeFont ttf,
                            boolean embedSubset, PDType0Font parent) throws IOException
     {
-        super(document, dict, ttfStream, embedSubset);
+        super(document, dict, ttf, embedSubset);
         this.document = document;
         this.dict = dict;
         this.parent = parent;
@@ -85,7 +87,6 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
                 gidToUni.put(gid, codePoint); // CID = GID
             }
         }
-
         // ToUnicode CMap
         buildToUnicodeCMap(null);
     }
@@ -416,6 +417,6 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
      */
     public PDCIDFont getCIDFont() throws IOException
     {
-        return PDFontFactory.createDescendantFont(cidFont, parent);
+        return new PDCIDFontType2(cidFont, parent, ttf);
     }
 }
