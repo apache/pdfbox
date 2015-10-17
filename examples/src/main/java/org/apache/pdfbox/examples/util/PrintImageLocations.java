@@ -41,8 +41,6 @@ import org.apache.pdfbox.contentstream.operator.state.SetMatrix;
 /**
  * This is an example on how to get the x/y coordinates of image locations.
  *
- * Usage: java org.apache.pdfbox.examples.util.PrintImageLocations &lt;input-pdf&gt;
- *
  * @author Ben Litchfield
  */
 public class PrintImageLocations extends PDFStreamEngine
@@ -159,7 +157,7 @@ public class PrintImageLocations extends PDFStreamEngine
      */
     private static void usage()
     {
-        System.err.println( "Usage: java org.apache.pdfbox.examples.pdmodel.PrintImageLocations <input-pdf>" );
+        System.err.println( "Usage: java " + PrintImageLocations.class.getName() + " <input-pdf>" );
     }
 
 }

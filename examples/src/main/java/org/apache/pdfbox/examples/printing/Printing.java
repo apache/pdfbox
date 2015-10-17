@@ -47,7 +47,7 @@ public final class Printing
     {
         if (args.length != 1)
         {
-            System.err.println("usage: java org.apache.pdfbox.examples.printing.Printing <input>");
+            System.err.println("usage: java " + Printing.class.getName() + " <input>");
             System.exit(1);
         }
 

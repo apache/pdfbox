@@ -33,8 +33,6 @@ import java.util.List;
 /**
  * This is an example on how to remove all text from PDF document.
  *
- * Usage: java org.apache.pdfbox.examples.util.RemoveAllText &lt;input-pdf&gt; &lt;output-pdf&gt;
- *
  * @author Ben Litchfield
  */
 public final class RemoveAllText
@@ -115,7 +113,7 @@ public final class RemoveAllText
      */
     private static void usage()
     {
-        System.err.println( "Usage: java org.apache.pdfbox.examples.pdmodel.RemoveAllText <input-pdf> <output-pdf>" );
+        System.err.println( "Usage: java " + RemoveAllText.class.getName() + " <input-pdf> <output-pdf>" );
     }
 
 }
