@@ -38,8 +38,6 @@ import org.apache.xmpbox.xml.XmpParsingException;
 /**
  * This is an example on how to extract metadata from a PDF document.
  * 
- * Usage: java org.apache.pdfbox.examples.pdmodel.ExtractDocument &lt;input-pdf&gt;
- *
  */
 public final class ExtractMetadata
 {

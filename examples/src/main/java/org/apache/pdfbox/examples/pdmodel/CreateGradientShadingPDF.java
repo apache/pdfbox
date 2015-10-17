@@ -156,6 +156,6 @@ public class CreateGradientShadingPDF
      */
     private static void usage()
     {
-        System.err.println("usage: java org.apache.pdfbox.examples.pdmodel.CreateGradientShadingPDF <outputfile.pdf>");
+        System.err.println("usage: java o" + CreateGradientShadingPDF.class.getName() + " <outputfile.pdf>");
     }
 }
