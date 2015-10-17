@@ -43,8 +43,6 @@ import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
 /**
  * Extracts the images from a PDF file.
  *
- * <p>usage: java org.apache.pdfbox.tools.ExtractImages &lt;pdffile&gt; &lt;password&gt; [imageprefix]
- *
  * @author Ben Litchfield
  */
 public final class ExtractImages
@@ -145,7 +143,7 @@ public final class ExtractImages
      */
     private static void usage()
     {
-        String message = "Usage: java org.apache.pdfbox.tools.ExtractImages [options] <inputfile>\n"
+        String message = "Usage: java " + ExtractImages.class.getName() + " [options] <inputfile>\n"
                 + "\nOptions:\n"
                 + "  -password <password>   : Password to decrypt document\n"
                 + "  -prefix <image-prefix> : Image prefix(default to pdf name)\n"
