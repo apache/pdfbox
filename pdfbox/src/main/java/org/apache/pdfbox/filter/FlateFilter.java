@@ -35,9 +35,8 @@ import org.apache.pdfbox.cos.COSName;
 /**
  * This is the used for the FlateDecode filter.
  *
- * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
+ * @author Ben Litchfield
  * @author Marcel Kammer
- * @version $Revision: 1.12 $
  */
 public class FlateFilter implements Filter
 {
@@ -122,13 +121,33 @@ public class FlateFilter implements Filter
         { 
             Inflater inflater = new Inflater(); 
             inflater.setInput(buf,0,read); 
-            byte[] res = new byte[2048]; 
+            byte[] res = new byte[32];
+            boolean dataWritten = false;
             while(true) 
             { 
-                int resRead = inflater.inflate(res); 
+                int resRead = 0;
+                try
+                {
+                    resRead = inflater.inflate(res);
+                }
+                catch(DataFormatException exception)
+                {
+                    if (dataWritten)
+                    {
+                        // some data could be read -> don't throw an exception
+                        LOG.warn("FlateFilter: premature end of stream due to a DataFormatException");
+                        break;
+                    }
+                    else
+                    {
+                        // nothing could be read -> re-throw exception
+                        throw exception;
+                    }
+                }
                 if(resRead != 0) 
                 { 
                     out.write(res,0,resRead); 
+                    dataWritten = true;
                     continue; 
                 } 
                 if(inflater.finished() || inflater.needsDictionary() || in.available() == 0) 
