@@ -32,7 +32,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
  * This will read a document from the filesystem, decrypt it and do something with the signature.
- * usage: java org.apache.pdfbox.examples.signature.ShowSignature &lt;password&gt; &lt;inputfile&gt;
  *
  * @author Ben Litchfield
  */
@@ -146,7 +145,7 @@ public final class ShowSignature
      */
     private static void usage()
     {
-        System.err.println( "usage: java org.apache.pdfbox.examples.signature.ShowSignature " +
+        System.err.println( "usage: java " + ShowSignature.class.getName() +
                             "<password> <inputfile>" );
     }
 }
