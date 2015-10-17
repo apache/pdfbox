@@ -29,8 +29,6 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlin
  * This is an example on how to add bookmarks to a PDF document.  It simply
  * adds 1 bookmark for every page.
  *
- * Usage: java org.apache.pdfbox.examples.pdmodel.CreateBookmarks &lt;input-pdf&gt; &lt;output-pdf&gt;
- *
  * @author Ben Litchfield
  */
 public final class CreateBookmarks
@@ -100,6 +98,6 @@ public final class CreateBookmarks
      */
     private static void usage()
     {
-        System.err.println( "Usage: java org.apache.pdfbox.examples.pdmodel.CreateBookmarks <input-pdf> <output-pdf>" );
+        System.err.println( "Usage: java " + CreateBookmarks.class.getName() + " <input-pdf> <output-pdf>" );
     }
 }
