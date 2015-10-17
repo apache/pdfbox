@@ -35,8 +35,6 @@ import javax.xml.transform.TransformerException;
 /**
  * This is an example on how to add metadata to a document.
  *
- * Usage: java org.apache.pdfbox.examples.pdmodel.AddMetadataToDocument &lt;input-pdf&gt; &lt;output-pdf&gt;
- *
  * @author Ben Litchfield
  * 
  */
@@ -118,7 +116,6 @@ public final class AddMetadataFromDocInfo
      */
     private static void usage()
     {
-        System.err.println( "Usage: java org.apache.pdfbox.examples.pdmodel.AddMetadataFromDocInfo " +
-            "<input-pdf> <output-pdf>" );
+        System.err.println( "Usage: java " + AddMetadataFromDocInfo.class.getName() + " <input-pdf> <output-pdf>" );
     }
 }
