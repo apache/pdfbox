@@ -79,6 +79,6 @@ public final class RemoveFirstPage
      */
     private static void usage()
     {
-        System.err.println( "Usage: java org.apache.pdfbox.examples.pdmodel.RemoveFirstPage <input-pdf> <output-pdf>" );
+        System.err.println( "Usage: java " + RemoveFirstPage.class.getName() + " <input-pdf> <output-pdf>" );
     }
 }
