@@ -18,12 +18,13 @@ package org.apache.pdfbox.pdmodel.font;
 
 import java.awt.geom.GeneralPath;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.cmap.CMap;
+import org.apache.fontbox.ttf.TTFParser;
+import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -58,7 +59,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     */
     public static PDType0Font load(PDDocument doc, File file) throws IOException
     {
-        return new PDType0Font(doc, new FileInputStream(file), true);
+        return new PDType0Font(doc, new TTFParser().parse(file), true);
     }
 
     /**
@@ -71,7 +72,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     */
     public static PDType0Font load(PDDocument doc, InputStream input) throws IOException
     {
-        return new PDType0Font(doc, input, true);
+        return new PDType0Font(doc, new TTFParser().parse(input), true);
     }
 
     /**
@@ -86,7 +87,22 @@ public class PDType0Font extends PDFont implements PDVectorFont
     public static PDType0Font load(PDDocument doc, InputStream input, boolean embedSubset)
             throws IOException
     {
-        return new PDType0Font(doc, input, embedSubset);
+        return new PDType0Font(doc, new TTFParser().parse(input), embedSubset);
+    }
+
+    /**
+     * Loads a TTF to be embedded into a document as a Type 0 font.
+     *
+     * @param doc The PDF document that will hold the embedded font.
+     * @param ttf A TrueType font.
+     * @param embedSubset True if the font will be subset before embedding
+     * @return A Type0 font with a CIDFontType2 descendant.
+     * @throws IOException If there is an error reading the font stream.
+     */
+    public static PDType0Font load(PDDocument doc, TrueTypeFont ttf, boolean embedSubset)
+            throws IOException
+    {
+        return new PDType0Font(doc, ttf, embedSubset);
     }
 
     /**
@@ -114,10 +130,10 @@ public class PDType0Font extends PDFont implements PDVectorFont
     /**
     * Private. Creates a new TrueType font for embedding.
     */
-    private PDType0Font(PDDocument document, InputStream ttfStream, boolean embedSubset)
+    private PDType0Font(PDDocument document, TrueTypeFont ttf, boolean embedSubset)
             throws IOException
     {
-        embedder = new PDCIDFontType2Embedder(document, dict, ttfStream, embedSubset, this);
+        embedder = new PDCIDFontType2Embedder(document, dict, ttf, embedSubset, this);
         descendantFont = embedder.getCIDFont();
         readEncoding();
         fetchCMapUCS2();
