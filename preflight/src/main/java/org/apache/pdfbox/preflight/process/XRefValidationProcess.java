@@ -22,6 +22,7 @@
 package org.apache.pdfbox.preflight.process;
 
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_INDIRECT_OBJ_RANGE;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_TRAILER;
 
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.preflight.PreflightConstants;
@@ -35,6 +36,10 @@ public class XRefValidationProcess extends AbstractProcess
     public void validate(PreflightContext ctx) throws ValidationException
     {
         COSDocument document = ctx.getDocument().getDocument();
+        if (document.isXRefStream())
+        {
+            addValidationError(ctx, new ValidationError(ERROR_SYNTAX_TRAILER, "/XRef cross reference streams are not allowed"));
+        }
         if (document.getObjects().size() > PreflightConstants.MAX_INDIRECT_OBJ)
         {
             addValidationError(ctx, new ValidationError(ERROR_SYNTAX_INDIRECT_OBJ_RANGE, "Too many indirect objects"));
