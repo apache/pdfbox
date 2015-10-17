@@ -29,8 +29,6 @@ import java.util.Calendar;
 /**
  * This is an example on how to get a documents metadata information.
  *
- * Usage: java org.apache.pdfbox.examples.pdmodel.PrintDocumentMetaData &lt;input-pdf&gt;
- *
  * @author Ben Litchfield
  * 
  */
@@ -73,7 +71,7 @@ public class PrintDocumentMetaData
      */
     private static void usage()
     {
-        System.err.println( "Usage: java org.apache.pdfbox.examples.pdmodel.PrintDocumentMetaData <input-pdf>" );
+        System.err.println( "Usage: java " + PrintDocumentMetaData.class.getName() + " <input-pdf>" );
     }
 
     /**

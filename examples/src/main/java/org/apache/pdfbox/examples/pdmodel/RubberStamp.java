@@ -90,6 +90,6 @@ public final class RubberStamp
      */
     private static void usage()
     {
-        System.err.println( "Usage: java org.apache.pdfbox.examples.pdmodel.RubberStamp <input-pdf> <output-pdf>" );
+        System.err.println( "Usage: java " + RubberStamp.class.getName() + " <input-pdf> <output-pdf>" );
     }
 }

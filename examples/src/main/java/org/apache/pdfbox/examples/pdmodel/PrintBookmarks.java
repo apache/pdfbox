@@ -27,8 +27,6 @@ import java.io.IOException;
 /**
  * This is an example on how to access the bookmarks that are part of a pdf document.
  *
- * Usage: java org.apache.pdfbox.examples.pdmodel.PrintBookmarks &lt;input-pdf&gt;
- *
  * @author Ben Litchfield
  * 
  */
@@ -79,7 +77,7 @@ public class PrintBookmarks
      */
     private static void usage()
     {
-        System.err.println( "Usage: java org.apache.pdfbox.examples.pdmodel.PrintBookmarks <input-pdf>" );
+        System.err.println( "Usage: java " + PrintBookmarks.class.getName() + " <input-pdf>" );
     }
 
     /**
