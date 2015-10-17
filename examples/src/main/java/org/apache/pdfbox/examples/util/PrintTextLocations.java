@@ -29,8 +29,6 @@ import org.apache.pdfbox.text.TextPosition;
 /**
  * This is an example on how to get some x/y coordinates of text.
  *
- * Usage: java org.apache.pdfbox.examples.util.PrintTextLocations &lt;input-pdf&gt;
- *
  * @author Ben Litchfield
  */
 public class PrintTextLocations extends PDFTextStripper
