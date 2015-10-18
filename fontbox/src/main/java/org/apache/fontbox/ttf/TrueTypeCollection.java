@@ -119,6 +119,25 @@ public class TrueTypeCollection implements Closeable
         return fonts;
     }
 
+    /**
+     * Return a TrueType font by name.
+     *
+     * @param fontName the font name to search for.
+     * @return the found font or null if no font for that name was found.
+     * @throws IOException if there was an error reading the naming table of a font.
+     */
+    public TrueTypeFont getFontByName(String fontName) throws IOException
+    {
+        for (TrueTypeFont ttf : fonts)
+        {
+            if (ttf.getName().equals(fontName))
+            {
+                return ttf;
+            }
+        }
+        return null;
+    }
+
     @Override
     public void close() throws IOException
     {
