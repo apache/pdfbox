@@ -35,12 +35,10 @@ public final class FillFormField
 
     public static void main(String[] args) throws IOException
     {
-        String formTemplate = "src/main/resources/org/apache/pdfbox/examples/acroforms/FillFormField.pdf";
-        String filledForm = "FillFormField.pdf";
+        String formTemplate = "src/main/resources/org/apache/pdfbox/examples/interactive/form/FillFormField.pdf";
         
         // load the document
-        PDDocument pdfDocument = PDDocument
-                .load(new File(formTemplate),(String)null);
+        PDDocument pdfDocument = PDDocument.load(new File(formTemplate));
 
         // get the document catalog
         PDAcroForm acroForm = pdfDocument.getDocumentCatalog().getAcroForm();
@@ -59,7 +57,7 @@ public final class FillFormField
         }
 
         // Save and close the filled out form.
-        pdfDocument.save(filledForm);
+        pdfDocument.save("target/FillFormField.pdf");
         pdfDocument.close();
     }
 
