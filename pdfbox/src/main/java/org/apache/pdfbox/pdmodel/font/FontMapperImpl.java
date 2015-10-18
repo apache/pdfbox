@@ -316,6 +316,7 @@ final class FontMapperImpl implements FontMapper
      *
      * @param fontDescriptor FontDescriptor
      */
+    @Override
     public FontMapping<TrueTypeFont> getTrueTypeFont(String baseFont,
                                                             PDFontDescriptor fontDescriptor)
     {
@@ -344,6 +345,7 @@ final class FontMapperImpl implements FontMapper
      *
      * @param fontDescriptor the FontDescriptor of the font to find
      */
+    @Override
     public FontMapping<FontBoxFont> getFontBoxFont(String baseFont,
                                                           PDFontDescriptor fontDescriptor)
     {
@@ -475,6 +477,7 @@ final class FontMapperImpl implements FontMapper
      * @param fontDescriptor FontDescriptor
      * @param cidSystemInfo the CID system info, e.g. "Adobe-Japan1", if any.
      */
+    @Override
     public CIDFontMapping getCIDFont(String baseFont, PDFontDescriptor fontDescriptor,
                                             PDCIDSystemInfo cidSystemInfo)
     {
