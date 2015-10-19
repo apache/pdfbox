@@ -29,7 +29,7 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDRadioButton;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
 
 /**
- * This example will take a PDF document and set a FDF field in it.
+ * This example will take a PDF document and set a form field in it.
  *
  * @author Ben Litchfield
  *
@@ -125,6 +125,6 @@ public class SetField
      */
     private static void usage()
     {
-        System.err.println("usage: org.apache.pdfbox.examples.fdf.SetField <pdf-file> <field-name> <field-value>");
+        System.err.println("usage: org.apache.pdfbox.examples.interactive.form.SetField <pdf-file> <field-name> <field-value>");
     }
 }

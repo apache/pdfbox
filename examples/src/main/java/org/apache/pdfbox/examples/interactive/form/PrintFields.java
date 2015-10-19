@@ -128,6 +128,6 @@ public class PrintFields
      */
     private static void usage()
     {
-        System.err.println("usage: org.apache.pdfbox.examples.fdf.PrintFields <pdf-file>");
+        System.err.println("usage: org.apache.pdfbox.examples.interactive.form.PrintFields <pdf-file>");
     }
 }
