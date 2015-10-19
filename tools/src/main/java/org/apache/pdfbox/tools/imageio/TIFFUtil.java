@@ -35,9 +35,25 @@ final class TIFFUtil
 {
     private static final Log LOG = LogFactory.getLog(TIFFUtil.class);
 
+    private static String tagSetClassName = "com.sun.media.imageio.plugins.tiff.BaselineTIFFTagSet";
+    
     private TIFFUtil()
     {
     }    
+
+    static
+    {
+        try
+        {
+            String alternateClassName = "com.github.jaiimageio.plugins.tiff.BaselineTIFFTagSet";
+            Class.forName(alternateClassName);
+            tagSetClassName = alternateClassName;
+        }
+        catch (ClassNotFoundException ex)
+        {
+            // ignore
+        }
+    }
 
     /**
      * Sets the ImageIO parameter compression type based on the given image.
@@ -87,8 +103,7 @@ final class TIFFUtil
         if (root.getElementsByTagName("TIFFIFD").getLength() == 0)
         {
             ifd = new IIOMetadataNode("TIFFIFD");
-            ifd.setAttribute("tagSets",
-                             "com.sun.media.imageio.plugins.tiff.BaselineTIFFTagSet");
+            ifd.setAttribute("tagSets", tagSetClassName);
             root.appendChild(ifd);
         }
         else
