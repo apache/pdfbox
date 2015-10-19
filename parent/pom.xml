@@ -116,7 +116,7 @@
         <repository>
             <id>mygrid-repository</id>
             <name>myGrid Repository</name>
-            <url>https://repository.mygrid.org.uk/artifactory/mygrid-all/</url>
+            <url>http://repository.mygrid.org.uk/artifactory/mygrid-all/</url>
         </repository>
     </repositories>
   
