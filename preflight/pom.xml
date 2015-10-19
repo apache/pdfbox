@@ -101,6 +101,7 @@
 				<configuration>
 					<configLocation>../pdfbox-checkstyle-5.xml</configLocation>
 				</configuration>
+                                <version>2.16</version>
 			</plugin>
             <plugin>
                 <groupId>com.googlecode.maven-download-plugin</groupId>
