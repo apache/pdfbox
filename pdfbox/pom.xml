@@ -74,8 +74,13 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>net.java.dev.jai-imageio</groupId>
-            <artifactId>jai-imageio-core-standalone</artifactId>
+            <groupId>com.github.jai-imageio</groupId>
+            <artifactId>jai-imageio-core</artifactId>
+            <scope>test</scope>
+        </dependency>    
+        <dependency>
+            <groupId>com.github.jai-imageio</groupId>
+            <artifactId>jai-imageio-jpeg2000</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
