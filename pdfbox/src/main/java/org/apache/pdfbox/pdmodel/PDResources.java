@@ -23,6 +23,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
+import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDPropertyList;
 import org.apache.pdfbox.pdmodel.font.PDFont;
@@ -306,6 +307,32 @@ public final class PDResources implements COSObjectable
             cache.put(indirect, propertyList);
         }
         return propertyList;
+    }
+
+    /**
+     * Tells whether the XObject resource with the given name is an image.
+     *
+     * @param name Name of the XObject resource.
+     * @return true if it is an image XObject, false if not.
+     */
+    public boolean isImageXObject(COSName name)
+    {
+        // get the instance
+        COSBase value = get(COSName.XOBJECT, name);
+        if (value == null)
+        {
+            return false;
+        }
+        else if (value instanceof COSObject)
+        {
+            value = ((COSObject) value).getObject();
+        }
+        if (!(value instanceof COSStream))
+        {
+            return false;
+        }
+        COSStream stream = (COSStream) value;
+        return COSName.IMAGE.equals(stream.getCOSName(COSName.SUBTYPE));
     }
 
     /**

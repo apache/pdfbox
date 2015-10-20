@@ -21,7 +21,6 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDTransparencyGroup;
-import org.apache.pdfbox.text.PDFMarkedContentExtractor;
 
 import java.io.IOException;
 import java.util.List;
@@ -47,11 +46,14 @@ public class DrawObject extends OperatorProcessor
             return;
         }
         COSName name = (COSName) base0;
-        PDXObject xobject =  context.getResources().getXObject(name);
-        if (context instanceof PDFMarkedContentExtractor)
+
+        if (context.getResources().isImageXObject(name))
         {
-            ((PDFMarkedContentExtractor) context).xobject(xobject);
+            // we're done here, don't decode images when doing text extraction
+            return;
         }
+        
+        PDXObject xobject = context.getResources().getXObject(name);
 
         if (xobject instanceof PDTransparencyGroup)
         {
