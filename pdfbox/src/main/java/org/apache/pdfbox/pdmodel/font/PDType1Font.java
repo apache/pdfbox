@@ -36,6 +36,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
 import org.apache.pdfbox.pdmodel.font.encoding.StandardEncoding;
@@ -435,7 +436,14 @@ public class PDType1Font extends PDSimpleFont
     @Override
     public BoundingBox getBoundingBox() throws IOException
     {
-        return genericFont.getFontBBox();
+        BoundingBox fontBBox = genericFont.getFontBBox();
+        if (fontBBox.getWidth() == 0 && fontBBox.getHeight() == 0)
+        {
+            PDRectangle fdBB = getFontDescriptor().getFontBoundingBox();
+            fontBBox = new BoundingBox(fdBB.getLowerLeftX(), fdBB.getLowerLeftY(),
+                    fdBB.getUpperRightX(), fdBB.getUpperRightY());
+        }
+        return fontBBox;
     }
 
     //@Override
