@@ -29,6 +29,7 @@ import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDMarkedConte
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.contentstream.operator.markedcontent.BeginMarkedContentSequence;
 import org.apache.pdfbox.contentstream.operator.markedcontent.BeginMarkedContentSequenceWithProperties;
+import org.apache.pdfbox.contentstream.operator.markedcontent.DrawObject;
 import org.apache.pdfbox.contentstream.operator.markedcontent.EndMarkedContentSequence;
 
 /**
@@ -61,6 +62,7 @@ public class PDFMarkedContentExtractor extends PDFTextStreamEngine
         addOperator(new BeginMarkedContentSequenceWithProperties());
         addOperator(new BeginMarkedContentSequence());
         addOperator(new EndMarkedContentSequence());
+        addOperator(new DrawObject());
         // todo: DP - Marked Content Point
         // todo: MP - Marked Content Point with Properties
     }
