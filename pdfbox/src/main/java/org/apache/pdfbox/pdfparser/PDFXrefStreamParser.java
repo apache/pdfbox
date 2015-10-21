@@ -113,14 +113,24 @@ public class PDFXrefStreamParser extends BaseParser
                 byte[] currLine = new byte[lineSize];
                 pdfSource.read(currLine);
 
-                int type = 0;
-                /*
-                 * Grabs the number of bytes specified for the first column in
-                 * the W array and stores it.
-                 */
-                for(int i = 0; i < w0; i++)
+                int type;
+                if (w0 == 0)
                 {
-                    type += (currLine[i] & 0x00ff) << ((w0 - i - 1)* 8);
+                    // "If the first element is zero, 
+                    // the type field shall not be present, and shall default to type 1"
+                    type = 1;
+                }
+                else
+                {
+                    type = 0;
+                    /*
+                     * Grabs the number of bytes specified for the first column in
+                     * the W array and stores it.
+                     */
+                    for (int i = 0; i < w0; i++)
+                    {
+                        type += (currLine[i] & 0x00ff) << ((w0 - i - 1) * 8);
+                    }
                 }
                 //Need to remember the current objID
                 Integer objID = objIter.next();
