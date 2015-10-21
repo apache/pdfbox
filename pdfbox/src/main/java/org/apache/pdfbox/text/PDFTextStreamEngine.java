@@ -202,7 +202,7 @@ class PDFTextStreamEngine extends PDFStreamEngine
         }
 
         // the space width has to be transformed into display units
-        float spaceWidthDisplay = spaceWidthText * fontSizeText * horizontalScalingText *
+        float spaceWidthDisplay = spaceWidthText * horizontalScalingText *
                 textRenderingMatrix.getScalingFactorX();
 
         // use our additional glyph list for Unicode mapping
