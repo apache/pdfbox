@@ -198,7 +198,7 @@ public final class IndexPDFFiles
 
                     String path = file.getName().toUpperCase();
                     Document doc = null;
-                    if (path.endsWith(".PDF"))
+                    if (path.toLowerCase().endsWith(".pdf"))
                     {
                         System.out.println("Indexing PDF document: " + file);
                         doc = LucenePDFDocument.getDocument(file);
