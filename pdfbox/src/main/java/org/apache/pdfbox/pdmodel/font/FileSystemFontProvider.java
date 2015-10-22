@@ -266,7 +266,7 @@ final class FileSystemFontProvider extends FontProvider
             {
                 String path = fontInfo.file.getAbsolutePath();
                 // PDFBOX-3014: do not cache ttc files because file:font is a 1:N relationship
-                if (path.endsWith(".ttc"))
+                if (path.toLowerCase().endsWith(".ttc"))
                 {
                     // remove .ttc files from older versions
                     prefs.remove(path);
