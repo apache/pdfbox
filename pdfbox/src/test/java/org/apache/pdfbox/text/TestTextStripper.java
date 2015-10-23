@@ -16,6 +16,13 @@
  */
 package org.apache.pdfbox.text;
 
+import difflib.ChangeDelta;
+import difflib.DeleteDelta;
+import difflib.DiffUtils;
+import difflib.InsertDelta;
+import difflib.Patch;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
@@ -25,8 +32,11 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.io.Writer;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -96,7 +106,7 @@ public class TestTextStripper extends TestCase
 
     private boolean bFail = false;
     private PDFTextStripper stripper = null;
-    private final String encoding = "UTF-16LE";
+    private static final String ENCODING = "UTF-8";
 
     /**
      * Test class constructor.
@@ -238,26 +248,30 @@ public class TestTextStripper extends TestCase
         try
         {            
             File outFile;
+            File diffFile;
             File expectedFile;
 
             if(bSort)
             {
                 outFile = new File(outDir,  inFile.getName() + "-sorted.txt");
+                diffFile = new File(outDir, inFile.getName() + "-sorted-diff.txt");
                 expectedFile = new File(inFile.getParentFile(), inFile.getName() + "-sorted.txt");
             }
             else
             {
                 outFile = new File(outDir, inFile.getName() + ".txt");
+                diffFile = new File(outDir, inFile.getName() + "-diff.txt");
                 expectedFile = new File(inFile.getParentFile(), inFile.getName() + ".txt");
             }
 
             OutputStream os = new FileOutputStream(outFile);
             try
             {
-                os.write( 0xFF );
-                os.write( 0xFE );
+                os.write (0xEF);
+                os.write (0xBB);
+                os.write (0xBF);
 
-                Writer writer = new OutputStreamWriter(os, encoding);
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os, ENCODING));
                 try
                 {
                     //Allows for sorted tests 
@@ -284,15 +298,17 @@ public class TestTextStripper extends TestCase
             if (!expectedFile.exists())
             {
                 this.bFail = true;
-                fail("FAILURE: Input verification file: " + expectedFile.getAbsolutePath() +
+                log.error("FAILURE: Input verification file: " + expectedFile.getAbsolutePath() +
                         " did not exist");
                 return;
             }
+            
+            boolean localFail = false;
 
             LineNumberReader expectedReader =
-                new LineNumberReader(new InputStreamReader(new FileInputStream(expectedFile), encoding));
+                new LineNumberReader(new InputStreamReader(new FileInputStream(expectedFile), ENCODING));
             LineNumberReader actualReader =
-                new LineNumberReader(new InputStreamReader(new FileInputStream(outFile), encoding));
+                new LineNumberReader(new InputStreamReader(new FileInputStream(outFile), ENCODING));
 
             while (true)
             {
@@ -309,7 +325,8 @@ public class TestTextStripper extends TestCase
                 if (!stringsEqual(expectedLine, actualLine))
                 {
                     this.bFail = true;
-                    fail("FAILURE: Line mismatch for file " + inFile.getName() +
+                    localFail = true;
+                    log.error("FAILURE: Line mismatch for file " + inFile.getName() +
                             " (sort = "+bSort+")" +
                             " at expected line: " + expectedReader.getLineNumber() +
                             " at actual line: " + actualReader.getLineNumber() +
@@ -327,6 +344,50 @@ public class TestTextStripper extends TestCase
             }
             expectedReader.close();
             actualReader.close();
+            if (!localFail)
+            {
+                outFile.delete();
+            }
+            else
+            {
+                // https://code.google.com/p/java-diff-utils/wiki/SampleUsage
+                List<String> original = fileToLines(expectedFile);
+                List<String> revised = fileToLines(outFile);
+
+                // Compute diff. Get the Patch object. Patch is the container for computed deltas.
+                Patch patch = DiffUtils.diff(original, revised);
+
+                PrintStream diffPS = new PrintStream(diffFile);
+                for (Object delta : (List<ChangeDelta>) patch.getDeltas())
+                {
+                    if (delta instanceof ChangeDelta)
+                    {
+                        ChangeDelta cdelta = (ChangeDelta) delta;
+                        diffPS.println("Org: " + cdelta.getOriginal());
+                        diffPS.println("New: " + cdelta.getRevised());
+                        diffPS.println();
+                    }
+                    else if (delta instanceof DeleteDelta)
+                    {
+                        DeleteDelta ddelta = (DeleteDelta) delta;
+                        diffPS.println("Org: " + ddelta.getOriginal());
+                        diffPS.println("New: " + ddelta.getRevised());
+                        diffPS.println();
+                    }
+                    else if (delta instanceof InsertDelta)
+                    {
+                        InsertDelta idelta = (InsertDelta) delta;
+                        diffPS.println("Org: " + idelta.getOriginal());
+                        diffPS.println("New: " + idelta.getRevised());
+                        diffPS.println();
+                    }
+                    else
+                    {
+                        diffPS.println(delta);
+                    }
+                }
+                diffPS.close();
+            }
         }
         finally
         {
@@ -334,6 +395,27 @@ public class TestTextStripper extends TestCase
         }
     }
     
+    // Helper method for get the file content
+    private static List<String> fileToLines(File file)
+    {
+        List<String> lines = new LinkedList<String>();
+        String line = "";
+        try
+        {
+            BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file), ENCODING));
+            while ((line = in.readLine()) != null)
+            {
+                lines.add(line);
+            }
+            in.close();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        return lines;
+    }
+
     private int findOutlineItemDestPageNum(PDDocument doc, PDOutlineItem oi) throws IOException
     {
         PDPageDestination pageDest = (PDPageDestination) oi.getDestination();
