@@ -65,7 +65,13 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- For legal reasons (incompatible license), these two dependencies 
+        <dependency>
+            <groupId>com.googlecode.java-diff-utils</groupId>
+            <artifactId>diffutils</artifactId>
+            <version>1.3.0</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- For legal reasons (incompatible license), these three dependencies below
         are to be used only in the tests and may not be distributed. 
         See also LEGAL-195 -->
         <dependency>
