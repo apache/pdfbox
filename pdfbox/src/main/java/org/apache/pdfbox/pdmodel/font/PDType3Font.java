@@ -66,7 +66,7 @@ public class PDType3Font extends PDSimpleFont
     {
         COSDictionary encodingDict = (COSDictionary)dict.getDictionaryObject(COSName.ENCODING);
         encoding = new DictionaryEncoding(encodingDict);
-        glyphList = GlyphList.getZapfDingbats();
+        glyphList = GlyphList.getAdobeGlyphList();
     }
     
     @Override
