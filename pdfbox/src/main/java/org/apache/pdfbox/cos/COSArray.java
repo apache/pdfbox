@@ -190,7 +190,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>
         {
             obj = ((COSObject)obj).getObject();
         }
-        else if( obj instanceof COSNull )
+        if (obj instanceof COSNull)
         {
             obj = null;
         }
