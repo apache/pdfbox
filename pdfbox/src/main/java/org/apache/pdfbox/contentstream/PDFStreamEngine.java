@@ -571,7 +571,12 @@ public abstract class PDFStreamEngine
         PDTextState textState = getGraphicsState().getTextState();
         float fontSize = textState.getFontSize();
         float horizontalScaling = textState.getHorizontalScaling() / 100f;
-        boolean isVertical = textState.getFont().isVertical();
+        PDFont font = textState.getFont();
+        boolean isVertical = false;
+        if (font != null)
+        {
+            isVertical = font.isVertical();
+        }
 
         for (COSBase obj : array)
         {
