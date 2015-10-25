@@ -404,20 +404,28 @@ public class NonSequentialPDFParser extends PDFParser
                 document.setDecrypted();
             }
         }
-        else if(!parseMinimalCatalog)
+        else
         {
-            COSObject catalogObj = document.getCatalog();
-            if (catalogObj != null)
+            COSDictionary rootDictionary = (COSDictionary)rootObject; 
+            // in some pdfs the type value "Catalog" is missing in the root object
+            if (isLenient() && !rootDictionary.containsKey(COSName.TYPE))
             {
-                if (catalogObj.getObject() instanceof COSDictionary)
+                rootDictionary.setItem(COSName.TYPE, COSName.CATALOG);
+            }
+            if(!parseMinimalCatalog)
+            {
+                COSObject catalogObj = document.getCatalog();
+                if (catalogObj != null)
                 {
-                    parseDictObjects((COSDictionary) catalogObj.getObject(), (COSName[]) null);
-                    allPagesParsed = true;
-                    document.setDecrypted();
+                    if (catalogObj.getObject() instanceof COSDictionary)
+                    {
+                        parseDictObjects((COSDictionary) catalogObj.getObject(), (COSName[]) null);
+                        allPagesParsed = true;
+                        document.setDecrypted();
+                    }
                 }
             }
         }
-        
         // PDFBOX-1922: read the version again now that all objects have been resolved
         readVersionInTrailer(trailer);
 
