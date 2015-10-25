@@ -34,6 +34,7 @@ import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.ScratchFile;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -104,6 +105,13 @@ public class TestPDFParser
     public void testPDFParserInputStreamScratchFile() throws IOException
     {
         executeParserTest(new RandomAccessBufferedFileInputStream(new FileInputStream(PATH_OF_PDF)), MemoryUsageSetting.setupTempFileOnly());
+    }
+    
+    @Test
+    public void testPDFParserMissingCatalog() throws IOException
+    {
+        // PDFBOX-3060
+        PDDocument.load(TestPDFParser.class.getResourceAsStream("MissingCatalog.pdf")).close();        
     }
 
     private void executeParserTest(RandomAccessRead source, MemoryUsageSetting memUsageSetting) throws IOException
