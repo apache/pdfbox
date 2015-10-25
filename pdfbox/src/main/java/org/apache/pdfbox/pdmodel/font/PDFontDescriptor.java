@@ -681,9 +681,9 @@ public final class PDFontDescriptor implements COSObjectable
     }
 
     /**
-     * This will get the missing width for the font.
+     * This will get the missing width for the font from the /MissingWidth dictionary entry.
      *
-     * @return The missing width value.
+     * @return The missing width value, or 0 if there is no such dictionary entry.
      */
     public float getMissingWidth()
     {
