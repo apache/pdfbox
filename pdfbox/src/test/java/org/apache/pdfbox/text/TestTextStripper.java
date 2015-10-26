@@ -263,6 +263,9 @@ public class TestTextStripper extends TestCase
                 diffFile = new File(outDir, inFile.getName() + "-diff.txt");
                 expectedFile = new File(inFile.getParentFile(), inFile.getName() + ".txt");
             }
+            
+            // delete possible leftover
+            diffFile.delete();
 
             OutputStream os = new FileOutputStream(outFile);
             try
