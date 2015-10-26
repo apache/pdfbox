@@ -681,6 +681,14 @@ public final class PDFontDescriptor implements COSObjectable
     }
 
     /**
+     * Returns true if the missing widths entry is present in the font descriptor.
+     */
+    public boolean hasMissingWidth()
+    {
+        return dic.containsKey(COSName.MISSING_WIDTH);
+    }
+
+    /**
      * This will get the missing width for the font from the /MissingWidth dictionary entry.
      *
      * @return The missing width value, or 0 if there is no such dictionary entry.
