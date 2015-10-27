@@ -201,9 +201,6 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
         addOperator(new StubOperator("F"));
         addOperator(new StubOperator("f*"));
 
-        addOperator(new StubOperator("g"));
-        addOperator(new StubOperator("G"));
-
         addOperator(new StubOperator("M"));
         addOperator(new StubOperator("MP"));
 
