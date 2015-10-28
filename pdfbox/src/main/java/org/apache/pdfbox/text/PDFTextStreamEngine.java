@@ -167,8 +167,6 @@ class PDFTextStreamEngine extends PDFStreamEngine
         // Text or Disp to represent if the values are in text or disp units (no glyph units are
         // saved).
 
-        float horizontalScalingText = getGraphicsState().getTextState().getHorizontalScaling()/100f;
-
         float glyphSpaceToTextSpaceFactor = 1 / 1000f;
         if (font instanceof PDType3Font)
         {
@@ -200,8 +198,7 @@ class PDFTextStreamEngine extends PDFStreamEngine
         }
 
         // the space width has to be transformed into display units
-        float spaceWidthDisplay = spaceWidthText * horizontalScalingText *
-                textRenderingMatrix.getScalingFactorX();
+        float spaceWidthDisplay = spaceWidthText * textRenderingMatrix.getScalingFactorX();
 
         // use our additional glyph list for Unicode mapping
         unicode = font.toUnicode(code, glyphList);
