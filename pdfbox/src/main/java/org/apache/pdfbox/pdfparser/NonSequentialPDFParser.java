@@ -406,6 +406,10 @@ public class NonSequentialPDFParser extends PDFParser
         }
         else
         {
+            if (!(rootObject instanceof COSDictionary))
+            {
+                throw new IOException("Expected root dictionary, but got this: " + rootObject);
+            }
             COSDictionary rootDictionary = (COSDictionary)rootObject; 
             // in some pdfs the type value "Catalog" is missing in the root object
             if (isLenient() && !rootDictionary.containsKey(COSName.TYPE))
