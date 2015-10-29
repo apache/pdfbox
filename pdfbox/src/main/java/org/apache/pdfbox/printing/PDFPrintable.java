@@ -96,6 +96,10 @@ public final class PDFPrintable implements Printable
         this.scaling = scaling;
         this.showPageBorder = showPageBorder;
         this.dpi = dpi;
+        if (dpi <= 0)
+        {
+            throw new IllegalArgumentException("DPI must be greater than zero");
+        }
     }
     
     @Override
