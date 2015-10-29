@@ -66,6 +66,26 @@ public abstract class PDColorSpace implements COSObjectable
                                       PDResources resources)
                                       throws IOException
     {
+        return create(colorSpace, resources, false);
+    }
+    
+    /**
+     * Creates a color space given a name or array. Abbreviated device color names are not supported
+     * here, please replace them first. This method is for PDFBox internal use only, others should
+     * use {@link create(COSBase, PDResources)}.
+     *
+     * @param colorSpace the color space COS object
+     * @param resources the current resources.
+     * @param wasDefault if current color space was used by a default color space.
+     * @return a new color space.
+     * @throws MissingResourceException if the color space is missing in the resources dictionary
+     * @throws IOException if the color space is unknown or cannot be created.
+     */
+    public static PDColorSpace create(COSBase colorSpace,
+                                      PDResources resources,
+                                      boolean wasDefault)
+                                      throws IOException
+    {
         if (colorSpace instanceof COSObject)
         {
             return create(((COSObject) colorSpace).getObject(), resources);
@@ -94,9 +114,9 @@ public abstract class PDColorSpace implements COSObjectable
                     defaultName = COSName.DEFAULT_GRAY;
                 }
 
-                if (resources.hasColorSpace(defaultName))
+                if (resources.hasColorSpace(defaultName) && !wasDefault)
                 {
-                    return resources.getColorSpace(defaultName);
+                    return resources.getColorSpace(defaultName, true);
                 }
             }
 
@@ -181,7 +201,7 @@ public abstract class PDColorSpace implements COSObjectable
                      name == COSName.DEVICEGRAY)
             {
                 // not allowed in an array, but we sometimes encounter these regardless
-                return create(name, resources);
+                return create(name, resources, wasDefault);
             }
             else
             {
