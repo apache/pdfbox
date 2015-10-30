@@ -57,6 +57,7 @@ public class PDCIDFontType2 extends PDCIDFont
     private final boolean isDamaged;
     private final CmapSubtable cmap; // may be null
     private Matrix fontMatrix;
+    private final Map<Integer, Float> glyphHeights = new HashMap<Integer, Float>();
 
     /**
      * Constructor.
@@ -345,9 +346,33 @@ public class PDCIDFontType2 extends PDCIDFont
     @Override
     public float getHeight(int code) throws IOException
     {
-        // todo: really we want the BBox, (for text extraction:)
-        return (ttf.getHorizontalHeader().getAscender() + -ttf.getHorizontalHeader().getDescender())
-                / ttf.getUnitsPerEm(); // todo: shouldn't this be the yMax/yMin?
+        float height = 0;
+        if (glyphHeights.containsKey(code))
+        {
+            return glyphHeights.get(code);
+        }
+
+        int gid = codeToGID(code);
+        GlyphData glyph = ttf.getGlyph().getGlyph(gid);
+        if (glyph == null)
+        {
+            glyphHeights.put(code, height);
+            return height;
+        }
+        if(glyph.getPath() != null) {
+            height = (float) glyph.getPath().getBounds().getHeight();
+        }
+        if(height == 0) {
+            height = (float) glyph.getBoundingBox().getHeight();
+        }
+
+        int unitsPerEM = ttf.getUnitsPerEm();
+        if (unitsPerEM != 1000)
+        {
+            height *= 1000f / unitsPerEM;
+        }
+        glyphHeights.put(code, height);
+        return height;
     }
 
     @Override

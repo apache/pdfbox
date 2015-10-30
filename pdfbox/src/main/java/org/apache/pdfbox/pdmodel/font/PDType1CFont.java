@@ -54,7 +54,7 @@ public class PDType1CFont extends PDSimpleFont
 {
     private static final Log LOG = LogFactory.getLog(PDType1CFont.class);
 
-    private final Map<String, Float> glyphHeights = new HashMap<String, Float>();
+    private final Map<Integer, Float> glyphHeights = new HashMap<Integer, Float>();
     private Float avgWidth = null;
     private Matrix fontMatrix;
     private final AffineTransform fontMatrixTransform;
@@ -269,13 +269,18 @@ public class PDType1CFont extends PDSimpleFont
     @Override
     public float getHeight(int code) throws IOException
     {
-        String name = codeToName(code);
-        float height = 0;
-        if (!glyphHeights.containsKey(name))
+        if (glyphHeights.containsKey(code))
         {
-            height = (float)cffFont.getType1CharString(name).getBounds().getHeight(); // todo: cffFont could be null
-            glyphHeights.put(name, height);
+            return glyphHeights.get(code);
         }
+
+        float height = 0;
+        String name = codeToName(code);
+        if (name != null && cffFont != null)
+        {
+            height = (float)cffFont.getType1CharString(name).getBounds().getHeight();
+        }
+        glyphHeights.put(code, height);
         return height;
     }
 
