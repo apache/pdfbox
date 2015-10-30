@@ -113,7 +113,7 @@ class PDFTextStreamEngine extends PDFStreamEngine
     public void processPage(PDPage page) throws IOException
     {
         this.pageRotation = page.getRotation();
-        this.pageSize = page.getCropBox();
+        this.pageSize = page.getMediaBox();
         super.processPage(page);
     }
 
