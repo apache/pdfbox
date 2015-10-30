@@ -70,4 +70,19 @@ public class TestPDDocumentInformation extends TestCase
             }
         }
     }
+    
+    /**
+     * PDFBOX-3068: test that indirect /Title element of /Info entry can be found.
+     * 
+     * @throws Exception 
+     */
+    public void testPDFBox3068() throws Exception
+    {
+        PDDocument doc = PDDocument.load(TestPDDocumentInformation.class.getResourceAsStream("PDFBOX-3068.pdf"));
+        PDDocumentInformation documentInformation = doc.getDocumentInformation();
+        //TODO uncomment after solving PDFBOX-3068
+        //assertEquals("Title", documentInformation.getTitle());
+        doc.close();
+    }
+    
 }
