@@ -53,8 +53,7 @@ public class PDMarkedContent
     private final String tag;
     private final COSDictionary properties;
     private final List<Object> contents;
-    private boolean visible = true;
-
+    private boolean transparencyGroup = true;
 
     /**
      * Creates a new marked content object.
