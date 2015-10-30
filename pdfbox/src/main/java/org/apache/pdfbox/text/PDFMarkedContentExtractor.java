@@ -115,6 +115,31 @@ public class PDFMarkedContentExtractor extends PDFTextStreamEngine
     }
 
     /**
+     * Return the currently stacked marked content.
+     *
+     * @return the currently stacked marked content.
+     */
+    public Stack<PDMarkedContent> getCurrentMarkedContentStack()
+    {
+        return currentMarkedContents;
+    }
+
+    /**
+     * Handle transparency groups. In case of an instance then send it up stream and then set
+     * the visible flag to false.
+     *
+     * @param group The transparency group.
+     */
+    @Override
+    protected void processTransparencyGroup(PDTransparencyGroup group) throws IOException
+    {
+        super.processTransparencyGroup(group);
+        if(!this.currentMarkedContents.isEmpty()) {
+            this.currentMarkedContents.peek().setTransparencyGroup(true);
+        }
+    }
+
+    /**
      * This will process a TextPosition object and add the
      * text to the list of characters on a page.  It takes care of
      * overlapping text.

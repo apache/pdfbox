@@ -53,6 +53,7 @@ public class PDMarkedContent
     private final String tag;
     private final COSDictionary properties;
     private final List<Object> contents;
+    private boolean visible = true;
 
 
     /**
@@ -197,6 +198,26 @@ public class PDMarkedContent
             .append(", properties=").append(this.properties);
         sb.append(", contents=").append(this.contents);
         return sb.toString();
+    }
+
+    /**
+     * Is this marked content a transparency group.
+     *
+     * @return boolean True if the marked content is a transparency group.
+     */
+    public boolean isTransparencyGroup()
+    {
+        return transparencyGroup;
+    }
+
+    /**
+     * Set flag if this marked content is a transparency group.
+     *
+     * $param visible True if the marked content is a transparency group.
+     */
+    public void setTransparencyGroup(boolean transparencyGroup)
+    {
+        this.transparencyGroup = transparencyGroup;
     }
 
 }
