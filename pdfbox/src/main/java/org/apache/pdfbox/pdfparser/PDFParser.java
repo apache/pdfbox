@@ -210,6 +210,13 @@ public class PDFParser extends COSParser
         if (catalogObj != null && catalogObj.getObject() instanceof COSDictionary)
         {
             parseDictObjects((COSDictionary) catalogObj.getObject(), (COSName[]) null);
+            
+            COSBase infoBase = trailer.getDictionaryObject(COSName.INFO);
+            if (infoBase instanceof COSDictionary)
+            {
+                parseDictObjects((COSDictionary) infoBase, (COSName[]) null);
+            }
+            
             document.setDecrypted();
         }
         initialParseDone = true;
