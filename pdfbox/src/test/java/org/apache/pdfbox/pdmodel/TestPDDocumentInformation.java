@@ -66,4 +66,17 @@ public class TestPDDocumentInformation extends TestCase {
             }
         }
     }
+    
+    /**
+     * PDFBOX-3068: test that indirect /Title element of /Info entry can be found with nonSeq parser.
+     * 
+     * @throws Exception 
+     */
+    public void testPDFBox3068() throws Exception
+    {
+        PDDocument doc = PDDocument.loadNonSeq(TestPDDocumentInformation.class.getResourceAsStream("PDFBOX-3068.pdf"), null);
+        PDDocumentInformation documentInformation = doc.getDocumentInformation();
+        assertEquals("Title", documentInformation.getTitle());
+        doc.close();
+    }
 }
