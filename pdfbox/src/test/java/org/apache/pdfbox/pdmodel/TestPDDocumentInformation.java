@@ -80,8 +80,7 @@ public class TestPDDocumentInformation extends TestCase
     {
         PDDocument doc = PDDocument.load(TestPDDocumentInformation.class.getResourceAsStream("PDFBOX-3068.pdf"));
         PDDocumentInformation documentInformation = doc.getDocumentInformation();
-        //TODO uncomment after solving PDFBOX-3068
-        //assertEquals("Title", documentInformation.getTitle());
+        assertEquals("Title", documentInformation.getTitle());
         doc.close();
     }
     
