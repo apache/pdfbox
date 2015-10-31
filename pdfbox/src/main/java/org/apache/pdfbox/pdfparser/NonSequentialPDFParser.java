@@ -424,6 +424,13 @@ public class NonSequentialPDFParser extends PDFParser
                     if (catalogObj.getObject() instanceof COSDictionary)
                     {
                         parseDictObjects((COSDictionary) catalogObj.getObject(), (COSName[]) null);
+
+                        COSBase infoBase = trailer.getDictionaryObject(COSName.INFO);
+                        if (infoBase instanceof COSDictionary)
+                        {
+                            parseDictObjects((COSDictionary) infoBase, (COSName[]) null);
+                        }
+
                         allPagesParsed = true;
                         document.setDecrypted();
                     }
