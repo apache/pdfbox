@@ -170,9 +170,7 @@ class PDFTextStreamEngine extends PDFStreamEngine
         float glyphSpaceToTextSpaceFactor = 1 / 1000f;
         if (font instanceof PDType3Font)
         {
-            // This will typically be 1000 but in the case of a type3 font
-            // this might be a different number
-            glyphSpaceToTextSpaceFactor = 1f / font.getFontMatrix().getScaleX();
+            glyphSpaceToTextSpaceFactor = font.getFontMatrix().getScaleX();
         }
 
         float spaceWidthText = 0;
