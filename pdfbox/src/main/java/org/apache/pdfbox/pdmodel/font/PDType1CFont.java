@@ -196,7 +196,6 @@ public class PDType1CFont extends PDSimpleFont
             // extract from Type1 font/substitute
             if (genericFont instanceof EncodedFont)
             {
-                //FIXME dead instanceof
                 return Type1Encoding.fromFontBox(((EncodedFont) genericFont).getEncoding());
             }
             else
