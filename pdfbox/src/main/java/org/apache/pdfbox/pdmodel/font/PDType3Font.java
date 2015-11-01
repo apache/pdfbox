@@ -25,6 +25,9 @@ import org.apache.pdfbox.pdmodel.common.PDMatrix;
 import java.awt.Graphics;
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSNumber;
 
 /**
  * This is implementation of the Type3 Font.
@@ -38,6 +41,11 @@ public class PDType3Font extends PDSimpleFont
      * Log instance.
      */
     private static final Log LOG = LogFactory.getLog(PDType3Font.class);
+    
+    /**
+     * cached height.
+     */
+    private float type3Height = 0;
 
     /**
      * Constructor.
@@ -76,4 +84,37 @@ public class PDType3Font extends PDSimpleFont
     {
         font.setItem( COSName.FONT_MATRIX, matrix );
     }
+    
+    @Override
+    public float getFontHeight(byte[] c, int offset, int length) throws IOException
+    {
+        // first try old behavior until & including 1.8.10
+        float height = super.getFontHeight(c, offset, length);
+        
+        // if that didn't work, use 1/2 of font bounding box
+        if (height == 0)
+        {
+            if (type3Height != 0)
+            {
+                return type3Height;
+            }
+
+            COSBase bboxBase = font.getDictionaryObject(COSName.FONT_BBOX);
+            if (bboxBase instanceof COSArray)
+            {
+                COSArray bboxArray = (COSArray) bboxBase;
+                COSBase o1 = bboxArray.getObject(1);
+                COSBase o3 = bboxArray.getObject(3);
+                if (bboxArray.size() == 4 && o1 instanceof COSNumber && o3 instanceof COSNumber)
+                {
+                    height = ((COSNumber) o3).floatValue() - ((COSNumber) o1).floatValue();
+                    type3Height = height / 2;
+                    return type3Height;
+                }
+            }
+        }
+
+        return height;
+    }
+
 }
