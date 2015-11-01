@@ -344,15 +344,13 @@ public class PDFStreamEngine
         float fontMatrixXScaling = 1/1000f;
         float fontMatrixYScaling = 1/1000f;
         float glyphSpaceToTextSpaceFactor = 1/1000f;
-        // expect Type3 fonts, those are providing the width of a character in glyph space units
+        // except Type3 fonts, those are providing the width of a character in glyph space units
         if (font instanceof PDType3Font)
         {
             PDMatrix fontMatrix = font.getFontMatrix();
             fontMatrixXScaling = fontMatrix.getValue(0, 0);
             fontMatrixYScaling = fontMatrix.getValue(1, 1);
-            //This will typically be 1000 but in the case of a type3 font
-            //this might be a different number
-            glyphSpaceToTextSpaceFactor = 1f/fontMatrix.getValue( 0, 0 );
+            glyphSpaceToTextSpaceFactor = fontMatrix.getValue( 0, 0 );
         }
         float spaceWidthText=0;
         try
