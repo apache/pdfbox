@@ -261,7 +261,7 @@ public class PDType3Font extends PDSimpleFont
     {
         PDRectangle rect = getFontBBox();
         return new BoundingBox(rect.getLowerLeftX(), rect.getLowerLeftY(),
-                               rect.getWidth(), rect.getHeight());
+                               rect.getUpperRightX(), rect.getUpperRightY());
     }
     
     /**
