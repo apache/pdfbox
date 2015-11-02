@@ -422,8 +422,6 @@ public class PDDocument implements Closeable
     {
         // Set rectangle for non-visual signature to rectangle array [ 0 0 0 0 ]
         signatureField.getWidgets().get(0).setRectangle(new PDRectangle());
-        // Clear AcroForm / Set DefaultRessource
-        acroForm.setDefaultResources(null);
         // Set empty Appearance-Dictionary
         PDAppearanceDictionary ap = new PDAppearanceDictionary();
         
