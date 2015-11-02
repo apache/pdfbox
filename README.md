@@ -7,6 +7,17 @@ of existing documents and the ability to extract content from documents.
 PDFBox also includes several command line utilities. PDFBox is published
 under the Apache License, Version 2.0.
 
+PDFBox is a project of the Apache Software Foundation <http://www.apache.org/>.
+
+Binary Downloads
+----------------
+
+You can download binary versions for releases currently under development or older
+releases from out [Download Page](http://pdfbox.apache.org/download.cgi).
+
+Build
+-----
+
 You need Java 6 (or higher) and Maven 2 <http://maven.apache.org/> to
 build PDFBox. The recommended build command is:
 
@@ -16,7 +27,31 @@ The default build will compile the Java sources and package the binary
 classes into jar packages. See the Maven documentation for all the
 other available build options.
 
-PDFBox is a project of the Apache Software Foundation <http://www.apache.org/>.
+Contribute
+----------
+
+There are various ways to help us improve PDFBox. 
+
+- look at the [Issue Tracker](https://issues.apache.org/jira/browse/PDFBOX) to help us fix bugs.
+- answer questions on our [Users Mailing List](http://pdfbox.apache.org/mailinglists.html "Subscribe to Mailing List").
+- help us enhance the [Examples](https://svn.apache.org/repos/asf/pdfbox/trunk/examples/)
+- help us to enhance the [PDFBox Documentation](https://git-wip-us.apache.org/repos/asf/pdfbox-docs)
+or on [GitHub](https://github.com/apache/pdfbox-docs). 
+
+Support
+-------
+
+If you have questions about how to use PDFBox do ask on the
+[Users Mailing List](/mailinglists.html "Subscribe to Mailing List").
+This will get you help from the entire community.
+
+The PDFBox examples and the test code in the sources will also provide additional information.
+
+And there are additonal resources available on sites such as
+[Stack Overflow](http://stackoverflow.com/search?q=pdfbox "Stack Overflow").
+
+If you are sure you have found a bug the please report the issue in our 
+[Issue Tracker](https://issues.apache.org/jira/browse/PDFBOX). 
 
 Known Limitations and Problems
 ------------------------------
