@@ -437,8 +437,6 @@ public class PDDocument implements Pageable, Closeable
         {
             // Set rectangle for non-visual signature to 0 0 0 0
             signatureField.getWidget().setRectangle(new PDRectangle());  // rectangle array [ 0 0 0 0 ]
-            // Clear AcroForm / Set DefaultRessource
-            acroFormDict.setItem(COSName.DR, null);
             // Set empty Appearance-Dictionary
             PDAppearanceDictionary ap = new PDAppearanceDictionary();
             COSStream apsStream = getDocument().createCOSStream();
