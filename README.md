@@ -1,4 +1,3 @@
-===================================================
 Apache PDFBox <http://pdfbox.apache.org/>
 ===================================================
 
@@ -20,7 +19,7 @@ other available build options.
 PDFBox is a project of the Apache Software Foundation <http://www.apache.org/>.
 
 Known Limitations and Problems
-==============================
+------------------------------
 
 See the issue tracker at https://issues.apache.org/jira/browse/PDFBOX for
 the full list of known issues and requested features. Some of the more
@@ -44,9 +43,9 @@ commont issues are:
    not sort the text.
 
 License (see also LICENSE.txt)
-==============================
+------------------------------
 
-Collective work: Copyright 2014 The Apache Software Foundation.
+Collective work: Copyright 2015 The Apache Software Foundation.
 
 Licensed to the Apache Software Foundation (ASF) under one or more
 contributor license agreements.  See the NOTICE file distributed with
@@ -64,7 +63,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 Export control
-==============
+--------------
 
 This distribution includes cryptographic software.  The country in  which
 you currently reside may have restrictions on the import,  possession, use,
@@ -85,5 +84,5 @@ for export under the License Exception ENC Technology Software Unrestricted
 
 The following provides more details on the included cryptographic software:
 
-    Apache PDFBox uses the Java Cryptography Architecture (JCA) and the
-    Bouncy Castle libraries for handling encryption in PDF documents.
+**Apache PDFBox uses the Java Cryptography Architecture (JCA) and the
+Bouncy Castle libraries for handling encryption in PDF documents.**
