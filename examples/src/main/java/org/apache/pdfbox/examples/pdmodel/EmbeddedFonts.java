@@ -61,6 +61,10 @@ public final class EmbeddedFonts
         stream.newLine();
 
         stream.showText("English русский язык Tiếng Việt");
+        stream.newLine();
+
+        // ligature
+        stream.showText("Ligatures: \uFB01lm \uFB02ood");
 
         stream.endText();
         stream.close();
