@@ -19,7 +19,8 @@ package org.apache.pdfbox.examples.util;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.Point2D;
+import java.awt.Shape;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -32,6 +33,7 @@ import javax.imageio.ImageIO;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;
@@ -155,17 +157,35 @@ public class DrawPrintTextLocations extends PDFTextStripper
             // usually, the height is identical to what you see when marking text in Adobe Reader
             PDFont font = text.getFont();
             BoundingBox bbox = font.getBoundingBox();
-            Point2D.Float p1 = font.getFontMatrix().transformPoint(bbox.getLowerLeftX(), bbox.getLowerLeftY());
-            Point2D.Float p2 = font.getFontMatrix().transformPoint(bbox.getUpperRightX(), bbox.getUpperRightY());
 
-            rect = new Rectangle2D.Float(
-                    text.getXDirAdj(),
-                    (text.getYDirAdj() - p2.y * text.getYScale()),
-                    text.getWidthDirAdj(),
-                    (p2.y - p1.y) * text.getYScale());
+            // advance width, bbox height (glyph space)
+            float xadvance = font.getWidth(text.getCharacterCodes()[0]); // todo: should iterate all chars
+            rect = new Rectangle2D.Float(0, bbox.getLowerLeftY(), xadvance,
+                                         bbox.getUpperRightY() - bbox.getLowerLeftY());
+            
+            // glyph space -> user space
+            // note: text.getTextMatrix() is *not* the Text Matrix, it's the Text Rendering Matrix
+            AffineTransform at = text.getTextMatrix().createAffineTransform();
+            if (font instanceof PDType3Font)
+            {
+                // bbox and font matrix are unscaled
+                at.concatenate(font.getFontMatrix().createAffineTransform());
+            }
+            else
+            {
+                // bbox and font matrix are already scaled to 1000
+                at.scale(1/1000f, 1/1000f);
+            }
+            Shape s = at.createTransformedShape(rect);
+
+            // flip y-axis
+            AffineTransform flip = new AffineTransform();
+            flip.translate(0, getCurrentPage().getBBox().getHeight());
+            flip.scale(1, -1);
+            s = flip.createTransformedShape(s);
+            
             g2d.setColor(Color.blue);
-            g2d.draw(rect);
-
+            g2d.draw(s);
         }
     }
 
