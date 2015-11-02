@@ -846,11 +846,20 @@ public class PDDocument implements Closeable
                                   MemoryUsageSetting memUsageSetting) throws IOException
     {
         RandomAccessBufferedFileInputStream raFile = new RandomAccessBufferedFileInputStream(file);
-        PDFParser parser = new PDFParser(raFile, password, keyStore, alias, new ScratchFile(memUsageSetting));
         try
         {
-            parser.parse();
-            return parser.getPDDocument();
+            ScratchFile scratchFile = new ScratchFile(memUsageSetting);
+            try
+            {
+                PDFParser parser = new PDFParser(raFile, password, keyStore, alias, scratchFile);
+                parser.parse();
+                return parser.getPDDocument();
+            }
+            catch (IOException ioe)
+            {
+                IOUtils.closeQuietly(scratchFile);
+                throw ioe;
+            }
         }
         catch (IOException ioe)
         {
@@ -965,10 +974,18 @@ public class PDDocument implements Closeable
                                   String alias, MemoryUsageSetting memUsageSetting) throws IOException
     {
         ScratchFile scratchFile = new ScratchFile(memUsageSetting);
-        RandomAccessRead source = scratchFile.createBuffer(input);
-        PDFParser parser = new PDFParser(source, password, keyStore, alias, scratchFile);
-        parser.parse();
-        return parser.getPDDocument();
+        try
+        {
+            RandomAccessRead source = scratchFile.createBuffer(input);
+            PDFParser parser = new PDFParser(source, password, keyStore, alias, scratchFile);
+            parser.parse();
+            return parser.getPDDocument();
+        }
+        catch (IOException ioe)
+        {
+            IOUtils.closeQuietly(scratchFile);
+            throw ioe;
+        }
     }
 
     /**
