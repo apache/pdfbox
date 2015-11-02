@@ -41,6 +41,8 @@ or on [GitHub](https://github.com/apache/pdfbox-docs).
 Support
 -------
 
+**Please follow the guidlines at our [Support Page](http://pdfbox.apache.org/support.html).**
+
 If you have questions about how to use PDFBox do ask on the
 [Users Mailing List](/mailinglists.html "Subscribe to Mailing List").
 This will get you help from the entire community.
