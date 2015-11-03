@@ -292,6 +292,9 @@ public abstract class PDFStreamEngine
 
             // Matrix shall be concatenated with A to form a matrix AA that maps from the appearance's
             // coordinate system to the annotation's rectangle in default user space
+            //
+            // HOWEVER only the opposite order works for rotated pages with 
+            // filled fields / annotations that have a matrix in the appearance stream, see PDFBOX-3083
             Matrix aa = Matrix.concatenate(a, matrix);
 
             // make matrix AA the CTM
