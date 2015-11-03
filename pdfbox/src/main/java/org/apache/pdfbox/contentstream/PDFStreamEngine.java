@@ -127,7 +127,7 @@ public abstract class PDFStreamEngine
         }
         currentPage = page;
         graphicsStack.clear();
-        graphicsStack.push(new PDGraphicsState(page.getCropBox()));
+        graphicsStack.push(new PDGraphicsState(page.getMediaBox()));
         textMatrix = null;
         textLineMatrix = null;
         resources = null;

@@ -241,7 +241,7 @@ public class PDPage implements COSObjectable, PDContentStream
     @Override
     public PDRectangle getBBox()
     {
-        return getCropBox();
+        return getMediaBox();
     }
 
     @Override
