@@ -284,7 +284,7 @@ public class PDDocument implements Closeable
         // Distinction of case for visual and non-visual signature
         if (visualSignature == null)
         {
-            prepareNonVisibleSignature(signatureField, acroForm);
+            prepareNonVisibleSignature(signatureField);
         }
         else
         {
@@ -417,7 +417,7 @@ public class PDDocument implements Closeable
         }
     }
 
-    private void prepareNonVisibleSignature(PDSignatureField signatureField, PDAcroForm acroForm)
+    private void prepareNonVisibleSignature(PDSignatureField signatureField)
             throws IOException
     {
         // Set rectangle for non-visual signature to rectangle array [ 0 0 0 0 ]
