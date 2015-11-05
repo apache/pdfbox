@@ -34,6 +34,7 @@ import org.apache.fontbox.cff.Type2CharString;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.util.Matrix;
 
@@ -191,6 +192,14 @@ public class PDCIDFontType0 extends PDCIDFont
     @Override
     public BoundingBox getBoundingBox()
     {
+        if (getFontDescriptor() != null) {
+            PDRectangle bbox = getFontDescriptor().getFontBoundingBox();
+            if (bbox.getLowerLeftX() != 0 || bbox.getLowerLeftY() != 0 ||
+                bbox.getUpperRightX() != 0 || bbox.getUpperRightY() != 0) {
+                return new BoundingBox(bbox.getLowerLeftX(), bbox.getLowerLeftY(),
+                                       bbox.getUpperRightX(), bbox.getUpperRightY());
+            }
+        }
         if (cidFont != null)
         {
             return cidFont.getFontBBox();
