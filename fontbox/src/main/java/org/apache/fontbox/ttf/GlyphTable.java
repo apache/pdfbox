@@ -36,6 +36,18 @@ public class GlyphTable extends TTFTable
     private TTFDataStream data;
     private IndexToLocationTable loca;
     private int numGlyphs;
+    
+    private int cached = 0;
+    
+    /**
+     * Don't even bother to cache huge fonts.
+     */
+    private static final int MAX_CACHE_SIZE = 5000;
+    
+    /**
+     * Don't cache more glyphs than this.
+     */
+    private static final int MAX_CACHED_GLYPHS = 100;
 
     GlyphTable(TrueTypeFont font)
     {
@@ -53,9 +65,15 @@ public class GlyphTable extends TTFTable
     {
         loca = ttf.getIndexToLocation();
         numGlyphs = ttf.getNumberOfGlyphs();
-        glyphs = new GlyphData[numGlyphs];
 
-        // we don't actually read the table yet because it can contain tens of thousands of glyphs
+        if (numGlyphs < MAX_CACHE_SIZE)
+        {
+            // don't cache the huge fonts to save memory
+            glyphs = new GlyphData[numGlyphs];
+            cached = 0;
+        }
+
+        // we don't actually read the complete table here because it can contain tens of thousands of glyphs
         this.data = data;
         initialized = true;
     }
@@ -145,7 +163,7 @@ public class GlyphTable extends TTFTable
             return null;
         }
         
-        if (glyphs[gid] != null)
+        if (glyphs != null && glyphs[gid] != null)
         {
             return glyphs[gid];
         }
@@ -183,7 +201,12 @@ public class GlyphTable extends TTFTable
 
             // restore
             data.seek(currentPosition);
-            glyphs[gid] = glyph;
+
+            if (glyphs != null && cached < MAX_CACHED_GLYPHS)
+            {
+                glyphs[gid] = glyph;
+                ++cached;
+            }            
             return glyph;
         }
     }
