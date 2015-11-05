@@ -16,19 +16,20 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.prefs.Preferences;
+import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.FontBoxFont;
@@ -52,8 +53,6 @@ import org.apache.pdfbox.util.Charsets;
  */
 final class FileSystemFontProvider extends FontProvider
 {
-    private static final long serialVersionUID = 1;
-    
     private static final Log LOG = LogFactory.getLog(FileSystemFontProvider.class);
     
     private final List<FSFontInfo> fontInfoList = new ArrayList<FSFontInfo>();
@@ -213,16 +212,18 @@ final class FileSystemFontProvider extends FontProvider
         }
         
         // load cached FontInfo objects
-        List<FSFontInfo> cachedInfos = loadCache(files);
+        List<FSFontInfo> cachedInfos = loadDiskCache(files);
         if (cachedInfos != null && cachedInfos.size() > 0)
         {
             fontInfoList.addAll(cachedInfos);
         }
         else
         {
-            LOG.warn("Building font cache, this may take a while");
+            LOG.warn("Building on-disk font cache, this may take a while");
             scanFonts(files);
-            saveCache();
+            saveDiskCache();
+            LOG.warn("Finished building on-disk font cache, found " +
+                     fontInfoList.size() + " fonts");
         }
     }
     
@@ -253,80 +254,181 @@ final class FileSystemFontProvider extends FontProvider
             }
         }
     }
-    
-    private void saveCache()
-    {
-        // Get the preferences database for this package.
-        Preferences prefs = Preferences.userNodeForPackage(FileSystemFontProvider.class);
 
-        // To save, write the object to a byte array.
+    private File getDiskCacheFile()
+    {
+        String path = System.getProperty("pdfbox.fontcache");
+        if (path == null)
+        {
+            path = System.getProperty("user.home");
+        }
+        return new File(path, ".pdfbox.cache");
+    }
+
+    /**
+     * Saves the font metadata cache to disk.
+     */
+    private void saveDiskCache()
+    {
+        BufferedWriter writer = null;
         try
         {
+            File file = getDiskCacheFile();
+            writer = new BufferedWriter(new FileWriter(file));
+
             for (FSFontInfo fontInfo : fontInfoList)
             {
-                String path = fontInfo.file.getAbsolutePath();
-                // PDFBOX-3014: do not cache ttc files because file:font is a 1:N relationship
-                if (path.toLowerCase().endsWith(".ttc") || path.toLowerCase().endsWith(".otc"))
+                writer.write(fontInfo.postScriptName);
+                writer.write("|");
+                writer.write(fontInfo.format.toString());
+                writer.write("|");
+                if (fontInfo.cidSystemInfo != null)
                 {
-                    // remove .ttc files from older versions
-                    prefs.remove(path);
-                    continue;
+                    writer.write(fontInfo.cidSystemInfo.getRegistry() + '-' +
+                                 fontInfo.cidSystemInfo.getOrdering() + '-' +
+                                 fontInfo.cidSystemInfo.getSupplement());
                 }
-                ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-                ObjectOutputStream objectOut = new ObjectOutputStream(byteOut);
-                // write it to the stream
-                objectOut.writeObject(fontInfo);
-                prefs.putByteArray(path, byteOut.toByteArray());
+                writer.write("|");
+                if (fontInfo.usWeightClass > -1)
+                {
+                    writer.write(Integer.toHexString(fontInfo.usWeightClass));
+                }
+                writer.write("|");
+                if (fontInfo.sFamilyClass > -1)
+                {
+                    writer.write(Integer.toHexString(fontInfo.sFamilyClass));
+                }
+                writer.write("|");
+                writer.write(Integer.toHexString(fontInfo.ulCodePageRange1));
+                writer.write("|");
+                writer.write(Integer.toHexString(fontInfo.ulCodePageRange2));
+                writer.write("|");
+                if (fontInfo.macStyle > -1)
+                {
+                    writer.write(Integer.toHexString(fontInfo.macStyle));
+                }
+                writer.write("|");
+                if (fontInfo.panose != null)
+                {
+                    byte[] bytes = fontInfo.panose.getBytes();
+                    for (int i = 0; i < 10; i ++)
+                    {
+                        String str = Integer.toHexString(bytes[i]);
+                        if (str.length() == 1)
+                        {
+                            writer.write('0');
+                        }
+                        writer.write(str);
+                    }
+                }
+                writer.write("|");
+                writer.write(fontInfo.file.getAbsolutePath());
+                writer.newLine();
             }
         }
         catch (IOException e)
         {
             LOG.error("Could not write to font cache", e);
         }
-        LOG.warn("Finished building font cache, found " + fontInfoList.size() + " fonts");
+        finally
+        {
+            IOUtils.closeQuietly(writer);
+        }
     }
-    
-    private List<FSFontInfo> loadCache(List<File> files)
+
+    /**
+     * Loads the font metadata cache from disk.
+     */
+    private List<FSFontInfo> loadDiskCache(List<File> files)
     {
-        // Get the preferences database for this package.
-        Preferences prefs = Preferences.userNodeForPackage(FileSystemFontProvider.class);
-        List<FSFontInfo> results = new ArrayList<FSFontInfo>();
+        Set<String> pending = new HashSet<String>();
         for (File file : files)
         {
-            // The second argument is the default if the key isn't found.
-            byte[] stored = prefs.getByteArray(file.getAbsolutePath(), null);
-            if (stored != null)
+            pending.add(file.getAbsolutePath());
+        }
+        
+        List<FSFontInfo> results = new ArrayList<FSFontInfo>();
+        File file = getDiskCacheFile();
+        if (file.exists())
+        {
+            BufferedReader reader = null;
+            try
             {
-                try
+                reader = new BufferedReader(new FileReader(file));
+                String line;
+                while ((line = reader.readLine()) != null)
                 {
-                    ByteArrayInputStream byteIn = new ByteArrayInputStream(stored);
-                    ObjectInputStream objectIn = new ObjectInputStream(byteIn);
-                    Object object = objectIn.readObject();
-                    if (object instanceof FSFontInfo)
+                    String[] parts = line.split("\\|", 10);
+
+                    String postScriptName;
+                    FontFormat format;
+                    CIDSystemInfo cidSystemInfo = null;
+                    int usWeightClass = -1;
+                    int sFamilyClass = -1;
+                    int ulCodePageRange1;
+                    int ulCodePageRange2;
+                    int macStyle = -1;
+                    byte[] panose = null;
+                    File fontFile;
+                    
+                    postScriptName = parts[0];
+                    format = FontFormat.valueOf(parts[1]);
+                    if (parts[2].length() > 0)
                     {
-                        FSFontInfo info = (FSFontInfo)object;
-                        info.parent = this;
-                        results.add(info);
+                        String[] ros = parts[2].split("-");
+                        cidSystemInfo = new CIDSystemInfo(ros[0], ros[1], Integer.parseInt(ros[2]));
                     }
-                }
-                catch (ClassNotFoundException e)
-                {
-                    LOG.error("Error loading font cache, will be re-built", e);
-                    return null;
-                }
-                catch (IOException e)
-                {
-                    LOG.error("Error loading font cache, will be re-built", e);
-                    return null;
+                    if (parts[3].length() > 0)
+                    {
+                        usWeightClass = (int)Long.parseLong(parts[3], 16);
+                    }
+                    if (parts[4].length() > 0)
+                    {
+                        sFamilyClass = (int)Long.parseLong(parts[4], 16);
+                    }
+                    ulCodePageRange1 = (int)Long.parseLong(parts[5], 16);
+                    ulCodePageRange2 = (int)Long.parseLong(parts[6], 16);
+                    if (parts[7].length() > 0)
+                    {
+                        macStyle = (int)Long.parseLong(parts[7], 16);
+                    }
+                    if (parts[8].length() > 0)
+                    {
+                        panose = new byte[10];
+                        for (int i = 0; i < 10; i ++)
+                        {
+                            String str = parts[8].substring(i * 2, i * 2 + 1);
+                            int b = Integer.parseInt(str, 16);
+                            panose[i] = (byte)(b & 0xff);
+                        }
+                    }
+                    fontFile = new File(parts[9]);
+                    
+                    FSFontInfo info = new FSFontInfo(fontFile, FontFormat.OTF, postScriptName,
+                            cidSystemInfo, usWeightClass, sFamilyClass, ulCodePageRange1,
+                            ulCodePageRange2, macStyle, panose, this);
+                    results.add(info);
+                    pending.remove(fontFile.getAbsolutePath());
                 }
             }
-            else
+            catch (IOException e)
             {
-                // re-build the entire cache if we encounter un-cached fonts (could be optimised)
-                LOG.warn("New fonts found, font cache will be re-built");
+                LOG.error("Error loading font cache, will be re-built", e);
                 return null;
             }
+            finally
+            {
+                IOUtils.closeQuietly(reader);
+            }
         }
+        
+        if (pending.size() > 0)
+        {
+            // re-build the entire cache if we encounter un-cached fonts (could be optimised)
+            LOG.warn("New fonts found, font cache will be re-built");
+            return null;
+        }
+        
         return results;
     }
 
@@ -450,8 +552,10 @@ final class FileSystemFontProvider extends FontProvider
                     {
                         // Apple's AAT fonts have a "gcid" table with CID info
                         byte[] bytes = ttf.getTableBytes(ttf.getTableMap().get("gcid"));
-                        String registryName = new String(bytes, 10, 64, Charsets.US_ASCII).trim();
-                        String orderName = new String(bytes, 76, 64, Charsets.US_ASCII).trim();
+                        String reg = new String(bytes, 10, 64, Charsets.US_ASCII);
+                        String registryName = reg.substring(0, reg.indexOf('\0'));
+                        String ord = new String(bytes, 76, 64, Charsets.US_ASCII);
+                        String orderName = ord.substring(0, ord.indexOf('\0'));
                         int supplementVersion = bytes[140] << 8 & bytes[141];
                         ros = new CIDSystemInfo(registryName, orderName, supplementVersion);
                     }
