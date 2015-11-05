@@ -53,6 +53,7 @@ public class GlyphTable extends TTFTable
     {
         loca = ttf.getIndexToLocation();
         numGlyphs = ttf.getNumberOfGlyphs();
+        glyphs = new GlyphData[numGlyphs];
 
         // we don't actually read the table yet because it can contain tens of thousands of glyphs
         this.data = data;
@@ -143,6 +144,11 @@ public class GlyphTable extends TTFTable
         {
             return null;
         }
+        
+        if (glyphs[gid] != null)
+        {
+            return glyphs[gid];
+        }
 
         synchronized (font)
         {
@@ -177,6 +183,7 @@ public class GlyphTable extends TTFTable
 
             // restore
             data.seek(currentPosition);
+            glyphs[gid] = glyph;
             return glyph;
         }
     }
