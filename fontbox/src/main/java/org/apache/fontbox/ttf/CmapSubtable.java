@@ -488,6 +488,13 @@ public class CmapSubtable
                 {
                     p = (p + idDelta) % 65536;
                 }
+                
+                if (p >= numGlyphs)
+                {
+                    LOG.warn("glyphId " + p + " for charcode " + charCode + " ignored, numGlyphs is " + numGlyphs);
+                    continue;
+                }
+                
                 glyphIdToCharacterCode[p] = charCode;
                 characterCodeToGlyphId.put(charCode, p);
             }
