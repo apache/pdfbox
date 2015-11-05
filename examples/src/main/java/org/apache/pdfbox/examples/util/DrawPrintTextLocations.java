@@ -160,8 +160,7 @@ public class DrawPrintTextLocations extends PDFTextStripper
 
             // advance width, bbox height (glyph space)
             float xadvance = font.getWidth(text.getCharacterCodes()[0]); // todo: should iterate all chars
-            rect = new Rectangle2D.Float(0, bbox.getLowerLeftY(), xadvance,
-                                         bbox.getUpperRightY() - bbox.getLowerLeftY());
+            rect = new Rectangle2D.Float(0, bbox.getLowerLeftY(), xadvance, bbox.getHeight());
             
             // glyph space -> user space
             // note: text.getTextMatrix() is *not* the Text Matrix, it's the Text Rendering Matrix
