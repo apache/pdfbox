@@ -436,14 +436,15 @@ public class PDType1Font extends PDSimpleFont
     @Override
     public BoundingBox getBoundingBox() throws IOException
     {
-        BoundingBox fontBBox = genericFont.getFontBBox();
-        if (fontBBox.getWidth() == 0 && fontBBox.getHeight() == 0)
-        {
-            PDRectangle fdBB = getFontDescriptor().getFontBoundingBox();
-            fontBBox = new BoundingBox(fdBB.getLowerLeftX(), fdBB.getLowerLeftY(),
-                    fdBB.getUpperRightX(), fdBB.getUpperRightY());
+        if (getFontDescriptor() != null) {
+            PDRectangle bbox = getFontDescriptor().getFontBoundingBox();
+            if (bbox.getLowerLeftX() != 0 || bbox.getLowerLeftY() != 0 ||
+                bbox.getUpperRightX() != 0 || bbox.getUpperRightY() != 0) {
+                return new BoundingBox(bbox.getLowerLeftX(), bbox.getLowerLeftY(),
+                                       bbox.getUpperRightX(), bbox.getUpperRightY());
+            }
         }
-        return fontBBox;
+        return genericFont.getFontBBox();
     }
 
     //@Override
