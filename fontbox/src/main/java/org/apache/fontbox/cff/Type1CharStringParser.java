@@ -81,7 +81,14 @@ public class Type1CharStringParser
             if (b0 == CALLSUBR)
             {
                 // callsubr command
-                Integer operand=(Integer)sequence.remove(sequence.size()-1);
+                Object obj = sequence.remove(sequence.size() - 1);
+                if (!(obj instanceof Integer))
+                {
+                    LOG.warn("Parameter " + obj + " for CALLSUBR is ignored, integer expected in glyph '"
+                            + glyphName + "' of font " + fontName);
+                    continue;
+                }
+                Integer operand = (Integer) obj;
 
                 if (operand >= 0 && operand < subrs.size())
                 {
