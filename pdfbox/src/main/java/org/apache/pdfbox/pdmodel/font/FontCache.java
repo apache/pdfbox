@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.fontbox.FontBoxFont;
 
 /**
- * A cache for system fonts. This allows PDFBox to manage caching for a {@link FontProvider}.
+ * An in-memory cache for system fonts. This allows PDFBox to manage caching for a {@link FontProvider}.
  * PDFBox is free to purge this cache at will.
  *
  * @author John Hewson
