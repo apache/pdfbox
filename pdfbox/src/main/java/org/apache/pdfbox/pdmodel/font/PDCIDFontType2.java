@@ -291,7 +291,9 @@ public class PDCIDFontType2 extends PDCIDFont
                 if (unicode == null)
                 {
                     LOG.warn("Failed to find a character mapping for " + code + " in " + getName());
-                    return 0;
+                    // Acrobat is willing to use the CID as a GID, even when the font isn't embedded
+                    // see PDFBOX-2599
+                    return codeToCID(code);
                 }
                 else if (unicode.length() > 1)
                 {
