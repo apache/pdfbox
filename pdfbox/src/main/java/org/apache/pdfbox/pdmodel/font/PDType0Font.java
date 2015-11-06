@@ -215,42 +215,35 @@ public class PDType0Font extends PDFont implements PDVectorFont
      */
     private void fetchCMapUCS2() throws IOException
     {
-        // if the font is composite and uses a predefined cmap (excluding Identity-H/V) then
-        // or if its decendant font uses Adobe-GB1/CNS1/Japan1/Korea1
-        if (isCMapPredefined)
+        // if the font is composite and uses a predefined cmap (excluding Identity-H/V)
+        // or whose descendant CIDFont uses the Adobe-GB1, Adobe-CNS1, Adobe-Japan1, or
+        // Adobe-Korea1 character collection:
+        COSName name = dict.getCOSName(COSName.ENCODING);
+        if (isCMapPredefined && !(name == COSName.IDENTITY_H || name == COSName.IDENTITY_V) ||
+            isDescendantCJK)
         {
             // a) Map the character code to a CID using the font's CMap
             // b) Obtain the ROS from the font's CIDSystemInfo
             // c) Construct a second CMap name by concatenating the ROS in the format "R-O-UCS2"
             // d) Obtain the CMap with the constructed name
             // e) Map the CID according to the CMap from step d), producing a Unicode value
-
-            String cMapName = null;
-
-            // get the encoding CMap
-            COSBase encoding = dict.getDictionaryObject(COSName.ENCODING);
-            if (encoding instanceof COSName)
-            {
-                cMapName = ((COSName)encoding).getName();
-            }
             
-            if ("Identity-H".equals(cMapName) || "Identity-V".equals(cMapName))
+            String strName = null;
+            if (name == null && isDescendantCJK)
             {
-                if (isDescendantCJK)
-                {
-                    cMapName = getCJKCMap(descendantFont.getCIDSystemInfo());
-                }
-                else
-                {
-                    // we can't map Identity-H or Identity-V to Unicode
-                    return;
-                }
+                strName = cMap.getRegistry() + "-" +
+                          cMap.getOrdering() + "-" +
+                          cMap.getSupplement();
+            }
+            else if (name != null)
+            {
+                strName = name.getName();
             }
             
             // try to find the corresponding Unicode (UC2) CMap
-            if (cMapName != null)
+            if (strName != null)
             {
-                CMap cMap = CMapManager.getPredefinedCMap(cMapName);
+                CMap cMap = CMapManager.getPredefinedCMap(strName);
                 if (cMap != null)
                 {
                     String ucs2Name = cMap.getRegistry() + "-" + cMap.getOrdering() + "-UCS2";
@@ -414,7 +407,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
             return unicode;
         }
 
-        if (isCMapPredefined && cMapUCS2 != null)
+        if ((isCMapPredefined || isDescendantCJK) && cMapUCS2 != null)
         {
             // if the font is composite and uses a predefined cmap (excluding Identity-H/V) then
             // or if its decendant font uses Adobe-GB1/CNS1/Japan1/Korea1

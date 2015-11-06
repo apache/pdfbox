@@ -275,6 +275,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName ID_TREE = new COSName("IDTree");
     public static final COSName IDENTITY = new COSName("Identity");
     public static final COSName IDENTITY_H = new COSName("Identity-H");
+    public static final COSName IDENTITY_V = new COSName("Identity-V");
     public static final COSName IF = new COSName("IF");
     public static final COSName IM = new COSName("IM");
     public static final COSName IMAGE = new COSName("Image");

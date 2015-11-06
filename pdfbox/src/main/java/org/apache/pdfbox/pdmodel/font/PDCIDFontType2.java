@@ -283,20 +283,12 @@ public class PDCIDFontType2 extends PDCIDFont
             // font's 'cmap' table. The means by which this is accomplished are implementation-
             // dependent.
             
-            boolean hasUnicodeMap = parent.getCMapUCS2() != null;
-
             if (cid2gid != null)
             {
                 // Acrobat allows non-embedded GIDs - todo: can we find a test PDF for this?
+                LOG.warn("Using non-embedded GIDs in font " + getName());
                 int cid = codeToCID(code);
                 return cid2gid[cid];
-            }
-            else if (hasIdentityCid2Gid || !hasUnicodeMap)
-            {
-                // same as above, but for the default Identity CID2GIDMap or when there is no
-                // ToUnicode CMap to fallback to, see PDFBOX-2599 and PDFBOX-2560
-                // todo: can we find a test PDF for the Identity case?
-                return codeToCID(code);
             }
             else
             {
