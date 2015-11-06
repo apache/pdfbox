@@ -261,6 +261,10 @@ final class FileSystemFontProvider extends FontProvider
         if (path == null)
         {
             path = System.getProperty("user.home");
+            if (path == null)
+            {
+                path = System.getProperty("java.io.tmpdir");
+            }
         }
         return new File(path, ".pdfbox.cache");
     }
