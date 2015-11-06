@@ -227,13 +227,14 @@ public class PDType0Font extends PDFont implements PDVectorFont
             // c) Construct a second CMap name by concatenating the ROS in the format "R-O-UCS2"
             // d) Obtain the CMap with the constructed name
             // e) Map the CID according to the CMap from step d), producing a Unicode value
-            
+
+            // todo: not sure how to interpret the PDF spec here, do we always override? or only when Identity-H/V?
             String strName = null;
-            if (name == null && isDescendantCJK)
+            if (isDescendantCJK)
             {
-                strName = cMap.getRegistry() + "-" +
-                          cMap.getOrdering() + "-" +
-                          cMap.getSupplement();
+                strName = descendantFont.getCIDSystemInfo().getRegistry() + "-" +
+                          descendantFont.getCIDSystemInfo().getOrdering() + "-" +
+                          descendantFont.getCIDSystemInfo().getSupplement();
             }
             else if (name != null)
             {
