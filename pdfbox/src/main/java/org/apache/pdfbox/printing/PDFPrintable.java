@@ -46,6 +46,7 @@ public final class PDFPrintable implements Printable
     private final boolean showPageBorder;
     private final Scaling scaling;
     private final float dpi;
+    private final boolean center;
 
     /**
      * Creates a new PDFPrintable.
@@ -91,11 +92,28 @@ public final class PDFPrintable implements Printable
      */
     public PDFPrintable(PDDocument document, Scaling scaling, boolean showPageBorder, float dpi)
     {
+        this(document, scaling, showPageBorder, dpi, true);
+    }
+    
+    /**
+     * Creates a new PDFPrintable with the given page scaling and with optional page borders shown.
+     * The image will be rasterized at the given DPI before being sent to the printer.
+     *
+     * @param document the document to print
+     * @param scaling page scaling policy
+     * @param showPageBorder true if page borders are to be printed
+     * @param dpi if non-zero then the image will be rasterized at the given DPI
+     * @param center true if the content is to be centered on the page (otherwise top-left).
+     */
+    public PDFPrintable(PDDocument document, Scaling scaling, boolean showPageBorder, float dpi,
+                        boolean center)
+    {
         this.document = document;
         this.renderer = new PDFRenderer(document);
         this.scaling = scaling;
         this.showPageBorder = showPageBorder;
         this.dpi = dpi;
+        this.center = center;
     }
     
     @Override
@@ -136,8 +154,11 @@ public final class PDFPrintable implements Printable
             graphics2D.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
 
             // center on page
-            graphics2D.translate((imageableWidth - cropBox.getWidth() * scale) / 2,
-                    (imageableHeight - cropBox.getHeight() * scale) / 2);
+            if (center)
+            {
+                graphics2D.translate((imageableWidth - cropBox.getWidth() * scale) / 2,
+                                     (imageableHeight - cropBox.getHeight() * scale) / 2);
+            }
 
             // rasterize to bitmap (optional)
             Graphics2D printerGraphics = null;
