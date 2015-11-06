@@ -170,9 +170,6 @@ public class GlyphTable extends TTFTable
 
         synchronized (font)
         {
-            // save
-            long currentPosition = data.getCurrentPosition();
-
             // read a single glyph
             long[] offsets = loca.getOffsets();
 
@@ -184,9 +181,13 @@ public class GlyphTable extends TTFTable
             }
             else
             {
+                // save
+                long currentPosition = data.getCurrentPosition();
+
                 data.seek(getOffset() + offsets[gid]);
+
                 glyph = new GlyphData();
-                
+
                 HorizontalMetricsTable hmt = font.getHorizontalMetrics();
                 int leftSideBearing = hmt == null ? 0 : hmt.getLeftSideBearing(gid);
 
@@ -197,16 +198,17 @@ public class GlyphTable extends TTFTable
                 {
                     glyph.getDescription().resolve();
                 }
+                
+                // restore
+                data.seek(currentPosition);
+                
+                if (glyphs != null && glyphs[gid] == null && cached < MAX_CACHED_GLYPHS)
+                {
+                    glyphs[gid] = glyph;
+                    ++cached;
+                }
             }
-
-            // restore
-            data.seek(currentPosition);
-
-            if (glyphs != null && cached < MAX_CACHED_GLYPHS)
-            {
-                glyphs[gid] = glyph;
-                ++cached;
-            }            
+               
             return glyph;
         }
     }
