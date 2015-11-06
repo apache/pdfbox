@@ -21,10 +21,6 @@
 
 package org.apache.pdfbox.preflight;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -37,7 +33,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
@@ -50,8 +45,13 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 @RunWith(Parameterized.class)
-public class TestIsartor
+public class TestIsartorBavaria
 {
     private static final String FILTER_FILE = "isartor.filter";
     private static final String SKIP_BAVARIA = "skip-bavaria";
@@ -165,7 +165,7 @@ public class TestIsartor
     private final Set<String> expectedErrorSet;
     private final File file;
 
-    public TestIsartor(File path, Set<String> errorSet)
+    public TestIsartorBavaria(File path, Set<String> errorSet)
     {
         System.out.println("  " + path.getName());
         this.file = path;
@@ -205,7 +205,7 @@ public class TestIsartor
                 }
                 StringBuilder message = new StringBuilder();
                 message.append(file.getName());
-                message.append( " : Isartor file should be valid, but has error");
+                message.append( " : PDF/A file should be valid, but has error");
                 if (errorSet.size() > 1)
                 {
                     message.append('s');
@@ -221,7 +221,7 @@ public class TestIsartor
             }
             else
             {
-                assertFalse(file.getName() + " : Isartor file should be invalid (expected " +
+                assertFalse(file.getName() + " : PDF/A file should be invalid (expected " +
                         this.expectedErrorSet + ")", result.isValid()); //TODO
 
                 assertTrue(file.getName() + " : Should find at least one error",
