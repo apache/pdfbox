@@ -210,4 +210,25 @@ public final class PDFPrintable implements Printable
             return cropBox;
         }
     }
+
+    /**
+     * This will find the MediaBox with rotation applied, for this page by looking up the hierarchy
+     * until it finds them.
+     *
+     * @return The MediaBox at this level in the hierarchy.
+     */
+    static PDRectangle getRotatedMediaBox(PDPage page)
+    {
+        PDRectangle mediaBox = page.getMediaBox();
+        int rotationAngle = page.getRotation();
+        if (rotationAngle == 90 || rotationAngle == 270)
+        {
+            return new PDRectangle(mediaBox.getLowerLeftY(), mediaBox.getLowerLeftX(),
+                                   mediaBox.getHeight(), mediaBox.getWidth());
+        }
+        else
+        {
+            return mediaBox;
+        }
+    }
 }

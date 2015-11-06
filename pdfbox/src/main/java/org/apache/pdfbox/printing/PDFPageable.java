@@ -104,7 +104,7 @@ public final class PDFPageable extends Book
     public PageFormat getPageFormat(int pageIndex)
     {
         PDPage page = document.getPage(pageIndex);
-        PDRectangle mediaBox = page.getMediaBox();
+        PDRectangle mediaBox = PDFPrintable.getRotatedMediaBox(page);
         PDRectangle cropBox = PDFPrintable.getRotatedCropBox(page);
         
         // Java does not seem to understand landscape paper sizes, i.e. where width > height, it
