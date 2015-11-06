@@ -52,8 +52,6 @@ public class PDCIDFontType2 extends PDCIDFont
 
     private final TrueTypeFont ttf;
     private final int[] cid2gid;
-    private final Map<Integer, Integer> gid2cid;
-    private final boolean hasIdentityCid2Gid;
     private final boolean isEmbedded;
     private final boolean isDamaged;
     private final CmapSubtable cmap; // may be null
@@ -182,11 +180,7 @@ public class PDCIDFontType2 extends PDCIDFont
             ttf = ttfFont;
         }
         cmap = ttf.getUnicodeCmap(false);
-
         cid2gid = readCIDToGIDMap();
-        gid2cid = invert(cid2gid);
-        COSBase map = dict.getDictionaryObject(COSName.CID_TO_GID_MAP);
-        hasIdentityCid2Gid = map instanceof COSName && ((COSName) map).getName().equals("Identity");
     }
 
     @Override
