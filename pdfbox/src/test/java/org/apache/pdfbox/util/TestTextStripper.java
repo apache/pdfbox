@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.util;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
@@ -99,7 +100,7 @@ public class TestTextStripper extends TestCase
 
     private boolean bFail = false;
     private PDFTextStripper stripper = null;
-    private final String encoding = "UTF-16LE";
+    private final String encoding = "UTF-8";
 
     /**
      * Test class constructor.
@@ -242,7 +243,7 @@ public class TestTextStripper extends TestCase
             }
         }
 
-        PDDocument document = PDDocument.load(inFile);
+        PDDocument document = PDDocument.loadNonSeq(inFile, null);
         try
         {
             
@@ -262,10 +263,11 @@ public class TestTextStripper extends TestCase
 
             OutputStream os = new FileOutputStream(outFile);
             try {
-                os.write( 0xFF );
-                os.write( 0xFE );
+                os.write (0xEF);
+                os.write (0xBB);
+                os.write (0xBF);
 
-                Writer writer = new OutputStreamWriter(os, encoding);
+                Writer writer = new BufferedWriter(new OutputStreamWriter(os, encoding));
                 try {
                     //Allows for sorted tests 
                     stripper.setSortByPosition(bSort);
@@ -292,6 +294,8 @@ public class TestTextStripper extends TestCase
                 " did not exist");
                 return;
             }
+            
+            boolean localFail = false;
 
             LineNumberReader expectedReader =
                 new LineNumberReader(new InputStreamReader(new FileInputStream(expectedFile), encoding));
@@ -313,6 +317,7 @@ public class TestTextStripper extends TestCase
                 if (!stringsEqual(expectedLine, actualLine))
                 {
                     this.bFail = true;
+                    localFail = true;
                     log.error("FAILURE: Line mismatch for file " + inFile.getName() +
                             " ( sort = "+bSort+")" +
                             " at expected line: " + expectedReader.getLineNumber() +
@@ -328,6 +333,12 @@ public class TestTextStripper extends TestCase
                 {
                     break;
                 }
+            }
+            expectedReader.close();
+            actualReader.close();
+            if (!localFail)
+            {
+                outFile.delete();
             }
         }
         finally
