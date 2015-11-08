@@ -20,6 +20,8 @@ import java.awt.geom.GeneralPath;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashSet;
+import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.cmap.CMap;
@@ -48,6 +50,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     private boolean isCMapPredefined;
     private boolean isDescendantCJK;
     private PDCIDFontType2Embedder embedder;
+    private final Set<Integer> noUnicode = new HashSet<Integer>(); 
     
     /**
     * Loads a TTF to be embedded into a document as a Type 0 font.
@@ -421,9 +424,14 @@ public class PDType0Font extends PDFont implements PDVectorFont
         }
         else
         {
-            // if no value has been produced, there is no way to obtain Unicode for the character.
-            String cid = "CID+" + codeToCID(code);
-            LOG.warn("No Unicode mapping for " + cid + " (" + code + ") in font " + getName());
+            if (LOG.isWarnEnabled() && !noUnicode.contains(code))
+            {
+                // if no value has been produced, there is no way to obtain Unicode for the character.
+                String cid = "CID+" + codeToCID(code);
+                LOG.warn("No Unicode mapping for " + cid + " (" + code + ") in font " + getName());
+                // we keep track of which warnings have been issued, so we don't log multiple times
+                noUnicode.add(code);
+            }
             return null;
         }
     }
