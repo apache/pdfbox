@@ -22,6 +22,7 @@ import java.io.InputStream;
 import org.apache.fontbox.FontBoxFont;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
@@ -43,6 +44,7 @@ public class PDType3Font extends PDSimpleFont
     private PDResources resources;
     private COSDictionary charProcs;
     private Matrix fontMatrix;
+    private BoundingBox fontBBox;
 
     /**
      * Constructor.
@@ -241,7 +243,7 @@ public class PDType3Font extends PDSimpleFont
     }
 
     /**
-     * This will get the fonts bounding box.
+     * This will get the fonts bounding box from its dictionary.
      *
      * @return The fonts bounding box.
      */
@@ -259,11 +261,42 @@ public class PDType3Font extends PDSimpleFont
     @Override
     public BoundingBox getBoundingBox()
     {
+        if (fontBBox != null)
+        {
+            return fontBBox;
+        }
         PDRectangle rect = getFontBBox();
-        return new BoundingBox(rect.getLowerLeftX(), rect.getLowerLeftY(),
-                               rect.getUpperRightX(), rect.getUpperRightY());
+        if (rect.getLowerLeftX() == 0 && rect.getLowerLeftY() == 0
+                && rect.getUpperRightX() == 0 && rect.getUpperRightY() == 0)
+        {
+            // Plan B: get the max bounding box of the glyphs
+            COSDictionary cp = getCharProcs();
+            for (COSName name : cp.keySet())
+            {
+                COSBase base = cp.getDictionaryObject(name);
+                if (base instanceof COSStream)
+                {
+                    PDType3CharProc charProc = new PDType3CharProc(this, (COSStream) base);
+                    try
+                    {
+                        PDRectangle glyphBBox = charProc.getGlyphBBox();
+                        rect.setLowerLeftX(Math.min(rect.getLowerLeftX(), glyphBBox.getLowerLeftX()));
+                        rect.setLowerLeftY(Math.min(rect.getLowerLeftY(), glyphBBox.getLowerLeftY()));
+                        rect.setUpperRightX(Math.max(rect.getUpperRightX(), glyphBBox.getUpperRightX()));
+                        rect.setUpperRightY(Math.max(rect.getUpperRightY(), glyphBBox.getUpperRightY()));
+                    }
+                    catch (IOException ex)
+                    {
+                        // ignore
+                    }
+                }
+            }
+        }
+        fontBBox = new BoundingBox(rect.getLowerLeftX(), rect.getLowerLeftY(),
+                rect.getUpperRightX(), rect.getUpperRightY());
+        return fontBBox;
     }
-    
+
     /**
      * Returns the dictionary containing all streams to be used to render the glyphs.
      * 
