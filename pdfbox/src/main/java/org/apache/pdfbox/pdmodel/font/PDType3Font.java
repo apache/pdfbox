@@ -280,6 +280,10 @@ public class PDType3Font extends PDSimpleFont
                     try
                     {
                         PDRectangle glyphBBox = charProc.getGlyphBBox();
+                        if (glyphBBox == null)
+                        {
+                            continue;
+                        }
                         rect.setLowerLeftX(Math.min(rect.getLowerLeftX(), glyphBBox.getLowerLeftX()));
                         rect.setLowerLeftY(Math.min(rect.getLowerLeftY(), glyphBBox.getLowerLeftY()));
                         rect.setUpperRightX(Math.max(rect.getUpperRightX(), glyphBBox.getUpperRightX()));
