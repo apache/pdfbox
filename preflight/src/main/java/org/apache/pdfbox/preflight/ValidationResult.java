@@ -286,6 +286,10 @@ public class ValidationResult
             {
                 this.details = "Invalid graphics transparency";
             }
+            else if (errorCode.startsWith(PreflightConstants.ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY))
+            {
+                this.details = "Unexpected value for key in Graphic object definition";
+            }
             else if (errorCode.startsWith(PreflightConstants.ERROR_GRAPHIC_UNEXPECTED_KEY))
             {
                 this.details = "Unexpected key in Graphic object definition";
