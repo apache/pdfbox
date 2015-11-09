@@ -320,7 +320,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
 
                 if (cs == null)
                 {
-                    registerError("The ColorSpace is unknown", ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY);
+                    registerError("The ColorSpace " + colorSpace + " is unknown", ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY);
                     return;
                 }
             }
@@ -541,7 +541,9 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
         }
         else
         {
-            registerError("The operand doesn't have the expected type", ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY);
+            registerError("The operand " + arguments.get(0) + " for colorSpace operator " + 
+                    operator.getName() + " doesn't have the expected type", 
+                    ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY);
             return;
         }
 
@@ -568,7 +570,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
 
         if (cs == null)
         {
-            registerError("The ColorSpace is unknown", ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY);
+            registerError("The ColorSpace " + colorSpaceName + " is unknown", ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY);
             return;
         }
 
