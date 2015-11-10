@@ -86,11 +86,11 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
         }
         // extend values
         COSArray extendValues = shading.getExtend();
-        if (shading.getExtend() != null)
+        if (extendValues != null)
         {
             extend = new boolean[2];
-            extend[0] = ((COSBoolean) extendValues.get(0)).getValue();
-            extend[1] = ((COSBoolean) extendValues.get(1)).getValue();
+            extend[0] = ((COSBoolean) extendValues.getObject(0)).getValue();
+            extend[1] = ((COSBoolean) extendValues.getObject(1)).getValue();
         }
         else
         {
