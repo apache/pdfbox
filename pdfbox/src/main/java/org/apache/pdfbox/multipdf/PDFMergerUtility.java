@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -552,9 +553,8 @@ public class PDFMergerUtility
         List<PDField> srcFields = srcAcroForm.getFields();
         if (srcFields != null)
         {
-            List<COSDictionary> destFields = new ArrayList<COSDictionary>();
-            // fixme: we're only iterating over the root fields, names of kids aren't being checked
-            for (PDField srcField : srcFields)
+            COSArray destFields = (COSArray) destAcroForm.getCOSObject().getItem(COSName.FIELDS);
+            for (PDField srcField : srcAcroForm.getFieldTree())
             {
                 COSDictionary dstField = (COSDictionary) cloner.cloneForNewDocument(srcField.getCOSObject());
                 // if the form already has a field with this name then we need to rename this field
@@ -565,8 +565,7 @@ public class PDFMergerUtility
                 }
                 destFields.add(dstField);
             }
-            destAcroForm.getCOSObject().setItem(COSName.FIELDS,
-                                                COSArrayList.converterToCOSArray(destFields));
+            destAcroForm.getCOSObject().setItem(COSName.FIELDS,destFields);
         }
     }
 
@@ -686,6 +685,31 @@ public class PDFMergerUtility
     private boolean isDynamicXfa(PDAcroForm acroForm)
     {
         return acroForm != null && acroForm.xfaIsDynamic();
+    }
+    
+    private static String randomString(int length)
+    {
+        SecureRandom random = new SecureRandom();
+        char[] chars = new char[length];
+        for(int i=0;i<chars.length;i++)
+        {
+            int v = random.nextInt(10 + 26 + 26);
+            char c;
+            if (v < 10)
+            {
+                c = (char)('0' + v);
+            }
+            else if (v < 36)
+            {
+                c = (char)('a' - 10 + v);
+            }
+            else
+            {
+                c = (char)('A' - 36 + v);
+            }
+            chars[i] = c;
+        }
+        return new String(chars);
     }
 
 }
