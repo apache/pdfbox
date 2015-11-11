@@ -22,7 +22,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -46,7 +45,6 @@ import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.PageMode;
-import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.PDNumberTreeNode;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDMarkInfo;
@@ -686,30 +684,4 @@ public class PDFMergerUtility
     {
         return acroForm != null && acroForm.xfaIsDynamic();
     }
-    
-    private static String randomString(int length)
-    {
-        SecureRandom random = new SecureRandom();
-        char[] chars = new char[length];
-        for(int i=0;i<chars.length;i++)
-        {
-            int v = random.nextInt(10 + 26 + 26);
-            char c;
-            if (v < 10)
-            {
-                c = (char)('0' + v);
-            }
-            else if (v < 36)
-            {
-                c = (char)('a' - 10 + v);
-            }
-            else
-            {
-                c = (char)('A' - 36 + v);
-            }
-            chars[i] = c;
-        }
-        return new String(chars);
-    }
-
 }
