@@ -282,9 +282,9 @@ public final class PDImageXObject extends PDXObject implements PDImage
         }
         else
         {
-            // explicit mask
+            // explicit mask - to be applied only if /ImageMask true
             PDImageXObject mask = getMask();
-            if (mask != null)
+            if (mask != null && mask.isStencil())
             {
                 image = applyMask(image, mask.getOpaqueImage(), false);
             }
