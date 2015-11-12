@@ -82,7 +82,7 @@ public class PDAcroFormTest
     @Test
     public void testFlatten() throws IOException
     {
-        PDDocument testPdf = PDDocument.load(new File("target/test-output/AlignmentTests.pdf"));
+        PDDocument testPdf = PDDocument.load(new File("src/test/resources/org/apache/pdfbox/pdmodel/interactive/form/AlignmentTests.pdf"));
         testPdf.getDocumentCatalog().getAcroForm().flatten();
         testPdf.save("target/test-output/AlignmentTests-flattened.pdf"); 
     }
