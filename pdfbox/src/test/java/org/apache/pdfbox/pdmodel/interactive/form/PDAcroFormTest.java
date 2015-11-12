@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSName;
@@ -76,6 +77,14 @@ public class PDAcroFormTest
         assertTrue(acroForm.getDefaultAppearance().isEmpty());
         acroForm.setDefaultAppearance("/Helv 0 Tf 0 g");
         assertEquals(acroForm.getDefaultAppearance(),"/Helv 0 Tf 0 g");
+    }
+    
+    @Test
+    public void testFlatten() throws IOException
+    {
+        PDDocument testPdf = PDDocument.load(new File("target/test-output/AlignmentTests.pdf"));
+        testPdf.getDocumentCatalog().getAcroForm().flatten();
+        testPdf.save("target/test-output/AlignmentTests-flattened.pdf"); 
     }
 
     @After

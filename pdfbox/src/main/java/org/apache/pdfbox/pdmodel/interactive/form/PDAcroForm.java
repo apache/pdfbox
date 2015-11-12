@@ -152,18 +152,45 @@ public final class PDAcroForm implements COSObjectable
         }
         return fdf;
     }
-    
-    
+
     /**
      * This will flatten all form fields.
      * 
      * <p>Flattening a form field will take the current appearance and make that part
      * of the pages content stream. All form fields and annotations associated are removed.</p>
-     *  
+     * 
+     * <p>The appearances for the form fields widgets will <strong>not</strong> be generated<p>
+     * 
      * @throws IOException 
      */
     public void flatten() throws IOException
     {
+    	List<PDField> fields = new ArrayList<PDField>();
+    	for (PDField field: getFieldTree())
+    	{
+    		fields.add(field);
+    	}
+    	flatten(fields, false);
+    }
+    
+    
+    /**
+     * This will flatten the specified form fields.
+     * 
+     * <p>Flattening a form field will take the current appearance and make that part
+     * of the pages content stream. All form fields and annotations associated are removed.</p>
+     * 
+     * @param refreshAppearances if set to true the appearances for the form field widgets will be updated
+     * @throws IOException 
+     */
+    public void flatten(List<PDField> fields, boolean refreshAppearances) throws IOException
+    {
+    	// construct the appearances if set
+    	if (refreshAppearances)
+    	{
+    		refreshAppearances();
+    	}
+    	
         // indicates if the original content stream
         // has been wrapped in a q...Q pair.
         boolean isContentStreamWrapped = false;
@@ -173,7 +200,7 @@ public final class PDAcroForm implements COSObjectable
         
         // Iterate over all form fields and their widgets and create a
         // FormXObject at the page content level from that
-        for (PDField field : getFieldTree())
+        for (PDField field : fields)
         {
             for (PDAnnotationWidget widget : field.getWidgets())
             {
@@ -221,6 +248,41 @@ public final class PDAcroForm implements COSObjectable
         setFields(Collections.<PDField>emptyList());
     }    
 
+    /**
+     * Refreshes the appearance streams and appearance dictionaries for 
+     * the widget annotations of all fields.
+     * 
+     * @throws IOException
+     */
+    public void refreshAppearances() throws IOException
+    {
+        for (PDField field : getFieldTree())
+        {
+        	if (field instanceof PDTerminalField)
+        	{
+        		((PDTerminalField) field).constructAppearances();
+        	}
+        }
+    }
+
+    /**
+     * Refreshes the appearance streams and appearance dictionaries for 
+     * the widget annotations of the specified fields.
+     * 
+     * @throws IOException
+     */
+    public void refreshAppearances(List<PDField> fields) throws IOException
+    {
+        for (PDField field : fields)
+        {
+        	if (field instanceof PDTerminalField)
+        	{
+        		((PDTerminalField) field).constructAppearances();
+        	}
+        }
+    }
+    
+    
     /**
      * This will return all of the documents root fields.
      * 

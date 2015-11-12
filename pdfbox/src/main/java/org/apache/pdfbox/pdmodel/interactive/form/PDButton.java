@@ -271,6 +271,19 @@ public abstract class PDButton extends PDTerminalField
                 // TODO: implement appearance generation for radio buttons
                 throw new UnsupportedOperationException("Appearance generation is not implemented yet, see PDFBOX-2849");
             }
+            else 
+            {
+                PDAppearanceEntry appearanceEntry = widget.getAppearance().getNormalAppearance();
+                String value = getValue();
+                if (((COSDictionary) appearanceEntry.getCOSObject()).containsKey(value))
+                {
+                    widget.getCOSObject().setName(COSName.AS, value);
+                }
+                else
+                {
+                    widget.getCOSObject().setItem(COSName.AS, COSName.Off);
+                }
+            }
         }
     }  
 
