@@ -61,6 +61,7 @@ public class GlyphTable extends TTFTable
      * @param data The stream to read the data from.
      * @throws IOException If there is an error reading the data.
      */
+    @Override
     public void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
     {
         loca = ttf.getIndexToLocation();
@@ -70,7 +71,6 @@ public class GlyphTable extends TTFTable
         {
             // don't cache the huge fonts to save memory
             glyphs = new GlyphData[numGlyphs];
-            cached = 0;
         }
 
         // we don't actually read the complete table here because it can contain tens of thousands of glyphs
@@ -79,67 +79,56 @@ public class GlyphTable extends TTFTable
     }
 
     /**
-     * Reads all glyphs from the font. Can be very slow.
-     */
-    private void readAll() throws IOException
-    {
-        // the glyph offsets
-        long[] offsets = loca.getOffsets();
-
-        // the end of the glyph table
-        // should not be 0, but sometimes is, see PDFBOX-2044
-        // structure of this table: see
-        // https://developer.apple.com/fonts/TTRefMan/RM06/Chap6loca.html
-        long endOfGlyphs = offsets[numGlyphs];
-        long offset = getOffset();
-        glyphs = new GlyphData[numGlyphs];
-        for (int i = 0; i < numGlyphs; i++)
-        {
-            // end of glyphs reached?
-            if (endOfGlyphs != 0 &&
-                    endOfGlyphs == offsets[i])
-            {
-                break;
-            }
-            // the current glyph isn't defined
-            // if the next offset is equal or smaller to the current offset
-            if (offsets[i + 1] <= offsets[i])
-            {
-                continue;
-            }
-            glyphs[i] = new GlyphData();
-            data.seek(offset + offsets[i]);
-            
-            HorizontalMetricsTable hmt = font.getHorizontalMetrics();
-            int leftSideBearing = hmt == null ? 0 : hmt.getLeftSideBearing(i);
-            
-            glyphs[i].initData(this, data, leftSideBearing);
-        }
-        for (int i = 0; i < numGlyphs; i++)
-        {
-            GlyphData glyph = glyphs[i];
-            // resolve composite glyphs
-            if (glyph != null && glyph.getDescription().isComposite())
-            {
-                glyph.getDescription().resolve();
-            }
-        }
-        initialized = true;
-    }
-
-    /**
      * Returns all glyphs. This method can be very slow.
      */
     public GlyphData[] getGlyphs() throws IOException
     {
-        if (glyphs == null)
+        synchronized (font)
         {
-            synchronized (font)
+            // the glyph offsets
+            long[] offsets = loca.getOffsets();
+
+            // the end of the glyph table
+            // should not be 0, but sometimes is, see PDFBOX-2044
+            // structure of this table: see
+            // https://developer.apple.com/fonts/TTRefMan/RM06/Chap6loca.html
+            long endOfGlyphs = offsets[numGlyphs];
+            long offset = getOffset();
+            if (glyphs == null)
             {
-                readAll();
+                glyphs = new GlyphData[numGlyphs];
             }
+         
+            for (int gid = 0; gid < numGlyphs; gid++)
+            {
+                // end of glyphs reached?
+                if (endOfGlyphs != 0 && endOfGlyphs == offsets[gid])
+                {
+                    break;
+                }
+                // the current glyph isn't defined
+                // if the next offset is equal or smaller to the current offset
+                if (offsets[gid + 1] <= offsets[gid])
+                {
+                    continue;
+                }
+                if (glyphs[gid] != null)
+                {
+                    // already cached
+                    continue;
+                }
+
+                data.seek(offset + offsets[gid]);
+
+                if (glyphs[gid] == null)
+                {
+                    ++cached;
+                }
+                glyphs[gid] = getGlyphData(gid);
+            }
+            initialized = true;
+            return glyphs;
         }
-        return glyphs;
     }
 
     /**
@@ -173,43 +162,43 @@ public class GlyphTable extends TTFTable
             // read a single glyph
             long[] offsets = loca.getOffsets();
 
-            GlyphData glyph;
             if (offsets[gid] == offsets[gid + 1])
             {
                 // no outline
-                glyph = null;
+                return null;
             }
-            else
+            
+            // save
+            long currentPosition = data.getCurrentPosition();
+
+            data.seek(getOffset() + offsets[gid]);
+
+            GlyphData glyph = getGlyphData(gid);
+
+            // restore
+            data.seek(currentPosition);
+
+            if (glyphs != null && glyphs[gid] == null && cached < MAX_CACHED_GLYPHS)
             {
-                // save
-                long currentPosition = data.getCurrentPosition();
-
-                data.seek(getOffset() + offsets[gid]);
-
-                glyph = new GlyphData();
-
-                HorizontalMetricsTable hmt = font.getHorizontalMetrics();
-                int leftSideBearing = hmt == null ? 0 : hmt.getLeftSideBearing(gid);
-
-                glyph.initData(this, data, leftSideBearing);
-
-                // resolve composite glyph
-                if (glyph.getDescription().isComposite())
-                {
-                    glyph.getDescription().resolve();
-                }
-                
-                // restore
-                data.seek(currentPosition);
-                
-                if (glyphs != null && glyphs[gid] == null && cached < MAX_CACHED_GLYPHS)
-                {
-                    glyphs[gid] = glyph;
-                    ++cached;
-                }
+                glyphs[gid] = glyph;
+                ++cached;
             }
-               
+
             return glyph;
         }
+    }
+
+    private GlyphData getGlyphData(int gid) throws IOException
+    {
+        GlyphData glyph = new GlyphData();
+        HorizontalMetricsTable hmt = font.getHorizontalMetrics();
+        int leftSideBearing = hmt == null ? 0 : hmt.getLeftSideBearing(gid);
+        glyph.initData(this, data, leftSideBearing);
+        // resolve composite glyph
+        if (glyph.getDescription().isComposite())
+        {
+            glyph.getDescription().resolve();
+        }
+        return glyph;
     }
 }
