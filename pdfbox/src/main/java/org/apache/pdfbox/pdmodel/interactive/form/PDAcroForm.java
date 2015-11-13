@@ -24,6 +24,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -51,6 +53,8 @@ import org.apache.pdfbox.util.Matrix;
  */
 public final class PDAcroForm implements COSObjectable
 {
+	private static final Log LOG = LogFactory.getLog(PDAcroForm.class);
+	
     private static final int FLAG_SIGNATURES_EXIST = 1;
     private static final int FLAG_APPEND_ONLY = 1 << 1;
 
@@ -165,6 +169,14 @@ public final class PDAcroForm implements COSObjectable
      */
     public void flatten() throws IOException
     {
+    	// for dynamic XFA forms there is no flatten as this would mean to do a rendering
+    	// from the XFA content into a static PDF.
+    	if (xfaIsDynamic())
+    	{
+    		LOG.warn("Flatten for a dynamix XFA form is not supported");
+    		return;
+    	}
+    	
     	List<PDField> fields = new ArrayList<PDField>();
     	for (PDField field: getFieldTree())
     	{
@@ -185,7 +197,15 @@ public final class PDAcroForm implements COSObjectable
      */
     public void flatten(List<PDField> fields, boolean refreshAppearances) throws IOException
     {
-    	// construct the appearances if set
+    	// for dynamic XFA forms there is no flatten as this would mean to do a rendering
+    	// from the XFA content into a static PDF.
+    	if (xfaIsDynamic())
+    	{
+    		LOG.warn("Flatten for a dynamix XFA form is not supported");
+    		return;
+    	}
+    	
+    	// refresh the appearances if set
     	if (refreshAppearances)
     	{
     		refreshAppearances();
@@ -246,6 +266,10 @@ public final class PDAcroForm implements COSObjectable
         
         // remove the fields
         setFields(Collections.<PDField>emptyList());
+        
+        // remove XFA for hybrid forms
+        dictionary.removeItem(COSName.XFA);
+        
     }    
 
     /**
