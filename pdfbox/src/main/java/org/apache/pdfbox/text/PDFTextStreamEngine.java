@@ -67,6 +67,7 @@ class PDFTextStreamEngine extends PDFStreamEngine
 
     private int pageRotation;
     private PDRectangle pageSize;
+    private Matrix translateMatrix;
     private final GlyphList glyphList;
 
     /**
@@ -114,6 +115,16 @@ class PDFTextStreamEngine extends PDFStreamEngine
     {
         this.pageRotation = page.getRotation();
         this.pageSize = page.getCropBox();
+        
+        if (pageSize.getLowerLeftX() == 0 && pageSize.getLowerLeftY() == 0)
+        {
+            translateMatrix = null;
+        }
+        else
+        {
+            // translation matrix for cropbox
+            translateMatrix = Matrix.getTranslateInstance(-pageSize.getLowerLeftX(), -pageSize.getLowerLeftY());
+        }            
         super.processPage(page);
     }
 
@@ -219,8 +230,21 @@ class PDFTextStreamEngine extends PDFStreamEngine
             }
         }
 
+        // adjust for cropbox if needed
+        Matrix translatedTextRenderingMatrix;
+        if (translateMatrix == null)
+        {
+            translatedTextRenderingMatrix = textRenderingMatrix;
+        }
+        else
+        {
+            translatedTextRenderingMatrix = Matrix.concatenate(translateMatrix, textRenderingMatrix);
+            nextX -= pageSize.getLowerLeftX();
+            nextY -= pageSize.getLowerLeftY();
+        }
+
         processTextPosition(new TextPosition(pageRotation, pageSize.getWidth(),
-                pageSize.getHeight(), textRenderingMatrix, nextX, nextY,
+                pageSize.getHeight(), translatedTextRenderingMatrix, nextX, nextY,
                 dyDisplay, dxDisplay,
                 spaceWidthDisplay, unicode, new int[] { code } , font, fontSize,
                 (int)(fontSize * textRenderingMatrix.getScalingFactorX())));
