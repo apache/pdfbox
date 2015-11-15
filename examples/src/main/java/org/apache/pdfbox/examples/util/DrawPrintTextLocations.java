@@ -21,6 +21,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -32,11 +33,15 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
+import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDThreadBead;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;
+import org.apache.pdfbox.util.Matrix;
 
 /**
  * This is an example on how to get some x/y coordinates of text and to show them in a rendered
@@ -108,6 +113,9 @@ public class DrawPrintTextLocations extends PDFTextStripper
     {
         PDFRenderer pdfRenderer = new PDFRenderer(document);
         image = pdfRenderer.renderImage(page, SCALE);
+        
+        PDPage pdPage = document.getPage(page);
+        PDRectangle cropBox = pdPage.getCropBox();
 
         g2d = image.createGraphics();
         g2d.setStroke(new BasicStroke(0.1f));
@@ -118,6 +126,21 @@ public class DrawPrintTextLocations extends PDFTextStripper
 
         Writer dummy = new OutputStreamWriter(new ByteArrayOutputStream());
         writeText(document, dummy);
+        
+        // beads in green
+        g2d.setStroke(new BasicStroke(0.4f));
+        List<PDThreadBead> pageArticles = pdPage.getThreadBeads();
+        for (PDThreadBead bead : pageArticles)
+        {
+            PDRectangle r = bead.getRectangle();
+            GeneralPath p = r.transform(Matrix.getTranslateInstance(-cropBox.getLowerLeftX(), cropBox.getLowerLeftY()));
+            AffineTransform flip = new AffineTransform();
+            flip.translate(0, pdPage.getBBox().getHeight());
+            flip.scale(1, -1);
+            Shape s = flip.createTransformedShape(p);
+            g2d.setColor(Color.green);
+            g2d.draw(s);
+        }
 
         g2d.dispose();
 
