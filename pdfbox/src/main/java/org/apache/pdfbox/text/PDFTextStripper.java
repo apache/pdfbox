@@ -820,6 +820,27 @@ public class PDFTextStripper extends PDFTextStreamEngine
                     if (bead != null)
                     {
                         PDRectangle rect = bead.getRectangle();
+                        
+                        // bead rectangle is in PDF coordinates (y=0 is bottom), 
+                        // glyphs are in image coordinates (y=0 is top),
+                        // so we must flip
+                        PDPage pdPage = getCurrentPage();
+                        PDRectangle mediaBox = pdPage.getMediaBox();
+                        float upperRightY = mediaBox.getUpperRightY() - rect.getLowerLeftY();
+                        float lowerLeftY = mediaBox.getUpperRightY() - rect.getUpperRightY();
+                        rect.setLowerLeftY(lowerLeftY);
+                        rect.setUpperRightY(upperRightY);
+                        
+                        // adjust for cropbox
+                        PDRectangle cropBox = pdPage.getCropBox();
+                        if (cropBox.getLowerLeftX() != 0 || cropBox.getLowerLeftY() != 0)
+                        {
+                            rect.setLowerLeftX(rect.getLowerLeftX() - cropBox.getLowerLeftX());
+                            rect.setLowerLeftY(rect.getLowerLeftY() - cropBox.getLowerLeftY());
+                            rect.setUpperRightX(rect.getUpperRightX() - cropBox.getLowerLeftX());
+                            rect.setUpperRightY(rect.getUpperRightY() - cropBox.getLowerLeftY());
+                        }
+                        
                         if (rect.contains(x, y))
                         {
                             foundArticleDivisionIndex = i * 2 + 1;
