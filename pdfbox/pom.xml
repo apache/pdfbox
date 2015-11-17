@@ -37,7 +37,7 @@
     <inceptionYear>2002</inceptionYear>
     
     <properties>
-        <svn.scmJavadocUrl>https://svn.apache.org/repos/asf/pdfbox/cmssite/trunk/content/docs/${project.version}/javadocs</svn.scmJavadocUrl>
+    	<git.scmJavadocUrl>git:https://git-wip-us.apache.org/repos/asf/pdfbox-docs//content/docs/${project.version}/javadocs</git.scmJavadocUrl>
     </properties>
     
     <dependencies>
@@ -166,7 +166,7 @@
                 <artifactId>maven-scm-publish-plugin</artifactId>
                 <configuration>
                     <content>${project.reporting.outputDirectory}/apidocs</content>
-                    <pubScmUrl>scm:svn:${svn.scmJavadocUrl}</pubScmUrl>
+                    <pubScmUrl>scm:${git.scmJavadocUrl}</pubScmUrl>
                     <tryUpdate>true</tryUpdate>
                     <checkoutDirectory>${svn.scmJavadocCheckoutDirectory}</checkoutDirectory>
                     <serverId>pdfbox-site</serverId>
