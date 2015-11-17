@@ -166,7 +166,8 @@ public class PDFTextStripper extends PDFStreamEngine
     private float spacingTolerance = .5f;
     private float averageCharTolerance = .3f;
 
-    private List<PDThreadBead> pageArticles = null;
+    private List<PDRectangle> beadRectangles = null;
+    
     /**
      * The charactersByArticle is used to extract text by article divisions.  For example
      * a PDF that has two columns like a newspaper, we want to extract the first column and
@@ -435,11 +436,44 @@ public class PDFTextStripper extends PDFStreamEngine
                 (endBookmarkPageNumber == -1 || currentPageNo <= endBookmarkPageNumber ))
         {
             startPage( page );
-            pageArticles = page.getThreadBeads();
-            int numberOfArticleSections = 1 + pageArticles.size() * 2;
-            if( !shouldSeparateByBeads )
+
+            int numberOfArticleSections = 1;
+            if (shouldSeparateByBeads)
             {
-                numberOfArticleSections = 1;
+                beadRectangles = new ArrayList<PDRectangle>();
+                for (PDThreadBead bead : page.getThreadBeads())
+                {
+                    if (bead == null)
+                    {
+                        // can't skip, because of null entry handling in processTextPosition()
+                        beadRectangles.add(null);
+                        continue;
+                    }
+
+                    PDRectangle rect = bead.getRectangle();
+
+                    // bead rectangle is in PDF coordinates (y=0 is bottom), 
+                    // glyphs are in image coordinates (y=0 is top),
+                    // so we must flip
+                    PDRectangle mediaBox = page.findMediaBox();
+                    float upperRightY = mediaBox.getUpperRightY() - rect.getLowerLeftY();
+                    float lowerLeftY = mediaBox.getUpperRightY() - rect.getUpperRightY();
+                    rect.setLowerLeftY(lowerLeftY);
+                    rect.setUpperRightY(upperRightY);
+
+                    // adjust for cropbox
+                    PDRectangle cropBox = page.findCropBox();
+                    if (cropBox.getLowerLeftX() != 0 || cropBox.getLowerLeftY() != 0)
+                    {
+                        rect.setLowerLeftX(rect.getLowerLeftX() - cropBox.getLowerLeftX());
+                        rect.setLowerLeftY(rect.getLowerLeftY() - cropBox.getLowerLeftY());
+                        rect.setUpperRightX(rect.getUpperRightX() - cropBox.getLowerLeftX());
+                        rect.setUpperRightY(rect.getUpperRightY() - cropBox.getLowerLeftY());
+                    }
+
+                    beadRectangles.add(rect);
+                }
+                numberOfArticleSections += beadRectangles.size() * 2;
             }
             int originalSize = charactersByArticle.size();
             charactersByArticle.setSize( numberOfArticleSections );
@@ -967,14 +1001,13 @@ public class PDFTextStripper extends PDFStreamEngine
             int notFoundButFirstAboveArticleDivisionIndex = -1;
             float x = text.getX();
             float y = text.getY();
-            if( shouldSeparateByBeads )
+            if (shouldSeparateByBeads)
             {
-                for( int i=0; i<pageArticles.size() && foundArticleDivisionIndex == -1; i++ )
+                for (int i = 0; i < beadRectangles.size() && foundArticleDivisionIndex == -1; i++)
                 {
-                    PDThreadBead bead = (PDThreadBead)pageArticles.get( i );
-                    if( bead != null )
+                    PDRectangle rect = beadRectangles.get(i);
+                    if( rect != null )
                     {
-                        PDRectangle rect = bead.getRectangle();
                         if( rect.contains( x, y ) )
                         {
                             foundArticleDivisionIndex = i*2+1;
