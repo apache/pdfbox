@@ -583,11 +583,13 @@ final class FileSystemFontProvider extends FontProvider
             }
             else
             {
+                fontInfoList.add(new FSIgnored(file, FontFormat.TTF, "*skipnoname*"));
                 LOG.warn("Missing 'name' entry for PostScript name in font " + file);
             }
         }
         catch (IOException e)
         {
+            fontInfoList.add(new FSIgnored(file, FontFormat.TTF, "*skipexception*"));
             LOG.error("Could not load font file: " + file, e);
         }
         finally
