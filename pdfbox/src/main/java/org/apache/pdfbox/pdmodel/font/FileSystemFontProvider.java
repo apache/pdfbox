@@ -40,6 +40,7 @@ import org.apache.fontbox.ttf.OTFParser;
 import org.apache.fontbox.ttf.OpenTypeFont;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeCollection;
+import org.apache.fontbox.ttf.TrueTypeCollection.TrueTypeFontProcessor;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.type1.Type1Font;
 import org.apache.fontbox.util.autodetect.FontFileFinder;
@@ -439,16 +440,20 @@ final class FileSystemFontProvider extends FontProvider
     /**
      * Adds a TTC or OTC to the file cache. To reduce memory, the parsed font is not cached.
      */
-    private void addTrueTypeCollection(File ttcFile) throws IOException
+    private void addTrueTypeCollection(final File ttcFile) throws IOException
     {
         TrueTypeCollection ttc = null;
         try
         {
             ttc = new TrueTypeCollection(ttcFile);
-            for (TrueTypeFont ttf : ttc.getFonts())
+            ttc.processAllFonts(new TrueTypeFontProcessor()
             {
-                addTrueTypeFontImpl(ttf, ttcFile);
-            }
+                @Override
+                public void process(TrueTypeFont ttf) throws IOException
+                {
+                    addTrueTypeFontImpl(ttf, ttcFile);
+                }
+            });
         }
         catch (NullPointerException e) // TTF parser is buggy
         {
@@ -657,14 +662,13 @@ final class FileSystemFontProvider extends FontProvider
         if (file.getName().toLowerCase().endsWith(".ttc"))
         {
             TrueTypeCollection ttc = new TrueTypeCollection(file);
-            for (TrueTypeFont ttf : ttc.getFonts())
+            TrueTypeFont ttf = ttc.getFontByName(postScriptName);
+            if (ttf == null)
             {
-                if (ttf.getName().equals(postScriptName))
-                {
-                    return ttf;
-                }
+                ttc.close();
+                throw new IOException("Font " + postScriptName + " not found in " + file);
             }
-            throw new IOException("Font " + postScriptName + " not found in " + file);
+            return ttf;
         }
         else
         {
