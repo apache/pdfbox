@@ -163,7 +163,7 @@ public class CFFParser
         index.initData(dataSize);
         for (int i = 0; i < dataSize; i++)
         {
-            index.setData(i, input.readCard8());
+            index.setData(i, (byte) input.readCard8());
         }
         return index;
     }

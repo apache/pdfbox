@@ -25,7 +25,7 @@ public class IndexData
 {
     private final int count;
     private final int[] offset;
-    private int[] data;
+    private byte[] data;
 
     /**
      * Constructor.
@@ -44,7 +44,7 @@ public class IndexData
         byte[] bytes = new byte[length];
         for (int i = 0; i < length; i++)
         {
-            bytes[i] = (byte) data[offset[index] - 1 + i];
+            bytes[i] = data[offset[index] - 1 + i];
         }
         return bytes;
     }
@@ -92,7 +92,7 @@ public class IndexData
      */
     public void initData(int dataSize) 
     {
-        data = new int[dataSize];
+        data = new byte[dataSize];
     }
     
     /**
@@ -100,7 +100,7 @@ public class IndexData
      * @param index the index of the data value
      * @param value the given data value
      */
-    public void setData(int index, int value) 
+    public void setData(int index, byte value) 
     {
         data[index] = value;
     }
