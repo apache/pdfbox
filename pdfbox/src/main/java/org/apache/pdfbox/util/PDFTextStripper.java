@@ -440,39 +440,7 @@ public class PDFTextStripper extends PDFStreamEngine
             int numberOfArticleSections = 1;
             if (shouldSeparateByBeads)
             {
-                beadRectangles = new ArrayList<PDRectangle>();
-                for (PDThreadBead bead : page.getThreadBeads())
-                {
-                    if (bead == null)
-                    {
-                        // can't skip, because of null entry handling in processTextPosition()
-                        beadRectangles.add(null);
-                        continue;
-                    }
-
-                    PDRectangle rect = bead.getRectangle();
-
-                    // bead rectangle is in PDF coordinates (y=0 is bottom), 
-                    // glyphs are in image coordinates (y=0 is top),
-                    // so we must flip
-                    PDRectangle mediaBox = page.findMediaBox();
-                    float upperRightY = mediaBox.getUpperRightY() - rect.getLowerLeftY();
-                    float lowerLeftY = mediaBox.getUpperRightY() - rect.getUpperRightY();
-                    rect.setLowerLeftY(lowerLeftY);
-                    rect.setUpperRightY(upperRightY);
-
-                    // adjust for cropbox
-                    PDRectangle cropBox = page.findCropBox();
-                    if (cropBox.getLowerLeftX() != 0 || cropBox.getLowerLeftY() != 0)
-                    {
-                        rect.setLowerLeftX(rect.getLowerLeftX() - cropBox.getLowerLeftX());
-                        rect.setLowerLeftY(rect.getLowerLeftY() - cropBox.getLowerLeftY());
-                        rect.setUpperRightX(rect.getUpperRightX() - cropBox.getLowerLeftX());
-                        rect.setUpperRightY(rect.getUpperRightY() - cropBox.getLowerLeftY());
-                    }
-
-                    beadRectangles.add(rect);
-                }
+                fillBeadRectangles(page);
                 numberOfArticleSections += beadRectangles.size() * 2;
             }
             int originalSize = charactersByArticle.size();
@@ -492,6 +460,43 @@ public class PDFTextStripper extends PDFStreamEngine
             processStream( page, page.findResources(), content );
             writePage();
             endPage( page );
+        }
+    }
+
+    private void fillBeadRectangles(PDPage page)
+    {
+        beadRectangles = new ArrayList<PDRectangle>();
+        for (PDThreadBead bead : page.getThreadBeads())
+        {
+            if (bead == null)
+            {
+                // can't skip, because of null entry handling in processTextPosition()
+                beadRectangles.add(null);
+                continue;
+            }
+            
+            PDRectangle rect = bead.getRectangle();
+            
+            // bead rectangle is in PDF coordinates (y=0 is bottom),
+            // glyphs are in image coordinates (y=0 is top),
+            // so we must flip
+            PDRectangle mediaBox = page.findMediaBox();
+            float upperRightY = mediaBox.getUpperRightY() - rect.getLowerLeftY();
+            float lowerLeftY = mediaBox.getUpperRightY() - rect.getUpperRightY();
+            rect.setLowerLeftY(lowerLeftY);
+            rect.setUpperRightY(upperRightY);
+            
+            // adjust for cropbox
+            PDRectangle cropBox = page.findCropBox();
+            if (cropBox.getLowerLeftX() != 0 || cropBox.getLowerLeftY() != 0)
+            {
+                rect.setLowerLeftX(rect.getLowerLeftX() - cropBox.getLowerLeftX());
+                rect.setLowerLeftY(rect.getLowerLeftY() - cropBox.getLowerLeftY());
+                rect.setUpperRightX(rect.getUpperRightX() - cropBox.getLowerLeftX());
+                rect.setUpperRightY(rect.getUpperRightY() - cropBox.getLowerLeftY());
+            }
+            
+            beadRectangles.add(rect);
         }
     }
 
