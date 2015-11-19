@@ -126,6 +126,10 @@ public class CodespaceRange
      */
     public boolean isPartialMatch(byte b, int index)
     {
+        if (index >= start.length || index >= end.length)
+        {
+            return false;
+        }
         int startNum = start[index] & 0xff;
         int endNum = end[index] & 0xff;
         int codeNum = b & 0xff;
