@@ -33,7 +33,6 @@ public class TrueTypeCollection implements Closeable
     private final TTFDataStream stream;
     private final int numFonts;
     private final long[] fontOffsets;
-    private final float version;
 
     /**
      * Creates a new TrueTypeCollection from a .ttc file.
@@ -73,7 +72,7 @@ public class TrueTypeCollection implements Closeable
         {
             throw new IOException("Missing TTC header");
         }
-        version = stream.read32Fixed();
+        float version = stream.read32Fixed();
         numFonts = (int)stream.readUnsignedInt();
         fontOffsets = new long[numFonts];
         for (int i = 0; i < numFonts; i++)
@@ -111,15 +110,13 @@ public class TrueTypeCollection implements Closeable
         {
             stream.seek(fontOffsets[idx]);
             OTFParser parser = new OTFParser(false, true);
-            OpenTypeFont otf = parser.parse(new TTCDataStream(stream));
-            return otf;
+            return parser.parse(new TTCDataStream(stream));
         }
         else
         {
             stream.seek(fontOffsets[idx]);
             TTFParser parser = new TTFParser(false, true);
-            TrueTypeFont ttf = parser.parse(new TTCDataStream(stream));
-            return ttf;
+            return parser.parse(new TTCDataStream(stream));
         }
     }
 
@@ -146,9 +143,9 @@ public class TrueTypeCollection implements Closeable
     /**
      * Implement the callback method to call {@link TrueTypeCollection#processAllFonts()}.
      */
-    public static interface TrueTypeFontProcessor
+    public interface TrueTypeFontProcessor
     {
-        public void process(TrueTypeFont ttf) throws IOException;
+        void process(TrueTypeFont ttf) throws IOException;
     }
     
     @Override
