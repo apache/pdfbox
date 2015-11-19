@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel;
 
+import java.io.BufferedOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -1079,7 +1080,7 @@ public class PDDocument implements Closeable
      */
     public void save(File file) throws IOException
     {
-        save(new FileOutputStream(file));
+        save(new BufferedOutputStream(new FileOutputStream(file)));
     }
 
     /**
