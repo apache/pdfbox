@@ -106,18 +106,17 @@ public class TrueTypeCollection implements Closeable
     private TrueTypeFont getFontAtIndex(int idx) throws IOException
     {
         stream.seek(fontOffsets[idx]);
+        TTFParser parser;
         if (stream.readTag().equals("OTTO"))
         {
-            stream.seek(fontOffsets[idx]);
-            OTFParser parser = new OTFParser(false, true);
-            return parser.parse(new TTCDataStream(stream));
+            parser = new OTFParser(false, true);
         }
         else
         {
-            stream.seek(fontOffsets[idx]);
-            TTFParser parser = new TTFParser(false, true);
-            return parser.parse(new TTCDataStream(stream));
+            parser = new TTFParser(false, true);
         }
+        stream.seek(fontOffsets[idx]);
+        return parser.parse(new TTCDataStream(stream));
     }
 
     /**
