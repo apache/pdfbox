@@ -18,6 +18,7 @@ package org.apache.fontbox.cff;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -125,7 +126,7 @@ public abstract class CFFFont implements FontBoxFont
      */
     public final List<byte[]> getCharStringBytes()
     {
-        return charStrings;
+        return Collections.unmodifiableList(charStrings);
     }
 
     /**
