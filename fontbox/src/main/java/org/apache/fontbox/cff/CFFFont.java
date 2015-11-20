@@ -119,11 +119,11 @@ public abstract class CFFFont implements FontBoxFont
     }
 
     /**
-     * Returns the character strings dictionary.
+     * Returns the character strings dictionary. For expert users only.
      *
      * @return the dictionary
      */
-    List<byte[]> getCharStringBytes()
+    public List<byte[]> getCharStringBytes()
     {
         return charStrings;
     }
