@@ -19,6 +19,7 @@ package org.apache.pdfbox.contentstream.operator.state;
 
 import java.io.IOException;
 import java.util.List;
+import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.contentstream.operator.Operator;
@@ -35,6 +36,10 @@ public class SetRenderingIntent extends OperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> operands) throws IOException
     {
+        if (operands.size() < 1)
+        {
+            throw new MissingOperandException(operator, operands);
+        }
         COSName value = (COSName)operands.get(0);
         context.getGraphicsState().setRenderingIntent(RenderingIntent.fromString(value.getName()));
     }

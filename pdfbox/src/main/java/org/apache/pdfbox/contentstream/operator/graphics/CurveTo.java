@@ -21,6 +21,7 @@ import java.util.List;
 import java.awt.geom.Point2D;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
@@ -38,6 +39,10 @@ public class CurveTo extends GraphicsOperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> operands) throws IOException
     {
+        if (operands.size() < 6)
+        {
+            throw new MissingOperandException(operator, operands);
+        }
         COSNumber x1 = (COSNumber)operands.get(0);
         COSNumber y1 = (COSNumber)operands.get(1);
         COSNumber x2 = (COSNumber)operands.get(2);

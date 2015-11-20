@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.contentstream.operator.Operator;
@@ -38,6 +39,10 @@ public class CurveToReplicateInitialPoint extends GraphicsOperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> operands) throws IOException
     {
+        if (operands.size() < 4)
+        {
+            throw new MissingOperandException(operator, operands);
+        }
         COSNumber x2 = (COSNumber)operands.get(0);
         COSNumber y2 = (COSNumber)operands.get(1);
         COSNumber x3 = (COSNumber)operands.get(2);

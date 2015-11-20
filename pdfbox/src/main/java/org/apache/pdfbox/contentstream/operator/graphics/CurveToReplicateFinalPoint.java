@@ -19,6 +19,7 @@ package org.apache.pdfbox.contentstream.operator.graphics;
 import java.io.IOException;
 import java.util.List;
 import java.awt.geom.Point2D;
+import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
@@ -34,6 +35,10 @@ public final class CurveToReplicateFinalPoint extends GraphicsOperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> operands) throws IOException
     {
+        if (operands.size() < 4)
+        {
+            throw new MissingOperandException(operator, operands);
+        }
         COSNumber x1 = (COSNumber)operands.get(0);
         COSNumber y1 = (COSNumber)operands.get(1);
         COSNumber x3 = (COSNumber)operands.get(2);
