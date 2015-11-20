@@ -16,14 +16,14 @@
  */
 package org.apache.pdfbox.contentstream.operator.state;
 
+import java.io.IOException;
 import java.util.List;
 
-import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
-
-import java.io.IOException;
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSNumber;
 
 /**
  * J: Set the line cap style.
@@ -34,6 +34,10 @@ public class SetLineCapStyle extends OperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
+        if (arguments.size() < 1)
+        {
+            throw new MissingOperandException(operator, arguments);
+        }
         int lineCapStyle = ((COSNumber)arguments.get( 0 )).intValue();
         context.getGraphicsState().setLineCap( lineCapStyle );
     }

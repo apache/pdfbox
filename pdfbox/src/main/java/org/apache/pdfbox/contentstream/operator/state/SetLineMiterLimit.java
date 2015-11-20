@@ -16,14 +16,15 @@
  */
 package org.apache.pdfbox.contentstream.operator.state;
 
+import java.io.IOException;
 import java.util.List;
 
-import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSNumber;
 
-import java.io.IOException;
 
 /**
  * M: Set miter limit.
@@ -34,6 +35,10 @@ public class SetLineMiterLimit extends OperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
+        if (arguments.size() < 1)
+        {
+            throw new MissingOperandException(operator, arguments);
+        }
         COSNumber miterLimit = (COSNumber)arguments.get( 0 );
         context.getGraphicsState().setMiterLimit( miterLimit.floatValue() );
     }

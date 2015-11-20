@@ -22,6 +22,7 @@ import java.awt.geom.Point2D;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.contentstream.operator.Operator;
@@ -38,9 +39,23 @@ public class LineTo extends GraphicsOperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> operands) throws IOException
     {
+        if (operands.size() < 2)
+        {
+            throw new MissingOperandException(operator, operands);
+        }
+        COSBase base0 = operands.get(0);
+        if (!(base0 instanceof COSNumber))
+        {
+            return;
+        }
+        COSBase base1 = operands.get(1);
+        if (!(base1 instanceof COSNumber))
+        {
+            return;
+        }
         // append straight line segment from the current point to the point
-        COSNumber x = (COSNumber)operands.get(0);
-        COSNumber y = (COSNumber)operands.get(1);
+        COSNumber x = (COSNumber) base0;
+        COSNumber y = (COSNumber) base1;
 
         Point2D.Float pos = context.transformedPoint(x.floatValue(), y.floatValue());
 
