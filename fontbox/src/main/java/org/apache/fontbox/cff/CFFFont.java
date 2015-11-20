@@ -123,7 +123,7 @@ public abstract class CFFFont implements FontBoxFont
      *
      * @return the dictionary
      */
-    public List<byte[]> getCharStringBytes()
+    public final List<byte[]> getCharStringBytes()
     {
         return charStrings;
     }
