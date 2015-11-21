@@ -43,6 +43,10 @@ public class CurveTo extends GraphicsOperatorProcessor
         {
             throw new MissingOperandException(operator, operands);
         }
+        if (!checkArrayTypesClass(operands, COSNumber.class))
+        {
+            return;
+        }
         COSNumber x1 = (COSNumber)operands.get(0);
         COSNumber y1 = (COSNumber)operands.get(1);
         COSNumber x2 = (COSNumber)operands.get(2);
