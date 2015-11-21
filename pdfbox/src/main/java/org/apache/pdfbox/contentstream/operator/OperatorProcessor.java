@@ -68,4 +68,23 @@ public abstract class OperatorProcessor
      * Returns the name of this operator, e.g. "BI".
      */
     public abstract String getName();
+    
+    /**
+     * Check whether all operands list elements are an instance of a specific class.
+     *
+     * @param operands The operands list.
+     * @param clazz The expected class.
+     * @return the boolean
+     */
+    public boolean checkArrayTypesClass(List<COSBase> operands, Class clazz)
+    {
+        for (COSBase base : operands)
+        {
+            if (!clazz.isInstance(base))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
 }
