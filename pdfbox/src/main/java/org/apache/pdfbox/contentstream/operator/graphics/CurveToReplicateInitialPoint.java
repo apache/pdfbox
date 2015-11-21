@@ -43,6 +43,10 @@ public class CurveToReplicateInitialPoint extends GraphicsOperatorProcessor
         {
             throw new MissingOperandException(operator, operands);
         }
+        if (!checkArrayTypesClass(operands, COSNumber.class))
+        {
+            return;
+        }
         COSNumber x2 = (COSNumber)operands.get(0);
         COSNumber y2 = (COSNumber)operands.get(1);
         COSNumber x3 = (COSNumber)operands.get(2);

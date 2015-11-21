@@ -39,6 +39,10 @@ public final class AppendRectangleToPath extends GraphicsOperatorProcessor
         {
             throw new MissingOperandException(operator, operands);
         }
+        if (!checkArrayTypesClass(operands, COSNumber.class))
+        {
+            return;
+        }
         COSNumber x = (COSNumber) operands.get(0);
         COSNumber y = (COSNumber) operands.get(1);
         COSNumber w = (COSNumber) operands.get(2);
