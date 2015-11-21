@@ -225,9 +225,11 @@ public abstract class PDFont implements COSObjectable, PDFontLike
         {
             int firstChar = dict.getInt(COSName.FIRST_CHAR, -1);
             int lastChar = dict.getInt(COSName.LAST_CHAR, -1);
-            if (getWidths().size() > 0 && code >= firstChar && code <= lastChar)
+            int siz = getWidths().size();
+            int idx = code - firstChar;
+            if (siz > 0 && code >= firstChar && code <= lastChar && idx < siz)
             {
-                return getWidths().get(code - firstChar);
+                return getWidths().get(idx);
             }
 
             PDFontDescriptor fd = getFontDescriptor();
