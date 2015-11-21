@@ -141,6 +141,10 @@ public class PfbParser
             size += in.read() << 16;
             size += in.read() << 24;
             lengths[records] = size;
+            if (pointer >= pfbdata.length)
+            {
+                throw new EOFException("attempted to read past EOF");
+            }
             int got = in.read(pfbdata, pointer, size);
             if (got < 0) 
             {
