@@ -106,7 +106,15 @@ public abstract class COSNumber extends COSBase
             }
             catch( NumberFormatException e )
             {
-                throw new IOException( "Value is not an integer: " + number, e );
+                // might be a huge number, see PDFBOX-3116
+                try
+                {
+                    return new COSFloat(number);
+                }
+                catch (NumberFormatException e2)
+                {
+                    throw new IOException("Not a number: " + number, e2);
+                }
             }
         } 
         else 
