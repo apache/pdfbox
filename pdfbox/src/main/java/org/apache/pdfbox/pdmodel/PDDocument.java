@@ -1126,11 +1126,10 @@ public class PDDocument implements Closeable
      */
     public void saveIncremental(OutputStream output) throws IOException
     {
-        InputStream input = new RandomAccessInputStream(pdfSource);
         COSWriter writer = null;
         try
         {
-            writer = new COSWriter(output, input);
+            writer = new COSWriter(output, pdfSource);
             writer.write(this, signInterface);
             writer.close();
         }
