@@ -17,6 +17,8 @@
 package org.apache.pdfbox.pdmodel.interactive.annotation;
 
 import java.io.IOException;
+import java.util.Calendar;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
@@ -558,12 +560,26 @@ public abstract class PDAnnotation implements COSObjectable
 
     /**
      * This will set the date and time the annotation was modified.
-     * 
-     * @param m the date and time the annotation was created.
+     *
+     * @param m the date and time the annotation was created. Date values used in a PDF shall
+     * conform to a standard date format, which closely follows that of the international standard
+     * ASN.1 (Abstract Syntax Notation One), defined in ISO/IEC 8824. A date shall be a text string
+     * of the form (D:YYYYMMDDHHmmSSOHH'mm). Alternatively, use
+     * {@link #setModifiedDate(java.util.Calendar)}
      */
     public void setModifiedDate(String m)
     {
         getCOSObject().setString(COSName.M, m);
+    }
+
+    /**
+     * This will set the date and time the annotation was modified.
+     *
+     * @param c the date and time the annotation was created.
+     */
+    public void setModifiedDate(Calendar c)
+    {
+        getCOSObject().setDate(COSName.M, c);
     }
 
     /**
