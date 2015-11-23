@@ -58,6 +58,9 @@ import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.cos.COSUpdateInfo;
 import org.apache.pdfbox.cos.ICOSVisitor;
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.io.RandomAccessBuffer;
+import org.apache.pdfbox.io.RandomAccessInputStream;
+import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdfparser.PDFXRefStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.SecurityHandler;
@@ -210,7 +213,8 @@ public class COSWriter implements ICOSVisitor, Closeable
     private boolean reachedSignature = false;
     private long signatureOffset, signatureLength;
     private long byteRangeOffset, byteRangeLength;
-    private InputStream incrementalInput;
+    private RandomAccessRead incrementalInput;
+    private RandomAccessRead tempIncInput;
     private OutputStream incrementalOutput;
     private SignatureInterface signatureInterface;
 
@@ -235,16 +239,36 @@ public class COSWriter implements ICOSVisitor, Closeable
      * @param inputStream input stream containing source PDF data
      * 
      * @throws IOException if something went wrong
+     * @deprecated Use {@link #COSWriter(OutputStream, RandomAccessRead)} instead
      */
     public COSWriter(OutputStream outputStream, InputStream inputStream) throws IOException
     {
         super();
+        tempIncInput = new RandomAccessBuffer(inputStream);
+        initWriter(outputStream, tempIncInput);
+    }
 
+    /**
+     * COSWriter constructor for incremental updates. 
+     *
+     * @param outputStream output stream where the new PDF data will be written
+     * @param inputData random access read containing source PDF data
+     * 
+     * @throws IOException if something went wrong
+     */
+    public COSWriter(OutputStream outputStream, RandomAccessRead inputData) throws IOException
+    {
+        super();
+        initWriter(outputStream, inputData);
+    }
+
+    private void initWriter(OutputStream outputStream, RandomAccessRead inputData) throws IOException
+    {
         // write to buffer instead of output
         setOutput(new ByteArrayOutputStream());
-        setStandardOutput(new COSStandardOutputStream(output, inputStream.available()));
+        setStandardOutput(new COSStandardOutputStream(output, (int)inputData.length()));
 
-        incrementalInput = inputStream;
+        incrementalInput = inputData;
         incrementalOutput = outputStream;
         incrementalUpdate = true;
 
@@ -317,6 +341,10 @@ public class COSWriter implements ICOSVisitor, Closeable
             getOutput().close();
         }
         if (incrementalOutput != null)
+        {
+            incrementalOutput.close();
+        }
+        if (tempIncInput != null)
         {
             incrementalOutput.close();
         }
@@ -688,7 +716,7 @@ public class COSWriter implements ICOSVisitor, Closeable
         }
 
         // calculate the ByteRange values
-        long inLength = incrementalInput.available();
+        long inLength = incrementalInput.length();
         long beforeLength = signatureOffset;
         long afterOffset = signatureOffset + signatureLength;
         long afterLength = getStandardOutput().getPos() - (inLength + signatureLength) - (signatureOffset - inLength);
@@ -718,9 +746,6 @@ public class COSWriter implements ICOSVisitor, Closeable
             }
         }
 
-        // get the input PDF bytes
-        byte[] inputBytes = IOUtils.toByteArray(incrementalInput);
-
         // get only the incremental bytes to be signed (includes /ByteRange but not /Contents)
         byte[] signBuffer = new byte[buffer.length - (int)signatureLength];
         int bufSignatureOffset = (int)(signatureOffset - inLength);
@@ -728,7 +753,7 @@ public class COSWriter implements ICOSVisitor, Closeable
         System.arraycopy(buffer, bufSignatureOffset + (int)signatureLength,
                          signBuffer, bufSignatureOffset, buffer.length - bufSignatureOffset - (int)signatureLength);
 
-        SequenceInputStream signStream = new SequenceInputStream(new ByteArrayInputStream(inputBytes),
+        SequenceInputStream signStream = new SequenceInputStream(new RandomAccessInputStream(incrementalInput),
                 new ByteArrayInputStream(signBuffer));
 
         // sign the bytes
@@ -745,10 +770,10 @@ public class COSWriter implements ICOSVisitor, Closeable
         System.arraycopy(signatureBytes, 0, buffer, bufSignatureOffset + 1, signatureBytes.length);
 
         // write the data to the incremental output stream
-        incrementalOutput.write(inputBytes);
+        IOUtils.copy(new RandomAccessInputStream(incrementalInput), incrementalOutput);
         incrementalOutput.write(buffer);
     }
-    
+
     private void writeXrefRange(long x, long y) throws IOException
     {
         getStandardOutput().write(String.valueOf(x).getBytes(Charsets.ISO_8859_1));
