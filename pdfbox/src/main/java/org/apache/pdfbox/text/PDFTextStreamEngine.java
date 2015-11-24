@@ -29,6 +29,7 @@ import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
 
 import java.io.IOException;
+import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
 import org.apache.pdfbox.contentstream.operator.DrawObject;
@@ -145,8 +146,15 @@ class PDFTextStreamEngine extends PDFStreamEngine
         float horizontalScaling = state.getTextState().getHorizontalScaling() / 100f;
         Matrix textMatrix = getTextMatrix();
 
+        BoundingBox bbox = font.getBoundingBox();
+        if (bbox.getLowerLeftY() <= Short.MAX_VALUE)
+        {
+            // PDFBOX-2158 and PDFBOX-3130
+            // files by Salmat eSolutions / ClibPDF Library
+            bbox.setLowerLeftY(bbox.getLowerLeftY() + 65536);
+        }
         // 1/2 the bbox is used as the height todo: why?
-        float glyphHeight = font.getBoundingBox().getHeight() / 2;
+        float glyphHeight = bbox.getHeight() / 2;
 
         // transformPoint from glyph space -> text space
         float height = font.getFontMatrix().transformPoint(0, glyphHeight).y;
