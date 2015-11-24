@@ -1366,6 +1366,12 @@ public class COSWriter implements ICOSVisitor, Closeable
                 isASCII = false;
                 break;
             }
+            // PDFBOX-3107 EOL markers within a string are troublesome
+            if (b == 0x0d || b == 0x0a)
+            {
+                isASCII = false;
+                break;
+            }
         }
 
         if (isASCII && !forceHex)
