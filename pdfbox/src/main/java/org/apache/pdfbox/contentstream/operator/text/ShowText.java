@@ -46,6 +46,11 @@ public class ShowText extends OperatorProcessor
             // ignore
             return;
         }
+        if (context.getTextMatrix() == null)
+        {
+            // ignore: outside of BT...ET
+            return;
+        }
         COSString string = (COSString) base;
         context.showTextString(string.getBytes());
     }
