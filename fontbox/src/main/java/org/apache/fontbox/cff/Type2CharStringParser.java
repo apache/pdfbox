@@ -58,18 +58,18 @@ public class Type2CharStringParser
     /**
      * The given byte array will be parsed and converted to a Type2 sequence.
      * @param bytes the given mapping as byte array
-     * @param globalSubrIndex index containing all global subroutines
-     * @param localSubrIndex index containing all local subroutines
+     * @param globalSubrIndex list containing all global subroutines
+     * @param localSubrIndex list containing all local subroutines
      * 
      * @return the Type2 sequence
      * @throws IOException if an error occurs during reading
      */
-    public List<Object> parse(byte[] bytes, IndexData globalSubrIndex, IndexData localSubrIndex) throws IOException
+    public List<Object> parse(byte[] bytes, List<byte[]> globalSubrIndex, List<byte[]> localSubrIndex) throws IOException
     {
         return parse(bytes, globalSubrIndex, localSubrIndex, true);
     }
     
-    private List<Object> parse(byte[] bytes, IndexData globalSubrIndex, IndexData localSubrIndex, boolean init) throws IOException
+    private List<Object> parse(byte[] bytes, List<byte[]> globalSubrIndex, List<byte[]> localSubrIndex, boolean init) throws IOException
     {
         if (init) 
         {
@@ -78,8 +78,8 @@ public class Type2CharStringParser
             sequence = new ArrayList<Object>();
         }
         DataInput input = new DataInput(bytes);
-        boolean localSubroutineIndexProvided = localSubrIndex != null && localSubrIndex.getCount() > 0;
-        boolean globalSubroutineIndexProvided = globalSubrIndex != null && globalSubrIndex.getCount() > 0;
+        boolean localSubroutineIndexProvided = localSubrIndex != null && localSubrIndex.size() > 0;
+        boolean globalSubroutineIndexProvided = globalSubrIndex != null && globalSubrIndex.size() > 0;
 
         while (input.hasRemaining())
         {
@@ -89,7 +89,7 @@ public class Type2CharStringParser
                 Integer operand=(Integer)sequence.remove(sequence.size()-1);
                 //get subrbias
                 int bias = 0;
-                int nSubrs = localSubrIndex.getCount();
+                int nSubrs = localSubrIndex.size();
                 
                 if (nSubrs < 1240)
                 {
@@ -104,9 +104,9 @@ public class Type2CharStringParser
                     bias = 32768;
                 }
                 int subrNumber = bias+operand;
-                if (subrNumber < localSubrIndex.getCount())
+                if (subrNumber < localSubrIndex.size())
                 {
-                    byte[] subrBytes = localSubrIndex.getBytes(subrNumber);
+                    byte[] subrBytes = localSubrIndex.get(subrNumber);
                     parse(subrBytes, globalSubrIndex, localSubrIndex, false);
                     Object lastItem=sequence.get(sequence.size()-1);
                     if (lastItem instanceof CharStringCommand && ((CharStringCommand)lastItem).getKey().getValue()[0] == 11)
@@ -121,7 +121,7 @@ public class Type2CharStringParser
                 Integer operand=(Integer)sequence.remove(sequence.size()-1);
                 //get subrbias
                 int bias = 0;
-                int nSubrs = globalSubrIndex.getCount();
+                int nSubrs = globalSubrIndex.size();
                 
                 if (nSubrs < 1240)
                 {
@@ -137,9 +137,9 @@ public class Type2CharStringParser
                 }
                 
                 int subrNumber = bias+operand;
-                if (subrNumber < globalSubrIndex.getCount())
+                if (subrNumber < globalSubrIndex.size())
                 {
-                    byte[] subrBytes = globalSubrIndex.getBytes(subrNumber);
+                    byte[] subrBytes = globalSubrIndex.get(subrNumber);
                     parse(subrBytes, globalSubrIndex, localSubrIndex, false);
                     Object lastItem=sequence.get(sequence.size()-1);
                     if (lastItem instanceof CharStringCommand && ((CharStringCommand)lastItem).getKey().getValue()[0]==11) 

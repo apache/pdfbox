@@ -37,9 +37,9 @@ public class CFFParser
     private CFFDataInput input = null;
     @SuppressWarnings("unused")
     private Header header = null;
-    private IndexData nameIndex = null;
-    private IndexData topDictIndex = null;
-    private IndexData stringIndex = null;
+    private List<byte[]> nameIndex = null;
+    private List<byte[]> topDictIndex = null;
+    private List<byte[]> stringIndex = null;
     
     // for debugging only
     private String debugFontName; 
@@ -107,10 +107,10 @@ public class CFFParser
         nameIndex = readIndexData(input);
         topDictIndex = readIndexData(input);
         stringIndex = readIndexData(input);
-        IndexData globalSubrIndex = readIndexData(input);
+        List<byte[]> globalSubrIndex = readIndexData(input);
 
         List<CFFFont> fonts = new ArrayList<CFFFont>();
-        for (int i = 0; i < nameIndex.getCount(); i++)
+        for (int i = 0; i < nameIndex.size(); i++)
         {
             CFFFont font = parseFont(i);
             font.setGlobalSubrIndex(globalSubrIndex);
@@ -141,15 +141,16 @@ public class CFFParser
         return cffHeader;
     }
 
-    private static IndexData readIndexData(CFFDataInput input) throws IOException
+    private static List<byte[]> readIndexData(CFFDataInput input) throws IOException
     {
+        List<byte[]> indexDataValues = new ArrayList<byte[]>();
         int count = input.readCard16();
-        IndexData index = new IndexData(count);
         if (count == 0)
         {
-            return index;
+            return indexDataValues;
         }
         int offSize = input.readOffSize();
+        int[] offsets = new int[count+1];
         for (int i = 0; i <= count; i++)
         {
             int offset = input.readOffset(offSize);
@@ -157,15 +158,22 @@ public class CFFParser
             {
                 throw new IOException("illegal offset value " + offset + " in CFF font");
             }
-            index.setOffset(i, offset);
+            offsets[i] = offset;
         }
-        int dataSize = index.getOffset(count) - index.getOffset(0);
-        index.initData(dataSize);
-        for (int i = 0; i < dataSize; i++)
+        int dataSize = offsets[count] - offsets[0];
+        byte[] data = input.readBytes(dataSize);
+        
+        for (int i = 0; i < count; i++)
         {
-            index.setData(i, (byte) input.readCard8());
+            int length = offsets[i + 1] - offsets[i];
+            byte[] bytes = new byte[length];
+            for (int j = 0; j < length; j++)
+            {
+                bytes[j] = data[offsets[i] - 1 + j];
+            }
+            indexDataValues.add(bytes);
         }
-        return index;
+        return indexDataValues;
     }
 
     private static DictData readDictData(CFFDataInput input) throws IOException
@@ -330,11 +338,11 @@ public class CFFParser
     private CFFFont parseFont(int index) throws IOException
     {
         // name index
-        DataInput nameInput = new DataInput(nameIndex.getBytes(index));
+        DataInput nameInput = new DataInput(nameIndex.get(index));
         String name = nameInput.getString();
 
         // top dict
-        CFFDataInput topDictInput = new CFFDataInput(topDictIndex.getBytes(index));
+        CFFDataInput topDictInput = new CFFDataInput(topDictIndex.get(index));
         DictData topDict = readDictData(topDictInput);
 
         // we dont't support synthetic fonts
@@ -390,8 +398,8 @@ public class CFFParser
         DictData.Entry charStringsEntry = topDict.getEntry("CharStrings");
         int charStringsOffset = charStringsEntry.getNumber(0).intValue();
         input.setPosition(charStringsOffset);
-        IndexData charStringsIndex = readIndexData(input);
-
+        List<byte[]> charStringsIndex = readIndexData(input);
+        
         // charset
         DictData.Entry charsetEntry = topDict.getEntry("charset");
         CFFCharset charset;
@@ -413,7 +421,7 @@ public class CFFParser
             else
             {
                 input.setPosition(charsetId);
-                charset = readCharset(input, charStringsIndex.getCount(), isCIDFont);
+                charset = readCharset(input, charStringsIndex.size(), isCIDFont);
             }
         }
         else
@@ -421,7 +429,7 @@ public class CFFParser
             if (isCIDFont)
             {
                 // a CID font with no charset does not default to any predefined charset
-                charset = new EmptyCharset(charStringsIndex.getCount());
+                charset = new EmptyCharset(charStringsIndex.size());
             }
             else
             {
@@ -431,17 +439,12 @@ public class CFFParser
         font.setCharset(charset);
 
         // charstrings dict
-        font.charStrings.add(charStringsIndex.getBytes(0)); // .notdef
-        for (int i = 1; i < charStringsIndex.getCount(); i++)
-        {
-            byte[] bytes = charStringsIndex.getBytes(i);
-            font.charStrings.add(bytes);
-        }
+        font.charStrings.addAll(charStringsIndex);
 
         // format-specific dictionaries
         if (isCIDFont)
         {
-            parseCIDFontDicts(topDict, (CFFCIDFont) font, charStringsIndex);
+            parseCIDFontDicts(topDict, (CFFCIDFont) font, charStringsIndex.size());
 
             // some malformed fonts have FontMatrix in their Font DICT, see PDFBOX-2495
             if (topDict.getEntry("FontMatrix") == null)
@@ -472,7 +475,7 @@ public class CFFParser
     /**
      * Parse dictionaries specific to a CIDFont.
      */
-    private void parseCIDFontDicts(DictData topDict, CFFCIDFont font, IndexData charStringsIndex)
+    private void parseCIDFontDicts(DictData topDict, CFFCIDFont font, int nrOfcharStrings)
             throws IOException
     {
         // In a CIDKeyed Font, the Private dictionary isn't in the Top Dict but in the Font dict
@@ -486,14 +489,14 @@ public class CFFParser
         // font dict index
         int fontDictOffset = fdArrayEntry.getNumber(0).intValue();
         input.setPosition(fontDictOffset);
-        IndexData fdIndex = readIndexData(input);
+        List<byte[]> fdIndex = readIndexData(input);
 
         List<Map<String, Object>> privateDictionaries = new LinkedList<Map<String, Object>>();
         List<Map<String, Object>> fontDictionaries = new LinkedList<Map<String, Object>>();
 
-        for (int i = 0; i < fdIndex.getCount(); ++i)
+        for (int i = 0; i < fdIndex.size(); ++i)
         {
-            byte[] bytes = fdIndex.getBytes(i);
+            byte[] bytes = fdIndex.get(i);
             CFFDataInput fontDictInput = new CFFDataInput(bytes);
             DictData fontDict = readDictData(fontDictInput);
 
@@ -526,13 +529,12 @@ public class CFFParser
             int localSubrOffset = (Integer) getNumber(privateDict, "Subrs", 0);
             if (localSubrOffset == 0)
             {
-                privDict.put("Subrs", new IndexData(0));
+                privDict.put("Subrs", new ArrayList<byte[]>());
             }
             else
             {
                 input.setPosition(privateOffset + localSubrOffset);
-                IndexData idx = readIndexData(input);
-                privDict.put("Subrs", idx);
+                privDict.put("Subrs", readIndexData(input));
             }
         }
 
@@ -540,7 +542,7 @@ public class CFFParser
         DictData.Entry fdSelectEntry = topDict.getEntry("FDSelect");
         int fdSelectPos = fdSelectEntry.getNumber(0).intValue();
         input.setPosition(fdSelectPos);
-        FDSelect fdSelect = readFDSelect(input, charStringsIndex.getCount(), font);
+        FDSelect fdSelect = readFDSelect(input, nrOfcharStrings, font);
 
         // TODO almost certainly erroneous - CIDFonts do not have a top-level private dict
         // font.addValueToPrivateDict("defaultWidthX", 1000);
@@ -622,7 +624,7 @@ public class CFFParser
         int localSubrOffset = (Integer) getNumber(privateDict, "Subrs", 0);
         if (localSubrOffset == 0)
         {
-            font.addToPrivateDict("Subrs", new IndexData(0));
+            font.addToPrivateDict("Subrs", new ArrayList<byte[]>());
         }
         else
         {
@@ -637,9 +639,9 @@ public class CFFParser
         {
             return CFFStandardString.getName(index);
         }
-        if (index - 391 < stringIndex.getCount())
+        if (index - 391 < stringIndex.size())
         {
-            DataInput dataInput = new DataInput(stringIndex.getBytes(index - 391));
+            DataInput dataInput = new DataInput(stringIndex.get(index - 391));
             return dataInput.getString();
         }
         else

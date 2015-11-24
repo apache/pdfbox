@@ -191,9 +191,9 @@ public class CFFType1Font extends CFFFont implements EncodedFont
         this.encoding = encoding;
     }
 
-    private IndexData getLocalSubrIndex()
+    private List<byte[]> getLocalSubrIndex()
     {
-        return (IndexData)privateDict.get("Subrs");
+        return (List<byte[]>)privateDict.get("Subrs");
     }
 
     // helper for looking up keys/values
