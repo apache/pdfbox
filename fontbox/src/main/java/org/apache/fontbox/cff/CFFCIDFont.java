@@ -19,6 +19,7 @@ package org.apache.fontbox.cff;
 
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -202,15 +203,15 @@ public class CFFCIDFont extends CFFFont
      *
      * @param gid GID
      */
-    private IndexData getLocalSubrIndex(int gid)
+    private List<byte[]> getLocalSubrIndex(int gid)
     {
         int fdArrayIndex = this.fdSelect.getFDIndex(gid);
         if (fdArrayIndex == -1)
         {
-            return new IndexData(0);
+            return new ArrayList<byte[]>();
         }
         Map<String, Object> privDict = this.privateDictionaries.get(fdArrayIndex);
-        return (IndexData)privDict.get("Subrs");
+        return (List<byte[]>)privDict.get("Subrs");
     }
 
     /**

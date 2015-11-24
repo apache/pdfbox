@@ -38,7 +38,7 @@ public abstract class CFFFont implements FontBoxFont
     protected final Map<String, Object> topDict = new LinkedHashMap<String, Object>();
     protected CFFCharset charset;
     protected final List<byte[]> charStrings = new ArrayList<byte[]>();
-    protected IndexData globalSubrIndex;
+    protected List<byte[]> globalSubrIndex;
     private byte[] data;
 
     /**
@@ -160,19 +160,19 @@ public abstract class CFFFont implements FontBoxFont
     /**
      * Sets the global subroutine index data.
      * 
-     * @param globalSubrIndexValue the IndexData object containing the global subroutines
+     * @param globalSubrIndexValue an list containing the global subroutines
      */
-    void setGlobalSubrIndex(IndexData globalSubrIndexValue)
+    void setGlobalSubrIndex(List<byte[]> globalSubrIndexValue)
     {
         globalSubrIndex = globalSubrIndexValue;
     }
 
     /**
-     * Returns the global subroutine index data.
+     * Returns the list containing the global subroutine .
      * 
      * @return the dictionary
      */
-    public IndexData getGlobalSubrIndex()
+    public List<byte[]> getGlobalSubrIndex()
     {
         return globalSubrIndex;
     }
