@@ -147,7 +147,7 @@ class PDFTextStreamEngine extends PDFStreamEngine
         Matrix textMatrix = getTextMatrix();
 
         BoundingBox bbox = font.getBoundingBox();
-        if (bbox.getLowerLeftY() <= Short.MAX_VALUE)
+        if (bbox.getLowerLeftY() < Short.MIN_VALUE)
         {
             // PDFBOX-2158 and PDFBOX-3130
             // files by Salmat eSolutions / ClibPDF Library
