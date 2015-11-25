@@ -151,7 +151,7 @@ class PDFTextStreamEngine extends PDFStreamEngine
         {
             // PDFBOX-2158 and PDFBOX-3130
             // files by Salmat eSolutions / ClibPDF Library
-            bbox.setLowerLeftY(bbox.getLowerLeftY() + 65536);
+            bbox.setLowerLeftY(- (bbox.getLowerLeftY() + 65536));
         }
         // 1/2 the bbox is used as the height todo: why?
         float glyphHeight = bbox.getHeight() / 2;
