@@ -360,8 +360,8 @@ public class TestTextStripper extends TestCase
                 // Compute diff. Get the Patch object. Patch is the container for computed deltas.
                 Patch patch = DiffUtils.diff(original, revised);
 
-                PrintStream diffPS = new PrintStream(diffFile);
-                for (Object delta : (List<ChangeDelta>) patch.getDeltas())
+                PrintStream diffPS = new PrintStream(diffFile, ENCODING);
+                for (Object delta : patch.getDeltas())
                 {
                     if (delta instanceof ChangeDelta)
                     {
