@@ -54,6 +54,7 @@ import org.apache.pdfbox.contentstream.operator.text.SetTextRenderingMode;
 import org.apache.pdfbox.contentstream.operator.text.SetTextRise;
 import org.apache.pdfbox.contentstream.operator.text.SetWordSpacing;
 import org.apache.pdfbox.contentstream.operator.text.ShowText;
+import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
 
 /**
  * PDFStreamEngine subclass for advanced processing of text via TextPosition.
@@ -155,6 +156,17 @@ class PDFTextStreamEngine extends PDFStreamEngine
         }
         // 1/2 the bbox is used as the height todo: why?
         float glyphHeight = bbox.getHeight() / 2;
+        
+        // sometimes the bbox has very high values, but CapHeight is OK
+        PDFontDescriptor fontDescriptor = font.getFontDescriptor();
+        if (fontDescriptor != null)
+        {
+            float capHeight = fontDescriptor.getCapHeight();
+            if (capHeight != 0 && capHeight < glyphHeight)
+            {
+                glyphHeight = capHeight;
+            }
+        }
 
         // transformPoint from glyph space -> text space
         float height = font.getFontMatrix().transformPoint(0, glyphHeight).y;
