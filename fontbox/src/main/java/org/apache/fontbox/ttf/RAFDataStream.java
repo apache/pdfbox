@@ -18,7 +18,6 @@ package org.apache.fontbox.ttf;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
@@ -32,7 +31,7 @@ class RAFDataStream extends TTFDataStream
 {
     private RandomAccessFile raf = null;
     private File ttfFile = null;
-    private final int BUFFERSIZE = 16384;
+    private static final int BUFFERSIZE = 16384;
     
     /**
      * Constructor.
@@ -40,7 +39,7 @@ class RAFDataStream extends TTFDataStream
      * @param name The raf file.
      * @param mode The mode to open the RAF.
      * 
-     * @throws FileNotFoundException If there is a problem creating the RAF.
+     * @throws IOException If there is a problem creating the RAF.
      * 
      * @see RandomAccessFile#RandomAccessFile( String, String )
      */
@@ -55,7 +54,7 @@ class RAFDataStream extends TTFDataStream
      * @param file The raf file.
      * @param mode The mode to open the RAF.
      * 
-     * @throws FileNotFoundException If there is a problem creating the RAF.
+     * @throws IOException If there is a problem creating the RAF.
      * 
      * @see RandomAccessFile#RandomAccessFile( File, String )
      */
