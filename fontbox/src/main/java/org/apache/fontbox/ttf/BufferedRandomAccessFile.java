@@ -16,6 +16,7 @@
 package org.apache.fontbox.ttf;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
@@ -35,19 +36,19 @@ public class BufferedRandomAccessFile extends RandomAccessFile
     /**
      * Uses a byte instead of a char buffer for efficiency reasons.
      */
-    private byte buffer[];
-    private int buf_end = 0;
-    private int buf_pos = 0;
+    private final byte buffer[];
+    private int bufend = 0;
+    private int bufpos = 0;
     
     /**
      * The position inside the actual file.
      */
-    private long real_pos = 0;
+    private long realpos = 0;
     
     /**
      * Buffer size.
      */
-    private final int BUF_SIZE;
+    private final int BUFSIZE;
 
     /**
      * Creates a new instance of the BufferedRandomAccessFile.
@@ -56,65 +57,75 @@ public class BufferedRandomAccessFile extends RandomAccessFile
      * @param mode Specifies the mode to use ("r", "rw", etc.) See the BufferedLineReader
      * documentation for more information.
      * @param bufsize The buffer size (in bytes) to use.
-     * @throws IOException
+     * @throws FileNotFoundException If the mode is "r" but the given string does not denote an
+     * existing regular file, or if the mode begins with "rw" but the given string does not denote
+     * an existing, writable regular file and a new regular file of that name cannot be created, or
+     * if some other error occurs while opening or creating the file.
      */
     public BufferedRandomAccessFile(String filename, String mode, int bufsize)
-            throws IOException
+            throws FileNotFoundException
     {
         super(filename, mode);
-        invalidate();
-        BUF_SIZE = bufsize;
-        buffer = new byte[BUF_SIZE];
-    }
-
-    public BufferedRandomAccessFile(File file, String mode, int bufsize)
-            throws IOException
-    {
-        this(file.getAbsolutePath(), mode, bufsize);
+        BUFSIZE = bufsize;
+        buffer = new byte[BUFSIZE];
     }
 
     /**
-     * Reads one byte form the current position
+     * Creates a new instance of the BufferedRandomAccessFile.
      *
-     * @return The read byte or -1 in case the end was reached.
+     * @param file The file to open.
+     * @param mode Specifies the mode to use ("r", "rw", etc.) See the BufferedLineReader
+     * documentation for more information.
+     * @param bufsize The buffer size (in bytes) to use.
+     * @throws FileNotFoundException If the mode is "r" but the given file path does not denote an
+     * existing regular file, or if the mode begins with "rw" but the given file path does not denote
+     * an existing, writable regular file and a new regular file of that name cannot be created, or
+     * if some other error occurs while opening or creating the file.
+     */
+    public BufferedRandomAccessFile(File file, String mode, int bufsize)
+            throws FileNotFoundException
+    {
+        super(file, mode);
+        BUFSIZE = bufsize;
+        buffer = new byte[BUFSIZE];
+    }
+
+    /**
+     * {@inheritDoc}
      */
     @Override
     public final int read() throws IOException
     {
-        if (buf_pos >= buf_end)
-        {
-            if (fillBuffer() < 0)
-            {
-                return -1;
-            }
-        }
-        if (buf_end == 0)
+        if (bufpos >= bufend && fillBuffer() < 0)
         {
             return -1;
         }
-        else
+        if (bufend == 0)
         {
-            // FIX to handle unsigned bytes
-            return (buffer[buf_pos++] + 256) & 0xFF;
-            // End of fix
+            return -1;
         }
+        // FIX to handle unsigned bytes
+        return (buffer[bufpos++] + 256) & 0xFF;
+        // End of fix
     }
 
     /**
-     * Reads the next BUF_SIZE bytes into the internal buffer.
+     * Reads the next BUFSIZE bytes into the internal buffer.
      *
-     * @return
-     * @throws IOException
+     * @return The total number of bytes read into the buffer, or -1 if there is no more data
+     * because the end of the file has been reached.
+     * @throws IOException If the first byte cannot be read for any reason other than end of file,
+     * or if the random access file has been closed, or if some other I/O error occurs.
      */
     private int fillBuffer() throws IOException
     {
-        int n = super.read(buffer, 0, BUF_SIZE);
+        int n = super.read(buffer, 0, BUFSIZE);
 
         if (n >= 0)
         {
-            real_pos += n;
-            buf_end = n;
-            buf_pos = 0;
+            realpos += n;
+            bufend = n;
+            bufpos = 0;
         }
         return n;
     }
@@ -122,31 +133,26 @@ public class BufferedRandomAccessFile extends RandomAccessFile
     /**
      * Clears the local buffer.
      *
-     * @throws IOException
+     * @throws IOException If an I/O error occurs.
      */
     private void invalidate() throws IOException
     {
-        buf_end = 0;
-        buf_pos = 0;
-        real_pos = super.getFilePointer();
+        bufend = 0;
+        bufpos = 0;
+        realpos = super.getFilePointer();
     }
 
     /**
-     * Reads the set number of bytes into the passed buffer.
-     *
-     * @param b The buffer to read the bytes into.
-     * @param off Byte offset within the file to start reading from
-     * @param len Number of bytes to read into the buffer.
-     * @return Number of bytes read.
+     * {@inheritDoc}
      */
     @Override
     public int read(byte b[], int off, int len) throws IOException
     {
-        int leftover = buf_end - buf_pos;
+        int leftover = bufend - bufpos;
         if (len <= leftover)
         {
-            System.arraycopy(buffer, buf_pos, b, off, len);
-            buf_pos += len;
+            System.arraycopy(buffer, bufpos, b, off, len);
+            bufpos += len;
             return len;
         }
         for (int i = 0; i < len; i++)
@@ -165,29 +171,24 @@ public class BufferedRandomAccessFile extends RandomAccessFile
     }
 
     /**
-     * Returns the current position of the pointer in the file.
-     *
-     * @return The byte position of the pointer in the file.
+     * {@inheritDoc}
      */
     @Override
     public long getFilePointer() throws IOException
     {
-        long l = real_pos;
-        return (l - buf_end + buf_pos);
+        return realpos - bufend + bufpos;
     }
 
     /**
-     * Moves the internal pointer to the passed (byte) position in the file.
-     *
-     * @param pos The byte position to move to.
+     * {@inheritDoc}
      */
     @Override
     public void seek(long pos) throws IOException
     {
-        int n = (int) (real_pos - pos);
-        if (n >= 0 && n <= buf_end)
+        int n = (int) (realpos - pos);
+        if (n >= 0 && n <= bufend)
         {
-            buf_pos = buf_end - n;
+            bufpos = bufend - n;
         }
         else
         {
