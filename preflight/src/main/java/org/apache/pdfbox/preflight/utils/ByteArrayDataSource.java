@@ -29,7 +29,7 @@ import java.io.OutputStream;
 
 import javax.activation.DataSource;
 
-import org.apache.commons.io.IOUtils;
+import org.apache.pdfbox.io.IOUtils;
 
 public class ByteArrayDataSource implements DataSource
 {
@@ -40,7 +40,7 @@ public class ByteArrayDataSource implements DataSource
     public ByteArrayDataSource(InputStream is) throws IOException
     {
         data = new ByteArrayOutputStream();
-        IOUtils.copyLarge(is, data);
+        IOUtils.copy(is, data);
         IOUtils.closeQuietly(is);
     }
 

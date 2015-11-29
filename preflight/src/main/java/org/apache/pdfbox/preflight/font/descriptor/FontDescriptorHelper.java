@@ -45,10 +45,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
@@ -282,7 +282,7 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
         {
             bos = new ByteArrayOutputStream();
             metaDataContent = metadata.createInputStream();
-            IOUtils.copyLarge(metaDataContent, bos);
+            IOUtils.copy(metaDataContent, bos);
             result = bos.toByteArray();
         }
         catch (IOException e)
