@@ -23,7 +23,7 @@ package org.apache.xmpbox.schema;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import org.apache.commons.io.IOUtils;
+
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.type.JobType;
 import org.apache.xmpbox.type.StructuredType;
@@ -56,13 +56,6 @@ public class BasicJobTicketSchemaTest
         serializer = new XmpSerializer();
     }
 
-    private InputStream transfer(ByteArrayOutputStream out)
-    {
-        IOUtils.closeQuietly(out);
-        ByteArrayInputStream bis = new ByteArrayInputStream(out.toByteArray());
-        return bis;
-    }
-
     @Test
     public void testAddTwoJobs() throws Exception
     {
@@ -76,7 +69,7 @@ public class BasicJobTicketSchemaTest
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         serializer.serialize(metadata, bos, true);
-        InputStream is = transfer(bos);
+        InputStream is = new ByteArrayInputStream(bos.toByteArray());
         XMPMetadata rxmp = builder.parse(is);
 
         XMPBasicJobTicketSchema jt = rxmp.getBasicJobTicketSchema();
@@ -98,7 +91,7 @@ public class BasicJobTicketSchemaTest
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
         serializer.serialize(metadata, bos, true);
-        InputStream is = transfer(bos);
+        InputStream is = new ByteArrayInputStream(bos.toByteArray());
         XMPMetadata rxmp = builder.parse(is);
 
         XMPBasicJobTicketSchema jt = rxmp.getBasicJobTicketSchema();
@@ -130,7 +123,7 @@ public class BasicJobTicketSchemaTest
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         serializer.serialize(metadata, bos, true);
-        InputStream is = transfer(bos);
+        InputStream is = new ByteArrayInputStream(bos.toByteArray());
         XMPMetadata rxmp = builder.parse(is);
 
         XMPBasicJobTicketSchema jt = rxmp.getBasicJobTicketSchema();
