@@ -185,7 +185,7 @@ public class CFFParser
         DictData dict = new DictData();
         dict.entries = new ArrayList<DictData.Entry>();
         int endPosition = input.getPosition() + dictSize;
-        while (input.getPosition() <= endPosition)
+        while (input.getPosition() < endPosition)
         {
             DictData.Entry entry = readEntry(input);
             dict.entries.add(entry);
