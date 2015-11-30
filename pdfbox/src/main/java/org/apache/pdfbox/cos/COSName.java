@@ -93,6 +93,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName BLACK_POINT = new COSName("BlackPoint");
     public static final COSName BLEED_BOX = new COSName("BleedBox");
     public static final COSName BM = new COSName("BM");
+    public static final COSName BORDER = new COSName("Border");
     public static final COSName BOUNDS = new COSName("Bounds");
     public static final COSName BPC = new COSName("BPC");
     public static final COSName BS = new COSName("BS");
