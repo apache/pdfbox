@@ -35,11 +35,11 @@ final class UniUtil
         switch (hex.length())
         {
             case 1:
-                return "uni0" + hex;
+                return "uni000" + hex;
             case 2:
                 return "uni00" + hex;
             case 3:
-                return "uni000" + hex;
+                return "uni0" + hex;
             default:
                 return "uni" + hex;
         }
