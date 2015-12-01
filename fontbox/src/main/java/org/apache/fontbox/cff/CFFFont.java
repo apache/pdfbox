@@ -39,7 +39,7 @@ public abstract class CFFFont implements FontBoxFont
     protected CFFCharset charset;
     protected final List<byte[]> charStrings = new ArrayList<byte[]>();
     protected List<byte[]> globalSubrIndex;
-    private byte[] data;
+    private CFFParser.ByteSource source;
 
     /**
      * The name of the font.
@@ -127,6 +127,22 @@ public abstract class CFFFont implements FontBoxFont
     public final List<byte[]> getCharStringBytes()
     {
         return Collections.unmodifiableList(charStrings);
+    }
+
+    /**
+     * Sets a byte source to re-read the CFF data in the future.
+     */
+    final void setData(CFFParser.ByteSource source)
+    {
+        this.source = source;
+    }
+    
+    /**
+     * Returns the CFF data.
+     */
+    public byte[] getData() throws IOException
+    {
+        return source.getBytes();
     }
     
     /**
