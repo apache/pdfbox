@@ -41,12 +41,39 @@ public class CFFParser
     private List<String> nameIndex = null;
     private List<byte[]> topDictIndex = null;
     private List<String> stringIndex = null;
+    private ByteSource source;
     
     // for debugging only
-    private String debugFontName; 
+    private String debugFontName;
 
     /**
-     * Parsing CFF Font using a byte array as input.
+     * Source from which bytes may be read in the future.
+     */
+    public interface ByteSource
+    {
+        /**
+         * Returns the source bytes. May be called more than once.
+         */
+        byte[] getBytes() throws IOException;
+    }
+
+    /**
+     * Parse CFF font using byte array, also passing in a byte source for future use.
+     * 
+     * @param bytes source bytes
+     * @param source source to re-read bytes from in the future
+     * @return the parsed CFF fonts
+     * @throws IOException If there is an error reading from the stream
+     */
+    public List<CFFFont> parse(byte[] bytes, ByteSource source) throws IOException
+    {
+        this.source = source;
+        return parse(bytes);
+    }
+    
+    /**
+     * Parse CFF font using a byte array as input.
+     * 
      * @param bytes the given byte array
      * @return the parsed CFF fonts
      * @throws IOException If there is an error reading from the stream
@@ -115,6 +142,7 @@ public class CFFParser
         {
             CFFFont font = parseFont(i);
             font.setGlobalSubrIndex(globalSubrIndex);
+            font.setData(source);
             fonts.add(font);
         }
         return fonts;
