@@ -128,26 +128,6 @@ public abstract class CFFFont implements FontBoxFont
     {
         return Collections.unmodifiableList(charStrings);
     }
-
-    /**
-     * Sets the original data.
-     *
-     * @param data the original data.
-     */
-    void setData(byte[] data)
-    {
-        this.data = data;
-    }
-
-    /**
-     * Returns the the original data.
-     *
-     * @return the dictionary
-     */
-    public byte[] getData()
-    {
-        return data;
-    }
     
     /**
      * Returns the number of charstrings in the font.
