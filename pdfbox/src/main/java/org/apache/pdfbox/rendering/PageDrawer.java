@@ -24,6 +24,7 @@ import java.awt.GraphicsDevice;
 import java.awt.Paint;
 import java.awt.RenderingHints;
 import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.TexturePaint;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
@@ -827,6 +828,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     {
         lastClip = null;
         //TODO support more annotation flags (Invisible, NoZoom, NoRotate)
+        // Example for NoZoom can be found in p5 of PDFBOX-2348
         int deviceType = graphics.getDeviceConfiguration().getDevice().getType();
         if (deviceType == GraphicsDevice.TYPE_PRINTER && !annotation.isPrinted())
         {
@@ -841,6 +843,78 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             return;
         }
         super.showAnnotation(annotation);
+        
+        if (annotation instanceof PDAnnotationLink)
+        {
+            showAnnotationLinkBorder((PDAnnotationLink) annotation);
+        }
+    }
+
+    private void showAnnotationLinkBorder(PDAnnotationLink link) throws IOException
+    {
+        if (link.getAppearance() != null)
+        {
+            return;
+        }
+        COSArray border = link.getBorder();
+        PDBorderStyleDictionary borderStyle = link.getBorderStyle();
+        float width = 0;
+        float[] dashArray = null;
+        boolean underline = false;
+        if (borderStyle == null)
+        {
+            if (border.get(2) instanceof COSNumber)
+            {
+                width = ((COSNumber) border.getObject(2)).floatValue();
+            }
+            if (border.size() > 3)
+            {
+                COSBase base3 = border.getObject(3);
+                if (base3 instanceof COSArray)
+                {
+                    dashArray = ((COSArray) base3).toFloatArray();
+                }
+            }
+        }
+        else
+        {
+            width = borderStyle.getWidth();
+            if (borderStyle.getStyle().equals(PDBorderStyleDictionary.STYLE_DASHED))
+            {
+                dashArray = borderStyle.getDashStyle().getDashArray();
+            }
+            if (borderStyle.getStyle().equals(PDBorderStyleDictionary.STYLE_UNDERLINE))
+            {
+                underline = true;
+            }
+        }
+        if (width == 0)
+        {
+            return;
+        }
+        PDColor color = link.getColor();
+        if (color == null)
+        {
+            // spec is unclear, but black seems to be the right thing to do
+            color = new PDColor(new float[] { 0 }, PDDeviceGray.INSTANCE);
+        }
+        PDRectangle rectangle = link.getRectangle();
+        Stroke oldStroke = graphics.getStroke();
+        graphics.setPaint(getPaint(color));
+        BasicStroke stroke = new BasicStroke(width, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10, dashArray, 0);
+        graphics.setStroke(stroke);
+        graphics.setClip(null);
+        if (underline)
+        {
+            graphics.drawLine((int) rectangle.getLowerLeftX(), (int) rectangle.getLowerLeftY(),
+                    (int) (rectangle.getLowerLeftX() + rectangle.getWidth()), (int) rectangle.getLowerLeftY());
+        }
+        else
+        {
+            graphics.drawRect((int) rectangle.getLowerLeftX(), (int) rectangle.getLowerLeftY(),
+                    (int) rectangle.getWidth(), (int) rectangle.getHeight());
+        }
+        graphics.setStroke(oldStroke);
     }
 
     @Override
