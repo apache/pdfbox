@@ -529,6 +529,13 @@ public class CFFParser
             CFFDataInput fontDictInput = new CFFDataInput(bytes);
             DictData fontDict = readDictData(fontDictInput);
 
+            // read private dict
+            DictData.Entry privateEntry = fontDict.getEntry("Private");
+            if (privateEntry == null)
+            {
+                throw new IOException("Font DICT invalid without \"Private\" entry");
+            }
+
             // font dict
             Map<String, Object> fontDictMap = new LinkedHashMap<String, Object>(4);
             fontDictMap.put("FontName", getString(fontDict, "FontName"));
@@ -538,17 +545,10 @@ public class CFFParser
             // TODO OD-4 : Add here other keys
             fontDictionaries.add(fontDictMap);
 
-            // read private dict
-            DictData.Entry privateEntry = fontDict.getEntry("Private");
-            if (privateEntry == null)
-            {
-                throw new IOException("Font DICT invalid without \"Private\" entry");
-            }
             int privateOffset = privateEntry.getNumber(1).intValue();
             input.setPosition(privateOffset);
             int privateSize = privateEntry.getNumber(0).intValue();
-            CFFDataInput privateDictData = new CFFDataInput(input.readBytes(privateSize));
-            DictData privateDict = readDictData(privateDictData);
+            DictData privateDict = readDictData(input, privateSize);
 
             // populate private dict
             Map<String, Object> privDict = readPrivateDict(privateDict);
