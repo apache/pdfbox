@@ -29,8 +29,8 @@ import org.apache.fontbox.ttf.OpenTypeFont;
 public final class CIDFontMapping extends FontMapping<OpenTypeFont>
 {
     private final FontBoxFont ttf;
-    
-    CIDFontMapping(OpenTypeFont font, FontBoxFont fontBoxFont, boolean isFallback)
+
+    public CIDFontMapping(OpenTypeFont font, FontBoxFont fontBoxFont, boolean isFallback)
     {
         super(font, isFallback);
         this.ttf = fontBoxFont;
