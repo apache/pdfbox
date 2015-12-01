@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URI;
+import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -192,39 +193,45 @@ final class FileSystemFontProvider extends FontProvider
     FileSystemFontProvider(FontCache cache)
     {
         this.cache = cache;
+        try
+        {
+            if (LOG.isTraceEnabled())
+            {
+                LOG.trace("Will search the local system for fonts");
+            }
 
-        if (LOG.isTraceEnabled())
-        {
-            LOG.trace("Will search the local system for fonts");
-        }
+            // scan the local system for font files
+            List<File> files = new ArrayList<File>();
+            FontFileFinder fontFileFinder = new FontFileFinder();
+            List<URI> fonts = fontFileFinder.find();
+            for (URI font : fonts)
+            {
+                files.add(new File(font));
+            }
 
-        // scan the local system for font files
-        List<File> files = new ArrayList<File>();
-        FontFileFinder fontFileFinder = new FontFileFinder();
-        List<URI> fonts = fontFileFinder.find();
-        for (URI font : fonts)
-        {
-            files.add(new File(font));
-        }
+            if (LOG.isTraceEnabled())
+            {
+                LOG.trace("Found " + files.size() + " fonts on the local system");
+            }
 
-        if (LOG.isTraceEnabled())
-        {
-            LOG.trace("Found " + files.size() + " fonts on the local system");
+            // load cached FontInfo objects
+            List<FSFontInfo> cachedInfos = loadDiskCache(files);
+            if (cachedInfos != null && cachedInfos.size() > 0)
+            {
+                fontInfoList.addAll(cachedInfos);
+            }
+            else
+            {
+                LOG.warn("Building on-disk font cache, this may take a while");
+                scanFonts(files);
+                saveDiskCache();
+                LOG.warn("Finished building on-disk font cache, found " +
+                        fontInfoList.size() + " fonts");
+            }
         }
-        
-        // load cached FontInfo objects
-        List<FSFontInfo> cachedInfos = loadDiskCache(files);
-        if (cachedInfos != null && cachedInfos.size() > 0)
+        catch (AccessControlException e)
         {
-            fontInfoList.addAll(cachedInfos);
-        }
-        else
-        {
-            LOG.warn("Building on-disk font cache, this may take a while");
-            scanFonts(files);
-            saveDiskCache();
-            LOG.warn("Finished building on-disk font cache, found " +
-                     fontInfoList.size() + " fonts");
+            LOG.error("Error accessing the file system", e);
         }
     }
     
