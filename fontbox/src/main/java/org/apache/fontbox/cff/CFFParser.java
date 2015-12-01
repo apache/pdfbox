@@ -115,7 +115,6 @@ public class CFFParser
         {
             CFFFont font = parseFont(i);
             font.setGlobalSubrIndex(globalSubrIndex);
-            font.setData(bytes);
             fonts.add(font);
         }
         return fonts;
