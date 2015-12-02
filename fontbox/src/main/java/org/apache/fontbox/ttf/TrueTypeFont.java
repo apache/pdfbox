@@ -524,7 +524,14 @@ public class TrueTypeFont implements FontBoxFont, Closeable
         CmapTable cmapTable = getCmap();
         if (cmapTable == null)
         {
-            return null;
+            if (isStrict)
+            {
+                throw new IOException("The TrueType font does not contain a 'cmap' table");
+            }
+            else
+            {
+                return null;
+            }
         }
 
         CmapSubtable cmap = cmapTable.getSubtable(CmapTable.PLATFORM_UNICODE,
