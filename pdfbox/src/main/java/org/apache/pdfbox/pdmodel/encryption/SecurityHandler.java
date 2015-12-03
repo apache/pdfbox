@@ -245,6 +245,12 @@ public abstract class SecurityHandler
         byte[] iv = new byte[16];
 
         int ivSize = data.read(iv);
+
+        if (decrypt && ivSize == -1)
+        {
+            return;
+        }
+
         if (ivSize != iv.length)
         {
             throw new IOException(
@@ -314,7 +320,19 @@ public abstract class SecurityHandler
         if (decrypt)
         {
             // read IV from stream
-            data.read(iv);
+            int ivSize = data.read(iv);
+
+            if (ivSize == -1)
+            {
+                return;
+            }
+
+            if (ivSize != iv.length)
+            {
+                throw new IOException(
+                        "AES initialization vector not fully read: only "
+                        + ivSize + " bytes read instead of " + iv.length);
+            }
         }
         else
         {
