@@ -325,4 +325,33 @@ public class PDAnnotationMarkup extends PDAnnotation
         this.getCOSObject().setItem("ExData", externalData);
     }
 
+    /**
+     * This will set the border style dictionary, specifying the width and dash pattern used in drawing the line.
+     *
+     * @param bs the border style dictionary to set.
+     *
+     */
+    public void setBorderStyle(PDBorderStyleDictionary bs)
+    {
+        this.getCOSObject().setItem(COSName.BS, bs);
+    }
+
+    /**
+     * This will retrieve the border style dictionary, specifying the width and dash pattern used in drawing the line.
+     *
+     * @return the border style dictionary.
+     */
+    public PDBorderStyleDictionary getBorderStyle()
+    {
+        COSDictionary bs = (COSDictionary) this.getCOSObject().getItem(COSName.BS);
+        if (bs != null)
+        {
+            return new PDBorderStyleDictionary(bs);
+        }
+        else
+        {
+            return null;
+        }
+    }
+
 }
