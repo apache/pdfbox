@@ -865,12 +865,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
     }
 
-    private class AnnotationBorder
+    private static class AnnotationBorder
     {
-        float[] dashArray = null;
-        boolean underline = false;
-        float width = 0;
-        PDColor color;
+        private float[] dashArray = null;
+        private boolean underline = false;
+        private float width = 0;
+        private PDColor color;
     }
     
     // return border info. BorderStyle must be provided as parameter because
