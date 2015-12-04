@@ -262,13 +262,11 @@ public class PDFTextStripper extends PDFTextStreamEngine
      */
     protected void processPages(PDPageTree pages) throws IOException
     {
-        PDPageTree pagesTree = document.getPages();
-
         PDPage startBookmarkPage = startBookmark == null ? null
                 : startBookmark.findDestinationPage(document);
         if (startBookmarkPage != null)
         {
-            startBookmarkPageNumber = pagesTree.indexOf(startBookmarkPage) + 1;
+            startBookmarkPageNumber = pages.indexOf(startBookmarkPage) + 1;
         }
         else
         {
@@ -280,7 +278,7 @@ public class PDFTextStripper extends PDFTextStreamEngine
                 : endBookmark.findDestinationPage(document);
         if (endBookmarkPage != null)
         {
-            endBookmarkPageNumber = pagesTree.indexOf(endBookmarkPage) + 1;
+            endBookmarkPageNumber = pages.indexOf(endBookmarkPage) + 1;
         }
         else
         {
