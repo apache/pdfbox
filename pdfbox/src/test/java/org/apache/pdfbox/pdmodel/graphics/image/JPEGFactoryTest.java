@@ -17,11 +17,15 @@ package org.apache.pdfbox.pdmodel.graphics.image;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import javax.imageio.ImageIO;
 import junit.framework.TestCase;
+import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
@@ -29,6 +33,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.colorCount;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.doWritePDF;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.validate;
+import static org.junit.Assert.assertArrayEquals;
 
 /**
  * Unit tests for JPEGFactory
@@ -58,6 +63,7 @@ public class JPEGFactoryTest extends TestCase
         validate(ximage, 8, 344, 287, "jpg", PDDeviceRGB.INSTANCE.getName());
 
         doWritePDF(document, ximage, testResultsDir, "jpegrgbstream.pdf");
+        checkJpegStream(testResultsDir, "jpegrgbstream.pdf", JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg"));
     }
 
     /**
@@ -72,6 +78,7 @@ public class JPEGFactoryTest extends TestCase
         validate(ximage, 8, 344, 287, "jpg", PDDeviceGray.INSTANCE.getName());
 
         doWritePDF(document, ximage, testResultsDir, "jpeg256stream.pdf");
+        checkJpegStream(testResultsDir, "jpeg256stream.pdf", JPEGFactoryTest.class.getResourceAsStream("jpeg256.jpg"));
     }
 
     /**
@@ -190,5 +197,24 @@ public class JPEGFactoryTest extends TestCase
         assertTrue(colorCount(ximage.getSoftMask().getImage()) > image.getHeight() / 10);
 
         doWritePDF(document, ximage, testResultsDir, "jpeg-4bargb.pdf");
+    }
+
+    // check whether it is possible to extract the jpeg stream exactly 
+    // as it was passed to createFromStream
+    private void checkJpegStream(File testResultsDir, String filename, InputStream resourceStream)
+            throws IOException
+    {
+        PDDocument doc = PDDocument.load(new File(testResultsDir, filename));
+        PDImageXObject img =
+                (PDImageXObject) doc.getPage(0).getResources().getXObject(COSName.getPDFName("Im1"));
+        InputStream dctStream = img.createInputStream(Arrays.asList(COSName.DCT_DECODE.getName()));
+        ByteArrayOutputStream baos1 = new ByteArrayOutputStream();
+        ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
+        IOUtils.copy(resourceStream, baos1);
+        IOUtils.copy(dctStream, baos2);
+        resourceStream.close();
+        dctStream.close();
+        assertArrayEquals(baos1.toByteArray(), baos2.toByteArray());
+        doc.close();
     }
 }
