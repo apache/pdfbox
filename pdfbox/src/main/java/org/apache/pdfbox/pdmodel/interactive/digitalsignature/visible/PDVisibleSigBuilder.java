@@ -73,7 +73,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     public PDVisibleSigBuilder()
     {
         pdfStructure = new PDFTemplateStructure();
-        log.info("PDF Strucure has been Created");
+        log.info("PDF Structure has been created");
     }
 
     @Override
@@ -82,7 +82,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
         PDAcroForm theAcroForm = new PDAcroForm(template);
         template.getDocumentCatalog().setAcroForm(theAcroForm);
         pdfStructure.setAcroForm(theAcroForm);
-        log.info("Acro form page has been created");
+        log.info("AcroForm has been created");
     }
 
     @Override
@@ -145,7 +145,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
         rect.setLowerLeftX(properties.getxAxis());
         signatureField.getWidgets().get(0).setRectangle(rect);
         pdfStructure.setSignatureRectangle(rect);
-        log.info("rectangle of signature has been created");
+        log.info("Signature rectangle has been created");
     }
 
     @Override
@@ -195,7 +195,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     {
         PDStream holderForm = new PDStream(template);
         pdfStructure.setHolderFormStream(holderForm);
-        log.info("Holder form Stream has been created");
+        log.info("Holder form stream has been created");
     }
 
     @Override
@@ -233,7 +233,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
         signatureField.getWidgets().get(0).setAppearance(appearance);
 
         pdfStructure.setAppearanceDictionary(appearance);
-        log.info("PDF appereance Dictionary has been created");
+        log.info("PDF appearence Dictionary has been created");
     }
 
     @Override
@@ -322,7 +322,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
         innerFormResources.getCOSObject().setItem(COSName.PROC_SET, procSet);
         imageFormResources.getCOSObject().setItem(COSName.PROC_SET, procSet);
         holderFormResources.getCOSObject().setItem(COSName.PROC_SET, procSet);
-        log.info("inserted ProcSet to PDF");
+        log.info("Inserted ProcSet to PDF");
     }
 
     @Override
@@ -370,7 +370,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
         widgetDict.setItem(COSName.DR, holderFormResources.getCOSObject());
 
         pdfStructure.setWidgetDictionary(widgetDict);
-        log.info("WidgetDictionary has been crated");
+        log.info("WidgetDictionary has been created");
     }
 
     @Override
