@@ -18,11 +18,18 @@ package org.apache.pdfbox.pdmodel.graphics.xobject;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import javax.imageio.ImageIO;
 import junit.framework.TestCase;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.exceptions.COSVisitorException;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
@@ -32,6 +39,7 @@ import static org.apache.pdfbox.pdmodel.graphics.xobject.PDUtils.checkIdent;
 import static org.apache.pdfbox.pdmodel.graphics.xobject.PDUtils.colorCount;
 import static org.apache.pdfbox.pdmodel.graphics.xobject.PDUtils.createInterestingImage;
 import org.apache.pdfbox.util.ImageIOUtil;
+import static org.junit.Assert.assertArrayEquals;
 
 /**
  *
@@ -104,6 +112,7 @@ public class PDJpegTest extends TestCase
         document.save(pdfFile);
         document.close();
         document = PDDocument.loadNonSeq(pdfFile, null);
+        checkJpegStream(document, this.getClass().getResourceAsStream("jpeg.jpg"));
         document.close();
     }
 
@@ -139,6 +148,7 @@ public class PDJpegTest extends TestCase
         document.save(pdfFile);
         document.close();
         document = PDDocument.loadNonSeq(pdfFile, null);
+        checkJpegStream(document, this.getClass().getResourceAsStream("jpeg256.jpg"));
         document.close();
     }
 
@@ -340,4 +350,21 @@ public class PDJpegTest extends TestCase
         assertTrue(writeOk);
     }
 
+    // check whether it is possible to extract the jpeg stream exactly 
+    // as it was passed to createFromStream
+    private void checkJpegStream(PDDocument doc, InputStream resourceStream)
+            throws IOException
+    {
+        Map<String, PDXObject> xObjectMap = 
+                ((List<PDPage>) doc.getDocumentCatalog().getAllPages()).get(0).getResources().getXObjects();
+        PDXObjectImage ximage = (PDXObjectImage) xObjectMap.get("Im0");
+        InputStream dctStream = ximage.getPDStream().getPartiallyFilteredStream(Arrays.asList(COSName.DCT_DECODE.getName()));
+        ByteArrayOutputStream baos1 = new ByteArrayOutputStream();
+        ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
+        IOUtils.copy(resourceStream, baos1);
+        IOUtils.copy(dctStream, baos2);
+        resourceStream.close();
+        dctStream.close();
+        assertArrayEquals(baos1.toByteArray(), baos2.toByteArray());
+    }
 }
