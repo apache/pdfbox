@@ -44,7 +44,7 @@ public class SignatureOptions implements Closeable
     }
 
     /**
-     * Set the page number.
+     * Set the 0-based page number.
      * 
      * @param pageNo the page number
      */
@@ -54,7 +54,7 @@ public class SignatureOptions implements Closeable
     }
   
     /**
-     * Get the page number.
+     * Get the 0-based page number.
      * 
      * @return the page number
      */
