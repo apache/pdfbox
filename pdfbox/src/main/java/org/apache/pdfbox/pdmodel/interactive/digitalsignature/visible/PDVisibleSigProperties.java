@@ -129,8 +129,9 @@ public class PDVisibleSigProperties
     }
 
     /**
-     * gets our preferred size
-     * @return the signature's preferred size.
+     * Gets the preferred signature size in bytes.
+     *
+     * @return the signature's preferred size. A return value of 0 means to use default.
      */
     public int getPreferredSize()
     {
@@ -138,8 +139,9 @@ public class PDVisibleSigProperties
     }
 
     /**
-     * sets our preferred size
-     * @param preferredSize
+     * Sets the preferred signature size in bytes.
+     *
+     * @param preferredSize The preferred signature size in bytes, or 0 to use default.
      * @return the visible signature properties.
      */
     public PDVisibleSigProperties preferredSize(int preferredSize)
