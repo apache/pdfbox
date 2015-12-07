@@ -131,6 +131,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
         {
             options = new SignatureOptions();
             options.setVisualSignature(visibleSignatureProperties);
+            options.setPage(visibleSignatureProperties.getPage() - 1);
             doc.addSignature(signature, this, options);
         }
         else
@@ -179,8 +180,10 @@ public class CreateVisibleSignature extends CreateSignatureBase
             String substring = name.substring(0, name.lastIndexOf('.'));
             File signedDocumentFile = new File(documentFile.getParent(), substring + "_signed.pdf");
 
-            signing.setVisibleSignatureProperties (args[2], 0, 0, -50, image, 1);
-            signing.setSignatureProperties ("name", "location", "Security", 0, 1, true);
+            // page is 1-based here
+            int page = 1;
+            signing.setVisibleSignatureProperties (args[2], 0, 0, -50, image, page);
+            signing.setSignatureProperties ("name", "location", "Security", 0, page, true);
             signing.signPDF(documentFile, signedDocumentFile);
         }
     }
