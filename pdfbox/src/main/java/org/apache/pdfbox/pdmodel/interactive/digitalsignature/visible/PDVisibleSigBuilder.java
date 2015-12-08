@@ -272,7 +272,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     {
         COSName name = holderFormResources.add(innerForm, "FRM");
         pdfStructure.setInnerFormName(name);
-        log.info("Alerady inserted inner form  inside holder form");
+        log.info("Already inserted inner form inside holder form");
     }
 
     @Override
@@ -341,7 +341,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
 
         appendRawCommands(pdfStructure.getHolderFormStream().createOutputStream(),
                 holderFormComment);
-        appendRawCommands(pdfStructure.getInnterFormStream().createOutputStream(),
+        appendRawCommands(pdfStructure.getInnerFormStream().createOutputStream(),
                 innerFormComment);
         appendRawCommands(pdfStructure.getImageFormStream().createOutputStream(),
                 imgFormComment);
