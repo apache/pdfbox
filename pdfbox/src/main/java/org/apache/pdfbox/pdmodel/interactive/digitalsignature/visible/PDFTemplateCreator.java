@@ -88,7 +88,7 @@ public class PDFTemplateCreator
         pdfBuilder.createAcroForm(template);
         PDAcroForm acroForm = pdfStructure.getAcroForm();
 
-        // AcroForm contains singature fields
+        // AcroForm contains signature fields
         pdfBuilder.createSignatureField(acroForm);
         PDSignatureField pdSignatureField = pdfStructure.getSignatureField();
         

@@ -96,7 +96,7 @@ public interface PDFTemplateBuilder
             throws IOException;
 
     /**
-     * Creates SingatureRectangle.
+     * Creates SignatureRectangle.
      * 
      * @param signatureField
      * @param properties

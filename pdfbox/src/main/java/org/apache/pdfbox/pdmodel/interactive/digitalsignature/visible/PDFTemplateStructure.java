@@ -52,7 +52,7 @@ public class PDFTemplateStructure
     private PDSignatureField signatureField;
     private PDSignature pdSignature;
     private COSDictionary acroFormDictionary;
-    private PDRectangle singatureRectangle;
+    private PDRectangle signatureRectangle;
     private AffineTransform affineTransform;
     private COSArray procSet;
     private PDImageXObject image;
@@ -193,18 +193,18 @@ public class PDFTemplateStructure
      * Gets SignatureRectangle
      * @return the rectangle for the signature
      */
-    public PDRectangle getSingatureRectangle()
+    public PDRectangle getSignatureRectangle()
     {
-        return singatureRectangle;
+        return signatureRectangle;
     }
 
     /**
      * Sets SignatureRectangle
-     * @param singatureRectangle
+     * @param signatureRectangle
      */
-    public void setSignatureRectangle(PDRectangle singatureRectangle)
+    public void setSignatureRectangle(PDRectangle signatureRectangle)
     {
-        this.singatureRectangle = singatureRectangle;
+        this.signatureRectangle = signatureRectangle;
     }
 
     /**
