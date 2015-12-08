@@ -33,7 +33,7 @@ import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
-import org.apache.pdfbox.pdmodel.graphics.image.JPEGFactory;
+import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
@@ -173,7 +173,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     @Override
     public void createSignatureImage(PDDocument template, BufferedImage image) throws IOException
     {
-        pdfStructure.setImage(JPEGFactory.createFromImage(template, image));
+        pdfStructure.setImage(LosslessFactory.createFromImage(template, image));
         log.info("Visible Signature Image has been created");
     }
 
