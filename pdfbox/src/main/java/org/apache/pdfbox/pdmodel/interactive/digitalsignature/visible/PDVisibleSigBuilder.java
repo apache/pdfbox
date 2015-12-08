@@ -267,7 +267,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     }
 
     @Override
-    public void insertInnerFormToHolerResources(PDFormXObject innerForm,
+    public void insertInnerFormToHolderResources(PDFormXObject innerForm,
                                                 PDResources holderFormResources)
     {
         COSName name = holderFormResources.add(innerForm, "FRM");

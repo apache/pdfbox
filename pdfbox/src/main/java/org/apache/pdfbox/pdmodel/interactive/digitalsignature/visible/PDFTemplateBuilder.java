@@ -180,7 +180,7 @@ public interface PDFTemplateBuilder
      * @param innerForm
      * @param holderFormResources
      */
-    void insertInnerFormToHolerResources(PDFormXObject innerForm,
+    void insertInnerFormToHolderResources(PDFormXObject innerForm,
             PDResources holderFormResources);
 
     /**
