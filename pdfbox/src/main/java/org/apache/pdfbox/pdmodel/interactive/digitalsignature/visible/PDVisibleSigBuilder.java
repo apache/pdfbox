@@ -233,7 +233,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
         signatureField.getWidgets().get(0).setAppearance(appearance);
 
         pdfStructure.setAppearanceDictionary(appearance);
-        log.info("PDF appearence Dictionary has been created");
+        log.info("PDF appearance dictionary has been created");
     }
 
     @Override
@@ -241,7 +241,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     {
         PDStream innterFormStream = new PDStream(template);
         pdfStructure.setInnterFormStream(innterFormStream);
-        log.info("Stream of another form (inner form - it would be inside holder form) " +
+        log.info("Stream of another form (inner form - it will be inside holder form) " +
                  "has been created");
     }
 
@@ -250,7 +250,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     {
         PDResources innerFormResources = new PDResources();
         pdfStructure.setInnerFormResources(innerFormResources);
-        log.info("Resources of another form (inner form - it would be inside holder form)" +
+        log.info("Resources of another form (inner form - it will be inside holder form)" +
                  "have been created");
     }
 
@@ -263,16 +263,16 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
         innerForm.setBBox(formrect);
         innerForm.setFormType(1);
         pdfStructure.setInnerForm(innerForm);
-        log.info("Another form (inner form - it would be inside holder form) have been created");
+        log.info("Another form (inner form - it will be inside holder form) has been created");
     }
 
     @Override
     public void insertInnerFormToHolderResources(PDFormXObject innerForm,
                                                 PDResources holderFormResources)
     {
-        COSName name = holderFormResources.add(innerForm, "FRM");
-        pdfStructure.setInnerFormName(name);
-        log.info("Already inserted inner form inside holder form");
+        COSName innerFormName = holderFormResources.add(innerForm, "FRM");
+        pdfStructure.setInnerFormName(innerFormName);
+        log.info("Now inserted inner form inside holder form");
     }
 
     @Override
@@ -280,7 +280,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     {
         PDStream imageFormStream = new PDStream(template);
         pdfStructure.setImageFormStream(imageFormStream);
-        log.info("Created image form Stream");
+        log.info("Created image form stream");
     }
 
     @Override
@@ -288,7 +288,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     {
         PDResources imageFormResources = new PDResources();
         pdfStructure.setImageFormResources(imageFormResources);
-        log.info("Created image form Resources");
+        log.info("Created image form resources");
     }
 
     @Override
@@ -345,7 +345,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
                 innerFormComment);
         appendRawCommands(pdfStructure.getImageFormStream().createOutputStream(),
                 imgFormComment);
-        log.info("Injected apereance stream to pdf");
+        log.info("Injected appearance stream to pdf");
     }
 
     public void appendRawCommands(OutputStream os, String commands) throws IOException
