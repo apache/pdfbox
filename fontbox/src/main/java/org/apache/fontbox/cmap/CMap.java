@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -48,7 +47,7 @@ public class CMap
 
     // CID mappings
     private final Map<Integer,Integer> codeToCid = new HashMap<Integer,Integer>();
-    private final List<CIDRange> codeToCidRanges = new LinkedList<CIDRange>();
+    private final List<CIDRange> codeToCidRanges = new ArrayList<CIDRange>();
 
     private static final String SPACE = " ";
     private int spaceMapping = -1;
@@ -261,7 +260,7 @@ public class CMap
      */
     void addCIDRange(char from, char to, int cid)
     {
-        codeToCidRanges.add(0, new CIDRange(from, to, cid));
+        codeToCidRanges.add(new CIDRange(from, to, cid));
     }
 
     /**
