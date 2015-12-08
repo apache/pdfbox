@@ -360,7 +360,7 @@ public class PDFTemplateStructure
      * Gets Inner form Stream.
      * @return the inner form stream
      */
-    public PDStream getInnterFormStream()
+    public PDStream getInnerFormStream()
     {
         return innterFormStream;
     }

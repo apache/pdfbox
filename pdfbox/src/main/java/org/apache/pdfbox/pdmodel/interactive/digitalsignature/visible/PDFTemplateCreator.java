@@ -122,7 +122,7 @@ public class PDFTemplateCreator
         pdfBuilder.createInnerFormStream(template);
         pdfBuilder.createInnerFormResource();
         PDResources innerFormResource = pdfStructure.getInnerFormResources();
-        pdfBuilder.createInnerForm(innerFormResource, pdfStructure.getInnterFormStream(), formater);
+        pdfBuilder.createInnerForm(innerFormResource, pdfStructure.getInnerFormStream(), formater);
         PDFormXObject innerForm = pdfStructure.getInnerForm();
        
         // inner form must be in the holder form as we wrote
