@@ -56,7 +56,7 @@ public class PDFTemplateStructure
     private AffineTransform affineTransform;
     private COSArray procSet;
     private PDImageXObject image;
-    private PDRectangle formaterRectangle;
+    private PDRectangle formatterRectangle;
     private PDStream holderFormStream;
     private PDResources holderFormResources;
     private PDFormXObject holderForm;
@@ -265,18 +265,18 @@ public class PDFTemplateStructure
      * Gets formatter rectangle
      * @return the formatter rectangle
      */
-    public PDRectangle getFormaterRectangle()
+    public PDRectangle getFormatterRectangle()
     {
-        return formaterRectangle;
+        return formatterRectangle;
     }
 
     /**
      * Sets formatter rectangle
-     * @param formaterRectangle
+     * @param formatterRectangle
      */
-    public void setFormaterRectangle(PDRectangle formaterRectangle)
+    public void setFormatterRectangle(PDRectangle formatterRectangle)
     {
-        this.formaterRectangle = formaterRectangle;
+        this.formatterRectangle = formatterRectangle;
     }
 
     /**

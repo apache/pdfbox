@@ -122,7 +122,7 @@ public interface PDFTemplateBuilder
      * 
      * @param params
      */
-    void createFormaterRectangle(byte[] params);
+    void createFormatterRectangle(byte[] params);
 
     /**
      * 

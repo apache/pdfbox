@@ -42,38 +42,38 @@ public class PDVisibleSignDesigner
     private float pageHeight;
     private float pageWidth;
     private BufferedImage image;
-    private String signatureFieldName = "sig"; // default
-    private byte[] formaterRectangleParams = { 0, 0, 100, 50 }; // default
-    private byte[] AffineTransformParams =   { 1, 0, 0, 1, 0, 0 }; // default
+    private String signatureFieldName = "sig";
+    private byte[] formatterRectangleParams = { 0, 0, 100, 50 };
+    private byte[] AffineTransformParams = { 1, 0, 0, 1, 0, 0 };
     private float imageSizeInPercents;
 
     /**
      * Constructor.
      *
      * @param filename Path of the PDF file
-     * @param jpegStream JPEG image as a stream
+     * @param imageStream image as a stream
      * @param page The 1-based page number for which the page size should be calculated.
      * @throws IOException
      */
-    public PDVisibleSignDesigner(String filename, InputStream jpegStream, int page)
+    public PDVisibleSignDesigner(String filename, InputStream imageStream, int page)
             throws IOException
     {
-        this(new FileInputStream(filename), jpegStream, page);
+        this(new FileInputStream(filename), imageStream, page);
     }
 
     /**
      * Constructor.
      *
      * @param documentStream Original PDF document as stream
-     * @param jpegStream JPEG image as a stream
+     * @param imageStream Image as a stream
      * @param page The 1-based page number for which the page size should be calculated.
      * @throws IOException
      */
-    public PDVisibleSignDesigner(InputStream documentStream, InputStream jpegStream, int page)
+    public PDVisibleSignDesigner(InputStream documentStream, InputStream imageStream, int page)
             throws IOException
     {
         // set visible singature image Input stream
-        signatureImageStream(jpegStream);
+        readImageStream(imageStream);
 
         // create PD document
         PDDocument document = PDDocument.load(documentStream);
@@ -87,15 +87,15 @@ public class PDVisibleSignDesigner
     /**
      * Constructor.
      *
-     * @param doc - Already created PDDocument of your PDF document
-     * @param jpegStream
+     * @param document Already created PDDocument of your PDF document.
+     * @param imageStream Image as a stream.
      * @param page The 1-based page number for which the page size should be calculated.
-     * @throws IOException - If we can't read, flush, or can't close stream
+     * @throws IOException If we can't read, flush, or can't close stream.
      */
-    public PDVisibleSignDesigner(PDDocument doc, InputStream jpegStream, int page) throws IOException
+    public PDVisibleSignDesigner(PDDocument document, InputStream imageStream, int page) throws IOException
     {
-        signatureImageStream(jpegStream);
-        calculatePageSize(doc, page);
+        readImageStream(imageStream);
+        calculatePageSize(document, page);
     }
 
     /**
@@ -118,35 +118,37 @@ public class PDVisibleSignDesigner
         pageHeight(mediaBox.getHeight());
         pageWidth = mediaBox.getWidth();
 
-        float x = this.pageWidth;
+        float x = pageWidth;
         float y = 0;
-        pageWidth = this.pageWidth + y;
+        pageWidth += y;
         float tPercent = (100 * y / (x + y));
         imageSizeInPercents = 100 - tPercent;
     }
 
     /**
-     *
-     * @param path  of image location
+     * Set the image for the signature.
+     * 
+     * @param path of image location
      * @return image Stream
      * @throws IOException
      */
     public PDVisibleSignDesigner signatureImage(String path) throws IOException
     {
         InputStream fin = new FileInputStream(path);
-        return signatureImageStream(fin);
+        readImageStream(fin);
+        return this;
     }
 
     /**
-     * zoom signature image with some percent.
+     * Zoom signature image with some percent.
      * 
      * @param percent increase image with x percent.
      * @return Visible Signature Configuration Object
      */
     public PDVisibleSignDesigner zoom(float percent)
     {
-        imageHeight = imageHeight + (imageHeight * percent) / 100;
-        imageWidth = imageWidth + (imageWidth * percent) / 100;
+        imageHeight += (imageHeight * percent) / 100;
+        imageWidth += (imageWidth * percent) / 100;
         return this;
     }
 
@@ -234,7 +236,7 @@ public class PDVisibleSignDesigner
 
     /**
      * 
-     * @param height signature image Height
+     * @param height signature image height
      * @return Visible Signature Configuration Object
      */
     public PDVisibleSignDesigner height(float height)
@@ -293,18 +295,17 @@ public class PDVisibleSignDesigner
     }
 
     /**
+     * Read the image stream of the signature and set height and width.
      * 
      * @param stream stream of your visible signature image
-     * @return Visible Signature Configuration Object
      * @throws IOException If we can't read, flush, or close stream of image
      */
-    private PDVisibleSignDesigner signatureImageStream(InputStream stream) throws IOException
+    private void readImageStream(InputStream stream) throws IOException
     {
         ImageIO.setUseCache(false);
         image = ImageIO.read(stream);
         imageHeight = (float)image.getHeight();
         imageWidth = (float)image.getWidth();
-        return this;
     }
 
     /**
@@ -331,20 +332,20 @@ public class PDVisibleSignDesigner
      * 
      * @return formatter PDRectanle parameters
      */
-    public byte[] getFormaterRectangleParams()
+    public byte[] getFormatterRectangleParams()
     {
-        return formaterRectangleParams;
+        return formatterRectangleParams;
     }
 
     /**
-     * sets formatter PDRectangle;
+     * Sets formatter PDRectangle
      * 
-     * @param formaterRectangleParams
+     * @param formatterRectangleParams
      * @return Visible Signature Configuration Object
      */
-    public PDVisibleSignDesigner formaterRectangleParams(byte[] formaterRectangleParams)
+    public PDVisibleSignDesigner formatterRectangleParams(byte[] formatterRectangleParams)
     {
-        this.formaterRectangleParams = formaterRectangleParams;
+        this.formatterRectangleParams = formatterRectangleParams;
         return this;
     }
 
