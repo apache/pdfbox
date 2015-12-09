@@ -116,10 +116,15 @@ public class PDFTextStripper extends PDFTextStreamEngine
         boolean is16orLess = false;
         try
         {
-            String[] versionComponents = System.getProperty("java.version").split("\\.");
-            int javaMajorVersion = Integer.parseInt(versionComponents[0]);
-            int javaMinorVersion = Integer.parseInt(versionComponents[1]);
-            is16orLess = javaMajorVersion == 1 && javaMinorVersion <= 6;
+            String version = System.getProperty("java.specification.version");
+            StringTokenizer st = new StringTokenizer(version, ".");
+            int majorVersion = Integer.parseInt(st.nextToken());
+            int minorVersion = 0;
+            if (st.hasMoreTokens())
+            {
+                minorVersion = Integer.parseInt(st.nextToken());
+            }
+            is16orLess = majorVersion == 1 && minorVersion <= 6;
         }
         catch (SecurityException x)
         {
