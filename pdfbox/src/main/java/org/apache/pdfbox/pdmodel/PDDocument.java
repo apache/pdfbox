@@ -200,14 +200,14 @@ public class PDDocument implements Closeable
         // Reserve content
         // We need to reserve some space for the signature. Some signatures including
         // big certificate chain and we need enough space to store it.
-        int preferedSignatureSize = options.getPreferedSignatureSize();
-        if (preferedSignatureSize > 0)
+        int preferredSignatureSize = options.getPreferredSignatureSize();
+        if (preferredSignatureSize > 0)
         {
-            sigObject.setContents(new byte[preferedSignatureSize]);
+            sigObject.setContents(new byte[preferredSignatureSize]);
         }
         else
         {
-            sigObject.setContents(new byte[0x2500]);
+            sigObject.setContents(new byte[SignatureOptions.DEFAULT_SIGNATURE_SIZE]);
         }
 
         // Reserve ByteRange
