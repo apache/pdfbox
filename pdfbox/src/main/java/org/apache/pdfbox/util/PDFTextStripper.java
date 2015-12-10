@@ -134,6 +134,11 @@ public class PDFTextStripper extends PDFStreamEngine
             // when run in an applet ignore and use default
             // assume 1.7 or higher so that quicksort is used
         }
+        catch (NumberFormatException nfe)
+        {
+            // should never happen, but if it does,
+            // assume 1.7 or higher so that quicksort is used
+        }
         useCustomQuicksort = !is16orLess;
     }
 
