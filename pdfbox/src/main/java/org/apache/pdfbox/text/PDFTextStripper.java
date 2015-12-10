@@ -109,10 +109,12 @@ public class PDFTextStripper extends PDFTextStreamEngine
                 // ignore and use default
             }
         }
-
+    }
+    
+    static
+    {
         // check if we need to use the custom quicksort algorithm as a
-        // workaround to the transitivity issue of TextPositionComparator:
-        // https://issues.apache.org/jira/browse/PDFBOX-1512
+        // workaround to the PDFBOX-1512 transitivity issue of TextPositionComparator:
         boolean is16orLess = false;
         try
         {
@@ -129,6 +131,11 @@ public class PDFTextStripper extends PDFTextStreamEngine
         catch (SecurityException x)
         {
             // when run in an applet ignore and use default
+            // assume 1.7 or higher so that quicksort is used
+        }
+        catch (NumberFormatException nfe)
+        {
+            // should never happen, but if it does,
             // assume 1.7 or higher so that quicksort is used
         }
         useCustomQuickSort = !is16orLess;
