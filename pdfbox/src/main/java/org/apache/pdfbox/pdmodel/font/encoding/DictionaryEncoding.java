@@ -59,7 +59,8 @@ public class DictionaryEncoding extends Encoding
             throw new IllegalArgumentException("Invalid encoding: " + baseEncoding);
         }
         
-        codeToName.putAll( this.baseEncoding.codeToName );
+        codeToName.putAll(this.baseEncoding.codeToName);
+        inverted.putAll(this.baseEncoding.inverted);
         applyDifferences();
     }
 
@@ -116,7 +117,8 @@ public class DictionaryEncoding extends Encoding
         }
         baseEncoding = base;
 
-        codeToName.putAll( baseEncoding.codeToName );
+        codeToName.putAll(baseEncoding.codeToName);
+        inverted.putAll(baseEncoding.inverted);
         applyDifferences();
     }
 
