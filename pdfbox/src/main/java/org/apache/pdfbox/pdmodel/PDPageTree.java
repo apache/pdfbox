@@ -59,12 +59,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
      */
     public PDPageTree(COSDictionary root)
     {
-        if (root == null)
-        {
-            throw new IllegalArgumentException("root cannot be null");
-        }
-        this.root = root;
-        document = null;
+        this(root, null);
     }
     
     /**
@@ -79,7 +74,19 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
         {
             throw new IllegalArgumentException("root cannot be null");
         }
-        this.root = root;
+        // repair bad PDFs which contain a Page dict instead of a page tree, see PDFBOX-3154
+        if (COSName.PAGE.equals(root.getCOSName(COSName.TYPE)))
+        {
+            COSArray kids = new COSArray();
+            kids.add(root);
+            this.root = new COSDictionary();
+            this.root.setItem(COSName.KIDS, kids);
+            this.root.setInt(COSName.COUNT, 1);
+        }
+        else
+        {
+            this.root = root;
+        }
         this.document = document;
     }
 
