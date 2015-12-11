@@ -45,4 +45,10 @@ public class BuiltInEncoding extends Encoding
     {
         throw new UnsupportedOperationException("Built-in encodings cannot be serialized");
     }
+
+    @Override
+    public String getEncodingName()
+    {
+        return "built-in (TTF)";
+    }
 }

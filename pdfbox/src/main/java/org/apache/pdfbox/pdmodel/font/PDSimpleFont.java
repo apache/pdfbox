@@ -18,7 +18,6 @@ package org.apache.pdfbox.pdmodel.font;
 
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -168,28 +167,6 @@ public abstract class PDSimpleFont extends PDFont
     public GlyphList getGlyphList()
     {
         return glyphList;
-    }
-
-    /**
-     * Inverts the font's Encoding. Any duplicate (Name -> Code) mappings will be lost.
-     */
-    protected Map<String, Integer> getInvertedEncoding()
-    {
-        if (invertedEncoding != null)
-        {
-            return invertedEncoding;
-        }
-
-        invertedEncoding = new HashMap<String, Integer>();
-        Map<Integer, String> codeToName = encoding.getCodeToNameMap();
-        for (Map.Entry<Integer, String> entry : codeToName.entrySet())
-        {
-            if (!invertedEncoding.containsKey(entry.getValue()))
-            {
-                invertedEncoding.put(entry.getValue(), entry.getKey());
-            }
-        }
-        return invertedEncoding;
     }
     
     /**

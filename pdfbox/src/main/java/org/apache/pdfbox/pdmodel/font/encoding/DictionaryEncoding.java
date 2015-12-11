@@ -167,4 +167,10 @@ public class DictionaryEncoding extends Encoding
     {
         return encoding;
     }
+
+    @Override
+    public String getEncodingName()
+    {
+        return baseEncoding.getEncodingName() + " with differences";
+    }
 }

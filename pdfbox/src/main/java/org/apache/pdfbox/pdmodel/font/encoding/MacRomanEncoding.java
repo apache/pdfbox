@@ -272,4 +272,10 @@ public class MacRomanEncoding extends Encoding
     {
         return COSName.MAC_ROMAN_ENCODING;
     }
+
+    @Override
+    public String getEncodingName()
+    {
+        return "MacRomanEncoding";
+    }
 }
