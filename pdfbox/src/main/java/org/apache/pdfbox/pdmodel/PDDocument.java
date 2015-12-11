@@ -176,7 +176,7 @@ public class PDDocument implements Closeable
      * Add a signature.
      * 
      * @param sigObject is the PDSignatureField model
-     * @param signatureInterface is a interface which provides signing capabilities
+     * @param signatureInterface is an interface which provides signing capabilities
      * @throws IOException if there is an error creating required fields
      */
     public void addSignature(PDSignature sigObject, SignatureInterface signatureInterface) throws IOException
@@ -190,7 +190,7 @@ public class PDDocument implements Closeable
      * (i.e. 0 or max) and no exception will be thrown.
      *
      * @param sigObject is the PDSignatureField model
-     * @param signatureInterface is a interface which provides signing capabilities
+     * @param signatureInterface is an interface which provides signing capabilities
      * @param options signature options
      * @throws IOException if there is an error creating required fields
      */
@@ -372,11 +372,11 @@ public class PDDocument implements Closeable
                 }
 
                 // Search for signature field
-                COSBase ft = cosBaseDict.getDictionaryObject(COSName.FT);
+                COSBase fieldType = cosBaseDict.getDictionaryObject(COSName.FT);
                 COSBase apDict = cosBaseDict.getDictionaryObject(COSName.AP);
-                if (sigFieldNotFound && COSName.SIG.equals(ft) && apDict != null)
+                if (sigFieldNotFound && COSName.SIG.equals(fieldType) && apDict instanceof COSDictionary)
                 {
-                    assignAppearanceDictionary(signatureField, cosBaseDict);
+                    assignAppearanceDictionary(signatureField, (COSDictionary) apDict);
                     assignAcroFormDefaultResource(acroForm, cosBaseDict);
                     sigFieldNotFound = false;
                 }
@@ -389,39 +389,40 @@ public class PDDocument implements Closeable
         }
     }
 
-    private void assignSignatureRectangle(PDSignatureField signatureField, COSDictionary cosBaseDict)
+    private void assignSignatureRectangle(PDSignatureField signatureField, COSDictionary annotDict)
     {
-        // Read and set the Rectangle for visual signature
-        COSArray rectAry = (COSArray) cosBaseDict.getDictionaryObject(COSName.RECT);
-        PDRectangle rect = new PDRectangle(rectAry);
+        // Read and set the rectangle for visual signature
+        COSArray rectArray = (COSArray) annotDict.getDictionaryObject(COSName.RECT);
+        PDRectangle rect = new PDRectangle(rectArray);
         signatureField.getWidgets().get(0).setRectangle(rect);
     }
 
-    private void assignAppearanceDictionary(PDSignatureField signatureField, COSDictionary dict)
+    private void assignAppearanceDictionary(PDSignatureField signatureField, COSDictionary apDict)
     {
         // read and set Appearance Dictionary
-        PDAppearanceDictionary ap
-                = new PDAppearanceDictionary((COSDictionary) dict.getDictionaryObject(COSName.AP));
-        ap.getCOSObject().setDirect(true);
+        PDAppearanceDictionary ap = new PDAppearanceDictionary(apDict);
+        apDict.setDirect(true);
         signatureField.getWidgets().get(0).setAppearance(ap);
     }
 
     private void assignAcroFormDefaultResource(PDAcroForm acroForm, COSDictionary dict)
     {
-        // read and set AcroForm DefaultResource
-        COSDictionary dr = (COSDictionary) dict.getDictionaryObject(COSName.DR);
-        if (dr != null)
+        // read and set AcroForm default resource dictionary /DR if available
+        COSBase base = dict.getDictionaryObject(COSName.DR);
+        if (base instanceof COSDictionary)
         {
+            COSDictionary dr = (COSDictionary) base;
             dr.setDirect(true);
             dr.setNeedToBeUpdated(true);
-            COSDictionary acroFormDict = acroForm.getCOSObject();
-            acroFormDict.setItem(COSName.DR, dr);
+            acroForm.getCOSObject().setItem(COSName.DR, dr);
         }
     }
 
     private void prepareNonVisibleSignature(PDSignatureField signatureField)
             throws IOException
     {
+        // "Signature fields that are not intended to be visible shall
+        // have an annotation rectangle that has zero height and width."
         // Set rectangle for non-visual signature to rectangle array [ 0 0 0 0 ]
         signatureField.getWidgets().get(0).setRectangle(new PDRectangle());
         // Set empty Appearance-Dictionary
