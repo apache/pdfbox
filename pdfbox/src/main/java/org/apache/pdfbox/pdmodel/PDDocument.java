@@ -1154,7 +1154,11 @@ public class PDDocument implements Closeable
         return getDocumentCatalog().getPages().get(pageIndex);
     }
 
-    // todo: new!
+    /**
+     * Returns the page tree.
+     * 
+     * @return the page tree
+     */
     public PDPageTree getPages()
     {
         return getDocumentCatalog().getPages();
