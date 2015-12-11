@@ -58,16 +58,28 @@ public abstract class Encoding implements COSObjectable
     }
 
     protected final Map<Integer, String> codeToName = new HashMap<Integer, String>();
+    protected final Map<String, Integer> inverted = new HashMap<String, Integer>();
     private Set<String> names;
 
     /**
-     * Returns an unmodifiable view of the Code2Name mapping.
+     * Returns an unmodifiable view of the code -> name mapping.
      * 
-     * @return the Code2Name map
+     * @return the code -> name map
      */
     public Map<Integer, String> getCodeToNameMap()
     {
         return Collections.unmodifiableMap(codeToName);
+    }
+
+    /**
+     * Returns an unmodifiable view of the name -> code mapping. More than one name may map to
+     * the same code.
+     *
+     * @return the name -> code map
+     */
+    public Map<String, Integer> getNameToCodeMap()
+    {
+        return Collections.unmodifiableMap(inverted);
     }
 
     /**
@@ -79,6 +91,7 @@ public abstract class Encoding implements COSObjectable
     protected void add(int code, String name)
     {
         codeToName.put(code, name);
+        inverted.put(name, code);
     }
 
     /**
@@ -123,4 +136,9 @@ public abstract class Encoding implements COSObjectable
        }
        return ".notdef";
     }
+
+    /**
+     * Returns the name of this encoding.
+     */
+    public abstract String getEncodingName();
 }

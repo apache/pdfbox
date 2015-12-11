@@ -292,4 +292,10 @@ public class WinAnsiEncoding extends Encoding
     {
         return COSName.WIN_ANSI_ENCODING;
     }
+
+    @Override
+    public String getEncodingName()
+    {
+        return "WinAnsiEncoding";
+    }
 }

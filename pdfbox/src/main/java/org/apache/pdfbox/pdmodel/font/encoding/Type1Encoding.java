@@ -71,4 +71,10 @@ public class Type1Encoding extends Encoding
     {
         return null;
     }
+
+    @Override
+    public String getEncodingName()
+    {
+        return "built-in (Type 1)";
+    }
 }
