@@ -16,7 +16,6 @@
  */
 package org.apache.fontbox.cmap;
 
-import java.util.List;
 
 /**
  * This represents a single entry in the codespace range.
@@ -99,17 +98,17 @@ public class CodespaceRange
     /**
      * Returns true if the given code bytes match this codespace range.
      */
-    public boolean isFullMatch(List<Byte> code)
+    public boolean isFullMatch(byte[] code, int codeLen)
     {
         // code must be the same length as the bounding codes
-        if (code.size() >= start.length && code.size() <= end.length)
+        if (codeLen >= start.length && codeLen <= end.length)
         {
             // each of it bytes must lie between the corresponding bytes of the upper & lower bounds
-            for (int i = 0; i < code.size(); i++)
+            for (int i = 0; i < codeLen; i++)
             {
                 int startNum = start[i] & 0xff;
                 int endNum = end[i] & 0xff;
-                int codeNum = code.get(i) & 0xff;
+                int codeNum = code[i] & 0xff;
 
                 if (codeNum > endNum || codeNum < startNum)
                 {
@@ -120,7 +119,7 @@ public class CodespaceRange
         }
         return false;
     }
-
+    
     /**
      * Returns true if the given byte matches the byte at the given index of this codespace range.
      */
