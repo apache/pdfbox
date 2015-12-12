@@ -104,15 +104,16 @@ public class CMap
         in.mark(4);
 
         // mapping algorithm
-        List<Byte> bytes = new ArrayList<Byte>(4);
+        byte[] bytes = new byte[4];
         for (int i = 0; i < 4; i++)
         {
-            bytes.add((byte)in.read());
+            bytes[i] = (byte)in.read();
+            final int byteCount = i+1;
             for (CodespaceRange range : codespaceRanges)
             {
-                if (range.isFullMatch(bytes))
+                if (range.isFullMatch(bytes, byteCount))
                 {
-                    return toInt(bytes);
+                    return toInt(bytes, byteCount);
                 }
             }
         }
@@ -121,15 +122,16 @@ public class CMap
         in.reset();
 
         // modified mapping algorithm
-        bytes = new ArrayList<Byte>(4);
         for (int i = 0; i < 4; i++)
         {
-            bytes.add((byte)in.read());
+            final byte curByte = (byte)in.read(); 
+            bytes[i] = curByte;
+            final int byteCount = i + 1;
             CodespaceRange match = null;
             CodespaceRange shortest = null;
             for (CodespaceRange range : codespaceRanges)
             {
-                if (range.isPartialMatch(bytes.get(i), i))
+                if (range.isPartialMatch(curByte, i))
                 {
                     if (match == null)
                     {
@@ -156,9 +158,9 @@ public class CMap
             }
 
             // we're done when we have enough bytes for the matched range
-            if (match != null && match.getStart().length == bytes.size())
+            if (match != null && match.getStart().length == byteCount)
             {
-                return toInt(bytes);
+                return toInt(bytes, byteCount);
             }
         }
 
@@ -166,15 +168,15 @@ public class CMap
     }
 
     /**
-     * Returns an int given a List<Byte>
+     * Returns an int for the given a byte array
      */
-    private int toInt(List<Byte> data)
+    private int toInt(byte[] data, int dataLen)
     {
         int code = 0;
-        for (byte b : data)
+        for (int i = 0; i < dataLen; ++i)
         {
             code <<= 8;
-            code |= (b + 256) % 256;
+            code |= (data[i] + 256) % 256;
         }
         return code;
     }
