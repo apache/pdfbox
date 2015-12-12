@@ -38,6 +38,9 @@ public class CMap
     private String registry = null;
     private String ordering = null;
     private int supplement = 0;
+    
+    private int minCodeLength = 4;
+    private int maxCodeLength;
 
     // code lengths
     private final List<CodespaceRange> codespaceRanges = new ArrayList<CodespaceRange>();
@@ -101,13 +104,13 @@ public class CMap
     public int readCode(InputStream in) throws IOException
     {
         // save the position in the string
-        in.mark(4);
+        in.mark(maxCodeLength);
 
         // mapping algorithm
-        byte[] bytes = new byte[4];
-        for (int i = 0; i < 4; i++)
+        byte[] bytes = new byte[maxCodeLength];
+        in.read(bytes,0,minCodeLength);
+        for (int i = minCodeLength-1; i < maxCodeLength; i++)
         {
-            bytes[i] = (byte)in.read();
             final int byteCount = i+1;
             for (CodespaceRange range : codespaceRanges)
             {
@@ -116,13 +119,17 @@ public class CMap
                     return toInt(bytes, byteCount);
                 }
             }
+            if (i+1 < maxCodeLength)
+            {
+                bytes[i+1] = (byte)in.read();
+            }
         }
 
         // reset to the original position in the string
         in.reset();
 
         // modified mapping algorithm
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < maxCodeLength; i++)
         {
             final byte curByte = (byte)in.read(); 
             bytes[i] = curByte;
@@ -273,6 +280,8 @@ public class CMap
     void addCodespaceRange( CodespaceRange range )
     {
         codespaceRanges.add(range);
+        maxCodeLength = Math.max(maxCodeLength, range.getCodeLength());
+        minCodeLength = Math.min(minCodeLength, range.getCodeLength());
     }
     
     /**
@@ -283,10 +292,11 @@ public class CMap
      */
     void useCmap( CMap cmap )
     {
-        this.codespaceRanges.addAll(cmap.codespaceRanges);
-        this.charToUnicode.putAll(cmap.charToUnicode);
-        this.codeToCid.putAll(cmap.codeToCid);
-        this.codeToCidRanges.addAll(cmap.codeToCidRanges);
+        for (CodespaceRange codespaceRange : cmap.codespaceRanges)
+            addCodespaceRange(codespaceRange);
+        charToUnicode.putAll(cmap.charToUnicode);
+        codeToCid.putAll(cmap.codeToCid);
+        codeToCidRanges.addAll(cmap.codeToCidRanges);
     }
     
     /**
