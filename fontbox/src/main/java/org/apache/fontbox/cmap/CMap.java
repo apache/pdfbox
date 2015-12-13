@@ -34,11 +34,11 @@ public class CMap
     private String cmapName = null;
     private String cmapVersion = null;
     private int cmapType = -1;
-    
+
     private String registry = null;
     private String ordering = null;
     private int supplement = 0;
-    
+
     private int minCodeLength = 4;
     private int maxCodeLength;
 
@@ -119,9 +119,9 @@ public class CMap
                     return toInt(bytes, byteCount);
                 }
             }
-            if (i+1 < maxCodeLength)
+            if (byteCount < maxCodeLength)
             {
-                bytes[i+1] = (byte)in.read();
+                bytes[byteCount] = (byte)in.read();
             }
         }
 
@@ -211,7 +211,7 @@ public class CMap
         }
         return 0;
     }
-    
+
     /**
      * Convert the given part of a byte array to an integer.
      * @param data the byte array
@@ -293,12 +293,14 @@ public class CMap
     void useCmap( CMap cmap )
     {
         for (CodespaceRange codespaceRange : cmap.codespaceRanges)
+        {
             addCodespaceRange(codespaceRange);
+        }
         charToUnicode.putAll(cmap.charToUnicode);
         codeToCid.putAll(cmap.codeToCid);
         codeToCidRanges.addAll(cmap.codeToCidRanges);
     }
-    
+
     /**
      * Returns the WMode of a CMap.
      *
