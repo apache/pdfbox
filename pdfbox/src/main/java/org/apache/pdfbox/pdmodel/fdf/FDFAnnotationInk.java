@@ -120,7 +120,7 @@ public class FDFAnnotationInk extends FDFAnnotation
      * 
      * @param inklist the List of arrays representing the paths.
      */
-    public void setInkList(List<float[]> inklist)
+    public final void setInkList(List<float[]> inklist)
     {
         COSArray newInklist = new COSArray();
         for (float[] array : inklist)
