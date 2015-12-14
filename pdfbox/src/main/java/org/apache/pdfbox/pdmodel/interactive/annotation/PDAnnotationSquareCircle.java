@@ -169,6 +169,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
      * @param bs the border style dictionary to set. TODO not all annotations may have a BS entry
      *
      */
+    @Override
     public void setBorderStyle(PDBorderStyleDictionary bs)
     {
         this.getCOSObject().setItem(COSName.BS, bs);
@@ -179,9 +180,10 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
      *
      * @return the border style dictionary. TODO not all annotations may have a BS entry
      */
+    @Override
     public PDBorderStyleDictionary getBorderStyle()
     {
-        COSDictionary bs = (COSDictionary) this.getCOSObject().getItem(COSName.BS);
+        COSDictionary bs = (COSDictionary) this.getCOSObject().getDictionaryObject(COSName.BS);
         if (bs != null)
         {
             return new PDBorderStyleDictionary(bs);
