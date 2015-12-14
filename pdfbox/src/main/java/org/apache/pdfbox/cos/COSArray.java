@@ -29,9 +29,10 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
  *
  * @author Ben Litchfield
  */
-public class COSArray extends COSBase implements Iterable<COSBase>
+public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInfo
 {
     private final List<COSBase> objects = new ArrayList<COSBase>();
+    private boolean needToBeUpdated;
 
     /**
      * Constructor.
@@ -512,6 +513,18 @@ public class COSArray extends COSBase implements Iterable<COSBase>
     public Object accept(ICOSVisitor visitor) throws IOException
     {
         return visitor.visitFromArray(this);
+    }
+
+    @Override
+    public boolean isNeedToBeUpdated() 
+    {
+      return needToBeUpdated;
+    }
+    
+    @Override
+    public void setNeedToBeUpdated(boolean flag) 
+    {
+      needToBeUpdated = flag;
     }
 
     /**
