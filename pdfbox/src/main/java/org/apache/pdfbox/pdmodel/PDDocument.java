@@ -245,14 +245,6 @@ public class PDDocument implements Closeable
             acroForm.getCOSObject().setNeedToBeUpdated(true);
         }
 
-        // For invisible signatures, the annotation has a rectangle array with values [ 0 0 0 0 ]. This annotation is
-        // usually attached to the viewed page when the signature is created. Despite not having an appearance, the
-        // annotation AP and N dictionaries may be present in some versions of Acrobat. If present, N references the
-        // DSBlankXObj (blank) XObject.
-
-        // Create Annotation / Field for signature
-        List<PDAnnotation> annotations = page.getAnnotations();
-
         List<PDField> fields = acroForm.getFields();
         if (fields == null)
         {
@@ -269,7 +261,8 @@ public class PDDocument implements Closeable
             signatureField.getWidgets().get(0).setPage(page);
         }
         // to conform PDF/A-1 requirement:
-        // The /F key's Print flag bit shall be set to 1 and its Hidden, Invisible and NoView flag bits shall be set to 0
+        // The /F key's Print flag bit shall be set to 1 and 
+        // its Hidden, Invisible and NoView flag bits shall be set to 0
         signatureField.getWidgets().get(0).setPrinted(true);
 
         // Set the AcroForm Fields
@@ -287,11 +280,13 @@ public class PDDocument implements Closeable
         if (visualSignature == null)
         {
             prepareNonVisibleSignature(signatureField);
+            return;
         }
-        else
-        {
-            prepareVisibleSignature(signatureField, acroForm, visualSignature);
-        }
+        
+        prepareVisibleSignature(signatureField, acroForm, visualSignature);
+
+        // Create Annotation / Field for signature
+        List<PDAnnotation> annotations = page.getAnnotations();
 
         // Get the annotations of the page and append the signature-annotation to it
         // take care that page and acroforms do not share the same array (if so, we don't need to add it twice)
@@ -425,20 +420,6 @@ public class PDDocument implements Closeable
         // have an annotation rectangle that has zero height and width."
         // Set rectangle for non-visual signature to rectangle array [ 0 0 0 0 ]
         signatureField.getWidgets().get(0).setRectangle(new PDRectangle());
-        // Set empty Appearance-Dictionary
-        PDAppearanceDictionary ap = new PDAppearanceDictionary();
-        
-        // Create empty visual appearance stream
-        COSStream apsStream = getDocument().createCOSStream();
-        apsStream.createOutputStream().close();
-        PDAppearanceStream aps = new PDAppearanceStream(apsStream);
-        COSDictionary cosObject = (COSDictionary) aps.getCOSObject();
-        cosObject.setItem(COSName.SUBTYPE, COSName.FORM);
-        cosObject.setItem(COSName.BBOX, new PDRectangle());
-        
-        ap.setNormalAppearance(aps);
-        ap.getCOSObject().setDirect(true);
-        signatureField.getWidgets().get(0).setAppearance(ap);
     }
 
     /**
