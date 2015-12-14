@@ -928,7 +928,7 @@ public class COSWriter implements ICOSVisitor, Closeable
                 else if( current instanceof COSObject )
                 {
                     COSBase subValue = ((COSObject)current).getObject();
-                    if( subValue instanceof COSDictionary || subValue == null )
+                    if (incrementalUpdate || subValue instanceof COSDictionary || subValue == null)
                     {
                         addObjectToWrite( current );
                         writeReference( current );
@@ -1024,16 +1024,19 @@ public class COSWriter implements ICOSVisitor, Closeable
                     {
                         COSDictionary dict = (COSDictionary)value;
                         
-                        // write all XObjects as direct objects, this will save some size
-                        COSBase item = dict.getItem(COSName.XOBJECT);
-                        if(item!=null)
+                        if (!incrementalUpdate)
                         {
-                            item.setDirect(true);
-                        }
-                        item = dict.getItem(COSName.RESOURCES);
-                        if(item!=null)
-                        {
-                            item.setDirect(true);
+                            // write all XObjects as direct objects, this will save some size
+                            COSBase item = dict.getItem(COSName.XOBJECT);
+                            if (item != null)
+                            {
+                                item.setDirect(true);
+                            }
+                            item = dict.getItem(COSName.RESOURCES);
+                            if (item != null)
+                            {
+                                item.setDirect(true);
+                           }
                         }
 
                         if(dict.isDirect()) 
@@ -1051,7 +1054,7 @@ public class COSWriter implements ICOSVisitor, Closeable
                     else if( value instanceof COSObject )
                     {
                         COSBase subValue = ((COSObject)value).getObject();
-                        if( subValue instanceof COSDictionary || subValue == null )
+                        if (incrementalUpdate || subValue instanceof COSDictionary || subValue == null)
                         {
                             addObjectToWrite( value );
                             writeReference( value );
