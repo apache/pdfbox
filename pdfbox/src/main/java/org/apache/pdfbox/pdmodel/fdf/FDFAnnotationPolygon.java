@@ -94,7 +94,7 @@ public class FDFAnnotationPolygon extends FDFAnnotation
             {
                 throw new IOException("Error: missing element 'vertices'");
             }
-            String[] verticesValues = vertices.split(",");
+            String[] verticesValues = vertices.split(",|;");
             float[] values = new float[verticesValues.length];
             for (int i = 0; i < verticesValues.length; i++)
             {
@@ -143,7 +143,7 @@ public class FDFAnnotationPolygon extends FDFAnnotation
      *
      * @param color The interior color of the drawn area.
      */
-    public void setInteriorColor(Color color)
+    public final void setInteriorColor(Color color)
     {
         COSArray array = null;
         if (color != null)
