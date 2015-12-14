@@ -241,7 +241,8 @@ public class CreateVisibleSignature implements SignatureInterface
 
       FileInputStream image = new FileInputStream(args[3]);
 
-      int page = 2;
+      // page is 1-based here
+      int page = 1;
       PDVisibleSignDesigner visibleSig = new PDVisibleSignDesigner(args[2], image, page);
       visibleSig.xAxis(0).yAxis(0).zoom(-50).signatureFieldName("signature");
 
