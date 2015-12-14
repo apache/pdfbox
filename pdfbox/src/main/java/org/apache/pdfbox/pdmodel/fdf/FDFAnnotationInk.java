@@ -104,6 +104,7 @@ public class FDFAnnotationInk extends FDFAnnotation
                     inklist.add(values);
                 }
             }
+            setInkList(inklist);
         }
         catch (XPathExpressionException e)
         {
