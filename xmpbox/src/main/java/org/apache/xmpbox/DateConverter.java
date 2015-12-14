@@ -340,6 +340,25 @@ public final class DateConverter
         }
         else
         {
+            // can't use parseDateTime immediately, 
+            // first do handling for time that has no seconds
+            int teeIndex = dateString.indexOf('T');
+            if (teeIndex == -1)
+            {
+                return javax.xml.bind.DatatypeConverter.parseDateTime(dateString);
+            }
+            int plusIndex = dateString.indexOf('+', teeIndex + 1);
+            int minusIndex = dateString.indexOf('-', teeIndex + 1);
+            if (plusIndex == -1 && minusIndex == -1)
+            {
+                return javax.xml.bind.DatatypeConverter.parseDateTime(dateString);
+            }
+            plusIndex = Math.max(plusIndex, minusIndex);
+            if (plusIndex - teeIndex == 6)
+            {
+                String toParse = dateString.substring(0, plusIndex) + ":00" + dateString.substring(plusIndex);
+                return javax.xml.bind.DatatypeConverter.parseDateTime(toParse);
+            }
             return javax.xml.bind.DatatypeConverter.parseDateTime(dateString);
         }
     }
