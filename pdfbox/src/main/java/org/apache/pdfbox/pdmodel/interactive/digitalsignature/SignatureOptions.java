@@ -44,7 +44,7 @@ public class SignatureOptions
     }
   
     /**
-     * Get the page number.
+     * Get the 1-based page number.
      * 
      * @return the page number
      */
