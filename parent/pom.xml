@@ -48,6 +48,10 @@
   <properties>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
   </properties>
+  
+  <prerequisites>
+    <maven>3.0.0</maven>
+  </prerequisites>
 
   <profiles>
     <profile>
