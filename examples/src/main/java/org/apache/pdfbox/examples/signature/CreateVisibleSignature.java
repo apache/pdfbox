@@ -165,7 +165,7 @@ public class CreateVisibleSignature implements SignatureInterface
     if (signatureProperties != null && signatureProperties.isVisualSignEnabled()) {
       options = new SignatureOptions();
       options.setVisualSignature(signatureProperties);
-      // options.setPage(signatureProperties.getPage());
+      options.setPage(signatureProperties.getPage());
       // options.setPreferedSignatureSize(signatureProperties.getPreferredSize());
       doc.addSignature(signature, this, options);
     } else {
@@ -241,13 +241,14 @@ public class CreateVisibleSignature implements SignatureInterface
 
       FileInputStream image = new FileInputStream(args[3]);
 
-      PDVisibleSignDesigner visibleSig = new PDVisibleSignDesigner(args[2], image, 1);
+      int page = 2;
+      PDVisibleSignDesigner visibleSig = new PDVisibleSignDesigner(args[2], image, page);
       visibleSig.xAxis(0).yAxis(0).zoom(-50).signatureFieldName("signature");
 
       PDVisibleSigProperties signatureProperties = new PDVisibleSigProperties();
 
       signatureProperties.signerName("name").signerLocation("location").signatureReason("Security").preferredSize(0)
-          .page(1).visualSignEnabled(true).setPdVisibleSignature(visibleSig).buildSignature();
+          .page(page).visualSignEnabled(true).setPdVisibleSignature(visibleSig).buildSignature();
 
       signing.signPDF(document, signatureProperties);
     }
