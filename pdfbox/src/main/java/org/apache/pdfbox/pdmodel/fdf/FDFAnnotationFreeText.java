@@ -122,13 +122,16 @@ public class FDFAnnotationFreeText extends FDFAnnotation
     private void initCallout(Element element) throws IOException
     {
         String callout = element.getAttribute("callout");
-        String[] calloutValues = callout.split(",");
-        float[] values = new float[calloutValues.length];
-        for (int i = 0; i < calloutValues.length; i++)
+        if (callout != null && !callout.isEmpty())
         {
-            values[i] = Float.parseFloat(calloutValues[i]);
+            String[] calloutValues = callout.split(",");
+            float[] values = new float[calloutValues.length];
+            for (int i = 0; i < calloutValues.length; i++)
+            {
+                values[i] = Float.parseFloat(calloutValues[i]);
+            }
+            setCallout(values);
         }
-        setCallout(values);
     }
 
     /**
