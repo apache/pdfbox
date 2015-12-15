@@ -84,7 +84,7 @@ public class FDFAnnotationPolygon extends FDFAnnotation
         }
     }
 
-    private void initVertices(Element element) throws IOException, NumberFormatException
+    private void initVertices(Element element) throws IOException
     {
         XPath xpath = XPathFactory.newInstance().newXPath();
         try

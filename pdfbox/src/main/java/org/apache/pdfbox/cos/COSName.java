@@ -126,6 +126,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName CID_TO_GID_MAP = new COSName("CIDToGIDMap");
     public static final COSName CID_SET = new COSName("CIDSet");
     public static final COSName CIDSYSTEMINFO = new COSName("CIDSystemInfo");
+    public static final COSName CL = new COSName("CL");
     public static final COSName CLR_F = new COSName("ClrF");
     public static final COSName CLR_FF = new COSName("ClrFf");
     public static final COSName CMAP = new COSName("CMap");
