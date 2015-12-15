@@ -67,6 +67,17 @@ public class FDFAnnotationCaret extends FDFAnnotation
         super(element);
         annot.setName(COSName.SUBTYPE, SUBTYPE);
 
+        initFringe(element);
+
+        String symbol = element.getAttribute("symbol");
+        if (symbol != null && !symbol.isEmpty())
+        {
+            setSymbol(element.getAttribute("symbol"));
+        }
+    }
+
+    private void initFringe(Element element) throws IOException
+    {
         String fringe = element.getAttribute("fringe");
         if (fringe != null && !fringe.isEmpty())
         {
@@ -75,20 +86,12 @@ public class FDFAnnotationCaret extends FDFAnnotation
             {
                 throw new IOException("Error: wrong amount of numbers in attribute 'fringe'");
             }
-            float[] values = new float[4];
-            for (int i = 0; i < 4; i++)
-            {
-                values[i] = Float.parseFloat(fringeValues[i]);
-            }
-            COSArray array = new COSArray();
-            array.setFloatArray(values);
-            setFringe(new PDRectangle(array));
-        }
-
-        String symbol = element.getAttribute("symbol");
-        if (symbol != null && !symbol.isEmpty())
-        {
-            setSymbol(element.getAttribute("symbol"));
+            PDRectangle rect = new PDRectangle();
+            rect.setLowerLeftX(Float.parseFloat(fringeValues[0]));
+            rect.setLowerLeftY(Float.parseFloat(fringeValues[1]));
+            rect.setUpperRightX(Float.parseFloat(fringeValues[2]));
+            rect.setUpperRightY(Float.parseFloat(fringeValues[3]));
+            setFringe(rect);
         }
     }
 
@@ -98,7 +101,7 @@ public class FDFAnnotationCaret extends FDFAnnotation
      *
      * @param fringe the fringe
      */
-    public void setFringe(PDRectangle fringe)
+    public final void setFringe(PDRectangle fringe)
     {
         annot.setItem(COSName.RD, fringe);
     }
@@ -127,7 +130,7 @@ public class FDFAnnotationCaret extends FDFAnnotation
      * 
      * @param symbol the symbol
      */
-    public void setSymbol(String symbol)
+    public final void setSymbol(String symbol)
     {
         String newSymbol = "None";
         if ("paragraph".equals(symbol))
