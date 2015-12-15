@@ -17,7 +17,12 @@
 package org.apache.pdfbox.pdmodel.fdf;
 
 import java.io.IOException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.w3c.dom.Element;
@@ -29,6 +34,8 @@ import org.w3c.dom.Element;
  */
 public class FDFAnnotationFreeText extends FDFAnnotation
 {
+    private static final Log LOG = LogFactory.getLog(FDFAnnotationFreeText.class);
+ 
     /**
      * COS Model value for SubType entry.
      */
@@ -66,6 +73,17 @@ public class FDFAnnotationFreeText extends FDFAnnotation
         annot.setName(COSName.SUBTYPE, SUBTYPE);
 
         setJustification(element.getAttribute("justification"));
+        
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        try
+        {
+            setDefaultAppearance(xpath.evaluate("defaultappearance", element));
+            setDefaultStyle(xpath.evaluate("defaultstyle", element));
+        }
+        catch (XPathExpressionException ex)
+        {
+            LOG.debug("Error while evaluating XPath expression");
+        }
         String rotation = element.getAttribute("rotation");
         if (rotation != null && !rotation.isEmpty())
         {
@@ -78,7 +96,7 @@ public class FDFAnnotationFreeText extends FDFAnnotation
      * 
      * @param justification The quadding of the text.
      */
-    public void setJustification(String justification)
+    public final void setJustification(String justification)
     {
         int quadding = 0;
         if ("centered".equals(justification))
@@ -107,7 +125,7 @@ public class FDFAnnotationFreeText extends FDFAnnotation
      * 
      * @param rotation The number of degrees of clockwise rotation.
      */
-    public void setRotation(int rotation)
+    public final void setRotation(int rotation)
     {
         annot.setInt(COSName.ROTATE, rotation);
     }
@@ -120,6 +138,47 @@ public class FDFAnnotationFreeText extends FDFAnnotation
     public String getRotation()
     {
         return annot.getString(COSName.ROTATE);
+    }
+
+    /**
+     * Set the default appearance string.
+     *
+     * @param appearance The new default appearance string.
+     */
+    public final void setDefaultAppearance(String appearance)
+    {
+        annot.setString(COSName.DA, appearance);
+    }
+
+    /**
+     * Get the default appearance string.
+     *
+     * @return The default appearance of the annotation.
+     */
+    public String getDefaultAppearance()
+    {
+        return annot.getString(COSName.DA);
+
+    }
+
+    /**
+     * Set the default style string.
+     *
+     * @param style The new default style string.
+     */
+    public final void setDefaultStyle(String style)
+    {
+        annot.setString(COSName.DS, style);
+    }
+
+    /**
+     * Get the default style string.
+     *
+     * @return The default style of the annotation.
+     */
+    public String getDefaultStyle()
+    {
+        return annot.getString(COSName.DS);
     }
 
 }
