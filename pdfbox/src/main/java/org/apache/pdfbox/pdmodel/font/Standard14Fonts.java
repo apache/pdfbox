@@ -116,7 +116,7 @@ final class Standard14Fonts
             try
             {
                 AFMParser parser = new AFMParser(afmStream);
-                FontMetrics metric = parser.parse();
+                FontMetrics metric = parser.parse(true);
                 STANDARD14_AFM_MAP.put(fontName, metric);
             }
             finally
