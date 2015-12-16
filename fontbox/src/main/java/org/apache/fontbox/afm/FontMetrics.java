@@ -17,8 +17,8 @@
 package org.apache.fontbox.afm;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -141,10 +141,8 @@ public class FontMetrics
         float average = 0;
         float totalWidths = 0;
         float characterCount = 0;
-        Iterator<CharMetric> iter = charMetricsMap.values().iterator();
-        while( iter.hasNext() )
+        for (CharMetric metric : charMetrics)
         {
-            CharMetric metric = iter.next();
             if( metric.getWx() > 0 )
             {
                 totalWidths += metric.getWx();
@@ -155,7 +153,6 @@ public class FontMetrics
         {
             average = totalWidths / characterCount;
         }
-
         return average;
     }
 
@@ -176,7 +173,7 @@ public class FontMetrics
      */
     public List<String> getComments()
     {
-        return comments;
+        return Collections.unmodifiableList(comments);
     }
 
     /**
@@ -710,7 +707,7 @@ public class FontMetrics
      */
     public List<CharMetric> getCharMetrics()
     {
-        return charMetrics;
+        return Collections.unmodifiableList(charMetrics);
     }
 
     /** Setter for property charMetrics.
@@ -737,7 +734,7 @@ public class FontMetrics
      */
     public List<TrackKern> getTrackKern()
     {
-        return trackKern;
+        return Collections.unmodifiableList(trackKern);
     }
 
     /** Setter for property trackKern.
@@ -763,7 +760,7 @@ public class FontMetrics
      */
     public List<Composite> getComposites()
     {
-        return composites;
+        return Collections.unmodifiableList(composites);
     }
 
     /** Setter for property composites.
@@ -789,7 +786,7 @@ public class FontMetrics
      */
     public List<KernPair> getKernPairs()
     {
-        return kernPairs;
+        return Collections.unmodifiableList(kernPairs);
     }
 
     /**
@@ -815,7 +812,7 @@ public class FontMetrics
      */
     public List<KernPair> getKernPairs0()
     {
-        return kernPairs0;
+        return Collections.unmodifiableList(kernPairs0);
     }
 
     /**
@@ -841,7 +838,7 @@ public class FontMetrics
      */
     public List<KernPair> getKernPairs1()
     {
-        return kernPairs1;
+        return Collections.unmodifiableList(kernPairs1);
     }
 
     /**
