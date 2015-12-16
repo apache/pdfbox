@@ -71,6 +71,21 @@ public class PDEmbeddedFile extends PDStream
     }
 
     /**
+     * Constructor.
+     *
+     * @param doc {@inheritDoc}
+     * @param input {@inheritDoc}
+     * @param filter Filter to apply to the stream.
+     *
+     * @throws IOException {@inheritDoc}
+     */
+    public PDEmbeddedFile(PDDocument doc, InputStream input, COSName filter) throws IOException
+    {
+        super(doc, input, filter);
+        getStream().setName(COSName.TYPE, "EmbeddedFile");
+    }
+
+    /**
      * Set the subtype for this embedded file.  This should be a mime type value.  Optional.
      *
      * @param mimeType The mimeType for the file.
