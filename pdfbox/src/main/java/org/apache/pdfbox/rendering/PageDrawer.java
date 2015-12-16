@@ -913,6 +913,22 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // spec is unclear, but black seems to be the right thing to do
             ab.color = new PDColor(new float[] { 0 }, PDDeviceGray.INSTANCE);
         }
+        if (ab.dashArray != null)
+        {
+            boolean allZero = true;
+            for (float f : ab.dashArray)
+            {
+                if (f != 0)
+                {
+                    allZero = false;
+                    break;
+                }
+            }
+            if (allZero)
+            {
+                ab.dashArray = null;
+            }
+        }
         return ab;
     }
 
