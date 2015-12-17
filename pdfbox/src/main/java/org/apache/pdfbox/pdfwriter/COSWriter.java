@@ -708,13 +708,24 @@ public class COSWriter implements ICOSVisitor, Closeable
         }
     }
 
+    /**
+     * Write an incremental update for a non signature case. This can be used for e.g. augmenting signatures.
+     * 
+     * @throws IOException
+     */
+    private void doWriteIncrement() throws IOException
+    {
+        ByteArrayOutputStream byteOut = (ByteArrayOutputStream) output;
+        byteOut.flush();
+        byte[] buffer = byteOut.toByteArray();
+        SequenceInputStream signStream = new SequenceInputStream(new RandomAccessInputStream(incrementalInput),
+                                                                 new ByteArrayInputStream(buffer));
+        // write the data to the incremental output stream
+        IOUtils.copy(signStream, incrementalOutput);
+    }
+    
     private void doWriteSignature() throws IOException
     {
-        if (signatureOffset == 0 || byteRangeOffset == 0)
-        {
-            return;
-        }
-
         // calculate the ByteRange values
         long inLength = incrementalInput.length();
         long beforeLength = signatureOffset;
@@ -1090,7 +1101,12 @@ public class COSWriter implements ICOSVisitor, Closeable
 
         if(incrementalUpdate)
         {
-            doWriteSignature();
+          if (signatureOffset == 0 || byteRangeOffset == 0)
+          {
+              doWriteIncrement();
+          } else {
+              doWriteSignature();
+          }
         }
 
         return null;
