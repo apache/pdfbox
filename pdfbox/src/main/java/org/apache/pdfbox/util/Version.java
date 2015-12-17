@@ -27,7 +27,7 @@ import java.util.Properties;
 public final class Version
 {
     private static final String PDFBOX_VERSION_PROPERTIES =
-            "org/apache/pdfbox/resources/pdfbox.properties";
+            "org/apache/pdfbox/resources/version.properties";
 
     private Version()
     {
