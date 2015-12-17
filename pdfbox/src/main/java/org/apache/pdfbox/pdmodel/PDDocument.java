@@ -286,6 +286,11 @@ public class PDDocument implements Closeable
         // Create Annotation / Field for signature
         List<PDAnnotation> annotations = page.getAnnotations();
 
+        // Make /Annots a direct object to avoid problem if it is an existing indirect object: 
+        // it would not be updated in incremental save, and if we'd set the /Annots array "to be updated" 
+        // while keeping it indirect, Adobe Reader would claim that the document had been modified.
+        page.setAnnotations(annotations);
+
         // Get the annotations of the page and append the signature-annotation to it
         // take care that page and acroforms do not share the same array (if so, we don't need to add it twice)
         if (!(annotations instanceof COSArrayList &&
