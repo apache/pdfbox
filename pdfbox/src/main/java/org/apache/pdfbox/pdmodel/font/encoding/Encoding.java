@@ -57,8 +57,8 @@ public abstract class Encoding implements COSObjectable
         }
     }
 
-    protected final Map<Integer, String> codeToName = new HashMap<Integer, String>();
-    protected final Map<String, Integer> inverted = new HashMap<String, Integer>();
+    protected final Map<Integer, String> codeToName = new HashMap<Integer, String>(250);
+    protected final Map<String, Integer> inverted = new HashMap<String, Integer>(250);
     private Set<String> names;
 
     /**
@@ -105,7 +105,7 @@ public abstract class Encoding implements COSObjectable
         // otherwise /Differences won't be accounted for
         if (names == null)
         {
-            names = new HashSet<String>();
+            names = new HashSet<String>(codeToName.size());
             names.addAll(codeToName.values());
         }
         return names.contains(name);
