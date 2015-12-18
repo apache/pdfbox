@@ -223,7 +223,7 @@ public class CharStringCommand
 
     static
     {
-        Map<Key, String> map = new LinkedHashMap<Key, String>();
+        Map<Key, String> map = new LinkedHashMap<Key, String>(26);
         map.put(new Key(1), "hstem");
         map.put(new Key(3), "vstem");
         map.put(new Key(4), "vmoveto");
@@ -261,7 +261,7 @@ public class CharStringCommand
 
     static
     {
-        Map<Key, String> map = new LinkedHashMap<Key, String>();
+        Map<Key, String> map = new LinkedHashMap<Key, String>(48);
         map.put(new Key(1), "hstem");
         map.put(new Key(3), "vstem");
         map.put(new Key(4), "vmoveto");

@@ -30,12 +30,12 @@ public abstract class Encoding
     /**
      * This is a mapping from a character code to a character name.
      */
-    protected Map<Integer,String> codeToName = new HashMap<Integer,String>();
+    protected Map<Integer,String> codeToName = new HashMap<Integer,String>(250);
 
     /**
      * This is a mapping from a character name to a character code.
      */
-    protected Map<String,Integer> nameToCode = new HashMap<String,Integer>();
+    protected Map<String,Integer> nameToCode = new HashMap<String,Integer>(250);
 
     /**
      * This will add a character encoding.

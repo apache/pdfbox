@@ -29,7 +29,7 @@ import java.util.Map;
  */
 public abstract class CFFEncoding extends Encoding
 {
-    private final Map<Integer, String> codeToName = new HashMap<Integer, String>();
+    private final Map<Integer, String> codeToName = new HashMap<Integer, String>(250);
 
     /**
      * Package-private constructor for subclasses.

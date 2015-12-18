@@ -202,8 +202,8 @@ public final class CFFOperator
         }
     }
 
-    private static Map<CFFOperator.Key, CFFOperator> keyMap = new LinkedHashMap<CFFOperator.Key, CFFOperator>();
-    private static Map<String, CFFOperator> nameMap = new LinkedHashMap<String, CFFOperator>();
+    private static Map<CFFOperator.Key, CFFOperator> keyMap = new LinkedHashMap<CFFOperator.Key, CFFOperator>(52);
+    private static Map<String, CFFOperator> nameMap = new LinkedHashMap<String, CFFOperator>(52);
 
     static
     {
