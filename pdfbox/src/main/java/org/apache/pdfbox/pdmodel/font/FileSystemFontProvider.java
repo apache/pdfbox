@@ -409,7 +409,7 @@ final class FileSystemFontProvider extends FontProvider
                         panose = new byte[10];
                         for (int i = 0; i < 10; i ++)
                         {
-                            String str = parts[8].substring(i * 2, i * 2 + 1);
+                            String str = parts[8].substring(i * 2, i * 2 + 2);
                             int b = Integer.parseInt(str, 16);
                             panose[i] = (byte)(b & 0xff);
                         }
