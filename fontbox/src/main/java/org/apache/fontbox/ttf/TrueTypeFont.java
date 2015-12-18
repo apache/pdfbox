@@ -486,17 +486,21 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     {
         if (postScriptNames == null)
         {
-            postScriptNames = new HashMap<String, Integer>();
             if (getPostScript() != null)
             {
                 String[] names = getPostScript().getGlyphNames();
                 if (names != null)
                 {
+                    postScriptNames = new HashMap<String, Integer>(names.length);
                     for (int i = 0; i < names.length; i++)
                     {
                         postScriptNames.put(names[i], i);
                     }
                 }
+                else
+                {
+                    postScriptNames = new HashMap<String, Integer>();
+                }                    
             }
         }
     }
