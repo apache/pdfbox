@@ -48,36 +48,36 @@ final class Type1Glyph2D implements Glyph2D
     public GeneralPath getPathForCharacterCode(int code)
     {
         // cache
-        if (cache.containsKey(code))
+        GeneralPath path = cache.get(code);
+        if (path == null)
         {
-            return cache.get(code);
-        }
-
-        // fetch
-        try
-        {
-            String name = font.getEncoding().getName(code);
-            if (!font.hasGlyph(name))
+            // fetch
+            try
             {
-                LOG.warn("No glyph for " + code + " (" + name + ") in font " + font.getName());
+                String name = font.getEncoding().getName(code);
+                if (!font.hasGlyph(name))
+                {
+                    LOG.warn("No glyph for " + code + " (" + name + ") in font " + font.getName());
+                }
+    
+                // todo: can this happen? should it be encapsulated?
+                path = font.getPath(name);
+                if (path == null)
+                {
+                    path = font.getPath(".notdef");
+                }
+    
+                cache.put(code, path);
+                return path;
             }
-
-            // todo: can this happen? should it be encapsulated?
-            GeneralPath path = font.getPath(name);
-            if (path == null)
+            catch (IOException e)
             {
-                path = font.getPath(".notdef");
+                // todo: escalate this error?
+                LOG.error("Glyph rendering failed", e); 
+                path = new GeneralPath();
             }
-
-            cache.put(code, path);
-            return path;
         }
-        catch (IOException e)
-        {
-            // todo: escalate this error?
-            LOG.error("Glyph rendering failed", e); 
-            return new GeneralPath();
-        }
+        return path;
     }
 
     @Override
