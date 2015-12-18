@@ -77,7 +77,7 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         dict.setItem(COSName.DESCENDANT_FONTS, descendantFonts);
 
         // build GID -> Unicode map
-        gidToUni = new HashMap<Integer, Integer>();
+        gidToUni = new HashMap<Integer, Integer>(ttf.getMaximumProfile().getNumGlyphs());
         for (int gid = 1, max = ttf.getMaximumProfile().getNumGlyphs(); gid <= max; gid++)
         {
             // skip composite glyph components that have no code point
@@ -99,7 +99,7 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
             throws IOException
     {
         // build CID2GIDMap, because the content stream has been written with the old GIDs
-        Map<Integer, Integer> cidToGid = new HashMap<Integer, Integer>();
+        Map<Integer, Integer> cidToGid = new HashMap<Integer, Integer>(gidToCid.size());
         for (Map.Entry<Integer, Integer> entry : gidToCid.entrySet())
         {
             int newGID = entry.getKey();

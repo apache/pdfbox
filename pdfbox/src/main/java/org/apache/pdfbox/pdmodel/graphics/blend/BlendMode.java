@@ -189,7 +189,7 @@ public abstract class BlendMode
 
     private static Map<COSName, BlendMode> createBlendModeMap()
     {
-        Map<COSName, BlendMode> map = new HashMap<COSName, BlendMode>();
+        Map<COSName, BlendMode> map = new HashMap<COSName, BlendMode>(13);
         map.put(COSName.NORMAL, BlendMode.NORMAL);
         map.put(COSName.COMPATIBLE, BlendMode.COMPATIBLE);
         map.put(COSName.MULTIPLY, BlendMode.MULTIPLY);

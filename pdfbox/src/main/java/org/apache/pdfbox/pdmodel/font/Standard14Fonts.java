@@ -40,14 +40,13 @@ final class Standard14Fonts
     {
     }
 
-    private static final Set<String> STANDARD_14_NAMES = new HashSet<String>();
-    private static final Map<String, String> STANDARD_14_MAPPING = new HashMap<String, String>();
-    private static final Map<String, FontMetrics> STANDARD14_AFM_MAP;
+    private static final Set<String> STANDARD_14_NAMES = new HashSet<String>(34);
+    private static final Map<String, String> STANDARD_14_MAPPING = new HashMap<String, String>(34);
+    private static final Map<String, FontMetrics> STANDARD14_AFM_MAP =  new HashMap<String, FontMetrics>(34);
     static
     {
         try
         {
-            STANDARD14_AFM_MAP = new HashMap<String, FontMetrics>();
             addAFM("Courier-Bold");
             addAFM("Courier-BoldOblique");
             addAFM("Courier");
