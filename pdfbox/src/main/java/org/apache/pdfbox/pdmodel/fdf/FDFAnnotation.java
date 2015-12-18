@@ -219,7 +219,14 @@ public abstract class FDFAnnotation implements COSObjectable
             setOpacity(Float.parseFloat(opac));
         }
         setSubject(element.getAttribute("subject"));
-        setIntent(element.getAttribute("intent"));
+
+        String intent = element.getAttribute("intent");
+        if (intent.isEmpty())
+        {
+            // not conforming to spec, but qoppa produces it and Adobe accepts it
+            intent = element.getAttribute("IT");
+        }
+        setIntent(intent);
 
         XPath xpath = XPathFactory.newInstance().newXPath();
         try
