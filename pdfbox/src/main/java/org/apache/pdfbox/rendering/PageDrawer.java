@@ -399,13 +399,13 @@ public class PageDrawer extends PDFGraphicsStreamEngine
      */
     private Glyph2D createGlyph2D(PDFont font) throws IOException
     {
+        Glyph2D glyph2D = fontGlyph2D.get(font);
         // Is there already a Glyph2D for the given font?
-        if (fontGlyph2D.containsKey(font))
+        if (glyph2D != null)
         {
-            return fontGlyph2D.get(font);
+            return glyph2D;
         }
 
-        Glyph2D glyph2D = null;
         if (font instanceof PDTrueTypeFont)
         {
             PDTrueTypeFont ttfFont = (PDTrueTypeFont)font;
