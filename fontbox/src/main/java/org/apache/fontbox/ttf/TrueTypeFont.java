@@ -484,24 +484,21 @@ public class TrueTypeFont implements FontBoxFont, Closeable
 
     private synchronized void readPostScriptNames() throws IOException
     {
-        if (postScriptNames == null)
+        if (postScriptNames == null && getPostScript() != null)
         {
-            if (getPostScript() != null)
+            String[] names = getPostScript().getGlyphNames();
+            if (names != null)
             {
-                String[] names = getPostScript().getGlyphNames();
-                if (names != null)
+                postScriptNames = new HashMap<String, Integer>(names.length);
+                for (int i = 0; i < names.length; i++)
                 {
-                    postScriptNames = new HashMap<String, Integer>(names.length);
-                    for (int i = 0; i < names.length; i++)
-                    {
-                        postScriptNames.put(names[i], i);
-                    }
+                    postScriptNames.put(names[i], i);
                 }
-                else
-                {
-                    postScriptNames = new HashMap<String, Integer>();
-                }                    
             }
+            else
+            {
+                postScriptNames = new HashMap<String, Integer>();
+            }                    
         }
     }
 
