@@ -60,8 +60,8 @@ class PDType1FontEmbedder
 
         // read the pfb
         byte[] pfbBytes = IOUtils.toByteArray(pfbStream);
-        PfbParser pfbParser = new PfbParser(new ByteArrayInputStream(pfbBytes));
-        type1 = Type1Font.createWithPFB(new ByteArrayInputStream(pfbBytes));
+        PfbParser pfbParser = new PfbParser(pfbBytes);
+        type1 = Type1Font.createWithPFB(pfbBytes);
         
         if (encoding == null)
         {
