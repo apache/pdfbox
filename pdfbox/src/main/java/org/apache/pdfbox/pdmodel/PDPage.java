@@ -130,7 +130,7 @@ public class PDPage implements COSObjectable, PDContentStream
         else if (base instanceof COSArray && ((COSArray) base).size() > 0)
         {
             COSArray array = (COSArray)base;
-            for (int i = 0; i < streams.size(); i++)
+            for (int i = 0; i < array.size(); i++)
             {
                 COSStream stream = (COSStream) array.getObject(i);
                 streams.add(new PDStream(stream));
