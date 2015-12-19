@@ -159,7 +159,8 @@ final class TTFGlyph2D implements Glyph2D
                 glyphs.put(gid, glyphPath);
             }
         }
-        return glyphPath != null ? (GeneralPath) glyphPath.clone() : null; // todo: expensive
+        // todo: expensive
+        return (GeneralPath) glyphPath.clone();
     }
 
     @Override
