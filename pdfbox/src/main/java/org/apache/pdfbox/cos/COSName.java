@@ -35,7 +35,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     private static Map<String, COSName> nameMap = new ConcurrentHashMap<String, COSName>(8192);
 
     // all common COSName values are stored in this HashMap
-    // hey are already defined as static constants and don't need to be synchronized
+    // they are already defined as static constants and don't need to be synchronized
     private static Map<String, COSName> commonNameMap = new HashMap<String, COSName>(768);
 
     //
