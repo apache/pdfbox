@@ -20,9 +20,12 @@ import java.io.Closeable;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
+
+import org.apache.fontbox.util.Charsets;
 
 /**
  * An interface into a data stream.
@@ -58,11 +61,11 @@ abstract class TTFDataStream implements Closeable
      */
     public String readString(int length) throws IOException
     {
-        return readString(length, "ISO-8859-1");
+        return readString(length, Charsets.ISO_8859_1);
     }
 
     /**
-     * Read a fixed length ascii string.
+     * Read a fixed length string.
      * 
      * @param length The length of the string to read in bytes.
      * @param charset The expected character set of the string.
@@ -75,6 +78,19 @@ abstract class TTFDataStream implements Closeable
         return new String(buffer, charset);
     }
 
+    /**
+     * Read a fixed length string.
+     * 
+     * @param length The length of the string to read in bytes.
+     * @param charset The expected character set of the string.
+     * @return A string of the desired length.
+     * @throws IOException If there is an error reading the data.
+     */
+    public String readString(int length, Charset charset) throws IOException
+    {
+        byte[] buffer = read(length);
+        return new String(buffer, charset);
+    }
     /**
      * Read an unsigned byte.
      * 
@@ -212,7 +228,7 @@ abstract class TTFDataStream implements Closeable
      */
     public String readTag() throws IOException
     {
-        return new String(read(4), "US-ASCII");
+        return new String(read(4), Charsets.US_ASCII);
     }
 
     /**

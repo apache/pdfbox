@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import org.apache.fontbox.util.BoundingBox;
+import org.apache.fontbox.util.Charsets;
 
 /**
  * This class is used to parse AFM(Adobe Font Metrics) documents.
@@ -692,7 +693,7 @@ public class AFMParser
                 throw new IOException( "Error parsing AFM file:" + e );
             }
         }
-        return new String( data, "ISO-8859-1" );
+        return new String( data, Charsets.ISO_8859_1 );
     }
 
     /**

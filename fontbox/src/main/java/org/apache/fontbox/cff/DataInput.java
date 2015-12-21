@@ -19,6 +19,8 @@ package org.apache.fontbox.cff;
 import java.io.EOFException;
 import java.io.IOException;
 
+import org.apache.fontbox.util.Charsets;
+
 /**
  * This class contains some functionality to read a byte buffer.
  * 
@@ -73,7 +75,7 @@ public class DataInput
      */
     public String getString() throws IOException
     {
-        return new String(inputBuffer, "ISO-8859-1");
+        return new String(inputBuffer, Charsets.ISO_8859_1);
     }
 
     /**

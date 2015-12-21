@@ -17,11 +17,13 @@
 package org.apache.fontbox.ttf;
 
 import java.io.IOException;
-
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.fontbox.util.Charsets;
 
 /**
  * A table in a true type font.
@@ -80,25 +82,25 @@ public class NamingTable extends TTFTable
             data.seek(getOffset() + (2*3)+numberOfNameRecords*2*6+nr.getStringOffset());
             int platform = nr.getPlatformId();
             int encoding = nr.getPlatformEncodingId();
-            String charset = "ISO-8859-1";
+            Charset charset = Charsets.ISO_8859_1;
             if (platform == 3 && (encoding == 1 || encoding == 0))
             {
-                charset = "UTF-16";
+                charset = Charsets.UTF_16;
             }
             else if (platform == 2)
             {
                 if (encoding == 0)
                 {
-                    charset = "US-ASCII";
+                    charset = Charsets.US_ASCII;
                 }
                 else if (encoding == 1)
                 {
                     //not sure is this is correct??
-                    charset = "ISO-10646-1";
+                    charset = Charsets.ISO_10646;
                 }
                 else if (encoding == 2)
                 {
-                    charset = "ISO-8859-1";
+                    charset = Charsets.ISO_8859_1;
                 }
             }
             String string = data.readString(nr.getStringLength(), charset);
