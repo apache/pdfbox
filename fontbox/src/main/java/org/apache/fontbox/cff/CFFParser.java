@@ -25,6 +25,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.fontbox.util.Charsets;
+
 /**
  * This class represents a parser for a CFF font. 
  * @author Villu Ruusmann
@@ -151,7 +153,7 @@ public class CFFParser
     private static String readTagName(CFFDataInput input) throws IOException
     {
         byte[] b = input.readBytes(4);
-        return new String(b, "ISO-8859-1");
+        return new String(b, Charsets.ISO_8859_1);
     }
 
     private static long readLong(CFFDataInput input) throws IOException
@@ -219,7 +221,7 @@ public class CFFParser
         for (int i = 0; i < count; i++)
         {
             int length = offsets[i + 1] - offsets[i];
-            indexDataValues.add(new String(input.readBytes(length), "ISO-8859-1"));
+            indexDataValues.add(new String(input.readBytes(length), Charsets.ISO_8859_1));
         }
         return indexDataValues;
     }
