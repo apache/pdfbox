@@ -66,7 +66,7 @@ public class FontMetrics
     private float standardVerticalWidth;
 
     private List<CharMetric> charMetrics = new ArrayList<CharMetric>();
-    private final Map<String,CharMetric> charMetricsMap = new HashMap<String,CharMetric>();
+    private Map<String,CharMetric> charMetricsMap = new HashMap<String,CharMetric>();
     private List<TrackKern> trackKern = new ArrayList<TrackKern>();
     private List<Composite> composites = new ArrayList<Composite>();
     private List<KernPair> kernPairs = new ArrayList<KernPair>();
@@ -89,13 +89,9 @@ public class FontMetrics
      */
     public float getCharacterWidth( String name )
     {
-        float result;
+        float result = 0;
         CharMetric metric = charMetricsMap.get( name );
-        if( metric == null )
-        {
-            result=0;
-        }
-        else
+        if( metric != null )
         {
             result = metric.getWx();
         }
@@ -110,21 +106,14 @@ public class FontMetrics
      */
     public float getCharacterHeight( String name )
     {
-        float result;
+        float result = 0;
         CharMetric metric = charMetricsMap.get( name );
-        if( metric == null )
+        if( metric != null )
         {
-            result=0;
-        }
-        else
-        {
-            if( metric.getWy() == 0 )
+            result = metric.getWy(); 
+            if( result == 0 )
             {
                 result = metric.getBoundingBox().getHeight();
-            }
-            else
-            {
-                result = metric.getWy();
             }
         }
         return result;
@@ -716,6 +705,11 @@ public class FontMetrics
     public void setCharMetrics(List<CharMetric> charMetricsValue)
     {
         charMetrics = charMetricsValue;
+        charMetricsMap = new HashMap<String, CharMetric>(charMetrics.size());
+        for (CharMetric metric : charMetricsValue)
+        {
+            charMetricsMap.put( metric.getName(), metric );
+        }
     }
 
     /**

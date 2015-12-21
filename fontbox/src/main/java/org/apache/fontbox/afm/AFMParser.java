@@ -18,6 +18,8 @@ package org.apache.fontbox.afm;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import org.apache.fontbox.util.BoundingBox;
@@ -466,10 +468,11 @@ public class AFMParser
             else if( START_CHAR_METRICS.equals( nextCommand ) )
             {
                 int count = readInt();
+                List<CharMetric> charMetrics = new ArrayList<CharMetric>(count);
                 for( int i=0; i<count; i++ )
                 {
                     CharMetric charMetric = parseCharMetric();
-                    fontMetrics.addCharMetric( charMetric );
+                    charMetrics.add( charMetric );
                 }
                 String end = readString();
                 if( !end.equals( END_CHAR_METRICS ) )
@@ -478,6 +481,7 @@ public class AFMParser
                                                 end + "'" );
                 }
                 charMetricsRead = true;
+                fontMetrics.setCharMetrics(charMetrics);
             }
             else if( !reducedDataset && START_COMPOSITES.equals( nextCommand ) )
             {
