@@ -22,8 +22,10 @@ import java.nio.charset.Charset;
  * This class provides an instance of all common charsets used to transform byte arrays into strings. 
  *  
  */
-public class Charsets
+public final class Charsets
 {
+    private Charsets() {}
+    
     /**
      * ISO-8859-1 Charset
      */
