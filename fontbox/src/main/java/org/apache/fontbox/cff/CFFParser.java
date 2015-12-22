@@ -1029,6 +1029,7 @@ public class CFFParser
         if (isCIDFont)
         {
             charset.addCID(0, 0);
+            charset.rangesCID2GID = new ArrayList<RangeMapping>();
         }
         else
         {
@@ -1039,17 +1040,17 @@ public class CFFParser
         {
             int rangeFirst = dataInput.readSID();
             int rangeLeft = dataInput.readCard8();
-            for (int j = 0; j < 1 + rangeLeft; j++)
+            if (!isCIDFont)
             {
-                int sid = rangeFirst + j;
-                if (isCIDFont)
+                for (int j = 0; j < 1 + rangeLeft; j++)
                 {
-                    charset.addCID(gid + j, sid);
-                }
-                else
-                {
+                    int sid = rangeFirst + j;
                     charset.addSID(gid + j, sid, readString(sid));
                 }
+            }
+            else
+            {
+                charset.rangesCID2GID.add(new RangeMapping(gid, rangeFirst, rangeLeft));
             }
             gid += rangeLeft;
         }
@@ -1064,7 +1065,7 @@ public class CFFParser
         if (isCIDFont)
         {
             charset.addCID(0, 0);
-            charset.rangesCID2GID = new ArrayList<Format2Charset.Range>();
+            charset.rangesCID2GID = new ArrayList<RangeMapping>();
         }
         else
         {
@@ -1085,7 +1086,7 @@ public class CFFParser
             }
             else
             {
-                charset.rangesCID2GID.add(new Format2Charset.Range(gid, first, nLeft));
+                charset.rangesCID2GID.add(new RangeMapping(gid, first, nLeft));
             }
             gid += nLeft;
         }
@@ -1342,12 +1343,39 @@ public class CFFParser
     private static class Format1Charset extends EmbeddedCharset
     {
         private int format;
+        private List<RangeMapping> rangesCID2GID;
 
         protected Format1Charset(boolean isCIDFont)
         {
             super(isCIDFont);
         }
 
+        @Override
+        public int getCIDForGID(int gid)
+        {
+            for (RangeMapping mapping : rangesCID2GID)
+            {
+                if (mapping.isInRange(gid))
+                {
+                    return mapping.mapValue(gid);
+                }
+            }
+            return super.getCIDForGID(gid);
+        }
+        
+        @Override
+        public int getGIDForCID(int cid)
+        {
+            for (RangeMapping mapping : rangesCID2GID)
+            {
+                if (mapping.isInReverseRange(cid))
+                {
+                    return mapping.mapReverseValue(cid);
+                }
+            }
+            return super.getGIDForCID(cid);
+        }
+        
         @Override
         public String toString()
         {
@@ -1361,7 +1389,7 @@ public class CFFParser
     private static class Format2Charset extends EmbeddedCharset
     {
         private int format;
-        private List<Range> rangesCID2GID;
+        private List<RangeMapping> rangesCID2GID;
         
         protected Format2Charset(boolean isCIDFont)
         {
@@ -1371,11 +1399,11 @@ public class CFFParser
         @Override
         public int getCIDForGID(int gid)
         {
-            for (Range range : rangesCID2GID)
+            for (RangeMapping mapping : rangesCID2GID)
             {
-                if (range.isInRange(gid))
+                if (mapping.isInRange(gid))
                 {
-                    return range.mapValue(gid);
+                    return mapping.mapValue(gid);
                 }
             }
             return super.getCIDForGID(gid);
@@ -1384,11 +1412,11 @@ public class CFFParser
         @Override
         public int getGIDForCID(int cid)
         {
-            for (Range range : rangesCID2GID)
+            for (RangeMapping mapping : rangesCID2GID)
             {
-                if (range.isInReverseRange(cid))
+                if (mapping.isInReverseRange(cid))
                 {
-                    return range.mapReverseValue(cid);
+                    return mapping.mapReverseValue(cid);
                 }
             }
             return super.getGIDForCID(cid);
@@ -1400,63 +1428,64 @@ public class CFFParser
             return getClass().getName() + "[format=" + format + "]";
         }
 
-        /**
-         * Inner class representing a range of a charset. 
-         */
-        private static class Range
+    }
+
+    /**
+     * Inner class representing a rang mapping for a CID charset. 
+     */
+    private static final class RangeMapping
+    {
+        private final int startValue;
+        private final int endValue;
+        private final int startMappedValue;
+        private final int endMappedValue;
+
+        private RangeMapping(int startGID, int first, int nLeft)
         {
-            private final int startValue;
-            private final int endValue;
-            private final int startMappedValue;
-            private final int endMappedValue;
+            this.startValue = startGID;
+            endValue = startValue + nLeft;
+            this.startMappedValue = first;
+            endMappedValue = startMappedValue + nLeft;
+        }
+        
+        boolean isInRange(int value)
+        {
+            return value >= startValue && value <= endValue;
+        }
+        
+        boolean isInReverseRange(int value)
+        {
+            return value >= startMappedValue && value <= endMappedValue;
+        }
 
-            private Range(int startGID, int first, int nLeft)
+        int mapValue(int value)
+        {
+            if (isInRange(value))
             {
-                this.startValue = startGID;
-                endValue = startValue + nLeft;
-                this.startMappedValue = first;
-                endMappedValue = startMappedValue + nLeft;
+                return startMappedValue + (value - startValue);
             }
-            
-            boolean isInRange(int value)
+            else
             {
-                return value >= startValue && value <= endValue;
+                return 0;
             }
-            
-            boolean isInReverseRange(int value)
-            {
-                return value >= startMappedValue && value <= endMappedValue;
-            }
+        }
 
-            int mapValue(int value)
+        int mapReverseValue(int value)
+        {
+            if (isInReverseRange(value))
             {
-                if (isInRange(value))
-                {
-                    return startMappedValue + (value - startValue);
-                }
-                else
-                {
-                    return 0;
-                }
+                return startValue + (value - startMappedValue);
             }
+            else
+            {
+                return 0;
+            }
+        }
 
-            int mapReverseValue(int value)
-            {
-                if (isInReverseRange(value))
-                {
-                    return startValue + (value - startMappedValue);
-                }
-                else
-                {
-                    return 0;
-                }
-            }
-
-            @Override
-            public String toString()
-            {
-                return getClass().getName() + "[startGID=" + startValue + ", endGID=" + endValue +  ", first=" + startMappedValue +"]";
-            }
+        @Override
+        public String toString()
+        {
+            return getClass().getName() + "[start value=" + startValue + ", end value=" + endValue +  ", start mapped-value=" + startMappedValue +  ", end mapped-value=" + endMappedValue +"]";
         }
     }
 
