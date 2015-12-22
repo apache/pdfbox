@@ -1075,7 +1075,6 @@ public class CFFParser
         {
             int first = dataInput.readSID();
             int nLeft = dataInput.readCard16();
-            charset.rangesCID2GID.add(new Format2Charset.Range(gid, first, nLeft));
             if (!isCIDFont)
             {
                 for (int j = 0; j < 1 + nLeft; j++)
@@ -1083,6 +1082,10 @@ public class CFFParser
                     int sid = first + j;
                     charset.addSID(gid + j, sid, readString(sid));
                 }
+            }
+            else
+            {
+                charset.rangesCID2GID.add(new Format2Charset.Range(gid, first, nLeft));
             }
             gid += nLeft;
         }
