@@ -1061,10 +1061,10 @@ public class CFFParser
     {
         Format2Charset charset = new Format2Charset(isCIDFont);
         charset.format = format;
-        charset.range = new Format2Charset.Range2[0];
         if (isCIDFont)
         {
             charset.addCID(0, 0);
+            charset.rangesCID2GID = new ArrayList<Format2Charset.Range>();
         }
         else
         {
@@ -1073,26 +1073,18 @@ public class CFFParser
 
         for (int gid = 1; gid < nGlyphs; gid++)
         {
-            Format2Charset.Range2[] newRange = new Format2Charset.Range2[charset.range.length + 1];
-            System.arraycopy(charset.range, 0, newRange, 0, charset.range.length);
-            charset.range = newRange;
-            Format2Charset.Range2 range = new Format2Charset.Range2();
-            range.first = dataInput.readSID();
-            range.nLeft = dataInput.readCard16();
-            charset.range[charset.range.length - 1] = range;
-            for (int j = 0; j < 1 + range.nLeft; j++)
+            int first = dataInput.readSID();
+            int nLeft = dataInput.readCard16();
+            charset.rangesCID2GID.add(new Format2Charset.Range(gid, first, nLeft));
+            if (!isCIDFont)
             {
-                int sid = range.first + j;
-                if (isCIDFont)
+                for (int j = 0; j < 1 + nLeft; j++)
                 {
-                    charset.addCID(gid + j, sid);
-                }
-                else
-                {
+                    int sid = first + j;
                     charset.addSID(gid + j, sid, readString(sid));
                 }
             }
-            gid += range.nLeft;
+            gid += nLeft;
         }
         return charset;
     }
@@ -1366,31 +1358,101 @@ public class CFFParser
     private static class Format2Charset extends EmbeddedCharset
     {
         private int format;
-        private Range2[] range;
-
+        private List<Range> rangesCID2GID;
+        
         protected Format2Charset(boolean isCIDFont)
         {
             super(isCIDFont);
         }
 
         @Override
+        public int getCIDForGID(int gid)
+        {
+            for (Range range : rangesCID2GID)
+            {
+                if (range.isInRange(gid))
+                {
+                    return range.mapValue(gid);
+                }
+            }
+            return super.getCIDForGID(gid);
+        }
+        
+        @Override
+        public int getGIDForCID(int cid)
+        {
+            for (Range range : rangesCID2GID)
+            {
+                if (range.isInReverseRange(cid))
+                {
+                    return range.mapReverseValue(cid);
+                }
+            }
+            return super.getGIDForCID(cid);
+        }
+        
+        @Override
         public String toString()
         {
-            return getClass().getName() + "[format=" + format + ", range=" + Arrays.toString(range) + "]";
+            return getClass().getName() + "[format=" + format + "]";
         }
 
         /**
          * Inner class representing a range of a charset. 
          */
-        private static class Range2
+        private static class Range
         {
-            private int first;
-            private int nLeft;
+            private final int startValue;
+            private final int endValue;
+            private final int startMappedValue;
+            private final int endMappedValue;
+
+            private Range(int startGID, int first, int nLeft)
+            {
+                this.startValue = startGID;
+                endValue = startValue + nLeft;
+                this.startMappedValue = first;
+                endMappedValue = startMappedValue + nLeft;
+            }
+            
+            boolean isInRange(int value)
+            {
+                return value >= startValue && value <= endValue;
+            }
+            
+            boolean isInReverseRange(int value)
+            {
+                return value >= startMappedValue && value <= endMappedValue;
+            }
+
+            int mapValue(int value)
+            {
+                if (isInRange(value))
+                {
+                    return startMappedValue + (value - startValue);
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+
+            int mapReverseValue(int value)
+            {
+                if (isInReverseRange(value))
+                {
+                    return startValue + (value - startMappedValue);
+                }
+                else
+                {
+                    return 0;
+                }
+            }
 
             @Override
             public String toString()
             {
-                return getClass().getName() + "[first=" + first + ", nLeft=" + nLeft + "]";
+                return getClass().getName() + "[startGID=" + startValue + ", endGID=" + endValue +  ", first=" + startMappedValue +"]";
             }
         }
     }
