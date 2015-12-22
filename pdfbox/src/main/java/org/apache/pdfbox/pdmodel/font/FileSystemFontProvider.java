@@ -519,12 +519,19 @@ final class FileSystemFontProvider extends FontProvider
             // read PostScript name, if any
             if (ttf.getName() != null)
             {
+                // ignore bitmap fonts
+                if (ttf.getHeader() == null)
+                {
+                    fontInfoList.add(new FSIgnored(file, FontFormat.TTF, ttf.getName()));
+                    return;
+                }
+                int macStyle = ttf.getHeader().getMacStyle();
+
                 int sFamilyClass = -1;
                 int usWeightClass = -1;
                 int ulCodePageRange1 = 0;
                 int ulCodePageRange2 = 0;
                 byte[] panose = null;
-                
                 // Apple's AAT fonts don't have an OS/2 table
                 if (ttf.getOS2Windows() != null)
                 {
@@ -535,14 +542,6 @@ final class FileSystemFontProvider extends FontProvider
                     panose = ttf.getOS2Windows().getPanose();
                 }
 
-                // ignore bitmap fonts
-                if (ttf.getHeader() == null)
-                {
-                    fontInfoList.add(new FSIgnored(file, FontFormat.TTF, ttf.getName()));
-                    return;
-                }
-                int macStyle = ttf.getHeader().getMacStyle();
-                
                 String format;
                 if (ttf instanceof OpenTypeFont && ((OpenTypeFont)ttf).isPostScript())
                 {
