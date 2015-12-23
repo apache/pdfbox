@@ -155,19 +155,17 @@ public class BufferedRandomAccessFile extends RandomAccessFile
             bufpos += len;
             return len;
         }
-        for (int i = 0; i < len; i++)
+        System.arraycopy(buffer, bufpos, b, off, leftover);
+        bufpos += leftover;
+        if (fillBuffer() > 0)
         {
-            int c = this.read();
-            if (c != -1)
+            int bytesRead = read(b, off + leftover, len - leftover);
+            if (bytesRead > 0)
             {
-                b[off + i] = (byte) c;
-            }
-            else
-            {
-                return i;
+                leftover += bytesRead;
             }
         }
-        return len;
+        return leftover;
     }
 
     /**
