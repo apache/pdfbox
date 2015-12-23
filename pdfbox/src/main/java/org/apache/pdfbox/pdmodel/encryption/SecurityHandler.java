@@ -39,6 +39,8 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -68,6 +70,7 @@ public abstract class SecurityHandler
     /**
      * CONSTANTS.
      */
+    private static final Log LOG = LogFactory.getLog(SecurityHandler.class);
 
     private static final int DEFAULT_KEY_LENGTH = 40;
 
@@ -210,14 +213,7 @@ public abstract class SecurityHandler
         {
             COSObject nextObj = objectIter.next();
             COSBase nextCOSBase = nextObj.getObject();
-            boolean isSignatureDictionary = false;
-            if (nextCOSBase instanceof COSDictionary)
-            {
-                COSDictionary dict = (COSDictionary) nextCOSBase;
-                isSignatureDictionary = COSName.SIG.equals(dict.getDictionaryObject(COSName.FT))
-                        || COSName.SIG.equals(dict.getDictionaryObject(COSName.TYPE));
-            }
-            if (!isSignatureDictionary && nextCOSBase != encryptionDict)
+            if (nextCOSBase != encryptionDict)
             {
                 decryptObject(nextObj);
             }
@@ -353,27 +349,27 @@ public abstract class SecurityHandler
             }
             catch (InvalidKeyException e)
             {
-                throw new WrappedIOException(e);
+                throw new WrappedIOException(e.getMessage(), e);
             }
             catch (InvalidAlgorithmParameterException e)
             {
-                throw new WrappedIOException(e);
+                throw new WrappedIOException(e.getMessage(), e);
             }
             catch (NoSuchAlgorithmException e)
             {
-                throw new WrappedIOException(e);
+                throw new WrappedIOException(e.getMessage(), e);
             }
             catch (NoSuchPaddingException e)
             {
-                throw new WrappedIOException(e);
+                throw new WrappedIOException(e.getMessage(), e);
             }
             catch (IllegalBlockSizeException e)
             {
-                throw new WrappedIOException(e);
+                throw new WrappedIOException(e.getMessage(), e);
             }
             catch (BadPaddingException e)
             {
-                throw new WrappedIOException(e);
+                throw new WrappedIOException(e.getMessage(), e);
             }
         }
         else
@@ -516,8 +512,14 @@ public abstract class SecurityHandler
     private void decryptDictionary(COSDictionary dictionary, long objNum, long genNum) throws CryptographyException,
             IOException
     {
+        COSBase type = dictionary.getDictionaryObject(COSName.TYPE);
         for (Map.Entry<COSName, COSBase> entry : dictionary.entrySet())
         {
+            if (COSName.SIG.equals(type) && COSName.CONTENTS.equals(entry.getKey()))
+            {
+                // do not decrypt the signature contents string
+                continue;
+            }
             COSBase value = entry.getValue();
             // within a dictionary only the following kind of COS objects have to be decrypted
             if (value instanceof COSString || value instanceof COSStream || value instanceof COSArray
@@ -573,11 +575,19 @@ public abstract class SecurityHandler
      */
     public void decryptString(COSString string, long objNum, long genNum) throws CryptographyException, IOException
     {
-        ByteArrayInputStream data = new ByteArrayInputStream(string.getBytes());
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        encryptData(objNum, genNum, data, buffer, true /* decrypt */);
-        string.reset();
-        string.append(buffer.toByteArray());
+        ByteArrayInputStream bais = new ByteArrayInputStream(string.getBytes());
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try
+        {
+            encryptData(objNum, genNum, bais, baos, true /* decrypt */);
+            string.reset();
+            string.append(baos.toByteArray());
+        }
+        catch (WrappedIOException ex)
+        {
+            LOG.error("Failed to decrypt COSString of length " + string.getBytes().length + 
+                    " in object " + objNum + ": " + ex.getMessage());
+        }
     }
 
     /**
