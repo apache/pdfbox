@@ -1549,32 +1549,34 @@ public class NonSequentialPDFParser extends PDFParser
             // PDFBOX-2936: avoid orphan /CF dictionaries found in US govt "I-" files
             return;
         }
-        // skip dictionary containing the signature
-        if (!COSName.SIG.equals(dict.getItem(COSName.TYPE)))
+        COSBase type = dict.getDictionaryObject(COSName.TYPE);
+        for (Entry<COSName, COSBase> entry : dict.entrySet())
         {
-            for (Entry<COSName, COSBase> entry : dict.entrySet())
+            if (COSName.SIG.equals(type) && COSName.CONTENTS.equals(entry.getKey()))
             {
-                if (entry.getValue() instanceof COSString)
+                // do not decrypt the signature contents string
+                continue;
+            }
+            if (entry.getValue() instanceof COSString)
+            {
+                decryptString((COSString) entry.getValue(), objNr, objGenNr);
+            }
+            else if (entry.getValue() instanceof COSArray)
+            {
+                try
                 {
-                    decryptString((COSString) entry.getValue(), objNr, objGenNr);
+                    securityHandler.decryptArray((COSArray) entry.getValue(), objNr, objGenNr);
                 }
-                else if (entry.getValue() instanceof COSArray)
+                catch (CryptographyException ce)
                 {
-                    try
-                    {
-                        securityHandler.decryptArray((COSArray) entry.getValue(), objNr, objGenNr);
-                    }
-                    catch (CryptographyException ce)
-                    {
-                        throw new IOException("Error decrypting stream object " + objNr + ": "
-                                + ce.getMessage()
-                        /* , ce // TODO: remove remark with Java 1.6 */);
-                    }
+                    throw new IOException("Error decrypting stream object " + objNr + ": "
+                            + ce.getMessage()
+                    /* , ce // TODO: remove remark with Java 1.6 */);
                 }
-                else if (entry.getValue() instanceof COSDictionary)
-                {
-                    decryptDictionary((COSDictionary) entry.getValue(), objNr, objGenNr);
-                }
+            }
+            else if (entry.getValue() instanceof COSDictionary)
+            {
+                decryptDictionary((COSDictionary) entry.getValue(), objNr, objGenNr);
             }
         }
     }
