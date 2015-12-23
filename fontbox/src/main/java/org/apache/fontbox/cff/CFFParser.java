@@ -156,7 +156,12 @@ public class CFFParser
         int offSize = input.readOffSize();
         for (int i = 0; i <= count; i++)
         {
-            index.setOffset(i, input.readOffset(offSize));
+            int offset = input.readOffset(offSize);
+            if (offset > input.length())
+            {
+                throw new IOException("illegal offset value " + offset + " in CFF font");
+            }
+            index.setOffset(i, offset);
         }
         int dataSize = index.getOffset(count) - index.getOffset(0);
         index.initData(dataSize);

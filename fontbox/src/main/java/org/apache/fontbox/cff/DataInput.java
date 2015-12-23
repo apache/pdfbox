@@ -175,4 +175,9 @@ public class DataInput
             return -1;
         }
     }
+
+    public int length()
+    {
+        return inputBuffer.length;
+    }
 }
