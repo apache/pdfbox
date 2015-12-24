@@ -1550,9 +1550,10 @@ public class NonSequentialPDFParser extends PDFParser
             return;
         }
         COSBase type = dict.getDictionaryObject(COSName.TYPE);
+        boolean isSignature = COSName.SIG.equals(type) || COSName.DOC_TIME_STAMP.equals(type);
         for (Entry<COSName, COSBase> entry : dict.entrySet())
         {
-            if (COSName.SIG.equals(type) && COSName.CONTENTS.equals(entry.getKey()))
+            if (isSignature && COSName.CONTENTS.equals(entry.getKey()))
             {
                 // do not decrypt the signature contents string
                 continue;
