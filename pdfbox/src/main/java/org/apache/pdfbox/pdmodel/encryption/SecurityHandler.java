@@ -513,9 +513,10 @@ public abstract class SecurityHandler
             IOException
     {
         COSBase type = dictionary.getDictionaryObject(COSName.TYPE);
+        boolean isSignature = COSName.SIG.equals(type) || COSName.DOC_TIME_STAMP.equals(type);
         for (Map.Entry<COSName, COSBase> entry : dictionary.entrySet())
         {
-            if (COSName.SIG.equals(type) && COSName.CONTENTS.equals(entry.getKey()))
+            if (isSignature && COSName.CONTENTS.equals(entry.getKey()))
             {
                 // do not decrypt the signature contents string
                 continue;
