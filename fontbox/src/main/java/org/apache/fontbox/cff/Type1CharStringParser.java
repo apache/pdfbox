@@ -137,8 +137,7 @@ public class Type1CharStringParser
                     // all remaining othersubrs use this fallback mechanism
                     for (int i = 0; i < numArgs; i++)
                     {
-                        Integer arg = removeInteger(sequence);
-                        results.push(arg);
+                        results.push(removeInteger(sequence));
                     }
                 }
 
@@ -147,8 +146,7 @@ public class Type1CharStringParser
                 {
                     input.readByte(); // B0_POP
                     input.readByte(); // B1_POP
-                    Integer val = results.pop();
-                    sequence.add(val);
+                    sequence.add(results.pop());
                 }
 
                 if (results.size() > 0)
@@ -221,12 +219,7 @@ public class Type1CharStringParser
         } 
         else if (b0 == 255)
         {
-            int b1 = input.readUnsignedByte();
-            int b2 = input.readUnsignedByte();
-            int b3 = input.readUnsignedByte();
-            int b4 = input.readUnsignedByte();
-
-            return b1 << 24 | b2 << 16 | b3 << 8 | b4;
+            return input.readInt();
         } 
         else
         {

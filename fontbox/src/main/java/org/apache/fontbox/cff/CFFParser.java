@@ -299,17 +299,11 @@ public class CFFParser
     {
         if (b0 == 28)
         {
-            int b1 = input.readUnsignedByte();
-            int b2 = input.readUnsignedByte();
-            return (int) (short) (b1 << 8 | b2);
+            return (int) input.readShort();
         }
         else if (b0 == 29)
         {
-            int b1 = input.readUnsignedByte();
-            int b2 = input.readUnsignedByte();
-            int b3 = input.readUnsignedByte();
-            int b4 = input.readUnsignedByte();
-            return b1 << 24 | b2 << 16 | b3 << 8 | b4;
+            return input.readInt();
         }
         else if (b0 >= 32 && b0 <= 246)
         {

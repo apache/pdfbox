@@ -212,10 +212,7 @@ public class Type2CharStringParser
 
         if (b0 == 28)
         {
-            int b1 = input.readUnsignedByte();
-            int b2 = input.readUnsignedByte();
-
-            return (int) (short) (b1 << 8 | b2);
+            return (int) input.readShort();
         } 
         else if (b0 >= 32 && b0 <= 246)
         {
@@ -235,13 +232,12 @@ public class Type2CharStringParser
         } 
         else if (b0 == 255)
         {
-            int b1 = input.readUnsignedByte();
-            int b2 = input.readUnsignedByte();
+            short value = input.readShort();
             // The lower bytes are representing the digits after 
             // the decimal point and aren't needed in this context
             input.readUnsignedByte();
             input.readUnsignedByte();
-            return (int) (short)(b1 << 8 | b2);
+            return (int) value;
         } 
         else
         {
@@ -251,37 +247,29 @@ public class Type2CharStringParser
 
     private int getMaskLength()
     {
-        int length = 1;
-
         int hintCount = hstemCount + vstemCount;
-        while ((hintCount -= 8) > 0)
+        int length = (int)(hintCount / 8); 
+        if (hintCount % 8 > 0)
         {
             length++;
         }
-
         return length;
     }
 
     private List<Number> peekNumbers()
     {
         List<Number> numbers = new ArrayList<Number>();
-
         for (int i = sequence.size() - 1; i > -1; i--)
         {
             Object object = sequence.get(i);
 
             if (object instanceof Number)
             {
-                Number number = (Number) object;
-
-                numbers.add(0, number);
-
+                numbers.add(0, (Number) object);
                 continue;
             }
-
             return numbers;
         }
-
         return numbers;
     }
 }
