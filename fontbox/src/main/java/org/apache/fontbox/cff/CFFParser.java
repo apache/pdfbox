@@ -1113,7 +1113,7 @@ public class CFFParser
      */
     private static class DictData
     {
-        private Map<String, Entry> entries = new HashMap<String, Entry>();
+        private final Map<String, Entry> entries = new HashMap<String, Entry>();
 
         public void add(Entry entry)
         {
