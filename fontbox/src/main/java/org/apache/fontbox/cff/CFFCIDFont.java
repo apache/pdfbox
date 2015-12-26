@@ -220,6 +220,7 @@ public class CFFCIDFont extends CFFFont
      * @param cid CID
      * @throws IOException if the charstring could not be read
      */
+    @Override
     public CIDKeyedType2CharString getType2CharString(int cid) throws IOException
     {
         CIDKeyedType2CharString type2 = charStringCache.get(cid);
