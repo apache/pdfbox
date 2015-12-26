@@ -114,6 +114,7 @@ public class CFFType1Font extends CFFFont implements EncodedFont
      * @param gid GID
      * @throws IOException if the charstring could not be read
      */
+    @Override
     public Type2CharString getType2CharString(int gid) throws IOException
     {
         String name = "GID+" + gid; // for debugging only
