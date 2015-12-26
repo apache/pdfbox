@@ -203,15 +203,15 @@ public class CFFCIDFont extends CFFFont
      *
      * @param gid GID
      */
-    private List<byte[]> getLocalSubrIndex(int gid)
+    private byte[][] getLocalSubrIndex(int gid)
     {
         int fdArrayIndex = this.fdSelect.getFDIndex(gid);
         if (fdArrayIndex == -1)
         {
-            return new ArrayList<byte[]>();
+            return null;
         }
         Map<String, Object> privDict = this.privateDictionaries.get(fdArrayIndex);
-        return (List<byte[]>)privDict.get("Subrs");
+        return (byte[][])privDict.get("Subrs");
     }
 
     /**
@@ -228,10 +228,10 @@ public class CFFCIDFont extends CFFFont
         {
             int gid = charset.getGIDForCID(cid);
 
-            byte[] bytes = charStrings.get(gid);
+            byte[] bytes = charStrings[gid];
             if (bytes == null)
             {
-                bytes = charStrings.get(0); // .notdef
+                bytes = charStrings[0]; // .notdef
             }
             Type2CharStringParser parser = new Type2CharStringParser(fontName, cid);
             List<Object> type2seq = parser.parse(bytes, globalSubrIndex, getLocalSubrIndex(gid));

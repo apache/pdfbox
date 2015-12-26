@@ -18,6 +18,7 @@ package org.apache.fontbox.cff;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -37,8 +38,8 @@ public abstract class CFFFont implements FontBoxFont
     protected String fontName;
     protected final Map<String, Object> topDict = new LinkedHashMap<String, Object>();
     protected CFFCharset charset;
-    protected final List<byte[]> charStrings = new ArrayList<byte[]>();
-    protected List<byte[]> globalSubrIndex;
+    protected byte[][] charStrings;
+    protected byte[][] globalSubrIndex;
     private CFFParser.ByteSource source;
 
     /**
@@ -129,7 +130,7 @@ public abstract class CFFFont implements FontBoxFont
      */
     public final List<byte[]> getCharStringBytes()
     {
-        return Collections.unmodifiableList(charStrings);
+        return Arrays.asList(charStrings);
     }
 
     /**
@@ -153,7 +154,7 @@ public abstract class CFFFont implements FontBoxFont
      */
     public int getNumCharStrings()
     {
-        return charStrings.size();
+        return charStrings.length;
     }
 
     /**
@@ -161,7 +162,7 @@ public abstract class CFFFont implements FontBoxFont
      * 
      * @param globalSubrIndexValue an list containing the global subroutines
      */
-    void setGlobalSubrIndex(List<byte[]> globalSubrIndexValue)
+    void setGlobalSubrIndex(byte[][] globalSubrIndexValue)
     {
         globalSubrIndex = globalSubrIndexValue;
     }
@@ -173,7 +174,7 @@ public abstract class CFFFont implements FontBoxFont
      */
     public List<byte[]> getGlobalSubrIndex()
     {
-        return Collections.unmodifiableList(globalSubrIndex);
+        return Arrays.asList(globalSubrIndex);
     }
 
     /**
