@@ -46,6 +46,7 @@ public abstract class CFFFont implements FontBoxFont
      *
      * @return the name of the font
      */
+    @Override
     public String getName()
     {
         return fontName;
@@ -88,11 +89,13 @@ public abstract class CFFFont implements FontBoxFont
     /**
      * Returns the FontMatrix.
      */
+    @Override
     public abstract List<Number> getFontMatrix();
 
     /**
      * Returns the FontBBox.
      */
+    @Override
     public BoundingBox getFontBBox()
     {
         List<Number> numbers = (List<Number>)topDict.get("FontBBox");
@@ -170,7 +173,7 @@ public abstract class CFFFont implements FontBoxFont
      */
     public List<byte[]> getGlobalSubrIndex()
     {
-        return globalSubrIndex;
+        return Collections.unmodifiableList(globalSubrIndex);
     }
 
     /**
