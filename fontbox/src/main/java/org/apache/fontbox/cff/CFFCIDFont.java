@@ -19,7 +19,6 @@ package org.apache.fontbox.cff;
 
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
