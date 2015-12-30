@@ -169,7 +169,15 @@ class PDFTextStreamEngine extends PDFStreamEngine
         }
 
         // transformPoint from glyph space -> text space
-        float height = font.getFontMatrix().transformPoint(0, glyphHeight).y;
+        float height;
+        if (font instanceof PDType3Font)
+        {
+            height = font.getFontMatrix().transformPoint(0, glyphHeight).y;
+        }
+        else
+        {
+            height = glyphHeight / 1000;
+        }
 
         // (modified) combined displacement, this is calculated *without* taking the character
         // spacing and word spacing into account, due to legacy code in TextStripper
