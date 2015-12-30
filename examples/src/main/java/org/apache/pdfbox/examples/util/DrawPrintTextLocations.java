@@ -205,9 +205,32 @@ public class DrawPrintTextLocations extends PDFTextStripper
             flip.translate(0, getCurrentPage().getBBox().getHeight());
             flip.scale(1, -1);
             s = flip.createTransformedShape(s);
-            
+
+            AffineTransform transform = g2d.getTransform();
+            int rotation = getCurrentPage().getRotation();
+            if (rotation != 0)
+            {
+                PDRectangle mediaBox = getCurrentPage().getMediaBox();
+                switch (rotation)
+                {
+                    case 90:
+                        g2d.translate(mediaBox.getHeight(), 0);
+                        break;
+                    case 270:
+                        g2d.translate(0, mediaBox.getWidth());
+                        break;
+                    case 180:
+                        g2d.translate(mediaBox.getWidth(), mediaBox.getHeight());
+                        break;
+                }
+                g2d.rotate(Math.toRadians(rotation));
+            }
             g2d.setColor(Color.blue);
             g2d.draw(s);
+            if (rotation != 0)
+            {
+                g2d.setTransform(transform);
+            }
         }
     }
 
