@@ -222,6 +222,8 @@ public class DrawPrintTextLocations extends PDFTextStripper
                     case 180:
                         g2d.translate(mediaBox.getWidth(), mediaBox.getHeight());
                         break;
+                    default:
+                        break;
                 }
                 g2d.rotate(Math.toRadians(rotation));
             }
