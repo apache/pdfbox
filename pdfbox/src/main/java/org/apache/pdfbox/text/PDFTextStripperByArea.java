@@ -57,7 +57,7 @@ public class PDFTextStripperByArea extends PDFTextStripper
      * @param aShouldSeparateByBeads The new grouping of beads.
      */
     @Override
-    public void setShouldSeparateByBeads(boolean aShouldSeparateByBeads)
+    public final void setShouldSeparateByBeads(boolean aShouldSeparateByBeads)
     {
     }
 
