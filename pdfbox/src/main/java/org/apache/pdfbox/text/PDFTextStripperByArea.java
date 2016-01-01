@@ -74,6 +74,17 @@ public class PDFTextStripperByArea extends PDFTextStripper
     }
 
     /**
+     * Delete a region to group text by. If the region does not exist, this method does nothing.
+     *
+     * @param regionName The name of the region to delete.
+     */
+    public void removeRegion(String regionName)
+    {
+        regions.remove(regionName);
+        regionArea.remove(regionName);
+    }
+    
+    /**
      * Get the list of regions that have been setup.
      *
      * @return A list of java.lang.String objects to identify the region names.
