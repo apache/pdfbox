@@ -36,7 +36,6 @@ import java.util.SortedSet;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.Vector;
 import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
@@ -190,7 +189,7 @@ public class PDFTextStripper extends PDFTextStreamEngine
      *
      * Most PDFs won't have any beads, so charactersByArticle will contain a single entry.
      */
-    protected Vector<List<TextPosition>> charactersByArticle = new Vector<List<TextPosition>>();
+    protected ArrayList<List<TextPosition>> charactersByArticle = new ArrayList<List<TextPosition>>();
 
     private Map<String, TreeMap<Float, TreeSet<Float>>> characterListMapping = new HashMap<String, TreeMap<Float, TreeSet<Float>>>();
 
@@ -365,16 +364,24 @@ public class PDFTextStripper extends PDFTextStreamEngine
                 numberOfArticleSections += beadRectangles.size() * 2;
             }
             int originalSize = charactersByArticle.size();
-            charactersByArticle.setSize(numberOfArticleSections);
-            for (int i = 0; i < numberOfArticleSections; i++)
+            charactersByArticle.ensureCapacity(numberOfArticleSections);
+            int lastIndex = Math.max(numberOfArticleSections, originalSize);
+            for (int i = 0; i < lastIndex; i++)
             {
-                if (numberOfArticleSections < originalSize)
+                if (i < originalSize)
                 {
                     charactersByArticle.get(i).clear();
                 }
                 else
                 {
-                    charactersByArticle.set(i, new ArrayList<TextPosition>());
+                    if (numberOfArticleSections < originalSize)
+                    {
+                        charactersByArticle.remove(i);
+                    }
+                    else
+                    {
+                        charactersByArticle.add(new ArrayList<TextPosition>());
+                    }
                 }
             }
             characterListMapping.clear();
@@ -1803,20 +1810,21 @@ public class PDFTextStripper extends PDFTextStreamEngine
             {
                 for (; --end >= start;)
                 {
+                    char character = word.charAt(end);
                     if (Character.isMirrored(word.codePointAt(end)))
                     {
-                        if (MIRRORING_CHAR_MAP.containsKey(word.charAt(end) + ""))
+                        if (MIRRORING_CHAR_MAP.containsKey(character))
                         {
-                            result.append(MIRRORING_CHAR_MAP.get(word.charAt(end) + "").charAt(0));
+                            result.append(MIRRORING_CHAR_MAP.get(character));
                         }
                         else
                         {
-                            result.append(word.charAt(end));
+                            result.append(character);
                         }
                     }
                     else
                     {
-                        result.append(word.charAt(end));
+                        result.append(character);
                     }
                 }
             }
@@ -1829,7 +1837,7 @@ public class PDFTextStripper extends PDFTextStreamEngine
         return result.toString();
     }
 
-    private static HashMap<String, String> MIRRORING_CHAR_MAP = new HashMap<String, String>();
+    private static Map<Character, Character> MIRRORING_CHAR_MAP = new HashMap<Character, Character>();
 
     static
     {
@@ -1843,6 +1851,17 @@ public class PDFTextStripper extends PDFTextStreamEngine
         {
             LOG.warn("Could not parse BidiMirroring.txt, mirroring char map will be empty: "
                     + e.getMessage());
+        }
+        finally
+        {
+            try
+            {
+                input.close();
+            }
+            catch (IOException e)
+            {
+                LOG.error("Could not close BidiMirroring.txt ", e);
+            }
         }
     };
 
@@ -1877,10 +1896,10 @@ public class PDFTextStripper extends PDFTextStreamEngine
 
             StringTokenizer st = new StringTokenizer(s, ";");
             int nFields = st.countTokens();
-            String[] fields = new String[nFields];
+            Character[] fields = new Character[nFields];
             for (int i = 0; i < nFields; i++)
             {
-                fields[i] = "" + (char) Integer.parseInt(st.nextToken().trim(), 16); //
+                fields[i] = (char) Integer.parseInt(st.nextToken().trim(), 16);
             }
 
             if (fields.length == 2)
