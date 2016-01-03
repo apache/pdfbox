@@ -1107,7 +1107,7 @@ public class CFFParser
         
         public Entry getEntry(String name)
         {
-            return getEntry(CFFOperator.getOperator(name));
+            return entries.get(name);
         }
 
         public Boolean getBoolean(String name, boolean defaultValue)
@@ -1126,15 +1126,6 @@ public class CFFParser
         {
             Entry entry = getEntry(name);
             return entry != null ? entry.getNumber(0) : defaultValue;
-        }
-
-        private Entry getEntry(CFFOperator operator)
-        {
-            if (operator != null && entries.containsKey(operator.getName()))
-            {
-                return entries.get(operator.getName());
-            }
-            return null;
         }
 
         /**
