@@ -1439,12 +1439,12 @@ public class COSParser extends BaseParser
             long differenceStream = xrefOffset - newOffsetStream;
             if (Math.abs(differenceTable) > Math.abs(differenceStream))
             {
-                newOffset = differenceStream;
+                newOffset = newOffsetStream;
                 bfSearchXRefStreamsOffsets.remove(newOffsetStream);
             }
             else
             {
-                newOffset = differenceTable;
+                newOffset = newOffsetTable;
                 bfSearchXRefTablesOffsets.remove(newOffsetTable);
             }
         }
