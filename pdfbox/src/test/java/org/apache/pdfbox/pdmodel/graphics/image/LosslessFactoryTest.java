@@ -198,6 +198,15 @@ public class LosslessFactoryTest extends TestCase
             }
         }
 
+        // extra for PDFBOX-3181: check for exception due to different sizes of 
+        // alphaRaster.getSampleModel().getWidth()
+        // and
+        // alphaRaster.getWidth()
+        // happens with image returned by BufferedImage.getSubimage()
+        argbImage = argbImage.getSubimage(1, 1, argbImage.getWidth() - 2, argbImage.getHeight() - 2);
+        w -= 2;
+        h -= 2;
+
         PDImageXObject ximage = LosslessFactory.createFromImage(document, argbImage);
 
         validate(ximage, 8, w, h, "png", PDDeviceRGB.INSTANCE.getName());
