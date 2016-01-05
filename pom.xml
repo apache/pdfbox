@@ -74,6 +74,7 @@
         <plugins>
           <plugin>
             <artifactId>maven-assembly-plugin</artifactId>
+            <version>2.6</version>
             <executions>
               <execution>
                 <goals>
@@ -91,6 +92,7 @@
           </plugin>
           <plugin>
             <artifactId>maven-antrun-plugin</artifactId>
+            <version>1.8</version>
             <executions>
               <execution>
                 <goals>
