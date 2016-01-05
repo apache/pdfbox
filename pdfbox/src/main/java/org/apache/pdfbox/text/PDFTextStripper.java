@@ -184,7 +184,10 @@ public class PDFTextStripper extends PDFTextStreamEngine
      * beads(or articles), one for each column. The size of the charactersByArticle would be 5, because not all text on
      * the screen will fall into one of the articles. The five divisions are shown below
      *
-     * Text before first article first article text text between first article and second article second article text
+     * Text before first article
+     * first article text
+     * text between first article and second article
+     * second article text
      * text after second article
      *
      * Most PDFs won't have any beads, so charactersByArticle will contain a single entry.
