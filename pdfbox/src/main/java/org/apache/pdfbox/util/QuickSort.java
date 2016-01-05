@@ -18,21 +18,24 @@ package org.apache.pdfbox.util;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Stack;
 
 /**
  * see http://de.wikipedia.org/wiki/Quicksort.
  * 
- * @author UWe Pachler
+ * @author Uwe Pachler
+ * @author Manuel Aristaran
  */
-public class QuickSort
+public final class QuickSort
 {
     
     private QuickSort()
     {
     }
     
-    private static final Comparator<? extends Comparable> objComp = new Comparator<Comparable>()
+    private static final Comparator<? extends Comparable> OBJCOMP = new Comparator<Comparable>()
     {
+        @Override
         public int compare(Comparable object1, Comparable object2)
         {
             return object1.compareTo(object2);
@@ -52,7 +55,7 @@ public class QuickSort
         {
             return;
         }
-        quicksort(list, cmp, 0, size - 1);
+        quicksort(list, cmp);
     }
 
     /**
@@ -62,17 +65,62 @@ public class QuickSort
      */
     public static <T extends Comparable> void sort(List<T> list)
     {
-        sort(list, (Comparator<T>) objComp);
+        sort(list, (Comparator<T>) OBJCOMP);
     }
 
-    private static <T> void quicksort(List<T> list, Comparator<T> cmp, int left, int right)
+    private static <T> void quicksort(List<T> list, Comparator<T> cmp)
     {
-        if (left < right)
+        Stack<Integer> stack = new Stack<Integer>();
+        stack.push(0);
+        stack.push(list.size());
+        while (!stack.isEmpty())
         {
-            int splitter = split(list, cmp, left, right);
-            quicksort(list, cmp, left, splitter - 1);
-            quicksort(list, cmp, splitter + 1, right);
+            int right = stack.pop();
+            int left = stack.pop();
+            if (right - left < 2)
+            {
+                continue;
+            }
+            int p = left + ((right - left) / 2);
+            p = partition(list, cmp, p, left, right);
+
+            stack.push(p + 1);
+            stack.push(right);
+
+            stack.push(left);
+            stack.push(p);
         }
+    }
+
+    private static <T> int partition(List<T> list, Comparator<T> cmp, int p, int start, int end)
+    {
+        int l = start;
+        int h = end - 2;
+        T piv = list.get(p);
+        swap(list, p, end - 1);
+
+        while (l < h)
+        {
+            if (cmp.compare(list.get(l), piv) <= 0)
+            {
+                l++;
+            }
+            else if (cmp.compare(piv, list.get(h)) <= 0)
+            {
+                h--;
+            }
+            else
+            {
+                swap(list, l, h);
+            }
+        }
+        int idx = h;
+        if (cmp.compare(list.get(h), piv) < 0)
+        {
+            idx++;
+        }
+        swap(list, end - 1, idx);
+        return idx;
     }
 
     private static <T> void swap(List<T> list, int i, int j)
@@ -80,34 +128,5 @@ public class QuickSort
         T tmp = list.get(i);
         list.set(i, list.get(j));
         list.set(j, tmp);
-    }
-
-    private static <T> int split(List<T> list, Comparator<T> cmp, int left, int right)
-    {
-        int i = left;
-        int j = right - 1;
-        T pivot = list.get(right);
-        do
-        {
-            while (cmp.compare(list.get(i), pivot) <= 0 && i < right)
-            {
-                ++i;
-            }
-            while (cmp.compare(pivot, list.get(j)) <= 0 && j > left)
-            {
-                --j;
-            }
-            if (i < j)
-            {
-                swap(list, i, j);
-            }
-
-        } while (i < j);
-
-        if (cmp.compare(pivot, list.get(i)) < 0)
-        {
-            swap(list, i, right);
-        }
-        return i;
     }
 }
