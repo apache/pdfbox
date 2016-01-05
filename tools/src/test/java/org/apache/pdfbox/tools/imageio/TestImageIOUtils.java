@@ -18,6 +18,7 @@ package org.apache.pdfbox.tools.imageio;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
@@ -38,6 +39,7 @@ import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
@@ -45,6 +47,8 @@ import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.apache.pdfbox.util.filetypedetector.FileType;
+import org.apache.pdfbox.util.filetypedetector.FileTypeDetector;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -116,35 +120,41 @@ public class TestImageIOUtils extends TestCase
             // testing PNG
             writeImage(document, imageType, outDir + file.getName() + "-", ImageType.RGB, dpi);
             checkResolution(outDir + file.getName() + "-1." + imageType, (int) dpi);
+            checkFileTypeByContent(outDir + file.getName() + "-1." + imageType, FileType.PNG);
 
             // testing JPG/JPEG
             imageType = "jpg";
             writeImage(document, imageType, outDir + file.getName() + "-", ImageType.RGB, dpi);
             checkResolution(outDir + file.getName() + "-1." + imageType, (int) dpi);
+            checkFileTypeByContent(outDir + file.getName() + "-1." + imageType, FileType.JPEG);
 
             // testing BMP
             imageType = "bmp";
             writeImage(document, imageType, outDir + file.getName() + "-", ImageType.RGB, dpi);
             checkResolution(outDir + file.getName() + "-1." + imageType, (int) dpi);
+            checkFileTypeByContent(outDir + file.getName() + "-1." + imageType, FileType.BMP);
 
             // testing GIF
             imageType = "gif";
             writeImage(document, imageType, outDir + file.getName() + "-", ImageType.RGB, dpi);
-            // no META data posible for GIF, thus no test
+            // no META data posible for GIF, thus no dpi test
+            checkFileTypeByContent(outDir + file.getName() + "-1." + imageType, FileType.GIF);
 
             // testing WBMP
             imageType = "wbmp";
             writeImage(document, imageType, outDir + file.getName() + "-", ImageType.BINARY, dpi);
-            // no META data posible for WBMP, thus no test
+            // no META data posible for WBMP, thus no dpi test
 
             // testing TIFF
             imageType = "tif";
             writeImage(document, imageType, outDir + file.getName() + "-bw-", ImageType.BINARY, dpi);
             checkResolution(outDir + file.getName() + "-bw-1." + imageType, (int) dpi);
             checkTiffCompression(outDir + file.getName() + "-bw-1." + imageType, "CCITT T.6");
+            checkFileTypeByContent(outDir + file.getName() + "-bw-1." + imageType, FileType.TIFF);
             writeImage(document, imageType, outDir + file.getName() + "-co-", ImageType.RGB, dpi);
             checkResolution(outDir + file.getName() + "-co-1." + imageType, (int) dpi);
             checkTiffCompression(outDir + file.getName() + "-co-1." + imageType, "LZW");
+            checkFileTypeByContent(outDir + file.getName() + "-co-1." + imageType, FileType.TIFF);
         }
         finally
         {
@@ -374,6 +384,13 @@ public class TestImageIOUtils extends TestCase
         assertEquals("Incorrect TIFF compression in file " + filename, expectedCompression, actualCompression);
         iis.close();
         reader.dispose();
+    }
+
+    private void checkFileTypeByContent(String filename, FileType fileType) throws IOException
+    {
+        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(filename));
+        assertEquals(fileType, FileTypeDetector.detectFileType(bis));
+        IOUtils.closeQuietly(bis);  
     }
 
 }
