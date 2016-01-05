@@ -23,12 +23,18 @@ import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.font.encoding.GlyphList;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDCIDFont;
+import org.apache.pdfbox.pdmodel.font.PDCIDFontType2;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
+import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
 
 import java.io.IOException;
+
+import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
@@ -179,10 +185,36 @@ class PDFTextStreamEngine extends PDFStreamEngine
             height = glyphHeight / 1000;
         }
 
+        float displacementX = displacement.getX();
+        // the sorting algorithm is based on the width of the character. As the displacement
+        // for vertical characters doesn't provide any suitable value for it, we have to 
+        // calculate our own
+        if (font.isVertical())
+        {
+            displacementX = font.getWidth(code) / 1000;
+            // there may be an additional scaling factor for true type fonts
+            TrueTypeFont ttf = null;
+            if (font instanceof PDTrueTypeFont)
+            {
+                 ttf = ((PDTrueTypeFont)font).getTrueTypeFont();
+            }
+            else if (font instanceof PDType0Font)
+            {
+                PDCIDFont cidFont = ((PDType0Font)font).getDescendantFont();
+                if (cidFont instanceof PDCIDFontType2)
+                {
+                    ttf = ((PDCIDFontType2)cidFont).getTrueTypeFont();
+                }
+            }
+            if (ttf != null && ttf.getUnitsPerEm() != 1000)
+            {
+                displacementX *= 1000f / ttf.getUnitsPerEm();
+            }
+        }
         // (modified) combined displacement, this is calculated *without* taking the character
         // spacing and word spacing into account, due to legacy code in TextStripper
-        float tx = displacement.getX() * fontSize * horizontalScaling;
-        float ty = 0; // todo: support vertical writing mode
+        float tx = displacementX * fontSize * horizontalScaling;
+        float ty = displacement.getY() * fontSize;
 
         // (modified) combined displacement matrix
         Matrix td = Matrix.getTranslateInstance(tx, ty);
