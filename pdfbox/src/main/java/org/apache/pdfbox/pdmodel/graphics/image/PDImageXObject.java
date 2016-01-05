@@ -21,6 +21,7 @@ import java.awt.Paint;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -44,6 +45,8 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
+import org.apache.pdfbox.util.filetypedetector.FileType;
+import org.apache.pdfbox.util.filetypedetector.FileTypeDetector;
 
 /**
  * An Image XObject.
@@ -145,7 +148,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
     }
     
     /**
-     * Create a PDImageXObject from an image file, see {@link #createFromFile(File, PDDocument)} for
+     * Create a PDImageXObject from an image file, see {@link #createFromFileByExtension(File, PDDocument)} for
      * more details.
      *
      * @param imagePath the image file path.
@@ -156,7 +159,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
      */
     public static PDImageXObject createFromFile(String imagePath, PDDocument doc) throws IOException
     {
-        return createFromFile(new File(imagePath), doc);
+        return createFromFileByExtension(new File(imagePath), doc);
     }
 
     /**
@@ -174,13 +177,13 @@ public final class PDImageXObject extends PDXObject implements PDImage
      * PDImageXObject.
      * @throws IllegalArgumentException if the image type is not supported.
      */
-    public static PDImageXObject createFromFile(File file, PDDocument doc) throws IOException
+    public static PDImageXObject createFromFileByExtension(File file, PDDocument doc) throws IOException
     {
         String name = file.getName();
         int dot = file.getName().lastIndexOf('.');
         if (dot == -1)
         {
-            throw new IOException("Image type not supported: " + name);
+            throw new IllegalArgumentException("Image type not supported: " + name);
         }
         String ext = name.substring(dot + 1).toLowerCase();
         if ("jpg".equals(ext) || "jpeg".equals(ext))
@@ -196,7 +199,63 @@ public final class PDImageXObject extends PDXObject implements PDImage
             BufferedImage bim = ImageIO.read(file);
             return LosslessFactory.createFromImage(doc, bim);
         }
-        throw new IOException("Image type not supported: " + name);
+        throw new IllegalArgumentException("Image type not supported: " + name);
+    }
+
+    /**
+     * Create a PDImageXObject from an image file. The file format is determined by the file
+     * content. The following file types are supported: jpg, jpeg, tif, tiff, gif, bmp and png. This
+     * is a convenience method that calls {@link JPEGFactory#createFromStream},
+     * {@link CCITTFactory#createFromFile} or {@link ImageIO#read} combined with
+     * {@link LosslessFactory#createFromImage}. (The later can also be used to create a
+     * PDImageXObject from a BufferedImage).
+     *
+     * @param file the image file.
+     * @param doc the document that shall use this PDImageXObject.
+     * @return a PDImageXObject.
+     * @throws IOException if there is an error when reading the file or creating the
+     * PDImageXObject.
+     * @throws IllegalArgumentException if the image type is not supported.
+     */
+    public static PDImageXObject createFromFileByContent(File file, PDDocument doc) throws IOException
+    {
+        FileInputStream fileInputStream = null;
+        BufferedInputStream bufferedInputStream = null;
+        FileType fileType = null;
+        try
+        {
+            fileInputStream = new FileInputStream(file);
+            bufferedInputStream = new BufferedInputStream(fileInputStream);
+            fileType = FileTypeDetector.detectFileType(bufferedInputStream);
+        }
+        catch (IOException e)
+        {
+            throw new IOException("Could not determine file type: " + file.getName(), e);
+        }
+        finally
+        {
+            IOUtils.closeQuietly(fileInputStream);
+            IOUtils.closeQuietly(bufferedInputStream);
+        }
+        if (fileType == null)
+        {
+            throw new IllegalArgumentException("Image type not supported: " + file.getName());
+        }
+
+        if (fileType.equals(FileType.JPEG))
+        {
+            return JPEGFactory.createFromStream(doc, new FileInputStream(file));
+        }
+        if (fileType.equals(FileType.TIFF))
+        {
+            return CCITTFactory.createFromFile(doc, file);
+        }
+        if (fileType.equals(FileType.BMP) || fileType.equals(FileType.GIF) || fileType.equals(FileType.PNG))
+        {
+            BufferedImage bim = ImageIO.read(file);
+            return LosslessFactory.createFromImage(doc, bim);
+        }
+        throw new IllegalArgumentException("Image type not supported: " + file.getName());
     }
 
     // repairs parameters using decode result
