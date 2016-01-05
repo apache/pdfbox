@@ -98,10 +98,10 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
+                <version>2.17</version>
 				<configuration>
 					<configLocation>../pdfbox-checkstyle-5.xml</configLocation>
 				</configuration>
-                                <version>2.16</version>
 			</plugin>
             <plugin>
                 <groupId>com.googlecode.maven-download-plugin</groupId>
@@ -218,24 +218,4 @@
 
 	</dependencies>
 
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-report-plugin</artifactId>
-				<version>2.18.1</version>
-				<configuration>
-					<showSuccess>true</showSuccess>
-					<aggregate>true</aggregate>
-					<outputDirectory>${project.reporting.outputDirectory}/surefire-report</outputDirectory>
-				</configuration>
-				<reportSets>
-					<reportSet>
-						<id />
-					</reportSet>
-				</reportSets>
-			</plugin>
-
-		</plugins>
-	</reporting>
 </project>
