@@ -32,7 +32,7 @@ public class TestQuickSort extends TestCase
         List<T> list = Arrays.asList(input);
         QuickSort.sort(list);
 
-        boolean equal = Arrays.equals(list.toArray(new Object[input.length]), input);
+        boolean equal = Arrays.equals(list.toArray(new Object[input.length]), expected);
 
         assertTrue(equal);
     }
