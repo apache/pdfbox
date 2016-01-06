@@ -42,7 +42,7 @@ public final class TextPosition
     // normalization.
     private static Map<Integer, String> createDiacritics()
     {
-        HashMap<Integer, String> map = new HashMap<Integer, String>();
+        HashMap<Integer, String> map = new HashMap<Integer, String>(31);
         map.put(0x0060, "\u0300");
         map.put(0x02CB, "\u0300");
         map.put(0x0027, "\u0301");
@@ -102,6 +102,7 @@ public final class TextPosition
     // mutable
     private float[] widths;
     private String unicode;
+    private float direction = -1;
 
     /**
      * Constructor.
@@ -193,36 +194,43 @@ public final class TextPosition
      */
     public float getDir()
     {
-        float a = textMatrix.getScaleY();
-        float b = textMatrix.getShearY();
-        float c = textMatrix.getShearX();
-        float d = textMatrix.getScaleX();
-
-        // 12 0   left to right
-        // 0 12
-        if (a > 0 && Math.abs(b) < d && Math.abs(c) < a && d > 0)
+        if (direction < 0)
         {
-            return 0;
+            float a = textMatrix.getScaleY();
+            float b = textMatrix.getShearY();
+            float c = textMatrix.getShearX();
+            float d = textMatrix.getScaleX();
+    
+            // 12 0   left to right
+            // 0 12
+            if (a > 0 && Math.abs(b) < d && Math.abs(c) < a && d > 0)
+            {
+                direction = 0;
+            }
+            // -12 0   right to left (upside down)
+            // 0 -12
+            else if (a < 0 && Math.abs(b) < Math.abs(d) && Math.abs(c) < Math.abs(a) && d < 0)
+            {
+                direction = 180;
+            }
+            // 0  12    up
+            // -12 0
+            else if (Math.abs(a) < Math.abs(c) && b > 0 && c < 0 && Math.abs(d) < b)
+            {
+                direction = 90;
+            }
+            // 0  -12   down
+            // 12 0
+            else if (Math.abs(a) < c && b < 0 && c > 0 && Math.abs(d) < Math.abs(b))
+            {
+                direction = 270;
+            }
+            else
+            {
+                direction = 0;
+            }
         }
-        // -12 0   right to left (upside down)
-        // 0 -12
-        else if (a < 0 && Math.abs(b) < Math.abs(d) && Math.abs(c) < Math.abs(a) && d < 0)
-        {
-            return 180;
-        }
-        // 0  12    up
-        // -12 0
-        else if (Math.abs(a) < Math.abs(c) && b > 0 && c < 0 && Math.abs(d) < b)
-        {
-            return 90;
-        }
-        // 0  -12   down
-        // 12 0
-        else if (Math.abs(a) < c && b < 0 && c > 0 && Math.abs(d) < Math.abs(b))
-        {
-            return 270;
-        }
-        return 0;
+        return direction;
     }
 
     /**
@@ -472,10 +480,11 @@ public final class TextPosition
     public boolean contains(TextPosition tp2)
     {
         double thisXstart = getXDirAdj();
-        double thisXend = getXDirAdj() + getWidthDirAdj();
+        double thisWidth = getWidthDirAdj();
+        double thisXend = thisXstart + thisWidth;
 
         double tp2Xstart = tp2.getXDirAdj();
-        double tp2Xend = tp2.getXDirAdj() + tp2.getWidthDirAdj();
+        double tp2Xend = tp2Xstart + tp2.getWidthDirAdj();
 
         // no X overlap at all so return as soon as possible
         if (tp2Xend <= thisXstart || tp2Xstart >= thisXend)
@@ -485,8 +494,10 @@ public final class TextPosition
 
         // no Y overlap at all so return as soon as possible. Note: 0.0 is in the upper left and
         // y-coordinate is top of TextPosition
-        if (tp2.getYDirAdj() + tp2.getHeightDir() < getYDirAdj() ||
-           tp2.getYDirAdj() > getYDirAdj() + getHeightDir())
+        double thisYstart = getYDirAdj();
+        double tp2Ystart = tp2.getYDirAdj();
+        if (tp2Ystart + tp2.getHeightDir() < thisYstart ||
+                tp2Ystart > thisYstart + getHeightDir())
         {
             return false;
         }
@@ -496,13 +507,13 @@ public final class TextPosition
         else if (tp2Xstart > thisXstart && tp2Xend > thisXend)
         {
             double overlap = thisXend - tp2Xstart;
-            double overlapPercent = overlap/getWidthDirAdj();
+            double overlapPercent = overlap/thisWidth;
             return overlapPercent > .15;
         }
         else if (tp2Xstart < thisXstart && tp2Xend < thisXend)
         {
             double overlap = tp2Xend - thisXstart;
-            double overlapPercent = overlap/getWidthDirAdj();
+            double overlapPercent = overlap/thisWidth;
             return overlapPercent > .15;
         }
         return true;
@@ -634,7 +645,7 @@ public final class TextPosition
      */
     private String combineDiacritic(String str)
     {
-        // Unicode contains special combining forms of the diacritic characters which we want to use
+        // Unicode contains special combining forms of the diagetWidthDirAdj()critic characters which we want to use
         int codePoint = str.codePointAt(0);
 
         // convert the characters not defined in the Unicode spec
