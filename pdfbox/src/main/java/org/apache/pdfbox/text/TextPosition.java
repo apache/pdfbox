@@ -645,7 +645,7 @@ public final class TextPosition
      */
     private String combineDiacritic(String str)
     {
-        // Unicode contains special combining forms of the diagetWidthDirAdj()critic characters which we want to use
+        // Unicode contains special combining forms of the diacritic characters which we want to use
         int codePoint = str.codePointAt(0);
 
         // convert the characters not defined in the Unicode spec
