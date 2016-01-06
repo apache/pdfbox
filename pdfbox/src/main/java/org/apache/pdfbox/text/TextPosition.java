@@ -42,7 +42,7 @@ public final class TextPosition
     // normalization.
     private static Map<Integer, String> createDiacritics()
     {
-        HashMap<Integer, String> map = new HashMap<Integer, String>(31);
+        Map<Integer, String> map = new HashMap<Integer, String>(31);
         map.put(0x0060, "\u0300");
         map.put(0x02CB, "\u0300");
         map.put(0x0027, "\u0301");
