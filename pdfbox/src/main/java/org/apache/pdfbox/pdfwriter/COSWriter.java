@@ -1266,13 +1266,16 @@ public class COSWriter implements ICOSVisitor, Closeable
         {
             if (pdDocument.getEncryption() != null)
             {
-                SecurityHandler securityHandler = pdDocument.getEncryption().getSecurityHandler();
-                if (!securityHandler.hasProtectionPolicy())
+                if (!incrementalUpdate)
                 {
-                    throw new IllegalStateException("PDF contains an encryption dictionary, please remove it with "
-                            + "setAllSecurityToBeRemoved() or set a protection policy with protect()");
+                    SecurityHandler securityHandler = pdDocument.getEncryption().getSecurityHandler();
+                    if (!securityHandler.hasProtectionPolicy())
+                    {
+                        throw new IllegalStateException("PDF contains an encryption dictionary, please remove it with "
+                                + "setAllSecurityToBeRemoved() or set a protection policy with protect()");
+                    }
+                    securityHandler.prepareDocumentForEncryption(pdDocument);
                 }
-                securityHandler.prepareDocumentForEncryption(pdDocument);
                 willEncrypt = true;
             }
             else
