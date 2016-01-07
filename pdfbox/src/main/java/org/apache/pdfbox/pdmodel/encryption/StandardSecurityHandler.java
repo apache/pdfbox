@@ -109,6 +109,7 @@ public final class StandardSecurityHandler extends SecurityHandler
         {
             return DEFAULT_VERSION;
         }
+        //TODO return 4 if keyLength is 128 to enable AES128 functionality
         else if(keyLength == 256)
         {
             return 5;
@@ -136,6 +137,10 @@ public final class StandardSecurityHandler extends SecurityHandler
         {
             // note about revision 5: "Shall not be used. This value was used by a deprecated Adobe extension."
             return 6;    
+        }
+        if (version == 4)
+        {
+            return 4;
         }
         if ( version == 2 || version == 3 || policy.getPermissions().hasAnyRevision3PermissionSet())
         {
@@ -471,17 +476,6 @@ public final class StandardSecurityHandler extends SecurityHandler
         }
     }
 
-    private void prepareEncryptionDictAES(PDEncryption encryptionDictionary, COSName aesVName)
-    {
-        PDCryptFilterDictionary cryptFilterDictionary = new PDCryptFilterDictionary();
-        cryptFilterDictionary.setCryptFilterMethod(aesVName);
-        cryptFilterDictionary.setLength(keyLength);
-        encryptionDictionary.setStdCryptFilterDictionary(cryptFilterDictionary);
-        encryptionDictionary.setStreamFilterName(COSName.STD_CF);
-        encryptionDictionary.setStringFilterName(COSName.STD_CF);
-        setAES(true);
-    }
-
     private void prepareEncryptionDictRev2345(String ownerPassword, String userPassword,
             PDEncryption encryptionDictionary, int permissionInt, PDDocument document, 
             int revision, int length)
@@ -523,6 +517,22 @@ public final class StandardSecurityHandler extends SecurityHandler
 
         encryptionDictionary.setOwnerKey(ownerBytes);
         encryptionDictionary.setUserKey(userBytes);
+        
+        if (revision == 4)
+        {
+            prepareEncryptionDictAES(encryptionDictionary, COSName.AESV2);
+        }
+    }
+
+    private void prepareEncryptionDictAES(PDEncryption encryptionDictionary, COSName aesVName)
+    {
+        PDCryptFilterDictionary cryptFilterDictionary = new PDCryptFilterDictionary();
+        cryptFilterDictionary.setCryptFilterMethod(aesVName);
+        cryptFilterDictionary.setLength(keyLength);
+        encryptionDictionary.setStdCryptFilterDictionary(cryptFilterDictionary);
+        encryptionDictionary.setStreamFilterName(COSName.STD_CF);
+        encryptionDictionary.setStringFilterName(COSName.STD_CF);
+        setAES(true);
     }
 
     /**
