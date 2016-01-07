@@ -46,6 +46,7 @@ public class PDFParser extends COSParser
     private InputStream keyStoreInputStream = null;
     private String keyAlias = null;
 
+    private PDEncryption encryption = null;    
     private AccessPermission accessPermission;
 
     /**
@@ -169,7 +170,9 @@ public class PDFParser extends COSParser
      */
     public PDDocument getPDDocument() throws IOException
     {
-        return new PDDocument( getDocument(), source, accessPermission );
+        PDDocument doc = new PDDocument(getDocument(), source, accessPermission);
+        doc.setEncryptionDictionary(encryption);
+        return doc;
     }
 
     /**
@@ -276,8 +279,7 @@ public class PDFParser extends COSParser
             }
             try
             {
-                PDEncryption encryption = new PDEncryption(document.getEncryptionDictionary());
-    
+                encryption = new PDEncryption(document.getEncryptionDictionary());
                 DecryptionMaterial decryptionMaterial;
                 if (keyStoreInputStream != null)
                 {
