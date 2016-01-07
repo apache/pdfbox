@@ -261,11 +261,8 @@ public final class StandardSecurityHandler extends SecurityHandler
             if (stdCryptFilterDictionary != null)
             {
                 COSName cryptFilterMethod = stdCryptFilterDictionary.getCryptFilterMethod();
-                if (cryptFilterMethod != null)
-                {
-                    setAES("AESV2".equalsIgnoreCase(cryptFilterMethod.getName())
-                            || "AESV3".equalsIgnoreCase(cryptFilterMethod.getName()));
-                }
+                setAES(COSName.AESV2.equals(cryptFilterMethod) || 
+                       COSName.AESV3.equals(cryptFilterMethod));
             }
         }
     }
@@ -439,13 +436,7 @@ public final class StandardSecurityHandler extends SecurityHandler
             encryptionDictionary.setOwnerKey(o);
             encryptionDictionary.setOwnerEncryptionKey(oe);
 
-            PDCryptFilterDictionary cryptFilterDictionary = new PDCryptFilterDictionary();
-            cryptFilterDictionary.setCryptFilterMethod(COSName.AESV3);
-            cryptFilterDictionary.setLength(keyLength);
-            encryptionDictionary.setStdCryptFilterDictionary(cryptFilterDictionary);
-            encryptionDictionary.setStreamFilterName(COSName.STD_CF);
-            encryptionDictionary.setStringFilterName(COSName.STD_CF);
-            setAES(true);
+            prepareEncryptionDictAES(encryptionDictionary, COSName.AESV3);
 
             // Algorithm 10: compute "Perms" value
             byte[] perms = new byte[16];
@@ -478,6 +469,17 @@ public final class StandardSecurityHandler extends SecurityHandler
             logIfStrongEncryptionMissing();
             throw new IOException(e);
         }
+    }
+
+    private void prepareEncryptionDictAES(PDEncryption encryptionDictionary, COSName aesVName)
+    {
+        PDCryptFilterDictionary cryptFilterDictionary = new PDCryptFilterDictionary();
+        cryptFilterDictionary.setCryptFilterMethod(aesVName);
+        cryptFilterDictionary.setLength(keyLength);
+        encryptionDictionary.setStdCryptFilterDictionary(cryptFilterDictionary);
+        encryptionDictionary.setStreamFilterName(COSName.STD_CF);
+        encryptionDictionary.setStringFilterName(COSName.STD_CF);
+        setAES(true);
     }
 
     private void prepareEncryptionDictRev2345(String ownerPassword, String userPassword,

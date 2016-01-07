@@ -90,9 +90,8 @@ public class PDCryptFilterDictionary
      *
      * @param cfm name of the crypt filter method.
      *
-     * @throws IOException If there is an error setting the data.
      */
-    public void setCryptFilterMethod(COSName cfm) throws IOException
+    public void setCryptFilterMethod(COSName cfm)
     {
         cryptFilterDictionary.setItem( COSName.CFM, cfm );
     }
