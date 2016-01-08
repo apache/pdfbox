@@ -1189,9 +1189,10 @@ public class COSParser extends BaseParser
         }
         // seek to offset-1 
         source.seek(startXRefOffset-1);
-        int nextValue = source.read();
-        // the first character has to be a whitespace, and then a digit
-        if (isWhitespace(nextValue) && isDigit())
+        // skip whitespaces
+        skipSpaces();
+        // next value has to be a digit
+        if (isDigit())
         {
             try
             {
