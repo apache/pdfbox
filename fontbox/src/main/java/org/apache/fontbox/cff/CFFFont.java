@@ -187,7 +187,7 @@ public abstract class CFFFont implements FontBoxFont
     public String toString()
     {
         return getClass().getSimpleName() + "[name=" + fontName + ", topDict=" + topDict
-                + ", charset=" + charset + ", charStrings=" + charStrings
+                + ", charset=" + charset + ", charStrings=" + Arrays.deepToString(charStrings)
                 + "]";
     }
 }
