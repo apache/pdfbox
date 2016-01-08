@@ -348,8 +348,8 @@ public class PDType1Font extends PDSimpleFont
         if (!encoding.contains(name))
         {
             throw new IllegalArgumentException(
-                    String.format("U+%04X is not available in this font's encoding: %s",
-                                  unicode, encoding.getEncodingName()));
+                    String.format("U+%04X ('%s') is not available in this font's encoding: %s",
+                                  unicode, name, encoding.getEncodingName()));
         }
         
         String nameInFont = getNameInFont(name);
