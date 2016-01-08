@@ -478,15 +478,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
         {
             throw new IllegalArgumentException("attempted to insert before orphan page");
         }
-
-        // now increase every parent
-        do
-        {
-            int cnt = parentDict.getInt(COSName.COUNT);
-            parentDict.setInt(COSName.COUNT, cnt + 1);
-            parentDict = (COSDictionary) parentDict.getDictionaryObject(COSName.PARENT);
-        }
-        while (parentDict != null);
+        increaseParents(parentDict);
     }
 
     /**
@@ -518,8 +510,11 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
         {
             throw new IllegalArgumentException("attempted to insert before orphan page");
         }
+        increaseParents(parentDict);
+    }
 
-        // now increase every parent
+    private void increaseParents(COSDictionary parentDict)
+    {
         do
         {
             int cnt = parentDict.getInt(COSName.COUNT);
