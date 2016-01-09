@@ -1189,25 +1189,28 @@ public class COSParser extends BaseParser
         }
         // seek to offset-1 
         source.seek(startXRefOffset-1);
-        // skip whitespaces
-        skipSpaces();
-        // next value has to be a digit
-        if (isDigit())
+        int nextValue = source.read();
+        // the first character has to be whitespace(s), and then a digit
+        if (isWhitespace(nextValue))
         {
-            try
+            skipSpaces();
+            if (isDigit())
             {
-                // it's a XRef stream
-                readObjectNumber();
-                readGenerationNumber();
-                readExpectedString(OBJ_MARKER, true);
-                source.seek(startXRefOffset);
-                return startXRefOffset;
-            }
-            catch (IOException exception)
-            {
+                try
+                {
+                    // it's a XRef stream
+                    readObjectNumber();
+                    readGenerationNumber();
+                    readExpectedString(OBJ_MARKER, true);
+                    source.seek(startXRefOffset);
+                    return startXRefOffset;
+                }
+                catch (IOException exception)
+                {
                 // there wasn't an object of a xref stream
-                // try to repair the offset
-                source.seek(startXRefOffset);
+                    // try to repair the offset
+                    source.seek(startXRefOffset);
+                }
             }
         }
         // try to find a fixed offset
@@ -1237,7 +1240,7 @@ public class COSParser extends BaseParser
             LOG.debug("Fixed reference for xref table/stream " + objectOffset + " -> " + newOffset);
             return newOffset;
         }
-        LOG.error("Can't find the object axref table/stream at offset " + objectOffset);
+        LOG.error("Can't find the object xref table/stream at offset " + objectOffset);
         return 0;
     }
 
