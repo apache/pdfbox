@@ -174,7 +174,7 @@ class PlainTextFormatter
     {
         if (textContent != null && !textContent.getParagraphs().isEmpty())
         {
-        	boolean isFirstParagraph = true;
+            boolean isFirstParagraph = true;
         	for (Paragraph paragraph : textContent.getParagraphs())
             {
                 if (wrapLines)
@@ -260,8 +260,6 @@ class PlainTextFormatter
             if (lines.indexOf(line) == 0 && isFirstParagraph)
             {
                 contents.newLineAtOffset(offset, verticalOffset);
-                // reset the initial horizontalOffset
-                horizontalOffset = 0f;
             }
             else
             {
@@ -270,7 +268,7 @@ class PlainTextFormatter
                 contents.newLineAtOffset(offset, - appearanceStyle.getLeading());
             }
 
-            lastPos = startOffset; 
+            lastPos += offset; 
 
             List<Word> words = line.getWords();
             for (Word word : words)
