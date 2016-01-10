@@ -52,8 +52,15 @@ public class ImportFDF
     {
         PDDocumentCatalog docCatalog = pdfDocument.getDocumentCatalog();
         PDAcroForm acroForm = docCatalog.getAcroForm();
+        if (acroForm == null)
+        {
+            return;
+        }
         acroForm.setCacheFields( true );
         acroForm.importFDF( fdfDocument );
+        
+        //TODO this can be removed when we create appearance streams
+        acroForm.setNeedAppearances(true);
     }
 
     /**
