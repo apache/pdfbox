@@ -18,6 +18,9 @@ package org.apache.pdfbox;
 
 import java.io.IOException;
 
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 
@@ -54,8 +57,15 @@ public class ImportFDF
     {
         PDDocumentCatalog docCatalog = pdfDocument.getDocumentCatalog();
         PDAcroForm acroForm = docCatalog.getAcroForm();
-        acroForm.setCacheFields( true );
+        if (acroForm == null)
+        {
+            return;
+        }
+        acroForm.setCacheFields(true);
         acroForm.importFDF( fdfDocument );
+        
+        //TODO this can be removed when we create appearance streams
+        ((COSDictionary) acroForm.getCOSObject()).setBoolean(COSName.getPDFName("NeedAppearances"), true);
     }
 
     /**
