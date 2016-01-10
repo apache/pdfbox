@@ -94,7 +94,6 @@ public class ImportXFDF
 
                 importer.importFDF( pdf, fdf );
                 pdf.save( args[2] );
-                fdf.save( "tmp/outputXFDFtoPDF.fdf");
             }
         }
         finally
