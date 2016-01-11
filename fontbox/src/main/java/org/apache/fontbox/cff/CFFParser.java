@@ -1323,11 +1323,14 @@ public class CFFParser
         @Override
         public int getCIDForGID(int gid)
         {
-            for (RangeMapping mapping : rangesCID2GID)
+            if (isCIDFont())
             {
-                if (mapping.isInRange(gid))
+                for (RangeMapping mapping : rangesCID2GID)
                 {
-                    return mapping.mapValue(gid);
+                    if (mapping.isInRange(gid))
+                    {
+                        return mapping.mapValue(gid);
+                    }
                 }
             }
             return super.getCIDForGID(gid);
@@ -1336,11 +1339,14 @@ public class CFFParser
         @Override
         public int getGIDForCID(int cid)
         {
-            for (RangeMapping mapping : rangesCID2GID)
+            if (isCIDFont())
             {
-                if (mapping.isInReverseRange(cid))
+                for (RangeMapping mapping : rangesCID2GID)
                 {
-                    return mapping.mapReverseValue(cid);
+                    if (mapping.isInReverseRange(cid))
+                    {
+                        return mapping.mapReverseValue(cid);
+                    }
                 }
             }
             return super.getGIDForCID(cid);
