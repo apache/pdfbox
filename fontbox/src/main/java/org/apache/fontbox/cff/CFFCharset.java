@@ -48,6 +48,16 @@ public abstract class CFFCharset
     }
 
     /**
+     * Indicates if the charset belongs to a CID font.
+     * 
+     * @return true for CID fonts
+     */
+    public boolean isCIDFont()
+    {
+        return isCIDFont;
+    }
+    
+    /**
      * Adds a new GID/SID/name combination to the charset.
      *
      * @param gid GID
