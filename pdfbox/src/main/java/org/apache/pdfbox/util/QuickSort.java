@@ -35,7 +35,6 @@ public final class QuickSort
     
     private static final Comparator<? extends Comparable> OBJCOMP = new Comparator<Comparable>()
     {
-        @Override
         public int compare(Comparable object1, Comparable object2)
         {
             return object1.compareTo(object2);
