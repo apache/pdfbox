@@ -1,4 +1,4 @@
-Release Notes -- Apache PDFBox -- Version 1.8.10
+Release Notes -- Apache PDFBox -- Version 1.8.11
 
 Introduction
 ------------
@@ -13,42 +13,64 @@ issues on the PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFB
 
 Bug
 
-[PDFBOX-1453] - NPE saving modified encrypted document
-[PDFBOX-1642] - NPE when parsing XMP schema definition with "closed Choice" value type
-[PDFBOX-2501] - Page render without barcode
-[PDFBOX-2730] - PDFSplit slow and keeps unused pages
-[PDFBOX-2733] - Nullpointer exception in PDFXrefStreamParser.parse
-[PDFBOX-2734] - Can't create PDF with DeviceN colorspace
-[PDFBOX-2737] - PDF not converted to Image
-[PDFBOX-2741] - IndexOutOfBoundsException when calling PDSeparation.setAlternateColorSpace
-[PDFBOX-2742] - PDFSplit ignores global resources
-[PDFBOX-2743] - Can't create PDF with PDIndexed colorspace
-[PDFBOX-2745] - PDPageXYZDestination zoom property can't be set lower than 100%
-[PDFBOX-2767] - ClassCastException in PDDocument.addSignature
-[PDFBOX-2769] - NPE when saving encrypted file
-[PDFBOX-2772] - EI token lost for rewrite
-[PDFBOX-2773] - ClassCastException in PDDocumentCatalog.java:339
-[PDFBOX-2778] - PDF to Image conversion fails with "Invalid code word encountered"
-[PDFBOX-2781] - Opening pdf document after encrypting it with PDFBox throws IllegalBlockSizeException
-[PDFBOX-2786] - PDPageDestination page index off by one
-[PDFBOX-2788] - Seemingly good document gets semi-corrupted
-[PDFBOX-2792] - Text extraction ignores bookmarks
-[PDFBOX-2793] - /Dests dictionary isn't supported
-[PDFBOX-2797] - PDJavascriptNameTreeNode does not support dictionaries
-[PDFBOX-2799] - PDOptionalContentProperties.setGroupEnabled not working
-[PDFBOX-2801] - SecurityHandler does not tolerate plain-text COSString
-[PDFBOX-2811] - Infinite loop within RandomAccessBuffer
-[PDFBOX-2812] - NPE in PDColorSpaceFactory.createColorSpace with PDICCBased
-[PDFBOX-2819] - invalid ICC Profile when reading from a byte array
-[PDFBOX-2823] - StringIndexOutOfBoundsException when doing DateConverter.parseDate()
-[PDFBOX-2837] - PDFBox creates files with EBCDIC code on z/OS
-[PDFBOX-2847] - mergeDocumentsNonSeq does not utilize scratchFile
-[PDFBOX-2853] - CCITT: Background is rendered as transparent color
-[PDFBOX-2867] - Correct use of Float.NaN
+[PDFBOX-962] - All sort of Problems when importing Xfdf files into PDFs -> damaged pdfs and NPEs
+[PDFBOX-2508] - Text extraction getting zero font height, bad widths, and ? for text in this PDF with Type 3 Fonts
+[PDFBOX-2693] - OutOfMemoryError at org.apache.fontbox.cff.IndexData.initData(IndexData.java:95)
+[PDFBOX-2816] - PDFBox makes disallowed changes when signing a signed document
+[PDFBOX-2845] - Error parsing PDF
+[PDFBOX-2901] - High CPU load and OutOfMemoryError when rendering shading
+[PDFBOX-2903] - ClassCastException at PDFParser:667
+[PDFBOX-2909] - NullPointerException when rendering shading with no function
+[PDFBOX-2911] - Merge does not close input streams
+[PDFBOX-2914] - java.lang.NegativeArraySizeException in org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray.createColorModel
+[PDFBOX-2916] - ArrayIndexOutOfBoundsException in CmapSubtable.processSubtype6
+[PDFBOX-2923] - CFFParser parser treats CIDFont's charset data as SID
+[PDFBOX-2924] - ClassCastException when doing PDFSplit
+[PDFBOX-2925] - EmptyStackException in PDFStreamEngine.getColorSpaces
+[PDFBOX-2935] - Problem while extracting font from PDFontSetting (used in PDExtendedGraphicsState)
+[PDFBOX-2940] - ClassCastException in FDF export
+[PDFBOX-2958] - TIFF-Predictor with 1 bit per component not supported
+[PDFBOX-2964] - Checkbox getOnValue() throws NPE
+[PDFBOX-2965] - NPE in PDAcroForm.getField() if the /Fields entry is missing
+[PDFBOX-2976] - java.util.zip.DataFormatException: incorrect data check
+[PDFBOX-2982] - fix ClassCastExceptions in operator methods
+[PDFBOX-2985] - Potential NPE in PDMarkedContent#getMCID()
+[PDFBOX-2986] - Potential resource leak in TTFParser's use of RAFDataStream
+[PDFBOX-2987] - NPE in PDTrueTypeFont.extractCMaps
+[PDFBOX-2988] - Infinite recursion in ExtractImages 1.8.11-SNAPSHOT
+[PDFBOX-2989] - LZW decode filter shouldn't throw IndexOutOfBoundsException
+[PDFBOX-2990] - PDDocument.load fails to load a PDF document.
+[PDFBOX-2996] - StackOverflow in Quicksort
+[PDFBOX-3002] - PDF files not closed after load fails
+[PDFBOX-3022] - Maven repos should be https
+[PDFBOX-3034] - Newly created XRef stream has direct root objects
+[PDFBOX-3035] - Files with missing xref table must fail
+[PDFBOX-3041] - Wrong default type in Xref stream W0 element
+[PDFBOX-3087] - Metadata stream should not be compressed
+[PDFBOX-3097] - ClassCastException in Axial / Radial shading when object reference in extends
+[PDFBOX-3110] - Extract by beads doesn't work
+[PDFBOX-3114] - Visible signatures in different pages changes previous revision
+[PDFBOX-3153] - Direct JPEG extraction results in invalid images in 2.0.0 releases.
+[PDFBOX-3155] - org.apache.pdfbox.util.PDFTextStripper class initialization throws NumberFormatException with recent Verona-enabled Java 9 JVMs
+[PDFBOX-3157] - PDOutputIntent has N=3 (RGB) hardcoded
+[PDFBOX-3173] - Signature dictionary is not decrypted in encrypted files
 
 Improvement
 
-[PDFBOX-2744] - Add validation check for setNonStrokingColor and setStrokingColor
+[PDFBOX-1621] - Add setModifiedDate(Calendar c) to PDAnnotation
+[PDFBOX-2891] - Use animal sniffer maven plugin to detect non java 5 api usage within the 1.8 branch
+[PDFBOX-2952] - Log statement on level 'severe' while nothing else indicates error
+[PDFBOX-2962] - Handle TIFF predictor for bpc 2 and 4 / optimize existing predictor code
+[PDFBOX-3007] - Preflight cookbook example is inefficient
+[PDFBOX-3176] - Add a removeRegion method in PDFTextSTripperByArea class
+
+Task
+
+[PDFBOX-2938] - Add 1.8.10 javadocs to pdfbox website
+[PDFBOX-3051] - COSArray.getObject() incorrect handling of indirect reference to COSNull
+[PDFBOX-3060] - Catalog cannot be found
+[PDFBOX-3068] - Null metadata in 2.0 in some files that had metadata in 1.8.10 with old parser
+
 
 Release Contents
 ----------------
