@@ -57,6 +57,8 @@ public abstract class BaseParser
 
     private static final long GENERATION_NUMBER_THRESHOLD = 65535;
 
+    static final int MAX_LENGTH_LONG = Long.toString(Long.MAX_VALUE).length();
+
     /**
      * system property allowing to define size of push back buffer.
      */
@@ -1719,6 +1721,11 @@ public abstract class BaseParser
                 lastByte != -1 )
         {
             buffer.append( (char)lastByte );
+            if (buffer.length() > MAX_LENGTH_LONG)
+            {
+                throw new IOException("Number '" + buffer + 
+                        "' is getting too long, stop reading at offset " + pdfSource.getOffset());
+            }
         }
         if( lastByte != -1 )
         {
