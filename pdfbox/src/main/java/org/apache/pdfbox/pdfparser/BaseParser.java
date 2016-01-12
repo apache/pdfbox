@@ -50,6 +50,8 @@ public abstract class BaseParser
 
     private static final long GENERATION_NUMBER_THRESHOLD = 65535;
 
+    static final int MAX_LENGTH_LONG = Long.toString(Long.MAX_VALUE).length();
+
     /**
      * Log instance.
      */
@@ -207,7 +209,7 @@ public abstract class BaseParser
             else
             {
                 // invalid dictionary, we were expecting a /Name, read until the end or until we can recover
-                LOG.warn("Invalid dictionary, found: '" + c + "' but expected: '/'");
+                LOG.warn("Invalid dictionary, found: '" + c + "' but expected: '/' at offset " + seqSource.getPosition());
                 if (readUntilEndOfCOSDictionary())
                 {
                     // we couldn't recover
@@ -292,6 +294,7 @@ public abstract class BaseParser
         }
         else
         {
+            // label this item as direct, to avoid signature problems.
             value.setDirect(true);
             obj.setItem(key, value);
         }
@@ -1364,6 +1367,11 @@ public abstract class BaseParser
                 lastByte != -1 )
         {
             buffer.append( (char)lastByte );
+            if (buffer.length() > MAX_LENGTH_LONG)
+            {
+                throw new IOException("Number '" + buffer + 
+                        "' is getting too long, stop reading at offset " + seqSource.getPosition());
+            }
         }
         if( lastByte != -1 )
         {
