@@ -320,6 +320,10 @@ public class PDFDebugger extends JFrame
             public void actionPerformed(ActionEvent evt)
             {
                 String urlString = JOptionPane.showInputDialog("Enter an URL");
+                if (urlString == null || urlString.isEmpty())
+                {
+                    return;
+                }
                 try
                 {
                     readPDFurl(urlString, "");
