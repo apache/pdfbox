@@ -54,7 +54,12 @@ public class PDCheckbox extends PDChoiceButton
      */
     public boolean isChecked()
     {
-        return getDictionary().getNameAsString("V").compareTo(getOnValue()) == 0;
+        String v = getDictionary().getNameAsString("V");
+        if (v == null)
+        {
+            return false;
+        }
+        return v.compareTo(getOnValue()) == 0;
     }
 
     /**
