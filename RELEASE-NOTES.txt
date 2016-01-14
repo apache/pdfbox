@@ -54,6 +54,8 @@ Bug
 [PDFBOX-3155] - org.apache.pdfbox.util.PDFTextStripper class initialization throws NumberFormatException with recent Verona-enabled Java 9 JVMs
 [PDFBOX-3157] - PDOutputIntent has N=3 (RGB) hardcoded
 [PDFBOX-3173] - Signature dictionary is not decrypted in encrypted files
+[PDFBOX-3190] - Links don't work in firefox
+[PDFBOX-3193] - New NPE in PDFBox 1.8.11-rc1 in Acroform PDCheckbox's isChecked()
 
 Improvement
 
