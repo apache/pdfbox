@@ -82,11 +82,10 @@ public class PDAnnotationLink extends PDAnnotation
     }
 
     /**
-     * Get the action to be performed when this annotation is to be activated.
+     * Get the action to be performed when this annotation is to be activated. Either this or the
+     * destination entry should be set, but not both.
      *
      * @return The action to be performed when this annotation is activated.
-     *
-     * TODO not all annotations have an A entry
      */
     public PDAction getAction()
     {
@@ -96,10 +95,10 @@ public class PDAnnotationLink extends PDAnnotation
     }
 
     /**
-     * Set the annotation action.
-     * As of PDF 1.6 this is only used for Widget Annotations
+     * Set the annotation action. Either this or the destination entry should be set, but not both.
+     *
      * @param action The annotation action.
-     * TODO not all annotations have an A entry
+     *
      */
     public void setAction( PDAction action )
     {
@@ -138,8 +137,8 @@ public class PDAnnotationLink extends PDAnnotation
     }
 
     /**
-     * Get the destination to be displayed when the annotation is activated.  Either
-     * this or the A should be set but not both.
+     * Get the destination to be displayed when the annotation is activated. Either this or the
+     * action entry should be set, but not both.
      *
      * @return The destination for this annotation.
      *
@@ -154,7 +153,7 @@ public class PDAnnotationLink extends PDAnnotation
     }
 
     /**
-     * The new destination value.
+     * The new destination value. Either this or the action entry should be set, but not both.
      *
      * @param dest The updated destination.
      */
