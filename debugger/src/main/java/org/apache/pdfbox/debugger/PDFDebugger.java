@@ -47,11 +47,13 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.TransferHandler;
@@ -98,6 +100,7 @@ import org.apache.pdfbox.debugger.ui.RotationMenu;
 import org.apache.pdfbox.debugger.ui.Tree;
 import org.apache.pdfbox.debugger.ui.ZoomMenu;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.printing.PDFPageable;
 
 /**
@@ -1217,7 +1220,33 @@ public class PDFDebugger extends JFrame
      */
     private void parseDocument( File file, String password )throws IOException
     {
-        document = PDDocument.load(file, password);
+        while (true)
+        {
+            try
+            {
+                document = PDDocument.load(file, password);
+            }
+            catch (InvalidPasswordException ipe)
+            {
+                // https://stackoverflow.com/questions/8881213/joptionpane-to-get-password
+                JPanel panel = new JPanel();
+                JLabel label = new JLabel("Password:");
+                JPasswordField pass = new JPasswordField(10);
+                panel.add(label);
+                panel.add(pass);
+                String[] options = new String[] {"OK", "Cancel"};
+                int option = JOptionPane.showOptionDialog(null, panel, "Enter password",
+                         JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE,
+                         null, options, "");
+                if (option == 0)
+                {
+                    password = new String(pass.getPassword());
+                    continue;
+                }
+                throw ipe;
+            }
+            break;
+        }        
         printMenuItem.setEnabled(true);
     }
 
