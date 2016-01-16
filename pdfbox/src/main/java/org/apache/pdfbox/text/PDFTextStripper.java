@@ -1445,6 +1445,10 @@ public class PDFTextStripper extends PDFTextStreamEngine
         {
             if (lastPosition.isArticleStart())
             {
+                if (lastPosition.isLineStart())
+                {
+                    writeLineSeparator();
+                }
                 writeParagraphStart();
             }
             else
