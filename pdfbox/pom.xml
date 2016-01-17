@@ -178,6 +178,9 @@
                         <exclude>src/main/resources/META-INF/services/*</exclude>
                         <exclude>src/test/resources/input/rendering/*.ai</exclude>
                         <exclude>src/test/resources/input/*.txt</exclude>
+                        <exclude>src/test/resources/org/apache/pdfbox/filter/*.bin</exclude>
+                        <exclude>src/test/resources/org/apache/pdfbox/encryption/*.der</exclude>
+                        <exclude>src/test/resources/org/apache/pdfbox/encryption/*.pfx</exclude>
                         <exclude>download/glyphlist.txt</exclude>
                         <exclude>release.properties</exclude>
                     </excludes>
