@@ -103,10 +103,6 @@ public class CMap
      */
     public int readCode(InputStream in) throws IOException
     {
-        // save the position in the string
-        in.mark(maxCodeLength);
-
-        // mapping algorithm
         byte[] bytes = new byte[maxCodeLength];
         in.read(bytes,0,minCodeLength);
         for (int i = minCodeLength-1; i < maxCodeLength; i++)
@@ -124,58 +120,11 @@ public class CMap
                 bytes[byteCount] = (byte)in.read();
             }
         }
-
-        // reset to the original position in the string
-        in.reset();
-
-        // modified mapping algorithm
-        for (int i = 0; i < maxCodeLength; i++)
-        {
-            final byte curByte = (byte)in.read(); 
-            bytes[i] = curByte;
-            final int byteCount = i + 1;
-            CodespaceRange match = null;
-            CodespaceRange shortest = null;
-            for (CodespaceRange range : codespaceRanges)
-            {
-                if (range.isPartialMatch(curByte, i))
-                {
-                    if (match == null)
-                    {
-                        match = range;
-                    }
-                    else if (range.getStart().length < match.getStart().length)
-                    {
-                        // for multiple matches, choose the codespace with the shortest codes
-                        match = range;
-                    }
-                }
-
-                // find shortest range
-                if (shortest == null || range.getStart().length < shortest.getStart().length)
-                {
-                    shortest = range;
-                }
-            }
-
-            // if there are no matches, the range with the shortest codes is chosen
-            if (match == null)
-            {
-                match = shortest;
-            }
-
-            // we're done when we have enough bytes for the matched range
-            if (match != null && match.getStart().length == byteCount)
-            {
-                return toInt(bytes, byteCount);
-            }
-        }
-
         throw new IOException("CMap is invalid");
     }
 
     /**
-     * Returns an int for the given a byte array
+     * Returns an int for the given byte array
      */
     private int toInt(byte[] data, int dataLen)
     {

@@ -26,6 +26,8 @@ public class CodespaceRange
 {
     private byte[] start;
     private byte[] end;
+    private int startInt;
+    private int endInt;
     private int codeLength = 0;
     
     /**
@@ -61,6 +63,7 @@ public class CodespaceRange
     void setEnd(byte[] endBytes)
     {
         end = endBytes;
+        endInt = toInt(endBytes, endBytes.length);
     }
 
     /** Getter for property start.
@@ -80,6 +83,7 @@ public class CodespaceRange
     {
         start = startBytes;
         codeLength = start.length;
+        startInt = toInt(startBytes, startBytes.length);
     }
 
     /**
@@ -91,6 +95,19 @@ public class CodespaceRange
     }
 
     /**
+     * Returns an int for the given byte array
+     */
+    private int toInt(byte[] data, int dataLen)
+    {
+        int code = 0;
+        for (int i = 0; i < dataLen; ++i)
+        {
+            code <<= 8;
+            code |= (data[i] + 256) % 256;
+        }
+        return code;
+    }
+    /**
      * Returns true if the given code bytes match this codespace range.
      */
     public boolean isFullMatch(byte[] code, int codeLen)
@@ -98,35 +115,11 @@ public class CodespaceRange
         // code must be the same length as the bounding codes
         if (codeLen == codeLength)
         {
-            // each of it bytes must lie between the corresponding bytes of the upper & lower bounds
-            for (int i = 0; i < codeLen; i++)
-            {
-                int startNum = start[i] & 0xff;
-                int endNum = end[i] & 0xff;
-                int codeNum = code[i] & 0xff;
-
-                if (codeNum > endNum || codeNum < startNum)
-                {
-                    return false;
-                }
-            }
-            return true;
+            int value = toInt(code, codeLen);
+            if (value >= startInt || value <=endInt)
+                return true;
         }
         return false;
     }
     
-    /**
-     * Returns true if the given byte matches the byte at the given index of this codespace range.
-     */
-    public boolean isPartialMatch(byte b, int index)
-    {
-        if (index == codeLength)
-        {
-            return false;
-        }
-        int startNum = start[index] & 0xff;
-        int endNum = end[index] & 0xff;
-        int codeNum = b & 0xff;
-        return !(codeNum > endNum || codeNum < startNum);
-    }
 }
