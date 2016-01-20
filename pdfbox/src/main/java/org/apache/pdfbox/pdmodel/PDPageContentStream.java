@@ -284,7 +284,7 @@ public final class PDPageContentStream implements Closeable
             fontStack.setElementAt(font, fontStack.size() - 1);
         }
         
-        if (font.willBeSubset() && !document.getFontsToSubset().contains(font))
+        if (font.willBeSubset())
         {
             document.getFontsToSubset().add(font);
         }
