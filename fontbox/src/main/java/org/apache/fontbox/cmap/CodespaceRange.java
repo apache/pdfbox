@@ -116,7 +116,7 @@ public class CodespaceRange
         if (codeLen == codeLength)
         {
             int value = toInt(code, codeLen);
-            if (value >= startInt || value <=endInt)
+            if (value >= startInt && value <=endInt)
                 return true;
         }
         return false;
