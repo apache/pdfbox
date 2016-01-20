@@ -88,13 +88,16 @@ final class FlateFilter extends Filter
     // missing Z_STREAM_END, see PDFBOX-1232 for details
     private void decompress(InputStream in, OutputStream out) throws IOException, DataFormatException 
     { 
-        byte[] buf = new byte[2048]; 
+        byte[] buf = new byte[2048];
+        // skip zlib header
+        in.skip(2);
         int read = in.read(buf); 
         if (read > 0) 
         { 
-            Inflater inflater = new Inflater(); 
+            // use nowrap mode to bypass zlib-header and checksum to avoid a DataFormatException
+            Inflater inflater = new Inflater(true); 
             inflater.setInput(buf,0,read);
-            byte[] res = new byte[32]; 
+            byte[] res = new byte[1024]; 
             boolean dataWritten = false;
             while (true) 
             { 
