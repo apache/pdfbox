@@ -117,7 +117,7 @@ public class FlateFilter implements Filter
     { 
         byte[] buf = new byte[2048]; 
         // skip zlib header
-        in.skip(2);
+        in.read(buf,0,2);
         int read = in.read(buf); 
         if(read > 0) 
         { 
