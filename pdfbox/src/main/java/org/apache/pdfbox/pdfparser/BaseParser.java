@@ -1363,7 +1363,7 @@ public abstract class BaseParser
                     // we can end up in an infinite loop otherwise
                     throw new IOException( "Unknown dir object c='" + c +
                             "' cInt=" + (int)c + " peek='" + (char)peek
-                            + "' peekInt=" + peek + " " + pdfSource.getOffset() );
+                            + "' peekInt=" + peek + " at offset " + pdfSource.getOffset() );
                 }
 
                 // if it's an endstream/endobj, we want to put it back so the caller will see it
