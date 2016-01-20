@@ -314,7 +314,7 @@ public final class PDOutlineItem extends PDOutlineNode
      *
      * @param structureElement The new structure element for this node.
      */
-    public void setStructuredElement( PDStructureElement structureElement )
+    public void setStructureElement( PDStructureElement structureElement )
     {
         getCOSObject().setItem(COSName.SE, structureElement);
     }
