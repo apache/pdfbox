@@ -307,7 +307,7 @@ class PDFTextStreamEngine extends PDFStreamEngine
                 pageSize.getHeight(), translatedTextRenderingMatrix, nextX, nextY,
                 dyDisplay, dxDisplay,
                 spaceWidthDisplay, unicode, new int[] { code } , font, fontSize,
-                (int)(fontSize * textRenderingMatrix.getScalingFactorX())));
+                (int)(fontSize * textMatrix.getScalingFactorX())));
     }
 
     /**
