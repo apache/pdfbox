@@ -1646,13 +1646,14 @@ public class COSParser extends BaseParser
                             trailer.setItem(COSName.ROOT, document.getObjectFromPool(entry.getKey()));
                         }
                         // info dictionary
-                        else if (dictionary.containsKey(COSName.TITLE)
+                        else if (dictionary.containsKey(COSName.MOD_DATE) && 
+                                (dictionary.containsKey(COSName.TITLE)
                                 || dictionary.containsKey(COSName.AUTHOR)
                                 || dictionary.containsKey(COSName.SUBJECT)
                                 || dictionary.containsKey(COSName.KEYWORDS)
                                 || dictionary.containsKey(COSName.CREATOR)
                                 || dictionary.containsKey(COSName.PRODUCER)
-                                || dictionary.containsKey(COSName.CREATION_DATE))
+                                || dictionary.containsKey(COSName.CREATION_DATE)))
                         {
                             trailer.setItem(COSName.INFO, document.getObjectFromPool(entry.getKey()));
                         }
