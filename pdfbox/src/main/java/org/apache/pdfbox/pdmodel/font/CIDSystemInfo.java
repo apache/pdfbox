@@ -17,14 +17,12 @@
 
 package org.apache.pdfbox.pdmodel.font;
 
-import java.io.Serializable;
-
 /**
  * Represents a CIDSystemInfo for the FontMapper API.
  *
  * @author John Hewson
  */
-public final class CIDSystemInfo implements Serializable
+public final class CIDSystemInfo
 {
     private final String registry;
     private final String ordering;
