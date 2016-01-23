@@ -24,7 +24,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.net.URI;
 import java.security.AccessControlException;
 import java.util.ArrayList;
@@ -60,7 +59,7 @@ final class FileSystemFontProvider extends FontProvider
     private final List<FSFontInfo> fontInfoList = new ArrayList<FSFontInfo>();
     private final FontCache cache;
 
-    private static class FSFontInfo extends FontInfo implements Serializable
+    private static class FSFontInfo extends FontInfo
     {
         private final String postScriptName;
         private final FontFormat format;
@@ -179,7 +178,7 @@ final class FileSystemFontProvider extends FontProvider
     /**
      * Represents ignored fonts (i.e. bitmap fonts).
      */
-    private static final class FSIgnored extends FSFontInfo implements Serializable
+    private static final class FSIgnored extends FSFontInfo
     {
         private FSIgnored(File file, FontFormat format, String postScriptName)
         {
