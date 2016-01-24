@@ -107,14 +107,7 @@ public abstract class COSNumber extends COSBase
             catch( NumberFormatException e )
             {
                 // might be a huge number, see PDFBOX-3116
-                try
-                {
-                    return new COSFloat(number);
-                }
-                catch (NumberFormatException e2)
-                {
-                    throw new IOException("Not a number: " + number, e2);
-                }
+                return new COSFloat(number);
             }
         } 
         else 
