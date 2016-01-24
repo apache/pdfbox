@@ -91,10 +91,10 @@ public class COSFloat extends COSNumber
         // check for huge values
         if (floatValue == Float.NEGATIVE_INFINITY  || floatValue == Float.POSITIVE_INFINITY )
         {
+            
             if (Math.abs(doubleValue) > Float.MAX_VALUE)
             {
-                floatValue = Float.MAX_VALUE;
-                floatValue *= floatValue == Float.POSITIVE_INFINITY ? 1 : -1;
+                floatValue = Float.MAX_VALUE * (floatValue == Float.POSITIVE_INFINITY ? 1 : -1);
                 valueReplaced = true;
             }
         }
