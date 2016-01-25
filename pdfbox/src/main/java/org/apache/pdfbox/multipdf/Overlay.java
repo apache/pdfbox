@@ -68,8 +68,6 @@ public class Overlay
     private String inputFileName = null;
     private PDDocument inputPDFDocument = null;
 
-    private String outputFilename = null;
-    
     private String defaultOverlayFilename = null;
     private PDDocument defaultOverlay = null;
 
@@ -96,9 +94,12 @@ public class Overlay
      * This will add overlays to a documents.
      * 
      * @param specificPageOverlayFile map of overlay files for specific pages
+     * 
+     * @return the resulting pdf, which has to be saved and closed be the caller
+     *  
      * @throws IOException if something went wrong
      */
-    public void overlay(Map<Integer, String> specificPageOverlayFile)
+    public PDDocument overlay(Map<Integer, String> specificPageOverlayFile)
             throws IOException
     {
         try
@@ -112,14 +113,10 @@ public class Overlay
             }
             processPages(inputPDFDocument);
 
-            inputPDFDocument.save(outputFilename);
+            return inputPDFDocument;
         }
         finally
         {
-            if (inputPDFDocument != null)
-            {
-                inputPDFDocument.close();
-            }
             if (defaultOverlay != null)
             {
                 defaultOverlay.close();
@@ -506,26 +503,6 @@ public class Overlay
     public String getInputFile()
     {
         return inputFileName;
-    }
-
-    /**
-     * Sets the output file.
-     * 
-     * @param outputFile the output file
-     */
-    public void setOutputFile(String outputFile)
-    {
-        outputFilename = outputFile;
-    }
-
-    /**
-     * Returns the output file.
-     * 
-     * @return the output file
-     */
-    public String getOutputFile()
-    {
-        return outputFilename;
     }
 
     /**
