@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.multipdf.Overlay;
 import org.apache.pdfbox.multipdf.Overlay.Position;
+import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
  * 
@@ -60,6 +61,7 @@ public final class OverlayPDF
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
+        String outputFilename = null;
         Overlay overlayer = new Overlay();
         Map<Integer, String> specificPageOverlayFile = new HashMap<Integer, String>();
         // input arguments
@@ -72,7 +74,7 @@ public final class OverlayPDF
             } 
             else if (i == (args.length - 1)) 
             {
-                overlayer.setOutputFile(arg);
+                outputFilename = arg;
             } 
             else if (arg.equals(POSITION) && ((i + 1) < args.length)) 
             {
@@ -130,14 +132,16 @@ public final class OverlayPDF
             }
         }
         
-        if (overlayer.getInputFile() == null || overlayer.getOutputFile() == null) 
+        if (overlayer.getInputFile() == null || outputFilename == null) 
         {
             usage();
         }
         
         try 
         {
-            overlayer.overlay(specificPageOverlayFile);
+            PDDocument result = overlayer.overlay(specificPageOverlayFile);
+            result.save(outputFilename);
+            result.close();
         } 
         catch (IOException e) 
         {
