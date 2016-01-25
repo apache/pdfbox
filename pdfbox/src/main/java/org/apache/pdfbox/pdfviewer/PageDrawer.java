@@ -422,7 +422,12 @@ public class PageDrawer extends PDFStreamEngine
                 // apply the CTM
                 for (int i = 0; i < dashArray.length; ++i)
                 {
-                    dashArray[i] = transformWidth(dashArray[i]);
+                    // minimum line dash width avoids JVM crash, see PDFBOX-2373, PDFBOX-2929, PDFBOX-3204
+                    float w = transformWidth(dashArray[i]);
+                    if (w != 0)
+                    {
+                        dashArray[i] = Math.max(w, 0.035f);
+                    }
                 }
                 phaseStart = (int)transformWidth(phaseStart);
 
