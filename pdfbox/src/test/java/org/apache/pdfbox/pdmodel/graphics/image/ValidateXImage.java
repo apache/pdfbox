@@ -45,11 +45,11 @@ public class ValidateXImage
     {
         // check the dictionary
         assertNotNull(ximage);
-        COSStream cosStream = ximage.getCOSStream();
+        COSStream cosStream = ximage.getCOSObject();
         assertNotNull(cosStream);
         assertEquals(COSName.XOBJECT, cosStream.getItem(COSName.TYPE));
         assertEquals(COSName.IMAGE, cosStream.getItem(COSName.SUBTYPE));
-        assertTrue(ximage.getCOSStream().getLength() > 0);
+        assertTrue(ximage.getCOSObject().getLength() > 0);
         assertEquals(bpc, ximage.getBitsPerComponent());
         assertEquals(width, ximage.getWidth());
         assertEquals(height, ximage.getHeight());
