@@ -23,6 +23,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.util.Matrix;
@@ -75,7 +76,7 @@ public class AddMessageToEachPage
                 float centerX = rotate ? pageHeight/2f : (pageWidth - stringWidth)/2f;
                 float centerY = rotate ? (pageWidth - stringWidth)/2f : pageHeight/2f;
                 // append the content to the existing stream
-                PDPageContentStream contentStream = new PDPageContentStream(doc, page, true, true,true);
+                PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.APPEND, true, true);
                 contentStream.beginText();
                 // set font and font size
                 contentStream.setFont( font, fontSize );

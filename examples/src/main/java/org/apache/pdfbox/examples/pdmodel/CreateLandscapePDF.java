@@ -22,6 +22,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.util.Matrix;
@@ -65,7 +66,7 @@ public class CreateLandscapePDF
             float stringWidth = font.getStringWidth( message )*fontSize/1000f;
             float startX = 100;
             float startY = 100;
-            PDPageContentStream contentStream = new PDPageContentStream(doc, page, false, false);
+            PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, false);
             // add the rotation using the current transformation matrix
             // including a translation of pageWidth to use the lower left corner as 0,0 reference
             contentStream.transform(new Matrix(0, 1, -1, 0, pageWidth, 0));
