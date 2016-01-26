@@ -110,7 +110,7 @@ public class RubberStampWithImage
                     drawXObject(ximage, form.getResources(), os, lowerLeftX, lowerLeftY, imgWidth, imgHeight);
                     os.close();
 
-                    PDAppearanceStream myDic = new PDAppearanceStream(form.getCOSStream());
+                    PDAppearanceStream myDic = new PDAppearanceStream(form.getCOSObject());
                     PDAppearanceDictionary appearance = new PDAppearanceDictionary(new COSDictionary());
                     appearance.setNormalAppearance(myDic);
                     rubberStamp.setAppearance(appearance);
