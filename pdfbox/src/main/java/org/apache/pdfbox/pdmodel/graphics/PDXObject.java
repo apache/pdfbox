@@ -120,8 +120,8 @@ public class PDXObject implements COSObjectable
     protected PDXObject(PDDocument document, COSName subtype)
     {
         stream = new PDStream(document);
-        stream.getStream().setName(COSName.TYPE, COSName.XOBJECT.getName());
-        stream.getStream().setName(COSName.SUBTYPE, subtype.getName());
+        stream.getCOSObject().setName(COSName.TYPE, COSName.XOBJECT.getName());
+        stream.getCOSObject().setName(COSName.SUBTYPE, subtype.getName());
     }
 
     /**
@@ -137,10 +137,12 @@ public class PDXObject implements COSObjectable
     /**
      * Returns the stream.
      * @return The stream for this object.
+     * @deprecated use {@link #getCOSObject() }
      */
+    @Deprecated
     public final COSStream getCOSStream()
     {
-        return stream.getStream();
+        return stream.getCOSObject();
     }
 
     /**
