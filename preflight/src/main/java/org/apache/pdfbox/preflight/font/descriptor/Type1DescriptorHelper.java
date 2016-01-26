@@ -74,7 +74,7 @@ public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container>
 
         if (ff1 != null)
         {
-            COSStream stream = ff1.getStream();
+            COSStream stream = ff1.getCOSObject();
             if (stream == null)
             {
                 this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID, 
