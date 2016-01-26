@@ -103,7 +103,7 @@ public class PDFormXObject extends PDXObject implements PDContentStream
      */
     public int getFormType()
     {
-        return getCOSStream().getInt(COSName.FORMTYPE, 1);
+        return getCOSObject().getInt(COSName.FORMTYPE, 1);
     }
 
     /**
@@ -112,7 +112,7 @@ public class PDFormXObject extends PDXObject implements PDContentStream
      */
     public void setFormType(int formType)
     {
-        getCOSStream().setInt(COSName.FORMTYPE, formType);
+        getCOSObject().setInt(COSName.FORMTYPE, formType);
     }
 
     /**
@@ -124,7 +124,7 @@ public class PDFormXObject extends PDXObject implements PDContentStream
     {
         if( group == null ) 
         {
-            COSDictionary dic = (COSDictionary) getCOSStream().getDictionaryObject(COSName.GROUP);
+            COSDictionary dic = (COSDictionary) getCOSObject().getDictionaryObject(COSName.GROUP);
             if( dic != null ) 
             {
                 group = new PDTransparencyGroupAttributes(dic);
@@ -135,13 +135,13 @@ public class PDFormXObject extends PDXObject implements PDContentStream
     
     public PDStream getContentStream()
     {
-        return new PDStream(getCOSStream());
+        return new PDStream(getCOSObject());
     }
 
     @Override
     public InputStream getContents() throws IOException
     {
-        return getCOSStream().createInputStream();
+        return getCOSObject().createInputStream();
     }
 
     /**
@@ -153,7 +153,7 @@ public class PDFormXObject extends PDXObject implements PDContentStream
     @Override
     public PDResources getResources()
     {
-        COSDictionary resources = (COSDictionary) getCOSStream().getDictionaryObject(COSName.RESOURCES);
+        COSDictionary resources = (COSDictionary) getCOSObject().getDictionaryObject(COSName.RESOURCES);
         if (resources != null)
         {
             return new PDResources(resources, cache);
@@ -167,7 +167,7 @@ public class PDFormXObject extends PDXObject implements PDContentStream
      */
     public void setResources(PDResources resources)
     {
-        getCOSStream().setItem(COSName.RESOURCES, resources);
+        getCOSObject().setItem(COSName.RESOURCES, resources);
     }
 
     /**
@@ -181,7 +181,7 @@ public class PDFormXObject extends PDXObject implements PDContentStream
     public PDRectangle getBBox()
     {
         PDRectangle retval = null;
-        COSArray array = (COSArray) getCOSStream().getDictionaryObject(COSName.BBOX);
+        COSArray array = (COSArray) getCOSObject().getDictionaryObject(COSName.BBOX);
         if (array != null)
         {
             retval = new PDRectangle(array);
@@ -197,11 +197,11 @@ public class PDFormXObject extends PDXObject implements PDContentStream
     {
         if (bbox == null)
         {
-            getCOSStream().removeItem(COSName.BBOX);
+            getCOSObject().removeItem(COSName.BBOX);
         }
         else
         {
-            getCOSStream().setItem(COSName.BBOX, bbox.getCOSArray());
+            getCOSObject().setItem(COSName.BBOX, bbox.getCOSArray());
         }
     }
 
@@ -212,7 +212,7 @@ public class PDFormXObject extends PDXObject implements PDContentStream
     @Override
     public Matrix getMatrix()
     {
-        COSArray array = (COSArray) getCOSStream().getDictionaryObject(COSName.MATRIX);
+        COSArray array = (COSArray) getCOSObject().getDictionaryObject(COSName.MATRIX);
         if (array != null)
         {
             return new Matrix(array);
@@ -237,7 +237,7 @@ public class PDFormXObject extends PDXObject implements PDContentStream
         {
             matrix.add(new COSFloat((float) v));
         }
-        getCOSStream().setItem(COSName.MATRIX, matrix);
+        getCOSObject().setItem(COSName.MATRIX, matrix);
     }
 
     /**
@@ -248,7 +248,7 @@ public class PDFormXObject extends PDXObject implements PDContentStream
      */
     public int getStructParents()
     {
-        return getCOSStream().getInt(COSName.STRUCT_PARENTS, 0);
+        return getCOSObject().getInt(COSName.STRUCT_PARENTS, 0);
     }
 
     /**
@@ -257,6 +257,6 @@ public class PDFormXObject extends PDXObject implements PDContentStream
      */
     public void setStructParents(int structParent)
     {
-        getCOSStream().setInt(COSName.STRUCT_PARENTS, structParent);
+        getCOSObject().setInt(COSName.STRUCT_PARENTS, structParent);
     }
 }
