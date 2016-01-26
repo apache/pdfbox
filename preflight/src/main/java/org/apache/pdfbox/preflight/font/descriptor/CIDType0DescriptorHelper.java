@@ -55,7 +55,7 @@ public class CIDType0DescriptorHelper extends FontDescriptorHelper<CIDType0Conta
         if (ff3 != null)
         {
             // Stream validation should be done by the StreamValidateHelper. Process font specific check
-            COSStream stream = ff3.getStream();
+            COSStream stream = ff3.getCOSObject();
             if (stream == null)
             {
                 this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID, 

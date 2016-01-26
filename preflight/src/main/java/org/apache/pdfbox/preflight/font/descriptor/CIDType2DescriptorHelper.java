@@ -74,7 +74,7 @@ public class CIDType2DescriptorHelper extends FontDescriptorHelper<CIDType2Conta
         if (ff2 != null)
         {
             // Stream validation should be done by the StreamValidateHelper. Process font specific check
-            COSStream stream = ff2.getStream();
+            COSStream stream = ff2.getCOSObject();
             if (stream == null)
             {
                 this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID, 
