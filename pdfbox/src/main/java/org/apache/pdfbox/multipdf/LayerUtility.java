@@ -156,7 +156,7 @@ public class LayerUtility
         form.setResources(formRes);
 
         //Transfer some values from page to form
-        transferDict(page.getCOSObject(), form.getCOSStream(), PAGE_TO_FORM_FILTER, true);
+        transferDict(page.getCOSObject(), form.getCOSObject(), PAGE_TO_FORM_FILTER, true);
 
         Matrix matrix = form.getMatrix();
         AffineTransform at = matrix.createAffineTransform();
