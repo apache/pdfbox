@@ -228,7 +228,7 @@ public final class PDPageContentStream implements Closeable
                 close();
                 
                 // insert the new stream at the beginning
-                array.add(0, saveGraphics.getStream());
+                array.add(0, saveGraphics.getCOSObject());
             }
 
             // Sets the compoundStream as page contents
