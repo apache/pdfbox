@@ -237,7 +237,7 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
 
         InputStream input = new ByteArrayInputStream(out.toByteArray());
         PDStream stream = new PDStream(document, input, COSName.FLATE_DECODE);
-        stream.getStream().setInt(COSName.LENGTH1, stream.toByteArray().length);
+        stream.getCOSObject().setInt(COSName.LENGTH1, stream.toByteArray().length);
 
         cidFont.setItem(COSName.CID_TO_GID_MAP, stream);
     }
