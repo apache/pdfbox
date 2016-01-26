@@ -26,6 +26,7 @@ import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.TestPDFToImage;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,6 +40,9 @@ public class PDAcroFormTest
     
     private PDDocument document;
     private PDAcroForm acroForm;
+    
+    private static final File OUT_DIR = new File("target/test-output");
+    private static final File IN_DIR = new File("src/test/resources/org/apache/pdfbox/pdmodel/interactive/form");
     
     @Before
     public void setUp()
@@ -82,9 +86,19 @@ public class PDAcroFormTest
     @Test
     public void testFlatten() throws IOException
     {
-        PDDocument testPdf = PDDocument.load(new File("src/test/resources/org/apache/pdfbox/pdmodel/interactive/form/AlignmentTests.pdf"));
+        PDDocument testPdf = PDDocument.load(new File(IN_DIR, "AlignmentTests.pdf"));
         testPdf.getDocumentCatalog().getAcroForm().flatten();
-        testPdf.save("target/test-output/AlignmentTests-flattened.pdf"); 
+        assertTrue(testPdf.getDocumentCatalog().getAcroForm().getFields().isEmpty());
+        File file = new File(OUT_DIR, "AlignmentTests-flattened.pdf");
+        testPdf.save(file);
+        // compare rendering
+        TestPDFToImage testPDFToImage = new TestPDFToImage(TestPDFToImage.class.getName());
+        if (!testPDFToImage.doTestFile(file, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
+        {
+            // don't fail, rendering is different on different systems, result must be viewed manually
+            System.out.println("Rendering of " + file + " failed or is not identical to expected rendering in " + IN_DIR + " directory");
+        }
+        
     }
 
     @After
