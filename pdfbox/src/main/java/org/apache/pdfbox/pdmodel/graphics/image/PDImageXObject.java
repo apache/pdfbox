@@ -104,7 +104,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
             PDColorSpace initColorSpace) throws IOException
     {
         super(createRawStream(document, encodedStream), COSName.IMAGE);
-        getCOSStream().setItem(COSName.FILTER, cosFilter);
+        getCOSObject().setItem(COSName.FILTER, cosFilter);
         resources = null;
         colorSpace = null;
         setBitsPerComponent(bitsPerComponent);
@@ -275,7 +275,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
     // repairs parameters using decode result
     private static PDStream repair(PDStream stream, COSInputStream input)
     {
-        stream.getStream().addAll(input.getDecodeResult().getParameters());
+        stream.getCOSObject().addAll(input.getDecodeResult().getParameters());
         return stream;
     }
 
@@ -285,7 +285,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
      */
     public PDMetadata getMetadata()
     {
-        COSStream cosStream = (COSStream) getCOSStream().getDictionaryObject(COSName.METADATA);
+        COSStream cosStream = (COSStream) getCOSObject().getDictionaryObject(COSName.METADATA);
         if (cosStream != null)
         {
             return new PDMetadata(cosStream);
@@ -299,7 +299,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
      */
     public void setMetadata(PDMetadata meta)
     {
-        getCOSStream().setItem(COSName.METADATA, meta);
+        getCOSObject().setItem(COSName.METADATA, meta);
     }
 
     /**
@@ -308,7 +308,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
      */
     public int getStructParent()
     {
-        return getCOSStream().getInt(COSName.STRUCT_PARENT, 0);
+        return getCOSObject().getInt(COSName.STRUCT_PARENT, 0);
     }
 
     /**
@@ -317,7 +317,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
      */
     public void setStructParent(int key)
     {
-        getCOSStream().setInt(COSName.STRUCT_PARENT, key);
+        getCOSObject().setInt(COSName.STRUCT_PARENT, key);
     }
 
     /**
@@ -464,10 +464,11 @@ public final class PDImageXObject extends PDXObject implements PDImage
     /**
      * Returns the Mask Image XObject associated with this image, or null if there is none.
      * @return Mask Image XObject
+     * @throws java.io.IOException
      */
     public PDImageXObject getMask() throws IOException
     {
-        COSBase mask = getCOSStream().getDictionaryObject(COSName.MASK);
+        COSBase mask = getCOSObject().getDictionaryObject(COSName.MASK);
         if (mask instanceof COSArray)
         {
             // color key mask, no explicit mask to return
@@ -475,7 +476,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
         }
         else
         {
-            COSStream cosStream = (COSStream)getCOSStream().getDictionaryObject(COSName.MASK);
+            COSStream cosStream = (COSStream) getCOSObject().getDictionaryObject(COSName.MASK);
             if (cosStream != null)
             {
                 // always DeviceGray
@@ -491,7 +492,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
      */
     public COSArray getColorKeyMask()
     {
-        COSBase mask = getCOSStream().getDictionaryObject(COSName.MASK);
+        COSBase mask = getCOSObject().getDictionaryObject(COSName.MASK);
         if (mask instanceof COSArray)
         {
             return (COSArray)mask;
@@ -502,10 +503,11 @@ public final class PDImageXObject extends PDXObject implements PDImage
     /**
      * Returns the Soft Mask Image XObject associated with this image, or null if there is none.
      * @return the SMask Image XObject, or null.
+     * @throws java.io.IOException
      */
     public PDImageXObject getSoftMask() throws IOException
     {
-        COSStream cosStream = (COSStream)getCOSStream().getDictionaryObject(COSName.SMASK);
+        COSStream cosStream = (COSStream) getCOSObject().getDictionaryObject(COSName.SMASK);
         if (cosStream != null)
         {
             // always DeviceGray
@@ -523,14 +525,14 @@ public final class PDImageXObject extends PDXObject implements PDImage
         }
         else
         {
-            return getCOSStream().getInt(COSName.BITS_PER_COMPONENT, COSName.BPC);
+            return getCOSObject().getInt(COSName.BITS_PER_COMPONENT, COSName.BPC);
         }
     }
 
     @Override
     public void setBitsPerComponent(int bpc)
     {
-        getCOSStream().setInt(COSName.BITS_PER_COMPONENT, bpc);
+        getCOSObject().setInt(COSName.BITS_PER_COMPONENT, bpc);
     }
 
     @Override
@@ -538,7 +540,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
     {
         if (colorSpace == null)
         {
-            COSBase cosBase = getCOSStream().getDictionaryObject(COSName.COLORSPACE, COSName.CS);
+            COSBase cosBase = getCOSObject().getDictionaryObject(COSName.COLORSPACE, COSName.CS);
             if (cosBase != null)
             {
                 colorSpace = PDColorSpace.create(cosBase, resources);
@@ -572,61 +574,61 @@ public final class PDImageXObject extends PDXObject implements PDImage
     @Override
     public boolean isEmpty()
     {
-        return getStream().getStream().getLength() == 0;
+        return getStream().getCOSObject().getLength() == 0;
     }
 
     @Override
     public void setColorSpace(PDColorSpace cs)
     {
-        getCOSStream().setItem(COSName.COLORSPACE, cs != null ? cs.getCOSObject() : null);
+        getCOSObject().setItem(COSName.COLORSPACE, cs != null ? cs.getCOSObject() : null);
     }
 
     @Override
     public int getHeight()
     {
-        return getCOSStream().getInt(COSName.HEIGHT);
+        return getCOSObject().getInt(COSName.HEIGHT);
     }
 
     @Override
     public void setHeight(int h)
     {
-        getCOSStream().setInt(COSName.HEIGHT, h);
+        getCOSObject().setInt(COSName.HEIGHT, h);
     }
 
     @Override
     public int getWidth()
     {
-        return getCOSStream().getInt(COSName.WIDTH);
+        return getCOSObject().getInt(COSName.WIDTH);
     }
 
     @Override
     public void setWidth(int w)
     {
-        getCOSStream().setInt(COSName.WIDTH, w);
+        getCOSObject().setInt(COSName.WIDTH, w);
     }
 
     @Override
     public boolean getInterpolate()
     {
-        return getCOSStream().getBoolean(COSName.INTERPOLATE, false);
+        return getCOSObject().getBoolean(COSName.INTERPOLATE, false);
     }
 
     @Override
     public void setInterpolate(boolean value)
     {
-        getCOSStream().setBoolean(COSName.INTERPOLATE, value);
+        getCOSObject().setBoolean(COSName.INTERPOLATE, value);
     }
 
     @Override
     public void setDecode(COSArray decode)
     {
-        getCOSStream().setItem(COSName.DECODE, decode);
+        getCOSObject().setItem(COSName.DECODE, decode);
     }
 
     @Override
     public COSArray getDecode()
     {
-        COSBase decode = getCOSStream().getDictionaryObject(COSName.DECODE);
+        COSBase decode = getCOSObject().getDictionaryObject(COSName.DECODE);
         if (decode instanceof COSArray)
         {
             return (COSArray) decode;
@@ -637,13 +639,13 @@ public final class PDImageXObject extends PDXObject implements PDImage
     @Override
     public boolean isStencil()
     {
-        return getCOSStream().getBoolean(COSName.IMAGE_MASK, false);
+        return getCOSObject().getBoolean(COSName.IMAGE_MASK, false);
     }
 
     @Override
     public void setStencil(boolean isStencil)
     {
-        getCOSStream().setBoolean(COSName.IMAGE_MASK, isStencil);
+        getCOSObject().setBoolean(COSName.IMAGE_MASK, isStencil);
     }
 
     /**
