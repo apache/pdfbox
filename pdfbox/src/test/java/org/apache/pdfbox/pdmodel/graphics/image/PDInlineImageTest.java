@@ -30,6 +30,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
 /**
@@ -164,7 +165,7 @@ public class PDInlineImageTest extends TestCase
         PDDocument document = new PDDocument();
         PDPage page = new PDPage();
         document.addPage(page);
-        PDPageContentStream contentStream = new PDPageContentStream(document, page, true, false);
+        PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, false);
         contentStream.drawImage(inlineImage1, 150, 400);
         contentStream.drawImage(inlineImage1, 150, 500, inlineImage1.getWidth() * 2, inlineImage1.getHeight() * 2);
         contentStream.drawImage(inlineImage1, 150, 600, inlineImage1.getWidth() * 4, inlineImage1.getHeight() * 4);
