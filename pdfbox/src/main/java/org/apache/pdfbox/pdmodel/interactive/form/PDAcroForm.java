@@ -192,6 +192,7 @@ public final class PDAcroForm implements COSObjectable
      * <p>Flattening a form field will take the current appearance and make that part
      * of the pages content stream. All form fields and annotations associated are removed.</p>
      * 
+     * @param fields
      * @param refreshAppearances if set to true the appearances for the form field widgets will be updated
      * @throws IOException 
      */
@@ -237,7 +238,7 @@ public final class PDAcroForm implements COSObjectable
                         contentStream = new PDPageContentStream(document, page, true, true);
                     }
                     
-                    PDFormXObject fieldObject = new PDFormXObject(widget.getNormalAppearanceStream().getCOSStream());
+                    PDFormXObject fieldObject = new PDFormXObject(widget.getNormalAppearanceStream().getCOSObject());
                     
                     Matrix translationMatrix = Matrix.getTranslateInstance(widget.getRectangle().getLowerLeftX(), widget.getRectangle().getLowerLeftY());
                     contentStream.saveGraphicsState();
@@ -293,6 +294,7 @@ public final class PDAcroForm implements COSObjectable
      * Refreshes the appearance streams and appearance dictionaries for 
      * the widget annotations of the specified fields.
      * 
+     * @param fields
      * @throws IOException
      */
     public void refreshAppearances(List<PDField> fields) throws IOException
