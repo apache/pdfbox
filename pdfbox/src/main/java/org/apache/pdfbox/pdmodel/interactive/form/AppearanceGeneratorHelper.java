@@ -559,7 +559,7 @@ class AppearanceGeneratorHelper
      */
     private void writeToStream(byte[] data, PDAppearanceStream appearanceStream) throws IOException
     {
-        OutputStream out = appearanceStream.getCOSStream().createOutputStream();
+        OutputStream out = appearanceStream.getCOSObject().createOutputStream();
         out.write(data);
         out.close();
     }
