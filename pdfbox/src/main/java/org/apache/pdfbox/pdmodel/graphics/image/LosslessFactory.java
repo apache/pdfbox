@@ -108,7 +108,7 @@ public final class LosslessFactory
         PDImage xAlpha = createAlphaFromARGBImage(document, image);
         if (xAlpha != null)
         {
-            pdImage.getCOSStream().setItem(COSName.SMASK, xAlpha);
+            pdImage.getCOSObject().setItem(COSName.SMASK, xAlpha);
         }
 
         return pdImage;

@@ -144,7 +144,7 @@ public final class CCITTFactory
                 1,
                 PDDeviceGray.INSTANCE);
         
-        COSDictionary dict = pdImage.getCOSStream();
+        COSDictionary dict = pdImage.getCOSObject();
         dict.setItem(COSName.DECODE_PARMS, decodeParms);
         return pdImage;
     }
