@@ -55,7 +55,7 @@ public abstract class PDFunction implements COSObjectable
         if (function instanceof COSStream)
         {
             functionStream = new PDStream( (COSStream)function );
-            functionStream.getStream().setItem( COSName.TYPE, COSName.FUNCTION );
+            functionStream.getCOSObject().setItem( COSName.TYPE, COSName.FUNCTION );
         }
         else if (function instanceof COSDictionary)
         {
@@ -86,7 +86,7 @@ public abstract class PDFunction implements COSObjectable
     {
         if (functionStream != null)
         {
-            return functionStream.getStream();
+            return functionStream.getCOSObject();
         }
         else 
         {
