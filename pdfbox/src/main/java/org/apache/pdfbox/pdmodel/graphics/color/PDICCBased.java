@@ -206,7 +206,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
     {
         if (numberOfComponents < 0)
         {
-            numberOfComponents = stream.getStream().getInt(COSName.N);
+            numberOfComponents = stream.getCOSObject().getInt(COSName.N);
         }
         return numberOfComponents;
     }
@@ -245,7 +245,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
      */
     public PDColorSpace getAlternateColorSpace() throws IOException
     {
-        COSBase alternate = stream.getStream().getDictionaryObject(COSName.ALTERNATE);
+        COSBase alternate = stream.getCOSObject().getDictionaryObject(COSName.ALTERNATE);
         COSArray alternateArray;
         if(alternate == null)
         {
@@ -299,7 +299,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
      */
     public PDRange getRangeForComponent(int n)
     {
-        COSArray rangeArray = (COSArray) stream.getStream().getDictionaryObject(COSName.RANGE);
+        COSArray rangeArray = (COSArray) stream.getCOSObject().getDictionaryObject(COSName.RANGE);
         if (rangeArray == null || rangeArray.size() < getNumberOfComponents() * 2)
         {
             return new PDRange(); // 0..1
@@ -313,7 +313,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
      */
     public COSStream getMetadata()
     {
-        return (COSStream)stream.getStream().getDictionaryObject(COSName.METADATA);
+        return (COSStream)stream.getCOSObject().getDictionaryObject(COSName.METADATA);
     }
 
     /**
@@ -359,7 +359,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
     public void setNumberOfComponents(int n)
     {
         numberOfComponents = n;
-        stream.getStream().setInt(COSName.N, n);
+        stream.getCOSObject().setInt(COSName.N, n);
     }
 
     /**
@@ -374,7 +374,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
         {
             altArray = COSArrayList.converterToCOSArray(list);
         }
-        stream.getStream().setItem(COSName.ALTERNATE, altArray);
+        stream.getCOSObject().setItem(COSName.ALTERNATE, altArray);
     }
 
     /**
@@ -384,11 +384,11 @@ public final class PDICCBased extends PDCIEBasedColorSpace
      */
     public void setRangeForComponent(PDRange range, int n)
     {
-        COSArray rangeArray = (COSArray) stream.getStream().getDictionaryObject(COSName.RANGE);
+        COSArray rangeArray = (COSArray) stream.getCOSObject().getDictionaryObject(COSName.RANGE);
         if (rangeArray == null)
         {
             rangeArray = new COSArray();
-            stream.getStream().setItem(COSName.RANGE, rangeArray);
+            stream.getCOSObject().setItem(COSName.RANGE, rangeArray);
         }
         // extend range array with default values if needed
         while (rangeArray.size() < (n + 1) * 2)
@@ -406,7 +406,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
      */
     public void setMetadata(COSStream metadata)
     {
-        stream.getStream().setItem(COSName.METADATA, metadata);
+        stream.getCOSObject().setItem(COSName.METADATA, metadata);
     }
 
     @Override
