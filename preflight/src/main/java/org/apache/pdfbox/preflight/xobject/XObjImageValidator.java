@@ -52,7 +52,7 @@ public class XObjImageValidator extends AbstractXObjValidator
 
     public XObjImageValidator(PreflightContext context, PDImageXObject xobj)
     {
-        super(context, xobj.getCOSStream());
+        super(context, xobj.getCOSObject());
         this.xImage = xobj;
     }
 
