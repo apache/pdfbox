@@ -52,7 +52,7 @@ public class PDObjectStream extends PDStream
     {
         COSStream cosStream = document.getDocument().createCOSStream();
         PDObjectStream strm = new PDObjectStream( cosStream );
-        strm.getStream().setItem( COSName.TYPE, COSName.OBJ_STM );
+        strm.getCOSObject().setItem( COSName.TYPE, COSName.OBJ_STM );
         return strm;
     }
 
@@ -63,7 +63,7 @@ public class PDObjectStream extends PDStream
      */
     public String getType()
     {
-        return getStream().getNameAsString( COSName.TYPE );
+        return getCOSObject().getNameAsString( COSName.TYPE );
     }
 
     /**
@@ -73,7 +73,7 @@ public class PDObjectStream extends PDStream
      */
     public int getNumberOfObjects()
     {
-        return getStream().getInt( COSName.N, 0 );
+        return getCOSObject().getInt( COSName.N, 0 );
     }
 
     /**
@@ -83,7 +83,7 @@ public class PDObjectStream extends PDStream
      */
     public void setNumberOfObjects( int n )
     {
-        getStream().setInt( COSName.N, n );
+        getCOSObject().setInt( COSName.N, n );
     }
 
     /**
@@ -93,7 +93,7 @@ public class PDObjectStream extends PDStream
      */
     public int getFirstByteOffset()
     {
-        return getStream().getInt( COSName.FIRST, 0 );
+        return getCOSObject().getInt( COSName.FIRST, 0 );
     }
 
     /**
@@ -103,7 +103,7 @@ public class PDObjectStream extends PDStream
      */
     public void setFirstByteOffset( int n )
     {
-        getStream().setInt( COSName.FIRST, n );
+        getCOSObject().setInt( COSName.FIRST, n );
     }
 
     /**
@@ -115,7 +115,7 @@ public class PDObjectStream extends PDStream
     public PDObjectStream getExtends()
     {
         PDObjectStream retval = null;
-        COSStream stream = (COSStream)getStream().getDictionaryObject( COSName.EXTENDS );
+        COSStream stream = (COSStream)getCOSObject().getDictionaryObject( COSName.EXTENDS );
         if( stream != null )
         {
             retval = new PDObjectStream( stream );
@@ -132,6 +132,6 @@ public class PDObjectStream extends PDStream
      */
     public void setExtends( PDObjectStream stream )
     {
-        getStream().setItem( COSName.EXTENDS, stream );
+        getCOSObject().setItem( COSName.EXTENDS, stream );
     }
 }
