@@ -201,12 +201,12 @@ public final class ExtractImages
             if (pdImage instanceof PDImageXObject)
             {
                 PDImageXObject xobject = (PDImageXObject)pdImage;
-                if (seen.contains(xobject.getCOSStream()))
+                if (seen.contains(xobject.getCOSObject()))
                 {
                     // skip duplicate image
                     return;
                 }
-                seen.add(xobject.getCOSStream());
+                seen.add(xobject.getCOSObject());
             }
 
             // save image
