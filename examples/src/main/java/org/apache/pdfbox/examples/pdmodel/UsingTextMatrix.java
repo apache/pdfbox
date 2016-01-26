@@ -22,6 +22,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.util.Matrix;
@@ -66,7 +67,7 @@ public class UsingTextMatrix
             float stringWidth = font.getStringWidth( message );
             float centeredYPosition = (pageSize.getHeight() - (stringWidth*fontSize)/1000f)/3f;
 
-            PDPageContentStream contentStream = new PDPageContentStream(doc, page, false, false);
+            PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, false);
             contentStream.setFont( font, fontSize );
             contentStream.beginText();
             // counterclockwise rotation
@@ -92,7 +93,7 @@ public class UsingTextMatrix
             doc.addPage(page);
             fontSize = 1.0f;
 
-            contentStream = new PDPageContentStream(doc, page, false, false);
+            contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, false);
             contentStream.setFont( font, fontSize );
             contentStream.beginText();
 
@@ -110,7 +111,7 @@ public class UsingTextMatrix
             doc.addPage(page);
             fontSize = 1.0f;
 
-            contentStream = new PDPageContentStream(doc, page, false, false);
+            contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, false);
             contentStream.setFont( font, fontSize );
             contentStream.beginText();
 

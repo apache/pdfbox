@@ -28,6 +28,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.function.PDFunctionType2;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShadingType2;
@@ -108,7 +109,7 @@ public class CreateGradientShadingPDF
 
             // invoke shading from content stream
             // compress parameter is set to false so that you can see the stream in a text editor
-            PDPageContentStream contentStream = new PDPageContentStream(document, page, true, false);
+            PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, false);
             contentStream.shadingFill(axialShading);
             contentStream.shadingFill(radialShading);
             contentStream.close();
