@@ -111,7 +111,7 @@ public final class PDOutputIntent implements COSObjectable
     {
         ICC_Profile icc = ICC_Profile.getInstance(colorProfile);
         PDStream stream = new PDStream(doc, new ByteArrayInputStream(icc.getData()), COSName.FLATE_DECODE);
-        stream.getStream().setInt(COSName.N, icc.getNumComponents());
+        stream.getCOSObject().setInt(COSName.N, icc.getNumComponents());
         return stream;
     }
 }  
