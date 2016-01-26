@@ -57,7 +57,7 @@ public class XObjFormValidator extends AbstractXObjValidator
 
     public XObjFormValidator(PreflightContext context, PDFormXObject xobj)
     {
-        super(context, xobj.getCOSStream());
+        super(context, xobj.getCOSObject());
         this.pdXObj = xobj;
     }
 
