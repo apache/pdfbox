@@ -61,6 +61,36 @@ import org.apache.pdfbox.util.Matrix;
  */
 public final class PDPageContentStream implements Closeable
 {
+    
+    /**
+     * This is to choose what to do with the stream: overwrite, append or prepend.
+     */
+    public static enum AppendMode
+    {
+        /**
+         * Overwrite the existing page content streams.
+         */
+        OVERWRITE, 
+        /**
+         * Append the content stream after all existing page content streams.
+         */
+        APPEND, 
+        /**
+         * Insert before all other page content streams.
+         */
+        PREPEND;
+
+        public boolean isOverwrite()
+        {
+            return this == OVERWRITE;
+        }
+
+        public boolean isPrepend()
+        {
+            return this == PREPEND;
+        }
+    }
+  
     private static final Log LOG = LogFactory.getLog(PDPageContentStream.class);
 
     private final PDDocument document;
@@ -85,7 +115,7 @@ public final class PDPageContentStream implements Closeable
      */
     public PDPageContentStream(PDDocument document, PDPage sourcePage) throws IOException
     {
-        this(document, sourcePage, false, true);
+        this(document, sourcePage, AppendMode.OVERWRITE, true, false);
     }
 
     /**
@@ -97,8 +127,25 @@ public final class PDPageContentStream implements Closeable
      *                      content is deleted.
      * @param compress Tell if the content stream should compress the page contents.
      * @throws IOException If there is an error writing to the page contents.
+     * @deprecated use {@link #PDPageContentStream(PDDocument, PDPage, PDPageContentStream.AppendMode, boolean)}
      */
+    @Deprecated
     public PDPageContentStream(PDDocument document, PDPage sourcePage, boolean appendContent,
+                               boolean compress) throws IOException
+    {
+        this(document, sourcePage, appendContent, compress, false);
+    }
+
+    /**
+     * Create a new PDPage content stream.
+     *
+     * @param document The document the page is part of.
+     * @param sourcePage The page to write the contents to.
+     * @param appendContent Indicates whether content will be overwritten, appended or prepended.
+     * @param compress Tell if the content stream should compress the page contents.
+     * @throws IOException If there is an error writing to the page contents.
+     */
+    public PDPageContentStream(PDDocument document, PDPage sourcePage, AppendMode appendContent,
                                boolean compress) throws IOException
     {
         this(document, sourcePage, appendContent, compress, false);
@@ -114,15 +161,34 @@ public final class PDPageContentStream implements Closeable
      * @param compress Tell if the content stream should compress the page contents.
      * @param resetContext Tell if the graphic context should be reseted.
      * @throws IOException If there is an error writing to the page contents.
+     * @deprecated use {@link #PDPageContentStream(PDDocument, PDPage, PDPageContentStream.AppendMode, boolean, boolean) }
      */
+    @Deprecated
     public PDPageContentStream(PDDocument document, PDPage sourcePage, boolean appendContent,
+                               boolean compress, boolean resetContext) throws IOException
+    {
+      this (document, sourcePage, appendContent ? AppendMode.APPEND : AppendMode.OVERWRITE, compress, resetContext);
+    }
+    
+    /**
+     * Create a new PDPage content stream.
+     *
+     * @param document The document the page is part of.
+     * @param sourcePage The page to write the contents to.
+     * @param appendContent Indicates whether content will be overwritten, appended or prepended.
+     * @param compress Tell if the content stream should compress the page contents.
+     * @param resetContext Tell if the graphic context should be reset. This is only relevant
+     *                     in non-overwrite modes.
+     * @throws IOException If there is an error writing to the page contents.
+     */
+    public PDPageContentStream(PDDocument document, PDPage sourcePage, AppendMode appendContent,
                                boolean compress, boolean resetContext) throws IOException
     {
         this.document = document;
         COSName filter = compress ? COSName.FLATE_DECODE : null;
         
-        // If request specifies the need to append to the document
-        if (appendContent && sourcePage.hasContents())
+        // If request specifies the need to append/prepend to the document
+        if (!appendContent.isOverwrite() && sourcePage.hasContents())
         {
             // Create a stream to append new content
             PDStream contentsToAppend = new PDStream(document);
@@ -133,14 +199,20 @@ public final class PDPageContentStream implements Closeable
             if (contents instanceof COSArray)
             {
                 // If contents is already an array, a new stream is simply appended to it
-                array = (COSArray)contents;
-                array.add(contentsToAppend);
+                array = (COSArray) contents;
             }
             else
             {
                 // Creates a new array and adds the current stream plus a new one to it
                 array = new COSArray();
                 array.add(contents);
+            }
+            if (appendContent.isPrepend())
+            {
+                array.add(0, contentsToAppend.getCOSObject());
+            }
+            else
+            {
                 array.add(contentsToAppend);
             }
 
@@ -203,13 +275,7 @@ public final class PDPageContentStream implements Closeable
      */
     public PDPageContentStream(PDDocument doc, PDAppearanceStream appearance) throws IOException
     {
-        this.document = doc;
-        
-        output = appearance.getStream().createOutputStream();
-        this.resources = appearance.getResources();
-        
-        formatDecimal.setMaximumFractionDigits(4);
-        formatDecimal.setGroupingUsed(false);
+        this (doc, appearance, appearance.getStream().createOutputStream()); 
     }
     
     /**
