@@ -41,13 +41,12 @@ public final class CCITTFactory
     }
     
     /**
-     * Creates a new CCITT Fax compressed Image XObject from the first page of 
-     * a TIFF file.
+     * Creates a new CCITT Fax compressed image XObject from the first image of a TIFF file.
      * 
      * @param document the document to create the image as part of.
      * @param reader the random access TIFF file which contains a suitable CCITT
      * compressed image
-     * @return a new Image XObject
+     * @return a new image XObject
      * @throws IOException if there is an error reading the TIFF data.
      * 
      * @deprecated Use {@link #createFromFile(PDDocument, File)} instead.
@@ -60,13 +59,13 @@ public final class CCITTFactory
     }
 
     /**
-     * Creates a new CCITT Fax compressed Image XObject from a TIFF file.
+     * Creates a new CCITT Fax compressed image XObject from a specific image of a TIFF file.
      *
      * @param document the document to create the image as part of.
      * @param reader the random access TIFF file which contains a suitable CCITT
      * compressed image
      * @param number TIFF image number, starting from 0
-     * @return a new Image XObject, or null if no such page
+     * @return a new image XObject, or null if no such page
      * @throws IOException if there is an error reading the TIFF data.
      * 
      * @deprecated Use {@link #createFromFile(PDDocument, File, int)} instead.
@@ -79,8 +78,11 @@ public final class CCITTFactory
     }
 
     /**
-     * Creates a new CCITT Fax compressed Image XObject from the first page of 
-     * a TIFF file.
+     * Creates a new CCITT Fax compressed image XObject from the first image of a TIFF file. Only
+     * single-strip CCITT T4 or T6 compressed TIFF files are supported. If you're not sure what TIFF
+     * files you have, use
+     * {@link LosslessFactory#createFromImage(org.apache.pdfbox.pdmodel.PDDocument, java.awt.image.BufferedImage)}
+     * instead.
      *
      * @param document the document to create the image as part of.
      * @param file the  TIFF file which contains a suitable CCITT compressed image
@@ -94,11 +96,14 @@ public final class CCITTFactory
     }
 
     /**
-     * Creates a new CCITT Fax compressed Image XObject from the first page of 
-     * a TIFF file.
+     * Creates a new CCITT Fax compressed image XObject from a specific image of a TIFF file. Only
+     * single-strip CCITT T4 or T6 compressed TIFF files are supported. If you're not sure what TIFF
+     * files you have, use
+     * {@link LosslessFactory#createFromImage(org.apache.pdfbox.pdmodel.PDDocument, java.awt.image.BufferedImage)}
+     * instead.
      *
      * @param document the document to create the image as part of.
-     * @param file the  TIFF file which contains a suitable CCITT compressed image
+     * @param file the TIFF file which contains a suitable CCITT compressed image
      * @param number TIFF image number, starting from 0
      * @return a new Image XObject
      * @throws IOException if there is an error reading the TIFF data.
@@ -110,7 +115,7 @@ public final class CCITTFactory
     }
     
     /**
-     * Creates a new CCITT Fax compressed Image XObject from a TIFF file.
+     * Creates a new CCITT Fax compressed image XObject from a TIFF file.
      * 
      * @param document the document to create the image as part of.
      * @param reader the random access TIFF file which contains a suitable CCITT
