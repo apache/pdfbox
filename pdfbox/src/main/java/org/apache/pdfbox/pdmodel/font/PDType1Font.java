@@ -202,7 +202,7 @@ public class PDType1Font extends PDSimpleFont
             {
                 try
                 {
-                    COSStream stream = fontFile.getStream();
+                    COSStream stream = fontFile.getCOSObject();
                     int length1 = stream.getInt(COSName.LENGTH1);
                     int length2 = stream.getInt(COSName.LENGTH2);
 
