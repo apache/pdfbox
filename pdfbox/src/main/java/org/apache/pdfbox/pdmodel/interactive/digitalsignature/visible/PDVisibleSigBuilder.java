@@ -227,7 +227,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
         PDAppearanceDictionary appearance = new PDAppearanceDictionary();
         appearance.getCOSObject().setDirect(true);
 
-        PDAppearanceStream appearanceStream = new PDAppearanceStream(holderForml.getCOSStream());
+        PDAppearanceStream appearanceStream = new PDAppearanceStream(holderForml.getCOSObject());
 
         appearance.setNormalAppearance(appearanceStream);
         signatureField.getWidgets().get(0).setAppearance(appearance);
