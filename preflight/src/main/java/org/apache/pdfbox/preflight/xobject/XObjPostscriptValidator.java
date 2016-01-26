@@ -29,7 +29,7 @@ public class XObjPostscriptValidator extends AbstractXObjValidator
 
     public XObjPostscriptValidator(PreflightContext context, PDPostScriptXObject xobj)
     {
-        super(context, xobj.getCOSStream());
+        super(context, xobj.getCOSObject());
     }
 
     /*
