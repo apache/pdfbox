@@ -30,6 +30,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
@@ -133,7 +134,7 @@ public class TestLayerUtility extends TestCase
             };
 
             //Setup page content stream and paint background/title
-            PDPageContentStream contentStream = new PDPageContentStream(doc, page, false, false);
+            PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, false);
             PDFont font = PDType1Font.HELVETICA_BOLD;
             contentStream.beginText();
             contentStream.newLineAtOffset(50, 720);
@@ -179,7 +180,7 @@ public class TestLayerUtility extends TestCase
             }
 
             //Setup page content stream and paint background/title
-            PDPageContentStream contentStream = new PDPageContentStream(doc, page, false, false);
+            PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, false);
             PDFont font = PDType1Font.HELVETICA_BOLD;
             contentStream.setNonStrokingColor(Color.LIGHT_GRAY);
             contentStream.beginText();

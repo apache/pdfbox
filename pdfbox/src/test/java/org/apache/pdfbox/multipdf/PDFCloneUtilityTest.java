@@ -22,6 +22,7 @@ import junit.framework.TestCase;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 
 /**
  * Test suite for PDFCloneUtility, see PDFBOX-2052.
@@ -42,8 +43,8 @@ public class PDFCloneUtilityTest extends TestCase
         PDDocument dstDoc = new PDDocument();
         PDPage pdPage = new PDPage();
         srcDoc.addPage(pdPage);
-        new PDPageContentStream(srcDoc, pdPage, true, true).close();
-        new PDPageContentStream(srcDoc, pdPage, true, true).close();
+        new PDPageContentStream(srcDoc, pdPage, AppendMode.APPEND, true).close();
+        new PDPageContentStream(srcDoc, pdPage, AppendMode.APPEND, true).close();
         new PDFCloneUtility(dstDoc).cloneForNewDocument(pdPage.getCOSObject());
         srcDoc.close();
         dstDoc.close();
@@ -65,17 +66,17 @@ public class PDFCloneUtilityTest extends TestCase
         PDDocument srcDoc = new PDDocument();
         PDPage pdPage = new PDPage();
         srcDoc.addPage(pdPage);
-        PDPageContentStream pdPageContentStream1 = new PDPageContentStream(srcDoc, pdPage, true, false);
+        PDPageContentStream pdPageContentStream1 = new PDPageContentStream(srcDoc, pdPage, AppendMode.APPEND, false);
         pdPageContentStream1.setNonStrokingColor(Color.black);
         pdPageContentStream1.addRect(100, 600, 300, 100);
         pdPageContentStream1.fill();
         pdPageContentStream1.close();
-        PDPageContentStream pdPageContentStream2 = new PDPageContentStream(srcDoc, pdPage, true, false);
+        PDPageContentStream pdPageContentStream2 = new PDPageContentStream(srcDoc, pdPage, AppendMode.APPEND, false);
         pdPageContentStream2.setNonStrokingColor(Color.red);
         pdPageContentStream2.addRect(100, 500, 300, 100);
         pdPageContentStream2.fill();
         pdPageContentStream2.close();
-        PDPageContentStream pdPageContentStream3 = new PDPageContentStream(srcDoc, pdPage, true, false);
+        PDPageContentStream pdPageContentStream3 = new PDPageContentStream(srcDoc, pdPage, AppendMode.APPEND, false);
         pdPageContentStream3.setNonStrokingColor(Color.yellow);
         pdPageContentStream3.addRect(100, 400, 300, 100);
         pdPageContentStream3.fill();
