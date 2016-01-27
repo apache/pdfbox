@@ -16,18 +16,6 @@
  */
 package org.apache.pdfbox.multipdf;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -55,6 +43,18 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlin
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 /**
  * This class will take a list of pdf documents and merge them, saving the
  * result in a new document.
@@ -68,6 +68,7 @@ public class PDFMergerUtility
     private final List<InputStream> sources;
     private final List<FileInputStream> fileInputStreams;
     private String destinationFileName;
+    private String mergedFieldPrefix = "pdfBoxMergedField";
     private OutputStream destinationStream;
     private boolean ignoreAcroFormErrors = false;
 
@@ -98,6 +99,28 @@ public class PDFMergerUtility
     public void setDestinationFileName(String destination)
     {
         destinationFileName = destination;
+    }
+
+    /**
+     * Get the prefix used to create new field names when encountering naming collisions during
+     * merging of the AcroForms. The default value is "pdfBoxMergedField".
+     *
+     * @return Returns the mergedFieldPrefix.
+     */
+    public String getMergedFieldPrefix()
+    {
+        return mergedFieldPrefix;
+    }
+
+    /**
+     * Sets the prefix used to create new field names when encountering naming collisions during
+     * merging of the AcroForms. The default value is "pdfBoxMergedField".
+     *
+     * @param mergedFieldPrefix The prefix to set.
+     */
+    public void setMergedFieldPrefix(String mergedFieldPrefix)
+    {
+        this.mergedFieldPrefix = mergedFieldPrefix;
     }
 
     /**
@@ -541,36 +564,30 @@ public class PDFMergerUtility
             throws IOException
     {
 
-    	List<PDField> srcFields = srcAcroForm.getFields();
+        List<PDField> srcFields = srcAcroForm.getFields();
 
         if (srcFields != null)
         {
-        	// if a form is merged multiple times using PDFBox the newly generated
-        	// fields starting with dummyFieldName may already exist. We need to determine the last unique 
-        	// number used and increment that.
-        	final String prefix = "dummyFieldName";
-        	final int prefixLength = prefix.length();
-
-            for (PDField destField : destAcroForm.getFieldTree())
-            {
-            	String fieldName = destField.getPartialName();
-            	if (fieldName.startsWith(prefix))
-            	{
-            		nextFieldNum = Math.max(nextFieldNum, Integer.parseInt(fieldName.substring(prefixLength, fieldName.length()))+1);
-            	}
-            }
-        	
             COSArray destFields = (COSArray) destAcroForm.getCOSObject().getItem(COSName.FIELDS);
             for (PDField srcField : srcAcroForm.getFieldTree())
             {
-                COSDictionary dstField = (COSDictionary) cloner.cloneForNewDocument(srcField.getCOSObject());
-                // if the form already has a field with this name then we need to rename this field
-                // to prevent merge conflicts.
-                if (destAcroForm.getField(srcField.getFullyQualifiedName()) != null)
+                // only add the root fields. kid fields are added automatically when parent is added, and changing
+                // the parent name is enough to prevent field name collisions when merging.
+                if (srcField.getParent() == null)
                 {
-                    dstField.setString(COSName.T, prefix + nextFieldNum++);
+
+                    COSDictionary dstField = (COSDictionary) cloner.cloneForNewDocument(srcField.getCOSObject());
+
+                    // if the form already has a field with this name then we need to rename this field
+                    // to prevent merge conflicts.
+                    if (destAcroForm.getField(srcField.getPartialName()) != null)
+                    {
+                        String newFieldName = mergedFieldPrefix + nextFieldNum++;
+                        dstField.setString(COSName.T, newFieldName);
+                    }
+
+                    destFields.add(dstField);
                 }
-                destFields.add(dstField);
             }
             destAcroForm.getCOSObject().setItem(COSName.FIELDS,destFields);
         }
