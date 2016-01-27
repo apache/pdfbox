@@ -36,6 +36,7 @@ import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentGroup;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentProperties;
@@ -238,7 +239,7 @@ public class LayerUtility
         ocprops.addGroup(layer);
 
         PDPageContentStream contentStream = new PDPageContentStream(
-                targetDoc, targetPage, true, !DEBUG);
+                targetDoc, targetPage, AppendMode.APPEND, !DEBUG);
         contentStream.beginMarkedContent(COSName.OC, layer);
         contentStream.saveGraphicsState();
         contentStream.transform(new Matrix(transform));
