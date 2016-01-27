@@ -111,8 +111,8 @@ public class PDXObject implements COSObjectable
     {
         this.stream = stream;
         // could be used for writing:
-        stream.getStream().setName(COSName.TYPE, COSName.XOBJECT.getName());
-        stream.getStream().setName(COSName.SUBTYPE, subtype.getName());
+        stream.getCOSObject().setName(COSName.TYPE, COSName.XOBJECT.getName());
+        stream.getCOSObject().setName(COSName.SUBTYPE, subtype.getName());
     }
 
     /**
