@@ -75,10 +75,10 @@ class PDType1FontEmbedder
         PDFontDescriptor fd = buildFontDescriptor(type1);
 
         PDStream fontStream = new PDStream(doc, pfbParser.getInputStream(), COSName.FLATE_DECODE);
-        fontStream.getStream().setInt("Length", pfbParser.size());
+        fontStream.getCOSObject().setInt("Length", pfbParser.size());
         for (int i = 0; i < pfbParser.getLengths().length; i++)
         {
-            fontStream.getStream().setInt("Length" + (i + 1), pfbParser.getLengths()[i]);
+            fontStream.getCOSObject().setInt("Length" + (i + 1), pfbParser.getLengths()[i]);
         }
         fd.setFontFile(fontStream);
 
