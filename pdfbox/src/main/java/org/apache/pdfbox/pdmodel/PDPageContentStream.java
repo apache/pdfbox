@@ -178,7 +178,7 @@ public final class PDPageContentStream implements Closeable
      * @param appendContent Indicates whether content will be overwritten, appended or prepended.
      * @param compress Tell if the content stream should compress the page contents.
      * @param resetContext Tell if the graphic context should be reset. This is only relevant
-     *                     in non-overwrite modes.
+     *                     when the appendContent parameter is set to {@link AppendMode#APPEND}.
      * @throws IOException If there is an error writing to the page contents.
      */
     public PDPageContentStream(PDDocument document, PDPage sourcePage, AppendMode appendContent,
