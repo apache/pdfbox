@@ -177,6 +177,10 @@ public final class PdfaExtensionHelper
         }
         // check ptype existance
         PropertyType pt = transformValueType(tm, ptype);
+        if (pt == null)
+        {
+            throw new XmpParsingException(ErrorType.NoValueType, "Unknown property value type : " + ptype);
+        }
         if (pt.type() == null)
         {
             throw new XmpParsingException(ErrorType.NoValueType, "Type not defined : " + ptype);
