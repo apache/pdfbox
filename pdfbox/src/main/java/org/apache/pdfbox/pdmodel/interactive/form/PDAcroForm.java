@@ -34,6 +34,7 @@ import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
@@ -230,12 +231,12 @@ public final class PDAcroForm implements COSObjectable
                     PDPage page = widget.getPage();
                     if (!isContentStreamWrapped)
                     {
-                        contentStream = new PDPageContentStream(document, page, true, true, true);
+                        contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, true, true);
                         isContentStreamWrapped = true;
                     }
                     else
                     {
-                        contentStream = new PDPageContentStream(document, page, true, true);
+                        contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
                     }
                     
                     PDFormXObject fieldObject = new PDFormXObject(widget.getNormalAppearanceStream().getCOSObject());
