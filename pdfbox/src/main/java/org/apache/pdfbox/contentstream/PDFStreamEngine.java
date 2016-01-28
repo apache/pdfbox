@@ -403,9 +403,10 @@ public abstract class PDFStreamEngine
     }
 
     /**
-     * Process a child stream of the given page. Cannot be used with #processPage(PDPage).
+     * Process a child stream of the given page. Cannot be used with {@link #processPage(PDPage)}.
      *
      * @param contentStream the child content stream
+     * @param page
      * @throws IOException if there is an exception while processing the stream
      */
     protected void processChildStream(PDContentStream contentStream, PDPage page) throws IOException
