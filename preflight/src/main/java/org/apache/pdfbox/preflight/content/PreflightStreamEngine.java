@@ -105,14 +105,13 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
 
     protected PreflightContext context = null;
     protected COSDocument cosDocument = null;
-    protected PDPage processeedPage = null;
+    protected PDPage processedPage = null;
 
-    public PreflightStreamEngine(PreflightContext _context, PDPage _page)
+    public PreflightStreamEngine(PreflightContext context, PDPage page)
     {
-        super();
-        this.context = _context;
-        this.cosDocument = _context.getDocument().getDocument();
-        this.processeedPage = _page;
+        this.context = context;
+        this.cosDocument = context.getDocument().getDocument();
+        this.processedPage = page;
 
         // Graphics operators
         addOperator(new SetLineWidth());
