@@ -589,7 +589,7 @@ public class PDFMergerUtility
                     destFields.add(dstField);
                 }
             }
-            destAcroForm.getCOSObject().setItem(COSName.FIELDS,destFields);
+            destAcroForm.getCOSObject().setItem(COSName.FIELDS, destFields);
         }
     }
 
