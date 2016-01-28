@@ -65,9 +65,9 @@ public class PreflightContentStream extends PreflightStreamEngine
     {
         try
         {
-            if (this.processeedPage.hasContents())
+            if (processedPage.hasContents())
             {
-                processPage(this.processeedPage);
+                processPage(processedPage);
             }
         }
         catch (ContentStreamException e)
@@ -91,13 +91,14 @@ public class PreflightContentStream extends PreflightStreamEngine
         try
         {
             // workaround for preflight not finding widget annotation parent PDPage
-            if (processeedPage == null)
+            if (processedPage == null)
             {
-                processChildStream(form, new PDPage()); // dummy page, resource lookup may fail
+                // dummy page, resource lookup may fail
+                processChildStream(form, new PDPage()); 
             }
             else
             {
-                processChildStream(form, processeedPage);
+                processChildStream(form, processedPage);
             }
         }
         catch (ContentStreamException e)
@@ -120,7 +121,7 @@ public class PreflightContentStream extends PreflightStreamEngine
     {
         try
         {
-            processChildStream(pattern, processeedPage);
+            processChildStream(pattern, processedPage);
         }
         catch (ContentStreamException e)
         {
