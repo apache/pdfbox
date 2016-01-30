@@ -569,25 +569,23 @@ public class PDFMergerUtility
         if (srcFields != null)
         {
             COSArray destFields = (COSArray) destAcroForm.getCOSObject().getItem(COSName.FIELDS);
-            for (PDField srcField : srcAcroForm.getFieldTree())
+
+            // only add the root fields. kid fields are added automatically when parent is added, and changing
+            // the parent name is enough to prevent field name collisions when merging.
+            for (PDField srcField : srcFields)
             {
-                // only add the root fields. kid fields are added automatically when parent is added, and changing
-                // the parent name is enough to prevent field name collisions when merging.
-                if (srcField.getParent() == null)
+                COSDictionary dstField = (COSDictionary) cloner.cloneForNewDocument(srcField.getCOSObject());
+
+                // if the form already has a field with this name then we need to rename this field
+                // to prevent merge conflicts.
+                String fieldName = srcField.getPartialName();
+                while (destAcroForm.getField(fieldName) != null)
                 {
-
-                    COSDictionary dstField = (COSDictionary) cloner.cloneForNewDocument(srcField.getCOSObject());
-
-                    // if the form already has a field with this name then we need to rename this field
-                    // to prevent merge conflicts.
-                    if (destAcroForm.getField(srcField.getPartialName()) != null)
-                    {
-                        String newFieldName = mergedFieldPrefix + nextFieldNum++;
-                        dstField.setString(COSName.T, newFieldName);
-                    }
-
-                    destFields.add(dstField);
+                    fieldName = mergedFieldPrefix + nextFieldNum++;
+                    dstField.setString(COSName.T, fieldName);
                 }
+
+                destFields.add(dstField);
             }
             destAcroForm.getCOSObject().setItem(COSName.FIELDS, destFields);
         }
