@@ -825,9 +825,16 @@ public class COSParser extends BaseParser
             }
             catch(IOException exception)
             {
-                LOG.debug("Stop reading object stream "+objstmObjNr+" due to an exception", exception);
-                // the error is handled in parseDictObjects
-                return;
+                if (isLenient)
+                {
+                    LOG.debug("Stop reading object stream "+objstmObjNr+" due to an exception", exception);
+                    // the error is handled in parseDictObjects
+                    return;
+                }
+                else
+                {
+                    throw exception;
+                }
             }
 
             // get set of object numbers referenced for this object stream
