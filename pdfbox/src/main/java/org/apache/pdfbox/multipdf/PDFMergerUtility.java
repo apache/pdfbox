@@ -70,7 +70,9 @@ public class PDFMergerUtility
     private String destinationFileName;
     private String mergedFieldPrefix = "pdfBoxMergedField";
     private OutputStream destinationStream;
+    private boolean renameFieldsOnMerge = true;
     private boolean ignoreAcroFormErrors = false;
+    private int nextFieldNum = 1;
 
     /**
      * Instantiate a new PDFMergerUtility.
@@ -141,6 +143,51 @@ public class PDFMergerUtility
     public void setDestinationStream(OutputStream destStream)
     {
         destinationStream = destStream;
+    }
+
+    /**
+     * Indicates if acroform errors are ignored or not.
+     *
+     * @return true if acroform errors are ignored
+     */
+    public boolean isIgnoreAcroFormErrors()
+    {
+        return ignoreAcroFormErrors;
+    }
+
+    /**
+     * Set to true to ignore acroform errors.
+     *
+     * @param ignoreAcroFormErrorsValue true if acroform errors should be
+     * ignored
+     */
+    public void setIgnoreAcroFormErrors(boolean ignoreAcroFormErrorsValue)
+    {
+        ignoreAcroFormErrors = ignoreAcroFormErrorsValue;
+    }
+
+
+    /**
+     * If true, then merged fields will be renamed if another field with the same name
+     * already exists in the document.
+     *
+     * @return true if fields are set to be renamed, false if they will retain their original names
+     */
+    public boolean isRenameFieldsOnMerge()
+    {
+        return renameFieldsOnMerge;
+    }
+
+    /**
+     * Set to false to have all fields retain their original names. True by default. If
+     * true, then merged fields will be renamed if another field with the same name
+     * already exists in the document.
+     *
+     * @param renameFieldsOnMerge the value to which to set this
+     */
+    public void setRenameFieldsOnMerge(boolean renameFieldsOnMerge)
+    {
+        this.renameFieldsOnMerge = renameFieldsOnMerge;
     }
 
     /**
@@ -308,8 +355,22 @@ public class PDFMergerUtility
             if (destAcroForm == null && srcAcroForm != null)
             {
                 destCatalog.getCOSObject().setItem(COSName.ACRO_FORM,
-                        cloner.cloneForNewDocument(srcAcroForm.getCOSObject()));       
-                
+                        cloner.cloneForNewDocument(srcAcroForm.getCOSObject()));
+
+                if (renameFieldsOnMerge)
+                {
+                    for (PDField field : srcAcroForm.getFields())
+                    {
+                        // reduce likelihood of name collisions by setting next number above this field's
+                        // number if this field was merged by us in another document
+                        String fieldName = field.getPartialName();
+                        if (fieldName.startsWith(mergedFieldPrefix))
+                        {
+                            nextFieldNum = Math.max(nextFieldNum, Integer.parseInt(
+                                    fieldName.substring(mergedFieldPrefix.length(), fieldName.length())) + 1);
+                        }
+                    }
+                }
             }
             else
             {
@@ -549,8 +610,6 @@ public class PDFMergerUtility
         }
     }
 
-    private int nextFieldNum = 1;
-
     /**
      * Merge the contents of the source form into the destination form for the
      * destination file.
@@ -570,46 +629,45 @@ public class PDFMergerUtility
         {
             COSArray destFields = (COSArray) destAcroForm.getCOSObject().getItem(COSName.FIELDS);
 
-            // only add the root fields. kid fields are added automatically when parent is added, and changing
-            // the parent name is enough to prevent field name collisions when merging.
             for (PDField srcField : srcFields)
             {
-                COSDictionary dstField = (COSDictionary) cloner.cloneForNewDocument(srcField.getCOSObject());
 
-                // if the form already has a field with this name then we need to rename this field
-                // to prevent merge conflicts.
-                String fieldName = srcField.getPartialName();
-                while (destAcroForm.getField(fieldName) != null)
+                // only add the root fields. kid fields are added automatically when parent is added
+                // check for null parent to make sure field is root
+                if (srcField.getParent() == null)
                 {
-                    fieldName = mergedFieldPrefix + nextFieldNum++;
-                    dstField.setString(COSName.T, fieldName);
-                }
 
-                destFields.add(dstField);
+                    COSDictionary dstField = (COSDictionary) cloner.cloneForNewDocument(srcField.getCOSObject());
+
+                    // rename fields on merge if enabled
+                    if (renameFieldsOnMerge)
+                    {
+                        // only use partial name since it is same as fully qualified for root fields
+                        String fieldName = srcField.getPartialName();
+                        // reduce likelihood of name collisions by setting next number above this field's
+                        // number if this field was merged by us in another document
+                        if (fieldName.startsWith(mergedFieldPrefix))
+                        {
+                            nextFieldNum = Math.max(nextFieldNum, Integer.parseInt(
+                                    fieldName.substring(mergedFieldPrefix.length(), fieldName.length())) + 1);
+                        }
+                        // if the form already has a field with this name then we need to rename this field
+                        while (destAcroForm.getField(fieldName) != null)
+                        {
+                            fieldName = mergedFieldPrefix + nextFieldNum++;
+                        }
+                        // set new name if there is one
+                        if (!fieldName.equals(srcField.getPartialName()))
+                        {
+                            dstField.setString(COSName.T, fieldName);
+                        }
+                    }
+
+                    destFields.add(dstField);
+                }
             }
             destAcroForm.getCOSObject().setItem(COSName.FIELDS, destFields);
         }
-    }
-
-    /**
-     * Indicates if acroform errors are ignored or not.
-     *
-     * @return true if acroform errors are ignored
-     */
-    public boolean isIgnoreAcroFormErrors()
-    {
-        return ignoreAcroFormErrors;
-    }
-
-    /**
-     * Set to true to ignore acroform errors.
-     *
-     * @param ignoreAcroFormErrorsValue true if acroform errors should be
-     * ignored
-     */
-    public void setIgnoreAcroFormErrors(boolean ignoreAcroFormErrorsValue)
-    {
-        ignoreAcroFormErrors = ignoreAcroFormErrorsValue;
     }
 
     /**
