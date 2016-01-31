@@ -16,10 +16,14 @@
  ! limitations under the License.
  !-->
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
-<log4j:configuration>
+<log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/'>
+    <appender name="console" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %-5p %C:%L - %m%n" />
+        </layout>
+    </appender>
     <root>
-        <priority value ="off" />
+        <level value="WARN" />
         <appender-ref ref="console" />
-        <appender-ref ref="rolling-file" />
     </root>
 </log4j:configuration>
