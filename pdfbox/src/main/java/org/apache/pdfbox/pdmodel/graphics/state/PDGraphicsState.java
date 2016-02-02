@@ -20,6 +20,7 @@ import java.awt.BasicStroke;
 import java.awt.Composite;
 import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
+import org.apache.pdfbox.cos.COSBase;
 
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.PDLineDashPattern;
@@ -63,7 +64,7 @@ public class PDGraphicsState implements Cloneable
     private double overprintMode = 0;
     //black generation
     //undercolor removal
-    //transfer
+    private COSBase transfer = null;
     //halftone
     private double flatness = 1.0;
     private double smoothness = 0;
@@ -592,5 +593,33 @@ public class PDGraphicsState implements Cloneable
     public Composite getNonStrokingJavaComposite()
     {
         return BlendComposite.getInstance(blendMode, (float) nonStrokingAlphaConstant);
+    }
+
+    /**
+     * This will get the transfer function.
+     *
+     * @return The transfer function. According to the PDF specification, this is either a single
+     * function (which applies to all process colorants) or an array of four functions (which apply
+     * to the process colorants individually). The name Identity may be used to represent the
+     * identity function, and the name Default denotes the transfer function that was in effect at
+     * the start of the page.
+     */
+    public COSBase getTransfer()
+    {
+        return transfer;
+    }
+
+    /**
+     * This will set the transfer function.
+     *
+     * @param transfer The transfer function. According to the PDF specification, this is either a
+     * single function (which applies to all process colorants) or an array of four functions (which
+     * apply to the process colorants individually). The name Identity may be used to represent the
+     * identity function, and the name Default denotes the transfer function that was in effect at
+     * the start of the page.
+     */
+    public void setTransfer(COSBase transfer)
+    {
+        this.transfer = transfer;
     }
 }
