@@ -834,6 +834,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         WritableRaster raster = image.copyData(image.getRaster().createCompatibleWritableRaster());
         BufferedImage bim = new BufferedImage(cm, raster, isAlphaPremultiplied, null);
 
+        Map<Integer, Integer> rMap;
+        Map<Integer, Integer> gMap;
+        Map<Integer, Integer> bMap;
         PDFunction rf, gf, bf;
         if (transfer instanceof COSArray)
         {
@@ -841,10 +844,14 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             rf = PDFunction.create(ar.getObject(0));
             gf = PDFunction.create(ar.getObject(1));
             bf = PDFunction.create(ar.getObject(2));
+            rMap = new HashMap<Integer, Integer>(256);
+            gMap = new HashMap<Integer, Integer>(256);
+            bMap = new HashMap<Integer, Integer>(256);
         }
         else
         {
             rf = gf = bf = PDFunction.create(transfer);
+            rMap = gMap = bMap = new HashMap<Integer, Integer>(256);
         }
         float input[] = new float[1];
         for (int x = 0; x < image.getWidth(); ++x)
@@ -852,13 +859,41 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             for (int y = 0; y < image.getHeight(); ++y)
             {
                 int rgb = image.getRGB(x, y);
-                input[0] = ((rgb >> 16) & 0xFF) / 255f;
-                int r = (int) (rf.eval(input)[0] * 255);
-                input[0] = ((rgb >> 8) & 0xFF) / 255f;
-                int g = (int) (gf.eval(input)[0] * 255);
-                input[0] = (rgb & 0xFF) / 255f;
-                int b = (int) (bf.eval(input)[0] * 255);
-                bim.setRGB(x, y, (rgb & 0xFF000000) | (r << 16) | (g << 8) | b);
+                Integer ri = (rgb >> 16) & 0xFF;
+                Integer gi = (rgb >> 8) & 0xFF;
+                Integer bi = rgb & 0xFF;
+                int ro, go, bo;
+                if (rMap.containsKey(ri))
+                {
+                    ro = rMap.get(ri);
+                }
+                else
+                {
+                    input[0] = (ri & 0xFF) / 255f;
+                    ro = (int) (rf.eval(input)[0] * 255);
+                    rMap.put(ri, ro);
+                }
+                if (gMap.containsKey(gi))
+                {
+                    go = gMap.get(gi);
+                }
+                else
+                {
+                    input[0] = (gi & 0xFF) / 255f;
+                    go = (int) (gf.eval(input)[0] * 255);
+                    gMap.put(gi, go);
+                }
+                if (bMap.containsKey(bi))
+                {
+                    bo = bMap.get(bi);
+                }
+                else
+                {
+                    input[0] = (bi & 0xFF) / 255f;
+                    bo = (int) (bf.eval(input)[0] * 255);
+                    bMap.put(bi, bo);
+                }
+                bim.setRGB(x, y, (rgb & 0xFF000000) | (ro << 16) | (go << 8) | bo);
             }
         }
         return bim;
