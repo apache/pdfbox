@@ -33,7 +33,9 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
 import java.awt.image.Raster;
+import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,9 +44,11 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 import org.apache.pdfbox.pdmodel.font.PDCIDFontType0;
 import org.apache.pdfbox.pdmodel.font.PDCIDFontType2;
 import org.apache.pdfbox.pdmodel.font.PDFont;
@@ -807,6 +811,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
         else
         {
+            COSBase transfer = getGraphicsState().getTransfer();
+            if (transfer instanceof COSArray || transfer instanceof COSDictionary)
+            {
+                image = applyTransferFunction(image, transfer);
+            }
+
             int width = image.getWidth(null);
             int height = image.getHeight(null);
             AffineTransform imageTransform = new AffineTransform(at);
@@ -814,6 +824,44 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             imageTransform.translate(0, -height);
             graphics.drawImage(image, imageTransform, null);
         }
+    }
+
+    private BufferedImage applyTransferFunction(BufferedImage image, COSBase transfer) throws IOException
+    {
+        // Deep copy http://stackoverflow.com/a/26894825/535646
+        ColorModel cm = image.getColorModel();
+        boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
+        WritableRaster raster = image.copyData(image.getRaster().createCompatibleWritableRaster());
+        BufferedImage bim = new BufferedImage(cm, raster, isAlphaPremultiplied, null);
+
+        PDFunction rf, gf, bf;
+        if (transfer instanceof COSArray)
+        {
+            COSArray ar = (COSArray) transfer;
+            rf = PDFunction.create(ar.getObject(0));
+            gf = PDFunction.create(ar.getObject(1));
+            bf = PDFunction.create(ar.getObject(2));
+        }
+        else
+        {
+            rf = gf = bf = PDFunction.create(transfer);
+        }
+        float input[] = new float[1];
+        for (int x = 0; x < image.getWidth(); ++x)
+        {
+            for (int y = 0; y < image.getHeight(); ++y)
+            {
+                int rgb = image.getRGB(x, y);
+                input[0] = ((rgb >> 16) & 0xFF) / 255f;
+                int r = (int) (rf.eval(input)[0] * 255);
+                input[0] = ((rgb >> 8) & 0xFF) / 255f;
+                int g = (int) (gf.eval(input)[0] * 255);
+                input[0] = (rgb & 0xFF) / 255f;
+                int b = (int) (bf.eval(input)[0] * 255);
+                bim.setRGB(x, y, (rgb & 0xFF000000) | (r << 16) | (g << 8) | b);
+            }
+        }
+        return bim;
     }
 
     @Override
