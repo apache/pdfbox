@@ -141,6 +141,20 @@ public class PDExtendedGraphicsState implements COSObjectable
             {
                 gs.setBlendMode( getBlendMode() );
             }
+            else if (key.equals(COSName.TR))
+            {
+                if (dict.containsKey(COSName.TR2))
+                {
+                    // "If both TR and TR2 are present in the same graphics state parameter dictionary, 
+                    // TR2 shall take precedence."
+                    continue;
+                }
+                gs.setTransfer(getTransfer());
+            }
+            else if (key.equals(COSName.TR2))
+            {
+                gs.setTransfer(getTransfer2());
+            }
         }
     }
 
@@ -579,5 +593,69 @@ public class PDExtendedGraphicsState implements COSObjectable
         {
             dict.setItem(key, new COSFloat(value));
         }
+    }
+
+    /**
+     * This will get the transfer function of the /TR dictionary.
+     *
+     * @return The transfer function. According to the PDF specification, this is either a single
+     * function (which applies to all process colorants) or an array of four functions (which apply
+     * to the process colorants individually). The name Identity may be used to represent the
+     * identity function.
+     */
+    public COSBase getTransfer()
+    {
+        COSBase base = dict.getDictionaryObject(COSName.TR);
+        if (base instanceof COSArray && ((COSArray) base).size() != 4)
+        {
+            return null;
+        }
+        return base;
+    }
+
+    /**
+     * This will set the transfer function of the /TR dictionary.
+     *
+     * @param transfer The transfer function. According to the PDF specification, this is either a
+     * single function (which applies to all process colorants) or an array of four functions (which
+     * apply to the process colorants individually). The name Identity may be used to represent the
+     * identity function.
+     */
+    public void setTransfer(COSBase transfer)
+    {
+        dict.setItem(COSName.TR, transfer);
+    }
+
+    /**
+     * This will get the transfer function of the /TR2 dictionary.
+     *
+     * @return The transfer function. According to the PDF specification, this is either a single
+     * function (which applies to all process colorants) or an array of four functions (which apply
+     * to the process colorants individually). The name Identity may be used to represent the
+     * identity function, and the name Default denotes the transfer function that was in effect at
+     * the start of the page.
+     */
+    public COSBase getTransfer2()
+    {
+        COSBase base = dict.getDictionaryObject(COSName.TR2);
+        if (base instanceof COSArray && ((COSArray) base).size() != 4)
+        {
+            return null;
+        }
+        return base;
+    }
+
+    /**
+     * This will set the transfer function of the /TR2 dictionary.
+     *
+     * @param transfer2 The transfer function. According to the PDF specification, this is either a
+     * single function (which applies to all process colorants) or an array of four functions (which
+     * apply to the process colorants individually). The name Identity may be used to represent the
+     * identity function, and the name Default denotes the transfer function that was in effect at
+     * the start of the page.
+     */
+    public void setTransfer2(COSBase transfer2)
+    {
+        dict.setItem(COSName.TR2, transfer2);
     }
 }
