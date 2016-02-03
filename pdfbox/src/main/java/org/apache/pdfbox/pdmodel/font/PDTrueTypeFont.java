@@ -152,6 +152,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
     private final TrueTypeFont ttf;
     private final boolean isEmbedded;
     private final boolean isDamaged;
+    private BoundingBox fontBBox;
 
     /**
      * Creates a new TrueType font from a Font dictionary.
@@ -300,6 +301,15 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
 
     @Override
     public BoundingBox getBoundingBox() throws IOException
+    {
+        if (fontBBox == null)
+        {
+            fontBBox = generateBoundingBox();
+        }
+        return fontBBox;
+    }
+
+    private BoundingBox generateBoundingBox() throws IOException
     {
         if (getFontDescriptor() != null) {
             PDRectangle bbox = getFontDescriptor().getFontBoundingBox();

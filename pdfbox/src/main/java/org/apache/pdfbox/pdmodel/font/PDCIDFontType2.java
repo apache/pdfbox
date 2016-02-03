@@ -56,6 +56,7 @@ public class PDCIDFontType2 extends PDCIDFont
     private final boolean isDamaged;
     private final CmapSubtable cmap; // may be null
     private Matrix fontMatrix;
+    private BoundingBox fontBBox;
 
     /**
      * Constructor.
@@ -196,6 +197,15 @@ public class PDCIDFontType2 extends PDCIDFont
 
     @Override
     public BoundingBox getBoundingBox() throws IOException
+    {
+        if (fontBBox == null)
+        {
+            fontBBox = generateBoundingBox();
+        }
+        return fontBBox;
+    }
+
+    private BoundingBox generateBoundingBox() throws IOException
     {
         if (getFontDescriptor() != null) {
             PDRectangle bbox = getFontDescriptor().getFontBoundingBox();
