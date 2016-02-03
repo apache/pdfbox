@@ -411,14 +411,15 @@ public class PDCIDFontType0 extends PDCIDFont
     @Override
     public float getHeight(int code) throws IOException
     {
-        int cid = codeToCID(code);
+        if (glyphHeights.containsKey(code))
+        {
+            return glyphHeights.get(code);
+        }
 
         float height = 0;
-        if (!glyphHeights.containsKey(cid))
-        {
-            height =  (float) getType2CharString(cid).getBounds().getHeight();
-            glyphHeights.put(cid, height);
-        }
+        int cid = codeToCID(code);
+        height =  (float) getType2CharString(cid).getBounds().getHeight();
+        glyphHeights.put(code, height);
         return height;
     }
 

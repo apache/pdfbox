@@ -152,6 +152,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
     private final TrueTypeFont ttf;
     private final boolean isEmbedded;
     private final boolean isDamaged;
+    private final Map<Integer, Float> glyphHeights = new HashMap<Integer, Float>();
 
     /**
      * Creates a new TrueType font from a Font dictionary.
@@ -339,13 +340,43 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
     @Override
     public float getHeight(int code) throws IOException
     {
-        int gid = codeToGID(code);
-        GlyphData glyph = ttf.getGlyph().getGlyph(gid);
-        if (glyph != null)
+        if (glyphHeights.containsKey(code))
         {
-            return glyph.getBoundingBox().getHeight();
+            return glyphHeights.get(code);
         }
-        return 0;
+
+        float height = 0;
+        String name = codeToName(code);
+        int gid = ttf.nameToGID(name);
+        gid = (gid == 0) ? codeToGID(code) : gid;
+
+        GlyphData glyph = ttf.getGlyph().getGlyph(gid);
+        if (glyph == null)
+        {
+            glyphHeights.put(code, height);
+            return height;
+        }
+        if (glyph.getPath() != null)
+        {
+            height = (float) glyph.getPath().getBounds().getHeight();
+        }
+        if (height == 0)
+        {
+            height = (float) glyph.getBoundingBox().getHeight();
+        }
+
+        float unitsPerEM = ttf.getUnitsPerEm();
+        if (unitsPerEM != 1000)
+        {
+            height *= 1000f / unitsPerEM;
+        }
+        glyphHeights.put(code, height);
+        return height;
+    }
+
+    public String codeToName(int code)
+    {
+        return getEncoding().getName(code);
     }
 
     @Override

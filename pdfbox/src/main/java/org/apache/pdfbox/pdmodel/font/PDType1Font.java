@@ -94,6 +94,7 @@ public class PDType1Font extends PDSimpleFont
     private final boolean isDamaged;
     private Matrix fontMatrix;
     private final AffineTransform fontMatrixTransform;
+    private final Map<Integer, Float> glyphHeights = new HashMap<Integer, Float>();
 
     /**
      * Creates a Type 1 standard 14 font for embedding.
@@ -322,17 +323,29 @@ public class PDType1Font extends PDSimpleFont
     @Override
     public float getHeight(int code) throws IOException
     {
-        String name = codeToName(code);
+        if (glyphHeights.containsKey(code))
+        {
+            return glyphHeights.get(code);
+        }
+        float height = 0;
         if (getStandard14AFM() != null)
         {
             String afmName = getEncoding().getName(code);
-            return getStandard14AFM().getCharacterHeight(afmName); // todo: isn't this the y-advance, not the height?
+            height = getStandard14AFM().getCharacterHeight(afmName); // todo: isn't this the y-advance, not the height?
         }
         else
         {
+            String name = codeToName(code);
             // todo: should be scaled by font matrix
-            return (float) genericFont.getPath(name).getBounds().getHeight();
+            height = (float) genericFont.getPath(name).getBounds().getHeight();
+            if(height == 0)
+            {
+                height = genericFont.getFontBBox().getHeight();
+            }
         }
+
+        glyphHeights.put(code, height);
+        return glyphHeights.get(code);
     }
 
     @Override
