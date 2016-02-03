@@ -33,9 +33,7 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
 import java.awt.image.Raster;
-import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -828,12 +826,18 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     private BufferedImage applyTransferFunction(BufferedImage image, COSBase transfer) throws IOException
     {
-        // Deep copy http://stackoverflow.com/a/26894825/535646
-        ColorModel cm = image.getColorModel();
-        boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
-        WritableRaster raster = image.copyData(image.getRaster().createCompatibleWritableRaster());
-        BufferedImage bim = new BufferedImage(cm, raster, isAlphaPremultiplied, null);
+        BufferedImage bim;
+        if (image.getColorModel().hasAlpha())
+        {
+            bim = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        }
+        else
+        {
+            bim = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
+        }
 
+        // prepare transfer functions (either one per color or one for all) 
+        // and maps (actually arrays[256] to be faster) to avoid calculating values several times
         Integer rMap[], gMap[], bMap[];
         PDFunction rf, gf, bf;
         if (transfer instanceof COSArray)
@@ -848,9 +852,15 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
         else
         {
-            rf = gf = bf = PDFunction.create(transfer);
-            rMap = gMap = bMap = new Integer[256];
+            rf = PDFunction.create(transfer);
+            gf = rf;
+            bf = rf;
+            rMap = new Integer[256];
+            gMap = rMap;
+            bMap = rMap;
         }
+
+        // apply the transfer function to each color, but keep alpha
         float input[] = new float[1];
         for (int x = 0; x < image.getWidth(); ++x)
         {
