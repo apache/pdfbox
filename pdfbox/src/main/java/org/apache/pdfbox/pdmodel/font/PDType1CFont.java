@@ -64,6 +64,7 @@ public class PDType1CFont extends PDSimpleFont
     private final FontBoxFont genericFont; // embedded or system font for rendering
     private final boolean isEmbedded;
     private final boolean isDamaged;
+    private BoundingBox fontBBox;
 
     /**
      * Constructor.
@@ -184,6 +185,15 @@ public class PDType1CFont extends PDSimpleFont
 
     @Override
     public BoundingBox getBoundingBox() throws IOException
+    {
+        if (fontBBox == null)
+        {
+            fontBBox = generateBoundingBox();
+        }
+        return fontBBox;
+    }
+
+    private BoundingBox generateBoundingBox() throws IOException
     {
         if (getFontDescriptor() != null) {
             PDRectangle bbox = getFontDescriptor().getFontBoundingBox();

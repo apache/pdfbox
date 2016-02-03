@@ -656,9 +656,12 @@ final class FontMapperImpl implements FontMapper
             {
                 return true;
             }
-            else return cidSystemInfo.getOrdering().equals("Korea1") &&
+            else
+            {
+                return cidSystemInfo.getOrdering().equals("Korea1") &&
                         (codePageRange & KOREAN_WANSUNG) == KOREAN_WANSUNG ||
                         (codePageRange & KOREAN_JOHAB) == KOREAN_JOHAB;
+            }
         }
     }
 

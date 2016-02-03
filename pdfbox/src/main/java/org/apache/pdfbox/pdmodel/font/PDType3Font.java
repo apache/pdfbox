@@ -261,10 +261,15 @@ public class PDType3Font extends PDSimpleFont
     @Override
     public BoundingBox getBoundingBox()
     {
-        if (fontBBox != null)
+        if (fontBBox == null)
         {
-            return fontBBox;
+            fontBBox = generateBoundingBox();
         }
+        return fontBBox;
+    }
+
+    private BoundingBox generateBoundingBox()
+    {
         PDRectangle rect = getFontBBox();
         if (rect.getLowerLeftX() == 0 && rect.getLowerLeftY() == 0
                 && rect.getUpperRightX() == 0 && rect.getUpperRightY() == 0)
@@ -296,9 +301,8 @@ public class PDType3Font extends PDSimpleFont
                 }
             }
         }
-        fontBBox = new BoundingBox(rect.getLowerLeftX(), rect.getLowerLeftY(),
+        return new BoundingBox(rect.getLowerLeftX(), rect.getLowerLeftY(),
                 rect.getUpperRightX(), rect.getUpperRightY());
-        return fontBBox;
     }
 
     /**

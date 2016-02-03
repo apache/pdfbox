@@ -445,6 +445,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     @Override
     public BoundingBox getBoundingBox() throws IOException
     {
+        // Will be cached by underlying font
         return descendantFont.getBoundingBox();
     }
 
