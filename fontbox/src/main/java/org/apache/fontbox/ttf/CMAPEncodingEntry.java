@@ -315,6 +315,11 @@ public class CMAPEncodingEntry
     {
         int firstCode = data.readUnsignedShort();
         int entryCount = data.readUnsignedShort();
+        // skip emtpy tables
+        if (entryCount == 0)
+        {
+            return;
+        }
         Map<Integer, Integer> tmpGlyphToChar = new HashMap<Integer, Integer>();
         int[] glyphIdArray = data.readUnsignedShortArray(entryCount);
         for (int i = 0; i < entryCount; i++)
