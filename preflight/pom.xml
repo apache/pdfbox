@@ -192,7 +192,7 @@
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<scope>compile</scope>
+			<scope>test</scope>
 		</dependency>
 		<!-- TODO find a suitable place to store the isator test pdfs <dependency> 
 			<groupId>org.pdfa</groupId> <artifactId>isartor</artifactId> <version>1.0-20080813</version> 
