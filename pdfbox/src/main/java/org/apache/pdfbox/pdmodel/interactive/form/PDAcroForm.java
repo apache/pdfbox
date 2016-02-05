@@ -210,7 +210,7 @@ public final class PDAcroForm implements COSObjectable
     	// refresh the appearances if set
     	if (refreshAppearances)
     	{
-    		refreshAppearances();
+    		refreshAppearances(fields);
     	}
     	
         // indicates if the original content stream
