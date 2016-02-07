@@ -286,8 +286,8 @@ public class PDCIDFontType2 extends PDCIDFont
             // encoding specified by the predefined CMap to one of the encodings in the TrueType
             // font's 'cmap' table. The means by which this is accomplished are implementation-
             // dependent.
-            
-            if (cid2gid != null)
+            // omit the CID2GID mapping if the embedded font is replaced by an external font
+            if (cid2gid != null && !isDamaged)
             {
                 // Acrobat allows non-embedded GIDs - todo: can we find a test PDF for this?
                 LOG.warn("Using non-embedded GIDs in font " + getName());
