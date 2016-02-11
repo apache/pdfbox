@@ -89,6 +89,27 @@
 					</instructions>
 				</configuration>
 			</plugin>
+                        <plugin>
+                            <groupId>com.googlecode.maven-download-plugin</groupId>
+                            <artifactId>download-maven-plugin</artifactId>
+                            <version>1.2.1</version>
+                            <executions>
+                                <execution>
+                                    <id>get-isartor</id>
+                                    <phase>generate-test-resources</phase>
+                                    <goals>
+                                        <goal>wget</goal>
+                                    </goals>
+                                    <configuration>
+                                        <url>http://www.pdfa.org/wp-content/uploads/2011/08/isartor-pdfa-2008-08-13.zip</url>
+                                        <unpack>true</unpack>
+                                        <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                                        <md5>9f129c834bc6f9f8dabad4491c4c10ec</md5>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+                        
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>javacc-maven-plugin</artifactId>
@@ -170,7 +191,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.8.1</version>
+			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
