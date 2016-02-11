@@ -237,13 +237,18 @@ public class PDFStreamEngine
             }
             finally
             {
-                streamResourcesStack.pop().clear();
+                clearAfterProcessSubStream();
             }
         }
         else
         {
             processSubStream(cosStream);
         }
+    }
+
+    protected void clearAfterProcessSubStream()
+    {
+        streamResourcesStack.pop().clear();
     }
 
     private void processSubStream(COSStream cosStream) throws IOException 
