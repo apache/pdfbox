@@ -26,6 +26,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -466,6 +467,20 @@ public abstract class SecurityHandler
         if (COSName.XREF.equals(type))
         {
             return;
+        }
+        if (COSName.METADATA.equals(type))
+        {
+            // PDFBOX-3229 check case where metadata is not encrypted despite /EncryptMetadata missing
+            InputStream is = stream.getFilteredStream();
+            byte buf[] = new byte[10];
+            is.read(buf);
+            is.close();
+            if (Arrays.equals(buf, "<?xpacket ".getBytes("ISO_8859_1")))
+            {
+                LOG.warn("Metadata is not encrypted, but was expected to be");
+                LOG.warn("Read PDF specification about EncryptMetadata (default value: true)");
+                return;
+            }
         }
         decryptDictionary(stream, objNum, genNum);
         InputStream encryptedStream = stream.getFilteredStream();
