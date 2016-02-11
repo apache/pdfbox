@@ -391,4 +391,13 @@ public class ContentStreamWrapper extends ContentStreamEngine
             }
         }
     }
+    
+    @Override
+    protected void clearAfterProcessSubStream()
+    {
+        super.clearAfterProcessSubStream();
+
+        // PDFBOX-3024: delete all font containers because their fonts have been cleared
+        context.clearFontContainers();
+    }
 }
