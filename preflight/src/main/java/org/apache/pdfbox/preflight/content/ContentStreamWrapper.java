@@ -62,8 +62,7 @@ public class ContentStreamWrapper extends ContentStreamEngine
     /**
      * Process the validation of a PageContent (The page is initialized by the constructor)
      * 
-     * @return A list of validation error. This list is empty if the validation succeed.
-     * @throws ValidationException.
+     * @throws ValidationException
      */
     public void validPageContentStream() throws ValidationException
     {
@@ -89,7 +88,6 @@ public class ContentStreamWrapper extends ContentStreamEngine
      * Process the validation of a XObject Form
      * 
      * @param xobj
-     * @return A list of validation error. This list is empty if the validation succeed.
      * @throws ValidationException
      */
     public void validXObjContentStream(PDXObjectForm xobj) throws ValidationException
@@ -118,7 +116,6 @@ public class ContentStreamWrapper extends ContentStreamEngine
      * Process the validation of a Tiling Pattern
      * 
      * @param pattern
-     * @return A list of validation error. This list is empty if the validation succeed.
      * @throws ValidationException
      */
     public void validPatternContentStream(COSStream pattern) throws ValidationException
@@ -160,7 +157,7 @@ public class ContentStreamWrapper extends ContentStreamEngine
          * exception)
          */
         String operation = operator.getOperation();
-        OperatorProcessor processor = (OperatorProcessor) contentStreamEngineOperators.get(operation);
+        OperatorProcessor processor = contentStreamEngineOperators.get(operation);
         if (processor != null)
         {
             processor.setContext(this);
@@ -357,6 +354,9 @@ public class ContentStreamWrapper extends ContentStreamEngine
             // font already computed
             return;
         }
+        
+        // font may already have been cleared, so we have to reassign it
+        fontContainer.setFont(font);
 
         int codeLength = 1;
         for (int i = 0; i < string.length; i += codeLength)
