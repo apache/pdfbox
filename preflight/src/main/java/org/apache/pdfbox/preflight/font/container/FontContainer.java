@@ -59,6 +59,11 @@ public abstract class FontContainer
         this.font = font;
     }
 
+    public void setFont(PDFont font)
+    {
+        this.font = font;
+    }
+
     public void push(ValidationError error)
     {
         this.errorBuffer.add(error);
