@@ -197,14 +197,6 @@ public class PreflightContext implements Closeable
     }
 
     /**
-     * Empty the font container map.
-     */
-    public void clearFontContainers()
-    {
-        this.fontContainers.clear();
-    }
-
-    /**
      * @return the iccProfileWrapper
      */
     public ICCProfileWrapper getIccProfileWrapper()
