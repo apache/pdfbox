@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.digitalsignature;
 
+import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -80,7 +81,7 @@ public class PDPropBuildDataDict implements COSObjectable
      */
     public String getName()
     {
-        return dictionary.getString(COSName.NAME);
+        return dictionary.getNameAsString(COSName.NAME);
     }
 
     /**
@@ -95,6 +96,9 @@ public class PDPropBuildDataDict implements COSObjectable
 
     /**
      * The build date of the software module.
+     * This string is normally produced by the compiler that is used to compile the software,
+     * for example using the Date and Time preprocessor flags. As such, this not likely
+     * to be in PDF Date format.
      *
      * @return the build date of the software module
      */
@@ -105,13 +109,41 @@ public class PDPropBuildDataDict implements COSObjectable
 
     /**
      * The build date of the software module. This string is normally produced by the
-     * compiler under C++.
+     * compiler.
      *
      * @param date is the build date of the software module
      */
     public void setDate(String date)
     {
         dictionary.setString(COSName.DATE, date);
+    }
+
+    /**
+     * A text string indicating the version of the application implementation, as described by the
+     * <code>Name</code> attribute in this dictionary. When set by Adobe Acrobat, this entry is in
+     * the format: major.minor.micro (for example 7.0.7).
+     * <p>
+     * NOTE: Version value is specific for build data dictionary when used as the <code>App</code>
+     * dictionary in a build properties dictionary.
+     * </p>
+     *
+     * @param applicationVersion the application implementation version
+     */
+    public void setVersion(String applicationVersion)
+    {
+        dictionary.setString("REx", applicationVersion);
+    }
+
+    /**
+     * A text string indicating the version of the application implementation, as described by the
+     * <code>/Name</code> attribute in this dictionary. When set by Adobe Acrobat, this entry is in
+     * the format: major.minor.micro (for example 7.0.7).
+     *
+     * @return the application implementation version
+     */
+    public String getVersion()
+    {
+        return dictionary.getString("REx");
     }
 
     /**
@@ -135,8 +167,11 @@ public class PDPropBuildDataDict implements COSObjectable
     }
 
     /**
-     * The software module revision number, used to determinate the minimum version
-     * of software that is required in order to process this signature.
+     * The software module revision number, used to determinate the minimum version of software that
+     * is required in order to process this signature.
+     * <p>
+     * NOTE: this entry is deprecated for PDF v1.7
+     * </p>
      *
      * @return the revision of the software module
      */
@@ -146,8 +181,11 @@ public class PDPropBuildDataDict implements COSObjectable
     }
 
     /**
-     * The software module revision number, used to determinate the minimum version
-     * of software that is required in order to process this signature.
+     * The software module revision number, used to determinate the minimum version of software that
+     * is required in order to process this signature.
+     * <p>
+     * NOTE: this entry is deprecated for PDF v1.7
+     * </p>
      *
      * @param revision is the software module revision number
      */
@@ -180,23 +218,52 @@ public class PDPropBuildDataDict implements COSObjectable
     }
 
     /**
-     * Indicates the operation system. The format isn't specified yet.
+     * Indicates the operating system. The string format isn't specified yet. In its PDF Signature
+     * Build Dictionary Specifications Adobe differently specifies the value type to store operating
+     * system string:<ul>
+     * <li>Specification for PDF v1.5 specifies type as string;</li>
+     * <li>Specification for PDF v1.7 specifies type as array and provided example for
+     * <code>/PropBuild</code> dictionary indicate it as array of names.</li>
+     * </ul>
+     * This method supports both types to retrieve the value.
      *
-     * @return a the operation system id or name.
+     * @return the operating system id or name.
      */
     public String getOS()
     {
+        final COSBase cosBase = dictionary.getItem(COSName.OS);
+        if (cosBase instanceof COSArray)
+        {
+            return ((COSArray) cosBase).getName(0);
+        }
+        // PDF v1.5 style
         return dictionary.getString(COSName.OS);
     }
 
     /**
-     * Indicates the operation system. The format isn't specified yet.
+     * Indicates the operating system. The string format isn't specified yet. Value will be stored
+     * as first item of the array, as specified in PDF Signature Build Dictionary Specification for
+     * PDF v1.7.
      *
      * @param os is a string with the system id or name.
      */
     public void setOS(String os)
     {
-        dictionary.setString(COSName.OS, os);
+        if (os == null)
+        {
+            dictionary.removeItem(COSName.OS);
+        }
+        else
+        {
+            COSBase osArray = dictionary.getItem(COSName.OS);
+            if (!(osArray instanceof COSArray))
+            {
+                osArray = new COSArray();
+                osArray.setDirect(true);
+                dictionary.setItem(COSName.OS, osArray);
+            }
+            ((COSArray) osArray).add(0, COSName.getPDFName(os));
+        }
     }
 
     /**
