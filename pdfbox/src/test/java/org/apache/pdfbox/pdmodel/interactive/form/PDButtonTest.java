@@ -61,7 +61,7 @@ public class PDButtonTest
     @Test
     public void createCheckBox()
     {
-        PDButton buttonField = new PDCheckbox(acroForm);
+        PDButton buttonField = new PDCheckBox(acroForm);
         
         assertEquals(buttonField.getFieldType(), buttonField.getCOSObject().getNameAsString(COSName.FT));
         assertEquals(buttonField.getFieldType(), "Btn");
@@ -94,7 +94,7 @@ public class PDButtonTest
     @Test
     public void retrieveAcrobatCheckBoxProperties() throws IOException
     {
-        PDCheckbox checkbox = (PDCheckbox) acrobatAcroForm.getField("Checkbox");
+        PDCheckBox checkbox = (PDCheckBox) acrobatAcroForm.getField("Checkbox");
         assertNotNull(checkbox);
         assertEquals(checkbox.getOnValue(), "Yes");
         assertEquals(checkbox.getOnValues().size(), 1);
@@ -104,7 +104,7 @@ public class PDButtonTest
     @Test
     public void testAcrobatCheckBoxProperties() throws IOException
     {
-        PDCheckbox checkbox = (PDCheckbox) acrobatAcroForm.getField("Checkbox");
+        PDCheckBox checkbox = (PDCheckBox) acrobatAcroForm.getField("Checkbox");
         assertEquals(checkbox.getValue(), "");
         assertEquals(checkbox.isChecked(), false);
 
@@ -122,7 +122,7 @@ public class PDButtonTest
         assertEquals(checkbox.isChecked(), false);
         assertEquals(checkbox.getCOSObject().getDictionaryObject(COSName.AS), COSName.Off);
 
-        checkbox = (PDCheckbox) acrobatAcroForm.getField("Checkbox-DefaultValue");
+        checkbox = (PDCheckBox) acrobatAcroForm.getField("Checkbox-DefaultValue");
         assertEquals(checkbox.getDefaultValue(), checkbox.getOnValue());
         
         checkbox.setDefaultValue("Off");
@@ -135,20 +135,20 @@ public class PDButtonTest
         PDField checkbox = acrobatAcroForm.getField("Checkbox");
 
         checkbox.setValue("Yes");
-        assertEquals(checkbox.getValueAsString(), ((PDCheckbox) checkbox).getOnValue());
-        assertEquals(((PDCheckbox) checkbox).isChecked(), true);
+        assertEquals(checkbox.getValueAsString(), ((PDCheckBox) checkbox).getOnValue());
+        assertEquals(((PDCheckBox) checkbox).isChecked(), true);
         assertEquals(checkbox.getCOSObject().getDictionaryObject(COSName.AS), COSName.YES);
 
         checkbox.setValue("Off");
         assertEquals(checkbox.getValueAsString(), COSName.Off.getName());
-        assertEquals(((PDCheckbox) checkbox).isChecked(), false);
+        assertEquals(((PDCheckBox) checkbox).isChecked(), false);
         assertEquals(checkbox.getCOSObject().getDictionaryObject(COSName.AS), COSName.Off);
     }
     
     @Test
     public void testAcrobatCheckBoxGroupProperties() throws IOException
     {
-        PDCheckbox checkbox = (PDCheckbox) acrobatAcroForm.getField("CheckboxGroup");
+        PDCheckBox checkbox = (PDCheckBox) acrobatAcroForm.getField("CheckboxGroup");
         assertEquals(checkbox.getValue(), "");
         assertEquals(checkbox.isChecked(), false);
 
@@ -219,7 +219,7 @@ public class PDButtonTest
     @Test(expected=IllegalArgumentException.class)
     public void setCheckboxInvalidValue() throws IOException
     {
-        PDCheckbox checkbox = (PDCheckbox) acrobatAcroForm.getField("Checkbox");
+        PDCheckBox checkbox = (PDCheckBox) acrobatAcroForm.getField("Checkbox");
         // Set a value which doesn't match the radio button list 
         checkbox.setValue("InvalidValue");
     }    
@@ -227,7 +227,7 @@ public class PDButtonTest
     @Test(expected=IllegalArgumentException.class)
     public void setCheckboxGroupInvalidValue() throws IOException
     {
-        PDCheckbox checkbox = (PDCheckbox) acrobatAcroForm.getField("CheckboxGroup");
+        PDCheckBox checkbox = (PDCheckBox) acrobatAcroForm.getField("CheckboxGroup");
         // Set a value which doesn't match the radio button list 
         checkbox.setValue("InvalidValue");
     }    

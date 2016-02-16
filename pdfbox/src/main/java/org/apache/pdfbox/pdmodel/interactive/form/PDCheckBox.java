@@ -31,14 +31,14 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceEntry;
  * @author Ben Litchfield
  * @author sug
  */
-public final class PDCheckbox extends PDButton
+public final class PDCheckBox extends PDButton
 {
     /**
      * @see PDField#PDField(PDAcroForm)
      *
      * @param acroForm The acroform.
      */
-    public PDCheckbox(PDAcroForm acroForm)
+    public PDCheckBox(PDAcroForm acroForm)
     {
         super(acroForm);
     }
@@ -50,7 +50,7 @@ public final class PDCheckbox extends PDButton
      * @param field the PDF object to represent as a field.
      * @param parent the parent node of the node
      */
-    PDCheckbox(PDAcroForm acroForm, COSDictionary field, PDNonTerminalField parent)
+    PDCheckBox(PDAcroForm acroForm, COSDictionary field, PDNonTerminalField parent)
     {
         super(acroForm, field, parent);
     }
