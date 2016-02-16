@@ -104,7 +104,7 @@ final class PDFieldFactory
         }
         else
         {
-            return new PDCheckbox(form, field, parent);
+            return new PDCheckBox(form, field, parent);
         }
     }
 
