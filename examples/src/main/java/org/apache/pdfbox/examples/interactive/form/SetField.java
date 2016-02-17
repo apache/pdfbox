@@ -21,7 +21,7 @@ import java.io.IOException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
-import org.apache.pdfbox.pdmodel.interactive.form.PDCheckbox;
+import org.apache.pdfbox.pdmodel.interactive.form.PDCheckBox;
 import org.apache.pdfbox.pdmodel.interactive.form.PDComboBox;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDListBox;
@@ -52,7 +52,7 @@ public class SetField
         PDField field = acroForm.getField(name);
         if (field != null)
         {
-            if (field instanceof PDCheckbox)
+            if (field instanceof PDCheckBox)
             {
                 field.setValue("Yes");
             }
