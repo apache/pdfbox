@@ -96,9 +96,6 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
      * 
      * @param pdcs
      *            the color space object to check.
-     * @param result
-     *            the list of error to update if the validation fails.
-     * @return true if the validation succeed, false otherwise.
      */
     protected final void processAllColorSpace(PDColorSpace pdcs)
     {
@@ -107,11 +104,11 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
         switch (cs)
         {
         case DeviceRGB:
-        case DeviceRGB_SHORT:
+        case RGB:
             processRGBColorSpace(pdcs);
             break;
         case DeviceCMYK:
-        case DeviceCMYK_SHORT:
+        case CMYK:
             processCYMKColorSpace(pdcs);
             break;
         case CalRGB:
@@ -120,7 +117,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
             processCalibratedColorSpace(pdcs);
             break;
         case DeviceGray:
-        case DeviceGray_SHORT:
+        case G:
             processGrayColorSpace(pdcs);
             break;
         case ICCBased:
@@ -130,7 +127,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
             processDeviceNColorSpace(pdcs);
             break;
         case Indexed:
-        case Indexed_SHORT:
+        case I:
             processIndexedColorSpace(pdcs);
             break;
         case Separation:
@@ -353,7 +350,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
         {
             PDColorSpace based = indexed.getBaseColorSpace();
             ColorSpaces cs = ColorSpaces.valueOf(based.getName());
-            if (cs == ColorSpaces.Indexed || cs == ColorSpaces.Indexed_SHORT)
+            if (cs == ColorSpaces.Indexed || cs == ColorSpaces.I)
             {
                 context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_INDEXED,
                         "Indexed color space can't be used as Base color space"));
@@ -398,7 +395,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
                 case DeviceN:
                 case Pattern:
                 case Indexed:
-                case Indexed_SHORT:
+                case I:
                     context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_ALTERNATE, acs
                             .getLabel() + " color space can't be used as alternate color space"));
                     break;

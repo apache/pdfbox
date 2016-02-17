@@ -341,7 +341,7 @@ public abstract class ContentStreamEngine extends PDFStreamEngine
 
                 if (cs == null)
                 {
-                    registerError("The ColorSpace is unknown", ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY);
+                    registerError("The ColorSpace " + colorSpace + " is unknown", ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY);
                     return;
                 }
             }
@@ -597,7 +597,7 @@ public abstract class ContentStreamEngine extends PDFStreamEngine
 
         if (cs == null)
         {
-            registerError("The ColorSpace is unknown", ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY);
+            registerError("The ColorSpace " + colorSpaceName + " is unknown", ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY);
             return;
         }
 
