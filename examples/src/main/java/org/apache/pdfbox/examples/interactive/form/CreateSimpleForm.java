@@ -83,6 +83,7 @@ public final class CreateSimpleForm
         PDAnnotationWidget widget = textBox.getWidgets().get(0);
         PDRectangle rect = new PDRectangle(50, 750, 200, 50);
         widget.setRectangle(rect);
+        widget.setPage(page);
         
         // Add the annotation to the page
         page.getAnnotations().add(widget);
