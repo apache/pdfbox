@@ -29,9 +29,9 @@ package org.apache.pdfbox.preflight.graphic;
 public enum ColorSpaces
 {
 
-    Lab("Lab"), CalRGB("CalRGB"), CalGray("CalGray"), DeviceN("DeviceN"), Indexed("Indexed"), Indexed_SHORT("I"), Pattern(
-            "Pattern"), ICCBased("ICCBased"), DeviceRGB("DeviceRGB"), DeviceRGB_SHORT("RGB"), DeviceGray("DeviceGray"), DeviceGray_SHORT(
-            "G"), DeviceCMYK("DeviceCMYK"), DeviceCMYK_SHORT("CMYK"), Separation("Separation");
+    Lab("Lab"), CalRGB("CalRGB"), CalGray("CalGray"), DeviceN("DeviceN"), Indexed("Indexed"), I("I"), Pattern(
+            "Pattern"), ICCBased("ICCBased"), DeviceRGB("DeviceRGB"), RGB("RGB"), DeviceGray("DeviceGray"), G(
+            "G"), DeviceCMYK("DeviceCMYK"), CMYK("CMYK"), Separation("Separation");
 
     /**
      * Name of the ColorSpace
