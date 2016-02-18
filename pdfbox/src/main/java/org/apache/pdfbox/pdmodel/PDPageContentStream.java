@@ -968,7 +968,7 @@ public final class PDPageContentStream implements Closeable
             else
             {
                 strokingColorSpaceStack.setElementAt(color.getColorSpace(),
-                        nonStrokingColorSpaceStack.size() - 1);
+                        strokingColorSpaceStack.size() - 1);
             }
         }
 
