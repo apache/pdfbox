@@ -217,6 +217,7 @@ final class ASCII85OutputStream extends FilterOutputStream
             out.write(NEWLINE);
         }
         out.write(terminator);
+        out.write('>');
         out.write(NEWLINE);
         count = 0;
         lineBreak = maxline;
