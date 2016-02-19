@@ -290,26 +290,32 @@ public final class StandardSecurityHandler extends SecurityHandler
     }
 
     // Algorithm 13: validate permissions ("Perms" field). Relaxed to accomodate buggy encoders
+    // https://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/adobe_supplement_iso32000.pdf
     private void validatePerms(PDEncryption encryption, int dicPermissions, boolean encryptMetadata) throws IOException
     {
         try
         {
+            // "Decrypt the 16-byte Perms string using AES-256 in ECB mode with an 
+            // initialization vector of zero and the file encryption key as the key."
             Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
             cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(encryptionKey, "AES"));
             byte[] perms = cipher.doFinal(encryption.getPerms());
             
+            // "Verify that bytes 9-11 of the result are the characters ‘a’, ‘d’, ‘b’."
             if (perms[9] != 'a' || perms[10] != 'd' || perms[11] != 'b')
             {
                 LOG.warn("Verification of permissions failed (constant)");
             }
             
+            // "Bytes 0-3 of the decrypted Perms entry, treated as a little-endian integer, 
+            // are the user permissions. They should match the value in the P key."
             int permsP = perms[0] & 0xFF | (perms[1] & 0xFF) << 8 | (perms[2] & 0xFF) << 16 |
                     (perms[3] & 0xFF) << 24;
             
             if (permsP != dicPermissions)
             {
-                LOG.warn("Verification of permissions failed (" + permsP +
-                        " != " + dicPermissions + ")");
+                LOG.warn("Verification of permissions failed (" + String.format("%08X",permsP) +
+                        " != " + String.format("%08X",dicPermissions) + ")");
             }
             
             if (encryptMetadata && perms[8] != 'T' || !encryptMetadata && perms[8] != 'F')
