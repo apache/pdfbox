@@ -53,6 +53,8 @@ public class COSDocument extends COSBase implements Closeable
 
     private float version = 1.4f;
 
+    private String originalHeaderString = null;
+
     /**
      * Maps ObjectKeys to a COSObject. Note that references to these objects
      * are also stored in COSDictionary objects that map a name to a specific object.
@@ -87,7 +89,7 @@ public class COSDocument extends COSBase implements Closeable
 
     private boolean warnMissingClose = true;
     
-    /** signal that document is already decrypted, e.g. with {@link NonSequentialPDFParser} */
+    /** signal that document is already decrypted, e.g. with {@link org.apache.pdfbox.pdfparser.NonSequentialPDFParser} */
     private boolean isDecrypted = false;
     
     private long startXref;
@@ -334,7 +336,7 @@ public class COSDocument extends COSBase implements Closeable
     }
 
     /**
-     * This will set the version of this PDF document.
+     * This will set the version of this PDF document and update the header string.
      *
      * @param versionValue The version of the PDF document.
      */
@@ -653,7 +655,8 @@ public class COSDocument extends COSBase implements Closeable
     }
 
     /**
-     * @return Returns the headerString.
+     * @return Returns the current headerString. (It may have been updated by calls to 
+     * {@link #setVersion(float) })
      */
     public String getHeaderString()
     {
@@ -665,6 +668,21 @@ public class COSDocument extends COSBase implements Closeable
     public void setHeaderString(String header)
     {
         headerString = header;
+        if (originalHeaderString != null)
+        {
+            originalHeaderString = header;
+        }
+    }
+
+    /**
+     * Get the original headerString from the PDF file. Unlike {@link #getHeaderString()}, the
+     * value is not changed by files that have another header value in the document catalog.
+     *
+     * @return the original header string.
+     */
+    public String getOriginalHeaderString()
+    {
+        return originalHeaderString;
     }
 
     /**
