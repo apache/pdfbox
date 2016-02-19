@@ -303,8 +303,8 @@ public final class StandardSecurityHandler extends SecurityHandler
                 LOG.warn("Verification of permissions failed (constant)");
             }
             
-            int permsP = perms[0] & 0xFF | perms[1] & 0xFF << 8 | perms[2] & 0xFF << 16 |
-                    perms[3] & 0xFF << 24;
+            int permsP = perms[0] & 0xFF | (perms[1] & 0xFF) << 8 | (perms[2] & 0xFF) << 16 |
+                    (perms[3] & 0xFF) << 24;
             
             if (permsP != dicPermissions)
             {
