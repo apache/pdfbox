@@ -486,7 +486,7 @@ public final class PDAcroForm implements COSObjectable
         COSDictionary dr = (COSDictionary) dictionary.getDictionaryObject(COSName.DR);
         if (dr != null)
         {
-            retval = new PDResources(dr);
+            retval = new PDResources(dr, document.getResourceCache());
         }
         return retval;
     }
