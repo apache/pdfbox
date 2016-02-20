@@ -900,15 +900,7 @@ public final class PDPageContentStream implements Closeable
     @Deprecated
     public void setStrokingColorSpace(PDColorSpace colorSpace) throws IOException
     {
-        if (strokingColorSpaceStack.isEmpty())
-        {
-            strokingColorSpaceStack.add(colorSpace);
-        }
-        else
-        {
-            strokingColorSpaceStack.setElementAt(colorSpace, strokingColorSpaceStack.size() - 1);
-        }
-
+        setStrokingColorSpaceStack(colorSpace);
         writeOperand(getName(colorSpace));
         writeOperator("CS");
     }
@@ -924,15 +916,7 @@ public final class PDPageContentStream implements Closeable
     @Deprecated
     public void setNonStrokingColorSpace(PDColorSpace colorSpace) throws IOException
     {
-        if (nonStrokingColorSpaceStack.isEmpty())
-        {
-            nonStrokingColorSpaceStack.add(colorSpace);
-        }
-        else
-        {
-            nonStrokingColorSpaceStack.setElementAt(colorSpace, nonStrokingColorSpaceStack.size() - 1);
-        }
-
+        setNonStrokingColorSpaceStack(colorSpace);
         writeOperand(getName(colorSpace));
         writeOperator("cs");
     }
@@ -964,16 +948,7 @@ public final class PDPageContentStream implements Closeable
         {
             writeOperand(getName(color.getColorSpace()));
             writeOperator("CS");
-
-            if (strokingColorSpaceStack.isEmpty())
-            {
-                strokingColorSpaceStack.add(color.getColorSpace());
-            }
-            else
-            {
-                strokingColorSpaceStack.setElementAt(color.getColorSpace(),
-                        strokingColorSpaceStack.size() - 1);
-            }
+            setStrokingColorSpaceStack(color.getColorSpace());
         }
 
         for (float value : color.getComponents())
@@ -1067,6 +1042,7 @@ public final class PDPageContentStream implements Closeable
         writeOperand(g / 255f);
         writeOperand(b / 255f);
         writeOperator("RG");
+        setStrokingColorSpaceStack(PDDeviceRGB.INSTANCE);
     }
 
     /**
@@ -1113,6 +1089,7 @@ public final class PDPageContentStream implements Closeable
         writeOperand(y);
         writeOperand(k);
         writeOperator("K");
+        setStrokingColorSpaceStack(PDDeviceCMYK.INSTANCE);
     }
 
     /**
@@ -1148,6 +1125,7 @@ public final class PDPageContentStream implements Closeable
         }
         writeOperand((float) g);
         writeOperator("G");
+        setStrokingColorSpaceStack(PDDeviceGray.INSTANCE);
     }
 
     /**
@@ -1163,16 +1141,7 @@ public final class PDPageContentStream implements Closeable
         {
             writeOperand(getName(color.getColorSpace()));
             writeOperator("cs");
-
-            if (nonStrokingColorSpaceStack.isEmpty())
-            {
-                nonStrokingColorSpaceStack.add(color.getColorSpace());
-            }
-            else
-            {
-                nonStrokingColorSpaceStack.setElementAt(color.getColorSpace(),
-                        nonStrokingColorSpaceStack.size() - 1);
-            }
+            setNonStrokingColorSpaceStack(color.getColorSpace());
         }
 
         for (float value : color.getComponents())
@@ -1266,6 +1235,7 @@ public final class PDPageContentStream implements Closeable
         writeOperand(g / 255f);
         writeOperand(b / 255f);
         writeOperator("rg");
+        setNonStrokingColorSpaceStack(PDDeviceRGB.INSTANCE);
     }
 
     /**
@@ -1309,6 +1279,7 @@ public final class PDPageContentStream implements Closeable
         writeOperand((float) y);
         writeOperand((float) k);
         writeOperator("k");
+        setNonStrokingColorSpaceStack(PDDeviceCMYK.INSTANCE);
     }
 
     /**
@@ -1342,6 +1313,7 @@ public final class PDPageContentStream implements Closeable
         }
         writeOperand((float) g);
         writeOperator("g");
+        setNonStrokingColorSpaceStack(PDDeviceGray.INSTANCE);
     }
 
     /**
@@ -2220,5 +2192,29 @@ public final class PDPageContentStream implements Closeable
     private boolean isOutsideOneInterval(double val)
     {
         return val < 0 || val > 1;
+    }
+
+    private void setStrokingColorSpaceStack(PDColorSpace colorSpace)
+    {
+        if (strokingColorSpaceStack.isEmpty())
+        {
+            strokingColorSpaceStack.add(colorSpace);
+        }
+        else
+        {
+            strokingColorSpaceStack.setElementAt(colorSpace, strokingColorSpaceStack.size() - 1);
+        }
+    }
+
+    private void setNonStrokingColorSpaceStack(PDColorSpace colorSpace)
+    {
+        if (nonStrokingColorSpaceStack.isEmpty())
+        {
+            nonStrokingColorSpaceStack.add(colorSpace);
+        }
+        else
+        {
+            nonStrokingColorSpaceStack.setElementAt(colorSpace, nonStrokingColorSpaceStack.size() - 1);
+        }
     }
 }
