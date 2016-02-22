@@ -1700,7 +1700,7 @@ public final class PDPageContentStream implements Closeable
     }
 
     /**
-     * Fills the path using the nonzero winding rule.
+     * Fills the path using the nonzero winding number rule.
      *
      * @throws IOException If the content stream could not be written
      * @throws IllegalStateException If the method was called within a text block.
@@ -1724,9 +1724,77 @@ public final class PDPageContentStream implements Closeable
     {
         if (inTextMode)
         {
-            throw new IllegalStateException("Error: fill is not allowed within a text block.");
+            throw new IllegalStateException("Error: fillEvenOdd is not allowed within a text block.");
         }
         writeOperator("f*");
+    }
+
+    /**
+     * Fill and then stroke the path, using the nonzero winding number rule to determine the region
+     * to fill. This shall produce the same result as constructing two identical path objects,
+     * painting the first with {@link #fill() } and the second with {@link #stroke() }.
+     *
+     * @throws IOException If the content stream could not be written
+     * @throws IllegalStateException If the method was called within a text block.
+     */
+    public void fillAndStroke() throws IOException
+    {
+        if (inTextMode)
+        {
+            throw new IllegalStateException("Error: fillAndStroke is not allowed within a text block.");
+        }
+        writeOperator("B");
+    }
+
+    /**
+     * Fill and then stroke the path, using the even-odd rule to determine the region to
+     * fill. This shall produce the same result as constructing two identical path objects, painting
+     * the first with {@link #fillEvenOdd() } and the second with {@link #stroke() }.
+     *
+     * @throws IOException If the content stream could not be written
+     * @throws IllegalStateException If the method was called within a text block.
+     */
+    public void fillAndStrokeEvenOdd() throws IOException
+    {
+        if (inTextMode)
+        {
+            throw new IllegalStateException("Error: fillAndStrokeEvenOdd is not allowed within a text block.");
+        }
+        writeOperator("B*");
+    }
+
+    /**
+     * Close, fill, and then stroke the path, using the nonzero winding number rule to determine the
+     * region to fill. This shall have the same effect as the sequence {@link #closePath() }
+     * and then {@link #fillAndStroke() }.
+     *
+     * @throws IOException If the content stream could not be written
+     * @throws IllegalStateException If the method was called within a text block.
+     */
+    public void closeAndFillAndStroke() throws IOException
+    {
+        if (inTextMode)
+        {
+            throw new IllegalStateException("Error: closeAndFillAndStroke is not allowed within a text block.");
+        }
+        writeOperator("b");
+    }
+
+    /**
+     * Close, fill, and then stroke the path, using the even-odd rule to determine the region to
+     * fill. This shall have the same effect as the sequence {@link #closePath() }
+     * and then {@link #fillAndStrokeEvenOdd() }.
+     *
+     * @throws IOException If the content stream could not be written
+     * @throws IllegalStateException If the method was called within a text block.
+     */
+    public void closeAndFillAndStrokeEvenOdd() throws IOException
+    {
+        if (inTextMode)
+        {
+            throw new IllegalStateException("Error: closeAndFillAndStrokeEvenOdd is not allowed within a text block.");
+        }
+        writeOperator("b*");
     }
 
     /**
