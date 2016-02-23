@@ -668,7 +668,7 @@ public class COSDocument extends COSBase implements Closeable
     public void setHeaderString(String header)
     {
         headerString = header;
-        if (originalHeaderString != null)
+        if (originalHeaderString == null)
         {
             originalHeaderString = header;
         }
