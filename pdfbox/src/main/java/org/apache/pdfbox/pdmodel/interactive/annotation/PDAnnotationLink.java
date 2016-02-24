@@ -119,7 +119,7 @@ public class PDAnnotationLink extends PDAnnotation
      */
     public PDBorderStyleDictionary getBorderStyle()
     {
-        COSBase bs = this.getCOSObject().getDictionaryObject(COSName.BS);
+        COSBase bs = getCOSObject().getDictionaryObject(COSName.BS);
         if (bs instanceof COSDictionary)
         {
             return new PDBorderStyleDictionary((COSDictionary) bs);
