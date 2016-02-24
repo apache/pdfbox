@@ -343,15 +343,12 @@ public class PDAnnotationMarkup extends PDAnnotation
      */
     public PDBorderStyleDictionary getBorderStyle()
     {
-        COSDictionary bs = (COSDictionary) this.getCOSObject().getDictionaryObject(COSName.BS);
-        if (bs != null)
+        COSBase bs = getCOSObject().getDictionaryObject(COSName.BS);
+        if (bs instanceof COSDictionary)
         {
-            return new PDBorderStyleDictionary(bs);
+            return new PDBorderStyleDictionary((COSDictionary) bs);
         }
-        else
-        {
-            return null;
-        }
+        return null;
     }
 
 }
