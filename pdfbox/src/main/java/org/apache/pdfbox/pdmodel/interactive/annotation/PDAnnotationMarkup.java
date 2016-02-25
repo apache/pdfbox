@@ -213,16 +213,20 @@ public class PDAnnotationMarkup extends PDAnnotation
     }
 
     /**
-     * This will retrieve the annotation to which this one is "In Reply To" the actual relationship is specified by the
-     * RT entry.
+     * This will retrieve the annotation to which this one is "In Reply To" the actual relationship
+     * is specified by the RT entry.
      *
-     * @return the other annotation.
-     * @throws IOException if there is an error with the annotation.
+     * @return the other annotation or null if there is none.
+     * @throws IOException if there is an error creating the other annotation.
      */
     public PDAnnotation getInReplyTo() throws IOException
     {
-        COSBase irt = getCOSObject().getDictionaryObject("IRT");
-        return PDAnnotation.createAnnotation(irt);
+        COSBase base = getCOSObject().getDictionaryObject("IRT");
+        if (base instanceof COSDictionary)
+        {
+            return PDAnnotation.createAnnotation(base);
+        }
+        return null;
     }
 
     /**
