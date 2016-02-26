@@ -57,6 +57,7 @@ public class NamingTable extends TTFTable
      * @param data The stream to read the data from.
      * @throws IOException If there is an error reading the data.
      */
+    @Override
     public void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
     {
         int formatSelector = data.readUnsignedShort();
@@ -83,11 +84,15 @@ public class NamingTable extends TTFTable
             int platform = nr.getPlatformId();
             int encoding = nr.getPlatformEncodingId();
             Charset charset = Charsets.ISO_8859_1;
-            if (platform == 3 && (encoding == 1 || encoding == 0))
+            if (platform == NameRecord.PLATFORM_WINDOWS && (encoding == NameRecord.ENCODING_WINDOWS_SYMBOL || encoding == NameRecord.ENCODING_WINDOWS_UNICODE_BMP))
             {
                 charset = Charsets.UTF_16;
             }
-            else if (platform == 2)
+            else if (platform == NameRecord.PLATFORM_UNICODE)
+            {
+                charset = Charsets.UTF_16;
+            }
+            else if (platform == NameRecord.PLATFORM_ISO)
             {
                 if (encoding == 0)
                 {
@@ -162,7 +167,7 @@ public class NamingTable extends TTFTable
     private String getEnglishName(int nameId)
     {
         // Unicode, Full, BMP, 1.1, 1.0
-        for (int i = 4; i <= 0; i--)
+        for (int i = 4; i >= 0; i--)
         {
             String nameUni =
                     getName(nameId,
