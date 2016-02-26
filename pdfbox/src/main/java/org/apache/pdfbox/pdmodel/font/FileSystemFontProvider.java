@@ -289,7 +289,7 @@ final class FileSystemFontProvider extends FontProvider
 
             for (FSFontInfo fontInfo : fontInfoList)
             {
-                writer.write(fontInfo.postScriptName);
+                writer.write(fontInfo.postScriptName.trim());
                 writer.write("|");
                 writer.write(fontInfo.format.toString());
                 writer.write("|");
@@ -370,6 +370,11 @@ final class FileSystemFontProvider extends FontProvider
                 while ((line = reader.readLine()) != null)
                 {
                     String[] parts = line.split("\\|", 10);
+                    if (parts.length < 10)
+                    {
+                        LOG.error("Incorrect line '" + line + "' in font disk cache is skipped");
+                        continue;
+                    }
 
                     String postScriptName;
                     FontFormat format;
