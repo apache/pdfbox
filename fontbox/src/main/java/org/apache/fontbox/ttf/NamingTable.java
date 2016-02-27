@@ -157,6 +157,10 @@ public class NamingTable extends TTFTable
                              NameRecord.ENCODING_WINDOWS_UNICODE_BMP,
                              NameRecord.LANGUGAE_WINDOWS_EN_US);
         }
+        if (psName != null)
+        {
+            psName = psName.trim();
+        }
 
         initialized = true;
     }
