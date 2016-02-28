@@ -79,7 +79,6 @@ public class DeviceColorSpaceHelper extends StandardColorSpaceHelper
             switch (colorSpace)
             {
             case Indexed:
-            case I:
             case Pattern:
                 context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_FORBIDDEN, colorSpace
                         .getLabel() + " ColorSpace is forbidden"));

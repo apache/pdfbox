@@ -30,7 +30,6 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDPatternResources;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 
 /**
  * This class represents a color space in a pdf document.
@@ -128,8 +127,7 @@ public final class PDColorSpaceFactory
             {
                 retval = new PDDeviceN( array );
             }
-            else if( name.equals( PDIndexed.NAME ) ||
-                   name.equals( PDIndexed.ABBREVIATED_NAME ))
+            else if( name.equals( PDIndexed.NAME ) )
             {
                 retval = new PDIndexed( array );
             }
@@ -189,24 +187,21 @@ public final class PDColorSpaceFactory
     throws IOException
     {
         PDColorSpace cs = null;
-        if( colorSpaceName.equals( PDDeviceCMYK.NAME ) ||
-                 colorSpaceName.equals( PDDeviceCMYK.ABBREVIATED_NAME ) )
+        if( colorSpaceName.equals( PDDeviceCMYK.NAME ) )
         {
             cs = PDDeviceCMYK.INSTANCE;
         }
-        else if( colorSpaceName.equals( PDDeviceRGB.NAME ) ||
-                 colorSpaceName.equals( PDDeviceRGB.ABBREVIATED_NAME ) )
+        else if( colorSpaceName.equals( PDDeviceRGB.NAME ) )
         {
             cs = PDDeviceRGB.INSTANCE;
         }
-        else if( colorSpaceName.equals( PDDeviceGray.NAME ) ||
-                 colorSpaceName.equals( PDDeviceGray.ABBREVIATED_NAME ))
+        else if( colorSpaceName.equals( PDDeviceGray.NAME ) )
         {
             cs = new PDDeviceGray();
         }
         else if( colorSpaces != null && colorSpaces.get( colorSpaceName ) != null )
         {
-            cs = (PDColorSpace)colorSpaces.get( colorSpaceName );
+            cs = colorSpaces.get( colorSpaceName );
         }
         else if( colorSpaceName.equals( PDLab.NAME ) )
         {

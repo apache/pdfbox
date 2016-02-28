@@ -104,11 +104,9 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
         switch (cs)
         {
         case DeviceRGB:
-        case RGB:
             processRGBColorSpace(pdcs);
             break;
         case DeviceCMYK:
-        case CMYK:
             processCYMKColorSpace(pdcs);
             break;
         case CalRGB:
@@ -117,7 +115,6 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
             processCalibratedColorSpace(pdcs);
             break;
         case DeviceGray:
-        case G:
             processGrayColorSpace(pdcs);
             break;
         case ICCBased:
@@ -127,7 +124,6 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
             processDeviceNColorSpace(pdcs);
             break;
         case Indexed:
-        case I:
             processIndexedColorSpace(pdcs);
             break;
         case Separation:
@@ -350,7 +346,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
         {
             PDColorSpace based = indexed.getBaseColorSpace();
             ColorSpaces cs = ColorSpaces.valueOf(based.getName());
-            if (cs == ColorSpaces.Indexed || cs == ColorSpaces.I)
+            if (cs == ColorSpaces.Indexed)
             {
                 context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_INDEXED,
                         "Indexed color space can't be used as Base color space"));
@@ -395,7 +391,6 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
                 case DeviceN:
                 case Pattern:
                 case Indexed:
-                case I:
                     context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_ALTERNATE, acs
                             .getLabel() + " color space can't be used as alternate color space"));
                     break;

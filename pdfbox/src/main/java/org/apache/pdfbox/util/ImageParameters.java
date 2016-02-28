@@ -19,7 +19,7 @@ package org.apache.pdfbox.util;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSInteger;
+import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 
@@ -139,9 +139,69 @@ public class ImageParameters
         PDColorSpace retval = null;
         if( cs != null )
         {
-            retval = PDColorSpaceFactory.createColorSpace( cs, colorSpaces );
+            retval = createColorSpace( cs, colorSpaces );
         }
         return retval;
+    }
+
+    /**
+     * This will create the correct color space for the given name.
+     * This method is specific for parsing the color space specified within the content stream of inline image.
+     *
+     * @param cs the object denoting the color space (the name or array)
+     * @param colorSpaces The ColorSpace dictionary from the current resources, if any.
+     *
+     * @return The color space.
+     * @throws IOException If the color space name is unknown.
+     */
+    private PDColorSpace createColorSpace(COSBase cs, Map colorSpaces) throws IOException
+    {
+        if (cs instanceof COSName)
+        {
+            return PDColorSpaceFactory.createColorSpace( toLongName(cs), colorSpaces );
+        }
+
+        // In InlinedImage only DeviceGray/RGB/CMYK and restricted Indexed color spaces are allowed.
+        if (cs instanceof COSArray && ((COSArray) cs).size() == 4 && ((COSArray) cs).get(3) instanceof COSString)
+        {
+            COSArray srcArray = (COSArray) cs;
+            COSBase csType = srcArray.get(0);
+            if (COSName.I.equals(csType) || COSName.INDEXED.equals(csType))
+            {
+                COSArray dstArray = new COSArray();
+                dstArray.addAll(srcArray);
+                dstArray.set(0, COSName.INDEXED);
+                dstArray.set(1, toLongName(srcArray.get(1)));
+                return PDColorSpaceFactory.createColorSpace( dstArray, colorSpaces );
+            }
+
+            throw new IOException("Illegal type of inline image color space: " + csType);
+        }
+
+        throw new IOException("Illegal type of object for inline image color space: " + cs);
+    }
+
+    /**
+     * Deliver the long name of a device colorspace, or the parameter
+     *
+     * @param cs the color space name object
+     * @return
+     */
+    private COSBase toLongName(COSBase cs)
+    {
+        if (COSName.getPDFName("RGB").equals(cs))
+        {
+            return COSName.DEVICERGB;
+        }
+        if (COSName.getPDFName("CMYK").equals(cs))
+        {
+            return COSName.DEVICECMYK;
+        }
+        if (COSName.getPDFName("G").equals(cs))
+        {
+            return COSName.DEVICEGRAY;
+        }
+        return cs;
     }
 
     /**

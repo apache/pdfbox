@@ -24,6 +24,7 @@ package org.apache.pdfbox.preflight.content;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE_CMYK;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE_MISSING;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE_RGB;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_UNKNOWN_COLOR_SPACE;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_TOO_MANY_GRAPHIC_STATES;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY;
 import static org.apache.pdfbox.preflight.PreflightConstants.MAX_GRAPHIC_STATES;
@@ -299,59 +300,30 @@ public abstract class ContentStreamEngine extends PDFStreamEngine
      * 
      * @param operator
      *            the InlinedImage object (BI to EI)
-     * @throws ContentStreamException
+     * @throws ValidationException
      */
-    protected void validImageColorSpace(PDFOperator operator) throws ContentStreamException, IOException
+    protected void validImageColorSpace(PDFOperator operator) throws ValidationException
     {
         COSDictionary dict = operator.getImageParameters().getDictionary();
 
-        COSBase csInlinedBase = dict.getItem(COSName.CS);
-        ColorSpaceHelper csHelper = null;
+        COSBase csInlinedBase = dict.getDictionaryObject(COSName.CS, COSName.COLORSPACE);
+        ColorSpaceHelper csHelper;
         if (csInlinedBase != null)
         {
-            if (COSUtils.isString(csInlinedBase, cosDocument))
+            try
             {
                 /*
                  * In InlinedImage only DeviceGray/RGB/CMYK and restricted Indexed color spaces are allowed.
                  */
-                String colorSpace = COSUtils.getAsString(csInlinedBase, cosDocument);
-                ColorSpaces cs = null;
-
-                try
-                {
-                    cs = ColorSpaces.valueOf(colorSpace);
-                }
-                catch (IllegalArgumentException e)
-                {
-                    // The color space is unknown. Try to access the resources dictionary,
-                    // the color space can be a reference.
-                    Map<String, PDColorSpace> colorSpaces = this.getResources().getColorSpaces();
-                    if (colorSpaces != null)
-                    {
-                        PDColorSpace pdCS = colorSpaces.get(colorSpace);
-                        if (pdCS != null)
-                        {
-                            cs = ColorSpaces.valueOf(pdCS.getName());
-                            PreflightConfiguration cfg = context.getConfig();
-                            ColorSpaceHelperFactory csFact = cfg.getColorSpaceHelperFact();
-                            csHelper = csFact.getColorSpaceHelper(context, pdCS, ColorSpaceRestriction.ONLY_DEVICE);
-                        }
-                    }
-                }
-
-                if (cs == null)
-                {
-                    registerError("The ColorSpace " + colorSpace + " is unknown", ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY);
-                    return;
-                }
-            }
-
-            if (csHelper == null)
-            {
-                PDColorSpace pdCS = PDColorSpaceFactory.createColorSpace(csInlinedBase);
+                PDColorSpace pdCS = operator.getImageParameters().getColorSpace(this.getResources().getColorSpaces());
                 PreflightConfiguration cfg = context.getConfig();
                 ColorSpaceHelperFactory csFact = cfg.getColorSpaceHelperFact();
                 csHelper = csFact.getColorSpaceHelper(context, pdCS, ColorSpaceRestriction.ONLY_DEVICE);
+            }
+            catch (IOException e)
+            {
+                registerError(e.getMessage(), ERROR_GRAPHIC_INVALID_UNKNOWN_COLOR_SPACE);
+                return;
             }
 
             csHelper.validate();
@@ -361,7 +333,7 @@ public abstract class ContentStreamEngine extends PDFStreamEngine
     /**
      * This method validates if the ColorOperator can be used with the color space defined in OutputIntent dictionaries.
      * 
-     * @param operator
+     * @param operation
      *            the color operator
      * @throws ContentStreamException
      */

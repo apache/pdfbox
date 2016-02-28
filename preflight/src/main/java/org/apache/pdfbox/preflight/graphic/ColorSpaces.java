@@ -23,15 +23,14 @@ package org.apache.pdfbox.preflight.graphic;
 
 /**
  * This enum makes ColorSpaces validation easier. Labels represent ColorSpace names as defined in the
- * "PDF Reference 1.4". Enum entries with the "_SHORT" suffix are used to represent color spaces (DeviceGray, DeviceRGB,
- * DeviceCMYK and Indexed) using the InlinedImage notation.
+ * "PDF Reference 1.4".
  */
 public enum ColorSpaces
 {
 
-    Lab("Lab"), CalRGB("CalRGB"), CalGray("CalGray"), DeviceN("DeviceN"), Indexed("Indexed"), I("I"), Pattern(
-            "Pattern"), ICCBased("ICCBased"), DeviceRGB("DeviceRGB"), RGB("RGB"), DeviceGray("DeviceGray"), G(
-            "G"), DeviceCMYK("DeviceCMYK"), CMYK("CMYK"), Separation("Separation");
+    Lab("Lab"), CalRGB("CalRGB"), CalGray("CalGray"), DeviceN("DeviceN"), Indexed("Indexed"),
+    Pattern("Pattern"), ICCBased("ICCBased"), DeviceRGB("DeviceRGB"), DeviceGray("DeviceGray"),
+    DeviceCMYK("DeviceCMYK"), Separation("Separation");
 
     /**
      * Name of the ColorSpace
@@ -50,14 +49,4 @@ public enum ColorSpaces
     {
         return label;
     }
-
-    /**
-     * @param label
-     *            the label to set
-     */
-    public void setLabel(String label)
-    {
-        this.label = label;
-    }
-
 }
