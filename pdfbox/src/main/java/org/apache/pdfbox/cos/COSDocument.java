@@ -59,6 +59,11 @@ public class COSDocument extends COSBase implements Closeable
         new HashMap<COSObjectKey, Long>();
 
     /**
+     * List containing all streams which are created when creating a new pdf. 
+     */
+    private final List<COSStream> streams = new ArrayList<COSStream>();
+    
+    /**
      * Document trailer dictionary.
      */
     private COSDictionary trailer;
@@ -105,7 +110,12 @@ public class COSDocument extends COSBase implements Closeable
      */
     public COSStream createCOSStream()
     {
-        return new COSStream(scratchFile);
+        COSStream stream = new COSStream(scratchFile);
+        // collect all COSStreams so that they can be closed when closing the COSDocument.
+        // This is limited to newly created pdfs as all COSStreams of an existing pdf are
+        // collected within the map objectPool
+        streams.add(stream);
+        return stream;
     }
 
     /**
@@ -432,7 +442,13 @@ public class COSDocument extends COSBase implements Closeable
                     }
                 }
             }
-
+            if (streams != null)
+            {
+                for(COSStream stream : streams)
+                {
+                    stream.close();
+                }
+            }
             if (scratchFile != null)
             {
                 scratchFile.close();
