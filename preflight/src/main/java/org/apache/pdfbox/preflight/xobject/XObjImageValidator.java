@@ -149,7 +149,7 @@ public class XObjImageValidator extends AbstractXObjValidator
             }
             catch (IOException e)
             {
-                context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_UNKNOWN_COLOR_SPACE));
+                context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_UNKNOWN_COLOR_SPACE, e.getMessage()));
             }
         }
     }
