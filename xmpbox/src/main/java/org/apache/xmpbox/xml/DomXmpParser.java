@@ -658,16 +658,21 @@ public class DomXmpParser
             if (!token.endsWith("\"") && !token.endsWith("\'"))
             {
                 throw new XmpParsingException(ErrorType.XpacketBadStart, "Cannot understand PI data part : '" + token
-                        + "'");
+                        + "' in '" + data + "'");
             }
             String quote = token.substring(token.length() - 1);
             int pos = token.indexOf("=" + quote);
             if (pos <= 0)
             {
                 throw new XmpParsingException(ErrorType.XpacketBadStart, "Cannot understand PI data part : '" + token
-                        + "'");
+                        + "' in '" + data + "'");
             }
             String name = token.substring(0, pos);
+            if (token.length() - 1 < pos + 2)
+            {
+                throw new XmpParsingException(ErrorType.XpacketBadStart, "Cannot understand PI data part : '" + token
+                        + "' in '" + data + "'");
+            }
             String value = token.substring(pos + 2, token.length() - 1);
             if ("id".equals(name))
             {
