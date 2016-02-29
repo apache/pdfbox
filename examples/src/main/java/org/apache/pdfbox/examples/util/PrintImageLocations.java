@@ -125,19 +125,21 @@ public class PrintImageLocations extends PDFStreamEngine
                 Matrix ctmNew = getGraphicsState().getCurrentTransformationMatrix();
                 float imageXScale = ctmNew.getScalingFactorX();
                 float imageYScale = ctmNew.getScalingFactorY();
-                System.out.println("position = " + ctmNew.getTranslateX() + ", " + ctmNew.getTranslateY());
-                // size in pixel
-                System.out.println("size = " + imageWidth + "px, " + imageHeight + "px");
-                // size in page units
-                System.out.println("size = " + imageXScale + "pu, " + imageYScale + "pu");
-                // size in inches 
+
+                // position in user space units. 1 unit = 1/72 inch at 72 dpi
+                System.out.println("position in PDF = " + ctmNew.getTranslateX() + ", " + ctmNew.getTranslateY() + " in user space units");
+                // raw size in pixels
+                System.out.println("raw image size  = " + imageWidth + ", " + imageHeight + " in pixels");
+                // displayed size in user space units
+                System.out.println("displayed size  = " + imageXScale + ", " + imageYScale + " in user space units");
+                // displayed size in inches at 72 dpi rendering
                 imageXScale /= 72;
                 imageYScale /= 72;
-                System.out.println("size = " + imageXScale + "in, " + imageYScale + "in");
-                // size in millimeter
+                System.out.println("displayed size  = " + imageXScale + ", " + imageYScale + " in inches at 72 dpi rendering");
+                // displayed size in millimeters at 72 dpi rendering
                 imageXScale *= 25.4;
                 imageYScale *= 25.4;
-                System.out.println("size = " + imageXScale + "mm, " + imageYScale + "mm");
+                System.out.println("displayed size  = " + imageXScale + ", " + imageYScale + " in millimeters at 72 dpi rendering");
                 System.out.println();
             }
             else if(xobject instanceof PDFormXObject)
