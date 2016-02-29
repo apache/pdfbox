@@ -72,7 +72,7 @@ public abstract class PDColorSpace implements COSObjectable
     /**
      * Creates a color space given a name or array. Abbreviated device color names are not supported
      * here, please replace them first. This method is for PDFBox internal use only, others should
-     * use {@link create(COSBase, PDResources)}.
+     * use {@link #create(COSBase, PDResources)}.
      *
      * @param colorSpace the color space COS object
      * @param resources the current resources.

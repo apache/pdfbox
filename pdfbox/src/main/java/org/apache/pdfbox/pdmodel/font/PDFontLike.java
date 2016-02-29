@@ -71,7 +71,7 @@ public interface PDFontLike
      * PDFont subclass to retrieve the glyph outline as a GeneralPath.
      * 
      * @param code character code
-     * @deprecated Use {@link #getBoundingBox().getHeight()} instead.
+     * @deprecated Use {@link #getBoundingBox().#getHeight(int)} instead.
      */
     @Deprecated
     float getHeight(int code) throws IOException;
