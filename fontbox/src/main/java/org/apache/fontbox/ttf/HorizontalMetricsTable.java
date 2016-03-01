@@ -47,22 +47,39 @@ public class HorizontalMetricsTable extends TTFTable
         int numHMetrics = hHeader.getNumberOfHMetrics();
         int numGlyphs = ttf.getNumberOfGlyphs();
         
+        int bytesRead = 0;
         advanceWidth = new int[ numHMetrics ];
         leftSideBearing = new short[ numHMetrics ];
         for( int i=0; i<numHMetrics; i++ )
         {
             advanceWidth[i] = data.readUnsignedShort();
             leftSideBearing[i] = data.readSignedShort();
+            bytesRead += 4;
         }
         
-        int numberNonHorizontal = numGlyphs - numHMetrics;
-        nonHorizontalLeftSideBearing = new short[ numberNonHorizontal ];
-        for( int i=0; i<numberNonHorizontal; i++ )
+        if (bytesRead < getLength())
         {
-            nonHorizontalLeftSideBearing[i] = data.readSignedShort();
+            int numberNonHorizontal = numGlyphs - numHMetrics;
+
+            // handle bad fonts with too many hmetrics
+            if (numberNonHorizontal < 0)
+            {
+                numberNonHorizontal = numGlyphs;
+            }
+
+            nonHorizontalLeftSideBearing = new short[numberNonHorizontal];
+            for (int i = 0; i < numberNonHorizontal; i++)
+            {
+                if (bytesRead < getLength())
+                {
+                    nonHorizontalLeftSideBearing[i] = data.readSignedShort();
+                    bytesRead += 2;
+                }
+            }
         }
         initialized = true;
     }
+
     /**
      * @return Returns the advanceWidth.
      */
