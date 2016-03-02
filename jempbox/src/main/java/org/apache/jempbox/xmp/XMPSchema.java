@@ -172,7 +172,7 @@ public class XMPSchema
                     if (nodeList.getLength() > 0)
                     {
                         Element node = (Element) nodeList.item(0);
-                        node.setNodeValue(propertyValue);
+                        XMLUtil.setStringValue(node, propertyValue);
                     }
                     else
                     {
