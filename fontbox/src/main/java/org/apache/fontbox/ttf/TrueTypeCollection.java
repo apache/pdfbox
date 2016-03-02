@@ -140,7 +140,7 @@ public class TrueTypeCollection implements Closeable
     }
 
     /**
-     * Implement the callback method to call {@link TrueTypeCollection#processAllFonts()}.
+     * Implement the callback method to call {@link TrueTypeCollection#processAllFonts(TrueTypeFontProcessor)}.
      */
     public interface TrueTypeFontProcessor
     {
