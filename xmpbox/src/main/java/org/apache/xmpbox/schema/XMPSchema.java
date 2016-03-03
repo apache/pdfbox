@@ -1255,10 +1255,10 @@ public class XMPSchema extends AbstractStructuredType
         return null;
     }
 
-    protected AbstractSimpleProperty instanciateSimple(String param, Object value)
+    protected AbstractSimpleProperty instanciateSimple(String propertyName, Object value)
     {
         TypeMapping tm = getMetadata().getTypeMapping();
-        return tm.instanciateSimpleField(getClass(), null, getPrefix(), param, value);
+        return tm.instanciateSimpleField(getClass(), null, getPrefix(), propertyName, value);
     }
 
 }
