@@ -21,6 +21,7 @@
 
 package org.apache.pdfbox.preflight.process.reflect;
 
+import org.apache.pdfbox.cos.COSBase;
 import static org.apache.pdfbox.preflight.PreflightConfiguration.RESOURCES_PROCESS;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_PATTERN_DEFINITION;
 
@@ -74,14 +75,23 @@ public class TilingPatternValidationProcess extends AbstractProcess
             }
 
     /**
-     * Validate the Pattern content like Color and Show Text Operators using an instance of ContentStreamWrapper.
+     * Validate the Pattern content like Color and Show Text Operators using an instance of
+     * ContentStreamWrapper.
      */
     protected void parsePatternContent(PreflightContext context, PDPage page, PDTilingPatternResources pattern)
             throws ValidationException
-            {
+    {
         ContentStreamWrapper csWrapper = new ContentStreamWrapper(context, page);
-        csWrapper.validPatternContentStream((COSStream) pattern.getCOSObject());
-            }
+        COSBase base = pattern.getCOSObject();
+        if (base instanceof COSStream)
+        {
+            csWrapper.validPatternContentStream((COSStream) pattern.getCOSObject());
+        }
+        else
+        {
+            context.addValidationError(new ValidationError(PreflightConstants.ERROR_GRAPHIC_MISSING_OBJECT, "Stream for tiling pattern expected"));
+        }
+    }
 
     /**
      * This method checks if required fields are present.
