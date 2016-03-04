@@ -64,6 +64,16 @@ public abstract class AbstractComplexProperty extends AbstractField
      */
     public final void addProperty(AbstractField obj)
     {
+        // https://www.adobe.com/content/dam/Adobe/en/devnet/xmp/pdfs/cs6/XMPSpecificationPart1.pdf
+        // "Each property name in an XMP packet shall be unique within that packet"
+        // "Multiple values are represented using an XMP array value"
+        // "The nested element's element content shall consist of zero or more rdf:li elements, 
+        // one for each item in the array"
+        // thus delete existing elements of a property, except for arrays ("li")
+        if (!(this instanceof ArrayProperty))
+        {
+            container.removePropertiesByName(obj.getPropertyName());
+        }
         container.addProperty(obj);
     }
 
