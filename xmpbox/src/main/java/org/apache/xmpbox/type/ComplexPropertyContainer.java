@@ -161,11 +161,11 @@ public class ComplexPropertyContainer /* extends AbstractField */
     }
 
     /**
-     * Return all properties with this specified localName
+     * Return all properties with this specified localName.
      * 
      * @param localName
      *            the local name wanted
-     * @return All properties with local name which match with localName given
+     * @return All properties with local name which match with localName given, or null if there are none.
      */
     public List<AbstractField> getPropertiesByLocalName(String localName)
     {
@@ -190,17 +190,16 @@ public class ComplexPropertyContainer /* extends AbstractField */
             }
         }
         return null;
-
     }
 
     /**
-     * Check if two property are similar
+     * Check if two properties are equal.
      * 
      * @param prop1
      *            First property
      * @param prop2
      *            Second property
-     * @return True if these properties are equals
+     * @return True if these properties are equal.
      */
     public boolean isSameProperty(AbstractField prop1, AbstractField prop2)
     {
@@ -260,4 +259,25 @@ public class ComplexPropertyContainer /* extends AbstractField */
         }
     }
 
+    /**
+     * Remove all properties with a specified LocalName.
+     * 
+     * @param localName The name for which to remove all.
+     */
+    public void removePropertiesByName(String localName)
+    {
+        if (properties.isEmpty())
+        {
+            return;
+        }
+        List<AbstractField> propList = getPropertiesByLocalName(localName);
+        if (propList == null)
+        {
+            return;
+        }
+        for (AbstractField field : propList)
+        {
+            properties.remove(field);
+        }
+    }
 }
