@@ -32,7 +32,6 @@ import org.apache.xmpbox.xml.DomXmpParser;
 import org.apache.xmpbox.xml.XmpParsingException;
 import org.apache.xmpbox.xml.XmpSerializationException;
 import org.junit.Assert;
-import static org.junit.Assert.assertFalse;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -120,6 +119,14 @@ public class XMPMetaDataTest
         Assert.assertEquals(xpacketEncoding, metadata.getXpacketEncoding());
     }
     
+    /**
+     * Test whether the bug reported in PDFBOX-3257 and PDFBOX-3258 has been fixed: setting
+     * CreateDate twice must not insert two elements, and fixing this must not interfere with the
+     * handling of lists.
+     *
+     * @throws IOException
+     * @throws XmpParsingException 
+     */
     @Test
     public void testPDFBOX3257() throws IOException, XmpParsingException
     {
@@ -176,8 +183,7 @@ public class XMPMetaDataTest
         Calendar createDate1 = basicSchema.getCreateDate();
         basicSchema.setCreateDate(new GregorianCalendar());
         Calendar createDate2 = basicSchema.getCreateDate();
-        // activate when bug is fixed
-        //assertFalse("CreateDate has not been set", createDate1.equals(createDate2));
+        Assert.assertFalse("CreateDate has not been set", createDate1.equals(createDate2));
         
         // check that bugfix does not interfere with lists of properties with same name
         DublinCoreSchema dublinCoreSchema = xmp.getDublinCoreSchema();
