@@ -194,4 +194,26 @@ public class ComplexPropertyContainer
             properties.remove(property);
         }
     }
+
+    /**
+     * Remove all properties with a specified LocalName.
+     * 
+     * @param localName The name for which to remove all.
+     */
+    public void removePropertiesByName(String localName)
+    {
+        if (properties.isEmpty())
+        {
+            return;
+        }
+        List<AbstractField> propList = getPropertiesByLocalName(localName);
+        if (propList == null)
+        {
+            return;
+        }
+        for (AbstractField field : propList)
+        {
+            properties.remove(field);
+        }
+    }
 }
