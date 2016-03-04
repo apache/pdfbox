@@ -21,11 +21,18 @@
 
 package org.apache.xmpbox;
 
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import junit.framework.Assert;
+import org.apache.xmpbox.schema.DublinCoreSchema;
+import org.apache.xmpbox.schema.XMPBasicSchema;
 
 import org.apache.xmpbox.schema.XMPSchema;
+import org.apache.xmpbox.xml.DomXmpParser;
+import org.apache.xmpbox.xml.XmpParsingException;
 import org.apache.xmpbox.xml.XmpSerializationException;
 import org.junit.Before;
 import org.junit.Test;
@@ -113,4 +120,78 @@ public class XMPMetaDataTest
         Assert.assertEquals(xpacketBytes, metadata.getXpacketBytes());
         Assert.assertEquals(xpacketEncoding, metadata.getXpacketEncoding());
     }
+    
+    /**
+     * Test whether the bug reported in PDFBOX-3257 and PDFBOX-3258 has been fixed: setting
+     * CreateDate twice must not insert two elements, and fixing this must not interfere with the
+     * handling of lists.
+     *
+     * @throws IOException
+     * @throws XmpParsingException 
+     */
+    @Test
+    public void testPDFBOX3257() throws IOException, XmpParsingException
+    {
+        // taken from file test-landscape2.pdf
+        String xmpmeta = "<?xpacket id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n"
+                + "<x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"Adobe XMP Core 4.0-c316 44.253921, Sun Oct 01 2006 17:14:39\">\n"
+                + "   <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n"
+                + "      <rdf:Description rdf:about=\"\"\n"
+                + "            xmlns:xap=\"http://ns.adobe.com/xap/1.0/\">\n"
+                + "         <xap:CreatorTool>Acrobat PDFMaker 8.1 for Word</xap:CreatorTool>\n"
+                + "         <xap:ModifyDate>2008-11-12T15:29:43+01:00</xap:ModifyDate>\n"
+                + "         <xap:CreateDate>2008-11-12T15:29:40+01:00</xap:CreateDate>\n"
+                + "         <xap:MetadataDate>2008-11-12T15:29:43+01:00</xap:MetadataDate>\n"
+                + "      </rdf:Description>\n"
+                + "      <rdf:Description rdf:about=\"\"\n"
+                + "            xmlns:pdf=\"http://ns.adobe.com/pdf/1.3/\">\n"
+                + "         <pdf:Producer>Acrobat Distiller 8.1.0 (Windows)</pdf:Producer>\n"
+                + "      </rdf:Description>\n"
+                + "      <rdf:Description rdf:about=\"\"\n"
+                + "            xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n"
+                + "         <dc:format>application/pdf</dc:format>\n"
+                + "         <dc:creator>\n"
+                + "            <rdf:Seq>\n"
+                + "               <rdf:li>R002325</rdf:li>\n"
+                + "            </rdf:Seq>\n"
+                + "         </dc:creator>\n"
+                + "         <dc:subject>\n"
+                + "            <rdf:Bag>\n"
+                + "               <rdf:li>one</rdf:li>\n"
+                + "               <rdf:li>two</rdf:li>\n"
+                + "               <rdf:li>three</rdf:li>\n"
+                + "               <rdf:li>four</rdf:li>\n"
+                + "            </rdf:Bag>\n"
+                + "         </dc:subject>\n"
+                + "         <dc:title>\n"
+                + "            <rdf:Alt>\n"
+                + "               <rdf:li xml:lang=\"x-default\"> </rdf:li>\n"
+                + "            </rdf:Alt>\n"
+                + "         </dc:title>\n"
+                + "      </rdf:Description>\n"
+                + "      <rdf:Description rdf:about=\"\"\n"
+                + "            xmlns:xapMM=\"http://ns.adobe.com/xap/1.0/mm/\">\n"
+                + "         <xapMM:DocumentID>uuid:31ae92cf-9a27-45e0-9371-0d2741e25919</xapMM:DocumentID>\n"
+                + "         <xapMM:InstanceID>uuid:2c7eb5da-9210-4666-8cef-e02ef6631c5e</xapMM:InstanceID>\n"
+                + "      </rdf:Description>\n"
+                + "   </rdf:RDF>\n"
+                + "</x:xmpmeta>\n"
+                + "<?xpacket end=\"w\"?>";
+        DomXmpParser xmpParser = new DomXmpParser();
+        xmpParser.setStrictParsing(false);
+        //IOUtils.copy(meta.createInputStream(),System.out);
+        XMPMetadata xmp = xmpParser.parse(xmpmeta.getBytes());
+        XMPBasicSchema basicSchema = xmp.getXMPBasicSchema();
+        Calendar createDate1 = basicSchema.getCreateDate();
+        basicSchema.setCreateDate(new GregorianCalendar());
+        Calendar createDate2 = basicSchema.getCreateDate();
+        // activate when bug is fixed
+        Assert.assertFalse("CreateDate has not been set", createDate1.equals(createDate2));
+        
+        // check that bugfix does not interfere with lists of properties with same name
+        DublinCoreSchema dublinCoreSchema = xmp.getDublinCoreSchema();
+        List<String> subjects = dublinCoreSchema.getSubjects();
+        Assert.assertEquals(4, subjects.size());
+    }
+
 }
