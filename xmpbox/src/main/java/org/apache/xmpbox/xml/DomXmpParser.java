@@ -805,7 +805,7 @@ public class DomXmpParser
         }
         catch (BadFieldValueException e)
         {
-            throw new XmpParsingException(ErrorType.InvalidType, "Failed to retreive property definition", e);
+            throw new XmpParsingException(ErrorType.InvalidType, "Failed to retrieve property definition", e);
         }
     }
 
