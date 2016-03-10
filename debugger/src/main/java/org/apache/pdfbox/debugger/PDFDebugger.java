@@ -707,9 +707,21 @@ public class PDFDebugger extends JFrame
         if (selectedNode instanceof MapEntry)
         {
             Object key = ((MapEntry) selectedNode).getKey();
-            return (COSName.FLAGS.equals(key) && isFontDescriptor(parentNode))
-                    || (COSName.F.equals(key) && isAnnot(parentNode)) || COSName.FF.equals(key)
-                    || COSName.PANOSE.equals(key);
+            return (COSName.FLAGS.equals(key) && isFontDescriptor(parentNode)) || 
+                    (COSName.F.equals(key) && isAnnot(parentNode)) || 
+                    COSName.FF.equals(key) || 
+                    COSName.PANOSE.equals(key) ||
+                    (COSName.P.equals(key) && isEncrypt(parentNode));
+        }
+        return false;
+    }
+
+    private boolean isEncrypt(Object obj)
+    {
+        if (obj instanceof MapEntry)
+        {
+            MapEntry entry = (MapEntry) obj;
+            return (entry.getKey() instanceof COSName && entry.getValue() instanceof COSDictionary);
         }
         return false;
     }
