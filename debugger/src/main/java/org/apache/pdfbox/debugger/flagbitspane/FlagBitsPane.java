@@ -70,6 +70,13 @@ public class FlagBitsPane
             view = new FlagBitsPaneView(
                     flag.getFlagType(), flag.getFlagValue(), flag.getFlagBits(), flag.getColumnNames());
         }
+
+        if (COSName.P.equals(flagType))
+        {
+            flag = new EncryptFlag(dictionary);
+            view = new FlagBitsPaneView(
+                    flag.getFlagType(), flag.getFlagValue(), flag.getFlagBits(), flag.getColumnNames());
+        }
     }
 
     /**
