@@ -168,6 +168,18 @@ public class PDFMergerUtility
     }
 
     /**
+     * Merge the list of source documents, saving the result in the destination file.
+     *
+     * @throws IOException If there is an error saving the document.
+     * @deprecated use {@link #mergeDocuments(org.apache.pdfbox.io.MemoryUsageSetting) }
+     */
+    @Deprecated
+    public void mergeDocuments() throws IOException
+    {
+        mergeDocuments(MemoryUsageSetting.setupMainMemoryOnly());
+    }
+
+    /**
      * Merge the list of source documents, saving the result in the destination
      * file.
      *
