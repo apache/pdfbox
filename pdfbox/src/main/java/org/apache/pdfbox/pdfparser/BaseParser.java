@@ -726,18 +726,17 @@ public abstract class BaseParser
             int ch = c;
             if (ch == '#')
             {
-                char ch1 = (char) seqSource.read();
-                char ch2 = (char) seqSource.read();
-
+                int ch1 = seqSource.read();
+                int ch2 = seqSource.read();
                 // Prior to PDF v1.2, the # was not a special character.  Also,
                 // it has been observed that various PDF tools do not follow the
                 // spec with respect to the # escape, even though they report
                 // PDF versions of 1.2 or later.  The solution here is that we
                 // interpret the # as an escape only when it is followed by two
                 // valid hex digits.
-                if (isHexDigit(ch1) && isHexDigit(ch2))
+                if (isHexDigit((char)ch1) && isHexDigit((char)ch2))
                 {
-                    String hex = "" + ch1 + ch2;
+                    String hex = "" + (char)ch1 + (char)ch2;
                     try
                     {
                         buffer.write(Integer.parseInt(hex, 16));
@@ -750,6 +749,13 @@ public abstract class BaseParser
                 }
                 else
                 {
+                    // check for premature EOF
+                    if (ch2 == -1 || ch1 == -1)
+                    {
+                        LOG.error("Premature EOF in BaseParser#parseCOSName");
+                        c = -1;
+                        break;
+                    }
                     seqSource.unread(ch2);
                     c = ch1;
                     buffer.write(ch);
