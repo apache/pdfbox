@@ -122,7 +122,15 @@ class GlyphRenderer
                     Point pnow = contour.get(j);
                     if (pnow.onCurve)
                     {
-                        lineTo(path, pnow);
+                        if (j == clen - 1)
+                        {
+                            // PDFBOX-3268 avoid weird corners at end of path
+                            path.closePath();
+                        }
+                        else
+                        {
+                            lineTo(path, pnow);
+                        }
                     }
                     else if (contour.get(j + 1).onCurve)
                     {
