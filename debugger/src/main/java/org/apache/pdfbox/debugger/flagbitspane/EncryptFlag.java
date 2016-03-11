@@ -54,7 +54,6 @@ public class EncryptFlag extends Flag
     @Override
     Object[][] getFlagBits()
     {
-        int p = encryptDictionary.getInt(COSName.P);
         AccessPermission ap = new AccessPermission(encryptDictionary.getInt(COSName.P));
         return new Object[][]{
                 new Object[]{3, "can print", ap.canPrint()},
