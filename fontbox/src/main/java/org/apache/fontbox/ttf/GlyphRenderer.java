@@ -122,15 +122,7 @@ class GlyphRenderer
                     Point pnow = contour.get(j);
                     if (pnow.onCurve)
                     {
-                        if (j == clen - 1)
-                        {
-                            // PDFBOX-3268 avoid weird corners at end of path
-                            path.closePath();
-                        }
-                        else
-                        {
-                            lineTo(path, pnow);
-                        }
+                        lineTo(path, pnow);
                     }
                     else if (contour.get(j + 1).onCurve)
                     {
@@ -142,6 +134,7 @@ class GlyphRenderer
                         quadTo(path, pnow, midValue(pnow, contour.get(j + 1)));
                     }
                 }
+                path.closePath();            
                 start = p + 1;
             }
         }
