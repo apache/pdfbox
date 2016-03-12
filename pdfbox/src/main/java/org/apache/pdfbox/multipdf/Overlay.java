@@ -102,45 +102,50 @@ public class Overlay
     public PDDocument overlay(Map<Integer, String> specificPageOverlayFile)
             throws IOException
     {
-        try
+        loadPDFs();
+        for (Map.Entry<Integer, String> e : specificPageOverlayFile.entrySet())
         {
-            loadPDFs();
-            for (Map.Entry<Integer, String> e : specificPageOverlayFile.entrySet())
-            {
-                PDDocument doc = loadPDF(e.getValue());
-                specificPageOverlay.put(e.getKey(), doc);
-                specificPageOverlayPage.put(e.getKey(), getLayoutPage(doc));
-            }
-            processPages(inputPDFDocument);
-
-            return inputPDFDocument;
+            PDDocument doc = loadPDF(e.getValue());
+            specificPageOverlay.put(e.getKey(), doc);
+            specificPageOverlayPage.put(e.getKey(), getLayoutPage(doc));
         }
-        finally
+        processPages(inputPDFDocument);
+        return inputPDFDocument;
+    }
+
+    /**
+     * Close all input pdfs which were used for the overlay.
+     * 
+     * @throws IOException if something went wrong
+     */
+    public void close() throws IOException
+    {
+        if (defaultOverlay != null)
         {
-            if (defaultOverlay != null)
-            {
-                defaultOverlay.close();
-            }
-            if (firstPageOverlay != null)
-            {
-                firstPageOverlay.close();
-            }
-            if (lastPageOverlay != null)
-            {
-                lastPageOverlay.close();
-            }
-            if (allPagesOverlay != null)
-            {
-                allPagesOverlay.close();
-            }
-            if (oddPageOverlay != null)
-            {
-                oddPageOverlay.close();
-            }
-            if (evenPageOverlay != null)
-            {
-                evenPageOverlay.close();
-            }
+            defaultOverlay.close();
+        }
+        if (firstPageOverlay != null)
+        {
+            firstPageOverlay.close();
+        }
+        if (lastPageOverlay != null)
+        {
+            lastPageOverlay.close();
+        }
+        if (allPagesOverlay != null)
+        {
+            allPagesOverlay.close();
+        }
+        if (oddPageOverlay != null)
+        {
+            oddPageOverlay.close();
+        }
+        if (evenPageOverlay != null)
+        {
+            evenPageOverlay.close();
+        }
+        if (specificPageOverlay != null)
+        {
             for (Map.Entry<Integer, PDDocument> e : specificPageOverlay.entrySet())
             {
                 e.getValue().close();
