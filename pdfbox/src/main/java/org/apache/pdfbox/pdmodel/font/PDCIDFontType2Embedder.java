@@ -24,6 +24,8 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.cos.COSArray;
@@ -261,7 +263,7 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
     }
 
     /**
-     * Builds wieths with a custom CIDToGIDMap (for embedding font subset).
+     * Builds widths with a custom CIDToGIDMap (for embedding font subset).
      */
     private void buildWidths(Map<Integer, Integer> cidToGid) throws IOException
     {
@@ -269,18 +271,13 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
 
         COSArray widths = new COSArray();
         COSArray ws = new COSArray();
-        int prev = -1;
-
-        for (int cid : cidToGid.keySet())
+        int prev = Integer.MIN_VALUE;
+        // Use a sorted list to get an optimal width array  
+        Set<Integer> keys = new TreeSet<Integer>(cidToGid.keySet());
+        for (int cid : keys)
         {
-            if (!cidToGid.containsKey(cid))
-            {
-                continue;
-            }
-
             int gid = cidToGid.get(cid);
             float width = ttf.getHorizontalMetrics().getAdvanceWidth(gid) * scaling;
-
             // c [w1 w2 ... wn]
             if (prev != cid - 1)
             {
@@ -291,7 +288,6 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
             ws.add(COSInteger.get(Math.round(width))); // wi
             prev = cid;
         }
-
         cidFont.setItem(COSName.W, widths);
     }
 
