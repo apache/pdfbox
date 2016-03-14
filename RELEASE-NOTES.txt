@@ -5,10 +5,8 @@ Introduction
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is the third release candidate for the upcoming major release 2.0.0 of PDFBox.
-This release contains a lot of improvements, fixes and refactorings. The API is 
-supposed to be stable, but we can't guarantee that there won't be any last changes
-to it before providing the final release candidate.
+This is the long awaited final release of PDFBox 2.0.0. It contains a lot of improvements,
+fixes and refactorings.
 
 For more details on these changes and all the other fixes and improvements
 included in this release, please refer to the following issues on the
@@ -58,6 +56,8 @@ Sub-task
 [PDFBOX-3127] - Text with vertical font not extracted correctly
 [PDFBOX-3129] - NullPointerException in PDFStreamEngine.showText()
 [PDFBOX-3186] - Parsing fails when XRef stream object is 1 byte later
+[PDFBOX-3208] - The trailer rebuild mechnism doesn't work
+[PDFBOX-3264] - One 32kb truncated file causes OOM in 2.0.0-trunk
 
 Bug
 
@@ -102,12 +102,14 @@ Bug
 [PDFBOX-728] - Text extracted from a TeX-created PDF file comes in some form of hex encoding
 [PDFBOX-778] - OutOfMemory when extracting text from pdf
 [PDFBOX-785] - Spliting a PDF creates unnecessarily large files
+[PDFBOX-816] - 1.2.1 - PDFTextStripper* uses different Y values when cropbox has non-zero Y: not so for X coordinates.
 [PDFBOX-823] - NullPointerException in DateConverter.toISO8601(DateConverter.java:221)
 [PDFBOX-833] - Wrong encoding with Type1C font when specific encoding is defined
 [PDFBOX-837] - Wrong RevisionNumber when disabling all permissions and using 128bit encryption
 [PDFBOX-877] - processOperator breaks contract - never throws IOException
 [PDFBOX-904] - Potential issue with COSString and UTF-16-encoded Strings.
 [PDFBOX-905] - NullPointerException when writing pdf to image
+[PDFBOX-908] - Gracefull handle corrupt PDFs
 [PDFBOX-923] - pdf gets messed up when updated with xfdf data
 [PDFBOX-924] - Image not getting rendered correctly..
 [PDFBOX-932] - Swedish characters are garbled in form
@@ -722,6 +724,7 @@ Bug
 [PDFBOX-2724] - Importing a XFDF file doesn't populate the field value
 [PDFBOX-2726] - org.apache.pdfbox.cos.COSArray cannot be cast to org.apache.pdfbox.cos.COSDictionary
 [PDFBOX-2728] - java.awt.geom.IllegalPathStateException: missing initial moveto in path definition
+[PDFBOX-2729] - Can't sign encrypted PDF files
 [PDFBOX-2730] - PDFSplit slow and keeps unused pages
 [PDFBOX-2733] - Nullpointer exception in PDFXrefStreamParser.parse
 [PDFBOX-2734] - Can't create PDF with DeviceN colorspace
@@ -814,6 +817,7 @@ Bug
 [PDFBOX-2950] - Chinese font substitution issue
 [PDFBOX-2951] - quotedbl causes NullPointerException
 [PDFBOX-2956] - PDFontDescriptor doesn't contain method getCIDSet.
+[PDFBOX-2957] - Glyphs rendered as gibberish
 [PDFBOX-2958] - TIFF-Predictor with 1 bit per component not supported
 [PDFBOX-2959] - type3 font glyphs overlapped
 [PDFBOX-2960] - ClassCastException when pattern name is indirect object
@@ -878,10 +882,13 @@ Bug
 [PDFBOX-3109] - DrawPrintTextLocations with incorrect coordinates when cropbox
 [PDFBOX-3110] - Extract by beads doesn't work
 [PDFBOX-3114] - Visible signatures in different pages changes previous revision
+[PDFBOX-3116] - COSNumber NumberFormatException for large number
+[PDFBOX-3120] - ArrayIndexOutOfBoundsException in CodespaceRange.isPartialMatch / CMap is invalid
 [PDFBOX-3130] - Recent regression in PDFTextStripper, text getting garbled
 [PDFBOX-3139] - Custom FontMapper cant be used
 [PDFBOX-3140] - Different fallback font rendering first and second time
 [PDFBOX-3141] - Link annotation borders not rendered
+[PDFBOX-3142] - PDFMergerUtility with scratch file generates result with blank pages for certain source files.
 [PDFBOX-3143] - Added PDEmbeddedFile constructor with COSName parameter
 [PDFBOX-3144] - NullPointerException in TTFSubsetter
 [PDFBOX-3145] - Security manager fails for .pdfbox.cache
@@ -905,6 +912,36 @@ Bug
 [PDFBOX-3181] - java.lang.ArrayIndexOutOfBoundsException: Coordinate out of bounds! in org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory.createFromImage
 [PDFBOX-3184] - Throwing in PDType1Font.encode for chars above 255 is wrong.
 [PDFBOX-3187] - NullPointerException CFFParser
+[PDFBOX-3188] - java.io.IOException: Error: source PDF is encrypted, can't append encrypted PDF documents
+[PDFBOX-3189] - java.io.IOException is thrown from both NonSequentialPDFParser and PDFParser
+[PDFBOX-3190] - Links don't work in firefox
+[PDFBOX-3191] - PDFDebugger does not handle cancelling of "Open URL" dialog
+[PDFBOX-3195] - ExtractText add space at start of text
+[PDFBOX-3199] - JPEG input file not closed when creating PDImageXObject
+[PDFBOX-3201] - Skip zlib-header and checksum to avoid DataFormatException
+[PDFBOX-3203] - Fractional font sizes are reported scaled
+[PDFBOX-3204] - JVM crashes on PDFRenderer.renderImageWithDPI
+[PDFBOX-3209] - Overlay class does not work with in-memory PDFs
+[PDFBOX-3217] - PdfaExtensionHelper.populatePDFAPropertyType
+[PDFBOX-3219] - Suggestion for log4j.xml example inside preflight source
+[PDFBOX-3221] - /TR /TR2 Transfer function not implemented
+[PDFBOX-3226] - No such Element Exception processing File
+[PDFBOX-3229] - Decryption fails when Metadata not encrypted but EncryptMetadata is true/default.
+[PDFBOX-3237] - ASCII85Filter does not use or recognize the correct end-of-data terminator
+[PDFBOX-3240] - Missing Type for standard type 1 fonts
+[PDFBOX-3242] - Problem displaying document created by PDFBox 2.0RC3 in Acrobat Reader
+[PDFBOX-3249] - PDAnnotationMarkup.getInReplyTo throws exception when no element
+[PDFBOX-3250] - Possible errors in TrueType table 'name' parsing.
+[PDFBOX-3252] - java.lang.ExceptionInInitializerError in PDFBox
+[PDFBOX-3253] - Close all COSStreams when creating a new pdf
+[PDFBOX-3254] - Corrupted XMP causes java.lang.StringIndexOutOfBoundsException
+[PDFBOX-3258] - XMPBox XMPBasicSchema setters don't work if already set
+[PDFBOX-3259] - ClassCastException in PDTilingPattern.getContents
+[PDFBOX-3263] - Overlaying 2 pdfs corrupts cross-reference stream
+[PDFBOX-3266] - Overlay doesn't work anymore
+[PDFBOX-3268] - Corners of stroked type are inaccurate when rendered as an image
+[PDFBOX-3271] - Incomplete widths array for CID-fonts
+[PDFBOX-3272] - Loaded fonts file descriptors open after closing document
 
 Improvement
 
@@ -1073,6 +1110,7 @@ Improvement
 [PDFBOX-2566] - Remove logging from operator classes
 [PDFBOX-2580] - Decouple implementation specific forms handling from interactive.form PD Model
 [PDFBOX-2587] - PDF takes minutes to convert (sRGB)
+[PDFBOX-2590] - Improve PDPageContentStream API
 [PDFBOX-2591] - Allow using custom Filters
 [PDFBOX-2592] - Allow sharing of COS objects between different documents
 [PDFBOX-2594] - Set default params in JBIG2Filter
@@ -1118,6 +1156,7 @@ Improvement
 [PDFBOX-2893] - Simplify COSStream encoding and decoding
 [PDFBOX-2894] - Remove COSStreamArray / SequenceRandomAccessRead
 [PDFBOX-2905] - Replace PDFReader with PDFDebugger
+[PDFBOX-2918] - Allow to refresh an AcroForm field appearance
 [PDFBOX-2922] - Printing issues with landscape pages
 [PDFBOX-2928] - Add numPages parameter of Book in Printing.printWithPaper example
 [PDFBOX-2931] - Make PDFPrintable margin-aligning and centering optional
@@ -1125,10 +1164,12 @@ Improvement
 [PDFBOX-2943] - PDType3Font.getWidthFromFont not supported
 [PDFBOX-2945] - PDType1Font.getNameInFont(String) very slow when Unicode fallback is used
 [PDFBOX-2962] - Handle TIFF predictor for bpc 2 and 4 / optimize existing predictor code
+[PDFBOX-2970] - Add capability to flatten AcroForm form fields
 [PDFBOX-2973] - Actions shortage
 [PDFBOX-2978] - Add support for grouped checkboxes
 [PDFBOX-2997] - Make FontMapper into a singleton interface
 [PDFBOX-3072] - Allow missing page type
+[PDFBOX-3084] - More generic PDPageContentStream constructor
 [PDFBOX-3088] - Cache glyph table to optimize concurrent access
 [PDFBOX-3103] - Slow performance when printing PDF (fix provided)
 [PDFBOX-3104] - Font Cache is taking a lot of time
@@ -1143,8 +1184,14 @@ Improvement
 [PDFBOX-3163] - PDImageXObject.createFromFile should relies on header bytes
 [PDFBOX-3176] - Add a removeRegion method in PDFTextSTripperByArea class
 [PDFBOX-3178] - Make PDFTextStreamEngine class public
+[PDFBOX-3200] - Performance improvement in PDPageContentStream.setFont
+[PDFBOX-3202] - Rename structure element setter of PDOutlineItem
+[PDFBOX-3224] - Cache Font Bounding Boxes for Performance in Text Extraction
+[PDFBOX-3231] - Update PDPropBuildDataDict
+[PDFBOX-3234] - Rename check box field type to match PDF 2.0 specification
+[PDFBOX-3245] - Add fill and stroke operators
 
-Feature
+New Feature
 
 [PDFBOX-52] - DCTFilter is not implemented yet
 [PDFBOX-149] - Update encryption algorithms
@@ -1187,6 +1234,7 @@ Task
 [PDFBOX-3011] - Find out why trunk CreateVisibleSignature example produces incorrect output pdf
 [PDFBOX-3020] - Set libraries to current versions for RC
 [PDFBOX-3040] - Move website to local build tool
+[PDFBOX-3058] - Support TIKA Migration to PDFBox 2.0
 
 Test
 
@@ -1211,6 +1259,7 @@ Wish
 [PDFBOX-2692] - Possibility to use our own and/or overwrite PageDrawer class
 [PDFBOX-2738] - Make org.apache.pdfbox.pdmodel.PDDocument#getFontsToSubset public
 [PDFBOX-2770] - Provide the sources along with SNAPSHOT releases
+[PDFBOX-3233] - Create default resources with cache
 
 Release Contents
 ----------------
