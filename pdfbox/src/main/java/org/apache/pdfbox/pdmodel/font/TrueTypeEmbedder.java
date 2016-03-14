@@ -305,6 +305,7 @@ abstract class TrueTypeEmbedder implements Subsetter
 
         // re-build the embedded font
         buildSubset(new ByteArrayInputStream(out.toByteArray()), tag, gidToCid);
+        ttf.close();
     }
 
     /**
