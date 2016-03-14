@@ -34,12 +34,12 @@
 
   <scm>
     <connection>
-      scm:svn:http://svn.apache.org/repos/asf/pdfbox/trunk
+      scm:svn:http://svn.apache.org/repos/asf/pdfbox/branches/2.0
     </connection>
     <developerConnection>
-      scm:svn:https://svn.apache.org/repos/asf/pdfbox/trunk
+      scm:svn:https://svn.apache.org/repos/asf/pdfbox/branches/2.0
     </developerConnection>
-    <url>http://svn.apache.org/viewvc/pdfbox/trunk</url>
+    <url>http://svn.apache.org/viewvc/pdfbox/branches/2.0</url>
   </scm>
 
   <modules>
