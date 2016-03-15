@@ -289,7 +289,7 @@ public class Type1CharString
             int b = numbers.get(numbers.size() -1);
             int a = numbers.get(numbers.size() -2);
 
-            int result = a / b; // TODO loss of precision, should be float
+            int result = Math.round(a / (float) b); // TODO loss of precision, result should be float
 
             List<Integer> list = new ArrayList<Integer>(numbers);
             list.remove(list.size() - 1);
