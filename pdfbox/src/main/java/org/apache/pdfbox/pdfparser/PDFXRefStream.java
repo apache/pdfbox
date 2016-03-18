@@ -111,6 +111,11 @@ public class PDFXRefStream implements PDFXRef
             {
                 continue;
             }
+            // this one too, because it has already been written in COSWriter.doWriteBody()
+            if (COSName.ENCRYPT.equals(cosName))
+            {
+                continue;
+            }
             COSBase dictionaryObject = this.stream.getDictionaryObject(cosName);
             dictionaryObject.setDirect(true);
         }
