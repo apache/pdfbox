@@ -471,18 +471,18 @@ public class COSWriter implements ICOSVisitor, Closeable
             addObjectToWrite( info );
         }
 
-        while( objectsToWrite.size() > 0 )
-        {
-            COSBase nextObject = objectsToWrite.removeFirst();
-            objectsToWriteSet.remove(nextObject);
-            doWriteObject( nextObject );
-        }
+        doWriteObjects();
         willEncrypt = false;
         if( encrypt != null )
         {
             addObjectToWrite( encrypt );
         }
 
+        doWriteObjects();
+    }
+
+    private void doWriteObjects() throws IOException
+    {
         while( objectsToWrite.size() > 0 )
         {
             COSBase nextObject = objectsToWrite.removeFirst();
