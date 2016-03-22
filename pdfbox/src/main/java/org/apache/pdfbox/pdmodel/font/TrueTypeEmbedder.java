@@ -103,6 +103,11 @@ abstract class TrueTypeEmbedder implements Subsetter
         try
         {
             input = stream.createInputStream();
+            if (ttf != null)
+            {
+                // close the replaced true type font
+                ttf.close();
+            }
             ttf = new TTFParser().parseEmbedded(input);
             if (!isEmbeddingPermitted(ttf))
             {
