@@ -521,7 +521,7 @@ public class PDDocument implements Closeable
             in = page.getContents();
             if (in != null)
             {
-                PDStream dest = new PDStream(this, page.getContents(), COSName.FLATE_DECODE);
+                PDStream dest = new PDStream(this, in, COSName.FLATE_DECODE);
                 importedPage.setContents(dest);
             }
             addPage(importedPage);
@@ -530,7 +530,6 @@ public class PDDocument implements Closeable
         {
             IOUtils.closeQuietly(in);
         }
-
         return importedPage;
     }
 
