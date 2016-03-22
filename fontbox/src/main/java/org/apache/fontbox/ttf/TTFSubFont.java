@@ -966,6 +966,10 @@ public class TTFSubFont
             int[] gidToUC = this.baseCmap.getGlyphIdToCharacterCode();
             for (Integer glyphId : this.glyphIds) 
             {
+                if (glyphId >= gidToUC.length)
+                {
+                    continue;
+                }
                 int uc = gidToUC[glyphId.intValue()];
                 String name = null;
                 if (uc < 0x8000) 
