@@ -50,7 +50,7 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
 abstract class TrueTypeEmbedder implements Subsetter
 {
     private static final int ITALIC = 1;
-    private static final int OBLIQUE = 256;
+    private static final int OBLIQUE = 512;
     private static final String BASE25 = "BCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     private final PDDocument document;
@@ -185,8 +185,7 @@ abstract class TrueTypeEmbedder implements Subsetter
                          ttf.getHorizontalHeader().getNumberOfHMetrics() == 1);
 
         int fsSelection = os2.getFsSelection();
-        fd.setItalic((fsSelection & ITALIC) == fsSelection ||
-                     (fsSelection & OBLIQUE) == fsSelection);
+        fd.setItalic(((fsSelection & (ITALIC | OBLIQUE)) != 0));
 
         switch (os2.getFamilyClass())
         {
