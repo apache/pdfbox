@@ -17,14 +17,19 @@
 package org.apache.pdfbox.cos;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.util.DateConverter;
+import org.apache.pdfbox.util.SmallMap;
 
 /**
  * This class represents a dictionary where name/value pairs reside.
@@ -34,13 +39,15 @@ import org.apache.pdfbox.util.DateConverter;
  */
 public class COSDictionary extends COSBase implements COSUpdateInfo
 {
+	
     private static final String PATH_SEPARATOR = "/";
     private boolean needToBeUpdated;
 
     /**
      * The name-value pairs of this dictionary. The pairs are kept in the order they were added to the dictionary.
      */
-    protected Map<COSName, COSBase> items = new LinkedHashMap<COSName, COSBase>();
+//    protected Map<COSName, COSBase> items = new LinkedHashMap<COSName, COSBase>();
+    protected Map<COSName, COSBase> items = new SmallMap<COSName, COSBase>();
 
     /**
      * Constructor.
@@ -48,6 +55,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     public COSDictionary()
     {
         // default constructor
+        debugInstanceCount();
     }
 
     /**
@@ -58,8 +66,54 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     public COSDictionary(COSDictionary dict)
     {
         items.putAll(dict.items);
+        
+        debugInstanceCount();
     }
 
+    private static final boolean DO_DEBUG_INSTANCE_COUNT = true;
+    private static final List<WeakReference<COSDictionary>> DICT_INSTANCES = 
+            DO_DEBUG_INSTANCE_COUNT ? new ArrayList<WeakReference<COSDictionary>>() : null;
+
+    /**
+     * Only for memory debugging purposes (especially PDFBOX-3284): holds weak
+     * references to all instances and prints after each 10,000th instance a
+     * statistic across all instances showing how many instances we have per
+     * dictionary size (item count).
+     * This is to show that there can be a large number of COSDictionary instances
+     * but each having only few items, thus using a {@link LinkedHashMap} is a
+     * waste of memory resources.
+     * 
+     * <p>This method should be removed if further testing of COSDictionary uses
+     * is not needed anymore.</p>
+     */
+    private final void debugInstanceCount()
+    {
+        if (DO_DEBUG_INSTANCE_COUNT)
+        {
+            synchronized (DICT_INSTANCES)
+            {
+                DICT_INSTANCES.add(new WeakReference<COSDictionary>(this));
+                // print statistics at each 10,000th instance
+                if (DICT_INSTANCES.size() % 10000 == 0)
+                {
+                    int[] sizeCount = new int[100];
+                    for (WeakReference<COSDictionary> dict : DICT_INSTANCES)
+                    {
+                        COSDictionary curDict = dict.get();
+                        if (curDict != null)
+                        {
+                            int sizeIdx = curDict.size();
+                            sizeCount[sizeIdx < sizeCount.length ? sizeIdx
+                                    : sizeCount.length - 1]++;
+                        }
+                    }
+                    System.out.println("COSDictionary: dictionary size occurrences: " + Arrays.toString(sizeCount));
+                }
+            }
+        }
+    }
+    
+    
     /**
      * @see java.util.Map#containsValue(java.lang.Object)
      *
