@@ -70,7 +70,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
         debugInstanceCount();
     }
 
-    private static final boolean DO_DEBUG_INSTANCE_COUNT = true;
+    private static final boolean DO_DEBUG_INSTANCE_COUNT = false;
     private static final List<WeakReference<COSDictionary>> DICT_INSTANCES = 
             DO_DEBUG_INSTANCE_COUNT ? new ArrayList<WeakReference<COSDictionary>>() : null;
 
