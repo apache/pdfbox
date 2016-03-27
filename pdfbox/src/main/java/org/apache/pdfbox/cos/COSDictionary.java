@@ -107,7 +107,18 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
                                     : sizeCount.length - 1]++;
                         }
                     }
-                    System.out.println("COSDictionary: dictionary size occurrences: " + Arrays.toString(sizeCount));
+                    // find biggest
+                    int maxIdx = -1;
+                    int max = 0;
+                    for (int sizeIdx = 0; sizeIdx < sizeCount.length; ++sizeIdx)
+                    {
+                        if (max < sizeCount[sizeIdx])
+                        {
+                            maxIdx = sizeIdx;
+                            max = sizeCount[sizeIdx];
+                        }
+                    }
+                    System.out.println("COSDictionary: dictionary size occurrences (max idx: " + maxIdx + "): " + Arrays.toString(sizeCount));
                 }
             }
         }
