@@ -1513,16 +1513,12 @@ public class NonSequentialPDFParser extends PDFParser
                             forceParsing);
                     parser.parse();
 
-                    // get set of object numbers referenced for this object
-                    // stream
-                    final Set<Long> refObjNrs = xrefTrailerResolver.getContainedObjectNumbers(objstmObjNr);
-
                     // register all objects which are referenced to be contained
                     // in object stream
                     for (COSObject next : parser.getObjects())
                     {
                         COSObjectKey stmObjKey = new COSObjectKey(next);
-                        if (refObjNrs.contains(stmObjKey.getNumber()))
+                        if (xrefTrailerResolver.getXrefTable().containsKey(stmObjKey))
                         {
                             COSObject stmObj = document.getObjectFromPool(stmObjKey);
                             stmObj.setObject(next.getObject());
