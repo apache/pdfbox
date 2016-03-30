@@ -833,7 +833,8 @@ public class PreflightParser extends PDFParser
                     for (COSObject next : parser.getObjects())
                     {
                         COSObjectKey stmObjKey = new COSObjectKey(next);
-                        if (xrefTrailerResolver.getXrefTable().containsKey(stmObjKey))
+                        Long offset = xrefTrailerResolver.getXrefTable().get(stmObjKey); 
+                        if (offset != null && offset == -objstmObjNr)
                         {
                             COSObject stmObj = document.getObjectFromPool(stmObjKey);
                             stmObj.setObject(next.getObject());
