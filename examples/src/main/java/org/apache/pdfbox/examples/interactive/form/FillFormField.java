@@ -46,7 +46,7 @@ public final class FillFormField
         // as there might not be an AcroForm entry a null check is necessary
         if (acroForm != null)
         {
-            // Retrieve an individual field and set it's value.
+            // Retrieve an individual field and set its value.
             PDTextField field = (PDTextField) acroForm.getField( "sampleField" );
             field.setValue("Text Entry");
             
