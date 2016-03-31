@@ -387,6 +387,14 @@ public class PDCcitt extends PDXObjectImage
                     }
                     break;
                 }
+                case 266:
+                {
+                    if (val != 1)
+                    {
+                        throw new IOException("FillOrder " + val + " is not supported");
+                    }
+                    break;
+                }
                 case 273:
                 {
                     if (count == 1)
