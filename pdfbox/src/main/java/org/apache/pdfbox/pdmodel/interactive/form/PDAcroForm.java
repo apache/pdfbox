@@ -220,6 +220,11 @@ public final class PDAcroForm implements COSObjectable
         // the content stream to write to
         PDPageContentStream contentStream;
         
+        // Hold a reference between the annotations and the page they are on.
+        // This will only be used in case a PDAnnotationWidget doesn't contain
+        // a /P entry specifying the page it's on as the /P entry is optional
+        Map<COSDictionary, Integer> annotationToPageRef = null;
+        
         // Iterate over all form fields and their widgets and create a
         // FormXObject at the page content level from that
         for (PDField field : fields)
@@ -229,6 +234,18 @@ public final class PDAcroForm implements COSObjectable
                 if (widget.getNormalAppearanceStream() != null)
                 {
                     PDPage page = widget.getPage();
+
+                    // resolve the page from looking at the annotations
+                    if (widget.getPage() == null) {
+                    	if (annotationToPageRef == null) {
+                    		annotationToPageRef = buildAnnotationToPageRef();
+                    	}
+                    	Integer pageRef = annotationToPageRef.get(widget.getCOSObject());
+                    	if (pageRef != null) {
+                    		page = document.getPage((int) pageRef);
+                    	}
+                    }
+
                     if (!isContentStreamWrapped)
                     {
                         contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, true, true);
@@ -615,5 +632,24 @@ public final class PDAcroForm implements COSObjectable
     public void setAppendOnly(boolean appendOnly)
     {
         dictionary.setFlag(COSName.SIG_FLAGS, FLAG_APPEND_ONLY, appendOnly);
+    }
+    
+    private Map<COSDictionary, Integer> buildAnnotationToPageRef() {
+    	Map<COSDictionary, Integer> annotationToPageRef = new HashMap<COSDictionary, Integer>();
+    	
+    	int idx = 0;
+    	for (PDPage page : document.getPages()) {
+    		try {
+				for (PDAnnotation annotation : page.getAnnotations()) {
+					if (annotation instanceof PDAnnotationWidget) {
+						annotationToPageRef.put(annotation.getCOSObject(), idx);
+					}
+				}
+			} catch (IOException e) {
+				LOG.warn("Can't retriev annotations for page " + idx);
+			}
+    		idx++;
+    	}    	
+    	return annotationToPageRef;
     }
 }
