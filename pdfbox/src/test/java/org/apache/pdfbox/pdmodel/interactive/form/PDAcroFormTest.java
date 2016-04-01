@@ -26,6 +26,7 @@ import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.rendering.TestPDFToImage;
 import org.junit.After;
 import org.junit.Before;
@@ -101,6 +102,35 @@ public class PDAcroFormTest
         
     }
 
+    /*
+     * Same as above but remove the page reference from the widget annotation
+     * before doing the flatten() to ensure that the widgets page reference is properly looked up
+     * (PDFBOX-3301)
+     */
+    @Test
+    public void testFlattenWidgetNoRef() throws IOException
+    {
+        PDDocument testPdf = PDDocument.load(new File(IN_DIR, "AlignmentTests.pdf"));
+        PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
+        for (PDField field : acroForm.getFieldTree()) {
+        	for (PDAnnotationWidget widget : field.getWidgets()) {
+        		widget.getCOSObject().removeItem(COSName.P);
+        	}
+        }
+        testPdf.getDocumentCatalog().getAcroForm().flatten();
+        assertTrue(testPdf.getDocumentCatalog().getAcroForm().getFields().isEmpty());
+        File file = new File(OUT_DIR, "AlignmentTests-flattened-noRef.pdf");
+        testPdf.save(file);
+        // compare rendering
+        TestPDFToImage testPDFToImage = new TestPDFToImage(TestPDFToImage.class.getName());
+        if (!testPDFToImage.doTestFile(file, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
+        {
+            // don't fail, rendering is different on different systems, result must be viewed manually
+            System.out.println("Rendering of " + file + " failed or is not identical to expected rendering in " + IN_DIR + " directory");
+        }
+    }
+    
+    
     @After
     public void tearDown() throws IOException
     {
