@@ -51,7 +51,7 @@ public abstract class CharStringHandler
             }
             else
             {
-                stack.push((Integer)obj);
+                stack.push((Number)obj);
             }
         }
         return stack;
