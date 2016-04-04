@@ -66,10 +66,13 @@ class StreamImageView implements ActionListener, AncestorListener
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
+        zoomMenu = ZoomMenu.getInstance();
+        zoomMenu.changeZoomSelection(zoomMenu.getImageZoomScale());
+
         label = new JLabel();
         label.setBorder(new LineBorder(Color.BLACK));
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
-        label.setIcon(new ImageIcon(image));
+        addImage(zoomImage(image, zoomMenu.getImageZoomScale(), RotationMenu.getRotationDegrees()));
 
         panel.add(Box.createVerticalGlue());
         panel.add(label);
@@ -105,6 +108,7 @@ class StreamImageView implements ActionListener, AncestorListener
         if (ZoomMenu.isZoomMenu(actionCommand) || RotationMenu.isRotationMenu(actionCommand))
         {
             addImage(zoomImage(image, ZoomMenu.getZoomScale(), RotationMenu.getRotationDegrees()));
+            zoomMenu.setImageZoomScale(ZoomMenu.getZoomScale());
         }
     }
 
@@ -117,9 +121,7 @@ class StreamImageView implements ActionListener, AncestorListener
     @Override
     public void ancestorAdded(AncestorEvent ancestorEvent)
     {
-        zoomMenu = ZoomMenu.getInstance();
         zoomMenu.addMenuListeners(this);
-        zoomMenu.setZoomSelection(ZoomMenu.ZOOM_100_PERCENT);
         zoomMenu.setEnableMenu(true);
         
         rotationMenu = RotationMenu.getInstance();
