@@ -42,7 +42,8 @@ public final class ZoomMenu extends MenuBase
         }
     }
 
-    public static final String ZOOM_100_PERCENT = "100%";
+    private float pageZoomScale = 1;
+    private float imageZoomScale = 1;
     private static final int[] ZOOMS = new int[] { 25, 50, 100, 200, 400 };
 
     private static ZoomMenu instance;
@@ -81,11 +82,12 @@ public final class ZoomMenu extends MenuBase
     /**
      * Set the zoom selection.
      *
-     * @param selection zoom menu string, e.g. "100%".
+     * @param zoomValue, e.g. 1, 0.25, 4.
      * @throws IllegalArgumentException if the parameter doesn't belong to a zoom menu item.
      */
-    public void setZoomSelection(String selection)
+    public void changeZoomSelection(float zoomValue)
     {
+        String selection = (int)(zoomValue*100) +"%";
         for (Component comp : menu.getMenuComponents())
         {
             JRadioButtonMenuItem menuItem = (JRadioButtonMenuItem) comp;
@@ -131,5 +133,36 @@ public final class ZoomMenu extends MenuBase
             }
         }
         throw new IllegalStateException("no zoom menu item is selected");
+    }
+
+    public float getPageZoomScale()
+    {
+        return pageZoomScale;
+    }
+
+    public void setPageZoomScale(float pageZoomValue)
+    {
+        pageZoomScale = pageZoomValue;
+    }
+
+    public float getImageZoomScale()
+    {
+        return imageZoomScale;
+    }
+
+    public void setImageZoomScale(float imageZoomValue)
+    {
+        imageZoomScale = imageZoomValue;
+    }
+
+    /**
+     * When a new file is loaded zoom values should be reset.
+     *
+     */
+    public void resetZoom()
+    {
+        setPageZoomScale(1);
+        setImageZoomScale(1);
+        changeZoomSelection(1);
     }
 }
