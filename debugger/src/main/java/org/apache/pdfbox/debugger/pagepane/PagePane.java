@@ -81,9 +81,11 @@ public class PagePane implements ActionListener, AncestorListener
         panel.add(label);
         panel.addAncestorListener(this);
 
+        zoomMenu = ZoomMenu.getInstance();
+        zoomMenu.changeZoomSelection(zoomMenu.getPageZoomScale());
         // render in a background thread: rendering is read-only, so this should be ok, despite
         // the fact that PDDocument is not officially thread safe
-        new RenderWorker(1, 0).execute();
+        new RenderWorker(zoomMenu.getPageZoomScale(), 0).execute();
     }
 
     /**
@@ -103,15 +105,14 @@ public class PagePane implements ActionListener, AncestorListener
         if (ZoomMenu.isZoomMenu(actionCommand) || RotationMenu.isRotationMenu(actionCommand))
         {
             new RenderWorker(ZoomMenu.getZoomScale(), RotationMenu.getRotationDegrees()).execute();
+            zoomMenu.setPageZoomScale(ZoomMenu.getZoomScale());
         }
     }
 
     @Override
     public void ancestorAdded(AncestorEvent ancestorEvent)
     {
-        zoomMenu = ZoomMenu.getInstance();
         zoomMenu.addMenuListeners(this);
-        zoomMenu.setZoomSelection(ZoomMenu.ZOOM_100_PERCENT);
         zoomMenu.setEnableMenu(true);
         
         rotationMenu = RotationMenu.getInstance();
