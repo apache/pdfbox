@@ -270,7 +270,8 @@ public class PDFDebugger extends JFrame
                 }
                 catch (IOException e)
                 {
-                    throw new RuntimeException(e);
+                    new ErrorDialog(e).setVisible(true);
+                    return true;
                 }
                 catch (UnsupportedFlavorException e)
                 {
