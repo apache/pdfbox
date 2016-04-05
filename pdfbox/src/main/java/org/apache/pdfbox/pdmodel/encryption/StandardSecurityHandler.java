@@ -109,8 +109,11 @@ public final class StandardSecurityHandler extends SecurityHandler
         {
             return DEFAULT_VERSION;
         }
-        //TODO return 4 if keyLength is 128 to enable AES128 functionality
-        else if(keyLength == 256)
+        else if (keyLength == 128 && policy.isPreferAES())
+        {
+            return 4;
+        }
+        else if (keyLength == 256)
         {
             return 5;
         }
