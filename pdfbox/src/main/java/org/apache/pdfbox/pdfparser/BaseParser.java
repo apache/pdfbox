@@ -707,7 +707,8 @@ public abstract class BaseParser
     protected boolean isEndOfName(int ch)
     {
         return ch == ASCII_SPACE || ch == ASCII_CR || ch == ASCII_LF || ch == 9 || ch == '>' ||
-               ch == '<' || ch == '[' || ch =='/' || ch ==']' || ch ==')' || ch =='(';
+               ch == '<' || ch == '[' || ch =='/' || ch ==']' || ch ==')' || ch =='(' || 
+               ch == 0 || ch == '\f';
     }
 
     /**
