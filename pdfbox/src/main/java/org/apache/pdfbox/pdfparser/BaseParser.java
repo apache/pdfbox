@@ -1123,7 +1123,7 @@ public abstract class BaseParser
     protected boolean isEndOfName(char ch)
     {
         return (ch == ' ' || ch == 13 || ch == 10 || ch == 9 || ch == '>' || ch == '<'
-            || ch == '[' || ch =='/' || ch ==']' || ch ==')' || ch =='(' ||
+            || ch == '[' || ch =='/' || ch ==']' || ch ==')' || ch =='(' || ch == 0 || ch == '\f' ||
             ch == -1 //EOF
         );
     }
