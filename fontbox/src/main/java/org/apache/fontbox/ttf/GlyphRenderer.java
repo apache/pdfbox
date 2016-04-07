@@ -63,13 +63,19 @@ class GlyphRenderer
     private Point[] describe(GlyphDescription gd)
     {
         int endPtIndex = 0;
+        int endPtOfContourIndex = -1;
         Point[] points = new Point[gd.getPointCount()];
         for (int i = 0; i < gd.getPointCount(); i++)
         {
-            boolean endPt = gd.getEndPtOfContours(endPtIndex) == i;
+            if (endPtOfContourIndex == -1)
+            {
+                endPtOfContourIndex = gd.getEndPtOfContours(endPtIndex);
+            }
+            boolean endPt = endPtOfContourIndex == i;
             if (endPt)
             {
                 endPtIndex++;
+                endPtOfContourIndex = -1;
             }
             points[i] = new Point(gd.getXCoordinate(i), gd.getYCoordinate(i),
                     (gd.getFlags(i) & GlyfDescript.ON_CURVE) != 0, endPt);
