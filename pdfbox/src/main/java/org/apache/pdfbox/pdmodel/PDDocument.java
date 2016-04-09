@@ -1108,17 +1108,22 @@ public class PDDocument implements Closeable
     }
 
    /**
-     * Save the PDF as an incremental update. This is only possible if the PDF was loaded from a file.
+     * Save the PDF as an incremental update. This is only possible if the PDF was loaded from a
+     * file or a stream, not if the document was created in PDFBox itself.
      *
      * @param output stream to write
      * @throws IOException if the output could not be written
-     * @throws IllegalStateException if the document was not loaded from a file.
+     * @throws IllegalStateException if the document was not loaded from a file or a stream.
      */
     public void saveIncremental(OutputStream output) throws IOException
     {
         COSWriter writer = null;
         try
         {
+            if (pdfSource == null)
+            {
+                throw new IllegalStateException("document was not loaded from a file or a stream");
+            }
             writer = new COSWriter(output, pdfSource);
             writer.write(this, signInterface);
             writer.close();
