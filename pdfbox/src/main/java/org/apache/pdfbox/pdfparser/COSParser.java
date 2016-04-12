@@ -1216,8 +1216,13 @@ public class COSParser extends BaseParser
                     readObjectNumber();
                     readGenerationNumber();
                     readExpectedString(OBJ_MARKER, true);
+                    // check the dictionary to avoid false positives
+                    COSDictionary dict = parseCOSDictionary();
                     source.seek(startXRefOffset);
-                    return startXRefOffset;
+                    if (dict != null && "XRef".equals(dict.getNameAsString(COSName.TYPE)))
+                    {
+                        return startXRefOffset;
+                    }
                 }
                 catch (IOException exception)
                 {
