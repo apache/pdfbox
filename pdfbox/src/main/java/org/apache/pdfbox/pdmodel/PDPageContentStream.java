@@ -614,6 +614,33 @@ public final class PDPageContentStream implements Closeable
     }
 
     /**
+     * Draw an image at the origin with the given transformation matrix.
+     *
+     * @param image The image to draw.
+     * @param matrix The transformation matrix to apply to the image.
+     *
+     * @throws IOException If there is an error writing to the stream.
+     * @throws IllegalStateException If the method was called within a text block.
+     */
+    public void drawImage(PDImageXObject image, Matrix matrix) throws IOException
+    {
+        if (inTextMode)
+        {
+            throw new IllegalStateException("Error: drawImage is not allowed within a text block.");
+        }
+
+        saveGraphicsState();
+
+        AffineTransform transform = matrix.createAffineTransform();
+        transform(new Matrix(transform));
+
+        writeOperand(resources.add(image));
+        writeOperator("Do");
+
+        restoreGraphicsState();
+    }
+
+    /**
      * Draw an inline image at the x,y coordinates, with the default size of the image.
      *
      * @param inlineImage The inline image to draw.
