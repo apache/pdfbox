@@ -49,6 +49,7 @@ import org.apache.pdfbox.pdmodel.common.PDNumberTreeNode;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDMarkInfo;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureTreeRoot;
+import org.apache.pdfbox.pdmodel.graphics.color.PDOutputIntent;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
@@ -429,6 +430,8 @@ public class PDFMergerUtility
             destCatalog.getCOSObject().setItem(COSName.METADATA, newStream);
         }
 
+        mergeOutputIntents(cloner, srcCatalog, destCatalog);
+
         // merge logical structure hierarchy if logical structure information is available in both source pdf and
         // destination pdf
         boolean mergeStructTree = false;
@@ -535,6 +538,38 @@ public class PDFMergerUtility
             kDictLevel0.setItem(COSName.P, destStructTree);
             kDictLevel0.setItem(COSName.S, new COSString(STRUCTURETYPE_DOCUMENT));
             destStructTree.setK(kDictLevel0);
+        }
+    }
+
+    // copy outputIntents to destination, but avoid duplicate OutputConditionIdentifier,
+    // except when it is missing or is named "Custom".
+    private void mergeOutputIntents(PDFCloneUtility cloner, 
+            PDDocumentCatalog srcCatalog, PDDocumentCatalog destCatalog) throws IOException
+    {
+        List<PDOutputIntent> srcOutputIntents = srcCatalog.getOutputIntents();
+        List<PDOutputIntent> dstOutputIntents = destCatalog.getOutputIntents();
+        for (PDOutputIntent srcOI : srcOutputIntents)
+        {
+            String srcOCI = srcOI.getOutputConditionIdentifier();
+            if (srcOCI != null && !"Custom".equals(srcOCI))
+            {
+                // is that identifier already there?
+                boolean skip = false;
+                for (PDOutputIntent dstOI : dstOutputIntents)
+                {
+                    if (dstOI.getOutputConditionIdentifier().equals(srcOCI))
+                    {
+                        skip = true;
+                        break;
+                    }
+                }
+                if (skip)
+                {
+                    continue;
+                }
+            }
+            destCatalog.addOutputIntent(new PDOutputIntent((COSDictionary) cloner.cloneForNewDocument(srcOI)));
+            dstOutputIntents.add(srcOI);
         }
     }
 
