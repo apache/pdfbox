@@ -78,6 +78,12 @@ public class DomXmpParser
         try
         {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            dbFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            dbFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            dbFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            dbFactory.setXIncludeAware(false);
+            dbFactory.setExpandEntityReferences(false);
             dbFactory.setNamespaceAware(true);
             dBuilder = dbFactory.newDocumentBuilder();
             nsFinder = new NamespaceFinder();
@@ -86,7 +92,6 @@ public class DomXmpParser
         {
             throw new XmpParsingException(ErrorType.Configuration, "Failed to initilalize", e);
         }
-
     }
 
     public boolean isStrictParsing()
