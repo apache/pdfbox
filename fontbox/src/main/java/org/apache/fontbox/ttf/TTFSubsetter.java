@@ -249,7 +249,14 @@ public final class TTFSubsetter
         writeSInt16(out, h.getReserved4());
         writeSInt16(out, h.getReserved5());
         writeSInt16(out, h.getMetricDataFormat());
-        writeUint16(out, glyphIds.subSet(0, h.getNumberOfHMetrics()).size());
+
+        // is there a GID >= numberOfHMetrics ? Then keep the last entry of original hmtx table
+        int hmetrics = glyphIds.subSet(0, h.getNumberOfHMetrics()).size();
+        if (glyphIds.last() >= h.getNumberOfHMetrics())
+        {
+            ++hmetrics;
+        }
+        writeUint16(out, hmetrics);
 
         out.flush();
         return bos.toByteArray();
@@ -864,11 +871,21 @@ public final class TTFSubsetter
         HorizontalMetricsTable hm = ttf.getHorizontalMetrics();
         byte [] buf = new byte[4];
         InputStream is = ttf.getOriginalData();
+        
+        // is there a GID >= numberOfHMetrics ? Then keep the last entry of original hmtx table
+        SortedSet<Integer> gidSet = glyphIds;
+        if (glyphIds.last() >= h.getNumberOfHMetrics())
+        {
+            // Create a deep copy of the glyph set that has the last entry
+            gidSet = new TreeSet<Integer>(glyphIds);
+            gidSet.add(ttf.getHorizontalHeader().getNumberOfHMetrics() - 1);
+        }
+        
         try
         {
             is.skip(hm.getOffset());
             long lastOff = 0;
-            for (Integer glyphId : glyphIds)
+            for (Integer glyphId : gidSet)
             {
                 // offset in original file
                 long off;
