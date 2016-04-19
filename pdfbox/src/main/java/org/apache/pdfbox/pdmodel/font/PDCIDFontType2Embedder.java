@@ -277,7 +277,12 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         for (int cid : keys)
         {
             int gid = cidToGid.get(cid);
-            float width = ttf.getHorizontalMetrics().getAdvanceWidth(gid) * scaling;
+            long width = Math.round(ttf.getHorizontalMetrics().getAdvanceWidth(gid) * scaling);
+            if (width == 1000)
+            {
+                // skip default width
+                continue;
+            }
             // c [w1 w2 ... wn]
             if (prev != cid - 1)
             {
@@ -285,7 +290,7 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
                 widths.add(COSInteger.get(cid)); // c
                 widths.add(ws);
             }
-            ws.add(COSInteger.get(Math.round(width))); // wi
+            ws.add(COSInteger.get(width)); // wi
             prev = cid;
         }
         cidFont.setItem(COSName.W, widths);
