@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.multipdf;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -45,6 +46,7 @@ import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.PageMode;
+import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.pdmodel.common.PDNumberTreeNode;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDMarkInfo;
@@ -71,6 +73,8 @@ public class PDFMergerUtility
     private String destinationFileName;
     private OutputStream destinationStream;
     private boolean ignoreAcroFormErrors = false;
+    private PDDocumentInformation destinationDocumentInformation = null;
+    private byte[] destinationXmpMetadata = null;
 
     /**
      * Instantiate a new PDFMergerUtility.
@@ -119,6 +123,50 @@ public class PDFMergerUtility
     public void setDestinationStream(OutputStream destStream)
     {
         destinationStream = destStream;
+    }
+
+    /**
+     * Get the destination document information that is to be set in {@link #mergeDocuments(org.apache.pdfbox.io.MemoryUsageSetting)
+     * }. The default is null, which means that it is ignored.
+     *
+     * @return The destination document information.
+     */
+    public PDDocumentInformation getDestinationDocumentInformation()
+    {
+        return destinationDocumentInformation;
+    }
+
+    /**
+     * Set the destination document information that is to be set in {@link #mergeDocuments(org.apache.pdfbox.io.MemoryUsageSetting)
+     * }. The default is null, which means that it is ignored.
+     *
+     * @param info The destination document information.
+     */
+    public void setDestinationDocumentInformation(PDDocumentInformation info)
+    {
+        destinationDocumentInformation = info;
+    }
+
+    /**
+     * Set the destination XMP metadata that is to be set in {@link #mergeDocuments(org.apache.pdfbox.io.MemoryUsageSetting)
+     * }. The default is null, which means that it is ignored.
+     *
+     * @return The destination XMP metadata.
+     */
+    public byte[] getDestinationXmpMetadata()
+    {
+        return destinationXmpMetadata;
+    }
+
+    /**
+     * Set the destination XMP metadata that is to be set in {@link #mergeDocuments(org.apache.pdfbox.io.MemoryUsageSetting)
+     * }. The default is null, which means that it is ignored.
+     *
+     * @param xmp The destination XMP metadata.
+     */
+    public void setXMPMetadata(byte[] xmp)
+    {
+        destinationXmpMetadata = xmp;
     }
 
     /**
@@ -213,6 +261,18 @@ public class PDFMergerUtility
                     tobeclosed.add(source);
                     appendDocument(destination, source);
                 }
+                
+                // optionally set meta data
+                if (destinationDocumentInformation != null)
+                {
+                    destination.setDocumentInformation(destinationDocumentInformation);
+                }
+                if (destinationXmpMetadata != null)
+                {
+                    PDMetadata meta = new PDMetadata(destination, new ByteArrayInputStream(destinationXmpMetadata));
+                    destination.getDocumentCatalog().setMetadata(meta);
+                }
+                
                 if (destinationStream == null)
                 {
                     destination.save(destinationFileName);
