@@ -49,8 +49,9 @@ public final class ExtractText
     private static final String SORT = "-sort";
     private static final String IGNORE_BEADS = "-ignoreBeads";
     private static final String DEBUG = "-debug";
-    // jjb - added simple HTML output
     private static final String HTML = "-html";
+    
+    private static final String STD_ENCODING = "UTF-8";
 
     /*
      * debug flag
@@ -93,7 +94,7 @@ public final class ExtractText
         boolean sort = false;
         boolean separateBeads = true;
         String password = "";
-        String encoding = "UTF-8";
+        String encoding = STD_ENCODING;
         String pdfFile = null;
         String outputFile = null;
         // Defaults to text files
@@ -204,6 +205,11 @@ public final class ExtractText
                 }
                 else
                 {
+                    if (toHTML && !STD_ENCODING.equals(encoding))
+                    {
+                        encoding = STD_ENCODING;
+                        System.out.println("The encoding parameter is ignored when writing html output.");
+                    }
                     output = new OutputStreamWriter( new FileOutputStream( outputFile ), encoding );
                 }
 
