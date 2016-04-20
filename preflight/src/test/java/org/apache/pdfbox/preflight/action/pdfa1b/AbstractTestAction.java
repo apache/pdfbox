@@ -135,5 +135,6 @@ public abstract class AbstractTestAction
                 assertTrue(errors.isEmpty());
             }
         }
+        ctx.getDocument().close();
     }
 }
