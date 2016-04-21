@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.multipdf;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -74,7 +73,7 @@ public class PDFMergerUtility
     private OutputStream destinationStream;
     private boolean ignoreAcroFormErrors = false;
     private PDDocumentInformation destinationDocumentInformation = null;
-    private byte[] destinationXmpMetadata = null;
+    private PDMetadata destinationMetadata = null;
 
     /**
      * Instantiate a new PDFMergerUtility.
@@ -148,25 +147,25 @@ public class PDFMergerUtility
     }
 
     /**
-     * Set the destination XMP metadata that is to be set in {@link #mergeDocuments(org.apache.pdfbox.io.MemoryUsageSetting)
+     * Set the destination metadata that is to be set in {@link #mergeDocuments(org.apache.pdfbox.io.MemoryUsageSetting)
      * }. The default is null, which means that it is ignored.
      *
-     * @return The destination XMP metadata.
+     * @return The destination metadata.
      */
-    public byte[] getDestinationXmpMetadata()
+    public PDMetadata getDestinationMetadata()
     {
-        return destinationXmpMetadata;
+        return destinationMetadata;
     }
 
     /**
-     * Set the destination XMP metadata that is to be set in {@link #mergeDocuments(org.apache.pdfbox.io.MemoryUsageSetting)
+     * Set the destination metadata that is to be set in {@link #mergeDocuments(org.apache.pdfbox.io.MemoryUsageSetting)
      * }. The default is null, which means that it is ignored.
      *
-     * @param xmp The destination XMP metadata.
+     * @param meta The destination metadata.
      */
-    public void setXMPMetadata(byte[] xmp)
+    public void setDestinationMetadata(PDMetadata meta)
     {
-        destinationXmpMetadata = xmp;
+        destinationMetadata = meta;
     }
 
     /**
@@ -267,10 +266,9 @@ public class PDFMergerUtility
                 {
                     destination.setDocumentInformation(destinationDocumentInformation);
                 }
-                if (destinationXmpMetadata != null)
+                if (destinationMetadata != null)
                 {
-                    PDMetadata meta = new PDMetadata(destination, new ByteArrayInputStream(destinationXmpMetadata));
-                    destination.getDocumentCatalog().setMetadata(meta);
+                    destination.getDocumentCatalog().setMetadata(destinationMetadata);
                 }
                 
                 if (destinationStream == null)
