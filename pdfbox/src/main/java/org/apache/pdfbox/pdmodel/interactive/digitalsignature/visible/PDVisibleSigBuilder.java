@@ -330,6 +330,11 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
         String holderFormComment = "q 1 0 0 1 0 0 cm /" + innerFormName + " Do Q \n";
         String innerFormComment = "q 1 0 0 1 0 0 cm /" + imageObjectName + " Do Q\n";
 
+        // PDFBOX-3321 avoid length being written as an indirect object,
+        //  to prevent call of heuristic readUntilEndStream()
+        pdfStructure.getHolderFormStream().getStream().setInt(COSName.LENGTH, 0);
+        pdfStructure.getInnterFormStream().getStream().setInt(COSName.LENGTH, 0);
+        pdfStructure.getImageFormStream().getStream().setInt(COSName.LENGTH, 0);
         appendRawCommands(pdfStructure.getHolderFormStream().createOutputStream(), holderFormComment);
         appendRawCommands(pdfStructure.getInnterFormStream().createOutputStream(), innerFormComment);
         appendRawCommands(pdfStructure.getImageFormStream().createOutputStream(), imgFormComment);
