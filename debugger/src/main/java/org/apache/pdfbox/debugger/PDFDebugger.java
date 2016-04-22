@@ -712,6 +712,7 @@ public class PDFDebugger extends JFrame
                     (COSName.F.equals(key) && isAnnot(parentNode)) || 
                     COSName.FF.equals(key) || 
                     COSName.PANOSE.equals(key) ||
+                    COSName.SIG_FLAGS.equals(key) ||
                     (COSName.P.equals(key) && isEncrypt(parentNode));
         }
         return false;

@@ -77,6 +77,12 @@ public class FlagBitsPane
             view = new FlagBitsPaneView(
                     flag.getFlagType(), flag.getFlagValue(), flag.getFlagBits(), flag.getColumnNames());
         }
+        if (COSName.SIG_FLAGS.equals(flagType))
+        {
+            flag = new SigFlag(dictionary);
+            view = new FlagBitsPaneView(
+                    flag.getFlagType(), flag.getFlagValue(), flag.getFlagBits(), flag.getColumnNames());
+        }
     }
 
     /**
