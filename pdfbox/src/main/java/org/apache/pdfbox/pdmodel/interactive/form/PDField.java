@@ -131,7 +131,7 @@ public abstract class PDField implements COSObjectable
      * For {@link PDNonTerminalField} the list will be empty as non terminal fields
      * have no visual representation in the form.
      * 
-     * @return A non-null string.
+     * @return a List of {@link PDAnnotationWidget} annotations.
      */
     public abstract List<PDAnnotationWidget> getWidgets();
     
