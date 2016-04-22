@@ -1,11 +1,11 @@
-Release Notes -- Apache PDFBox -- Version 1.8.11
+Release Notes -- Apache PDFBox -- Version 1.8.12
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is an incremental bugfix release based on the earlier 1.8.10 release. It 
+This is an incremental bugfix release based on the earlier 1.8.11 release. It 
 contains a couple of fixes and small improvements.
 
 For more details on all fixes included in this release, please refer to the following
@@ -13,65 +13,39 @@ issues on the PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFB
 
 Bug
 
-[PDFBOX-962] - All sort of Problems when importing Xfdf files into PDFs -> damaged pdfs and NPEs
-[PDFBOX-2508] - Text extraction getting zero font height, bad widths, and ? for text in this PDF with Type 3 Fonts
-[PDFBOX-2693] - OutOfMemoryError at org.apache.fontbox.cff.IndexData.initData(IndexData.java:95)
-[PDFBOX-2816] - PDFBox makes disallowed changes when signing a signed document
-[PDFBOX-2845] - Error parsing PDF
-[PDFBOX-2901] - High CPU load and OutOfMemoryError when rendering shading
-[PDFBOX-2903] - ClassCastException at PDFParser:667
-[PDFBOX-2909] - NullPointerException when rendering shading with no function
-[PDFBOX-2911] - Merge does not close input streams
-[PDFBOX-2914] - java.lang.NegativeArraySizeException in org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray.createColorModel
-[PDFBOX-2916] - ArrayIndexOutOfBoundsException in CmapSubtable.processSubtype6
-[PDFBOX-2923] - CFFParser parser treats CIDFont's charset data as SID
-[PDFBOX-2924] - ClassCastException when doing PDFSplit
-[PDFBOX-2925] - EmptyStackException in PDFStreamEngine.getColorSpaces
-[PDFBOX-2935] - Problem while extracting font from PDFontSetting (used in PDExtendedGraphicsState)
-[PDFBOX-2940] - ClassCastException in FDF export
-[PDFBOX-2958] - TIFF-Predictor with 1 bit per component not supported
-[PDFBOX-2964] - Checkbox getOnValue() throws NPE
-[PDFBOX-2965] - NPE in PDAcroForm.getField() if the /Fields entry is missing
-[PDFBOX-2976] - java.util.zip.DataFormatException: incorrect data check
-[PDFBOX-2982] - fix ClassCastExceptions in operator methods
-[PDFBOX-2985] - Potential NPE in PDMarkedContent#getMCID()
-[PDFBOX-2986] - Potential resource leak in TTFParser's use of RAFDataStream
-[PDFBOX-2987] - NPE in PDTrueTypeFont.extractCMaps
-[PDFBOX-2988] - Infinite recursion in ExtractImages 1.8.11-SNAPSHOT
-[PDFBOX-2989] - LZW decode filter shouldn't throw IndexOutOfBoundsException
-[PDFBOX-2990] - PDDocument.load fails to load a PDF document.
-[PDFBOX-2996] - StackOverflow in Quicksort
-[PDFBOX-3002] - PDF files not closed after load fails
-[PDFBOX-3022] - Maven repos should be https
-[PDFBOX-3034] - Newly created XRef stream has direct root objects
-[PDFBOX-3035] - Files with missing xref table must fail
-[PDFBOX-3041] - Wrong default type in Xref stream W0 element
-[PDFBOX-3087] - Metadata stream should not be compressed
-[PDFBOX-3097] - ClassCastException in Axial / Radial shading when object reference in extends
-[PDFBOX-3110] - Extract by beads doesn't work
-[PDFBOX-3114] - Visible signatures in different pages changes previous revision
-[PDFBOX-3153] - Direct JPEG extraction results in invalid images in 2.0.0 releases.
-[PDFBOX-3155] - org.apache.pdfbox.util.PDFTextStripper class initialization throws NumberFormatException with recent Verona-enabled Java 9 JVMs
-[PDFBOX-3157] - PDOutputIntent has N=3 (RGB) hardcoded
-[PDFBOX-3173] - Signature dictionary is not decrypted in encrypted files
-[PDFBOX-3190] - Links don't work in firefox
-[PDFBOX-3193] - New NPE in PDFBox 1.8.11-rc1 in Acroform PDCheckbox's isChecked()
+[PDFBOX-1995] - AdobePDFSchema.getProducer() returns empty string
+[PDFBOX-2428] - An error occured when reading table hmtx
+[PDFBOX-3024] - Preflight validation call PDType0Font.clear at the wrong time
+[PDFBOX-3116] - COSNumber NumberFormatException for large number
+[PDFBOX-3201] - Skip zlib-header and checksum to avoid DataFormatException
+[PDFBOX-3204] - JVM crashes on PDFRenderer.renderImageWithDPI
+[PDFBOX-3217] - PdfaExtensionHelper.populatePDFAPropertyType
+[PDFBOX-3226] - No such Element Exception processing File
+[PDFBOX-3229] - Decryption fails when Metadata not encrypted but EncryptMetadata is true/default.
+[PDFBOX-3235] - ColorSpace validation fails for inlined image
+[PDFBOX-3237] - ASCII85Filter does not use or recognize the correct end-of-data terminator
+[PDFBOX-3254] - Corrupted XMP causes java.lang.StringIndexOutOfBoundsException
+[PDFBOX-3257] - XMPSchemaBasic setCreateDate and setModifyDate don't work if already set
+[PDFBOX-3258] - XMPBox XMPBasicSchema setters don't work if already set
+[PDFBOX-3259] - ClassCastException in PDTilingPattern.getContents
+[PDFBOX-3285] - All lines that use a given font stop rendering if 'ö' is inserted - 
+ArrayIndexOutOfBoundsException in TTFSubFont.buildPostTable
+[PDFBOX-3297] - Infinite loop
+[PDFBOX-3299] - TIFF-files with FillOrder=2 can't be converted to PDF
+[PDFBOX-3308] - Missing endOfName chars
+[PDFBOX-3321] - ASCII stream data size is increased when written
 
 Improvement
 
-[PDFBOX-1621] - Add setModifiedDate(Calendar c) to PDAnnotation
-[PDFBOX-2891] - Use animal sniffer maven plugin to detect non java 5 api usage within the 1.8 branch
-[PDFBOX-2952] - Log statement on level 'severe' while nothing else indicates error
-[PDFBOX-2962] - Handle TIFF predictor for bpc 2 and 4 / optimize existing predictor code
-[PDFBOX-3007] - Preflight cookbook example is inefficient
-[PDFBOX-3176] - Add a removeRegion method in PDFTextSTripperByArea class
+[PDFBOX-1840] - Automatically load isartor for preflight tests
+[PDFBOX-3196] - Update maven plugins and apache parent pom
+[PDFBOX-3231] - Update PDPropBuildDataDict
+[PDFBOX-3251] - Improve parsing and validation of ColorSpace for inline image
+[PDFBOX-3295] - Improve parsing performance of object streams
 
-Task
+Wish
 
-[PDFBOX-2938] - Add 1.8.10 javadocs to pdfbox website
-[PDFBOX-3051] - COSArray.getObject() incorrect handling of indirect reference to COSNull
-[PDFBOX-3060] - Catalog cannot be found
-[PDFBOX-3068] - Null metadata in 2.0 in some files that had metadata in 1.8.10 with old parser
+[PDFBOX-3241] - return original PDF Header
 
 
 Release Contents
