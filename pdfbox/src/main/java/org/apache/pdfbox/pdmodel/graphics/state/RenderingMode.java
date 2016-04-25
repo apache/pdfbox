@@ -103,7 +103,7 @@ public enum RenderingMode
     {
         return this == STROKE ||
                this == FILL_STROKE ||
-               this == STROKE ||
+               this == STROKE_CLIP ||
                this == FILL_STROKE_CLIP;
     }
 
