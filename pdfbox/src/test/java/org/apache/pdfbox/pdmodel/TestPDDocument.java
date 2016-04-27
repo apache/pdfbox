@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -33,6 +34,8 @@ import junit.framework.TestCase;
 import static junit.framework.TestCase.assertNull;
 import static junit.framework.TestCase.assertTrue;
 import static junit.framework.TestCase.fail;
+import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
 /**
  * Testcase introduced with PDFBOX-1581.
@@ -249,5 +252,28 @@ public class TestPDDocument extends TestCase
 
         boolean deleted = f.delete();
         assertTrue("delete good file failed after successful load() and close()", deleted);
+    }
+    
+    /**
+     * Test whether importPage does a deep copy (if not, the save would fail, see PDFBOX-3328)
+     *
+     * @throws java.io.IOException
+     */
+    public void testImportPage() throws IOException
+    {
+        PDDocument doc1 = new PDDocument();
+        PDPage page = new PDPage();
+        PDPageContentStream pageContentStream = new PDPageContentStream(doc1, page);
+        BufferedImage bim = new BufferedImage(20, 20, BufferedImage.TYPE_INT_RGB);
+        PDImageXObject img = LosslessFactory.createFromImage(doc1, bim);
+        pageContentStream.drawImage(img, 0, 0);
+        pageContentStream.close();
+        doc1.addPage(page);
+
+        PDDocument doc2 = new PDDocument();
+        doc2.importPage(doc1.getPage(0));
+        doc1.close();
+        doc2.save(new ByteArrayOutputStream());
+        doc2.close();
     }
 }
