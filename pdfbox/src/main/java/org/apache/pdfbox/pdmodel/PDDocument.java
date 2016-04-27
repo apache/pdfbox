@@ -42,6 +42,7 @@ import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.ScratchFile;
+import org.apache.pdfbox.multipdf.PDFCloneUtility;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
@@ -502,34 +503,26 @@ public class PDDocument implements Closeable
      * document and want to copy the contents to this document's scratch file then use this method otherwise just use
      * the {@link #addPage} method.
      * 
-     * Unlike {@link #addPage}, this method does a deep copy. If your page has annotations, and if
-     * these link to pages not in the target document, then the target document might become huge.
-     * What you need to do is to delete page references of such annotations. See
+     * Unlike {@link #addPage}, this method does a deep clone. This will be slower and have a larger
+     * memory footprint. However the deep clone is important to avoid resources getting lost if the
+     * source document is closed when the destination document is saved.
+     *
+     * If your page has annotations, and if these link to pages not in the target document, then the
+     * target document might become huge. What you need to do is to delete page references of such
+     * annotations. See
      * <a href="http://stackoverflow.com/a/35477351/535646">here</a> for how to do this.
      *
      * @param page The page to import.
      * @return The page that was imported.
-     * 
+     *
      * @throws IOException If there is an error copying the page.
      */
     public PDPage importPage(PDPage page) throws IOException
     {
-        PDPage importedPage = new PDPage(new COSDictionary(page.getCOSObject()), resourceCache);
-        InputStream in = null;
-        try
-        {
-            in = page.getContents();
-            if (in != null)
-            {
-                PDStream dest = new PDStream(this, in, COSName.FLATE_DECODE);
-                importedPage.setContents(dest);
-            }
-            addPage(importedPage);
-        }
-        catch (IOException e)
-        {
-            IOUtils.closeQuietly(in);
-        }
+        PDFCloneUtility cloner = new PDFCloneUtility(this);
+        COSBase pageBase = cloner.cloneForNewDocument(page.getCOSObject());
+        PDPage importedPage = new PDPage((COSDictionary) pageBase, resourceCache);
+        addPage(importedPage);
         return importedPage;
     }
 
