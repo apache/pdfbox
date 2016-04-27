@@ -2196,6 +2196,25 @@ public final class PDPageContentStream implements Closeable
     }
 
     /**
+     * Write a comment line.
+     *
+     * @param comment
+     * @throws IOException If the content stream could not be written.
+     * @throws IllegalArgumentException If the comment contains a newline. This is not allowed,
+     * because the next line could be ordinary PDF content.
+     */
+    public void addComment(String comment) throws IOException
+    {
+        if (comment.indexOf('\n') >= 0 || comment.indexOf('\r') >= 0)
+        {
+            throw new IllegalArgumentException("comment should not include a newline");
+        }
+        output.write('%');
+        output.write(comment.getBytes(Charsets.US_ASCII));
+        output.write('\n');
+    }
+
+    /**
      * Writes a real real to the content stream.
      */
     private void writeOperand(float real) throws IOException
