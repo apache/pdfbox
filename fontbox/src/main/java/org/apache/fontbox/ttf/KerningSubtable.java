@@ -283,16 +283,10 @@ public class KerningSubtable
         public int getKerning(int l, int r)
         {
             int[] key = new int[] { l, r, 0 };
-            int index;
-            index = Arrays.binarySearch(pairs, 0, searchRange, key, this);
+            int index = Arrays.binarySearch(pairs, key, this);
             if (index >= 0)
             {
                 return pairs[index][2];
-            }
-            index = Arrays.binarySearch(pairs, searchRange, pairs.length, key, this);
-            if (index >= 0)
-            {
-                return pairs[searchRange + index][2];
             }
             return 0;
         }
