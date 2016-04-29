@@ -23,7 +23,9 @@ import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.pdfparser.VisualSignatureParser;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible.PDVisibleSigProperties;
 
-
+/**
+ * This contains the visual signature as a COSDocument, its preferred size and the page.
+ */
 public class SignatureOptions
 {
     private COSDocument visualSignature;
