@@ -47,7 +47,6 @@ import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.PDEncryption;
 import org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy;
@@ -214,23 +213,20 @@ public class PDDocument implements Closeable
 
         signInterface = signatureInterface;
 
-        //
-        // Create SignatureForm for signature
-        // and appending it to the document
-        //
+        // Create SignatureForm for signature and append it to the document
 
-        // Get the first page
-        PDDocumentCatalog catalog = getDocumentCatalog();
-        int pageCount = catalog.getPages().getCount();
+        // Get the first valid page
+        int pageCount = getNumberOfPages();
         if (pageCount == 0)
         {
             throw new IllegalStateException("Cannot sign an empty document");
         }
 
         int startIndex = Math.min(Math.max(options.getPage(), 0), pageCount - 1);
-        PDPage page = catalog.getPages().get(startIndex);
+        PDPage page = getPage(startIndex);
 
         // Get the AcroForm from the Root-Dictionary and append the annotation
+        PDDocumentCatalog catalog = getDocumentCatalog();
         PDAcroForm acroForm = catalog.getAcroForm();
         catalog.getCOSObject().setNeedToBeUpdated(true);
 
