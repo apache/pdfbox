@@ -27,7 +27,7 @@ import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible.PDVisibleSigProperties;
 
 /**
- * TODO description needed
+ * This contains the visual signature as a COSDocument, its preferred size and the page.
  */
 public class SignatureOptions implements Closeable
 {
