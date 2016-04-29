@@ -113,4 +113,17 @@ public class SignatureOptions
             preferedSignatureSize = size;
         }
     } 
+
+    /**
+     * Closes the visual signature COSDocument, if any.
+     *
+     * @throws IOException if the document could not be closed
+     */
+    public void close() throws IOException
+    {
+        if (visualSignature != null)
+        {
+            visualSignature.close();
+        }
+    }
 }
