@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,7 +59,11 @@ public class PDVisibleSignDesigner
     public PDVisibleSignDesigner(String filename, InputStream imageStream, int page)
             throws IOException
     {
-        this(new FileInputStream(filename), imageStream, page);
+        // set visible signature image Input stream
+        readImageStream(imageStream);
+
+        // calculate height and width of document page
+        calculatePageSizeFromFile(filename, page);
     }
 
     /**
@@ -75,13 +80,8 @@ public class PDVisibleSignDesigner
         // set visible signature image Input stream
         readImageStream(imageStream);
 
-        // create PD document
-        PDDocument document = PDDocument.load(documentStream);
-
         // calculate height and width of document page
-        calculatePageSize(document, page);
-
-        document.close();
+        calculatePageSizeFromStream(documentStream, page);
     }
 
     /**
@@ -109,7 +109,11 @@ public class PDVisibleSignDesigner
     public PDVisibleSignDesigner(String filename, BufferedImage image, int page)
             throws IOException
     {
-        this(new FileInputStream(filename), image, page);
+        // set visible signature image
+        setImage(image);
+
+        // calculate height and width of document page
+        calculatePageSizeFromFile(filename, page);
     }
 
     /**
@@ -126,13 +130,8 @@ public class PDVisibleSignDesigner
         // set visible signature image
         setImage(image);
 
-        // create PD document
-        PDDocument document = PDDocument.load(documentStream);
-
         // calculate height and width of document page
-        calculatePageSize(document, page);
-
-        document.close();
+        calculatePageSizeFromStream(documentStream, page);
     }
 
     /**
@@ -146,6 +145,28 @@ public class PDVisibleSignDesigner
     {
         setImage(image);
         calculatePageSize(document, page);
+    }
+
+    private void calculatePageSizeFromFile(String filename, int page) throws IOException
+    {
+        // create PD document
+        PDDocument document = PDDocument.load(new File(filename));
+
+        // calculate height and width of document page
+        calculatePageSize(document, page);
+
+        document.close();
+    }
+
+    private void calculatePageSizeFromStream(InputStream documentStream, int page) throws IOException
+    {
+        // create PD document
+        PDDocument document = PDDocument.load(documentStream);
+
+        // calculate height and width of document page
+        calculatePageSize(document, page);
+
+        document.close();
     }
 
     /**
@@ -162,7 +183,6 @@ public class PDVisibleSignDesigner
         {
             throw new IllegalArgumentException("First page of pdf is 1, not " + page);
         }
-
 
         PDPage firstPage = document.getPage(page - 1);
         PDRectangle mediaBox = firstPage.getMediaBox();
