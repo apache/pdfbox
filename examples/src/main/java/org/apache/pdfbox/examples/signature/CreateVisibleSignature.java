@@ -73,7 +73,7 @@ public class CreateVisibleSignature implements SignatureInterface
 
   private Certificate[] cert;
 
-  private SignatureOptions options;
+  private SignatureOptions options = null;
 
   /**
    * Initialize the signature creator with a keystore (pkcs12) and pin that
@@ -174,6 +174,10 @@ public class CreateVisibleSignature implements SignatureInterface
 
     // write incremental (only for signing purpose)
     doc.saveIncremental(fis, fos);
+    if (options != null)
+    {
+        options.close();
+    }
 
     return outputDocument;
   }
