@@ -162,17 +162,18 @@ class AppearanceGeneratorHelper
         }
     }
     
-    private int resolveRotation(PDAnnotationWidget widget) {
-		PDAppearanceCharacteristicsDictionary  characteristicsDictionary = widget.getAppearanceCharacteristics();
-		if (characteristicsDictionary != null)
-		{
-			// 0 is the default value if the R key doesn't exist
-			return characteristicsDictionary.getRotation();
-		}
-		return 0;
-	}
+    private int resolveRotation(PDAnnotationWidget widget)
+    {
+        PDAppearanceCharacteristicsDictionary  characteristicsDictionary = widget.getAppearanceCharacteristics();
+        if (characteristicsDictionary != null)
+        {
+            // 0 is the default value if the R key doesn't exist
+            return characteristicsDictionary.getRotation();
+        }
+        return 0;
+    }
 
-	/**
+    /**
      * Initialize the content of the appearance stream.
      * 
      * Get settings like border style, border width and colors to be used to draw a rectangle and background color 
@@ -402,33 +403,36 @@ class AppearanceGeneratorHelper
         contents.close();
     }
     
-    private AffineTransform calculateMatrix(PDRectangle bbox, int rotation) {
-		if (rotation == 0)
-		{
-			return new AffineTransform();
-		}
-		else
-		{
-			float tx=0, ty=0;
-			
-			if (rotation == 90)
-			{
-				tx = bbox.getUpperRightY();
-			} else if (rotation == 180)
-			{
-				tx = bbox.getUpperRightY();
-				ty = bbox.getUpperRightX();
-			} else if (rotation == 270)
-			{
-				ty = bbox.getUpperRightX();
-			}
-			
-			Matrix matrix = Matrix.getRotateInstance(Math.toRadians(rotation), tx, ty);
-			return matrix.createAffineTransform();
-		}
-	}
+    private AffineTransform calculateMatrix(PDRectangle bbox, int rotation)
+    {
+        if (rotation == 0)
+        {
+            return new AffineTransform();
+        }
+        else
+        {
+            float tx=0, ty=0;
 
-	private boolean isMultiLine()
+            if (rotation == 90)
+            {
+                tx = bbox.getUpperRightY();
+            }
+            else if (rotation == 180)
+            {
+                tx = bbox.getUpperRightY();
+                ty = bbox.getUpperRightX();
+            }
+            else if (rotation == 270)
+            {
+                ty = bbox.getUpperRightX();
+            }
+
+            Matrix matrix = Matrix.getRotateInstance(Math.toRadians(rotation), tx, ty);
+            return matrix.createAffineTransform();
+        }
+    }
+
+    private boolean isMultiLine()
     {
         return field instanceof PDTextField && ((PDTextField) field).isMultiline();
     }
