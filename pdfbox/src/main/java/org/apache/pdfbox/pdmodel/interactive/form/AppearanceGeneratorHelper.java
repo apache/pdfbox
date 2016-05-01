@@ -36,6 +36,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceEntry;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
+import org.apache.pdfbox.util.Matrix;
 
 /**
  * Create the AcroForms field appearance helper.
@@ -262,7 +263,13 @@ class AppearanceGeneratorHelper
         PDPageContentStream contents = new PDPageContentStream(field.getAcroForm().getDocument(),
                                                                appearanceStream, output);
         
-        appearanceStream.setMatrix(new AffineTransform());
+        // Set an identity transformation in case there is no Matrix entry
+        Matrix matrix = appearanceStream.getMatrix();
+        if (matrix == null)
+        {
+            appearanceStream.setMatrix(new AffineTransform());
+        }
+
         appearanceStream.setFormType(1);
         
         // Acrobat calculates the left and right padding dependent on the offset of the border edge
