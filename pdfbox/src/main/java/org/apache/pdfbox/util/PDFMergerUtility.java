@@ -447,6 +447,13 @@ public class PDFMergerUtility
             destCatalog.getCOSDictionary().setItem(COSName.METADATA, newStream);
         }
 
+        COSDictionary destOCP = (COSDictionary) destCatalog.getCOSDictionary().getDictionaryObject(COSName.OCPROPERTIES);
+        COSDictionary srcOCP = (COSDictionary) srcCatalog.getCOSDictionary().getDictionaryObject(COSName.OCPROPERTIES);
+        if (destOCP == null && srcOCP != null)
+        {
+            destCatalog.getCOSDictionary().setItem(COSName.OCPROPERTIES, cloner.cloneForNewDocument(srcOCP));
+        }
+
         // merge logical structure hierarchy if logical structure information is available in both source pdf and
         // destination pdf
         boolean mergeStructTree = false;
