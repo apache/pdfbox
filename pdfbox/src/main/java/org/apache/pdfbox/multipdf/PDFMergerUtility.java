@@ -488,6 +488,13 @@ public class PDFMergerUtility
             destCatalog.getCOSObject().setItem(COSName.METADATA, newStream);
         }
 
+        COSDictionary destOCP = (COSDictionary) destCatalog.getCOSObject().getDictionaryObject(COSName.OCPROPERTIES);
+        COSDictionary srcOCP = (COSDictionary) srcCatalog.getCOSObject().getDictionaryObject(COSName.OCPROPERTIES);
+        if (destOCP == null && srcOCP != null)
+        {
+            destCatalog.getCOSObject().setItem(COSName.OCPROPERTIES, cloner.cloneForNewDocument(srcOCP));
+        }
+
         mergeOutputIntents(cloner, srcCatalog, destCatalog);
 
         // merge logical structure hierarchy if logical structure information is available in both source pdf and
