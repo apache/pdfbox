@@ -77,8 +77,7 @@ public class PDFXRefStream implements PDFXRef
         {
             throw new IllegalArgumentException("size is not set in xrefstream");
         }
-        // add one for object number 0
-        stream.setLong(COSName.SIZE, streamData.size() + 1);
+        stream.setLong(COSName.SIZE, size);
     
         List<Long> indexEntry = getIndexEntry();
         COSArray indexAsArray = new COSArray();
