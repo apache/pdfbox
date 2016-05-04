@@ -260,10 +260,6 @@ public class PDDocument implements Closeable
             // backward linking
             signatureField.getWidgets().get(0).setPage(page);
         }
-        else
-        {
-            signatureField.getCOSObject().setNeedToBeUpdated(true);
-        }
         // to conform PDF/A-1 requirement:
         // The /F key's Print flag bit shall be set to 1 and 
         // its Hidden, Invisible and NoView flag bits shall be set to 0
