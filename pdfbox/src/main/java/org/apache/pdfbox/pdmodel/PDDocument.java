@@ -246,6 +246,11 @@ public class PDDocument implements Closeable
             fields = new ArrayList<PDField>();
             acroForm.setFields(fields);
         }
+        else
+        {
+            COSArray fieldArray = (COSArray) acroForm.getCOSObject().getDictionaryObject(COSName.FIELDS);
+            fieldArray.setNeedToBeUpdated(true);
+        }
         PDSignatureField signatureField = findSignatureField(fields, sigObject);
         if (signatureField == null)
         {
