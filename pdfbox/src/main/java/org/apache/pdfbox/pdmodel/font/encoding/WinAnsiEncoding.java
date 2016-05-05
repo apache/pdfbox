@@ -283,11 +283,7 @@ public class WinAnsiEncoding extends Encoding
         }
     }
 
-    /**
-     * Convert this standard java object to a COS object.
-     * 
-     * @return The cos object that matches this Java object.
-     */
+    @Override
     public COSBase getCOSObject()
     {
         return COSName.WIN_ANSI_ENCODING;
