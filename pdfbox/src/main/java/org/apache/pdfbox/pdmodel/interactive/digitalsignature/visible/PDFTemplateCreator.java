@@ -68,7 +68,6 @@ public class PDFTemplateCreator
      * @param properties
      * @return InputStream
      * @throws IOException
-     * @throws COSVisitorException
      */
 
     public InputStream buildPDF(PDVisibleSignDesigner properties) throws IOException
