@@ -236,6 +236,7 @@ public class StandardSecurityHandler extends SecurityHandler
         if( isUserPassword )
         {
             currentAccessPermission = new AccessPermission( dicPermissions );
+            currentAccessPermission.setReadOnly();
             encryptionKey =
                 computeEncryptedKey(
                     password.getBytes("ISO-8859-1"),
