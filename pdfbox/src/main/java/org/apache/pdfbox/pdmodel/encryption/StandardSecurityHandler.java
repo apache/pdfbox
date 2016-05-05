@@ -237,6 +237,7 @@ public final class StandardSecurityHandler extends SecurityHandler
                            dicLength, encryptMetadata) )
         {
             currentAccessPermission = new AccessPermission(dicPermissions);
+            currentAccessPermission.setReadOnly();
             setCurrentAccessPermission(currentAccessPermission);
             
             encryptionKey =
