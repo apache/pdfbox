@@ -379,16 +379,16 @@ final class FontMapperImpl implements FontMapper
             return t1;
         }
 
-        OpenTypeFont otf = (OpenTypeFont) findFont(FontFormat.OTF, postScriptName);
-        if (otf instanceof OpenTypeFont)
-        {
-            return otf;
-        }
-
         TrueTypeFont ttf = (TrueTypeFont)findFont(FontFormat.TTF, postScriptName);
         if (ttf != null)
         {
             return ttf;
+        }
+
+        OpenTypeFont otf = (OpenTypeFont) findFont(FontFormat.OTF, postScriptName);
+        if (otf != null)
+        {
+            return otf;
         }
 
         return null;
