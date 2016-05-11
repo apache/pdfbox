@@ -462,9 +462,15 @@ final class Type1Parser
         lexer = new Type1Lexer(decrypted);
 
         // find /Private dict
-        while (!lexer.peekToken().getText().equals("Private"))
+        Token peekToken = lexer.peekToken();
+        while (peekToken != null && !peekToken.getText().equals("Private"))
         {
             lexer.nextToken();
+            peekToken = lexer.peekToken();
+        }
+        if (peekToken == null)
+        {
+            throw new IOException("/Private token not found");
         }
 
         // Private dict
