@@ -1869,11 +1869,6 @@ public class COSParser extends BaseParser
             header = readLine();
             while (!header.contains(headerMarker))
             {
-                // if a line starts with a digit, it has to be the first one with data in it
-                if ((header.length() > 0) && (Character.isDigit(header.charAt(0))))
-                {
-                    break;
-                }
                 header = readLine();
             }
         }
