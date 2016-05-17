@@ -1026,7 +1026,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     private void drawAnnotationLinkBorder(PDAnnotationLink link) throws IOException
     {
         AnnotationBorder ab = getAnnotationBorder(link, link.getBorderStyle());
-        if (ab.width == 0)
+        if (ab.width == 0 || ab.color.getComponents().length == 0)
         {
             return;
         }
@@ -1063,7 +1063,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
         // PDF spec does not mention /Border for ink annotations, but it is used if /BS is not available
         AnnotationBorder ab = getAnnotationBorder(inkAnnotation, inkAnnotation.getBorderStyle());
-        if (ab.width == 0)
+        if (ab.width == 0 || ab.color.getComponents().length == 0)
         {
             return;
         }
