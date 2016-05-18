@@ -118,14 +118,6 @@
         </dependencies>
     </dependencyManagement>
   
-    <repositories>
-        <repository>
-            <id>jbig2.googlecode</id>
-            <name>JBIG2 ImageIO-Plugin repository at googlecode.com</name>
-            <url>https://jbig2-imageio.googlecode.com/svn/maven-repository/</url>
-        </repository>
-    </repositories>
-  
     <profiles>
         <profile>
             <id>pedantic</id>
