@@ -28,6 +28,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.SimpleTimeZone;
+import java.util.TimeZone;
 
 /**
  * This class is used to convert dates to strings and back using the PDF date standards. Date are described in
@@ -174,6 +175,7 @@ public class DateConverter
                 }
                 else
                 {
+                    updateZoneId(zone);
                     retval = new GregorianCalendar(zone);
                 }
                 retval.clear();
@@ -214,6 +216,43 @@ public class DateConverter
             }
         }
         return retval;
+    }
+
+    /**
+     * Update the zone ID based on the raw offset. This is either GMT, GMT+hh:mm or GMT-hh:mm, where
+     * n is between 1 and 14. The highest negative hour is -14, the highest positive hour is 12.
+     * Zones that don't fit in this schema are set to zone ID "unknown".
+     *
+     * @param tz the time zone to update.
+     */
+    private static void updateZoneId(TimeZone tz)
+    {
+        // https://garygregory.wordpress.com/2013/06/18/what-are-the-java-timezone-ids/
+        int offset = tz.getRawOffset();
+        char pm = '+';
+        if (offset < 0)
+        {
+            pm = '-';
+            offset = -offset;
+        }
+        int hh = offset / 3600000;
+        int mm = offset % 3600000 / 60000;
+        if (offset == 0)
+        {
+            tz.setID("GMT");
+        }
+        else if (pm == '+' && hh <= 12)
+        {
+            tz.setID(String.format("GMT+%02d:%02d", hh, mm));
+        }
+        else if (pm == '-' && hh <= 14)
+        {
+            tz.setID(String.format("GMT-%02d:%02d", hh, mm));
+        }
+        else
+        {
+            tz.setID("unknown");
+        }
     }
 
     /**
