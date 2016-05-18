@@ -486,7 +486,7 @@ public class DateConverter
         {                    // we parsed a time zone in default format
             int hrSign = (sign == '-' ? -1 :+1);
             tz.setRawOffset(restrainTZoffset(hrSign*(tzHours*MILLIS_PER_HOUR + tzMin*MILLIS_PER_MINUTE))); 
-            tz.setID("unknown");
+            updateZoneId(tz);
         }
         else if ( ! hadGMT)
         {            // try to process as a name; "GMT" or "UTC" has already been processed
@@ -506,6 +506,43 @@ public class DateConverter
         adjustTimeZoneNicely(cal, tz);
         initialWhere.setIndex(where.getIndex());
         return true;
+    }
+    
+    /**
+     * Update the zone ID based on the raw offset. This is either GMT, GMT+hh:mm or GMT-hh:mm, where
+     * n is between 1 and 14. The highest negative hour is -14, the highest positive hour is 12.
+     * Zones that don't fit in this schema are set to zone ID "unknown".
+     *
+     * @param tz the time zone to update.
+     */
+    private static void updateZoneId(TimeZone tz)
+    {
+        // https://garygregory.wordpress.com/2013/06/18/what-are-the-java-timezone-ids/
+        int offset = tz.getRawOffset();
+        char pm = '+';
+        if (offset < 0)
+        {
+            pm = '-';
+            offset = -offset;
+        }
+        int hh = offset / 3600000;
+        int mm = offset % 3600000 / 60000;
+        if (offset == 0)
+        {
+            tz.setID("GMT");
+        }
+        else if (pm == '+' && hh <= 12)
+        {
+            tz.setID(String.format("GMT+%02d:%02d", hh, mm));
+        }
+        else if (pm == '-' && hh <= 14)
+        {
+            tz.setID(String.format("GMT-%02d:%02d", hh, mm));
+        }
+        else
+        {
+            tz.setID("unknown");
+        }
     }
     
     /**
