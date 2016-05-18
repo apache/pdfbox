@@ -83,7 +83,7 @@
         <dependency>
             <groupId>com.levigo.jbig2</groupId>
             <artifactId>levigo-jbig2-imageio</artifactId>
-            <version>1.6.2</version>
+            <version>1.6.5</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -95,11 +95,6 @@
     </dependencies>
   
     <repositories>
-        <repository>
-            <id>jbig2.googlecode</id>
-            <name>JBIG2 ImageIO-Plugin repository at googlecode.com</name>
-            <url>https://jbig2-imageio.googlecode.com/svn/maven-repository/</url>
-        </repository>
         <repository>
             <id>mygrid-repository</id>
             <name>myGrid Repository</name>
