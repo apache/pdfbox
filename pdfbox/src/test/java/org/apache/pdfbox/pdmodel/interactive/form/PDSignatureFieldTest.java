@@ -72,6 +72,6 @@ public class PDSignatureFieldTest
         PDSignatureField sigField = new PDSignatureField(acroForm);
         sigField.setPartialName("SignatureField");
 
-        ((PDField) sigField).setValue("Can't set value using String");
+        sigField.setValue("Can't set value using String");
     }
 }
