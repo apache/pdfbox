@@ -318,7 +318,7 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
                     totalWidths += width;
                 }
             }
-            float averageWidth = totalWidths / characterCount;
+            averageWidth = totalWidths / characterCount;
             if (averageWidth <= 0 || Float.isNaN(averageWidth))
             {
                 averageWidth = getDefaultWidth();
