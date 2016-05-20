@@ -28,6 +28,12 @@ import junit.framework.TestSuite;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 
 /**
  * This will test the functionality of choice fields in PDFBox.
@@ -95,11 +101,38 @@ public class TestListBox extends TestCase
         try
         {
             doc = new PDDocument();
+            PDPage page = new PDPage(PDRectangle.A4);
+            doc.addPage(page);
             PDAcroForm form = new PDAcroForm( doc );
+            
+            // Adobe Acrobat uses Helvetica as a default font and 
+            // stores that under the name '/Helv' in the resources dictionary
+            PDFont font = PDType1Font.HELVETICA;
+            PDResources resources = new PDResources();
+            resources.put(COSName.getPDFName("Helv"), font);
+            
+            // Add and set the resources and default appearance at the form level
+            form.setDefaultResources(resources);
+            
+            // Acrobat sets the font size on the form level to be
+            // auto sized as default. This is done by setting the font size to '0'
+            String defaultAppearanceString = "/Helv 0 Tf 0 g";
+            form.setDefaultAppearance(defaultAppearanceString);
+            
             PDChoice choice = new PDListBox(form);
             
-            // appearance construction is not implemented, so turn on NeedAppearances
-            form.setNeedAppearances(true);
+            choice.setDefaultAppearance("/Helv 12 Tf 0g");
+            
+            
+            // Specify the annotation associated with the field
+            PDAnnotationWidget widget = choice.getWidgets().get(0);
+            PDRectangle rect = new PDRectangle(50, 750, 200, 50);
+            widget.setRectangle(rect);
+            widget.setPage(page);
+            
+            // Add the annotation to the page
+            page.getAnnotations().add(widget);
+            
             
             // test that there are no nulls returned for an empty field
             // only specific methods are tested here
