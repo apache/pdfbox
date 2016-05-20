@@ -379,7 +379,7 @@ public class PDPageLabels implements COSObjectable
             while (power < 3 && pageIndex > 0)
             {
                 buf.insert(0, ROMANS[power][pageIndex % 10]);
-                pageIndex = pageIndex / 10;
+                pageIndex /= 10;
                 power++;
             }
             // Prepend as many m as there are thousands (which is
