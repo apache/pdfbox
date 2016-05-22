@@ -164,7 +164,7 @@ public abstract class PDAppearanceHandler
     PDAppearanceEntry getRolloverAppearance()
     {
         PDAppearanceDictionary appearanceDictionary = getAppearance();
-        PDAppearanceEntry appearanceEntry = appearanceDictionary.getDownAppearance();
+        PDAppearanceEntry appearanceEntry = appearanceDictionary.getRolloverAppearance();
 
         if (appearanceEntry.isSubDictionary())
         {
