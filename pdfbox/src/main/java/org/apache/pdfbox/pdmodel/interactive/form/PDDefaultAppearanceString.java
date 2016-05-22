@@ -29,13 +29,13 @@ import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceContentStream;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 
 /**
@@ -272,7 +272,7 @@ class PDDefaultAppearanceString
     /**
      * Writes the DA string to the given content stream.
      */
-    void writeTo(PDPageContentStream contents, float zeroFontSize) throws IOException
+    void writeTo(PDAppearanceContentStream contents, float zeroFontSize) throws IOException
     {
         float fontSize = getFontSize();
         if (fontSize == 0)
