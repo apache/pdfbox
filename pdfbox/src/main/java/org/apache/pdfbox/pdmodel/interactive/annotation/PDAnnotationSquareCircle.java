@@ -22,15 +22,18 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
+import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDAppearanceHandler;
+import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDSquareAppearanceHandler;
 
 /**
- * This is the class that represents a rectangular or eliptical annotation Introduced in PDF 1.3 specification .
+ * This is the class that represents a rectangular or elliptical annotation introduced in PDF 1.3 specification .
  *
  * @author Paul King
  */
 public class PDAnnotationSquareCircle extends PDAnnotationMarkup
 {
 
+    private PDAppearanceHandler squareAppearanceHandler;
     /**
      * Constant for a Rectangular type of annotation.
      */
@@ -61,6 +64,36 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
         super(field);
     }
 
+    /**
+     * Set a custom appearance handler for generating the annotations appearance streams.
+     * 
+     * @param squareAppearanceHandler
+     */
+    public void setCustomSquareAppearanceHandler(PDAppearanceHandler squareAppearanceHandler)
+    {
+        this.squareAppearanceHandler = squareAppearanceHandler;
+    }
+    
+    public void constructAppearances()
+    {
+        if (getSubtype() == SUB_TYPE_SQUARE)
+        {
+            if (squareAppearanceHandler == null)
+            {
+                PDSquareAppearanceHandler appearanceHandler = new PDSquareAppearanceHandler(this);
+                appearanceHandler.generateAppearanceStreams();
+            }
+            else
+            {
+                squareAppearanceHandler.generateAppearanceStreams();
+            }
+        }
+        else if (getSubtype() == SUB_TYPE_SQUARE)
+        {
+            
+        }
+    }
+    
     /**
      * This will set interior color of the drawn area color is in DeviceRGB colo rspace.
      *
