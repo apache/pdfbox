@@ -51,7 +51,7 @@ public class PDSquareAnnotationTest
     // the location of the annotation
     static PDRectangle rectangle;
     
-    private static final File OUT_DIR = new File("target/test-output");
+    private static final File IN_DIR = new File("src/test/resources/org/apache/pdfbox/pdmodel/interactive/annotation");
     private static final String NAME_OF_PDF = "PDSquareAnnotationTest.pdf";
 
     @Before
@@ -99,10 +99,6 @@ public class PDSquareAnnotationTest
 
         annotation.constructAppearances();
         annotations.add(annotation);
-        
-        // store for validation test
-        File file = new File(OUT_DIR, NAME_OF_PDF);
-        document.save(file);
         document.close();
     }
     
@@ -112,7 +108,7 @@ public class PDSquareAnnotationTest
         // the width of the <nnotations border
         final int borderWidth = 1;
 
-        File file = new File(OUT_DIR, NAME_OF_PDF);
+        File file = new File(IN_DIR, NAME_OF_PDF);
         PDDocument document = PDDocument.load(file);
         PDPage page = document.getPage(0);
         List<PDAnnotation> annotations = page.getAnnotations();
