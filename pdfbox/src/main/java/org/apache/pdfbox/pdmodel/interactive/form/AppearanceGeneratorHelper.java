@@ -26,13 +26,13 @@ import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdfwriter.ContentStreamWriter;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.interactive.action.PDFormFieldAdditionalActions;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceCharacteristicsDictionary;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceContentStream;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceEntry;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
@@ -186,8 +186,7 @@ class AppearanceGeneratorHelper
     private void initializeAppearanceContent(PDAnnotationWidget widget, PDAppearanceStream appearanceStream) throws IOException
     {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        PDPageContentStream contents = new PDPageContentStream(field.getAcroForm().getDocument(),
-                appearanceStream, output);
+        PDAppearanceContentStream contents = new PDAppearanceContentStream(appearanceStream, output);
         PDAppearanceCharacteristicsDictionary appearanceCharacteristics = widget.getAppearanceCharacteristics();
         
         // TODO: support more entries like patterns, background color etc.
@@ -286,8 +285,7 @@ class AppearanceGeneratorHelper
                                            PDAppearanceStream appearanceStream,
                                            OutputStream output) throws IOException
     {
-        PDPageContentStream contents = new PDPageContentStream(field.getAcroForm().getDocument(),
-                                                               appearanceStream, output);
+        PDAppearanceContentStream contents = new PDAppearanceContentStream(appearanceStream, output);
         
         PDRectangle bbox = resolveBoundingBox(widget, appearanceStream);
         
@@ -467,7 +465,7 @@ class AppearanceGeneratorHelper
      * @param fontSize the font size to be used
      * @throws IOException
      */
-    private void insertGeneratedCombAppearance(PDPageContentStream contents, PDAppearanceStream appearanceStream,
+    private void insertGeneratedCombAppearance(PDAppearanceContentStream contents, PDAppearanceStream appearanceStream,
             PDFont font, float fontSize) throws IOException
     {
         
@@ -507,7 +505,7 @@ class AppearanceGeneratorHelper
         }
     }
     
-    private void insertGeneratedSelectionHighlight(PDPageContentStream contents, PDAppearanceStream appearanceStream,
+    private void insertGeneratedSelectionHighlight(PDAppearanceContentStream contents, PDAppearanceStream appearanceStream,
             PDFont font, float fontSize) throws IOException
     {
         List<Integer> indexEntries = ((PDListBox) field).getSelectedOptionsIndex();
@@ -551,7 +549,7 @@ class AppearanceGeneratorHelper
     }
     
     
-    private void insertGeneratedListboxAppearance(PDPageContentStream contents, PDAppearanceStream appearanceStream,
+    private void insertGeneratedListboxAppearance(PDAppearanceContentStream contents, PDAppearanceStream appearanceStream,
             PDRectangle contentRect, PDFont font, float fontSize) throws IOException
     {
         contents.setNonStrokingColor(0);
