@@ -572,27 +572,6 @@ public abstract class PDAbstractContentStream implements Closeable
         }
     }
 
-    public void setStrokingColor(float[] components) throws IOException
-    {
-        for (float value : components)
-        {
-            writeOperand(value);
-        }
-        
-        int numComponents = components.length;
-        switch(numComponents)
-        {
-            case 1:
-                writeOperator("G");
-                break;
-            case 3:
-                writeOperator("RG");
-                break;
-            case 4:
-                writeOperator("K");
-        }
-    }
-    
     /**
      * Sets the stroking color and, if necessary, the stroking color space.
      *
