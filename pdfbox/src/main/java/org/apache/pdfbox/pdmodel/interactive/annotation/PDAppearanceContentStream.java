@@ -23,6 +23,7 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 import org.apache.pdfbox.contentstream.PDAbstractContentStream;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 
 /**
@@ -32,23 +33,23 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
  */
 public final class PDAppearanceContentStream extends PDAbstractContentStream implements Closeable
 {
-    
+
     /**
-     * This is to choose what to do with the stream: overwrite, append or prepend.
+     * This is to choose what to do with the stream: overwrite, append or
+     * prepend.
      */
     public static enum AppendMode
     {
         /**
          * Overwrite the existing page content streams.
          */
-        OVERWRITE, 
-        /**
-         * Append the content stream after all existing page content streams.
-         */
-        APPEND, 
-        /**
-         * Insert before all other page content streams.
-         */
+        OVERWRITE, /**
+                    * Append the content stream after all existing page content
+                    * streams.
+                    */
+        APPEND, /**
+                 * Insert before all other page content streams.
+                 */
         PREPEND;
 
         public boolean isOverwrite()
@@ -61,7 +62,6 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
             return this == PREPEND;
         }
     }
-    
 
     // number format
     private final NumberFormat formatDecimal = NumberFormat.getNumberInstance(Locale.US);
@@ -69,51 +69,158 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
     /**
      * Create a new appearance stream.
      *
-     * @param doc The document the page is part of.
-     * @param appearance The appearance stream to write to.
-     * @throws IOException If there is an error writing to the page contents.
+     * @param doc
+     *            The document the page is part of.
+     * @param appearance
+     *            The appearance stream to write to.
+     * @throws IOException
+     *             If there is an error writing to the page contents.
      */
     public PDAppearanceContentStream(PDAppearanceStream appearance) throws IOException
     {
-        this (appearance, appearance.getStream().createOutputStream()); 
+        this(appearance, appearance.getStream().createOutputStream());
     }
-    
+
     /**
-     * Create a new appearance stream. Note that this is not actually a "page" content stream.
+     * Create a new appearance stream. Note that this is not actually a "page"
+     * content stream.
      *
-     * @param doc The document the appearance is part of.
-     * @param appearance The appearance stream to add to.
-     * @param outputStream The appearances output stream to write to.
-     * @throws IOException If there is an error writing to the page contents.
+     * @param doc
+     *            The document the appearance is part of.
+     * @param appearance
+     *            The appearance stream to add to.
+     * @param outputStream
+     *            The appearances output stream to write to.
+     * @throws IOException
+     *             If there is an error writing to the page contents.
      */
-    public PDAppearanceContentStream(PDAppearanceStream appearance, OutputStream outputStream)
-            throws IOException
+    public PDAppearanceContentStream(PDAppearanceStream appearance, OutputStream outputStream) throws IOException
     {
         super(appearance, outputStream);
         setResources(appearance.getResources());
-        
+
         formatDecimal.setMaximumFractionDigits(4);
         formatDecimal.setGroupingUsed(false);
     }
 
+    /**
+     * Set the stroking color.
+     * 
+     * <p>The command is only emitted if the color is not null and the number of 
+     * components is gt 0.
+     * 
+     * @see PDAbstractContentStream#setStrokingColor(PDColor)
+     */
+    public boolean setStrokingColorOnDemand(PDColor color) throws IOException
+    {
+        if (color != null)
+        {
+            float[] components = color.getComponents();
+            if (components != null && components.length > 0)
+            {
+                setStrokingColor(components);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Set the stroking color.
+     * 
+     * @see PDAbstractContentStream#setStrokingColor(java.awt.Color)
+     * @param components
+     *            the color components dependent on the color space being used.
+     * @throws IOException
+     *             if an IO error occurs while writing to the stream.
+     */
     public void setStrokingColor(float[] components) throws IOException
     {
         for (float value : components)
         {
             writeOperand(value);
         }
-        
+
         int numComponents = components.length;
-        switch(numComponents)
+        switch (numComponents)
         {
-            case 1:
-                writeOperator("G");
-                break;
-            case 3:
-                writeOperator("RG");
-                break;
-            case 4:
-                writeOperator("K");
+        case 1:
+            writeOperator("G");
+            break;
+        case 3:
+            writeOperator("RG");
+            break;
+        case 4:
+            writeOperator("K");
+        }
+    }
+
+    /**
+     * Set the non stroking color.
+     * 
+     * <p>The command is only emitted if the color is not null and the number of 
+     * components is gt 0.
+     * 
+     * @see PDAbstractContentStream#setNonStrokingColor(PDColor)
+     */
+    public boolean setNonStrokingColorOnDemand(PDColor color) throws IOException
+    {
+        if (color != null)
+        {
+            float[] components = color.getComponents();
+            if (components != null && components.length > 0)
+            {
+                setNonStrokingColor(components);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Set the non stroking color.
+     * 
+     * @see PDAbstractContentStream#setNonStrokingColor(java.awt.Color)
+     * @param components
+     *            the color components dependent on the color space being used.
+     * @throws IOException
+     *             if an IO error occurs while writing to the stream.
+     */
+    public void setNonStrokingColor(float[] components) throws IOException
+    {
+        for (float value : components)
+        {
+            writeOperand(value);
+        }
+
+        int numComponents = components.length;
+        switch (numComponents)
+        {
+        case 1:
+            writeOperator("g");
+            break;
+        case 3:
+            writeOperator("rg");
+            break;
+        case 4:
+            writeOperator("k");
+        }
+    }
+
+    /**
+     * Sets the line width. The command is only emitted if the lineWidth is
+     * different to 1.
+     * 
+     * @see PDAbstractContentStream#setLineWidth(float)
+     */
+    public void setLineWidthOnDemand(float lineWidth) throws IOException
+    {
+        // Acrobat doesn't write a line width command
+        // for a line width of 1 as this is default.
+        // Will do the same.
+        if (!(Math.abs(lineWidth - 1) < 1e-6))
+        {
+            setLineWidth(lineWidth);
         }
     }
 }
