@@ -17,7 +17,6 @@
 
 package org.apache.pdfbox.pdmodel.interactive.annotation.handlers;
 
-
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
 
@@ -52,20 +51,29 @@ public class PDSquareAppearanceHandler extends PDAppearanceHandler
             PDAppearanceContentStream contentStream = new PDAppearanceContentStream(appearanceStream);
             PDRectangle bbox = getRectangle();
             appearanceStream.setBBox(bbox);
-            AffineTransform transform = AffineTransform.getTranslateInstance(-bbox.getLowerLeftX(), -bbox.getLowerLeftY());
+            AffineTransform transform = AffineTransform.getTranslateInstance(-bbox.getLowerLeftX(),
+                    -bbox.getLowerLeftY());
             appearanceStream.setMatrix(transform);
-            contentStream.setStrokingColor(getColor().getComponents());
+
+            contentStream.setStrokingColorOnDemand(getColor());
+            boolean hasBackground = contentStream
+                    .setNonStrokingColorOnDemand(((PDAnnotationSquareCircle) getAnnotation()).getInteriorColor());
+
+            contentStream.setLineWidthOnDemand(lineWidth);
             
-            // Acrobat doesn't write a line width command
-            // for a line width of 1 as this is default.
-            // Will do the same.
-            if (!(Math.abs(lineWidth - 1) < 1e-6))
+            // Acrobat applies a padding to each side of the bbox so the line is completely within
+            // the bbox.
+            PDRectangle borderEdge = getPaddedRectangle(bbox,lineWidth);
+            contentStream.addRect(borderEdge.getLowerLeftX() , borderEdge.getLowerLeftY(),
+                    borderEdge.getWidth(), borderEdge.getHeight());
+
+            if (!hasBackground)
             {
-                contentStream.setLineWidth(lineWidth);
+                contentStream.stroke();
+            } else
+            {
+                contentStream.fillAndStroke();
             }
-            contentStream.addRect(bbox.getLowerLeftX()+lineWidth, bbox.getLowerLeftY()+lineWidth, bbox.getWidth()-2*lineWidth, bbox.getHeight()-2*lineWidth);
-            
-            contentStream.stroke();
             contentStream.close();
         } catch (IOException e)
         {
@@ -84,32 +92,32 @@ public class PDSquareAppearanceHandler extends PDAppearanceHandler
     {
         // TODO to be implemented
     }
-    
+
     /**
      * Get the line with of the border.
      * 
-     * Get the width of the line used to draw a border around
-     * the annotation. This may either be specified by the annotation
-     * dictionaries Border setting or by the W entry in the BS border
-     * style dictionary. If both are missing the default width is 1.
+     * Get the width of the line used to draw a border around the annotation.
+     * This may either be specified by the annotation dictionaries Border
+     * setting or by the W entry in the BS border style dictionary. If both are
+     * missing the default width is 1.
      * 
      * @return the line width
      */
-    // TODO: according to the PDF spec the use of the BS entry is annotation specific
-    //       so we will leave that to be implemented by individual handlers.
-    //       If at the end all annotations support the BS entry this can be handled
-    //       here and removed from the individual handlers.
+    // TODO: according to the PDF spec the use of the BS entry is annotation
+    // specific
+    // so we will leave that to be implemented by individual handlers.
+    // If at the end all annotations support the BS entry this can be handled
+    // here and removed from the individual handlers.
     public float getLineWidth()
     {
         PDAnnotationSquareCircle annotation = (PDAnnotationSquareCircle) getAnnotation();
-        
+
         PDBorderStyleDictionary bs = annotation.getBorderStyle();
-        
+
         if (bs != null)
         {
             return bs.getWidth();
-        }
-        else
+        } else
         {
             COSArray borderCharacteristics = annotation.getBorder();
             if (borderCharacteristics != null && borderCharacteristics.size() >= 3)
@@ -117,7 +125,7 @@ public class PDSquareAppearanceHandler extends PDAppearanceHandler
                 return borderCharacteristics.getInt(3);
             }
         }
-        
+
         return 1;
     }
 }
