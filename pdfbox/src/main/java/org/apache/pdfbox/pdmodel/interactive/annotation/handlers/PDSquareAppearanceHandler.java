@@ -59,21 +59,20 @@ public class PDSquareAppearanceHandler extends PDAppearanceHandler
             boolean hasBackground = contentStream
                     .setNonStrokingColorOnDemand(((PDAnnotationSquareCircle) getAnnotation()).getInteriorColor());
 
-            contentStream.setLineWidthOnDemand(lineWidth);
+            contentStream.setBorderLine(lineWidth, ((PDAnnotationSquareCircle) getAnnotation()).getBorderStyle());
+            
+            // the differences rectangle
+            // TODO: this only works for border effect solid. Cloudy needs a different approach.
+            setRectDifference(lineWidth);
             
             // Acrobat applies a padding to each side of the bbox so the line is completely within
             // the bbox.
-            PDRectangle borderEdge = getPaddedRectangle(bbox,lineWidth);
+            PDRectangle borderEdge = getPaddedRectangle(bbox,lineWidth/2);
             contentStream.addRect(borderEdge.getLowerLeftX() , borderEdge.getLowerLeftY(),
                     borderEdge.getWidth(), borderEdge.getHeight());
 
-            if (!hasBackground)
-            {
-                contentStream.stroke();
-            } else
-            {
-                contentStream.fillAndStroke();
-            }
+            contentStream.closePath(lineWidth, hasBackground);
+
             contentStream.close();
         } catch (IOException e)
         {
@@ -108,7 +107,7 @@ public class PDSquareAppearanceHandler extends PDAppearanceHandler
     // so we will leave that to be implemented by individual handlers.
     // If at the end all annotations support the BS entry this can be handled
     // here and removed from the individual handlers.
-    public float getLineWidth()
+    float getLineWidth()
     {
         PDAnnotationSquareCircle annotation = (PDAnnotationSquareCircle) getAnnotation();
 

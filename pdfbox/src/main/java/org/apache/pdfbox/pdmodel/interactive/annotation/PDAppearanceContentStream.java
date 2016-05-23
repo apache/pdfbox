@@ -23,6 +23,7 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 import org.apache.pdfbox.contentstream.PDAbstractContentStream;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 
@@ -106,7 +107,8 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
     /**
      * Set the stroking color.
      * 
-     * <p>The command is only emitted if the color is not null and the number of 
+     * <p>
+     * The command is only emitted if the color is not null and the number of
      * components is gt 0.
      * 
      * @see PDAbstractContentStream#setStrokingColor(PDColor)
@@ -158,7 +160,8 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
     /**
      * Set the non stroking color.
      * 
-     * <p>The command is only emitted if the color is not null and the number of 
+     * <p>
+     * The command is only emitted if the color is not null and the number of
      * components is gt 0.
      * 
      * @see PDAbstractContentStream#setNonStrokingColor(PDColor)
@@ -207,6 +210,20 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
         }
     }
 
+    public void setBorderLine(float lineWidth, PDBorderStyleDictionary bs) throws IOException
+    {
+        // Important:
+        // can't use PDBorderStyleDictionary.getDashStyle() as
+        // this will return a default dash style if non is existing
+        if (bs != null && (bs.getCOSObject().containsKey(COSName.D)))
+        {
+            setLineDashPattern(bs.getDashStyle().getDashArray(), 0);
+        } else
+        {
+            setLineWidthOnDemand(lineWidth);
+        }
+    }
+
     /**
      * Sets the line width. The command is only emitted if the lineWidth is
      * different to 1.
@@ -221,6 +238,33 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
         if (!(Math.abs(lineWidth - 1) < 1e-6))
         {
             setLineWidth(lineWidth);
+        }
+    }
+    
+    /**
+     * Close a path.
+     * 
+     * <p>Dependent on the lineWidth and whether or not there is a background
+     * to be generated there are different commands to be used for closing a path.
+     * 
+     * @param lineWidth the line width of the path.
+     * @param hasBackground shall there be a background color.
+     * @throws IOException if an IO error occurs while writing to the stream.
+     */
+    public void closePath(float lineWidth, boolean hasBackground) throws IOException
+    {
+        if (lineWidth < 1e-6) {
+            writeOperator("n");
+        }
+        else
+        {
+            if (!hasBackground)
+            {
+                stroke();
+            } else
+            {
+                fillAndStroke();
+            }
         }
     }
 }
