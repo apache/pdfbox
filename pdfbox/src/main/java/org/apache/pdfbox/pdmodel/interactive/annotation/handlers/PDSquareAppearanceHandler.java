@@ -46,6 +46,7 @@ public class PDSquareAppearanceHandler extends PDAppearanceHandler
     {
         PDAppearanceEntry appearanceEntry = getNormalAppearance();
         PDAppearanceStream appearanceStream = appearanceEntry.getAppearanceStream();
+        float lineWidth = getLineWidth();
         try
         {
             PDAppearanceContentStream contentStream = new PDAppearanceContentStream(appearanceStream);
@@ -54,7 +55,15 @@ public class PDSquareAppearanceHandler extends PDAppearanceHandler
             AffineTransform transform = AffineTransform.getTranslateInstance(-bbox.getLowerLeftX(), -bbox.getLowerLeftY());
             appearanceStream.setMatrix(transform);
             contentStream.setStrokingColor(getColor().getComponents());
-            contentStream.addRect(bbox.getLowerLeftX()+1f, bbox.getLowerLeftY()+1f, bbox.getWidth()-2f, bbox.getHeight()-2f);
+            
+            // Acrobat doesn't write a line width command
+            // for a line width of 1 as this is default.
+            // Will do the same.
+            if (!(Math.abs(lineWidth - 1) < 1e-6))
+            {
+                contentStream.setLineWidth(lineWidth);
+            }
+            contentStream.addRect(bbox.getLowerLeftX()+lineWidth, bbox.getLowerLeftY()+lineWidth, bbox.getWidth()-2*lineWidth, bbox.getHeight()-2*lineWidth);
             
             contentStream.stroke();
             contentStream.close();
