@@ -21,6 +21,7 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationSquareCircle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceEntry;
 
@@ -177,6 +178,18 @@ public abstract class PDAppearanceHandler
         }
 
         return appearanceEntry;
+    }
+    
+    /**
+     * Set the differences rectangle.
+     */
+    void setRectDifference(float lineWidth)
+    {
+        if (annotation instanceof PDAnnotationSquareCircle && lineWidth > 0)
+        {
+            PDRectangle differences = new PDRectangle(lineWidth/2, lineWidth/2,0,0);
+            ((PDAnnotationSquareCircle) annotation).setRectDifference(differences);
+        }
     }
 
     /**
