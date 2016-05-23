@@ -81,7 +81,7 @@ public class CCITTFactoryTest extends TestCase
         document.save(testResultsDir + "/singletiff.pdf");
         document.close();
         
-        document = PDDocument.load(new File(testResultsDir, "singletiff.pdf"), (String)null);
+        document = PDDocument.load(new File(testResultsDir, "singletiff.pdf"));
         assertEquals(2, document.getNumberOfPages());
         
         document.close();  
