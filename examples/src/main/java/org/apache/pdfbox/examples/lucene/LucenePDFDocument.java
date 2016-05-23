@@ -371,7 +371,7 @@ public class LucenePDFDocument
         PDDocument pdfDocument = null;
         try
         {
-            pdfDocument = PDDocument.load(is, "");
+            pdfDocument = PDDocument.load(is);
 
             // create a writer where to append the text content.
             StringWriter writer = new StringWriter();
