@@ -107,7 +107,7 @@ public class ValidateXImage
         document.save(pdfFile);
         document.close();
 
-        document = PDDocument.load(pdfFile, (String)null);
+        document = PDDocument.load(pdfFile);
         assertEquals(1, count(document.getPage(0).getResources().getXObjectNames()));
         new PDFRenderer(document).renderImage(0);
         document.close();

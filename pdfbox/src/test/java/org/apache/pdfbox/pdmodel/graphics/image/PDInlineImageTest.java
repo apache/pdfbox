@@ -178,7 +178,7 @@ public class PDInlineImageTest extends TestCase
         document.save(pdfFile);
         document.close();
 
-        document = PDDocument.load(pdfFile, (String)null);
+        document = PDDocument.load(pdfFile);
         new PDFRenderer(document).renderImage(0);
         document.close();
 
