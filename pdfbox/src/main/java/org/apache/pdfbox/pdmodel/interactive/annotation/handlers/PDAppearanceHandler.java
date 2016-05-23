@@ -79,12 +79,12 @@ public abstract class PDAppearanceHandler
     // If at the end all annotations support the BS entry this can be handled
     // here and removed from the individual handlers.
     abstract float getLineWidth();
-    
+
     PDColor getColor()
     {
         return annotation.getColor();
     }
-    
+
     PDRectangle getRectangle()
     {
         return annotation.getRectangle();
@@ -93,8 +93,9 @@ public abstract class PDAppearanceHandler
     /**
      * Get the annotations appearance dictionary.
      * 
-     * <p>This will get the annotations appearance dictionary. If this is
-     * not existent an empty appearance dictionary will be created.
+     * <p>
+     * This will get the annotations appearance dictionary. If this is not
+     * existent an empty appearance dictionary will be created.
      * 
      * @return the annotations appearance dictionary
      */
@@ -112,8 +113,9 @@ public abstract class PDAppearanceHandler
     /**
      * Get the annotations normal appearance.
      * 
-     * <p>This will get the annotations normal appearance. If this is
-     * not existent an empty appearance entry will be created.
+     * <p>
+     * This will get the annotations normal appearance. If this is not existent
+     * an empty appearance entry will be created.
      * 
      * @return the appearance entry representing the normal appearance.
      */
@@ -124,18 +126,19 @@ public abstract class PDAppearanceHandler
 
         if (appearanceEntry.isSubDictionary())
         {
-           appearanceEntry = new PDAppearanceEntry(new COSStream());
-           appearanceDictionary.setNormalAppearance(appearanceEntry);
+            appearanceEntry = new PDAppearanceEntry(new COSStream());
+            appearanceDictionary.setNormalAppearance(appearanceEntry);
         }
 
         return appearanceEntry;
     }
-    
+
     /**
      * Get the annotations down appearance.
      * 
-     * <p>This will get the annotations down appearance. If this is
-     * not existent an empty appearance entry will be created.
+     * <p>
+     * This will get the annotations down appearance. If this is not existent an
+     * empty appearance entry will be created.
      * 
      * @return the appearance entry representing the down appearance.
      */
@@ -143,7 +146,7 @@ public abstract class PDAppearanceHandler
     {
         PDAppearanceDictionary appearanceDictionary = getAppearance();
         PDAppearanceEntry appearanceEntry = appearanceDictionary.getDownAppearance();
-        
+
         if (appearanceEntry.isSubDictionary())
         {
             appearanceEntry = new PDAppearanceEntry(new COSStream());
@@ -156,8 +159,9 @@ public abstract class PDAppearanceHandler
     /**
      * Get the annotations rollover appearance.
      * 
-     * <p>This will get the annotations rollover appearance. If this is
-     * not existent an empty appearance entry will be created.
+     * <p>
+     * This will get the annotations rollover appearance. If this is not
+     * existent an empty appearance entry will be created.
      * 
      * @return the appearance entry representing the rollover appearance.
      */
@@ -173,5 +177,20 @@ public abstract class PDAppearanceHandler
         }
 
         return appearanceEntry;
+    }
+
+    /**
+     * Get a padded rectangle.
+     * 
+     * <p>Creates a new rectangle with padding applied to each side.
+     * .
+     * @param rectangle the rectangle.
+     * @param padding the padding to apply.
+     * @return the padded rectangle.
+     */
+    PDRectangle getPaddedRectangle(PDRectangle rectangle, float padding)
+    {
+        return new PDRectangle(rectangle.getLowerLeftX() + padding, rectangle.getLowerLeftY() + padding,
+                rectangle.getWidth() - 2 * padding, rectangle.getHeight() - 2 * padding);
     }
 }
