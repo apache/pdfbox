@@ -17,7 +17,6 @@
 
 package org.apache.pdfbox.pdmodel.interactive.annotation.handlers;
 
-import java.awt.geom.AffineTransform;
 import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSArray;
@@ -25,40 +24,41 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationSquareCircle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceContentStream;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceEntry;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 
 /**
  * Handler to generate the square annotations appearance.
  *
  */
-public class PDSquareAppearanceHandler extends PDAppearanceHandler
+public class PDSquareAppearanceHandler extends PDAbstractAppearanceHandler
 {
+    
     public PDSquareAppearanceHandler(PDAnnotation annotation)
     {
         super(annotation);
+    }
+    
+    @Override
+    public void generateAppearanceStreams()
+    {
+        generateNormalAppearance();
+        generateRolloverAppearance();
+        generateDownAppearance();
     }
 
     @Override
     public void generateNormalAppearance()
     {
-        PDAppearanceEntry appearanceEntry = getNormalAppearance();
-        PDAppearanceStream appearanceStream = appearanceEntry.getAppearanceStream();
         float lineWidth = getLineWidth();
         try
         {
-            PDAppearanceContentStream contentStream = new PDAppearanceContentStream(appearanceStream);
-            PDRectangle bbox = getRectangle();
-            appearanceStream.setBBox(bbox);
-            AffineTransform transform = AffineTransform.getTranslateInstance(-bbox.getLowerLeftX(),
-                    -bbox.getLowerLeftY());
-            appearanceStream.setMatrix(transform);
-
+            PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream();;
             contentStream.setStrokingColorOnDemand(getColor());
             boolean hasBackground = contentStream
                     .setNonStrokingColorOnDemand(((PDAnnotationSquareCircle) getAnnotation()).getInteriorColor());
 
+            handleOpacity(((PDAnnotationSquareCircle) getAnnotation()).getConstantOpacity());
+            
             contentStream.setBorderLine(lineWidth, ((PDAnnotationSquareCircle) getAnnotation()).getBorderStyle());
             
             // the differences rectangle
@@ -67,12 +67,12 @@ public class PDSquareAppearanceHandler extends PDAppearanceHandler
             
             // Acrobat applies a padding to each side of the bbox so the line is completely within
             // the bbox.
-            PDRectangle borderEdge = getPaddedRectangle(bbox,lineWidth/2);
+            PDRectangle borderEdge = getPaddedRectangle(getRectangle(),lineWidth/2);
             contentStream.addRect(borderEdge.getLowerLeftX() , borderEdge.getLowerLeftY(),
                     borderEdge.getWidth(), borderEdge.getHeight());
-
+            
             contentStream.closePath(lineWidth, hasBackground);
-
+            
             contentStream.close();
         } catch (IOException e)
         {

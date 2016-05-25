@@ -212,8 +212,7 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
 
     public void setBorderLine(float lineWidth, PDBorderStyleDictionary bs) throws IOException
     {
-        // Important:
-        // can't use PDBorderStyleDictionary.getDashStyle() as
+        // Can't use PDBorderStyleDictionary.getDashStyle() as
         // this will return a default dash style if non is existing
         if (bs != null && (bs.getCOSObject().containsKey(COSName.D)))
         {
