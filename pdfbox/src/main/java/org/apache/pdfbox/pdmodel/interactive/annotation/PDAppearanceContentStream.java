@@ -250,7 +250,7 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
      * @param hasBackground shall there be a background color.
      * @throws IOException if an IO error occurs while writing to the stream.
      */
-    public void closePath(float lineWidth, boolean hasBackground) throws IOException
+    public void drawShape(float lineWidth, boolean hasBackground) throws IOException
     {
         if (lineWidth < 1e-6) {
             writeOperator("n");

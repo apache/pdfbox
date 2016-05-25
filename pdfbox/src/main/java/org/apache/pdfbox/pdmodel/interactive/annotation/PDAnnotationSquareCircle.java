@@ -23,6 +23,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDAppearanceHandler;
+import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDCircleAppearanceHandler;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDSquareAppearanceHandler;
 
 /**
@@ -34,6 +35,8 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
 {
 
     private PDAppearanceHandler squareAppearanceHandler;
+    private PDAppearanceHandler circleAppearanceHandler;
+    
     /**
      * Constant for a Rectangular type of annotation.
      */
@@ -74,6 +77,16 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
         this.squareAppearanceHandler = squareAppearanceHandler;
     }
     
+    /**
+     * Set a custom appearance handler for generating the annotations appearance streams.
+     * 
+     * @param circleAppearanceHandler
+     */
+    public void setCustomCircleAppearanceHandler(PDAppearanceHandler circleAppearanceHandler)
+    {
+        this.circleAppearanceHandler = circleAppearanceHandler;
+    }
+    
     public void constructAppearances()
     {
         if (getSubtype() == SUB_TYPE_SQUARE)
@@ -88,9 +101,17 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
                 squareAppearanceHandler.generateAppearanceStreams();
             }
         }
-        else if (getSubtype() == SUB_TYPE_SQUARE)
+        else if (getSubtype() == SUB_TYPE_CIRCLE)
         {
-            
+            if (circleAppearanceHandler == null)
+            {
+                PDCircleAppearanceHandler appearanceHandler = new PDCircleAppearanceHandler(this);
+                appearanceHandler.generateAppearanceStreams();
+            }
+            else
+            {
+                circleAppearanceHandler.generateAppearanceStreams();
+            }
         }
     }
     
