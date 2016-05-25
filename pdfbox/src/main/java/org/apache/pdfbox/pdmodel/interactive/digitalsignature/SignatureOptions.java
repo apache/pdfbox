@@ -23,6 +23,7 @@ import java.io.InputStream;
 
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
+import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible.PDVisibleSigProperties;
 
@@ -34,7 +35,11 @@ public class SignatureOptions implements Closeable
     private COSDocument visualSignature;
     private int preferredSignatureSize;
     private int pageNo;
-    
+
+    // the pdf to be read
+    // this is done analog to PDDocument
+    private RandomAccessRead pdfSource = null;
+
     public static final int DEFAULT_SIGNATURE_SIZE = 0x2500;
 
     /**
@@ -47,85 +52,88 @@ public class SignatureOptions implements Closeable
 
     /**
      * Set the 0-based page number.
-     * 
+     *
      * @param pageNo the page number
      */
     public void setPage(int pageNo)
     {
         this.pageNo = pageNo;
     }
-  
+
     /**
      * Get the 0-based page number.
-     * 
+     *
      * @return the page number
      */
-    public int getPage() 
+    public int getPage()
     {
         return pageNo;
     }
-  
+
     /**
      * Reads the visual signature from the given file.
-     *  
+     *
      * @param file the file containing the visual signature
-     * @throws IOException when something went wrong during parsing 
+     * @throws IOException when something went wrong during parsing
      */
     public void setVisualSignature(File file) throws IOException
-    { 
-        PDFParser parser = new PDFParser(new RandomAccessBufferedFileInputStream(file));
+    {
+        pdfSource = new RandomAccessBufferedFileInputStream(file);
+        PDFParser parser = new PDFParser(pdfSource);
         parser.parse();
         visualSignature = parser.getDocument();
     }
-    
+
     /**
      * Reads the visual signature from the given input stream.
-     *  
+     *
      * @param is the input stream containing the visual signature
-     * @throws IOException when something went wrong during parsing 
+     * @throws IOException when something went wrong during parsing
      */
     public void setVisualSignature(InputStream is) throws IOException
-    { 
-        PDFParser parser = new PDFParser(new RandomAccessBufferedFileInputStream(is));
+    {
+        pdfSource = new RandomAccessBufferedFileInputStream(is);
+        PDFParser parser = new PDFParser(pdfSource);
         parser.parse();
         visualSignature = parser.getDocument();
     }
-    
+
     /**
      * Reads the visual signature from the given visual signature properties
-     *  
-     * @param visSignatureProperties the <code>PDVisibleSigProperties</code> object containing the visual signature
-     * 
+     *
+     * @param visSignatureProperties the <code>PDVisibleSigProperties</code> object containing the
+     * visual signature
+     *
      * @throws IOException when something went wrong during parsing
      */
     public void setVisualSignature(PDVisibleSigProperties visSignatureProperties) throws IOException
-    { 
+    {
         setVisualSignature(visSignatureProperties.getVisibleSignature());
     }
 
     /**
      * Get the visual signature.
-     * 
+     *
      * @return the visual signature
      */
     public COSDocument getVisualSignature()
     {
         return visualSignature;
     }
-  
+
     /**
      * Get the preferred size of the signature.
-     * 
+     *
      * @return the preferred size of the signature in bytes.
      */
     public int getPreferredSignatureSize()
     {
         return preferredSignatureSize;
     }
-  
+
     /**
      * Set the preferred size of the signature.
-     * 
+     *
      * @param size the size of the signature in bytes. Only values above 0 will be considered.
      */
     public void setPreferredSignatureSize(int size)
@@ -147,6 +155,10 @@ public class SignatureOptions implements Closeable
         if (visualSignature != null)
         {
             visualSignature.close();
+        }
+        if (pdfSource != null)
+        {
+            pdfSource.close();
         }
     }
 }
