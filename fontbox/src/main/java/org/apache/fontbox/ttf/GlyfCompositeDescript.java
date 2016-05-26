@@ -44,7 +44,7 @@ public class GlyfCompositeDescript extends GlyfDescript
     private GlyphTable glyphTable = null;
     private boolean beingResolved = false;
     private boolean resolved = false;
-
+    private int pointCount = -1;
     /**
      * Constructor.
      * 
@@ -203,14 +203,21 @@ public class GlyfCompositeDescript extends GlyfDescript
         {
             LOG.error("getPointCount called on unresolved GlyfCompositeDescript");
         }
-        GlyfCompositeComp c = components.get(components.size() - 1);
-        GlyphDescription gd = getGlypDescription(c.getGlyphIndex());
-        if (gd == null)
+        if (pointCount < 0)
         {
-            LOG.error("getGlypDescription(" + c.getGlyphIndex() + ") is null, returning 0");
-            return 0;
-        }
-        return c.getFirstIndex() + gd.getPointCount();
+            GlyfCompositeComp c = components.get(components.size() - 1);
+            GlyphDescription gd = getGlypDescription(c.getGlyphIndex());
+            if (gd == null)
+            {
+                LOG.error("getGlypDescription(" + c.getGlyphIndex() + ") is null, returning 0");
+                pointCount = 0;
+            }
+            else
+            {
+                pointCount = c.getFirstIndex() + gd.getPointCount();
+            }
+        }   
+        return pointCount;
     }
 
     /**
