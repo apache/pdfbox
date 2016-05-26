@@ -25,6 +25,8 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionFactory;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionURI;
+import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDAppearanceHandler;
+import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDLinkAppearanceHandler;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
 
 /**
@@ -57,6 +59,11 @@ public class PDAnnotationLink extends PDAnnotation
      * The type of annotation.
      */
     public static final String SUB_TYPE = "Link";
+    
+    /**
+     * Custom apperance handler to generate an appearance stream.
+     */
+    private PDAppearanceHandler customAppearanceHandler;
 
     /**
      * Constructor.
@@ -222,5 +229,28 @@ public class PDAnnotationLink extends PDAnnotation
         }
         // Should never happen as this is a required item
         return null; 
+    }
+    
+    /**
+     * Set a custom appearance handler for generating the annotations appearance streams.
+     * 
+     * @param circleAppearanceHandler
+     */
+    public void setCustomAppearanceHandler(PDAppearanceHandler customAppearanceHandler)
+    {
+        this.customAppearanceHandler = customAppearanceHandler;
+    }
+    
+    public void constructAppearances()
+    {
+        if (customAppearanceHandler == null)
+        {
+            PDLinkAppearanceHandler appearanceHandler = new PDLinkAppearanceHandler(this);
+            appearanceHandler.generateAppearanceStreams();
+        }
+        else
+        {
+            customAppearanceHandler.generateAppearanceStreams();
+        }
     }
 }
