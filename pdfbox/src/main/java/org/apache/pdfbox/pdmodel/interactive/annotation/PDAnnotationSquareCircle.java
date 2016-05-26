@@ -89,7 +89,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
     
     public void constructAppearances()
     {
-        if (getSubtype() == SUB_TYPE_SQUARE)
+        if (SUB_TYPE_SQUARE.equals(getSubtype()))
         {
             if (squareAppearanceHandler == null)
             {
@@ -101,7 +101,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
                 squareAppearanceHandler.generateAppearanceStreams();
             }
         }
-        else if (getSubtype() == SUB_TYPE_CIRCLE)
+        else if (SUB_TYPE_CIRCLE.equals(getSubtype()))
         {
             if (circleAppearanceHandler == null)
             {
