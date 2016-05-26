@@ -173,10 +173,10 @@ public class PDFRenderer
     private void renderPage(PDPage page, Graphics2D graphics, int width, int height, float scaleX,
                             float scaleY) throws IOException
     {
+        graphics.clearRect(0, 0, width, height);
+
         graphics.scale(scaleX, scaleY);
         // TODO should we be passing the scale to PageDrawer rather than messing with Graphics?
-        
-        graphics.clearRect(0, 0, width, height);
 
         PDRectangle cropBox = page.getCropBox();
         int rotationAngle = page.getRotation();
