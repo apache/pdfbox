@@ -153,6 +153,7 @@
                         <exclude>src/test/resources/org/apache/pdfbox/encryption/*.der</exclude>
                         <exclude>src/test/resources/org/apache/pdfbox/encryption/*.pfx</exclude>
                         <exclude>src/test/resources/org/apache/pdfbox/filter/*.bin</exclude>
+                        <exclude>src/test/resources/org/apache/pdfbox/text/*.txt</exclude>
                     </excludes>
                 </configuration>
             </plugin>
