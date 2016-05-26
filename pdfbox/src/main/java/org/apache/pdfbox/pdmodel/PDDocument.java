@@ -696,8 +696,7 @@ public class PDDocument implements Closeable
         PDAcroForm acroForm = getDocumentCatalog().getAcroForm();
         if (acroForm != null)
         {
-            // fixme: non-terminal fields are ignored, could have descendant signatures
-            for (PDField field : acroForm.getFields())
+            for (PDField field : acroForm.getFieldTree())
             {
                 if (field instanceof PDSignatureField)
                 {
