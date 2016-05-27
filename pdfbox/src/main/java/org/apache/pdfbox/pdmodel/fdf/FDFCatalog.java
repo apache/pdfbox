@@ -56,7 +56,6 @@ public class FDFCatalog implements COSObjectable
      * This will create an FDF catalog from an XFDF XML document.
      *
      * @param element The XML document that contains the XFDF data.
-     * @throws IOException If there is an error reading from the dom.
      */
     public FDFCatalog(Element element)
     {
@@ -135,7 +134,7 @@ public class FDFCatalog implements COSObjectable
      *
      * @param fdf The new FDF dictionary.
      */
-    public void setFDF(FDFDictionary fdf)
+    public final void setFDF(FDFDictionary fdf)
     {
         catalog.setItem(COSName.FDF, fdf);
     }

@@ -49,7 +49,6 @@ public class FDFDocument implements Closeable
     /**
      * Constructor, creates a new FDF document.
      *
-     * @throws IOException If there is an error creating this document.
      */
     public FDFDocument()
     {
@@ -147,7 +146,7 @@ public class FDFDocument implements Closeable
      *
      * @param cat The FDF catalog.
      */
-    public void setCatalog(FDFCatalog cat)
+    public final void setCatalog(FDFCatalog cat)
     {
         COSDictionary trailer = document.getTrailer();
         trailer.setItem(COSName.ROOT, cat);

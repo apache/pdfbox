@@ -142,7 +142,7 @@ public class FDFAnnotationFreeText extends FDFAnnotation
      * ending coordinates of the line in default user space, Four numbers [ x1 y1 x2 y2 ] represent
      * the starting and ending coordinates of the line.
      */
-    public void setCallout(float[] callout)
+    public final void setCallout(float[] callout)
     {
         COSArray newCallout = new COSArray();
         newCallout.setFloatArray(callout);

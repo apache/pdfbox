@@ -302,7 +302,7 @@ public class FDFDictionary implements COSObjectable
      *
      * @param fs The file specification.
      */
-    public void setFile(PDFileSpecification fs)
+    public final void setFile(PDFileSpecification fs)
     {
         fdf.setItem(COSName.F, fs);
     }
@@ -322,7 +322,7 @@ public class FDFDictionary implements COSObjectable
      *
      * @param id The new id for the FDF.
      */
-    public void setID(COSArray id)
+    public final void setID(COSArray id)
     {
         fdf.setItem(COSName.ID, id);
     }
@@ -353,7 +353,7 @@ public class FDFDictionary implements COSObjectable
      *
      * @param fields The list of fields.
      */
-    public void setFields(List<FDFField> fields)
+    public final void setFields(List<FDFField> fields)
     {
         fdf.setItem(COSName.FIELDS, COSArrayList.converterToCOSArray(fields));
     }
@@ -466,7 +466,7 @@ public class FDFDictionary implements COSObjectable
      *
      * @param annots The list of annotations.
      */
-    public void setAnnotations(List<FDFAnnotation> annots)
+    public final void setAnnotations(List<FDFAnnotation> annots)
     {
         fdf.setItem(COSName.ANNOTS, COSArrayList.converterToCOSArray(annots));
     }

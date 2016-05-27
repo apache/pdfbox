@@ -180,7 +180,7 @@ public class FDFField implements COSObjectable
      *
      * @param kids A list of FDFField objects.
      */
-    public void setKids(List<FDFField> kids)
+    public final void setKids(List<FDFField> kids)
     {
         field.setItem(COSName.KIDS, COSArrayList.converterToCOSArray(kids));
     }

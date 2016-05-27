@@ -113,7 +113,7 @@ public class FDFAnnotationPolygon extends FDFAnnotation
      *
      * @param vertices array of floats [x1, y1, x2, y2, ...] vertex coordinates in default user space.
      */
-    public void setVertices(float[] vertices)
+    public final void setVertices(float[] vertices)
     {
         COSArray newVertices = new COSArray();
         newVertices.setFloatArray(vertices);
