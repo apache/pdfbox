@@ -93,7 +93,7 @@ abstract class TrueTypeEmbedder implements Subsetter
         cmap = ttf.getUnicodeCmap();
     }
 
-    public void buildFontFile2(InputStream ttfStream) throws IOException
+    public final void buildFontFile2(InputStream ttfStream) throws IOException
     {
         PDStream stream = new PDStream(document, ttfStream, COSName.FLATE_DECODE);
         stream.getCOSObject().setInt(COSName.LENGTH1, stream.toByteArray().length);
