@@ -55,7 +55,7 @@ public class SmallMap<K, V> implements Map<K, V>
      * Returns index of key within map-array or <code>-1</code>
      * if key is not found (or key is <code>null</code>).
      */
-    private final int findKey(Object key)
+    private int findKey(Object key)
     {
         if (isEmpty() || (key==null))
         {
@@ -77,7 +77,7 @@ public class SmallMap<K, V> implements Map<K, V>
      * Returns index of value within map-array or <code>-1</code>
      * if value is not found (or value is <code>null</code>).
      */
-    private final int findValue(Object value)
+    private int findValue(Object value)
     {
         if (isEmpty() || (value==null))
         {
@@ -199,7 +199,7 @@ public class SmallMap<K, V> implements Map<K, V>
     }
 
     @Override
-    public void putAll(Map<? extends K, ? extends V> otherMap)
+    public final void putAll(Map<? extends K, ? extends V> otherMap)
     {
         if ((mapArr == null) || (mapArr.length == 0))
         {
@@ -317,7 +317,7 @@ public class SmallMap<K, V> implements Map<K, V>
     {
         private final int keyIdx;
         
-        public SmallMapEntry(int keyInMapIdx)
+        SmallMapEntry(int keyInMapIdx)
         {
             keyIdx = keyInMapIdx;
         }
