@@ -25,7 +25,6 @@ import java.util.Locale;
 import org.apache.pdfbox.contentstream.PDAbstractContentStream;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 
 /**
  * Provides the ability to write to a page content stream.
@@ -39,7 +38,7 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
      * This is to choose what to do with the stream: overwrite, append or
      * prepend.
      */
-    public static enum AppendMode
+    public enum AppendMode
     {
         /**
          * Overwrite the existing page content streams.
