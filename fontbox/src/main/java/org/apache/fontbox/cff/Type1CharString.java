@@ -87,7 +87,7 @@ public class Type1CharString
      */
     public Rectangle2D getBounds()
     {
-        synchronized (fontName)
+        synchronized(LOG)
         {
             if (path == null)
             {
@@ -103,7 +103,7 @@ public class Type1CharString
      */
     public int getWidth()
     {
-        synchronized (fontName)
+        synchronized(LOG)
         {
             if (path == null)
             {
@@ -119,7 +119,7 @@ public class Type1CharString
      */
     public GeneralPath getPath()
     {
-        synchronized (fontName)
+        synchronized(LOG)
         {
             if (path == null)
             {
