@@ -87,9 +87,12 @@ public class Type1CharString
      */
     public Rectangle2D getBounds()
     {
-        if (path == null)
+        synchronized (fontName)
         {
-            render();
+            if (path == null)
+            {
+                render();
+            }
         }
         return path.getBounds2D();
     }
@@ -100,9 +103,12 @@ public class Type1CharString
      */
     public int getWidth()
     {
-        if (path == null)
+        synchronized (fontName)
         {
-          render();
+            if (path == null)
+            {
+                render();
+            }
         }
         return width;
     }
@@ -113,9 +119,12 @@ public class Type1CharString
      */
     public GeneralPath getPath()
     {
-        if (path == null)
+        synchronized (fontName)
         {
-          render();
+            if (path == null)
+            {
+                render();
+            }
         }
         return path;
     }
