@@ -30,7 +30,7 @@ class Token
      * All different types of tokens.  
      *
      */
-    static enum Kind
+    enum Kind
     {
         NONE, STRING, NAME, LITERAL, REAL, INTEGER,
         START_ARRAY,  END_ARRAY, START_PROC,
