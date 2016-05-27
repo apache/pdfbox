@@ -89,7 +89,7 @@ public class FDFAnnotationText extends FDFAnnotation
      *
      * @param icon The name of the annotation
      */
-    public void setIcon(String icon)
+    public final void setIcon(String icon)
     {
         annot.setName(COSName.NAME, icon);
     }
@@ -120,7 +120,7 @@ public class FDFAnnotationText extends FDFAnnotation
      * 
      * @param state the annotation state
      */
-    public void setState(String state)
+    public final void setState(String state)
     {
         annot.setString(COSName.STATE, state);
     }
@@ -140,7 +140,7 @@ public class FDFAnnotationText extends FDFAnnotation
      * 
      * @param stateModel the annotation state model
      */
-    public void setStateModel(String stateModel)
+    public final void setStateModel(String stateModel)
     {
         annot.setString(COSName.STATE_MODEL, stateModel);
     }

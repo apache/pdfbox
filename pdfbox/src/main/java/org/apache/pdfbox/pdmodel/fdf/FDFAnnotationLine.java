@@ -159,7 +159,7 @@ public class FDFAnnotationLine extends FDFAnnotation
      *
      * @param line array of 4 floats [x1, y1, x2, y2] line start and end points in default user space.
      */
-    public void setLine(float[] line)
+    public final void setLine(float[] line)
     {
         COSArray newLine = new COSArray();
         newLine.setFloatArray(line);
@@ -189,7 +189,7 @@ public class FDFAnnotationLine extends FDFAnnotation
      *
      * @param style The new style.
      */
-    public void setStartPointEndingStyle(String style)
+    public final void setStartPointEndingStyle(String style)
     {
         if (style == null)
         {
@@ -231,7 +231,7 @@ public class FDFAnnotationLine extends FDFAnnotation
      *
      * @param style The new style.
      */
-    public void setEndPointEndingStyle(String style)
+    public final void setEndPointEndingStyle(String style)
     {
         if (style == null)
         {
@@ -273,7 +273,7 @@ public class FDFAnnotationLine extends FDFAnnotation
      *
      * @param color The interior color of the line endings.
      */
-    public void setInteriorColor(Color color)
+    public final void setInteriorColor(Color color)
     {
         COSArray array = null;
         if (color != null)
@@ -310,7 +310,7 @@ public class FDFAnnotationLine extends FDFAnnotation
      *
      * @param cap Boolean value.
      */
-    public void setCaption(boolean cap)
+    public final void setCaption(boolean cap)
     {
         annot.setBoolean(COSName.CAP, cap);
     }
@@ -340,7 +340,7 @@ public class FDFAnnotationLine extends FDFAnnotation
      * 
      * @param leaderLength length of the leader line
      */
-    public void setLeaderLength(float leaderLength)
+    public final void setLeaderLength(float leaderLength)
     {
         annot.setFloat(COSName.LL, leaderLength);
     }
@@ -360,7 +360,7 @@ public class FDFAnnotationLine extends FDFAnnotation
      * 
      * @param leaderExtend length of the leader line extensions
      */
-    public void setLeaderExtend(float leaderExtend)
+    public final void setLeaderExtend(float leaderExtend)
     {
         annot.setFloat(COSName.LLE, leaderExtend);
     }
@@ -380,7 +380,7 @@ public class FDFAnnotationLine extends FDFAnnotation
      * 
      * @param leaderOffset length of the leader line offset
      */
-    public void setLeaderOffset(float leaderOffset)
+    public final void setLeaderOffset(float leaderOffset)
     {
         annot.setFloat(COSName.LLO, leaderOffset);
     }
@@ -400,7 +400,7 @@ public class FDFAnnotationLine extends FDFAnnotation
      * 
      * @param captionStyle caption positioning
      */
-    public void setCaptionStyle(String captionStyle)
+    public final void setCaptionStyle(String captionStyle)
     {
         annot.setString(COSName.CP, captionStyle);
     }
@@ -410,7 +410,7 @@ public class FDFAnnotationLine extends FDFAnnotation
      * 
      * @param offset the horizontal offset of the caption
      */
-    public void setCaptionHorizontalOffset(float offset)
+    public final void setCaptionHorizontalOffset(float offset)
     {
         COSArray array = (COSArray) annot.getDictionaryObject(COSName.CO);
         if (array == null)
@@ -447,7 +447,7 @@ public class FDFAnnotationLine extends FDFAnnotation
      * 
      * @param offset vertical offset of the caption
      */
-    public void setCaptionVerticalOffset(float offset)
+    public final void setCaptionVerticalOffset(float offset)
     {
         COSArray array = (COSArray) annot.getDictionaryObject(COSName.CO);
         if (array == null)
