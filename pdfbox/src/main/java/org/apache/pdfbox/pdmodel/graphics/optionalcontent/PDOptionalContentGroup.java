@@ -62,7 +62,7 @@ public class PDOptionalContentGroup extends PDPropertyList
      * Sets the name of the optional content group.
      * @param name the name
      */
-    public void setName(String name)
+    public final void setName(String name)
     {
         dict.setString(COSName.NAME, name);
     }
