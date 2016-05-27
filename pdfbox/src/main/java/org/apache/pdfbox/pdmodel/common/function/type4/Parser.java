@@ -25,7 +25,7 @@ public final class Parser
 {
 
     /** Used to indicate the parsers current state. */
-    private static enum State
+    private enum State
     {
         NEWLINE, WHITESPACE, COMMENT, TOKEN
     }
