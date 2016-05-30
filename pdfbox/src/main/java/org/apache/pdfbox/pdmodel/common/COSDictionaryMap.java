@@ -77,7 +77,7 @@ public class COSDictionaryMap<K,V> implements Map<K,V>
      */
     public boolean containsKey(Object key)
     {
-        return map.keySet().contains( key );
+        return actuals.containsKey( key );
     }
 
     /**
@@ -160,6 +160,7 @@ public class COSDictionaryMap<K,V> implements Map<K,V>
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean equals(Object o)
     {
         boolean retval = false;
@@ -174,6 +175,7 @@ public class COSDictionaryMap<K,V> implements Map<K,V>
     /**
      * {@inheritDoc}
      */
+    @Override
     public String toString()
     {
         return actuals.toString();
@@ -182,6 +184,7 @@ public class COSDictionaryMap<K,V> implements Map<K,V>
     /**
      * {@inheritDoc}
      */
+    @Override
     public int hashCode()
     {
         return map.hashCode();
