@@ -9,3 +9,6 @@ Copyright 2002, 2010 Adobe Systems Incorporated.
 
 Includes the Bidi Mirroring Glyph Property (BidiMirroring-8.0.0.txt)
 Copyright 1991-2015 Unicode, Inc.
+
+Includes parts of TwelveMonkeys ImageIO
+Copyright 2008-2016 Harald Kuhr
