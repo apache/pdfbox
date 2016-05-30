@@ -78,7 +78,7 @@ public class COSDictionaryMap<K,V> implements Map<K,V>
     @Override
     public boolean containsKey(Object key)
     {
-        return map.keySet().contains( key );
+        return actuals.containsKey( key );
     }
 
     /**
