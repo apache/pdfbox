@@ -61,13 +61,13 @@ public class COSFloat extends COSNumber
         }
         catch( NumberFormatException e )
         {
-            if (aFloat.startsWith("0.00000-"))
+            if (aFloat.matches("^0\\.0+\\-\\d+"))
             {
                 // PDFBOX-2990 has 0.00000-33917698
-                // Let's wait what other floats will be coming before doing a more general workaround.
+                // PDFBOX-3369 has 0.00-35095424
                 try
                 {
-                    valueAsString = "-0.00000" + aFloat.substring(8);
+                    valueAsString = "-" + valueAsString.replaceFirst("\\-", "");
                     value = new BigDecimal(valueAsString);
                     checkMinMaxValues();
                 }
