@@ -105,6 +105,8 @@ public abstract class PDAbstractContentStream implements Closeable
      */
     public PDAbstractContentStream() throws IOException
     {
+        formatDecimal.setMaximumFractionDigits(4);
+        formatDecimal.setGroupingUsed(false);
     }
     
     /**
@@ -137,6 +139,22 @@ public abstract class PDAbstractContentStream implements Closeable
         formatDecimal.setGroupingUsed(false);
     }
     
+    /**
+     * Sets the maximum number of digits allowed for fractional numbers.
+     * 
+     * @see NumberFormat#setMaximumFractionDigits(int)
+     * @param fractionDigitsNumber
+     */
+    protected void setMaximumFractionDigits(int fractionDigitsNumber)
+    {
+        formatDecimal.setMaximumFractionDigits(fractionDigitsNumber);
+    }
+    
+    public OutputStream getOutput()
+    {
+        return this.output;
+    }
+
     public void setOutput(OutputStream outputStream)
     {
         this.output = outputStream;
@@ -150,11 +168,6 @@ public abstract class PDAbstractContentStream implements Closeable
     public void setResources(PDResources resources)
     {
         this.resources = resources;
-    }
-    
-    public OutputStream getOutput()
-    {
-        return this.output;
     }
     
     public Stack<PDColorSpace> getStrokingColorSpaceStack()
@@ -1339,6 +1352,15 @@ public abstract class PDAbstractContentStream implements Closeable
     }
 
     /**
+     * Writes a double to the content stream.
+     */
+    protected void writeOperand(double data) throws IOException
+    {
+        write(formatDecimal.format(data));
+        output.write(' ');
+    }
+
+    /**
      * Writes a real real to the content stream.
      */
     protected void writeOperand(float real) throws IOException
@@ -1382,6 +1404,14 @@ public abstract class PDAbstractContentStream implements Closeable
         output.write(text.getBytes(Charsets.US_ASCII));
     }
 
+    /**
+     * Writes a byte[] to the content stream.
+     */
+    protected void write(byte[] data) throws IOException
+    {
+        output.write(data);
+    }
+    
     /**
      * Writes a string to the content stream as ASCII.
      */
