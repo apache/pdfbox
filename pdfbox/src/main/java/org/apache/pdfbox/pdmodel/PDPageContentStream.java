@@ -21,8 +21,6 @@ import java.awt.geom.PathIterator;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.text.NumberFormat;
-import java.util.Locale;
 import java.util.Stack;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,7 +42,6 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDInlineImage;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
-import org.apache.pdfbox.util.Charsets;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -92,9 +89,6 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
 
     private final Stack<PDColorSpace> nonStrokingColorSpaceStack = new Stack<PDColorSpace>();
     private final Stack<PDColorSpace> strokingColorSpaceStack = new Stack<PDColorSpace>();
-
-    // number format
-    private final NumberFormat formatDecimal = NumberFormat.getNumberInstance(Locale.US);
 
     /**
      * Create a new PDPage content stream.
@@ -257,8 +251,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
         }
         setResources(resources);
         // configure NumberFormat
-        formatDecimal.setMaximumFractionDigits(10);
-        formatDecimal.setGroupingUsed(false);
+        setMaximumFractionDigits(10);
     }
 
     /**
@@ -288,9 +281,6 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
         this.document = doc;
         
         setResources(appearance.getResources());
-        
-        formatDecimal.setMaximumFractionDigits(4);
-        formatDecimal.setGroupingUsed(false);
     }
 
     /**
@@ -365,6 +355,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
             }
         }
 
+        
         COSWriter.writeString(font.encode(text), getOutput());
         write(" ");
 
@@ -1074,7 +1065,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     @Deprecated
     public void appendRawCommands(String commands) throws IOException
     {
-        getOutput().write(commands.getBytes(Charsets.US_ASCII));
+        write(commands);
     }
 
     /**
@@ -1087,7 +1078,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     @Deprecated
     public void appendRawCommands(byte[] commands) throws IOException
     {
-        getOutput().write(commands);
+        write(commands);
     }
 
     /**
@@ -1100,7 +1091,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     @Deprecated
     public void appendRawCommands(int data) throws IOException
     {
-        getOutput().write(data);
+        writeOperand(data);
     }
 
     /**
@@ -1113,7 +1104,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     @Deprecated
     public void appendRawCommands(double data) throws IOException
     {
-        getOutput().write(formatDecimal.format(data).getBytes(Charsets.US_ASCII));
+        writeOperand(data);
     }
 
     /**
@@ -1126,7 +1117,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     @Deprecated
     public void appendRawCommands(float data) throws IOException
     {
-        getOutput().write(formatDecimal.format(data).getBytes(Charsets.US_ASCII));
+        writeOperand(data);
     }
 
     /**
@@ -1139,7 +1130,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     @Deprecated
     public void appendCOSName(COSName name) throws IOException
     {
-        name.writePDF(getOutput());
+        writeOperand(name);
     }
     
     /**
@@ -1148,20 +1139,10 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @param state The extended graphics state.
      * @throws IOException If the content stream could not be written.
      */
+    @Override
     public void setGraphicsStateParameters(PDExtendedGraphicsState state) throws IOException
     {
         writeOperand(getResources().add(state));
         writeOperator("gs");
-    }
-
-    /**
-     * Close the content stream.  This must be called when you are done with this object.
-     *
-     * @throws IOException If the underlying stream has a problem being written to.
-     */
-    @Override
-    public void close() throws IOException
-    {
-        getOutput().close();
     }
 }
