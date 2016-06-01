@@ -63,9 +63,6 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
         }
     }
 
-    // number format
-    private final NumberFormat formatDecimal = NumberFormat.getNumberInstance(Locale.US);
-
     /**
      * Create a new appearance stream.
      *
@@ -98,9 +95,6 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
     {
         super(appearance, outputStream);
         setResources(appearance.getResources());
-
-        formatDecimal.setMaximumFractionDigits(4);
-        formatDecimal.setGroupingUsed(false);
     }
 
     /**
