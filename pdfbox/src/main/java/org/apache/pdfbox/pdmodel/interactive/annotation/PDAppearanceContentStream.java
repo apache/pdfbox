@@ -19,8 +19,6 @@ package org.apache.pdfbox.pdmodel.interactive.annotation;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.text.NumberFormat;
-import java.util.Locale;
 
 import org.apache.pdfbox.contentstream.PDAbstractContentStream;
 import org.apache.pdfbox.cos.COSName;
