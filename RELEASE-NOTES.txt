@@ -1,11 +1,11 @@
-Release Notes -- Apache PDFBox -- Version 2.0.1
+Release Notes -- Apache PDFBox -- Version 2.0.2
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is an incremental bugfix release based on the earlier 2.0.0 release. It contains
+This is an incremental bugfix release based on the earlier 2.0.1 release. It contains
 a couple of fixes and small improvements.
 
 For more details on these changes and all the other fixes and improvements
@@ -14,30 +14,35 @@ PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
 
 Bug
 
-[PDFBOX-3272] - Loaded fonts file descriptors open after closing document
-[PDFBOX-3273] - Fonts not rendered correctly
-[PDFBOX-3276] - Double encryption dictionary for files with XRef stream
-[PDFBOX-3279] - PDDocument.importPage creates two inputstreams
-[PDFBOX-3281] - HTML output wrongly specifies UTF-16 in header
-[PDFBOX-3286] - Think I found a bad constant (TTF) value and constant use in PDFBox source
-[PDFBOX-3292] - Error reading stream, expected='endstream' actual='' in non-truncated files
-[PDFBOX-3297] - Infinite loop
-[PDFBOX-3299] - TIFF-files with FillOrder=2 can't be converted to PDF
-[PDFBOX-3301] - NPE in PDAcroForm.flatten if a widget doesn't contain a /P entry
-[PDFBOX-3303] - setWidgets should set connection to parent
-[PDFBOX-3308] - Missing endOfName chars
-[PDFBOX-3312] - NPE in saveIncremental() / fix javadoc
-[PDFBOX-3317] - Merged PDF/A files no longer valid PDF/A
-[PDFBOX-3319] - Chinese character overlap other chinese character
+[PDFBOX-3267] - Using threads results in different images
+[PDFBOX-3326] - Issue in RenderingMode.isStroke method
+[PDFBOX-3327] - IndexOutOfBoundsException when retrieving kerning information
+[PDFBOX-3332] - Apache PDFBox Form Fill TrueType text spacing issue
+[PDFBOX-3333] - Wrong appearance generation for rotated AcroForms fields
+[PDFBOX-3336] - several errors in the incremental save
+[PDFBOX-3338] - CCITT Fax decoder fails
+[PDFBOX-3341] - currentAccessPermission.setReadOnly() not set in StandardSecurityHandler
+[PDFBOX-3346] - Create example with empty signature
+[PDFBOX-3347] - COSName parsing doesn't handle ISO-8859-1 encoded bytes
+[PDFBOX-3348] - NPE in Type1Parser.parseBinary
+[PDFBOX-3351] - NPE when drawing annotation with empty border color array
+[PDFBOX-3354] - PDCIDFont.getAverageFontWidth always returns 0
+[PDFBOX-3355] - PDPageLabels.getLabelsByPageIndices() returns Uppercase letters for style a
+[PDFBOX-3360] - java.lang.IllegalArgumentException: dash lengths all zero
+[PDFBOX-3362] - PageLayout.TwoColumnRight was Illegal
+[PDFBOX-3363] - Leftover file in temp directory when signing
+[PDFBOX-3368] - ContainsKey don't work for the Map<String, Object> returned by PDStructureTreeRoot.getRoleMap
+[PDFBOX-3369] - Error expected floating point number actual='0.00-35095424'
 
 Improvement
 
-[PDFBOX-3275] - Show glyph bounds in DrawPrintTextLocations
-[PDFBOX-3289] - Wrong unit MM_PER_INCH in PDRectangle
-[PDFBOX-3295] - Improve parsing performance of object streams
-[PDFBOX-3305] - PDPageContentStream should allow drawing images at current position
-[PDFBOX-3307] - Enable AES128 encryption
-[PDFBOX-3323] - Cannot set destination meta data in PDFMergerUtility
+[PDFBOX-3089] - Investigate why glyph path caching does not always cache glyph accesses
+[PDFBOX-3316] - Add comment to PDF
+[PDFBOX-3329] - Create PDFMergerUtility example with improved metadata handling
+[PDFBOX-3342] - Add example to jump to a local page to AddAnnotations
+[PDFBOX-3352] - Calendar values are parsed with unknown timezones
+[PDFBOX-3364] - PDModel.getSignatureFields() only returns top level signature fields
+
 
 Release Contents
 ----------------
