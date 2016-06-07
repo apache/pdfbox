@@ -25,7 +25,9 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.Enumeration;
 import org.apache.pdfbox.io.IOUtils;
@@ -73,9 +75,13 @@ public class CreateVisibleSignature extends CreateSignatureBase
      *
      * @param keystore is a pkcs12 keystore.
      * @param pin is the pin for the keystore / private key
+     * @throws KeyStoreException if the keystore has not been initialized (loaded)
+     * @throws NoSuchAlgorithmException if the algorithm for recovering the key cannot be found
+     * @throws UnrecoverableKeyException if the given password is wrong
+     * @throws CertificateException if the certificate is not valid as signing time
      */
     public CreateVisibleSignature(KeyStore keystore, char[] pin)
-            throws KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, IOException
+            throws KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, IOException, CertificateException
     {
         // grabs the first alias from the keystore and get the private key. An
         // alternative method or constructor could be used for setting a specific
@@ -91,7 +97,13 @@ public class CreateVisibleSignature extends CreateSignatureBase
             throw new IOException("Could not find alias");
         }
         setPrivateKey((PrivateKey) keystore.getKey(alias, pin));
-        setCertificate(keystore.getCertificateChain(alias)[0]);
+        Certificate cert = keystore.getCertificateChain(alias)[0];
+        setCertificate(cert);
+        if (cert instanceof X509Certificate)
+        {
+            // avoid expired certificate
+            ((X509Certificate) cert).checkValidity();
+        }
     }
 
     /**
