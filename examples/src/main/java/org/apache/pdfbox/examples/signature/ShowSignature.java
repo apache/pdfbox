@@ -88,8 +88,6 @@ public final class ShowSignature
                                                      NoSuchAlgorithmException, InvalidKeyException,
                                                      NoSuchProviderException, SignatureException
     {
-        args = new String[]{"","C:\\Users\\Tilman Hausherr\\Documents\\Java\\PDFBoxPageImageExtraction\\annotations2_signed.pdf"};
-        args = new String[]{"","C:\\Users\\Tilman Hausherr\\Documents\\Java\\PDFBox reactor\\pdfbox\\src\\test\\resources\\input\\rendering\\PDFBOX-1452.pdf"};
         if( args.length != 2 )
         {
             usage();
