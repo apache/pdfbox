@@ -21,12 +21,15 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SignatureException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateFactory;
+import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -46,6 +49,7 @@ import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.util.Store;
+import org.bouncycastle.util.StoreException;
 
 /**
  * This will read a document from the filesystem, decrypt it and do something with the signature.
@@ -84,6 +88,8 @@ public final class ShowSignature
                                                      NoSuchAlgorithmException, InvalidKeyException,
                                                      NoSuchProviderException, SignatureException
     {
+        args = new String[]{"","C:\\Users\\Tilman Hausherr\\Documents\\Java\\PDFBoxPageImageExtraction\\annotations2_signed.pdf"};
+        args = new String[]{"","C:\\Users\\Tilman Hausherr\\Documents\\Java\\PDFBox reactor\\pdfbox\\src\\test\\resources\\input\\rendering\\PDFBOX-1452.pdf"};
         if( args.length != 2 )
         {
             usage();
@@ -120,49 +126,13 @@ public final class ShowSignature
                     {
                         if (subFilter.equals("adbe.pkcs7.detached"))
                         {
-                            CMSProcessable signedContent = new CMSProcessableByteArray(buf);
-
-                            // inspiration:
-                            // http://stackoverflow.com/a/26702631/535646
-                            // http://stackoverflow.com/a/9261365/535646
-                            CMSSignedData signedData = new CMSSignedData(signedContent, contents.getBytes());
-                            Store certificatesStore = signedData.getCertificates();
-                            Collection<SignerInformation> signers = signedData.getSignerInfos().getSigners();
-                            SignerInformation signerInformation = signers.iterator().next();
-                            Collection matches = certificatesStore.getMatches(signerInformation.getSID());
-                            X509CertificateHolder certificateHolder = (X509CertificateHolder) matches.iterator().next();
-                            X509Certificate certFromSignedData = new JcaX509CertificateConverter().getCertificate(certificateHolder);
-                            System.out.println("certFromSignedData: " + certFromSignedData);
-                            certFromSignedData.checkValidity(sig.getSignDate().getTime());
-
-                            // CMSVerifierCertificateNotValidException means that the keystore wasn't valid at signing time
-                            if (signerInformation.verify(new JcaSimpleSignerInfoVerifierBuilder().build(certFromSignedData)))
-                            {
-                                System.out.println("Signature verified");
-                            }
-                            else
-                            {
-                                System.out.println("Signature verification failed");
-                            }
+                            verifyPKCS7(buf, contents, sig);
                             
                             //TODO check certificate chain, revocation lists, timestamp...
                         }
-                        else if (subFilter.equals("adbe.x509.rsa_sha1"))
-                        {
-                            // PDFBOX-2693.pdf
-                            COSString certString = (COSString) sigDict.getDictionaryObject(
-                                    COSName.getPDFName("Cert"));
-                            byte[] certData = certString.getBytes();
-                            CertificateFactory factory = CertificateFactory.getInstance("X.509");
-                            ByteArrayInputStream certStream = new ByteArrayInputStream(certData);
-                            Collection<? extends Certificate> certs = factory.generateCertificates(certStream);
-                            System.out.println("certs=" + certs);
-                            
-                            //TODO verify signature
-                        }
                         else if (subFilter.equals("adbe.pkcs7.sha1"))
                         {
-                            // PDFBOX-1452.pdf
+                            // example: PDFBOX-1452.pdf
                             COSString certString = (COSString) sigDict.getDictionaryObject(
                                     COSName.CONTENTS);
                             byte[] certData = certString.getBytes();
@@ -171,6 +141,22 @@ public final class ShowSignature
                             Collection<? extends Certificate> certs = factory.generateCertificates(certStream);
                             System.out.println("certs=" + certs);
 
+                            byte[] hash = MessageDigest.getInstance("SHA1").digest(buf);
+                            verifyPKCS7(hash, contents, sig);
+                            
+                            //TODO check certificate chain, revocation lists, timestamp...
+                        }
+                        else if (subFilter.equals("adbe.x509.rsa_sha1"))
+                        {
+                            // example: PDFBOX-2693.pdf
+                            COSString certString = (COSString) sigDict.getDictionaryObject(
+                                    COSName.getPDFName("Cert"));
+                            byte[] certData = certString.getBytes();
+                            CertificateFactory factory = CertificateFactory.getInstance("X.509");
+                            ByteArrayInputStream certStream = new ByteArrayInputStream(certData);
+                            Collection<? extends Certificate> certs = factory.generateCertificates(certStream);
+                            System.out.println("certs=" + certs);
+                            
                             //TODO verify signature
                         }
                         else
@@ -199,6 +185,44 @@ public final class ShowSignature
                     document.close();
                 }
             }
+        }
+    }
+
+    /**
+     * Verify a PKCS7 signature.
+     *
+     * @param byteArray the byte sequence that has been signed
+     * @param contents the /Contents field as a COSString
+     * @param sig the PDF signature (the /V dictionary)
+     * @throws CertificateException
+     * @throws CMSException
+     * @throws StoreException
+     * @throws OperatorCreationException
+     */
+    private void verifyPKCS7(byte[] byteArray, COSString contents, PDSignature sig)
+            throws CMSException, CertificateException, StoreException, OperatorCreationException
+    {
+        // inspiration:
+        // http://stackoverflow.com/a/26702631/535646
+        // http://stackoverflow.com/a/9261365/535646
+        CMSProcessable signedContent = new CMSProcessableByteArray(byteArray);
+        CMSSignedData signedData = new CMSSignedData(signedContent, contents.getBytes());
+        Store certificatesStore = signedData.getCertificates();
+        Collection<SignerInformation> signers = signedData.getSignerInfos().getSigners();
+        SignerInformation signerInformation = signers.iterator().next();
+        Collection matches = certificatesStore.getMatches(signerInformation.getSID());
+        X509CertificateHolder certificateHolder = (X509CertificateHolder) matches.iterator().next();
+        X509Certificate certFromSignedData = new JcaX509CertificateConverter().getCertificate(certificateHolder);
+        System.out.println("certFromSignedData: " + certFromSignedData);
+        certFromSignedData.checkValidity(sig.getSignDate().getTime());
+        
+        if (signerInformation.verify(new JcaSimpleSignerInfoVerifierBuilder().build(certFromSignedData)))
+        {
+            System.out.println("Signature verified");
+        }
+        else
+        {
+            System.out.println("Signature verification failed");
         }
     }
 
