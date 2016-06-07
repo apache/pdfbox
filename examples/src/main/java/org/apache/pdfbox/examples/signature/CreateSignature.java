@@ -31,6 +31,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Enumeration;
@@ -68,14 +70,15 @@ public class CreateSignature extends CreateSignatureBase
 
     /**
      * Initialize the signature creator with a keystore and certficate password.
-     * @param keystore the keystore containing the signing certificate
+     * @param keystore the pkcs12 keystore containing the signing certificate
      * @param password the password for recovering the key
      * @throws KeyStoreException if the keystore has not been initialized (loaded)
      * @throws NoSuchAlgorithmException if the algorithm for recovering the key cannot be found
      * @throws UnrecoverableKeyException if the given password is wrong
+     * @throws CertificateException if the certificate is not valid as signing time
      */
     public CreateSignature(KeyStore keystore, char[] password)
-            throws KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException
+            throws KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, CertificateException
     {
         // grabs the first alias from the keystore and get the private key. An
         // TODO alternative method or constructor could be used for setting a specific
@@ -91,8 +94,13 @@ public class CreateSignature extends CreateSignatureBase
             throw new KeyStoreException("Keystore is empty");
         }
         setPrivateKey((PrivateKey) keystore.getKey(alias, password));
-        Certificate[] certificateChain = keystore.getCertificateChain(alias);
-        setCertificate(certificateChain[0]);
+        Certificate cert = keystore.getCertificateChain(alias)[0];
+        setCertificate(cert);
+        if (cert instanceof X509Certificate)
+        {
+            // avoid expired certificate
+            ((X509Certificate) cert).checkValidity();
+        }
     }
 
     /**
