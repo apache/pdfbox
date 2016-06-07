@@ -47,6 +47,7 @@ import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
+import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.tsp.TSPValidationException;
 import org.bouncycastle.util.Store;
@@ -218,16 +219,15 @@ public class TestCreateSignature extends TestCase
                 
                 assertEquals(certificate, certFromSignedData);
 
-                // code below doesn't work - maybe because the signature can indeed not be verified?
-                
-//                if (signerInformation.verify(new JcaSimpleSignerInfoVerifierBuilder().build(certFromSignedData)))
-//                {
-//                    System.out.println("Signature verified");
-//                }
-//                else
-//                {
-//                    System.out.println("Signature verification failed");
-//                }
+                // CMSVerifierCertificateNotValidException means that the keystore wasn't valid at signing time
+                if (signerInformation.verify(new JcaSimpleSignerInfoVerifierBuilder().build(certFromSignedData)))
+                {
+                    System.out.println("Signature verified");
+                }
+                else
+                {
+                    System.out.println("Signature verification failed");
+                }
 
                 break;
             }
