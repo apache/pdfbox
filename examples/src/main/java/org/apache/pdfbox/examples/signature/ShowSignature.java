@@ -19,16 +19,33 @@ package org.apache.pdfbox.examples.signature;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.SignatureException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 
-import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
+import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.cms.CMSException;
+import org.bouncycastle.cms.CMSProcessable;
+import org.bouncycastle.cms.CMSProcessableByteArray;
+import org.bouncycastle.cms.CMSSignedData;
+import org.bouncycastle.cms.SignerInformation;
+import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
+import org.bouncycastle.operator.OperatorCreationException;
+import org.bouncycastle.util.Store;
 
 /**
  * This will read a document from the filesystem, decrypt it and do something with the signature.
@@ -37,6 +54,8 @@ import org.apache.pdfbox.pdmodel.PDDocument;
  */
 public final class ShowSignature
 {
+    private static SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+    
     private ShowSignature()
     {
     }
@@ -48,14 +67,22 @@ public final class ShowSignature
      *
      * @throws IOException If there is an error reading the file.
      * @throws CertificateException
+     * @throws java.security.NoSuchAlgorithmException
+     * @throws java.security.InvalidKeyException
+     * @throws java.security.NoSuchProviderException
+     * @throws java.security.SignatureException
      */
-    public static void main( String[] args ) throws IOException, CertificateException
+    public static void main(String[] args) throws IOException, CertificateException,
+                                                  NoSuchAlgorithmException, InvalidKeyException, 
+                                                  NoSuchProviderException, SignatureException
     {
         ShowSignature show = new ShowSignature();
         show.showSignature( args );
     }
 
-    private void showSignature( String[] args ) throws IOException, CertificateException
+    private void showSignature(String[] args) throws IOException, CertificateException,
+                                                     NoSuchAlgorithmException, InvalidKeyException,
+                                                     NoSuchProviderException, SignatureException
     {
         if( args.length != 2 )
         {
@@ -68,71 +95,106 @@ public final class ShowSignature
             PDDocument document = null;
             try
             {
-                document = PDDocument.load( new File(infile), password );
-                if( !document.isEncrypted() )
+                document = PDDocument.load(new File(infile), password);
+                for (PDSignature sig : document.getSignatureDictionaries())
                 {
-                    System.err.println( "Warning: Document is not encrypted." );
-                }
+                    COSDictionary sigDict = sig.getCOSObject();
+                    COSString contents = (COSString) sigDict.getDictionaryObject(COSName.CONTENTS);
 
-                COSDictionary trailer = document.getDocument().getTrailer();
-                COSDictionary root = (COSDictionary)trailer.getDictionaryObject( COSName.ROOT );
-                COSDictionary acroForm = (COSDictionary)root.getDictionaryObject( COSName.ACRO_FORM );
-                COSArray fields = (COSArray)acroForm.getDictionaryObject( COSName.FIELDS );
-                for( int i=0; i<fields.size(); i++ )
-                {
-                    COSDictionary field = (COSDictionary)fields.getObject( i );
-                    COSName type = field.getCOSName( COSName.FT );
-                    if( COSName.SIG.equals( type ) )
+                    // download the signed content, described in /ByteRange COSArray:
+                    // [offset1 len1 offset2 len2]
+                    int[] byteRange = sig.getByteRange();
+                    byte[] buf = new byte[byteRange[1] + byteRange[3]];
+                    RandomAccessFile raf = new RandomAccessFile(infile, "r");
+                    raf.seek(byteRange[0]);
+                    raf.readFully(buf, byteRange[0], byteRange[1]);
+                    raf.seek(byteRange[2]);
+                    raf.readFully(buf, byteRange[1], byteRange[3]);
+                    raf.close();
+
+                    System.out.println("Signature found");
+                    System.out.println("Name:     " + sig.getName());
+                    System.out.println("Modified: " + sdf.format(sig.getSignDate().getTime()));
+                    String subFilter = sig.getSubFilter();
+                    if (subFilter != null)
                     {
-                        COSDictionary cert = (COSDictionary)field.getDictionaryObject( COSName.V );
-                        if( cert != null )
+                        if (subFilter.equals("adbe.pkcs7.detached"))
                         {
-                            System.out.println( "Certificate found" );
-                            System.out.println( "Name=" + cert.getDictionaryObject( COSName.NAME ) );
-                            System.out.println( "Modified=" + cert.getDictionaryObject( COSName.M ) );
-                            COSName subFilter = (COSName)cert.getDictionaryObject( COSName.SUB_FILTER );
-                            if( subFilter != null )
+                            CMSProcessable signedContent = new CMSProcessableByteArray(buf);
+
+                            // inspiration:
+                            // http://stackoverflow.com/a/26702631/535646
+                            // http://stackoverflow.com/a/9261365/535646
+                            CMSSignedData signedData = new CMSSignedData(signedContent, contents.getBytes());
+                            Store certificatesStore = signedData.getCertificates();
+                            Collection<SignerInformation> signers = signedData.getSignerInfos().getSigners();
+                            SignerInformation signerInformation = signers.iterator().next();
+                            Collection matches = certificatesStore.getMatches(signerInformation.getSID());
+                            X509CertificateHolder certificateHolder = (X509CertificateHolder) matches.iterator().next();
+                            X509Certificate certFromSignedData = new JcaX509CertificateConverter().getCertificate(certificateHolder);
+                            System.out.println("certFromSignedData: " + certFromSignedData);
+                            certFromSignedData.checkValidity(sig.getSignDate().getTime());
+
+                            // CMSVerifierCertificateNotValidException means that the keystore wasn't valid at signing time
+                            if (signerInformation.verify(new JcaSimpleSignerInfoVerifierBuilder().build(certFromSignedData)))
                             {
-                                if( subFilter.getName().equals( "adbe.x509.rsa_sha1" ) )
-                                {
-                                    COSString certString = (COSString)cert.getDictionaryObject(
-                                        COSName.getPDFName( "Cert" ) );
-                                    byte[] certData = certString.getBytes();
-                                    CertificateFactory factory = CertificateFactory.getInstance( "X.509" );
-                                    ByteArrayInputStream certStream = new ByteArrayInputStream( certData );
-                                    Collection<? extends Certificate> certs = factory.generateCertificates( certStream );
-                                    System.out.println( "certs=" + certs );
-                                }
-                                else if( subFilter.getName().equals( "adbe.pkcs7.sha1" ) )
-                                {
-                                    COSString certString = (COSString)cert.getDictionaryObject(
-                                        COSName.CONTENTS );
-                                    byte[] certData = certString.getBytes();
-                                    CertificateFactory factory = CertificateFactory.getInstance( "X.509" );
-                                    ByteArrayInputStream certStream = new ByteArrayInputStream( certData );
-                                    Collection<? extends Certificate> certs = factory.generateCertificates( certStream );
-                                    System.out.println( "certs=" + certs );
-                                }
-                                else
-                                {
-                                    System.err.println( "Unknown certificate type:" + subFilter );
-                                }
+                                System.out.println("Signature verified");
                             }
                             else
                             {
-                                throw new IOException( "Missing subfilter for cert dictionary" );
+                                System.out.println("Signature verification failed");
                             }
+                            
+                            //TODO check certificate chain, revocation lists, timestamp...
+                        }
+                        else if (subFilter.equals("adbe.x509.rsa_sha1"))
+                        {
+                            // PDFBOX-2693.pdf
+                            COSString certString = (COSString) sigDict.getDictionaryObject(
+                                    COSName.getPDFName("Cert"));
+                            byte[] certData = certString.getBytes();
+                            CertificateFactory factory = CertificateFactory.getInstance("X.509");
+                            ByteArrayInputStream certStream = new ByteArrayInputStream(certData);
+                            Collection<? extends Certificate> certs = factory.generateCertificates(certStream);
+                            System.out.println("certs=" + certs);
+                            
+                            //TODO verify signature
+                        }
+                        else if (subFilter.equals("adbe.pkcs7.sha1"))
+                        {
+                            // PDFBOX-1452.pdf
+                            COSString certString = (COSString) sigDict.getDictionaryObject(
+                                    COSName.CONTENTS);
+                            byte[] certData = certString.getBytes();
+                            CertificateFactory factory = CertificateFactory.getInstance("X.509");
+                            ByteArrayInputStream certStream = new ByteArrayInputStream(certData);
+                            Collection<? extends Certificate> certs = factory.generateCertificates(certStream);
+                            System.out.println("certs=" + certs);
+
+                            //TODO verify signature
                         }
                         else
                         {
-                            System.out.println( "Signature found, but no certificate" );
+                            System.err.println("Unknown certificate type: " + subFilter);
                         }
+                    }
+                    else
+                    {
+                        throw new IOException("Missing subfilter for cert dictionary");
                     }
                 }
             }
+            catch (CMSException ex)
+            {
+                throw new IOException(ex);
+            }
+            catch (OperatorCreationException ex)
+            {
+                throw new IOException(ex);
+            }
             finally
             {
-                if( document != null )
+                if (document != null)
                 {
                     document.close();
                 }
