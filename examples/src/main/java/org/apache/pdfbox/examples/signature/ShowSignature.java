@@ -27,9 +27,7 @@ import java.security.NoSuchProviderException;
 import java.security.SignatureException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
-import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateFactory;
-import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -58,7 +56,7 @@ import org.bouncycastle.util.StoreException;
  */
 public final class ShowSignature
 {
-    private static SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+    private SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
     
     private ShowSignature()
     {
