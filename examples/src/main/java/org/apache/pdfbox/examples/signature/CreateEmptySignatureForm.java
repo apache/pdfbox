@@ -76,6 +76,7 @@ public final class CreateEmptySignatureForm
         widget.setPage(page);
         page.getAnnotations().add(widget);
         
+        acroForm.getFields().add(signatureField);        
 
         document.save("target/EmptySignatureForm.pdf");
         document.close();
