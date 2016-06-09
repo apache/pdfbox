@@ -18,8 +18,8 @@ package org.apache.pdfbox.examples.signature;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -103,16 +103,10 @@ public final class ShowSignature
                     COSDictionary sigDict = sig.getCOSObject();
                     COSString contents = (COSString) sigDict.getDictionaryObject(COSName.CONTENTS);
 
-                    // download the signed content, described in /ByteRange COSArray:
-                    // [offset1 len1 offset2 len2]
-                    int[] byteRange = sig.getByteRange();
-                    byte[] buf = new byte[byteRange[1] + byteRange[3]];
-                    RandomAccessFile raf = new RandomAccessFile(infile, "r");
-                    raf.seek(byteRange[0]);
-                    raf.readFully(buf, byteRange[0], byteRange[1]);
-                    raf.seek(byteRange[2]);
-                    raf.readFully(buf, byteRange[1], byteRange[3]);
-                    raf.close();
+                    // download the signed content
+                    FileInputStream fis = new FileInputStream(infile);
+                    byte[] buf = sig.getSignedContent(fis);
+                    fis.close();
 
                     System.out.println("Signature found");
                     System.out.println("Name:     " + sig.getName());
