@@ -250,9 +250,10 @@ public final class TTFSubsetter
         writeSInt16(out, h.getReserved5());
         writeSInt16(out, h.getMetricDataFormat());
 
-        // is there a GID >= numberOfHMetrics ? Then keep the last entry of original hmtx table
+        // is there a GID >= numberOfHMetrics ? Then keep the last entry of original hmtx table,
+        // (add if it isn't in our set of GIDs), see also in buildHmtxTable()
         int hmetrics = glyphIds.subSet(0, h.getNumberOfHMetrics()).size();
-        if (glyphIds.last() >= h.getNumberOfHMetrics())
+        if (glyphIds.last() >= h.getNumberOfHMetrics() && !glyphIds.contains(h.getNumberOfHMetrics()-1))
         {
             ++hmetrics;
         }
@@ -873,12 +874,14 @@ public final class TTFSubsetter
         InputStream is = ttf.getOriginalData();
         
         // is there a GID >= numberOfHMetrics ? Then keep the last entry of original hmtx table
+        // add it if it isn't in the set
+        int lastgid = h.getNumberOfHMetrics() - 1;
         SortedSet<Integer> gidSet = glyphIds;
-        if (glyphIds.last() >= h.getNumberOfHMetrics())
+        if (glyphIds.last() > lastgid && !glyphIds.contains(lastgid))
         {
-            // Create a deep copy of the glyph set that has the last entry
+            // Create a deep copy of the glyph set and add the last entry
             gidSet = new TreeSet<Integer>(glyphIds);
-            gidSet.add(ttf.getHorizontalHeader().getNumberOfHMetrics() - 1);
+            gidSet.add(lastgid);
         }
         
         try
