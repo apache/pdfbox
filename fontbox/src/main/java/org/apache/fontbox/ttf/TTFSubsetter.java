@@ -870,53 +870,48 @@ public final class TTFSubsetter
 
         HorizontalHeaderTable h = ttf.getHorizontalHeader();
         HorizontalMetricsTable hm = ttf.getHorizontalMetrics();
-        byte [] buf = new byte[4];
         InputStream is = ttf.getOriginalData();
         
-        // is there a GID >= numberOfHMetrics ? Then keep the last entry of original hmtx table
-        // add it if it isn't in the set
+        // more info: https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6hmtx.html
         int lastgid = h.getNumberOfHMetrics() - 1;
-        SortedSet<Integer> gidSet = glyphIds;
+        // true if lastgid is not in the set: we'll need its width (but not its left side bearing) later
+        boolean needLastGidWidth = false;
         if (glyphIds.last() > lastgid && !glyphIds.contains(lastgid))
         {
-            // Create a deep copy of the glyph set and add the last entry
-            gidSet = new TreeSet<Integer>(glyphIds);
-            gidSet.add(lastgid);
+            needLastGidWidth = true;
         }
-        
+
         try
         {
             is.skip(hm.getOffset());
-            long lastOff = 0;
-            for (Integer glyphId : gidSet)
+            long lastOffset = 0;
+            for (Integer glyphId : glyphIds)
             {
                 // offset in original file
-                long off;
-                if (glyphId < h.getNumberOfHMetrics())
+                long offset;
+                if (glyphId <= lastgid)
                 {
-                    off = glyphId * 4;
+                    // copy width and lsb
+                    offset = glyphId * 4;
+                    lastOffset = copyBytes(is, bos, offset, lastOffset, 4);
                 }
-                else
+                else 
                 {
-                    off = h.getNumberOfHMetrics() * 4 + (glyphId - h.getNumberOfHMetrics()) * 2;
-                }
-                // skip over from last original offset
-                if (off != lastOff)
-                {
-                    long nskip = off-lastOff;
-                    if (nskip != is.skip(nskip))
+                    if (needLastGidWidth)
                     {
-                        throw new EOFException("Unexpected EOF exception parsing glyphId of hmtx table.");
+                        // one time only: copy width from lastgid, whose width applies
+                        // to all later glyphs
+                        needLastGidWidth = false;
+                        offset = lastgid * 4;
+                        lastOffset = copyBytes(is, bos, offset, lastOffset, 2);
+
+                        // then go on with lsb from actual glyph (lsb are individual even in monotype fonts)
                     }
+
+                    // copy lsb only, as we are beyond numOfHMetrics
+                    offset = h.getNumberOfHMetrics() * 4 + (glyphId - h.getNumberOfHMetrics()) * 2;
+                    lastOffset = copyBytes(is, bos, offset, lastOffset, 2);
                 }
-                // read left side bearings only, if we are beyond numOfHMetrics
-                int n = glyphId < h.getNumberOfHMetrics() ? 4 : 2;
-                if (n != is.read(buf, 0, n))
-                {
-                    throw new EOFException("Unexpected EOF exception parsing glyphId of hmtx table.");
-                }
-                bos.write(buf, 0, n);
-                lastOff = off + n;
             }
 
             return bos.toByteArray();
@@ -925,6 +920,24 @@ public final class TTFSubsetter
         {
             is.close();
         }
+    }
+
+    private long copyBytes(InputStream is, OutputStream os, long newOffset, long lastOffset, int count)
+            throws IOException
+    {
+        // skip over from last original offset
+        long nskip = newOffset - lastOffset;
+        if (nskip != is.skip(nskip))
+        {
+            throw new EOFException("Unexpected EOF exception parsing glyphId of hmtx table.");
+        }
+        byte[] buf = new byte[count];
+        if (count != is.read(buf, 0, count))
+        {
+            throw new EOFException("Unexpected EOF exception parsing glyphId of hmtx table.");
+        }
+        os.write(buf, 0, count);
+        return newOffset + count; 
     }
 
     /**
