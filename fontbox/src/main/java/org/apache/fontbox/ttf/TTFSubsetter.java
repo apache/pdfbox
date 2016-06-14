@@ -433,12 +433,8 @@ public final class TTFSubsetter
 
         out.write(os2.getAchVendId().getBytes("US-ASCII"));
 
-        Iterator<Entry<Integer, Integer>> it = uniToGID.entrySet().iterator();
-        it.next();
-        Entry<Integer, Integer> first = it.next();
-
         writeUint16(out, os2.getFsSelection());
-        writeUint16(out, first.getKey());
+        writeUint16(out, uniToGID.firstKey());
         writeUint16(out, uniToGID.lastKey());
         writeUint16(out, os2.getTypoAscender());
         writeUint16(out, os2.getTypoDescender());
@@ -705,14 +701,14 @@ public final class TTFSubsetter
 
         // build Format 4 subtable (Unicode BMP)
         Iterator<Entry<Integer, Integer>> it = uniToGID.entrySet().iterator();
-        it.next();
         Entry<Integer, Integer> lastChar = it.next();
         Entry<Integer, Integer> prevChar = lastChar;
         int lastGid = getNewGlyphId(lastChar.getValue());
 
-        int[] startCode = new int[uniToGID.size()];
-        int[] endCode = new int[uniToGID.size()];
-        int[] idDelta = new int[uniToGID.size()];
+        // +1 because .notdef is missing in uniToGID
+        int[] startCode = new int[uniToGID.size()+1];
+        int[] endCode = new int[uniToGID.size()+1];
+        int[] idDelta = new int[uniToGID.size()+1];
         int segCount = 0;
         while(it.hasNext())
         {
