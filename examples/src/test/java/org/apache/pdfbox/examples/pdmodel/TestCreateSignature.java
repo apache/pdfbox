@@ -166,10 +166,10 @@ public class TestCreateSignature extends TestCase
         String inPath = inDir + "sign_me.pdf";
         FileInputStream fis = new FileInputStream(jpegPath);
         CreateVisibleSignature signing = new CreateVisibleSignature(keystore, password.toCharArray());
-        signing.setVisibleSignatureProperties(inPath, 0, 0, -50, fis, 1);
-        signing.setSignatureProperties("name", "location", "Security", 0, 1, true);
+        signing.setvisibleSignDesigner(inPath, 0, 0, -50, fis, 1);
+        signing.setVisibleSignatureProperties("name", "location", "Security", 0, 1, true);
         File destFile = new File(outDir + "signed_visible.pdf");
-        signing.signPDF(new File(inPath), destFile);
+        signing.signPDF(new File(inPath), destFile, null);
 
         checkSignature(destFile);
     }
