@@ -133,12 +133,19 @@ public class CreateVisibleSignature extends CreateSignatureBase
 
         // create signature dictionary
         PDSignature signature = new PDSignature();
-        signature.setFilter(PDSignature.FILTER_ADOBE_PPKLITE); // default filter
+
+        // default filter
+        signature.setFilter(PDSignature.FILTER_ADOBE_PPKLITE);
+        
         // subfilter for basic and PAdES Part 2 signatures
         signature.setSubFilter(PDSignature.SUBFILTER_ADBE_PKCS7_DETACHED);
-        signature.setName("signer name");
-        signature.setLocation("signer location");
-        signature.setReason("reason for signature");
+        
+        if (visibleSignatureProperties != null)
+        {
+            signature.setName(visibleSignatureProperties.getSignerName());
+            signature.setLocation(visibleSignatureProperties.getSignerLocation());
+            signature.setReason(visibleSignatureProperties.getSignatureReason());
+        }
 
         // the signing date, needed for valid signature
         signature.setSignDate(Calendar.getInstance());
@@ -147,7 +154,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
         if (visibleSignatureProperties != null && visibleSignatureProperties.isVisualSignEnabled())
         {
             signatureOptions = new SignatureOptions();
-            signatureOptions.setVisualSignature(visibleSignatureProperties);
+            signatureOptions.setVisualSignature(visibleSignatureProperties.getVisibleSignature());
             signatureOptions.setPage(visibleSignatureProperties.getPage() - 1);
             doc.addSignature(signature, this, signatureOptions);
         }
