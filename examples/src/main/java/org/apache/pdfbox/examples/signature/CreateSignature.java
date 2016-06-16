@@ -38,7 +38,6 @@ import java.util.Enumeration;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
-import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureOptions;
 
 /**
  * An example for singing a PDF with bouncy castle.
@@ -150,9 +149,7 @@ public class CreateSignature extends CreateSignatureBase
         signature.setSignDate(Calendar.getInstance());
 
         // register signature dictionary and sign interface
-        SignatureOptions signatureOptions = new SignatureOptions();
-        signatureOptions.setPage(1); // 0-based
-        document.addSignature(signature, this, signatureOptions);
+        document.addSignature(signature, this);
 
         // write incremental (only for signing purpose)
         document.saveIncremental(output);
