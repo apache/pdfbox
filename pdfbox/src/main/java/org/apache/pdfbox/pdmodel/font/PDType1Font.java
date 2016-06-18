@@ -88,13 +88,26 @@ public class PDType1Font extends PDSimpleFont
     public static final PDType1Font SYMBOL = new PDType1Font("Symbol");
     public static final PDType1Font ZAPF_DINGBATS = new PDType1Font("ZapfDingbats");
 
-    private final Type1Font type1font; // embedded font
-    private final FontBoxFont genericFont; // embedded or system font for rendering
+    /**
+     * embedded font.
+     */
+    private final Type1Font type1font;
+    
+    /**
+     * embedded or system font for rendering.
+     */
+    private final FontBoxFont genericFont;
+    
     private final boolean isEmbedded;
     private final boolean isDamaged;
     private Matrix fontMatrix;
     private final AffineTransform fontMatrixTransform;
     private BoundingBox fontBBox;
+
+    /**
+     * to improve encoding speed.
+     */
+    final private Map <Integer,byte[]> codeToBytesMap = new HashMap<Integer,byte[]>();
 
     /**
      * Creates a Type 1 standard 14 font for embedding.
@@ -339,6 +352,12 @@ public class PDType1Font extends PDSimpleFont
     @Override
     protected byte[] encode(int unicode) throws IOException
     {
+        byte[] bytes = codeToBytesMap.get(unicode);
+        if (bytes != null)
+        {
+            return bytes;
+        }
+
         String name = getGlyphList().codePointToName(unicode);
         if (!encoding.contains(name))
         {
@@ -357,7 +376,9 @@ public class PDType1Font extends PDSimpleFont
         }
 
         int code = inverted.get(name);
-        return new byte[] { (byte)code };
+        bytes = new byte[] { (byte)code };
+        codeToBytesMap.put(code, bytes);
+        return bytes;
     }
 
     @Override
