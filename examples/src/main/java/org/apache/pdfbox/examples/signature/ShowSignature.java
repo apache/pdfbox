@@ -105,8 +105,15 @@ public final class ShowSignature
 
                     // download the signed content
                     FileInputStream fis = new FileInputStream(infile);
-                    byte[] buf = sig.getSignedContent(fis);
-                    fis.close();
+                    byte[] buf = null;
+                    try
+                    {
+                        buf = sig.getSignedContent(fis);
+                    }
+                    finally
+                    {
+                        fis.close();
+                    }
 
                     System.out.println("Signature found");
                     System.out.println("Name:     " + sig.getName());
