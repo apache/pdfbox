@@ -67,7 +67,6 @@ import org.apache.pdfbox.pdmodel.encryption.SecurityHandler;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
 import org.apache.pdfbox.util.Charsets;
-import org.apache.pdfbox.util.Hex;
 
 /**
  * This class acts on a in-memory representation of a PDF document.
@@ -158,6 +157,11 @@ public class COSWriter implements ICOSVisitor, Closeable
      * The close stream token.
      */
     public static final byte[] ENDSTREAM = "endstream".getBytes(Charsets.US_ASCII);
+    
+    /**
+     * for hex conversion.
+     */
+    private static final byte[] HEXES = "0123456789ABCDEF".getBytes(Charsets.US_ASCII);
     
     private final NumberFormat formatXrefOffset = new DecimalFormat("0000000000");
 
@@ -1380,19 +1384,22 @@ public class COSWriter implements ICOSVisitor, Closeable
     {
         // check for non-ASCII characters
         boolean isASCII = true;
-        for (byte b : bytes)
+        if (!forceHex)
         {
-            // if the byte is negative then it is an eight bit byte and is outside the ASCII range
-            if (b < 0)
+            for (byte b : bytes)
             {
-                isASCII = false;
-                break;
-            }
-            // PDFBOX-3107 EOL markers within a string are troublesome
-            if (b == 0x0d || b == 0x0a)
-            {
-                isASCII = false;
-                break;
+                // if the byte is negative then it is an eight bit byte and is outside the ASCII range
+                if (b < 0)
+                {
+                    isASCII = false;
+                    break;
+                }
+                // PDFBOX-3107 EOL markers within a string are troublesome
+                if (b == 0x0d || b == 0x0a)
+                {
+                    isASCII = false;
+                    break;
+                }
             }
         }
 
@@ -1422,7 +1429,9 @@ public class COSWriter implements ICOSVisitor, Closeable
             output.write('<');
             for (byte b : bytes)
             {
-                output.write(Hex.getBytes(b));
+                // https://stackoverflow.com/questions/2817752/java-code-to-convert-byte-to-hexadecimal
+                output.write(HEXES[(b & 0xF0) >> 4]);
+                output.write(HEXES[b & 0x0F]);
             }
             output.write('>');
         }
