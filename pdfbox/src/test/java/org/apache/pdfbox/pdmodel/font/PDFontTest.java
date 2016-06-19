@@ -23,6 +23,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import junit.framework.TestCase;
+import org.apache.fontbox.ttf.TTFParser;
+import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -68,6 +70,7 @@ public class PDFontTest extends TestCase
     {
         InputStream ttfStream = PDFontTest.class.getClassLoader().getResourceAsStream(
                 "org/apache/pdfbox/ttf/LiberationSans-Regular.ttf");
+        final TrueTypeFont ttf = new TTFParser ().parse (ttfStream);
 
         for (int i = 0; i < 2; ++i)
         {
@@ -77,7 +80,7 @@ public class PDFontTest extends TestCase
             doc.addPage(page);
 
             PDPageContentStream cs = new PDPageContentStream(doc, page);
-            PDFont font = PDType0Font.load(doc, ttfStream);
+            PDFont font = PDType0Font.load(doc, ttf, true);
             cs.setFont(font, 10);
             cs.beginText();
             cs.showText("PDFBOX");
