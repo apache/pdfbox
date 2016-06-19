@@ -107,7 +107,7 @@ public class PDType1Font extends PDSimpleFont
     /**
      * to improve encoding speed.
      */
-    final private Map <Integer,byte[]> codeToBytesMap = new HashMap<Integer,byte[]>();
+    private final Map <Integer,byte[]> codeToBytesMap = new HashMap<Integer,byte[]>();
 
     /**
      * Creates a Type 1 standard 14 font for embedding.
