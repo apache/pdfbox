@@ -146,7 +146,6 @@ class MemoryTTFDataStream extends TTFDataStream
      */
     public void close() throws IOException
     {
-        data = null;
     }
     
     /**
