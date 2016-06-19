@@ -19,8 +19,16 @@
 
 package org.apache.pdfbox.pdmodel.font;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import junit.framework.TestCase;
+import org.apache.fontbox.ttf.TTFParser;
+import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
 /**
@@ -49,6 +57,37 @@ public class PDFontTest extends TestCase
             {
                 doc.close();
             }
+        }
+    }
+
+    /**
+     * PDFBOX-3337: Test ability to reuse a TrueTypeFont for several PDFs to avoid parsing it over
+     * and over again.
+     *
+     * @throws java.io.IOException
+     */
+    public void testPDFBox3337() throws IOException
+    {
+        InputStream ttfStream = PDFontTest.class.getClassLoader().getResourceAsStream(
+                "org/apache/pdfbox/ttf/LiberationSans-Regular.ttf");
+        final TrueTypeFont ttf = new TTFParser ().parse (ttfStream);
+
+        for (int i = 0; i < 2; ++i)
+        {
+            PDDocument doc = new PDDocument();
+
+            final PDPage page = new PDPage(PDRectangle.A4);
+            doc.addPage(page);
+
+            PDPageContentStream cs = new PDPageContentStream(doc, page);
+            PDFont font = PDType0Font.load(doc, ttf, true);
+            cs.setFont(font, 10);
+            cs.beginText();
+            cs.showText("PDFBOX");
+            cs.endText();
+            cs.close();
+            doc.save(new ByteArrayOutputStream());
+            doc.close();
         }
     }
 }
