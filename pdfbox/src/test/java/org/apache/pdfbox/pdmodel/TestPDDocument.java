@@ -16,10 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -37,11 +33,6 @@ import junit.framework.TestCase;
 import static junit.framework.TestCase.assertNull;
 import static junit.framework.TestCase.assertTrue;
 import static junit.framework.TestCase.fail;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
-import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
-import org.apache.pdfbox.rendering.PDFRenderer;
-import org.junit.Assert;
 
 /**
  * Testcase introduced with PDFBOX-1581.
@@ -258,50 +249,5 @@ public class TestPDDocument extends TestCase
 
         boolean deleted = f.delete();
         assertTrue("delete good file failed after successful load() and close()", deleted);
-    }
-    
-    /**
-     * Test whether importPage does a deep copy (if not, the save would fail, see PDFBOX-3328)
-     *
-     * @throws java.io.IOException
-     */
-    public void testImportPage() throws IOException
-    {
-        PDDocument doc1 = new PDDocument();
-        PDPage page = new PDPage();
-        PDPageContentStream pageContentStream = new PDPageContentStream(doc1, page);
-        BufferedImage bim = new BufferedImage(100, 50, BufferedImage.TYPE_INT_RGB);
-        Graphics g = bim.getGraphics();
-        Font font = new Font("Dialog", Font.PLAIN, 20);   
-        g.setFont(font);
-        g.drawString("PDFBox", 10, 30);
-        g.dispose();
-        PDImageXObject img = LosslessFactory.createFromImage(doc1, bim);
-        pageContentStream.drawImage(img, 200, 500);
-        pageContentStream.setFont(PDType1Font.HELVETICA, 20);
-        pageContentStream.beginText();
-        pageContentStream.setNonStrokingColor(Color.blue);
-        pageContentStream.newLineAtOffset(200, 600);
-        pageContentStream.showText("PDFBox");
-        pageContentStream.endText();
-        pageContentStream.close();
-        doc1.addPage(page);
-        BufferedImage bim1 = new PDFRenderer(doc1).renderImage(0);
-        
-        PDDocument doc2 = new PDDocument();
-        doc2.importPage(doc1.getPage(0));
-        doc1.close();
-        BufferedImage bim2 = new PDFRenderer(doc2).renderImage(0);
-        doc2.save(new ByteArrayOutputStream());
-        doc2.close();
-        
-        assertEquals(bim1.getWidth(), bim2.getWidth());
-        assertEquals(bim1.getHeight(), bim2.getHeight());
-        int w = bim1.getWidth();
-        int h = bim1.getHeight();
-        int[] pixels1 = bim1.getRaster().getPixels(0, 0, w, h, (int[]) null);
-        int[] pixels2 = bim2.getRaster().getPixels(0, 0, w, h, (int[]) null);
-        assertEquals(w * h * 3, pixels1.length);
-        Assert.assertArrayEquals(pixels1, pixels2);
     }
 }
