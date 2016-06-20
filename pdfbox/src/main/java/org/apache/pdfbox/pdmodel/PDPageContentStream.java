@@ -2215,7 +2215,7 @@ public final class PDPageContentStream implements Closeable
     }
 
     /**
-     * Writes a real real to the content stream.
+     * Writes a real number to the content stream.
      */
     private void writeOperand(float real) throws IOException
     {
@@ -2224,7 +2224,7 @@ public final class PDPageContentStream implements Closeable
     }
 
     /**
-     * Writes a real number to the content stream.
+     * Writes an integer number to the content stream.
      */
     private void writeOperand(int integer) throws IOException
     {
