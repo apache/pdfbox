@@ -1352,7 +1352,9 @@ public abstract class PDAbstractContentStream implements Closeable
     }
 
     /**
-     * Writes a double to the content stream.
+     * Writes a double number to the content stream.
+     * @param data
+     * @throws java.io.IOException
      */
     protected void writeOperand(double data) throws IOException
     {
@@ -1361,7 +1363,9 @@ public abstract class PDAbstractContentStream implements Closeable
     }
 
     /**
-     * Writes a real real to the content stream.
+     * Writes a real number to the content stream.
+     * @param real
+     * @throws java.io.IOException
      */
     protected void writeOperand(float real) throws IOException
     {
@@ -1370,7 +1374,9 @@ public abstract class PDAbstractContentStream implements Closeable
     }
 
     /**
-     * Writes a real number to the content stream.
+     * Writes an integer number to the content stream.
+     * @param integer
+     * @throws java.io.IOException
      */
     protected void writeOperand(int integer) throws IOException
     {
@@ -1380,6 +1386,8 @@ public abstract class PDAbstractContentStream implements Closeable
 
     /**
      * Writes a COSName to the content stream.
+     * @param name
+     * @throws java.io.IOException
      */
     protected void writeOperand(COSName name) throws IOException
     {
@@ -1389,6 +1397,8 @@ public abstract class PDAbstractContentStream implements Closeable
 
     /**
      * Writes a string to the content stream as ASCII.
+     * @param text
+     * @throws java.io.IOException
      */
     protected void writeOperator(String text) throws IOException
     {
@@ -1398,6 +1408,8 @@ public abstract class PDAbstractContentStream implements Closeable
 
     /**
      * Writes a string to the content stream as ASCII.
+     * @param text
+     * @throws java.io.IOException
      */
     protected void write(String text) throws IOException
     {
@@ -1406,6 +1418,8 @@ public abstract class PDAbstractContentStream implements Closeable
 
     /**
      * Writes a byte[] to the content stream.
+     * @param data
+     * @throws java.io.IOException
      */
     protected void write(byte[] data) throws IOException
     {
@@ -1413,7 +1427,8 @@ public abstract class PDAbstractContentStream implements Closeable
     }
     
     /**
-     * Writes a string to the content stream as ASCII.
+     * Writes a newline to the content stream as ASCII.
+     * @throws java.io.IOException
      */
     protected void writeLine() throws IOException
     {
@@ -1422,6 +1437,8 @@ public abstract class PDAbstractContentStream implements Closeable
 
     /**
      * Writes binary data to the content stream.
+     * @param data
+     * @throws java.io.IOException
      */
     protected void writeBytes(byte[] data) throws IOException
     {
