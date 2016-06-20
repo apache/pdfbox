@@ -2259,7 +2259,7 @@ public final class PDPageContentStream implements Closeable
     }
 
     /**
-     * Writes a string to the content stream as ASCII.
+     * Writes a newline to the content stream as ASCII.
      */
     private void writeLine() throws IOException
     {
