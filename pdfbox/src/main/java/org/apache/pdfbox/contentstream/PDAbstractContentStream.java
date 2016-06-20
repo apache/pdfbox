@@ -112,7 +112,6 @@ public abstract class PDAbstractContentStream implements Closeable
     /**
      * Create a new appearance stream.
      *
-     * @param doc The document the page is part of.
      * @param appearance The appearance stream to write to.
      * @throws IOException If there is an error writing to the page contents.
      */
@@ -124,7 +123,6 @@ public abstract class PDAbstractContentStream implements Closeable
     /**
      * Create a new appearance stream. Note that this is not actually a "page" content stream.
      *
-     * @param doc The document the appearance is part of.
      * @param appearance The appearance stream to add to.
      * @param outputStream The appearances output stream to write to.
      * @throws IOException If there is an error writing to the page contents.
