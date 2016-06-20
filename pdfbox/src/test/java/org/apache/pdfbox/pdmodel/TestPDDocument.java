@@ -107,63 +107,6 @@ public class TestPDDocument extends TestCase
     }
 
     /**
-     * Test document save/loadNonSeq using a stream.
-     * @throws IOException if something went wrong
-     */
-    public void testSaveLoadNonSeqStream() throws IOException
-    {
-        // Create PDF with one blank page
-        PDDocument document = new PDDocument();
-        document.addPage(new PDPage());
-
-        // Save
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        document.save(baos);
-        document.close();
-
-        // Verify content
-        byte[] pdf = baos.toByteArray();
-        assertTrue(pdf.length > 200);
-        assertEquals("%PDF-1.4", new String(Arrays.copyOfRange(pdf, 0, 8), "UTF-8"));
-        assertEquals("%%EOF\n", new String(Arrays.copyOfRange(pdf, pdf.length - 6, pdf.length), "UTF-8"));
-
-        // Load
-        PDDocument loadDoc = PDDocument.load(new ByteArrayInputStream(pdf));
-        assertEquals(1, loadDoc.getNumberOfPages());
-        loadDoc.close();
-    }
-
-    /**
-     * Test document save/loadNonSeq using a file.
-     * @throws IOException if something went wrong
-     */
-    public void testSaveLoadNonSeqFile() throws IOException
-    {
-        // Create PDF with one blank page
-        PDDocument document = new PDDocument();
-        document.addPage(new PDPage());
-
-        // Save
-        File targetFile = new File(testResultsDir, "pddocument-saveloadnonseqfile.pdf");
-        document.save(targetFile);
-        document.close();
-
-        // Verify content
-        assertTrue(targetFile.length() > 200);
-        InputStream in = new FileInputStream(targetFile);
-        byte[] pdf = IOUtils.toByteArray(in);
-        in.close();
-        assertTrue(pdf.length > 200);
-        assertEquals("%PDF-1.4", new String(Arrays.copyOfRange(pdf, 0, 8), "UTF-8"));
-        assertEquals("%%EOF\n", new String(Arrays.copyOfRange(pdf, pdf.length - 6, pdf.length), "UTF-8"));
-
-        // Load
-        PDDocument loadDoc = PDDocument.load(targetFile);
-        assertEquals(1, loadDoc.getNumberOfPages());
-        loadDoc.close();
-    }
-    
-    /**
      * Test get/setVersion.
      * @throws IOException if something went wrong
      */
