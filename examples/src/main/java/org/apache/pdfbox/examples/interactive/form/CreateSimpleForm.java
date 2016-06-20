@@ -84,6 +84,9 @@ public final class CreateSimpleForm
         PDRectangle rect = new PDRectangle(50, 750, 200, 50);
         widget.setRectangle(rect);
         widget.setPage(page);
+
+        // make sure the annotation is visible on screen and paper
+        widget.setPrinted(true);
         
         // Add the annotation to the page
         page.getAnnotations().add(widget);
