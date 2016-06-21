@@ -37,6 +37,9 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
  */
 public class DetermineTextFitsField
 {
+    private DetermineTextFitsField()
+    {
+    }
 
     public static void main(String[] args) throws IOException
     {
