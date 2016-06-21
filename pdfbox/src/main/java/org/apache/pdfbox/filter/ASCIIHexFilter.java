@@ -116,7 +116,7 @@ final class ASCIIHexFilter extends Filter
         int byteRead;
         while ((byteRead = input.read()) != -1)
         {
-            encoded.write(Hex.getBytes((byte)byteRead));
+            Hex.writeHexByte((byte)byteRead, encoded);
         }
         encoded.flush();
     }
