@@ -67,6 +67,7 @@ import org.apache.pdfbox.pdmodel.encryption.SecurityHandler;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
 import org.apache.pdfbox.util.Charsets;
+import org.apache.pdfbox.util.Hex;
 
 /**
  * This class acts on a in-memory representation of a PDF document.
@@ -157,11 +158,6 @@ public class COSWriter implements ICOSVisitor, Closeable
      * The close stream token.
      */
     public static final byte[] ENDSTREAM = "endstream".getBytes(Charsets.US_ASCII);
-    
-    /**
-     * for hex conversion.
-     */
-    private static final byte[] HEXES = "0123456789ABCDEF".getBytes(Charsets.US_ASCII);
     
     private final NumberFormat formatXrefOffset = new DecimalFormat("0000000000");
 
@@ -772,16 +768,14 @@ public class COSWriter implements ICOSVisitor, Closeable
                 new ByteArrayInputStream(signBuffer));
 
         // sign the bytes
-        byte[] sign = signatureInterface.sign(signStream);
-        String signature = new COSString(sign).toHexString();
+        byte[] signatureBytes = Hex.getBytes(signatureInterface.sign(signStream));
         // substract 2 bytes because of the enclosing "<>"
-        if (signature.length() > signatureLength - 2)
+        if (signatureBytes.length > signatureLength - 2)
         {
             throw new IOException("Can't write signature, not enough space");
         }
 
         // overwrite the signature Contents in the buffer
-        byte[] signatureBytes = signature.getBytes(Charsets.ISO_8859_1);
         System.arraycopy(signatureBytes, 0, buffer, bufSignatureOffset + 1, signatureBytes.length);
 
         // write the data to the incremental output stream
@@ -1427,12 +1421,7 @@ public class COSWriter implements ICOSVisitor, Closeable
         {
             // write hex string
             output.write('<');
-            for (byte b : bytes)
-            {
-                // https://stackoverflow.com/questions/2817752/java-code-to-convert-byte-to-hexadecimal
-                output.write(HEXES[(b & 0xF0) >> 4]);
-                output.write(HEXES[b & 0x0F]);
-            }
+            Hex.writeHexBytes(bytes, output);
             output.write('>');
         }
     }
