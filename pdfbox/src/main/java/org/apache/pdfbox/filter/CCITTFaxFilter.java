@@ -21,10 +21,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.IOUtils;
 
 /**
  * Decodes image data that has been encoded using either Group 3 or Group 4
- * CCITT facsimile (fax) encoding.
+ * CCITT facsimile (fax) encoding, and encodes image data to Group 4.
  *
  * @author Ben Litchfield
  * @author Marcel Kammer
@@ -110,7 +111,7 @@ final class CCITTFaxFilter extends Filter
         return new DecodeResult(parameters);
     }
 
-    public void readFromDecoderStream(CCITTFaxDecoderStream decoderStream, byte[] result)
+    void readFromDecoderStream(CCITTFaxDecoderStream decoderStream, byte[] result)
             throws IOException
     {
         int pos = 0;
@@ -138,6 +139,11 @@ final class CCITTFaxFilter extends Filter
     protected void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
             throws IOException
     {
-        throw new UnsupportedOperationException("CCITTFaxFilter encoding not implemented, use the CCITTFactory methods instead");
+        int cols = parameters.getInt(COSName.COLUMNS);
+        int rows = parameters.getInt(COSName.ROWS);
+        CCITTFaxEncoderStream ccittFaxEncoderStream = 
+                new CCITTFaxEncoderStream(encoded, cols, rows, TIFFExtension.FILL_LEFT_TO_RIGHT);
+        IOUtils.copy(input, ccittFaxEncoderStream);
+        input.close();
     }
 }
