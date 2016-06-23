@@ -146,9 +146,9 @@ public abstract class PDVariableText extends PDTerminalField
      * 
      * This is an inheritable attribute.
      * 
-     * 0 - Left(default)<br/>
-     * 1 - Centered<br />
-     * 2 - Right<br />
+     * 0 - Left(default)<br>
+     * 1 - Centered<br>
+     * 2 - Right<br>
      * Please see the QUADDING_CONSTANTS.
      *
      * @return The justification of the text strings.
@@ -193,7 +193,7 @@ public abstract class PDVariableText extends PDTerminalField
      * <p>
      * Setting the rich text value will not generate the appearance
      * for the field.
-     * <br/>
+     * <br>
      * You can set {@link PDAcroForm#setNeedAppearances(Boolean)} to
      * signal a conforming reader to generate the appearance stream.
      * </p>
