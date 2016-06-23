@@ -32,7 +32,7 @@ import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
 
 /**
  * This will read a document from the filesystem, encrypt it and and then write
- * the results to the filesystem. <br/><br/>
+ * the results to the filesystem.
  *
  * @author  Ben Litchfield
  */

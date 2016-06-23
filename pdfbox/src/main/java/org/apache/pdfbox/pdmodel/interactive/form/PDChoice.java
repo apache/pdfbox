@@ -73,7 +73,7 @@ public abstract class PDChoice extends PDVariableText
      * 
      * <p>
      * For a choice field the options array can either be an array
-     * of text strings or an array of a two-element arrays.<br/>
+     * of text strings or an array of a two-element arrays.<br>
      * The method always only returns either the text strings or,
      * in case of two-element arrays, an array of the first element of 
      * the two-element arrays
@@ -180,7 +180,7 @@ public abstract class PDChoice extends PDVariableText
      * 
      * <p>
      * For options with an array of text strings the display value and export value
-     * are the same.<br/>
+     * are the same.<br>
      * For options with an array of two-element arrays the display value is the 
      * second entry in the two-element array.
      * </p>
@@ -198,7 +198,7 @@ public abstract class PDChoice extends PDVariableText
      * 
      * <p>
      * For options with an array of text strings the display value and export value
-     * are the same.<br/>
+     * are the same.<br>
      * For options with an array of two-element arrays the export value is the 
      * first entry in the two-element array.
      * </p>
