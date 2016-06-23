@@ -72,10 +72,10 @@ public abstract class Encoding implements COSObjectable
     }
 
     /**
-     * Returns an unmodifiable view of the name -> code mapping. More than one name may map to
+     * Returns an unmodifiable view of the name -&gt; code mapping. More than one name may map to
      * the same code.
      *
-     * @return the name -> code map
+     * @return the name -&gt; code map
      */
     public Map<String, Integer> getNameToCodeMap()
     {
