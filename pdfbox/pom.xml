@@ -155,6 +155,7 @@
                         <exclude>src/test/resources/org/apache/pdfbox/filter/*.bin</exclude>
                         <exclude>src/test/resources/org/apache/pdfbox/text/*.txt</exclude>
                         <exclude>src/main/java/org/apache/pdfbox/filter/CCITTFaxDecoderStream.java</exclude>
+                        <exclude>src/main/java/org/apache/pdfbox/filter/CCITTFaxEncoderStream.java</exclude>
                         <exclude>src/main/java/org/apache/pdfbox/filter/TIFFExtension.java</exclude>
                     </excludes>
                 </configuration>
