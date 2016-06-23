@@ -60,7 +60,7 @@ public final class PDRadioButton extends PDButton
     }
 
     /**
-     * From the PDF Spec <br/>
+     * From the PDF Spec <br>
      * If set, a group of radio buttons within a radio button field that use the same value for the on state will turn
      * on and off in unison; that is if one is checked, they are all checked. If clear, the buttons are mutually
      * exclusive (the same behavior as HTML radio buttons).
@@ -86,7 +86,7 @@ public final class PDRadioButton extends PDButton
      * <p>
      * A RadioButton might have an export value to allow field values
      * which can not be encoded as PDFDocEncoding or for the same export value 
-     * being assigned to multiple RadioButtons in a group.<br/>
+     * being assigned to multiple RadioButtons in a group.<br>
      * To define an export value the RadioButton must define options {@link #setExportValues(List)}
      * which correspond to the individual items within the RadioButton.</p>
      * <p>
