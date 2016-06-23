@@ -187,9 +187,9 @@ public class FDFField implements COSObjectable
 
     /**
      * This will get the "T" entry in the field dictionary. A partial field name. Where the fully qualified field name
-     * is a concatenation of the parent's fully qualified field name and "." as a separator. For example<br/>
-     * Address.State<br />
-     * Address.City<br />
+     * is a concatenation of the parent's fully qualified field name and "." as a separator. For example<br>
+     * Address.State<br>
+     * Address.City<br>
      *
      * @return The partial field name.
      */

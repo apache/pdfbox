@@ -149,7 +149,7 @@ public class PDFCloneUtility
 
       /**
        * Merges two objects of the same type by deep-cloning its members.
-       * <br/>
+       * <br>
        * Base and target must be instances of the same class.
        * @param base the base object to be cloned
        * @param target the merge target

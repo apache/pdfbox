@@ -566,9 +566,9 @@ public final class PDAcroForm implements COSObjectable
     
     /**
      * This will get the 'quadding' or justification of the text to be displayed.
-     * 0 - Left(default)<br/>
-     * 1 - Centered<br />
-     * 2 - Right<br />
+     * 0 - Left(default)<br>
+     * 1 - Centered<br>
+     * 2 - Right<br>
      * Please see the QUADDING_CONSTANTS.
      *
      * @return The justification of the text strings.

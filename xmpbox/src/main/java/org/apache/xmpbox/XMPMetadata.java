@@ -207,10 +207,10 @@ public class XMPMetadata
     /**
      * Get the XMPSchema for the specified namespace.
      * 
-     * Return the schema corresponding to this nsURI<br/>
+     * Return the schema corresponding to this nsURI<br>
      * BE CAREFUL: typically, Metadata should contain one schema for each type.
      * This method returns the first schema encountered
-     * corresponding to this NSURI.<br/>
+     * corresponding to this NSURI.<br>
      * Return null if unknown
      * 
      * @param nsURI The namespace URI corresponding to the schema wanted
@@ -234,10 +234,10 @@ public class XMPMetadata
     /** 
      * Get the XMPSchema for the specified Class.
      * 
-     * Return the schema corresponding to this Class<br/>
+     * Return the schema corresponding to this Class<br>
      * BE CAREFUL: typically, Metadata should contain one schema for each type.
      * This method returns the first schema encountered
-     * corresponding to this Class.<br/>
+     * corresponding to this Class.<br>
      * Return null if unknown
      * 
      * @param clz The Class corresponding to the schema wanted
