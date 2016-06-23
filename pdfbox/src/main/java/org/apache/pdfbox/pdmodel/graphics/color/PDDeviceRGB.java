@@ -54,7 +54,7 @@ public final class PDDeviceRGB extends PDDeviceColorSpace
         {
             return;
         }
-        synchronized (PDDeviceRGB.class)
+        synchronized (this)
         {
             // we might have been waiting for another thread, so check again
             if (awtColorSpace != null)
