@@ -95,7 +95,7 @@ public class CMap
 
     /**
      * Reads a character code from a string in the content stream.
-     * <p>>See "CMap Mapping" and "Handling Undefined Characters" in PDF32000 for more details.
+     * <p>See "CMap Mapping" and "Handling Undefined Characters" in PDF32000 for more details.
      *
      * @param in string stream
      * @return character code
