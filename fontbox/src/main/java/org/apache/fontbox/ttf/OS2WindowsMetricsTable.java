@@ -155,7 +155,7 @@ public class OS2WindowsMetricsTable extends TTFTable
     public static final short FSTYPE_RESTRICTED = 0x0001;
 
     /**
-     * Preview & Print embedding: the font may be embedded, and temporarily loaded on the
+     * Preview and Print embedding: the font may be embedded, and temporarily loaded on the
      * remote system. No edits can be applied to the document.
      */
     public static final short FSTYPE_PREVIEW_AND_PRINT = 0x0004;
