@@ -64,8 +64,6 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
     /**
      * Create a new appearance stream.
      *
-     * @param doc
-     *            The document the page is part of.
      * @param appearance
      *            The appearance stream to write to.
      * @throws IOException
@@ -80,8 +78,6 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
      * Create a new appearance stream. Note that this is not actually a "page"
      * content stream.
      *
-     * @param doc
-     *            The document the appearance is part of.
      * @param appearance
      *            The appearance stream to add to.
      * @param outputStream
