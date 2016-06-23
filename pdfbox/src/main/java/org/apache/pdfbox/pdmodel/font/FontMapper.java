@@ -21,7 +21,7 @@ import org.apache.fontbox.ttf.TrueTypeFont;
 
 /**
  * Font mapper, locates non-embedded fonts. If you implement this then you're responsible for
- * caching the fonts. SoftReference<FontBoxFont> is recommended.
+ * caching the fonts. SoftReference&lt;FontBoxFont&gt; is recommended.
  *
  * @author John Hewson
  */
