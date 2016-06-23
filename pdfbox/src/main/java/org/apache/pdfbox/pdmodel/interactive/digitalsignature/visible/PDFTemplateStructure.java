@@ -181,7 +181,7 @@ public class PDFTemplateStructure
     /**
      * Acroform have its Dictionary, so we here set
      * the Dictionary  which is in this location:
-     * <b> AcroForm/DR <b>
+     * <b> AcroForm/DR </b>
      * @param acroFormDictionary
      */
     public void setAcroFormDictionary(COSDictionary acroFormDictionary)
