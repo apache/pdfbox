@@ -125,7 +125,7 @@ public final class TTFSubsetter
     }
 
     /**
-     * Returns the map of new -> old GIDs.
+     * Returns the map of new -&gt; old GIDs.
      */
     public Map<Integer, Integer> getGIDMap() throws IOException
     {
