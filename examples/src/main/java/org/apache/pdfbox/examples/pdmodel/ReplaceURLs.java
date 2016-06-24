@@ -48,7 +48,7 @@ public final class ReplaceURLs
     /**
      * This will read in a document and replace all of the urls with
      * http://pdfbox.apache.org.
-     * <br />
+     * <br>
      * see usage() for commandline
      *
      * @param args Command line arguments.

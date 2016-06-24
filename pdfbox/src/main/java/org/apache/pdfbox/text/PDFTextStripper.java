@@ -214,7 +214,7 @@ public class PDFTextStripper extends PDFTextStreamEngine
     }
 
     /**
-     * This will return the text of a document. See writeText. <br />
+     * This will return the text of a document. See writeText. <br>
      * NOTE: The document must not be encrypted when coming into this method.
      *
      * @param doc The document to get the text from.

@@ -139,7 +139,7 @@ public class FDFIconFit implements COSObjectable
     }
 
     /**
-     * This is guaranteed to never return null.<br />
+     * This is guaranteed to never return null.<br>
      *
      * To quote the PDF Spec "An array of two numbers between 0.0 and 1.0 indicating the fraction of leftover space to
      * allocate at the left and bottom of the icon. A value of [0.0 0.0] positions the icon at the bottom-left corner of

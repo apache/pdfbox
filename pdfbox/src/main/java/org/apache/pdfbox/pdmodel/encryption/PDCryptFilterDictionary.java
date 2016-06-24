@@ -72,7 +72,7 @@ public class PDCryptFilterDictionary
     }
 
     /**
-     * This will return the Length entry of the crypt filter dictionary.<br /><br />
+     * This will return the Length entry of the crypt filter dictionary.<br><br>
      * The length in <b>bits</b> for the crypt filter algorithm. This will return a multiple of 8.
      *
      * @return The length in bits for the encryption algorithm
