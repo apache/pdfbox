@@ -71,13 +71,15 @@ public interface PDFontLike
      * PDFont subclass to retrieve the glyph outline as a GeneralPath.
      * 
      * @param code character code
-     * @deprecated Use {@link #getBoundingBox()#getHeight(int) } instead.
+     * @deprecated Use
+     * {@link #getBoundingBox() getBoundingBox()}.{@link BoundingBox#getHeight() getHeight()}
+     * instead.
      */
     @Deprecated
     float getHeight(int code) throws IOException;
 
     /**
-     * Returns the advance width of the given character, in glyph space.</p>
+     * Returns the advance width of the given character, in glyph space.<p>
      * 
      * If you want the visual bounds of the glyph then call getPath(..) on the appropriate
      * PDFont subclass to retrieve the glyph outline as a GeneralPath instead.
