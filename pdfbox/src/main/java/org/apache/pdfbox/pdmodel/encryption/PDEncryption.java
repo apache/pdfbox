@@ -214,7 +214,7 @@ public class PDEncryption
     }
 
     /**
-     * This will return the Length entry of the encryption dictionary.<br /><br />
+     * This will return the Length entry of the encryption dictionary.<br><br>
      * The length in <b>bits</b> for the encryption algorithm.  This will return a multiple of 8.
      *
      * @return The length in bits for the encryption algorithm

@@ -81,7 +81,7 @@ public class SetField
 
     /**
      * This will read a PDF file and set a field and then write it the pdf out
-     * again. <br />
+     * again. <br>
      * see usage() for commandline
      *
      * @param args command line arguments

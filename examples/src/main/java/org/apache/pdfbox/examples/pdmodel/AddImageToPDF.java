@@ -80,7 +80,7 @@ public class AddImageToPDF
 
     /**
      * This will load a PDF document and add a single image on it.
-     * <br />
+     * <br>
      * see usage() for commandline
      *
      * @param args Command line arguments.

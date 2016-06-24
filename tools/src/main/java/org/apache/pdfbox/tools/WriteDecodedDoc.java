@@ -89,7 +89,7 @@ public class WriteDecodedDoc
 
     /**
      * This will write a PDF document with completely decoded streams.
-     * <br />
+     * <br>
      * see usage() for commandline
      *
      * @param args command line arguments
