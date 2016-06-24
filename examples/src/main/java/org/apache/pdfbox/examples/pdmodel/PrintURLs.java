@@ -48,7 +48,7 @@ public final class PrintURLs
 
     /**
      * This will create a hello world PDF document.
-     * <br />
+     * <br>
      * see usage() for commandline
      *
      * @param args Command line arguments.

@@ -210,7 +210,7 @@ public class TextToPDF
 
     /**
      * This will create a PDF document with some text in it.
-     * <br />
+     * <br>
      * see usage() for commandline
      *
      * @param args Command line arguments.

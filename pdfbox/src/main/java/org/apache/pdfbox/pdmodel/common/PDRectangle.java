@@ -156,8 +156,8 @@ public class PDRectangle implements COSObjectable
     /**
      * This will create a translated rectangle based off of this rectangle, such
      * that the new rectangle retains the same dimensions(height/width), but the
-     * lower left x,y values are zero. <br />
-     * 100, 100, 400, 400 (llx, lly, urx, ury ) <br />
+     * lower left x,y values are zero. <br>
+     * 100, 100, 400, 400 (llx, lly, urx, ury ) <br>
      * will be translated to 0,0,300,300
      *
      * @return A new rectangle that has been translated back to the origin.

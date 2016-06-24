@@ -91,7 +91,7 @@ public class PrintFields
     }
 
     /**
-     * This will read a PDF file and print out the form elements. <br />
+     * This will read a PDF file and print out the form elements. <br>
      * see usage() for commandline
      * 
      * @param args command line arguments
