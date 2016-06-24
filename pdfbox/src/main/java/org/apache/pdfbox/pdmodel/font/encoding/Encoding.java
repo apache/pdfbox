@@ -62,9 +62,9 @@ public abstract class Encoding implements COSObjectable
     private Set<String> names;
 
     /**
-     * Returns an unmodifiable view of the code -> name mapping.
+     * Returns an unmodifiable view of the code -&gt; name mapping.
      * 
-     * @return the code -> name map
+     * @return the code -&gt; name map
      */
     public Map<Integer, String> getCodeToNameMap()
     {
