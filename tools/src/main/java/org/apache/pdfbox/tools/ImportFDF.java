@@ -65,7 +65,7 @@ public class ImportFDF
 
     /**
      * This will import an fdf document and write out another pdf.
-     * <br />
+     * <br>
      * see usage() for commandline
      *
      * @param args command line arguments

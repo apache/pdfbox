@@ -209,8 +209,8 @@ public class FDFField implements COSObjectable
     }
 
     /**
-     * This will get the value for the field. This will return type will either be <br />
-     * String : Checkboxes, Radio Button <br />
+     * This will get the value for the field. This will return type will either be <br>
+     * String : Checkboxes, Radio Button <br>
      * java.util.List of strings: Choice Field PDTextStream: Textfields
      *
      * @return The value of the field.
