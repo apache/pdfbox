@@ -77,7 +77,7 @@ public final class PDDeviceRGB extends PDDeviceColorSpace
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public int getNumberOfComponents()
