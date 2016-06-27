@@ -234,7 +234,7 @@ public class PDAnnotationLink extends PDAnnotation
     /**
      * Set a custom appearance handler for generating the annotations appearance streams.
      * 
-     * @param circleAppearanceHandler
+     * @param customAppearanceHandler
      */
     public void setCustomAppearanceHandler(PDAppearanceHandler customAppearanceHandler)
     {
