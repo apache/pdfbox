@@ -508,7 +508,7 @@ public class PDFDebugger extends JFrame
     }
 
     /**
-     * Returns the Edit > Find > Find menu item.
+     * Returns the Edit &gt; Find &gt; Find menu item.
      */
     public JMenuItem getFindMenuItem()
     {
@@ -516,7 +516,7 @@ public class PDFDebugger extends JFrame
     }
 
     /**
-     * Returns the Edit > Find > Find Next menu item.
+     * Returns the Edit &gt; Find &gt; Find Next menu item.
      */
     public JMenuItem getFindNextMenuItem()
     {
@@ -524,7 +524,7 @@ public class PDFDebugger extends JFrame
     }
 
     /**
-     * Returns the Edit > Find > Find Previous menu item.
+     * Returns the Edit &gt; Find &gt; Find Previous menu item.
      */
     public JMenuItem getFindPreviousMenuItem()
     {
