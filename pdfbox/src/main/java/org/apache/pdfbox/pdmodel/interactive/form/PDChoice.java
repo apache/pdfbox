@@ -242,7 +242,6 @@ public abstract class PDChoice extends PDVariableText
      * </p>
      * <p>
      * Setting the index will set the value too.
-     * </p>
      *
      * @param values List containing the indices of all selected options.
      */
