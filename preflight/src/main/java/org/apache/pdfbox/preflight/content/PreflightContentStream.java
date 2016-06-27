@@ -164,10 +164,9 @@ public class PreflightContentStream extends PreflightStreamEngine
     }
 
     /**
-     * Process Text Validation. According to the operator one of the both method will be called.
-     * (validStringDefinition(PDFOperator operator, List<?> arguments) / validStringArray(PDFOperator operator, List<?>
-     * arguments))
-     * 
+     * Process Text Validation. Depending on the operator parameter, this will either call
+     * <code>validateStringDefinition</code> or <code>validateStringArray</code>.
+     *
      * @param operator
      * @param arguments
      * @throws IOException
