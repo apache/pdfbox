@@ -219,7 +219,6 @@ public abstract class PDButton extends PDTerminalField
      *  <li>allow radio buttons having the same export value to be handled independently
      *  </li>
      * </ul>
-     * </p>
      * 
      * @return List containing all possible export values. If there is no Opt entry an empty list will be returned.
      */
