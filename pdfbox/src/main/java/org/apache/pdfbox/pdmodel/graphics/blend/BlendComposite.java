@@ -30,7 +30,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * AWT composite for blend modes.
  * 
- * @author Kühn & Weyh Software, GmbH
+ * @author Kühn &amp; Weyh Software GmbH
  */
 public final class BlendComposite implements Composite
 {
