@@ -38,7 +38,7 @@ import java.io.IOException;
  * AWT Paint that adds a soft mask to the alpha channel of the existing parent paint. If the parent
  * paint does not have an alpha channel, a new raster is created.
  * 
- * @author Kühn & Weyh Software, GmbH
+ * @author Kühn &amp; Weyh Software GmbH
  */
 public final class SoftMaskPaint implements Paint
 {
