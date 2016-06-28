@@ -19,6 +19,8 @@ package org.apache.pdfbox.pdmodel.font.encoding;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -32,12 +34,16 @@ import org.apache.pdfbox.cos.COSNumber;
  */
 public class DictionaryEncoding extends Encoding
 {
+    private static final Log LOG = LogFactory.getLog(DictionaryEncoding.class);
     private final COSDictionary encoding;
     private final Encoding baseEncoding;
     private final Map<Integer, String> differences = new HashMap<Integer, String>();
 
     /**
      * Creates a new DictionaryEncoding for embedding.
+     *
+     * @param baseEncoding
+     * @param differences
      */
     public DictionaryEncoding(COSName baseEncoding, COSArray differences)
     {
@@ -56,11 +62,14 @@ public class DictionaryEncoding extends Encoding
 
         if (this.baseEncoding == null)
         {
-            throw new IllegalArgumentException("Invalid encoding: " + baseEncoding);
+            LOG.error("Invalid encoding: " + baseEncoding);
         }
         
-        codeToName.putAll(this.baseEncoding.codeToName);
-        inverted.putAll(this.baseEncoding.inverted);
+        if (this.baseEncoding != null)
+        {
+            codeToName.putAll(this.baseEncoding.codeToName);
+            inverted.putAll(this.baseEncoding.inverted);
+        }
         applyDifferences();
     }
 
@@ -91,7 +100,7 @@ public class DictionaryEncoding extends Encoding
         if (encoding.containsKey(COSName.BASE_ENCODING))
         {
             COSName name = encoding.getCOSName(COSName.BASE_ENCODING);
-            base = Encoding.getInstance(name); // may be null
+            base = Encoding.getInstance(name);
         }
 
         if (base == null)
@@ -110,26 +119,33 @@ public class DictionaryEncoding extends Encoding
                 }
                 else
                 {
-                    throw new IllegalArgumentException("Symbolic fonts must have a built-in " + 
-                                                       "encoding");
+                    LOG.error("Symbolic fonts must have a built-in encoding");
                 }
             }
         }
         baseEncoding = base;
 
-        codeToName.putAll(baseEncoding.codeToName);
-        inverted.putAll(baseEncoding.inverted);
+        if (baseEncoding != null)
+        {
+            codeToName.putAll(baseEncoding.codeToName);
+            inverted.putAll(baseEncoding.inverted);
+        }
         applyDifferences();
     }
 
     private void applyDifferences()
     {
         // now replace with the differences
-        COSArray differences = (COSArray)encoding.getDictionaryObject( COSName.DIFFERENCES );
-        int currentIndex = -1;
-        for( int i=0; differences != null && i<differences.size(); i++ )
+        COSBase base = encoding.getDictionaryObject(COSName.DIFFERENCES);
+        if (!(base instanceof COSArray))
         {
-            COSBase next = differences.getObject( i );
+            return;
+        }
+        COSArray diffArray = (COSArray) base;
+        int currentIndex = -1;
+        for (int i = 0; i < diffArray.size(); i++)
+        {
+            COSBase next = diffArray.getObject(i);
             if( next instanceof COSNumber)
             {
                 currentIndex = ((COSNumber)next).intValue();
@@ -145,7 +161,7 @@ public class DictionaryEncoding extends Encoding
     }
 
     /**
-     * Returns the base encoding. Will be null for Type 3 fonts.
+     * Returns the base encoding. Will be null for Type 3 fonts or if the encoding is missing or invalid.
      */
     public Encoding getBaseEncoding()
     {
