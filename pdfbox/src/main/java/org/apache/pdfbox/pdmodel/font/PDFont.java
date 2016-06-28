@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.afm.FontMetrics;
@@ -64,7 +65,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     private List<Float> widths;
     private float avgFontWidth;
     private float fontWidthOfSpace = -1f;
-    private final Map<Integer, Float> codeToWidthMap = new HashMap<Integer, Float>();
+    private final Map<Integer, Float> codeToWidthMap;
 
     /**
      * Constructor for embedding.
@@ -76,6 +77,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
         toUnicodeCMap = null;
         fontDescriptor = null;
         afmStandard14 = null;
+        codeToWidthMap = new HashMap<Integer, Float>();
     }
 
     /**
@@ -92,6 +94,8 @@ public abstract class PDFont implements COSObjectable, PDFontLike
             throw new IllegalArgumentException("No AFM for font " + baseFont);
         }
         fontDescriptor = PDType1FontEmbedder.buildFontDescriptor(afmStandard14);
+        // standard 14 fonts may be accessed concurrently, as they are singletons
+        codeToWidthMap = new ConcurrentHashMap<Integer, Float>();
     }
 
     /**
@@ -102,6 +106,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     protected PDFont(COSDictionary fontDictionary) throws IOException
     {
         dict = fontDictionary;
+        codeToWidthMap = new HashMap<Integer, Float>();
 
         // standard 14 fonts use an AFM
         afmStandard14 = Standard14Fonts.getAFM(getName()); // may be null (it usually is)
