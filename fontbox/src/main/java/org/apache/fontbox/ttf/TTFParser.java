@@ -175,6 +175,8 @@ public class TTFParser
             }
         }
 
+        boolean isPostScript = font.tables.containsKey(CFFTable.TAG);
+        
         HeaderTable head = font.getHeader();
         if (head == null)
         {
@@ -200,26 +202,30 @@ public class TTFParser
             throw new IOException("post is mandatory");
         }
 
-        IndexToLocationTable loc = font.getIndexToLocation();
-        if (loc == null)
+        if (!isPostScript)
         {
-            throw new IOException("loca is mandatory");
+            IndexToLocationTable loc = font.getIndexToLocation();
+            if (loc == null)
+            {
+                throw new IOException("loca is mandatory");
+            }
+
+            if (font.getGlyph() == null)
+            {
+                throw new IOException("glyf is mandatory");
+            }
         }
-        // check other mandatory tables
-        if (font.getGlyph() == null)
-        {
-            throw new IOException("glyf is mandatory");
-        }
+
         if (font.getNaming() == null && !isEmbedded)
         {
             throw new IOException("name is mandatory");
         }
+
         if (font.getHorizontalMetrics() == null)
         {
             throw new IOException("hmtx is mandatory");
         }
-
-        // check others mandatory tables
+        
         if (!isEmbedded && font.getCmap() == null)
         {
             throw new IOException("cmap is mandatory");
