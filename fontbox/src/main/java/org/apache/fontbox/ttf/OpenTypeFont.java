@@ -40,7 +40,7 @@ public class OpenTypeFont extends TrueTypeFont
     @Override
     void setVersion(float versionValue)
     {
-        isPostScript = versionValue != 1.0;
+        isPostScript = Float.floatToIntBits(versionValue) == 0x469EA8A9; // OTTO
         super.setVersion(versionValue);
     }
     
