@@ -51,6 +51,10 @@ public abstract class Encoding implements COSObjectable
         {
             return MacRomanEncoding.INSTANCE;
         }
+        else if (COSName.MAC_EXPERT_ENCODING.equals(name))
+        {
+            return MacExpertEncoding.INSTANCE;
+        }
         else
         {
             return null;
