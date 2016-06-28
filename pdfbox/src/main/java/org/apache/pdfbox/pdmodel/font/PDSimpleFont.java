@@ -369,6 +369,10 @@ public abstract class PDSimpleFont extends PDFont
                 // we also require that the differences are actually different, see PDFBOX-1900 with
                 // the file from PDFBOX-2192 on Windows
                 Encoding baseEncoding = dictionary.getBaseEncoding();
+                if (baseEncoding == null)
+                {
+                    return false;
+                }
                 for (Map.Entry<Integer, String> entry : dictionary.getDifferences().entrySet())
                 {
                     if (!entry.getValue().equals(baseEncoding.getName(entry.getKey())))
