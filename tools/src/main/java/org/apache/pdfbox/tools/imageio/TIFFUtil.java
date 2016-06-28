@@ -76,12 +76,14 @@ final class TIFFUtil
     }
 
     /**
-     * Updates the given ImageIO metadata with Sun's custom TIFF tags.
-     * {@see https://svn.apache.org/repos/asf/xmlgraphics/commons/tags/commons-1_3_1/src/java/org/
-     *       apache/xmlgraphics/image/writer/imageio/ImageIOTIFFImageWriter.java}
-     * {@see http://download.java.net/media/jai-imageio/javadoc/1.0_01/com/sun/media/imageio/
-     *       plugins/tiff/package-summary.html}
-     * {@see http://partners.adobe.com/public/developer/tiff/index.html}
+     * Updates the given ImageIO metadata with Sun's custom TIFF tags, as described in
+     * the <a href="https://svn.apache.org/repos/asf/xmlgraphics/commons/tags/commons-1_3_1/src/java/org/apache/xmlgraphics/image/writer/imageio/ImageIOTIFFImageWriter.java">org.apache.xmlgraphics.image.writer.imageio.ImageIOTIFFImageWriter
+     * sources</a>, 
+     * the <a href="http://download.java.net/media/jai-imageio/javadoc/1.0_01/com/sun/media/imageio/plugins/tiff/package-summary.html">com.sun.media.imageio.plugins.tiff
+     * package javadoc</a>
+     * and the <a href="http://partners.adobe.com/public/developer/tiff/index.html">TIFF
+     * specification</a>.
+     *
      * @param image buffered image which will be written
      * @param metadata ImageIO metadata
      * @param dpi image dots per inch
