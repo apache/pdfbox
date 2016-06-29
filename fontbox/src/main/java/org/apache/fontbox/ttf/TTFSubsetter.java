@@ -35,6 +35,8 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Subsetter for TrueType (TTF) fonts.
@@ -46,6 +48,8 @@ import java.util.TreeSet;
  */
 public final class TTFSubsetter
 {
+    private static final Log LOG = LogFactory.getLog(TTFSubsetter.class);
+    
     private static final byte[] PAD_BUF = new byte[] { 0, 0, 0 };
 
     private final TrueTypeFont ttf;
@@ -396,7 +400,7 @@ public final class TTFSubsetter
     private byte[] buildOS2Table() throws IOException
     {
         OS2WindowsMetricsTable os2 = ttf.getOS2Windows();
-        if (os2 == null || keepTables != null && !keepTables.contains("OS/2"))
+        if (os2 == null || uniToGID.isEmpty() || keepTables != null && !keepTables.contains("OS/2"))
         {
             return null;
         }
@@ -682,7 +686,7 @@ public final class TTFSubsetter
 
     private byte[] buildCmapTable() throws IOException
     {
-        if (ttf.getCmap() == null || keepTables != null && !keepTables.contains("cmap"))
+        if (ttf.getCmap() == null || uniToGID.isEmpty() || keepTables != null && !keepTables.contains("cmap"))
         {
             return null;
         }
@@ -947,7 +951,7 @@ public final class TTFSubsetter
     {
         if (glyphIds.isEmpty() || uniToGID.isEmpty())
         {
-            throw new IllegalStateException("subset is empty");
+            LOG.info("font subset is empty");
         }
         
         addCompoundReferences();
