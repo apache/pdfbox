@@ -29,7 +29,6 @@ import org.apache.fontbox.util.autodetect.FontFileFinder;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
 import org.junit.Test;
 
 /**
@@ -40,7 +39,7 @@ public class TTFSubsetterTest
 {
 
     /**
-     * Test of PDFBOX-2854: empty subset.
+     * Test of PDFBOX-2854: empty subset with all tables.
      * 
      * @throws java.io.IOException
      */
@@ -50,15 +49,47 @@ public class TTFSubsetterTest
         final File testFile = new File("src/test/resources/ttf/LiberationSans-Regular.ttf");
         TrueTypeFont x = new TTFParser().parse(testFile);
         TTFSubsetter ttfSubsetter = new TTFSubsetter(x);
-        try
-        {
-            ttfSubsetter.writeToStream(new ByteArrayOutputStream());
-            fail("IllegalStateException should be thrown");
-        }
-        catch (IllegalStateException e)
-        {
-            // ok
-        }
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ttfSubsetter.writeToStream(baos);
+        TrueTypeFont subset = new TTFParser(true).parse(new ByteArrayInputStream(baos.toByteArray()));
+        assertEquals(1, subset.getNumberOfGlyphs());
+        assertEquals(0, subset.nameToGID(".notdef"));
+        assertNotNull(subset.getGlyph().getGlyph(0));
+        subset.close();
+    }
+
+    /**
+     * Test of PDFBOX-2854: empty subset with selected tables.
+     * 
+     * @throws java.io.IOException
+     */
+    @Test
+    public void testEmptySubset2() throws IOException
+    {
+        final File testFile = new File("src/test/resources/ttf/LiberationSans-Regular.ttf");
+        TrueTypeFont x = new TTFParser().parse(testFile);
+        // List copied from TrueTypeEmbedder.java
+        List<String> tables = new ArrayList<String>();
+        tables.add("head");
+        tables.add("hhea");
+        tables.add("loca");
+        tables.add("maxp");
+        tables.add("cvt ");
+        tables.add("prep");
+        tables.add("glyf");
+        tables.add("hmtx");
+        tables.add("fpgm");
+        tables.add("gasp");
+        TTFSubsetter ttfSubsetter = new TTFSubsetter(x, tables);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ttfSubsetter.writeToStream(baos);
+        TrueTypeFont subset = new TTFParser(true).parse(new ByteArrayInputStream(baos.toByteArray()));
+        assertEquals(1, subset.getNumberOfGlyphs());
+        assertEquals(0, subset.nameToGID(".notdef"));
+        assertNotNull(subset.getGlyph().getGlyph(0));
+        subset.close();
     }
 
     /**
