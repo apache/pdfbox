@@ -577,10 +577,13 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     {
         // look up in 'post' table
         readPostScriptNames();
-        Integer gid = postScriptNames.get(name);
-        if (gid != null && gid > 0 && gid < getMaximumProfile().getNumGlyphs())
+        if (postScriptNames != null)
         {
-            return gid;
+            Integer gid = postScriptNames.get(name);
+            if (gid != null && gid > 0 && gid < getMaximumProfile().getNumGlyphs())
+            {
+                return gid;
+            }
         }
 
         // look up in 'cmap'
