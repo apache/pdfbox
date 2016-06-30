@@ -380,7 +380,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     }
 
     /**
-     * Returns the number of glyphs (MaximuProfile.numGlyphs).
+     * Returns the number of glyphs (MaximumProfile.numGlyphs).
      * 
      * @return the number of glyphs
      * @throws IOException if there was an error reading the table.
