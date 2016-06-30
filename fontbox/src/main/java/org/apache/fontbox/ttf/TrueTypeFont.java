@@ -106,7 +106,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     }
 
     /**
-     * Returns the war bytes of the given table.
+     * Returns the raw bytes of the given table.
      * @param table the table to read.
      * @throws IOException if there was an error accessing the table.
      */
