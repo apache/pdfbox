@@ -250,8 +250,13 @@ public class StreamPane implements ActionListener
         @Override
         protected StyledDocument doInBackground()
         {
+            // default encoding to use when reading text base content
+            String encoding = "ISO-8859-1";
             synchronized (stream)
             {
+                if (stream.isXmlMetadata()) {
+                    encoding = "UTF-8";
+                }
                 InputStream inputStream = stream.getStream(filterKey);
                 if (isContentStream && Stream.UNFILTERED.equals(filterKey))
                 {
@@ -260,9 +265,9 @@ public class StreamPane implements ActionListener
                     {
                         return document;
                     }
-                    return getDocument(stream.getStream(filterKey));
+                    return getDocument(stream.getStream(filterKey), encoding);
                 }
-                return getDocument(inputStream);
+                return getDocument(inputStream, encoding);
             }
         }
 
@@ -283,7 +288,7 @@ public class StreamPane implements ActionListener
             }
         }
 
-        private String getStringOfStream(InputStream ioStream)
+        private String getStringOfStream(InputStream ioStream, String encoding)
         {
             ByteArrayOutputStream byteArray = new ByteArrayOutputStream();
             byte[] buffer = new byte[1024];
@@ -301,7 +306,7 @@ public class StreamPane implements ActionListener
             }
             try
             {
-                return byteArray.toString("ISO-8859-1");
+                return byteArray.toString(encoding);
             }
             catch (UnsupportedEncodingException e)
             {
@@ -310,12 +315,12 @@ public class StreamPane implements ActionListener
             }
         }
 
-        private StyledDocument getDocument(InputStream inputStream)
+        private StyledDocument getDocument(InputStream inputStream, String encoding)
         {
             StyledDocument docu = new DefaultStyledDocument();
             if (inputStream != null)
             {
-                String data = getStringOfStream(inputStream);
+                String data = getStringOfStream(inputStream, encoding);
                 try
                 {
                     docu.insertString(0, data, null);
