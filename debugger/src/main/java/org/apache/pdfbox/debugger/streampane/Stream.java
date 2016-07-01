@@ -45,6 +45,8 @@ public class Stream
     private final COSStream stream;
     private final boolean isThumb;
     private final boolean isImage;
+    private final boolean isXmlMetadata;
+    
     private final Map<String, List<String>> filters;
 
     /**
@@ -58,6 +60,7 @@ public class Stream
         this.stream = cosStream;
         this.isThumb = isThumb;
         this.isImage = isImageStream(cosStream, isThumb);
+        this.isXmlMetadata = isXmlMetadataStream(cosStream);
 
         filters = createFilterList(cosStream);
     }
@@ -70,6 +73,16 @@ public class Stream
     public boolean isImage()
     {
         return isImage;
+    }
+    
+    /**
+     * Return if this is stream is an Metadata stream.
+     *
+     * @return true if this a metadata stream and false otherwise.
+     */
+    public boolean isXmlMetadata()
+    {
+        return isXmlMetadata;
     }
 
     /**
@@ -228,5 +241,10 @@ public class Stream
             return true;
         }
         return dic.containsKey(COSName.SUBTYPE) && dic.getCOSName(COSName.SUBTYPE).equals(COSName.IMAGE);
+    }
+    
+    private boolean isXmlMetadataStream(COSDictionary dic)
+    {
+        return dic.containsKey(COSName.SUBTYPE) && dic.getCOSName(COSName.SUBTYPE).equals(COSName.getPDFName("XML"));
     }
 }
