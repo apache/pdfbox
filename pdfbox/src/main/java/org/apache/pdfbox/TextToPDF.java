@@ -24,6 +24,7 @@ import java.io.Reader;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
@@ -40,6 +41,7 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 public class TextToPDF
 {
     private int fontSize = 10;
+    private boolean landscape = false;
     private PDSimpleFont font = PDType1Font.HELVETICA;
 
     /**
@@ -73,12 +75,17 @@ public class TextToPDF
 
             final int margin = 40;
             float height = font.getFontDescriptor().getFontBoundingBox().getHeight()/1000;
+            PDRectangle mediaBox = PDPage.PAGE_SIZE_LETTER;
+            if (landscape)
+            {
+                mediaBox = new PDRectangle(mediaBox.getHeight(), mediaBox.getWidth());
+            }
 
             //calculate font height and increase by 5 percent.
             height = height*fontSize*1.05f;
             BufferedReader data = new BufferedReader( text );
             String nextLine = null;
-            PDPage page = new PDPage();
+            PDPage page = new PDPage(mediaBox);
             PDPageContentStream contentStream = null;
             float y = -1;
             float maxStringLength = page.getMediaBox().getWidth() - 2*margin;
@@ -159,7 +166,7 @@ public class TextToPDF
                     {
                         // We have crossed the end-of-page boundary and need to extend the
                         // document by another page.
-                        page = new PDPage();
+                        page = new PDPage(mediaBox);
                         doc.addPage( page );
                         if( contentStream != null )
                         {
@@ -185,7 +192,7 @@ public class TextToPDF
                     contentStream.drawString( nextLineToDraw.toString() );
                     if (ff)
                     {
-                        page = new PDPage();
+                        page = new PDPage(mediaBox);
                         doc.addPage(page);
                         contentStream.endText();
                         contentStream.close();
@@ -235,6 +242,9 @@ public class TextToPDF
      */
     public static void main(String[] args) throws IOException
     {
+        args = new String[]{"-standardFont", "Courier", "-landscape", "-fontSize", "8", "C:\\Users\\Tilman Hausherr\\Documents\\Java\\PDFBoxPageImageExtraction\\gprod.pdf", 
+                            "C:\\Users\\Tilman Hausherr\\Documents\\Java\\PDFBoxPageImageExtraction\\gprod.txt", 
+        };
         TextToPDF app = new TextToPDF();
         PDDocument doc = new PDDocument();
         try
@@ -262,6 +272,10 @@ public class TextToPDF
                     {
                         i++;
                         app.setFontSize( Integer.parseInt( args[i] ) );
+                    }
+                    else if( args[i].equals( "-landscape" ))
+                    {
+                        app.setLandscape(true);
                     }
                     else
                     {
@@ -296,6 +310,7 @@ public class TextToPDF
         }
         System.err.println( "    -ttf <ttf file>         The TTF font to use.");
         System.err.println( "    -fontSize <fontSize>    default:10" );
+        System.err.println( "    -landscape              sets orientation to landscape" );
 
 
     }
@@ -327,4 +342,25 @@ public class TextToPDF
     {
         this.fontSize = aFontSize;
     }
+
+    /**
+     * Tells the paper orientation.
+     *
+     * @return
+     */
+    public boolean isLandscape()
+    {
+        return landscape;
+    }
+
+    /**
+     * Sets paper orientation.
+     *
+     * @param landscape
+     */
+    public void setLandscape(boolean landscape)
+    {
+        this.landscape = landscape;
+    }
+
 }
