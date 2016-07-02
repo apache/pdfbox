@@ -94,20 +94,61 @@ public class TextToPDF
                 // the text.
                 textIsEmpty = false;
 
-                String[] lineWords = nextLine.trim().split( " " );
+                String[] lineWords = nextLine.replaceAll("[\\n\\r]+$", "").split(" ");
                 int lineIndex = 0;
                 while( lineIndex < lineWords.length )
                 {
-                    StringBuffer nextLineToDraw = new StringBuffer();
+                    StringBuilder nextLineToDraw = new StringBuilder();
                     float lengthIfUsingNextWord = 0;
+                    boolean ff = false;
                     do
                     {
-                        nextLineToDraw.append( lineWords[lineIndex] );
-                        nextLineToDraw.append( " " );
-                        lineIndex++;
+                        String word1, word2 = "";
+                        int indexFF = lineWords[lineIndex].indexOf('\f');
+                        if (indexFF == -1)
+                        {
+                            word1 = lineWords[lineIndex];
+                        }
+                        else
+                        {
+                            ff = true;
+                            word1 = lineWords[lineIndex].substring(0, indexFF);
+                            if (indexFF < lineWords[lineIndex].length())
+                            {
+                                word2 = lineWords[lineIndex].substring(indexFF + 1);
+                            }
+                        }
+                        // word1 is the part before ff, word2 after
+                        // both can be empty
+                        // word1 can also be empty without ff, if a line has many spaces
+                        if (word1.length() > 0 || !ff)
+                        {
+                            nextLineToDraw.append(word1);
+                            nextLineToDraw.append(" ");
+                        }
+                        if (!ff || word2.length() == 0)
+                        {
+                            lineIndex++;
+                        }
+                        else
+                        {
+                            lineWords[lineIndex] = word2;
+                        }
+                        if (ff)
+                        {
+                            break;
+                        }
                         if( lineIndex < lineWords.length )
                         {
-                            String lineWithNextWord = nextLineToDraw.toString() + lineWords[lineIndex];
+                            // need cut off at \f in next word to avoid IllegalArgumentException
+                            String nextWord = lineWords[lineIndex];
+                            indexFF = nextWord.indexOf('\f');
+                            if (indexFF != -1)
+                            {
+                                nextWord = nextWord.substring(0, indexFF);
+                            }
+                            
+                            String lineWithNextWord = nextLineToDraw.toString() + " " + nextWord;
                             lengthIfUsingNextWord =
                                 (font.getStringWidth( lineWithNextWord )/1000) * fontSize;
                         }
@@ -142,6 +183,18 @@ public class TextToPDF
                     contentStream.moveTextPositionByAmount( 0, -height);
                     y -= height;
                     contentStream.drawString( nextLineToDraw.toString() );
+                    if (ff)
+                    {
+                        page = new PDPage();
+                        doc.addPage(page);
+                        contentStream.endText();
+                        contentStream.close();
+                        contentStream = new PDPageContentStream(doc, page);
+                        contentStream.setFont(font, fontSize);
+                        contentStream.beginText();
+                        y = page.getMediaBox().getHeight() - margin + height;
+                        contentStream.moveTextPositionByAmount(margin, y);
+                    }
                 }
 
 
