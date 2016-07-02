@@ -242,9 +242,6 @@ public class TextToPDF
      */
     public static void main(String[] args) throws IOException
     {
-        args = new String[]{"-standardFont", "Courier", "-landscape", "-fontSize", "8", "C:\\Users\\Tilman Hausherr\\Documents\\Java\\PDFBoxPageImageExtraction\\gprod.pdf", 
-                            "C:\\Users\\Tilman Hausherr\\Documents\\Java\\PDFBoxPageImageExtraction\\gprod.txt", 
-        };
         TextToPDF app = new TextToPDF();
         PDDocument doc = new PDDocument();
         try
