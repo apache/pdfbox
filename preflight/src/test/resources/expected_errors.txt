@@ -110,7 +110,9 @@ isartor-6-3-4-t01-fail-b.pdf=3.1.3
 isartor-6-3-4-t01-fail-c.pdf=3.1.3
 isartor-6-3-4-t01-fail-d.pdf=3.1.3
 isartor-6-3-4-t01-fail-e.pdf=3.1.3
-isartor-6-3-4-t01-fail-f.pdf=3.1.3
+# 5.3.1 check is not part of isartor, but N Appearance of a Btn widget must not be a stream, but an appearance subdictionary, see PDFBOX-3408
+# PDFTools validator agrees: "The appearance must have state dictionaries (subdictionaries to 'N')"
+isartor-6-3-4-t01-fail-f.pdf=3.1.3,5.3.1
 isartor-6-3-4-t01-fail-g.pdf=3.2.4 // Type3 Damage because the Type1 used as Resource isn't embedded 
 isartor-6-3-4-t01-fail-h.pdf=3.1.3
 isartor-6-3-5-t01-fail-a.pdf=3.3.1
