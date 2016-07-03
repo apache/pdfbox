@@ -539,6 +539,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName W = new COSName("W");
     public static final COSName W2 = new COSName("W2");
     public static final COSName WHITE_POINT = new COSName("WhitePoint");
+    public static final COSName WIDGET = new COSName("Widget");
     public static final COSName WIDTH = new COSName("Width");
     public static final COSName WIDTHS = new COSName("Widths");
     public static final COSName WIN_ANSI_ENCODING = new COSName("WinAnsiEncoding");
