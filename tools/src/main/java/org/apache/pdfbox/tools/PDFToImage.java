@@ -278,7 +278,7 @@ public final class PDFToImage
             + "  -page <number>                   : The only page to extract (1-based)\n"
             + "  -startPage <int>                 : The first page to start extraction (1-based)\n"
             + "  -endPage <int>                   : The last page to extract(inclusive)\n"
-            + "  -color <int>                     : The color depth (valid: bilevel, indexed, gray, rgb, rgba)\n"
+            + "  -color <int>                     : The color depth (valid: bilevel, gray, rgb, rgba)\n"
             + "  -dpi <int>                       : The DPI of the output image\n"
             + "  -cropbox <int> <int> <int> <int> : The page area to export\n"
             + "  -time                            : Prints timing information to stdout\n"
