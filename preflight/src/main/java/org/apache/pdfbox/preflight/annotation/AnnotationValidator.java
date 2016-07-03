@@ -126,6 +126,7 @@ public abstract class AnnotationValidator
      * DestOutputProfile of the OutputIntent dictionary.
      * 
      * @return true if the C field is present and the RGB profile is used.
+     * @throws org.apache.pdfbox.preflight.exception.ValidationException
      */
     protected boolean checkColors() throws ValidationException
     {
@@ -142,6 +143,7 @@ public abstract class AnnotationValidator
      * Search the RGB Profile in OutputIntents dictionaries
      * 
      * @return true if a rgb profile is found, false otherwise.
+     * @throws org.apache.pdfbox.preflight.exception.ValidationException
      */
     protected boolean searchRGBProfile() throws ValidationException
     {
@@ -162,6 +164,7 @@ public abstract class AnnotationValidator
      * If the AP content isn't valid, this method return false and updates the errors list.
      * 
      * @return the validation state of the AP content.
+     * @throws org.apache.pdfbox.preflight.exception.ValidationException
      */
     protected boolean checkAP() throws ValidationException
     {
@@ -185,21 +188,57 @@ public abstract class AnnotationValidator
             }
             else
             {
-                // the N entry must be a Stream (Dictionaries are forbidden)
                 COSBase apn = apDict.getItem(COSName.N);
-                if (!COSUtils.isStream(apn, cosDocument))
+                COSBase subtype = annotDictionary.getItem(COSName.SUBTYPE);
+                COSBase ft = annotDictionary.getItem(COSName.FT);
+                if (COSName.WIDGET.equals(subtype) && COSName.BTN.equals(ft))
                 {
-                    ctx.addValidationError(new ValidationError(ERROR_ANNOT_INVALID_AP_CONTENT,
-                            "The N Appearance must be a Stream"));
-                    return false;
+                    // TECHNICAL CORRIGENDUM 2 for ISO 19005-1:2005 (PDF/A-1) 
+                    // added a clause for Widget Annotations:
+                    // the value of the N key shall be an appearance subdictionary
+                    if (COSUtils.isStream(apn, cosDocument))
+                    {
+                        ctx.addValidationError(new ValidationError(ERROR_ANNOT_INVALID_AP_CONTENT,
+                                "The N Appearance of a Btn widget must not be a stream, but an appearance subdictionary"));
+                        // But validate it anyway, for isartor-6-3-4-t01-fail-f.pdf
+                        // Appearance stream is a XObjectForm, check it.
+                        ContextHelper.validateElement(ctx, new PDFormXObject(
+                                COSUtils.getAsStream(apn, cosDocument)),
+                                GRAPHIC_PROCESS);
+                        return false;
+                    }
+                    if (!COSUtils.isDictionary(apn, cosDocument))
+                    {
+                        ctx.addValidationError(new ValidationError(ERROR_ANNOT_INVALID_AP_CONTENT,
+                                "The N Appearance must be an appearance subdictionary"));
+                        return false;
+                    }
+                    COSDictionary apnDict = COSUtils.getAsDictionary(apn, cosDocument);
+                    for (COSBase val : apnDict.getValues())
+                    {
+                        // Appearance stream is a XObjectForm, check it.
+                        ContextHelper.validateElement(ctx, new PDFormXObject(
+                                COSUtils.getAsStream(val, cosDocument)),
+                                GRAPHIC_PROCESS);
+                    }
                 }
-
-                // Appearance stream is a XObjectForm, check it.
-                ContextHelper.validateElement(ctx, new PDFormXObject(
-                        COSUtils.getAsStream(apn, cosDocument)),
-                        GRAPHIC_PROCESS);
+                else
+                {
+                    // the N entry must be a stream (Dictionaries are forbidden)
+                    if (!COSUtils.isStream(apn, cosDocument))
+                    {
+                        ctx.addValidationError(new ValidationError(ERROR_ANNOT_INVALID_AP_CONTENT,
+                                "The N Appearance must be a Stream"));
+                        return false;
+                    }
+                    // Appearance stream is a XObjectForm, check it.
+                    ContextHelper.validateElement(ctx, new PDFormXObject(
+                            COSUtils.getAsStream(apn, cosDocument)),
+                            GRAPHIC_PROCESS);
+                }
             }
-        } // else ok, nothing to check,this field is optional
+        }
+        // else ok, nothing to check, this field is optional
         return true;
     }
 
