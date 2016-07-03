@@ -470,7 +470,7 @@ public final class TextPosition
      * (set by the "cm" operator), the text matrix (set by the "Tm" operator) and the font size (set
      * by the "Tf" operator).
      *
-     * @return The X scaling factor.
+     * @return The Y scaling factor.
      */
     public float getYScale()
     {
