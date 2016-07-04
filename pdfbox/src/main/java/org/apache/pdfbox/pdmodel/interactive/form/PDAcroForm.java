@@ -45,6 +45,7 @@ import org.apache.pdfbox.pdmodel.fdf.FDFField;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -248,7 +249,7 @@ public final class PDAcroForm implements COSObjectable
 
                     if (!isContentStreamWrapped)
                     {
-                        contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, true, true);
+                        contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
                         isContentStreamWrapped = true;
                     }
                     else
@@ -256,11 +257,22 @@ public final class PDAcroForm implements COSObjectable
                         contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
                     }
                     
-                    PDFormXObject fieldObject = new PDFormXObject(widget.getNormalAppearanceStream().getCOSObject());
+                    PDAppearanceStream appearanceStream = widget.getNormalAppearanceStream();
                     
-                    Matrix translationMatrix = Matrix.getTranslateInstance(widget.getRectangle().getLowerLeftX(), widget.getRectangle().getLowerLeftY());
+                    PDFormXObject fieldObject = new PDFormXObject(appearanceStream.getCOSObject());
+                    
                     contentStream.saveGraphicsState();
-                    contentStream.transform(translationMatrix);
+                    
+                    // translate the appearance stream to the widget location if there is 
+                    // not already a transformation in place
+                    boolean needsTransformation = isNeedsTransformation(appearanceStream);
+                    if (needsTransformation)
+                    {
+                        Matrix translationMatrix = Matrix.getTranslateInstance(widget.getRectangle().getLowerLeftX(),
+                                widget.getRectangle().getLowerLeftY());
+                        contentStream.transform(translationMatrix);
+                    }
+                    
                     contentStream.drawForm(fieldObject);
                     contentStream.restoreGraphicsState();
                     contentStream.close();
@@ -651,5 +663,23 @@ public final class PDAcroForm implements COSObjectable
     		idx++;
     	}    	
     	return annotationToPageRef;
+    }
+    
+    /**
+     * Check if there is a transformation needed to place the annotations content.
+     * 
+     * @param appearanceStream
+     * @return the need for a transformation.
+     */
+    private boolean isNeedsTransformation(PDAppearanceStream appearanceStream)
+    {
+        // Check if there is a XObject defined as this is an indication that there should already be a transformation
+        // in place.
+        // TODO: A more reliable approach might be to parse the content stream
+        if (appearanceStream.getResources() != null && appearanceStream.getResources().getXObjectNames().iterator().hasNext())
+        {
+            return false;
+        }
+        return true;
     }
 }
