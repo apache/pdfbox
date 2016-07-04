@@ -190,7 +190,7 @@ public abstract class AnnotationValidator
             {
                 COSBase apn = apDict.getItem(COSName.N);
                 COSBase subtype = annotDictionary.getItem(COSName.SUBTYPE);
-                COSBase ft = annotDictionary.getItem(COSName.FT);
+                COSBase ft = getFieldType();
                 if (COSName.WIDGET.equals(subtype) && COSName.BTN.equals(ft))
                 {
                     // TECHNICAL CORRIGENDUM 2 for ISO 19005-1:2005 (PDF/A-1) 
@@ -338,5 +338,26 @@ public abstract class AnnotationValidator
     public final void setFactory(AnnotationValidatorFactory fact)
     {
         this.annotFact = fact;
+    }
+
+    private COSBase getFieldType()
+    {
+        COSBase ft = annotDictionary.getDictionaryObject(COSName.FT);
+        COSDictionary parent = annotDictionary;
+        while (ft == null)
+        {
+            // /FT could be in parent, so look upwards
+            COSBase parentBase = parent.getDictionaryObject(COSName.PARENT);
+            if (parentBase instanceof COSDictionary)
+            {
+                parent = (COSDictionary) parentBase;
+                ft = parent.getDictionaryObject(COSName.FT);
+            }
+            else
+            {
+                break;
+            }
+        }
+        return ft;
     }
 }
