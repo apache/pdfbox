@@ -154,7 +154,7 @@ public class FontFileFinder
     {
         String name = file.getName().toLowerCase();
         return (name.endsWith(".ttf") || name.endsWith(".otf") || name.endsWith(".pfb") || name.endsWith(".ttc")) 
-                // PDFBOX-3377 exclude weird file in AIX
-                && !name.equals("fonts.alias.ttf");
+                // PDFBOX-3377 exclude weird files in AIX
+                && !name.startsWith("fonts.");
     }
 }
