@@ -128,11 +128,16 @@ public class DictionaryEncoding extends Encoding
     private void applyDifferences()
     {
         // now replace with the differences
-        COSArray differences = (COSArray)encoding.getDictionaryObject( COSName.DIFFERENCES );
-        int currentIndex = -1;
-        for( int i=0; differences != null && i<differences.size(); i++ )
+        COSBase base = encoding.getDictionaryObject(COSName.DIFFERENCES);
+        if (!(base instanceof COSArray))
         {
-            COSBase next = differences.getObject( i );
+            return;
+        }
+        COSArray diffArray = (COSArray) base;
+        int currentIndex = -1;
+        for (int i = 0; i < diffArray.size(); i++)
+        {
+            COSBase next = diffArray.getObject(i);
             if( next instanceof COSNumber)
             {
                 currentIndex = ((COSNumber)next).intValue();
