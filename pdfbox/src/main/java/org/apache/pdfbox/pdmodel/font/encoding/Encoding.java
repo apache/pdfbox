@@ -18,9 +18,9 @@ package org.apache.pdfbox.pdmodel.font.encoding;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
@@ -109,8 +109,15 @@ public abstract class Encoding implements COSObjectable
         // otherwise /Differences won't be accounted for
         if (names == null)
         {
-            names = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
-            names.addAll(codeToName.values());
+            synchronized(this)
+            {
+                // PDFBOX-3404: avoid possibility that one thread ends up with newly created empty map from other thread
+                Set<String> tmpSet = new HashSet<String>(codeToName.values());
+                // make sure that assignment is done after initialisation is complete
+                names = tmpSet;
+                // note that it might still happen that 'names' is initialized twice, but this is harmless
+            }
+            // at this point, names will never be null.
         }
         return names.contains(name);
     }
