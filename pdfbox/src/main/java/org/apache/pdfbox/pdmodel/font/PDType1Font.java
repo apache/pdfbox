@@ -47,6 +47,7 @@ import org.apache.pdfbox.util.Matrix;
 
 import static org.apache.pdfbox.pdmodel.font.UniUtil.getUniNameOfCodePoint;
 import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
+import org.apache.pdfbox.pdmodel.font.encoding.ZapfDingbatsEncoding;
 
 /**
  * A PostScript Type 1 Font.
@@ -121,8 +122,16 @@ public class PDType1Font extends PDSimpleFont
         
         dict.setItem(COSName.SUBTYPE, COSName.TYPE1);
         dict.setName(COSName.BASE_FONT, baseFont);
-        encoding = WinAnsiEncoding.INSTANCE;
-        dict.setItem(COSName.ENCODING, COSName.WIN_ANSI_ENCODING);
+        if ("ZapfDingbats".equals(baseFont))
+        {
+            encoding = ZapfDingbatsEncoding.INSTANCE;
+        }
+        else
+        {
+            encoding = WinAnsiEncoding.INSTANCE;
+            dict.setItem(COSName.ENCODING, COSName.WIN_ANSI_ENCODING);
+        }
+
         // standard 14 fonts may be accessed concurrently, as they are singletons
         codeToBytesMap = new ConcurrentHashMap<Integer,byte[]>();
 
