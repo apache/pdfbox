@@ -111,7 +111,13 @@ public abstract class PDSimpleFont extends PDFont
                 Encoding builtIn = null;
                 Boolean symbolic = getSymbolicFlag();
                 boolean isFlaggedAsSymbolic = symbolic != null && symbolic;
-                if (!encodingDict.containsKey(COSName.BASE_ENCODING) && isFlaggedAsSymbolic)
+
+                COSName baseEncoding = encodingDict.getCOSName(COSName.BASE_ENCODING);
+                
+                boolean hasValidBaseEncoding = baseEncoding != null &&
+                            Encoding.getInstance(baseEncoding) != null;
+                
+                if (!hasValidBaseEncoding && isFlaggedAsSymbolic)
                 {
                     builtIn = readEncodingFromFont();
                 }
@@ -142,7 +148,7 @@ public abstract class PDSimpleFont extends PDFont
             glyphList = GlyphList.getAdobeGlyphList();
         }
     }
-
+    
     /**
      * Called by readEncoding() if the encoding needs to be extracted from the font file.
      *
