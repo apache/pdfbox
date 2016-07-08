@@ -20,9 +20,12 @@ import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.File;
 import java.io.IOException;
-
+import java.util.HashMap;
+import java.util.Map;
 import javax.print.PrintService;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.printing.Orientation;
 import org.apache.pdfbox.printing.PDFPageable;
 
 /**
@@ -35,6 +38,7 @@ public final class PrintPDF
     private static final String PASSWORD = "-password";
     private static final String SILENT = "-silentPrint";
     private static final String PRINTER_NAME = "-printerName";
+    private static final String ORIENTATION = "-orientation";
 
     /**
      * private constructor.
@@ -60,6 +64,11 @@ public final class PrintPDF
         String pdfFile = null;
         boolean silentPrint = false;
         String printerName = null;
+        Orientation orientation = Orientation.AUTO;
+        Map <String,Orientation> orientationMap = new HashMap<String,Orientation>();
+        orientationMap.put("auto", Orientation.AUTO);
+        orientationMap.put("landscape", Orientation.LANDSCAPE);
+        orientationMap.put("portrait", Orientation.PORTRAIT);
         for (int i = 0; i < args.length; i++)
         {
             if (args[i].equals(PASSWORD))
@@ -83,6 +92,19 @@ public final class PrintPDF
             else if (args[i].equals(SILENT))
             {
                 silentPrint = true;
+            }
+            else if (args[i].equals(ORIENTATION))
+            {
+                i++;
+                if (i >= args.length)
+                {
+                    usage();
+                }
+                orientation = orientationMap.get(args[i]);
+                if (orientation == null)
+                {
+                    usage();
+                }
             }
             else
             {
@@ -116,7 +138,7 @@ public final class PrintPDF
                     }
                 }
             }
-            printJob.setPageable(new PDFPageable(document));
+            printJob.setPageable(new PDFPageable(document, orientation));
             
             if (silentPrint || printJob.printDialog())
             {
@@ -139,8 +161,10 @@ public final class PrintPDF
     {
         String message = "Usage: java -jar pdfbox-app-x.y.z.jar PrintPDF [options] <inputfile>\n"
                 + "\nOptions:\n"
-                + "  -password  <password> : Password to decrypt document\n"
-                + "  -silentPrint          : Print without prompting for printer info\n";
+                + "  -password  <password>                : Password to decrypt document\n"
+                + "  -printerName <name>                  : Print to specific printer\n"
+                + "  -orientation auto|portrait|landscape : Print using orientation (default: auto)\n"
+                + "  -silentPrint                         : Print without printer dialog box\n";
         
         System.err.println(message);
         System.exit(1);
