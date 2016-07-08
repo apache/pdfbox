@@ -99,7 +99,7 @@ public class DictionaryEncoding extends Encoding
         if (hasBaseEncoding)
         {
             COSName name = encoding.getCOSName(COSName.BASE_ENCODING);
-            base = Encoding.getInstance(name); // may be null
+            base = Encoding.getInstance(name); // null when the name is invalid
         }
 
         if (base == null)
@@ -115,14 +115,6 @@ public class DictionaryEncoding extends Encoding
                 if (builtIn != null)
                 {
                     base = builtIn;
-                }
-                else if (hasBaseEncoding)
-                {
-                    String name = encoding.getCOSName(COSName.BASE_ENCODING).getName();
-                    LOG.warn("Invalid BaseEncoding: " + name + ", using StandardEncoding instead");
-                    
-                    // fallback to standard encoding (not in PDF spec, see PDFBOX-3403)
-                    base = StandardEncoding.INSTANCE;
                 }
                 else
                 {
