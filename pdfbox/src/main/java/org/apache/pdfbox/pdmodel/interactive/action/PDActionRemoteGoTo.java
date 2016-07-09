@@ -61,7 +61,9 @@ public class PDActionRemoteGoTo extends PDAction
      * It must be GoToR for a remote go-to action.
      *
      * @return The S entry of the specific remote go-to action dictionary.
+     * @deprecated use {@link #getSubType() }.
      */
+    @Deprecated
     public String getS()
     {
        return action.getNameAsString( COSName.S );
@@ -72,7 +74,9 @@ public class PDActionRemoteGoTo extends PDAction
      * It must be GoToR for a remote go-to action.
      *
      * @param s The remote go-to action.
+     * @deprecated use {@link #setSubType(java.lang.String) }.
      */
+    @Deprecated
     public void setS( String s )
     {
        action.setName( COSName.S, s );
