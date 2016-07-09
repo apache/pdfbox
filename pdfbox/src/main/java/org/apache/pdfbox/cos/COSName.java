@@ -340,6 +340,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName MEDIA_BOX = new COSName("MediaBox");
     public static final COSName METADATA = new COSName("Metadata");
     public static final COSName MISSING_WIDTH = new COSName("MissingWidth");
+    public static final COSName MIX = new COSName("Mix");
     public static final COSName MK = new COSName("MK");
     public static final COSName ML = new COSName("ML");
     public static final COSName MM_TYPE1 = new COSName("MMType1");
@@ -435,6 +436,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName RD = new COSName("RD");
     public static final COSName REASON = new COSName("Reason");
     public static final COSName REASONS = new COSName("Reasons");
+    public static final COSName REPEAT = new COSName("Repeat");
     public static final COSName RECIPIENTS = new COSName("Recipients");
     public static final COSName RECT = new COSName("Rect");
     public static final COSName REGISTRY = new COSName("Registry");
@@ -490,6 +492,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName SV = new COSName("SV");
     public static final COSName SW = new COSName("SW");
     public static final COSName SY = new COSName("Sy");
+    public static final COSName SYNCHRONOUS = new COSName("Synchronous");
     // T
     public static final COSName T = new COSName("T");
     public static final COSName TARGET = new COSName("Target");
@@ -536,6 +539,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName VIEW_AREA = new COSName("ViewArea");
     public static final COSName VIEW_CLIP = new COSName("ViewClip");
     public static final COSName VIEWER_PREFERENCES = new COSName("ViewerPreferences");
+    public static final COSName VOLUME = new COSName("Volume");
     // W
     public static final COSName W = new COSName("W");
     public static final COSName W2 = new COSName("W2");

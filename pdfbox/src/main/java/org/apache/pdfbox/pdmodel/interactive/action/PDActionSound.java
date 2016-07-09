@@ -17,13 +17,18 @@
 
 package org.apache.pdfbox.pdmodel.interactive.action;
 
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSBoolean;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.cos.COSStream;
 
 /**
- * This represents a Sound action that can be executed in a PDF document
+ * This represents a Sound action that can be executed in a PDF document.
  *
  * @author Timur Kamalov
+ * @author Tilman Hausherr
  */
 public class PDActionSound extends PDAction
 {
@@ -53,25 +58,148 @@ public class PDActionSound extends PDAction
     }
 
     /**
-     * This will get the type of action that the actions dictionary describes. It must be Sound for
-     * a Sound action.
-     *
-     * @return The S entry of the specific Sound action dictionary.
+     * Sets the sound object.
+     * 
+     * @param sound the sound object defining the sound that shall be played.
      */
-    public String getS()
+    public void setSound(COSStream sound)
     {
-        return action.getNameAsString(COSName.S);
+        action.setItem(COSName.SOUND, sound);
     }
 
     /**
-     * This will set the type of action that the actions dictionary describes. It must be Sound for
-     * a Sound action.
-     *
-     * @param s The Sound action.
+     * Gets the sound object.
+     * 
+     * @return The sound object defining the sound that shall be played.
      */
-    public void setS(String s)
+    public COSStream getSound()
     {
-        action.setName(COSName.S, s);
+        COSBase base = action.getDictionaryObject(COSName.SOUND);
+        if (base instanceof COSStream)
+        {
+            return (COSStream) base;
+        }
+        return null;
+    }
+    
+    /**
+     * Gets the volume at which to play the sound, in the range −1.0 to 1.0.
+     *
+     * @param volume The volume at which to play the sound, in the range −1.0 to 1.0.
+     * 
+     * @throws IllegalArgumentException if the volume parameter is outside of the range −1.0 to 1.0.
+     */
+    public void setVolume(float volume)
+    {
+        if (volume < -1 || volume > 1)
+        {
+            throw new IllegalArgumentException("volume outside of the range −1.0 to 1.0");
+        }
+        action.setFloat(COSName.VOLUME, volume);
     }
 
+    /**
+     * Sets the volume.
+     *
+     * @return The volume at which to play the sound, in the range −1.0 to 1.0. Default value: 1.0.
+     */
+    public float getVolume()
+    {
+        COSBase base = action.getDictionaryObject(COSName.VOLUME);
+        if (base instanceof COSNumber)
+        {
+            float volume = ((COSNumber) base).floatValue();
+            if (volume < -1 || volume > 1)
+            {
+                volume = 1;
+            }
+            return volume;
+        }
+        return 1;
+    }
+    
+    /**
+     * A flag specifying whether to play the sound synchronously or asynchronously. When true, the
+     * reader allows no further user interaction other than canceling the sound until the sound has
+     * been completely played.
+     *
+     * @param synchronous Whether to play the sound synchronously (true) or asynchronously (false).
+     */
+    public void setSynchronous(boolean synchronous)
+    {
+        action.setBoolean(COSName.SYNCHRONOUS, synchronous);
+    }
+
+    /**
+     * Gets the synchronous flag. It specifyes whether to play the sound synchronously or
+     * asynchronously. When true, the reader allows no further user interaction other than canceling
+     * the sound until the sound has been completely played.
+     *
+     * @return Whether to play the sound synchronously (true) or asynchronously (false, also the
+     * default).
+     */
+    public boolean getSynchronous()
+    {
+        COSBase base = action.getDictionaryObject(COSName.SYNCHRONOUS);
+        if (base instanceof COSBoolean)
+        {
+            return ((COSBoolean) base).getValue();
+        }
+        return false;
+    }
+    
+    /**
+     * A flag specifying whether to repeat the sound indefinitely.
+     *
+     * @param repeat Whether to repeat the sound indefinitely.
+     */
+    public void setRepeat(boolean repeat)
+    {
+        action.setBoolean(COSName.REPEAT, repeat);
+    }
+
+    /**
+     * Gets whether to repeat the sound indefinitely.
+     *
+     * @return Whether to repeat the sound indefinitely (default: false).
+     */
+    public boolean getRepeat()
+    {
+        COSBase base = action.getDictionaryObject(COSName.REPEAT);
+        if (base instanceof COSBoolean)
+        {
+            return ((COSBoolean) base).getValue();
+        }
+        return false;
+    }
+
+    /**
+     * The flag specifying whether to mix this sound with any other sound already playing. If this
+     * flag is false, any previously playing sound shall be stopped before starting this sound; this
+     * can be used to stop a repeating sound (see Repeat). Default value: false.
+     *
+     * @param mix whether to mix this sound with any other sound already playing.
+     * (false).
+     */
+    public void setMix(boolean mix)
+    {
+        action.setBoolean(COSName.MIX, mix);
+    }
+
+    /**
+     * Gets the flag specifying whether to mix this sound with any other sound already playing. If
+     * this flag is false, any previously playing sound shall be stopped before starting this sound;
+     * this can be used to stop a repeating sound (see Repeat).
+     *
+     * @return whether to mix this sound with any other sound already playing (default: false).
+     */
+    public boolean getMix()
+    {
+        COSBase base = action.getDictionaryObject(COSName.MIX);
+        if (base instanceof COSBoolean)
+        {
+            return ((COSBoolean) base).getValue();
+        }
+        return false;
+    }
 }
