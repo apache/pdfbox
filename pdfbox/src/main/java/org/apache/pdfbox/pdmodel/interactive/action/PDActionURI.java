@@ -56,7 +56,9 @@ public class PDActionURI extends PDAction
      * It must be URI for a URI action.
      *
      * @return The S entry of the specific URI action dictionary.
+     * @deprecated use {@link #getSubType() }.
      */
+    @Deprecated
     public String getS()
     {
         return action.getNameAsString(COSName.S);
@@ -67,7 +69,9 @@ public class PDActionURI extends PDAction
      * It must be URI for a URI action.
      *
      * @param s The URI action.
+     * @deprecated use {@link #setSubType(java.lang.String) }.
      */
+    @Deprecated
     public void setS(String s)
     {
         action.setName(COSName.S, s);
