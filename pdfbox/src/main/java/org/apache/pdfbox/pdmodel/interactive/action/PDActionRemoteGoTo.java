@@ -57,28 +57,6 @@ public class PDActionRemoteGoTo extends PDAction
     }
 
     /**
-     * This will get the type of action that the actions dictionary describes.
-     * It must be GoToR for a remote go-to action.
-     *
-     * @return The S entry of the specific remote go-to action dictionary.
-     */
-    public String getS()
-    {
-       return action.getNameAsString( COSName.S );
-    }
-
-    /**
-     * This will set the type of action that the actions dictionary describes.
-     * It must be GoToR for a remote go-to action.
-     *
-     * @param s The remote go-to action.
-     */
-    public void setS( String s )
-    {
-       action.setName( COSName.S, s );
-    }
-
-    /**
      * This will get the file in which the destination is located.
      *
      * @return The F entry of the specific remote go-to action dictionary.

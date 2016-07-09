@@ -52,28 +52,6 @@ public class PDActionURI extends PDAction
     }
 
     /**
-     * This will get the type of action that the actions dictionary describes.
-     * It must be URI for a URI action.
-     *
-     * @return The S entry of the specific URI action dictionary.
-     */
-    public String getS()
-    {
-        return action.getNameAsString(COSName.S);
-    }
-
-    /**
-     * This will set the type of action that the actions dictionary describes.
-     * It must be URI for a URI action.
-     *
-     * @param s The URI action.
-     */
-    public void setS(String s)
-    {
-        action.setName(COSName.S, s);
-    }
-
-    /**
      * This will get the uniform resource identifier to resolve, encoded in
      * 7-bit ASCII.
      *
