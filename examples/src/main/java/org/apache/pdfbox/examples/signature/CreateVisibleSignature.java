@@ -81,31 +81,12 @@ public class CreateVisibleSignature extends CreateSignatureBase
      * @throws NoSuchAlgorithmException if the algorithm for recovering the key cannot be found
      * @throws UnrecoverableKeyException if the given password is wrong
      * @throws CertificateException if the certificate is not valid as signing time
+     * @throws IOException if no certificate could be found
      */
     public CreateVisibleSignature(KeyStore keystore, char[] pin)
             throws KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, IOException, CertificateException
     {
-        // grabs the first alias from the keystore and get the private key. An
-        // alternative method or constructor could be used for setting a specific
-        // alias that should be used.
-        Enumeration<String> aliases = keystore.aliases();
-        String alias = null;
-        if (aliases.hasMoreElements())
-        {
-            alias = aliases.nextElement();
-        }
-        else
-        {
-            throw new IOException("Could not find alias");
-        }
-        setPrivateKey((PrivateKey) keystore.getKey(alias, pin));
-        Certificate cert = keystore.getCertificateChain(alias)[0];
-        setCertificate(cert);
-        if (cert instanceof X509Certificate)
-        {
-            // avoid expired certificate
-            ((X509Certificate) cert).checkValidity();
-        }
+        super(keystore, pin);
     }
 
     /**
