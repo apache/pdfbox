@@ -377,8 +377,8 @@ public class PDType1Font extends PDSimpleFont
         if (!encoding.contains(name))
         {
             throw new IllegalArgumentException(
-                    String.format("U+%04X ('%s') is not available in this font's encoding: %s",
-                                  unicode, name, encoding.getEncodingName()));
+                    String.format("U+%04X ('%s') is not available in this font %s (generic: %s) encoding: %s",
+                                  unicode, name, getName(), genericFont.getName(), encoding.getEncodingName()));
         }
         
         String nameInFont = getNameInFont(name);
@@ -387,7 +387,7 @@ public class PDType1Font extends PDSimpleFont
         if (nameInFont.equals(".notdef") || !genericFont.hasGlyph(nameInFont))
         {
             throw new IllegalArgumentException(
-                    String.format("No glyph for U+%04X in font %s", unicode, getName()));
+                    String.format("No glyph for U+%04X in font %s (generic: %s)", unicode, getName(), genericFont.getName()));
         }
 
         int code = inverted.get(name);
