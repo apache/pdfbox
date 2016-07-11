@@ -19,9 +19,16 @@ package org.apache.pdfbox.examples.signature;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
 import org.bouncycastle.asn1.ASN1Encodable;
@@ -54,12 +61,58 @@ public abstract class CreateSignatureBase implements SignatureInterface
     private Certificate certificate;
     private TSAClient tsaClient;
 
-    public void setPrivateKey(PrivateKey privateKey)
+    /**
+     * Initialize the signature creator with a keystore (pkcs12) and pin that should be used for the
+     * signature.
+     *
+     * @param keystore is a pkcs12 keystore.
+     * @param pin is the pin for the keystore / private key
+     * @throws KeyStoreException if the keystore has not been initialized (loaded)
+     * @throws NoSuchAlgorithmException if the algorithm for recovering the key cannot be found
+     * @throws UnrecoverableKeyException if the given password is wrong
+     * @throws CertificateException if the certificate is not valid as signing time
+     * @throws IOException if no certificate could be found
+     */
+    public CreateSignatureBase(KeyStore keystore, char[] pin)
+            throws KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, IOException, CertificateException
+    {
+        // grabs the first alias from the keystore and get the private key. An
+        // alternative method or constructor could be used for setting a specific
+        // alias that should be used.
+        Enumeration<String> aliases = keystore.aliases();
+        String alias;
+        Certificate cert = null;
+        while (aliases.hasMoreElements())
+        {
+            alias = aliases.nextElement();
+            setPrivateKey((PrivateKey) keystore.getKey(alias, pin));
+            Certificate[] certChain = keystore.getCertificateChain(alias);
+            if (certChain == null)
+            {
+                continue;
+            }
+            cert = certChain[0];
+            setCertificate(cert);
+            if (cert instanceof X509Certificate)
+            {
+                // avoid expired certificate
+                ((X509Certificate) cert).checkValidity();
+            }
+            break;
+        }
+
+        if (cert == null)
+        {
+            throw new IOException("Could not find certificate");
+        }
+    }
+
+    public final void setPrivateKey(PrivateKey privateKey)
     {
         this.privateKey = privateKey;
     }
 
-    public void setCertificate(Certificate certificate)
+    public final void setCertificate(Certificate certificate)
     {
         this.certificate = certificate;
     }
