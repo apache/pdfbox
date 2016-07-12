@@ -25,13 +25,9 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
-import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.Calendar;
-import java.util.Enumeration;
 import org.apache.pdfbox.io.IOUtils;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
