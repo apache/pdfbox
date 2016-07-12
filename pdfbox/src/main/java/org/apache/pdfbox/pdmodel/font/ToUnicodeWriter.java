@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import org.apache.pdfbox.util.Charsets;
+import org.apache.pdfbox.util.Hex;
 
 /**
  * Writes ToUnicode Mapping Files.
@@ -154,15 +155,15 @@ final class ToUnicodeWriter
             {
                 int index = batch * 100 + j;
                 writer.write('<');
-                writer.write(toHex(srcFrom.get(index)));
+                writer.write(Hex.getChars(srcFrom.get(index).shortValue()));
                 writer.write("> ");
 
                 writer.write('<');
-                writer.write(toHex(srcTo.get(index)));
+                writer.write(Hex.getChars(srcTo.get(index).shortValue()));
                 writer.write("> ");
 
-                writer.write("<");
-                writer.write(stringToHex(dstString.get(index)));
+                writer.write('<');
+                writer.write(Hex.getCharsUTF16BE(dstString.get(index)));
                 writer.write(">\n");
             }
             writeLine(writer, "endbfrange\n");
@@ -181,21 +182,5 @@ final class ToUnicodeWriter
     {
         writer.write(text);
         writer.write('\n');
-    }
-
-    private String toHex(int num)
-    {
-        return String.format("%04X", num);
-    }
-
-    private String stringToHex(String text)
-    {
-        // use of non-BMP code points requires PDF 1.5 or later, otherwise we're limited to UCS-2
-        StringBuilder sb = new StringBuilder();
-        for (byte b : text.getBytes(Charsets.UTF_16BE))
-        {
-            sb.append(String.format("%02X", b));
-        }
-        return sb.toString();
     }
 }
