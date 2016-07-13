@@ -266,7 +266,7 @@ final class CCITTFaxEncoderStream extends OutputStream {
         outputBufferBitLength = 0;
     }
 
-    public static class Code {
+    private static class Code {
         private Code(int code, int length) {
             this.code = code;
             this.length = length;
@@ -276,13 +276,13 @@ final class CCITTFaxEncoderStream extends OutputStream {
         final int length;
     }
 
-    public static final Code[] WHITE_TERMINATING_CODES;
+    private static final Code[] WHITE_TERMINATING_CODES;
 
-    public static final Code[] WHITE_NONTERMINATING_CODES;
+    private static final Code[] WHITE_NONTERMINATING_CODES;
 
-    public static final Code[] BLACK_TERMINATING_CODES;
+    private static final Code[] BLACK_TERMINATING_CODES;
 
-    public static final Code[] BLACK_NONTERMINATING_CODES;
+    private static final Code[] BLACK_NONTERMINATING_CODES;
 
     static {
         // Setup HUFFMAN Codes
