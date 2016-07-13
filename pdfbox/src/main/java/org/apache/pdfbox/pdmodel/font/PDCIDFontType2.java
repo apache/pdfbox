@@ -27,7 +27,6 @@ import org.apache.fontbox.cff.Type2CharString;
 import org.apache.fontbox.cmap.CMap;
 import org.apache.fontbox.ttf.CmapSubtable;
 import org.apache.fontbox.ttf.GlyphData;
-import org.apache.fontbox.ttf.GlyphTable;
 import org.apache.fontbox.ttf.OTFParser;
 import org.apache.fontbox.ttf.OpenTypeFont;
 import org.apache.fontbox.ttf.TrueTypeFont;
@@ -439,12 +438,7 @@ public class PDCIDFontType2 extends PDCIDFont
         else
         {
             int gid = codeToGID(code);
-            GlyphTable glyphTable = ttf.getGlyph();
-            if (glyphTable == null)
-            {
-                return new GeneralPath();
-            }
-            GlyphData glyph = glyphTable.getGlyph(gid);
+            GlyphData glyph = ttf.getGlyph().getGlyph(gid);
             if (glyph != null)
             {
                 return glyph.getPath();

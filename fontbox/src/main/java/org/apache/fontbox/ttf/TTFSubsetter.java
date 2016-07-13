@@ -479,10 +479,6 @@ public final class TTFSubsetter
         do
         {
             GlyphTable g = ttf.getGlyph();
-            if (g == null)
-            {
-                throw new IOException("source font " + ttf.getName() + " must have a glyf table");
-            }
             long[] offsets = ttf.getIndexToLocation().getOffsets();
             InputStream is = ttf.getOriginalData();
             Set<Integer> glyphIdsToAdd = null;
@@ -564,10 +560,6 @@ public final class TTFSubsetter
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
         GlyphTable g = ttf.getGlyph();
-        if (g == null)
-        {
-            throw new IOException("source font " + ttf.getName() + " must have a glyf table");
-        }
         long[] offsets = ttf.getIndexToLocation().getOffsets();
         InputStream is = ttf.getOriginalData();
         try
