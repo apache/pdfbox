@@ -209,6 +209,11 @@ public class TTFParser
             {
                 throw new IOException("loca is mandatory");
             }
+
+            if (font.getGlyph() == null)
+            {
+                throw new IOException("glyf is mandatory");
+            }
         }
         
         if (font.getNaming() == null && !isEmbedded)
