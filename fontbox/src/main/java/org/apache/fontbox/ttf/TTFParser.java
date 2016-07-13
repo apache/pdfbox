@@ -209,6 +209,11 @@ public class TTFParser
             {
                 throw new IOException("loca is mandatory");
             }
+
+            if (font.getGlyph() == null)
+            {
+                throw new IOException("glyf is mandatory");
+            }
         }
 
         if (font.getNaming() == null && !isEmbedded)
@@ -300,8 +305,8 @@ public class TTFParser
         table.setOffset(raf.readUnsignedInt());
         table.setLength(raf.readUnsignedInt());
         
-        // skip tables with zero length
-        if (table.getLength() == 0)
+        // skip tables with zero length (except glyf)
+        if (table.getLength() == 0 && !tag.equals(GlyphTable.TAG))
         {
             return null;
         }
