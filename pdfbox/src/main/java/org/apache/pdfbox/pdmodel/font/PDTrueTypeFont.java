@@ -29,7 +29,6 @@ import org.apache.fontbox.FontBoxFont;
 import org.apache.fontbox.ttf.CmapSubtable;
 import org.apache.fontbox.ttf.CmapTable;
 import org.apache.fontbox.ttf.GlyphData;
-import org.apache.fontbox.ttf.GlyphTable;
 import org.apache.fontbox.ttf.PostScriptTable;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
@@ -351,12 +350,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
     public float getHeight(int code) throws IOException
     {
         int gid = codeToGID(code);
-        GlyphTable glyphTable = ttf.getGlyph();
-        if (glyphTable == null)
-        {
-            return 0;
-        }
-        GlyphData glyph = glyphTable.getGlyph(gid);
+        GlyphData glyph = ttf.getGlyph().getGlyph(gid);
         if (glyph != null)
         {
             return glyph.getBoundingBox().getHeight();
@@ -448,12 +442,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
     public GeneralPath getPath(int code) throws IOException
     {
         int gid = codeToGID(code);
-        GlyphTable glyphTable = ttf.getGlyph();
-        if (glyphTable == null)
-        {
-            return new GeneralPath();
-        }
-        GlyphData glyph = glyphTable.getGlyph(gid);
+        GlyphData glyph = ttf.getGlyph().getGlyph(gid);
         
         // some glyphs have no outlines (e.g. space, table, newline)
         if (glyph == null)
@@ -493,12 +482,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
             return new GeneralPath();
         }
         
-        GlyphTable glyphTable = ttf.getGlyph();
-        if (glyphTable == null)
-        {
-            return new GeneralPath();
-        }
-        GlyphData glyph = glyphTable.getGlyph(gid);
+        GlyphData glyph = ttf.getGlyph().getGlyph(gid);
         if (glyph != null)
         {
             return glyph.getPath();
