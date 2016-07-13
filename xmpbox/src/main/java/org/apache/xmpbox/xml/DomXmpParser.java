@@ -92,7 +92,6 @@ public class DomXmpParser
         {
             throw new XmpParsingException(ErrorType.Configuration, "Failed to initilalize", e);
         }
-
     }
 
     public boolean isStrictParsing()
@@ -462,7 +461,7 @@ public class DomXmpParser
         for (Element element : lis)
         {
             QName propertyQName = new QName(element.getLocalName());
-            AbstractField ast = parseLiElement(xmp, propertyQName, element);
+            AbstractField ast = parseLiElement(xmp, propertyQName, element, type.type());
             if (ast != null)
             {
                 array.addProperty(ast);
@@ -499,7 +498,7 @@ public class DomXmpParser
         }
     }
 
-    private AbstractField parseLiElement(XMPMetadata xmp, QName descriptor, Element liElement)
+    private AbstractField parseLiElement(XMPMetadata xmp, QName descriptor, Element liElement, Types type)
             throws XmpParsingException
     {
         if (DomHelper.isParseTypeResource(liElement))
@@ -515,11 +514,11 @@ public class DomXmpParser
         }
         else
         {
-            // no child, so consider as simple text
+            // no child
             String text = liElement.getTextContent();
             TypeMapping tm = xmp.getTypeMapping();
             AbstractSimpleProperty sp = tm.instanciateSimpleProperty(descriptor.getNamespaceURI(),
-                    descriptor.getPrefix(), descriptor.getLocalPart(), text, Types.Text);
+                    descriptor.getPrefix(), descriptor.getLocalPart(), text, type);
             loadAttributes(sp, liElement);
             return sp;
         }
@@ -600,7 +599,7 @@ public class DomXmpParser
                 List<Element> lis = DomHelper.getElementChildren(bagOrSeq);
                 for (Element element2 : lis)
                 {
-                    AbstractField ast2 = parseLiElement(xmp, descriptor, element2);
+                    AbstractField ast2 = parseLiElement(xmp, descriptor, element2, type.type());
                     if (ast2 != null)
                     {
                         array.addProperty(ast2);
