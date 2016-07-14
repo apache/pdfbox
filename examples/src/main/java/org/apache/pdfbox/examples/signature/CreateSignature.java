@@ -161,7 +161,7 @@ public class CreateSignature implements SignatureInterface
     try
     {
       // load document
-      PDDocument doc = PDDocument.load(document, randomAccessFile);
+      PDDocument doc = PDDocument.loadNonSeq(document, randomAccessFile);
   
       // create signature dictionary
       PDSignature signature = new PDSignature();
