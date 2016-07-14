@@ -19,6 +19,7 @@ package org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -64,7 +65,7 @@ public class PDVisibleSignDesigner
     public PDVisibleSignDesigner(InputStream originalDocumenStream, InputStream imageStream, int page) throws IOException
     {
         signatureImageStream(imageStream);
-        document = PDDocument.load(originalDocumenStream);
+        document = PDDocument.loadNonSeq(originalDocumenStream, null);
         calculatePageSize(document, page);
     }
 
@@ -77,11 +78,11 @@ public class PDVisibleSignDesigner
      */
     public PDVisibleSignDesigner(String documentPath, InputStream imageStream, int page) throws IOException
     {
-        // set visible singature image Input stream
+        // set visible signature image Input stream
         signatureImageStream(imageStream);
 
         // create PD document
-        document = PDDocument.load(documentPath);
+        document = PDDocument.loadNonSeq(new File(documentPath), null);
 
         // calculate height an width of document
         calculatePageSize(document, page);
