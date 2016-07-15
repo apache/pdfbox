@@ -79,10 +79,7 @@ public class SignatureOptions implements Closeable
      */
     public void setVisualSignature(File file) throws IOException
     {
-        pdfSource = new RandomAccessBufferedFileInputStream(file);
-        PDFParser parser = new PDFParser(pdfSource);
-        parser.parse();
-        visualSignature = parser.getDocument();
+        initFromRandomAccessRead(new RandomAccessBufferedFileInputStream(file));
     }
 
     /**
@@ -93,7 +90,12 @@ public class SignatureOptions implements Closeable
      */
     public void setVisualSignature(InputStream is) throws IOException
     {
-        pdfSource = new RandomAccessBuffer(is);
+        initFromRandomAccessRead(new RandomAccessBuffer(is));
+    }
+    
+    private void initFromRandomAccessRead(RandomAccessRead rar) throws IOException
+    {
+        pdfSource = rar;
         PDFParser parser = new PDFParser(pdfSource);
         parser.parse();
         visualSignature = parser.getDocument();
