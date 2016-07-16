@@ -109,13 +109,7 @@ public final class DomHelper
     public static boolean isParseTypeResource(Element element)
     {
         Attr parseType = element.getAttributeNodeNS(XmpConstants.RDF_NAMESPACE, XmpConstants.PARSE_TYPE);
-        if (parseType != null && XmpConstants.RESOURCE_NAME.equals(parseType.getValue()))
-        {
-            // parseType resourc
-            return true;
-        }
-        // else
-        return false;
+        return parseType != null && XmpConstants.RESOURCE_NAME.equals(parseType.getValue());
     }
 
 }
