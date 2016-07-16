@@ -121,7 +121,7 @@ public class Type2CharStringParser
             { // process globalsubr command
                 Integer operand=(Integer)sequence.remove(sequence.size()-1);
                 //get subrbias
-                int bias = 0;
+                int bias;
                 int nSubrs = globalSubrIndex.length;
                 
                 if (nSubrs < 1240)
@@ -249,7 +249,7 @@ public class Type2CharStringParser
     private int getMaskLength()
     {
         int hintCount = hstemCount + vstemCount;
-        int length = (int)(hintCount / 8); 
+        int length = hintCount / 8; 
         if (hintCount % 8 > 0)
         {
             length++;
@@ -264,12 +264,11 @@ public class Type2CharStringParser
         {
             Object object = sequence.get(i);
 
-            if (object instanceof Number)
+            if (!(object instanceof Number))
             {
-                numbers.add(0, (Number) object);
-                continue;
+                return numbers;
             }
-            return numbers;
+            numbers.add(0, (Number) object);
         }
         return numbers;
     }
