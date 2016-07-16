@@ -53,6 +53,15 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     private final PDFTemplateStructure pdfStructure;
     private static final Log log = LogFactory.getLog(PDVisibleSigBuilder.class);
 
+    /**
+     * Constructor.
+     */
+    public PDVisibleSigBuilder()
+    {
+        pdfStructure = new PDFTemplateStructure();
+        log.info("PDF Structure has been created");
+    }
+
     @Override
     public void createPage(PDVisibleSignDesigner properties)
     {
@@ -68,12 +77,6 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
         PDDocument template = new PDDocument();
         template.addPage(page);
         pdfStructure.setTemplate(template);
-    }
-
-    public PDVisibleSigBuilder()
-    {
-        pdfStructure = new PDFTemplateStructure();
-        log.info("PDF Structure has been created");
     }
 
     @Override
