@@ -1413,6 +1413,7 @@ public class COSWriter implements ICOSVisitor, Closeable
                         break;
                     default:
                         output.write(b);
+                        break;
                 }
             }
             output.write(')');
