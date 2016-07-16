@@ -187,6 +187,7 @@ public class LayerUtility
             at.scale(viewBox.getWidth() / viewBox.getHeight(), viewBox.getHeight() / viewBox.getWidth());
             at.translate(viewBox.getHeight(), 0);
             at.rotate(-Math.PI * 1.5);
+            break;
         default:
             //no additional transformations necessary
         }
